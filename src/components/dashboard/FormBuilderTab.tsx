@@ -38,7 +38,7 @@ import {
 interface Event {
   id: string;
   name: string;
-  settings: EventSettings | null;
+  settings: Partial<EventSettings> | null;
 }
 
 interface FormBuilderTabProps {
