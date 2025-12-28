@@ -14,6 +14,283 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          access_code: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          description: string | null
+          event_date: string | null
+          event_type: Database["public"]["Enums"]["event_type"]
+          honoree_name: string
+          id: string
+          is_public: boolean | null
+          locale: string | null
+          name: string
+          settings: Json | null
+          slug: string
+          status: Database["public"]["Enums"]["event_status"]
+          survey_deadline: string | null
+          theme: Json | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_code?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          honoree_name: string
+          id?: string
+          is_public?: boolean | null
+          locale?: string | null
+          name: string
+          settings?: Json | null
+          slug: string
+          status?: Database["public"]["Enums"]["event_status"]
+          survey_deadline?: string | null
+          theme?: Json | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_code?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          honoree_name?: string
+          id?: string
+          is_public?: boolean | null
+          locale?: string | null
+          name?: string
+          settings?: Json | null
+          slug?: string
+          status?: Database["public"]["Enums"]["event_status"]
+          survey_deadline?: string | null
+          theme?: Json | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      expense_shares: {
+        Row: {
+          amount: number
+          created_at: string
+          expense_id: string
+          id: string
+          is_paid: boolean | null
+          paid_at: string | null
+          participant_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          expense_id: string
+          id?: string
+          is_paid?: boolean | null
+          paid_at?: string | null
+          participant_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          expense_id?: string
+          id?: string
+          is_paid?: boolean | null
+          paid_at?: string | null
+          participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_shares_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_shares_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: Database["public"]["Enums"]["expense_category"]
+          created_at: string
+          currency: string
+          description: string
+          event_id: string
+          expense_date: string | null
+          id: string
+          paid_by_participant_id: string | null
+          receipt_url: string | null
+          split_type: Database["public"]["Enums"]["split_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          currency?: string
+          description: string
+          event_id: string
+          expense_date?: string | null
+          id?: string
+          paid_by_participant_id?: string | null
+          receipt_url?: string | null
+          split_type?: Database["public"]["Enums"]["split_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          currency?: string
+          description?: string
+          event_id?: string
+          expense_date?: string | null
+          id?: string
+          paid_by_participant_id?: string | null
+          receipt_url?: string | null
+          split_type?: Database["public"]["Enums"]["split_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_paid_by_participant_id_fkey"
+            columns: ["paid_by_participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_templates: {
+        Row: {
+          channels: string[] | null
+          content_template: string
+          created_at: string
+          emoji_prefix: string | null
+          event_id: string
+          id: string
+          locale: string | null
+          sort_order: number | null
+          template_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          channels?: string[] | null
+          content_template: string
+          created_at?: string
+          emoji_prefix?: string | null
+          event_id: string
+          id?: string
+          locale?: string | null
+          sort_order?: number | null
+          template_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          channels?: string[] | null
+          content_template?: string
+          created_at?: string
+          emoji_prefix?: string | null
+          event_id?: string
+          id?: string
+          locale?: string | null
+          sort_order?: number | null
+          template_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_templates_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participants: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          event_id: string
+          id: string
+          joined_at: string | null
+          name: string
+          phone: string | null
+          response_id: string | null
+          role: Database["public"]["Enums"]["participant_role"]
+          status: Database["public"]["Enums"]["participant_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          joined_at?: string | null
+          name: string
+          phone?: string | null
+          response_id?: string | null
+          role?: Database["public"]["Enums"]["participant_role"]
+          status?: Database["public"]["Enums"]["participant_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          joined_at?: string | null
+          name?: string
+          phone?: string | null
+          response_id?: string | null
+          role?: Database["public"]["Enums"]["participant_role"]
+          status?: Database["public"]["Enums"]["participant_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responses: {
         Row: {
           alcohol: string | null
@@ -24,6 +301,7 @@ export type Database = {
           de_city: string | null
           destination: string
           duration_pref: string
+          event_id: string | null
           fitness_level: string
           id: string
           meta: Json | null
@@ -44,6 +322,7 @@ export type Database = {
           de_city?: string | null
           destination: string
           duration_pref: string
+          event_id?: string | null
           fitness_level: string
           id?: string
           meta?: Json | null
@@ -64,6 +343,7 @@ export type Database = {
           de_city?: string | null
           destination?: string
           duration_pref?: string
+          event_id?: string | null
           fitness_level?: string
           id?: string
           meta?: Json | null
@@ -75,7 +355,15 @@ export type Database = {
           travel_pref?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "responses_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       settings: {
         Row: {
@@ -92,15 +380,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_event_organizer: {
+        Args: { _event_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_event_participant: {
+        Args: { _event_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "organizer" | "member"
+      event_status: "draft" | "planning" | "active" | "completed" | "cancelled"
+      event_type: "bachelor" | "bachelorette" | "birthday" | "trip" | "other"
+      expense_category:
+        | "transport"
+        | "accommodation"
+        | "activities"
+        | "food"
+        | "drinks"
+        | "gifts"
+        | "other"
+      participant_role: "organizer" | "guest"
+      participant_status: "invited" | "confirmed" | "declined" | "maybe"
+      split_type: "equal" | "custom" | "percentage"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -227,6 +563,22 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "organizer", "member"],
+      event_status: ["draft", "planning", "active", "completed", "cancelled"],
+      event_type: ["bachelor", "bachelorette", "birthday", "trip", "other"],
+      expense_category: [
+        "transport",
+        "accommodation",
+        "activities",
+        "food",
+        "drinks",
+        "gifts",
+        "other",
+      ],
+      participant_role: ["organizer", "guest"],
+      participant_status: ["invited", "confirmed", "declined", "maybe"],
+      split_type: ["equal", "custom", "percentage"],
+    },
   },
 } as const
