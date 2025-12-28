@@ -58,6 +58,83 @@ serve(async (req) => {
     const slug = generateSlug(name);
     const access_code = generateAccessCode();
 
+    // Default survey configuration
+    const defaultSettings = {
+      form_locked: false,
+      date_blocks: date_blocks || {},
+      date_warnings: {},
+      no_gos: no_gos || [],
+      focus_points: focus_points || [],
+      
+      // Default options for survey
+      budget_options: [
+        { value: "80-150", label: "80–150 €" },
+        { value: "150-250", label: "150–250 €" },
+        { value: "250-400", label: "250–400 €" },
+        { value: "400+", label: "400 €+" },
+      ],
+      
+      destination_options: [
+        { value: "de_city", label: "Großstadt in Deutschland" },
+        { value: "barcelona", label: "Barcelona", emoji: "🇪🇸" },
+        { value: "lisbon", label: "Lissabon", emoji: "🇵🇹" },
+        { value: "prague", label: "Prag", emoji: "🇨🇿" },
+        { value: "budapest", label: "Budapest", emoji: "🇭🇺" },
+        { value: "either", label: "Egal – Hauptsache cool" },
+      ],
+      
+      activity_options: [
+        { value: "karting", label: "Karting", emoji: "🏎️", category: "action" },
+        { value: "escape_room", label: "Escape Room", emoji: "🔐", category: "action" },
+        { value: "lasertag", label: "Lasertag", emoji: "🔫", category: "action" },
+        { value: "axe_throwing", label: "Axtwerfen", emoji: "🪓", category: "action" },
+        { value: "vr_simracing", label: "VR Arena / Sim-Racing", emoji: "🎮", category: "action" },
+        { value: "climbing", label: "Kletterhalle / Bouldern", emoji: "🧗", category: "outdoor" },
+        { value: "bubble_soccer", label: "Bubble Soccer", emoji: "⚽", category: "action" },
+        { value: "outdoor", label: "Outdoor Challenge", emoji: "🏕️", category: "outdoor" },
+        { value: "wellness", label: "Wellness / Sauna", emoji: "🧖", category: "chill" },
+        { value: "food", label: "Food / Dinner Experience", emoji: "🍽️", category: "food" },
+        { value: "mixed", label: "Gemischt – alles ein bisschen", emoji: "🎯", category: "other" },
+      ],
+      
+      duration_options: [
+        { value: "day", label: "Tages-JGA (nur Samstag)" },
+        { value: "weekend", label: "Wochenende (2–3 Tage)" },
+        { value: "either", label: "Egal – beides ok" },
+      ],
+      
+      travel_options: [
+        { value: "daytrip", label: "Tagestrip ohne Übernachtung" },
+        { value: "one_night", label: "1 Nacht ist ok" },
+        { value: "two_nights", label: "2 Nächte sind ok" },
+        { value: "either", label: "Egal – flexibel" },
+      ],
+      
+      fitness_options: [
+        { value: "chill", label: "Entspannt", emoji: "🛋️" },
+        { value: "normal", label: "Normal", emoji: "🚶" },
+        { value: "sporty", label: "Sportlich", emoji: "💪" },
+      ],
+      
+      alcohol_options: [
+        { value: "yes", label: "Mit Alkohol ok", emoji: "🍻" },
+        { value: "no", label: "Lieber alkoholfrei" },
+        { value: "either", label: "Egal" },
+      ],
+      
+      attendance_options: [
+        { value: "yes", label: "Ja, bin dabei!", emoji: "🎉" },
+        { value: "maybe", label: "Vielleicht / unter Vorbehalt" },
+        { value: "no", label: "Leider nein", emoji: "😔" },
+      ],
+      
+      branding: {
+        primary_color: "#8B5CF6",
+        accent_color: "#06B6D4",
+        background_style: "gradient",
+      },
+    };
+
     // Create event
     const { data: event, error: eventError } = await supabase
       .from("events")
@@ -73,11 +150,7 @@ serve(async (req) => {
         currency,
         timezone,
         status: "planning",
-        settings: {
-          date_blocks: date_blocks || {},
-          no_gos: no_gos || [],
-          focus_points: focus_points || [],
-        },
+        settings: defaultSettings,
         theme: {
           primary_color: "#8B5CF6",
           accent_color: "#06B6D4",
