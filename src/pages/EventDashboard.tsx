@@ -25,9 +25,12 @@ import { IdeasTab } from "@/components/dashboard/IdeasTab";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
+import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
+import { FileEdit } from "lucide-react";
 
 const tabs = [
   { id: "overview", label: "Übersicht", icon: LayoutDashboard },
+  { id: "formbuilder", label: "Formular", icon: FileEdit },
   { id: "schedule", label: "Termine", icon: Calendar },
   { id: "destination", label: "Ziel", icon: MapPin },
   { id: "ideas", label: "Ideen", icon: Lightbulb },
@@ -134,6 +137,8 @@ const EventDashboard = () => {
             onTabChange={setActiveTab}
           />
         );
+      case "formbuilder":
+        return <FormBuilderTab event={event} onUpdate={refetch} />;
       case "schedule":
         return <ScheduleTab event={event} stats={stats} isLoading={statsLoading} />;
       case "destination":

@@ -8,7 +8,8 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import Hero from "@/components/Hero";
 import InfoCard from "@/components/InfoCard";
 import ProgressIndicator from "@/components/ProgressIndicator";
-import SurveyForm from "@/components/SurveyForm";
+import DynamicSurveyForm from "@/components/survey/DynamicSurveyForm";
+import { mergeWithDefaults } from "@/lib/survey-config";
 
 const EventSurvey = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -53,6 +54,9 @@ const EventSurvey = () => {
     ? { block: event.locked_block, label: event.settings?.date_blocks?.[event.locked_block] || event.locked_block }
     : undefined;
 
+  // Merge settings with defaults for the form
+  const settings = mergeWithDefaults(event.settings);
+
   return (
     <main className="min-h-screen hero-gradient">
       <div className="absolute top-4 left-4 z-10">
@@ -68,7 +72,12 @@ const EventSurvey = () => {
       <Hero />
       <InfoCard />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />
-      <SurveyForm isLocked={isFormLocked} />
+      <DynamicSurveyForm 
+        isLocked={isFormLocked} 
+        eventId={event.id}
+        settings={settings}
+        participants={participants}
+      />
     </main>
   );
 };
