@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export interface EventData {
   id: string;
@@ -61,13 +60,6 @@ export function useEvent(slug: string | undefined): UseEventResult {
     setError(null);
 
     try {
-      const { data, error: fetchError } = await supabase.functions.invoke("get-event", {
-        body: null,
-        method: "GET",
-        headers: {},
-      });
-
-      // Use query params approach
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-event?slug=${slug}`,
         {
