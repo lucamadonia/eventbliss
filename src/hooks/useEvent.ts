@@ -56,6 +56,13 @@ export function useEvent(slug: string | undefined): UseEventResult {
       return;
     }
 
+    // Validate slug format - reject placeholder patterns
+    if (slug.startsWith(':') || slug === 'slug' || slug.length < 3) {
+      setError("Invalid event link. Please use a valid event URL or access code.");
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
