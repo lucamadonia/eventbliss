@@ -26,7 +26,8 @@ import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
-import { FileEdit } from "lucide-react";
+import { AgenciesTab } from "@/components/dashboard/AgenciesTab";
+import { FileEdit, Building2 } from "lucide-react";
 
 const tabs = [
   { id: "overview", label: "Übersicht", icon: LayoutDashboard },
@@ -34,6 +35,7 @@ const tabs = [
   { id: "schedule", label: "Termine", icon: Calendar },
   { id: "destination", label: "Ziel", icon: MapPin },
   { id: "ideas", label: "Ideen", icon: Lightbulb },
+  { id: "agencies", label: "Agenturen", icon: Building2 },
   { id: "ai", label: "KI", icon: Sparkles },
   { id: "messages", label: "Nachrichten", icon: MessageSquare },
   { id: "settings", label: "Settings", icon: Settings },
@@ -145,6 +147,8 @@ const EventDashboard = () => {
         return <DestinationTab event={event} stats={stats} isLoading={statsLoading} />;
       case "ideas":
         return <IdeasTab responses={responses} isLoading={statsLoading} />;
+      case "agencies":
+        return <AgenciesTab />;
       case "ai":
         return <AIAssistantTab event={event} stats={stats} />;
       case "messages":
