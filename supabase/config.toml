@@ -12,5 +12,14 @@ verify_jwt = false
 [functions.submit-response]
 verify_jwt = false
 
+[functions.get-responses]
+verify_jwt = false
+
+[functions.update-event-settings]
+verify_jwt = false
+
+[functions.ai-assistant]
+verify_jwt = false
+
 [functions.get-public-info]
 verify_jwt = false

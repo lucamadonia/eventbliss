@@ -1,0 +1,275 @@
+import { useState } from "react";
+import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { GradientButton } from "@/components/ui/GradientButton";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import type { EventData } from "@/hooks/useEvent";
+
+interface AIAssistantTabProps {
+  event: EventData;
+  stats: {
+    attendance: { yes: number; maybe: number; no: number };
+    budgets: Record<string, number>;
+    destinations: Record<string, number>;
+    activities: Record<string, number>;
+    fitness_levels: Record<string, number>;
+  } | null;
+}
+
+type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat";
+
+interface AIRequest {
+  type: RequestType;
+  icon: React.ElementType;
+  label: string;
+  description: string;
+}
+
+const AI_REQUESTS: AIRequest[] = [
+  {
+    type: "trip_ideas",
+    icon: MapPin,
+    label: "Trip-Ideen",
+    description: "Passende Reiseziele vorschlagen",
+  },
+  {
+    type: "activities",
+    icon: Lightbulb,
+    label: "Aktivitäten",
+    description: "Aktivitäts-Empfehlungen",
+  },
+  {
+    type: "day_plan",
+    icon: Calendar,
+    label: "Tagesplan",
+    description: "Kompletten Ablauf erstellen",
+  },
+  {
+    type: "budget_estimate",
+    icon: DollarSign,
+    label: "Budget-Schätzung",
+    description: "Kosten kalkulieren",
+  },
+];
+
+export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [response, setResponse] = useState<string | null>(null);
+  const [currentType, setCurrentType] = useState<RequestType | null>(null);
+  const [chatMessage, setChatMessage] = useState("");
+
+  const getContext = () => {
+    const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
+    
+    // Get top budget
+    const budgetEntries = Object.entries(stats?.budgets || {});
+    const topBudget = budgetEntries.length > 0 
+      ? budgetEntries.sort((a, b) => b[1] - a[1])[0][0]
+      : "150-250";
+
+    // Get top destination
+    const destEntries = Object.entries(stats?.destinations || {});
+    const topDestination = destEntries.length > 0
+      ? destEntries.sort((a, b) => b[1] - a[1])[0][0]
+      : "either";
+
+    // Get top activities
+    const activityEntries = Object.entries(stats?.activities || {});
+    const topActivities = activityEntries
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([key]) => key);
+
+    // Get fitness level
+    const fitnessEntries = Object.entries(stats?.fitness_levels || {});
+    const topFitness = fitnessEntries.length > 0
+      ? fitnessEntries.sort((a, b) => b[1] - a[1])[0][0]
+      : "normal";
+
+    return {
+      event_type: event.event_type,
+      honoree_name: event.honoree_name,
+      participant_count: participantCount || 8,
+      avg_budget: topBudget,
+      destination_pref: topDestination,
+      top_activities: topActivities,
+      fitness_level: topFitness,
+      duration: "weekend",
+    };
+  };
+
+  const handleRequest = async (type: RequestType, message?: string) => {
+    setIsLoading(true);
+    setCurrentType(type);
+    setResponse(null);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            type,
+            context: getContext(),
+            message,
+          }),
+        }
+      );
+
+      const result = await res.json();
+
+      if (!result.success) {
+        if (res.status === 429) {
+          toast.error("Zu viele Anfragen. Bitte warte einen Moment.");
+        } else {
+          throw new Error(result.error || "AI request failed");
+        }
+        return;
+      }
+
+      setResponse(result.response);
+    } catch (error) {
+      console.error("AI error:", error);
+      toast.error("KI-Anfrage fehlgeschlagen");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChat = async () => {
+    if (!chatMessage.trim()) return;
+    await handleRequest("chat", chatMessage);
+    setChatMessage("");
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <GlassCard className="p-6 bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 rounded-xl bg-gradient-primary">
+            <Sparkles className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <div>
+            <h3 className="font-display text-2xl font-bold">KI-Assistent</h3>
+            <p className="text-sm text-muted-foreground">
+              Powered by AI • Personalisierte Empfehlungen
+            </p>
+          </div>
+        </div>
+        
+        <p className="text-muted-foreground">
+          Basierend auf den Präferenzen von{" "}
+          <span className="text-foreground font-medium">
+            {(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)} Teilnehmern
+          </span>{" "}
+          für{" "}
+          <span className="text-primary font-medium">{event.honoree_name}</span>
+        </p>
+      </GlassCard>
+
+      {/* Quick Actions Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {AI_REQUESTS.map((req) => {
+          const Icon = req.icon;
+          const isActive = currentType === req.type && isLoading;
+          
+          return (
+            <GlassCard
+              key={req.type}
+              className={`p-4 cursor-pointer transition-all hover:scale-[1.02] ${
+                isActive ? "ring-2 ring-primary" : ""
+              }`}
+              onClick={() => !isLoading && handleRequest(req.type)}
+            >
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className={`p-3 rounded-xl ${
+                  isActive ? "bg-primary/30" : "bg-muted/50"
+                }`}>
+                  {isActive ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  ) : (
+                    <Icon className="w-6 h-6" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-bold text-sm">{req.label}</p>
+                  <p className="text-xs text-muted-foreground">{req.description}</p>
+                </div>
+              </div>
+            </GlassCard>
+          );
+        })}
+      </div>
+
+      {/* Chat Input */}
+      <GlassCard className="p-4">
+        <div className="flex gap-3">
+          <Textarea
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            placeholder="Frag die KI was auch immer... z.B. 'Was sind gute Restaurants in Barcelona für 10 Leute?'"
+            className="resize-none bg-background/50"
+            rows={2}
+          />
+          <GradientButton
+            onClick={handleChat}
+            disabled={isLoading || !chatMessage.trim()}
+            icon={isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
+          >
+            Fragen
+          </GradientButton>
+        </div>
+      </GlassCard>
+
+      {/* Response */}
+      {response && (
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h4 className="font-bold">KI-Antwort</h4>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => currentType && handleRequest(currentType)}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              Neu generieren
+            </Button>
+          </div>
+          
+          <div className="prose prose-sm prose-invert max-w-none">
+            <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+              {response}
+            </div>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* No Stats Warning */}
+      {!stats && (
+        <GlassCard className="p-6 border-warning/30">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-warning mt-0.5" />
+            <div>
+              <h4 className="font-bold text-warning">Noch keine Daten</h4>
+              <p className="text-sm text-muted-foreground">
+                Die KI-Empfehlungen werden besser, sobald mehr Teilnehmer abgestimmt haben.
+                Aktuell werden Standard-Werte verwendet.
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+      )}
+    </div>
+  );
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,29 +12,87 @@ import {
   Wallet,
   Loader2,
   AlertCircle,
-  Users,
-  TrendingUp,
-  Clock,
+  Sparkles,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
+import { OverviewTab } from "@/components/dashboard/OverviewTab";
+import { ScheduleTab } from "@/components/dashboard/ScheduleTab";
+import { DestinationTab } from "@/components/dashboard/DestinationTab";
+import { IdeasTab } from "@/components/dashboard/IdeasTab";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
+import { MessagesTab } from "@/components/dashboard/MessagesTab";
+import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 
 const tabs = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "schedule", label: "Schedule", icon: Calendar },
-  { id: "destination", label: "Destination", icon: MapPin },
-  { id: "ideas", label: "Ideas", icon: Lightbulb },
-  { id: "messages", label: "Messages", icon: MessageSquare },
+  { id: "overview", label: "Übersicht", icon: LayoutDashboard },
+  { id: "schedule", label: "Termine", icon: Calendar },
+  { id: "destination", label: "Ziel", icon: MapPin },
+  { id: "ideas", label: "Ideen", icon: Lightbulb },
+  { id: "ai", label: "KI", icon: Sparkles },
+  { id: "messages", label: "Nachrichten", icon: MessageSquare },
   { id: "settings", label: "Settings", icon: Settings },
 ];
+
+interface ResponseStats {
+  total_responses: number;
+  attendance: { yes: number; maybe: number; no: number };
+  date_blocks: Record<string, { yes: number; maybe: number; total: number }>;
+  budgets: Record<string, number>;
+  destinations: Record<string, number>;
+  activities: Record<string, number>;
+  fitness_levels: Record<string, number>;
+}
+
+interface Response {
+  id: string;
+  participant: string;
+  attendance: string;
+  suggestions: string | null;
+  restrictions: string | null;
+  partial_days: string | null;
+}
 
 const EventDashboard = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { event, participants, responseCount, isLoading, error } = useEvent(slug);
+  const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const [activeTab, setActiveTab] = useState("overview");
+  const [stats, setStats] = useState<ResponseStats | null>(null);
+  const [responses, setResponses] = useState<Response[]>([]);
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  // Fetch responses and stats
+  useEffect(() => {
+    if (!event?.id) return;
+
+    const fetchResponses = async () => {
+      setStatsLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-responses?event_id=${event.id}`,
+          {
+            headers: {
+              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+          }
+        );
+        const data = await res.json();
+        if (data.success) {
+          setStats(data.stats);
+          setResponses(data.responses || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch responses:", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchResponses();
+  }, [event?.id]);
 
   if (isLoading) {
     return (
@@ -42,7 +100,7 @@ const EventDashboard = () => {
         <div className="min-h-screen flex items-center justify-center">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
             <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading dashboard...</p>
+            <p className="text-muted-foreground">Dashboard wird geladen...</p>
           </motion.div>
         </div>
       </AnimatedBackground>
@@ -55,9 +113,9 @@ const EventDashboard = () => {
         <div className="min-h-screen flex items-center justify-center px-4">
           <GlassCard className="p-8 text-center max-w-md">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h1 className="font-display text-2xl font-bold mb-2">Event Not Found</h1>
-            <p className="text-muted-foreground mb-6">{error || "Unable to load this event."}</p>
-            <GradientButton onClick={() => navigate("/")}>Go Home</GradientButton>
+            <h1 className="font-display text-2xl font-bold mb-2">Event nicht gefunden</h1>
+            <p className="text-muted-foreground mb-6">{error || "Event konnte nicht geladen werden."}</p>
+            <GradientButton onClick={() => navigate("/")}>Zur Startseite</GradientButton>
           </GlassCard>
         </div>
       </AnimatedBackground>
@@ -68,178 +126,28 @@ const EventDashboard = () => {
     switch (activeTab) {
       case "overview":
         return (
-          <div className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <GlassCard className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/20">
-                    <Users className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{participants.length}</p>
-                    <p className="text-sm text-muted-foreground">Participants</p>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-secondary/20">
-                    <TrendingUp className="w-5 h-5 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{responseCount}</p>
-                    <p className="text-sm text-muted-foreground">Responses</p>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-accent/20">
-                    <Clock className="w-5 h-5 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {Math.round((responseCount / Math.max(participants.length, 1)) * 100)}%
-                    </p>
-                    <p className="text-sm text-muted-foreground">Response Rate</p>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/20">
-                    <Calendar className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold capitalize">{event.status}</p>
-                    <p className="text-sm text-muted-foreground">Status</p>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
-
-            {/* Participants List */}
-            <GlassCard className="p-6">
-              <h3 className="font-display text-xl font-bold mb-4">Participants</h3>
-              <div className="space-y-3">
-                {participants.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-background/30"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
-                        {p.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-medium">{p.name}</p>
-                        <p className="text-sm text-muted-foreground capitalize">{p.role}</p>
-                      </div>
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        p.status === "confirmed"
-                          ? "bg-green-500/20 text-green-400"
-                          : p.status === "declined"
-                          ? "bg-red-500/20 text-red-400"
-                          : p.status === "maybe"
-                          ? "bg-yellow-500/20 text-yellow-400"
-                          : "bg-muted/50 text-muted-foreground"
-                      }`}
-                    >
-                      {p.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GlassCard
-                className="p-6 cursor-pointer hover:bg-background/30 transition-colors"
-                onClick={() => navigate(`/e/${slug}/expenses`)}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-lg bg-primary/20">
-                    <Wallet className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold">Cost Splitting</h4>
-                    <p className="text-sm text-muted-foreground">Track and split expenses</p>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard
-                className="p-6 cursor-pointer hover:bg-background/30 transition-colors"
-                onClick={() => setActiveTab("messages")}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-lg bg-secondary/20">
-                    <MessageSquare className="w-6 h-6 text-secondary" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold">Message Templates</h4>
-                    <p className="text-sm text-muted-foreground">Send updates to the group</p>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
-          </div>
+          <OverviewTab
+            event={event}
+            participants={participants}
+            responseCount={responseCount}
+            slug={slug!}
+            onTabChange={setActiveTab}
+          />
         );
-
+      case "schedule":
+        return <ScheduleTab event={event} stats={stats} isLoading={statsLoading} />;
+      case "destination":
+        return <DestinationTab event={event} stats={stats} isLoading={statsLoading} />;
+      case "ideas":
+        return <IdeasTab responses={responses} isLoading={statsLoading} />;
+      case "ai":
+        return <AIAssistantTab event={event} stats={stats} />;
       case "messages":
-        return (
-          <div className="space-y-4">
-            <GlassCard className="p-6">
-              <h3 className="font-display text-xl font-bold mb-4">Message Templates</h3>
-              <p className="text-muted-foreground mb-6">
-                Pre-built templates for WhatsApp. Click to copy.
-              </p>
-              
-              <div className="space-y-3">
-                {[
-                  { emoji: "🎉", title: "Kickoff", desc: "Initial invitation message" },
-                  { emoji: "💸", title: "Budget Poll", desc: "Ask about budget preferences" },
-                  { emoji: "🏨", title: "Accommodation", desc: "Hotel vs Airbnb voting" },
-                  { emoji: "🧳", title: "Packing List", desc: "What to bring reminder" },
-                  { emoji: "📢", title: "Countdown", desc: "3 days reminder" },
-                  { emoji: "🧾", title: "Payment Request", desc: "Payment reminder" },
-                ].map((template) => (
-                  <GlassCard
-                    key={template.title}
-                    className="p-4 cursor-pointer hover:bg-background/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">{template.emoji}</span>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{template.title}</h4>
-                        <p className="text-sm text-muted-foreground">{template.desc}</p>
-                      </div>
-                      <GradientButton size="sm" variant="outline">
-                        Copy
-                      </GradientButton>
-                    </div>
-                  </GlassCard>
-                ))}
-              </div>
-            </GlassCard>
-          </div>
-        );
-
+        return <MessagesTab event={event} slug={slug!} />;
+      case "settings":
+        return <SettingsTab event={event} participants={participants} onUpdate={refetch} />;
       default:
-        return (
-          <GlassCard className="p-8 text-center">
-            <p className="text-muted-foreground">
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} tab coming soon...
-            </p>
-          </GlassCard>
-        );
+        return null;
     }
   };
 
@@ -268,7 +176,7 @@ const EventDashboard = () => {
                 onClick={() => navigate(`/e/${slug}/expenses`)}
                 icon={<Wallet className="w-4 h-4" />}
               >
-                Expenses
+                Kosten
               </GradientButton>
             </div>
           </div>
