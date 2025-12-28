@@ -1,1 +1,16 @@
 project_id = "kqsfifsghvrnemfaxpef"
+
+[functions.create-event]
+verify_jwt = false
+
+[functions.join-event]
+verify_jwt = false
+
+[functions.get-event]
+verify_jwt = false
+
+[functions.submit-response]
+verify_jwt = false
+
+[functions.get-public-info]
+verify_jwt = false
