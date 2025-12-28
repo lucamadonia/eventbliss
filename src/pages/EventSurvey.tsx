@@ -5,7 +5,7 @@ import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
-import Hero from "@/components/Hero";
+import DynamicHero from "@/components/survey/DynamicHero";
 import InfoCard from "@/components/InfoCard";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import DynamicSurveyForm from "@/components/survey/DynamicSurveyForm";
@@ -69,7 +69,16 @@ const EventSurvey = () => {
         </button>
       </div>
 
-      <Hero />
+      <DynamicHero 
+        eventName={event.name}
+        eventType={event.event_type as 'bachelor' | 'bachelorette' | 'birthday' | 'trip' | 'other'}
+        honoreeName={event.honoree_name}
+        branding={settings.branding}
+        keyDateLabel={settings.branding?.key_date_label}
+        keyDate={settings.branding?.key_date}
+        heroImageUrl={settings.branding?.hero_image_url}
+        logoUrl={settings.branding?.logo_url}
+      />
       <InfoCard />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />
       <DynamicSurveyForm 

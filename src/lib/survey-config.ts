@@ -26,6 +26,9 @@ export interface BrandingConfig {
   logo_url?: string;
   hero_title?: string;
   hero_subtitle?: string;
+  hero_image_url?: string;
+  key_date_label?: string;
+  key_date?: string;
 }
 
 export interface SurveyConfig {
