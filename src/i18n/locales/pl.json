@@ -430,5 +430,35 @@
       "byCategory": "Według Kategorii",
       "showAll": "Pokaż Wszystko"
     }
+  },
+  "cookie": {
+    "title": "Używamy plików cookie",
+    "description": "Używamy plików cookie, aby poprawić Twoje doświadczenie. Dostosuj swoje preferencje poniżej.",
+    "necessary": "Niezbędne pliki cookie",
+    "necessaryDesc": "Niezbędne do działania strony. Nie można ich wyłączyć.",
+    "analytics": "Analityczne pliki cookie",
+    "analyticsDesc": "Pomagają nam zrozumieć, jak korzystasz z naszej strony.",
+    "marketing": "Marketingowe pliki cookie",
+    "marketingDesc": "Używane do wyświetlania spersonalizowanych reklam.",
+    "acceptAll": "Zaakceptuj wszystkie",
+    "acceptSelected": "Zaakceptuj wybrane",
+    "rejectAll": "Odrzuć wszystkie",
+    "learnMore": "Dowiedz się więcej"
+  },
+  "newsletter": {
+    "title": "Bądź na bieżąco",
+    "placeholder": "Twój email",
+    "subscribe": "Subskrybuj",
+    "success": "Pomyślnie zasubskrybowano!",
+    "successTitle": "Witaj na pokładzie!",
+    "successMessage": "Będziesz otrzymywać nasze najnowsze aktualizacje.",
+    "gdprConsent": "Zgadzam się na otrzymywanie e-maili i akceptuję politykę prywatności",
+    "marketingConsent": "Chcę otrzymywać komunikaty marketingowe (opcjonalnie)",
+    "errors": {
+      "invalidEmail": "Wprowadź poprawny adres e-mail",
+      "gdprRequired": "Musisz zaakceptować politykę prywatności",
+      "alreadySubscribed": "Ten e-mail jest już zasubskrybowany",
+      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+    }
   }
 }
