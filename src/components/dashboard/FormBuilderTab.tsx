@@ -77,10 +77,10 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   // Convert stored activity_options to ActivityItem format
   const initialActivities: ActivityItem[] = useMemo(() => {
     return settings.activity_options.map(opt => {
-      const libActivity = ACTIVITIES_LIBRARY.find(a => a.id === opt.value);
+      const libActivity = ACTIVITIES_LIBRARY.find(a => a.value === opt.value);
       return libActivity || {
-        id: opt.value,
-        name: opt.label,
+        value: opt.value,
+        label: opt.label,
         emoji: opt.emoji || '🎯',
         category: (opt.category || 'other') as ActivityItem['category'],
         tags: [],
@@ -124,12 +124,28 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         }
       });
 
-      // Convert activities to storage format
+      // Convert activities to storage format - map extended categories to basic ones
+      const mapCategory = (cat: ActivityItem['category']): 'action' | 'chill' | 'food' | 'outdoor' | 'other' => {
+        const categoryMap: Record<string, 'action' | 'chill' | 'food' | 'outdoor' | 'other'> = {
+          action: 'action',
+          outdoor: 'outdoor',
+          chill: 'chill',
+          food: 'food',
+          entertainment: 'other',
+          creative: 'other',
+          sport: 'action',
+          nightlife: 'other',
+          culture: 'other',
+          adventure: 'outdoor',
+        };
+        return categoryMap[cat] || 'other';
+      };
+
       const activityOptions = selectedActivities.map(activity => ({
-        value: activity.id,
-        label: activity.name,
+        value: activity.value,
+        label: activity.label,
         emoji: activity.emoji,
-        category: activity.category,
+        category: mapCategory(activity.category),
       }));
 
       const updatedSettings: Partial<EventSettings> = {
