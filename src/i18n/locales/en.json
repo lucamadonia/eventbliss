@@ -491,7 +491,7 @@
         "defaultWarning": "Possible restrictions",
         "hintInput": "Enter note..."
       },
-      "customQuestionBuilder": {
+      "customQuestions": {
         "quickAdd": "Quick add:",
         "presets": {
           "dietary": "Dietary",
@@ -499,6 +499,13 @@
           "tshirtSize": "T-Shirt Size",
           "driversLicense": "Driver's License",
           "specialWishes": "Special Wishes"
+        },
+        "presetQuestions": {
+          "dietary": { "label": "Any dietary restrictions?", "placeholder": "e.g. vegetarian, vegan, allergies..." },
+          "songWish": { "label": "Your song request for the playlist?", "placeholder": "Artist - Song title" },
+          "tshirtSize": { "label": "What T-shirt size do you wear?" },
+          "driversLicense": { "label": "Do you have a driver's license and can drive?" },
+          "specialWishes": { "label": "Is there anything else you'd like to share?", "placeholder": "Special wishes, ideas, notes..." }
         },
         "types": {
           "text": "Short Text",
@@ -517,6 +524,43 @@
         "noQuestionsHint": "Use the quick buttons above or add a new question.",
         "addNew": "Add new question",
         "questionsConfigured": "custom question(s) configured"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Search activities...",
+        "selected": "selected",
+        "custom": "Custom",
+        "addCustom": "Add custom activity",
+        "activityName": "Activity name",
+        "emoji": "Emoji",
+        "add": "Add",
+        "all": "All",
+        "recommended": "Recommended",
+        "selectedTab": "Selected",
+        "selectAllRecommended": "Select all recommended",
+        "noResults": "No activities found",
+        "noResultsHint": "Try a different search term or category",
+        "selectedActivities": "Selected activities",
+        "removeAll": "Remove all"
+      },
+      "branding": {
+        "primaryColor": "Primary Color",
+        "accentColor": "Accent Color",
+        "resetTemplateColors": "Reset template colors",
+        "heroTexts": "Hero Texts",
+        "heroTitle": "Hero Title",
+        "heroTitleDefault": "Default: Event name",
+        "heroSubtitle": "Hero Subtitle",
+        "heroSubtitlePlaceholder": "Find a date & plan action",
+        "keyDate": "Key Date (e.g. Wedding date)",
+        "keyDateLabel": "Date Label",
+        "keyDateLabelPlaceholder": "Wedding",
+        "date": "Date",
+        "selectDate": "Select date",
+        "backgroundStyle": "Background Style",
+        "gradient": "🌈 Gradient",
+        "solid": "🎨 Solid",
+        "dark": "🌙 Dark",
+        "livePreview": "Live preview of hero section"
       },
       "activitySelector": {
         "searchPlaceholder": "Search activities...",

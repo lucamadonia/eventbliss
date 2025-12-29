@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Palette, Type, Calendar, Image, Sparkles, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { de, enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { BrandingConfig } from '@/lib/survey-config';
 import { DesignTemplate } from '@/lib/design-templates';
@@ -33,9 +34,12 @@ export function BrandingEditor({
   honoreeName,
   selectedTemplate,
 }: BrandingEditorProps) {
+  const { t, i18n } = useTranslation();
   const [keyDate, setKeyDate] = useState<Date | undefined>(
     branding.key_date ? new Date(branding.key_date) : undefined
   );
+  
+  const dateLocale = i18n.language === 'de' ? de : enUS;
 
   const updateBranding = (updates: Partial<BrandingConfig>) => {
     onChange({ ...branding, ...updates });
@@ -81,21 +85,21 @@ export function BrandingEditor({
               {branding.hero_title || eventName || 'Event Name'}
             </h3>
             <p className="text-sm text-white/80 mt-1">
-              {branding.hero_subtitle || 'Termin finden & Action planen'}
+              {branding.hero_subtitle || t('dashboard.form.branding.heroSubtitlePlaceholder')}
             </p>
             {(branding.key_date_label || branding.key_date) && (
               <div className="mt-3 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5">
                 <Calendar className="w-4 h-4 text-white" />
                 <span className="text-sm text-white font-medium">
-                  {branding.key_date_label || 'Hochzeit'}
-                  {keyDate && `: ${format(keyDate, 'EEE, dd.MM.yyyy', { locale: de })}`}
+                  {branding.key_date_label || t('dashboard.form.branding.keyDateLabelPlaceholder')}
+                  {keyDate && `: ${format(keyDate, 'EEE, dd.MM.yyyy', { locale: dateLocale })}`}
                 </span>
               </div>
             )}
           </div>
         </div>
         <div className="bg-muted/30 px-4 py-2 text-center">
-          <span className="text-xs text-muted-foreground">Live-Vorschau des Hero-Bereichs</span>
+          <span className="text-xs text-muted-foreground">{t('dashboard.form.branding.livePreview')}</span>
         </div>
       </motion.div>
 
@@ -108,7 +112,7 @@ export function BrandingEditor({
           className="w-full"
         >
           <RotateCcw className="w-4 h-4 mr-2" />
-          Template-Farben zurücksetzen ({selectedTemplate.name})
+          {t('dashboard.form.branding.resetTemplateColors')} ({selectedTemplate.name})
         </Button>
       )}
 
@@ -118,7 +122,7 @@ export function BrandingEditor({
         <div className="space-y-2">
           <Label className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
-            Primärfarbe
+            {t('dashboard.form.branding.primaryColor')}
           </Label>
           <div className="flex gap-2">
             <div
@@ -154,7 +158,7 @@ export function BrandingEditor({
         <div className="space-y-2">
           <Label className="flex items-center gap-2">
             <Sparkles className="w-4 h-4" />
-            Akzentfarbe
+            {t('dashboard.form.branding.accentColor')}
           </Label>
           <div className="flex gap-2">
             <div
@@ -191,12 +195,12 @@ export function BrandingEditor({
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Type className="w-4 h-4" />
-          Hero-Texte
+          {t('dashboard.form.branding.heroTexts')}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="hero-title">Hero-Titel</Label>
+            <Label htmlFor="hero-title">{t('dashboard.form.branding.heroTitle')}</Label>
             <Input
               id="hero-title"
               value={branding.hero_title || ''}
@@ -204,17 +208,17 @@ export function BrandingEditor({
               placeholder={eventName || 'JGA Max'}
             />
             <p className="text-xs text-muted-foreground">
-              Standard: Event-Name
+              {t('dashboard.form.branding.heroTitleDefault')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hero-subtitle">Hero-Untertitel</Label>
+            <Label htmlFor="hero-subtitle">{t('dashboard.form.branding.heroSubtitle')}</Label>
             <Input
               id="hero-subtitle"
               value={branding.hero_subtitle || ''}
               onChange={(e) => updateBranding({ hero_subtitle: e.target.value })}
-              placeholder="Termin finden & Action planen"
+              placeholder={t('dashboard.form.branding.heroSubtitlePlaceholder')}
             />
           </div>
         </div>
@@ -224,22 +228,22 @@ export function BrandingEditor({
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Calendar className="w-4 h-4" />
-          Schlüssel-Datum (z.B. Hochzeitstermin)
+          {t('dashboard.form.branding.keyDate')}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="key-date-label">Datum-Label</Label>
+            <Label htmlFor="key-date-label">{t('dashboard.form.branding.keyDateLabel')}</Label>
             <Input
               id="key-date-label"
               value={branding.key_date_label || ''}
               onChange={(e) => updateBranding({ key_date_label: e.target.value })}
-              placeholder="Hochzeit"
+              placeholder={t('dashboard.form.branding.keyDateLabelPlaceholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Datum</Label>
+            <Label>{t('dashboard.form.branding.date')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -250,7 +254,7 @@ export function BrandingEditor({
                   )}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
-                  {keyDate ? format(keyDate, 'PPP', { locale: de }) : 'Datum wählen'}
+                  {keyDate ? format(keyDate, 'PPP', { locale: dateLocale }) : t('dashboard.form.branding.selectDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -269,7 +273,7 @@ export function BrandingEditor({
 
       {/* Background Style */}
       <div className="space-y-3">
-        <Label>Hintergrund-Stil</Label>
+        <Label>{t('dashboard.form.branding.backgroundStyle')}</Label>
         <div className="flex gap-2 flex-wrap">
           {(['gradient', 'solid', 'dark'] as const).map((style) => (
             <Button
@@ -278,9 +282,9 @@ export function BrandingEditor({
               size="sm"
               onClick={() => updateBranding({ background_style: style })}
             >
-              {style === 'gradient' && '🌈 Gradient'}
-              {style === 'solid' && '🎨 Solid'}
-              {style === 'dark' && '🌙 Dark'}
+              {style === 'gradient' && t('dashboard.form.branding.gradient')}
+              {style === 'solid' && t('dashboard.form.branding.solid')}
+              {style === 'dark' && t('dashboard.form.branding.dark')}
             </Button>
           ))}
         </div>

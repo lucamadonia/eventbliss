@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
   Plus,
@@ -34,72 +35,89 @@ interface CustomQuestionBuilderProps {
   onChange: (questions: CustomQuestion[]) => void;
 }
 
-const QUESTION_TYPES = [
-  { value: 'text', label: 'Kurztext', icon: Type },
-  { value: 'textarea', label: 'Langtext', icon: AlignLeft },
-  { value: 'select', label: 'Dropdown', icon: List },
-  { value: 'radio', label: 'Single Choice', icon: CircleDot },
-  { value: 'checkbox', label: 'Multiple Choice', icon: CheckSquare },
-  { value: 'toggle', label: 'Ja/Nein', icon: ToggleLeft },
+const QUESTION_TYPE_KEYS = [
+  { value: 'text', labelKey: 'types.text', icon: Type },
+  { value: 'textarea', labelKey: 'types.textarea', icon: AlignLeft },
+  { value: 'select', labelKey: 'types.select', icon: List },
+  { value: 'radio', labelKey: 'types.radio', icon: CircleDot },
+  { value: 'checkbox', labelKey: 'types.checkbox', icon: CheckSquare },
+  { value: 'toggle', labelKey: 'types.toggle', icon: ToggleLeft },
 ] as const;
 
-const QUESTION_PRESETS = [
-  {
-    label: 'Ernährung',
-    question: {
-      id: 'dietary',
-      type: 'text' as const,
-      label: 'Gibt es Ernährungs-Einschränkungen?',
-      placeholder: 'z.B. vegetarisch, vegan, Allergien...',
-      required: false,
-    },
-  },
-  {
-    label: 'Song-Wunsch',
-    question: {
-      id: 'song_wish',
-      type: 'text' as const,
-      label: 'Dein Song-Wunsch für die Playlist?',
-      placeholder: 'Artist - Songtitel',
-      required: false,
-    },
-  },
-  {
-    label: 'T-Shirt Größe',
-    question: {
-      id: 'tshirt_size',
-      type: 'select' as const,
-      label: 'Welche T-Shirt Größe trägst du?',
-      options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-      required: false,
-    },
-  },
-  {
-    label: 'Führerschein',
-    question: {
-      id: 'drivers_license',
-      type: 'toggle' as const,
-      label: 'Hast du einen Führerschein und kannst fahren?',
-      required: false,
-    },
-  },
-  {
-    label: 'Besondere Wünsche',
-    question: {
-      id: 'special_wishes',
-      type: 'textarea' as const,
-      label: 'Gibt es etwas, das du uns noch mitteilen möchtest?',
-      placeholder: 'Besondere Wünsche, Ideen, Anmerkungen...',
-      required: false,
-    },
-  },
+const QUESTION_PRESET_KEYS = [
+  { labelKey: 'presets.dietary', id: 'dietary' },
+  { labelKey: 'presets.songWish', id: 'song_wish' },
+  { labelKey: 'presets.tshirtSize', id: 'tshirt_size' },
+  { labelKey: 'presets.driversLicense', id: 'drivers_license' },
+  { labelKey: 'presets.specialWishes', id: 'special_wishes' },
 ];
 
 export function CustomQuestionBuilder({
   questions,
   onChange,
 }: CustomQuestionBuilderProps) {
+  const { t } = useTranslation();
   const [newQuestionType, setNewQuestionType] = useState<string>('text');
+
+  // Build presets with translations
+  const QUESTION_PRESETS = [
+    {
+      label: t('dashboard.form.customQuestions.presets.dietary'),
+      question: {
+        id: 'dietary',
+        type: 'text' as const,
+        label: t('dashboard.form.customQuestions.presetQuestions.dietary.label'),
+        placeholder: t('dashboard.form.customQuestions.presetQuestions.dietary.placeholder'),
+        required: false,
+      },
+    },
+    {
+      label: t('dashboard.form.customQuestions.presets.songWish'),
+      question: {
+        id: 'song_wish',
+        type: 'text' as const,
+        label: t('dashboard.form.customQuestions.presetQuestions.songWish.label'),
+        placeholder: t('dashboard.form.customQuestions.presetQuestions.songWish.placeholder'),
+        required: false,
+      },
+    },
+    {
+      label: t('dashboard.form.customQuestions.presets.tshirtSize'),
+      question: {
+        id: 'tshirt_size',
+        type: 'select' as const,
+        label: t('dashboard.form.customQuestions.presetQuestions.tshirtSize.label'),
+        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        required: false,
+      },
+    },
+    {
+      label: t('dashboard.form.customQuestions.presets.driversLicense'),
+      question: {
+        id: 'drivers_license',
+        type: 'toggle' as const,
+        label: t('dashboard.form.customQuestions.presetQuestions.driversLicense.label'),
+        required: false,
+      },
+    },
+    {
+      label: t('dashboard.form.customQuestions.presets.specialWishes'),
+      question: {
+        id: 'special_wishes',
+        type: 'textarea' as const,
+        label: t('dashboard.form.customQuestions.presetQuestions.specialWishes.label'),
+        placeholder: t('dashboard.form.customQuestions.presetQuestions.specialWishes.placeholder'),
+        required: false,
+      },
+    },
+  ];
+
+  // Build question types with translations
+  const QUESTION_TYPES = QUESTION_TYPE_KEYS.map(qt => ({
+    value: qt.value,
+    label: t(`dashboard.form.customQuestions.${qt.labelKey}`),
+    icon: qt.icon,
+  }));
 
   const addQuestion = (preset?: typeof QUESTION_PRESETS[0]['question']) => {
     const baseQuestion = preset || {
@@ -167,11 +185,11 @@ export function CustomQuestionBuilder({
     <div className="space-y-6">
       {/* Quick Add Presets */}
       <div className="space-y-2">
-        <Label className="text-sm text-muted-foreground">Schnell hinzufügen:</Label>
+        <Label className="text-sm text-muted-foreground">{t('dashboard.form.customQuestions.quickAdd')}</Label>
         <div className="flex flex-wrap gap-2">
           {QUESTION_PRESETS.map((preset) => (
             <Button
-              key={preset.label}
+              key={preset.question.id}
               variant="outline"
               size="sm"
               onClick={() => addQuestion(preset.question)}
@@ -246,28 +264,28 @@ export function CustomQuestionBuilder({
                               onChange={(e) =>
                                 updateQuestion(index, { label: e.target.value })
                               }
-                              placeholder="Frage eingeben..."
+                              placeholder={t('dashboard.form.customQuestions.questionPlaceholder')}
                               className="flex-1"
                             />
                           </div>
 
                           {/* Placeholder for text types */}
                           {['text', 'textarea'].includes(question.type) && (
-                            <Input
-                              value={question.placeholder || ''}
-                              onChange={(e) =>
-                                updateQuestion(index, { placeholder: e.target.value })
-                              }
-                              placeholder="Platzhalter-Text (optional)"
-                              className="text-sm"
-                            />
+                          <Input
+                            value={question.placeholder || ''}
+                            onChange={(e) =>
+                              updateQuestion(index, { placeholder: e.target.value })
+                            }
+                            placeholder={t('dashboard.form.customQuestions.placeholderPlaceholder')}
+                            className="text-sm"
+                          />
                           )}
 
                           {/* Options for select/radio/checkbox */}
                           {question.options && (
                             <div className="space-y-2">
                               <Label className="text-xs text-muted-foreground">
-                                Optionen:
+                                {t('dashboard.form.customQuestions.options')}
                               </Label>
                               <div className="space-y-2">
                                 {question.options.map((option, optIndex) => (
@@ -296,7 +314,7 @@ export function CustomQuestionBuilder({
                                   className="w-full"
                                 >
                                   <Plus className="w-4 h-4 mr-1" />
-                                  Option hinzufügen
+                                  {t('dashboard.form.customQuestions.addOption')}
                                 </Button>
                               </div>
                             </div>
@@ -310,7 +328,7 @@ export function CustomQuestionBuilder({
                                 updateQuestion(index, { required: checked })
                               }
                             />
-                            <Label className="text-sm">Pflichtfeld</Label>
+                            <Label className="text-sm">{t('dashboard.form.customQuestions.requiredField')}</Label>
                           </div>
                         </div>
 
@@ -333,8 +351,8 @@ export function CustomQuestionBuilder({
       ) : (
         <div className="text-center py-8 text-muted-foreground">
           <HelpCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">Noch keine eigenen Fragen hinzugefügt.</p>
-          <p className="text-xs">Nutze die Schnell-Buttons oben oder füge eine neue Frage hinzu.</p>
+          <p className="text-sm">{t('dashboard.form.customQuestions.noQuestions')}</p>
+          <p className="text-xs">{t('dashboard.form.customQuestions.noQuestionsHint')}</p>
         </div>
       )}
 
@@ -358,7 +376,7 @@ export function CustomQuestionBuilder({
 
         <Button onClick={() => addQuestion()} className="flex-1">
           <Plus className="w-4 h-4 mr-2" />
-          Neue Frage hinzufügen
+          {t('dashboard.form.customQuestions.addNew')}
         </Button>
       </div>
 
@@ -367,7 +385,7 @@ export function CustomQuestionBuilder({
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Badge variant="secondary">{questions.length}</Badge>
           <span>
-            eigene Frage{questions.length !== 1 ? 'n' : ''} konfiguriert
+            {t('dashboard.form.customQuestions.questionsConfigured', { count: questions.length })}
           </span>
         </div>
       )}
