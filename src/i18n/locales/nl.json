@@ -610,6 +610,68 @@
       "aiFeatures": "Alle AI functies",
       "prioritySupport": "Prioriteits support"
     },
-    "subscribe": "Nu Upgraden"
+    "subscribe": "Nu Upgraden",
+    "voucher": {
+      "title": "Voucher Inwisselen",
+      "description": "Heb je een vouchercode? Wissel hem hier in.",
+      "placeholder": "VOUCHERCODE",
+      "redeem": "Inwisselen",
+      "success": "Voucher succesvol ingewisseld!",
+      "error": "Ongeldige vouchercode"
+    }
+  },
+  "admin": {
+    "title": "Admin Portaal",
+    "tabs": {
+      "stats": "Statistieken",
+      "users": "Gebruikers",
+      "members": "Leden",
+      "subscriptions": "Abonnementen",
+      "vouchers": "Vouchers"
+    },
+    "users": {
+      "title": "Gebruikersbeheer",
+      "create": "Gebruiker Aanmaken",
+      "createTitle": "Nieuwe Gebruiker Aanmaken",
+      "email": "E-mail",
+      "password": "Wachtwoord",
+      "fullName": "Volledige Naam",
+      "plan": "Abonnement",
+      "name": "Naam",
+      "status": "Status",
+      "createdAt": "Aangemaakt op",
+      "search": "Gebruikers zoeken...",
+      "noUsers": "Geen gebruikers gevonden",
+      "mustChangePassword": "Gebruiker moet wachtwoord wijzigen bij eerste inlog",
+      "mustChange": "Wachtwoord wijzigen",
+      "active": "Actief",
+      "requiredFields": "E-mail en wachtwoord zijn vereist",
+      "passwordTooShort": "Wachtwoord moet minimaal 6 tekens hebben",
+      "createSuccess": "Gebruiker succesvol aangemaakt",
+      "createError": "Fout bij aanmaken"
+    },
+    "vouchers": {
+      "title": "Voucherbeheer",
+      "create": "Voucher Aanmaken",
+      "code": "Code",
+      "type": "Type",
+      "value": "Waarde",
+      "uses": "Gebruik",
+      "validFrom": "Geldig vanaf",
+      "validUntil": "Geldig tot",
+      "status": "Status",
+      "active": "Actief",
+      "inactive": "Inactief",
+      "expired": "Verlopen",
+      "noVouchers": "Geen vouchers",
+      "percentage": "Percentage",
+      "fixed": "Vast bedrag",
+      "free_trial": "Gratis proefperiode",
+      "unlimited": "Onbeperkt",
+      "createSuccess": "Voucher succesvol aangemaakt",
+      "createError": "Fout bij aanmaken",
+      "deleteSuccess": "Voucher verwijderd",
+      "deleteError": "Fout bij verwijderen"
+    }
   }
 }

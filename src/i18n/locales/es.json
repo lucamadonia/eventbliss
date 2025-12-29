@@ -655,6 +655,68 @@
       "aiFeatures": "Todas las funciones IA desbloqueadas",
       "prioritySupport": "Soporte prioritario"
     },
-    "subscribe": "Actualizar Ahora"
+    "subscribe": "Actualizar Ahora",
+    "voucher": {
+      "title": "Canjear Cupón",
+      "description": "¿Tienes un código de cupón? Canjéalo aquí.",
+      "placeholder": "CÓDIGO DE CUPÓN",
+      "redeem": "Canjear",
+      "success": "¡Cupón canjeado con éxito!",
+      "error": "Código de cupón inválido"
+    }
+  },
+  "admin": {
+    "title": "Portal de Admin",
+    "tabs": {
+      "stats": "Estadísticas",
+      "users": "Usuarios",
+      "members": "Miembros",
+      "subscriptions": "Suscripciones",
+      "vouchers": "Cupones"
+    },
+    "users": {
+      "title": "Gestión de Usuarios",
+      "create": "Crear Usuario",
+      "createTitle": "Crear Nuevo Usuario",
+      "email": "Email",
+      "password": "Contraseña",
+      "fullName": "Nombre Completo",
+      "plan": "Plan",
+      "name": "Nombre",
+      "status": "Estado",
+      "createdAt": "Creado el",
+      "search": "Buscar usuarios...",
+      "noUsers": "No se encontraron usuarios",
+      "mustChangePassword": "Usuario debe cambiar contraseña en primer inicio",
+      "mustChange": "Cambiar contraseña",
+      "active": "Activo",
+      "requiredFields": "Email y contraseña son requeridos",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "createSuccess": "Usuario creado con éxito",
+      "createError": "Error al crear usuario"
+    },
+    "vouchers": {
+      "title": "Gestión de Cupones",
+      "create": "Crear Cupón",
+      "code": "Código",
+      "type": "Tipo",
+      "value": "Valor",
+      "uses": "Usos",
+      "validFrom": "Válido desde",
+      "validUntil": "Válido hasta",
+      "status": "Estado",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "expired": "Expirado",
+      "noVouchers": "No hay cupones",
+      "percentage": "Porcentaje",
+      "fixed": "Monto fijo",
+      "free_trial": "Prueba gratuita",
+      "unlimited": "Ilimitado",
+      "createSuccess": "Cupón creado con éxito",
+      "createError": "Error al crear cupón",
+      "deleteSuccess": "Cupón eliminado",
+      "deleteError": "Error al eliminar"
+    }
   }
 }

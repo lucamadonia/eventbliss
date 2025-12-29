@@ -1,5 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,10 @@ export default function Premium() {
     setCheckoutLoading(selectedPlanType);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan_type: selectedPlanType }
+        body: { 
+          plan_type: selectedPlanType,
+          locale: i18n.language
+        }
       });
       
       if (error) throw error;
