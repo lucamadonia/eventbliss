@@ -87,6 +87,12 @@ serve(async (req) => {
       .eq("participant", participant)
       .maybeSingle();
 
+    // Normalize budget/destination - can be string or array
+    const budgetChoices = Array.isArray(budget) ? budget : (budget ? [budget] : []);
+    const destinationChoices = Array.isArray(destination) ? destination : (destination ? [destination] : []);
+    const primaryBudget = budgetChoices[0] || "150-250";
+    const primaryDestination = destinationChoices[0] || "either";
+
     const responseData = {
       event_id,
       participant,
@@ -94,8 +100,8 @@ serve(async (req) => {
       duration_pref: duration_pref || "either",
       date_blocks: date_blocks || [],
       partial_days: partial_days || null,
-      budget: budget || "150-250",
-      destination: destination || "either",
+      budget: primaryBudget,
+      destination: primaryDestination,
       de_city: de_city || null,
       travel_pref: travel_pref || "either",
       preferences: preferences || [],
@@ -103,6 +109,10 @@ serve(async (req) => {
       alcohol: alcohol || null,
       restrictions: restrictions || null,
       suggestions: suggestions || null,
+      meta: {
+        budget_choices: budgetChoices,
+        destination_choices: destinationChoices,
+      },
     };
 
     let result;

@@ -33,12 +33,13 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { responseSchema, type ResponseFormData } from "@/lib/schemas";
-import { 
+import { dynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
+import {
   type EventSettings, 
   type SelectOption,
   type ActivityOption,
   type DateBlockOption,
+  type QuestionConfigs,
   mergeWithDefaults,
   getDateBlocksArray,
 } from "@/lib/survey-config";
@@ -73,22 +74,23 @@ const DynamicSurveyForm = ({
   // Merge settings with defaults
   const config = mergeWithDefaults(settings);
   const dateBlocks = getDateBlocksArray(config.date_blocks, config.date_warnings);
+  const questionConfig = config.question_config;
 
-  const form = useForm<ResponseFormData>({
-    resolver: zodResolver(responseSchema),
+  const form = useForm<DynamicResponseFormData>({
+    resolver: zodResolver(dynamicResponseSchema),
     defaultValues: {
-      participant: undefined,
-      attendance: undefined,
-      duration_pref: undefined,
+      participant: "",
+      attendance: "",
+      duration_pref: "",
       date_blocks: [],
-      budget: undefined,
-      destination: undefined,
-      travel_pref: undefined,
+      budget: questionConfig.budget.multiSelect ? [] : "",
+      destination: questionConfig.destination.multiSelect ? [] : "",
+      travel_pref: "",
       preferences: [],
-      fitness_level: undefined,
+      fitness_level: "",
       group_code: "",
       partial_days: "",
-      alcohol: undefined,
+      alcohol: "",
       restrictions: "",
       suggestions: "",
       de_city: "",
@@ -96,8 +98,10 @@ const DynamicSurveyForm = ({
   });
 
   const watchDestination = form.watch("destination");
-
-  const onSubmit = async (data: ResponseFormData) => {
+  const showDeCityField = Array.isArray(watchDestination) 
+    ? watchDestination.includes("de_city") 
+    : watchDestination === "de_city";
+  const onSubmit = async (data: DynamicResponseFormData) => {
     setIsSubmitting(true);
 
     try {
@@ -343,7 +347,7 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Budget - Dynamic options */}
+            {/* Budget - Dynamic options (single or multi-select) */}
             <div className="form-section">
               <FormField
                 control={form.control}
@@ -352,23 +356,57 @@ const DynamicSurveyForm = ({
                   <FormItem>
                     <FormLabel className="form-label">Dein Budget pro Person *</FormLabel>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid grid-cols-2 gap-3"
-                      >
-                        {config.budget_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`budget-${option.value}`} />
-                            <Label htmlFor={`budget-${option.value}`} className="cursor-pointer">
-                              {option.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                      {questionConfig.budget.multiSelect ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          {config.budget_options.map((option) => {
+                            const values = Array.isArray(field.value) ? field.value : [];
+                            const isChecked = values.includes(option.value);
+                            return (
+                              <div
+                                key={option.value}
+                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                                }`}
+                                onClick={() => {
+                                  const newValue = isChecked
+                                    ? values.filter((v) => v !== option.value)
+                                    : [...values, option.value];
+                                  field.onChange(newValue);
+                                }}
+                              >
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={(checked) => {
+                                    const newValue = checked
+                                      ? [...values, option.value]
+                                      : values.filter((v) => v !== option.value);
+                                    field.onChange(newValue);
+                                  }}
+                                />
+                                <Label className="cursor-pointer">{option.label}</Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={typeof field.value === 'string' ? field.value : ''}
+                          className="grid grid-cols-2 gap-3"
+                        >
+                          {config.budget_options.map((option) => (
+                            <div
+                              key={option.value}
+                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                            >
+                              <RadioGroupItem value={option.value} id={`budget-${option.value}`} />
+                              <Label htmlFor={`budget-${option.value}`} className="cursor-pointer">
+                                {option.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -376,7 +414,7 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Destination - Dynamic options */}
+            {/* Destination - Dynamic options (single or multi-select) */}
             <div className="form-section">
               <FormField
                 control={form.control}
@@ -385,23 +423,59 @@ const DynamicSurveyForm = ({
                   <FormItem>
                     <FormLabel className="form-label">Destination *</FormLabel>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid gap-3"
-                      >
-                        {config.destination_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`dest-${option.value}`} />
-                            <Label htmlFor={`dest-${option.value}`} className="cursor-pointer flex-1">
-                              {option.label} {option.emoji}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                      {questionConfig.destination.multiSelect ? (
+                        <div className="grid gap-3">
+                          {config.destination_options.map((option) => {
+                            const values = Array.isArray(field.value) ? field.value : [];
+                            const isChecked = values.includes(option.value);
+                            return (
+                              <div
+                                key={option.value}
+                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                                }`}
+                                onClick={() => {
+                                  const newValue = isChecked
+                                    ? values.filter((v) => v !== option.value)
+                                    : [...values, option.value];
+                                  field.onChange(newValue);
+                                }}
+                              >
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={(checked) => {
+                                    const newValue = checked
+                                      ? [...values, option.value]
+                                      : values.filter((v) => v !== option.value);
+                                    field.onChange(newValue);
+                                  }}
+                                />
+                                <Label className="cursor-pointer flex-1">
+                                  {option.label} {option.emoji}
+                                </Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={typeof field.value === 'string' ? field.value : ''}
+                          className="grid gap-3"
+                        >
+                          {config.destination_options.map((option) => (
+                            <div
+                              key={option.value}
+                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                            >
+                              <RadioGroupItem value={option.value} id={`dest-${option.value}`} />
+                              <Label htmlFor={`dest-${option.value}`} className="cursor-pointer flex-1">
+                                {option.label} {option.emoji}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -409,7 +483,7 @@ const DynamicSurveyForm = ({
               />
 
               {/* DE City (conditional) */}
-              {watchDestination === "de_city" && (
+              {showDeCityField && (
                 <FormField
                   control={form.control}
                   name="de_city"

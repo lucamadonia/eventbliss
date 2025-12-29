@@ -209,8 +209,8 @@ export const AdvancedActivitySelector = ({
 
       {/* Category Tabs */}
       <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
-        <ScrollArea className="w-full" type="scroll">
-          <TabsList className="inline-flex h-auto p-1 w-max">
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto p-1 w-max min-w-full">
             <TabsTrigger value="all" className="data-[state=active]:bg-primary/20">
               Alle ({ACTIVITIES_LIBRARY.length})
             </TabsTrigger>
@@ -239,7 +239,7 @@ export const AdvancedActivitySelector = ({
               </TabsTrigger>
             ))}
           </TabsList>
-        </ScrollArea>
+        </div>
 
         {/* Quick action for recommended */}
         {activeCategory === 'recommended' && (

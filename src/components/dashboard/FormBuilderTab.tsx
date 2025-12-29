@@ -19,6 +19,7 @@ import {
   Users,
   Car,
   Heart,
+  ToggleLeft,
   Wine,
   Clock,
 } from "lucide-react";
@@ -514,6 +515,29 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
                   <div className="space-y-4">
+                    {/* Multi-Select Toggle */}
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <ToggleLeft className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{t('dashboard.form.selectionType')}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant={questionConfig.budget.multiSelect ? "outline" : "default"}
+                          size="sm"
+                          onClick={() => updateQuestionConfig('budget', { ...questionConfig.budget, multiSelect: false })}
+                        >
+                          {t('dashboard.form.single')}
+                        </Button>
+                        <Button
+                          variant={questionConfig.budget.multiSelect ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => updateQuestionConfig('budget', { ...questionConfig.budget, multiSelect: true })}
+                        >
+                          {t('dashboard.form.multi')}
+                        </Button>
+                      </div>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {budgetOptions.map((option) => (
                         <Badge
@@ -565,6 +589,29 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
                   <div className="space-y-4">
+                    {/* Multi-Select Toggle */}
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <ToggleLeft className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{t('dashboard.form.selectionType')}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant={questionConfig.destination.multiSelect ? "outline" : "default"}
+                          size="sm"
+                          onClick={() => updateQuestionConfig('destination', { ...questionConfig.destination, multiSelect: false })}
+                        >
+                          {t('dashboard.form.single')}
+                        </Button>
+                        <Button
+                          variant={questionConfig.destination.multiSelect ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => updateQuestionConfig('destination', { ...questionConfig.destination, multiSelect: true })}
+                        >
+                          {t('dashboard.form.multi')}
+                        </Button>
+                      </div>
+                    </div>
                     <div className="grid sm:grid-cols-2 gap-2">
                       {destinationOptions.map((option) => (
                         <div
