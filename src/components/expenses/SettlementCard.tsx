@@ -1,13 +1,24 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { ArrowRight, Send, Check } from "lucide-react";
+import { ArrowRight, Send, Check, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface Balance {
+  id: string;
+  name: string;
+  paid: number;
+  owes: number;
+  balance: number;
+}
 
 interface Settlement {
   from: string;
   to: string;
   amount: number;
+  fromBalance?: Balance;
+  toBalance?: Balance;
 }
 
 interface SettlementCardProps {
@@ -43,6 +54,16 @@ export const SettlementCard = ({ settlement, currency, index = 0, onMarkPaid }: 
     }
   };
 
+  const formatBalance = (balance: Balance | undefined) => {
+    if (!balance) return null;
+    return t("expenses.balanceTooltip", {
+      name: balance.name,
+      paid: `${currency}${balance.paid.toFixed(2)}`,
+      owes: `${currency}${balance.owes.toFixed(2)}`,
+      balance: `${balance.balance >= 0 ? "+" : ""}${currency}${balance.balance.toFixed(2)}`,
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -51,24 +72,46 @@ export const SettlementCard = ({ settlement, currency, index = 0, onMarkPaid }: 
       className="flex items-center justify-between p-4 rounded-xl bg-background/30 border border-border/50 hover:border-primary/30 transition-colors"
     >
       <div className="flex items-center gap-3">
-        {/* From avatar */}
-        <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
-            {settlement.from.charAt(0).toUpperCase()}
-          </div>
-        </div>
+        {/* From avatar with tooltip */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative cursor-help">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                  {settlement.from.charAt(0).toUpperCase()}
+                </div>
+              </div>
+            </TooltipTrigger>
+            {settlement.fromBalance && (
+              <TooltipContent className="max-w-xs">
+                <p>{formatBalance(settlement.fromBalance)}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
 
         {/* Arrow */}
         <div className="flex items-center gap-2">
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
         </div>
 
-        {/* To avatar */}
-        <div className="relative">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">
-            {settlement.to.charAt(0).toUpperCase()}
-          </div>
-        </div>
+        {/* To avatar with tooltip */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative cursor-help">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm">
+                  {settlement.to.charAt(0).toUpperCase()}
+                </div>
+              </div>
+            </TooltipTrigger>
+            {settlement.toBalance && (
+              <TooltipContent className="max-w-xs">
+                <p>{formatBalance(settlement.toBalance)}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
 
         {/* Names and amount */}
         <div className="ml-2">
@@ -112,10 +155,11 @@ export const SettlementCard = ({ settlement, currency, index = 0, onMarkPaid }: 
 interface SettlementListProps {
   settlements: Settlement[];
   currency: string;
+  balances?: Balance[];
   onMarkPaid?: (settlement: Settlement) => void;
 }
 
-export const SettlementList = ({ settlements, currency, onMarkPaid }: SettlementListProps) => {
+export const SettlementList = ({ settlements, currency, balances, onMarkPaid }: SettlementListProps) => {
   const { t } = useTranslation();
 
   if (settlements.length === 0) {

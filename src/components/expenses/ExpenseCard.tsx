@@ -13,8 +13,10 @@ import {
   Trash2,
   Calendar,
   Clock,
+  RotateCcw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,13 +37,17 @@ interface Expense {
   created_at: string;
   expense_date: string | null;
   is_planned?: boolean;
+  deleted_at?: string | null;
+  deletion_reason?: string | null;
 }
 
 interface ExpenseCardProps {
   expense: Expense;
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
+  onRestore?: (expense: Expense) => void;
   index?: number;
+  isDeleted?: boolean;
 }
 
 const CATEGORY_CONFIG: Record<string, { icon: typeof Car; color: string; bg: string }> = {
@@ -54,7 +60,7 @@ const CATEGORY_CONFIG: Record<string, { icon: typeof Car; color: string; bg: str
   other: { icon: Wallet, color: "text-muted-foreground", bg: "bg-muted/50" },
 };
 
-export const ExpenseCard = ({ expense, onEdit, onDelete, index = 0 }: ExpenseCardProps) => {
+export const ExpenseCard = ({ expense, onEdit, onDelete, onRestore, index = 0, isDeleted = false }: ExpenseCardProps) => {
   const { t, i18n } = useTranslation();
   const config = CATEGORY_CONFIG[expense.category] || CATEGORY_CONFIG.other;
   const IconComponent = config.icon;
@@ -72,21 +78,29 @@ export const ExpenseCard = ({ expense, onEdit, onDelete, index = 0 }: ExpenseCar
       transition={{ delay: index * 0.05 }}
       className={`group relative flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-background/40 ${
         expense.is_planned ? "opacity-70" : ""
-      }`}
+      } ${isDeleted ? "opacity-50 bg-destructive/5 border border-destructive/20" : ""}`}
     >
       {/* Category Icon */}
-      <div className={`shrink-0 p-3 rounded-xl ${config.bg}`}>
+      <div className={`shrink-0 p-3 rounded-xl ${config.bg} ${isDeleted ? "grayscale" : ""}`}>
         <IconComponent className={`w-5 h-5 ${config.color}`} />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h4 className="font-medium truncate">{expense.description}</h4>
+          <h4 className={`font-medium truncate ${isDeleted ? "line-through text-muted-foreground" : ""}`}>
+            {expense.description}
+          </h4>
           {expense.is_planned && (
             <Badge variant="outline" className="shrink-0 text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
               <Calendar className="w-3 h-3 mr-1" />
               {t("expenses.planned")}
+            </Badge>
+          )}
+          {isDeleted && (
+            <Badge variant="outline" className="shrink-0 text-xs bg-destructive/10 text-destructive border-destructive/30">
+              <Trash2 className="w-3 h-3 mr-1" />
+              {t("common.delete")}
             </Badge>
           )}
         </div>
@@ -97,12 +111,18 @@ export const ExpenseCard = ({ expense, onEdit, onDelete, index = 0 }: ExpenseCar
             <Clock className="w-3 h-3" />
             {relativeTime}
           </span>
+          {isDeleted && expense.deletion_reason && (
+            <>
+              <span className="text-muted-foreground/50">•</span>
+              <span className="text-xs italic text-destructive/70">"{expense.deletion_reason}"</span>
+            </>
+          )}
         </div>
       </div>
 
       {/* Amount */}
       <div className="text-right shrink-0">
-        <p className={`font-display font-bold text-lg ${expense.is_planned ? "text-orange-400" : "text-foreground"}`}>
+        <p className={`font-display font-bold text-lg ${expense.is_planned ? "text-orange-400" : isDeleted ? "text-muted-foreground line-through" : "text-foreground"}`}>
           {expense.currency}{expense.amount.toFixed(2)}
         </p>
         <p className="text-xs text-muted-foreground capitalize">
@@ -111,7 +131,17 @@ export const ExpenseCard = ({ expense, onEdit, onDelete, index = 0 }: ExpenseCar
       </div>
 
       {/* Actions */}
-      {!expense.is_planned && (onEdit || onDelete) && (
+      {isDeleted && onRestore ? (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onRestore(expense)}
+          className="shrink-0 border-green-500/30 text-green-400 hover:bg-green-500/10"
+        >
+          <RotateCcw className="w-4 h-4 mr-1" />
+          {t("expenses.restore")}
+        </Button>
+      ) : !expense.is_planned && (onEdit || onDelete) ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="shrink-0 p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-background/60 transition-all">
@@ -133,7 +163,7 @@ export const ExpenseCard = ({ expense, onEdit, onDelete, index = 0 }: ExpenseCar
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-      )}
+      ) : null}
     </motion.div>
   );
 };
