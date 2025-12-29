@@ -1,0 +1,383 @@
+{
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "close": "Kapat",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı!",
+    "share": "Paylaş",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "remove": "Kaldır",
+    "back": "Geri",
+    "next": "İleri",
+    "submit": "Gönder",
+    "confirm": "Onayla",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "all": "Tümü",
+    "none": "Hiçbiri",
+    "yes": "Evet",
+    "no": "Hayır",
+    "or": "veya",
+    "and": "ve",
+    "optional": "İsteğe bağlı",
+    "required": "Zorunlu",
+    "saving": "Kaydediliyor...",
+    "saved": "Kaydedildi",
+    "openInNewTab": "Yeni sekmede aç",
+    "copyLink": "Linki kopyala",
+    "copyCode": "Kodu kopyala"
+  },
+  "landing": {
+    "title": "STAG",
+    "subtitle": "Modern Parti Planlama Platformu",
+    "description": "Grubunuzla unutulmaz etkinlikler planlayın. Basit, hızlı ve stressiz.",
+    "createEvent": "Etkinlik Oluştur",
+    "joinEvent": "Kod ile Katıl",
+    "features": {
+      "multiEvent": {
+        "title": "Çoklu Etkinlik Yönetimi",
+        "description": "Net bir panelle birden fazla etkinliği aynı anda yönetin."
+      },
+      "costSplitting": {
+        "title": "Akıllı Maliyet Bölüşümü",
+        "description": "Harcamaları takip edin ve tüm katılımcılar arasında adil bir şekilde paylaştırın."
+      },
+      "messageTemplates": {
+        "title": "Mesaj Şablonları",
+        "description": "Her durum için hazır WhatsApp mesajları."
+      }
+    },
+    "cta": {
+      "title": "Etkinliğinize hazır mısınız?",
+      "description": "Ücretsiz başlayın ve mükemmel etkinliği planlayın.",
+      "button": "Ücretsiz Etkinlik Oluştur"
+    },
+    "footer": "Unutulmaz etkinlikler için ❤️ ile yapıldı"
+  },
+  "createEvent": {
+    "title": "Etkinlik Oluştur",
+    "step1": {
+      "title": "Ne planlıyorsunuz?",
+      "subtitle": "Etkinliğinizin türünü seçin"
+    },
+    "step2": {
+      "title": "Kimin için?",
+      "subtitle": "Kim kutlanıyor?",
+      "placeholder": "Kişinin adı"
+    },
+    "step3": {
+      "title": "Etkinlik Detayları",
+      "subtitle": "Etkinliğinize bir isim verin",
+      "eventName": "Etkinlik Adı",
+      "eventNamePlaceholder": "örn. Max'in Bekarlığa Veda 2025"
+    },
+    "types": {
+      "bachelor": "Bekarlığa Veda",
+      "bachelorette": "Kına Gecesi",
+      "birthday": "Doğum Günü",
+      "trip": "Grup Gezisi",
+      "other": "Diğer Etkinlik"
+    },
+    "creating": "Etkinlik oluşturuluyor...",
+    "success": "Etkinlik başarıyla oluşturuldu!",
+    "goToDashboard": "Panele Git"
+  },
+  "joinEvent": {
+    "title": "Etkinliğe Katıl",
+    "subtitle": "Aldığınız erişim kodunu girin",
+    "codePlaceholder": "Erişim kodunu girin",
+    "join": "Katıl",
+    "joining": "Katılınıyor...",
+    "invalidCode": "Geçersiz erişim kodu",
+    "success": "Başarıyla katıldınız!"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "forgotPassword": "Şifremi unuttum?",
+    "noAccount": "Hesabınız yok mu?",
+    "hasAccount": "Zaten hesabınız var mı?",
+    "loginSuccess": "Başarıyla giriş yapıldı!",
+    "registerSuccess": "Hesap başarıyla oluşturuldu!",
+    "logoutSuccess": "Başarıyla çıkış yapıldı"
+  },
+  "survey": {
+    "title": "Cevabınız",
+    "subtitle": "Planlamada bize yardım edin!",
+    "locked": "Form kilitli",
+    "lockedDescription": "Organizatör formu kapattı. Artık cevap gönderemezsiniz.",
+    "alreadySubmitted": "Zaten cevap verdiniz",
+    "submitSuccess": "Cevap başarıyla gönderildi!",
+    "submitError": "Cevap gönderilirken hata oluştu",
+    "questions": {
+      "name": {
+        "label": "Siz kimsiniz?",
+        "placeholder": "Adınız"
+      },
+      "attendance": {
+        "label": "Katılacak mısınız?",
+        "options": {
+          "yes": "Evet, katılacağım! 🎉",
+          "no": "Maalesef hayır 😢",
+          "maybe": "Henüz emin değilim 🤔"
+        }
+      },
+      "duration": {
+        "label": "Tercih edilen süre",
+        "options": {
+          "day": "Günübirlik gezi",
+          "weekend": "Hafta sonu (2-3 gün)",
+          "long": "Uzun hafta sonu (3-4 gün)",
+          "week": "Tam hafta"
+        }
+      },
+      "travel": {
+        "label": "Seyahat",
+        "options": {
+          "car": "Araba 🚗",
+          "train": "Tren 🚂",
+          "plane": "Uçak ✈️",
+          "flexible": "Esnek"
+        }
+      },
+      "fitness": {
+        "label": "Fitness Seviyesi",
+        "options": {
+          "low": "Rahat",
+          "medium": "Orta",
+          "high": "Sportif",
+          "extreme": "Ekstrem"
+        }
+      },
+      "alcohol": {
+        "label": "Alkol?",
+        "options": {
+          "yes": "Evet, lütfen! 🍻",
+          "moderate": "Ölçülü 🍷",
+          "no": "Tercih etmem"
+        }
+      },
+      "budget": {
+        "label": "Kişi başı bütçeniz",
+        "options": {
+          "low": "100€'ya kadar",
+          "medium": "100-250€",
+          "high": "250-500€",
+          "unlimited": "Limit yok"
+        }
+      },
+      "destination": {
+        "label": "Nereye gitmek istersiniz?",
+        "options": {
+          "local": "Yerel (memleket)",
+          "domestic": "Yurtiçi",
+          "europe": "Avrupa",
+          "worldwide": "Dünya çapında"
+        }
+      },
+      "activities": {
+        "label": "Hangi aktiviteler?",
+        "placeholder": "Favorilerinizi seçin"
+      },
+      "dateBlocks": {
+        "label": "Ne zaman uygun?",
+        "description": "Sizin için uygun tüm dönemleri seçin"
+      },
+      "restrictions": {
+        "label": "Kısıtlamalar / Alerjiler",
+        "placeholder": "örn. Yükseklik korkusu, laktoz intoleransı..."
+      },
+      "suggestions": {
+        "label": "İstekler ve fikirler",
+        "placeholder": "Her zaman ne yapmak istediniz?"
+      }
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "overview": "Genel Bakış",
+      "ideas": "Fikirler",
+      "form": "Form",
+      "schedule": "Program",
+      "destination": "Hedef",
+      "agencies": "Ajanslar",
+      "messages": "Mesajlar",
+      "settings": "Ayarlar",
+      "aiAssistant": "AI Asistan"
+    },
+    "overview": {
+      "title": "Genel Bakış",
+      "participants": "Katılımcılar",
+      "responses": "Cevaplar",
+      "responseRate": "Cevap Oranı",
+      "deadline": "Son Tarih",
+      "noDeadline": "Son tarih belirlenmedi",
+      "surveyLink": "Anket Linki",
+      "accessCode": "Erişim Kodu",
+      "status": {
+        "draft": "Taslak",
+        "planning": "Planlama",
+        "active": "Aktif",
+        "completed": "Tamamlandı",
+        "cancelled": "İptal Edildi"
+      }
+    },
+    "form": {
+      "title": "Form Oluşturucu",
+      "coreQuestions": "Ana Sorular",
+      "customQuestions": "Özel Sorular",
+      "questionEnabled": "Soru etkin",
+      "questionDisabled": "Soru devre dışı",
+      "singleSelect": "Tekli seçim",
+      "multiSelect": "Çoklu seçim",
+      "addQuestion": "Soru Ekle",
+      "editOptions": "Seçenekleri Düzenle",
+      "saveChanges": "Değişiklikleri Kaydet"
+    },
+    "schedule": {
+      "title": "Program",
+      "setDate": "Tarih Belirle",
+      "dateSet": "Tarih belirlendi!",
+      "noDate": "Henüz tarih belirlenmedi"
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "general": "Genel",
+      "eventName": "Etkinlik Adı",
+      "honoreeName": "Onurlandırılan Kişi Adı",
+      "eventDate": "Etkinlik Tarihi",
+      "surveyDeadline": "Anket Son Tarihi",
+      "formStatus": {
+        "title": "Form Durumu",
+        "open": "Form açık",
+        "locked": "Form kilitli",
+        "description": "Kilitlendiğinde yeni cevap gönderilemez."
+      },
+      "dangerZone": {
+        "title": "Tehlike Bölgesi",
+        "deleteEvent": "Etkinliği Sil",
+        "deleteWarning": "Bu işlem geri alınamaz."
+      }
+    },
+    "team": {
+      "title": "Takımı Yönet",
+      "invite": "Davet Et",
+      "permissions": "İzinler",
+      "removeAccess": "Erişimi Kaldır",
+      "roles": {
+        "organizer": "Organizatör",
+        "guest": "Misafir"
+      }
+    }
+  },
+  "messages": {
+    "title": "Mesaj Şablonları",
+    "subtitle": "Hazır mesajları kopyalayın veya paylaşın",
+    "sendViaWhatsApp": "WhatsApp ile Gönder",
+    "templates": {
+      "kickoff": {
+        "title": "Başlangıç Mesajı",
+        "description": "Tüm katılımcılara ilk davet",
+        "template": "Herkese merhaba! 🎉\n\nBu an geldi - {{honoree}} için bekarlığa veda partisi planlıyoruz! 🥳\n\nMükemmel etkinliği organize etmemize yardım etmek için görüşlerinize ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Aktivite seçimi\n📍 Hedef seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌"
+      },
+      "reminder": {
+        "title": "Hatırlatma",
+        "description": "Bekleyen cevaplar için nazik hatırlatma",
+        "template": "Merhaba! 👋\n\n{{honoree}}'nin partisi için anketi hızlıca hatırlatma!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️"
+      },
+      "deadline": {
+        "title": "Son Tarih Uyarısı",
+        "description": "Anket kapanmadan son şans",
+        "template": "⚠️ SON ŞANS! ⚠️\n\n{{honoree}}'nin partisi için anket {{deadline}} tarihinde kapanıyor!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınmayacak!\n\nLütfen şimdi doldurun! ⏰"
+      },
+      "dateConfirmed": {
+        "title": "Tarih Onaylandı!",
+        "description": "Kesin tarihin duyurusu",
+        "template": "🎉 TARİH BELİRLENDİ! 🎉\n\n{{honoree}}'nin partisi şu tarihte olacak:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takvimlerinize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!"
+      },
+      "budget": {
+        "title": "Bütçe Bilgisi",
+        "description": "Maliyetler ve ödeme bilgileri",
+        "template": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\nİşte {{honoree}}'nin partisi için tahmini maliyetler:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Aktivite 1]\n• [Aktivite 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito transferi yapın.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!"
+      },
+      "packingList": {
+        "title": "Bavul Listesi",
+        "description": "Herkesin getirmesi gerekenler",
+        "template": "🎒 {{honoree}}'nin partisi için BAVUL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 [Hedef]\n\n✅ OLMASI GEREKENLER:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Özel kıyafetler]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinlik için hazırlanın! 🚀"
+      }
+    },
+    "quickActions": {
+      "title": "Hızlı İşlemler",
+      "copySurveyLink": "Anket linkini kopyala",
+      "copyAccessCode": "Erişim kodunu kopyala",
+      "openSurvey": "Anketi aç"
+    }
+  },
+  "agencies": {
+    "title": "Parti Ajansları",
+    "subtitle": "Yakınlarınızdaki profesyonel sağlayıcıları bulun",
+    "viewMode": {
+      "list": "Liste",
+      "map": "Harita"
+    },
+    "filterByCity": "Şehre göre filtrele",
+    "allCities": "Tüm şehirler",
+    "noAgencies": "Ajans bulunamadı",
+    "contact": {
+      "phone": "Telefon",
+      "email": "E-posta",
+      "website": "Web sitesi",
+      "visit": "Web sitesini ziyaret et"
+    },
+    "cityPanel": {
+      "title": "{{city}} şehrindeki Ajanslar",
+      "agencyCount": "{{count}} ajans"
+    }
+  },
+  "expenses": {
+    "title": "Harcamalar",
+    "addExpense": "Harcama Ekle",
+    "totalAmount": "Toplam Tutar",
+    "perPerson": "Kişi Başı",
+    "paidBy": "Ödeyen",
+    "splitType": {
+      "equal": "Eşit",
+      "custom": "Özel",
+      "percentage": "Yüzde"
+    },
+    "categories": {
+      "transport": "Ulaşım",
+      "accommodation": "Konaklama",
+      "activities": "Aktiviteler",
+      "food": "Yemek",
+      "drinks": "İçecekler",
+      "gifts": "Hediyeler",
+      "other": "Diğer"
+    }
+  },
+  "notifications": {
+    "linkCopied": "Link kopyalandı!",
+    "codeCopied": "Kod kopyalandı!",
+    "messageCopied": "Mesaj kopyalandı!",
+    "settingsSaved": "Ayarlar kaydedildi!",
+    "errorOccurred": "Bir hata oluştu",
+    "tryAgain": "Lütfen tekrar deneyin"
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "invalidEmail": "Geçersiz e-posta adresi",
+    "minLength": "En az {{count}} karakter gerekli",
+    "maxLength": "Maksimum {{count}} karakter izin verilir",
+    "passwordMismatch": "Şifreler eşleşmiyor"
+  }
+}

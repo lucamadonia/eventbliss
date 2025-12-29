@@ -1,0 +1,383 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "loading": "A carregar...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "share": "Partilhar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "submit": "Submeter",
+    "confirm": "Confirmar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "all": "Todos",
+    "none": "Nenhum",
+    "yes": "Sim",
+    "no": "Não",
+    "or": "ou",
+    "and": "e",
+    "optional": "Opcional",
+    "required": "Obrigatório",
+    "saving": "A guardar...",
+    "saved": "Guardado",
+    "openInNewTab": "Abrir em novo separador",
+    "copyLink": "Copiar link",
+    "copyCode": "Copiar código"
+  },
+  "landing": {
+    "title": "STAG",
+    "subtitle": "A Plataforma Moderna de Planeamento de Festas",
+    "description": "Planeia eventos inesquecíveis com o teu grupo. Simples, rápido e sem stress.",
+    "createEvent": "Criar Evento",
+    "joinEvent": "Entrar com Código",
+    "features": {
+      "multiEvent": {
+        "title": "Gestão Multi-Evento",
+        "description": "Gere vários eventos simultaneamente com um painel claro."
+      },
+      "costSplitting": {
+        "title": "Divisão Inteligente de Custos",
+        "description": "Regista despesas e divide-as justamente entre todos os participantes."
+      },
+      "messageTemplates": {
+        "title": "Modelos de Mensagens",
+        "description": "Mensagens WhatsApp pré-escritas para cada ocasião."
+      }
+    },
+    "cta": {
+      "title": "Pronto para o teu evento?",
+      "description": "Começa grátis e planeia o evento perfeito.",
+      "button": "Criar Evento Grátis"
+    },
+    "footer": "Feito com ❤️ para eventos inesquecíveis"
+  },
+  "createEvent": {
+    "title": "Criar Evento",
+    "step1": {
+      "title": "O que estás a planear?",
+      "subtitle": "Escolhe o tipo do teu evento"
+    },
+    "step2": {
+      "title": "Para quem?",
+      "subtitle": "Quem está a ser celebrado?",
+      "placeholder": "Nome da pessoa"
+    },
+    "step3": {
+      "title": "Detalhes do Evento",
+      "subtitle": "Dá um nome ao teu evento",
+      "eventName": "Nome do Evento",
+      "eventNamePlaceholder": "ex. Despedida do Max 2025"
+    },
+    "types": {
+      "bachelor": "Despedida de Solteiro",
+      "bachelorette": "Despedida de Solteira",
+      "birthday": "Aniversário",
+      "trip": "Viagem de Grupo",
+      "other": "Outro Evento"
+    },
+    "creating": "A criar evento...",
+    "success": "Evento criado com sucesso!",
+    "goToDashboard": "Ir para o Painel"
+  },
+  "joinEvent": {
+    "title": "Entrar no Evento",
+    "subtitle": "Introduz o código de acesso que recebeste",
+    "codePlaceholder": "Introduzir código de acesso",
+    "join": "Entrar",
+    "joining": "A entrar...",
+    "invalidCode": "Código de acesso inválido",
+    "success": "Entrou com sucesso!"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Registar",
+    "logout": "Sair",
+    "email": "Email",
+    "password": "Palavra-passe",
+    "confirmPassword": "Confirmar Palavra-passe",
+    "forgotPassword": "Esqueceu a palavra-passe?",
+    "noAccount": "Ainda não tem conta?",
+    "hasAccount": "Já tem conta?",
+    "loginSuccess": "Sessão iniciada com sucesso!",
+    "registerSuccess": "Conta criada com sucesso!",
+    "logoutSuccess": "Sessão terminada com sucesso"
+  },
+  "survey": {
+    "title": "A Tua Resposta",
+    "subtitle": "Ajuda-nos com o planeamento!",
+    "locked": "O formulário está bloqueado",
+    "lockedDescription": "O organizador fechou o formulário. Já não podes submeter respostas.",
+    "alreadySubmitted": "Já respondeste",
+    "submitSuccess": "Resposta submetida com sucesso!",
+    "submitError": "Erro ao submeter resposta",
+    "questions": {
+      "name": {
+        "label": "Quem és tu?",
+        "placeholder": "O teu nome"
+      },
+      "attendance": {
+        "label": "Vais participar?",
+        "options": {
+          "yes": "Sim, conto comigo! 🎉",
+          "no": "Infelizmente não 😢",
+          "maybe": "Ainda incerto 🤔"
+        }
+      },
+      "duration": {
+        "label": "Duração preferida",
+        "options": {
+          "day": "Viagem de um dia",
+          "weekend": "Fim de semana (2-3 dias)",
+          "long": "Fim de semana prolongado (3-4 dias)",
+          "week": "Semana inteira"
+        }
+      },
+      "travel": {
+        "label": "Viagem",
+        "options": {
+          "car": "Carro 🚗",
+          "train": "Comboio 🚂",
+          "plane": "Avião ✈️",
+          "flexible": "Flexível"
+        }
+      },
+      "fitness": {
+        "label": "Nível de aptidão física",
+        "options": {
+          "low": "Relaxado",
+          "medium": "Moderado",
+          "high": "Desportivo",
+          "extreme": "Extremo"
+        }
+      },
+      "alcohol": {
+        "label": "Álcool?",
+        "options": {
+          "yes": "Sim, por favor! 🍻",
+          "moderate": "Com moderação 🍷",
+          "no": "Prefiro não"
+        }
+      },
+      "budget": {
+        "label": "O teu orçamento por pessoa",
+        "options": {
+          "low": "Até 100€",
+          "medium": "100-250€",
+          "high": "250-500€",
+          "unlimited": "Sem limite"
+        }
+      },
+      "destination": {
+        "label": "Para onde queres ir?",
+        "options": {
+          "local": "Local (cidade natal)",
+          "domestic": "Nacional",
+          "europe": "Europa",
+          "worldwide": "Mundial"
+        }
+      },
+      "activities": {
+        "label": "Que atividades?",
+        "placeholder": "Escolhe as tuas favoritas"
+      },
+      "dateBlocks": {
+        "label": "Quando te dá jeito?",
+        "description": "Seleciona todos os períodos que funcionam para ti"
+      },
+      "restrictions": {
+        "label": "Restrições / Alergias",
+        "placeholder": "ex. Medo de alturas, intolerância à lactose..."
+      },
+      "suggestions": {
+        "label": "Desejos e ideias",
+        "placeholder": "O que sempre quiseste fazer?"
+      }
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "overview": "Visão Geral",
+      "ideas": "Ideias",
+      "form": "Formulário",
+      "schedule": "Agenda",
+      "destination": "Destino",
+      "agencies": "Agências",
+      "messages": "Mensagens",
+      "settings": "Definições",
+      "aiAssistant": "Assistente IA"
+    },
+    "overview": {
+      "title": "Visão Geral",
+      "participants": "Participantes",
+      "responses": "Respostas",
+      "responseRate": "Taxa de Resposta",
+      "deadline": "Prazo",
+      "noDeadline": "Sem prazo definido",
+      "surveyLink": "Link do Inquérito",
+      "accessCode": "Código de Acesso",
+      "status": {
+        "draft": "Rascunho",
+        "planning": "Planeamento",
+        "active": "Ativo",
+        "completed": "Concluído",
+        "cancelled": "Cancelado"
+      }
+    },
+    "form": {
+      "title": "Construtor de Formulário",
+      "coreQuestions": "Perguntas Principais",
+      "customQuestions": "Perguntas Personalizadas",
+      "questionEnabled": "Pergunta ativada",
+      "questionDisabled": "Pergunta desativada",
+      "singleSelect": "Seleção única",
+      "multiSelect": "Seleção múltipla",
+      "addQuestion": "Adicionar Pergunta",
+      "editOptions": "Editar Opções",
+      "saveChanges": "Guardar Alterações"
+    },
+    "schedule": {
+      "title": "Agenda",
+      "setDate": "Definir Data",
+      "dateSet": "A data está definida!",
+      "noDate": "Ainda sem data definida"
+    },
+    "settings": {
+      "title": "Definições",
+      "general": "Geral",
+      "eventName": "Nome do Evento",
+      "honoreeName": "Nome do Homenageado",
+      "eventDate": "Data do Evento",
+      "surveyDeadline": "Prazo do Inquérito",
+      "formStatus": {
+        "title": "Estado do Formulário",
+        "open": "Formulário aberto",
+        "locked": "Formulário bloqueado",
+        "description": "Quando bloqueado, não podem ser submetidas novas respostas."
+      },
+      "dangerZone": {
+        "title": "Zona de Perigo",
+        "deleteEvent": "Eliminar Evento",
+        "deleteWarning": "Esta ação não pode ser desfeita."
+      }
+    },
+    "team": {
+      "title": "Gerir Equipa",
+      "invite": "Convidar",
+      "permissions": "Permissões",
+      "removeAccess": "Remover Acesso",
+      "roles": {
+        "organizer": "Organizador",
+        "guest": "Convidado"
+      }
+    }
+  },
+  "messages": {
+    "title": "Modelos de Mensagens",
+    "subtitle": "Copia ou partilha mensagens pré-escritas",
+    "sendViaWhatsApp": "Enviar via WhatsApp",
+    "templates": {
+      "kickoff": {
+        "title": "Mensagem de Início",
+        "description": "Primeiro convite a todos os participantes",
+        "template": "Olá a todos! 🎉\n\nÉ agora - estamos a planear a despedida de solteiro do {{honoree}}! 🥳\n\nPara nos ajudar a organizar o evento perfeito, precisamos da vossa opinião!\n\n👉 Por favor preencham este breve inquérito:\n{{surveyLink}}\n\n🔑 Código de acesso: {{accessCode}}\n\nO inquérito demora apenas 2-3 minutos e ajuda-nos com:\n📅 Seleção de data\n💰 Planeamento de orçamento\n🎯 Seleção de atividades\n📍 Escolha do destino\n\nQuanto mais rápido todos responderem, mais rápido podemos começar! 🚀\n\nPerguntas? Digam-me!\n\nAbraço! 🙌"
+      },
+      "reminder": {
+        "title": "Lembrete",
+        "description": "Lembrete gentil para respostas pendentes",
+        "template": "Olá! 👋\n\nLembrete rápido sobre o inquérito para a festa do {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 Código: {{accessCode}}\n\nAté agora {{responseCount}} de {{totalCount}} responderam.\n\nPor favor preencham para podermos continuar a planear! 🙏\n\nDemora só 2 minutos! ⏱️"
+      },
+      "deadline": {
+        "title": "Aviso de Prazo",
+        "description": "Última chance antes de fechar o inquérito",
+        "template": "⚠️ ÚLTIMA CHANCE! ⚠️\n\nO inquérito para a festa do {{honoree}} fecha a {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Código: {{accessCode}}\n\nQuem não responder não será considerado no planeamento!\n\nPor favor preencham agora! ⏰"
+      },
+      "dateConfirmed": {
+        "title": "Data Confirmada!",
+        "description": "Anúncio da data final",
+        "template": "🎉 A DATA ESTÁ DEFINIDA! 🎉\n\nA festa do {{honoree}} será a:\n\n📅 {{eventDate}}\n\nPor favor marquem esta data nos vossos calendários e mantenham-na livre!\n\nMais detalhes em breve... 👀\n\nPerguntas? Digam-me!"
+      },
+      "budget": {
+        "title": "Info de Orçamento",
+        "description": "Custos e informação de pagamento",
+        "template": "💰 ATUALIZAÇÃO DE ORÇAMENTO 💰\n\nAqui estão os custos estimados para a festa do {{honoree}}:\n\n📊 Custo estimado por pessoa: {{budgetPerPerson}}€\n\nIsto inclui:\n• [Atividade 1]\n• [Atividade 2]\n• [Alojamento/Transporte]\n\nPor favor transfiram {{depositAmount}}€ de entrada até {{depositDeadline}}.\n\nDados bancários:\n[Inserir IBAN]\n\nPerguntas sobre o orçamento? Digam-me!"
+      },
+      "packingList": {
+        "title": "Lista de Bagagem",
+        "description": "O que todos devem trazer",
+        "template": "🎒 LISTA DE BAGAGEM para a festa do {{honoree}} 🎒\n\n📅 {{eventDate}}\n📍 [Destino]\n\n✅ ESSENCIAIS:\n• Documento de identidade\n• Dinheiro (aprox. {{cashAmount}}€)\n• [Roupa especial]\n• Boa disposição! 😄\n\n👕 CÓDIGO DE VESTUÁRIO:\n[Inserir código de vestuário]\n\n❌ NÃO ESQUECER:\n• [Item importante]\n• [Outra coisa importante]\n\nPerguntas? Digam-me!\n\nPreparem-se para um evento incrível! 🚀"
+      }
+    },
+    "quickActions": {
+      "title": "Ações Rápidas",
+      "copySurveyLink": "Copiar link do inquérito",
+      "copyAccessCode": "Copiar código de acesso",
+      "openSurvey": "Abrir inquérito"
+    }
+  },
+  "agencies": {
+    "title": "Agências de Festas",
+    "subtitle": "Encontra fornecedores profissionais perto de ti",
+    "viewMode": {
+      "list": "Lista",
+      "map": "Mapa"
+    },
+    "filterByCity": "Filtrar por cidade",
+    "allCities": "Todas as cidades",
+    "noAgencies": "Nenhuma agência encontrada",
+    "contact": {
+      "phone": "Telefone",
+      "email": "Email",
+      "website": "Website",
+      "visit": "Visitar website"
+    },
+    "cityPanel": {
+      "title": "Agências em {{city}}",
+      "agencyCount": "{{count}} agência(s)"
+    }
+  },
+  "expenses": {
+    "title": "Despesas",
+    "addExpense": "Adicionar Despesa",
+    "totalAmount": "Montante Total",
+    "perPerson": "Por Pessoa",
+    "paidBy": "Pago por",
+    "splitType": {
+      "equal": "Igual",
+      "custom": "Personalizado",
+      "percentage": "Percentagem"
+    },
+    "categories": {
+      "transport": "Transporte",
+      "accommodation": "Alojamento",
+      "activities": "Atividades",
+      "food": "Comida",
+      "drinks": "Bebidas",
+      "gifts": "Presentes",
+      "other": "Outro"
+    }
+  },
+  "notifications": {
+    "linkCopied": "Link copiado!",
+    "codeCopied": "Código copiado!",
+    "messageCopied": "Mensagem copiada!",
+    "settingsSaved": "Definições guardadas!",
+    "errorOccurred": "Ocorreu um erro",
+    "tryAgain": "Por favor tenta novamente"
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidEmail": "Endereço de email inválido",
+    "minLength": "São necessários pelo menos {{count}} caracteres",
+    "maxLength": "Máximo de {{count}} caracteres permitidos",
+    "passwordMismatch": "As palavras-passe não coincidem"
+  }
+}

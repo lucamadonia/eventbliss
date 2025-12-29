@@ -1,0 +1,383 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "share": "Delen",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "add": "Toevoegen",
+    "remove": "Verwijderen",
+    "back": "Terug",
+    "next": "Volgende",
+    "submit": "Verzenden",
+    "confirm": "Bevestigen",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "all": "Alle",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "or": "of",
+    "and": "en",
+    "optional": "Optioneel",
+    "required": "Vereist",
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "openInNewTab": "Openen in nieuw tabblad",
+    "copyLink": "Link kopiëren",
+    "copyCode": "Code kopiëren"
+  },
+  "landing": {
+    "title": "STAG",
+    "subtitle": "Het Moderne Feestplanningsplatform",
+    "description": "Plan onvergetelijke evenementen met je groep. Eenvoudig, snel en stressvrij.",
+    "createEvent": "Evenement Maken",
+    "joinEvent": "Deelnemen met Code",
+    "features": {
+      "multiEvent": {
+        "title": "Multi-Event Beheer",
+        "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard."
+      },
+      "costSplitting": {
+        "title": "Slimme Kostenverdeling",
+        "description": "Houd uitgaven bij en verdeel ze eerlijk onder alle deelnemers."
+      },
+      "messageTemplates": {
+        "title": "Berichtsjablonen",
+        "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid."
+      }
+    },
+    "cta": {
+      "title": "Klaar voor je evenement?",
+      "description": "Start gratis en plan het perfecte evenement.",
+      "button": "Gratis Evenement Maken"
+    },
+    "footer": "Gemaakt met ❤️ voor onvergetelijke evenementen"
+  },
+  "createEvent": {
+    "title": "Evenement Maken",
+    "step1": {
+      "title": "Wat plan je?",
+      "subtitle": "Kies het type van je evenement"
+    },
+    "step2": {
+      "title": "Voor wie?",
+      "subtitle": "Wie wordt er gevierd?",
+      "placeholder": "Naam van de persoon"
+    },
+    "step3": {
+      "title": "Evenement Details",
+      "subtitle": "Geef je evenement een naam",
+      "eventName": "Evenement Naam",
+      "eventNamePlaceholder": "bijv. Max's Vrijgezellenfeest 2025"
+    },
+    "types": {
+      "bachelor": "Vrijgezellenfeest",
+      "bachelorette": "Vrijgezellenfeest (dames)",
+      "birthday": "Verjaardag",
+      "trip": "Groepsreis",
+      "other": "Ander Evenement"
+    },
+    "creating": "Evenement wordt aangemaakt...",
+    "success": "Evenement succesvol aangemaakt!",
+    "goToDashboard": "Naar Dashboard"
+  },
+  "joinEvent": {
+    "title": "Deelnemen aan Evenement",
+    "subtitle": "Voer de toegangscode in die je hebt ontvangen",
+    "codePlaceholder": "Voer toegangscode in",
+    "join": "Deelnemen",
+    "joining": "Deelnemen...",
+    "invalidCode": "Ongeldige toegangscode",
+    "success": "Succesvol deelgenomen!"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "register": "Registreren",
+    "logout": "Uitloggen",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "noAccount": "Nog geen account?",
+    "hasAccount": "Al een account?",
+    "loginSuccess": "Succesvol ingelogd!",
+    "registerSuccess": "Account succesvol aangemaakt!",
+    "logoutSuccess": "Succesvol uitgelogd"
+  },
+  "survey": {
+    "title": "Je Antwoord",
+    "subtitle": "Help ons met de planning!",
+    "locked": "Het formulier is vergrendeld",
+    "lockedDescription": "De organisator heeft het formulier gesloten. Je kunt geen antwoorden meer indienen.",
+    "alreadySubmitted": "Je hebt al geantwoord",
+    "submitSuccess": "Antwoord succesvol verzonden!",
+    "submitError": "Fout bij verzenden van antwoord",
+    "questions": {
+      "name": {
+        "label": "Wie ben jij?",
+        "placeholder": "Je naam"
+      },
+      "attendance": {
+        "label": "Ben je erbij?",
+        "options": {
+          "yes": "Ja, ik ben erbij! 🎉",
+          "no": "Helaas niet 😢",
+          "maybe": "Nog niet zeker 🤔"
+        }
+      },
+      "duration": {
+        "label": "Voorkeursduur",
+        "options": {
+          "day": "Daguitje",
+          "weekend": "Weekend (2-3 dagen)",
+          "long": "Lang weekend (3-4 dagen)",
+          "week": "Hele week"
+        }
+      },
+      "travel": {
+        "label": "Reizen",
+        "options": {
+          "car": "Auto 🚗",
+          "train": "Trein 🚂",
+          "plane": "Vliegtuig ✈️",
+          "flexible": "Flexibel"
+        }
+      },
+      "fitness": {
+        "label": "Fitness Level",
+        "options": {
+          "low": "Ontspannen",
+          "medium": "Gematigd",
+          "high": "Sportief",
+          "extreme": "Extreem"
+        }
+      },
+      "alcohol": {
+        "label": "Alcohol?",
+        "options": {
+          "yes": "Ja, graag! 🍻",
+          "moderate": "Met mate 🍷",
+          "no": "Liever niet"
+        }
+      },
+      "budget": {
+        "label": "Je budget per persoon",
+        "options": {
+          "low": "Tot €100",
+          "medium": "€100-250",
+          "high": "€250-500",
+          "unlimited": "Geen limiet"
+        }
+      },
+      "destination": {
+        "label": "Waar wil je heen?",
+        "options": {
+          "local": "Lokaal (thuisstad)",
+          "domestic": "Binnenland",
+          "europe": "Europa",
+          "worldwide": "Wereldwijd"
+        }
+      },
+      "activities": {
+        "label": "Welke activiteiten?",
+        "placeholder": "Kies je favorieten"
+      },
+      "dateBlocks": {
+        "label": "Wanneer kun jij?",
+        "description": "Selecteer alle periodes die voor jou werken"
+      },
+      "restrictions": {
+        "label": "Beperkingen / Allergieën",
+        "placeholder": "bijv. Hoogtevrees, lactose-intolerantie..."
+      },
+      "suggestions": {
+        "label": "Wensen en ideeën",
+        "placeholder": "Wat heb je altijd al willen doen?"
+      }
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "overview": "Overzicht",
+      "ideas": "Ideeën",
+      "form": "Formulier",
+      "schedule": "Planning",
+      "destination": "Bestemming",
+      "agencies": "Bureaus",
+      "messages": "Berichten",
+      "settings": "Instellingen",
+      "aiAssistant": "AI Assistent"
+    },
+    "overview": {
+      "title": "Overzicht",
+      "participants": "Deelnemers",
+      "responses": "Antwoorden",
+      "responseRate": "Responspercentage",
+      "deadline": "Deadline",
+      "noDeadline": "Geen deadline ingesteld",
+      "surveyLink": "Enquête Link",
+      "accessCode": "Toegangscode",
+      "status": {
+        "draft": "Concept",
+        "planning": "Planning",
+        "active": "Actief",
+        "completed": "Voltooid",
+        "cancelled": "Geannuleerd"
+      }
+    },
+    "form": {
+      "title": "Formulier Bouwer",
+      "coreQuestions": "Kernvragen",
+      "customQuestions": "Aangepaste Vragen",
+      "questionEnabled": "Vraag ingeschakeld",
+      "questionDisabled": "Vraag uitgeschakeld",
+      "singleSelect": "Enkelvoudige selectie",
+      "multiSelect": "Meervoudige selectie",
+      "addQuestion": "Vraag Toevoegen",
+      "editOptions": "Opties Bewerken",
+      "saveChanges": "Wijzigingen Opslaan"
+    },
+    "schedule": {
+      "title": "Planning",
+      "setDate": "Datum Instellen",
+      "dateSet": "De datum staat vast!",
+      "noDate": "Nog geen datum ingesteld"
+    },
+    "settings": {
+      "title": "Instellingen",
+      "general": "Algemeen",
+      "eventName": "Evenement Naam",
+      "honoreeName": "Naam van de Gevierde",
+      "eventDate": "Evenement Datum",
+      "surveyDeadline": "Enquête Deadline",
+      "formStatus": {
+        "title": "Formulier Status",
+        "open": "Formulier open",
+        "locked": "Formulier vergrendeld",
+        "description": "Wanneer vergrendeld kunnen geen nieuwe antwoorden worden ingediend."
+      },
+      "dangerZone": {
+        "title": "Gevarenzone",
+        "deleteEvent": "Evenement Verwijderen",
+        "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt."
+      }
+    },
+    "team": {
+      "title": "Team Beheren",
+      "invite": "Uitnodigen",
+      "permissions": "Machtigingen",
+      "removeAccess": "Toegang Verwijderen",
+      "roles": {
+        "organizer": "Organisator",
+        "guest": "Gast"
+      }
+    }
+  },
+  "messages": {
+    "title": "Berichtsjablonen",
+    "subtitle": "Kopieer of deel voorgeschreven berichten",
+    "sendViaWhatsApp": "Verstuur via WhatsApp",
+    "templates": {
+      "kickoff": {
+        "title": "Kickoff Bericht",
+        "description": "Eerste uitnodiging aan alle deelnemers",
+        "template": "Hallo allemaal! 🎉\n\nHet is zover - we plannen het vrijgezellenfeest voor {{honoree}}! 🥳\n\nOm ons te helpen het perfecte evenement te organiseren, hebben we jullie input nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumselectie\n💰 Budgetplanning\n🎯 Activiteitenselectie\n📍 Bestemmingskeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het me weten!\n\nGroeten! 🙌"
+      },
+      "reminder": {
+        "title": "Herinnering",
+        "description": "Vriendelijke herinnering voor uitstaande antwoorden",
+        "template": "Hallo! 👋\n\nSnelle herinnering over de enquête voor {{honoree}}'s feest!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️"
+      },
+      "deadline": {
+        "title": "Deadline Waarschuwing",
+        "description": "Laatste kans voordat de enquête sluit",
+        "template": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor {{honoree}}'s feest sluit op {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert wordt niet meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰"
+      },
+      "dateConfirmed": {
+        "title": "Datum Bevestigd!",
+        "description": "Aankondiging van de definitieve datum",
+        "template": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{honoree}}'s feest vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het me weten!"
+      },
+      "budget": {
+        "title": "Budget Info",
+        "description": "Kosten en betalingsinformatie",
+        "template": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{honoree}}'s feest:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Activiteit 1]\n• [Activiteit 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het me weten!"
+      },
+      "packingList": {
+        "title": "Paklijst",
+        "description": "Wat iedereen moet meenemen",
+        "template": "🎒 PAKLIJST voor {{honoree}}'s feest 🎒\n\n📅 {{eventDate}}\n📍 [Bestemming]\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Speciale kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het me weten!\n\nMaak je klaar voor een geweldig evenement! 🚀"
+      }
+    },
+    "quickActions": {
+      "title": "Snelle Acties",
+      "copySurveyLink": "Enquête link kopiëren",
+      "copyAccessCode": "Toegangscode kopiëren",
+      "openSurvey": "Enquête openen"
+    }
+  },
+  "agencies": {
+    "title": "Feestbureaus",
+    "subtitle": "Vind professionele aanbieders bij jou in de buurt",
+    "viewMode": {
+      "list": "Lijst",
+      "map": "Kaart"
+    },
+    "filterByCity": "Filteren op stad",
+    "allCities": "Alle steden",
+    "noAgencies": "Geen bureaus gevonden",
+    "contact": {
+      "phone": "Telefoon",
+      "email": "E-mail",
+      "website": "Website",
+      "visit": "Website bezoeken"
+    },
+    "cityPanel": {
+      "title": "Bureaus in {{city}}",
+      "agencyCount": "{{count}} bureau(s)"
+    }
+  },
+  "expenses": {
+    "title": "Uitgaven",
+    "addExpense": "Uitgave Toevoegen",
+    "totalAmount": "Totaalbedrag",
+    "perPerson": "Per Persoon",
+    "paidBy": "Betaald door",
+    "splitType": {
+      "equal": "Gelijk",
+      "custom": "Aangepast",
+      "percentage": "Percentage"
+    },
+    "categories": {
+      "transport": "Vervoer",
+      "accommodation": "Accommodatie",
+      "activities": "Activiteiten",
+      "food": "Eten",
+      "drinks": "Drinken",
+      "gifts": "Cadeaus",
+      "other": "Overig"
+    }
+  },
+  "notifications": {
+    "linkCopied": "Link gekopieerd!",
+    "codeCopied": "Code gekopieerd!",
+    "messageCopied": "Bericht gekopieerd!",
+    "settingsSaved": "Instellingen opgeslagen!",
+    "errorOccurred": "Er is een fout opgetreden",
+    "tryAgain": "Probeer het opnieuw"
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "invalidEmail": "Ongeldig e-mailadres",
+    "minLength": "Minimaal {{count}} tekens vereist",
+    "maxLength": "Maximaal {{count}} tekens toegestaan",
+    "passwordMismatch": "Wachtwoorden komen niet overeen"
+  }
+}
