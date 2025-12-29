@@ -12,6 +12,12 @@ const Imprint = lazy(() => import("./pages/legal/Imprint"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
+
+// User Pages (lazy loaded)
+const MyEvents = lazy(() => import("./pages/MyEvents"));
+const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
+const Premium = lazy(() => import("./pages/Premium"));
+
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { languages } from "@/i18n";
 import Landing from "./pages/Landing";
@@ -26,6 +32,12 @@ import ClaimInvite from "./pages/ClaimInvite";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+);
 
 const AppContent = () => {
   const { i18n } = useTranslation();
@@ -52,11 +64,15 @@ const AppContent = () => {
           <Route path="/e/:slug/expenses" element={<EventExpenses />} />
           <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
           <Route path="/danke" element={<Danke />} />
+          {/* User Pages */}
+          <Route path="/my-events" element={<Suspense fallback={<PageLoader />}><MyEvents /></Suspense>} />
+          <Route path="/settings" element={<Suspense fallback={<PageLoader />}><ProfileSettings /></Suspense>} />
+          <Route path="/premium" element={<Suspense fallback={<PageLoader />}><Premium /></Suspense>} />
           {/* Legal Pages */}
-          <Route path="/legal/imprint" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Imprint /></Suspense>} />
-          <Route path="/legal/privacy" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Privacy /></Suspense>} />
-          <Route path="/legal/terms" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Terms /></Suspense>} />
-          <Route path="/legal/disclaimer" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Disclaimer /></Suspense>} />
+          <Route path="/legal/imprint" element={<Suspense fallback={<PageLoader />}><Imprint /></Suspense>} />
+          <Route path="/legal/privacy" element={<Suspense fallback={<PageLoader />}><Privacy /></Suspense>} />
+          <Route path="/legal/terms" element={<Suspense fallback={<PageLoader />}><Terms /></Suspense>} />
+          <Route path="/legal/disclaimer" element={<Suspense fallback={<PageLoader />}><Disclaimer /></Suspense>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
