@@ -616,6 +616,16 @@
     "portalError": "Error al abrir la gestión de suscripción.",
     "manageSubscription": "Gestionar Suscripción",
     "securePayment": "Pago seguro con Stripe. Cancela cuando quieras.",
+    "monthly": "Mensual",
+    "lifetime": "De por vida",
+    "lifetimeDescription": "Paga una vez, usa para siempre",
+    "popular": "Popular",
+    "oneTimePayment": "pago único",
+    "foreverAccess": "Acceso para siempre",
+    "lifetimeActive": "De por vida activo",
+    "subscribeMonthly": "Suscribirse mensualmente",
+    "buyLifetime": "Comprar una vez",
+    "upgradeToLifetime": "Actualizar a de por vida",
     "features": {
       "aiAssistant": "Asistente IA",
       "ai_assistant": "Asistente IA",
@@ -638,7 +648,7 @@
       "custom_questions": "Crea preguntas personalizadas con Premium.",
       "maxOptions": "Usuarios gratuitos pueden agregar hasta 5 opciones.",
       "upgradeButton": "Actualizar Ahora",
-      "startingAt": "Desde solo €39 / mes"
+      "startingAt": "Desde solo €6,99 / mes"
     },
     "benefits": {
       "unlimitedAccess": "Acceso ilimitado a todas las funciones",
