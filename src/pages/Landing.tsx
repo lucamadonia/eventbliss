@@ -34,6 +34,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
+import heroImage from "@/assets/hero-image.png";
+import featurePlanning from "@/assets/feature-planning.png";
+import featureBillSplitting from "@/assets/feature-bill-splitting.png";
+import featureExpenseTracking from "@/assets/feature-expense-tracking.png";
+import featureVoting from "@/assets/feature-voting.png";
+import multiDeviceMockup from "@/assets/multi-device-mockup.png";
+import socialProof from "@/assets/social-proof.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -87,85 +94,95 @@ const Landing = () => {
       <LandingHeader onScrollToSection={scrollToSection} />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 pt-24 pb-20">
-        <div className="container max-w-6xl mx-auto">
-          <div className="text-center">
-            {/* Floating decorative elements */}
-            <FloatingElement className="absolute top-32 left-10 opacity-30 hidden md:block" delay={0}>
-              <Sparkles className="w-8 h-8 text-primary" />
-            </FloatingElement>
-            <FloatingElement className="absolute top-48 right-16 opacity-20 hidden md:block" delay={2}>
-              <PartyPopper className="w-12 h-12 text-accent" />
-            </FloatingElement>
-            <FloatingElement className="absolute bottom-32 left-20 opacity-25 hidden lg:block" delay={1}>
-              <Cake className="w-10 h-10 text-neon-pink" />
-            </FloatingElement>
-
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8"
-            >
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground">
-                {t("landing.hero.badge")}
-              </span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
-            >
-              <span className="text-gradient-primary">{t("landing.hero.title")}</span>
-            </motion.h1>
-
-            {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12"
-            >
-              {t("landing.hero.subtitle")}
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
-            >
-              <GradientButton
-                size="lg"
-                onClick={() => navigate("/create")}
-                icon={<ArrowRight className="w-5 h-5" />}
+      <section className="relative min-h-screen flex items-center justify-center px-4 pt-24 pb-12">
+        <div className="container max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Text Content */}
+            <div className="text-center lg:text-left">
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8"
               >
-                {t("landing.hero.createEvent")}
-              </GradientButton>
-              <GradientButton
-                variant="outline"
-                size="lg"
-                onClick={() => navigate("/join")}
-              >
-                {t("landing.hero.joinEvent")}
-              </GradientButton>
-            </motion.div>
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {t("landing.hero.badge")}
+                </span>
+              </motion.div>
 
-            {/* Trust Badge */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-sm text-muted-foreground"
+              {/* Main Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold mb-6"
+              >
+                <span className="text-gradient-primary">{t("landing.hero.title")}</span>
+              </motion.h1>
+
+              {/* Subheadline */}
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
+              >
+                {t("landing.hero.subtitle")}
+              </motion.p>
+
+              {/* CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8"
+              >
+                <GradientButton
+                  size="lg"
+                  onClick={() => navigate("/create")}
+                  icon={<ArrowRight className="w-5 h-5" />}
+                >
+                  {t("landing.hero.createEvent")}
+                </GradientButton>
+                <GradientButton
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigate("/join")}
+                >
+                  {t("landing.hero.joinEvent")}
+                </GradientButton>
+              </motion.div>
+
+              {/* Trust Badge */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-sm text-muted-foreground"
+              >
+                {t("landing.hero.trustedBy")}
+              </motion.p>
+            </div>
+
+            {/* Right Column - Hero Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative"
             >
-              {t("landing.hero.trustedBy")}
-            </motion.p>
+              <div className="relative">
+                {/* Glow effect behind image */}
+                <div className="absolute inset-0 gradient-glow opacity-30 blur-3xl scale-110" />
+                <img
+                  src={heroImage}
+                  alt="EventBliss - People celebrating with the app"
+                  className="relative z-10 w-full h-auto rounded-2xl shadow-2xl"
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
 
@@ -231,7 +248,193 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* Feature Showcase Section with Images */}
+      <section className="relative py-24 px-4 bg-muted/30">
+        <div className="container max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              {t("landing.features.showcaseTitle", "Powerful Features, Beautiful Design")}
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-lg">
+              {t("landing.features.showcaseSubtitle", "Everything you need to plan the perfect group event")}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Feature Image Cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0 }}
+            >
+              <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
+                <div className="aspect-square rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={featurePlanning} 
+                    alt="Event Planning Feature" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-center">
+                  {t("landing.features.multiEvent.title")}
+                </h3>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
+                <div className="aspect-square rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={featureBillSplitting} 
+                    alt="Bill Splitting Feature" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-center">
+                  {t("landing.features.costSplitting.title")}
+                </h3>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
+                <div className="aspect-square rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={featureExpenseTracking} 
+                    alt="Expense Tracking Feature" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-center">
+                  {t("landing.features.realtime.title")}
+                </h3>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
+                <div className="aspect-square rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={featureVoting} 
+                    alt="Voting & Polls Feature" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-center">
+                  {t("landing.features.dateCoordination.title")}
+                </h3>
+              </GlassCard>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Multi-Device Mockup Section */}
+      <section className="relative py-24 px-4">
+        <div className="container max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <img
+                src={multiDeviceMockup}
+                alt="EventBliss on multiple devices"
+                className="w-full h-auto rounded-2xl shadow-xl"
+              />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-center lg:text-left"
+            >
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+                {t("landing.multiDevice.title", "Plan Events Anywhere, Anytime")}
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                {t("landing.multiDevice.description", "Access EventBliss from any device. Our responsive design ensures a seamless experience whether you're on your phone, tablet, or desktop.")}
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-primary" />
+                  </div>
+                  <span>{t("landing.multiDevice.feature1", "Real-time sync across all devices")}</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-primary" />
+                  </div>
+                  <span>{t("landing.multiDevice.feature2", "Instant notifications for updates")}</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-primary" />
+                  </div>
+                  <span>{t("landing.multiDevice.feature3", "Works offline with auto-sync")}</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof Image Section */}
+      <section className="relative py-16 px-4">
+        <div className="container max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative rounded-2xl overflow-hidden shadow-2xl"
+          >
+            <img
+              src={socialProof}
+              alt="Friends using EventBliss at a party"
+              className="w-full h-auto"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+              <p className="text-xl md:text-2xl font-display font-semibold text-foreground mb-2">
+                {t("landing.socialProof.quote", "Join thousands of happy event planners")}
+              </p>
+              <p className="text-muted-foreground">
+                {t("landing.socialProof.stats", "Over 10,000+ events planned successfully")}
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+
       <section id="how-it-works" className="relative py-24 px-4 bg-muted/30">
         <div className="container max-w-6xl mx-auto">
           <motion.div

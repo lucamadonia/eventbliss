@@ -430,5 +430,35 @@
       "byCategory": "Kategoriye Göre",
       "showAll": "Tümünü Göster"
     }
+  },
+  "cookie": {
+    "title": "Çerez Kullanıyoruz",
+    "description": "Deneyiminizi geliştirmek için çerezler kullanıyoruz. Tercihlerinizi aşağıdan özelleştirebilirsiniz.",
+    "necessary": "Gerekli Çerezler",
+    "necessaryDesc": "Sitenin çalışması için gereklidir. Devre dışı bırakılamaz.",
+    "analytics": "Analitik Çerezler",
+    "analyticsDesc": "Sitemizi nasıl kullandığınızı anlamamıza yardımcı olur.",
+    "marketing": "Pazarlama Çerezleri",
+    "marketingDesc": "Kişiselleştirilmiş reklamlar göstermek için kullanılır.",
+    "acceptAll": "Tümünü Kabul Et",
+    "acceptSelected": "Seçilenleri Kabul Et",
+    "rejectAll": "Tümünü Reddet",
+    "learnMore": "Daha fazla bilgi"
+  },
+  "newsletter": {
+    "title": "Güncel Kalın",
+    "placeholder": "E-posta adresiniz",
+    "subscribe": "Abone Ol",
+    "success": "Başarıyla abone oldunuz!",
+    "successTitle": "Hoş geldiniz!",
+    "successMessage": "En son güncellemelerimizi alacaksınız.",
+    "gdprConsent": "E-posta almayı ve gizlilik politikasını kabul ediyorum",
+    "marketingConsent": "Pazarlama iletişimleri almak istiyorum (isteğe bağlı)",
+    "errors": {
+      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+      "gdprRequired": "Gizlilik politikasını kabul etmelisiniz",
+      "alreadySubscribed": "Bu e-posta zaten abone",
+      "generic": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin."
+    }
   }
 }
