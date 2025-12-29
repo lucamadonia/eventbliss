@@ -124,22 +124,17 @@ const ActivityPreferencesSection = ({ control, activityOptions }: ActivityPrefer
                     <CollapsibleContent className="pt-2">
                       <div className="grid sm:grid-cols-2 gap-2 pl-2">
                         {options.map((option) => (
-                          <div
+                          <label
                             key={option.value}
+                            htmlFor={`activity-${option.value}`}
                             className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
                               field.value?.includes(option.value)
                                 ? "border-primary bg-primary/10"
                                 : "border-border hover:border-primary/50"
                             }`}
-                            onClick={() => {
-                              const isChecked = field.value?.includes(option.value);
-                              const newValue = isChecked
-                                ? field.value?.filter((v) => v !== option.value) || []
-                                : [...(field.value || []), option.value];
-                              field.onChange(newValue);
-                            }}
                           >
                             <Checkbox
+                              id={`activity-${option.value}`}
                               checked={field.value?.includes(option.value)}
                               onCheckedChange={(checked) => {
                                 const newValue = checked
@@ -148,10 +143,10 @@ const ActivityPreferencesSection = ({ control, activityOptions }: ActivityPrefer
                                 field.onChange(newValue);
                               }}
                             />
-                            <Label className="cursor-pointer flex-1 font-normal">
+                            <span className="cursor-pointer flex-1 font-normal">
                               {option.emoji} {option.label}
-                            </Label>
-                          </div>
+                            </span>
+                          </label>
                         ))}
                       </div>
                     </CollapsibleContent>
