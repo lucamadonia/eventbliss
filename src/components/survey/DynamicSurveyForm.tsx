@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
@@ -69,7 +71,16 @@ const DynamicSurveyForm = ({
 }: DynamicSurveyFormProps) => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Helper to translate template labels
+  const translateLabel = (label: string): string => {
+    if (label.startsWith('templates.') && i18n.exists(label)) {
+      return t(label);
+    }
+    return label;
+  };
 
   // Merge settings with defaults
   const config = mergeWithDefaults(settings);
@@ -218,7 +229,7 @@ const DynamicSurveyForm = ({
                           >
                             <RadioGroupItem value={option.value} id={`attendance-${option.value}`} />
                             <Label htmlFor={`attendance-${option.value}`} className="cursor-pointer flex-1">
-                              {option.label} {option.emoji}
+                              {translateLabel(option.label)} {option.emoji}
                             </Label>
                           </div>
                         ))}
@@ -260,7 +271,7 @@ const DynamicSurveyForm = ({
                                     field.onChange(newValue);
                                   }}
                                 />
-                                <span className="cursor-pointer flex-1">{option.label}</span>
+                                <span className="cursor-pointer flex-1">{translateLabel(option.label)}</span>
                               </label>
                             );
                           })}
@@ -279,7 +290,7 @@ const DynamicSurveyForm = ({
                             >
                               <RadioGroupItem value={option.value} id={`duration-${option.value}`} />
                               <Label htmlFor={`duration-${option.value}`} className="cursor-pointer flex-1">
-                                {option.label}
+                                {translateLabel(option.label)}
                               </Label>
                             </div>
                           ))}
@@ -406,7 +417,7 @@ const DynamicSurveyForm = ({
                                     field.onChange(newValue);
                                   }}
                                 />
-                                <span className="cursor-pointer">{option.label}</span>
+                                <span className="cursor-pointer">{translateLabel(option.label)}</span>
                               </label>
                             );
                           })}
@@ -424,7 +435,7 @@ const DynamicSurveyForm = ({
                             >
                               <RadioGroupItem value={option.value} id={`budget-${option.value}`} />
                               <Label htmlFor={`budget-${option.value}`} className="cursor-pointer">
-                                {option.label}
+                                {translateLabel(option.label)}
                               </Label>
                             </div>
                           ))}
@@ -468,7 +479,7 @@ const DynamicSurveyForm = ({
                                   }}
                                 />
                                 <span className="cursor-pointer flex-1">
-                                  {option.label} {option.emoji}
+                                  {translateLabel(option.label)} {option.emoji}
                                 </span>
                               </label>
                             );
@@ -487,7 +498,7 @@ const DynamicSurveyForm = ({
                             >
                               <RadioGroupItem value={option.value} id={`dest-${option.value}`} />
                               <Label htmlFor={`dest-${option.value}`} className="cursor-pointer flex-1">
-                                {option.label} {option.emoji}
+                                {translateLabel(option.label)} {option.emoji}
                               </Label>
                             </div>
                           ))}
@@ -538,7 +549,7 @@ const DynamicSurveyForm = ({
                           >
                             <RadioGroupItem value={option.value} id={`travel-${option.value}`} />
                             <Label htmlFor={`travel-${option.value}`} className="cursor-pointer flex-1">
-                              {option.label}
+                              {translateLabel(option.label)}
                             </Label>
                           </div>
                         ))}
@@ -582,7 +593,7 @@ const DynamicSurveyForm = ({
                             >
                               <RadioGroupItem value={option.value} id={`fitness-${option.value}`} className="sr-only" />
                               <span className="text-2xl block mb-1">{option.emoji}</span>
-                              <span className="text-sm">{option.label}</span>
+                              <span className="text-sm">{translateLabel(option.label)}</span>
                             </div>
                           );
                         })}
@@ -620,7 +631,7 @@ const DynamicSurveyForm = ({
                             >
                               <RadioGroupItem value={option.value} id={`alcohol-${option.value}`} className="sr-only" />
                               <span className="text-center text-sm">
-                                {option.label} {option.emoji}
+                                {translateLabel(option.label)} {option.emoji}
                               </span>
                             </div>
                           );

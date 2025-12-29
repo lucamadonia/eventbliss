@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
@@ -75,6 +76,14 @@ interface FormBuilderTabProps {
 export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   const { t } = useTranslation();
   const settings = mergeWithDefaults(event.settings);
+  
+  // Helper to translate template labels
+  const translateLabel = (label: string): string => {
+    if (label.startsWith('templates.') && i18n.exists(label)) {
+      return t(label);
+    }
+    return label;
+  };
   
   // Convert stored date_blocks to DateRangeBlock format
   const initialDateBlocks: DateRangeBlock[] = useMemo(() => {
@@ -565,7 +574,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           variant="secondary"
                           className="pl-3 pr-1 py-1.5 flex items-center gap-2"
                         >
-                          {option.label}
+                          {translateLabel(option.label)}
                           <Button
                             type="button"
                             variant="ghost"
@@ -642,7 +651,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border"
                         >
                           <span className="text-sm">
-                            {option.emoji} {option.label}
+                            {option.emoji} {translateLabel(option.label)}
                           </span>
                           <Button
                             type="button"

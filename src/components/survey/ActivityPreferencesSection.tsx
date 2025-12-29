@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Control } from "react-hook-form";
 import { Label } from "@/components/ui/label";
@@ -34,7 +36,16 @@ const CATEGORY_CONFIG: Record<string, { emoji: string; label: string; order: num
 };
 
 const ActivityPreferencesSection = ({ control, activityOptions }: ActivityPreferencesSectionProps) => {
+  const { t } = useTranslation();
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set(["action"]));
+  
+  // Helper to translate template labels
+  const translateLabel = (label: string): string => {
+    if (label.startsWith('templates.') && i18n.exists(label)) {
+      return t(label);
+    }
+    return label;
+  };
 
   // Group activities by category
   const groupedActivities = useMemo(() => {
@@ -144,7 +155,7 @@ const ActivityPreferencesSection = ({ control, activityOptions }: ActivityPrefer
                               }}
                             />
                             <span className="cursor-pointer flex-1 font-normal">
-                              {option.emoji} {option.label}
+                              {option.emoji} {translateLabel(option.label)}
                             </span>
                           </label>
                         ))}
