@@ -33,34 +33,35 @@
     "copyLink": "Copia link",
     "copyCode": "Copia codice"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "La Piattaforma Moderna per Organizzare Feste",
-    "description": "Organizza eventi indimenticabili con il tuo gruppo. Semplice, veloce e senza stress.",
-    "createEvent": "Crea Evento",
-    "joinEvent": "Unisciti con Codice",
+"landing": {
+    "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati" },
+    "hero": { "badge": "La piattaforma #1 per la pianificazione eventi", "title": "Pianifica Eventi Indimenticabili", "subtitle": "Dagli addii al celibato ai compleanni, organizza eventi di gruppo con facilità. Divisione intelligente dei costi, suggerimenti AI e collaborazione in tempo reale.", "createEvent": "Crea Evento", "joinEvent": "Partecipa con Codice", "trustedBy": "Oltre 10.000 organizzatori si fidano di noi" },
     "features": {
-      "title": "Tutto ciò di cui hai bisogno",
-      "subtitle": "Organizza l'evento perfetto con i nostri potenti strumenti",
-      "multiEvent": {
-        "title": "Gestione Multi-Evento",
-        "description": "Gestisci più eventi contemporaneamente con una dashboard chiara."
-      },
-      "costSplitting": {
-        "title": "Divisione Intelligente dei Costi",
-        "description": "Traccia le spese e dividile equamente tra tutti i partecipanti."
-      },
-      "messageTemplates": {
-        "title": "Modelli di Messaggi",
-        "description": "Messaggi WhatsApp pre-scritti per ogni occasione."
-      }
+      "title": "Tutto ciò di cui hai bisogno", "subtitle": "Strumenti potenti per l'evento perfetto",
+      "multiEvent": { "title": "Gestione Multi-Evento", "description": "Gestisci più eventi contemporaneamente con una dashboard chiara" },
+      "costSplitting": { "title": "Divisione Intelligente dei Costi", "description": "Traccia le spese e dividile equamente tra tutti" },
+      "aiSuggestions": { "title": "Suggerimenti AI", "description": "Ottieni raccomandazioni personalizzate per attività e destinazioni" },
+      "messageTemplates": { "title": "Modelli di Messaggi", "description": "Messaggi WhatsApp pre-scritti per ogni occasione" },
+      "dateCoordination": { "title": "Coordinamento Date", "description": "Trova la data perfetta che funziona per tutti" },
+      "realtime": { "title": "Collaborazione in Tempo Reale", "description": "Lavora insieme al tuo team in tempo reale" }
     },
-    "cta": {
-      "title": "Pronto per il tuo evento?",
-      "description": "Inizia gratis e organizza l'evento perfetto.",
-      "button": "Crea Evento Gratis"
+    "howItWorks": { "title": "Come Funziona", "subtitle": "Pianifica il tuo evento in 4 semplici passaggi",
+      "step1": { "title": "Crea Evento", "description": "Scegli il tipo di evento e imposta i dettagli di base" },
+      "step2": { "title": "Invita Ospiti", "description": "Condividi un link o codice semplice con il tuo gruppo" },
+      "step3": { "title": "Raccogli Preferenze", "description": "Lascia che gli ospiti votino su date, destinazioni e attività" },
+      "step4": { "title": "Pianifica Insieme", "description": "Usa suggerimenti AI e strumenti di collaborazione per finalizzare" }
     },
-    "footer": "Fatto con ❤️ per eventi indimenticabili"
+    "eventTypes": { "title": "Perfetto per Ogni Evento", "subtitle": "Che sia un weekend selvaggio o un raduno intimo", "bachelor": "Addii al Celibato", "bachelorette": "Addii al Nubilato", "birthday": "Feste di Compleanno", "team": "Eventi di Team", "trip": "Viaggi di Gruppo", "wedding": "Matrimoni" },
+    "testimonials": { "title": "Amato dagli Organizzatori", "subtitle": "Cosa dicono i nostri utenti", "testimonial1": { "text": "EventBliss ha reso la pianificazione dell'addio al celibato del mio amico così facile! Tutti hanno potuto votare." }, "testimonial2": { "text": "La funzione di divisione dei costi è un salvavita. Niente più conversazioni imbarazzanti sui soldi!" }, "testimonial3": { "text": "Ho organizzato 5 eventi con EventBliss. I suggerimenti AI sono incredibilmente utili." } },
+    "faq": { "title": "Domande Frequenti", "q1": "EventBliss è gratuito?", "a1": "Sì! EventBliss è gratuito per la pianificazione base. Funzionalità premium disponibili.", "q2": "Quanti ospiti posso invitare?", "a2": "Puoi invitare ospiti illimitati. Nessuna restrizione.", "q3": "Posso usare EventBliss per eventi aziendali?", "a3": "Assolutamente! EventBliss è perfetto per team building ed eventi aziendali.", "q4": "I miei dati sono sicuri?", "a4": "Sì, prendiamo la sicurezza seriamente. Tutti i dati sono criptati." },
+    "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
+    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." }
+  },
+  "legal": {
+    "imprint": { "title": "Note Legali", "company": "Informazioni Azienda", "registeredCompany": "Società registrata a Cipro", "address": "Indirizzo", "contact": "Contatto", "responsibleContent": "Responsabile del Contenuto", "disputeResolution": "Risoluzione Dispute UE", "disputeText": "La Commissione Europea fornisce una piattaforma per la risoluzione delle dispute online." },
+    "privacy": { "title": "Informativa sulla Privacy", "lastUpdated": "Ultimo aggiornamento", "intro": "La tua privacy è importante per noi. Questa policy spiega come raccogliamo e proteggiamo i tuoi dati.", "dataCollection": { "title": "Raccolta Dati", "content": "Raccogliamo le informazioni che fornisci direttamente." }, "dataUsage": { "title": "Uso dei Dati", "content": "I tuoi dati vengono usati per fornire e migliorare i nostri servizi." }, "cookies": { "title": "Cookie", "content": "Usiamo cookie per migliorare la tua esperienza." }, "dataSecurity": { "title": "Sicurezza dei Dati", "content": "Implementiamo misure di sicurezza standard del settore." }, "userRights": { "title": "I tuoi Diritti", "content": "Hai il diritto di accedere, correggere o eliminare i tuoi dati." }, "thirdParty": { "title": "Terze Parti", "content": "Potremmo condividere dati con partner fidati." }, "contact": { "title": "Contatto", "content": "Per richieste sulla privacy, contattaci a:" } },
+    "terms": { "title": "Termini di Servizio", "lastUpdated": "Ultimo aggiornamento", "intro": "Usando EventBliss, accetti questi termini.", "acceptance": { "title": "Accettazione", "content": "Accedendo a EventBliss, accetti questi termini." }, "services": { "title": "I Nostri Servizi", "content": "EventBliss fornisce strumenti di pianificazione eventi." }, "payment": { "title": "Termini di Pagamento", "content": "Le funzionalità base sono gratuite. Le premium potrebbero richiedere pagamento." }, "prohibited": { "title": "Attività Proibite", "content": "Non puoi usare i nostri servizi per attività illegali." }, "liability": { "title": "Limitazione di Responsabilità", "content": "EventBliss non è responsabile per danni derivanti dall'uso." }, "changes": { "title": "Modifiche", "content": "Possiamo aggiornare questi termini." }, "governingLaw": { "title": "Legge Applicabile", "content": "Questi termini sono regolati dalle leggi di Cipro." } },
+    "disclaimer": { "title": "Disclaimer", "lastUpdated": "Ultimo aggiornamento", "intro": "Leggi questo disclaimer prima di usare EventBliss.", "general": { "title": "Disclaimer Generale", "content": "Le informazioni su EventBliss sono solo a scopo informativo." }, "externalLinks": { "title": "Link Esterni", "content": "Non siamo responsabili per contenuti di terze parti." }, "availability": { "title": "Disponibilità", "content": "Puntiamo al 99,9% di uptime ma non possiamo garantire servizio ininterrotto." }, "limitation": { "title": "Limitazione", "content": "Non siamo responsabili per danni indiretti." }, "contact": { "title": "Contatto", "content": "Per domande su questo disclaimer, contattaci." } }
   },
   "createEvent": {
     "title": "Crea Evento",

@@ -33,34 +33,35 @@
     "copyLink": "Link kopiëren",
     "copyCode": "Code kopiëren"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "Het Moderne Feestplanningsplatform",
-    "description": "Plan onvergetelijke evenementen met je groep. Eenvoudig, snel en stressvrij.",
-    "createEvent": "Evenement Maken",
-    "joinEvent": "Deelnemen met Code",
+"landing": {
+    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren" },
+    "hero": { "badge": "Het #1 evenementenplanningsplatform", "title": "Plan Onvergetelijke Evenementen", "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.", "createEvent": "Evenement Maken", "joinEvent": "Deelnemen met Code", "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons" },
     "features": {
-      "title": "Alles wat je nodig hebt",
-      "subtitle": "Plan het perfecte evenement met onze krachtige tools",
-      "multiEvent": {
-        "title": "Multi-Event Beheer",
-        "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard."
-      },
-      "costSplitting": {
-        "title": "Slimme Kostenverdeling",
-        "description": "Houd uitgaven bij en verdeel ze eerlijk onder alle deelnemers."
-      },
-      "messageTemplates": {
-        "title": "Berichtsjablonen",
-        "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid."
-      }
+      "title": "Alles wat je nodig hebt", "subtitle": "Krachtige tools voor het perfecte evenement",
+      "multiEvent": { "title": "Multi-Event Beheer", "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard" },
+      "costSplitting": { "title": "Slimme Kostenverdeling", "description": "Houd uitgaven bij en verdeel ze eerlijk onder iedereen" },
+      "aiSuggestions": { "title": "AI-Suggesties", "description": "Krijg gepersonaliseerde aanbevelingen voor activiteiten en bestemmingen" },
+      "messageTemplates": { "title": "Berichtsjablonen", "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid" },
+      "dateCoordination": { "title": "Datumcoördinatie", "description": "Vind de perfecte datum die voor iedereen werkt" },
+      "realtime": { "title": "Realtime Samenwerking", "description": "Werk samen met je team in realtime" }
     },
-    "cta": {
-      "title": "Klaar voor je evenement?",
-      "description": "Start gratis en plan het perfecte evenement.",
-      "button": "Gratis Evenement Maken"
+    "howItWorks": { "title": "Hoe het Werkt", "subtitle": "Plan je evenement in 4 eenvoudige stappen",
+      "step1": { "title": "Evenement Maken", "description": "Kies het type evenement en stel basisdetails in" },
+      "step2": { "title": "Gasten Uitnodigen", "description": "Deel een simpele link of code met je groep" },
+      "step3": { "title": "Voorkeuren Verzamelen", "description": "Laat gasten stemmen op datums, bestemmingen en activiteiten" },
+      "step4": { "title": "Samen Plannen", "description": "Gebruik AI-suggesties en samenwerkingstools om te finaliseren" }
     },
-    "footer": "Gemaakt met ❤️ voor onvergetelijke evenementen"
+    "eventTypes": { "title": "Perfect voor Elk Evenement", "subtitle": "Of het nu een wild weekend of een intieme bijeenkomst is", "bachelor": "Vrijgezellenfeesten", "bachelorette": "Vrijgezellenfeesten (Dames)", "birthday": "Verjaardagsfeesten", "team": "Team Evenementen", "trip": "Groepsreizen", "wedding": "Bruiloften" },
+    "testimonials": { "title": "Geliefd bij Organisatoren", "subtitle": "Wat onze gebruikers zeggen", "testimonial1": { "text": "EventBliss maakte het plannen van het vrijgezellenfeest van mijn vriend zo makkelijk! Iedereen kon stemmen." }, "testimonial2": { "text": "De kostenverdelingsfunctie is een levensredder. Geen ongemakkelijke geldgesprekken meer!" }, "testimonial3": { "text": "Ik heb 5 evenementen georganiseerd met EventBliss. De AI-suggesties zijn ongelooflijk behulpzaam." } },
+    "faq": { "title": "Veelgestelde Vragen", "q1": "Is EventBliss gratis?", "a1": "Ja! EventBliss is gratis voor basisplanning. Premium functies beschikbaar voor power users.", "q2": "Hoeveel gasten kan ik uitnodigen?", "a2": "Je kunt onbeperkt gasten uitnodigen. Geen beperkingen.", "q3": "Kan ik EventBliss gebruiken voor zakelijke evenementen?", "a3": "Absoluut! EventBliss is perfect voor teambuilding en bedrijfsevenementen.", "q4": "Zijn mijn gegevens veilig?", "a4": "Ja, we nemen beveiliging serieus. Alle gegevens zijn versleuteld." },
+    "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
+    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." }
+  },
+  "legal": {
+    "imprint": { "title": "Impressum", "company": "Bedrijfsinformatie", "registeredCompany": "Geregistreerd bedrijf in Cyprus", "address": "Adres", "contact": "Contact", "responsibleContent": "Verantwoordelijk voor Inhoud", "disputeResolution": "EU Geschillenbeslechting", "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting." },
+    "privacy": { "title": "Privacybeleid", "lastUpdated": "Laatst bijgewerkt", "intro": "Je privacy is belangrijk voor ons. Dit beleid legt uit hoe we je gegevens verzamelen en beschermen.", "dataCollection": { "title": "Gegevensverzameling", "content": "We verzamelen informatie die je direct verstrekt." }, "dataUsage": { "title": "Gegevensgebruik", "content": "Je gegevens worden gebruikt om onze diensten te leveren en te verbeteren." }, "cookies": { "title": "Cookies", "content": "We gebruiken cookies om je ervaring te verbeteren." }, "dataSecurity": { "title": "Gegevensbeveiliging", "content": "We implementeren industriestandaard beveiligingsmaatregelen." }, "userRights": { "title": "Jouw Rechten", "content": "Je hebt het recht om je gegevens in te zien, te corrigeren of te verwijderen." }, "thirdParty": { "title": "Derden", "content": "We kunnen gegevens delen met vertrouwde partners." }, "contact": { "title": "Contact", "content": "Voor privacyvragen, neem contact op via:" } },
+    "terms": { "title": "Servicevoorwaarden", "lastUpdated": "Laatst bijgewerkt", "intro": "Door EventBliss te gebruiken, ga je akkoord met deze voorwaarden.", "acceptance": { "title": "Acceptatie", "content": "Door toegang tot EventBliss ga je akkoord met deze voorwaarden." }, "services": { "title": "Onze Diensten", "content": "EventBliss biedt tools voor evenementenplanning." }, "payment": { "title": "Betalingsvoorwaarden", "content": "Basisfuncties zijn gratis. Premium kan betaling vereisen." }, "prohibited": { "title": "Verboden Activiteiten", "content": "Je mag onze diensten niet gebruiken voor illegale activiteiten." }, "liability": { "title": "Beperking van Aansprakelijkheid", "content": "EventBliss is niet aansprakelijk voor schade door gebruik." }, "changes": { "title": "Wijzigingen", "content": "We kunnen deze voorwaarden bijwerken." }, "governingLaw": { "title": "Toepasselijk Recht", "content": "Deze voorwaarden vallen onder de wetten van Cyprus." } },
+    "disclaimer": { "title": "Disclaimer", "lastUpdated": "Laatst bijgewerkt", "intro": "Lees deze disclaimer voordat je EventBliss gebruikt.", "general": { "title": "Algemene Disclaimer", "content": "Informatie op EventBliss is alleen voor algemene doeleinden." }, "externalLinks": { "title": "Externe Links", "content": "We zijn niet verantwoordelijk voor content van derden." }, "availability": { "title": "Beschikbaarheid", "content": "We streven naar 99,9% uptime maar kunnen geen ononderbroken service garanderen." }, "limitation": { "title": "Beperking", "content": "We zijn niet aansprakelijk voor indirecte schade." }, "contact": { "title": "Contact", "content": "Voor vragen over deze disclaimer, neem contact op." } }
   },
   "createEvent": {
     "title": "Evenement Maken",
