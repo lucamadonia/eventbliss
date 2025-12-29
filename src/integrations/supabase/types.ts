@@ -635,6 +635,87 @@ export type Database = {
         }
         Relationships: []
       }
+      voucher_redemptions: {
+        Row: {
+          id: string
+          redeemed_at: string | null
+          subscription_id: string | null
+          user_id: string
+          voucher_id: string
+        }
+        Insert: {
+          id?: string
+          redeemed_at?: string | null
+          subscription_id?: string | null
+          user_id: string
+          voucher_id: string
+        }
+        Update: {
+          id?: string
+          redeemed_at?: string | null
+          subscription_id?: string | null
+          user_id?: string
+          voucher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voucher_redemptions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_redemptions_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vouchers: {
+        Row: {
+          code: string
+          created_at: string | null
+          created_by: string | null
+          discount_type: string
+          discount_value: number | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          used_count: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          created_by?: string | null
+          discount_type: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          created_by?: string | null
+          discount_type?: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

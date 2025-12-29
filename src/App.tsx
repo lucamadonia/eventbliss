@@ -17,6 +17,7 @@ const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 const MyEvents = lazy(() => import("./pages/MyEvents"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const Premium = lazy(() => import("./pages/Premium"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { languages } from "@/i18n";
@@ -68,6 +69,7 @@ const AppContent = () => {
           <Route path="/my-events" element={<Suspense fallback={<PageLoader />}><MyEvents /></Suspense>} />
           <Route path="/settings" element={<Suspense fallback={<PageLoader />}><ProfileSettings /></Suspense>} />
           <Route path="/premium" element={<Suspense fallback={<PageLoader />}><Premium /></Suspense>} />
+          <Route path="/admin/*" element={<Suspense fallback={<PageLoader />}><Admin /></Suspense>} />
           {/* Legal Pages */}
           <Route path="/legal/imprint" element={<Suspense fallback={<PageLoader />}><Imprint /></Suspense>} />
           <Route path="/legal/privacy" element={<Suspense fallback={<PageLoader />}><Privacy /></Suspense>} />
