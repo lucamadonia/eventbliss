@@ -623,5 +623,33 @@
     "authRequired": "Login Required",
     "loginToAdd": "Please log in to add or edit activities.",
     "addDate": "Add Date"
+  },
+  "cookie": {
+    "title": "We value your privacy",
+    "description": "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies.",
+    "necessary": { "title": "Necessary Cookies", "description": "Required for the website to function properly" },
+    "analytics": { "title": "Analytics Cookies", "description": "Help us understand how visitors interact with our website" },
+    "marketing": { "title": "Marketing Cookies", "description": "Used to deliver personalized advertisements" },
+    "acceptAll": "Accept All",
+    "rejectAll": "Reject All",
+    "acceptSelected": "Accept Selected",
+    "showDetails": "Show Details",
+    "hideDetails": "Hide Details"
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "success": "Successfully subscribed!",
+    "successTitle": "Welcome aboard!",
+    "successMessage": "You'll receive our latest updates and news.",
+    "gdprConsent": "I agree to receive emails and accept the privacy policy",
+    "marketingConsent": "I want to receive marketing communications (optional)",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "gdprRequired": "You must accept the privacy policy",
+      "alreadySubscribed": "This email is already subscribed",
+      "generic": "Something went wrong. Please try again."
+    }
   }
 }
