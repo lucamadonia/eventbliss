@@ -410,7 +410,22 @@
       "drinks": "Napoje",
       "gifts": "Prezenty",
       "other": "Inne"
-    }
+    },
+    "deleteConfirm": "Usunąć wydatek?",
+    "deleteConfirmDescription": "Ten wydatek zostanie oznaczony jako usunięty. Możesz podać powód.",
+    "deleteReason": "Powód (opcjonalnie)",
+    "deleteReasonPlaceholder": "np. Duplikat, Błędne dane...",
+    "restored": "Wydatek przywrócony",
+    "restoreError": "Nie można przywrócić wydatku",
+    "showDeleted": "Pokaż usunięte",
+    "hideDeleted": "Ukryj usunięte",
+    "deletedBy": "Usunięty przez",
+    "deletedAt": "Usunięty",
+    "restore": "Przywróć",
+    "settlementExplanation": "Rozliczenia pokazują, kto komu musi zapłacić, aby wszyscy byli sprawiedliwie rozliczeni.",
+    "balanceTooltip": "{{name}} zapłacił(a) {{paid}} i jest winien/winna {{owes}}. Różnica: {{balance}}",
+    "noPaymentNeeded": "{{name}} nie musi płacić, ponieważ zapłacił(a) już wystarczająco.",
+    "people": "osób"
   },
   "notifications": {
     "linkCopied": "Link skopiowany!",

@@ -410,7 +410,22 @@
       "drinks": "Bebidas",
       "gifts": "Presentes",
       "other": "Outro"
-    }
+    },
+    "deleteConfirm": "Eliminar despesa?",
+    "deleteConfirmDescription": "Esta despesa será marcada como eliminada. Podes indicar um motivo.",
+    "deleteReason": "Motivo (opcional)",
+    "deleteReasonPlaceholder": "ex. Duplicado, Informação incorreta...",
+    "restored": "Despesa restaurada",
+    "restoreError": "Não foi possível restaurar a despesa",
+    "showDeleted": "Mostrar eliminadas",
+    "hideDeleted": "Ocultar eliminadas",
+    "deletedBy": "Eliminado por",
+    "deletedAt": "Eliminado em",
+    "restore": "Restaurar",
+    "settlementExplanation": "Os acertos mostram quem precisa pagar a quem para que todos estejam cobertos de forma justa.",
+    "balanceTooltip": "{{name}} pagou {{paid}} e deve {{owes}}. Diferença: {{balance}}",
+    "noPaymentNeeded": "{{name}} não precisa pagar pois já pagou o suficiente.",
+    "people": "pessoas"
   },
   "notifications": {
     "linkCopied": "Link copiado!",

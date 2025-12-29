@@ -11,7 +11,9 @@ import {
   TrendingUp,
   Wallet,
   ChevronDown,
-  ChevronRight,
+  Eye,
+  EyeOff,
+  Info,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
@@ -20,6 +22,9 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // New expense components
 import { StatsHero } from "@/components/expenses/StatsHero";
@@ -28,6 +33,7 @@ import { ExpenseCard } from "@/components/expenses/ExpenseCard";
 import { SettlementList } from "@/components/expenses/SettlementCard";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { ExpenseFilters, FilterType, SortType, GroupType } from "@/components/expenses/ExpenseFilters";
+import { DeleteExpenseDialog } from "@/components/expenses/DeleteExpenseDialog";
 
 interface Expense {
   id: string;
@@ -40,6 +46,17 @@ interface Expense {
   created_at: string;
   expense_date: string | null;
   is_planned?: boolean;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+  deletion_reason?: string | null;
+}
+
+interface ExpenseShare {
+  id: string;
+  expense_id: string;
+  participant_id: string;
+  amount: number;
+  is_paid: boolean;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -58,6 +75,7 @@ const EventExpenses = () => {
   const { t } = useTranslation();
   const { event, participants, isLoading: eventLoading, error } = useEvent(slug);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenseShares, setExpenseShares] = useState<ExpenseShare[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
@@ -65,8 +83,11 @@ const EventExpenses = () => {
   const [groupBy, setGroupBy] = useState<GroupType>("none");
   const [filterByPerson, setFilterByPerson] = useState<string>("all");
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
 
-  // Fetch expenses from database
+  // Fetch expenses and shares from database
   useEffect(() => {
     const fetchExpenses = async () => {
       if (!event?.id) return;
@@ -81,6 +102,26 @@ const EventExpenses = () => {
 
         if (expensesError) throw expensesError;
 
+        // Fetch all expense shares
+        const expenseIds = (expensesData || []).map(e => e.id);
+        let sharesData: ExpenseShare[] = [];
+        if (expenseIds.length > 0) {
+          const { data: shares, error: sharesError } = await supabase
+            .from("expense_shares")
+            .select("*")
+            .in("expense_id", expenseIds);
+          
+          if (sharesError) throw sharesError;
+          sharesData = (shares || []).map(s => ({
+            id: s.id,
+            expense_id: s.expense_id,
+            participant_id: s.participant_id,
+            amount: Number(s.amount),
+            is_paid: s.is_paid || false,
+          }));
+        }
+        setExpenseShares(sharesData);
+
         const { data: activitiesData, error: activitiesError } = await supabase
           .from("schedule_activities")
           .select("id, title, estimated_cost, currency, category, day_date")
@@ -94,7 +135,7 @@ const EventExpenses = () => {
           return {
             id: exp.id,
             description: exp.description,
-            amount: exp.amount,
+            amount: Number(exp.amount),
             currency: exp.currency,
             category: exp.category,
             paid_by: paidByParticipant?.name || t("expenses.unknown"),
@@ -102,6 +143,9 @@ const EventExpenses = () => {
             created_at: exp.created_at,
             expense_date: exp.expense_date,
             is_planned: false,
+            deleted_at: exp.deleted_at,
+            deleted_by: exp.deleted_by,
+            deletion_reason: exp.deletion_reason,
           };
         });
 
@@ -110,7 +154,7 @@ const EventExpenses = () => {
           .map((act) => ({
             id: `planned-${act.id}`,
             description: act.title,
-            amount: act.estimated_cost!,
+            amount: Number(act.estimated_cost!),
             currency: act.currency || "EUR",
             category: mapActivityCategoryToExpense(act.category),
             paid_by: t("expenses.planned"),
@@ -150,9 +194,17 @@ const EventExpenses = () => {
     return mapping[activityCategory || "other"] || "other";
   };
 
-  // Calculate totals
-  const actualExpenses = useMemo(() => expenses.filter((e) => !e.is_planned), [expenses]);
-  const plannedExpenses = useMemo(() => expenses.filter((e) => e.is_planned), [expenses]);
+  // Filter out deleted expenses unless showDeleted is enabled
+  const activeExpenses = useMemo(() => {
+    if (showDeleted) {
+      return expenses;
+    }
+    return expenses.filter((e) => !e.deleted_at);
+  }, [expenses, showDeleted]);
+
+  // Calculate totals (only from non-deleted expenses)
+  const actualExpenses = useMemo(() => activeExpenses.filter((e) => !e.is_planned && !e.deleted_at), [activeExpenses]);
+  const plannedExpenses = useMemo(() => activeExpenses.filter((e) => e.is_planned), [activeExpenses]);
   const totalActualExpenses = useMemo(
     () => actualExpenses.reduce((sum, e) => sum + e.amount, 0),
     [actualExpenses]
@@ -164,24 +216,47 @@ const EventExpenses = () => {
   const totalExpenses = totalActualExpenses + totalPlannedExpenses;
   const perPerson = totalExpenses / Math.max(participants.length, 1);
 
-  // Calculate balances
+  // Calculate balances based on expense_shares
   const balances = useMemo(() => {
     return participants.map((p) => {
+      // What this person paid (sum of all expenses where they are the payer)
       const paid = actualExpenses
-        .filter((e) => e.paid_by_participant_id === p.id)
+        .filter((e) => e.paid_by_participant_id === p.id && !e.deleted_at)
         .reduce((sum, e) => sum + e.amount, 0);
-      const owes = totalActualExpenses / Math.max(participants.length, 1);
+      
+      // What this person owes (from expense_shares)
+      // If there are shares for an expense, use those
+      // Otherwise, assume equal split
+      let owes = 0;
+      
+      actualExpenses.forEach((expense) => {
+        if (expense.deleted_at) return;
+        
+        const sharesForExpense = expenseShares.filter((s) => s.expense_id === expense.id);
+        
+        if (sharesForExpense.length > 0) {
+          // Use the actual share amounts
+          const personShare = sharesForExpense.find((s) => s.participant_id === p.id);
+          if (personShare) {
+            owes += personShare.amount;
+          }
+        } else {
+          // No shares defined, assume equal split among all participants
+          owes += expense.amount / Math.max(participants.length, 1);
+        }
+      });
+      
       const balance = paid - owes;
       return { ...p, paid, owes, balance };
     });
-  }, [participants, actualExpenses, totalActualExpenses]);
+  }, [participants, actualExpenses, expenseShares]);
 
   // Calculate settlements
   const settlements = useMemo(() => {
     const debtors = balances.filter((b) => b.balance < -0.01).sort((a, b) => a.balance - b.balance);
     const creditors = balances.filter((b) => b.balance > 0.01).sort((a, b) => b.balance - a.balance);
 
-    const result: { from: string; to: string; amount: number }[] = [];
+    const result: { from: string; to: string; amount: number; fromBalance: typeof balances[0]; toBalance: typeof balances[0] }[] = [];
     let i = 0,
       j = 0;
     const debtorsCopy = debtors.map((d) => ({ ...d, remaining: Math.abs(d.balance) }));
@@ -194,6 +269,8 @@ const EventExpenses = () => {
           from: debtorsCopy[i].name,
           to: creditorsCopy[j].name,
           amount: Math.round(amount * 100) / 100,
+          fromBalance: debtors[i],
+          toBalance: creditors[j],
         });
       }
       debtorsCopy[i].remaining -= amount;
@@ -206,7 +283,7 @@ const EventExpenses = () => {
 
   // Filtered and sorted expenses
   const filteredExpenses = useMemo(() => {
-    let filtered = [...expenses];
+    let filtered = [...activeExpenses];
 
     // Filter by type
     if (filter === "paid") {
@@ -239,7 +316,7 @@ const EventExpenses = () => {
     });
 
     return filtered;
-  }, [expenses, filter, sort, filterByPerson]);
+  }, [activeExpenses, filter, sort, filterByPerson]);
 
   // Grouped expenses
   const groupedExpenses = useMemo(() => {
@@ -339,30 +416,7 @@ const EventExpenses = () => {
       }
 
       // Refresh expenses
-      const { data: refreshedData } = await supabase
-        .from("expenses")
-        .select("*")
-        .eq("event_id", event!.id)
-        .order("created_at", { ascending: false });
-
-      if (refreshedData) {
-        const mappedExpenses: Expense[] = refreshedData.map((exp) => {
-          const paidByParticipant = participants.find((p) => p.id === exp.paid_by_participant_id);
-          return {
-            id: exp.id,
-            description: exp.description,
-            amount: exp.amount,
-            currency: exp.currency,
-            category: exp.category,
-            paid_by: paidByParticipant?.name || t("expenses.unknown"),
-            paid_by_participant_id: exp.paid_by_participant_id,
-            created_at: exp.created_at,
-            expense_date: exp.expense_date,
-            is_planned: false,
-          };
-        });
-        setExpenses([...mappedExpenses, ...plannedExpenses]);
-      }
+      await refreshExpenses();
 
       toast({ title: t("common.success"), description: t("expenses.added") });
     } catch (err) {
@@ -376,19 +430,126 @@ const EventExpenses = () => {
     }
   };
 
-  const handleDeleteExpense = async (expense: Expense) => {
+  const refreshExpenses = async () => {
+    if (!event?.id) return;
+
+    const { data: refreshedData } = await supabase
+      .from("expenses")
+      .select("*")
+      .eq("event_id", event.id)
+      .order("created_at", { ascending: false });
+
+    if (refreshedData) {
+      // Also refresh shares
+      const expenseIds = refreshedData.map(e => e.id);
+      let sharesData: ExpenseShare[] = [];
+      if (expenseIds.length > 0) {
+        const { data: shares } = await supabase
+          .from("expense_shares")
+          .select("*")
+          .in("expense_id", expenseIds);
+        
+        sharesData = (shares || []).map(s => ({
+          id: s.id,
+          expense_id: s.expense_id,
+          participant_id: s.participant_id,
+          amount: Number(s.amount),
+          is_paid: s.is_paid || false,
+        }));
+      }
+      setExpenseShares(sharesData);
+
+      const mappedExpenses: Expense[] = refreshedData.map((exp) => {
+        const paidByParticipant = participants.find((p) => p.id === exp.paid_by_participant_id);
+        return {
+          id: exp.id,
+          description: exp.description,
+          amount: Number(exp.amount),
+          currency: exp.currency,
+          category: exp.category,
+          paid_by: paidByParticipant?.name || t("expenses.unknown"),
+          paid_by_participant_id: exp.paid_by_participant_id,
+          created_at: exp.created_at,
+          expense_date: exp.expense_date,
+          is_planned: false,
+          deleted_at: exp.deleted_at,
+          deleted_by: exp.deleted_by,
+          deletion_reason: exp.deletion_reason,
+        };
+      });
+      setExpenses([...mappedExpenses, ...plannedExpenses]);
+    }
+  };
+
+  const handleDeleteClick = (expense: Expense) => {
+    setExpenseToDelete(expense);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async (reason?: string) => {
+    if (!expenseToDelete) return;
+
     try {
-      const { error } = await supabase.from("expenses").delete().eq("id", expense.id);
+      const { data: userData } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from("expenses")
+        .update({
+          deleted_at: new Date().toISOString(),
+          deleted_by: userData?.user?.id || null,
+          deletion_reason: reason || null,
+        })
+        .eq("id", expenseToDelete.id);
 
       if (error) throw error;
 
-      setExpenses((prev) => prev.filter((e) => e.id !== expense.id));
+      setExpenses((prev) =>
+        prev.map((e) =>
+          e.id === expenseToDelete.id
+            ? { ...e, deleted_at: new Date().toISOString(), deletion_reason: reason }
+            : e
+        )
+      );
       toast({ title: t("common.success"), description: t("expenses.deleted") });
     } catch (err) {
       console.error("Error deleting expense:", err);
       toast({
         title: t("common.error"),
         description: t("expenses.deleteError"),
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setExpenseToDelete(null);
+    }
+  };
+
+  const handleRestoreExpense = async (expense: Expense) => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .update({
+          deleted_at: null,
+          deleted_by: null,
+          deletion_reason: null,
+        })
+        .eq("id", expense.id);
+
+      if (error) throw error;
+
+      setExpenses((prev) =>
+        prev.map((e) =>
+          e.id === expense.id
+            ? { ...e, deleted_at: null, deleted_by: null, deletion_reason: null }
+            : e
+        )
+      );
+      toast({ title: t("common.success"), description: t("expenses.restored") });
+    } catch (err) {
+      console.error("Error restoring expense:", err);
+      toast({
+        title: t("common.error"),
+        description: t("expenses.restoreError"),
         variant: "destructive",
       });
     }
@@ -423,6 +584,7 @@ const EventExpenses = () => {
   }
 
   const currency = event.currency || "€";
+  const deletedCount = expenses.filter((e) => e.deleted_at && !e.is_planned).length;
 
   return (
     <AnimatedBackground>
@@ -482,7 +644,7 @@ const EventExpenses = () => {
                 {t("expenses.analytics")}
               </h2>
               <ExpenseCharts
-                expenses={expenses}
+                expenses={activeExpenses.filter(e => !e.deleted_at)}
                 participants={participants}
                 currency={currency}
                 balances={balances}
@@ -498,11 +660,27 @@ const EventExpenses = () => {
               transition={{ delay: 0.3 }}
             >
               <GlassCard className="p-6">
-                <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-primary" />
-                  {t("expenses.settlements")}
-                </h2>
-                <SettlementList settlements={settlements} currency={currency} />
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-primary" />
+                    {t("expenses.settlements")}
+                  </h2>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="w-4 h-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>{t("expenses.settlementExplanation")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <SettlementList 
+                  settlements={settlements} 
+                  currency={currency} 
+                  balances={balances}
+                />
               </GlassCard>
             </motion.section>
           )}
@@ -514,7 +692,25 @@ const EventExpenses = () => {
             transition={{ delay: 0.4 }}
           >
             <GlassCard className="p-6">
-              <h2 className="font-display text-lg font-semibold mb-4">{t("expenses.allExpenses")}</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display text-lg font-semibold">{t("expenses.allExpenses")}</h2>
+                
+                {/* Show deleted toggle */}
+                {deletedCount > 0 && (
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="show-deleted"
+                      checked={showDeleted}
+                      onCheckedChange={setShowDeleted}
+                    />
+                    <Label htmlFor="show-deleted" className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1">
+                      {showDeleted ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showDeleted ? t("expenses.hideDeleted") : t("expenses.showDeleted")}
+                      <span className="text-xs">({deletedCount})</span>
+                    </Label>
+                  </div>
+                )}
+              </div>
 
               <ExpenseFilters
                 filter={filter}
@@ -527,9 +723,9 @@ const EventExpenses = () => {
                 onFilterByPersonChange={setFilterByPerson}
                 participants={participants}
                 counts={{
-                  all: expenses.length,
-                  paid: actualExpenses.length,
-                  planned: plannedExpenses.length,
+                  all: activeExpenses.length,
+                  paid: activeExpenses.filter((e) => !e.is_planned).length,
+                  planned: activeExpenses.filter((e) => e.is_planned).length,
                 }}
               />
 
@@ -574,7 +770,9 @@ const EventExpenses = () => {
                                   key={expense.id}
                                   expense={expense}
                                   index={index}
-                                  onDelete={!expense.is_planned ? handleDeleteExpense : undefined}
+                                  onDelete={!expense.is_planned && !expense.deleted_at ? () => handleDeleteClick(expense) : undefined}
+                                  onRestore={expense.deleted_at ? () => handleRestoreExpense(expense) : undefined}
+                                  isDeleted={!!expense.deleted_at}
                                 />
                               ))}
                             </div>
@@ -593,7 +791,9 @@ const EventExpenses = () => {
                           key={expense.id}
                           expense={expense}
                           index={index}
-                          onDelete={!expense.is_planned ? handleDeleteExpense : undefined}
+                          onDelete={!expense.is_planned && !expense.deleted_at ? () => handleDeleteClick(expense) : undefined}
+                          onRestore={expense.deleted_at ? () => handleRestoreExpense(expense) : undefined}
+                          isDeleted={!!expense.deleted_at}
                         />
                       ))
                     ) : (
@@ -628,6 +828,14 @@ const EventExpenses = () => {
           participants={participants}
           currency={currency}
           onAdd={handleAddExpense}
+        />
+
+        {/* Delete Expense Dialog */}
+        <DeleteExpenseDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          expense={expenseToDelete}
+          onConfirm={handleDeleteConfirm}
         />
       </div>
     </AnimatedBackground>

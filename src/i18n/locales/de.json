@@ -964,9 +964,21 @@
       "drinks": "Getränke",
       "gifts": "Geschenke",
       "other": "Sonstiges"
-    }
-  },
-  "common": {
+    },
+    "deleteConfirm": "Ausgabe löschen?",
+    "deleteConfirmDescription": "Diese Ausgabe wird als gelöscht markiert. Du kannst einen Grund angeben.",
+    "deleteReason": "Grund (optional)",
+    "deleteReasonPlaceholder": "z.B. Doppelt eingetragen, Falsche Angaben...",
+    "restored": "Ausgabe wiederhergestellt",
+    "restoreError": "Ausgabe konnte nicht wiederhergestellt werden",
+    "showDeleted": "Gelöschte anzeigen",
+    "hideDeleted": "Gelöschte ausblenden",
+    "deletedBy": "Gelöscht von",
+    "deletedAt": "Gelöscht am",
+    "restore": "Wiederherstellen",
+    "settlementExplanation": "Der Ausgleich zeigt, wer wem wie viel zahlen muss, damit alle fair beteiligt sind.",
+    "balanceTooltip": "{{name}} hat {{paid}} bezahlt und schuldet {{owes}}. Differenz: {{balance}}",
+    "noPaymentNeeded": "{{name}} muss nichts zahlen, da er/sie bereits genug bezahlt hat.",
     "people": "Personen"
   },
   "notifications": {

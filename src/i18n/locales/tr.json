@@ -410,7 +410,22 @@
       "drinks": "İçecekler",
       "gifts": "Hediyeler",
       "other": "Diğer"
-    }
+    },
+    "deleteConfirm": "Harcama silinsin mi?",
+    "deleteConfirmDescription": "Bu harcama silinmiş olarak işaretlenecek. Bir neden belirtebilirsiniz.",
+    "deleteReason": "Neden (isteğe bağlı)",
+    "deleteReasonPlaceholder": "örn. Yinelenen giriş, Yanlış bilgi...",
+    "restored": "Harcama geri yüklendi",
+    "restoreError": "Harcama geri yüklenemedi",
+    "showDeleted": "Silinenleri göster",
+    "hideDeleted": "Silinenleri gizle",
+    "deletedBy": "Silen",
+    "deletedAt": "Silinme tarihi",
+    "restore": "Geri yükle",
+    "settlementExplanation": "Mahsuplaşmalar, herkesin adil bir şekilde karşılanması için kimin kime ödeme yapması gerektiğini gösterir.",
+    "balanceTooltip": "{{name}} {{paid}} ödedi ve {{owes}} borçlu. Fark: {{balance}}",
+    "noPaymentNeeded": "{{name}}'in ödeme yapması gerekmiyor çünkü zaten yeterince ödedi.",
+    "people": "kişi"
   },
   "notifications": {
     "linkCopied": "Link kopyalandı!",

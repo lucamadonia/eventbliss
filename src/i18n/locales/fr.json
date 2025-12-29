@@ -468,7 +468,22 @@
       "drinks": "Boissons",
       "gifts": "Cadeaux",
       "other": "Autre"
-    }
+    },
+    "deleteConfirm": "Supprimer la dépense ?",
+    "deleteConfirmDescription": "Cette dépense sera marquée comme supprimée. Vous pouvez indiquer un motif.",
+    "deleteReason": "Motif (optionnel)",
+    "deleteReasonPlaceholder": "ex. Doublon, Informations incorrectes...",
+    "restored": "Dépense restaurée",
+    "restoreError": "Impossible de restaurer la dépense",
+    "showDeleted": "Afficher supprimées",
+    "hideDeleted": "Masquer supprimées",
+    "deletedBy": "Supprimé par",
+    "deletedAt": "Supprimé le",
+    "restore": "Restaurer",
+    "settlementExplanation": "Les règlements montrent qui doit payer à qui pour que tout le monde soit équitablement couvert.",
+    "balanceTooltip": "{{name}} a payé {{paid}} et doit {{owes}}. Différence : {{balance}}",
+    "noPaymentNeeded": "{{name}} n'a pas besoin de payer car il/elle a déjà assez payé.",
+    "people": "personnes"
   },
   "notifications": {
     "linkCopied": "Lien copié !",
