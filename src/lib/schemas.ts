@@ -5,6 +5,7 @@ const participantValues = PARTICIPANTS as unknown as readonly [string, ...string
 const dateBlockKeys = Object.keys(DATE_BLOCKS) as [string, ...string[]];
 const activityValues = ACTIVITY_OPTIONS.map(a => a.value) as unknown as [string, ...string[]];
 
+// Static schema for legacy SurveyForm component
 export const responseSchema = z.object({
   // Pflichtfelder
   participant: z.enum(participantValues, {
@@ -58,6 +59,46 @@ export const responseSchema = z.object({
 });
 
 export type ResponseFormData = z.infer<typeof responseSchema>;
+
+// Dynamic schema for DynamicSurveyForm component - supports both single and multi-select
+export const dynamicResponseSchema = z.object({
+  participant: z.string().min(1, "Bitte wähle deinen Namen aus"),
+  
+  attendance: z.string().min(1, "Bitte gib an, ob du dabei sein kannst"),
+  
+  duration_pref: z.string().min(1, "Bitte wähle deine bevorzugte Dauer"),
+  
+  date_blocks: z.array(z.string()).min(1, "Bitte wähle mindestens einen Terminblock aus"),
+  
+  // Budget can be string (single) or array (multi)
+  budget: z.union([
+    z.string().min(1, "Bitte wähle dein Budget"),
+    z.array(z.string()).min(1, "Bitte wähle mindestens ein Budget")
+  ]),
+  
+  // Destination can be string (single) or array (multi)
+  destination: z.union([
+    z.string().min(1, "Bitte wähle eine Destination"),
+    z.array(z.string()).min(1, "Bitte wähle mindestens eine Destination")
+  ]),
+  
+  travel_pref: z.string().min(1, "Bitte wähle deine Reisebereitschaft"),
+  
+  preferences: z.array(z.string()).min(1, "Bitte wähle mindestens eine Aktivität"),
+  
+  fitness_level: z.string().min(1, "Bitte wähle dein Fitness-Level"),
+  
+  group_code: z.string().min(1, "Gruppencode ist erforderlich").max(50, "Gruppencode zu lang"),
+  
+  // Optional fields
+  partial_days: z.string().max(500, "Maximal 500 Zeichen").optional(),
+  alcohol: z.string().optional(),
+  restrictions: z.string().max(500, "Maximal 500 Zeichen").optional(),
+  suggestions: z.string().max(1000, "Maximal 1000 Zeichen").optional(),
+  de_city: z.string().max(100, "Maximal 100 Zeichen").optional(),
+});
+
+export type DynamicResponseFormData = z.infer<typeof dynamicResponseSchema>;
 
 // Admin Login Schema
 export const adminLoginSchema = z.object({

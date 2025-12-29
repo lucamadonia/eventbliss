@@ -74,17 +74,25 @@ serve(async (req) => {
       }
     });
 
-    // Aggregate budgets
+    // Aggregate budgets (support multi-select from meta)
     responses.forEach(r => {
-      if (r.budget && r.attendance !== "no") {
-        stats.budgets[r.budget] = (stats.budgets[r.budget] || 0) + 1;
+      if (r.attendance !== "no") {
+        const meta = r.meta as Record<string, unknown> || {};
+        const budgetChoices = (meta.budget_choices as string[]) || (r.budget ? [r.budget] : []);
+        budgetChoices.forEach((b: string) => {
+          stats.budgets[b] = (stats.budgets[b] || 0) + 1;
+        });
       }
     });
 
-    // Aggregate destinations
+    // Aggregate destinations (support multi-select from meta)
     responses.forEach(r => {
-      if (r.destination && r.attendance !== "no") {
-        stats.destinations[r.destination] = (stats.destinations[r.destination] || 0) + 1;
+      if (r.attendance !== "no") {
+        const meta = r.meta as Record<string, unknown> || {};
+        const destChoices = (meta.destination_choices as string[]) || (r.destination ? [r.destination] : []);
+        destChoices.forEach((d: string) => {
+          stats.destinations[d] = (stats.destinations[d] || 0) + 1;
+        });
       }
     });
 

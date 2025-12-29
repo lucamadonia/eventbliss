@@ -17,10 +17,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import type { ActivityOption } from "@/lib/survey-config";
-import type { ResponseFormData } from "@/lib/schemas";
+import type { DynamicResponseFormData } from "@/lib/schemas";
 
 interface ActivityPreferencesSectionProps {
-  control: Control<ResponseFormData>;
+  control: Control<DynamicResponseFormData>;
   activityOptions: ActivityOption[];
 }
 
