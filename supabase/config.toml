@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.create-user]
 verify_jwt = false
+
+[functions.create-stripe-coupon]
+verify_jwt = false

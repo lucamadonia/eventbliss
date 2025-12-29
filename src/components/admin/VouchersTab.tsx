@@ -110,17 +110,56 @@ export function VouchersTab() {
       return;
     }
 
+    // Validate discount value for percentage/fixed types
+    const discountValue = newVoucher.discount_value ? parseFloat(newVoucher.discount_value) : null;
+    if ((newVoucher.discount_type === "percentage" || newVoucher.discount_type === "fixed") && !discountValue) {
+      toast({
+        title: t("common.error"),
+        description: t("admin.vouchers.discountValueRequired", "Rabattwert ist erforderlich"),
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      const { error } = await supabase.from("vouchers").insert({
+      // First insert the voucher into the database
+      const { data: insertedVoucher, error } = await supabase.from("vouchers").insert({
         code: newVoucher.code.toUpperCase(),
         discount_type: newVoucher.discount_type,
-        discount_value: newVoucher.discount_value ? parseFloat(newVoucher.discount_value) : null,
+        discount_value: discountValue,
         max_uses: newVoucher.max_uses ? parseInt(newVoucher.max_uses) : null,
         valid_until: newVoucher.valid_until ? new Date(newVoucher.valid_until).toISOString() : null,
         created_by: user?.id,
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // For percentage and fixed types, create a Stripe coupon
+      if ((newVoucher.discount_type === "percentage" || newVoucher.discount_type === "fixed") && insertedVoucher) {
+        try {
+          const { data: couponResult, error: couponError } = await supabase.functions.invoke("create-stripe-coupon", {
+            body: {
+              voucher_id: insertedVoucher.id,
+              code: newVoucher.code.toUpperCase(),
+              discount_type: newVoucher.discount_type,
+              discount_value: discountValue,
+            },
+          });
+
+          if (couponError) {
+            console.error("Error creating Stripe coupon:", couponError);
+            toast({
+              title: t("common.warning"),
+              description: t("admin.vouchers.stripeCouponError", "Voucher erstellt, aber Stripe-Coupon fehlgeschlagen"),
+              variant: "destructive",
+            });
+          } else {
+            console.log("Stripe coupon created:", couponResult);
+          }
+        } catch (stripeError) {
+          console.error("Error calling create-stripe-coupon:", stripeError);
+        }
+      }
 
       toast({
         title: t("common.success"),
