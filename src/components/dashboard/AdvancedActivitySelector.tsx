@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, 
@@ -50,6 +51,14 @@ export const AdvancedActivitySelector = ({
 }: AdvancedActivitySelectorProps) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Helper to translate template labels
+  const translateLabel = (label: string): string => {
+    if (label.startsWith('templates.') && i18n.exists(label)) {
+      return t(label);
+    }
+    return label;
+  };
   const [activeCategory, setActiveCategory] = useState<ActivityCategory | 'all' | 'selected' | 'recommended'>('all');
   const [customActivityName, setCustomActivityName] = useState("");
   const [customActivityEmoji, setCustomActivityEmoji] = useState("🎯");
@@ -287,7 +296,7 @@ export const AdvancedActivitySelector = ({
                       <span className="text-xl flex-shrink-0">{activity.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium block truncate">
-                          {activity.label}
+                          {translateLabel(activity.label)}
                         </span>
                         <span className="text-xs text-muted-foreground capitalize">
                           {ACTIVITY_CATEGORIES[activity.category]?.label}
@@ -350,7 +359,7 @@ export const AdvancedActivitySelector = ({
                 onClick={() => toggleActivity(activity)}
               >
                 <span>{activity.emoji}</span>
-                <span>{activity.label}</span>
+                <span>{translateLabel(activity.label)}</span>
                 <X className="w-3 h-3 ml-1 text-muted-foreground" />
               </Badge>
             ))}
