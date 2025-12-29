@@ -271,6 +271,12 @@
     "title": "Szablony Wiadomości",
     "subtitle": "Kopiuj lub udostępniaj gotowe wiadomości",
     "sendViaWhatsApp": "Wyślij przez WhatsApp",
+    "surveyLink": "Link do Ankiety",
+    "accessCode": "Kod Dostępu",
+    "proTip": {
+      "title": "Wskazówka Pro",
+      "description": "Skopiuj wiadomości i udostępnij je bezpośrednio przez WhatsApp lub inne komunikatory dla najlepszych rezultatów."
+    },
     "templates": {
       "kickoff": {
         "title": "Wiadomość Startowa",

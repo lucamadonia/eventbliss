@@ -271,6 +271,12 @@
     "title": "Modelli di Messaggi",
     "subtitle": "Copia o condividi messaggi pre-scritti",
     "sendViaWhatsApp": "Invia via WhatsApp",
+    "surveyLink": "Link Sondaggio",
+    "accessCode": "Codice di Accesso",
+    "proTip": {
+      "title": "Suggerimento Pro",
+      "description": "Copia i messaggi e condividili direttamente via WhatsApp o altri messenger per migliori risultati."
+    },
     "templates": {
       "kickoff": {
         "title": "Messaggio di Lancio",

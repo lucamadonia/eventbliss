@@ -271,6 +271,12 @@
     "title": "Berichtsjablonen",
     "subtitle": "Kopieer of deel voorgeschreven berichten",
     "sendViaWhatsApp": "Verstuur via WhatsApp",
+    "surveyLink": "Enquête Link",
+    "accessCode": "Toegangscode",
+    "proTip": {
+      "title": "Pro Tip",
+      "description": "Kopieer de berichten en deel ze direct via WhatsApp of andere messengers voor de beste resultaten."
+    },
     "templates": {
       "kickoff": {
         "title": "Kickoff Bericht",
