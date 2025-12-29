@@ -31,16 +31,33 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    // Parse request body for plan_type
+    // Parse request body for plan_type and locale
     let planType = "monthly";
+    let locale = "de";
     try {
       const body = await req.json();
       planType = body.plan_type || "monthly";
+      locale = body.locale || "de";
     } catch {
       // No body or invalid JSON, use default
     }
 
-    logStep("Plan type requested", { planType });
+    // Map our locale codes to Stripe-supported locales
+    const stripeLocaleMap: Record<string, string> = {
+      de: "de",
+      en: "en",
+      es: "es",
+      fr: "fr",
+      it: "it",
+      nl: "nl",
+      pt: "pt",
+      pl: "pl",
+      tr: "tr",
+      ar: "ar",
+    };
+    const stripeLocale = stripeLocaleMap[locale] || "de";
+
+    logStep("Plan type and locale requested", { planType, locale, stripeLocale });
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -70,7 +87,7 @@ serve(async (req) => {
 
     logStep("Creating checkout session", { priceId, mode, planType });
     
-    // Create checkout session
+    // Create checkout session with locale for Stripe UI
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -82,6 +99,7 @@ serve(async (req) => {
         },
       ],
       mode: mode,
+      locale: stripeLocale as any,
       success_url: `${origin}/premium?success=true`,
       cancel_url: `${origin}/premium?canceled=true`,
       metadata: {

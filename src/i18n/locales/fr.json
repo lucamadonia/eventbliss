@@ -655,6 +655,68 @@
       "aiFeatures": "Toutes les fonctionnalités IA débloquées",
       "prioritySupport": "Support prioritaire"
     },
-    "subscribe": "Passer à Premium"
+    "subscribe": "Passer à Premium",
+    "voucher": {
+      "title": "Utiliser un Coupon",
+      "description": "Vous avez un code coupon ? Utilisez-le ici.",
+      "placeholder": "CODE COUPON",
+      "redeem": "Utiliser",
+      "success": "Coupon utilisé avec succès !",
+      "error": "Code coupon invalide"
+    }
+  },
+  "admin": {
+    "title": "Portail Admin",
+    "tabs": {
+      "stats": "Statistiques",
+      "users": "Utilisateurs",
+      "members": "Membres",
+      "subscriptions": "Abonnements",
+      "vouchers": "Coupons"
+    },
+    "users": {
+      "title": "Gestion des Utilisateurs",
+      "create": "Créer un Utilisateur",
+      "createTitle": "Créer un Nouvel Utilisateur",
+      "email": "Email",
+      "password": "Mot de passe",
+      "fullName": "Nom Complet",
+      "plan": "Forfait",
+      "name": "Nom",
+      "status": "Statut",
+      "createdAt": "Créé le",
+      "search": "Rechercher des utilisateurs...",
+      "noUsers": "Aucun utilisateur trouvé",
+      "mustChangePassword": "L'utilisateur doit changer le mot de passe à la première connexion",
+      "mustChange": "Changer le mot de passe",
+      "active": "Actif",
+      "requiredFields": "Email et mot de passe requis",
+      "passwordTooShort": "Le mot de passe doit avoir au moins 6 caractères",
+      "createSuccess": "Utilisateur créé avec succès",
+      "createError": "Erreur lors de la création"
+    },
+    "vouchers": {
+      "title": "Gestion des Coupons",
+      "create": "Créer un Coupon",
+      "code": "Code",
+      "type": "Type",
+      "value": "Valeur",
+      "uses": "Utilisations",
+      "validFrom": "Valide à partir de",
+      "validUntil": "Valide jusqu'à",
+      "status": "Statut",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "expired": "Expiré",
+      "noVouchers": "Aucun coupon",
+      "percentage": "Pourcentage",
+      "fixed": "Montant fixe",
+      "free_trial": "Essai gratuit",
+      "unlimited": "Illimité",
+      "createSuccess": "Coupon créé avec succès",
+      "createError": "Erreur lors de la création",
+      "deleteSuccess": "Coupon supprimé",
+      "deleteError": "Erreur lors de la suppression"
+    }
   }
 }

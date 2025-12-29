@@ -597,6 +597,68 @@
       "aiFeatures": "جميع ميزات AI",
       "prioritySupport": "دعم أولوية"
     },
-    "subscribe": "ترقية الآن"
+    "subscribe": "ترقية الآن",
+    "voucher": {
+      "title": "استخدام قسيمة",
+      "description": "لديك كود قسيمة؟ استخدمه هنا.",
+      "placeholder": "كود القسيمة",
+      "redeem": "استخدام",
+      "success": "تم استخدام القسيمة بنجاح!",
+      "error": "كود قسيمة غير صالح"
+    }
+  },
+  "admin": {
+    "title": "بوابة المدير",
+    "tabs": {
+      "stats": "الإحصائيات",
+      "users": "المستخدمون",
+      "members": "الأعضاء",
+      "subscriptions": "الاشتراكات",
+      "vouchers": "القسائم"
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "create": "إنشاء مستخدم",
+      "createTitle": "إنشاء مستخدم جديد",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "fullName": "الاسم الكامل",
+      "plan": "الخطة",
+      "name": "الاسم",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء",
+      "search": "البحث عن مستخدمين...",
+      "noUsers": "لم يتم العثور على مستخدمين",
+      "mustChangePassword": "يجب على المستخدم تغيير كلمة المرور عند أول تسجيل دخول",
+      "mustChange": "تغيير كلمة المرور",
+      "active": "نشط",
+      "requiredFields": "البريد الإلكتروني وكلمة المرور مطلوبان",
+      "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+      "createSuccess": "تم إنشاء المستخدم بنجاح",
+      "createError": "خطأ في الإنشاء"
+    },
+    "vouchers": {
+      "title": "إدارة القسائم",
+      "create": "إنشاء قسيمة",
+      "code": "الكود",
+      "type": "النوع",
+      "value": "القيمة",
+      "uses": "الاستخدامات",
+      "validFrom": "صالح من",
+      "validUntil": "صالح حتى",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "expired": "منتهي الصلاحية",
+      "noVouchers": "لا توجد قسائم",
+      "percentage": "نسبة مئوية",
+      "fixed": "مبلغ ثابت",
+      "free_trial": "فترة تجريبية مجانية",
+      "unlimited": "غير محدود",
+      "createSuccess": "تم إنشاء القسيمة بنجاح",
+      "createError": "خطأ في الإنشاء",
+      "deleteSuccess": "تم حذف القسيمة",
+      "deleteError": "خطأ في الحذف"
+    }
   }
 }

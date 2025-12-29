@@ -597,6 +597,68 @@
       "aiFeatures": "Wszystkie funkcje AI",
       "prioritySupport": "Priorytetowe wsparcie"
     },
-    "subscribe": "Ulepsz Teraz"
+    "subscribe": "Ulepsz Teraz",
+    "voucher": {
+      "title": "Zrealizuj Voucher",
+      "description": "Masz kod vouchera? Zrealizuj go tutaj.",
+      "placeholder": "KOD VOUCHERA",
+      "redeem": "Zrealizuj",
+      "success": "Voucher zrealizowany pomyślnie!",
+      "error": "Nieprawidłowy kod vouchera"
+    }
+  },
+  "admin": {
+    "title": "Portal Admina",
+    "tabs": {
+      "stats": "Statystyki",
+      "users": "Użytkownicy",
+      "members": "Członkowie",
+      "subscriptions": "Subskrypcje",
+      "vouchers": "Vouchery"
+    },
+    "users": {
+      "title": "Zarządzanie Użytkownikami",
+      "create": "Utwórz Użytkownika",
+      "createTitle": "Utwórz Nowego Użytkownika",
+      "email": "Email",
+      "password": "Hasło",
+      "fullName": "Imię i Nazwisko",
+      "plan": "Plan",
+      "name": "Imię",
+      "status": "Status",
+      "createdAt": "Utworzono",
+      "search": "Szukaj użytkowników...",
+      "noUsers": "Nie znaleziono użytkowników",
+      "mustChangePassword": "Użytkownik musi zmienić hasło przy pierwszym logowaniu",
+      "mustChange": "Zmień hasło",
+      "active": "Aktywny",
+      "requiredFields": "Email i hasło są wymagane",
+      "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków",
+      "createSuccess": "Użytkownik utworzony pomyślnie",
+      "createError": "Błąd podczas tworzenia"
+    },
+    "vouchers": {
+      "title": "Zarządzanie Voucherami",
+      "create": "Utwórz Voucher",
+      "code": "Kod",
+      "type": "Typ",
+      "value": "Wartość",
+      "uses": "Użycia",
+      "validFrom": "Ważny od",
+      "validUntil": "Ważny do",
+      "status": "Status",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "expired": "Wygasły",
+      "noVouchers": "Brak voucherów",
+      "percentage": "Procent",
+      "fixed": "Stała kwota",
+      "free_trial": "Bezpłatny okres próbny",
+      "unlimited": "Nieograniczone",
+      "createSuccess": "Voucher utworzony pomyślnie",
+      "createError": "Błąd podczas tworzenia",
+      "deleteSuccess": "Voucher usunięty",
+      "deleteError": "Błąd podczas usuwania"
+    }
   }
 }

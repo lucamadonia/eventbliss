@@ -597,6 +597,68 @@
       "aiFeatures": "Tüm AI özellikleri",
       "prioritySupport": "Öncelikli destek"
     },
-    "subscribe": "Şimdi Yükselt"
+    "subscribe": "Şimdi Yükselt",
+    "voucher": {
+      "title": "Kupon Kullan",
+      "description": "Kupon kodunuz mu var? Burada kullanın.",
+      "placeholder": "KUPON KODU",
+      "redeem": "Kullan",
+      "success": "Kupon başarıyla kullanıldı!",
+      "error": "Geçersiz kupon kodu"
+    }
+  },
+  "admin": {
+    "title": "Admin Portalı",
+    "tabs": {
+      "stats": "İstatistikler",
+      "users": "Kullanıcılar",
+      "members": "Üyeler",
+      "subscriptions": "Abonelikler",
+      "vouchers": "Kuponlar"
+    },
+    "users": {
+      "title": "Kullanıcı Yönetimi",
+      "create": "Kullanıcı Oluştur",
+      "createTitle": "Yeni Kullanıcı Oluştur",
+      "email": "E-posta",
+      "password": "Şifre",
+      "fullName": "Tam İsim",
+      "plan": "Plan",
+      "name": "İsim",
+      "status": "Durum",
+      "createdAt": "Oluşturulma",
+      "search": "Kullanıcı ara...",
+      "noUsers": "Kullanıcı bulunamadı",
+      "mustChangePassword": "Kullanıcı ilk girişte şifre değiştirmeli",
+      "mustChange": "Şifre değiştir",
+      "active": "Aktif",
+      "requiredFields": "E-posta ve şifre gerekli",
+      "passwordTooShort": "Şifre en az 6 karakter olmalı",
+      "createSuccess": "Kullanıcı başarıyla oluşturuldu",
+      "createError": "Oluşturma hatası"
+    },
+    "vouchers": {
+      "title": "Kupon Yönetimi",
+      "create": "Kupon Oluştur",
+      "code": "Kod",
+      "type": "Tür",
+      "value": "Değer",
+      "uses": "Kullanımlar",
+      "validFrom": "Başlangıç",
+      "validUntil": "Bitiş",
+      "status": "Durum",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "expired": "Süresi Dolmuş",
+      "noVouchers": "Kupon yok",
+      "percentage": "Yüzde",
+      "fixed": "Sabit tutar",
+      "free_trial": "Ücretsiz deneme",
+      "unlimited": "Sınırsız",
+      "createSuccess": "Kupon başarıyla oluşturuldu",
+      "createError": "Oluşturma hatası",
+      "deleteSuccess": "Kupon silindi",
+      "deleteError": "Silme hatası"
+    }
   }
 }

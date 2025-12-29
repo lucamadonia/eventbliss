@@ -597,6 +597,68 @@
       "aiFeatures": "Todas as funcionalidades IA",
       "prioritySupport": "Suporte prioritário"
     },
-    "subscribe": "Atualizar Agora"
+    "subscribe": "Atualizar Agora",
+    "voucher": {
+      "title": "Resgatar Voucher",
+      "description": "Tens um código de voucher? Resgata-o aqui.",
+      "placeholder": "CÓDIGO DO VOUCHER",
+      "redeem": "Resgatar",
+      "success": "Voucher resgatado com sucesso!",
+      "error": "Código de voucher inválido"
+    }
+  },
+  "admin": {
+    "title": "Portal de Admin",
+    "tabs": {
+      "stats": "Estatísticas",
+      "users": "Utilizadores",
+      "members": "Membros",
+      "subscriptions": "Subscrições",
+      "vouchers": "Vouchers"
+    },
+    "users": {
+      "title": "Gestão de Utilizadores",
+      "create": "Criar Utilizador",
+      "createTitle": "Criar Novo Utilizador",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "fullName": "Nome Completo",
+      "plan": "Plano",
+      "name": "Nome",
+      "status": "Estado",
+      "createdAt": "Criado em",
+      "search": "Pesquisar utilizadores...",
+      "noUsers": "Nenhum utilizador encontrado",
+      "mustChangePassword": "Utilizador deve alterar palavra-passe no primeiro login",
+      "mustChange": "Alterar palavra-passe",
+      "active": "Ativo",
+      "requiredFields": "Email e palavra-passe são obrigatórios",
+      "passwordTooShort": "A palavra-passe deve ter pelo menos 6 caracteres",
+      "createSuccess": "Utilizador criado com sucesso",
+      "createError": "Erro ao criar utilizador"
+    },
+    "vouchers": {
+      "title": "Gestão de Vouchers",
+      "create": "Criar Voucher",
+      "code": "Código",
+      "type": "Tipo",
+      "value": "Valor",
+      "uses": "Utilizações",
+      "validFrom": "Válido desde",
+      "validUntil": "Válido até",
+      "status": "Estado",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "expired": "Expirado",
+      "noVouchers": "Sem vouchers",
+      "percentage": "Percentagem",
+      "fixed": "Valor fixo",
+      "free_trial": "Teste gratuito",
+      "unlimited": "Ilimitado",
+      "createSuccess": "Voucher criado com sucesso",
+      "createError": "Erro ao criar voucher",
+      "deleteSuccess": "Voucher eliminado",
+      "deleteError": "Erro ao eliminar"
+    }
   }
 }

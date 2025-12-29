@@ -610,6 +610,68 @@
       "aiFeatures": "Tutte le funzionalità IA",
       "prioritySupport": "Supporto prioritario"
     },
-    "subscribe": "Passa a Premium"
+    "subscribe": "Passa a Premium",
+    "voucher": {
+      "title": "Riscatta Voucher",
+      "description": "Hai un codice voucher? Riscattalo qui.",
+      "placeholder": "CODICE VOUCHER",
+      "redeem": "Riscatta",
+      "success": "Voucher riscattato con successo!",
+      "error": "Codice voucher non valido"
+    }
+  },
+  "admin": {
+    "title": "Portale Admin",
+    "tabs": {
+      "stats": "Statistiche",
+      "users": "Utenti",
+      "members": "Membri",
+      "subscriptions": "Abbonamenti",
+      "vouchers": "Voucher"
+    },
+    "users": {
+      "title": "Gestione Utenti",
+      "create": "Crea Utente",
+      "createTitle": "Crea Nuovo Utente",
+      "email": "Email",
+      "password": "Password",
+      "fullName": "Nome Completo",
+      "plan": "Piano",
+      "name": "Nome",
+      "status": "Stato",
+      "createdAt": "Creato il",
+      "search": "Cerca utenti...",
+      "noUsers": "Nessun utente trovato",
+      "mustChangePassword": "L'utente deve cambiare la password al primo accesso",
+      "mustChange": "Cambia password",
+      "active": "Attivo",
+      "requiredFields": "Email e password obbligatori",
+      "passwordTooShort": "La password deve avere almeno 6 caratteri",
+      "createSuccess": "Utente creato con successo",
+      "createError": "Errore nella creazione"
+    },
+    "vouchers": {
+      "title": "Gestione Voucher",
+      "create": "Crea Voucher",
+      "code": "Codice",
+      "type": "Tipo",
+      "value": "Valore",
+      "uses": "Utilizzi",
+      "validFrom": "Valido da",
+      "validUntil": "Valido fino a",
+      "status": "Stato",
+      "active": "Attivo",
+      "inactive": "Inattivo",
+      "expired": "Scaduto",
+      "noVouchers": "Nessun voucher",
+      "percentage": "Percentuale",
+      "fixed": "Importo fisso",
+      "free_trial": "Prova gratuita",
+      "unlimited": "Illimitato",
+      "createSuccess": "Voucher creato con successo",
+      "createError": "Errore nella creazione",
+      "deleteSuccess": "Voucher eliminato",
+      "deleteError": "Errore nell'eliminazione"
+    }
   }
 }
