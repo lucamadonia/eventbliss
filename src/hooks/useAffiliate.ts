@@ -269,7 +269,7 @@ export function useUpdatePayoutStatus() {
             await supabase
               .from("affiliates")
               .update({ 
-                pending_balance: Math.max(0, parseFloat(affiliate.pending_balance) - parseFloat(payout.amount))
+                pending_balance: Math.max(0, Number(affiliate.pending_balance) - Number(payout.amount))
               })
               .eq("id", payout.affiliate_id);
           }

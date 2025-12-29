@@ -93,13 +93,13 @@ export function PayoutsTab() {
     completed: payouts?.filter((p) => p.status === "completed").length || 0,
     totalPending: payouts
       ?.filter((p) => p.status === "pending")
-      .reduce((sum, p) => sum + parseFloat(p.amount), 0) || 0,
+      .reduce((sum, p) => sum + Number(p.amount), 0) || 0,
     totalProcessing: payouts
       ?.filter((p) => p.status === "processing")
-      .reduce((sum, p) => sum + parseFloat(p.amount), 0) || 0,
+      .reduce((sum, p) => sum + Number(p.amount), 0) || 0,
     totalCompleted: payouts
       ?.filter((p) => p.status === "completed")
-      .reduce((sum, p) => sum + parseFloat(p.amount), 0) || 0,
+      .reduce((sum, p) => sum + Number(p.amount), 0) || 0,
   };
 
   const formatCurrency = (amount: number) => {
@@ -314,7 +314,7 @@ export function PayoutsTab() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-bold">
-                        {formatCurrency(parseFloat(payout.amount))}
+                        {formatCurrency(Number(payout.amount))}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
