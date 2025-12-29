@@ -129,10 +129,10 @@ export function AffiliatesTab() {
       phone: formData.phone || undefined,
       website: formData.website || undefined,
       tax_id: formData.tax_id || undefined,
-      commission_type: formData.commission_type,
+      commission_type: formData.commission_type as "percentage" | "fixed",
       commission_rate: formData.commission_rate,
-      status: formData.status,
-      tier: formData.tier,
+      status: formData.status as "pending" | "active" | "suspended" | "terminated",
+      tier: formData.tier as "bronze" | "silver" | "gold" | "platinum",
       notes: formData.notes || undefined,
     });
     setIsCreateOpen(false);
@@ -154,7 +154,7 @@ export function AffiliatesTab() {
     await assignVoucher.mutateAsync({
       affiliate_id: selectedAffiliate.id,
       voucher_id: assignData.voucher_id,
-      custom_commission_type: assignData.custom_commission_type || undefined,
+      custom_commission_type: (assignData.custom_commission_type || undefined) as "percentage" | "fixed" | undefined,
       custom_commission_rate: assignData.custom_commission_rate || undefined,
     });
     setIsAssignOpen(false);
@@ -258,7 +258,7 @@ export function AffiliatesTab() {
                 <p className="text-sm text-muted-foreground">{t("affiliate.admin.totalEarnings", "Gesamtprovisionen")}</p>
                 <p className="text-2xl font-bold">
                   {formatCurrency(
-                    affiliates?.reduce((sum, a) => sum + parseFloat(a.total_earnings || 0), 0) || 0
+                    affiliates?.reduce((sum, a) => sum + Number(a.total_earnings || 0), 0) || 0
                   )}
                 </p>
               </div>
@@ -275,7 +275,7 @@ export function AffiliatesTab() {
                 <p className="text-sm text-muted-foreground">{t("affiliate.admin.pendingPayouts", "Ausstehende Auszahlungen")}</p>
                 <p className="text-2xl font-bold">
                   {formatCurrency(
-                    affiliates?.reduce((sum, a) => sum + parseFloat(a.pending_balance || 0), 0) || 0
+                    affiliates?.reduce((sum, a) => sum + Number(a.pending_balance || 0), 0) || 0
                   )}
                 </p>
               </div>
@@ -357,10 +357,10 @@ export function AffiliatesTab() {
                     <TableCell>
                       {affiliate.commission_type === "percentage"
                         ? `${affiliate.commission_rate}%`
-                        : formatCurrency(affiliate.commission_rate)}
+                        : formatCurrency(Number(affiliate.commission_rate))}
                     </TableCell>
-                    <TableCell>{formatCurrency(parseFloat(affiliate.total_earnings || 0))}</TableCell>
-                    <TableCell>{formatCurrency(parseFloat(affiliate.pending_balance || 0))}</TableCell>
+                    <TableCell>{formatCurrency(Number(affiliate.total_earnings || 0))}</TableCell>
+                    <TableCell>{formatCurrency(Number(affiliate.pending_balance || 0))}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`${statusColors[affiliate.status]} text-white`}>
                         {t(`affiliate.status.${affiliate.status}`, affiliate.status)}

@@ -4,13 +4,16 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MembersTab } from "@/components/admin/MembersTab";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
 import { VouchersTab } from "@/components/admin/VouchersTab";
 import { StatsOverview } from "@/components/admin/StatsOverview";
 import { UsersTab } from "@/components/admin/UsersTab";
+import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
+import { CommissionsTab } from "@/components/admin/CommissionsTab";
+import { PayoutsTab } from "@/components/admin/PayoutsTab";
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -57,7 +60,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
@@ -77,6 +80,18 @@ const Admin = () => {
             <TabsTrigger value="vouchers" className="gap-2">
               <Ticket className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.vouchers", "Voucher")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="affiliates" className="gap-2">
+              <Handshake className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.affiliates", "Partner")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="commissions" className="gap-2">
+              <Coins className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.commissions", "Provisionen")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="payouts" className="gap-2">
+              <Banknote className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.payouts", "Auszahlungen")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -98,6 +113,18 @@ const Admin = () => {
 
           <TabsContent value="vouchers">
             <VouchersTab />
+          </TabsContent>
+
+          <TabsContent value="affiliates">
+            <AffiliatesTab />
+          </TabsContent>
+
+          <TabsContent value="commissions">
+            <CommissionsTab />
+          </TabsContent>
+
+          <TabsContent value="payouts">
+            <PayoutsTab />
           </TabsContent>
         </Tabs>
       </main>

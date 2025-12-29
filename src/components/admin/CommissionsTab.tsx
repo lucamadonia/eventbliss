@@ -77,13 +77,13 @@ export function CommissionsTab() {
     paid: commissions?.filter((c) => c.status === "paid").length || 0,
     totalPending: commissions
       ?.filter((c) => c.status === "pending")
-      .reduce((sum, c) => sum + parseFloat(c.commission_amount), 0) || 0,
+      .reduce((sum, c) => sum + Number(c.commission_amount), 0) || 0,
     totalApproved: commissions
       ?.filter((c) => c.status === "approved")
-      .reduce((sum, c) => sum + parseFloat(c.commission_amount), 0) || 0,
+      .reduce((sum, c) => sum + Number(c.commission_amount), 0) || 0,
     totalPaid: commissions
       ?.filter((c) => c.status === "paid")
-      .reduce((sum, c) => sum + parseFloat(c.commission_amount), 0) || 0,
+      .reduce((sum, c) => sum + Number(c.commission_amount), 0) || 0,
   };
 
   const formatCurrency = (amount: number) => {
@@ -93,7 +93,7 @@ export function CommissionsTab() {
     }).format(amount);
   };
 
-  const handleStatusChange = (id: string, newStatus: string) => {
+  const handleStatusChange = (id: string, newStatus: "pending" | "approved" | "paid" | "cancelled") => {
     updateStatus.mutate({ id, status: newStatus });
   };
 
@@ -298,9 +298,9 @@ export function CommissionsTab() {
                         <Badge variant="outline">{commission.voucher?.code || "-"}</Badge>
                       </TableCell>
                       <TableCell>{commission.customer_email || "-"}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(parseFloat(commission.order_amount))}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(Number(commission.order_amount))}</TableCell>
                       <TableCell className="text-right font-medium">
-                        {formatCurrency(parseFloat(commission.commission_amount))}
+                        {formatCurrency(Number(commission.commission_amount))}
                         <span className="text-xs text-muted-foreground ml-1">
                           ({commission.commission_type === "percentage" ? `${commission.commission_rate}%` : "fix"})
                         </span>
