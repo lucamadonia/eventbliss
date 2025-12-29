@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -23,38 +24,39 @@ type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" 
 interface AIRequest {
   type: RequestType;
   icon: React.ElementType;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
 }
 
 const AI_REQUESTS: AIRequest[] = [
   {
     type: "trip_ideas",
     icon: MapPin,
-    label: "Trip-Ideen",
-    description: "Passende Reiseziele vorschlagen",
+    labelKey: "dashboard.ai.tripIdeas",
+    descriptionKey: "dashboard.ai.tripIdeasDesc",
   },
   {
     type: "activities",
     icon: Lightbulb,
-    label: "Aktivitäten",
-    description: "Aktivitäts-Empfehlungen",
+    labelKey: "dashboard.ai.activities",
+    descriptionKey: "dashboard.ai.activitiesDesc",
   },
   {
     type: "day_plan",
     icon: Calendar,
-    label: "Tagesplan",
-    description: "Kompletten Ablauf erstellen",
+    labelKey: "dashboard.ai.dayPlan",
+    descriptionKey: "dashboard.ai.dayPlanDesc",
   },
   {
     type: "budget_estimate",
     icon: DollarSign,
-    label: "Budget-Schätzung",
-    description: "Kosten kalkulieren",
+    labelKey: "dashboard.ai.budgetEstimate",
+    descriptionKey: "dashboard.ai.budgetEstimateDesc",
   },
 ];
 
 export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [currentType, setCurrentType] = useState<RequestType | null>(null);
@@ -126,7 +128,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
       if (!result.success) {
         if (res.status === 429) {
-          toast.error("Zu viele Anfragen. Bitte warte einen Moment.");
+          toast.error(t('dashboard.ai.tooManyRequests'));
         } else {
           throw new Error(result.error || "AI request failed");
         }
@@ -136,7 +138,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       setResponse(result.response);
     } catch (error) {
       console.error("AI error:", error);
-      toast.error("KI-Anfrage fehlgeschlagen");
+      toast.error(t('dashboard.ai.requestFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -157,20 +159,18 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             <Sparkles className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="font-display text-2xl font-bold">KI-Assistent</h3>
+            <h3 className="font-display text-2xl font-bold">{t('dashboard.ai.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              Powered by AI • Personalisierte Empfehlungen
+              {t('dashboard.ai.subtitle')}
             </p>
           </div>
         </div>
         
         <p className="text-muted-foreground">
-          Basierend auf den Präferenzen von{" "}
-          <span className="text-foreground font-medium">
-            {(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)} Teilnehmern
-          </span>{" "}
-          für{" "}
-          <span className="text-primary font-medium">{event.honoree_name}</span>
+          {t('dashboard.ai.basedOn', {
+            count: (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0),
+            name: event.honoree_name
+          })}
         </p>
       </GlassCard>
 
@@ -199,8 +199,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
                   )}
                 </div>
                 <div>
-                  <p className="font-bold text-sm">{req.label}</p>
-                  <p className="text-xs text-muted-foreground">{req.description}</p>
+                  <p className="font-bold text-sm">{t(req.labelKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t(req.descriptionKey)}</p>
                 </div>
               </div>
             </GlassCard>
@@ -214,7 +214,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
           <Textarea
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
-            placeholder="Frag die KI was auch immer... z.B. 'Was sind gute Restaurants in Barcelona für 10 Leute?'"
+            placeholder={t('dashboard.ai.chatPlaceholder')}
             className="resize-none bg-background/50"
             rows={2}
           />
@@ -223,7 +223,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             disabled={isLoading || !chatMessage.trim()}
             icon={isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
           >
-            Fragen
+            {t('dashboard.ai.ask')}
           </GradientButton>
         </div>
       </GlassCard>
@@ -234,7 +234,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              <h4 className="font-bold">KI-Antwort</h4>
+              <h4 className="font-bold">{t('dashboard.ai.response')}</h4>
             </div>
             <Button
               variant="ghost"
@@ -243,7 +243,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
               disabled={isLoading}
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-              Neu generieren
+              {t('dashboard.ai.regenerate')}
             </Button>
           </div>
           
@@ -261,10 +261,9 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
           <div className="flex items-start gap-3">
             <Sparkles className="w-5 h-5 text-warning mt-0.5" />
             <div>
-              <h4 className="font-bold text-warning">Noch keine Daten</h4>
+              <h4 className="font-bold text-warning">{t('dashboard.ai.noData')}</h4>
               <p className="text-sm text-muted-foreground">
-                Die KI-Empfehlungen werden besser, sobald mehr Teilnehmer abgestimmt haben.
-                Aktuell werden Standard-Werte verwendet.
+                {t('dashboard.ai.noDataDesc')}
               </p>
             </div>
           </div>

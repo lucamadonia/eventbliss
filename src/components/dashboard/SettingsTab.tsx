@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -23,6 +24,7 @@ interface SettingsTabProps {
 }
 
 export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [formLocked, setFormLocked] = useState(event.settings?.form_locked || false);
   const [lockedBlock, setLockedBlock] = useState<string>(event.settings?.locked_block || "");
@@ -58,11 +60,11 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         throw new Error(result.error || "Failed to save settings");
       }
 
-      toast.success("Einstellungen gespeichert!");
+      toast.success(t('notifications.settingsSaved'));
       onUpdate();
     } catch (error) {
       console.error("Error saving settings:", error);
-      toast.error("Fehler beim Speichern");
+      toast.error(t('notifications.errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -96,11 +98,11 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         throw new Error(result.error || "Failed to lock block");
       }
 
-      toast.success(`Termin Block ${block} wurde festgelegt! 🎉`);
+      toast.success(t('dashboard.settings.dateLocked', { block }));
       onUpdate();
     } catch (error) {
       console.error("Error locking block:", error);
-      toast.error("Fehler beim Festlegen");
+      toast.error(t('notifications.errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +114,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
       <GlassCard className="p-6">
         <h4 className="font-bold mb-4 flex items-center gap-2">
           <Settings className="w-5 h-5" />
-          Formular-Status
+          {t('dashboard.settings.formStatus.title')}
         </h4>
         
         <div className="space-y-4">
@@ -124,9 +126,9 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
                 <Unlock className="w-5 h-5 text-green-400" />
               )}
               <div>
-                <Label className="font-medium">Formular sperren</Label>
+                <Label className="font-medium">{t('dashboard.settings.formStatus.lockForm')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Neue Antworten werden blockiert
+                  {t('dashboard.settings.formStatus.lockFormDesc')}
                 </p>
               </div>
             </div>
@@ -140,7 +142,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
           <div className="p-4 rounded-lg bg-background/30">
             <Label className="font-medium flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4" />
-              Deadline
+              {t('dashboard.settings.deadline')}
             </Label>
             <input
               type="datetime-local"
@@ -149,7 +151,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
               className="w-full p-2 rounded-lg bg-background border border-border text-foreground"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Nach der Deadline können keine Änderungen mehr vorgenommen werden.
+              {t('dashboard.settings.deadlineDesc')}
             </p>
           </div>
         </div>
@@ -159,7 +161,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
       <GlassCard className="p-6 border-primary/30">
         <h4 className="font-bold mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5" />
-          Termin festlegen
+          {t('dashboard.settings.setDate')}
         </h4>
         
         {lockedBlock ? (
@@ -167,7 +169,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
             <div className="flex items-center gap-2 mb-2">
               <Lock className="w-5 h-5 text-green-400" />
               <span className="font-bold text-green-400">
-                Block {lockedBlock} ist festgelegt
+                {t('dashboard.settings.blockLocked', { block: lockedBlock })}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -182,22 +184,22 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
                 setFormLocked(false);
               }}
             >
-              Termin ändern
+              {t('dashboard.settings.changeDate')}
             </Button>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground mb-4">
-              Wähle den finalen Termin. Das Formular wird automatisch gesperrt.
+              {t('dashboard.settings.selectDateDesc')}
             </p>
             <Select onValueChange={handleLockBlock} disabled={isLoading}>
               <SelectTrigger>
-                <SelectValue placeholder="Terminblock auswählen..." />
+                <SelectValue placeholder={t('dashboard.settings.selectBlock')} />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(dateBlocks).map(([key, label]) => (
                   <SelectItem key={key} value={key}>
-                    Block {key}: {label}
+                    {t('dashboard.schedule.block')} {key}: {label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -221,7 +223,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         icon={isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
         className="w-full"
       >
-        {isLoading ? "Speichern..." : "Einstellungen speichern"}
+        {isLoading ? t('common.saving') : t('dashboard.settings.saveSettings')}
       </GradientButton>
     </div>
   );

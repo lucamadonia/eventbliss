@@ -1,7 +1,7 @@
 import { Users, TrendingUp, Clock, Calendar, Wallet, MessageSquare, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { GradientButton } from "@/components/ui/GradientButton";
 import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface OverviewTabProps {
@@ -14,6 +14,28 @@ interface OverviewTabProps {
 
 export const OverviewTab = ({ event, participants, responseCount, slug, onTabChange }: OverviewTabProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const getStatusLabel = (status: string) => {
+    const statusMap: Record<string, string> = {
+      draft: t('dashboard.overview.statuses.draft'),
+      planning: t('dashboard.overview.statuses.planning'),
+      active: t('dashboard.overview.statuses.active'),
+      completed: t('dashboard.overview.statuses.completed'),
+      cancelled: t('dashboard.overview.statuses.cancelled'),
+    };
+    return statusMap[status] || status;
+  };
+
+  const getParticipantStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      confirmed: t('dashboard.overview.participantStatus.confirmed'),
+      declined: t('dashboard.overview.participantStatus.declined'),
+      maybe: t('dashboard.overview.participantStatus.maybe'),
+      invited: t('dashboard.overview.participantStatus.invited'),
+    };
+    return statusMap[status] || status;
+  };
 
   return (
     <div className="space-y-6">
@@ -26,7 +48,7 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
             </div>
             <div>
               <p className="text-2xl font-bold">{participants.length}</p>
-              <p className="text-sm text-muted-foreground">Teilnehmer</p>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.participants')}</p>
             </div>
           </div>
         </GlassCard>
@@ -38,7 +60,7 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
             </div>
             <div>
               <p className="text-2xl font-bold">{responseCount}</p>
-              <p className="text-sm text-muted-foreground">Antworten</p>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.responses')}</p>
             </div>
           </div>
         </GlassCard>
@@ -52,7 +74,7 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <p className="text-2xl font-bold">
                 {Math.round((responseCount / Math.max(participants.length, 1)) * 100)}%
               </p>
-              <p className="text-sm text-muted-foreground">Rücklauf</p>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.responseRate')}</p>
             </div>
           </div>
         </GlassCard>
@@ -63,8 +85,8 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <Calendar className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold capitalize">{event.status}</p>
-              <p className="text-sm text-muted-foreground">Status</p>
+              <p className="text-2xl font-bold capitalize">{getStatusLabel(event.status)}</p>
+              <p className="text-sm text-muted-foreground">{t('common.status')}</p>
             </div>
           </div>
         </GlassCard>
@@ -78,9 +100,9 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <Clock className="w-5 h-5 text-warning" />
             </div>
             <div>
-              <h4 className="font-semibold text-warning">Ausstehende Antworten</h4>
+              <h4 className="font-semibold text-warning">{t('dashboard.overview.pendingResponses')}</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                {participants.length - responseCount} Teilnehmer haben noch nicht geantwortet.
+                {t('dashboard.overview.pendingResponsesDesc', { count: participants.length - responseCount })}
               </p>
             </div>
           </div>
@@ -89,7 +111,7 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
 
       {/* Participants List */}
       <GlassCard className="p-6">
-        <h3 className="font-display text-xl font-bold mb-4">Teilnehmer</h3>
+        <h3 className="font-display text-xl font-bold mb-4">{t('dashboard.overview.participants')}</h3>
         <div className="space-y-3">
           {participants.map((p) => (
             <div
@@ -103,7 +125,7 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
                 <div>
                   <p className="font-medium">{p.name}</p>
                   <p className="text-sm text-muted-foreground capitalize">
-                    {p.role === "organizer" ? "Organisator" : "Gast"}
+                    {p.role === "organizer" ? t('dashboard.team.roles.organizer') : t('dashboard.team.roles.guest')}
                   </p>
                 </div>
               </div>
@@ -118,15 +140,13 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
                     : "bg-muted/50 text-muted-foreground"
                 }`}
               >
-                {p.status === "confirmed" ? "Dabei" : 
-                 p.status === "declined" ? "Abgesagt" : 
-                 p.status === "maybe" ? "Vielleicht" : "Eingeladen"}
+                {getParticipantStatus(p.status)}
               </span>
             </div>
           ))}
           {participants.length === 0 && (
             <p className="text-muted-foreground text-center py-4">
-              Noch keine Teilnehmer hinzugefügt.
+              {t('dashboard.overview.noParticipants')}
             </p>
           )}
         </div>
@@ -143,8 +163,8 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <Wallet className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h4 className="font-bold">Kosten teilen</h4>
-              <p className="text-sm text-muted-foreground">Ausgaben tracken</p>
+              <h4 className="font-bold">{t('dashboard.overview.quickActions.expenses')}</h4>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.quickActions.expensesDesc')}</p>
             </div>
           </div>
         </GlassCard>
@@ -158,8 +178,8 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <MessageSquare className="w-6 h-6 text-secondary" />
             </div>
             <div>
-              <h4 className="font-bold">Nachrichten</h4>
-              <p className="text-sm text-muted-foreground">WhatsApp Templates</p>
+              <h4 className="font-bold">{t('dashboard.overview.quickActions.messages')}</h4>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.quickActions.messagesDesc')}</p>
             </div>
           </div>
         </GlassCard>
@@ -173,8 +193,8 @@ export const OverviewTab = ({ event, participants, responseCount, slug, onTabCha
               <Sparkles className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h4 className="font-bold">KI-Assistent</h4>
-              <p className="text-sm text-muted-foreground">Trip-Ideen & Tipps</p>
+              <h4 className="font-bold">{t('dashboard.overview.quickActions.ai')}</h4>
+              <p className="text-sm text-muted-foreground">{t('dashboard.overview.quickActions.aiDesc')}</p>
             </div>
           </div>
         </GlassCard>

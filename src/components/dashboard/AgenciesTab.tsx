@@ -14,6 +14,7 @@ import {
   Map,
   List,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ import { cn } from "@/lib/utils";
 import { AgenciesMapView } from "./AgenciesMapView";
 
 export const AgenciesTab = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
@@ -124,10 +126,10 @@ export const AgenciesTab = () => {
         <div>
           <h2 className="font-display text-2xl font-bold flex items-center gap-2">
             <Building2 className="w-6 h-6 text-primary" />
-            JGA Agenturen Verzeichnis
+            {t('agencies.title')}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {stats.total} Agenturen in {stats.countries} Ländern und {stats.cities} Städten
+            {t('agencies.stats', { total: stats.total, countries: stats.countries, cities: stats.cities })}
           </p>
         </div>
 
@@ -156,7 +158,7 @@ export const AgenciesTab = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Suche nach Agentur, Stadt oder Land..."
+              placeholder={t('agencies.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -180,10 +182,10 @@ export const AgenciesTab = () => {
           }}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
-              <SelectValue placeholder="Land" />
+              <SelectValue placeholder={t('agencies.country')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Alle Länder</SelectItem>
+              <SelectItem value="all">{t('agencies.allCountries')}</SelectItem>
               {Object.entries(COUNTRIES).map(([code, country]) => (
                 <SelectItem key={code} value={code}>
                   {country.emoji} {country.name}
@@ -196,10 +198,10 @@ export const AgenciesTab = () => {
           <Select value={selectedCity} onValueChange={setSelectedCity}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
-              <SelectValue placeholder="Stadt" />
+              <SelectValue placeholder={t('agencies.city')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Alle Städte</SelectItem>
+              <SelectItem value="all">{t('agencies.allCities')}</SelectItem>
               {availableCities.map(city => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
@@ -210,7 +212,7 @@ export const AgenciesTab = () => {
           {(searchQuery || selectedCountry !== "all" || selectedCity !== "all") && (
             <Button variant="ghost" onClick={resetFilters} className="flex-shrink-0">
               <X className="w-4 h-4 mr-1" />
-              Zurücksetzen
+              {t('common.reset')}
             </Button>
           )}
 
@@ -239,7 +241,7 @@ export const AgenciesTab = () => {
         {(searchQuery || selectedCountry !== "all" || selectedCity !== "all") && (
           <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
             <Filter className="w-4 h-4" />
-            <span>{filteredAgencies.length} von {stats.total} Agenturen</span>
+            <span>{t('agencies.filteredOf', { filtered: filteredAgencies.length, total: stats.total })}</span>
           </div>
         )}
       </GlassCard>
@@ -283,7 +285,7 @@ export const AgenciesTab = () => {
                                   {country?.name}
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                  {countryAgencyCount} Agenturen in {Object.keys(cities).length} Städten
+                                  {t('agencies.agenciesInCities', { agencies: countryAgencyCount, cities: Object.keys(cities).length })}
                                 </p>
                               </div>
                             </div>
@@ -353,7 +355,7 @@ export const AgenciesTab = () => {
                                         className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                                       >
                                         <Globe className="w-3 h-3" />
-                                        Website besuchen
+                                        {t('agencies.visitWebsite')}
                                         <ExternalLink className="w-3 h-3" />
                                       </a>
                                     </GlassCard>
@@ -374,13 +376,13 @@ export const AgenciesTab = () => {
               <GlassCard className="p-12 text-center">
                 <Search className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-40" />
                 <h3 className="font-display font-semibold text-lg mb-2">
-                  Keine Agenturen gefunden
+                  {t('agencies.noAgencies')}
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Versuche einen anderen Suchbegriff oder ändere die Filter.
+                  {t('agencies.noAgenciesDesc')}
                 </p>
                 <Button variant="outline" onClick={resetFilters}>
-                  Filter zurücksetzen
+                  {t('agencies.resetFilters')}
                 </Button>
               </GlassCard>
             )}

@@ -1,4 +1,5 @@
 import { Lightbulb, AlertTriangle, MessageCircle, User, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/ui/GlassCard";
 
 interface Response {
@@ -16,11 +17,22 @@ interface IdeasTabProps {
 }
 
 export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
+  const { t } = useTranslation();
+
+  const getAttendanceLabel = (attendance: string) => {
+    const labels: Record<string, string> = {
+      yes: t('dashboard.ideas.attendance.yes'),
+      maybe: t('dashboard.ideas.attendance.maybe'),
+      no: t('dashboard.ideas.attendance.no'),
+    };
+    return labels[attendance] || attendance;
+  };
+
   if (isLoading) {
     return (
       <GlassCard className="p-8 text-center">
         <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-        <p className="text-muted-foreground">Lade Ideen...</p>
+        <p className="text-muted-foreground">{t('dashboard.ideas.loading')}</p>
       </GlassCard>
     );
   }
@@ -35,9 +47,9 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
     return (
       <GlassCard className="p-8 text-center">
         <Lightbulb className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="font-display text-xl font-bold mb-2">Keine Ideen vorhanden</h3>
+        <h3 className="font-display text-xl font-bold mb-2">{t('dashboard.ideas.noIdeas')}</h3>
         <p className="text-muted-foreground">
-          Noch keine Vorschläge oder Einschränkungen eingegangen.
+          {t('dashboard.ideas.noIdeasDesc')}
         </p>
       </GlassCard>
     );
@@ -50,9 +62,9 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
         <GlassCard className="p-6">
           <h4 className="font-bold mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-yellow-400" />
-            Vorschläge & Ideen
+            {t('dashboard.ideas.suggestions')}
             <span className="ml-auto text-sm text-muted-foreground">
-              {suggestions.length} Einträge
+              {t('dashboard.ideas.entries', { count: suggestions.length })}
             </span>
           </h4>
           <div className="space-y-3">
@@ -73,7 +85,7 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {r.attendance === "yes" ? "Dabei" : r.attendance === "maybe" ? "Vielleicht" : "Abgesagt"}
+                    {getAttendanceLabel(r.attendance)}
                   </span>
                 </div>
                 <p className="text-muted-foreground">{r.suggestions}</p>
@@ -88,9 +100,9 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
         <GlassCard className="p-6 border-warning/30">
           <h4 className="font-bold mb-4 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-warning" />
-            Einschränkungen & Allergien
+            {t('dashboard.ideas.restrictions')}
             <span className="ml-auto text-sm text-muted-foreground">
-              {restrictions.length} Einträge
+              {t('dashboard.ideas.entries', { count: restrictions.length })}
             </span>
           </h4>
           <div className="space-y-3">
@@ -115,9 +127,9 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
         <GlassCard className="p-6">
           <h4 className="font-bold mb-4 flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-secondary" />
-            Teilweise Verfügbarkeit
+            {t('dashboard.ideas.partialAvailability')}
             <span className="ml-auto text-sm text-muted-foreground">
-              {partialDays.length} Einträge
+              {t('dashboard.ideas.entries', { count: partialDays.length })}
             </span>
           </h4>
           <div className="space-y-3">
@@ -142,15 +154,15 @@ export const IdeasTab = ({ responses, isLoading }: IdeasTabProps) => {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Lightbulb className="w-4 h-4" />
-            <span>{suggestions.length} Vorschläge</span>
+            <span>{t('dashboard.ideas.suggestionsCount', { count: suggestions.length })}</span>
           </div>
           <div className="flex items-center gap-1">
             <AlertTriangle className="w-4 h-4" />
-            <span>{restrictions.length} Einschränkungen</span>
+            <span>{t('dashboard.ideas.restrictionsCount', { count: restrictions.length })}</span>
           </div>
           <div className="flex items-center gap-1">
             <MessageCircle className="w-4 h-4" />
-            <span>{partialDays.length} Anmerkungen</span>
+            <span>{t('dashboard.ideas.notesCount', { count: partialDays.length })}</span>
           </div>
         </div>
       </GlassCard>

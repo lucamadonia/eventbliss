@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Calendar, Users, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/ui/GlassCard";
 import type { EventData } from "@/hooks/useEvent";
 
@@ -24,6 +25,7 @@ interface BlockScore {
 }
 
 export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
+  const { t } = useTranslation();
   const [blockScores, setBlockScores] = useState<BlockScore[]>([]);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
     return (
       <GlassCard className="p-8 text-center">
         <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-        <p className="text-muted-foreground">Lade Termine...</p>
+        <p className="text-muted-foreground">{t('dashboard.schedule.loading')}</p>
       </GlassCard>
     );
   }
@@ -65,9 +67,9 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
     return (
       <GlassCard className="p-8 text-center">
         <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="font-display text-xl font-bold mb-2">Keine Daten</h3>
+        <h3 className="font-display text-xl font-bold mb-2">{t('dashboard.schedule.noData')}</h3>
         <p className="text-muted-foreground">
-          Noch keine Antworten eingegangen. Sobald Teilnehmer abstimmen, siehst du hier die Termin-Auswertung.
+          {t('dashboard.schedule.noDataDesc')}
         </p>
       </GlassCard>
     );
@@ -85,9 +87,9 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
             <Calendar className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-xl font-bold">Termin-Auswertung</h3>
+            <h3 className="font-display text-xl font-bold">{t('dashboard.schedule.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              {stats.attendance.yes + stats.attendance.maybe} aktive Stimmen
+              {t('dashboard.schedule.activeVotes', { count: stats.attendance.yes + stats.attendance.maybe })}
             </p>
           </div>
         </div>
@@ -96,7 +98,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
           <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30 mb-4">
             <CheckCircle className="w-5 h-5 text-green-400" />
             <span className="font-medium">
-              Termin festgelegt: Block {lockedBlock}
+              {t('dashboard.schedule.dateLocked', { block: lockedBlock })}
             </span>
           </div>
         )}
@@ -106,7 +108,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
       {topBlocks.length > 0 && !lockedBlock && (
         <GlassCard className="p-6 border-primary/30">
           <h4 className="font-bold mb-4 flex items-center gap-2">
-            <span className="text-lg">🏆</span> Top-Empfehlungen
+            <span className="text-lg">🏆</span> {t('dashboard.schedule.topRecommendations')}
           </h4>
           <div className="grid gap-3 md:grid-cols-2">
             {topBlocks.map((block, idx) => (
@@ -119,7 +121,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold">Block {block.block}</span>
+                  <span className="font-bold">{t('dashboard.schedule.block')} {block.block}</span>
                   <span className={`text-2xl font-bold ${idx === 0 ? "" : "text-secondary"}`}>
                     {block.percentage}%
                   </span>
@@ -128,7 +130,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
                   {block.label}
                 </p>
                 <div className={`text-xs mt-2 ${idx === 0 ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
-                  {block.yesCount} Ja • {block.maybeCount} Vielleicht
+                  {block.yesCount} {t('dashboard.schedule.yes')} • {block.maybeCount} {t('dashboard.schedule.maybe')}
                 </div>
               </div>
             ))}
@@ -138,7 +140,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
 
       {/* All Blocks List */}
       <GlassCard className="p-6">
-        <h4 className="font-bold mb-4">Alle Termine</h4>
+        <h4 className="font-bold mb-4">{t('dashboard.schedule.allDates')}</h4>
         <div className="space-y-3">
           {blockScores.map((block, idx) => (
             <div
@@ -152,11 +154,11 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <span className={`font-bold ${idx === 0 && !lockedBlock ? "text-primary" : ""}`}>
-                    Block {block.block}
+                    {t('dashboard.schedule.block')} {block.block}
                   </span>
                   {lockedBlock === block.block && (
                     <span className="px-2 py-0.5 rounded-full text-xs bg-green-500/20 text-green-400">
-                      Festgelegt
+                      {t('dashboard.schedule.locked')}
                     </span>
                   )}
                 </div>
@@ -176,11 +178,11 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
               <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-green-400" />
-                  {block.yesCount} Ja
+                  {block.yesCount} {t('dashboard.schedule.yes')}
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-yellow-400" />
-                  {block.maybeCount} Vielleicht
+                  {block.maybeCount} {t('dashboard.schedule.maybe')}
                 </span>
               </div>
             </div>
@@ -193,8 +195,7 @@ export const ScheduleTab = ({ event, stats, isLoading }: ScheduleTabProps) => {
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <p>
-            Die Prozent-Werte werden berechnet aus: Ja = 1 Punkt, Vielleicht = 0.5 Punkte.
-            Nur Teilnehmer mit "Ja" oder "Vielleicht" zur Teilnahme werden gezählt.
+            {t('dashboard.schedule.legend')}
           </p>
         </div>
       </GlassCard>
