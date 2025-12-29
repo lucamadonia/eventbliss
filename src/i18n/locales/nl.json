@@ -443,5 +443,35 @@
       "byCategory": "Op Categorie",
       "showAll": "Alles Tonen"
     }
+  },
+  "cookie": {
+    "title": "We gebruiken cookies",
+    "description": "We gebruiken cookies om je ervaring te verbeteren. Pas je voorkeuren hieronder aan.",
+    "necessary": "Noodzakelijke cookies",
+    "necessaryDesc": "Essentieel voor de werking van de site. Kunnen niet worden uitgeschakeld.",
+    "analytics": "Analytische cookies",
+    "analyticsDesc": "Helpen ons te begrijpen hoe je onze site gebruikt.",
+    "marketing": "Marketing cookies",
+    "marketingDesc": "Gebruikt om gepersonaliseerde advertenties te tonen.",
+    "acceptAll": "Alles accepteren",
+    "acceptSelected": "Selectie accepteren",
+    "rejectAll": "Alles weigeren",
+    "learnMore": "Meer informatie"
+  },
+  "newsletter": {
+    "title": "Blijf op de hoogte",
+    "placeholder": "Je e-mailadres",
+    "subscribe": "Abonneren",
+    "success": "Succesvol geabonneerd!",
+    "successTitle": "Welkom aan boord!",
+    "successMessage": "Je ontvangt onze laatste updates en nieuws.",
+    "gdprConsent": "Ik ga akkoord met het ontvangen van e-mails en het privacybeleid",
+    "marketingConsent": "Ik wil marketingcommunicatie ontvangen (optioneel)",
+    "errors": {
+      "invalidEmail": "Voer een geldig e-mailadres in",
+      "gdprRequired": "Je moet het privacybeleid accepteren",
+      "alreadySubscribed": "Dit e-mailadres is al geabonneerd",
+      "generic": "Er is iets misgegaan. Probeer het opnieuw."
+    }
   }
 }
