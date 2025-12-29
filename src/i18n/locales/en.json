@@ -1479,6 +1479,27 @@
       "evening": "Evening",
       "overnight": "Overnight",
       "flexible": "Flexible"
+    },
+    "travel": {
+      "daytrip": "Day Trip",
+      "oneNight": "One Night",
+      "twoNights": "Two Nights",
+      "flexible": "Flexible"
+    },
+    "fitness": {
+      "chill": "Relaxed",
+      "normal": "Normal",
+      "sporty": "Sporty"
+    },
+    "alcohol": {
+      "yes": "Yes please",
+      "no": "Rather not",
+      "flexible": "Flexible"
+    },
+    "attendance": {
+      "yes": "I'm in!",
+      "maybe": "Maybe",
+      "no": "Unfortunately not"
     }
   }
 }

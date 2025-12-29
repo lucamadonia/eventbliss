@@ -1506,6 +1506,27 @@
       "evening": "Abend",
       "overnight": "Mit Übernachtung",
       "flexible": "Flexibel"
+    },
+    "travel": {
+      "daytrip": "Tagesausflug",
+      "oneNight": "Eine Übernachtung",
+      "twoNights": "Zwei Übernachtungen",
+      "flexible": "Flexibel"
+    },
+    "fitness": {
+      "chill": "Entspannt",
+      "normal": "Normal",
+      "sporty": "Sportlich"
+    },
+    "alcohol": {
+      "yes": "Gerne",
+      "no": "Lieber nicht",
+      "flexible": "Flexibel"
+    },
+    "attendance": {
+      "yes": "Ich bin dabei!",
+      "maybe": "Vielleicht",
+      "no": "Leider nicht"
     }
   }
 }
