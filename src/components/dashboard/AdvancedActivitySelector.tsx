@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, 
@@ -47,6 +48,7 @@ export const AdvancedActivitySelector = ({
   onSelectionChange,
   eventType = 'bachelor',
 }: AdvancedActivitySelectorProps) => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<ActivityCategory | 'all' | 'selected' | 'recommended'>('all');
   const [customActivityName, setCustomActivityName] = useState("");
@@ -140,7 +142,7 @@ export const AdvancedActivitySelector = ({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Aktivitäten suchen..."
+            placeholder={t('dashboard.form.activitySelector.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -161,31 +163,31 @@ export const AdvancedActivitySelector = ({
         <div className="flex gap-2">
           <Badge variant="secondary" className="h-10 px-4 flex items-center gap-2">
             <Check className="w-3.5 h-3.5" />
-            {selectedActivities.length} ausgewählt
+            {selectedActivities.length} {t('dashboard.form.activitySelector.selected')}
           </Badge>
           
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="h-10">
                 <Plus className="w-4 h-4 mr-1" />
-                Eigene
+                {t('dashboard.form.activitySelector.custom')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Eigene Aktivität hinzufügen</DialogTitle>
+                <DialogTitle>{t('dashboard.form.activitySelector.addCustom')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Emoji"
+                    placeholder={t('dashboard.form.activitySelector.emoji')}
                     value={customActivityEmoji}
                     onChange={(e) => setCustomActivityEmoji(e.target.value)}
                     className="w-20 text-center text-xl"
                     maxLength={4}
                   />
                   <Input
-                    placeholder="Aktivitätsname"
+                    placeholder={t('dashboard.form.activitySelector.activityName')}
                     value={customActivityName}
                     onChange={(e) => setCustomActivityName(e.target.value)}
                     className="flex-1"
@@ -197,7 +199,7 @@ export const AdvancedActivitySelector = ({
                   disabled={!customActivityName.trim()}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Hinzufügen
+                  {t('dashboard.form.activitySelector.add')}
                 </Button>
               </div>
             </DialogContent>
@@ -317,8 +319,8 @@ export const AdvancedActivitySelector = ({
             {filteredActivities.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
                 <Search className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">Keine Aktivitäten gefunden</p>
-                <p className="text-sm">Versuche einen anderen Suchbegriff oder Kategorie</p>
+                <p className="font-medium">{t('dashboard.form.activitySelector.noResults')}</p>
+                <p className="text-sm">{t('dashboard.form.activitySelector.noResultsHint')}</p>
               </div>
             )}
           </ScrollArea>
@@ -329,14 +331,14 @@ export const AdvancedActivitySelector = ({
       {selectedActivities.length > 0 && (
         <div className="pt-4 border-t border-border">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Ausgewählte Aktivitäten</span>
+            <span className="text-sm font-medium">{t('dashboard.form.activitySelector.selectedActivities')}</span>
             <Button 
               variant="ghost" 
               size="sm" 
               className="text-xs text-destructive hover:text-destructive"
               onClick={() => onSelectionChange([])}
             >
-              Alle entfernen
+              {t('dashboard.form.activitySelector.removeAll')}
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">

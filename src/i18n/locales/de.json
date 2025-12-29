@@ -524,6 +524,8 @@
         "custom": "Eigene",
         "addCustom": "Eigene Aktivität hinzufügen",
         "activityName": "Aktivitätsname",
+        "emoji": "Emoji",
+        "add": "Hinzufügen",
         "all": "Alle",
         "recommended": "Empfohlen",
         "selectedTab": "Ausgewählt",
@@ -545,12 +547,47 @@
         "keyDate": "Schlüssel-Datum (z.B. Hochzeitstermin)",
         "keyDateLabel": "Datum-Label",
         "keyDateLabelPlaceholder": "Hochzeit",
+        "date": "Datum",
         "selectDate": "Datum wählen",
         "backgroundStyle": "Hintergrund-Stil",
-        "gradient": "Gradient",
-        "solid": "Solid",
-        "dark": "Dark",
+        "gradient": "🌈 Gradient",
+        "solid": "🎨 Solid",
+        "dark": "🌙 Dark",
         "livePreview": "Live-Vorschau des Hero-Bereichs"
+      },
+      "customQuestions": {
+        "quickAdd": "Schnell hinzufügen:",
+        "presets": {
+          "dietary": "Ernährung",
+          "songWish": "Song-Wunsch",
+          "tshirtSize": "T-Shirt Größe",
+          "driversLicense": "Führerschein",
+          "specialWishes": "Besondere Wünsche"
+        },
+        "presetQuestions": {
+          "dietary": { "label": "Gibt es Ernährungs-Einschränkungen?", "placeholder": "z.B. vegetarisch, vegan, Allergien..." },
+          "songWish": { "label": "Dein Song-Wunsch für die Playlist?", "placeholder": "Artist - Songtitel" },
+          "tshirtSize": { "label": "Welche T-Shirt Größe trägst du?" },
+          "driversLicense": { "label": "Hast du einen Führerschein und kannst fahren?" },
+          "specialWishes": { "label": "Gibt es etwas, das du uns noch mitteilen möchtest?", "placeholder": "Besondere Wünsche, Ideen, Anmerkungen..." }
+        },
+        "types": {
+          "text": "Kurztext",
+          "textarea": "Langtext",
+          "select": "Dropdown",
+          "radio": "Single Choice",
+          "checkbox": "Multiple Choice",
+          "toggle": "Ja/Nein"
+        },
+        "questionPlaceholder": "Frage eingeben...",
+        "placeholderPlaceholder": "Platzhalter-Text (optional)",
+        "options": "Optionen:",
+        "addOption": "Option hinzufügen",
+        "requiredField": "Pflichtfeld",
+        "noQuestions": "Noch keine eigenen Fragen hinzugefügt.",
+        "noQuestionsHint": "Nutze die Schnell-Buttons oben oder füge eine neue Frage hinzu.",
+        "addNew": "Neue Frage hinzufügen",
+        "questionsConfigured": "eigene Frage(n) konfiguriert"
       }
     },
     "schedule": {

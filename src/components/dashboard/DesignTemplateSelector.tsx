@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,6 +17,7 @@ export function DesignTemplateSelector({
   onSelect,
   eventType = 'bachelor',
 }: DesignTemplateSelectorProps) {
+  const { t } = useTranslation();
   const recommendedTemplates = getTemplatesForEventType(eventType);
   const otherTemplates = DESIGN_TEMPLATES.filter(
     t => !t.eventTypes.includes(eventType)
@@ -28,10 +30,10 @@ export function DesignTemplateSelector({
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium text-foreground">
-            Empfohlen für diesen Event-Typ
+            {t('dashboard.form.design.recommendedFor')}
           </span>
           <Badge variant="secondary" className="text-xs">
-            {recommendedTemplates.length} Templates
+            {recommendedTemplates.length} {t('dashboard.form.design.templates')}
           </Badge>
         </div>
 
@@ -54,7 +56,7 @@ export function DesignTemplateSelector({
       {otherTemplates.length > 0 && (
         <div className="space-y-3">
           <span className="text-sm text-muted-foreground">
-            Weitere Templates
+            {t('dashboard.form.design.moreTemplates')}
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
