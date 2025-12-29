@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.redeem-voucher]
 verify_jwt = false
+
+[functions.create-user]
+verify_jwt = false

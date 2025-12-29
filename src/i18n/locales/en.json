@@ -246,7 +246,17 @@
     "hasAccount": "Already have an account?",
     "loginSuccess": "Successfully logged in!",
     "registerSuccess": "Account created successfully!",
-    "logoutSuccess": "Successfully logged out"
+    "logoutSuccess": "Successfully logged out",
+    "changePasswordTitle": "Password change required",
+    "changePasswordDescription": "For security reasons, you must change your password before you can continue.",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "passwordRequired": "Please fill in both password fields",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "passwordChanged": "Password changed successfully",
+    "passwordChangeError": "Error changing password",
+    "passwordRequirements": "Password must be at least 6 characters long."
   },
   "survey": {
     "title": "Your Response",
@@ -1186,5 +1196,59 @@
       "prioritySupport": "Priority support"
     },
     "subscribe": "Upgrade Now"
+  },
+  "admin": {
+    "title": "Admin Portal",
+    "tabs": {
+      "stats": "Statistics",
+      "users": "Users",
+      "members": "Members",
+      "subscriptions": "Subscriptions",
+      "vouchers": "Vouchers"
+    },
+    "users": {
+      "title": "User Management",
+      "create": "Create User",
+      "createTitle": "Create New User",
+      "email": "Email",
+      "password": "Password",
+      "fullName": "Full Name",
+      "plan": "Subscription Plan",
+      "name": "Name",
+      "status": "Status",
+      "createdAt": "Created At",
+      "search": "Search users...",
+      "noUsers": "No users found",
+      "mustChangePassword": "User must change password after first login",
+      "mustChange": "Change Password",
+      "active": "Active",
+      "requiredFields": "Email and password are required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "createSuccess": "User created successfully",
+      "createError": "Error creating user"
+    },
+    "vouchers": {
+      "title": "Voucher Management",
+      "create": "Create Voucher",
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "uses": "Uses",
+      "validFrom": "Valid From",
+      "validUntil": "Valid Until",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "expired": "Expired",
+      "noVouchers": "No vouchers found",
+      "percentage": "Percentage",
+      "fixed": "Fixed Amount",
+      "free_trial": "Free Trial",
+      "unlimited": "Unlimited",
+      "createSuccess": "Voucher created successfully",
+      "createError": "Error creating voucher",
+      "deleteSuccess": "Voucher deleted",
+      "deleteError": "Error deleting voucher"
+    }
   }
 }
