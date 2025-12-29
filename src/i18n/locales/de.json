@@ -246,7 +246,17 @@
     "hasAccount": "Bereits ein Konto?",
     "loginSuccess": "Erfolgreich angemeldet!",
     "registerSuccess": "Konto erfolgreich erstellt!",
-    "logoutSuccess": "Erfolgreich abgemeldet"
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "changePasswordTitle": "Passwort ändern erforderlich",
+    "changePasswordDescription": "Aus Sicherheitsgründen müssen Sie Ihr Passwort ändern, bevor Sie fortfahren können.",
+    "newPassword": "Neues Passwort",
+    "changePassword": "Passwort ändern",
+    "passwordRequired": "Bitte füllen Sie beide Passwortfelder aus",
+    "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen haben",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein",
+    "passwordChanged": "Passwort erfolgreich geändert",
+    "passwordChangeError": "Fehler beim Ändern des Passworts",
+    "passwordRequirements": "Das Passwort muss mindestens 6 Zeichen lang sein."
   },
   "survey": {
     "title": "Deine Antwort",
@@ -1213,5 +1223,59 @@
       "prioritySupport": "Prioritäts-Support"
     },
     "subscribe": "Jetzt upgraden"
+  },
+  "admin": {
+    "title": "Admin Portal",
+    "tabs": {
+      "stats": "Statistiken",
+      "users": "Benutzer",
+      "members": "Mitglieder",
+      "subscriptions": "Abos",
+      "vouchers": "Voucher"
+    },
+    "users": {
+      "title": "Benutzer-Verwaltung",
+      "create": "Benutzer erstellen",
+      "createTitle": "Neuen Benutzer erstellen",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "fullName": "Vollständiger Name",
+      "plan": "Abo-Paket",
+      "name": "Name",
+      "status": "Status",
+      "createdAt": "Erstellt am",
+      "search": "Benutzer suchen...",
+      "noUsers": "Keine Benutzer gefunden",
+      "mustChangePassword": "Benutzer muss Passwort nach erstem Login ändern",
+      "mustChange": "Passwort ändern",
+      "active": "Aktiv",
+      "requiredFields": "E-Mail und Passwort sind erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 6 Zeichen haben",
+      "createSuccess": "Benutzer erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des Benutzers"
+    },
+    "vouchers": {
+      "title": "Voucher-Verwaltung",
+      "create": "Voucher erstellen",
+      "code": "Code",
+      "type": "Typ",
+      "value": "Wert",
+      "uses": "Verwendungen",
+      "validFrom": "Gültig ab",
+      "validUntil": "Gültig bis",
+      "status": "Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "expired": "Abgelaufen",
+      "noVouchers": "Keine Voucher vorhanden",
+      "percentage": "Prozent",
+      "fixed": "Festbetrag",
+      "free_trial": "Gratis-Testphase",
+      "unlimited": "Unbegrenzt",
+      "createSuccess": "Voucher erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des Vouchers",
+      "deleteSuccess": "Voucher gelöscht",
+      "deleteError": "Fehler beim Löschen"
+    }
   }
 }

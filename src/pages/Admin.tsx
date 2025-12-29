@@ -4,12 +4,13 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MembersTab } from "@/components/admin/MembersTab";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
 import { VouchersTab } from "@/components/admin/VouchersTab";
 import { StatsOverview } from "@/components/admin/StatsOverview";
+import { UsersTab } from "@/components/admin/UsersTab";
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -56,10 +57,14 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.users", "Benutzer")}</span>
             </TabsTrigger>
             <TabsTrigger value="members" className="gap-2">
               <Users className="h-4 w-4" />
@@ -77,6 +82,10 @@ const Admin = () => {
 
           <TabsContent value="stats">
             <StatsOverview />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UsersTab />
           </TabsContent>
 
           <TabsContent value="members">
