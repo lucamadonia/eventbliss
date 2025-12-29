@@ -12,6 +12,24 @@ export interface SelectOption {
   emoji?: string;
 }
 
+// Question configuration for enabling/disabling questions and single/multi select
+export interface QuestionConfig {
+  enabled: boolean;
+  multiSelect: boolean;
+}
+
+export interface QuestionConfigs {
+  attendance: QuestionConfig;
+  duration: QuestionConfig;
+  date_blocks: QuestionConfig;
+  budget: QuestionConfig;
+  destination: QuestionConfig;
+  travel: QuestionConfig;
+  activities: QuestionConfig;
+  fitness: QuestionConfig;
+  alcohol: QuestionConfig;
+}
+
 export interface ActivityOption {
   value: string;
   label: string;
@@ -73,6 +91,9 @@ export interface SurveyConfig {
   
   // Custom questions (future feature)
   custom_questions?: CustomQuestion[];
+  
+  // Question visibility and multi-select configuration
+  question_config?: QuestionConfigs;
 }
 
 export interface CustomQuestion {
@@ -83,6 +104,18 @@ export interface CustomQuestion {
   options?: string[];
   placeholder?: string;
 }
+
+export const DEFAULT_QUESTION_CONFIG: QuestionConfigs = {
+  attendance: { enabled: true, multiSelect: false },
+  duration: { enabled: true, multiSelect: false },
+  date_blocks: { enabled: true, multiSelect: true },
+  budget: { enabled: true, multiSelect: false },
+  destination: { enabled: true, multiSelect: false },
+  travel: { enabled: true, multiSelect: false },
+  activities: { enabled: true, multiSelect: true },
+  fitness: { enabled: true, multiSelect: false },
+  alcohol: { enabled: true, multiSelect: false },
+};
 
 export interface EventSettings extends SurveyConfig {
   branding?: BrandingConfig;
@@ -157,6 +190,18 @@ export const DEFAULT_SURVEY_CONFIG: SurveyConfig = {
   
   no_gos: [],
   focus_points: [],
+  
+  question_config: {
+    attendance: { enabled: true, multiSelect: false },
+    duration: { enabled: true, multiSelect: false },
+    date_blocks: { enabled: true, multiSelect: true },
+    budget: { enabled: true, multiSelect: false },
+    destination: { enabled: true, multiSelect: false },
+    travel: { enabled: true, multiSelect: false },
+    activities: { enabled: true, multiSelect: true },
+    fitness: { enabled: true, multiSelect: false },
+    alcohol: { enabled: true, multiSelect: false },
+  },
 };
 
 export const DEFAULT_BRANDING: BrandingConfig = {
@@ -177,6 +222,10 @@ export function mergeWithDefaults(settings: Partial<EventSettings> | null): Even
     branding: {
       ...DEFAULT_BRANDING,
       ...(settings.branding || {}),
+    },
+    question_config: {
+      ...DEFAULT_QUESTION_CONFIG,
+      ...(settings.question_config || {}),
     },
     // Ensure arrays have defaults if empty
     budget_options: settings.budget_options?.length ? settings.budget_options : DEFAULT_SURVEY_CONFIG.budget_options,

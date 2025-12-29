@@ -5,12 +5,18 @@ import {
   Trash2, 
   GripVertical,
   Smile,
+  Eye,
+  EyeOff,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { SelectOption } from "@/lib/survey-config";
+import { Switch } from "@/components/ui/switch";
+import { SelectOption, QuestionConfig } from "@/lib/survey-config";
+import { cn } from "@/lib/utils";
 
 interface CoreQuestionEditorProps {
   title: string;
@@ -20,6 +26,11 @@ interface CoreQuestionEditorProps {
   showEmoji?: boolean;
   maxOptions?: number;
   placeholder?: string;
+  // New props for question configuration
+  questionConfig?: QuestionConfig;
+  onConfigChange?: (config: QuestionConfig) => void;
+  showVisibilityToggle?: boolean;
+  showMultiSelectToggle?: boolean;
 }
 
 export const CoreQuestionEditor = ({
@@ -30,9 +41,28 @@ export const CoreQuestionEditor = ({
   showEmoji = true,
   maxOptions = 10,
   placeholder = "Neue Option",
+  questionConfig,
+  onConfigChange,
+  showVisibilityToggle = true,
+  showMultiSelectToggle = true,
 }: CoreQuestionEditorProps) => {
   const [newLabel, setNewLabel] = useState("");
   const [newEmoji, setNewEmoji] = useState("");
+
+  const isEnabled = questionConfig?.enabled ?? true;
+  const isMultiSelect = questionConfig?.multiSelect ?? false;
+
+  const toggleEnabled = () => {
+    if (onConfigChange && questionConfig) {
+      onConfigChange({ ...questionConfig, enabled: !isEnabled });
+    }
+  };
+
+  const toggleMultiSelect = () => {
+    if (onConfigChange && questionConfig) {
+      onConfigChange({ ...questionConfig, multiSelect: !isMultiSelect });
+    }
+  };
 
   const addOption = () => {
     if (!newLabel.trim()) return;
@@ -73,12 +103,74 @@ export const CoreQuestionEditor = ({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <Label className="text-sm font-medium">{title}</Label>
-        {description && (
-          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+    <div className={cn("space-y-4", !isEnabled && "opacity-50")}>
+      {/* Header with toggles */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <Label className="text-sm font-medium">{title}</Label>
+          {description && (
+            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+          )}
+        </div>
+        
+        {/* Config Toggles */}
+        {(showVisibilityToggle || showMultiSelectToggle) && onConfigChange && questionConfig && (
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Multi-Select Toggle */}
+            {showMultiSelectToggle && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleMultiSelect}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors",
+                    isMultiSelect 
+                      ? "bg-primary/10 text-primary" 
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  )}
+                  disabled={!isEnabled}
+                >
+                  {isMultiSelect ? (
+                    <>
+                      <ToggleRight className="w-3.5 h-3.5" />
+                      Multi
+                    </>
+                  ) : (
+                    <>
+                      <ToggleLeft className="w-3.5 h-3.5" />
+                      Single
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Visibility Toggle */}
+            {showVisibilityToggle && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleEnabled}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors",
+                    isEnabled 
+                      ? "bg-green-500/10 text-green-600 dark:text-green-400" 
+                      : "bg-destructive/10 text-destructive"
+                  )}
+                >
+                  {isEnabled ? (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      Sichtbar
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      Versteckt
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -152,9 +244,16 @@ export const CoreQuestionEditor = ({
         </div>
       )}
 
-      {/* Count badge */}
+      {/* Count badge and info */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{options.length} von max. {maxOptions} Optionen</span>
+        <div className="flex items-center gap-3">
+          <span>{options.length} von max. {maxOptions} Optionen</span>
+          {isMultiSelect && (
+            <Badge variant="secondary" className="text-xs">
+              Mehrfachauswahl
+            </Badge>
+          )}
+        </div>
         {showEmoji && (
           <span className="flex items-center gap-1">
             <Smile className="w-3 h-3" />
