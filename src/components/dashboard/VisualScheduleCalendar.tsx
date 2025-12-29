@@ -1,12 +1,11 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
-import { format, parseISO, isValid } from "date-fns";
+import { motion } from "framer-motion";
+import { format, parseISO } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import {
   ChevronLeft,
   ChevronRight,
-  Plus,
   GripVertical,
   Clock,
   MapPin,
@@ -43,7 +42,7 @@ interface VisualScheduleCalendarProps {
   participants: Participant[];
   currency: string;
   onActivityClick: (activity: Activity) => void;
-  onTimeSlotClick: (date: string, hour: number) => void;
+  onTimeSlotClick: (date: string, time: string) => void;
   onActivityMove: (activityId: string, newDate: string, newStartTime: string, newEndTime: string) => void;
 }
 
@@ -54,6 +53,7 @@ const localeMap: Record<string, Locale> = {
 const HOURS = Array.from({ length: 17 }, (_, i) => i + 7); // 07:00 - 23:00
 const HOUR_HEIGHT = 60; // pixels per hour
 const MIN_SLOT_HEIGHT = 30; // minimum activity block height
+const SNAP_INTERVAL = 15; // snap to 15-minute intervals
 
 export const VisualScheduleCalendar = ({
   activities,
@@ -67,21 +67,37 @@ export const VisualScheduleCalendar = ({
   const { t, i18n } = useTranslation();
   const currentLocale = localeMap[i18n.language] || de;
   
+  const [visibleDaysCount, setVisibleDaysCount] = useState(5);
   const [visibleStartIndex, setVisibleStartIndex] = useState(0);
-  const [draggedActivity, setDraggedActivity] = useState<Activity | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [resizingActivity, setResizingActivity] = useState<string | null>(null);
-  const [resizeStartY, setResizeStartY] = useState(0);
-  const [originalEndTime, setOriginalEndTime] = useState<string | null>(null);
+  const [dragState, setDragState] = useState<{
+    activityId: string;
+    startY: number;
+    startX: number;
+    originalDate: string;
+    originalStartTime: string;
+    originalEndTime: string;
+    currentY: number;
+    currentX: number;
+  } | null>(null);
+  const [resizeState, setResizeState] = useState<{
+    activityId: string;
+    startY: number;
+    originalEndTime: string;
+    currentY: number;
+  } | null>(null);
+  const [createDragState, setCreateDragState] = useState<{
+    date: string;
+    startY: number;
+    currentY: number;
+    columnRect: DOMRect;
+  } | null>(null);
   
   const calendarRef = useRef<HTMLDivElement>(null);
+  const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
-  // Show 3 days at a time on desktop, 1 on mobile
-  const visibleDays = 3;
-  const visibleDates = eventDates.slice(visibleStartIndex, visibleStartIndex + visibleDays);
-  
+  const visibleDates = eventDates.slice(visibleStartIndex, visibleStartIndex + visibleDaysCount);
   const canGoBack = visibleStartIndex > 0;
-  const canGoForward = visibleStartIndex + visibleDays < eventDates.length;
+  const canGoForward = visibleStartIndex + visibleDaysCount < eventDates.length;
 
   // Parse time string to hour decimal (e.g., "14:30" -> 14.5)
   const timeToDecimal = (time: string | null): number => {
@@ -90,23 +106,64 @@ export const VisualScheduleCalendar = ({
     return hours + (minutes || 0) / 60;
   };
 
-  // Convert decimal to time string
-  const decimalToTime = (decimal: number): string => {
-    const hours = Math.floor(decimal);
-    const minutes = Math.round((decimal - hours) * 60);
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  // Convert decimal to time string with snapping
+  const decimalToTime = (decimal: number, snap = true): string => {
+    let hours = Math.floor(decimal);
+    let minutes = (decimal - hours) * 60;
+    if (snap) {
+      minutes = Math.round(minutes / SNAP_INTERVAL) * SNAP_INTERVAL;
+      if (minutes >= 60) {
+        hours += 1;
+        minutes = 0;
+      }
+    }
+    return `${hours.toString().padStart(2, "0")}:${Math.round(minutes).toString().padStart(2, "0")}`;
+  };
+
+  // Calculate Y position to time decimal
+  const yToTimeDecimal = (y: number): number => {
+    return 7 + y / HOUR_HEIGHT;
   };
 
   // Get activity position and size
-  const getActivityStyle = (activity: Activity) => {
-    const startDecimal = timeToDecimal(activity.start_time);
-    const endDecimal = timeToDecimal(activity.end_time) || startDecimal + 1;
-    const duration = Math.max(endDecimal - startDecimal, 0.5);
+  const getActivityStyle = (activity: Activity, isBeingDragged = false, isBeingResized = false) => {
+    let startDecimal = timeToDecimal(activity.start_time);
+    let endDecimal = timeToDecimal(activity.end_time) || startDecimal + 1;
     
+    // Apply drag offset
+    if (isBeingDragged && dragState && dragState.activityId === activity.id) {
+      const deltaY = dragState.currentY - dragState.startY;
+      const deltaHours = deltaY / HOUR_HEIGHT;
+      startDecimal = timeToDecimal(dragState.originalStartTime) + deltaHours;
+      endDecimal = timeToDecimal(dragState.originalEndTime) + deltaHours;
+      // Clamp
+      if (startDecimal < 7) {
+        const diff = 7 - startDecimal;
+        startDecimal = 7;
+        endDecimal += diff;
+      }
+      if (endDecimal > 23) {
+        const diff = endDecimal - 23;
+        endDecimal = 23;
+        startDecimal -= diff;
+      }
+    }
+    
+    // Apply resize offset
+    if (isBeingResized && resizeState && resizeState.activityId === activity.id) {
+      const deltaY = resizeState.currentY - resizeState.startY;
+      const deltaHours = deltaY / HOUR_HEIGHT;
+      endDecimal = Math.max(
+        timeToDecimal(activity.start_time) + 0.25,
+        Math.min(timeToDecimal(resizeState.originalEndTime) + deltaHours, 23)
+      );
+    }
+    
+    const duration = Math.max(endDecimal - startDecimal, 0.25);
     const top = (startDecimal - 7) * HOUR_HEIGHT;
     const height = Math.max(duration * HOUR_HEIGHT, MIN_SLOT_HEIGHT);
     
-    return { top, height };
+    return { top, height, startDecimal, endDecimal };
   };
 
   // Get activities for a specific date
@@ -114,152 +171,290 @@ export const VisualScheduleCalendar = ({
     return activities.filter(a => a.day_date === date);
   };
 
-  // Handle drag start
-  const handleDragStart = (e: React.MouseEvent, activity: Activity) => {
-    e.preventDefault();
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-    setDraggedActivity(activity);
+  // Determine which date column the pointer is over
+  const getDateFromX = (clientX: number): string | null => {
+    for (const [date, ref] of Object.entries(columnRefs.current)) {
+      if (ref) {
+        const rect = ref.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right) {
+          return date;
+        }
+      }
+    }
+    return null;
   };
 
-  // Handle drag end with new position
-  const handleDragEnd = useCallback((e: MouseEvent) => {
-    if (!draggedActivity || !calendarRef.current) {
-      setDraggedActivity(null);
-      return;
-    }
-
-    const rect = calendarRef.current.getBoundingClientRect();
-    const relativeX = e.clientX - rect.left;
-    const relativeY = e.clientY - rect.top;
+  // Handle drag start
+  const handleDragStart = (e: React.PointerEvent, activity: Activity) => {
+    e.preventDefault();
+    e.stopPropagation();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
     
-    // Calculate which date column
-    const columnWidth = rect.width / visibleDates.length;
-    const dateIndex = Math.floor(relativeX / columnWidth);
-    const newDate = visibleDates[dateIndex];
-    
-    // Calculate new time (accounting for header)
-    const headerHeight = 60;
-    const newStartDecimal = 7 + (relativeY - headerHeight - dragOffset.y) / HOUR_HEIGHT;
-    const snappedStart = Math.round(newStartDecimal * 4) / 4; // Snap to 15-min intervals
-    const clampedStart = Math.max(7, Math.min(snappedStart, 22));
-    
-    // Calculate duration
-    const originalDuration = timeToDecimal(draggedActivity.end_time) - timeToDecimal(draggedActivity.start_time);
-    const newEndDecimal = clampedStart + Math.max(originalDuration, 0.5);
-    
-    if (newDate && (newDate !== draggedActivity.day_date || decimalToTime(clampedStart) !== draggedActivity.start_time)) {
-      onActivityMove(
-        draggedActivity.id,
-        newDate,
-        decimalToTime(clampedStart),
-        decimalToTime(Math.min(newEndDecimal, 23))
-      );
-    }
-    
-    setDraggedActivity(null);
-  }, [draggedActivity, visibleDates, dragOffset, onActivityMove]);
+    setDragState({
+      activityId: activity.id,
+      startY: e.clientY,
+      startX: e.clientX,
+      originalDate: activity.day_date,
+      originalStartTime: activity.start_time || "09:00",
+      originalEndTime: activity.end_time || "10:00",
+      currentY: e.clientY,
+      currentX: e.clientX,
+    });
+  };
 
   // Handle resize start
-  const handleResizeStart = (e: React.MouseEvent, activity: Activity) => {
-    e.stopPropagation();
+  const handleResizeStart = (e: React.PointerEvent, activity: Activity) => {
     e.preventDefault();
-    setResizingActivity(activity.id);
-    setResizeStartY(e.clientY);
-    setOriginalEndTime(activity.end_time);
+    e.stopPropagation();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    
+    setResizeState({
+      activityId: activity.id,
+      startY: e.clientY,
+      originalEndTime: activity.end_time || "10:00",
+      currentY: e.clientY,
+    });
   };
 
-  // Handle resize end
-  const handleResizeEnd = useCallback((e: MouseEvent) => {
-    if (!resizingActivity || !originalEndTime) {
-      setResizingActivity(null);
-      return;
+  // Handle create-drag start on empty slot
+  const handleSlotPointerDown = (e: React.PointerEvent, date: string) => {
+    e.preventDefault();
+    const column = columnRefs.current[date];
+    if (!column) return;
+    
+    const rect = column.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    
+    setCreateDragState({
+      date,
+      startY: relY,
+      currentY: relY,
+      columnRect: rect,
+    });
+    
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  // Pointer move handler
+  const handlePointerMove = useCallback((e: PointerEvent) => {
+    if (dragState) {
+      setDragState(prev => prev ? { ...prev, currentY: e.clientY, currentX: e.clientX } : null);
     }
-
-    const activity = activities.find(a => a.id === resizingActivity);
-    if (!activity) {
-      setResizingActivity(null);
-      return;
+    if (resizeState) {
+      setResizeState(prev => prev ? { ...prev, currentY: e.clientY } : null);
     }
-
-    const deltaY = e.clientY - resizeStartY;
-    const deltaHours = deltaY / HOUR_HEIGHT;
-    const originalEndDecimal = timeToDecimal(originalEndTime);
-    const newEndDecimal = Math.round((originalEndDecimal + deltaHours) * 4) / 4;
-    const clampedEnd = Math.max(timeToDecimal(activity.start_time) + 0.25, Math.min(newEndDecimal, 23));
-
-    onActivityMove(
-      activity.id,
-      activity.day_date,
-      activity.start_time || "09:00",
-      decimalToTime(clampedEnd)
-    );
-
-    setResizingActivity(null);
-    setOriginalEndTime(null);
-  }, [resizingActivity, resizeStartY, originalEndTime, activities, onActivityMove]);
-
-  // Global mouse event listeners for drag & resize
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    // Just update cursor position if dragging
-  }, []);
-
-  const handleMouseUp = useCallback((e: MouseEvent) => {
-    if (draggedActivity) {
-      handleDragEnd(e);
+    if (createDragState) {
+      const relY = e.clientY - createDragState.columnRect.top;
+      setCreateDragState(prev => prev ? { ...prev, currentY: relY } : null);
     }
-    if (resizingActivity) {
-      handleResizeEnd(e);
-    }
-  }, [draggedActivity, resizingActivity, handleDragEnd, handleResizeEnd]);
+  }, [dragState, resizeState, createDragState]);
 
-  // Attach global listeners
-  useMemo(() => {
-    if (draggedActivity || resizingActivity) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+  // Pointer up handler
+  const handlePointerUp = useCallback((e: PointerEvent) => {
+    // Finalize drag
+    if (dragState) {
+      const activity = activities.find(a => a.id === dragState.activityId);
+      if (activity) {
+        const deltaY = dragState.currentY - dragState.startY;
+        const deltaHours = deltaY / HOUR_HEIGHT;
+        
+        let newStartDecimal = timeToDecimal(dragState.originalStartTime) + deltaHours;
+        let newEndDecimal = timeToDecimal(dragState.originalEndTime) + deltaHours;
+        
+        // Clamp
+        if (newStartDecimal < 7) {
+          const diff = 7 - newStartDecimal;
+          newStartDecimal = 7;
+          newEndDecimal += diff;
+        }
+        if (newEndDecimal > 23) {
+          const diff = newEndDecimal - 23;
+          newEndDecimal = 23;
+          newStartDecimal -= diff;
+        }
+        
+        // Determine new date based on X position
+        let newDate = getDateFromX(dragState.currentX) || dragState.originalDate;
+        
+        // Snap times
+        const snappedStart = decimalToTime(Math.round(newStartDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+        const snappedEnd = decimalToTime(Math.round(newEndDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+        
+        if (newDate !== activity.day_date || snappedStart !== activity.start_time || snappedEnd !== activity.end_time) {
+          onActivityMove(activity.id, newDate, snappedStart, snappedEnd);
+        }
+      }
+      setDragState(null);
+    }
+    
+    // Finalize resize
+    if (resizeState) {
+      const activity = activities.find(a => a.id === resizeState.activityId);
+      if (activity) {
+        const deltaY = resizeState.currentY - resizeState.startY;
+        const deltaHours = deltaY / HOUR_HEIGHT;
+        let newEndDecimal = timeToDecimal(resizeState.originalEndTime) + deltaHours;
+        newEndDecimal = Math.max(timeToDecimal(activity.start_time) + 0.25, Math.min(newEndDecimal, 23));
+        
+        const snappedEnd = decimalToTime(Math.round(newEndDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+        
+        if (snappedEnd !== activity.end_time) {
+          onActivityMove(activity.id, activity.day_date, activity.start_time || "09:00", snappedEnd);
+        }
+      }
+      setResizeState(null);
+    }
+    
+    // Finalize create-drag
+    if (createDragState) {
+      const startY = Math.min(createDragState.startY, createDragState.currentY);
+      const endY = Math.max(createDragState.startY, createDragState.currentY);
+      
+      const startDecimal = yToTimeDecimal(startY);
+      const endDecimal = yToTimeDecimal(endY);
+      
+      const snappedStart = decimalToTime(Math.round(startDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+      const duration = Math.max(0.25, endDecimal - startDecimal);
+      const snappedEnd = decimalToTime(Math.round((startDecimal + duration) * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+      
+      // Only trigger if dragged a meaningful distance
+      if (Math.abs(createDragState.currentY - createDragState.startY) > 10) {
+        onTimeSlotClick(createDragState.date, snappedStart + "|" + snappedEnd);
+      }
+      
+      setCreateDragState(null);
+    }
+  }, [dragState, resizeState, createDragState, activities, onActivityMove, onTimeSlotClick]);
+
+  // Attach global pointer listeners
+  useEffect(() => {
+    if (dragState || resizeState || createDragState) {
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
       return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
       };
     }
-  }, [draggedActivity, resizingActivity, handleMouseMove, handleMouseUp]);
+  }, [dragState, resizeState, createDragState, handlePointerMove, handlePointerUp]);
+
+  // Handle click on time slot for precise time
+  const handleSlotClick = (e: React.MouseEvent, date: string) => {
+    // Don't trigger if we just finished a create-drag
+    if (createDragState) return;
+    
+    const column = columnRefs.current[date];
+    if (!column) return;
+    
+    const rect = column.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    const clickedDecimal = yToTimeDecimal(relY);
+    const snappedTime = decimalToTime(Math.round(clickedDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+    const endTime = decimalToTime(Math.round((clickedDecimal + 1) * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+    
+    onTimeSlotClick(date, snappedTime + "|" + endTime);
+  };
+
+  // Get currently displayed start/end times for dragging activity
+  const getDragPreviewTimes = () => {
+    if (!dragState) return null;
+    const activity = activities.find(a => a.id === dragState.activityId);
+    if (!activity) return null;
+    
+    const deltaY = dragState.currentY - dragState.startY;
+    const deltaHours = deltaY / HOUR_HEIGHT;
+    let startDecimal = timeToDecimal(dragState.originalStartTime) + deltaHours;
+    let endDecimal = timeToDecimal(dragState.originalEndTime) + deltaHours;
+    
+    if (startDecimal < 7) {
+      const diff = 7 - startDecimal;
+      startDecimal = 7;
+      endDecimal += diff;
+    }
+    if (endDecimal > 23) {
+      const diff = endDecimal - 23;
+      endDecimal = 23;
+      startDecimal -= diff;
+    }
+    
+    return {
+      start: decimalToTime(Math.round(startDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL)),
+      end: decimalToTime(Math.round(endDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL)),
+    };
+  };
+
+  // Get resize preview time
+  const getResizePreviewTime = () => {
+    if (!resizeState) return null;
+    const activity = activities.find(a => a.id === resizeState.activityId);
+    if (!activity) return null;
+    
+    const deltaY = resizeState.currentY - resizeState.startY;
+    const deltaHours = deltaY / HOUR_HEIGHT;
+    let endDecimal = timeToDecimal(resizeState.originalEndTime) + deltaHours;
+    endDecimal = Math.max(timeToDecimal(activity.start_time) + 0.25, Math.min(endDecimal, 23));
+    
+    return decimalToTime(Math.round(endDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));
+  };
+
+  const dragPreview = getDragPreviewTimes();
+  const resizePreview = getResizePreviewTime();
 
   return (
     <GlassCard className="p-4 overflow-hidden">
       {/* Navigation Header */}
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setVisibleStartIndex(Math.max(0, visibleStartIndex - 1))}
-          disabled={!canGoBack}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setVisibleStartIndex(Math.max(0, visibleStartIndex - 1))}
+            disabled={!canGoBack}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+          
+          <h3 className="font-bold text-lg">
+            {t('planner.calendar.weekView')}
+          </h3>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setVisibleStartIndex(Math.min(eventDates.length - visibleDaysCount, visibleStartIndex + 1))}
+            disabled={!canGoForward}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
         
-        <h3 className="font-bold text-lg">
-          {t('planner.calendar.weekView')}
-        </h3>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setVisibleStartIndex(Math.min(eventDates.length - visibleDays, visibleStartIndex + 1))}
-          disabled={!canGoForward}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </Button>
+        {/* Days Count Selector */}
+        <div className="flex items-center gap-1 border border-border rounded-lg overflow-hidden">
+          {[1, 3, 5, 7].map(count => (
+            <button
+              key={count}
+              onClick={() => {
+                setVisibleDaysCount(count);
+                setVisibleStartIndex(Math.min(visibleStartIndex, Math.max(0, eventDates.length - count)));
+              }}
+              className={cn(
+                "px-3 py-1.5 text-sm transition-colors",
+                visibleDaysCount === count
+                  ? "bg-primary/20 text-primary"
+                  : "hover:bg-muted text-muted-foreground"
+              )}
+            >
+              {count} {t('planner.calendar.days')}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Calendar Grid */}
       <div 
         ref={calendarRef}
-        className="relative overflow-auto"
-        style={{ maxHeight: "calc(100vh - 300px)" }}
+        className="relative overflow-auto select-none"
+        style={{ maxHeight: "calc(100vh - 320px)" }}
       >
         {/* Header Row with Dates */}
         <div className="grid sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50" 
@@ -316,50 +511,93 @@ export const VisualScheduleCalendar = ({
 
           {/* Date Columns with Activities */}
           {visibleDates.map((date) => (
-            <div key={date} className="relative border-r border-border/30 last:border-r-0">
+            <div 
+              key={date} 
+              ref={el => columnRefs.current[date] = el}
+              className="relative border-r border-border/30 last:border-r-0"
+              onPointerDown={(e) => {
+                // Only start create-drag if clicking on empty space
+                if ((e.target as HTMLElement).closest('[data-activity]')) return;
+                handleSlotPointerDown(e, date);
+              }}
+              onClick={(e) => {
+                // Only handle click if not dragging
+                if ((e.target as HTMLElement).closest('[data-activity]')) return;
+                if (Math.abs(createDragState?.currentY ?? 0 - (createDragState?.startY ?? 0)) > 10) return;
+                handleSlotClick(e, date);
+              }}
+            >
               {/* Hour grid lines */}
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="border-b border-border/20 hover:bg-primary/5 cursor-pointer transition-colors"
+                  className="border-b border-border/20 hover:bg-primary/5 cursor-crosshair transition-colors"
                   style={{ height: HOUR_HEIGHT }}
-                  onClick={() => onTimeSlotClick(date, hour)}
                 />
               ))}
               
+              {/* Create drag preview */}
+              {createDragState && createDragState.date === date && (
+                <div 
+                  className="absolute left-1 right-1 bg-primary/30 border-2 border-dashed border-primary rounded-lg pointer-events-none z-30"
+                  style={{
+                    top: Math.min(createDragState.startY, createDragState.currentY),
+                    height: Math.max(Math.abs(createDragState.currentY - createDragState.startY), 20),
+                  }}
+                >
+                  <div className="absolute -top-5 left-1 text-xs font-medium text-primary bg-background/80 px-1 rounded">
+                    {decimalToTime(yToTimeDecimal(Math.min(createDragState.startY, createDragState.currentY)))} - 
+                    {decimalToTime(yToTimeDecimal(Math.max(createDragState.startY, createDragState.currentY)))}
+                  </div>
+                </div>
+              )}
+              
               {/* Activity Blocks */}
               {getActivitiesForDate(date).map((activity) => {
-                const { top, height } = getActivityStyle(activity);
+                const isDragging = dragState?.activityId === activity.id;
+                const isResizing = resizeState?.activityId === activity.id;
+                const { top, height } = getActivityStyle(activity, isDragging, isResizing);
                 const config = CATEGORY_CONFIG[activity.category] || CATEGORY_CONFIG.other;
-                const isDragging = draggedActivity?.id === activity.id;
-                const isResizing = resizingActivity === activity.id;
                 
                 return (
                   <motion.div
                     key={activity.id}
+                    data-activity={activity.id}
                     className={cn(
-                      "absolute left-1 right-1 rounded-lg p-2 cursor-grab active:cursor-grabbing overflow-hidden",
+                      "absolute left-1 right-1 rounded-lg p-2 cursor-grab overflow-hidden touch-none",
                       "border shadow-sm hover:shadow-md transition-shadow",
                       config.bgClass,
                       config.borderClass,
-                      isDragging && "opacity-50 z-50",
+                      isDragging && "opacity-70 z-50 cursor-grabbing shadow-lg",
                       isResizing && "z-40"
                     )}
                     style={{ top, height: Math.max(height, MIN_SLOT_HEIGHT) }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onActivityClick(activity);
+                      if (!isDragging && !isResizing) {
+                        onActivityClick(activity);
+                      }
                     }}
-                    onMouseDown={(e) => handleDragStart(e, activity)}
-                    layoutId={activity.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.02 }}
+                    onPointerDown={(e) => handleDragStart(e, activity)}
+                    initial={false}
+                    animate={{ 
+                      scale: isDragging ? 1.02 : 1,
+                      boxShadow: isDragging ? "0 10px 25px rgba(0,0,0,0.2)" : "0 1px 3px rgba(0,0,0,0.1)"
+                    }}
                   >
                     {/* Drag Handle */}
-                    <div className="absolute top-1 left-1 opacity-50">
+                    <div className="absolute top-1 left-1 opacity-50 pointer-events-none">
                       <GripVertical className="w-3 h-3" />
                     </div>
+                    
+                    {/* Time Preview while dragging */}
+                    {isDragging && dragPreview && (
+                      <div className="absolute -top-6 left-0 right-0 flex justify-center pointer-events-none">
+                        <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded font-medium shadow-lg">
+                          {dragPreview.start} - {dragPreview.end}
+                        </span>
+                      </div>
+                    )}
                     
                     {/* Content */}
                     <div className="ml-4">
@@ -373,20 +611,21 @@ export const VisualScheduleCalendar = ({
                           {activity.start_time && (
                             <span className="flex items-center gap-0.5">
                               <Clock className="w-2.5 h-2.5" />
-                              {activity.start_time}
-                            </span>
-                          )}
-                          {activity.location && height >= 70 && (
-                            <span className="flex items-center gap-0.5 truncate">
-                              <MapPin className="w-2.5 h-2.5" />
-                              {activity.location}
+                              {activity.start_time}{activity.end_time && ` - ${activity.end_time}`}
                             </span>
                           )}
                         </div>
                       )}
                       
-                      {height >= 80 && activity.estimated_cost && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-1">
+                      {height >= 70 && activity.location && (
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+                          <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                          <span className="truncate">{activity.location}</span>
+                        </div>
+                      )}
+                      
+                      {height >= 85 && activity.estimated_cost && (
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
                           <Euro className="w-2.5 h-2.5" />
                           {activity.estimated_cost} {activity.currency}
                         </div>
@@ -395,9 +634,20 @@ export const VisualScheduleCalendar = ({
                     
                     {/* Resize Handle */}
                     <div
-                      className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-primary/20 rounded-b-lg"
-                      onMouseDown={(e) => handleResizeStart(e, activity)}
-                    />
+                      className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize hover:bg-primary/30 rounded-b-lg flex items-center justify-center"
+                      onPointerDown={(e) => handleResizeStart(e, activity)}
+                    >
+                      <div className="w-8 h-1 bg-current opacity-30 rounded-full" />
+                    </div>
+                    
+                    {/* Resize Preview */}
+                    {isResizing && resizePreview && (
+                      <div className="absolute -bottom-6 left-0 right-0 flex justify-center pointer-events-none">
+                        <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded font-medium shadow-lg">
+                          {t('planner.calendar.endTime')}: {resizePreview}
+                        </span>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
@@ -418,6 +668,11 @@ export const VisualScheduleCalendar = ({
             <span>{t(`planner.categories.${key}`)}</span>
           </div>
         ))}
+      </div>
+      
+      {/* Help Text */}
+      <div className="text-xs text-muted-foreground mt-2">
+        {t('planner.calendar.helpText')}
       </div>
     </GlassCard>
   );

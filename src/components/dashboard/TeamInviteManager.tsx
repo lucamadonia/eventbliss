@@ -27,27 +27,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { Participant } from "@/hooks/useEvent";
-
-interface DashboardPermissions {
-  can_view_responses: boolean;
-  can_add_expenses: boolean;
-  can_view_all_expenses: boolean;
-  can_edit_settings: boolean;
-}
-
-interface ExtendedParticipant extends Participant {
-  can_access_dashboard?: boolean;
-  dashboard_permissions?: DashboardPermissions;
-  invite_token?: string;
-  invite_sent_at?: string | null;
-  invite_claimed_at?: string | null;
-}
+import type { Participant, DashboardPermissions } from "@/hooks/useEvent";
 
 interface TeamInviteManagerProps {
   eventSlug: string;
   eventId: string;
-  participants: ExtendedParticipant[];
+  participants: Participant[];
   onUpdate: () => void;
 }
 
@@ -72,7 +57,7 @@ export function TeamInviteManager({
     return `${window.location.origin}/e/${eventSlug}/claim/${inviteToken}`;
   };
 
-  const copyInviteLink = async (participant: ExtendedParticipant) => {
+  const copyInviteLink = async (participant: Participant) => {
     if (!participant.invite_token) return;
 
     const link = getInviteLink(participant.invite_token);
@@ -92,7 +77,7 @@ export function TeamInviteManager({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const toggleDashboardAccess = async (participant: ExtendedParticipant, enabled: boolean) => {
+  const toggleDashboardAccess = async (participant: Participant, enabled: boolean) => {
     setLoadingStates((prev) => ({ ...prev, [participant.id]: true }));
 
     try {
@@ -125,7 +110,7 @@ export function TeamInviteManager({
   };
 
   const updatePermission = async (
-    participant: ExtendedParticipant,
+    participant: Participant,
     permission: keyof DashboardPermissions,
     value: boolean
   ) => {
@@ -151,7 +136,7 @@ export function TeamInviteManager({
     }
   };
 
-  const getStatusBadge = (participant: ExtendedParticipant) => {
+  const getStatusBadge = (participant: Participant) => {
     if (participant.invite_claimed_at) {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-success/15 text-success border border-success/30">

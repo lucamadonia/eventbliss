@@ -53,10 +53,10 @@ serve(async (req) => {
       );
     }
 
-    // Get participants
+    // Get participants with all access fields
     const { data: participants, error: participantsError } = await supabase
       .from("participants")
-      .select("id, name, email, role, status, avatar_url")
+      .select("id, name, email, role, status, avatar_url, can_access_dashboard, dashboard_permissions, invite_token, invite_sent_at, invite_claimed_at, user_id")
       .eq("event_id", event.id)
       .order("created_at", { ascending: true });
 

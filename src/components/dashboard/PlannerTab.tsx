@@ -46,6 +46,11 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+interface PrefillTime {
+  start: string;
+  end: string;
+}
+
 interface Participant {
   id: string;
   name: string;
@@ -136,6 +141,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>(() => isMobile ? 'list' : 'calendar');
+  const [prefillTime, setPrefillTime] = useState<PrefillTime | null>(null);
 
   const currentLocale = localeMap[i18n.language] || de;
 
@@ -520,9 +526,15 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
               setShowForm(true);
             }
           }}
-          onTimeSlotClick={(date, hour) => {
+          onTimeSlotClick={(date, timeData) => {
             setSelectedDate(date);
-            // Open form with pre-filled time
+            // Parse time data (format: "HH:MM|HH:MM" for start|end)
+            if (timeData.includes('|')) {
+              const [start, end] = timeData.split('|');
+              setPrefillTime({ start, end });
+            } else {
+              setPrefillTime({ start: timeData, end: "" });
+            }
             setEditingActivity(null);
             setShowForm(true);
           }}
@@ -716,11 +728,14 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         onClose={() => {
           setShowForm(false);
           setEditingActivity(null);
+          setPrefillTime(null);
         }}
         onSave={handleSaveActivity}
         activity={editingActivity}
         participants={participants}
         defaultDate={selectedDate || eventDates[0]}
+        defaultStartTime={prefillTime?.start}
+        defaultEndTime={prefillTime?.end}
       />
     </div>
   );

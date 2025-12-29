@@ -943,7 +943,10 @@
       "items": "items",
       "legend": "Legend",
       "dragHint": "Drag activities to move them",
-      "clickToAdd": "Click to add new activity"
+      "clickToAdd": "Click to add new activity",
+      "days": "Days",
+      "endTime": "End",
+      "helpText": "Click on a time slot or drag to create new activities. Drag existing activities to move them."
     },
     "viewMode": {
       "list": "List",
