@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -13,6 +14,7 @@ import {
   Loader2,
   AlertCircle,
   Sparkles,
+  ClipboardList,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
@@ -27,18 +29,20 @@ import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import { AgenciesTab } from "@/components/dashboard/AgenciesTab";
+import { PlannerTab } from "@/components/dashboard/PlannerTab";
 import { FileEdit, Building2 } from "lucide-react";
 
 const tabs = [
-  { id: "overview", label: "Übersicht", icon: LayoutDashboard },
-  { id: "formbuilder", label: "Formular", icon: FileEdit },
-  { id: "schedule", label: "Termine", icon: Calendar },
-  { id: "destination", label: "Ziel", icon: MapPin },
-  { id: "ideas", label: "Ideen", icon: Lightbulb },
-  { id: "agencies", label: "Agenturen", icon: Building2 },
-  { id: "ai", label: "KI", icon: Sparkles },
-  { id: "messages", label: "Nachrichten", icon: MessageSquare },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "overview", labelKey: "dashboard.tabs.overview", icon: LayoutDashboard },
+  { id: "planner", labelKey: "dashboard.tabs.planner", icon: ClipboardList },
+  { id: "formbuilder", labelKey: "dashboard.tabs.form", icon: FileEdit },
+  { id: "schedule", labelKey: "dashboard.tabs.schedule", icon: Calendar },
+  { id: "destination", labelKey: "dashboard.tabs.destination", icon: MapPin },
+  { id: "ideas", labelKey: "dashboard.tabs.ideas", icon: Lightbulb },
+  { id: "agencies", labelKey: "dashboard.tabs.agencies", icon: Building2 },
+  { id: "ai", labelKey: "dashboard.tabs.ai", icon: Sparkles },
+  { id: "messages", labelKey: "dashboard.tabs.messages", icon: MessageSquare },
+  { id: "settings", labelKey: "dashboard.tabs.settings", icon: Settings },
 ];
 
 interface ResponseStats {
@@ -63,6 +67,7 @@ interface Response {
 const EventDashboard = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState<ResponseStats | null>(null);
@@ -147,6 +152,8 @@ const EventDashboard = () => {
         return <DestinationTab event={event} stats={stats} isLoading={statsLoading} />;
       case "ideas":
         return <IdeasTab responses={responses} isLoading={statsLoading} />;
+      case "planner":
+        return <PlannerTab event={event} participants={participants} />;
       case "agencies":
         return <AgenciesTab />;
       case "ai":
@@ -208,7 +215,7 @@ const EventDashboard = () => {
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="hidden sm:inline">{t(tab.labelKey)}</span>
                   </button>
                 );
               })}

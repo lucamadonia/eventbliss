@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_comments: {
+        Row: {
+          activity_id: string
+          content: string
+          created_at: string
+          id: string
+          participant_id: string
+        }
+        Insert: {
+          activity_id: string
+          content: string
+          created_at?: string
+          id?: string
+          participant_id: string
+        }
+        Update: {
+          activity_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          participant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_comments_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_comments_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           access_code: string | null
@@ -376,6 +415,93 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedule_activities: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          cost_per_person: boolean | null
+          created_at: string
+          currency: string | null
+          day_date: string
+          description: string | null
+          end_time: string | null
+          estimated_cost: number | null
+          event_id: string
+          id: string
+          location: string | null
+          location_url: string | null
+          notes: string | null
+          requirements: string[] | null
+          responsible_participant_id: string | null
+          sort_order: number | null
+          start_time: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cost_per_person?: boolean | null
+          created_at?: string
+          currency?: string | null
+          day_date: string
+          description?: string | null
+          end_time?: string | null
+          estimated_cost?: number | null
+          event_id: string
+          id?: string
+          location?: string | null
+          location_url?: string | null
+          notes?: string | null
+          requirements?: string[] | null
+          responsible_participant_id?: string | null
+          sort_order?: number | null
+          start_time?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cost_per_person?: boolean | null
+          created_at?: string
+          currency?: string | null
+          day_date?: string
+          description?: string | null
+          end_time?: string | null
+          estimated_cost?: number | null
+          event_id?: string
+          id?: string
+          location?: string | null
+          location_url?: string | null
+          notes?: string | null
+          requirements?: string[] | null
+          responsible_participant_id?: string | null
+          sort_order?: number | null
+          start_time?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_activities_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_activities_responsible_participant_id_fkey"
+            columns: ["responsible_participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
         ]
