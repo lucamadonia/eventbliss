@@ -1,38 +1,46 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Users, Wallet, MessageSquare } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { FloatingElement } from "@/components/ui/FloatingElement";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const features = [
     {
       icon: Users,
-      title: "Multi-Event Management",
-      description: "Create unlimited events. Each gets its own unique link, dashboard, and participant list.",
+      title: t('landing.feature1Title'),
+      description: t('landing.feature1Description'),
       gradient: "primary" as const,
     },
     {
       icon: Wallet,
-      title: "Smart Cost Splitting",
-      description: "Track expenses, split costs fairly, and see who owes what in real-time.",
+      title: t('landing.feature2Title'),
+      description: t('landing.feature2Description'),
       gradient: "secondary" as const,
     },
     {
       icon: MessageSquare,
-      title: "Message Templates",
-      description: "Pre-built WhatsApp templates for every stage. Copy, customize, send.",
+      title: t('landing.feature3Title'),
+      description: t('landing.feature3Description'),
       gradient: "accent" as const,
     },
   ];
 
   return (
     <AnimatedBackground>
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 py-20">
         <div className="container max-w-6xl mx-auto">
@@ -54,7 +62,7 @@ const Landing = () => {
             >
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-muted-foreground">
-                The Modern Party Planning Platform
+                {t('landing.subtitle')}
               </span>
             </motion.div>
 
@@ -65,7 +73,7 @@ const Landing = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
             >
-              <span className="text-gradient-primary">STAG</span>
+              <span className="text-gradient-primary">{t('landing.title')}</span>
             </motion.h1>
 
             {/* Subheadline */}
@@ -75,7 +83,7 @@ const Landing = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12"
             >
-              Plan epic bachelor parties, split costs effortlessly, and coordinate everything in one beautiful place.
+              {t('landing.description')}
             </motion.p>
 
             {/* CTA Buttons */}
@@ -90,14 +98,14 @@ const Landing = () => {
                 onClick={() => navigate("/create")}
                 icon={<ArrowRight className="w-5 h-5" />}
               >
-                Create Event
+                {t('landing.createEvent')}
               </GradientButton>
               <GradientButton
                 variant="outline"
                 size="lg"
                 onClick={() => navigate("/join")}
               >
-                Join with Code
+                {t('landing.joinWithCode')}
               </GradientButton>
             </motion.div>
           </div>
@@ -115,10 +123,10 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Everything You Need
+              {t('landing.featuresTitle')}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              From planning to payment — we've got every angle covered.
+              {t('landing.featuresSubtitle')}
             </p>
           </motion.div>
 
@@ -139,17 +147,17 @@ const Landing = () => {
         <div className="container max-w-4xl mx-auto">
           <GlassCard className="text-center p-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Ready to Start Planning?
+              {t('landing.ctaTitle')}
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              Create your event in seconds. No signup required to get started.
+              {t('landing.ctaDescription')}
             </p>
             <GradientButton
               size="lg"
               onClick={() => navigate("/create")}
               icon={<Sparkles className="w-5 h-5" />}
             >
-              Create Free Event
+              {t('landing.ctaButton')}
             </GradientButton>
           </GlassCard>
         </div>
@@ -158,7 +166,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border/50">
         <div className="container max-w-6xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2024 STAG. Built for legendary celebrations.</p>
+          <p>{t('landing.footer')}</p>
         </div>
       </footer>
     </AnimatedBackground>
