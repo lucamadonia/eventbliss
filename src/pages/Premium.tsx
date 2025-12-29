@@ -47,6 +47,9 @@ export default function Premium() {
       return;
     }
 
+    // Open popup immediately (synchronously) to avoid popup blockers
+    const popup = window.open("about:blank", "_blank");
+
     setCheckoutLoading(selectedPlanType);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
@@ -59,10 +62,18 @@ export default function Premium() {
       if (error) throw error;
       
       if (data?.url) {
-        window.open(data.url, "_blank");
+        if (popup && !popup.closed) {
+          popup.location.href = data.url;
+        } else {
+          // Fallback: open in same tab if popup was blocked
+          window.location.href = data.url;
+        }
+      } else {
+        popup?.close();
       }
     } catch (err) {
       console.error("Checkout error:", err);
+      popup?.close();
       toast.error(t("premium.checkoutError"));
     } finally {
       setCheckoutLoading(null);
@@ -70,6 +81,9 @@ export default function Premium() {
   };
 
   const handleManageSubscription = async () => {
+    // Open popup immediately (synchronously) to avoid popup blockers
+    const popup = window.open("about:blank", "_blank");
+    
     setPortalLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("customer-portal");
@@ -77,10 +91,18 @@ export default function Premium() {
       if (error) throw error;
       
       if (data?.url) {
-        window.open(data.url, "_blank");
+        if (popup && !popup.closed) {
+          popup.location.href = data.url;
+        } else {
+          // Fallback: open in same tab if popup was blocked
+          window.location.href = data.url;
+        }
+      } else {
+        popup?.close();
       }
     } catch (err) {
       console.error("Portal error:", err);
+      popup?.close();
       toast.error(t("premium.portalError"));
     } finally {
       setPortalLoading(false);
