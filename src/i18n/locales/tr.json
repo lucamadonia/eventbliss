@@ -544,9 +544,46 @@
   },
   "premium": {
     "title": "Premium Özellikler",
+    "description": "Daha iyi bir deneyim için gelişmiş özelliklerin kilidini aç.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Mükemmel etkinlikler için ihtiyacın olan her şey",
+    "perMonth": "ay",
     "badge": "Premium",
-    "features": { "ai_assistant": "AI Asistan", "expenses": "Sınırsız Harcamalar", "custom_questions": "Özel Sorular" },
-    "paywall": { "ai_assistant": "AI asistan size kişiselleştirilmiş öneriler sunar.", "expenses": "Ücretsiz kullanıcılar en fazla 3 harcama ekleyebilir.", "custom_questions": "Premium ile özel sorular oluşturun.", "maxOptions": "Ücretsiz kullanıcılar için maks. 5 seçenek.", "upgradeButton": "Şimdi Yükselt", "startingAt": "Sadece 9,99€ / ay'dan başlayan" },
-    "benefits": { "unlimitedAccess": "Sınırsız erişim", "aiFeatures": "Tüm AI özellikleri", "prioritySupport": "Öncelikli destek" }
+    "active": "Aktif",
+    "validUntil": "Geçerlilik",
+    "loginRequired": "Abone olmak için giriş yap.",
+    "subscriptionSuccess": "Premium aboneliğin şimdi aktif!",
+    "subscriptionCanceled": "Ödeme iptal edildi.",
+    "checkoutError": "Ödeme açılırken hata oluştu. Tekrar dene.",
+    "portalError": "Abonelik yönetimi açılırken hata oluştu.",
+    "manageSubscription": "Aboneliği Yönet",
+    "securePayment": "Stripe ile güvenli ödeme. İstediğin zaman iptal et.",
+    "features": {
+      "aiAssistant": "AI Asistan",
+      "ai_assistant": "AI Asistan",
+      "messageEnhancement": "Mesaj AI",
+      "unlimitedExpenses": "Sınırsız Harcamalar",
+      "expenses": "Sınırsız Harcamalar",
+      "customQuestions": "Özel Sorular",
+      "custom_questions": "Özel Sorular",
+      "unlimitedOptions": "Sınırsız Seçenekler",
+      "prioritySupport": "Öncelikli Destek"
+    },
+    "paywall": {
+      "title": "Premium Özellik",
+      "description": "Bu özellik sadece Premium kullanıcılar için mevcuttur.",
+      "ai_assistant": "AI asistan size kişiselleştirilmiş öneriler sunar.",
+      "expenses": "Ücretsiz kullanıcılar en fazla 3 harcama ekleyebilir.",
+      "custom_questions": "Premium ile özel sorular oluşturun.",
+      "maxOptions": "Ücretsiz kullanıcılar için maks. 5 seçenek.",
+      "upgradeButton": "Şimdi Yükselt",
+      "startingAt": "Sadece 39€ / ay'dan başlayan"
+    },
+    "benefits": {
+      "unlimitedAccess": "Sınırsız erişim",
+      "aiFeatures": "Tüm AI özellikleri",
+      "prioritySupport": "Öncelikli destek"
+    },
+    "subscribe": "Şimdi Yükselt"
   }
 }

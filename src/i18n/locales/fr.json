@@ -603,27 +603,48 @@
   "premium": {
     "title": "Fonctionnalités Premium",
     "description": "Débloquez des fonctionnalités avancées.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Tout ce dont vous avez besoin pour des événements parfaits",
+    "perMonth": "mois",
     "badge": "Premium",
+    "active": "Actif",
+    "validUntil": "Valide jusqu'au",
+    "loginRequired": "Veuillez vous connecter pour vous abonner.",
+    "subscriptionSuccess": "Votre abonnement Premium est maintenant actif !",
+    "subscriptionCanceled": "Paiement annulé.",
+    "checkoutError": "Erreur lors de l'ouverture du paiement. Veuillez réessayer.",
+    "portalError": "Erreur lors de l'ouverture de la gestion d'abonnement.",
+    "manageSubscription": "Gérer l'abonnement",
+    "securePayment": "Paiement sécurisé via Stripe. Annulez à tout moment.",
     "features": {
+      "aiAssistant": "Assistant IA",
       "ai_assistant": "Assistant IA",
+      "messageEnhancement": "IA de Messages",
       "message_ai": "IA de Messages",
+      "unlimitedExpenses": "Dépenses Illimitées",
       "expenses": "Dépenses Illimitées",
+      "customQuestions": "Questions Personnalisées",
       "custom_questions": "Questions Personnalisées",
-      "max_options": "Options Illimitées"
+      "unlimitedOptions": "Options Illimitées",
+      "max_options": "Options Illimitées",
+      "prioritySupport": "Support Prioritaire"
     },
     "paywall": {
+      "title": "Fonctionnalité Premium",
+      "description": "Cette fonctionnalité est réservée aux utilisateurs Premium.",
       "ai_assistant": "L'assistant IA vous aide avec des suggestions personnalisées.",
       "message_ai": "Avec Premium, améliorez vos messages avec l'IA.",
       "expenses": "Les utilisateurs gratuits peuvent ajouter jusqu'à 3 dépenses.",
       "custom_questions": "Créez des questions personnalisées avec Premium.",
       "maxOptions": "Les utilisateurs gratuits peuvent ajouter jusqu'à 5 options.",
       "upgradeButton": "Passer à Premium",
-      "startingAt": "À partir de 9,99€ / mois"
+      "startingAt": "À partir de 39€ / mois"
     },
     "benefits": {
       "unlimitedAccess": "Accès illimité à toutes les fonctionnalités",
       "aiFeatures": "Toutes les fonctionnalités IA débloquées",
       "prioritySupport": "Support prioritaire"
-    }
+    },
+    "subscribe": "Passer à Premium"
   }
 }

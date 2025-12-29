@@ -544,9 +544,46 @@
   },
   "premium": {
     "title": "Funcionalidades Premium",
+    "description": "Desbloqueia funcionalidades avançadas para uma experiência melhor.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Tudo o que precisas para eventos perfeitos",
+    "perMonth": "mês",
     "badge": "Premium",
-    "features": { "ai_assistant": "Assistente IA", "expenses": "Despesas Ilimitadas", "custom_questions": "Perguntas Personalizadas" },
-    "paywall": { "ai_assistant": "O assistente IA ajuda-te com sugestões personalizadas.", "expenses": "Utilizadores gratuitos podem adicionar até 3 despesas.", "custom_questions": "Cria perguntas personalizadas com Premium.", "maxOptions": "Máx. 5 opções para utilizadores gratuitos.", "upgradeButton": "Atualizar Agora", "startingAt": "A partir de apenas €9,99 / mês" },
-    "benefits": { "unlimitedAccess": "Acesso ilimitado", "aiFeatures": "Todas as funcionalidades IA", "prioritySupport": "Suporte prioritário" }
+    "active": "Ativo",
+    "validUntil": "Válido até",
+    "loginRequired": "Faz login para subscrever.",
+    "subscriptionSuccess": "A tua subscrição Premium está agora ativa!",
+    "subscriptionCanceled": "Checkout cancelado.",
+    "checkoutError": "Erro ao abrir checkout. Tenta novamente.",
+    "portalError": "Erro ao abrir gestão de subscrição.",
+    "manageSubscription": "Gerir Subscrição",
+    "securePayment": "Pagamento seguro via Stripe. Cancela quando quiseres.",
+    "features": {
+      "aiAssistant": "Assistente IA",
+      "ai_assistant": "Assistente IA",
+      "messageEnhancement": "IA de Mensagens",
+      "unlimitedExpenses": "Despesas Ilimitadas",
+      "expenses": "Despesas Ilimitadas",
+      "customQuestions": "Perguntas Personalizadas",
+      "custom_questions": "Perguntas Personalizadas",
+      "unlimitedOptions": "Opções Ilimitadas",
+      "prioritySupport": "Suporte Prioritário"
+    },
+    "paywall": {
+      "title": "Funcionalidade Premium",
+      "description": "Esta funcionalidade está disponível apenas para utilizadores Premium.",
+      "ai_assistant": "O assistente IA ajuda-te com sugestões personalizadas.",
+      "expenses": "Utilizadores gratuitos podem adicionar até 3 despesas.",
+      "custom_questions": "Cria perguntas personalizadas com Premium.",
+      "maxOptions": "Máx. 5 opções para utilizadores gratuitos.",
+      "upgradeButton": "Atualizar Agora",
+      "startingAt": "A partir de apenas €39 / mês"
+    },
+    "benefits": {
+      "unlimitedAccess": "Acesso ilimitado",
+      "aiFeatures": "Todas as funcionalidades IA",
+      "prioritySupport": "Suporte prioritário"
+    },
+    "subscribe": "Atualizar Agora"
   }
 }

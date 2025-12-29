@@ -1154,15 +1154,28 @@
     "planDescription": "Alles was du für perfekte Events brauchst",
     "perMonth": "Monat",
     "badge": "Premium",
+    "active": "Aktiv",
+    "validUntil": "Gültig bis",
+    "loginRequired": "Bitte melde dich an, um ein Abo abzuschließen.",
+    "subscriptionSuccess": "Dein Premium-Abo ist jetzt aktiv!",
+    "subscriptionCanceled": "Checkout abgebrochen.",
+    "checkoutError": "Fehler beim Öffnen des Checkouts. Bitte versuche es erneut.",
+    "portalError": "Fehler beim Öffnen der Abo-Verwaltung.",
+    "manageSubscription": "Abo verwalten",
+    "securePayment": "Sichere Zahlung über Stripe. Jederzeit kündbar.",
     "features": {
       "unlimitedEvents": "Unbegrenzte Events",
       "aiAssistant": "KI-Assistent",
       "prioritySupport": "Prioritäts-Support",
       "ai_assistant": "KI-Assistent",
       "message_ai": "Nachrichten-KI",
+      "messageEnhancement": "Nachrichten-KI",
       "expenses": "Unbegrenzte Ausgaben",
+      "unlimitedExpenses": "Unbegrenzte Ausgaben",
       "custom_questions": "Eigene Umfrage-Fragen",
-      "max_options": "Unbegrenzte Optionen"
+      "customQuestions": "Eigene Umfrage-Fragen",
+      "max_options": "Unbegrenzte Optionen",
+      "unlimitedOptions": "Unbegrenzte Optionen"
     },
     "paywall": {
       "title": "Premium-Funktion",
@@ -1173,14 +1186,13 @@
       "custom_questions": "Erstelle eigene Fragen für deine Umfrage mit Premium.",
       "maxOptions": "Free-Nutzer können max. 5 Optionen pro Frage hinzufügen.",
       "upgradeButton": "Jetzt upgraden",
-      "startingAt": "Ab nur 9,99€ / Monat"
+      "startingAt": "Ab nur 39€ / Monat"
     },
     "benefits": {
       "unlimitedAccess": "Unbegrenzter Zugang zu allen Funktionen",
       "aiFeatures": "Alle KI-Funktionen freigeschaltet",
       "prioritySupport": "Prioritäts-Support"
     },
-    "subscribe": "Jetzt upgraden",
-    "comingSoonNote": "Premium-Abonnements werden bald verfügbar sein. Bleib dran!"
+    "subscribe": "Jetzt upgraden"
   }
 }
