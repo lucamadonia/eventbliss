@@ -134,7 +134,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         .order("sort_order", { ascending: true });
 
       if (error) throw error;
-      setActivities(data || []);
+      setActivities((data || []) as Activity[]);
 
       // Fetch comments for all activities
       if (data && data.length > 0) {
@@ -265,6 +265,8 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const totalCostForDate = allActivitiesForDate.reduce((sum, a) => {
     return sum + (a.estimated_cost || 0);
   }, 0);
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -325,6 +327,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
       </div>
 
       {/* Date Navigation */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {eventDates.map((date) => {
           const dateObj = parseISO(date);
           const isSelected = date === selectedDate;
@@ -355,7 +358,6 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
           );
         })}
       </div>
-
       {/* Activities for Selected Date */}
       <AnimatePresence mode="wait">
         {selectedDate && (
