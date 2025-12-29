@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/badge";
+import { CATEGORY_CONFIG, CATEGORY_KEYS, ActivityCategory } from "@/lib/category-config";
+import { cn } from "@/lib/utils";
 
 interface Participant {
   id: string;
@@ -39,6 +41,7 @@ interface Activity {
   requirements: string[] | null;
   notes: string | null;
   responsible_participant_id: string | null;
+  category?: string | null;
 }
 
 interface ActivityFormProps {
@@ -76,6 +79,7 @@ export const ActivityForm = ({
     requirements: [],
     notes: "",
     responsible_participant_id: null,
+    category: "activity",
   });
   const [newRequirement, setNewRequirement] = useState("");
 
@@ -98,6 +102,7 @@ export const ActivityForm = ({
         requirements: activity.requirements || [],
         notes: activity.notes || "",
         responsible_participant_id: activity.responsible_participant_id,
+        category: activity.category || "activity",
       });
     } else {
       setFormData({
@@ -117,6 +122,7 @@ export const ActivityForm = ({
         requirements: [],
         notes: "",
         responsible_participant_id: null,
+        category: "activity",
       });
     }
   }, [activity, defaultDate, open]);
@@ -164,17 +170,46 @@ export const ActivityForm = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title & Description */}
+          {/* Title & Category */}
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="title">{t('planner.form.title')} *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-                placeholder={t('planner.form.titlePlaceholder')}
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="title">{t('planner.form.title')} *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                  placeholder={t('planner.form.titlePlaceholder')}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="category">{t('planner.form.category')} *</Label>
+                <div className="grid grid-cols-4 gap-1.5 mt-1.5">
+                  {CATEGORY_KEYS.map((key) => {
+                    const config = CATEGORY_CONFIG[key];
+                    const isSelected = formData.category === key;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => handleChange("category", key)}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-2 rounded-lg border transition-all text-xs",
+                          isSelected
+                            ? cn(config.bgClass, config.borderClass, config.colorClass, "border-2")
+                            : "border-border/50 hover:border-border bg-background/50"
+                        )}
+                      >
+                        <span className="text-lg">{config.emoji}</span>
+                        <span className="mt-0.5 truncate w-full text-center">
+                          {t(`planner.categories.${key}`)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             <div>
               <Label htmlFor="description">{t('planner.form.description')}</Label>

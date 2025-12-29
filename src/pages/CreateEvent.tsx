@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -38,11 +39,11 @@ interface EventFormData {
 }
 
 const eventTypes = [
-  { value: "bachelor", label: "Bachelor Party", icon: PartyPopper, emoji: "🎉" },
-  { value: "bachelorette", label: "Bachelorette", icon: Sparkles, emoji: "💅" },
-  { value: "birthday", label: "Birthday", icon: Cake, emoji: "🎂" },
-  { value: "trip", label: "Group Trip", icon: Plane, emoji: "✈️" },
-  { value: "other", label: "Other Event", icon: Users, emoji: "🎊" },
+  { value: "bachelor", labelKey: "createEvent.types.bachelor", icon: PartyPopper, emoji: "🎉" },
+  { value: "bachelorette", labelKey: "createEvent.types.bachelorette", icon: Sparkles, emoji: "💅" },
+  { value: "birthday", labelKey: "createEvent.types.birthday", icon: Cake, emoji: "🎂" },
+  { value: "trip", labelKey: "createEvent.types.trip", icon: Plane, emoji: "✈️" },
+  { value: "other", labelKey: "createEvent.types.other", icon: Users, emoji: "🎊" },
 ];
 
 const defaultNoGos = [
@@ -59,6 +60,7 @@ const defaultFocusPoints = [
 ];
 
 const CreateEvent = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -147,8 +149,8 @@ const CreateEvent = () => {
         });
         setStep(5);
         toast({
-          title: "Event created! 🎉",
-          description: "Share the code with your friends.",
+          title: t('createEvent.success.title'),
+          description: t('createEvent.success.description'),
         });
       } else {
         throw new Error(data?.error || "Failed to create event");
@@ -156,8 +158,8 @@ const CreateEvent = () => {
     } catch (error) {
       console.error("Error creating event:", error);
       toast({
-        title: "Error",
-        description: "Failed to create event. Please try again.",
+        title: t('common.error'),
+        description: t('createEvent.error.failed'),
         variant: "destructive",
       });
     } finally {
@@ -169,11 +171,16 @@ const CreateEvent = () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: "Copied!", description: "Link copied to clipboard." });
+    toast({ title: t('common.copied'), description: t('createEvent.success.linkCopied') });
   };
 
   const shareWhatsApp = () => {
-    const text = `🎉 You're invited!\n\nJoin "${formData.name}" for ${formData.honoree_name}'s celebration!\n\n👉 ${createdEvent?.share_link}\n📝 Code: ${createdEvent?.access_code}`;
+    const text = t('createEvent.success.whatsappMessage', {
+      name: formData.name,
+      honoree: formData.honoree_name,
+      link: createdEvent?.share_link,
+      code: createdEvent?.access_code,
+    });
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -189,10 +196,10 @@ const CreateEvent = () => {
           >
             <div className="text-center mb-8">
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                What are you planning?
+                {t('createEvent.step1.title')}
               </h2>
               <p className="text-muted-foreground">
-                Choose the type of event you want to organize.
+                {t('createEvent.step1.subtitle')}
               </p>
             </div>
 
@@ -209,7 +216,7 @@ const CreateEvent = () => {
                 >
                   <div className="text-center">
                     <span className="text-4xl mb-3 block">{type.emoji}</span>
-                    <p className="font-medium text-sm">{type.label}</p>
+                    <p className="font-medium text-sm">{t(type.labelKey)}</p>
                   </div>
                 </GlassCard>
               ))}
@@ -227,19 +234,19 @@ const CreateEvent = () => {
           >
             <div className="text-center mb-8">
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                Event Details
+                {t('createEvent.step2.title')}
               </h2>
               <p className="text-muted-foreground">
-                Tell us about the event and who it's for.
+                {t('createEvent.step2.subtitle')}
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="honoree_name">Who is the guest of honor?</Label>
+                <Label htmlFor="honoree_name">{t('createEvent.step2.honoreeName')}</Label>
                 <Input
                   id="honoree_name"
-                  placeholder="e.g., Dominik"
+                  placeholder={t('createEvent.step2.honoreeNamePlaceholder')}
                   value={formData.honoree_name}
                   onChange={(e) => updateFormData("honoree_name", e.target.value)}
                   className="bg-background/50 border-border/50"
@@ -247,10 +254,10 @@ const CreateEvent = () => {
               </div>
 
               <div>
-                <Label htmlFor="name">Event Name</Label>
+                <Label htmlFor="name">{t('createEvent.step2.eventName')}</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Dominik's Epic Bachelor Party"
+                  placeholder={t('createEvent.step2.eventNamePlaceholder')}
                   value={formData.name}
                   onChange={(e) => updateFormData("name", e.target.value)}
                   className="bg-background/50 border-border/50"
@@ -258,7 +265,7 @@ const CreateEvent = () => {
               </div>
 
               <div>
-                <Label htmlFor="event_date">Event Date (optional)</Label>
+                <Label htmlFor="event_date">{t('createEvent.step2.eventDate')}</Label>
                 <Input
                   id="event_date"
                   type="date"
@@ -269,10 +276,10 @@ const CreateEvent = () => {
               </div>
 
               <div>
-                <Label htmlFor="organizer_name">Your Name (Organizer)</Label>
+                <Label htmlFor="organizer_name">{t('createEvent.step2.organizerName')}</Label>
                 <Input
                   id="organizer_name"
-                  placeholder="e.g., Luca"
+                  placeholder={t('createEvent.step2.organizerNamePlaceholder')}
                   value={formData.organizer_name}
                   onChange={(e) => updateFormData("organizer_name", e.target.value)}
                   className="bg-background/50 border-border/50"
@@ -280,11 +287,11 @@ const CreateEvent = () => {
               </div>
 
               <div>
-                <Label htmlFor="organizer_email">Your Email (optional)</Label>
+                <Label htmlFor="organizer_email">{t('createEvent.step2.organizerEmail')}</Label>
                 <Input
                   id="organizer_email"
                   type="email"
-                  placeholder="luca@example.com"
+                  placeholder={t('createEvent.step2.organizerEmailPlaceholder')}
                   value={formData.organizer_email}
                   onChange={(e) => updateFormData("organizer_email", e.target.value)}
                   className="bg-background/50 border-border/50"
@@ -304,23 +311,23 @@ const CreateEvent = () => {
           >
             <div className="text-center mb-8">
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                Add Participants
+                {t('createEvent.step3.title')}
               </h2>
               <p className="text-muted-foreground">
-                Add the people you want to invite (you can add more later).
+                {t('createEvent.step3.subtitle')}
               </p>
             </div>
 
             <div className="flex gap-2">
               <Input
-                placeholder="Enter name..."
+                placeholder={t('createEvent.step3.namePlaceholder')}
                 value={participantInput}
                 onChange={(e) => setParticipantInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addParticipant()}
                 className="bg-background/50 border-border/50"
               />
               <GradientButton onClick={addParticipant} size="sm">
-                Add
+                {t('common.add')}
               </GradientButton>
             </div>
 
@@ -345,7 +352,7 @@ const CreateEvent = () => {
 
             {formData.participants.length === 0 && (
               <p className="text-center text-muted-foreground text-sm">
-                No participants added yet. You can skip this step and add them later.
+                {t('createEvent.step3.noParticipants')}
               </p>
             )}
           </motion.div>
@@ -361,21 +368,21 @@ const CreateEvent = () => {
           >
             <div className="text-center mb-8">
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                Review & Create
+                {t('createEvent.step4.title')}
               </h2>
               <p className="text-muted-foreground">
-                Everything looks good? Let's create your event!
+                {t('createEvent.step4.subtitle')}
               </p>
             </div>
 
             <GlassCard className="p-6 space-y-4">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">
-                  {eventTypes.find((t) => t.value === formData.event_type)?.emoji}
+                  {eventTypes.find((type) => type.value === formData.event_type)?.emoji}
                 </span>
                 <div>
                   <h3 className="font-bold text-lg">{formData.name}</h3>
-                  <p className="text-muted-foreground">for {formData.honoree_name}</p>
+                  <p className="text-muted-foreground">{t('createEvent.step4.forHonoree', { name: formData.honoree_name })}</p>
                 </div>
               </div>
 
@@ -389,17 +396,17 @@ const CreateEvent = () => {
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Users className="w-4 h-4" />
                 <span>
-                  {formData.participants.length + 1} participants (including you)
+                  {t('createEvent.step4.participantCount', { count: formData.participants.length + 1 })}
                 </span>
               </div>
 
               <div className="text-sm text-muted-foreground">
-                Organized by <span className="text-foreground">{formData.organizer_name}</span>
+                {t('createEvent.step4.organizedBy', { name: formData.organizer_name })}
               </div>
             </GlassCard>
 
             <Textarea
-              placeholder="Add a description or notes for your guests (optional)"
+              placeholder={t('createEvent.step4.descriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => updateFormData("description", e.target.value)}
               className="bg-background/50 border-border/50 min-h-[100px]"
@@ -425,16 +432,16 @@ const CreateEvent = () => {
 
             <div>
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                Event Created! 🎉
+                {t('createEvent.success.title')}
               </h2>
               <p className="text-muted-foreground">
-                Share the link or code with your friends.
+                {t('createEvent.success.shareMessage')}
               </p>
             </div>
 
             <GlassCard className="p-6 space-y-4">
               <div>
-                <Label className="text-muted-foreground text-sm">Access Code</Label>
+                <Label className="text-muted-foreground text-sm">{t('createEvent.success.accessCode')}</Label>
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <span className="font-mono text-3xl font-bold tracking-wider text-gradient-primary">
                     {createdEvent?.access_code}
@@ -443,7 +450,7 @@ const CreateEvent = () => {
               </div>
 
               <div className="pt-4 border-t border-border/50">
-                <Label className="text-muted-foreground text-sm">Share Link</Label>
+                <Label className="text-muted-foreground text-sm">{t('createEvent.success.shareLink')}</Label>
                 <div className="flex items-center gap-2 mt-2">
                   <Input
                     readOnly
@@ -455,7 +462,7 @@ const CreateEvent = () => {
                     onClick={() => copyToClipboard(createdEvent?.share_link || "")}
                     icon={copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   >
-                    {copied ? "Copied" : "Copy"}
+                    {copied ? t('common.copied') : t('common.copy')}
                   </GradientButton>
                 </div>
               </div>
@@ -463,14 +470,14 @@ const CreateEvent = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <GradientButton onClick={shareWhatsApp} icon={<MessageCircle className="w-5 h-5" />}>
-                Share via WhatsApp
+                {t('createEvent.success.shareWhatsApp')}
               </GradientButton>
               <GradientButton
                 variant="outline"
                 onClick={() => navigate(`/e/${createdEvent?.slug}/dashboard`)}
                 icon={<ArrowRight className="w-5 h-5" />}
               >
-                Go to Dashboard
+                {t('createEvent.success.goToDashboard')}
               </GradientButton>
             </div>
           </motion.div>
@@ -491,7 +498,7 @@ const CreateEvent = () => {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>{step > 1 && step < 5 ? "Back" : "Home"}</span>
+            <span>{step > 1 && step < 5 ? t('common.back') : t('common.home')}</span>
           </button>
 
           {step < 5 && (
@@ -528,7 +535,7 @@ const CreateEvent = () => {
                     disabled={!canProceed()}
                     icon={<ArrowRight className="w-5 h-5" />}
                   >
-                    Continue
+                    {t('common.next')}
                   </GradientButton>
                 ) : (
                   <GradientButton
@@ -537,7 +544,7 @@ const CreateEvent = () => {
                     loading={isSubmitting}
                     icon={<Sparkles className="w-5 h-5" />}
                   >
-                    Create Event
+                    {t('createEvent.submit')}
                   </GradientButton>
                 )}
               </motion.div>

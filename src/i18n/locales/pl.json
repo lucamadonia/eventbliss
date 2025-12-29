@@ -64,31 +64,15 @@
   },
   "createEvent": {
     "title": "Utwórz Wydarzenie",
-    "step1": {
-      "title": "Co planujesz?",
-      "subtitle": "Wybierz typ swojego wydarzenia"
-    },
-    "step2": {
-      "title": "Dla kogo?",
-      "subtitle": "Kto jest świętowany?",
-      "placeholder": "Imię osoby"
-    },
-    "step3": {
-      "title": "Szczegóły Wydarzenia",
-      "subtitle": "Nadaj swojemu wydarzeniu nazwę",
-      "eventName": "Nazwa Wydarzenia",
-      "eventNamePlaceholder": "np. Wieczór kawalerski Maxa 2025"
-    },
-    "types": {
-      "bachelor": "Wieczór Kawalerski",
-      "bachelorette": "Wieczór Panieński",
-      "birthday": "Urodziny",
-      "trip": "Wycieczka Grupowa",
-      "other": "Inne Wydarzenie"
-    },
+    "step1": { "title": "Co planujesz?", "subtitle": "Wybierz typ wydarzenia, które chcesz zorganizować." },
+    "step2": { "title": "Szczegóły Wydarzenia", "subtitle": "Opowiedz nam o wydarzeniu i dla kogo jest.", "honoreeName": "Kto jest gościem honorowym?", "honoreeNamePlaceholder": "np. Dominik", "eventName": "Nazwa Wydarzenia", "eventNamePlaceholder": "np. Epicka Impreza Dominika", "eventDate": "Data Wydarzenia (opcjonalnie)", "organizerName": "Twoje Imię (Organizator)", "organizerNamePlaceholder": "np. Luca", "organizerEmail": "Twój Email (opcjonalnie)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step3": { "title": "Dodaj Uczestników", "subtitle": "Dodaj osoby, które chcesz zaprosić.", "namePlaceholder": "Wpisz imię...", "noParticipants": "Brak uczestników. Możesz pominąć ten krok." },
+    "step4": { "title": "Przejrzyj i Utwórz", "subtitle": "Wszystko dobrze? Utwórzmy Twoje wydarzenie!", "forHonoree": "dla {{name}}", "participantCount": "{{count}} uczestników (w tym Ty)", "organizedBy": "Organizowane przez {{name}}", "descriptionPlaceholder": "Dodaj opis (opcjonalnie)" },
+    "types": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "birthday": "Urodziny", "trip": "Wycieczka Grupowa", "other": "Inne Wydarzenie" },
+    "submit": "Utwórz Wydarzenie",
     "creating": "Tworzenie wydarzenia...",
-    "success": "Wydarzenie utworzone pomyślnie!",
-    "goToDashboard": "Przejdź do Dashboardu"
+    "success": { "title": "Wydarzenie Utworzone! 🎉", "description": "Podziel się kodem z przyjaciółmi.", "shareMessage": "Udostępnij link lub kod.", "accessCode": "Kod Dostępu", "shareLink": "Link do Udostępnienia", "linkCopied": "Link skopiowany.", "shareWhatsApp": "Udostępnij przez WhatsApp", "goToDashboard": "Przejdź do Dashboardu", "whatsappMessage": "🎉 Jesteś zaproszony!\n\nDołącz do \"{{name}}\" na imprezę {{honoree}}!\n\n👉 {{link}}\n📝 Kod: {{code}}" },
+    "error": { "failed": "Tworzenie nie powiodło się. Spróbuj ponownie." }
   },
   "joinEvent": {
     "title": "Dołącz do Wydarzenia",
