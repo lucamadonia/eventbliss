@@ -1136,6 +1136,16 @@
     "portalError": "Error opening subscription management.",
     "manageSubscription": "Manage Subscription",
     "securePayment": "Secure payment via Stripe. Cancel anytime.",
+    "monthly": "Monthly",
+    "lifetime": "Lifetime",
+    "lifetimeDescription": "Pay once, use forever",
+    "popular": "Popular",
+    "oneTimePayment": "one-time",
+    "foreverAccess": "Access forever",
+    "lifetimeActive": "Lifetime active",
+    "subscribeMonthly": "Subscribe monthly",
+    "buyLifetime": "Buy once",
+    "upgradeToLifetime": "Upgrade to Lifetime",
     "features": {
       "unlimitedEvents": "Unlimited Events",
       "aiAssistant": "AI Assistant",
@@ -1159,7 +1169,7 @@
       "custom_questions": "Create custom questions for your survey with Premium.",
       "maxOptions": "Free users can add up to 5 options per question.",
       "upgradeButton": "Upgrade Now",
-      "startingAt": "Starting at just €39 / month"
+      "startingAt": "Starting at just €6.99 / month"
     },
     "benefits": {
       "unlimitedAccess": "Unlimited access to all features",

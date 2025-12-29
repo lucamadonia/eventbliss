@@ -1163,6 +1163,16 @@
     "portalError": "Fehler beim Öffnen der Abo-Verwaltung.",
     "manageSubscription": "Abo verwalten",
     "securePayment": "Sichere Zahlung über Stripe. Jederzeit kündbar.",
+    "monthly": "Monatlich",
+    "lifetime": "Lifetime",
+    "lifetimeDescription": "Einmal zahlen, für immer nutzen",
+    "popular": "Beliebt",
+    "oneTimePayment": "einmalig",
+    "foreverAccess": "Zugang für immer",
+    "lifetimeActive": "Lifetime aktiv",
+    "subscribeMonthly": "Monatlich abonnieren",
+    "buyLifetime": "Einmal kaufen",
+    "upgradeToLifetime": "Auf Lifetime upgraden",
     "features": {
       "unlimitedEvents": "Unbegrenzte Events",
       "aiAssistant": "KI-Assistent",
@@ -1186,7 +1196,7 @@
       "custom_questions": "Erstelle eigene Fragen für deine Umfrage mit Premium.",
       "maxOptions": "Free-Nutzer können max. 5 Optionen pro Frage hinzufügen.",
       "upgradeButton": "Jetzt upgraden",
-      "startingAt": "Ab nur 39€ / Monat"
+      "startingAt": "Ab nur 6,99€ / Monat"
     },
     "benefits": {
       "unlimitedAccess": "Unbegrenzter Zugang zu allen Funktionen",

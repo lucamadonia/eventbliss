@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Price IDs for different plans
+const PRICE_IDS = {
+  monthly: "price_1Sjgb5G3F2f0Er10ZWjNEIjC", // 6.99€/month
+  lifetime: "price_1SjgbNG3F2f0Er10zF9Midns", // 19.99€ one-time
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
@@ -24,6 +30,17 @@ serve(async (req) => {
 
   try {
     logStep("Function started");
+
+    // Parse request body for plan_type
+    let planType = "monthly";
+    try {
+      const body = await req.json();
+      planType = body.plan_type || "monthly";
+    } catch {
+      // No body or invalid JSON, use default
+    }
+
+    logStep("Plan type requested", { planType });
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -48,22 +65,27 @@ serve(async (req) => {
     }
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
+    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS] || PRICE_IDS.monthly;
+    const mode = planType === "lifetime" ? "payment" : "subscription";
+
+    logStep("Creating checkout session", { priceId, mode, planType });
     
-    // Create checkout session for premium subscription
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: "price_1RWQEKG3F2f0Er10zeyZy3vg", // Pro Monatlich - 39€/month
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      mode: mode,
       success_url: `${origin}/premium?success=true`,
       cancel_url: `${origin}/premium?canceled=true`,
       metadata: {
         user_id: user.id,
+        plan_type: planType,
       },
     });
 

@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings } from "lucide-react";
+import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,8 +16,8 @@ export default function Premium() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
-  const { isPremium, loading: premiumLoading, subscriptionEnd, checkSubscription } = usePremium();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const { isPremium, loading: premiumLoading, subscriptionEnd, planType, checkSubscription } = usePremium();
+  const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
   // Handle success/cancel from Stripe
@@ -36,16 +36,18 @@ export default function Premium() {
     }
   }, [searchParams, checkSubscription, t]);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (selectedPlanType: "monthly" | "lifetime") => {
     if (!user) {
       toast.error(t("premium.loginRequired"));
       navigate("/auth");
       return;
     }
 
-    setCheckoutLoading(true);
+    setCheckoutLoading(selectedPlanType);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout");
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan_type: selectedPlanType }
+      });
       
       if (error) throw error;
       
@@ -56,7 +58,7 @@ export default function Premium() {
       console.error("Checkout error:", err);
       toast.error(t("premium.checkoutError"));
     } finally {
-      setCheckoutLoading(false);
+      setCheckoutLoading(null);
     }
   };
 
@@ -87,6 +89,9 @@ export default function Premium() {
     { icon: Shield, key: "prioritySupport" },
   ];
 
+  const isMonthlyActive = isPremium && planType === "monthly";
+  const isLifetimeActive = isPremium && planType === "lifetime";
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -98,7 +103,7 @@ export default function Premium() {
         </div>
       </header>
 
-      <main className="container max-w-2xl py-12">
+      <main className="container max-w-4xl py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,99 +118,209 @@ export default function Premium() {
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="relative overflow-hidden">
-            {isPremium && (
-              <div className="absolute top-0 right-0 m-4">
-                <Badge className="bg-green-500 text-white">
-                  {t("premium.active")}
-                </Badge>
-              </div>
-            )}
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-2xl">{t("premium.planName")}</CardTitle>
-              <CardDescription>{t("premium.planDescription")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center">
-                <span className="text-4xl font-bold">€39</span>
-                <span className="text-muted-foreground">/{t("premium.perMonth")}</span>
-              </div>
-
-              {isPremium && subscriptionEnd && (
-                <div className="text-center text-sm text-muted-foreground">
-                  {t("premium.validUntil")}: {new Date(subscriptionEnd).toLocaleDateString()}
+        {/* Pricing Cards Grid */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Monthly Plan */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className={`relative overflow-hidden h-full ${isMonthlyActive ? 'ring-2 ring-primary' : ''}`}>
+              {isMonthlyActive && (
+                <div className="absolute top-0 right-0 m-4">
+                  <Badge className="bg-green-500 text-white">
+                    {t("premium.active")}
+                  </Badge>
                 </div>
               )}
+              <CardHeader className="text-center pb-2">
+                <CardTitle className="text-xl">{t("premium.monthly")}</CardTitle>
+                <CardDescription>{t("premium.planDescription")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <span className="text-4xl font-bold">€6,99</span>
+                  <span className="text-muted-foreground">/{t("premium.perMonth")}</span>
+                </div>
 
-              <div className="space-y-3">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.key}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <feature.icon className="h-4 w-4 text-primary" />
+                {isMonthlyActive && subscriptionEnd && (
+                  <div className="text-center text-sm text-muted-foreground">
+                    {t("premium.validUntil")}: {new Date(subscriptionEnd).toLocaleDateString()}
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {features.map((feature, index) => (
+                    <div key={feature.key} className="flex items-center gap-3">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <feature.icon className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm">{t(`premium.features.${feature.key}`)}</span>
+                      {isMonthlyActive && (
+                        <Check className="h-4 w-4 text-green-500 ml-auto" />
+                      )}
                     </div>
-                    <span>{t(`premium.features.${feature.key}`)}</span>
-                    {isPremium && (
-                      <Check className="h-4 w-4 text-green-500 ml-auto" />
-                    )}
-                  </motion.div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              {premiumLoading ? (
-                <Button className="w-full" size="lg" disabled>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t("common.loading")}
-                </Button>
-              ) : isPremium ? (
-                <Button 
-                  className="w-full" 
-                  size="lg" 
-                  variant="outline"
-                  onClick={handleManageSubscription}
-                  disabled={portalLoading}
-                >
-                  {portalLoading ? (
+                {premiumLoading ? (
+                  <Button className="w-full" size="lg" disabled>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Settings className="h-4 w-4 mr-2" />
-                  )}
-                  {t("premium.manageSubscription")}
-                </Button>
-              ) : (
-                <Button 
-                  className="w-full" 
-                  size="lg" 
-                  onClick={handleSubscribe}
-                  disabled={checkoutLoading}
-                >
-                  {checkoutLoading ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Crown className="h-4 w-4 mr-2" />
-                  )}
-                  {t("premium.subscribe")}
-                </Button>
+                    {t("common.loading")}
+                  </Button>
+                ) : isMonthlyActive ? (
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    variant="outline"
+                    onClick={handleManageSubscription}
+                    disabled={portalLoading}
+                  >
+                    {portalLoading ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Settings className="h-4 w-4 mr-2" />
+                    )}
+                    {t("premium.manageSubscription")}
+                  </Button>
+                ) : isLifetimeActive ? (
+                  <Button className="w-full" size="lg" disabled variant="outline">
+                    {t("premium.lifetimeActive")}
+                  </Button>
+                ) : (
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => handleSubscribe("monthly")}
+                    disabled={checkoutLoading !== null}
+                  >
+                    {checkoutLoading === "monthly" ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Crown className="h-4 w-4 mr-2" />
+                    )}
+                    {t("premium.subscribeMonthly")}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Lifetime Plan */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className={`relative overflow-hidden h-full border-primary ${isLifetimeActive ? 'ring-2 ring-primary' : ''}`}>
+              {/* Popular Badge */}
+              <div className="absolute top-0 left-0 right-0">
+                <div className="bg-primary text-primary-foreground text-center py-1 text-sm font-medium flex items-center justify-center gap-1">
+                  <Star className="h-4 w-4" />
+                  {t("premium.popular")}
+                </div>
+              </div>
+              
+              {isLifetimeActive && (
+                <div className="absolute top-8 right-0 m-4">
+                  <Badge className="bg-green-500 text-white">
+                    {t("premium.lifetimeActive")}
+                  </Badge>
+                </div>
               )}
               
-              {!isPremium && (
-                <p className="text-xs text-center text-muted-foreground">
-                  {t("premium.securePayment")}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+              <CardHeader className="text-center pb-2 pt-10">
+                <CardTitle className="text-xl">{t("premium.lifetime")}</CardTitle>
+                <CardDescription>{t("premium.lifetimeDescription")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <span className="text-4xl font-bold">€19,99</span>
+                  <span className="text-muted-foreground ml-2">{t("premium.oneTimePayment")}</span>
+                </div>
+
+                {isLifetimeActive && (
+                  <div className="text-center text-sm text-green-600 font-medium flex items-center justify-center gap-1">
+                    <Infinity className="h-4 w-4" />
+                    {t("premium.foreverAccess")}
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {features.map((feature) => (
+                    <div key={feature.key} className="flex items-center gap-3">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <feature.icon className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm">{t(`premium.features.${feature.key}`)}</span>
+                      {isLifetimeActive && (
+                        <Check className="h-4 w-4 text-green-500 ml-auto" />
+                      )}
+                    </div>
+                  ))}
+                  {/* Extra lifetime benefit */}
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Infinity className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">{t("premium.foreverAccess")}</span>
+                    {isLifetimeActive && (
+                      <Check className="h-4 w-4 text-green-500 ml-auto" />
+                    )}
+                  </div>
+                </div>
+
+                {premiumLoading ? (
+                  <Button className="w-full" size="lg" disabled>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {t("common.loading")}
+                  </Button>
+                ) : isLifetimeActive ? (
+                  <Button className="w-full" size="lg" disabled>
+                    <Check className="h-4 w-4 mr-2" />
+                    {t("premium.lifetimeActive")}
+                  </Button>
+                ) : isPremium ? (
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => handleSubscribe("lifetime")}
+                    disabled={checkoutLoading !== null}
+                  >
+                    {checkoutLoading === "lifetime" ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Crown className="h-4 w-4 mr-2" />
+                    )}
+                    {t("premium.upgradeToLifetime")}
+                  </Button>
+                ) : (
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => handleSubscribe("lifetime")}
+                    disabled={checkoutLoading !== null}
+                  >
+                    {checkoutLoading === "lifetime" ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Crown className="h-4 w-4 mr-2" />
+                    )}
+                    {t("premium.buyLifetime")}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {!isPremium && (
+          <p className="text-xs text-center text-muted-foreground mt-6">
+            {t("premium.securePayment")}
+          </p>
+        )}
       </main>
     </div>
   );
