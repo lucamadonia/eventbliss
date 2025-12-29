@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
-import { Send, AlertCircle, Info } from "lucide-react";
+import { Send, AlertCircle, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 import { responseSchema, type ResponseFormData } from "@/lib/schemas";
 import { 
@@ -38,6 +43,7 @@ import {
   getDateBlocksArray,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
+import ActivityPreferencesSection from "./ActivityPreferencesSection";
 
 interface Participant {
   id: string;
@@ -453,49 +459,11 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Activity Preferences - Dynamic options */}
-            <div className="form-section">
-              <FormField
-                control={form.control}
-                name="preferences"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="form-label">Aktivitäten / Präferenzen *</FormLabel>
-                    <FormDescription className="text-xs mb-3">
-                      Wähle alles, was dich interessiert
-                    </FormDescription>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {config.activity_options.map((option) => (
-                        <FormField
-                          key={option.value}
-                          control={form.control}
-                          name="preferences"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(option.value)}
-                                  onCheckedChange={(checked) => {
-                                    const newValue = checked
-                                      ? [...(field.value || []), option.value]
-                                      : field.value?.filter((v) => v !== option.value) || [];
-                                    field.onChange(newValue);
-                                  }}
-                                />
-                              </FormControl>
-                              <Label className="cursor-pointer flex-1 font-normal">
-                                {option.emoji} {option.label}
-                              </Label>
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Activity Preferences - Grouped by Category */}
+            <ActivityPreferencesSection 
+              control={form.control} 
+              activityOptions={config.activity_options} 
+            />
 
             {/* Fitness Level - Dynamic options */}
             <div className="form-section">

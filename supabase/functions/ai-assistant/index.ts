@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 interface RequestBody {
-  type: "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat";
+  type: "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "message_enhance";
   context: {
     event_type: string;
     honoree_name: string;
@@ -18,6 +18,11 @@ interface RequestBody {
     date_info?: string;
     fitness_level?: string;
     duration?: string;
+    // For message_enhance
+    original_text?: string;
+    enhancement_type?: "casual" | "formal" | "shorter" | "detailed" | "custom";
+    custom_instruction?: string;
+    template_type?: string;
   };
   message?: string;
 }
@@ -126,6 +131,32 @@ Erstelle eine detaillierte Budget-Schätzung für das Event:
 Benutzer-Frage: ${message || "Wie kann ich dir helfen?"}
 
 Beantworte die Frage basierend auf dem Event-Kontext.`;
+        break;
+
+      case "message_enhance":
+        const enhancementInstructions: Record<string, string> = {
+          casual: "Mache den Text lockerer, freundlicher und informeller. Nutze mehr Emojis und eine persönlichere Ansprache.",
+          formal: "Mache den Text formeller und professioneller. Reduziere Emojis und verwende eine höflichere Ansprache.",
+          shorter: "Kürze den Text auf das Wesentliche. Behalte die wichtigsten Informationen, aber mache ihn kompakter.",
+          detailed: "Füge mehr Details und hilfreiche Informationen hinzu. Erweitere den Text sinnvoll.",
+          custom: context.custom_instruction || "Passe den Text an.",
+        };
+        
+        const enhanceType = context.enhancement_type || "casual";
+        
+        userPrompt = `Du bist ein Experte für Event-Kommunikation.
+
+ORIGINAL-NACHRICHT (Template-Typ: ${context.template_type || "allgemein"}):
+${context.original_text}
+
+ANWEISUNG: ${enhancementInstructions[enhanceType]}
+
+EVENT-KONTEXT:
+- Event-Typ: ${context.event_type === "bachelor" ? "Junggesellenabschied (JGA)" : context.event_type === "bachelorette" ? "JGA (Braut)" : context.event_type === "birthday" ? "Geburtstag" : "Gruppenreise"}
+- Ehrengast: ${context.honoree_name}
+- Teilnehmer: ${context.participant_count} Personen
+
+Gib NUR die verbesserte Nachricht zurück, ohne zusätzliche Erklärungen. Behalte wichtige Platzhalter wie {{honoree}}, {{surveyLink}}, {{accessCode}} etc. bei.`;
         break;
 
       default:

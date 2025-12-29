@@ -795,6 +795,24 @@
         "template": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s party was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next adventure! 🚀"
       }
     },
+    "ai": {
+      "enhance": "Enhance with AI",
+      "dialogTitle": "Enhance Message with AI",
+      "dialogDescription": "Customize the message with AI assistance to fit your needs.",
+      "selectStyle": "Select style",
+      "casual": "More Casual",
+      "formal": "More Formal",
+      "shorter": "Shorter",
+      "detailed": "More Details",
+      "custom": "Custom",
+      "customPrompt": "Custom instruction",
+      "customPlaceholder": "e.g. Add more emojis, make it funnier...",
+      "originalText": "Original text",
+      "generateButton": "Generate message",
+      "enhancing": "Generating...",
+      "result": "Enhanced message",
+      "error": "Error generating. Please try again."
+    },
     "quickActions": {
       "title": "Quick Actions",
       "copySurveyLink": "Copy survey link",

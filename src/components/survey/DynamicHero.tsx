@@ -109,7 +109,7 @@ const DynamicHero = ({
               <img 
                 src={logoUrl} 
                 alt="Event Logo" 
-                className="h-16 md:h-20 mx-auto object-contain"
+                className="h-48 md:h-56 lg:h-64 mx-auto object-contain"
               />
             </motion.div>
           )}

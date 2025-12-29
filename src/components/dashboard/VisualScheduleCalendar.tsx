@@ -480,12 +480,14 @@ export const VisualScheduleCalendar = ({
       {/* Calendar Grid */}
       <div 
         ref={calendarRef}
-        className="relative overflow-auto select-none"
+        className="relative overflow-x-auto overflow-y-auto select-none"
         style={{ maxHeight: "calc(100vh - 320px)" }}
       >
+        {/* Scrollable inner container with min-width */}
+        <div style={{ minWidth: `${60 + (visibleDaysCount * 140)}px` }}>
         {/* Header Row with Dates */}
         <div className="grid sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50" 
-             style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, 1fr)` }}>
+             style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}>
           <div className="p-2 text-center text-xs text-muted-foreground border-r border-border/30">
             {t('planner.calendar.time')}
           </div>
@@ -519,7 +521,7 @@ export const VisualScheduleCalendar = ({
         {/* Time Grid */}
         <div 
           className="grid relative"
-          style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, 1fr)` }}
+          style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}
         >
           {/* Time Labels Column */}
           <div className="relative border-r border-border/30">
@@ -680,6 +682,7 @@ export const VisualScheduleCalendar = ({
               })}
             </div>
           ))}
+        </div>
         </div>
       </div>
 
