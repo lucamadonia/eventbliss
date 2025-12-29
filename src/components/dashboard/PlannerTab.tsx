@@ -15,11 +15,14 @@ import {
   ChevronDown,
   LogIn,
   CalendarPlus,
+  LayoutList,
+  LayoutGrid,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityForm } from "./ActivityForm";
+import { VisualScheduleCalendar } from "./VisualScheduleCalendar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +44,7 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Participant {
   id: string;
@@ -120,6 +124,7 @@ const categoryToExpenseCategory: Record<string, string> = {
 export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [comments, setComments] = useState<Record<string, Comment[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -130,6 +135,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const [customDates, setCustomDates] = useState<string[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>(() => isMobile ? 'list' : 'calendar');
 
   const currentLocale = localeMap[i18n.language] || de;
 
@@ -439,6 +445,34 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
           <p className="text-muted-foreground">{t('planner.subtitle')}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {/* View Mode Toggle */}
+          <div className="flex border border-border rounded-lg overflow-hidden">
+            <button
+              onClick={() => setViewMode('list')}
+              className={cn(
+                "flex items-center gap-1 px-3 py-1.5 text-sm transition-colors",
+                viewMode === 'list'
+                  ? "bg-primary/20 text-primary"
+                  : "hover:bg-muted text-muted-foreground"
+              )}
+            >
+              <LayoutList className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('planner.viewMode.list')}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={cn(
+                "flex items-center gap-1 px-3 py-1.5 text-sm transition-colors",
+                viewMode === 'calendar'
+                  ? "bg-primary/20 text-primary"
+                  : "hover:bg-muted text-muted-foreground"
+              )}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('planner.viewMode.calendar')}</span>
+            </button>
+          </div>
+
           {/* Export Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -472,151 +506,209 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap items-center gap-2">
-        <Filter className="w-4 h-4 text-muted-foreground" />
-        <Badge
-          variant={selectedCategory === 'all' ? 'default' : 'outline'}
-          className="cursor-pointer transition-all hover:scale-105"
-          onClick={() => setSelectedCategory('all')}
-        >
-          {t('planner.categories.all')}
-        </Badge>
-        {CATEGORY_KEYS.map((cat) => {
-          const config = CATEGORY_CONFIG[cat];
-          const count = allActivitiesForDate.filter(a => a.category === cat).length;
-          return (
+      {/* Calendar View */}
+      {viewMode === 'calendar' && (
+        <VisualScheduleCalendar
+          activities={activities}
+          eventDates={eventDates}
+          participants={participants}
+          currency={event.currency || 'EUR'}
+          onActivityClick={(activity) => {
+            const fullActivity = activities.find(a => a.id === activity.id);
+            if (fullActivity) {
+              setEditingActivity(fullActivity);
+              setShowForm(true);
+            }
+          }}
+          onTimeSlotClick={(date, hour) => {
+            setSelectedDate(date);
+            // Open form with pre-filled time
+            setEditingActivity(null);
+            setShowForm(true);
+          }}
+          onActivityMove={async (activityId, newDate, newStartTime, newEndTime) => {
+            try {
+              const { error } = await supabase
+                .from("schedule_activities")
+                .update({
+                  day_date: newDate,
+                  start_time: newStartTime,
+                  end_time: newEndTime,
+                })
+                .eq("id", activityId);
+
+              if (error) throw error;
+              
+              // Update local state
+              setActivities(prev => prev.map(a => 
+                a.id === activityId 
+                  ? { ...a, day_date: newDate, start_time: newStartTime, end_time: newEndTime }
+                  : a
+              ));
+              
+              toast({ title: t('common.success'), description: t('planner.activityUpdated') });
+            } catch (error) {
+              console.error("Error moving activity:", error);
+              toast({
+                title: t('common.error'),
+                description: t('planner.saveError'),
+                variant: "destructive",
+              });
+            }
+          }}
+        />
+      )}
+
+      {/* List View */}
+      {viewMode === 'list' && (
+        <>
+          {/* Category Filter */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <Badge
-              key={cat}
-              variant={selectedCategory === cat ? 'default' : 'outline'}
-              className={`cursor-pointer transition-all hover:scale-105 ${
-                selectedCategory === cat ? '' : `${config.bgClass} ${config.borderClass}`
-              }`}
-              onClick={() => setSelectedCategory(cat)}
+              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+              className="cursor-pointer transition-all hover:scale-105"
+              onClick={() => setSelectedCategory('all')}
             >
-              <span className="mr-1">{config.emoji}</span>
-              {t(`planner.categories.${cat}`)}
-              {count > 0 && <span className="ml-1 opacity-70">({count})</span>}
+              {t('planner.categories.all')}
             </Badge>
-          );
-        })}
-      </div>
-
-      {/* Date Navigation with Add Date Button */}
-      <div className="flex gap-2 overflow-x-auto pb-2 items-center">
-        {eventDates.map((date) => {
-          const dateObj = parseISO(date);
-          const isSelected = date === selectedDate;
-          const activityCount = activities.filter(a => a.day_date === date).length;
-          const isEventDate = date === event.event_date;
-
-          return (
-            <button
-              key={date}
-              onClick={() => setSelectedDate(date)}
-              className={`flex-shrink-0 px-4 py-3 rounded-xl border transition-all ${
-                isSelected
-                  ? "bg-primary/20 border-primary text-foreground"
-                  : "border-border/50 hover:border-primary/50"
-              } ${isEventDate ? "ring-2 ring-primary/30" : ""}`}
-            >
-              <div className="text-sm font-medium flex items-center gap-1">
-                {format(dateObj, "EEEE", { locale: currentLocale })}
-                {isEventDate && <span className="text-primary">★</span>}
-              </div>
-              <div className="text-lg font-bold">
-                {format(dateObj, "d. MMM", { locale: currentLocale })}
-              </div>
-              {activityCount > 0 && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  {activityCount} {activityCount === 1 ? t('planner.activity') : t('planner.activities')}
-                </div>
-              )}
-            </button>
-          );
-        })}
-        
-        {/* Add Date Button */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className="flex-shrink-0 px-4 py-3 rounded-xl border border-dashed border-border/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground">
-              <CalendarPlus className="w-5 h-5" />
-              <span className="text-sm">{t('planner.addDate')}</span>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <CalendarComponent
-              mode="single"
-              onSelect={handleAddDate}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      {/* Activities for Selected Date */}
-      <AnimatePresence mode="wait">
-        {selectedDate && (
-          <motion.div
-            key={selectedDate}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
-          >
-            {activitiesForDate.length === 0 ? (
-              <GlassCard className="p-8 text-center">
-                <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">{t('planner.noActivities')}</h3>
-                <p className="text-muted-foreground mb-4">{t('planner.noActivitiesHint')}</p>
-                <GradientButton
-                  size="sm"
-                  onClick={() => {
-                    setEditingActivity(null);
-                    setShowForm(true);
-                  }}
-                  icon={<Plus className="w-4 h-4" />}
+            {CATEGORY_KEYS.map((cat) => {
+              const config = CATEGORY_CONFIG[cat];
+              const count = allActivitiesForDate.filter(a => a.category === cat).length;
+              return (
+                <Badge
+                  key={cat}
+                  variant={selectedCategory === cat ? 'default' : 'outline'}
+                  className={`cursor-pointer transition-all hover:scale-105 ${
+                    selectedCategory === cat ? '' : `${config.bgClass} ${config.borderClass}`
+                  }`}
+                  onClick={() => setSelectedCategory(cat)}
                 >
-                  {t('planner.addFirst')}
-                </GradientButton>
-              </GlassCard>
-            ) : (
-              <>
-                {activitiesForDate.map((activity, index) => (
-                  <ActivityCard
-                    key={activity.id}
-                    activity={activity}
-                    participants={participants}
-                    comments={comments[activity.id] || []}
-                    onEdit={() => {
-                      setEditingActivity(activity);
-                      setShowForm(true);
-                    }}
-                    onDelete={() => handleDeleteActivity(activity.id)}
-                    onAddComment={(content, participantId) =>
-                      handleAddComment(activity.id, content, participantId)
-                    }
-                    index={index}
-                  />
-                ))}
+                  <span className="mr-1">{config.emoji}</span>
+                  {t(`planner.categories.${cat}`)}
+                  {count > 0 && <span className="ml-1 opacity-70">({count})</span>}
+                </Badge>
+              );
+            })}
+          </div>
 
-                {/* Daily Summary */}
-                <GlassCard className="p-4 bg-primary/5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      {t('planner.totalForDay')}
-                    </span>
-                    <span className="font-bold text-lg">
-                      {totalCostForDate.toFixed(2)} €
-                    </span>
+          {/* Date Navigation with Add Date Button */}
+          <div className="flex gap-2 overflow-x-auto pb-2 items-center">
+            {eventDates.map((date) => {
+              const dateObj = parseISO(date);
+              const isSelected = date === selectedDate;
+              const activityCount = activities.filter(a => a.day_date === date).length;
+              const isEventDate = date === event.event_date;
+
+              return (
+                <button
+                  key={date}
+                  onClick={() => setSelectedDate(date)}
+                  className={`flex-shrink-0 px-4 py-3 rounded-xl border transition-all ${
+                    isSelected
+                      ? "bg-primary/20 border-primary text-foreground"
+                      : "border-border/50 hover:border-primary/50"
+                  } ${isEventDate ? "ring-2 ring-primary/30" : ""}`}
+                >
+                  <div className="text-sm font-medium flex items-center gap-1">
+                    {format(dateObj, "EEEE", { locale: currentLocale })}
+                    {isEventDate && <span className="text-primary">★</span>}
                   </div>
-                </GlassCard>
-              </>
+                  <div className="text-lg font-bold">
+                    {format(dateObj, "d. MMM", { locale: currentLocale })}
+                  </div>
+                  {activityCount > 0 && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {activityCount} {activityCount === 1 ? t('planner.activity') : t('planner.activities')}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+            
+            {/* Add Date Button */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex-shrink-0 px-4 py-3 rounded-xl border border-dashed border-border/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground">
+                  <CalendarPlus className="w-5 h-5" />
+                  <span className="text-sm">{t('planner.addDate')}</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  onSelect={handleAddDate}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Activities for Selected Date */}
+          <AnimatePresence mode="wait">
+            {selectedDate && (
+              <motion.div
+                key={selectedDate}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
+              >
+                {activitiesForDate.length === 0 ? (
+                  <GlassCard className="p-8 text-center">
+                    <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="font-bold text-lg mb-2">{t('planner.noActivities')}</h3>
+                    <p className="text-muted-foreground mb-4">{t('planner.noActivitiesHint')}</p>
+                    <GradientButton
+                      size="sm"
+                      onClick={() => {
+                        setEditingActivity(null);
+                        setShowForm(true);
+                      }}
+                      icon={<Plus className="w-4 h-4" />}
+                    >
+                      {t('planner.addFirst')}
+                    </GradientButton>
+                  </GlassCard>
+                ) : (
+                  <>
+                    {activitiesForDate.map((activity, index) => (
+                      <ActivityCard
+                        key={activity.id}
+                        activity={activity}
+                        participants={participants}
+                        comments={comments[activity.id] || []}
+                        onEdit={() => {
+                          setEditingActivity(activity);
+                          setShowForm(true);
+                        }}
+                        onDelete={() => handleDeleteActivity(activity.id)}
+                        onAddComment={(content, participantId) =>
+                          handleAddComment(activity.id, content, participantId)
+                        }
+                        index={index}
+                      />
+                    ))}
+
+                    {/* Daily Summary */}
+                    <GlassCard className="p-4 bg-primary/5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          {t('planner.totalForDay')}
+                        </span>
+                        <span className="font-bold text-lg">
+                          {totalCostForDate.toFixed(2)} €
+                        </span>
+                      </div>
+                    </GlassCard>
+                  </>
+                )}
+              </motion.div>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </AnimatePresence>
+        </>
+      )}
 
       {/* Activity Form Modal */}
       <ActivityForm

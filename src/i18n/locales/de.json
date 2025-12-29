@@ -929,6 +929,29 @@
       "title": "Filtern",
       "byCategory": "Nach Kategorie",
       "showAll": "Alle anzeigen"
+    },
+    "export": {
+      "title": "Export",
+      "pdf": "Druckansicht (PDF)",
+      "ical": "Kalender (iCal)",
+      "icalDownloaded": "Kalenderdatei heruntergeladen"
+    },
+    "authRequired": "Anmeldung erforderlich",
+    "loginToAdd": "Bitte melde dich an, um Aktivitäten hinzuzufügen oder zu bearbeiten.",
+    "addDate": "Datum hinzufügen",
+    "calendar": {
+      "weekView": "Wochenansicht",
+      "listView": "Listenansicht",
+      "calendarView": "Kalenderansicht",
+      "time": "Zeit",
+      "items": "Einträge",
+      "legend": "Legende",
+      "dragHint": "Ziehe Aktivitäten zum Verschieben",
+      "clickToAdd": "Klicke um neue Aktivität zu erstellen"
+    },
+    "viewMode": {
+      "list": "Liste",
+      "calendar": "Kalender"
     }
   },
   "cookie": {

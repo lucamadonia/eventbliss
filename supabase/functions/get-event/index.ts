@@ -86,6 +86,7 @@ serve(async (req) => {
         success: true,
         event: {
           id: event.id,
+          slug: event.slug,
           name: event.name,
           honoree_name: event.honoree_name,
           event_type: event.event_type,
