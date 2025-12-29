@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Agency, COUNTRIES } from '@/lib/agencies-data';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { MapPin, AlertTriangle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { AgencyCityPanel } from './AgencyCityPanel';
 // City coordinates for all cities in the agencies data
 const CITY_COORDINATES: Record<string, [number, number]> = {
   // Deutschland
@@ -107,6 +108,13 @@ export const AgenciesMapView = ({
   const [isLoadingToken, setIsLoadingToken] = useState(true);
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [openCity, setOpenCity] = useState<string | null>(null);
+
+  // Get agencies for currently open city panel
+  const cityAgencies = useMemo(() => {
+    if (!openCity) return [];
+    return agencies.filter(a => a.city === openCity);
+  }, [openCity, agencies]);
 
   // Load token from edge function or localStorage
   useEffect(() => {
@@ -242,6 +250,7 @@ export const AgenciesMapView = ({
       });
 
       el.addEventListener('click', () => {
+        setOpenCity(city);
         onCityClick?.(city);
       });
 
@@ -387,6 +396,15 @@ export const AgenciesMapView = ({
   return (
     <div className="relative w-full h-[500px] rounded-lg overflow-hidden border border-border">
       <div ref={mapContainer} className="absolute inset-0" />
+      
+      {/* City Panel - shows agencies when city is clicked */}
+      {openCity && cityAgencies.length > 0 && (
+        <AgencyCityPanel
+          city={openCity}
+          agencies={cityAgencies}
+          onClose={() => setOpenCity(null)}
+        />
+      )}
       
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-border">

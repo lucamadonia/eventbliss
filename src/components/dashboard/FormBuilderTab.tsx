@@ -40,8 +40,11 @@ import {
   type SelectOption,
   type BrandingConfig,
   type CustomQuestion,
+  type QuestionConfigs,
+  type QuestionConfig,
   DEFAULT_SURVEY_CONFIG,
   DEFAULT_BRANDING,
+  DEFAULT_QUESTION_CONFIG,
   mergeWithDefaults,
 } from "@/lib/survey-config";
 import { DateRangeBlockEditor, DateRangeBlock } from "./DateRangeBlockEditor";
@@ -115,6 +118,15 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   const [fitnessOptions, setFitnessOptions] = useState<SelectOption[]>(settings.fitness_options);
   const [alcoholOptions, setAlcoholOptions] = useState<SelectOption[]>(settings.alcohol_options);
   
+  // Question configuration (visibility + multi-select)
+  const [questionConfig, setQuestionConfig] = useState<QuestionConfigs>(
+    settings.question_config || DEFAULT_QUESTION_CONFIG
+  );
+  
+  const updateQuestionConfig = (key: keyof QuestionConfigs, config: QuestionConfig) => {
+    setQuestionConfig(prev => ({ ...prev, [key]: config }));
+  };
+  
   const [newBudget, setNewBudget] = useState("");
   const [newDestination, setNewDestination] = useState("");
   const [newDestinationEmoji, setNewDestinationEmoji] = useState("");
@@ -180,6 +192,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
           template_id: selectedTemplate?.id,
         },
         custom_questions: customQuestions,
+        question_config: questionConfig,
       };
 
       const res = await fetch(
@@ -351,6 +364,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       showEmoji={true}
                       maxOptions={5}
                       placeholder="z.B. Unter Vorbehalt"
+                      questionConfig={questionConfig.attendance}
+                      onConfigChange={(c) => updateQuestionConfig('attendance', c)}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
@@ -361,6 +376,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         showEmoji={false}
                         maxOptions={5}
                         placeholder="z.B. 3-4 Tage"
+                        questionConfig={questionConfig.duration}
+                        onConfigChange={(c) => updateQuestionConfig('duration', c)}
                       />
                     </div>
                   </div>
@@ -394,6 +411,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       showEmoji={false}
                       maxOptions={5}
                       placeholder="z.B. Egal - flexibel"
+                      questionConfig={questionConfig.travel}
+                      onConfigChange={(c) => updateQuestionConfig('travel', c)}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
@@ -404,6 +423,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         showEmoji={true}
                         maxOptions={5}
                         placeholder="z.B. Sehr sportlich"
+                        questionConfig={questionConfig.fitness}
+                        onConfigChange={(c) => updateQuestionConfig('fitness', c)}
                       />
                     </div>
                     <div className="border-t border-border pt-6">
@@ -415,6 +436,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         showEmoji={true}
                         maxOptions={4}
                         placeholder="z.B. Nur Bier"
+                        questionConfig={questionConfig.alcohol}
+                        onConfigChange={(c) => updateQuestionConfig('alcohol', c)}
                       />
                     </div>
                   </div>
