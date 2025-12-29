@@ -122,6 +122,7 @@ export const CoreQuestionEditor = ({
             {showMultiSelectToggle && (
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={toggleMultiSelect}
                   className={cn(
                     "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors",
@@ -150,6 +151,7 @@ export const CoreQuestionEditor = ({
             {showVisibilityToggle && (
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={toggleEnabled}
                   className={cn(
                     "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors",
@@ -209,6 +211,7 @@ export const CoreQuestionEditor = ({
               />
               
               <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => removeOption(option.value)}
@@ -240,7 +243,7 @@ export const CoreQuestionEditor = ({
             onKeyDown={(e) => e.key === 'Enter' && addOption()}
             className="flex-1"
           />
-          <Button onClick={addOption} disabled={!newLabel.trim()}>
+          <Button type="button" onClick={addOption} disabled={!newLabel.trim()}>
             <Plus className="w-4 h-4" />
           </Button>
         </div>
