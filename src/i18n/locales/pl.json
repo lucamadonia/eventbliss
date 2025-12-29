@@ -544,9 +544,46 @@
   },
   "premium": {
     "title": "Funkcje Premium",
+    "description": "Odblokuj zaawansowane funkcje dla lepszego doświadczenia.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Wszystko czego potrzebujesz do idealnych wydarzeń",
+    "perMonth": "miesiąc",
     "badge": "Premium",
-    "features": { "ai_assistant": "Asystent AI", "expenses": "Nieograniczone Wydatki", "custom_questions": "Niestandardowe Pytania" },
-    "paywall": { "ai_assistant": "Asystent AI pomaga z personalizowanymi sugestiami.", "expenses": "Darmowi użytkownicy mogą dodać do 3 wydatków.", "custom_questions": "Twórz własne pytania z Premium.", "maxOptions": "Maks. 5 opcji dla darmowych użytkowników.", "upgradeButton": "Ulepsz Teraz", "startingAt": "Od tylko 9,99€ / miesiąc" },
-    "benefits": { "unlimitedAccess": "Nieograniczony dostęp", "aiFeatures": "Wszystkie funkcje AI", "prioritySupport": "Priorytetowe wsparcie" }
+    "active": "Aktywny",
+    "validUntil": "Ważny do",
+    "loginRequired": "Zaloguj się, aby subskrybować.",
+    "subscriptionSuccess": "Twoja subskrypcja Premium jest teraz aktywna!",
+    "subscriptionCanceled": "Checkout anulowany.",
+    "checkoutError": "Błąd podczas otwierania checkoutu. Spróbuj ponownie.",
+    "portalError": "Błąd podczas otwierania zarządzania subskrypcją.",
+    "manageSubscription": "Zarządzaj Subskrypcją",
+    "securePayment": "Bezpieczna płatność przez Stripe. Anuluj kiedy chcesz.",
+    "features": {
+      "aiAssistant": "Asystent AI",
+      "ai_assistant": "Asystent AI",
+      "messageEnhancement": "AI Wiadomości",
+      "unlimitedExpenses": "Nieograniczone Wydatki",
+      "expenses": "Nieograniczone Wydatki",
+      "customQuestions": "Niestandardowe Pytania",
+      "custom_questions": "Niestandardowe Pytania",
+      "unlimitedOptions": "Nieograniczone Opcje",
+      "prioritySupport": "Priorytetowe Wsparcie"
+    },
+    "paywall": {
+      "title": "Funkcja Premium",
+      "description": "Ta funkcja jest dostępna tylko dla użytkowników Premium.",
+      "ai_assistant": "Asystent AI pomaga z personalizowanymi sugestiami.",
+      "expenses": "Darmowi użytkownicy mogą dodać do 3 wydatków.",
+      "custom_questions": "Twórz własne pytania z Premium.",
+      "maxOptions": "Maks. 5 opcji dla darmowych użytkowników.",
+      "upgradeButton": "Ulepsz Teraz",
+      "startingAt": "Od tylko 39€ / miesiąc"
+    },
+    "benefits": {
+      "unlimitedAccess": "Nieograniczony dostęp",
+      "aiFeatures": "Wszystkie funkcje AI",
+      "prioritySupport": "Priorytetowe wsparcie"
+    },
+    "subscribe": "Ulepsz Teraz"
   }
 }

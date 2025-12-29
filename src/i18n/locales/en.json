@@ -1127,15 +1127,28 @@
     "planDescription": "Everything you need for perfect events",
     "perMonth": "month",
     "badge": "Premium",
+    "active": "Active",
+    "validUntil": "Valid until",
+    "loginRequired": "Please log in to subscribe.",
+    "subscriptionSuccess": "Your Premium subscription is now active!",
+    "subscriptionCanceled": "Checkout canceled.",
+    "checkoutError": "Error opening checkout. Please try again.",
+    "portalError": "Error opening subscription management.",
+    "manageSubscription": "Manage Subscription",
+    "securePayment": "Secure payment via Stripe. Cancel anytime.",
     "features": {
       "unlimitedEvents": "Unlimited Events",
       "aiAssistant": "AI Assistant",
       "prioritySupport": "Priority Support",
       "ai_assistant": "AI Assistant",
       "message_ai": "Message AI",
+      "messageEnhancement": "Message AI",
       "expenses": "Unlimited Expenses",
+      "unlimitedExpenses": "Unlimited Expenses",
       "custom_questions": "Custom Survey Questions",
-      "max_options": "Unlimited Options"
+      "customQuestions": "Custom Survey Questions",
+      "max_options": "Unlimited Options",
+      "unlimitedOptions": "Unlimited Options"
     },
     "paywall": {
       "title": "Premium Feature",
@@ -1146,14 +1159,13 @@
       "custom_questions": "Create custom questions for your survey with Premium.",
       "maxOptions": "Free users can add up to 5 options per question.",
       "upgradeButton": "Upgrade Now",
-      "startingAt": "Starting at just €9.99 / month"
+      "startingAt": "Starting at just €39 / month"
     },
     "benefits": {
       "unlimitedAccess": "Unlimited access to all features",
       "aiFeatures": "All AI features unlocked",
       "prioritySupport": "Priority support"
     },
-    "subscribe": "Upgrade Now",
-    "comingSoonNote": "Premium subscriptions will be available soon. Stay tuned!"
+    "subscribe": "Upgrade Now"
   }
 }

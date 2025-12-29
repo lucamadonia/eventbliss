@@ -544,9 +544,46 @@
   },
   "premium": {
     "title": "ميزات بريميوم",
+    "description": "افتح ميزات متقدمة لتجربة أفضل.",
+    "planName": "EventBliss Pro",
+    "planDescription": "كل ما تحتاجه لفعاليات مثالية",
+    "perMonth": "شهر",
     "badge": "بريميوم",
-    "features": { "ai_assistant": "مساعد الذكاء الاصطناعي", "expenses": "مصاريف غير محدودة", "custom_questions": "أسئلة مخصصة" },
-    "paywall": { "ai_assistant": "مساعد AI يساعدك باقتراحات مخصصة.", "expenses": "المستخدمون المجانيون يمكنهم إضافة 3 مصاريف كحد أقصى.", "custom_questions": "أنشئ أسئلة مخصصة مع بريميوم.", "maxOptions": "5 خيارات كحد أقصى للمستخدمين المجانيين.", "upgradeButton": "ترقية الآن", "startingAt": "ابتداءً من 9.99€ / شهر" },
-    "benefits": { "unlimitedAccess": "وصول غير محدود", "aiFeatures": "جميع ميزات AI", "prioritySupport": "دعم أولوية" }
+    "active": "نشط",
+    "validUntil": "صالح حتى",
+    "loginRequired": "يرجى تسجيل الدخول للاشتراك.",
+    "subscriptionSuccess": "اشتراكك البريميوم نشط الآن!",
+    "subscriptionCanceled": "تم إلغاء الدفع.",
+    "checkoutError": "خطأ في فتح الدفع. يرجى المحاولة مرة أخرى.",
+    "portalError": "خطأ في فتح إدارة الاشتراك.",
+    "manageSubscription": "إدارة الاشتراك",
+    "securePayment": "دفع آمن عبر Stripe. ألغِ في أي وقت.",
+    "features": {
+      "aiAssistant": "مساعد الذكاء الاصطناعي",
+      "ai_assistant": "مساعد الذكاء الاصطناعي",
+      "messageEnhancement": "AI للرسائل",
+      "unlimitedExpenses": "مصاريف غير محدودة",
+      "expenses": "مصاريف غير محدودة",
+      "customQuestions": "أسئلة مخصصة",
+      "custom_questions": "أسئلة مخصصة",
+      "unlimitedOptions": "خيارات غير محدودة",
+      "prioritySupport": "دعم أولوية"
+    },
+    "paywall": {
+      "title": "ميزة بريميوم",
+      "description": "هذه الميزة متاحة فقط لمستخدمي بريميوم.",
+      "ai_assistant": "مساعد AI يساعدك باقتراحات مخصصة.",
+      "expenses": "المستخدمون المجانيون يمكنهم إضافة 3 مصاريف كحد أقصى.",
+      "custom_questions": "أنشئ أسئلة مخصصة مع بريميوم.",
+      "maxOptions": "5 خيارات كحد أقصى للمستخدمين المجانيين.",
+      "upgradeButton": "ترقية الآن",
+      "startingAt": "ابتداءً من 39€ / شهر"
+    },
+    "benefits": {
+      "unlimitedAccess": "وصول غير محدود",
+      "aiFeatures": "جميع ميزات AI",
+      "prioritySupport": "دعم أولوية"
+    },
+    "subscribe": "ترقية الآن"
   }
 }

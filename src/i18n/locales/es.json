@@ -603,27 +603,48 @@
   "premium": {
     "title": "Funciones Premium",
     "description": "Desbloquea funciones avanzadas para una mejor experiencia.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Todo lo que necesitas para eventos perfectos",
+    "perMonth": "mes",
     "badge": "Premium",
+    "active": "Activo",
+    "validUntil": "Válido hasta",
+    "loginRequired": "Por favor inicia sesión para suscribirte.",
+    "subscriptionSuccess": "¡Tu suscripción Premium está activa!",
+    "subscriptionCanceled": "Checkout cancelado.",
+    "checkoutError": "Error al abrir el checkout. Intenta de nuevo.",
+    "portalError": "Error al abrir la gestión de suscripción.",
+    "manageSubscription": "Gestionar Suscripción",
+    "securePayment": "Pago seguro con Stripe. Cancela cuando quieras.",
     "features": {
+      "aiAssistant": "Asistente IA",
       "ai_assistant": "Asistente IA",
+      "messageEnhancement": "IA de Mensajes",
       "message_ai": "IA de Mensajes",
+      "unlimitedExpenses": "Gastos Ilimitados",
       "expenses": "Gastos Ilimitados",
+      "customQuestions": "Preguntas Personalizadas",
       "custom_questions": "Preguntas Personalizadas",
-      "max_options": "Opciones Ilimitadas"
+      "unlimitedOptions": "Opciones Ilimitadas",
+      "max_options": "Opciones Ilimitadas",
+      "prioritySupport": "Soporte Prioritario"
     },
     "paywall": {
+      "title": "Función Premium",
+      "description": "Esta función solo está disponible para usuarios Premium.",
       "ai_assistant": "El asistente IA te ayuda con sugerencias personalizadas.",
       "message_ai": "Con Premium puedes mejorar mensajes con IA.",
       "expenses": "Usuarios gratuitos pueden agregar hasta 3 gastos.",
       "custom_questions": "Crea preguntas personalizadas con Premium.",
       "maxOptions": "Usuarios gratuitos pueden agregar hasta 5 opciones.",
       "upgradeButton": "Actualizar Ahora",
-      "startingAt": "Desde solo €9.99 / mes"
+      "startingAt": "Desde solo €39 / mes"
     },
     "benefits": {
       "unlimitedAccess": "Acceso ilimitado a todas las funciones",
       "aiFeatures": "Todas las funciones IA desbloqueadas",
       "prioritySupport": "Soporte prioritario"
-    }
+    },
+    "subscribe": "Actualizar Ahora"
   }
 }
