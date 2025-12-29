@@ -34,6 +34,21 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Extract user from Authorization header
+    let userId: string | null = null;
+    let userEmail: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      if (!userError && user) {
+        userId = user.id;
+        userEmail = user.email || null;
+        console.log("Authenticated user:", userId);
+      }
+    }
+
     const body = await req.json();
     const {
       name,
@@ -135,7 +150,7 @@ serve(async (req) => {
       },
     };
 
-    // Create event
+    // Create event with created_by set to authenticated user
     const { data: event, error: eventError } = await supabase
       .from("events")
       .insert({
@@ -151,6 +166,7 @@ serve(async (req) => {
         timezone,
         status: "planning",
         settings: defaultSettings,
+        created_by: userId,
         theme: {
           primary_color: "#8B5CF6",
           accent_color: "#06B6D4",
@@ -166,16 +182,24 @@ serve(async (req) => {
 
     console.log("Event created:", event.id);
 
-    // Add organizer as first participant
+    // Add organizer as first participant with user_id
     if (organizer_name) {
       const { error: organizerError } = await supabase
         .from("participants")
         .insert({
           event_id: event.id,
           name: organizer_name,
-          email: organizer_email,
+          email: organizer_email || userEmail,
           role: "organizer",
           status: "confirmed",
+          user_id: userId,
+          can_access_dashboard: true,
+          dashboard_permissions: {
+            can_view_responses: true,
+            can_add_expenses: true,
+            can_view_all_expenses: true,
+            can_edit_settings: true,
+          },
         });
 
       if (organizerError) {
