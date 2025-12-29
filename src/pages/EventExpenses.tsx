@@ -1,57 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Plus,
-  Wallet,
-  Car,
-  Home,
-  Utensils,
-  Beer,
-  Gift,
-  Target,
   Loader2,
   AlertCircle,
+  Receipt,
   TrendingUp,
-  TrendingDown,
-  Equal,
-  Calendar,
+  Wallet,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-const categories = [
-  { value: "transport", label: "Transport", icon: Car, emoji: "🚗" },
-  { value: "accommodation", label: "Accommodation", icon: Home, emoji: "🏨" },
-  { value: "activities", label: "Activities", icon: Target, emoji: "🎯" },
-  { value: "food", label: "Food", icon: Utensils, emoji: "🍔" },
-  { value: "drinks", label: "Drinks", icon: Beer, emoji: "🍻" },
-  { value: "gifts", label: "Gifts", icon: Gift, emoji: "🎁" },
-  { value: "other", label: "Other", icon: Wallet, emoji: "💰" },
-];
+// New expense components
+import { StatsHero } from "@/components/expenses/StatsHero";
+import { ExpenseCharts } from "@/components/expenses/ExpenseCharts";
+import { ExpenseCard } from "@/components/expenses/ExpenseCard";
+import { SettlementList } from "@/components/expenses/SettlementCard";
+import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
+import { ExpenseFilters, FilterType, SortType } from "@/components/expenses/ExpenseFilters";
 
 interface Expense {
   id: string;
@@ -74,12 +47,8 @@ const EventExpenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
   const [isAddingExpense, setIsAddingExpense] = useState(false);
-  const [newExpense, setNewExpense] = useState({
-    description: "",
-    amount: "",
-    category: "other",
-    paid_by: "",
-  });
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [sort, setSort] = useState<SortType>("date-desc");
 
   // Fetch expenses from database
   useEffect(() => {
@@ -88,7 +57,6 @@ const EventExpenses = () => {
       
       setIsLoadingExpenses(true);
       try {
-        // Fetch expenses from expenses table
         const { data: expensesData, error: expensesError } = await supabase
           .from("expenses")
           .select("*")
@@ -97,7 +65,6 @@ const EventExpenses = () => {
 
         if (expensesError) throw expensesError;
 
-        // Fetch planned costs from schedule_activities
         const { data: activitiesData, error: activitiesError } = await supabase
           .from("schedule_activities")
           .select("id, title, estimated_cost, currency, category, day_date")
@@ -106,7 +73,6 @@ const EventExpenses = () => {
 
         if (activitiesError) throw activitiesError;
 
-        // Map expenses with participant names
         const mappedExpenses: Expense[] = (expensesData || []).map(exp => {
           const paidByParticipant = participants.find(p => p.id === exp.paid_by_participant_id);
           return {
@@ -123,7 +89,6 @@ const EventExpenses = () => {
           };
         });
 
-        // Add planned activities as separate entries (marked as planned)
         const plannedExpenses: Expense[] = (activitiesData || [])
           .filter(act => act.estimated_cost && act.estimated_cost > 0)
           .map(act => ({
@@ -169,6 +134,162 @@ const EventExpenses = () => {
     return mapping[activityCategory || 'other'] || 'other';
   };
 
+  // Calculate totals
+  const actualExpenses = useMemo(() => expenses.filter(e => !e.is_planned), [expenses]);
+  const plannedExpenses = useMemo(() => expenses.filter(e => e.is_planned), [expenses]);
+  const totalActualExpenses = useMemo(() => actualExpenses.reduce((sum, e) => sum + e.amount, 0), [actualExpenses]);
+  const totalPlannedExpenses = useMemo(() => plannedExpenses.reduce((sum, e) => sum + e.amount, 0), [plannedExpenses]);
+  const totalExpenses = totalActualExpenses + totalPlannedExpenses;
+  const perPerson = totalExpenses / Math.max(participants.length, 1);
+
+  // Calculate balances
+  const balances = useMemo(() => {
+    return participants.map((p) => {
+      const paid = actualExpenses
+        .filter((e) => e.paid_by_participant_id === p.id)
+        .reduce((sum, e) => sum + e.amount, 0);
+      const owes = totalActualExpenses / Math.max(participants.length, 1);
+      const balance = paid - owes;
+      return { ...p, paid, owes, balance };
+    });
+  }, [participants, actualExpenses, totalActualExpenses]);
+
+  // Calculate settlements
+  const settlements = useMemo(() => {
+    const debtors = balances.filter((b) => b.balance < -0.01).sort((a, b) => a.balance - b.balance);
+    const creditors = balances.filter((b) => b.balance > 0.01).sort((a, b) => b.balance - a.balance);
+
+    const result: { from: string; to: string; amount: number }[] = [];
+    let i = 0, j = 0;
+    const debtorsCopy = debtors.map((d) => ({ ...d, remaining: Math.abs(d.balance) }));
+    const creditorsCopy = creditors.map((c) => ({ ...c, remaining: c.balance }));
+
+    while (i < debtorsCopy.length && j < creditorsCopy.length) {
+      const amount = Math.min(debtorsCopy[i].remaining, creditorsCopy[j].remaining);
+      if (amount > 0.01) {
+        result.push({
+          from: debtorsCopy[i].name,
+          to: creditorsCopy[j].name,
+          amount: Math.round(amount * 100) / 100,
+        });
+      }
+      debtorsCopy[i].remaining -= amount;
+      creditorsCopy[j].remaining -= amount;
+      if (debtorsCopy[i].remaining < 0.01) i++;
+      if (creditorsCopy[j].remaining < 0.01) j++;
+    }
+    return result;
+  }, [balances]);
+
+  // Filtered and sorted expenses
+  const filteredExpenses = useMemo(() => {
+    let filtered = [...expenses];
+    
+    if (filter === "paid") {
+      filtered = filtered.filter(e => !e.is_planned);
+    } else if (filter === "planned") {
+      filtered = filtered.filter(e => e.is_planned);
+    }
+
+    filtered.sort((a, b) => {
+      switch (sort) {
+        case "date-desc":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "date-asc":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "amount-desc":
+          return b.amount - a.amount;
+        case "amount-asc":
+          return a.amount - b.amount;
+        case "category":
+          return a.category.localeCompare(b.category);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [expenses, filter, sort]);
+
+  const handleAddExpense = async (data: {
+    description: string;
+    amount: number;
+    category: string;
+    paid_by_participant_id: string;
+  }) => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .insert([{
+          event_id: event!.id,
+          description: data.description,
+          amount: data.amount,
+          currency: event!.currency || "EUR",
+          category: data.category as any,
+          paid_by_participant_id: data.paid_by_participant_id,
+        }]);
+
+      if (error) throw error;
+
+      // Refresh expenses
+      const { data: refreshedData } = await supabase
+        .from("expenses")
+        .select("*")
+        .eq("event_id", event!.id)
+        .order("created_at", { ascending: false });
+
+      if (refreshedData) {
+        const mappedExpenses: Expense[] = refreshedData.map(exp => {
+          const paidByParticipant = participants.find(p => p.id === exp.paid_by_participant_id);
+          return {
+            id: exp.id,
+            description: exp.description,
+            amount: exp.amount,
+            currency: exp.currency,
+            category: exp.category,
+            paid_by: paidByParticipant?.name || t('expenses.unknown'),
+            paid_by_participant_id: exp.paid_by_participant_id,
+            created_at: exp.created_at,
+            expense_date: exp.expense_date,
+            is_planned: false,
+          };
+        });
+        setExpenses([...mappedExpenses, ...plannedExpenses]);
+      }
+
+      toast({ title: t('common.success'), description: t('expenses.added') });
+    } catch (err) {
+      console.error("Error adding expense:", err);
+      toast({
+        title: t('common.error'),
+        description: t('expenses.addError'),
+        variant: "destructive",
+      });
+      throw err;
+    }
+  };
+
+  const handleDeleteExpense = async (expense: Expense) => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("id", expense.id);
+
+      if (error) throw error;
+
+      setExpenses(prev => prev.filter(e => e.id !== expense.id));
+      toast({ title: t('common.success'), description: t('expenses.deleted') });
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+      toast({
+        title: t('common.error'),
+        description: t('expenses.deleteError'),
+        variant: "destructive",
+      });
+    }
+  };
+
   if (eventLoading || isLoadingExpenses) {
     return (
       <AnimatedBackground>
@@ -197,123 +318,14 @@ const EventExpenses = () => {
     );
   }
 
-  // Separate actual vs planned expenses
-  const actualExpenses = expenses.filter(e => !e.is_planned);
-  const plannedExpenses = expenses.filter(e => e.is_planned);
-  
-  const totalActualExpenses = actualExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalPlannedExpenses = plannedExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalExpenses = totalActualExpenses + totalPlannedExpenses;
-  const perPerson = totalExpenses / Math.max(participants.length, 1);
-
-  // Calculate balances based on actual expenses only
-  const balances = participants.map((p) => {
-    const paid = actualExpenses
-      .filter((e) => e.paid_by_participant_id === p.id)
-      .reduce((sum, e) => sum + e.amount, 0);
-    const owes = totalActualExpenses / Math.max(participants.length, 1);
-    const balance = paid - owes;
-    return { ...p, paid, owes, balance };
-  });
-
-  // Calculate settlements (simplified)
-  const debtors = balances.filter((b) => b.balance < -0.01).sort((a, b) => a.balance - b.balance);
-  const creditors = balances.filter((b) => b.balance > 0.01).sort((a, b) => b.balance - a.balance);
-
-  const settlements: { from: string; to: string; amount: number }[] = [];
-  let i = 0,
-    j = 0;
-  const debtorsCopy = debtors.map((d) => ({ ...d, remaining: Math.abs(d.balance) }));
-  const creditorsCopy = creditors.map((c) => ({ ...c, remaining: c.balance }));
-
-  while (i < debtorsCopy.length && j < creditorsCopy.length) {
-    const amount = Math.min(debtorsCopy[i].remaining, creditorsCopy[j].remaining);
-    if (amount > 0.01) {
-      settlements.push({
-        from: debtorsCopy[i].name,
-        to: creditorsCopy[j].name,
-        amount: Math.round(amount * 100) / 100,
-      });
-    }
-    debtorsCopy[i].remaining -= amount;
-    creditorsCopy[j].remaining -= amount;
-    if (debtorsCopy[i].remaining < 0.01) i++;
-    if (creditorsCopy[j].remaining < 0.01) j++;
-  }
-
-  const handleAddExpense = async () => {
-    if (!newExpense.description || !newExpense.amount || !newExpense.paid_by) {
-      toast({
-        title: t('expenses.missingFields'),
-        description: t('expenses.fillRequired'),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from("expenses")
-        .insert([{
-          event_id: event.id,
-          description: newExpense.description,
-          amount: parseFloat(newExpense.amount),
-          currency: event.currency || "EUR",
-          category: newExpense.category as any,
-          paid_by_participant_id: newExpense.paid_by,
-        }]);
-
-      if (error) throw error;
-
-      // Refresh expenses
-      const { data: refreshedData } = await supabase
-        .from("expenses")
-        .select("*")
-        .eq("event_id", event.id)
-        .order("created_at", { ascending: false });
-
-      if (refreshedData) {
-        const mappedExpenses: Expense[] = refreshedData.map(exp => {
-          const paidByParticipant = participants.find(p => p.id === exp.paid_by_participant_id);
-          return {
-            id: exp.id,
-            description: exp.description,
-            amount: exp.amount,
-            currency: exp.currency,
-            category: exp.category,
-            paid_by: paidByParticipant?.name || t('expenses.unknown'),
-            paid_by_participant_id: exp.paid_by_participant_id,
-            created_at: exp.created_at,
-            expense_date: exp.expense_date,
-            is_planned: false,
-          };
-        });
-        setExpenses([...mappedExpenses, ...plannedExpenses]);
-      }
-
-      setNewExpense({ description: "", amount: "", category: "other", paid_by: "" });
-      setIsAddingExpense(false);
-      toast({ title: t('common.success'), description: t('expenses.added') });
-    } catch (err) {
-      console.error("Error adding expense:", err);
-      toast({
-        title: t('common.error'),
-        description: t('expenses.addError'),
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getCategoryInfo = (category: string) => {
-    return categories.find((c) => c.value === category) || categories[6];
-  };
+  const currency = event.currency || "€";
 
   return (
     <AnimatedBackground>
       <div className="min-h-screen">
         {/* Header */}
         <header className="sticky top-0 z-50 glass-card border-b border-border/50">
-          <div className="container max-w-4xl mx-auto px-4 py-4">
+          <div className="container max-w-5xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <button
@@ -323,232 +335,133 @@ const EventExpenses = () => {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h1 className="font-display text-xl font-bold">{t('expenses.title')}</h1>
+                  <h1 className="font-display text-xl font-bold flex items-center gap-2">
+                    <Receipt className="w-5 h-5 text-primary" />
+                    {t('expenses.title')}
+                  </h1>
                   <p className="text-sm text-muted-foreground">{event.name}</p>
                 </div>
               </div>
 
-              <Dialog open={isAddingExpense} onOpenChange={setIsAddingExpense}>
-                <DialogTrigger asChild>
-                  <GradientButton size="sm" icon={<Plus className="w-4 h-4" />}>
-                    {t('common.add')}
-                  </GradientButton>
-                </DialogTrigger>
-                <DialogContent className="glass-card border-border/50">
-                  <DialogHeader>
-                    <DialogTitle className="font-display">{t('expenses.addExpense')}</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <Label>{t('expenses.description')}</Label>
-                      <Input
-                        placeholder={t('expenses.descriptionPlaceholder')}
-                        value={newExpense.description}
-                        onChange={(e) =>
-                          setNewExpense({ ...newExpense, description: e.target.value })
-                        }
-                        className="bg-background/50"
-                      />
-                    </div>
-                    <div>
-                      <Label>{t('expenses.amount')} ({event.currency || 'EUR'})</Label>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        value={newExpense.amount}
-                        onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                        className="bg-background/50"
-                      />
-                    </div>
-                    <div>
-                      <Label>{t('expenses.category')}</Label>
-                      <Select
-                        value={newExpense.category}
-                        onValueChange={(v) => setNewExpense({ ...newExpense, category: v })}
-                      >
-                        <SelectTrigger className="bg-background/50">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((cat) => (
-                            <SelectItem key={cat.value} value={cat.value}>
-                              {cat.emoji} {t(`expenses.categories.${cat.value}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>{t('expenses.paidBy')}</Label>
-                      <Select
-                        value={newExpense.paid_by}
-                        onValueChange={(v) => setNewExpense({ ...newExpense, paid_by: v })}
-                      >
-                        <SelectTrigger className="bg-background/50">
-                          <SelectValue placeholder={t('expenses.selectPerson')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {participants.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <GradientButton className="w-full" onClick={handleAddExpense}>
-                      {t('expenses.addExpense')}
-                    </GradientButton>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <GradientButton size="sm" icon={<Plus className="w-4 h-4" />} onClick={() => setIsAddingExpense(true)}>
+                {t('common.add')}
+              </GradientButton>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <main className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <GlassCard className="p-4">
-              <p className="text-sm text-muted-foreground mb-1">{t('expenses.totalAmount')}</p>
-              <p className="text-2xl font-bold text-gradient-primary">
-                €{totalExpenses.toFixed(2)}
-              </p>
-            </GlassCard>
-            <GlassCard className="p-4">
-              <p className="text-sm text-muted-foreground mb-1">{t('expenses.actualPaid')}</p>
-              <p className="text-2xl font-bold text-green-500">
-                €{totalActualExpenses.toFixed(2)}
-              </p>
-            </GlassCard>
-            <GlassCard className="p-4">
-              <p className="text-sm text-muted-foreground mb-1">{t('expenses.plannedCosts')}</p>
-              <p className="text-2xl font-bold text-orange-500">
-                €{totalPlannedExpenses.toFixed(2)}
-              </p>
-            </GlassCard>
-            <GlassCard className="p-4">
-              <p className="text-sm text-muted-foreground mb-1">{t('expenses.perPerson')}</p>
-              <p className="text-2xl font-bold">€{perPerson.toFixed(2)}</p>
-            </GlassCard>
-          </div>
+        <main className="container max-w-5xl mx-auto px-4 py-6 space-y-8">
+          {/* Stats Hero */}
+          <StatsHero
+            totalExpenses={totalExpenses}
+            actualExpenses={totalActualExpenses}
+            plannedExpenses={totalPlannedExpenses}
+            perPerson={perPerson}
+            participantCount={participants.length}
+            currency={currency}
+          />
 
-          {/* Balances */}
-          {balances.length > 0 && (
-            <GlassCard className="p-6">
-              <h3 className="font-display text-lg font-bold mb-4">{t('expenses.balances')}</h3>
-              <div className="space-y-3">
-                {balances.map((b) => (
-                  <div key={b.id} className="flex items-center justify-between p-3 rounded-lg bg-background/30">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
-                        {b.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-medium">{b.name}</p>
-                        <p className="text-sm text-muted-foreground">{t('expenses.paid')} €{b.paid.toFixed(2)}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div
-                        className={`flex items-center gap-1 font-bold ${
-                          b.balance > 0.01
-                            ? "text-green-400"
-                            : b.balance < -0.01
-                            ? "text-red-400"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {b.balance > 0.01 ? (
-                          <TrendingUp className="w-4 h-4" />
-                        ) : b.balance < -0.01 ? (
-                          <TrendingDown className="w-4 h-4" />
-                        ) : (
-                          <Equal className="w-4 h-4" />
-                        )}
-                        €{Math.abs(b.balance).toFixed(2)}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {b.balance > 0.01 ? t('expenses.getsBack') : b.balance < -0.01 ? t('expenses.owes') : t('expenses.settled')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+          {/* Charts */}
+          {actualExpenses.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                {t("expenses.analytics")}
+              </h2>
+              <ExpenseCharts
+                expenses={expenses}
+                participants={participants}
+                currency={currency}
+              />
+            </motion.section>
           )}
 
           {/* Settlements */}
           {settlements.length > 0 && (
-            <GlassCard className="p-6">
-              <h3 className="font-display text-lg font-bold mb-4">{t('expenses.settleUp')}</h3>
-              <div className="space-y-3">
-                {settlements.map((s, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{s.from}</span>
-                      <span className="text-muted-foreground">→</span>
-                      <span className="font-medium">{s.to}</span>
-                    </div>
-                    <span className="font-bold text-primary">€{s.amount.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <GlassCard className="p-6">
+                <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-primary" />
+                  {t("expenses.settlements")}
+                </h2>
+                <SettlementList settlements={settlements} currency={currency} />
+              </GlassCard>
+            </motion.section>
           )}
 
-          {/* Expenses List */}
-          <GlassCard className="p-6">
-            <h3 className="font-display text-lg font-bold mb-4">{t('expenses.allExpenses')}</h3>
-            {expenses.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Wallet className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>{t('expenses.noExpenses')}</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {expenses.map((expense) => {
-                  const cat = getCategoryInfo(expense.category);
-                  return (
-                    <div
-                      key={expense.id}
-                      className={`flex items-center justify-between p-3 rounded-lg ${
-                        expense.is_planned ? "bg-orange-500/10 border border-orange-500/20" : "bg-background/30"
-                      }`}
+          {/* Expense List */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <GlassCard className="p-6">
+              <h2 className="font-display text-lg font-semibold mb-4">{t("expenses.allExpenses")}</h2>
+              
+              <ExpenseFilters
+                filter={filter}
+                sort={sort}
+                onFilterChange={setFilter}
+                onSortChange={setSort}
+                counts={{
+                  all: expenses.length,
+                  paid: actualExpenses.length,
+                  planned: plannedExpenses.length,
+                }}
+              />
+
+              <div className="divide-y divide-border/30">
+                <AnimatePresence mode="popLayout">
+                  {filteredExpenses.length > 0 ? (
+                    filteredExpenses.map((expense, index) => (
+                      <ExpenseCard
+                        key={expense.id}
+                        expense={expense}
+                        index={index}
+                        onDelete={!expense.is_planned ? handleDeleteExpense : undefined}
+                      />
+                    ))
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="py-12 text-center"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{cat.emoji}</span>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{expense.description}</p>
-                            {expense.is_planned && (
-                              <Badge variant="outline" className="text-orange-500 border-orange-500/30 text-xs">
-                                <Calendar className="w-3 h-3 mr-1" />
-                                {t('expenses.planned')}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {expense.is_planned 
-                              ? expense.expense_date 
-                              : `${t('expenses.paidBy')} ${expense.paid_by}`}
-                          </p>
-                        </div>
-                      </div>
-                      <p className={`font-bold ${expense.is_planned ? 'text-orange-500' : ''}`}>
-                        €{expense.amount.toFixed(2)}
-                      </p>
-                    </div>
-                  );
-                })}
+                      <Receipt className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                      <p className="text-muted-foreground">{t("expenses.noExpenses")}</p>
+                      <GradientButton
+                        size="sm"
+                        className="mt-4"
+                        onClick={() => setIsAddingExpense(true)}
+                        icon={<Plus className="w-4 h-4" />}
+                      >
+                        {t("expenses.addFirst")}
+                      </GradientButton>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            )}
-          </GlassCard>
+            </GlassCard>
+          </motion.section>
         </main>
+
+        {/* Add Expense Dialog */}
+        <AddExpenseDialog
+          open={isAddingExpense}
+          onOpenChange={setIsAddingExpense}
+          participants={participants}
+          currency={currency}
+          onAdd={handleAddExpense}
+        />
       </div>
     </AnimatedBackground>
   );
