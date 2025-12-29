@@ -673,5 +673,36 @@
       "deleteSuccess": "Voucher verwijderd",
       "deleteError": "Fout bij verwijderen"
     }
+  },
+  "templates": {
+    "title": "Kies een sjabloon",
+    "subtitle": "Opties afgestemd op jouw evenement",
+    "noTemplate": "Doorgaan zonder sjabloon",
+    "aiGenerate": "Maak met AI",
+    "aiTitle": "Maak aangepast sjabloon",
+    "aiPlaceholder": "Beschrijf je evenement in 1-2 zinnen, bijv. 'Relaxed vrijgezellenfeest met wandelen en lekker eten'...",
+    "aiDescriptionRequired": "Beschrijf je evenement",
+    "aiSuccess": "Sjabloon gemaakt!",
+    "aiSuccessDescription": "Je aangepaste sjabloon is gegenereerd",
+    "aiError": "Fout bij genereren",
+    "generating": "Genereren...",
+    "generate": "Genereer",
+    "premiumRequired": "Premium vereist",
+    "premiumRequiredDescription": "AI-generatie is een premium functie",
+    "jgaClassic": { "name": "Klassiek Feest", "description": "Actie, feest en onvergetelijke momenten" },
+    "jgaAdventure": { "name": "Avontuur Trip", "description": "Outdoor actie en teamuitdagingen" },
+    "jgaChill": { "name": "Relaxte Viering", "description": "Wellness, lekker eten en quality time" },
+    "bacheloretteGlam": { "name": "Glamour Weekend", "description": "Wellness, fotoshoot en cocktails" },
+    "bacheloretteAdventure": { "name": "Actief Uitje", "description": "Wandelen, yoga en natuur" },
+    "birthdayParty": { "name": "Verjaardagsfeest", "description": "Vieren met vrienden en familie" },
+    "birthdayExperience": { "name": "Verjaardag Beleving", "description": "Unieke activiteiten en avonturen" },
+    "familyTrip": { "name": "Familie Uitje", "description": "Plezier voor alle leeftijden" },
+    "friendsTrip": { "name": "Vriendentrip", "description": "Avontuur en reizen met vrienden" },
+    "teamEvent": { "name": "Team Event", "description": "Teambuilding en gedeelde ervaringen" },
+    "flexible": { "name": "Flexibel", "description": "Volledige flexibiliteit – jij beslist" },
+    "tags": { "action": "Actie", "party": "Feest", "city": "Stad", "outdoor": "Outdoor", "adventure": "Avontuur", "sports": "Sport", "relax": "Ontspanning", "wellness": "Wellness", "food": "Culinair", "glamour": "Glamour", "active": "Actief", "nature": "Natuur", "celebration": "Viering", "fun": "Fun", "experience": "Beleving", "unique": "Uniek", "memorable": "Onvergetelijk", "family": "Familie", "kids": "Kinderen", "relaxed": "Relaxed", "friends": "Vrienden", "travel": "Reizen", "team": "Team", "corporate": "Zakelijk", "teambuilding": "Teambuilding", "flexible": "Flexibel", "custom": "Aangepast", "open": "Open" },
+    "destinations": { "deCity": "Grote stad in Duitsland", "prague": "Praag", "budapest": "Boedapest", "barcelona": "Barcelona", "amsterdam": "Amsterdam", "mallorca": "Mallorca", "lisbon": "Lissabon", "flexible": "Flexibel", "alps": "Alpen", "seaCoast": "Kust", "forestNature": "Bos en Natuur", "lakeRegion": "Merengebied", "spaHotel": "Spa Hotel", "local": "Lokaal", "wineRegion": "Wijnstreek", "lakeResort": "Meer Resort", "vineyard": "Wijngaard", "restaurant": "Restaurant", "eventLocation": "Evenementlocatie", "rooftopBar": "Rooftop Bar", "nearbyCity": "Nabijgelegen Stad", "nature": "Natuur", "themePark": "Pretpark", "zoo": "Dierentuin", "beach": "Strand", "mountains": "Bergen", "farm": "Boerderij", "cityEurope": "Stad in Europa", "beachEurope": "Strand in Europa", "adventureEurope": "Avontuur in Europa", "roadTrip": "Roadtrip", "conferenceHotel": "Congreshotel", "outdoorLocation": "Outdoor Locatie", "eventSpace": "Evenementruimte", "office": "Kantoor", "domestic": "Binnenland", "europe": "Europa", "worldwide": "Wereldwijd" },
+    "activities": { "karting": "Karten", "escapeRoom": "Escape Room", "lasertag": "Lasergame", "axeThrowing": "Bijlwerpen", "vrArena": "VR Arena", "bubbleSoccer": "Bubble Voetbal", "paintball": "Paintball", "barTour": "Kroegentocht", "casino": "Casino", "bbqParty": "BBQ Feest", "rafting": "Raften", "canyoning": "Canyoning", "climbing": "Klimmen", "hiking": "Wandelen", "mountainBiking": "Mountainbiken", "survivalTraining": "Survival", "bungee": "Bungeejumpen", "paragliding": "Paragliden", "quadTour": "Quad Tour", "cabinBbq": "BBQ in Huisje", "spaWellness": "Spa en Wellness", "wineTasting": "Wijnproeverij", "gourmetDinner": "Gastronomisch Diner", "cookingClass": "Kookworkshop", "golf": "Golf", "cigarWhiskey": "Sigaar en Whisky", "breweryTour": "Brouwerijbezoek", "boatTrip": "Boottocht", "photoshoot": "Fotoshoot", "cocktailClass": "Cocktailworkshop", "yogaRetreat": "Yoga Retreat", "danceClass": "Dansles", "brunchParty": "Brunch", "beachClub": "Beachclub", "shoppingTour": "Shoptour", "karaoke": "Karaoke", "kayaking": "Kajakken", "horsebackRiding": "Paardrijden", "picnic": "Picknick", "sunsetBoat": "Zonsondergang Boot", "outdoorCooking": "Buiten Koken", "dinnerParty": "Diner", "bowling": "Bowlen", "gamesNight": "Spelavond", "cocktailParty": "Cocktailparty", "dancing": "Dansen", "liveMusic": "Live Muziek", "spaDay": "Spa Dag", "concert": "Concert", "sportsEvent": "Sportevenement", "artClass": "Kunstworkshop", "adventurePark": "Avonturenpark", "themePark": "Pretpark", "zooAquarium": "Dierentuin en Aquarium", "beachFun": "Strandplezier", "hikingEasy": "Makkelijke Wandeling", "games": "Spelletjes", "bikeTour": "Fietstocht", "swimming": "Zwemmen", "sightseeing": "Bezienswaardigheden", "nightlife": "Nachtleven", "foodTour": "Food Tour", "beach": "Strand", "waterSports": "Watersporten", "localExperiences": "Lokale Ervaringen", "concertsEvents": "Concerten", "teambuildingGames": "Teamspellen", "workshop": "Workshop", "outdoorChallenge": "Outdoor Uitdaging", "sportsTournament": "Sporttoernooi", "dinnerEvent": "Diner Event", "creativeWorkshop": "Creatieve Workshop", "action": "Actie", "chill": "Ontspanning", "outdoor": "Outdoor", "food": "Culinair", "culture": "Cultuur", "party": "Feest", "mixed": "Gemengd" },
+    "duration": { "dayTrip": "Dagtrip", "weekend": "Weekend (2-3 dagen)", "longWeekend": "Lang Weekend (3-4 dagen)", "week": "Hele Week", "twoWeeks": "Twee Weken", "halfDay": "Halve Dag", "fullDay": "Hele Dag", "evening": "Avond", "overnight": "Met Overnachting", "flexible": "Flexibel" }
   }
 }
