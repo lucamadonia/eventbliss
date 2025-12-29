@@ -2,16 +2,22 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
+interface AdminState {
+  isAdmin: boolean;
+  isLoading: boolean;
+}
+
 export function useAdmin() {
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [state, setState] = useState<AdminState>({
+    isAdmin: false,
+    isLoading: true
+  });
 
   useEffect(() => {
     const checkAdminRole = async () => {
       if (!user) {
-        setIsAdmin(false);
-        setIsLoading(false);
+        setState({ isAdmin: false, isLoading: false });
         return;
       }
 
@@ -25,20 +31,19 @@ export function useAdmin() {
 
         if (error) {
           console.error("Error checking admin role:", error);
-          setIsAdmin(false);
+          setState({ isAdmin: false, isLoading: false });
         } else {
-          setIsAdmin(!!data);
+          // Beide Werte ZUSAMMEN setzen - atomar!
+          setState({ isAdmin: !!data, isLoading: false });
         }
       } catch (err) {
         console.error("Error checking admin role:", err);
-        setIsAdmin(false);
-      } finally {
-        setIsLoading(false);
+        setState({ isAdmin: false, isLoading: false });
       }
     };
 
     checkAdminRole();
   }, [user]);
 
-  return { isAdmin, isLoading };
+  return state;
 }
