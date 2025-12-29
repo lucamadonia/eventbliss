@@ -66,18 +66,34 @@
     "title": "Create Event",
     "step1": {
       "title": "What are you planning?",
-      "subtitle": "Choose the type of your event"
+      "subtitle": "Choose the type of event you want to organize."
     },
     "step2": {
-      "title": "For whom?",
-      "subtitle": "Who is being celebrated?",
-      "placeholder": "Name of the person"
+      "title": "Event Details",
+      "subtitle": "Tell us about the event and who it's for.",
+      "honoreeName": "Who is the guest of honor?",
+      "honoreeNamePlaceholder": "e.g., Dominik",
+      "eventName": "Event Name",
+      "eventNamePlaceholder": "e.g., Dominik's Epic Bachelor Party",
+      "eventDate": "Event Date (optional)",
+      "organizerName": "Your Name (Organizer)",
+      "organizerNamePlaceholder": "e.g., Luca",
+      "organizerEmail": "Your Email (optional)",
+      "organizerEmailPlaceholder": "luca@example.com"
     },
     "step3": {
-      "title": "Event Details",
-      "subtitle": "Give your event a name",
-      "eventName": "Event Name",
-      "eventNamePlaceholder": "e.g. Max's Stag Party 2025"
+      "title": "Add Participants",
+      "subtitle": "Add the people you want to invite (you can add more later).",
+      "namePlaceholder": "Enter name...",
+      "noParticipants": "No participants added yet. You can skip this step and add them later."
+    },
+    "step4": {
+      "title": "Review & Create",
+      "subtitle": "Everything looks good? Let's create your event!",
+      "forHonoree": "for {{name}}",
+      "participantCount": "{{count}} participants (including you)",
+      "organizedBy": "Organized by {{name}}",
+      "descriptionPlaceholder": "Add a description or notes for your guests (optional)"
     },
     "types": {
       "bachelor": "Bachelor Party",
@@ -86,9 +102,22 @@
       "trip": "Group Trip",
       "other": "Other Event"
     },
+    "submit": "Create Event",
     "creating": "Creating event...",
-    "success": "Event created successfully!",
-    "goToDashboard": "Go to Dashboard"
+    "success": {
+      "title": "Event Created! 🎉",
+      "description": "Share the code with your friends.",
+      "shareMessage": "Share the link or code with your friends.",
+      "accessCode": "Access Code",
+      "shareLink": "Share Link",
+      "linkCopied": "Link copied to clipboard.",
+      "shareWhatsApp": "Share via WhatsApp",
+      "goToDashboard": "Go to Dashboard",
+      "whatsappMessage": "🎉 You're invited!\n\nJoin \"{{name}}\" for {{honoree}}'s celebration!\n\n👉 {{link}}\n📝 Code: {{code}}"
+    },
+    "error": {
+      "failed": "Failed to create event. Please try again."
+    }
   },
   "joinEvent": {
     "title": "Join Event",

@@ -66,18 +66,34 @@
     "title": "Crear Evento",
     "step1": {
       "title": "¿Qué estás planeando?",
-      "subtitle": "Elige el tipo de tu evento"
+      "subtitle": "Elige el tipo de evento que quieres organizar."
     },
     "step2": {
-      "title": "¿Para quién?",
-      "subtitle": "¿Quién será celebrado?",
-      "placeholder": "Nombre de la persona"
+      "title": "Detalles del Evento",
+      "subtitle": "Cuéntanos sobre el evento y para quién es.",
+      "honoreeName": "¿Quién es el invitado de honor?",
+      "honoreeNamePlaceholder": "ej. Dominik",
+      "eventName": "Nombre del Evento",
+      "eventNamePlaceholder": "ej. Despedida Épica de Dominik",
+      "eventDate": "Fecha del Evento (opcional)",
+      "organizerName": "Tu Nombre (Organizador)",
+      "organizerNamePlaceholder": "ej. Luca",
+      "organizerEmail": "Tu Email (opcional)",
+      "organizerEmailPlaceholder": "luca@example.com"
     },
     "step3": {
-      "title": "Detalles del Evento",
-      "subtitle": "Dale un nombre a tu evento",
-      "eventName": "Nombre del Evento",
-      "eventNamePlaceholder": "ej. Despedida de Max 2025"
+      "title": "Añadir Participantes",
+      "subtitle": "Añade las personas que quieres invitar (puedes añadir más después).",
+      "namePlaceholder": "Introduce nombre...",
+      "noParticipants": "No hay participantes añadidos. Puedes saltar este paso."
+    },
+    "step4": {
+      "title": "Revisar y Crear",
+      "subtitle": "¿Todo bien? ¡Vamos a crear tu evento!",
+      "forHonoree": "para {{name}}",
+      "participantCount": "{{count}} participantes (incluyéndote)",
+      "organizedBy": "Organizado por {{name}}",
+      "descriptionPlaceholder": "Añade una descripción o notas para tus invitados (opcional)"
     },
     "types": {
       "bachelor": "Despedida de Soltero",
@@ -86,9 +102,22 @@
       "trip": "Viaje en Grupo",
       "other": "Otro Evento"
     },
+    "submit": "Crear Evento",
     "creating": "Creando evento...",
-    "success": "¡Evento creado con éxito!",
-    "goToDashboard": "Ir al Panel"
+    "success": {
+      "title": "¡Evento Creado! 🎉",
+      "description": "Comparte el código con tus amigos.",
+      "shareMessage": "Comparte el enlace o código con tus amigos.",
+      "accessCode": "Código de Acceso",
+      "shareLink": "Enlace para Compartir",
+      "linkCopied": "Enlace copiado al portapapeles.",
+      "shareWhatsApp": "Compartir por WhatsApp",
+      "goToDashboard": "Ir al Panel",
+      "whatsappMessage": "🎉 ¡Estás invitado!\n\nÚnete a \"{{name}}\" para la celebración de {{honoree}}!\n\n👉 {{link}}\n📝 Código: {{code}}"
+    },
+    "error": {
+      "failed": "Error al crear evento. Inténtalo de nuevo."
+    }
   },
   "joinEvent": {
     "title": "Unirse al Evento",

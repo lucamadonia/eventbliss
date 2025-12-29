@@ -34,6 +34,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { CATEGORY_CONFIG, ActivityCategory } from "@/lib/category-config";
+import { cn } from "@/lib/utils";
 
 interface Participant {
   id: string;
@@ -59,6 +61,7 @@ interface Activity {
   requirements: string[] | null;
   notes: string | null;
   responsible_participant_id: string | null;
+  category?: string | null;
 }
 
 interface Comment {
@@ -119,7 +122,20 @@ export const ActivityCard = ({
           {/* Header */}
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {activity.category && CATEGORY_CONFIG[activity.category as ActivityCategory] && (
+                  <Badge 
+                    className={cn(
+                      "text-xs border",
+                      CATEGORY_CONFIG[activity.category as ActivityCategory].bgClass,
+                      CATEGORY_CONFIG[activity.category as ActivityCategory].colorClass,
+                      CATEGORY_CONFIG[activity.category as ActivityCategory].borderClass
+                    )}
+                  >
+                    {CATEGORY_CONFIG[activity.category as ActivityCategory].emoji}{" "}
+                    {t(`planner.categories.${activity.category}`)}
+                  </Badge>
+                )}
                 {activity.start_time && (
                   <Badge variant="outline" className="text-xs">
                     <Clock className="w-3 h-3 mr-1" />

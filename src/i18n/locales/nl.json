@@ -64,31 +64,15 @@
   },
   "createEvent": {
     "title": "Evenement Maken",
-    "step1": {
-      "title": "Wat plan je?",
-      "subtitle": "Kies het type van je evenement"
-    },
-    "step2": {
-      "title": "Voor wie?",
-      "subtitle": "Wie wordt er gevierd?",
-      "placeholder": "Naam van de persoon"
-    },
-    "step3": {
-      "title": "Evenement Details",
-      "subtitle": "Geef je evenement een naam",
-      "eventName": "Evenement Naam",
-      "eventNamePlaceholder": "bijv. Max's Vrijgezellenfeest 2025"
-    },
-    "types": {
-      "bachelor": "Vrijgezellenfeest",
-      "bachelorette": "Vrijgezellenfeest (dames)",
-      "birthday": "Verjaardag",
-      "trip": "Groepsreis",
-      "other": "Ander Evenement"
-    },
+    "step1": { "title": "Wat plan je?", "subtitle": "Kies het type evenement dat je wilt organiseren." },
+    "step2": { "title": "Evenement Details", "subtitle": "Vertel ons over het evenement en voor wie het is.", "honoreeName": "Wie is de eregast?", "honoreeNamePlaceholder": "bijv. Dominik", "eventName": "Evenement Naam", "eventNamePlaceholder": "bijv. Dominiks Epische Vrijgezellenfeest", "eventDate": "Evenement Datum (optioneel)", "organizerName": "Jouw Naam (Organisator)", "organizerNamePlaceholder": "bijv. Luca", "organizerEmail": "Jouw Email (optioneel)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step3": { "title": "Deelnemers Toevoegen", "subtitle": "Voeg de mensen toe die je wilt uitnodigen.", "namePlaceholder": "Voer naam in...", "noParticipants": "Nog geen deelnemers toegevoegd. Je kunt deze stap overslaan." },
+    "step4": { "title": "Controleren & Maken", "subtitle": "Alles goed? Laten we je evenement maken!", "forHonoree": "voor {{name}}", "participantCount": "{{count}} deelnemers (inclusief jou)", "organizedBy": "Georganiseerd door {{name}}", "descriptionPlaceholder": "Voeg een beschrijving toe (optioneel)" },
+    "types": { "bachelor": "Vrijgezellenfeest", "bachelorette": "Vrijgezellenfeest (dames)", "birthday": "Verjaardag", "trip": "Groepsreis", "other": "Ander Evenement" },
+    "submit": "Evenement Maken",
     "creating": "Evenement wordt aangemaakt...",
-    "success": "Evenement succesvol aangemaakt!",
-    "goToDashboard": "Naar Dashboard"
+    "success": { "title": "Evenement Gemaakt! 🎉", "description": "Deel de code met je vrienden.", "shareMessage": "Deel de link of code.", "accessCode": "Toegangscode", "shareLink": "Deel Link", "linkCopied": "Link gekopieerd.", "shareWhatsApp": "Delen via WhatsApp", "goToDashboard": "Naar Dashboard", "whatsappMessage": "🎉 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}'s feest!\n\n👉 {{link}}\n📝 Code: {{code}}" },
+    "error": { "failed": "Maken mislukt. Probeer opnieuw." }
   },
   "joinEvent": {
     "title": "Deelnemen aan Evenement",

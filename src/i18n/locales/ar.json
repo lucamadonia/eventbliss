@@ -64,31 +64,15 @@
   },
   "createEvent": {
     "title": "إنشاء فعالية",
-    "step1": {
-      "title": "ماذا تخطط؟",
-      "subtitle": "اختر نوع فعاليتك"
-    },
-    "step2": {
-      "title": "لمن؟",
-      "subtitle": "من يتم الاحتفال به؟",
-      "placeholder": "اسم الشخص"
-    },
-    "step3": {
-      "title": "تفاصيل الفعالية",
-      "subtitle": "أعطِ فعاليتك اسماً",
-      "eventName": "اسم الفعالية",
-      "eventNamePlaceholder": "مثال: حفلة وداع العزوبية لماكس 2025"
-    },
-    "types": {
-      "bachelor": "حفلة وداع العزوبية",
-      "bachelorette": "حفلة العروس",
-      "birthday": "عيد ميلاد",
-      "trip": "رحلة جماعية",
-      "other": "فعالية أخرى"
-    },
+    "step1": { "title": "ماذا تخطط؟", "subtitle": "اختر نوع الفعالية التي تريد تنظيمها." },
+    "step2": { "title": "تفاصيل الفعالية", "subtitle": "أخبرنا عن الفعالية ولمن هي.", "honoreeName": "من هو ضيف الشرف؟", "honoreeNamePlaceholder": "مثال: دومينيك", "eventName": "اسم الفعالية", "eventNamePlaceholder": "مثال: حفلة دومينيك الأسطورية", "eventDate": "تاريخ الفعالية (اختياري)", "organizerName": "اسمك (المنظم)", "organizerNamePlaceholder": "مثال: لوكا", "organizerEmail": "بريدك الإلكتروني (اختياري)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step3": { "title": "إضافة مشاركين", "subtitle": "أضف الأشخاص الذين تريد دعوتهم.", "namePlaceholder": "أدخل الاسم...", "noParticipants": "لم تتم إضافة مشاركين بعد. يمكنك تخطي هذه الخطوة." },
+    "step4": { "title": "مراجعة وإنشاء", "subtitle": "كل شيء جيد؟ لننشئ فعاليتك!", "forHonoree": "لـ {{name}}", "participantCount": "{{count}} مشاركين (بما فيهم أنت)", "organizedBy": "منظم بواسطة {{name}}", "descriptionPlaceholder": "أضف وصفاً (اختياري)" },
+    "types": { "bachelor": "حفلة وداع العزوبية", "bachelorette": "حفلة العروس", "birthday": "عيد ميلاد", "trip": "رحلة جماعية", "other": "فعالية أخرى" },
+    "submit": "إنشاء الفعالية",
     "creating": "جار إنشاء الفعالية...",
-    "success": "تم إنشاء الفعالية بنجاح!",
-    "goToDashboard": "الذهاب إلى لوحة التحكم"
+    "success": { "title": "تم إنشاء الفعالية! 🎉", "description": "شارك الكود مع أصدقائك.", "shareMessage": "شارك الرابط أو الكود.", "accessCode": "كود الوصول", "shareLink": "رابط المشاركة", "linkCopied": "تم نسخ الرابط.", "shareWhatsApp": "مشاركة عبر واتساب", "goToDashboard": "الذهاب للوحة التحكم", "whatsappMessage": "🎉 أنت مدعو!\n\nانضم إلى \"{{name}}\" لحفلة {{honoree}}!\n\n👉 {{link}}\n📝 الكود: {{code}}" },
+    "error": { "failed": "فشل الإنشاء. حاول مرة أخرى." }
   },
   "joinEvent": {
     "title": "الانضمام للفعالية",

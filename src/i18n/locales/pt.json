@@ -64,31 +64,15 @@
   },
   "createEvent": {
     "title": "Criar Evento",
-    "step1": {
-      "title": "O que estás a planear?",
-      "subtitle": "Escolhe o tipo do teu evento"
-    },
-    "step2": {
-      "title": "Para quem?",
-      "subtitle": "Quem está a ser celebrado?",
-      "placeholder": "Nome da pessoa"
-    },
-    "step3": {
-      "title": "Detalhes do Evento",
-      "subtitle": "Dá um nome ao teu evento",
-      "eventName": "Nome do Evento",
-      "eventNamePlaceholder": "ex. Despedida do Max 2025"
-    },
-    "types": {
-      "bachelor": "Despedida de Solteiro",
-      "bachelorette": "Despedida de Solteira",
-      "birthday": "Aniversário",
-      "trip": "Viagem de Grupo",
-      "other": "Outro Evento"
-    },
+    "step1": { "title": "O que estás a planear?", "subtitle": "Escolhe o tipo de evento que queres organizar." },
+    "step2": { "title": "Detalhes do Evento", "subtitle": "Conta-nos sobre o evento e para quem é.", "honoreeName": "Quem é o convidado de honra?", "honoreeNamePlaceholder": "ex. Dominik", "eventName": "Nome do Evento", "eventNamePlaceholder": "ex. Despedida Épica do Dominik", "eventDate": "Data do Evento (opcional)", "organizerName": "O Teu Nome (Organizador)", "organizerNamePlaceholder": "ex. Luca", "organizerEmail": "O Teu Email (opcional)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step3": { "title": "Adicionar Participantes", "subtitle": "Adiciona as pessoas que queres convidar.", "namePlaceholder": "Inserir nome...", "noParticipants": "Nenhum participante adicionado. Podes saltar este passo." },
+    "step4": { "title": "Rever e Criar", "subtitle": "Tudo bem? Vamos criar o teu evento!", "forHonoree": "para {{name}}", "participantCount": "{{count}} participantes (incluindo-te)", "organizedBy": "Organizado por {{name}}", "descriptionPlaceholder": "Adiciona uma descrição (opcional)" },
+    "types": { "bachelor": "Despedida de Solteiro", "bachelorette": "Despedida de Solteira", "birthday": "Aniversário", "trip": "Viagem de Grupo", "other": "Outro Evento" },
+    "submit": "Criar Evento",
     "creating": "A criar evento...",
-    "success": "Evento criado com sucesso!",
-    "goToDashboard": "Ir para o Painel"
+    "success": { "title": "Evento Criado! 🎉", "description": "Partilha o código com os teus amigos.", "shareMessage": "Partilha o link ou código.", "accessCode": "Código de Acesso", "shareLink": "Link de Partilha", "linkCopied": "Link copiado.", "shareWhatsApp": "Partilhar via WhatsApp", "goToDashboard": "Ir para o Painel", "whatsappMessage": "🎉 Estás convidado!\n\nJunta-te a \"{{name}}\" para a festa de {{honoree}}!\n\n👉 {{link}}\n📝 Código: {{code}}" },
+    "error": { "failed": "Falha ao criar. Tenta novamente." }
   },
   "joinEvent": {
     "title": "Entrar no Evento",

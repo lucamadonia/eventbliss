@@ -64,31 +64,15 @@
   },
   "createEvent": {
     "title": "Etkinlik Oluştur",
-    "step1": {
-      "title": "Ne planlıyorsunuz?",
-      "subtitle": "Etkinliğinizin türünü seçin"
-    },
-    "step2": {
-      "title": "Kimin için?",
-      "subtitle": "Kim kutlanıyor?",
-      "placeholder": "Kişinin adı"
-    },
-    "step3": {
-      "title": "Etkinlik Detayları",
-      "subtitle": "Etkinliğinize bir isim verin",
-      "eventName": "Etkinlik Adı",
-      "eventNamePlaceholder": "örn. Max'in Bekarlığa Veda 2025"
-    },
-    "types": {
-      "bachelor": "Bekarlığa Veda",
-      "bachelorette": "Kına Gecesi",
-      "birthday": "Doğum Günü",
-      "trip": "Grup Gezisi",
-      "other": "Diğer Etkinlik"
-    },
+    "step1": { "title": "Ne planlıyorsunuz?", "subtitle": "Düzenlemek istediğiniz etkinlik türünü seçin." },
+    "step2": { "title": "Etkinlik Detayları", "subtitle": "Etkinlik ve kimin için olduğu hakkında bilgi verin.", "honoreeName": "Onur konuğu kim?", "honoreeNamePlaceholder": "örn. Dominik", "eventName": "Etkinlik Adı", "eventNamePlaceholder": "örn. Dominik'in Epik Partisi", "eventDate": "Etkinlik Tarihi (isteğe bağlı)", "organizerName": "Adınız (Organizatör)", "organizerNamePlaceholder": "örn. Luca", "organizerEmail": "E-postanız (isteğe bağlı)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step3": { "title": "Katılımcı Ekle", "subtitle": "Davet etmek istediğiniz kişileri ekleyin.", "namePlaceholder": "İsim girin...", "noParticipants": "Henüz katılımcı eklenmedi. Bu adımı atlayabilirsiniz." },
+    "step4": { "title": "İncele ve Oluştur", "subtitle": "Her şey tamam mı? Etkinliğinizi oluşturalım!", "forHonoree": "{{name}} için", "participantCount": "{{count}} katılımcı (siz dahil)", "organizedBy": "{{name}} tarafından organize ediliyor", "descriptionPlaceholder": "Bir açıklama ekleyin (isteğe bağlı)" },
+    "types": { "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü", "trip": "Grup Gezisi", "other": "Diğer Etkinlik" },
+    "submit": "Etkinlik Oluştur",
     "creating": "Etkinlik oluşturuluyor...",
-    "success": "Etkinlik başarıyla oluşturuldu!",
-    "goToDashboard": "Panele Git"
+    "success": { "title": "Etkinlik Oluşturuldu! 🎉", "description": "Kodu arkadaşlarınızla paylaşın.", "shareMessage": "Linki veya kodu paylaşın.", "accessCode": "Erişim Kodu", "shareLink": "Paylaşım Linki", "linkCopied": "Link kopyalandı.", "shareWhatsApp": "WhatsApp ile Paylaş", "goToDashboard": "Panele Git", "whatsappMessage": "🎉 Davetlisiniz!\n\n\"{{name}}\" etkinliğine {{honoree}} için katılın!\n\n👉 {{link}}\n📝 Kod: {{code}}" },
+    "error": { "failed": "Oluşturma başarısız. Tekrar deneyin." }
   },
   "joinEvent": {
     "title": "Etkinliğe Katıl",

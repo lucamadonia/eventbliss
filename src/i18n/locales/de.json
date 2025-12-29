@@ -66,18 +66,34 @@
     "title": "Event erstellen",
     "step1": {
       "title": "Was planst du?",
-      "subtitle": "Wähle die Art deines Events"
+      "subtitle": "Wähle die Art des Events, das du organisieren möchtest."
     },
     "step2": {
-      "title": "Für wen?",
-      "subtitle": "Wer wird gefeiert?",
-      "placeholder": "Name der Person"
+      "title": "Event-Details",
+      "subtitle": "Erzähl uns vom Event und für wen es ist.",
+      "honoreeName": "Wer ist der Ehrengast?",
+      "honoreeNamePlaceholder": "z.B. Dominik",
+      "eventName": "Event-Name",
+      "eventNamePlaceholder": "z.B. Dominiks Legendärer JGA",
+      "eventDate": "Event-Datum (optional)",
+      "organizerName": "Dein Name (Organisator)",
+      "organizerNamePlaceholder": "z.B. Luca",
+      "organizerEmail": "Deine E-Mail (optional)",
+      "organizerEmailPlaceholder": "luca@example.com"
     },
     "step3": {
-      "title": "Event-Details",
-      "subtitle": "Gib deinem Event einen Namen",
-      "eventName": "Event-Name",
-      "eventNamePlaceholder": "z.B. Maxis JGA 2025"
+      "title": "Teilnehmer hinzufügen",
+      "subtitle": "Füge die Personen hinzu, die du einladen möchtest (du kannst später weitere hinzufügen).",
+      "namePlaceholder": "Name eingeben...",
+      "noParticipants": "Noch keine Teilnehmer hinzugefügt. Du kannst diesen Schritt überspringen."
+    },
+    "step4": {
+      "title": "Überprüfen & Erstellen",
+      "subtitle": "Alles gut? Lass uns dein Event erstellen!",
+      "forHonoree": "für {{name}}",
+      "participantCount": "{{count}} Teilnehmer (inkl. dir)",
+      "organizedBy": "Organisiert von {{name}}",
+      "descriptionPlaceholder": "Füge eine Beschreibung oder Notizen für deine Gäste hinzu (optional)"
     },
     "types": {
       "bachelor": "Junggesellenabschied",
@@ -86,9 +102,22 @@
       "trip": "Gruppenreise",
       "other": "Anderes Event"
     },
+    "submit": "Event erstellen",
     "creating": "Event wird erstellt...",
-    "success": "Event erfolgreich erstellt!",
-    "goToDashboard": "Zum Dashboard"
+    "success": {
+      "title": "Event erstellt! 🎉",
+      "description": "Teile den Code mit deinen Freunden.",
+      "shareMessage": "Teile den Link oder Code mit deinen Freunden.",
+      "accessCode": "Zugangscode",
+      "shareLink": "Link teilen",
+      "linkCopied": "Link in Zwischenablage kopiert.",
+      "shareWhatsApp": "Per WhatsApp teilen",
+      "goToDashboard": "Zum Dashboard",
+      "whatsappMessage": "🎉 Du bist eingeladen!\n\nSei dabei bei \"{{name}}\" für {{honoree}}'s Feier!\n\n👉 {{link}}\n📝 Code: {{code}}"
+    },
+    "error": {
+      "failed": "Event konnte nicht erstellt werden. Bitte versuche es erneut."
+    }
   },
   "joinEvent": {
     "title": "Event beitreten",
