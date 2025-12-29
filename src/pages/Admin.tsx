@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield } from "lucide-react";
@@ -14,14 +14,17 @@ import { StatsOverview } from "@/components/admin/StatsOverview";
 const Admin = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuthContext();
   const { isAdmin, isLoading: adminLoading } = useAdmin();
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    } else if (!authLoading && !adminLoading && !isAdmin) {
-      navigate("/");
+    // Nur redirecten wenn Auth UND Admin-Check beide fertig sind
+    if (authLoading || adminLoading) return;
+
+    if (!user) {
+      navigate("/auth", { replace: true });
+    } else if (!isAdmin) {
+      navigate("/", { replace: true });
     }
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
