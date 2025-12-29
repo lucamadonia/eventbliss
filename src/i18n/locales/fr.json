@@ -316,6 +316,12 @@
     "title": "Modèles de Messages",
     "subtitle": "Copiez ou partagez des messages pré-rédigés",
     "sendViaWhatsApp": "Envoyer via WhatsApp",
+    "surveyLink": "Lien du Sondage",
+    "accessCode": "Code d'Accès",
+    "proTip": {
+      "title": "Conseil Pro",
+      "description": "Copiez les messages et partagez-les directement via WhatsApp ou d'autres messageries pour de meilleurs résultats."
+    },
     "templates": {
       "kickoff": {
         "title": "Message de Lancement",

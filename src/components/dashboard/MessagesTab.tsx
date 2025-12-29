@@ -69,7 +69,7 @@ export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const surveyLink = `${window.location.origin}/e/${slug}`;
-  const accessCode = (event.settings as Record<string, unknown>)?.access_code as string || "STAG2025";
+  const accessCode = event.access_code || "STAG2025";
 
   const getTemplateText = (templateKey: string) => {
     return t(templateKey, {

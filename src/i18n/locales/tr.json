@@ -271,6 +271,12 @@
     "title": "Mesaj Şablonları",
     "subtitle": "Hazır mesajları kopyalayın veya paylaşın",
     "sendViaWhatsApp": "WhatsApp ile Gönder",
+    "surveyLink": "Anket Linki",
+    "accessCode": "Erişim Kodu",
+    "proTip": {
+      "title": "Pro İpucu",
+      "description": "Mesajları kopyalayın ve en iyi sonuçlar için doğrudan WhatsApp veya diğer mesajlaşma uygulamaları aracılığıyla paylaşın."
+    },
     "templates": {
       "kickoff": {
         "title": "Başlangıç Mesajı",

@@ -316,6 +316,12 @@
     "title": "Nachrichten-Vorlagen",
     "subtitle": "Kopiere oder teile vorgefertigte Nachrichten",
     "sendViaWhatsApp": "Via WhatsApp senden",
+    "surveyLink": "Umfrage-Link",
+    "accessCode": "Zugangscode",
+    "proTip": {
+      "title": "Pro-Tipp",
+      "description": "Kopiere die Nachrichten und teile sie direkt via WhatsApp oder andere Messenger für beste Ergebnisse."
+    },
     "templates": {
       "kickoff": {
         "title": "Kickoff-Nachricht",

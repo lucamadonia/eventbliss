@@ -271,6 +271,12 @@
     "title": "Modelos de Mensagens",
     "subtitle": "Copia ou partilha mensagens pré-escritas",
     "sendViaWhatsApp": "Enviar via WhatsApp",
+    "surveyLink": "Link do Inquérito",
+    "accessCode": "Código de Acesso",
+    "proTip": {
+      "title": "Dica Pro",
+      "description": "Copia as mensagens e partilha-as diretamente via WhatsApp ou outros mensageiros para melhores resultados."
+    },
     "templates": {
       "kickoff": {
         "title": "Mensagem de Início",

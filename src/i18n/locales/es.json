@@ -316,6 +316,12 @@
     "title": "Plantillas de Mensajes",
     "subtitle": "Copia o comparte mensajes prediseñados",
     "sendViaWhatsApp": "Enviar por WhatsApp",
+    "surveyLink": "Enlace de Encuesta",
+    "accessCode": "Código de Acceso",
+    "proTip": {
+      "title": "Consejo Pro",
+      "description": "Copia los mensajes y compártelos directamente vía WhatsApp u otros mensajeros para mejores resultados."
+    },
     "templates": {
       "kickoff": {
         "title": "Mensaje de Inicio",

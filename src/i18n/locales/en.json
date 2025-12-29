@@ -316,6 +316,12 @@
     "title": "Message Templates",
     "subtitle": "Copy or share pre-written messages",
     "sendViaWhatsApp": "Send via WhatsApp",
+    "surveyLink": "Survey Link",
+    "accessCode": "Access Code",
+    "proTip": {
+      "title": "Pro Tip",
+      "description": "Copy the messages and share them directly via WhatsApp or other messengers for best results."
+    },
     "templates": {
       "kickoff": {
         "title": "Kickoff Message",

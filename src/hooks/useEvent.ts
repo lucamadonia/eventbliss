@@ -12,6 +12,7 @@ export interface EventData {
   currency: string;
   timezone: string;
   theme: Record<string, unknown>;
+  access_code: string | null;
   settings: {
     date_blocks?: Record<string, string>;
     no_gos?: string[];
