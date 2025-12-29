@@ -61,7 +61,7 @@ export function LandingHeader({ onScrollToSection }: LandingHeaderProps) {
               <img
                 src={eventBlissLogo}
                 alt="EventBliss"
-                className="h-12 md:h-16 lg:h-20 w-auto"
+                className="h-24 md:h-32 lg:h-40 w-auto"
               />
             </a>
 
