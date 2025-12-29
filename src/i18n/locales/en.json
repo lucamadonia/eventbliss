@@ -651,5 +651,46 @@
       "alreadySubscribed": "This email is already subscribed",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "profile": {
+    "account": "Account",
+    "myEvents": "My Events",
+    "settings": "Settings",
+    "premium": "Premium",
+    "comingSoon": "Coming Soon",
+    "noEvents": "No events yet",
+    "noEventsDescription": "Create your first event and invite your friends!",
+    "createFirstEvent": "Create First Event",
+    "accountInfo": "Account Information",
+    "accountInfoDescription": "Your login credentials",
+    "emailCannotChange": "Email address cannot be changed.",
+    "changePassword": "Change Password",
+    "changePasswordDescription": "Choose a secure new password.",
+    "newPassword": "New Password",
+    "updatePassword": "Update Password",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "passwordChanged": "Password changed successfully!",
+    "dangerZoneDescription": "Permanently delete your account.",
+    "deleteAccount": "Delete Account",
+    "deleteAccountTitle": "Delete account?",
+    "deleteAccountWarning": "This action cannot be undone. All your events and data will be permanently deleted.",
+    "typeDeleteToConfirm": "Type DELETE to confirm",
+    "deleteConfirmationRequired": "Please type DELETE to confirm.",
+    "accountDeleteRequested": "Account deletion requested."
+  },
+  "premium": {
+    "title": "Premium Features",
+    "description": "Unlock advanced features for an even better event experience.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Everything you need for perfect events",
+    "perMonth": "month",
+    "features": {
+      "unlimitedEvents": "Unlimited Events",
+      "aiAssistant": "Advanced AI Assistant",
+      "prioritySupport": "Priority Support"
+    },
+    "subscribe": "Upgrade Now",
+    "comingSoonNote": "Premium subscriptions will be available soon. Stay tuned!"
   }
 }

@@ -619,5 +619,46 @@
       "alreadySubscribed": "Diese E-Mail ist bereits abonniert",
       "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
     }
+  },
+  "profile": {
+    "account": "Konto",
+    "myEvents": "Meine Events",
+    "settings": "Einstellungen",
+    "premium": "Premium",
+    "comingSoon": "Bald verfügbar",
+    "noEvents": "Noch keine Events",
+    "noEventsDescription": "Erstelle dein erstes Event und lade deine Freunde ein!",
+    "createFirstEvent": "Erstes Event erstellen",
+    "accountInfo": "Kontoinformationen",
+    "accountInfoDescription": "Deine Anmeldedaten",
+    "emailCannotChange": "Die E-Mail-Adresse kann nicht geändert werden.",
+    "changePassword": "Passwort ändern",
+    "changePasswordDescription": "Wähle ein sicheres neues Passwort.",
+    "newPassword": "Neues Passwort",
+    "updatePassword": "Passwort aktualisieren",
+    "passwordMismatch": "Passwörter stimmen nicht überein.",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen haben.",
+    "passwordChanged": "Passwort erfolgreich geändert!",
+    "dangerZoneDescription": "Lösche deinen Account dauerhaft.",
+    "deleteAccount": "Account löschen",
+    "deleteAccountTitle": "Account wirklich löschen?",
+    "deleteAccountWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Events und Daten werden dauerhaft gelöscht.",
+    "typeDeleteToConfirm": "Tippe DELETE um zu bestätigen",
+    "deleteConfirmationRequired": "Bitte tippe DELETE um zu bestätigen.",
+    "accountDeleteRequested": "Account-Löschung angefordert."
+  },
+  "premium": {
+    "title": "Premium-Funktionen",
+    "description": "Schalte erweiterte Funktionen frei für ein noch besseres Event-Erlebnis.",
+    "planName": "EventBliss Pro",
+    "planDescription": "Alles was du für perfekte Events brauchst",
+    "perMonth": "Monat",
+    "features": {
+      "unlimitedEvents": "Unbegrenzte Events",
+      "aiAssistant": "Erweiterter KI-Assistent",
+      "prioritySupport": "Prioritäts-Support"
+    },
+    "subscribe": "Jetzt upgraden",
+    "comingSoonNote": "Premium-Abonnements werden bald verfügbar sein. Bleib dran!"
   }
 }
