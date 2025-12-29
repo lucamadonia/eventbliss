@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
@@ -70,6 +71,7 @@ interface FormBuilderTabProps {
 }
 
 export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
+  const { t } = useTranslation();
   const settings = mergeWithDefaults(event.settings);
   
   // Convert stored date_blocks to DateRangeBlock format
@@ -213,14 +215,14 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
       const data = await res.json();
       
       if (!data.success) {
-        throw new Error(data.error || "Fehler beim Speichern");
+        throw new Error(data.error || t('common.error'));
       }
 
-      toast.success("Formular-Konfiguration gespeichert!");
+      toast.success(t('dashboard.form.successMessage'));
       onUpdate();
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Fehler beim Speichern");
+      toast.error(t('common.error'));
     } finally {
       setIsSaving(false);
     }
@@ -298,21 +300,21 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         <div>
           <h2 className="font-display text-2xl font-bold flex items-center gap-2">
             <Settings2 className="w-6 h-6 text-primary" />
-            Formular-Builder
+            {t('dashboard.form.title')}
           </h2>
           <p className="text-muted-foreground text-sm">
-            Konfiguriere das Survey für <span className="font-medium text-foreground">{event.name}</span>
+            {t('dashboard.form.subtitle', { eventName: event.name })}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-2" asChild>
             <a href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} target="_blank" rel="noopener noreferrer">
               <Eye className="w-4 h-4" />
-              Vorschau
+              {t('dashboard.form.preview')}
             </a>
           </Button>
           <GradientButton onClick={handleSave} disabled={isSaving} icon={<Save className="w-4 h-4" />}>
-            {isSaving ? "Speichert..." : "Speichern"}
+            {isSaving ? t('dashboard.form.saving') : t('dashboard.form.save')}
           </GradientButton>
         </div>
       </div>
@@ -322,15 +324,15 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         <TabsList className="grid grid-cols-3 w-full max-w-md">
           <TabsTrigger value="content" className="gap-2">
             <Calendar className="w-4 h-4" />
-            <span className="hidden sm:inline">Inhalt</span>
+            <span className="hidden sm:inline">{t('dashboard.form.tabs.content')}</span>
           </TabsTrigger>
           <TabsTrigger value="design" className="gap-2">
             <Palette className="w-4 h-4" />
-            <span className="hidden sm:inline">Design</span>
+            <span className="hidden sm:inline">{t('dashboard.form.tabs.design')}</span>
           </TabsTrigger>
           <TabsTrigger value="extras" className="gap-2">
             <MessageSquarePlus className="w-4 h-4" />
-            <span className="hidden sm:inline">Extras</span>
+            <span className="hidden sm:inline">{t('dashboard.form.tabs.extras')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -347,9 +349,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <Users className="w-5 h-5 text-success" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Teilnahme-Fragen</h3>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.attendance.title')}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Dabei?, Dauer, Teilweise möglich
+                        {t('dashboard.form.sections.attendance.description')}
                       </p>
                     </div>
                   </div>
@@ -357,25 +359,25 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 <AccordionContent className="px-6 pb-6">
                   <div className="space-y-6">
                     <CoreQuestionEditor
-                      title="Bist du dabei? *"
-                      description="Antwortoptionen für die Teilnahme-Frage"
+                      title={t('dashboard.form.questions.attendance.title')}
+                      description={t('dashboard.form.questions.attendance.description')}
                       options={attendanceOptions}
                       onChange={setAttendanceOptions}
                       showEmoji={true}
                       maxOptions={5}
-                      placeholder="z.B. Unter Vorbehalt"
+                      placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.attendance}
                       onConfigChange={(c) => updateQuestionConfig('attendance', c)}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
-                        title="Bevorzugte Dauer *"
-                        description="Optionen für die Dauer des Events"
+                        title={t('dashboard.form.questions.duration.title')}
+                        description={t('dashboard.form.questions.duration.description')}
                         options={durationOptions}
                         onChange={setDurationOptions}
                         showEmoji={false}
                         maxOptions={5}
-                        placeholder="z.B. 3-4 Tage"
+                        placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.duration}
                         onConfigChange={(c) => updateQuestionConfig('duration', c)}
                       />
@@ -394,9 +396,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <Car className="w-5 h-5 text-info" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Reise & Fitness</h3>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.travel.title')}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Reisebereitschaft, Fitnesslevel, Alkohol
+                        {t('dashboard.form.sections.travel.description')}
                       </p>
                     </div>
                   </div>
@@ -404,38 +406,38 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 <AccordionContent className="px-6 pb-6">
                   <div className="space-y-6">
                     <CoreQuestionEditor
-                      title="Maximale Reisedauer *"
-                      description="Wie weit sind die Gäste bereit zu reisen?"
+                      title={t('dashboard.form.questions.travel.title')}
+                      description={t('dashboard.form.questions.travel.description')}
                       options={travelOptions}
                       onChange={setTravelOptions}
                       showEmoji={false}
                       maxOptions={5}
-                      placeholder="z.B. Egal - flexibel"
+                      placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.travel}
                       onConfigChange={(c) => updateQuestionConfig('travel', c)}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
-                        title="Fitness-Level *"
-                        description="Bevorzugtes Aktivitätsniveau"
+                        title={t('dashboard.form.questions.fitness.title')}
+                        description={t('dashboard.form.questions.fitness.description')}
                         options={fitnessOptions}
                         onChange={setFitnessOptions}
                         showEmoji={true}
                         maxOptions={5}
-                        placeholder="z.B. Sehr sportlich"
+                        placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.fitness}
                         onConfigChange={(c) => updateQuestionConfig('fitness', c)}
                       />
                     </div>
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
-                        title="Alkohol-Präferenz"
-                        description="Einstellung zu alkoholischen Getränken"
+                        title={t('dashboard.form.questions.alcohol.title')}
+                        description={t('dashboard.form.questions.alcohol.description')}
                         options={alcoholOptions}
                         onChange={setAlcoholOptions}
                         showEmoji={true}
                         maxOptions={4}
-                        placeholder="z.B. Nur Bier"
+                        placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.alcohol}
                         onConfigChange={(c) => updateQuestionConfig('alcohol', c)}
                       />
@@ -454,9 +456,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <Calendar className="w-5 h-5 text-primary" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Terminblöcke</h3>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.dates.title')}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {dateBlocks.length} Termine konfiguriert
+                        {t('dashboard.form.sections.dates.configured', { count: dateBlocks.length })}
                       </p>
                     </div>
                   </div>
@@ -479,9 +481,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <Dumbbell className="w-5 h-5 text-warning" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Aktivitäten</h3>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.activities.title')}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {selectedActivities.length} von 100+ ausgewählt
+                        {t('dashboard.form.sections.activities.selected', { count: selectedActivities.length })}
                       </p>
                     </div>
                   </div>
@@ -505,8 +507,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <DollarSign className="w-5 h-5 text-accent" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Budget-Optionen</h3>
-                      <p className="text-sm text-muted-foreground">{budgetOptions.length} Optionen</p>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.budget.title')}</h3>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.form.sections.budget.options', { count: budgetOptions.length })}</p>
                     </div>
                   </div>
                 </AccordionTrigger>
@@ -533,7 +535,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                     </div>
                     <div className="flex gap-2">
                       <Input
-                        placeholder="z.B. 500-750 €"
+                        placeholder={t('dashboard.form.sections.budget.placeholder')}
                         value={newBudget}
                         onChange={(e) => setNewBudget(e.target.value)}
                         className="flex-1"
@@ -556,8 +558,8 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <MapPin className="w-5 h-5 text-success" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">Destinations</h3>
-                      <p className="text-sm text-muted-foreground">{destinationOptions.length} Optionen</p>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.destinations.title')}</h3>
+                      <p className="text-sm text-muted-foreground">{t('dashboard.form.sections.destinations.options', { count: destinationOptions.length })}</p>
                     </div>
                   </div>
                 </AccordionTrigger>
@@ -585,14 +587,14 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                     </div>
                     <div className="flex gap-2">
                       <Input
-                        placeholder="Emoji"
+                        placeholder={t('dashboard.form.sections.destinations.emojiPlaceholder')}
                         value={newDestinationEmoji}
                         onChange={(e) => setNewDestinationEmoji(e.target.value)}
                         className="w-16"
                         maxLength={4}
                       />
                       <Input
-                        placeholder="z.B. Amsterdam"
+                        placeholder={t('dashboard.form.sections.destinations.placeholder')}
                         value={newDestination}
                         onChange={(e) => setNewDestination(e.target.value)}
                         className="flex-1"
@@ -615,9 +617,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       <AlertTriangle className="w-5 h-5 text-destructive" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold">No-Gos & Fokus</h3>
+                      <h3 className="font-semibold">{t('dashboard.form.sections.rules.title')}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {noGos.length + focusPoints.length} Regeln
+                        {t('dashboard.form.sections.rules.rulesCount', { count: noGos.length + focusPoints.length })}
                       </p>
                     </div>
                   </div>
@@ -626,7 +628,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                   <div className="space-y-6">
                     {/* No-Gos */}
                     <div>
-                      <Label className="text-sm font-medium mb-3 block">❌ No-Gos</Label>
+                      <Label className="text-sm font-medium mb-3 block">❌ {t('dashboard.form.noGos.title')}</Label>
                       <div className="space-y-2 mb-3">
                         <AnimatePresence>
                           {noGos.map((noGo, index) => (
@@ -652,7 +654,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       </div>
                       <div className="flex gap-2">
                         <Input
-                          placeholder="z.B. Keine Stripper"
+                          placeholder={t('dashboard.form.noGos.placeholder')}
                           value={newNoGo}
                           onChange={(e) => setNewNoGo(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && addNoGo()}
@@ -666,7 +668,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
 
                     {/* Focus Points */}
                     <div>
-                      <Label className="text-sm font-medium mb-3 block">✨ Fokus / Wünsche</Label>
+                      <Label className="text-sm font-medium mb-3 block">✨ {t('dashboard.form.focusPoints.title')}</Label>
                       <div className="space-y-2 mb-3">
                         <AnimatePresence>
                           {focusPoints.map((point, index) => (
@@ -692,7 +694,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       </div>
                       <div className="flex gap-2">
                         <Input
-                          placeholder="z.B. Action & Spaß"
+                          placeholder={t('dashboard.form.focusPoints.placeholder')}
                           value={newFocusPoint}
                           onChange={(e) => setNewFocusPoint(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && addFocusPoint()}
@@ -719,9 +721,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 <Sparkles className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Design-Template wählen</h3>
+                <h3 className="font-semibold">{t('dashboard.form.design.templateTitle')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Wähle ein passendes Design für dein Event
+                  {t('dashboard.form.design.templateDescription')}
                 </p>
               </div>
             </div>
@@ -739,9 +741,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 <Palette className="w-5 h-5 text-accent" />
               </div>
               <div>
-                <h3 className="font-semibold">Branding anpassen</h3>
+                <h3 className="font-semibold">{t('dashboard.form.design.brandingTitle')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Farben, Texte & Key-Datum konfigurieren
+                  {t('dashboard.form.design.brandingDescription')}
                 </p>
               </div>
             </div>
@@ -764,9 +766,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                 <MessageSquarePlus className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Eigene Fragen</h3>
+                <h3 className="font-semibold">{t('dashboard.form.extras.customQuestionsTitle')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Füge individuelle Fragen zum Formular hinzu
+                  {t('dashboard.form.extras.customQuestionsDescription')}
                 </p>
               </div>
             </div>
@@ -783,7 +785,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         <div className="flex items-center gap-3 text-muted-foreground">
           <Sparkles className="w-5 h-5 text-primary" />
           <p className="text-sm">
-            Änderungen werden sofort im Survey-Formular sichtbar, sobald du speicherst.
+            {t('dashboard.form.previewHint')}
             <ChevronRight className="w-4 h-4 inline mx-1" />
             <a 
               href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} 
@@ -791,7 +793,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Vorschau öffnen
+              {t('dashboard.form.openPreview')}
             </a>
           </p>
         </div>

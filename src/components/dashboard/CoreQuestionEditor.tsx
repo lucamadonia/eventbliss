@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { 
   Plus, 
@@ -46,6 +47,7 @@ export const CoreQuestionEditor = ({
   showVisibilityToggle = true,
   showMultiSelectToggle = true,
 }: CoreQuestionEditorProps) => {
+  const { t } = useTranslation();
   const [newLabel, setNewLabel] = useState("");
   const [newEmoji, setNewEmoji] = useState("");
 
@@ -132,12 +134,12 @@ export const CoreQuestionEditor = ({
                   {isMultiSelect ? (
                     <>
                       <ToggleRight className="w-3.5 h-3.5" />
-                      Multi
+                      {t('dashboard.form.multi')}
                     </>
                   ) : (
                     <>
                       <ToggleLeft className="w-3.5 h-3.5" />
-                      Single
+                      {t('dashboard.form.single')}
                     </>
                   )}
                 </button>
@@ -159,12 +161,12 @@ export const CoreQuestionEditor = ({
                   {isEnabled ? (
                     <>
                       <Eye className="w-3.5 h-3.5" />
-                      Sichtbar
+                      {t('dashboard.form.visible')}
                     </>
                   ) : (
                     <>
                       <EyeOff className="w-3.5 h-3.5" />
-                      Versteckt
+                      {t('dashboard.form.hidden')}
                     </>
                   )}
                 </button>
@@ -247,17 +249,17 @@ export const CoreQuestionEditor = ({
       {/* Count badge and info */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-3">
-          <span>{options.length} von max. {maxOptions} Optionen</span>
+          <span>{t('dashboard.form.optionsCount', { count: options.length, max: maxOptions })}</span>
           {isMultiSelect && (
             <Badge variant="secondary" className="text-xs">
-              Mehrfachauswahl
+              {t('dashboard.form.multiSelect')}
             </Badge>
           )}
         </div>
         {showEmoji && (
           <span className="flex items-center gap-1">
             <Smile className="w-3 h-3" />
-            Emojis optional
+            {t('dashboard.form.emojisOptional')}
           </span>
         )}
       </div>
