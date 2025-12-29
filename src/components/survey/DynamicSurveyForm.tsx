@@ -81,7 +81,7 @@ const DynamicSurveyForm = ({
     defaultValues: {
       participant: "",
       attendance: "",
-      duration_pref: "",
+      duration_pref: questionConfig.duration?.multiSelect ? [] : "",
       date_blocks: [],
       budget: questionConfig.budget.multiSelect ? [] : "",
       destination: questionConfig.destination.multiSelect ? [] : "",
@@ -230,7 +230,7 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Duration Preference - Dynamic options */}
+            {/* Duration Preference - Dynamic options (single or multi-select) */}
             <div className="form-section">
               <FormField
                 control={form.control}
@@ -239,23 +239,58 @@ const DynamicSurveyForm = ({
                   <FormItem>
                     <FormLabel className="form-label">Bevorzugte Dauer *</FormLabel>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid gap-3"
-                      >
-                        {config.duration_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`duration-${option.value}`} />
-                            <Label htmlFor={`duration-${option.value}`} className="cursor-pointer flex-1">
-                              {option.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                      {questionConfig.duration?.multiSelect ? (
+                        <div className="grid gap-3">
+                          {config.duration_options.map((option) => {
+                            const values = Array.isArray(field.value) ? field.value : [];
+                            const isChecked = values.includes(option.value);
+                            return (
+                              <div
+                                key={option.value}
+                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                                }`}
+                                onClick={() => {
+                                  const newValue = isChecked
+                                    ? values.filter((v) => v !== option.value)
+                                    : [...values, option.value];
+                                  field.onChange(newValue);
+                                }}
+                              >
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={(checked) => {
+                                    const newValue = checked
+                                      ? [...values, option.value]
+                                      : values.filter((v) => v !== option.value);
+                                    field.onChange(newValue);
+                                  }}
+                                />
+                                <Label className="cursor-pointer flex-1">{option.label}</Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={typeof field.value === 'string' ? field.value : ''}
+                          className="grid gap-3"
+                        >
+                          {config.duration_options.map((option) => (
+                            <div
+                              key={option.value}
+                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                              onClick={() => field.onChange(option.value)}
+                            >
+                              <RadioGroupItem value={option.value} id={`duration-${option.value}`} />
+                              <Label htmlFor={`duration-${option.value}`} className="cursor-pointer flex-1">
+                                {option.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -553,21 +588,22 @@ const DynamicSurveyForm = ({
                         value={field.value}
                         className="grid grid-cols-3 gap-3"
                       >
-                        {config.fitness_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex flex-col items-center p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer text-center"
-                          >
-                            <RadioGroupItem value={option.value} id={`fitness-${option.value}`} className="sr-only" />
-                            <Label
-                              htmlFor={`fitness-${option.value}`}
-                              className="cursor-pointer w-full text-center"
+                        {config.fitness_options.map((option) => {
+                          const isSelected = field.value === option.value;
+                          return (
+                            <div
+                              key={option.value}
+                              onClick={() => field.onChange(option.value)}
+                              className={`flex flex-col items-center p-3 rounded-lg border transition-colors cursor-pointer text-center ${
+                                isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                              }`}
                             >
+                              <RadioGroupItem value={option.value} id={`fitness-${option.value}`} className="sr-only" />
                               <span className="text-2xl block mb-1">{option.emoji}</span>
                               <span className="text-sm">{option.label}</span>
-                            </Label>
-                          </div>
-                        ))}
+                            </div>
+                          );
+                        })}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -590,17 +626,23 @@ const DynamicSurveyForm = ({
                         value={field.value}
                         className="grid grid-cols-3 gap-3"
                       >
-                        {config.alcohol_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center justify-center p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`alcohol-${option.value}`} className="sr-only" />
-                            <Label htmlFor={`alcohol-${option.value}`} className="cursor-pointer text-center text-sm">
-                              {option.label} {option.emoji}
-                            </Label>
-                          </div>
-                        ))}
+                        {config.alcohol_options.map((option) => {
+                          const isSelected = field.value === option.value;
+                          return (
+                            <div
+                              key={option.value}
+                              onClick={() => field.onChange(option.value)}
+                              className={`flex items-center justify-center p-3 rounded-lg border transition-colors cursor-pointer ${
+                                isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                              }`}
+                            >
+                              <RadioGroupItem value={option.value} id={`alcohol-${option.value}`} className="sr-only" />
+                              <span className="text-center text-sm">
+                                {option.label} {option.emoji}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />

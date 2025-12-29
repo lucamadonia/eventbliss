@@ -78,6 +78,7 @@ const EventSurvey = () => {
         keyDate={settings.branding?.key_date}
         heroImageUrl={settings.branding?.hero_image_url}
         logoUrl={settings.branding?.logo_url}
+        templateId={settings.branding?.template_id}
       />
       <InfoCard />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />

@@ -66,7 +66,11 @@ export const dynamicResponseSchema = z.object({
   
   attendance: z.string().min(1, "Bitte gib an, ob du dabei sein kannst"),
   
-  duration_pref: z.string().min(1, "Bitte wähle deine bevorzugte Dauer"),
+  // Duration can be string (single) or array (multi)
+  duration_pref: z.union([
+    z.string().min(1, "Bitte wähle deine bevorzugte Dauer"),
+    z.array(z.string()).min(1, "Bitte wähle mindestens eine Dauer")
+  ]),
   
   date_blocks: z.array(z.string()).min(1, "Bitte wähle mindestens einen Terminblock aus"),
   

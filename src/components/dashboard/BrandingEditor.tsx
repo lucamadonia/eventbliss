@@ -141,6 +141,7 @@ export function BrandingEditor({
             {PRESET_COLORS.slice(0, 10).map((color) => (
               <button
                 key={color}
+                type="button"
                 onClick={() => updateBranding({ primary_color: color })}
                 className={cn(
                   'w-6 h-6 rounded-md border-2 transition-all hover:scale-110',
@@ -177,6 +178,7 @@ export function BrandingEditor({
             {PRESET_COLORS.slice(5, 15).map((color) => (
               <button
                 key={color}
+                type="button"
                 onClick={() => updateBranding({ accent_color: color })}
                 className={cn(
                   'w-6 h-6 rounded-md border-2 transition-all hover:scale-110',

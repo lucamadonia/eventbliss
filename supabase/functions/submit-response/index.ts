@@ -87,17 +87,19 @@ serve(async (req) => {
       .eq("participant", participant)
       .maybeSingle();
 
-    // Normalize budget/destination - can be string or array
+    // Normalize budget/destination/duration - can be string or array
     const budgetChoices = Array.isArray(budget) ? budget : (budget ? [budget] : []);
     const destinationChoices = Array.isArray(destination) ? destination : (destination ? [destination] : []);
+    const durationChoices = Array.isArray(duration_pref) ? duration_pref : (duration_pref ? [duration_pref] : []);
     const primaryBudget = budgetChoices[0] || "150-250";
     const primaryDestination = destinationChoices[0] || "either";
+    const primaryDuration = durationChoices[0] || "either";
 
     const responseData = {
       event_id,
       participant,
       attendance,
-      duration_pref: duration_pref || "either",
+      duration_pref: primaryDuration,
       date_blocks: date_blocks || [],
       partial_days: partial_days || null,
       budget: primaryBudget,
@@ -112,6 +114,7 @@ serve(async (req) => {
       meta: {
         budget_choices: budgetChoices,
         destination_choices: destinationChoices,
+        duration_choices: durationChoices,
       },
     };
 
