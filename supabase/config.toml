@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.get-mapbox-token]
 verify_jwt = false
+
+[functions.verify-invite-token]
+verify_jwt = false
+
+[functions.claim-invite]
+verify_jwt = false

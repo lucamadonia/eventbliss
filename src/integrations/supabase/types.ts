@@ -238,10 +238,15 @@ export type Database = {
       participants: {
         Row: {
           avatar_url: string | null
+          can_access_dashboard: boolean | null
           created_at: string
+          dashboard_permissions: Json | null
           email: string | null
           event_id: string
           id: string
+          invite_claimed_at: string | null
+          invite_sent_at: string | null
+          invite_token: string | null
           joined_at: string | null
           name: string
           phone: string | null
@@ -253,10 +258,15 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          can_access_dashboard?: boolean | null
           created_at?: string
+          dashboard_permissions?: Json | null
           email?: string | null
           event_id: string
           id?: string
+          invite_claimed_at?: string | null
+          invite_sent_at?: string | null
+          invite_token?: string | null
           joined_at?: string | null
           name: string
           phone?: string | null
@@ -268,10 +278,15 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          can_access_dashboard?: boolean | null
           created_at?: string
+          dashboard_permissions?: Json | null
           email?: string | null
           event_id?: string
           id?: string
+          invite_claimed_at?: string | null
+          invite_sent_at?: string | null
+          invite_token?: string | null
           joined_at?: string | null
           name?: string
           phone?: string | null
