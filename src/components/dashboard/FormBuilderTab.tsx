@@ -15,6 +15,11 @@ import {
   Eye,
   Settings2,
   ChevronRight,
+  Users,
+  Car,
+  Heart,
+  Wine,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -44,6 +49,7 @@ import { AdvancedActivitySelector } from "./AdvancedActivitySelector";
 import { DesignTemplateSelector } from "./DesignTemplateSelector";
 import { BrandingEditor } from "./BrandingEditor";
 import { CustomQuestionBuilder } from "./CustomQuestionBuilder";
+import { CoreQuestionEditor } from "./CoreQuestionEditor";
 import { DesignTemplate, getTemplateById } from "@/lib/design-templates";
 import { ActivityItem, ACTIVITIES_LIBRARY } from "@/lib/activities-library";
 
@@ -102,6 +108,13 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   );
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>(settings.custom_questions || []);
   
+  // Core question states
+  const [attendanceOptions, setAttendanceOptions] = useState<SelectOption[]>(settings.attendance_options);
+  const [durationOptions, setDurationOptions] = useState<SelectOption[]>(settings.duration_options);
+  const [travelOptions, setTravelOptions] = useState<SelectOption[]>(settings.travel_options);
+  const [fitnessOptions, setFitnessOptions] = useState<SelectOption[]>(settings.fitness_options);
+  const [alcoholOptions, setAlcoholOptions] = useState<SelectOption[]>(settings.alcohol_options);
+  
   const [newBudget, setNewBudget] = useState("");
   const [newDestination, setNewDestination] = useState("");
   const [newDestinationEmoji, setNewDestinationEmoji] = useState("");
@@ -155,6 +168,11 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         budget_options: budgetOptions,
         destination_options: destinationOptions,
         activity_options: activityOptions,
+        attendance_options: attendanceOptions,
+        duration_options: durationOptions,
+        travel_options: travelOptions,
+        fitness_options: fitnessOptions,
+        alcohol_options: alcoholOptions,
         no_gos: noGos,
         focus_points: focusPoints,
         branding: {
@@ -305,7 +323,104 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
 
         {/* CONTENT TAB */}
         <TabsContent value="content" className="space-y-4">
-          <Accordion type="multiple" defaultValue={["dates", "activities"]} className="space-y-4">
+          <Accordion type="multiple" defaultValue={["attendance", "dates", "activities"]} className="space-y-4">
+            
+            {/* Attendance & Duration Questions */}
+            <AccordionItem value="attendance" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-success/10">
+                      <Users className="w-5 h-5 text-success" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Teilnahme-Fragen</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Dabei?, Dauer, Teilweise möglich
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-6">
+                    <CoreQuestionEditor
+                      title="Bist du dabei? *"
+                      description="Antwortoptionen für die Teilnahme-Frage"
+                      options={attendanceOptions}
+                      onChange={setAttendanceOptions}
+                      showEmoji={true}
+                      maxOptions={5}
+                      placeholder="z.B. Unter Vorbehalt"
+                    />
+                    <div className="border-t border-border pt-6">
+                      <CoreQuestionEditor
+                        title="Bevorzugte Dauer *"
+                        description="Optionen für die Dauer des Events"
+                        options={durationOptions}
+                        onChange={setDurationOptions}
+                        showEmoji={false}
+                        maxOptions={5}
+                        placeholder="z.B. 3-4 Tage"
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
+
+            {/* Travel & Fitness Questions */}
+            <AccordionItem value="travel" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-info/10">
+                      <Car className="w-5 h-5 text-info" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Reise & Fitness</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Reisebereitschaft, Fitnesslevel, Alkohol
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-6">
+                    <CoreQuestionEditor
+                      title="Maximale Reisedauer *"
+                      description="Wie weit sind die Gäste bereit zu reisen?"
+                      options={travelOptions}
+                      onChange={setTravelOptions}
+                      showEmoji={false}
+                      maxOptions={5}
+                      placeholder="z.B. Egal - flexibel"
+                    />
+                    <div className="border-t border-border pt-6">
+                      <CoreQuestionEditor
+                        title="Fitness-Level *"
+                        description="Bevorzugtes Aktivitätsniveau"
+                        options={fitnessOptions}
+                        onChange={setFitnessOptions}
+                        showEmoji={true}
+                        maxOptions={5}
+                        placeholder="z.B. Sehr sportlich"
+                      />
+                    </div>
+                    <div className="border-t border-border pt-6">
+                      <CoreQuestionEditor
+                        title="Alkohol-Präferenz"
+                        description="Einstellung zu alkoholischen Getränken"
+                        options={alcoholOptions}
+                        onChange={setAlcoholOptions}
+                        showEmoji={true}
+                        maxOptions={4}
+                        placeholder="z.B. Nur Bier"
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
             
             {/* Date Blocks Section - Using new DateRangeBlockEditor */}
             <AccordionItem value="dates" className="border-none">
