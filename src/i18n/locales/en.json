@@ -382,6 +382,29 @@
     "totalAmount": "Total Amount",
     "perPerson": "Per Person",
     "paidBy": "Paid by",
+    "paid": "Paid",
+    "actualPaid": "Actually Paid",
+    "plannedCosts": "Planned Costs",
+    "planned": "Planned",
+    "balances": "Balances",
+    "settleUp": "Settle Up",
+    "allExpenses": "All Expenses",
+    "noExpenses": "No expenses yet",
+    "getsBack": "gets back",
+    "owes": "owes",
+    "settled": "settled",
+    "unknown": "Unknown",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g., Car rental",
+    "amount": "Amount",
+    "category": "Category",
+    "selectPerson": "Select person",
+    "missingFields": "Missing fields",
+    "fillRequired": "Please fill in all required fields.",
+    "added": "Expense added!",
+    "addError": "Could not add expense",
+    "loadError": "Could not load expenses",
+    "notFound": "Event Not Found",
     "splitType": {
       "equal": "Equal",
       "custom": "Custom",
@@ -480,6 +503,15 @@
       "title": "Filter",
       "byCategory": "By Category",
       "showAll": "Show All"
-    }
+    },
+    "export": {
+      "title": "Export",
+      "pdf": "Print Agenda (PDF)",
+      "ical": "Calendar (iCal)",
+      "icalDownloaded": "Calendar file downloaded"
+    },
+    "authRequired": "Login Required",
+    "loginToAdd": "Please log in to add or edit activities.",
+    "addDate": "Add Date"
   }
 }
