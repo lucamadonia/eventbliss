@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
   DollarSign, 
@@ -10,7 +10,11 @@ import {
   Save,
   AlertTriangle,
   Sparkles,
-  GripVertical,
+  Palette,
+  MessageSquarePlus,
+  Eye,
+  Settings2,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -18,26 +22,36 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { supabase } from "@/integrations/supabase/client";
 import { 
   type EventSettings, 
   type SelectOption,
-  type ActivityOption,
+  type BrandingConfig,
+  type CustomQuestion,
   DEFAULT_SURVEY_CONFIG,
+  DEFAULT_BRANDING,
   mergeWithDefaults,
 } from "@/lib/survey-config";
+import { DateRangeBlockEditor, DateRangeBlock } from "./DateRangeBlockEditor";
+import { AdvancedActivitySelector } from "./AdvancedActivitySelector";
+import { DesignTemplateSelector } from "./DesignTemplateSelector";
+import { BrandingEditor } from "./BrandingEditor";
+import { CustomQuestionBuilder } from "./CustomQuestionBuilder";
+import { DesignTemplate, getTemplateById } from "@/lib/design-templates";
+import { ActivityItem, ACTIVITIES_LIBRARY } from "@/lib/activities-library";
 
 interface Event {
   id: string;
   name: string;
+  honoree_name?: string;
+  event_type?: string;
   settings: Partial<EventSettings> | null;
 }
 
@@ -49,16 +63,45 @@ interface FormBuilderTabProps {
 export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   const settings = mergeWithDefaults(event.settings);
   
-  const [dateBlocks, setDateBlocks] = useState<Record<string, string>>(settings.date_blocks || {});
-  const [dateWarnings, setDateWarnings] = useState<Record<string, string>>(settings.date_warnings || {});
+  // Convert stored date_blocks to DateRangeBlock format
+  const initialDateBlocks: DateRangeBlock[] = useMemo(() => {
+    return Object.entries(settings.date_blocks || {}).map(([key, label]) => ({
+      key,
+      start: '', // We don't have start/end stored separately yet
+      end: '',
+      label,
+      warning: settings.date_warnings?.[key],
+    }));
+  }, [settings.date_blocks, settings.date_warnings]);
+
+  // Convert stored activity_options to ActivityItem format
+  const initialActivities: ActivityItem[] = useMemo(() => {
+    return settings.activity_options.map(opt => {
+      const libActivity = ACTIVITIES_LIBRARY.find(a => a.id === opt.value);
+      return libActivity || {
+        id: opt.value,
+        name: opt.label,
+        emoji: opt.emoji || '🎯',
+        category: (opt.category || 'other') as ActivityItem['category'],
+        tags: [],
+      };
+    });
+  }, [settings.activity_options]);
+
+  // State
+  const [activeTab, setActiveTab] = useState("content");
+  const [dateBlocks, setDateBlocks] = useState<DateRangeBlock[]>(initialDateBlocks);
   const [budgetOptions, setBudgetOptions] = useState<SelectOption[]>(settings.budget_options);
   const [destinationOptions, setDestinationOptions] = useState<SelectOption[]>(settings.destination_options);
-  const [activityOptions, setActivityOptions] = useState<ActivityOption[]>(settings.activity_options);
+  const [selectedActivities, setSelectedActivities] = useState<ActivityItem[]>(initialActivities);
   const [noGos, setNoGos] = useState<string[]>(settings.no_gos || []);
   const [focusPoints, setFocusPoints] = useState<string[]>(settings.focus_points || []);
+  const [branding, setBranding] = useState<BrandingConfig>(settings.branding || DEFAULT_BRANDING);
+  const [selectedTemplate, setSelectedTemplate] = useState<DesignTemplate | null>(
+    branding.template_id ? getTemplateById(branding.template_id) || null : null
+  );
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>(settings.custom_questions || []);
   
-  const [newDateKey, setNewDateKey] = useState("");
-  const [newDateLabel, setNewDateLabel] = useState("");
   const [newBudget, setNewBudget] = useState("");
   const [newDestination, setNewDestination] = useState("");
   const [newDestinationEmoji, setNewDestinationEmoji] = useState("");
@@ -70,15 +113,39 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Convert dateBlocks to storage format
+      const dateBlocksRecord: Record<string, string> = {};
+      const dateWarningsRecord: Record<string, string> = {};
+      
+      dateBlocks.forEach(block => {
+        dateBlocksRecord[block.key] = block.label;
+        if (block.warning) {
+          dateWarningsRecord[block.key] = block.warning;
+        }
+      });
+
+      // Convert activities to storage format
+      const activityOptions = selectedActivities.map(activity => ({
+        value: activity.id,
+        label: activity.name,
+        emoji: activity.emoji,
+        category: activity.category,
+      }));
+
       const updatedSettings: Partial<EventSettings> = {
         ...settings,
-        date_blocks: dateBlocks,
-        date_warnings: dateWarnings,
+        date_blocks: dateBlocksRecord,
+        date_warnings: dateWarningsRecord,
         budget_options: budgetOptions,
         destination_options: destinationOptions,
         activity_options: activityOptions,
         no_gos: noGos,
         focus_points: focusPoints,
+        branding: {
+          ...branding,
+          template_id: selectedTemplate?.id,
+        },
+        custom_questions: customQuestions,
       };
 
       const res = await fetch(
@@ -112,28 +179,15 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
     }
   };
 
-  // Date block helpers
-  const addDateBlock = () => {
-    if (!newDateKey || !newDateLabel) return;
-    setDateBlocks({ ...dateBlocks, [newDateKey.toUpperCase()]: newDateLabel });
-    setNewDateKey("");
-    setNewDateLabel("");
-  };
-
-  const removeDateBlock = (key: string) => {
-    const { [key]: _, ...rest } = dateBlocks;
-    setDateBlocks(rest);
-    const { [key]: __, ...warningsRest } = dateWarnings;
-    setDateWarnings(warningsRest);
-  };
-
-  const toggleDateWarning = (key: string, warning: string) => {
-    if (dateWarnings[key]) {
-      const { [key]: _, ...rest } = dateWarnings;
-      setDateWarnings(rest);
-    } else {
-      setDateWarnings({ ...dateWarnings, [key]: warning });
-    }
+  const handleTemplateSelect = (template: DesignTemplate) => {
+    setSelectedTemplate(template);
+    setBranding({
+      ...branding,
+      primary_color: template.branding.primary_color,
+      accent_color: template.branding.accent_color,
+      background_style: template.branding.background_style,
+      template_id: template.id,
+    });
   };
 
   // Budget helpers
@@ -166,19 +220,6 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
     setDestinationOptions(destinationOptions.filter(o => o.value !== value));
   };
 
-  // Activity helpers
-  const toggleActivity = (activityValue: string) => {
-    const exists = activityOptions.find(a => a.value === activityValue);
-    if (exists) {
-      setActivityOptions(activityOptions.filter(a => a.value !== activityValue));
-    } else {
-      const defaultActivity = DEFAULT_SURVEY_CONFIG.activity_options.find(a => a.value === activityValue);
-      if (defaultActivity) {
-        setActivityOptions([...activityOptions, defaultActivity]);
-      }
-    }
-  };
-
   // No-Go helpers
   const addNoGo = () => {
     if (!newNoGo) return;
@@ -201,338 +242,403 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
     setFocusPoints(focusPoints.filter((_, i) => i !== index));
   };
 
+  const eventType = event.event_type || 'bachelor';
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl font-bold">Formular konfigurieren</h2>
-          <p className="text-muted-foreground text-sm">Passe das Survey-Formular für dein Event an</p>
+          <h2 className="font-display text-2xl font-bold flex items-center gap-2">
+            <Settings2 className="w-6 h-6 text-primary" />
+            Formular-Builder
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Konfiguriere das Survey für <span className="font-medium text-foreground">{event.name}</span>
+          </p>
         </div>
-        <GradientButton onClick={handleSave} disabled={isSaving} icon={<Save className="w-4 h-4" />}>
-          {isSaving ? "Speichert..." : "Speichern"}
-        </GradientButton>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-2" asChild>
+            <a href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} target="_blank" rel="noopener noreferrer">
+              <Eye className="w-4 h-4" />
+              Vorschau
+            </a>
+          </Button>
+          <GradientButton onClick={handleSave} disabled={isSaving} icon={<Save className="w-4 h-4" />}>
+            {isSaving ? "Speichert..." : "Speichern"}
+          </GradientButton>
+        </div>
       </div>
 
-      <Accordion type="multiple" defaultValue={["dates", "destinations"]} className="space-y-4">
-        {/* Date Blocks Section */}
-        <AccordionItem value="dates" className="border-none">
-          <GlassCard className="overflow-hidden">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Calendar className="w-5 h-5 text-primary" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Terminblöcke</h3>
-                  <p className="text-sm text-muted-foreground">{Object.keys(dateBlocks).length} Termine konfiguriert</p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
-                {/* Existing date blocks */}
-                <div className="space-y-2">
-                  {Object.entries(dateBlocks).map(([key, label]) => (
-                    <motion.div
-                      key={key}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center gap-3 p-3 bg-background/50 rounded-lg border border-border"
-                    >
-                      <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
-                      <Badge variant="outline" className="font-mono">{key}</Badge>
-                      <span className="flex-1 text-sm">{label}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleDateWarning(key, "Mögliche Einschränkungen")}
-                        className={dateWarnings[key] ? "text-warning" : "text-muted-foreground"}
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeDateBlock(key)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
+      {/* Main Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="content" className="gap-2">
+            <Calendar className="w-4 h-4" />
+            <span className="hidden sm:inline">Inhalt</span>
+          </TabsTrigger>
+          <TabsTrigger value="design" className="gap-2">
+            <Palette className="w-4 h-4" />
+            <span className="hidden sm:inline">Design</span>
+          </TabsTrigger>
+          <TabsTrigger value="extras" className="gap-2">
+            <MessageSquarePlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Extras</span>
+          </TabsTrigger>
+        </TabsList>
 
-                {/* Add new date block */}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Block (z.B. A)"
-                    value={newDateKey}
-                    onChange={(e) => setNewDateKey(e.target.value.toUpperCase())}
-                    className="w-20"
-                    maxLength={2}
+        {/* CONTENT TAB */}
+        <TabsContent value="content" className="space-y-4">
+          <Accordion type="multiple" defaultValue={["dates", "activities"]} className="space-y-4">
+            
+            {/* Date Blocks Section - Using new DateRangeBlockEditor */}
+            <AccordionItem value="dates" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Calendar className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Terminblöcke</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {dateBlocks.length} Termine konfiguriert
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <DateRangeBlockEditor 
+                    blocks={dateBlocks} 
+                    onChange={setDateBlocks}
                   />
-                  <Input
-                    placeholder="Datum (z.B. Fr 27.02.–So 01.03.2026)"
-                    value={newDateLabel}
-                    onChange={(e) => setNewDateLabel(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button onClick={addDateBlock} disabled={!newDateKey || !newDateLabel}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </AccordionContent>
-          </GlassCard>
-        </AccordionItem>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
 
-        {/* Budget Options Section */}
-        <AccordionItem value="budget" className="border-none">
-          <GlassCard className="overflow-hidden">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-accent/10">
-                  <DollarSign className="w-5 h-5 text-accent" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Budget-Optionen</h3>
-                  <p className="text-sm text-muted-foreground">{budgetOptions.length} Optionen</p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  {budgetOptions.map((option) => (
-                    <Badge
-                      key={option.value}
-                      variant="secondary"
-                      className="pl-3 pr-1 py-1.5 flex items-center gap-2"
-                    >
-                      {option.label}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-5 w-5 p-0 hover:bg-destructive/20"
-                        onClick={() => removeBudgetOption(option.value)}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="z.B. 500-750 €"
-                    value={newBudget}
-                    onChange={(e) => setNewBudget(e.target.value)}
-                    className="flex-1"
+            {/* Activities Section - Using new AdvancedActivitySelector */}
+            <AccordionItem value="activities" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-warning/10">
+                      <Dumbbell className="w-5 h-5 text-warning" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Aktivitäten</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedActivities.length} von 100+ ausgewählt
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <AdvancedActivitySelector
+                    selectedActivities={selectedActivities}
+                    onSelectionChange={setSelectedActivities}
+                    eventType={eventType}
                   />
-                  <Button onClick={addBudgetOption} disabled={!newBudget}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </AccordionContent>
-          </GlassCard>
-        </AccordionItem>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
 
-        {/* Destinations Section */}
-        <AccordionItem value="destinations" className="border-none">
-          <GlassCard className="overflow-hidden">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-success/10">
-                  <MapPin className="w-5 h-5 text-success" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Destinations</h3>
-                  <p className="text-sm text-muted-foreground">{destinationOptions.length} Optionen</p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {destinationOptions.map((option) => (
-                    <div
-                      key={option.value}
-                      className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border"
-                    >
-                      <span className="text-sm">
-                        {option.emoji} {option.label}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeDestination(option.value)}
-                        className="text-destructive hover:text-destructive h-8 w-8 p-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
+            {/* Budget Options Section */}
+            <AccordionItem value="budget" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-accent/10">
+                      <DollarSign className="w-5 h-5 text-accent" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Budget-Optionen</h3>
+                      <p className="text-sm text-muted-foreground">{budgetOptions.length} Optionen</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      {budgetOptions.map((option) => (
+                        <Badge
+                          key={option.value}
+                          variant="secondary"
+                          className="pl-3 pr-1 py-1.5 flex items-center gap-2"
+                        >
+                          {option.label}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 w-5 p-0 hover:bg-destructive/20"
+                            onClick={() => removeBudgetOption(option.value)}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="z.B. 500-750 €"
+                        value={newBudget}
+                        onChange={(e) => setNewBudget(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={addBudgetOption} disabled={!newBudget}>
+                        <Plus className="w-4 h-4" />
                       </Button>
                     </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Emoji (optional)"
-                    value={newDestinationEmoji}
-                    onChange={(e) => setNewDestinationEmoji(e.target.value)}
-                    className="w-20"
-                    maxLength={4}
-                  />
-                  <Input
-                    placeholder="z.B. Amsterdam"
-                    value={newDestination}
-                    onChange={(e) => setNewDestination(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button onClick={addDestination} disabled={!newDestination}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </AccordionContent>
-          </GlassCard>
-        </AccordionItem>
+                  </div>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
 
-        {/* Activities Section */}
-        <AccordionItem value="activities" className="border-none">
-          <GlassCard className="overflow-hidden">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-warning/10">
-                  <Dumbbell className="w-5 h-5 text-warning" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Aktivitäten</h3>
-                  <p className="text-sm text-muted-foreground">{activityOptions.length} ausgewählt</p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="grid sm:grid-cols-2 gap-3">
-                {DEFAULT_SURVEY_CONFIG.activity_options.map((activity) => {
-                  const isSelected = activityOptions.some(a => a.value === activity.value);
-                  return (
-                    <label
-                      key={activity.value}
-                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                        isSelected
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-background/50 hover:border-primary/50"
-                      }`}
-                    >
-                      <Checkbox
-                        checked={isSelected}
-                        onCheckedChange={() => toggleActivity(activity.value)}
+            {/* Destinations Section */}
+            <AccordionItem value="destinations" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-success/10">
+                      <MapPin className="w-5 h-5 text-success" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Destinations</h3>
+                      <p className="text-sm text-muted-foreground">{destinationOptions.length} Optionen</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {destinationOptions.map((option) => (
+                        <div
+                          key={option.value}
+                          className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border"
+                        >
+                          <span className="text-sm">
+                            {option.emoji} {option.label}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeDestination(option.value)}
+                            className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Emoji"
+                        value={newDestinationEmoji}
+                        onChange={(e) => setNewDestinationEmoji(e.target.value)}
+                        className="w-16"
+                        maxLength={4}
                       />
-                      <span className="text-lg">{activity.emoji}</span>
-                      <span className="text-sm">{activity.label}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </AccordionContent>
-          </GlassCard>
-        </AccordionItem>
+                      <Input
+                        placeholder="z.B. Amsterdam"
+                        value={newDestination}
+                        onChange={(e) => setNewDestination(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={addDestination} disabled={!newDestination}>
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
 
-        {/* No-Gos & Focus Points Section */}
-        <AccordionItem value="rules" className="border-none">
-          <GlassCard className="overflow-hidden">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <Sparkles className="w-5 h-5 text-destructive" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">No-Gos & Fokus</h3>
-                  <p className="text-sm text-muted-foreground">Regeln für das Event</p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-6">
-                {/* No-Gos */}
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">❌ No-Gos</Label>
-                  <div className="space-y-2 mb-3">
-                    {noGos.map((noGo, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg"
-                      >
-                        <span className="text-sm">{noGo}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeNoGo(index)}
-                          className="h-6 w-6 p-0"
-                        >
-                          <Trash2 className="w-3 h-3" />
+            {/* No-Gos & Focus Points Section */}
+            <AccordionItem value="rules" className="border-none">
+              <GlassCard className="overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <AlertTriangle className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">No-Gos & Fokus</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {noGos.length + focusPoints.length} Regeln
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-6">
+                    {/* No-Gos */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">❌ No-Gos</Label>
+                      <div className="space-y-2 mb-3">
+                        <AnimatePresence>
+                          {noGos.map((noGo, index) => (
+                            <motion.div
+                              key={`nogo-${index}`}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -10 }}
+                              className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg"
+                            >
+                              <span className="text-sm">{noGo}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeNoGo(index)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="z.B. Keine Stripper"
+                          value={newNoGo}
+                          onChange={(e) => setNewNoGo(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && addNoGo()}
+                          className="flex-1"
+                        />
+                        <Button onClick={addNoGo} disabled={!newNoGo} size="sm">
+                          <Plus className="w-4 h-4" />
                         </Button>
                       </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="z.B. Keine Stripper"
-                      value={newNoGo}
-                      onChange={(e) => setNewNoGo(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button onClick={addNoGo} disabled={!newNoGo} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                    </div>
 
-                {/* Focus Points */}
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">✨ Fokus / Wünsche</Label>
-                  <div className="space-y-2 mb-3">
-                    {focusPoints.map((point, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 bg-success/10 rounded-lg"
-                      >
-                        <span className="text-sm">{point}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFocusPoint(index)}
-                          className="h-6 w-6 p-0"
-                        >
-                          <Trash2 className="w-3 h-3" />
+                    {/* Focus Points */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">✨ Fokus / Wünsche</Label>
+                      <div className="space-y-2 mb-3">
+                        <AnimatePresence>
+                          {focusPoints.map((point, index) => (
+                            <motion.div
+                              key={`focus-${index}`}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -10 }}
+                              className="flex items-center justify-between p-2 bg-success/10 rounded-lg"
+                            >
+                              <span className="text-sm">{point}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFocusPoint(index)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="z.B. Action & Spaß"
+                          value={newFocusPoint}
+                          onChange={(e) => setNewFocusPoint(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && addFocusPoint()}
+                          className="flex-1"
+                        />
+                        <Button onClick={addFocusPoint} disabled={!newFocusPoint} size="sm">
+                          <Plus className="w-4 h-4" />
                         </Button>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="z.B. Action & Spaß"
-                      value={newFocusPoint}
-                      onChange={(e) => setNewFocusPoint(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button onClick={addFocusPoint} disabled={!newFocusPoint} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                </AccordionContent>
+              </GlassCard>
+            </AccordionItem>
+          </Accordion>
+        </TabsContent>
+
+        {/* DESIGN TAB */}
+        <TabsContent value="design" className="space-y-6">
+          {/* Template Selector */}
+          <GlassCard className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Sparkles className="w-5 h-5 text-primary" />
               </div>
-            </AccordionContent>
+              <div>
+                <h3 className="font-semibold">Design-Template wählen</h3>
+                <p className="text-sm text-muted-foreground">
+                  Wähle ein passendes Design für dein Event
+                </p>
+              </div>
+            </div>
+            <DesignTemplateSelector
+              selectedTemplateId={selectedTemplate?.id || null}
+              onSelect={handleTemplateSelect}
+              eventType={eventType}
+            />
           </GlassCard>
-        </AccordionItem>
-      </Accordion>
+
+          {/* Branding Editor */}
+          <GlassCard className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-lg bg-accent/10">
+                <Palette className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Branding anpassen</h3>
+                <p className="text-sm text-muted-foreground">
+                  Farben, Texte & Key-Datum konfigurieren
+                </p>
+              </div>
+            </div>
+            <BrandingEditor
+              branding={branding}
+              onChange={setBranding}
+              eventName={event.name}
+              honoreeName={event.honoree_name || ''}
+              selectedTemplate={selectedTemplate}
+            />
+          </GlassCard>
+        </TabsContent>
+
+        {/* EXTRAS TAB */}
+        <TabsContent value="extras" className="space-y-6">
+          {/* Custom Questions */}
+          <GlassCard className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <MessageSquarePlus className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Eigene Fragen</h3>
+                <p className="text-sm text-muted-foreground">
+                  Füge individuelle Fragen zum Formular hinzu
+                </p>
+              </div>
+            </div>
+            <CustomQuestionBuilder
+              questions={customQuestions}
+              onChange={setCustomQuestions}
+            />
+          </GlassCard>
+        </TabsContent>
+      </Tabs>
 
       {/* Preview hint */}
-      <GlassCard className="p-4 border-dashed">
+      <GlassCard className="p-4 border-dashed border-primary/30">
         <div className="flex items-center gap-3 text-muted-foreground">
-          <Sparkles className="w-5 h-5" />
+          <Sparkles className="w-5 h-5 text-primary" />
           <p className="text-sm">
             Änderungen werden sofort im Survey-Formular sichtbar, sobald du speicherst.
+            <ChevronRight className="w-4 h-4 inline mx-1" />
+            <a 
+              href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Vorschau öffnen
+            </a>
           </p>
         </div>
       </GlassCard>
