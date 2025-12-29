@@ -274,6 +274,51 @@ export type Database = {
           },
         ]
       }
+      newsletter_subscribers: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          gdpr_consent: boolean
+          id: string
+          ip_address: string | null
+          locale: string | null
+          marketing_consent: boolean
+          source: string | null
+          subscribed_at: string
+          unsubscribed_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          gdpr_consent?: boolean
+          id?: string
+          ip_address?: string | null
+          locale?: string | null
+          marketing_consent?: boolean
+          source?: string | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          gdpr_consent?: boolean
+          id?: string
+          ip_address?: string | null
+          locale?: string | null
+          marketing_consent?: boolean
+          source?: string | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       participants: {
         Row: {
           avatar_url: string | null
