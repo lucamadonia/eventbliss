@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
@@ -61,6 +62,7 @@ function getNextKey(blocks: DateRangeBlock[]): string {
 }
 
 export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorProps) => {
+  const { t } = useTranslation();
   const [newStartDate, setNewStartDate] = useState<Date | undefined>();
   const [newEndDate, setNewEndDate] = useState<Date | undefined>();
   const [newWarning, setNewWarning] = useState("");
@@ -94,7 +96,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
       if (b.key === key) {
         return {
           ...b,
-          warning: b.warning ? undefined : "Mögliche Einschränkungen",
+          warning: b.warning ? undefined : t('dashboard.form.dateBlocks.defaultWarning'),
         };
       }
       return b;
@@ -168,7 +170,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
                         value={block.warning}
                         onChange={(e) => updateWarningText(block.key, e.target.value)}
                         className="h-7 text-xs bg-warning/10 border-warning/20"
-                        placeholder="Hinweis eingeben..."
+                        placeholder={t('dashboard.form.dateBlocks.hintInput')}
                       />
                     </div>
                   </motion.div>
@@ -187,7 +189,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
                       ? "text-warning hover:text-warning" 
                       : "text-muted-foreground hover:text-warning"
                   )}
-                  title={block.warning ? "Warnung entfernen" : "Warnung hinzufügen"}
+                  title={block.warning ? t('dashboard.form.dateBlocks.removeWarning') : t('dashboard.form.dateBlocks.addWarning')}
                 >
                   <AlertTriangle className="w-4 h-4" />
                 </Button>
@@ -212,13 +214,13 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
         animate={{ opacity: 1 }}
       >
         <Label className="text-sm font-medium text-muted-foreground mb-3 block">
-          Neuen Terminblock hinzufügen
+          {t('dashboard.form.dateBlocks.addNew')}
         </Label>
         
         <div className="flex flex-wrap gap-3 items-end">
           {/* Start Date Picker */}
           <div className="flex-1 min-w-[140px]">
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Von</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">{t('dashboard.form.dateBlocks.from')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -232,7 +234,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
                   {newStartDate ? (
                     format(newStartDate, "dd.MM.yyyy", { locale: de })
                   ) : (
-                    <span>Startdatum</span>
+                    <span>{t('dashboard.form.dateBlocks.startDate')}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -250,7 +252,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
 
           {/* End Date Picker */}
           <div className="flex-1 min-w-[140px]">
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Bis</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">{t('dashboard.form.dateBlocks.to')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -264,7 +266,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
                   {newEndDate ? (
                     format(newEndDate, "dd.MM.yyyy", { locale: de })
                   ) : (
-                    <span>Enddatum</span>
+                    <span>{t('dashboard.form.dateBlocks.endDate')}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -283,9 +285,9 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
 
           {/* Optional Warning */}
           <div className="flex-1 min-w-[160px]">
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Hinweis (optional)</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">{t('dashboard.form.dateBlocks.hintOptional')}</Label>
             <Input
-              placeholder="z.B. Ostern, Feiertag..."
+              placeholder={t('dashboard.form.dateBlocks.hintPlaceholder')}
               value={newWarning}
               onChange={(e) => setNewWarning(e.target.value)}
               className="h-10"
@@ -299,7 +301,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
             className="h-10"
           >
             <Plus className="w-4 h-4 mr-1" />
-            Hinzufügen
+            {t('dashboard.form.dateBlocks.add')}
           </Button>
         </div>
 
@@ -312,7 +314,7 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
           >
             <CalendarDays className="w-4 h-4 text-primary" />
             <span>
-              Vorschau: <strong className="text-foreground">{getNextKey(blocks)}</strong> – {formatDateRangeLabel(
+              {t('dashboard.form.dateBlocks.preview')}: <strong className="text-foreground">{getNextKey(blocks)}</strong> – {formatDateRangeLabel(
                 format(newStartDate, 'yyyy-MM-dd'),
                 format(newEndDate, 'yyyy-MM-dd')
               )}
@@ -325,8 +327,8 @@ export const DateRangeBlockEditor = ({ blocks, onChange }: DateRangeBlockEditorP
       {blocks.length === 0 && (
         <div className="text-center py-6 text-muted-foreground">
           <CalendarDays className="w-10 h-10 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">Noch keine Terminblöcke erstellt</p>
-          <p className="text-xs">Füge Zeiträume hinzu, zwischen denen die Teilnehmer wählen können</p>
+          <p className="text-sm">{t('dashboard.form.dateBlocks.noBlocks')}</p>
+          <p className="text-xs">{t('dashboard.form.dateBlocks.noBlocksHint')}</p>
         </div>
       )}
     </div>

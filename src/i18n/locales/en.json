@@ -370,6 +370,11 @@
     },
     "form": {
       "title": "Form Builder",
+      "subtitle": "Configure the survey for {{eventName}}",
+      "preview": "Preview",
+      "saving": "Saving...",
+      "save": "Save",
+      "successMessage": "Form configuration saved!",
       "coreQuestions": "Core Questions",
       "customQuestions": "Custom Questions",
       "questionEnabled": "Question enabled",
@@ -378,7 +383,175 @@
       "multiSelect": "Multi-select",
       "addQuestion": "Add Question",
       "editOptions": "Edit Options",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "tabs": {
+        "content": "Content",
+        "design": "Design",
+        "extras": "Extras"
+      },
+      "sections": {
+        "attendance": {
+          "title": "Attendance Questions",
+          "description": "Attending?, Duration, Partial availability"
+        },
+        "travel": {
+          "title": "Travel & Fitness",
+          "description": "Travel willingness, Fitness level, Alcohol"
+        },
+        "dates": {
+          "title": "Date Blocks",
+          "configured": "{{count}} dates configured"
+        },
+        "activities": {
+          "title": "Activities",
+          "selected": "{{count}} of 100+ selected"
+        },
+        "budget": {
+          "title": "Budget Options",
+          "options": "{{count}} options",
+          "placeholder": "e.g. 500-750 €"
+        },
+        "destinations": {
+          "title": "Destinations",
+          "options": "{{count}} options",
+          "placeholder": "e.g. Amsterdam",
+          "emojiPlaceholder": "Emoji"
+        },
+        "rules": {
+          "title": "No-Gos & Focus",
+          "rulesCount": "{{count}} rules"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "Are you in? *",
+          "description": "Response options for the attendance question"
+        },
+        "duration": {
+          "title": "Preferred Duration *",
+          "description": "Options for the event duration"
+        },
+        "travel": {
+          "title": "Maximum Travel Time *",
+          "description": "How far are guests willing to travel?"
+        },
+        "fitness": {
+          "title": "Fitness Level *",
+          "description": "Preferred activity level"
+        },
+        "alcohol": {
+          "title": "Alcohol Preference",
+          "description": "Attitude towards alcoholic beverages"
+        }
+      },
+      "design": {
+        "templateTitle": "Choose Design Template",
+        "templateDescription": "Select a suitable design for your event",
+        "brandingTitle": "Customize Branding",
+        "brandingDescription": "Configure colors, texts & key date",
+        "recommendedFor": "Recommended for this event type",
+        "moreTemplates": "More Templates",
+        "templates": "Templates"
+      },
+      "extras": {
+        "customQuestionsTitle": "Custom Questions",
+        "customQuestionsDescription": "Add individual questions to the form"
+      },
+      "noGos": {
+        "title": "No-Gos",
+        "placeholder": "e.g. No strippers"
+      },
+      "focusPoints": {
+        "title": "Focus / Wishes",
+        "placeholder": "e.g. Action & Fun"
+      },
+      "previewHint": "Changes will be visible in the survey form immediately after saving.",
+      "openPreview": "Open Preview",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "multi": "Multi",
+      "single": "Single",
+      "optionsCount": "{{count}} of max. {{max}} options",
+      "emojisOptional": "Emojis optional",
+      "newOption": "New Option",
+      "dateBlocks": {
+        "addNew": "Add new date block",
+        "from": "From",
+        "to": "To",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "hintOptional": "Note (optional)",
+        "hintPlaceholder": "e.g. Easter, Holiday...",
+        "add": "Add",
+        "preview": "Preview",
+        "noBlocks": "No date blocks created yet",
+        "noBlocksHint": "Add time periods that participants can choose from",
+        "addWarning": "Add warning",
+        "removeWarning": "Remove warning",
+        "defaultWarning": "Possible restrictions",
+        "hintInput": "Enter note..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "Quick add:",
+        "presets": {
+          "dietary": "Dietary",
+          "songWish": "Song Wish",
+          "tshirtSize": "T-Shirt Size",
+          "driversLicense": "Driver's License",
+          "specialWishes": "Special Wishes"
+        },
+        "types": {
+          "text": "Short Text",
+          "textarea": "Long Text",
+          "select": "Dropdown",
+          "radio": "Single Choice",
+          "checkbox": "Multiple Choice",
+          "toggle": "Yes/No"
+        },
+        "questionPlaceholder": "Enter question...",
+        "placeholderPlaceholder": "Placeholder text (optional)",
+        "options": "Options:",
+        "addOption": "Add option",
+        "requiredField": "Required field",
+        "noQuestions": "No custom questions added yet.",
+        "noQuestionsHint": "Use the quick buttons above or add a new question.",
+        "addNew": "Add new question",
+        "questionsConfigured": "custom question(s) configured"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Search activities...",
+        "selected": "selected",
+        "custom": "Custom",
+        "addCustom": "Add custom activity",
+        "activityName": "Activity name",
+        "all": "All",
+        "recommended": "Recommended",
+        "selectedTab": "Selected",
+        "selectAllRecommended": "Select all recommendations",
+        "noResults": "No activities found",
+        "noResultsHint": "Try a different search term or category",
+        "selectedActivities": "Selected Activities",
+        "removeAll": "Remove all"
+      },
+      "branding": {
+        "primaryColor": "Primary Color",
+        "accentColor": "Accent Color",
+        "resetTemplateColors": "Reset template colors",
+        "heroTexts": "Hero Texts",
+        "heroTitle": "Hero Title",
+        "heroTitleDefault": "Default: Event Name",
+        "heroSubtitle": "Hero Subtitle",
+        "heroSubtitlePlaceholder": "Find date & plan action",
+        "keyDate": "Key Date (e.g. Wedding Date)",
+        "keyDateLabel": "Date Label",
+        "keyDateLabelPlaceholder": "Wedding",
+        "selectDate": "Select date",
+        "backgroundStyle": "Background Style",
+        "gradient": "Gradient",
+        "solid": "Solid",
+        "dark": "Dark",
+        "livePreview": "Live preview of hero section"
+      }
     },
     "schedule": {
       "title": "Schedule",
