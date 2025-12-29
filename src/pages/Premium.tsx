@@ -105,7 +105,18 @@ export default function Premium() {
       if (error) throw error;
       
       if (!data?.success) {
-        throw new Error(data?.error || t("premium.voucher.error"));
+        const errorMessage = data?.error || "";
+        
+        // Check if it's a discount voucher that should be used in checkout
+        if (errorMessage.startsWith("DISCOUNT_VOUCHER:")) {
+          toast.info(t("premium.voucher.discountHint"), {
+            description: t("premium.voucher.discountHintDesc"),
+            duration: 6000,
+          });
+          return;
+        }
+        
+        throw new Error(errorMessage || t("premium.voucher.error"));
       }
       
       toast.success(data.message || t("premium.voucher.success"));
@@ -113,7 +124,18 @@ export default function Premium() {
       checkSubscription();
     } catch (err: any) {
       console.error("Voucher error:", err);
-      toast.error(err.message || t("premium.voucher.error"));
+      const errorMessage = err.message || "";
+      
+      // Check if it's a discount voucher that should be used in checkout
+      if (errorMessage.includes("DISCOUNT_VOUCHER:")) {
+        toast.info(t("premium.voucher.discountHint"), {
+          description: t("premium.voucher.discountHintDesc"),
+          duration: 6000,
+        });
+        return;
+      }
+      
+      toast.error(errorMessage || t("premium.voucher.error"));
     } finally {
       setVoucherLoading(false);
     }

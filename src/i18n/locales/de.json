@@ -1204,7 +1204,9 @@
       "placeholder": "GUTSCHEINCODE",
       "redeem": "Einlösen",
       "success": "Gutschein erfolgreich eingelöst!",
-      "error": "Ungültiger Gutscheincode"
+      "error": "Ungültiger Gutscheincode",
+      "discountHint": "Dieser Code gibt dir einen Rabatt!",
+      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein."
     },
     "paywall": {
       "title": "Premium-Funktion",
