@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { MessageSquare, Copy, Check, ExternalLink, Send } from "lucide-react";
+import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
 import type { EventData } from "@/hooks/useEvent";
 
@@ -14,132 +14,95 @@ interface MessagesTabProps {
 interface MessageTemplate {
   id: string;
   emoji: string;
-  title: string;
-  description: string;
-  template: string;
+  titleKey: string;
+  descriptionKey: string;
+  templateKey: string;
 }
 
+const TEMPLATE_IDS: MessageTemplate[] = [
+  {
+    id: "kickoff",
+    emoji: "🎉",
+    titleKey: "messages.templates.kickoff.title",
+    descriptionKey: "messages.templates.kickoff.description",
+    templateKey: "messages.templates.kickoff.template",
+  },
+  {
+    id: "reminder",
+    emoji: "⏰",
+    titleKey: "messages.templates.reminder.title",
+    descriptionKey: "messages.templates.reminder.description",
+    templateKey: "messages.templates.reminder.template",
+  },
+  {
+    id: "deadline",
+    emoji: "🚨",
+    titleKey: "messages.templates.deadline.title",
+    descriptionKey: "messages.templates.deadline.description",
+    templateKey: "messages.templates.deadline.template",
+  },
+  {
+    id: "dateConfirmed",
+    emoji: "🔒",
+    titleKey: "messages.templates.dateConfirmed.title",
+    descriptionKey: "messages.templates.dateConfirmed.description",
+    templateKey: "messages.templates.dateConfirmed.template",
+  },
+  {
+    id: "budget",
+    emoji: "💸",
+    titleKey: "messages.templates.budget.title",
+    descriptionKey: "messages.templates.budget.description",
+    templateKey: "messages.templates.budget.template",
+  },
+  {
+    id: "packingList",
+    emoji: "🧳",
+    titleKey: "messages.templates.packingList.title",
+    descriptionKey: "messages.templates.packingList.description",
+    templateKey: "messages.templates.packingList.template",
+  },
+];
+
 export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
+  const { t } = useTranslation();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const surveyLink = `${window.location.origin}/e/${slug}`;
-  const dashboardLink = `${window.location.origin}/e/${slug}/dashboard`;
   const accessCode = (event.settings as Record<string, unknown>)?.access_code as string || "STAG2025";
 
-  const templates: MessageTemplate[] = [
-    {
-      id: "kickoff",
-      emoji: "🎉",
-      title: "Kickoff-Nachricht",
-      description: "Erste Einladung an die Gruppe",
-      template: `Hey Jungs! 🎉
-
-Es ist soweit - wir planen den JGA für ${event.honoree_name}! 🥳
-
-Bitte füllt alle das kurze Formular aus (dauert nur 2 Min):
-👉 ${surveyLink}
-
-Gruppencode: ${accessCode}
-
-Je schneller alle antworten, desto besser können wir planen. 
-Deadline wird noch bekannt gegeben!
-
-Los geht's! 💪`,
-    },
-    {
-      id: "reminder",
-      emoji: "⏰",
-      title: "Erinnerung",
-      description: "Für Teilnehmer, die noch nicht geantwortet haben",
-      template: `Hey! ⏰
-
-Kurze Erinnerung: Hast du schon das JGA-Formular ausgefüllt?
-
-👉 ${surveyLink}
-Code: ${accessCode}
-
-Wir brauchen noch deine Stimme für die Planung!
-
-Danke! 🙏`,
-    },
-    {
-      id: "deadline",
-      emoji: "🚨",
-      title: "Deadline-Warnung",
-      description: "Letzte Chance vor Deadline",
-      template: `🚨 LETZTE CHANCE! 🚨
-
-Die Umfrage für ${event.honoree_name}s JGA schließt bald!
-
-Wer noch nicht abgestimmt hat:
-👉 ${surveyLink}
-
-Danach wird der Termin festgelegt. 
-Nicht abstimmen = Automatisch dabei 😜`,
-    },
-    {
-      id: "locked",
-      emoji: "🔒",
-      title: "Termin steht fest",
-      description: "Nach Festlegung des Termins",
-      template: `🔒 TERMIN STEHT FEST! 🔒
-
-Der JGA für ${event.honoree_name} findet statt:
-📅 [DATUM EINFÜGEN]
-
-Bitte tragt euch den Termin ein! 
-Details zur Location und Ablauf folgen.
-
-ACHTUNG: ${event.honoree_name} darf davon NICHTS erfahren! 🤫`,
-    },
-    {
-      id: "budget",
-      emoji: "💸",
-      title: "Budget-Info",
-      description: "Kosten und Zahlung",
-      template: `💸 BUDGET-UPDATE 💸
-
-Geschätzte Kosten pro Person: [BETRAG] €
-
-Bitte überweist auf:
-IBAN: [IBAN EINFÜGEN]
-Verwendungszweck: JGA ${event.honoree_name}
-
-Deadline: [DATUM]
-
-Bei Fragen meldet euch! 👍`,
-    },
-    {
-      id: "packing",
-      emoji: "🧳",
-      title: "Packliste",
-      description: "Was mitbringen?",
-      template: `🧳 PACKLISTE für den JGA! 🧳
-
-Bitte mitbringen:
-✅ Gute Laune
-✅ [SPEZIFISCHE ITEMS]
-✅ Bargeld für Extras
-✅ Bequeme Schuhe
-
-Wir freuen uns! 🎉`,
-    },
-  ];
+  const getTemplateText = (templateKey: string) => {
+    return t(templateKey, {
+      honoree: event.honoree_name,
+      surveyLink,
+      accessCode,
+      eventDate: event.event_date || "[DATE]",
+      responseCount: "X",
+      totalCount: "Y",
+      deadline: "[DEADLINE]",
+      budgetPerPerson: "[AMOUNT]",
+      depositAmount: "[DEPOSIT]",
+      depositDeadline: "[DATE]",
+      cashAmount: "[AMOUNT]",
+    });
+  };
 
   const handleCopy = async (template: MessageTemplate) => {
     try {
-      await navigator.clipboard.writeText(template.template);
+      const text = getTemplateText(template.templateKey);
+      await navigator.clipboard.writeText(text);
       setCopiedId(template.id);
-      toast.success(`"${template.title}" kopiert!`);
+      toast.success(t('notifications.messageCopied'));
       
       setTimeout(() => setCopiedId(null), 2000);
     } catch (error) {
-      toast.error("Kopieren fehlgeschlagen");
+      toast.error(t('notifications.errorOccurred'));
     }
   };
 
   const handleWhatsApp = (template: MessageTemplate) => {
-    const encoded = encodeURIComponent(template.template);
+    const text = getTemplateText(template.templateKey);
+    const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, "_blank");
   };
 
@@ -152,20 +115,20 @@ Wir freuen uns! 🎉`,
             <MessageSquare className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-xl font-bold">Nachrichten-Vorlagen</h3>
+            <h3 className="font-display text-xl font-bold">{t('messages.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              Vorgefertigte WhatsApp-Nachrichten für die Gruppe
+              {t('messages.subtitle')}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-background/30">
           <div>
-            <p className="text-xs text-muted-foreground">Survey-Link</p>
+            <p className="text-xs text-muted-foreground">{t('messages.surveyLink')}</p>
             <code className="text-xs text-primary break-all">{surveyLink}</code>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Gruppencode</p>
+            <p className="text-xs text-muted-foreground">{t('messages.accessCode')}</p>
             <code className="text-xs text-primary">{accessCode}</code>
           </div>
         </div>
@@ -173,79 +136,99 @@ Wir freuen uns! 🎉`,
 
       {/* Templates */}
       <div className="space-y-4">
-        {templates.map((template) => (
-          <GlassCard
-            key={template.id}
-            className="p-4 hover:bg-background/30 transition-colors"
-          >
-            <div className="flex items-start gap-4">
-              <span className="text-3xl">{template.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-bold">{template.title}</h4>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopy(template)}
-                      className="text-xs"
-                    >
-                      {copiedId === template.id ? (
-                        <Check className="w-4 h-4 text-green-400" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleWhatsApp(template)}
-                      className="text-xs text-green-400 hover:text-green-300"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
+        {TEMPLATE_IDS.map((template) => {
+          const templateText = getTemplateText(template.templateKey);
+          
+          return (
+            <GlassCard
+              key={template.id}
+              className="p-4 hover:bg-background/30 transition-colors group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="text-3xl p-2 bg-muted/30 rounded-xl group-hover:bg-primary/20 transition-colors">
+                  {template.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="font-bold">{t(template.titleKey)}</h4>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopy(template)}
+                        className="text-xs"
+                      >
+                        {copiedId === template.id ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleWhatsApp(template)}
+                        className="text-xs text-green-400 hover:text-green-300"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {t(template.descriptionKey)}
+                  </p>
+                  
+                  {/* Preview */}
+                  <div className="p-3 rounded-lg bg-muted/30 border border-border">
+                    <pre className="text-xs whitespace-pre-wrap font-sans text-muted-foreground">
+                      {templateText.slice(0, 180)}...
+                    </pre>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {template.description}
-                </p>
-                
-                {/* Preview */}
-                <div className="p-3 rounded-lg bg-muted/30 border border-border">
-                  <pre className="text-xs whitespace-pre-wrap font-sans text-muted-foreground">
-                    {template.template.slice(0, 150)}...
-                  </pre>
-                </div>
               </div>
-            </div>
-          </GlassCard>
-        ))}
+            </GlassCard>
+          );
+        })}
       </div>
+
+      {/* Pro Tip */}
+      <GlassCard className="p-4 border-primary/30">
+        <div className="flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-primary mt-0.5" />
+          <div>
+            <h4 className="font-bold text-sm">{t('messages.proTip.title')}</h4>
+            <p className="text-xs text-muted-foreground">
+              {t('messages.proTip.description')}
+            </p>
+          </div>
+        </div>
+      </GlassCard>
 
       {/* Quick Actions */}
       <GlassCard className="p-4">
+        <h4 className="font-bold text-sm mb-3">{t('messages.quickActions.title')}</h4>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
               navigator.clipboard.writeText(surveyLink);
-              toast.success("Link kopiert!");
+              toast.success(t('notifications.linkCopied'));
             }}
           >
             <Copy className="w-4 h-4 mr-2" />
-            Link kopieren
+            {t('messages.quickActions.copySurveyLink')}
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
               navigator.clipboard.writeText(accessCode);
-              toast.success("Code kopiert!");
+              toast.success(t('notifications.codeCopied'));
             }}
           >
             <Copy className="w-4 h-4 mr-2" />
-            Code kopieren
+            {t('messages.quickActions.copyAccessCode')}
           </Button>
           <Button
             variant="outline"
@@ -253,7 +236,7 @@ Wir freuen uns! 🎉`,
             onClick={() => window.open(surveyLink, "_blank")}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
-            Survey öffnen
+            {t('messages.quickActions.openSurvey')}
           </Button>
         </div>
       </GlassCard>

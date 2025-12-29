@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MapPin, Plane, DollarSign, Activity, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/ui/GlassCard";
 import type { EventData } from "@/hooks/useEvent";
 
@@ -16,38 +17,48 @@ interface DestinationTabProps {
   isLoading: boolean;
 }
 
-const DESTINATION_LABELS: Record<string, string> = {
-  de_city: "🇩🇪 Deutsche Großstadt",
-  barcelona: "🇪🇸 Barcelona",
-  lisbon: "🇵🇹 Lissabon",
-  either: "🌍 Egal",
-};
-
-const BUDGET_LABELS: Record<string, string> = {
-  "80-150": "80–150 €",
-  "150-250": "150–250 €",
-  "250-400": "250–400 €",
-  "400+": "400+ €",
-};
-
-const ACTIVITY_LABELS: Record<string, string> = {
-  karting: "🏎️ Karting",
-  escape_room: "🔐 Escape Room",
-  lasertag: "🔫 Lasertag",
-  axe_throwing: "🪓 Axtwerfen",
-  vr_simracing: "🎮 VR / Sim-Racing",
-  climbing: "🧗 Klettern",
-  bubble_soccer: "⚽ Bubble Soccer",
-  outdoor: "🏕️ Outdoor",
-  wellness: "🧖 Wellness",
-  food: "🍽️ Food Experience",
-  mixed: "🎭 Gemischt",
-};
-
 export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps) => {
+  const { t } = useTranslation();
   const [sortedDestinations, setSortedDestinations] = useState<[string, number][]>([]);
   const [sortedBudgets, setSortedBudgets] = useState<[string, number][]>([]);
   const [sortedActivities, setSortedActivities] = useState<[string, number][]>([]);
+
+  const getDestinationLabel = (key: string) => {
+    const labels: Record<string, string> = {
+      de_city: t('dashboard.destination.destinations.deCity'),
+      barcelona: t('dashboard.destination.destinations.barcelona'),
+      lisbon: t('dashboard.destination.destinations.lisbon'),
+      either: t('dashboard.destination.destinations.either'),
+    };
+    return labels[key] || key;
+  };
+
+  const getBudgetLabel = (key: string) => {
+    const labels: Record<string, string> = {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400+ €",
+    };
+    return labels[key] || key;
+  };
+
+  const getActivityLabel = (key: string) => {
+    const labels: Record<string, string> = {
+      karting: t('dashboard.destination.activities.karting'),
+      escape_room: t('dashboard.destination.activities.escapeRoom'),
+      lasertag: t('dashboard.destination.activities.lasertag'),
+      axe_throwing: t('dashboard.destination.activities.axeThrowing'),
+      vr_simracing: t('dashboard.destination.activities.vrSimracing'),
+      climbing: t('dashboard.destination.activities.climbing'),
+      bubble_soccer: t('dashboard.destination.activities.bubbleSoccer'),
+      outdoor: t('dashboard.destination.activities.outdoor'),
+      wellness: t('dashboard.destination.activities.wellness'),
+      food: t('dashboard.destination.activities.food'),
+      mixed: t('dashboard.destination.activities.mixed'),
+    };
+    return labels[key] || key;
+  };
 
   useEffect(() => {
     if (!stats) return;
@@ -67,7 +78,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
     return (
       <GlassCard className="p-8 text-center">
         <Clock className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-        <p className="text-muted-foreground">Lade Präferenzen...</p>
+        <p className="text-muted-foreground">{t('dashboard.destination.loading')}</p>
       </GlassCard>
     );
   }
@@ -76,9 +87,9 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
     return (
       <GlassCard className="p-8 text-center">
         <MapPin className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="font-display text-xl font-bold mb-2">Keine Daten</h3>
+        <h3 className="font-display text-xl font-bold mb-2">{t('dashboard.destination.noData')}</h3>
         <p className="text-muted-foreground">
-          Noch keine Antworten eingegangen.
+          {t('dashboard.destination.noDataDesc')}
         </p>
       </GlassCard>
     );
@@ -97,14 +108,18 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
               <MapPin className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Top-Destination</p>
+              <p className="text-sm text-muted-foreground">{t('dashboard.destination.topDestination')}</p>
               <h3 className="font-display text-2xl font-bold">
-                {DESTINATION_LABELS[topDestination[0]] || topDestination[0]}
+                {getDestinationLabel(topDestination[0])}
               </h3>
             </div>
           </div>
           <p className="text-muted-foreground">
-            {topDestination[1]} von {totalVotes} Stimmen ({Math.round((topDestination[1] / totalVotes) * 100)}%)
+            {t('dashboard.destination.votesOf', { 
+              votes: topDestination[1], 
+              total: totalVotes, 
+              percent: Math.round((topDestination[1] / totalVotes) * 100) 
+            })}
           </p>
         </GlassCard>
       )}
@@ -113,7 +128,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
       <GlassCard className="p-6">
         <h4 className="font-bold mb-4 flex items-center gap-2">
           <Plane className="w-5 h-5" />
-          Destination-Voting
+          {t('dashboard.destination.voting')}
         </h4>
         <div className="space-y-3">
           {sortedDestinations.map(([dest, count], idx) => (
@@ -124,7 +139,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium">
-                    {DESTINATION_LABELS[dest] || dest}
+                    {getDestinationLabel(dest)}
                   </span>
                   <span className="text-sm text-muted-foreground">
                     {count} ({Math.round((count / totalVotes) * 100)}%)
@@ -148,7 +163,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
       <GlassCard className="p-6">
         <h4 className="font-bold mb-4 flex items-center gap-2">
           <DollarSign className="w-5 h-5" />
-          Budget-Verteilung
+          {t('dashboard.destination.budgetDistribution')}
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {sortedBudgets.map(([budget, count]) => (
@@ -158,7 +173,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
             >
               <p className="text-2xl font-bold text-primary">{count}</p>
               <p className="text-sm text-muted-foreground">
-                {BUDGET_LABELS[budget] || budget}
+                {getBudgetLabel(budget)}
               </p>
             </div>
           ))}
@@ -166,11 +181,8 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
         {sortedBudgets.length > 0 && (
           <div className="mt-4 p-3 rounded-lg bg-muted/30">
             <p className="text-sm text-muted-foreground">
-              <strong>Empfehlung:</strong> Plane mit einem Budget von{" "}
-              <span className="text-foreground font-medium">
-                {BUDGET_LABELS[sortedBudgets[0][0]] || sortedBudgets[0][0]}
-              </span>{" "}
-              pro Person.
+              <strong>{t('dashboard.destination.recommendation')}:</strong>{" "}
+              {t('dashboard.destination.recommendationText', { budget: getBudgetLabel(sortedBudgets[0][0]) })}
             </p>
           </div>
         )}
@@ -180,7 +192,7 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
       <GlassCard className="p-6">
         <h4 className="font-bold mb-4 flex items-center gap-2">
           <Activity className="w-5 h-5" />
-          Beliebte Aktivitäten
+          {t('dashboard.destination.popularActivities')}
         </h4>
         <div className="flex flex-wrap gap-2">
           {sortedActivities.slice(0, 10).map(([activity, count], idx) => (
@@ -194,13 +206,13 @@ export const DestinationTab = ({ event, stats, isLoading }: DestinationTabProps)
                   : "bg-muted/50 text-muted-foreground"
               }`}
             >
-              {ACTIVITY_LABELS[activity] || activity} ({count})
+              {getActivityLabel(activity)} ({count})
             </span>
           ))}
         </div>
         {sortedActivities.length === 0 && (
           <p className="text-muted-foreground text-center py-4">
-            Noch keine Aktivitäts-Präferenzen.
+            {t('dashboard.destination.noActivities')}
           </p>
         )}
       </GlassCard>
