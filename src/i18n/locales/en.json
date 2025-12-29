@@ -33,34 +33,138 @@
     "copyLink": "Copy link",
     "copyCode": "Copy code"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "The Modern Party Planning Platform",
-    "description": "Plan unforgettable events with your group. Simple, fast, and stress-free.",
-    "createEvent": "Create Event",
-    "joinEvent": "Join with Code",
+"landing": {
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "solutions": "Solutions",
+      "faq": "FAQ",
+      "login": "Login",
+      "signUp": "Sign Up"
+    },
+    "hero": {
+      "badge": "The #1 Event Planning Platform",
+      "title": "Plan Unforgettable Events",
+      "subtitle": "From bachelor parties to birthdays, organize group events with ease. Smart cost splitting, AI-powered suggestions, and real-time collaboration.",
+      "createEvent": "Create Event",
+      "joinEvent": "Join with Code",
+      "trustedBy": "Trusted by 10,000+ event planners worldwide"
+    },
     "features": {
-      "title": "Everything you need",
-      "subtitle": "Plan the perfect event with our powerful tools",
-      "multiEvent": {
-        "title": "Multi-Event Management",
-        "description": "Manage multiple events simultaneously with a clear dashboard."
-      },
-      "costSplitting": {
-        "title": "Smart Cost Splitting",
-        "description": "Track expenses and split them fairly among all participants."
-      },
-      "messageTemplates": {
-        "title": "Message Templates",
-        "description": "Pre-written WhatsApp messages for every occasion."
-      }
+      "title": "Everything You Need",
+      "subtitle": "Powerful tools to plan the perfect event",
+      "multiEvent": { "title": "Multi-Event Management", "description": "Manage multiple events simultaneously with a clear dashboard" },
+      "costSplitting": { "title": "Smart Cost Splitting", "description": "Track expenses and split them fairly among all participants" },
+      "aiSuggestions": { "title": "AI-Powered Suggestions", "description": "Get personalized activity and destination recommendations" },
+      "messageTemplates": { "title": "Message Templates", "description": "Pre-written WhatsApp messages for every occasion" },
+      "dateCoordination": { "title": "Date Coordination", "description": "Find the perfect date that works for everyone" },
+      "realtime": { "title": "Real-time Collaboration", "description": "Work together with your team in real-time" }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Plan your event in 4 simple steps",
+      "step1": { "title": "Create Event", "description": "Choose your event type and set basic details" },
+      "step2": { "title": "Invite Guests", "description": "Share a simple link or code with your group" },
+      "step3": { "title": "Collect Preferences", "description": "Let guests vote on dates, destinations, and activities" },
+      "step4": { "title": "Plan Together", "description": "Use AI suggestions and collaboration tools to finalize plans" }
+    },
+    "eventTypes": {
+      "title": "Perfect for Any Event",
+      "subtitle": "Whether it's a wild weekend or an intimate gathering",
+      "bachelor": "Bachelor Parties",
+      "bachelorette": "Bachelorette Parties",
+      "birthday": "Birthday Parties",
+      "team": "Team Events",
+      "trip": "Group Trips",
+      "wedding": "Weddings"
+    },
+    "testimonials": {
+      "title": "Loved by Event Planners",
+      "subtitle": "See what our users have to say",
+      "testimonial1": { "text": "EventBliss made planning my friend's bachelor party so easy! Everyone could vote and we found the perfect date." },
+      "testimonial2": { "text": "The cost splitting feature is a lifesaver. No more awkward money conversations!" },
+      "testimonial3": { "text": "I've organized 5 events with EventBliss. The AI suggestions are incredibly helpful." }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Is EventBliss free to use?",
+      "a1": "Yes! EventBliss is free for basic event planning. Premium features are available for power users.",
+      "q2": "How many guests can I invite?",
+      "a2": "You can invite unlimited guests to your event. There are no restrictions.",
+      "q3": "Can I use EventBliss for business events?",
+      "a3": "Absolutely! EventBliss is perfect for team building, corporate retreats, and company parties.",
+      "q4": "Is my data secure?",
+      "a4": "Yes, we take security seriously. All data is encrypted and stored securely in the cloud."
     },
     "cta": {
-      "title": "Ready for your event?",
-      "description": "Start for free and plan the perfect event.",
-      "button": "Create Free Event"
+      "title": "Ready to Plan Your Next Event?",
+      "description": "Start for free and create unforgettable memories with your group.",
+      "button": "Create Your Event"
     },
-    "footer": "Made with ❤️ for unforgettable events"
+    "footer": {
+      "tagline": "Plan events that bring people together",
+      "product": "Product",
+      "features": "Features",
+      "integrations": "Integrations",
+      "enterprise": "Enterprise",
+      "solutions": "Solutions",
+      "legal": "Legal",
+      "imprint": "Imprint",
+      "disclaimer": "Disclaimer",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "contact": "Contact",
+      "address": "Gladstonos 12-14, 8042 Paphos, Cyprus",
+      "phone": "+357 99 980 583",
+      "company": "MYFAMBLISS GROUP LTD",
+      "copyright": "© 2025 MYFAMBLISS GROUP. All rights reserved."
+    }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Imprint",
+      "company": "Company Information",
+      "registeredCompany": "Registered company in Cyprus",
+      "address": "Address",
+      "contact": "Contact",
+      "responsibleContent": "Responsible for Content",
+      "disputeResolution": "EU Dispute Resolution",
+      "disputeText": "The European Commission provides a platform for online dispute resolution (ODR)."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last Updated",
+      "intro": "Your privacy is important to us. This policy explains how we collect, use, and protect your data.",
+      "dataCollection": { "title": "Data Collection", "content": "We collect information you provide directly, such as name, email, and event preferences." },
+      "dataUsage": { "title": "Data Usage", "content": "Your data is used to provide and improve our services, facilitate event planning, and communicate with you." },
+      "cookies": { "title": "Cookies", "content": "We use cookies to enhance your experience and analyze site usage." },
+      "dataSecurity": { "title": "Data Security", "content": "We implement industry-standard security measures to protect your data." },
+      "userRights": { "title": "Your Rights", "content": "You have the right to access, correct, or delete your personal data at any time." },
+      "thirdParty": { "title": "Third-Party Services", "content": "We may share data with trusted partners to provide our services." },
+      "contact": { "title": "Contact Us", "content": "For privacy-related inquiries, please contact us at:" }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last Updated",
+      "intro": "By using EventBliss, you agree to these terms. Please read them carefully.",
+      "acceptance": { "title": "Acceptance of Terms", "content": "By accessing or using EventBliss, you agree to be bound by these Terms of Service." },
+      "services": { "title": "Our Services", "content": "EventBliss provides event planning and coordination tools for groups." },
+      "payment": { "title": "Payment Terms", "content": "Basic features are free. Premium features may require payment." },
+      "prohibited": { "title": "Prohibited Activities", "content": "You may not use our services for illegal activities or to harm others." },
+      "liability": { "title": "Limitation of Liability", "content": "EventBliss is not liable for damages arising from use of our services." },
+      "changes": { "title": "Changes to Terms", "content": "We may update these terms. Continued use constitutes acceptance." },
+      "governingLaw": { "title": "Governing Law", "content": "These terms are governed by the laws of Cyprus." }
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "lastUpdated": "Last Updated",
+      "intro": "Please read this disclaimer carefully before using EventBliss.",
+      "general": { "title": "General Disclaimer", "content": "Information provided on EventBliss is for general purposes only." },
+      "externalLinks": { "title": "External Links", "content": "We are not responsible for content on third-party websites." },
+      "availability": { "title": "Service Availability", "content": "We strive for 99.9% uptime but cannot guarantee uninterrupted service." },
+      "limitation": { "title": "Limitation of Liability", "content": "We are not liable for any indirect or consequential damages." },
+      "contact": { "title": "Contact", "content": "For questions about this disclaimer, please contact us." }
+    }
   },
   "createEvent": {
     "title": "Create Event",

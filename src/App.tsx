@@ -5,6 +5,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+
+// Legal Pages (lazy loaded)
+const Imprint = lazy(() => import("./pages/legal/Imprint"));
+const Privacy = lazy(() => import("./pages/legal/Privacy"));
+const Terms = lazy(() => import("./pages/legal/Terms"));
+const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { languages } from "@/i18n";
 import Landing from "./pages/Landing";
@@ -45,6 +52,11 @@ const AppContent = () => {
           <Route path="/e/:slug/expenses" element={<EventExpenses />} />
           <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
           <Route path="/danke" element={<Danke />} />
+          {/* Legal Pages */}
+          <Route path="/legal/imprint" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Imprint /></Suspense>} />
+          <Route path="/legal/privacy" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Privacy /></Suspense>} />
+          <Route path="/legal/terms" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Terms /></Suspense>} />
+          <Route path="/legal/disclaimer" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}><Disclaimer /></Suspense>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
