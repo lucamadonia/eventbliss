@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp, Wand2, Loader2 } from "lucide-react";
+import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp, Wand2, Loader2, Crown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -16,6 +16,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { usePremium } from "@/hooks/usePremium";
+import { PremiumBadge } from "@/components/premium/PremiumBadge";
 import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface MessagesTabProps {
@@ -144,6 +146,7 @@ const ENHANCEMENT_OPTIONS: { type: EnhancementType; labelKey: string; emoji: str
 
 export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 }: MessagesTabProps) => {
   const { t, i18n } = useTranslation();
+  const { isPremium } = usePremium();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -338,15 +341,27 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
                       </Badge>
                     </div>
                     <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openAiDialog(template)}
-                        className="text-xs text-primary hover:text-primary"
-                        title={t('messages.ai.enhance')}
-                      >
-                        <Wand2 className="w-4 h-4" />
-                      </Button>
+                      {isPremium ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openAiDialog(template)}
+                          className="text-xs text-primary hover:text-primary"
+                          title={t('messages.ai.enhance')}
+                        >
+                          <Wand2 className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toast.info(t('premium.paywall.message_ai'))}
+                          className="text-xs text-muted-foreground"
+                          title={t('premium.badge')}
+                        >
+                          <Crown className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

@@ -541,5 +541,12 @@
       "alreadySubscribed": "Este email já está subscrito",
       "generic": "Algo correu mal. Tenta novamente."
     }
+  },
+  "premium": {
+    "title": "Funcionalidades Premium",
+    "badge": "Premium",
+    "features": { "ai_assistant": "Assistente IA", "expenses": "Despesas Ilimitadas", "custom_questions": "Perguntas Personalizadas" },
+    "paywall": { "ai_assistant": "O assistente IA ajuda-te com sugestões personalizadas.", "expenses": "Utilizadores gratuitos podem adicionar até 3 despesas.", "custom_questions": "Cria perguntas personalizadas com Premium.", "maxOptions": "Máx. 5 opções para utilizadores gratuitos.", "upgradeButton": "Atualizar Agora", "startingAt": "A partir de apenas €9,99 / mês" },
+    "benefits": { "unlimitedAccess": "Acesso ilimitado", "aiFeatures": "Todas as funcionalidades IA", "prioritySupport": "Suporte prioritário" }
   }
 }

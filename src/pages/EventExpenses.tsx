@@ -14,11 +14,14 @@ import {
   Eye,
   EyeOff,
   Info,
+  Crown,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
+import { usePremium } from "@/hooks/usePremium";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -34,6 +37,9 @@ import { SettlementList } from "@/components/expenses/SettlementCard";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { ExpenseFilters, FilterType, SortType, GroupType } from "@/components/expenses/ExpenseFilters";
 import { DeleteExpenseDialog } from "@/components/expenses/DeleteExpenseDialog";
+import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
+
+const MAX_FREE_EXPENSES = 3;
 
 interface Expense {
   id: string;
@@ -74,6 +80,7 @@ const EventExpenses = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { event, participants, isLoading: eventLoading, error } = useEvent(slug);
+  const { isPremium } = usePremium();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseShares, setExpenseShares] = useState<ExpenseShare[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
@@ -86,6 +93,14 @@ const EventExpenses = () => {
   const [showDeleted, setShowDeleted] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  // Calculate if user can add more expenses
+  const actualExpenseCount = useMemo(() => {
+    return expenses.filter(e => !e.is_planned && !e.deleted_at).length;
+  }, [expenses]);
+  
+  const canAddExpense = isPremium || actualExpenseCount < MAX_FREE_EXPENSES;
 
   // Fetch expenses and shares from database
   useEffect(() => {
@@ -609,13 +624,25 @@ const EventExpenses = () => {
                 </div>
               </div>
 
-              <GradientButton
-                size="sm"
-                icon={<Plus className="w-4 h-4" />}
-                onClick={() => setIsAddingExpense(true)}
-              >
-                {t("common.add")}
-              </GradientButton>
+              {canAddExpense ? (
+                <GradientButton
+                  size="sm"
+                  icon={<Plus className="w-4 h-4" />}
+                  onClick={() => setIsAddingExpense(true)}
+                >
+                  {t("common.add")}
+                </GradientButton>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowPaywall(true)}
+                  className="border-primary/30"
+                >
+                  <Crown className="w-4 h-4 mr-2 text-primary" />
+                  {t("common.add")}
+                </Button>
+              )}
             </div>
           </div>
         </header>
@@ -836,6 +863,22 @@ const EventExpenses = () => {
           expense={expenseToDelete}
           onConfirm={handleDeleteConfirm}
         />
+
+        {/* Premium Paywall Dialog */}
+        {showPaywall && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="max-w-md mx-4">
+              <PaywallOverlay feature="expenses" />
+              <Button
+                variant="ghost"
+                className="w-full mt-4"
+                onClick={() => setShowPaywall(false)}
+              >
+                {t("common.close")}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </AnimatedBackground>
   );

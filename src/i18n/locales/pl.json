@@ -541,5 +541,12 @@
       "alreadySubscribed": "Ten e-mail jest już zasubskrybowany",
       "generic": "Coś poszło nie tak. Spróbuj ponownie."
     }
+  },
+  "premium": {
+    "title": "Funkcje Premium",
+    "badge": "Premium",
+    "features": { "ai_assistant": "Asystent AI", "expenses": "Nieograniczone Wydatki", "custom_questions": "Niestandardowe Pytania" },
+    "paywall": { "ai_assistant": "Asystent AI pomaga z personalizowanymi sugestiami.", "expenses": "Darmowi użytkownicy mogą dodać do 3 wydatków.", "custom_questions": "Twórz własne pytania z Premium.", "maxOptions": "Maks. 5 opcji dla darmowych użytkowników.", "upgradeButton": "Ulepsz Teraz", "startingAt": "Od tylko 9,99€ / miesiąc" },
+    "benefits": { "unlimitedAccess": "Nieograniczony dostęp", "aiFeatures": "Wszystkie funkcje AI", "prioritySupport": "Priorytetowe wsparcie" }
   }
 }
