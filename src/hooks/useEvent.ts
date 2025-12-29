@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 export interface EventData {
   id: string;
+  slug: string;
   name: string;
   honoree_name: string;
   event_type: string;

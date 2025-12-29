@@ -934,7 +934,21 @@
     },
     "authRequired": "Login Required",
     "loginToAdd": "Please log in to add or edit activities.",
-    "addDate": "Add Date"
+    "addDate": "Add Date",
+    "calendar": {
+      "weekView": "Week View",
+      "listView": "List View",
+      "calendarView": "Calendar View",
+      "time": "Time",
+      "items": "items",
+      "legend": "Legend",
+      "dragHint": "Drag activities to move them",
+      "clickToAdd": "Click to add new activity"
+    },
+    "viewMode": {
+      "list": "List",
+      "calendar": "Calendar"
+    }
   },
   "cookie": {
     "title": "We value your privacy",

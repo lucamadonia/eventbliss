@@ -210,7 +210,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
 
       {/* Team Invite Manager */}
       <TeamInviteManager
-        eventSlug={event.id}
+        eventSlug={event.slug}
         eventId={event.id}
         participants={participants as any}
         onUpdate={onUpdate}
