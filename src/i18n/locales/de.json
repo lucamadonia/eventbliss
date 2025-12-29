@@ -1125,6 +1125,7 @@
     "myEvents": "Meine Events",
     "settings": "Einstellungen",
     "premium": "Premium",
+    "adminArea": "Admin-Bereich",
     "comingSoon": "Bald verfügbar",
     "noEvents": "Noch keine Events",
     "noEventsDescription": "Erstelle dein erstes Event und lade deine Freunde ein!",
@@ -1186,6 +1187,14 @@
       "customQuestions": "Eigene Umfrage-Fragen",
       "max_options": "Unbegrenzte Optionen",
       "unlimitedOptions": "Unbegrenzte Optionen"
+    },
+    "voucher": {
+      "title": "Gutschein einlösen",
+      "description": "Hast du einen Gutscheincode? Löse ihn hier ein.",
+      "placeholder": "GUTSCHEINCODE",
+      "redeem": "Einlösen",
+      "success": "Gutschein erfolgreich eingelöst!",
+      "error": "Ungültiger Gutscheincode"
     },
     "paywall": {
       "title": "Premium-Funktion",
