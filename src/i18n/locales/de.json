@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Übersicht",
+      "planner": "Planer",
       "ideas": "Ideen",
       "form": "Formular",
       "schedule": "Termine",
       "destination": "Reiseziel",
       "agencies": "Agenturen",
+      "ai": "KI-Assistent",
       "messages": "Nachrichten",
-      "settings": "Einstellungen",
-      "aiAssistant": "KI-Assistent"
+      "settings": "Einstellungen"
     },
     "overview": {
       "title": "Übersicht",
@@ -381,5 +382,75 @@
     "minLength": "Mindestens {{count}} Zeichen erforderlich",
     "maxLength": "Maximal {{count}} Zeichen erlaubt",
     "passwordMismatch": "Passwörter stimmen nicht überein"
+  },
+  "planner": {
+    "title": "Wochenend-Planer",
+    "subtitle": "Plane alle Aktivitäten für euer Event",
+    "addActivity": "Aktivität hinzufügen",
+    "newActivity": "Neue Aktivität",
+    "editActivity": "Aktivität bearbeiten",
+    "createActivity": "Aktivität erstellen",
+    "activity": "Aktivität",
+    "activities": "Aktivitäten",
+    "noActivities": "Noch keine Aktivitäten",
+    "noActivitiesHint": "Füge die erste Aktivität für diesen Tag hinzu",
+    "addFirst": "Erste Aktivität hinzufügen",
+    "totalForDay": "Geschätzte Kosten für diesen Tag",
+    "perPerson": "pro Person",
+    "deleteConfirm": "Aktivität löschen?",
+    "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "comment": "Kommentar",
+    "comments": "Kommentare",
+    "selectParticipant": "Teilnehmer wählen",
+    "writeComment": "Kommentar schreiben...",
+    "loadError": "Aktivitäten konnten nicht geladen werden",
+    "saveError": "Fehler beim Speichern",
+    "deleteError": "Fehler beim Löschen",
+    "commentError": "Kommentar konnte nicht hinzugefügt werden",
+    "activityCreated": "Aktivität erstellt",
+    "activityUpdated": "Aktivität aktualisiert",
+    "activityDeleted": "Aktivität gelöscht",
+    "form": {
+      "title": "Titel",
+      "titlePlaceholder": "z.B. Paintball, Abendessen, Bootstour...",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Kurze Beschreibung der Aktivität",
+      "date": "Datum",
+      "startTime": "Startzeit",
+      "endTime": "Endzeit",
+      "location": "Ort",
+      "locationPlaceholder": "z.B. Paintball Arena München",
+      "locationUrl": "Google Maps Link",
+      "responsiblePerson": "Verantwortliche Person",
+      "selectPerson": "Person auswählen",
+      "contactName": "Ansprechpartner",
+      "contactNamePlaceholder": "Name des Kontakts",
+      "contactPhone": "Telefon",
+      "contactEmail": "E-Mail",
+      "estimatedCost": "Geschätzte Kosten",
+      "currency": "Währung",
+      "perPerson": "Pro Person",
+      "requirements": "Anforderungen",
+      "requirementPlaceholder": "z.B. Sportkleidung, Ausweis...",
+      "notes": "Notizen",
+      "notesPlaceholder": "Zusätzliche Informationen..."
+    },
+    "categories": {
+      "title": "Kategorie",
+      "all": "Alle Kategorien",
+      "activity": "Aktivität",
+      "food": "Essen & Trinken",
+      "transport": "Transport",
+      "accommodation": "Unterkunft",
+      "party": "Party & Nightlife",
+      "sightseeing": "Sightseeing",
+      "relaxation": "Entspannung",
+      "other": "Sonstiges"
+    },
+    "filter": {
+      "title": "Filtern",
+      "byCategory": "Nach Kategorie",
+      "showAll": "Alle anzeigen"
+    }
   }
 }

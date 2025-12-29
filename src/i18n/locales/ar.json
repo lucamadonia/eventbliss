@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "نظرة عامة",
+      "planner": "المخطط",
       "ideas": "أفكار",
       "form": "النموذج",
       "schedule": "الجدول",
       "destination": "الوجهة",
       "agencies": "الوكالات",
+      "ai": "مساعد الذكاء الاصطناعي",
       "messages": "الرسائل",
-      "settings": "الإعدادات",
-      "aiAssistant": "مساعد الذكاء الاصطناعي"
+      "settings": "الإعدادات"
     },
     "overview": {
       "title": "نظرة عامة",
@@ -381,5 +382,75 @@
     "minLength": "مطلوب {{count}} حرف على الأقل",
     "maxLength": "الحد الأقصى {{count}} حرف مسموح",
     "passwordMismatch": "كلمات المرور غير متطابقة"
+  },
+  "planner": {
+    "title": "مخطط نهاية الأسبوع",
+    "subtitle": "خطط لجميع الأنشطة لفعاليتك",
+    "addActivity": "إضافة نشاط",
+    "newActivity": "نشاط جديد",
+    "editActivity": "تعديل النشاط",
+    "createActivity": "إنشاء نشاط",
+    "activity": "نشاط",
+    "activities": "أنشطة",
+    "noActivities": "لا توجد أنشطة بعد",
+    "noActivitiesHint": "أضف النشاط الأول لهذا اليوم",
+    "addFirst": "إضافة النشاط الأول",
+    "totalForDay": "التكاليف المقدرة لهذا اليوم",
+    "perPerson": "للشخص",
+    "deleteConfirm": "حذف النشاط؟",
+    "deleteConfirmDescription": "لا يمكن التراجع عن هذا الإجراء.",
+    "comment": "تعليق",
+    "comments": "تعليقات",
+    "selectParticipant": "اختر المشارك",
+    "writeComment": "اكتب تعليقاً...",
+    "loadError": "تعذر تحميل الأنشطة",
+    "saveError": "خطأ في الحفظ",
+    "deleteError": "خطأ في الحذف",
+    "commentError": "تعذر إضافة التعليق",
+    "activityCreated": "تم إنشاء النشاط",
+    "activityUpdated": "تم تحديث النشاط",
+    "activityDeleted": "تم حذف النشاط",
+    "form": {
+      "title": "العنوان",
+      "titlePlaceholder": "مثل بينتبول، عشاء، جولة بالقارب...",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف موجز للنشاط",
+      "date": "التاريخ",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء",
+      "location": "الموقع",
+      "locationPlaceholder": "مثل ملعب بينتبول القاهرة",
+      "locationUrl": "رابط خرائط جوجل",
+      "responsiblePerson": "الشخص المسؤول",
+      "selectPerson": "اختر شخصاً",
+      "contactName": "جهة الاتصال",
+      "contactNamePlaceholder": "اسم جهة الاتصال",
+      "contactPhone": "الهاتف",
+      "contactEmail": "البريد الإلكتروني",
+      "estimatedCost": "التكلفة المقدرة",
+      "currency": "العملة",
+      "perPerson": "للشخص",
+      "requirements": "المتطلبات",
+      "requirementPlaceholder": "مثل ملابس رياضية، هوية...",
+      "notes": "ملاحظات",
+      "notesPlaceholder": "معلومات إضافية..."
+    },
+    "categories": {
+      "title": "الفئة",
+      "all": "جميع الفئات",
+      "activity": "نشاط",
+      "food": "طعام ومشروبات",
+      "transport": "نقل",
+      "accommodation": "إقامة",
+      "party": "حفلة وحياة ليلية",
+      "sightseeing": "سياحة",
+      "relaxation": "استرخاء",
+      "other": "أخرى"
+    },
+    "filter": {
+      "title": "تصفية",
+      "byCategory": "حسب الفئة",
+      "showAll": "عرض الكل"
+    }
   }
 }

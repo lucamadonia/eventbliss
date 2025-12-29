@@ -6,15 +6,9 @@ import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/local
 import {
   Plus,
   Calendar,
-  Clock,
-  MapPin,
-  User,
-  Euro,
-  MessageCircle,
-  ChevronLeft,
-  ChevronRight,
   Loader2,
   ClipboardList,
+  Filter,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -22,6 +16,8 @@ import { ActivityCard } from "./ActivityCard";
 import { ActivityForm } from "./ActivityForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { CATEGORY_CONFIG, CATEGORY_KEYS, type ActivityCategory } from "@/lib/category-config";
 
 interface Participant {
   id: string;
@@ -51,6 +47,7 @@ interface Activity {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  category: ActivityCategory;
 }
 
 interface Comment {
@@ -92,6 +89,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const [showForm, setShowForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ActivityCategory | 'all'>('all');
 
   const currentLocale = localeMap[i18n.language] || de;
 
@@ -253,14 +251,20 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   };
 
   const activitiesForDate = selectedDate
+    ? activities.filter(a => {
+        const dateMatch = a.day_date === selectedDate;
+        const categoryMatch = selectedCategory === 'all' || a.category === selectedCategory;
+        return dateMatch && categoryMatch;
+      })
+    : [];
+
+  const allActivitiesForDate = selectedDate
     ? activities.filter(a => a.day_date === selectedDate)
     : [];
 
-  const totalCostForDate = activitiesForDate.reduce((sum, a) => {
+  const totalCostForDate = allActivitiesForDate.reduce((sum, a) => {
     return sum + (a.estimated_cost || 0);
   }, 0);
-
-  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -290,8 +294,37 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         </GradientButton>
       </div>
 
+      {/* Category Filter */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Filter className="w-4 h-4 text-muted-foreground" />
+        <Badge
+          variant={selectedCategory === 'all' ? 'default' : 'outline'}
+          className="cursor-pointer transition-all hover:scale-105"
+          onClick={() => setSelectedCategory('all')}
+        >
+          {t('planner.categories.all')}
+        </Badge>
+        {CATEGORY_KEYS.map((cat) => {
+          const config = CATEGORY_CONFIG[cat];
+          const count = allActivitiesForDate.filter(a => a.category === cat).length;
+          return (
+            <Badge
+              key={cat}
+              variant={selectedCategory === cat ? 'default' : 'outline'}
+              className={`cursor-pointer transition-all hover:scale-105 ${
+                selectedCategory === cat ? '' : `${config.bgClass} ${config.borderClass}`
+              }`}
+              onClick={() => setSelectedCategory(cat)}
+            >
+              <span className="mr-1">{config.emoji}</span>
+              {t(`planner.categories.${cat}`)}
+              {count > 0 && <span className="ml-1 opacity-70">({count})</span>}
+            </Badge>
+          );
+        })}
+      </div>
+
       {/* Date Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
         {eventDates.map((date) => {
           const dateObj = parseISO(date);
           const isSelected = date === selectedDate;

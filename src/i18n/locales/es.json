@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Vista General",
+      "planner": "Planificador",
       "ideas": "Ideas",
       "form": "Formulario",
       "schedule": "Calendario",
       "destination": "Destino",
       "agencies": "Agencias",
+      "ai": "Asistente IA",
       "messages": "Mensajes",
-      "settings": "Configuración",
-      "aiAssistant": "Asistente IA"
+      "settings": "Configuración"
     },
     "overview": {
       "title": "Vista General",
@@ -381,5 +382,75 @@
     "minLength": "Se requieren al menos {{count}} caracteres",
     "maxLength": "Máximo {{count}} caracteres permitidos",
     "passwordMismatch": "Las contraseñas no coinciden"
+  },
+  "planner": {
+    "title": "Planificador de Fin de Semana",
+    "subtitle": "Planifica todas las actividades para tu evento",
+    "addActivity": "Añadir Actividad",
+    "newActivity": "Nueva Actividad",
+    "editActivity": "Editar Actividad",
+    "createActivity": "Crear Actividad",
+    "activity": "Actividad",
+    "activities": "Actividades",
+    "noActivities": "Aún sin actividades",
+    "noActivitiesHint": "Añade la primera actividad para este día",
+    "addFirst": "Añadir Primera Actividad",
+    "totalForDay": "Costes estimados para este día",
+    "perPerson": "por persona",
+    "deleteConfirm": "¿Eliminar actividad?",
+    "deleteConfirmDescription": "Esta acción no se puede deshacer.",
+    "comment": "Comentario",
+    "comments": "Comentarios",
+    "selectParticipant": "Seleccionar participante",
+    "writeComment": "Escribir un comentario...",
+    "loadError": "No se pudieron cargar las actividades",
+    "saveError": "Error al guardar",
+    "deleteError": "Error al eliminar",
+    "commentError": "No se pudo añadir el comentario",
+    "activityCreated": "Actividad creada",
+    "activityUpdated": "Actividad actualizada",
+    "activityDeleted": "Actividad eliminada",
+    "form": {
+      "title": "Título",
+      "titlePlaceholder": "ej. Paintball, Cena, Paseo en Barco...",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Breve descripción de la actividad",
+      "date": "Fecha",
+      "startTime": "Hora de Inicio",
+      "endTime": "Hora de Fin",
+      "location": "Ubicación",
+      "locationPlaceholder": "ej. Arena de Paintball Madrid",
+      "locationUrl": "Enlace Google Maps",
+      "responsiblePerson": "Persona Responsable",
+      "selectPerson": "Seleccionar persona",
+      "contactName": "Contacto",
+      "contactNamePlaceholder": "Nombre del contacto",
+      "contactPhone": "Teléfono",
+      "contactEmail": "Email",
+      "estimatedCost": "Coste Estimado",
+      "currency": "Moneda",
+      "perPerson": "Por Persona",
+      "requirements": "Requisitos",
+      "requirementPlaceholder": "ej. Ropa deportiva, DNI...",
+      "notes": "Notas",
+      "notesPlaceholder": "Información adicional..."
+    },
+    "categories": {
+      "title": "Categoría",
+      "all": "Todas las Categorías",
+      "activity": "Actividad",
+      "food": "Comida y Bebida",
+      "transport": "Transporte",
+      "accommodation": "Alojamiento",
+      "party": "Fiesta y Noche",
+      "sightseeing": "Turismo",
+      "relaxation": "Relajación",
+      "other": "Otros"
+    },
+    "filter": {
+      "title": "Filtrar",
+      "byCategory": "Por Categoría",
+      "showAll": "Mostrar Todo"
+    }
   }
 }

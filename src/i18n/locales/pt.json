@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Visão Geral",
+      "planner": "Planificador",
       "ideas": "Ideias",
       "form": "Formulário",
       "schedule": "Agenda",
       "destination": "Destino",
       "agencies": "Agências",
+      "ai": "Assistente IA",
       "messages": "Mensagens",
-      "settings": "Definições",
-      "aiAssistant": "Assistente IA"
+      "settings": "Definições"
     },
     "overview": {
       "title": "Visão Geral",
@@ -381,5 +382,75 @@
     "minLength": "São necessários pelo menos {{count}} caracteres",
     "maxLength": "Máximo de {{count}} caracteres permitidos",
     "passwordMismatch": "As palavras-passe não coincidem"
+  },
+  "planner": {
+    "title": "Planificador de Fim de Semana",
+    "subtitle": "Planeia todas as atividades para o teu evento",
+    "addActivity": "Adicionar Atividade",
+    "newActivity": "Nova Atividade",
+    "editActivity": "Editar Atividade",
+    "createActivity": "Criar Atividade",
+    "activity": "Atividade",
+    "activities": "Atividades",
+    "noActivities": "Ainda sem atividades",
+    "noActivitiesHint": "Adiciona a primeira atividade para este dia",
+    "addFirst": "Adicionar Primeira Atividade",
+    "totalForDay": "Custos estimados para este dia",
+    "perPerson": "por pessoa",
+    "deleteConfirm": "Eliminar atividade?",
+    "deleteConfirmDescription": "Esta ação não pode ser desfeita.",
+    "comment": "Comentário",
+    "comments": "Comentários",
+    "selectParticipant": "Selecionar participante",
+    "writeComment": "Escrever um comentário...",
+    "loadError": "Não foi possível carregar as atividades",
+    "saveError": "Erro ao guardar",
+    "deleteError": "Erro ao eliminar",
+    "commentError": "Não foi possível adicionar o comentário",
+    "activityCreated": "Atividade criada",
+    "activityUpdated": "Atividade atualizada",
+    "activityDeleted": "Atividade eliminada",
+    "form": {
+      "title": "Título",
+      "titlePlaceholder": "ex. Paintball, Jantar, Passeio de Barco...",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição da atividade",
+      "date": "Data",
+      "startTime": "Hora de Início",
+      "endTime": "Hora de Fim",
+      "location": "Local",
+      "locationPlaceholder": "ex. Arena de Paintball Lisboa",
+      "locationUrl": "Link Google Maps",
+      "responsiblePerson": "Pessoa Responsável",
+      "selectPerson": "Selecionar pessoa",
+      "contactName": "Contacto",
+      "contactNamePlaceholder": "Nome do contacto",
+      "contactPhone": "Telefone",
+      "contactEmail": "Email",
+      "estimatedCost": "Custo Estimado",
+      "currency": "Moeda",
+      "perPerson": "Por Pessoa",
+      "requirements": "Requisitos",
+      "requirementPlaceholder": "ex. Roupa desportiva, documento...",
+      "notes": "Notas",
+      "notesPlaceholder": "Informação adicional..."
+    },
+    "categories": {
+      "title": "Categoria",
+      "all": "Todas as Categorias",
+      "activity": "Atividade",
+      "food": "Comida e Bebida",
+      "transport": "Transporte",
+      "accommodation": "Alojamento",
+      "party": "Festa e Vida Noturna",
+      "sightseeing": "Turismo",
+      "relaxation": "Relaxamento",
+      "other": "Outro"
+    },
+    "filter": {
+      "title": "Filtrar",
+      "byCategory": "Por Categoria",
+      "showAll": "Mostrar Tudo"
+    }
   }
 }

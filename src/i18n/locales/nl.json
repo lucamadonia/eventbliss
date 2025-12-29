@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Overzicht",
+      "planner": "Planner",
       "ideas": "Ideeën",
       "form": "Formulier",
       "schedule": "Planning",
       "destination": "Bestemming",
       "agencies": "Bureaus",
+      "ai": "AI Assistent",
       "messages": "Berichten",
-      "settings": "Instellingen",
-      "aiAssistant": "AI Assistent"
+      "settings": "Instellingen"
     },
     "overview": {
       "title": "Overzicht",
@@ -381,5 +382,75 @@
     "minLength": "Minimaal {{count}} tekens vereist",
     "maxLength": "Maximaal {{count}} tekens toegestaan",
     "passwordMismatch": "Wachtwoorden komen niet overeen"
+  },
+  "planner": {
+    "title": "Weekend Planner",
+    "subtitle": "Plan alle activiteiten voor je evenement",
+    "addActivity": "Activiteit Toevoegen",
+    "newActivity": "Nieuwe Activiteit",
+    "editActivity": "Activiteit Bewerken",
+    "createActivity": "Activiteit Maken",
+    "activity": "Activiteit",
+    "activities": "Activiteiten",
+    "noActivities": "Nog geen activiteiten",
+    "noActivitiesHint": "Voeg de eerste activiteit toe voor deze dag",
+    "addFirst": "Eerste Activiteit Toevoegen",
+    "totalForDay": "Geschatte kosten voor deze dag",
+    "perPerson": "per persoon",
+    "deleteConfirm": "Activiteit verwijderen?",
+    "deleteConfirmDescription": "Deze actie kan niet ongedaan worden gemaakt.",
+    "comment": "Opmerking",
+    "comments": "Opmerkingen",
+    "selectParticipant": "Selecteer deelnemer",
+    "writeComment": "Schrijf een opmerking...",
+    "loadError": "Kon activiteiten niet laden",
+    "saveError": "Fout bij opslaan",
+    "deleteError": "Fout bij verwijderen",
+    "commentError": "Kon opmerking niet toevoegen",
+    "activityCreated": "Activiteit aangemaakt",
+    "activityUpdated": "Activiteit bijgewerkt",
+    "activityDeleted": "Activiteit verwijderd",
+    "form": {
+      "title": "Titel",
+      "titlePlaceholder": "bijv. Paintball, Diner, Boottocht...",
+      "description": "Beschrijving",
+      "descriptionPlaceholder": "Korte beschrijving van de activiteit",
+      "date": "Datum",
+      "startTime": "Starttijd",
+      "endTime": "Eindtijd",
+      "location": "Locatie",
+      "locationPlaceholder": "bijv. Paintball Arena Amsterdam",
+      "locationUrl": "Google Maps Link",
+      "responsiblePerson": "Verantwoordelijke Persoon",
+      "selectPerson": "Selecteer persoon",
+      "contactName": "Contactpersoon",
+      "contactNamePlaceholder": "Naam van de contactpersoon",
+      "contactPhone": "Telefoon",
+      "contactEmail": "Email",
+      "estimatedCost": "Geschatte Kosten",
+      "currency": "Valuta",
+      "perPerson": "Per Persoon",
+      "requirements": "Vereisten",
+      "requirementPlaceholder": "bijv. Sportkleding, ID...",
+      "notes": "Notities",
+      "notesPlaceholder": "Aanvullende informatie..."
+    },
+    "categories": {
+      "title": "Categorie",
+      "all": "Alle Categorieën",
+      "activity": "Activiteit",
+      "food": "Eten & Drinken",
+      "transport": "Vervoer",
+      "accommodation": "Accommodatie",
+      "party": "Feest & Nachtleven",
+      "sightseeing": "Bezichtigen",
+      "relaxation": "Ontspanning",
+      "other": "Overig"
+    },
+    "filter": {
+      "title": "Filteren",
+      "byCategory": "Op Categorie",
+      "showAll": "Alles Tonen"
+    }
   }
 }

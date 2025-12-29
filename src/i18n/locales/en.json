@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Overview",
+      "planner": "Planner",
       "ideas": "Ideas",
       "form": "Form",
       "schedule": "Schedule",
       "destination": "Destination",
       "agencies": "Agencies",
+      "ai": "AI Assistant",
       "messages": "Messages",
-      "settings": "Settings",
-      "aiAssistant": "AI Assistant"
+      "settings": "Settings"
     },
     "overview": {
       "title": "Overview",
@@ -381,5 +382,75 @@
     "minLength": "At least {{count}} characters required",
     "maxLength": "Maximum {{count}} characters allowed",
     "passwordMismatch": "Passwords do not match"
+  },
+  "planner": {
+    "title": "Weekend Planner",
+    "subtitle": "Plan all activities for your event",
+    "addActivity": "Add Activity",
+    "newActivity": "New Activity",
+    "editActivity": "Edit Activity",
+    "createActivity": "Create Activity",
+    "activity": "Activity",
+    "activities": "Activities",
+    "noActivities": "No activities yet",
+    "noActivitiesHint": "Add the first activity for this day",
+    "addFirst": "Add First Activity",
+    "totalForDay": "Estimated costs for this day",
+    "perPerson": "per person",
+    "deleteConfirm": "Delete activity?",
+    "deleteConfirmDescription": "This action cannot be undone.",
+    "comment": "Comment",
+    "comments": "Comments",
+    "selectParticipant": "Select participant",
+    "writeComment": "Write a comment...",
+    "loadError": "Could not load activities",
+    "saveError": "Error saving",
+    "deleteError": "Error deleting",
+    "commentError": "Could not add comment",
+    "activityCreated": "Activity created",
+    "activityUpdated": "Activity updated",
+    "activityDeleted": "Activity deleted",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g. Paintball, Dinner, Boat Tour...",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the activity",
+      "date": "Date",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "location": "Location",
+      "locationPlaceholder": "e.g. Paintball Arena Munich",
+      "locationUrl": "Google Maps Link",
+      "responsiblePerson": "Responsible Person",
+      "selectPerson": "Select person",
+      "contactName": "Contact Person",
+      "contactNamePlaceholder": "Name of the contact",
+      "contactPhone": "Phone",
+      "contactEmail": "Email",
+      "estimatedCost": "Estimated Cost",
+      "currency": "Currency",
+      "perPerson": "Per Person",
+      "requirements": "Requirements",
+      "requirementPlaceholder": "e.g. Sportswear, ID...",
+      "notes": "Notes",
+      "notesPlaceholder": "Additional information..."
+    },
+    "categories": {
+      "title": "Category",
+      "all": "All Categories",
+      "activity": "Activity",
+      "food": "Food & Drinks",
+      "transport": "Transport",
+      "accommodation": "Accommodation",
+      "party": "Party & Nightlife",
+      "sightseeing": "Sightseeing",
+      "relaxation": "Relaxation",
+      "other": "Other"
+    },
+    "filter": {
+      "title": "Filter",
+      "byCategory": "By Category",
+      "showAll": "Show All"
+    }
   }
 }
