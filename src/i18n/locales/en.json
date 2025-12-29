@@ -724,6 +724,21 @@
     "sendViaWhatsApp": "Send via WhatsApp",
     "surveyLink": "Survey Link",
     "accessCode": "Access Code",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "categories": {
+      "before": "Before Event",
+      "planning": "Planning",
+      "confirmed": "Confirmed",
+      "after": "After Event"
+    },
+    "placeholders": {
+      "dateNotSet": "[Date not set]",
+      "deadlineNotSet": "[No deadline]",
+      "destination": "Insert destination",
+      "meetingPoint": "Insert meeting point",
+      "meetingTime": "Insert time"
+    },
     "proTip": {
       "title": "Pro Tip",
       "description": "Copy the messages and share them directly via WhatsApp or other messengers for best results."
@@ -732,7 +747,12 @@
       "kickoff": {
         "title": "Kickoff Message",
         "description": "First invitation to all participants",
-        "template": "Hey everyone! 🎉\n\nIt's happening - we're planning the stag party for {{honoree}}! 🥳\n\nTo help us organize the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌"
+        "template": "Hey everyone! 🎉\n\nIt's happening - we're planning the party for {{honoree}}! 🥳\n\nTo help us organize the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌"
+      },
+      "welcome": {
+        "title": "Welcome",
+        "description": "Welcome message for new participants",
+        "template": "Welcome to the team! 🙌\n\nGreat to have you on board for {{honoree}}'s party!\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. We're going to have an epic time! 🚀"
       },
       "reminder": {
         "title": "Reminder",
@@ -742,7 +762,7 @@
       "deadline": {
         "title": "Deadline Warning",
         "description": "Last chance before survey closes",
-        "template": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s party closes {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰"
+        "template": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s party closes on {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰"
       },
       "dateConfirmed": {
         "title": "Date Confirmed!",
@@ -754,10 +774,25 @@
         "description": "Costs and payment information",
         "template": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Activity 1]\n• [Activity 2]\n• [Accommodation/Transport]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know!"
       },
+      "locationShare": {
+        "title": "Meeting Point",
+        "description": "Share meeting point and address",
+        "template": "📍 MEETING POINT for {{honoree}}'s party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🚗"
+      },
+      "finalDetails": {
+        "title": "Final Details",
+        "description": "Last info before the event",
+        "template": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\n🤫 SECRECY:\n{{honoree}} must NOT find out anything!\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🔥"
+      },
       "packingList": {
         "title": "Packing List",
         "description": "What everyone should bring",
-        "template": "🎒 PACKING LIST for {{honoree}}'s party 🎒\n\n📅 {{eventDate}}\n📍 [Destination]\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🚀"
+        "template": "🎒 PACKING LIST for {{honoree}}'s party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🚀"
+      },
+      "thankYou": {
+        "title": "Thank You",
+        "description": "Thanks after the event",
+        "template": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s party was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next adventure! 🚀"
       }
     },
     "quickActions": {

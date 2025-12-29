@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addDays } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import {
   ChevronLeft,
@@ -95,9 +95,36 @@ export const VisualScheduleCalendar = ({
   const calendarRef = useRef<HTMLDivElement>(null);
   const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
-  const visibleDates = eventDates.slice(visibleStartIndex, visibleStartIndex + visibleDaysCount);
+  // Extend dates to ensure we always have enough days to display
+  const extendedDates = useMemo(() => {
+    if (eventDates.length === 0) {
+      // No dates at all - generate from today
+      const today = new Date();
+      return Array.from({ length: Math.max(visibleDaysCount, 7) }, (_, i) => 
+        format(addDays(today, i), "yyyy-MM-dd")
+      );
+    }
+    
+    if (eventDates.length >= visibleDaysCount) {
+      return eventDates;
+    }
+    
+    // We have some dates but fewer than visibleDaysCount - extend the range
+    const baseDateStr = eventDates[0];
+    const baseDate = parseISO(baseDateStr);
+    const allDates = new Set(eventDates);
+    
+    // Add days before and after to have enough
+    for (let i = -3; i <= visibleDaysCount + 3; i++) {
+      allDates.add(format(addDays(baseDate, i), "yyyy-MM-dd"));
+    }
+    
+    return Array.from(allDates).sort();
+  }, [eventDates, visibleDaysCount]);
+  
+  const visibleDates = extendedDates.slice(visibleStartIndex, visibleStartIndex + visibleDaysCount);
   const canGoBack = visibleStartIndex > 0;
-  const canGoForward = visibleStartIndex + visibleDaysCount < eventDates.length;
+  const canGoForward = visibleStartIndex + visibleDaysCount < extendedDates.length;
 
   // Parse time string to hour decimal (e.g., "14:30" -> 14.5)
   const timeToDecimal = (time: string | null): number => {
@@ -421,7 +448,7 @@ export const VisualScheduleCalendar = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setVisibleStartIndex(Math.min(eventDates.length - visibleDaysCount, visibleStartIndex + 1))}
+            onClick={() => setVisibleStartIndex(Math.min(extendedDates.length - visibleDaysCount, visibleStartIndex + 1))}
             disabled={!canGoForward}
           >
             <ChevronRight className="w-5 h-5" />
@@ -435,7 +462,7 @@ export const VisualScheduleCalendar = ({
               key={count}
               onClick={() => {
                 setVisibleDaysCount(count);
-                setVisibleStartIndex(Math.min(visibleStartIndex, Math.max(0, eventDates.length - count)));
+                setVisibleStartIndex(Math.min(visibleStartIndex, Math.max(0, extendedDates.length - count)));
               }}
               className={cn(
                 "px-3 py-1.5 text-sm transition-colors",

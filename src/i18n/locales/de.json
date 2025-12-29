@@ -751,6 +751,21 @@
     "sendViaWhatsApp": "Via WhatsApp senden",
     "surveyLink": "Umfrage-Link",
     "accessCode": "Zugangscode",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "categories": {
+      "before": "Vor dem Event",
+      "planning": "Planung",
+      "confirmed": "Bestätigt",
+      "after": "Nach dem Event"
+    },
+    "placeholders": {
+      "dateNotSet": "[Datum noch nicht festgelegt]",
+      "deadlineNotSet": "[Keine Deadline]",
+      "destination": "Zielort einfügen",
+      "meetingPoint": "Treffpunkt einfügen",
+      "meetingTime": "Uhrzeit einfügen"
+    },
     "proTip": {
       "title": "Pro-Tipp",
       "description": "Kopiere die Nachrichten und teile sie direkt via WhatsApp oder andere Messenger für beste Ergebnisse."
@@ -761,6 +776,11 @@
         "description": "Erste Einladung an alle Teilnehmer",
         "template": "Hey Leute! 🎉\n\nEs ist soweit - wir planen den JGA für {{honoree}}! 🥳\n\nDamit wir das perfekte Event organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{surveyLink}}\n\n🔑 Zugangscode: {{accessCode}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Reiseziel-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 🚀\n\nBei Fragen meldet euch!\n\nLG 🙌"
       },
+      "welcome": {
+        "title": "Willkommen",
+        "description": "Begrüßung für neue Teilnehmer",
+        "template": "Willkommen im Team! 🙌\n\nSchön, dass du bei {{honoree}}s JGA dabei bist!\n\nHier nochmal die wichtigsten Infos:\n\n📋 Umfrage: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nFalls du noch nicht geantwortet hast, bitte schnell nachholen!\n\nBei Fragen melde dich jederzeit. Wir freuen uns auf ein episches Event! 🚀"
+      },
       "reminder": {
         "title": "Erinnerung",
         "description": "Sanfte Erinnerung für ausstehende Antworten",
@@ -769,7 +789,7 @@
       "deadline": {
         "title": "Deadline-Warnung",
         "description": "Letzte Chance vor Umfrage-Schluss",
-        "template": "⚠️ LETZTE CHANCE! ⚠️\n\nDie Umfrage für {{honoree}}s JGA schließt {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWer nicht antwortet, kann bei der Planung nicht berücksichtigt werden!\n\nBitte jetzt ausfüllen! ⏰"
+        "template": "⚠️ LETZTE CHANCE! ⚠️\n\nDie Umfrage für {{honoree}}s JGA schließt am {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWer nicht antwortet, kann bei der Planung nicht berücksichtigt werden!\n\nBitte jetzt ausfüllen! ⏰"
       },
       "dateConfirmed": {
         "title": "Termin steht fest!",
@@ -781,10 +801,25 @@
         "description": "Kosten und Zahlungsinfos",
         "template": "💰 BUDGET-UPDATE 💰\n\nHier die geschätzten Kosten für {{honoree}}s JGA:\n\n📊 Geschätzte Kosten pro Person: {{budgetPerPerson}}€\n\nDas beinhaltet:\n• [Aktivität 1]\n• [Aktivität 2]\n• [Unterkunft/Transport]\n\nBitte überweist {{depositAmount}}€ Anzahlung bis {{depositDeadline}}.\n\nKontodaten:\n[IBAN einfügen]\n\nFragen zum Budget? Meldet euch!"
       },
+      "locationShare": {
+        "title": "Treffpunkt",
+        "description": "Treffpunkt und Adresse teilen",
+        "template": "📍 TREFFPUNKT für {{honoree}}s JGA 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Link einfügen]\n\nBitte seid pünktlich! Bei Verspätung schreibt kurz in die Gruppe.\n\nBis bald! 🚗"
+      },
+      "finalDetails": {
+        "title": "Finale Details",
+        "description": "Letzte Infos vor dem Event",
+        "template": "🎊 ES IST SOWEIT! 🎊\n\n{{honoree}}s JGA steht vor der Tür!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ WICHTIG:\n• Seid pünktlich am Treffpunkt\n• Handy geladen\n• Gute Laune mitbringen! 😄\n\n🤫 GEHEIMHALTUNG:\n{{honoree}} darf NICHTS erfahren!\n\nBei Fragen: Anrufen, NICHT in die Gruppe schreiben!\n\nFreut euch auf ein unvergessliches Event! 🔥"
+      },
       "packingList": {
         "title": "Packliste",
         "description": "Was alle mitbringen sollen",
-        "template": "🎒 PACKLISTE für {{honoree}}s JGA 🎒\n\n📅 {{eventDate}}\n📍 [Ziel]\n\n✅ MUST-HAVES:\n• Personalausweis\n• Bargeld (ca. {{cashAmount}}€)\n• [Spezielle Kleidung]\n• Gute Laune! 😄\n\n👕 DRESSCODE:\n[Dresscode hier einfügen]\n\n❌ NICHT VERGESSEN:\n• [Wichtiger Gegenstand]\n• [Noch was Wichtiges]\n\nFragen? Meldet euch!\n\nFreut euch auf ein geniales Event! 🚀"
+        "template": "🎒 PACKLISTE für {{honoree}}s JGA 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Personalausweis\n• Bargeld (ca. {{cashAmount}}€)\n• [Spezielle Kleidung]\n• Gute Laune! 😄\n\n👕 DRESSCODE:\n[Dresscode hier einfügen]\n\n❌ NICHT VERGESSEN:\n• [Wichtiger Gegenstand]\n• [Noch was Wichtiges]\n\nFragen? Meldet euch!\n\nFreut euch auf ein geniales Event! 🚀"
+      },
+      "thankYou": {
+        "title": "Dankeschön",
+        "description": "Danke nach dem Event",
+        "template": "🙏 DANKE AN ALLE! 🙏\n\n{{honoree}}s JGA war ein voller Erfolg! 🎉\n\nDanke an jeden Einzelnen von euch für:\n• Die tolle Stimmung\n• Eure Unterstützung bei der Planung\n• Die unvergesslichen Momente\n\n📸 Fotos/Videos bitte in der Gruppe teilen!\n\n💰 Kostenabrechnung folgt in den nächsten Tagen.\n\nEs war mir eine Ehre, das mit euch zu organisieren! 🙌\n\nBis zum nächsten Abenteuer! 🚀"
       }
     },
     "quickActions": {

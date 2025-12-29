@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles } from "lucide-react";
+import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
-import type { EventData } from "@/hooks/useEvent";
+import { Badge } from "@/components/ui/badge";
+import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface MessagesTabProps {
   event: EventData;
   slug: string;
+  participants?: Participant[];
+  responseCount?: number;
 }
 
 interface MessageTemplate {
@@ -17,15 +22,30 @@ interface MessageTemplate {
   titleKey: string;
   descriptionKey: string;
   templateKey: string;
+  category: "before" | "planning" | "confirmed" | "after";
 }
 
+const localeMap: Record<string, Locale> = {
+  de, en: enUS, es, fr, it, nl, pt, pl, tr, ar,
+};
+
 const TEMPLATE_IDS: MessageTemplate[] = [
+  // Before Event - Initial Phase
   {
     id: "kickoff",
     emoji: "🎉",
     titleKey: "messages.templates.kickoff.title",
     descriptionKey: "messages.templates.kickoff.description",
     templateKey: "messages.templates.kickoff.template",
+    category: "before",
+  },
+  {
+    id: "welcome",
+    emoji: "👋",
+    titleKey: "messages.templates.welcome.title",
+    descriptionKey: "messages.templates.welcome.description",
+    templateKey: "messages.templates.welcome.template",
+    category: "before",
   },
   {
     id: "reminder",
@@ -33,6 +53,7 @@ const TEMPLATE_IDS: MessageTemplate[] = [
     titleKey: "messages.templates.reminder.title",
     descriptionKey: "messages.templates.reminder.description",
     templateKey: "messages.templates.reminder.template",
+    category: "before",
   },
   {
     id: "deadline",
@@ -40,13 +61,16 @@ const TEMPLATE_IDS: MessageTemplate[] = [
     titleKey: "messages.templates.deadline.title",
     descriptionKey: "messages.templates.deadline.description",
     templateKey: "messages.templates.deadline.template",
+    category: "before",
   },
+  // Planning Phase
   {
     id: "dateConfirmed",
-    emoji: "🔒",
+    emoji: "📅",
     titleKey: "messages.templates.dateConfirmed.title",
     descriptionKey: "messages.templates.dateConfirmed.description",
     templateKey: "messages.templates.dateConfirmed.template",
+    category: "planning",
   },
   {
     id: "budget",
@@ -54,36 +78,89 @@ const TEMPLATE_IDS: MessageTemplate[] = [
     titleKey: "messages.templates.budget.title",
     descriptionKey: "messages.templates.budget.description",
     templateKey: "messages.templates.budget.template",
+    category: "planning",
+  },
+  {
+    id: "locationShare",
+    emoji: "📍",
+    titleKey: "messages.templates.locationShare.title",
+    descriptionKey: "messages.templates.locationShare.description",
+    templateKey: "messages.templates.locationShare.template",
+    category: "planning",
+  },
+  // Confirmed Phase
+  {
+    id: "finalDetails",
+    emoji: "✅",
+    titleKey: "messages.templates.finalDetails.title",
+    descriptionKey: "messages.templates.finalDetails.description",
+    templateKey: "messages.templates.finalDetails.template",
+    category: "confirmed",
   },
   {
     id: "packingList",
-    emoji: "🧳",
+    emoji: "🎒",
     titleKey: "messages.templates.packingList.title",
     descriptionKey: "messages.templates.packingList.description",
     templateKey: "messages.templates.packingList.template",
+    category: "confirmed",
+  },
+  // After Event
+  {
+    id: "thankYou",
+    emoji: "🙏",
+    titleKey: "messages.templates.thankYou.title",
+    descriptionKey: "messages.templates.thankYou.description",
+    templateKey: "messages.templates.thankYou.template",
+    category: "after",
   },
 ];
 
-export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
-  const { t } = useTranslation();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+const CATEGORY_INFO: Record<string, { labelKey: string; color: string }> = {
+  before: { labelKey: "messages.categories.before", color: "bg-blue-500/20 text-blue-400" },
+  planning: { labelKey: "messages.categories.planning", color: "bg-amber-500/20 text-amber-400" },
+  confirmed: { labelKey: "messages.categories.confirmed", color: "bg-green-500/20 text-green-400" },
+  after: { labelKey: "messages.categories.after", color: "bg-purple-500/20 text-purple-400" },
+};
 
+export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 }: MessagesTabProps) => {
+  const { t, i18n } = useTranslation();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const currentLocale = localeMap[i18n.language] || de;
   const surveyLink = `${window.location.origin}/e/${slug}`;
   const accessCode = event.access_code || "STAG2025";
+  const totalCount = participants.length;
+
+  // Format event date if available
+  const formattedEventDate = event.event_date 
+    ? format(new Date(event.event_date), "EEEE, d. MMMM yyyy", { locale: currentLocale })
+    : t('messages.placeholders.dateNotSet');
+
+  // Format deadline if available
+  const formattedDeadline = event.survey_deadline
+    ? format(new Date(event.survey_deadline), "d. MMMM yyyy", { locale: currentLocale })
+    : t('messages.placeholders.deadlineNotSet');
 
   const getTemplateText = (templateKey: string) => {
     return t(templateKey, {
       honoree: event.honoree_name,
       surveyLink,
       accessCode,
-      eventDate: event.event_date || "[DATE]",
-      responseCount: "X",
-      totalCount: "Y",
-      deadline: "[DEADLINE]",
-      budgetPerPerson: "[AMOUNT]",
-      depositAmount: "[DEPOSIT]",
-      depositDeadline: "[DATE]",
-      cashAmount: "[AMOUNT]",
+      eventDate: formattedEventDate,
+      responseCount: responseCount.toString(),
+      totalCount: totalCount.toString(),
+      deadline: formattedDeadline,
+      budgetPerPerson: "XXX",
+      depositAmount: "XX",
+      depositDeadline: formattedDeadline,
+      cashAmount: "XXX",
+      eventName: event.name,
+      destination: "[" + t('messages.placeholders.destination') + "]",
+      meetingPoint: "[" + t('messages.placeholders.meetingPoint') + "]",
+      meetingTime: "[" + t('messages.placeholders.meetingTime') + "]",
     });
   };
 
@@ -105,6 +182,16 @@ export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, "_blank");
   };
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  const filteredTemplates = selectedCategory 
+    ? TEMPLATE_IDS.filter(t => t.category === selectedCategory)
+    : TEMPLATE_IDS;
+
+  const categories = ["before", "planning", "confirmed", "after"];
 
   return (
     <div className="space-y-6">
@@ -134,10 +221,33 @@ export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
         </div>
       </GlassCard>
 
+      {/* Category Filter */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={selectedCategory === null ? "default" : "outline"}
+          size="sm"
+          onClick={() => setSelectedCategory(null)}
+        >
+          {t('common.all')}
+        </Button>
+        {categories.map((cat) => (
+          <Button
+            key={cat}
+            variant={selectedCategory === cat ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSelectedCategory(cat)}
+            className={selectedCategory === cat ? "" : CATEGORY_INFO[cat].color}
+          >
+            {t(CATEGORY_INFO[cat].labelKey)}
+          </Button>
+        ))}
+      </div>
+
       {/* Templates */}
       <div className="space-y-4">
-        {TEMPLATE_IDS.map((template) => {
+        {filteredTemplates.map((template) => {
           const templateText = getTemplateText(template.templateKey);
+          const isExpanded = expandedId === template.id;
           
           return (
             <GlassCard
@@ -149,8 +259,13 @@ export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
                   {template.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-bold">{t(template.titleKey)}</h4>
+                  <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold">{t(template.titleKey)}</h4>
+                      <Badge variant="secondary" className={CATEGORY_INFO[template.category].color}>
+                        {t(CATEGORY_INFO[template.category].labelKey)}
+                      </Badge>
+                    </div>
                     <div className="flex gap-2">
                       <Button
                         variant="ghost"
@@ -179,10 +294,28 @@ export const MessagesTab = ({ event, slug }: MessagesTabProps) => {
                   </p>
                   
                   {/* Preview */}
-                  <div className="p-3 rounded-lg bg-muted/30 border border-border">
+                  <div 
+                    className="p-3 rounded-lg bg-muted/30 border border-border cursor-pointer"
+                    onClick={() => toggleExpand(template.id)}
+                  >
                     <pre className="text-xs whitespace-pre-wrap font-sans text-muted-foreground">
-                      {templateText.slice(0, 180)}...
+                      {isExpanded ? templateText : templateText.slice(0, 200) + (templateText.length > 200 ? "..." : "")}
                     </pre>
+                    {templateText.length > 200 && (
+                      <div className="flex items-center justify-center mt-2 text-xs text-primary">
+                        {isExpanded ? (
+                          <>
+                            <ChevronUp className="w-4 h-4 mr-1" />
+                            {t('messages.showLess')}
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-4 h-4 mr-1" />
+                            {t('messages.showMore')}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
