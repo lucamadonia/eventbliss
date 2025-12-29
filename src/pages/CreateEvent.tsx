@@ -24,6 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { TemplateSelector } from "@/components/create-event/TemplateSelector";
+import { type EventTemplate } from "@/lib/event-templates";
 
 interface EventFormData {
   event_type: string;
@@ -36,6 +38,8 @@ interface EventFormData {
   participants: string[];
   no_gos: string[];
   focus_points: string[];
+  template_id?: string;
+  custom_template?: object;
 }
 
 const eventTypes = [
@@ -82,11 +86,14 @@ const CreateEvent = () => {
     participants: [],
     no_gos: defaultNoGos,
     focus_points: defaultFocusPoints,
+    template_id: undefined,
+    custom_template: undefined,
   });
 
   const [participantInput, setParticipantInput] = useState("");
 
-  const totalSteps = 4;
+  // Total steps: 1=Type, 2=Template, 3=Details, 4=Participants, 5=Summary, 6=Success
+  const totalSteps = 5;
 
   const updateFormData = (field: keyof EventFormData, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -111,14 +118,43 @@ const CreateEvent = () => {
       case 1:
         return !!formData.event_type;
       case 2:
-        return !!formData.name && !!formData.honoree_name && !!formData.organizer_name;
-      case 3:
+        // Template step - always can proceed (template is optional)
         return true;
+      case 3:
+        return !!formData.name && !!formData.honoree_name && !!formData.organizer_name;
       case 4:
+        return true;
+      case 5:
         return true;
       default:
         return false;
     }
+  };
+
+  const handleSelectTemplate = (template: EventTemplate | null, customConfig?: object) => {
+    if (template) {
+      setFormData((prev) => ({ 
+        ...prev, 
+        template_id: template.id,
+        custom_template: undefined,
+      }));
+    } else if (customConfig) {
+      setFormData((prev) => ({ 
+        ...prev, 
+        template_id: undefined,
+        custom_template: customConfig,
+      }));
+    }
+    setStep(3);
+  };
+
+  const handleSkipTemplate = () => {
+    setFormData((prev) => ({ 
+      ...prev, 
+      template_id: 'flexible',
+      custom_template: undefined,
+    }));
+    setStep(3);
   };
 
   const handleSubmit = async () => {
@@ -136,6 +172,8 @@ const CreateEvent = () => {
           participants: formData.participants.map((name) => ({ name })),
           no_gos: formData.no_gos,
           focus_points: formData.focus_points,
+          template_id: formData.template_id,
+          custom_template: formData.custom_template,
         },
       });
 
@@ -147,7 +185,7 @@ const CreateEvent = () => {
           access_code: data.event.access_code,
           share_link: data.share_link || `${window.location.origin}/e/${data.event.slug}`,
         });
-        setStep(5);
+        setStep(6);
         toast({
           title: t('createEvent.success.title'),
           description: t('createEvent.success.description'),
@@ -212,7 +250,11 @@ const CreateEvent = () => {
                       ? "ring-2 ring-primary bg-primary/10"
                       : ""
                   }`}
-                  onClick={() => updateFormData("event_type", type.value)}
+                  onClick={() => {
+                    updateFormData("event_type", type.value);
+                    // Auto-advance to template selection
+                    setTimeout(() => setStep(2), 300);
+                  }}
                 >
                   <div className="text-center">
                     <span className="text-4xl mb-3 block">{type.emoji}</span>
@@ -225,6 +267,15 @@ const CreateEvent = () => {
         );
 
       case 2:
+        return (
+          <TemplateSelector
+            eventType={formData.event_type}
+            onSelectTemplate={handleSelectTemplate}
+            onSkip={handleSkipTemplate}
+          />
+        );
+
+      case 3:
         return (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -301,7 +352,7 @@ const CreateEvent = () => {
           </motion.div>
         );
 
-      case 3:
+      case 5:
         return (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -414,7 +465,7 @@ const CreateEvent = () => {
           </motion.div>
         );
 
-      case 5:
+      case 6:
         return (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -494,14 +545,14 @@ const CreateEvent = () => {
         {/* Header */}
         <header className="p-4 flex items-center justify-between">
           <button
-            onClick={() => (step > 1 && step < 5 ? setStep(step - 1) : navigate("/"))}
+            onClick={() => (step > 1 && step < 6 ? setStep(step - 1) : navigate("/"))}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>{step > 1 && step < 5 ? t('common.back') : t('common.home')}</span>
+            <span>{step > 1 && step < 6 ? t('common.back') : t('common.home')}</span>
           </button>
 
-          {step < 5 && (
+          {step < 6 && (
             <div className="flex items-center gap-2">
               {Array.from({ length: totalSteps }).map((_, i) => (
                 <div
@@ -522,14 +573,14 @@ const CreateEvent = () => {
           <div className="w-full max-w-lg">
             <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
 
-            {/* Navigation */}
-            {step < 5 && (
+            {/* Navigation - hide for step 2 (template selector has its own nav) */}
+            {step < 6 && step !== 2 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-end mt-8"
               >
-                {step < 4 ? (
+                {step < 5 ? (
                   <GradientButton
                     onClick={() => setStep(step + 1)}
                     disabled={!canProceed()}
