@@ -30,7 +30,7 @@ export function LandingFooter() {
               <img
                 src={eventBlissLogo}
                 alt="EventBliss"
-                className="h-10 w-auto"
+                className="h-32 md:h-40 lg:h-48 w-auto"
               />
             </a>
             <p className="text-muted-foreground mb-6 max-w-md">
