@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { type EventSettings } from "@/lib/survey-config";
 
 export interface EventData {
   id: string;
@@ -14,13 +15,7 @@ export interface EventData {
   timezone: string;
   theme: Record<string, unknown>;
   access_code: string | null;
-  settings: {
-    date_blocks?: Record<string, string>;
-    no_gos?: string[];
-    focus_points?: string[];
-    form_locked?: boolean;
-    locked_block?: string;
-  };
+  settings: Partial<EventSettings> | null;
   survey_deadline: string | null;
   is_form_locked: boolean;
   locked_block: string | null;
