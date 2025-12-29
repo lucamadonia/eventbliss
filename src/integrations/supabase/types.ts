@@ -53,6 +53,285 @@ export type Database = {
           },
         ]
       }
+      affiliate_commissions: {
+        Row: {
+          affiliate_id: string
+          commission_amount: number
+          commission_rate: number
+          commission_type: Database["public"]["Enums"]["commission_type"]
+          created_at: string
+          currency: string | null
+          customer_email: string | null
+          id: string
+          notes: string | null
+          order_amount: number
+          payout_id: string | null
+          redemption_id: string | null
+          status: Database["public"]["Enums"]["commission_status"] | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          subscription_id: string | null
+          updated_at: string
+          voucher_id: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          commission_amount: number
+          commission_rate: number
+          commission_type: Database["public"]["Enums"]["commission_type"]
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          id?: string
+          notes?: string | null
+          order_amount: number
+          payout_id?: string | null
+          redemption_id?: string | null
+          status?: Database["public"]["Enums"]["commission_status"] | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subscription_id?: string | null
+          updated_at?: string
+          voucher_id?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          commission_amount?: number
+          commission_rate?: number
+          commission_type?: Database["public"]["Enums"]["commission_type"]
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          id?: string
+          notes?: string | null
+          order_amount?: number
+          payout_id?: string | null
+          redemption_id?: string | null
+          status?: Database["public"]["Enums"]["commission_status"] | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subscription_id?: string | null
+          updated_at?: string
+          voucher_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_payout_id_fkey"
+            columns: ["payout_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_payouts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_redemption_id_fkey"
+            columns: ["redemption_id"]
+            isOneToOne: false
+            referencedRelation: "voucher_redemptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_payouts: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          commission_count: number | null
+          created_at: string
+          currency: string | null
+          id: string
+          notes: string | null
+          payout_method: Database["public"]["Enums"]["payout_method"]
+          payout_reference: string | null
+          period_end: string | null
+          period_start: string | null
+          processed_at: string | null
+          processed_by: string | null
+          status: Database["public"]["Enums"]["payout_status"] | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount: number
+          commission_count?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          notes?: string | null
+          payout_method: Database["public"]["Enums"]["payout_method"]
+          payout_reference?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: Database["public"]["Enums"]["payout_status"] | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          commission_count?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          notes?: string | null
+          payout_method?: Database["public"]["Enums"]["payout_method"]
+          payout_reference?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: Database["public"]["Enums"]["payout_status"] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payouts_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_vouchers: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          custom_commission_rate: number | null
+          custom_commission_type:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          id: string
+          voucher_id: string
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          custom_commission_rate?: number | null
+          custom_commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          id?: string
+          voucher_id: string
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          custom_commission_rate?: number | null
+          custom_commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          id?: string
+          voucher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_vouchers_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_vouchers_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliates: {
+        Row: {
+          commission_rate: number | null
+          commission_type: Database["public"]["Enums"]["commission_type"] | null
+          company_name: string | null
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          notes: string | null
+          payout_details: Json | null
+          payout_method: Database["public"]["Enums"]["payout_method"] | null
+          pending_balance: number | null
+          phone: string | null
+          status: Database["public"]["Enums"]["affiliate_status"] | null
+          tax_id: string | null
+          tier: Database["public"]["Enums"]["affiliate_tier"] | null
+          total_earnings: number | null
+          updated_at: string
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          commission_rate?: number | null
+          commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          company_name?: string | null
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          notes?: string | null
+          payout_details?: Json | null
+          payout_method?: Database["public"]["Enums"]["payout_method"] | null
+          pending_balance?: number | null
+          phone?: string | null
+          status?: Database["public"]["Enums"]["affiliate_status"] | null
+          tax_id?: string | null
+          tier?: Database["public"]["Enums"]["affiliate_tier"] | null
+          total_earnings?: number | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          commission_rate?: number | null
+          commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          company_name?: string | null
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          notes?: string | null
+          payout_details?: Json | null
+          payout_method?: Database["public"]["Enums"]["payout_method"] | null
+          pending_balance?: number | null
+          phone?: string | null
+          status?: Database["public"]["Enums"]["affiliate_status"] | null
+          tax_id?: string | null
+          tier?: Database["public"]["Enums"]["affiliate_tier"] | null
+          total_earnings?: number | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           access_code: string | null
@@ -751,6 +1030,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_affiliate_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -758,6 +1038,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_affiliate: { Args: { _user_id: string }; Returns: boolean }
       is_event_organizer: {
         Args: { _event_id: string; _user_id: string }
         Returns: boolean
@@ -769,7 +1050,11 @@ export type Database = {
       is_premium: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      affiliate_status: "pending" | "active" | "suspended" | "terminated"
+      affiliate_tier: "bronze" | "silver" | "gold" | "platinum"
       app_role: "admin" | "organizer" | "member"
+      commission_status: "pending" | "approved" | "paid" | "cancelled"
+      commission_type: "percentage" | "fixed"
       event_status: "draft" | "planning" | "active" | "completed" | "cancelled"
       event_type: "bachelor" | "bachelorette" | "birthday" | "trip" | "other"
       expense_category:
@@ -782,6 +1067,8 @@ export type Database = {
         | "other"
       participant_role: "organizer" | "guest"
       participant_status: "invited" | "confirmed" | "declined" | "maybe"
+      payout_method: "bank_transfer" | "paypal" | "stripe"
+      payout_status: "pending" | "processing" | "completed" | "failed"
       split_type: "equal" | "custom" | "percentage"
     }
     CompositeTypes: {
@@ -910,7 +1197,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      affiliate_status: ["pending", "active", "suspended", "terminated"],
+      affiliate_tier: ["bronze", "silver", "gold", "platinum"],
       app_role: ["admin", "organizer", "member"],
+      commission_status: ["pending", "approved", "paid", "cancelled"],
+      commission_type: ["percentage", "fixed"],
       event_status: ["draft", "planning", "active", "completed", "cancelled"],
       event_type: ["bachelor", "bachelorette", "birthday", "trip", "other"],
       expense_category: [
@@ -924,6 +1215,8 @@ export const Constants = {
       ],
       participant_role: ["organizer", "guest"],
       participant_status: ["invited", "confirmed", "declined", "maybe"],
+      payout_method: ["bank_transfer", "paypal", "stripe"],
+      payout_status: ["pending", "processing", "completed", "failed"],
       split_type: ["equal", "custom", "percentage"],
     },
   },
