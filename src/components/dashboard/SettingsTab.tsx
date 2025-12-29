@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, Calendar, Lock, Unlock, Save, Clock, Users, Loader2 } from "lucide-react";
+import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TeamInviteManager } from "./TeamInviteManager";
 import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface SettingsTabProps {
@@ -205,32 +206,13 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         )}
       </GlassCard>
 
-      {/* Participants Management */}
-      <GlassCard className="p-6">
-        <h4 className="font-bold mb-4 flex items-center gap-2">
-          <Users className="w-5 h-5" />
-          Teilnehmer ({participants.length})
-        </h4>
-        
-        <div className="space-y-2">
-          {participants.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-background/30"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
-                  {p.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="font-medium">{p.name}</span>
-              </div>
-              <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                {p.role === "organizer" ? "Organisator" : "Gast"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </GlassCard>
+      {/* Team Invite Manager */}
+      <TeamInviteManager
+        eventSlug={event.id}
+        eventId={event.id}
+        participants={participants as any}
+        onUpdate={onUpdate}
+      />
 
       {/* Save Button */}
       <GradientButton
