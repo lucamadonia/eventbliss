@@ -9,6 +9,12 @@ import {
   Loader2,
   ClipboardList,
   Filter,
+  Download,
+  FileText,
+  CalendarDays,
+  ChevronDown,
+  LogIn,
+  CalendarPlus,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -17,7 +23,24 @@ import { ActivityForm } from "./ActivityForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CATEGORY_CONFIG, CATEGORY_KEYS, type ActivityCategory } from "@/lib/category-config";
+import { downloadICalFile } from "@/lib/ical-generator";
+import { openPrintableAgenda } from "@/lib/pdf-export";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Participant {
   id: string;
@@ -64,6 +87,7 @@ interface PlannerTabProps {
     id: string;
     name: string;
     event_date: string | null;
+    currency?: string;
   };
   participants: Participant[];
 }
@@ -81,8 +105,21 @@ const localeMap: Record<string, Locale> = {
   ar: ar,
 };
 
+// Map activity category to expense category
+const categoryToExpenseCategory: Record<string, string> = {
+  activity: 'activities',
+  food: 'food',
+  transport: 'transport',
+  accommodation: 'accommodation',
+  party: 'drinks',
+  sightseeing: 'activities',
+  relaxation: 'activities',
+  other: 'other',
+};
+
 export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [comments, setComments] = useState<Record<string, Comment[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -90,37 +127,75 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ActivityCategory | 'all'>('all');
+  const [customDates, setCustomDates] = useState<string[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
 
   const currentLocale = localeMap[i18n.language] || de;
 
-  // Generate dates based on event date or use a default range
+  // Check authentication and participant status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+      
+      if (user) {
+        // Find participant linked to this user
+        const participant = participants.find(p => p.id && participants.some(part => part.id));
+        if (participant) {
+          setCurrentParticipant(participant);
+        }
+      }
+    };
+    
+    checkAuth();
+  }, [participants]);
+
+  // Generate dates based on event date, custom dates, or activities
   const getEventDates = () => {
+    const allDates = new Set<string>();
+    
+    // Add event date ± 1 day if available
     if (event.event_date) {
       const baseDate = parseISO(event.event_date);
       if (isValid(baseDate)) {
-        return [
-          addDays(baseDate, -1),
-          baseDate,
-          addDays(baseDate, 1),
-        ].map(d => format(d, "yyyy-MM-dd"));
+        allDates.add(format(addDays(baseDate, -1), "yyyy-MM-dd"));
+        allDates.add(format(baseDate, "yyyy-MM-dd"));
+        allDates.add(format(addDays(baseDate, 1), "yyyy-MM-dd"));
       }
     }
-    // Default to today and next 2 days
-    const today = new Date();
-    return [
-      today,
-      addDays(today, 1),
-      addDays(today, 2),
-    ].map(d => format(d, "yyyy-MM-dd"));
+    
+    // Add dates from existing activities
+    activities.forEach(a => {
+      if (a.day_date) {
+        allDates.add(a.day_date);
+      }
+    });
+    
+    // Add custom dates
+    customDates.forEach(d => allDates.add(d));
+    
+    // If no dates at all, use today
+    if (allDates.size === 0) {
+      const today = new Date();
+      allDates.add(format(today, "yyyy-MM-dd"));
+    }
+    
+    return Array.from(allDates).sort();
   };
 
   const eventDates = getEventDates();
 
   useEffect(() => {
     if (!selectedDate && eventDates.length > 0) {
-      setSelectedDate(eventDates[1] || eventDates[0]);
+      // Prefer event date, then first date
+      if (event.event_date && eventDates.includes(event.event_date)) {
+        setSelectedDate(event.event_date);
+      } else {
+        setSelectedDate(eventDates[0]);
+      }
     }
-  }, [eventDates]);
+  }, [eventDates, event.event_date]);
 
   const fetchActivities = async () => {
     setIsLoading(true);
@@ -177,7 +252,20 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   }, [event.id]);
 
   const handleSaveActivity = async (activityData: Partial<Activity>) => {
+    // Check authentication before saving
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: t('planner.authRequired'),
+        description: t('planner.loginToAdd'),
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      let savedActivityId: string | null = null;
+      
       if (editingActivity) {
         const { error } = await supabase
           .from("schedule_activities")
@@ -185,26 +273,56 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
           .eq("id", editingActivity.id);
 
         if (error) throw error;
+        savedActivityId = editingActivity.id;
         toast({ title: t('common.success'), description: t('planner.activityUpdated') });
       } else {
-        const { error } = await supabase
+        const { data: insertedData, error } = await supabase
           .from("schedule_activities")
-          .insert([{ ...activityData, event_id: event.id } as any]);
+          .insert([{ ...activityData, event_id: event.id } as any])
+          .select()
+          .single();
 
         if (error) throw error;
+        savedActivityId = insertedData?.id;
         toast({ title: t('common.success'), description: t('planner.activityCreated') });
+        
+        // Sync cost to expenses if cost is set
+        if (activityData.estimated_cost && activityData.estimated_cost > 0 && savedActivityId) {
+          const expenseCategory = categoryToExpenseCategory[activityData.category || 'other'] || 'other';
+          
+          await supabase
+            .from("expenses")
+            .insert([{
+              event_id: event.id,
+              description: `${t('planner.activity')}: ${activityData.title}`,
+              amount: activityData.estimated_cost,
+              category: expenseCategory as any,
+              currency: activityData.currency || event.currency || 'EUR',
+              expense_date: activityData.day_date,
+            }]);
+        }
       }
 
       setShowForm(false);
       setEditingActivity(null);
       fetchActivities();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving activity:", error);
-      toast({
-        title: t('common.error'),
-        description: t('planner.saveError'),
-        variant: "destructive",
-      });
+      
+      // Check if it's an RLS error
+      if (error.code === '42501' || error.message?.includes('row-level security')) {
+        toast({
+          title: t('planner.authRequired'),
+          description: t('planner.loginToAdd'),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: t('common.error'),
+          description: t('planner.saveError'),
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -250,6 +368,27 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
     }
   };
 
+  const handleAddDate = (date: Date | undefined) => {
+    if (date) {
+      const dateStr = format(date, "yyyy-MM-dd");
+      if (!customDates.includes(dateStr) && !eventDates.includes(dateStr)) {
+        setCustomDates([...customDates, dateStr]);
+        setSelectedDate(dateStr);
+      } else {
+        setSelectedDate(dateStr);
+      }
+    }
+  };
+
+  const handleExportIcal = () => {
+    downloadICalFile(activities, { name: event.name, id: event.id });
+    toast({ title: t('common.success'), description: t('planner.export.icalDownloaded') });
+  };
+
+  const handleExportPdf = () => {
+    openPrintableAgenda(activities, { name: event.name, id: event.id, event_date: event.event_date }, i18n.language);
+  };
+
   const activitiesForDate = selectedDate
     ? activities.filter(a => {
         const dateMatch = a.day_date === selectedDate;
@@ -274,6 +413,20 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
     );
   }
 
+  // Show auth warning if not authenticated
+  if (isAuthenticated === false) {
+    return (
+      <GlassCard className="p-8 text-center">
+        <LogIn className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="font-bold text-lg mb-2">{t('planner.authRequired')}</h3>
+        <p className="text-muted-foreground mb-4">{t('planner.loginToAdd')}</p>
+        <GradientButton onClick={() => navigate('/auth')}>
+          {t('auth.login')}
+        </GradientButton>
+      </GlassCard>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -285,15 +438,38 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
           </h2>
           <p className="text-muted-foreground">{t('planner.subtitle')}</p>
         </div>
-        <GradientButton
-          onClick={() => {
-            setEditingActivity(null);
-            setShowForm(true);
-          }}
-          icon={<Plus className="w-4 h-4" />}
-        >
-          {t('planner.addActivity')}
-        </GradientButton>
+        <div className="flex gap-2 flex-wrap">
+          {/* Export Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                {t('planner.export.title')}
+                <ChevronDown className="w-4 h-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportPdf}>
+                <FileText className="w-4 h-4 mr-2" />
+                {t('planner.export.pdf')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportIcal}>
+                <CalendarDays className="w-4 h-4 mr-2" />
+                {t('planner.export.ical')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <GradientButton
+            onClick={() => {
+              setEditingActivity(null);
+              setShowForm(true);
+            }}
+            icon={<Plus className="w-4 h-4" />}
+          >
+            {t('planner.addActivity')}
+          </GradientButton>
+        </div>
       </div>
 
       {/* Category Filter */}
@@ -326,12 +502,13 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         })}
       </div>
 
-      {/* Date Navigation */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Date Navigation with Add Date Button */}
+      <div className="flex gap-2 overflow-x-auto pb-2 items-center">
         {eventDates.map((date) => {
           const dateObj = parseISO(date);
           const isSelected = date === selectedDate;
           const activityCount = activities.filter(a => a.day_date === date).length;
+          const isEventDate = date === event.event_date;
 
           return (
             <button
@@ -341,10 +518,11 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
                 isSelected
                   ? "bg-primary/20 border-primary text-foreground"
                   : "border-border/50 hover:border-primary/50"
-              }`}
+              } ${isEventDate ? "ring-2 ring-primary/30" : ""}`}
             >
-              <div className="text-sm font-medium">
+              <div className="text-sm font-medium flex items-center gap-1">
                 {format(dateObj, "EEEE", { locale: currentLocale })}
+                {isEventDate && <span className="text-primary">★</span>}
               </div>
               <div className="text-lg font-bold">
                 {format(dateObj, "d. MMM", { locale: currentLocale })}
@@ -357,7 +535,26 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
             </button>
           );
         })}
+        
+        {/* Add Date Button */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="flex-shrink-0 px-4 py-3 rounded-xl border border-dashed border-border/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground">
+              <CalendarPlus className="w-5 h-5" />
+              <span className="text-sm">{t('planner.addDate')}</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarComponent
+              mode="single"
+              onSelect={handleAddDate}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
+
       {/* Activities for Selected Date */}
       <AnimatePresence mode="wait">
         {selectedDate && (
