@@ -822,6 +822,24 @@
         "template": "🙏 DANKE AN ALLE! 🙏\n\n{{honoree}}s JGA war ein voller Erfolg! 🎉\n\nDanke an jeden Einzelnen von euch für:\n• Die tolle Stimmung\n• Eure Unterstützung bei der Planung\n• Die unvergesslichen Momente\n\n📸 Fotos/Videos bitte in der Gruppe teilen!\n\n💰 Kostenabrechnung folgt in den nächsten Tagen.\n\nEs war mir eine Ehre, das mit euch zu organisieren! 🙌\n\nBis zum nächsten Abenteuer! 🚀"
       }
     },
+    "ai": {
+      "enhance": "Mit KI anpassen",
+      "dialogTitle": "Nachricht mit KI anpassen",
+      "dialogDescription": "Passe die Nachricht mit KI-Unterstützung an deine Bedürfnisse an.",
+      "selectStyle": "Stil auswählen",
+      "casual": "Lockerer",
+      "formal": "Formeller",
+      "shorter": "Kürzer",
+      "detailed": "Mehr Details",
+      "custom": "Eigene Anpassung",
+      "customPrompt": "Eigene Anweisung",
+      "customPlaceholder": "z.B. Füge mehr Emojis hinzu, mache es lustiger...",
+      "originalText": "Original-Text",
+      "generateButton": "Nachricht generieren",
+      "enhancing": "Wird generiert...",
+      "result": "Angepasste Nachricht",
+      "error": "Fehler beim Generieren. Bitte versuche es erneut."
+    },
     "quickActions": {
       "title": "Schnellaktionen",
       "copySurveyLink": "Umfrage-Link kopieren",

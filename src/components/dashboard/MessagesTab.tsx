@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp, Wand2, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -7,6 +7,15 @@ import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/local
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface MessagesTabProps {
@@ -24,6 +33,8 @@ interface MessageTemplate {
   templateKey: string;
   category: "before" | "planning" | "confirmed" | "after";
 }
+
+type EnhancementType = "casual" | "formal" | "shorter" | "detailed" | "custom";
 
 const localeMap: Record<string, Locale> = {
   de, en: enUS, es, fr, it, nl, pt, pl, tr, ar,
@@ -123,11 +134,27 @@ const CATEGORY_INFO: Record<string, { labelKey: string; color: string }> = {
   after: { labelKey: "messages.categories.after", color: "bg-purple-500/20 text-purple-400" },
 };
 
+const ENHANCEMENT_OPTIONS: { type: EnhancementType; labelKey: string; emoji: string }[] = [
+  { type: "casual", labelKey: "messages.ai.casual", emoji: "😊" },
+  { type: "formal", labelKey: "messages.ai.formal", emoji: "👔" },
+  { type: "shorter", labelKey: "messages.ai.shorter", emoji: "✂️" },
+  { type: "detailed", labelKey: "messages.ai.detailed", emoji: "📝" },
+  { type: "custom", labelKey: "messages.ai.custom", emoji: "✨" },
+];
+
 export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 }: MessagesTabProps) => {
   const { t, i18n } = useTranslation();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // AI Enhancement State
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(null);
+  const [enhancementType, setEnhancementType] = useState<EnhancementType>("casual");
+  const [customInstruction, setCustomInstruction] = useState("");
+  const [enhancedText, setEnhancedText] = useState("");
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   const currentLocale = localeMap[i18n.language] || de;
   const surveyLink = `${window.location.origin}/e/${slug}`;
@@ -164,11 +191,10 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
     });
   };
 
-  const handleCopy = async (template: MessageTemplate) => {
+  const handleCopy = async (text: string, templateId?: string) => {
     try {
-      const text = getTemplateText(template.templateKey);
       await navigator.clipboard.writeText(text);
-      setCopiedId(template.id);
+      if (templateId) setCopiedId(templateId);
       toast.success(t('notifications.messageCopied'));
       
       setTimeout(() => setCopiedId(null), 2000);
@@ -185,6 +211,51 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const openAiDialog = (template: MessageTemplate) => {
+    setSelectedTemplate(template);
+    setEnhancedText("");
+    setCustomInstruction("");
+    setEnhancementType("casual");
+    setAiDialogOpen(true);
+  };
+
+  const handleEnhance = async () => {
+    if (!selectedTemplate) return;
+    
+    setIsEnhancing(true);
+    try {
+      const originalText = getTemplateText(selectedTemplate.templateKey);
+      
+      const { data, error } = await supabase.functions.invoke("ai-assistant", {
+        body: {
+          type: "message_enhance",
+          context: {
+            event_type: event.event_type,
+            honoree_name: event.honoree_name,
+            participant_count: totalCount,
+            original_text: originalText,
+            enhancement_type: enhancementType,
+            custom_instruction: enhancementType === "custom" ? customInstruction : undefined,
+            template_type: selectedTemplate.id,
+          },
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data?.success && data?.response) {
+        setEnhancedText(data.response);
+      } else {
+        throw new Error(data?.error || "Unknown error");
+      }
+    } catch (error) {
+      console.error("AI enhancement error:", error);
+      toast.error(t('messages.ai.error'));
+    } finally {
+      setIsEnhancing(false);
+    }
   };
 
   const filteredTemplates = selectedCategory 
@@ -266,11 +337,20 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
                         {t(CATEGORY_INFO[template.category].labelKey)}
                       </Badge>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleCopy(template)}
+                        onClick={() => openAiDialog(template)}
+                        className="text-xs text-primary hover:text-primary"
+                        title={t('messages.ai.enhance')}
+                      >
+                        <Wand2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopy(templateText, template.id)}
                         className="text-xs"
                       >
                         {copiedId === template.id ? (
@@ -373,6 +453,120 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
           </Button>
         </div>
       </GlassCard>
+
+      {/* AI Enhancement Dialog */}
+      <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-primary" />
+              {t('messages.ai.dialogTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('messages.ai.dialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Enhancement Options */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">{t('messages.ai.selectStyle')}</label>
+              <div className="flex flex-wrap gap-2">
+                {ENHANCEMENT_OPTIONS.map((option) => (
+                  <Button
+                    key={option.type}
+                    variant={enhancementType === option.type ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setEnhancementType(option.type)}
+                  >
+                    <span className="mr-1">{option.emoji}</span>
+                    {t(option.labelKey)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Instruction (if custom selected) */}
+            {enhancementType === "custom" && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">{t('messages.ai.customPrompt')}</label>
+                <Textarea
+                  placeholder={t('messages.ai.customPlaceholder')}
+                  value={customInstruction}
+                  onChange={(e) => setCustomInstruction(e.target.value)}
+                  className="min-h-[80px]"
+                />
+              </div>
+            )}
+
+            {/* Original Text Preview */}
+            {selectedTemplate && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">{t('messages.ai.originalText')}</label>
+                <div className="p-3 rounded-lg bg-muted/30 border border-border max-h-[150px] overflow-y-auto">
+                  <pre className="text-xs whitespace-pre-wrap font-sans text-muted-foreground">
+                    {getTemplateText(selectedTemplate.templateKey)}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* Enhance Button */}
+            <Button 
+              onClick={handleEnhance} 
+              disabled={isEnhancing || (enhancementType === "custom" && !customInstruction.trim())}
+              className="w-full"
+            >
+              {isEnhancing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {t('messages.ai.enhancing')}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {t('messages.ai.generateButton')}
+                </>
+              )}
+            </Button>
+
+            {/* Enhanced Result */}
+            {enhancedText && (
+              <div>
+                <label className="text-sm font-medium mb-2 block flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  {t('messages.ai.result')}
+                </label>
+                <div className="p-3 rounded-lg bg-primary/10 border border-primary/30">
+                  <pre className="text-sm whitespace-pre-wrap font-sans">
+                    {enhancedText}
+                  </pre>
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <Button 
+                    onClick={() => handleCopy(enhancedText)}
+                    className="flex-1"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    {t('common.copy')}
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      const encoded = encodeURIComponent(enhancedText);
+                      window.open(`https://wa.me/?text=${encoded}`, "_blank");
+                    }}
+                    className="text-green-400"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
