@@ -51,6 +51,8 @@ interface ActivityFormProps {
   activity: Activity | null;
   participants: Participant[];
   defaultDate: string;
+  defaultStartTime?: string;
+  defaultEndTime?: string;
 }
 
 export const ActivityForm = ({
@@ -60,6 +62,8 @@ export const ActivityForm = ({
   activity,
   participants,
   defaultDate,
+  defaultStartTime,
+  defaultEndTime,
 }: ActivityFormProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Activity>>({
@@ -109,8 +113,8 @@ export const ActivityForm = ({
         title: "",
         description: "",
         day_date: defaultDate,
-        start_time: "",
-        end_time: "",
+        start_time: defaultStartTime || "",
+        end_time: defaultEndTime || "",
         location: "",
         location_url: "",
         contact_name: "",
@@ -125,7 +129,7 @@ export const ActivityForm = ({
         category: "activity",
       });
     }
-  }, [activity, defaultDate, open]);
+  }, [activity, defaultDate, defaultStartTime, defaultEndTime, open]);
 
   const handleChange = (field: keyof Activity, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

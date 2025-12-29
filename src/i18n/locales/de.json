@@ -947,7 +947,10 @@
       "items": "Einträge",
       "legend": "Legende",
       "dragHint": "Ziehe Aktivitäten zum Verschieben",
-      "clickToAdd": "Klicke um neue Aktivität zu erstellen"
+      "clickToAdd": "Klicke um neue Aktivität zu erstellen",
+      "days": "Tage",
+      "endTime": "Ende",
+      "helpText": "Klicke auf einen Zeitslot oder ziehe, um neue Aktivitäten zu erstellen. Ziehe bestehende Aktivitäten zum Verschieben."
     },
     "viewMode": {
       "list": "Liste",

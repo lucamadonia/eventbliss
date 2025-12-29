@@ -26,6 +26,13 @@ export interface EventData {
   locked_block: string | null;
 }
 
+export interface DashboardPermissions {
+  can_view_responses: boolean;
+  can_add_expenses: boolean;
+  can_view_all_expenses: boolean;
+  can_edit_settings: boolean;
+}
+
 export interface Participant {
   id: string;
   name: string;
@@ -33,6 +40,12 @@ export interface Participant {
   role: "organizer" | "guest";
   status: "invited" | "confirmed" | "declined" | "maybe";
   avatar_url: string | null;
+  can_access_dashboard?: boolean;
+  dashboard_permissions?: DashboardPermissions;
+  invite_token?: string;
+  invite_sent_at?: string | null;
+  invite_claimed_at?: string | null;
+  user_id?: string | null;
 }
 
 export interface UseEventResult {
