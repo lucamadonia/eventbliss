@@ -421,6 +421,7 @@ export type Database = {
       }
       schedule_activities: {
         Row: {
+          category: string | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
@@ -444,6 +445,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -467,6 +469,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null

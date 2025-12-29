@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Genel Bakış",
+      "planner": "Planlayıcı",
       "ideas": "Fikirler",
       "form": "Form",
       "schedule": "Program",
       "destination": "Hedef",
       "agencies": "Ajanslar",
+      "ai": "AI Asistan",
       "messages": "Mesajlar",
-      "settings": "Ayarlar",
-      "aiAssistant": "AI Asistan"
+      "settings": "Ayarlar"
     },
     "overview": {
       "title": "Genel Bakış",
@@ -381,5 +382,75 @@
     "minLength": "En az {{count}} karakter gerekli",
     "maxLength": "Maksimum {{count}} karakter izin verilir",
     "passwordMismatch": "Şifreler eşleşmiyor"
+  },
+  "planner": {
+    "title": "Hafta Sonu Planlayıcısı",
+    "subtitle": "Etkinliğiniz için tüm aktiviteleri planlayın",
+    "addActivity": "Aktivite Ekle",
+    "newActivity": "Yeni Aktivite",
+    "editActivity": "Aktiviteyi Düzenle",
+    "createActivity": "Aktivite Oluştur",
+    "activity": "Aktivite",
+    "activities": "Aktiviteler",
+    "noActivities": "Henüz aktivite yok",
+    "noActivitiesHint": "Bu gün için ilk aktiviteyi ekleyin",
+    "addFirst": "İlk Aktiviteyi Ekle",
+    "totalForDay": "Bu gün için tahmini maliyetler",
+    "perPerson": "kişi başı",
+    "deleteConfirm": "Aktivite silinsin mi?",
+    "deleteConfirmDescription": "Bu işlem geri alınamaz.",
+    "comment": "Yorum",
+    "comments": "Yorumlar",
+    "selectParticipant": "Katılımcı seç",
+    "writeComment": "Bir yorum yaz...",
+    "loadError": "Aktiviteler yüklenemedi",
+    "saveError": "Kaydetme hatası",
+    "deleteError": "Silme hatası",
+    "commentError": "Yorum eklenemedi",
+    "activityCreated": "Aktivite oluşturuldu",
+    "activityUpdated": "Aktivite güncellendi",
+    "activityDeleted": "Aktivite silindi",
+    "form": {
+      "title": "Başlık",
+      "titlePlaceholder": "örn. Paintball, Akşam Yemeği, Tekne Turu...",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Aktivitenin kısa açıklaması",
+      "date": "Tarih",
+      "startTime": "Başlangıç Saati",
+      "endTime": "Bitiş Saati",
+      "location": "Konum",
+      "locationPlaceholder": "örn. Paintball Arena İstanbul",
+      "locationUrl": "Google Maps Linki",
+      "responsiblePerson": "Sorumlu Kişi",
+      "selectPerson": "Kişi seç",
+      "contactName": "İletişim",
+      "contactNamePlaceholder": "İletişim kişisinin adı",
+      "contactPhone": "Telefon",
+      "contactEmail": "Email",
+      "estimatedCost": "Tahmini Maliyet",
+      "currency": "Para Birimi",
+      "perPerson": "Kişi Başı",
+      "requirements": "Gereksinimler",
+      "requirementPlaceholder": "örn. Spor kıyafeti, kimlik...",
+      "notes": "Notlar",
+      "notesPlaceholder": "Ek bilgiler..."
+    },
+    "categories": {
+      "title": "Kategori",
+      "all": "Tüm Kategoriler",
+      "activity": "Aktivite",
+      "food": "Yemek ve İçecek",
+      "transport": "Ulaşım",
+      "accommodation": "Konaklama",
+      "party": "Parti ve Gece Hayatı",
+      "sightseeing": "Gezi",
+      "relaxation": "Dinlenme",
+      "other": "Diğer"
+    },
+    "filter": {
+      "title": "Filtrele",
+      "byCategory": "Kategoriye Göre",
+      "showAll": "Tümünü Göster"
+    }
   }
 }

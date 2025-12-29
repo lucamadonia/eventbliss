@@ -208,14 +208,15 @@
   "dashboard": {
     "tabs": {
       "overview": "Przegląd",
+      "planner": "Planer",
       "ideas": "Pomysły",
       "form": "Formularz",
       "schedule": "Harmonogram",
       "destination": "Cel podróży",
       "agencies": "Agencje",
+      "ai": "Asystent AI",
       "messages": "Wiadomości",
-      "settings": "Ustawienia",
-      "aiAssistant": "Asystent AI"
+      "settings": "Ustawienia"
     },
     "overview": {
       "title": "Przegląd",
@@ -381,5 +382,75 @@
     "minLength": "Wymagane minimum {{count}} znaków",
     "maxLength": "Maksymalnie {{count}} znaków dozwolone",
     "passwordMismatch": "Hasła nie są zgodne"
+  },
+  "planner": {
+    "title": "Planer Weekendowy",
+    "subtitle": "Zaplanuj wszystkie aktywności na swoje wydarzenie",
+    "addActivity": "Dodaj Aktywność",
+    "newActivity": "Nowa Aktywność",
+    "editActivity": "Edytuj Aktywność",
+    "createActivity": "Utwórz Aktywność",
+    "activity": "Aktywność",
+    "activities": "Aktywności",
+    "noActivities": "Jeszcze brak aktywności",
+    "noActivitiesHint": "Dodaj pierwszą aktywność na ten dzień",
+    "addFirst": "Dodaj Pierwszą Aktywność",
+    "totalForDay": "Szacowane koszty na ten dzień",
+    "perPerson": "na osobę",
+    "deleteConfirm": "Usunąć aktywność?",
+    "deleteConfirmDescription": "Ta akcja nie może być cofnięta.",
+    "comment": "Komentarz",
+    "comments": "Komentarze",
+    "selectParticipant": "Wybierz uczestnika",
+    "writeComment": "Napisz komentarz...",
+    "loadError": "Nie udało się załadować aktywności",
+    "saveError": "Błąd podczas zapisywania",
+    "deleteError": "Błąd podczas usuwania",
+    "commentError": "Nie udało się dodać komentarza",
+    "activityCreated": "Aktywność utworzona",
+    "activityUpdated": "Aktywność zaktualizowana",
+    "activityDeleted": "Aktywność usunięta",
+    "form": {
+      "title": "Tytuł",
+      "titlePlaceholder": "np. Paintball, Kolacja, Rejs...",
+      "description": "Opis",
+      "descriptionPlaceholder": "Krótki opis aktywności",
+      "date": "Data",
+      "startTime": "Czas Rozpoczęcia",
+      "endTime": "Czas Zakończenia",
+      "location": "Miejsce",
+      "locationPlaceholder": "np. Arena Paintball Warszawa",
+      "locationUrl": "Link Google Maps",
+      "responsiblePerson": "Osoba Odpowiedzialna",
+      "selectPerson": "Wybierz osobę",
+      "contactName": "Kontakt",
+      "contactNamePlaceholder": "Nazwa kontaktu",
+      "contactPhone": "Telefon",
+      "contactEmail": "Email",
+      "estimatedCost": "Szacowany Koszt",
+      "currency": "Waluta",
+      "perPerson": "Na Osobę",
+      "requirements": "Wymagania",
+      "requirementPlaceholder": "np. Strój sportowy, dokument...",
+      "notes": "Notatki",
+      "notesPlaceholder": "Dodatkowe informacje..."
+    },
+    "categories": {
+      "title": "Kategoria",
+      "all": "Wszystkie Kategorie",
+      "activity": "Aktywność",
+      "food": "Jedzenie i Napoje",
+      "transport": "Transport",
+      "accommodation": "Zakwaterowanie",
+      "party": "Impreza i Życie Nocne",
+      "sightseeing": "Zwiedzanie",
+      "relaxation": "Relaks",
+      "other": "Inne"
+    },
+    "filter": {
+      "title": "Filtruj",
+      "byCategory": "Według Kategorii",
+      "showAll": "Pokaż Wszystko"
+    }
   }
 }
