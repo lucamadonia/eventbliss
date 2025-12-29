@@ -1,0 +1,383 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "share": "Teilen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Absenden",
+    "confirm": "Bestätigen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "all": "Alle",
+    "none": "Keine",
+    "yes": "Ja",
+    "no": "Nein",
+    "or": "oder",
+    "and": "und",
+    "optional": "Optional",
+    "required": "Erforderlich",
+    "saving": "Speichern...",
+    "saved": "Gespeichert",
+    "openInNewTab": "In neuem Tab öffnen",
+    "copyLink": "Link kopieren",
+    "copyCode": "Code kopieren"
+  },
+  "landing": {
+    "title": "STAG",
+    "subtitle": "Die moderne Party-Planungs-Plattform",
+    "description": "Plane unvergessliche Events mit deiner Gruppe. Einfach, schnell und stressfrei.",
+    "createEvent": "Event erstellen",
+    "joinEvent": "Mit Code beitreten",
+    "features": {
+      "multiEvent": {
+        "title": "Multi-Event Management",
+        "description": "Verwalte mehrere Events gleichzeitig mit einem übersichtlichen Dashboard."
+      },
+      "costSplitting": {
+        "title": "Smarte Kostenaufteilung",
+        "description": "Erfasse Ausgaben und teile sie fair unter allen Teilnehmern auf."
+      },
+      "messageTemplates": {
+        "title": "Nachrichten-Vorlagen",
+        "description": "Vorgefertigte WhatsApp-Nachrichten für jeden Anlass."
+      }
+    },
+    "cta": {
+      "title": "Bereit für dein Event?",
+      "description": "Starte jetzt kostenlos und plane das perfekte Event.",
+      "button": "Kostenlos Event erstellen"
+    },
+    "footer": "Made with ❤️ for unforgettable events"
+  },
+  "createEvent": {
+    "title": "Event erstellen",
+    "step1": {
+      "title": "Was planst du?",
+      "subtitle": "Wähle die Art deines Events"
+    },
+    "step2": {
+      "title": "Für wen?",
+      "subtitle": "Wer wird gefeiert?",
+      "placeholder": "Name der Person"
+    },
+    "step3": {
+      "title": "Event-Details",
+      "subtitle": "Gib deinem Event einen Namen",
+      "eventName": "Event-Name",
+      "eventNamePlaceholder": "z.B. Maxis JGA 2025"
+    },
+    "types": {
+      "bachelor": "Junggesellenabschied",
+      "bachelorette": "JGA für die Braut",
+      "birthday": "Geburtstag",
+      "trip": "Gruppenreise",
+      "other": "Anderes Event"
+    },
+    "creating": "Event wird erstellt...",
+    "success": "Event erfolgreich erstellt!",
+    "goToDashboard": "Zum Dashboard"
+  },
+  "joinEvent": {
+    "title": "Event beitreten",
+    "subtitle": "Gib den Zugangscode ein, den du erhalten hast",
+    "codePlaceholder": "Zugangscode eingeben",
+    "join": "Beitreten",
+    "joining": "Trete bei...",
+    "invalidCode": "Ungültiger Zugangscode",
+    "success": "Erfolgreich beigetreten!"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Noch kein Konto?",
+    "hasAccount": "Bereits ein Konto?",
+    "loginSuccess": "Erfolgreich angemeldet!",
+    "registerSuccess": "Konto erfolgreich erstellt!",
+    "logoutSuccess": "Erfolgreich abgemeldet"
+  },
+  "survey": {
+    "title": "Deine Antwort",
+    "subtitle": "Hilf uns bei der Planung!",
+    "locked": "Das Formular ist gesperrt",
+    "lockedDescription": "Der Organisator hat das Formular geschlossen. Du kannst keine Antworten mehr abgeben.",
+    "alreadySubmitted": "Du hast bereits geantwortet",
+    "submitSuccess": "Antwort erfolgreich abgeschickt!",
+    "submitError": "Fehler beim Absenden",
+    "questions": {
+      "name": {
+        "label": "Wer bist du?",
+        "placeholder": "Dein Name"
+      },
+      "attendance": {
+        "label": "Bist du dabei?",
+        "options": {
+          "yes": "Ja, ich bin dabei! 🎉",
+          "no": "Leider nein 😢",
+          "maybe": "Noch unsicher 🤔"
+        }
+      },
+      "duration": {
+        "label": "Bevorzugte Dauer",
+        "options": {
+          "day": "Tagesausflug",
+          "weekend": "Wochenende (2-3 Tage)",
+          "long": "Verlängertes WE (3-4 Tage)",
+          "week": "Ganze Woche"
+        }
+      },
+      "travel": {
+        "label": "Anreise",
+        "options": {
+          "car": "Auto 🚗",
+          "train": "Zug 🚂",
+          "plane": "Flugzeug ✈️",
+          "flexible": "Flexibel"
+        }
+      },
+      "fitness": {
+        "label": "Fitness-Level",
+        "options": {
+          "low": "Gemütlich",
+          "medium": "Moderat",
+          "high": "Sportlich",
+          "extreme": "Extrem"
+        }
+      },
+      "alcohol": {
+        "label": "Alkohol?",
+        "options": {
+          "yes": "Ja, gerne! 🍻",
+          "moderate": "In Maßen 🍷",
+          "no": "Lieber nicht"
+        }
+      },
+      "budget": {
+        "label": "Dein Budget pro Person",
+        "options": {
+          "low": "Bis 100€",
+          "medium": "100-250€",
+          "high": "250-500€",
+          "unlimited": "Keine Grenze"
+        }
+      },
+      "destination": {
+        "label": "Wohin soll es gehen?",
+        "options": {
+          "local": "Lokal (Heimatstadt)",
+          "domestic": "Deutschland",
+          "europe": "Europa",
+          "worldwide": "Weltweit"
+        }
+      },
+      "activities": {
+        "label": "Welche Aktivitäten?",
+        "placeholder": "Wähle deine Favoriten"
+      },
+      "dateBlocks": {
+        "label": "Wann passt es dir?",
+        "description": "Wähle alle Zeiträume, die für dich möglich sind"
+      },
+      "restrictions": {
+        "label": "Einschränkungen / Allergien",
+        "placeholder": "z.B. Höhenangst, Laktoseintoleranz..."
+      },
+      "suggestions": {
+        "label": "Wünsche und Ideen",
+        "placeholder": "Was wolltest du schon immer mal machen?"
+      }
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "overview": "Übersicht",
+      "ideas": "Ideen",
+      "form": "Formular",
+      "schedule": "Termine",
+      "destination": "Reiseziel",
+      "agencies": "Agenturen",
+      "messages": "Nachrichten",
+      "settings": "Einstellungen",
+      "aiAssistant": "KI-Assistent"
+    },
+    "overview": {
+      "title": "Übersicht",
+      "participants": "Teilnehmer",
+      "responses": "Antworten",
+      "responseRate": "Rücklauf",
+      "deadline": "Deadline",
+      "noDeadline": "Keine Deadline gesetzt",
+      "surveyLink": "Umfrage-Link",
+      "accessCode": "Zugangscode",
+      "status": {
+        "draft": "Entwurf",
+        "planning": "Planung",
+        "active": "Aktiv",
+        "completed": "Abgeschlossen",
+        "cancelled": "Abgesagt"
+      }
+    },
+    "form": {
+      "title": "Formular-Builder",
+      "coreQuestions": "Kern-Fragen",
+      "customQuestions": "Eigene Fragen",
+      "questionEnabled": "Frage aktiviert",
+      "questionDisabled": "Frage deaktiviert",
+      "singleSelect": "Einzelauswahl",
+      "multiSelect": "Mehrfachauswahl",
+      "addQuestion": "Frage hinzufügen",
+      "editOptions": "Optionen bearbeiten",
+      "saveChanges": "Änderungen speichern"
+    },
+    "schedule": {
+      "title": "Termine",
+      "setDate": "Termin festlegen",
+      "dateSet": "Termin steht fest!",
+      "noDate": "Noch kein Termin festgelegt"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "general": "Allgemein",
+      "eventName": "Event-Name",
+      "honoreeName": "Name des Ehrengasts",
+      "eventDate": "Event-Datum",
+      "surveyDeadline": "Umfrage-Deadline",
+      "formStatus": {
+        "title": "Formular-Status",
+        "open": "Formular offen",
+        "locked": "Formular gesperrt",
+        "description": "Wenn gesperrt, können keine neuen Antworten abgegeben werden."
+      },
+      "dangerZone": {
+        "title": "Gefahrenzone",
+        "deleteEvent": "Event löschen",
+        "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+      }
+    },
+    "team": {
+      "title": "Team verwalten",
+      "invite": "Einladen",
+      "permissions": "Berechtigungen",
+      "removeAccess": "Zugang entfernen",
+      "roles": {
+        "organizer": "Organisator",
+        "guest": "Gast"
+      }
+    }
+  },
+  "messages": {
+    "title": "Nachrichten-Vorlagen",
+    "subtitle": "Kopiere oder teile vorgefertigte Nachrichten",
+    "sendViaWhatsApp": "Via WhatsApp senden",
+    "templates": {
+      "kickoff": {
+        "title": "Kickoff-Nachricht",
+        "description": "Erste Einladung an alle Teilnehmer",
+        "template": "Hey Leute! 🎉\n\nEs ist soweit - wir planen den JGA für {{honoree}}! 🥳\n\nDamit wir das perfekte Event organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{surveyLink}}\n\n🔑 Zugangscode: {{accessCode}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Reiseziel-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 🚀\n\nBei Fragen meldet euch!\n\nLG 🙌"
+      },
+      "reminder": {
+        "title": "Erinnerung",
+        "description": "Sanfte Erinnerung für ausstehende Antworten",
+        "template": "Hey! 👋\n\nKurze Erinnerung an die Umfrage für {{honoree}}s JGA!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nBisher haben {{responseCount}} von {{totalCount}} geantwortet.\n\nBitte füllt sie aus, damit wir weiterplanen können! 🙏\n\nDauert nur 2 Minuten! ⏱️"
+      },
+      "deadline": {
+        "title": "Deadline-Warnung",
+        "description": "Letzte Chance vor Umfrage-Schluss",
+        "template": "⚠️ LETZTE CHANCE! ⚠️\n\nDie Umfrage für {{honoree}}s JGA schließt {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWer nicht antwortet, kann bei der Planung nicht berücksichtigt werden!\n\nBitte jetzt ausfüllen! ⏰"
+      },
+      "dateConfirmed": {
+        "title": "Termin steht fest!",
+        "description": "Verkündung des finalen Datums",
+        "template": "🎉 DER TERMIN STEHT! 🎉\n\n{{honoree}}s JGA findet statt am:\n\n📅 {{eventDate}}\n\nBitte tragt euch den Termin ein und haltet euch frei!\n\nWeitere Details folgen bald... 👀\n\nFragen? Meldet euch!"
+      },
+      "budget": {
+        "title": "Budget-Info",
+        "description": "Kosten und Zahlungsinfos",
+        "template": "💰 BUDGET-UPDATE 💰\n\nHier die geschätzten Kosten für {{honoree}}s JGA:\n\n📊 Geschätzte Kosten pro Person: {{budgetPerPerson}}€\n\nDas beinhaltet:\n• [Aktivität 1]\n• [Aktivität 2]\n• [Unterkunft/Transport]\n\nBitte überweist {{depositAmount}}€ Anzahlung bis {{depositDeadline}}.\n\nKontodaten:\n[IBAN einfügen]\n\nFragen zum Budget? Meldet euch!"
+      },
+      "packingList": {
+        "title": "Packliste",
+        "description": "Was alle mitbringen sollen",
+        "template": "🎒 PACKLISTE für {{honoree}}s JGA 🎒\n\n📅 {{eventDate}}\n📍 [Ziel]\n\n✅ MUST-HAVES:\n• Personalausweis\n• Bargeld (ca. {{cashAmount}}€)\n• [Spezielle Kleidung]\n• Gute Laune! 😄\n\n👕 DRESSCODE:\n[Dresscode hier einfügen]\n\n❌ NICHT VERGESSEN:\n• [Wichtiger Gegenstand]\n• [Noch was Wichtiges]\n\nFragen? Meldet euch!\n\nFreut euch auf ein geniales Event! 🚀"
+      }
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "copySurveyLink": "Umfrage-Link kopieren",
+      "copyAccessCode": "Zugangscode kopieren",
+      "openSurvey": "Umfrage öffnen"
+    }
+  },
+  "agencies": {
+    "title": "JGA-Agenturen",
+    "subtitle": "Finde professionelle Anbieter in deiner Nähe",
+    "viewMode": {
+      "list": "Liste",
+      "map": "Karte"
+    },
+    "filterByCity": "Nach Stadt filtern",
+    "allCities": "Alle Städte",
+    "noAgencies": "Keine Agenturen gefunden",
+    "contact": {
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "website": "Website",
+      "visit": "Website besuchen"
+    },
+    "cityPanel": {
+      "title": "Agenturen in {{city}}",
+      "agencyCount": "{{count}} Agentur(en)"
+    }
+  },
+  "expenses": {
+    "title": "Ausgaben",
+    "addExpense": "Ausgabe hinzufügen",
+    "totalAmount": "Gesamtbetrag",
+    "perPerson": "Pro Person",
+    "paidBy": "Bezahlt von",
+    "splitType": {
+      "equal": "Gleichmäßig",
+      "custom": "Benutzerdefiniert",
+      "percentage": "Prozentual"
+    },
+    "categories": {
+      "transport": "Transport",
+      "accommodation": "Unterkunft",
+      "activities": "Aktivitäten",
+      "food": "Essen",
+      "drinks": "Getränke",
+      "gifts": "Geschenke",
+      "other": "Sonstiges"
+    }
+  },
+  "notifications": {
+    "linkCopied": "Link kopiert!",
+    "codeCopied": "Code kopiert!",
+    "messageCopied": "Nachricht kopiert!",
+    "settingsSaved": "Einstellungen gespeichert!",
+    "errorOccurred": "Ein Fehler ist aufgetreten",
+    "tryAgain": "Bitte versuche es erneut"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "minLength": "Mindestens {{count}} Zeichen erforderlich",
+    "maxLength": "Maximal {{count}} Zeichen erlaubt",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
+  }
+}

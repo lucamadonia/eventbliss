@@ -1,0 +1,383 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "loading": "جار التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "share": "مشاركة",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "confirm": "تأكيد",
+    "search": "بحث",
+    "filter": "تصفية",
+    "all": "الكل",
+    "none": "لا شيء",
+    "yes": "نعم",
+    "no": "لا",
+    "or": "أو",
+    "and": "و",
+    "optional": "اختياري",
+    "required": "مطلوب",
+    "saving": "جار الحفظ...",
+    "saved": "تم الحفظ",
+    "openInNewTab": "فتح في علامة تبويب جديدة",
+    "copyLink": "نسخ الرابط",
+    "copyCode": "نسخ الكود"
+  },
+  "landing": {
+    "title": "STAG",
+    "subtitle": "منصة تخطيط الحفلات الحديثة",
+    "description": "خطط لفعاليات لا تُنسى مع مجموعتك. بسيط وسريع وخالٍ من التوتر.",
+    "createEvent": "إنشاء فعالية",
+    "joinEvent": "الانضمام بكود",
+    "features": {
+      "multiEvent": {
+        "title": "إدارة فعاليات متعددة",
+        "description": "أدر عدة فعاليات في وقت واحد مع لوحة تحكم واضحة."
+      },
+      "costSplitting": {
+        "title": "تقسيم ذكي للتكاليف",
+        "description": "تتبع النفقات وقسمها بالتساوي بين جميع المشاركين."
+      },
+      "messageTemplates": {
+        "title": "قوالب الرسائل",
+        "description": "رسائل واتساب جاهزة لكل مناسبة."
+      }
+    },
+    "cta": {
+      "title": "هل أنت مستعد لفعاليتك؟",
+      "description": "ابدأ مجاناً وخطط للفعالية المثالية.",
+      "button": "إنشاء فعالية مجانية"
+    },
+    "footer": "صُنع بـ ❤️ لفعاليات لا تُنسى"
+  },
+  "createEvent": {
+    "title": "إنشاء فعالية",
+    "step1": {
+      "title": "ماذا تخطط؟",
+      "subtitle": "اختر نوع فعاليتك"
+    },
+    "step2": {
+      "title": "لمن؟",
+      "subtitle": "من يتم الاحتفال به؟",
+      "placeholder": "اسم الشخص"
+    },
+    "step3": {
+      "title": "تفاصيل الفعالية",
+      "subtitle": "أعطِ فعاليتك اسماً",
+      "eventName": "اسم الفعالية",
+      "eventNamePlaceholder": "مثال: حفلة وداع العزوبية لماكس 2025"
+    },
+    "types": {
+      "bachelor": "حفلة وداع العزوبية",
+      "bachelorette": "حفلة العروس",
+      "birthday": "عيد ميلاد",
+      "trip": "رحلة جماعية",
+      "other": "فعالية أخرى"
+    },
+    "creating": "جار إنشاء الفعالية...",
+    "success": "تم إنشاء الفعالية بنجاح!",
+    "goToDashboard": "الذهاب إلى لوحة التحكم"
+  },
+  "joinEvent": {
+    "title": "الانضمام للفعالية",
+    "subtitle": "أدخل كود الوصول الذي استلمته",
+    "codePlaceholder": "أدخل كود الوصول",
+    "join": "انضمام",
+    "joining": "جار الانضمام...",
+    "invalidCode": "كود وصول غير صالح",
+    "success": "تم الانضمام بنجاح!"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "registerSuccess": "تم إنشاء الحساب بنجاح!",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح"
+  },
+  "survey": {
+    "title": "إجابتك",
+    "subtitle": "ساعدنا في التخطيط!",
+    "locked": "النموذج مقفل",
+    "lockedDescription": "المنظم أغلق النموذج. لا يمكنك إرسال ردود بعد الآن.",
+    "alreadySubmitted": "لقد قمت بالرد بالفعل",
+    "submitSuccess": "تم إرسال الرد بنجاح!",
+    "submitError": "خطأ في إرسال الرد",
+    "questions": {
+      "name": {
+        "label": "من أنت؟",
+        "placeholder": "اسمك"
+      },
+      "attendance": {
+        "label": "هل ستحضر؟",
+        "options": {
+          "yes": "نعم، أنا قادم! 🎉",
+          "no": "للأسف لا 😢",
+          "maybe": "لست متأكداً بعد 🤔"
+        }
+      },
+      "duration": {
+        "label": "المدة المفضلة",
+        "options": {
+          "day": "رحلة يوم واحد",
+          "weekend": "نهاية الأسبوع (2-3 أيام)",
+          "long": "نهاية أسبوع طويلة (3-4 أيام)",
+          "week": "أسبوع كامل"
+        }
+      },
+      "travel": {
+        "label": "السفر",
+        "options": {
+          "car": "سيارة 🚗",
+          "train": "قطار 🚂",
+          "plane": "طائرة ✈️",
+          "flexible": "مرن"
+        }
+      },
+      "fitness": {
+        "label": "مستوى اللياقة",
+        "options": {
+          "low": "مريح",
+          "medium": "معتدل",
+          "high": "رياضي",
+          "extreme": "متطرف"
+        }
+      },
+      "alcohol": {
+        "label": "الكحول؟",
+        "options": {
+          "yes": "نعم، من فضلك! 🍻",
+          "moderate": "باعتدال 🍷",
+          "no": "أفضل لا"
+        }
+      },
+      "budget": {
+        "label": "ميزانيتك للشخص",
+        "options": {
+          "low": "حتى 100€",
+          "medium": "100-250€",
+          "high": "250-500€",
+          "unlimited": "بدون حد"
+        }
+      },
+      "destination": {
+        "label": "إلى أين تريد الذهاب؟",
+        "options": {
+          "local": "محلي (المدينة الأم)",
+          "domestic": "داخلي",
+          "europe": "أوروبا",
+          "worldwide": "عالمي"
+        }
+      },
+      "activities": {
+        "label": "أي أنشطة؟",
+        "placeholder": "اختر المفضلة لديك"
+      },
+      "dateBlocks": {
+        "label": "متى يناسبك؟",
+        "description": "اختر جميع الفترات التي تناسبك"
+      },
+      "restrictions": {
+        "label": "قيود / حساسية",
+        "placeholder": "مثل الخوف من الارتفاعات، عدم تحمل اللاكتوز..."
+      },
+      "suggestions": {
+        "label": "أمنيات وأفكار",
+        "placeholder": "ما الذي طالما أردت فعله؟"
+      }
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "ideas": "أفكار",
+      "form": "النموذج",
+      "schedule": "الجدول",
+      "destination": "الوجهة",
+      "agencies": "الوكالات",
+      "messages": "الرسائل",
+      "settings": "الإعدادات",
+      "aiAssistant": "مساعد الذكاء الاصطناعي"
+    },
+    "overview": {
+      "title": "نظرة عامة",
+      "participants": "المشاركون",
+      "responses": "الردود",
+      "responseRate": "معدل الاستجابة",
+      "deadline": "الموعد النهائي",
+      "noDeadline": "لم يتم تحديد موعد نهائي",
+      "surveyLink": "رابط الاستبيان",
+      "accessCode": "كود الوصول",
+      "status": {
+        "draft": "مسودة",
+        "planning": "تخطيط",
+        "active": "نشط",
+        "completed": "مكتمل",
+        "cancelled": "ملغي"
+      }
+    },
+    "form": {
+      "title": "منشئ النموذج",
+      "coreQuestions": "الأسئلة الأساسية",
+      "customQuestions": "أسئلة مخصصة",
+      "questionEnabled": "السؤال مفعل",
+      "questionDisabled": "السؤال معطل",
+      "singleSelect": "اختيار واحد",
+      "multiSelect": "اختيار متعدد",
+      "addQuestion": "إضافة سؤال",
+      "editOptions": "تعديل الخيارات",
+      "saveChanges": "حفظ التغييرات"
+    },
+    "schedule": {
+      "title": "الجدول",
+      "setDate": "تحديد التاريخ",
+      "dateSet": "تم تحديد التاريخ!",
+      "noDate": "لم يتم تحديد تاريخ بعد"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "general": "عام",
+      "eventName": "اسم الفعالية",
+      "honoreeName": "اسم المحتفى به",
+      "eventDate": "تاريخ الفعالية",
+      "surveyDeadline": "الموعد النهائي للاستبيان",
+      "formStatus": {
+        "title": "حالة النموذج",
+        "open": "النموذج مفتوح",
+        "locked": "النموذج مقفل",
+        "description": "عند القفل، لا يمكن إرسال ردود جديدة."
+      },
+      "dangerZone": {
+        "title": "منطقة الخطر",
+        "deleteEvent": "حذف الفعالية",
+        "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
+      }
+    },
+    "team": {
+      "title": "إدارة الفريق",
+      "invite": "دعوة",
+      "permissions": "الصلاحيات",
+      "removeAccess": "إزالة الوصول",
+      "roles": {
+        "organizer": "منظم",
+        "guest": "ضيف"
+      }
+    }
+  },
+  "messages": {
+    "title": "قوالب الرسائل",
+    "subtitle": "انسخ أو شارك الرسائل الجاهزة",
+    "sendViaWhatsApp": "إرسال عبر واتساب",
+    "templates": {
+      "kickoff": {
+        "title": "رسالة البداية",
+        "description": "الدعوة الأولى لجميع المشاركين",
+        "template": "مرحباً بالجميع! 🎉\n\nحان الوقت - نحن نخطط لحفلة وداع العزوبية لـ {{honoree}}! 🥳\n\nلمساعدتنا في تنظيم الفعالية المثالية، نحتاج آراءكم!\n\n👉 يرجى ملء هذا الاستبيان القصير:\n{{surveyLink}}\n\n🔑 كود الوصول: {{accessCode}}\n\nيستغرق الاستبيان 2-3 دقائق فقط ويساعدنا في:\n📅 اختيار التاريخ\n💰 تخطيط الميزانية\n🎯 اختيار الأنشطة\n📍 اختيار الوجهة\n\nكلما أسرع الجميع في الرد، كلما أسرعنا في البدء! 🚀\n\nأسئلة؟ أخبروني!\n\nتحياتي! 🙌"
+      },
+      "reminder": {
+        "title": "تذكير",
+        "description": "تذكير لطيف للردود المعلقة",
+        "template": "مرحباً! 👋\n\nتذكير سريع بخصوص استبيان حفلة {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 الكود: {{accessCode}}\n\nحتى الآن {{responseCount}} من {{totalCount}} ردوا.\n\nيرجى ملؤه حتى نتمكن من متابعة التخطيط! 🙏\n\nيستغرق دقيقتين فقط! ⏱️"
+      },
+      "deadline": {
+        "title": "تحذير الموعد النهائي",
+        "description": "الفرصة الأخيرة قبل إغلاق الاستبيان",
+        "template": "⚠️ الفرصة الأخيرة! ⚠️\n\nاستبيان حفلة {{honoree}} يغلق في {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 الكود: {{accessCode}}\n\nمن لا يرد لن يُؤخذ في الاعتبار في التخطيط!\n\nيرجى ملؤه الآن! ⏰"
+      },
+      "dateConfirmed": {
+        "title": "تم تأكيد التاريخ!",
+        "description": "إعلان التاريخ النهائي",
+        "template": "🎉 تم تحديد التاريخ! 🎉\n\nحفلة {{honoree}} ستكون في:\n\n📅 {{eventDate}}\n\nيرجى تحديد هذا التاريخ في تقويماتكم وإبقائه فارغاً!\n\nمزيد من التفاصيل قريباً... 👀\n\nأسئلة؟ أخبروني!"
+      },
+      "budget": {
+        "title": "معلومات الميزانية",
+        "description": "التكاليف ومعلومات الدفع",
+        "template": "💰 تحديث الميزانية 💰\n\nإليكم التكاليف المقدرة لحفلة {{honoree}}:\n\n📊 التكلفة المقدرة للشخص: {{budgetPerPerson}}€\n\nيشمل هذا:\n• [نشاط 1]\n• [نشاط 2]\n• [الإقامة/النقل]\n\nيرجى تحويل {{depositAmount}}€ عربون بحلول {{depositDeadline}}.\n\nبيانات البنك:\n[أدخل IBAN]\n\nأسئلة حول الميزانية؟ أخبروني!"
+      },
+      "packingList": {
+        "title": "قائمة الحقائب",
+        "description": "ما يجب أن يحضره الجميع",
+        "template": "🎒 قائمة الحقائب لحفلة {{honoree}} 🎒\n\n📅 {{eventDate}}\n📍 [الوجهة]\n\n✅ الضروريات:\n• بطاقة الهوية\n• نقد (حوالي {{cashAmount}}€)\n• [ملابس خاصة]\n• مزاج جيد! 😄\n\n👕 قواعد اللباس:\n[أدخل قواعد اللباس]\n\n❌ لا تنسوا:\n• [عنصر مهم]\n• [شيء مهم آخر]\n\nأسئلة؟ أخبروني!\n\nاستعدوا لفعالية رائعة! 🚀"
+      }
+    },
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "copySurveyLink": "نسخ رابط الاستبيان",
+      "copyAccessCode": "نسخ كود الوصول",
+      "openSurvey": "فتح الاستبيان"
+    }
+  },
+  "agencies": {
+    "title": "وكالات الحفلات",
+    "subtitle": "اعثر على مزودين محترفين بالقرب منك",
+    "viewMode": {
+      "list": "قائمة",
+      "map": "خريطة"
+    },
+    "filterByCity": "تصفية حسب المدينة",
+    "allCities": "جميع المدن",
+    "noAgencies": "لم يتم العثور على وكالات",
+    "contact": {
+      "phone": "هاتف",
+      "email": "بريد إلكتروني",
+      "website": "موقع إلكتروني",
+      "visit": "زيارة الموقع"
+    },
+    "cityPanel": {
+      "title": "وكالات في {{city}}",
+      "agencyCount": "{{count}} وكالة/وكالات"
+    }
+  },
+  "expenses": {
+    "title": "النفقات",
+    "addExpense": "إضافة نفقة",
+    "totalAmount": "المبلغ الإجمالي",
+    "perPerson": "للشخص",
+    "paidBy": "دفعها",
+    "splitType": {
+      "equal": "بالتساوي",
+      "custom": "مخصص",
+      "percentage": "نسبة مئوية"
+    },
+    "categories": {
+      "transport": "النقل",
+      "accommodation": "الإقامة",
+      "activities": "الأنشطة",
+      "food": "الطعام",
+      "drinks": "المشروبات",
+      "gifts": "الهدايا",
+      "other": "أخرى"
+    }
+  },
+  "notifications": {
+    "linkCopied": "تم نسخ الرابط!",
+    "codeCopied": "تم نسخ الكود!",
+    "messageCopied": "تم نسخ الرسالة!",
+    "settingsSaved": "تم حفظ الإعدادات!",
+    "errorOccurred": "حدث خطأ",
+    "tryAgain": "يرجى المحاولة مرة أخرى"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "عنوان بريد إلكتروني غير صالح",
+    "minLength": "مطلوب {{count}} حرف على الأقل",
+    "maxLength": "الحد الأقصى {{count}} حرف مسموح",
+    "passwordMismatch": "كلمات المرور غير متطابقة"
+  }
+}
