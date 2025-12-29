@@ -22,13 +22,14 @@ export interface ActivityOption {
 export interface BrandingConfig {
   primary_color: string;
   accent_color: string;
-  background_style: 'gradient' | 'solid' | 'image';
+  background_style: 'gradient' | 'solid' | 'image' | 'dark';
   logo_url?: string;
   hero_title?: string;
   hero_subtitle?: string;
   hero_image_url?: string;
   key_date_label?: string;
   key_date?: string;
+  template_id?: string;
 }
 
 export interface SurveyConfig {
@@ -76,10 +77,10 @@ export interface SurveyConfig {
 
 export interface CustomQuestion {
   id: string;
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox';
+  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'toggle';
   label: string;
   required: boolean;
-  options?: SelectOption[];
+  options?: string[];
   placeholder?: string;
 }
 
