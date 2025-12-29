@@ -29,6 +29,8 @@
     "required": "Erforderlich",
     "saving": "Speichern...",
     "saved": "Gespeichert",
+    "status": "Status",
+    "reset": "Zurücksetzen",
     "openInNewTab": "In neuem Tab öffnen",
     "copyLink": "Link kopieren",
     "copyCode": "Code kopieren"
@@ -366,6 +368,30 @@
         "active": "Aktiv",
         "completed": "Abgeschlossen",
         "cancelled": "Abgesagt"
+      },
+      "statuses": {
+        "draft": "Entwurf",
+        "planning": "Planung",
+        "active": "Aktiv",
+        "completed": "Abgeschlossen",
+        "cancelled": "Abgesagt"
+      },
+      "participantStatus": {
+        "confirmed": "Bestätigt",
+        "declined": "Abgesagt",
+        "maybe": "Vielleicht",
+        "invited": "Eingeladen"
+      },
+      "pendingResponses": "Ausstehende Antworten",
+      "pendingResponsesDesc": "{{count}} Teilnehmer haben noch nicht geantwortet.",
+      "noParticipants": "Noch keine Teilnehmer hinzugefügt.",
+      "quickActions": {
+        "expenses": "Ausgaben",
+        "expensesDesc": "Kosten verwalten & aufteilen",
+        "messages": "Nachrichten",
+        "messagesDesc": "Vorlagen kopieren & teilen",
+        "ai": "KI-Assistent",
+        "aiDesc": "Ideen & Vorschläge generieren"
       }
     },
     "form": {
@@ -592,9 +618,91 @@
     },
     "schedule": {
       "title": "Termine",
+      "loading": "Termine werden geladen...",
+      "noData": "Noch keine Daten",
+      "noDataDesc": "Sobald Teilnehmer ihre Verfügbarkeit angeben, erscheinen hier die Ergebnisse.",
+      "activeVotes": "{{count}} aktive Stimmen",
+      "dateLocked": "Termin {{block}} ist festgelegt",
+      "topRecommendations": "Top-Empfehlungen",
+      "block": "Block",
+      "yes": "Ja",
+      "maybe": "Vielleicht",
+      "allDates": "Alle Termine",
+      "locked": "Festgelegt",
+      "legend": "Der Score berechnet sich aus den \"Ja\"-Stimmen (100%) und \"Vielleicht\"-Stimmen (50%). Höhere Werte bedeuten bessere Verfügbarkeit.",
       "setDate": "Termin festlegen",
       "dateSet": "Termin steht fest!",
       "noDate": "Noch kein Termin festgelegt"
+    },
+    "destination": {
+      "loading": "Reiseziel-Daten werden geladen...",
+      "noData": "Noch keine Daten",
+      "noDataDesc": "Sobald Teilnehmer ihre Präferenzen angeben, erscheinen hier die Ergebnisse.",
+      "topDestination": "Top-Reiseziel",
+      "votesOf": "{{votes}} von {{total}} Stimmen ({{percent}}%)",
+      "voting": "Abstimmung",
+      "budgetDistribution": "Budget-Verteilung",
+      "recommendation": "Empfehlung",
+      "recommendationText": "Basierend auf den Abstimmungen liegt das Budget bei {{budget}}.",
+      "popularActivities": "Beliebte Aktivitäten",
+      "noActivities": "Noch keine Aktivitäten ausgewählt.",
+      "destinations": {
+        "deCity": "Deutsche Stadt",
+        "barcelona": "Barcelona",
+        "lisbon": "Lissabon",
+        "either": "Egal"
+      },
+      "activities": {
+        "karting": "Kartfahren",
+        "escapeRoom": "Escape Room",
+        "lasertag": "Lasertag",
+        "axeThrowing": "Axtwerfen",
+        "vrSimracing": "VR-Simracing",
+        "climbing": "Klettern",
+        "bubbleSoccer": "Bubble Soccer",
+        "outdoor": "Outdoor",
+        "wellness": "Wellness",
+        "food": "Kulinarik",
+        "mixed": "Gemischt"
+      }
+    },
+    "ideas": {
+      "loading": "Ideen werden geladen...",
+      "noIdeas": "Noch keine Ideen",
+      "noIdeasDesc": "Sobald Teilnehmer Vorschläge oder Einschränkungen angeben, erscheinen sie hier.",
+      "suggestions": "Vorschläge & Wünsche",
+      "entries": "{{count}} Einträge",
+      "restrictions": "Einschränkungen",
+      "partialAvailability": "Teilweise Verfügbarkeit",
+      "suggestionsCount": "{{count}} Vorschläge",
+      "restrictionsCount": "{{count}} Einschränkungen",
+      "notesCount": "{{count}} Notizen",
+      "attendance": {
+        "yes": "Dabei",
+        "maybe": "Vielleicht",
+        "no": "Nicht dabei"
+      }
+    },
+    "ai": {
+      "title": "KI-Assistent",
+      "subtitle": "Lass dir bei der Planung helfen",
+      "basedOn": "Basierend auf {{count}} Antworten für {{name}}s Event",
+      "tripIdeas": "Reise-Ideen",
+      "tripIdeasDesc": "Reiseziele vorschlagen",
+      "activities": "Aktivitäten",
+      "activitiesDesc": "Aktivitäten empfehlen",
+      "dayPlan": "Tagesplan",
+      "dayPlanDesc": "Ablauf erstellen",
+      "budgetEstimate": "Budget-Schätzung",
+      "budgetEstimateDesc": "Kosten berechnen",
+      "chatPlaceholder": "Stelle eine Frage zur Event-Planung...",
+      "ask": "Fragen",
+      "response": "Antwort",
+      "regenerate": "Neu generieren",
+      "noData": "Noch keine Daten",
+      "noDataDesc": "Der KI-Assistent funktioniert am besten, wenn bereits Umfrage-Antworten vorhanden sind.",
+      "tooManyRequests": "Zu viele Anfragen. Bitte warte einen Moment.",
+      "requestFailed": "KI-Anfrage fehlgeschlagen. Bitte versuche es erneut."
     },
     "settings": {
       "title": "Einstellungen",
@@ -607,8 +715,19 @@
         "title": "Formular-Status",
         "open": "Formular offen",
         "locked": "Formular gesperrt",
-        "description": "Wenn gesperrt, können keine neuen Antworten abgegeben werden."
+        "description": "Wenn gesperrt, können keine neuen Antworten abgegeben werden.",
+        "lockForm": "Formular sperren",
+        "lockFormDesc": "Wenn aktiviert, können keine neuen Antworten mehr abgegeben werden."
       },
+      "deadline": "Umfrage-Deadline",
+      "deadlineDesc": "Nach diesem Datum werden keine neuen Antworten mehr akzeptiert.",
+      "setDate": "Termin festlegen",
+      "selectDateDesc": "Wähle den finalen Termin für das Event. Dies sperrt automatisch das Formular.",
+      "selectBlock": "Terminblock wählen...",
+      "blockLocked": "Block {{block}} ist festgelegt",
+      "changeDate": "Termin ändern",
+      "dateLocked": "Termin {{block}} wurde festgelegt!",
+      "saveSettings": "Einstellungen speichern",
       "dangerZone": {
         "title": "Gefahrenzone",
         "deleteEvent": "Event löschen",
@@ -678,13 +797,23 @@
   "agencies": {
     "title": "JGA-Agenturen",
     "subtitle": "Finde professionelle Anbieter in deiner Nähe",
+    "stats": "{{total}} Agenturen in {{countries}} Ländern und {{cities}} Städten",
+    "agenciesInCities": "{{agencies}} Agenturen in {{cities}} Städten",
+    "searchPlaceholder": "Agentur suchen...",
+    "country": "Land",
+    "allCountries": "Alle Länder",
+    "city": "Stadt",
+    "allCities": "Alle Städte",
+    "filteredOf": "{{filtered}} von {{total}} Agenturen",
+    "noAgencies": "Keine Agenturen gefunden",
+    "noAgenciesDesc": "Versuche andere Filtereinstellungen oder einen anderen Suchbegriff.",
+    "resetFilters": "Filter zurücksetzen",
+    "visitWebsite": "Website besuchen",
     "viewMode": {
       "list": "Liste",
       "map": "Karte"
     },
     "filterByCity": "Nach Stadt filtern",
-    "allCities": "Alle Städte",
-    "noAgencies": "Keine Agenturen gefunden",
     "contact": {
       "phone": "Telefon",
       "email": "E-Mail",
