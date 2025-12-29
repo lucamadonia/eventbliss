@@ -29,6 +29,11 @@ import { Badge } from '@/components/ui/badge';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { cn } from '@/lib/utils';
 import { CustomQuestion } from '@/lib/survey-config';
+import { usePremium } from '@/hooks/usePremium';
+import { PaywallOverlay } from '@/components/premium/PaywallOverlay';
+import { toast } from 'sonner';
+
+const MAX_FREE_OPTIONS = 5;
 
 interface CustomQuestionBuilderProps {
   questions: CustomQuestion[];
@@ -57,7 +62,13 @@ export function CustomQuestionBuilder({
   onChange,
 }: CustomQuestionBuilderProps) {
   const { t } = useTranslation();
+  const { isPremium, loading: premiumLoading } = usePremium();
   const [newQuestionType, setNewQuestionType] = useState<string>('text');
+
+  // Show paywall if not premium (custom questions require premium)
+  if (!premiumLoading && !isPremium) {
+    return <PaywallOverlay feature="custom_questions" />;
+  }
 
   // Build presets with translations
   const QUESTION_PRESETS = [
@@ -157,6 +168,11 @@ export function CustomQuestionBuilder({
   const addOption = (questionIndex: number) => {
     const question = questions[questionIndex];
     if (question.options) {
+      // Check premium limit for options
+      if (!isPremium && question.options.length >= MAX_FREE_OPTIONS) {
+        toast.info(t('premium.paywall.maxOptions'));
+        return;
+      }
       updateQuestion(questionIndex, {
         options: [...question.options, `Option ${question.options.length + 1}`],
       });

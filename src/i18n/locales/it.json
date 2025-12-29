@@ -554,5 +554,12 @@
       "alreadySubscribed": "Questa email è già iscritta",
       "generic": "Qualcosa è andato storto. Riprova."
     }
+  },
+  "premium": {
+    "title": "Funzionalità Premium",
+    "badge": "Premium",
+    "features": { "ai_assistant": "Assistente IA", "expenses": "Spese Illimitate", "custom_questions": "Domande Personalizzate" },
+    "paywall": { "ai_assistant": "L'assistente IA ti aiuta con suggerimenti personalizzati.", "expenses": "Gli utenti gratuiti possono aggiungere fino a 3 spese.", "custom_questions": "Crea domande personalizzate con Premium.", "maxOptions": "Max 5 opzioni per gli utenti gratuiti.", "upgradeButton": "Passa a Premium", "startingAt": "A partire da €9,99 / mese" },
+    "benefits": { "unlimitedAccess": "Accesso illimitato", "aiFeatures": "Tutte le funzionalità IA", "prioritySupport": "Supporto prioritario" }
   }
 }

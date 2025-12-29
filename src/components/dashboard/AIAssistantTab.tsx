@@ -6,6 +6,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { usePremium } from "@/hooks/usePremium";
+import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import type { EventData } from "@/hooks/useEvent";
 
 interface AIAssistantTabProps {
@@ -57,10 +59,16 @@ const AI_REQUESTS: AIRequest[] = [
 
 export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   const { t } = useTranslation();
+  const { isPremium, loading: premiumLoading } = usePremium();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [currentType, setCurrentType] = useState<RequestType | null>(null);
   const [chatMessage, setChatMessage] = useState("");
+
+  // Show paywall if not premium
+  if (!premiumLoading && !isPremium) {
+    return <PaywallOverlay feature="ai_assistant" />;
+  }
 
   const getContext = () => {
     const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);

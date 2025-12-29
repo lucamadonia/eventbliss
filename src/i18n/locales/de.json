@@ -1153,9 +1153,31 @@
     "planName": "EventBliss Pro",
     "planDescription": "Alles was du für perfekte Events brauchst",
     "perMonth": "Monat",
+    "badge": "Premium",
     "features": {
       "unlimitedEvents": "Unbegrenzte Events",
-      "aiAssistant": "Erweiterter KI-Assistent",
+      "aiAssistant": "KI-Assistent",
+      "prioritySupport": "Prioritäts-Support",
+      "ai_assistant": "KI-Assistent",
+      "message_ai": "Nachrichten-KI",
+      "expenses": "Unbegrenzte Ausgaben",
+      "custom_questions": "Eigene Umfrage-Fragen",
+      "max_options": "Unbegrenzte Optionen"
+    },
+    "paywall": {
+      "title": "Premium-Funktion",
+      "description": "Diese Funktion ist nur für Premium-Nutzer verfügbar.",
+      "ai_assistant": "Der KI-Assistent hilft dir mit personalisierten Vorschlägen für dein Event.",
+      "message_ai": "Mit Premium kannst du Nachrichten per KI verbessern und personalisieren.",
+      "expenses": "Free-Nutzer können max. 3 Ausgaben hinzufügen. Mit Premium unbegrenzt!",
+      "custom_questions": "Erstelle eigene Fragen für deine Umfrage mit Premium.",
+      "maxOptions": "Free-Nutzer können max. 5 Optionen pro Frage hinzufügen.",
+      "upgradeButton": "Jetzt upgraden",
+      "startingAt": "Ab nur 9,99€ / Monat"
+    },
+    "benefits": {
+      "unlimitedAccess": "Unbegrenzter Zugang zu allen Funktionen",
+      "aiFeatures": "Alle KI-Funktionen freigeschaltet",
       "prioritySupport": "Prioritäts-Support"
     },
     "subscribe": "Jetzt upgraden",

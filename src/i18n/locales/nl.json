@@ -554,5 +554,12 @@
       "alreadySubscribed": "Dit e-mailadres is al geabonneerd",
       "generic": "Er is iets misgegaan. Probeer het opnieuw."
     }
+  },
+  "premium": {
+    "title": "Premium Functies",
+    "badge": "Premium",
+    "features": { "ai_assistant": "AI Assistent", "expenses": "Onbeperkte Uitgaven", "custom_questions": "Aangepaste Vragen" },
+    "paywall": { "ai_assistant": "De AI assistent helpt je met gepersonaliseerde suggesties.", "expenses": "Gratis gebruikers kunnen max. 3 uitgaven toevoegen.", "custom_questions": "Maak aangepaste vragen met Premium.", "maxOptions": "Max 5 opties voor gratis gebruikers.", "upgradeButton": "Nu Upgraden", "startingAt": "Vanaf slechts €9,99 / maand" },
+    "benefits": { "unlimitedAccess": "Onbeperkte toegang", "aiFeatures": "Alle AI functies", "prioritySupport": "Prioriteits support" }
   }
 }

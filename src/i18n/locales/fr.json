@@ -599,5 +599,31 @@
       "alreadySubscribed": "Cet email est déjà abonné",
       "generic": "Une erreur s'est produite. Veuillez réessayer."
     }
+  },
+  "premium": {
+    "title": "Fonctionnalités Premium",
+    "description": "Débloquez des fonctionnalités avancées.",
+    "badge": "Premium",
+    "features": {
+      "ai_assistant": "Assistant IA",
+      "message_ai": "IA de Messages",
+      "expenses": "Dépenses Illimitées",
+      "custom_questions": "Questions Personnalisées",
+      "max_options": "Options Illimitées"
+    },
+    "paywall": {
+      "ai_assistant": "L'assistant IA vous aide avec des suggestions personnalisées.",
+      "message_ai": "Avec Premium, améliorez vos messages avec l'IA.",
+      "expenses": "Les utilisateurs gratuits peuvent ajouter jusqu'à 3 dépenses.",
+      "custom_questions": "Créez des questions personnalisées avec Premium.",
+      "maxOptions": "Les utilisateurs gratuits peuvent ajouter jusqu'à 5 options.",
+      "upgradeButton": "Passer à Premium",
+      "startingAt": "À partir de 9,99€ / mois"
+    },
+    "benefits": {
+      "unlimitedAccess": "Accès illimité à toutes les fonctionnalités",
+      "aiFeatures": "Toutes les fonctionnalités IA débloquées",
+      "prioritySupport": "Support prioritaire"
+    }
   }
 }

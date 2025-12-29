@@ -541,5 +541,12 @@
       "alreadySubscribed": "هذا البريد الإلكتروني مشترك بالفعل",
       "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
     }
+  },
+  "premium": {
+    "title": "ميزات بريميوم",
+    "badge": "بريميوم",
+    "features": { "ai_assistant": "مساعد الذكاء الاصطناعي", "expenses": "مصاريف غير محدودة", "custom_questions": "أسئلة مخصصة" },
+    "paywall": { "ai_assistant": "مساعد AI يساعدك باقتراحات مخصصة.", "expenses": "المستخدمون المجانيون يمكنهم إضافة 3 مصاريف كحد أقصى.", "custom_questions": "أنشئ أسئلة مخصصة مع بريميوم.", "maxOptions": "5 خيارات كحد أقصى للمستخدمين المجانيين.", "upgradeButton": "ترقية الآن", "startingAt": "ابتداءً من 9.99€ / شهر" },
+    "benefits": { "unlimitedAccess": "وصول غير محدود", "aiFeatures": "جميع ميزات AI", "prioritySupport": "دعم أولوية" }
   }
 }

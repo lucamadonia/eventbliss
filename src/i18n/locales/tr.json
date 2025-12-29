@@ -541,5 +541,12 @@
       "alreadySubscribed": "Bu e-posta zaten abone",
       "generic": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin."
     }
+  },
+  "premium": {
+    "title": "Premium Özellikler",
+    "badge": "Premium",
+    "features": { "ai_assistant": "AI Asistan", "expenses": "Sınırsız Harcamalar", "custom_questions": "Özel Sorular" },
+    "paywall": { "ai_assistant": "AI asistan size kişiselleştirilmiş öneriler sunar.", "expenses": "Ücretsiz kullanıcılar en fazla 3 harcama ekleyebilir.", "custom_questions": "Premium ile özel sorular oluşturun.", "maxOptions": "Ücretsiz kullanıcılar için maks. 5 seçenek.", "upgradeButton": "Şimdi Yükselt", "startingAt": "Sadece 9,99€ / ay'dan başlayan" },
+    "benefits": { "unlimitedAccess": "Sınırsız erişim", "aiFeatures": "Tüm AI özellikleri", "prioritySupport": "Öncelikli destek" }
   }
 }

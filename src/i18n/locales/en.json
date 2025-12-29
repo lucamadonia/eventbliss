@@ -1126,10 +1126,32 @@
     "planName": "EventBliss Pro",
     "planDescription": "Everything you need for perfect events",
     "perMonth": "month",
+    "badge": "Premium",
     "features": {
       "unlimitedEvents": "Unlimited Events",
-      "aiAssistant": "Advanced AI Assistant",
-      "prioritySupport": "Priority Support"
+      "aiAssistant": "AI Assistant",
+      "prioritySupport": "Priority Support",
+      "ai_assistant": "AI Assistant",
+      "message_ai": "Message AI",
+      "expenses": "Unlimited Expenses",
+      "custom_questions": "Custom Survey Questions",
+      "max_options": "Unlimited Options"
+    },
+    "paywall": {
+      "title": "Premium Feature",
+      "description": "This feature is only available for premium users.",
+      "ai_assistant": "The AI assistant helps you with personalized suggestions for your event.",
+      "message_ai": "With Premium you can enhance and personalize messages with AI.",
+      "expenses": "Free users can add up to 3 expenses. Upgrade for unlimited!",
+      "custom_questions": "Create custom questions for your survey with Premium.",
+      "maxOptions": "Free users can add up to 5 options per question.",
+      "upgradeButton": "Upgrade Now",
+      "startingAt": "Starting at just €9.99 / month"
+    },
+    "benefits": {
+      "unlimitedAccess": "Unlimited access to all features",
+      "aiFeatures": "All AI features unlocked",
+      "prioritySupport": "Priority support"
     },
     "subscribe": "Upgrade Now",
     "comingSoonNote": "Premium subscriptions will be available soon. Stay tuned!"
