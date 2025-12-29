@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -129,6 +129,23 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
   const updateQuestionConfig = (key: keyof QuestionConfigs, config: QuestionConfig) => {
     setQuestionConfig(prev => ({ ...prev, [key]: config }));
   };
+
+  // Sync local state with event.settings when event changes (after save/refetch)
+  useEffect(() => {
+    const newSettings = mergeWithDefaults(event.settings);
+    setBudgetOptions(newSettings.budget_options);
+    setDestinationOptions(newSettings.destination_options);
+    setQuestionConfig(newSettings.question_config || DEFAULT_QUESTION_CONFIG);
+    setAttendanceOptions(newSettings.attendance_options);
+    setDurationOptions(newSettings.duration_options);
+    setTravelOptions(newSettings.travel_options);
+    setFitnessOptions(newSettings.fitness_options);
+    setAlcoholOptions(newSettings.alcohol_options);
+    setNoGos(newSettings.no_gos || []);
+    setFocusPoints(newSettings.focus_points || []);
+    setBranding(newSettings.branding || DEFAULT_BRANDING);
+    setCustomQuestions(newSettings.custom_questions || []);
+  }, [event.settings]);
   
   const [newBudget, setNewBudget] = useState("");
   const [newDestination, setNewDestination] = useState("");
@@ -523,6 +540,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       </div>
                       <div className="flex gap-1">
                         <Button
+                          type="button"
                           variant={questionConfig.budget.multiSelect ? "outline" : "default"}
                           size="sm"
                           onClick={() => updateQuestionConfig('budget', { ...questionConfig.budget, multiSelect: false })}
@@ -530,6 +548,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           {t('dashboard.form.single')}
                         </Button>
                         <Button
+                          type="button"
                           variant={questionConfig.budget.multiSelect ? "default" : "outline"}
                           size="sm"
                           onClick={() => updateQuestionConfig('budget', { ...questionConfig.budget, multiSelect: true })}
@@ -547,6 +566,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         >
                           {option.label}
                           <Button
+                            type="button"
                             variant="ghost"
                             size="sm"
                             className="h-5 w-5 p-0 hover:bg-destructive/20"
@@ -564,7 +584,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         onChange={(e) => setNewBudget(e.target.value)}
                         className="flex-1"
                       />
-                      <Button onClick={addBudgetOption} disabled={!newBudget}>
+                      <Button type="button" onClick={addBudgetOption} disabled={!newBudget}>
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -597,6 +617,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       </div>
                       <div className="flex gap-1">
                         <Button
+                          type="button"
                           variant={questionConfig.destination.multiSelect ? "outline" : "default"}
                           size="sm"
                           onClick={() => updateQuestionConfig('destination', { ...questionConfig.destination, multiSelect: false })}
@@ -604,6 +625,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           {t('dashboard.form.single')}
                         </Button>
                         <Button
+                          type="button"
                           variant={questionConfig.destination.multiSelect ? "default" : "outline"}
                           size="sm"
                           onClick={() => updateQuestionConfig('destination', { ...questionConfig.destination, multiSelect: true })}
@@ -622,6 +644,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                             {option.emoji} {option.label}
                           </span>
                           <Button
+                            type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => removeDestination(option.value)}
@@ -646,7 +669,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         onChange={(e) => setNewDestination(e.target.value)}
                         className="flex-1"
                       />
-                      <Button onClick={addDestination} disabled={!newDestination}>
+                      <Button type="button" onClick={addDestination} disabled={!newDestination}>
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -688,6 +711,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                             >
                               <span className="text-sm">{noGo}</span>
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeNoGo(index)}
@@ -707,7 +731,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           onKeyDown={(e) => e.key === 'Enter' && addNoGo()}
                           className="flex-1"
                         />
-                        <Button onClick={addNoGo} disabled={!newNoGo} size="sm">
+                        <Button type="button" onClick={addNoGo} disabled={!newNoGo} size="sm">
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
@@ -728,6 +752,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                             >
                               <span className="text-sm">{point}</span>
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeFocusPoint(index)}
@@ -747,7 +772,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                           onKeyDown={(e) => e.key === 'Enter' && addFocusPoint()}
                           className="flex-1"
                         />
-                        <Button onClick={addFocusPoint} disabled={!newFocusPoint} size="sm">
+                        <Button type="button" onClick={addFocusPoint} disabled={!newFocusPoint} size="sm">
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
