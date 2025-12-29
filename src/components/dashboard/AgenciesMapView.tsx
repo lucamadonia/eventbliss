@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { MapPin, AlertTriangle } from 'lucide-react';
-
+import { MapPin, AlertTriangle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 // City coordinates for all cities in the agencies data
 const CITY_COORDINATES: Record<string, [number, number]> = {
   // Deutschland
@@ -103,8 +103,41 @@ export const AgenciesMapView = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapToken, setMapToken] = useState<string>("");
+  const [manualToken, setManualToken] = useState<string>("");
+  const [isLoadingToken, setIsLoadingToken] = useState(true);
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load token from edge function or localStorage
+  useEffect(() => {
+    const loadToken = async () => {
+      setIsLoadingToken(true);
+      
+      // Check localStorage first
+      const storedToken = localStorage.getItem('mapbox_public_token');
+      if (storedToken) {
+        setMapToken(storedToken);
+        setIsLoadingToken(false);
+        return;
+      }
+
+      // Try to get from edge function
+      try {
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (data?.success && data?.token) {
+          setMapToken(data.token);
+          localStorage.setItem('mapbox_public_token', data.token);
+        }
+      } catch (err) {
+        console.log('Token fetch failed, falling back to manual input');
+      }
+      
+      setIsLoadingToken(false);
+    };
+
+    loadToken();
+  }, []);
 
   // Group agencies by city
   const cityCounts = agencies.reduce((acc, agency) => {
@@ -264,6 +297,25 @@ export const AgenciesMapView = ({
     }
   }, [agencies, cityCounts, isMapReady, selectedCity, selectedCountry, onCityClick]);
 
+  // Handle manual token submission
+  const handleManualTokenSubmit = () => {
+    if (manualToken.trim()) {
+      setMapToken(manualToken.trim());
+      localStorage.setItem('mapbox_public_token', manualToken.trim());
+    }
+  };
+
+  if (isLoadingToken) {
+    return (
+      <GlassCard className="p-6">
+        <div className="flex items-center justify-center gap-3">
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          <span>Mapbox Token wird geladen...</span>
+        </div>
+      </GlassCard>
+    );
+  }
+
   if (!mapToken) {
     return (
       <GlassCard className="p-6">
@@ -288,15 +340,21 @@ export const AgenciesMapView = ({
         </div>
         <div className="space-y-2">
           <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
-          <Input
-            id="mapbox-token"
-            type="password"
-            placeholder="pk.eyJ1Ijo..."
-            value={mapToken}
-            onChange={(e) => setMapToken(e.target.value)}
-          />
+          <div className="flex gap-2">
+            <Input
+              id="mapbox-token"
+              type="password"
+              placeholder="pk.eyJ1Ijo..."
+              value={manualToken}
+              onChange={(e) => setManualToken(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleManualTokenSubmit()}
+            />
+            <Button onClick={handleManualTokenSubmit} disabled={!manualToken.trim()}>
+              Speichern
+            </Button>
+          </div>
           <p className="text-xs text-muted-foreground">
-            Der Token wird nur lokal im Browser gespeichert.
+            Der Token wird im Browser gespeichert für zukünftige Besuche.
           </p>
         </div>
       </GlassCard>
@@ -314,7 +372,11 @@ export const AgenciesMapView = ({
           variant="outline" 
           size="sm" 
           className="mt-4"
-          onClick={() => setMapToken("")}
+          onClick={() => {
+            setMapToken("");
+            setManualToken("");
+            localStorage.removeItem('mapbox_public_token');
+          }}
         >
           Token ändern
         </Button>
