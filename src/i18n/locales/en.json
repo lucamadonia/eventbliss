@@ -937,9 +937,21 @@
       "drinks": "Drinks",
       "gifts": "Gifts",
       "other": "Other"
-    }
-  },
-  "common": {
+    },
+    "deleteConfirm": "Delete expense?",
+    "deleteConfirmDescription": "This expense will be marked as deleted. You can provide a reason.",
+    "deleteReason": "Reason (optional)",
+    "deleteReasonPlaceholder": "e.g., Duplicate entry, Wrong information...",
+    "restored": "Expense restored",
+    "restoreError": "Could not restore expense",
+    "showDeleted": "Show deleted",
+    "hideDeleted": "Hide deleted",
+    "deletedBy": "Deleted by",
+    "deletedAt": "Deleted at",
+    "restore": "Restore",
+    "settlementExplanation": "Settlements show who needs to pay whom so everyone is fairly covered.",
+    "balanceTooltip": "{{name}} paid {{paid}} and owes {{owes}}. Difference: {{balance}}",
+    "noPaymentNeeded": "{{name}} doesn't need to pay as they've already paid enough.",
     "people": "people"
   },
   "notifications": {

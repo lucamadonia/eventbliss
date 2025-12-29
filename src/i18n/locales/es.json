@@ -468,7 +468,22 @@
       "drinks": "Bebidas",
       "gifts": "Regalos",
       "other": "Otros"
-    }
+    },
+    "deleteConfirm": "¿Eliminar gasto?",
+    "deleteConfirmDescription": "Este gasto se marcará como eliminado. Puedes indicar un motivo.",
+    "deleteReason": "Motivo (opcional)",
+    "deleteReasonPlaceholder": "ej. Duplicado, Información incorrecta...",
+    "restored": "Gasto restaurado",
+    "restoreError": "No se pudo restaurar el gasto",
+    "showDeleted": "Mostrar eliminados",
+    "hideDeleted": "Ocultar eliminados",
+    "deletedBy": "Eliminado por",
+    "deletedAt": "Eliminado el",
+    "restore": "Restaurar",
+    "settlementExplanation": "Las liquidaciones muestran quién debe pagar a quién para que todos estén cubiertos equitativamente.",
+    "balanceTooltip": "{{name}} pagó {{paid}} y debe {{owes}}. Diferencia: {{balance}}",
+    "noPaymentNeeded": "{{name}} no necesita pagar ya que ha pagado suficiente.",
+    "people": "personas"
   },
   "notifications": {
     "linkCopied": "¡Enlace copiado!",

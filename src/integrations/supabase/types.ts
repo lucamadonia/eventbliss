@@ -170,6 +170,9 @@ export type Database = {
           category: Database["public"]["Enums"]["expense_category"]
           created_at: string
           currency: string
+          deleted_at: string | null
+          deleted_by: string | null
+          deletion_reason: string | null
           description: string
           event_id: string
           expense_date: string | null
@@ -184,6 +187,9 @@ export type Database = {
           category?: Database["public"]["Enums"]["expense_category"]
           created_at?: string
           currency?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
           description: string
           event_id: string
           expense_date?: string | null
@@ -198,6 +204,9 @@ export type Database = {
           category?: Database["public"]["Enums"]["expense_category"]
           created_at?: string
           currency?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
           description?: string
           event_id?: string
           expense_date?: string | null

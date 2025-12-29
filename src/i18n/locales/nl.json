@@ -423,7 +423,22 @@
       "drinks": "Drinken",
       "gifts": "Cadeaus",
       "other": "Overig"
-    }
+    },
+    "deleteConfirm": "Uitgave verwijderen?",
+    "deleteConfirmDescription": "Deze uitgave wordt als verwijderd gemarkeerd. Je kunt een reden opgeven.",
+    "deleteReason": "Reden (optioneel)",
+    "deleteReasonPlaceholder": "bijv. Dubbele invoer, Verkeerde informatie...",
+    "restored": "Uitgave hersteld",
+    "restoreError": "Kon uitgave niet herstellen",
+    "showDeleted": "Verwijderde tonen",
+    "hideDeleted": "Verwijderde verbergen",
+    "deletedBy": "Verwijderd door",
+    "deletedAt": "Verwijderd op",
+    "restore": "Herstellen",
+    "settlementExplanation": "Verrekeningen tonen wie aan wie moet betalen zodat iedereen eerlijk gedekt is.",
+    "balanceTooltip": "{{name}} betaalde {{paid}} en is {{owes}} verschuldigd. Verschil: {{balance}}",
+    "noPaymentNeeded": "{{name}} hoeft niet te betalen omdat hij/zij al genoeg heeft betaald.",
+    "people": "personen"
   },
   "notifications": {
     "linkCopied": "Link gekopieerd!",

@@ -410,7 +410,22 @@
       "drinks": "المشروبات",
       "gifts": "الهدايا",
       "other": "أخرى"
-    }
+    },
+    "deleteConfirm": "حذف النفقة؟",
+    "deleteConfirmDescription": "سيتم تمييز هذه النفقة كمحذوفة. يمكنك تحديد السبب.",
+    "deleteReason": "السبب (اختياري)",
+    "deleteReasonPlaceholder": "مثال: مكرر، معلومات خاطئة...",
+    "restored": "تم استعادة النفقة",
+    "restoreError": "تعذر استعادة النفقة",
+    "showDeleted": "عرض المحذوفة",
+    "hideDeleted": "إخفاء المحذوفة",
+    "deletedBy": "حذف بواسطة",
+    "deletedAt": "تاريخ الحذف",
+    "restore": "استعادة",
+    "settlementExplanation": "تظهر التسويات من يجب أن يدفع لمن حتى يتم تغطية الجميع بشكل عادل.",
+    "balanceTooltip": "{{name}} دفع {{paid}} ومدين بـ {{owes}}. الفرق: {{balance}}",
+    "noPaymentNeeded": "{{name}} لا يحتاج للدفع لأنه دفع ما يكفي بالفعل.",
+    "people": "أشخاص"
   },
   "notifications": {
     "linkCopied": "تم نسخ الرابط!",

@@ -423,7 +423,22 @@
       "drinks": "Bevande",
       "gifts": "Regali",
       "other": "Altro"
-    }
+    },
+    "deleteConfirm": "Eliminare spesa?",
+    "deleteConfirmDescription": "Questa spesa verrà contrassegnata come eliminata. Puoi indicare un motivo.",
+    "deleteReason": "Motivo (opzionale)",
+    "deleteReasonPlaceholder": "es. Duplicato, Informazioni errate...",
+    "restored": "Spesa ripristinata",
+    "restoreError": "Impossibile ripristinare la spesa",
+    "showDeleted": "Mostra eliminate",
+    "hideDeleted": "Nascondi eliminate",
+    "deletedBy": "Eliminato da",
+    "deletedAt": "Eliminato il",
+    "restore": "Ripristina",
+    "settlementExplanation": "I conguagli mostrano chi deve pagare a chi affinché tutti siano coperti equamente.",
+    "balanceTooltip": "{{name}} ha pagato {{paid}} e deve {{owes}}. Differenza: {{balance}}",
+    "noPaymentNeeded": "{{name}} non deve pagare perché ha già pagato abbastanza.",
+    "people": "persone"
   },
   "notifications": {
     "linkCopied": "Link copiato!",
