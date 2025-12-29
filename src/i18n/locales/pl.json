@@ -40,6 +40,8 @@
     "createEvent": "Utwórz Wydarzenie",
     "joinEvent": "Dołącz z Kodem",
     "features": {
+      "title": "Wszystko, czego potrzebujesz",
+      "subtitle": "Zaplanuj idealne wydarzenie dzięki naszym potężnym narzędziom",
       "multiEvent": {
         "title": "Zarządzanie Wieloma Wydarzeniami",
         "description": "Zarządzaj wieloma wydarzeniami jednocześnie z przejrzystym dashboardem."

@@ -40,6 +40,8 @@
     "createEvent": "Create Event",
     "joinEvent": "Join with Code",
     "features": {
+      "title": "Everything you need",
+      "subtitle": "Plan the perfect event with our powerful tools",
       "multiEvent": {
         "title": "Multi-Event Management",
         "description": "Manage multiple events simultaneously with a clear dashboard."

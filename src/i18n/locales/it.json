@@ -40,6 +40,8 @@
     "createEvent": "Crea Evento",
     "joinEvent": "Unisciti con Codice",
     "features": {
+      "title": "Tutto ciò di cui hai bisogno",
+      "subtitle": "Organizza l'evento perfetto con i nostri potenti strumenti",
       "multiEvent": {
         "title": "Gestione Multi-Evento",
         "description": "Gestisci più eventi contemporaneamente con una dashboard chiara."
