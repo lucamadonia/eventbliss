@@ -16,20 +16,20 @@ const Landing = () => {
   const features = [
     {
       icon: Users,
-      title: t('landing.feature1Title'),
-      description: t('landing.feature1Description'),
+      title: t('landing.features.multiEvent.title'),
+      description: t('landing.features.multiEvent.description'),
       gradient: "primary" as const,
     },
     {
       icon: Wallet,
-      title: t('landing.feature2Title'),
-      description: t('landing.feature2Description'),
+      title: t('landing.features.costSplitting.title'),
+      description: t('landing.features.costSplitting.description'),
       gradient: "secondary" as const,
     },
     {
       icon: MessageSquare,
-      title: t('landing.feature3Title'),
-      description: t('landing.feature3Description'),
+      title: t('landing.features.messageTemplates.title'),
+      description: t('landing.features.messageTemplates.description'),
       gradient: "accent" as const,
     },
   ];
@@ -105,7 +105,7 @@ const Landing = () => {
                 size="lg"
                 onClick={() => navigate("/join")}
               >
-                {t('landing.joinWithCode')}
+                {t('landing.joinEvent')}
               </GradientButton>
             </motion.div>
           </div>
@@ -123,10 +123,10 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              {t('landing.featuresTitle')}
+              {t('landing.features.title')}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              {t('landing.featuresSubtitle')}
+              {t('landing.features.subtitle')}
             </p>
           </motion.div>
 
@@ -147,17 +147,17 @@ const Landing = () => {
         <div className="container max-w-4xl mx-auto">
           <GlassCard className="text-center p-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              {t('landing.ctaTitle')}
+              {t('landing.cta.title')}
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              {t('landing.ctaDescription')}
+              {t('landing.cta.description')}
             </p>
             <GradientButton
               size="lg"
               onClick={() => navigate("/create")}
               icon={<Sparkles className="w-5 h-5" />}
             >
-              {t('landing.ctaButton')}
+              {t('landing.cta.button')}
             </GradientButton>
           </GlassCard>
         </div>

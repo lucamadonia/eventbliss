@@ -40,6 +40,8 @@
     "createEvent": "Evenement Maken",
     "joinEvent": "Deelnemen met Code",
     "features": {
+      "title": "Alles wat je nodig hebt",
+      "subtitle": "Plan het perfecte evenement met onze krachtige tools",
       "multiEvent": {
         "title": "Multi-Event Beheer",
         "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard."

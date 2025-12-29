@@ -40,6 +40,8 @@
     "createEvent": "Etkinlik Oluştur",
     "joinEvent": "Kod ile Katıl",
     "features": {
+      "title": "İhtiyacınız olan her şey",
+      "subtitle": "Güçlü araçlarımızla mükemmel etkinliği planlayın",
       "multiEvent": {
         "title": "Çoklu Etkinlik Yönetimi",
         "description": "Net bir panelle birden fazla etkinliği aynı anda yönetin."
