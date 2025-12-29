@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Heart, Calendar, PartyPopper, Cake, Plane, Star, Sparkles } from "lucide-react";
 import { type BrandingConfig } from "@/lib/survey-config";
+import { getTemplateById, PATTERN_SVGS } from "@/lib/design-templates";
 
 interface DynamicHeroProps {
   eventName: string;
@@ -11,6 +12,7 @@ interface DynamicHeroProps {
   keyDate?: string;
   heroImageUrl?: string;
   logoUrl?: string;
+  templateId?: string;
 }
 
 const eventTypeConfig = {
@@ -30,9 +32,15 @@ const DynamicHero = ({
   keyDate,
   heroImageUrl,
   logoUrl,
+  templateId,
 }: DynamicHeroProps) => {
   const config = eventTypeConfig[eventType] || eventTypeConfig.other;
   const IconComponent = config.icon;
+  
+  // Get template for pattern and background icons
+  const template = templateId ? getTemplateById(templateId) : null;
+  const patternId = template?.patternId || 'none';
+  const backgroundIcons = template?.backgroundIcons || [config.emoji];
   
   // Custom title from branding or auto-generate
   const title = branding?.hero_title || eventName;
@@ -41,9 +49,50 @@ const DynamicHero = ({
   // Dynamic styles based on branding
   const primaryColor = branding?.primary_color || "#8B5CF6";
   const accentColor = branding?.accent_color || "#06B6D4";
+  const backgroundStyle = branding?.background_style || 'gradient';
+
+  // Generate pattern SVG
+  const patternSvg = patternId !== 'none' && PATTERN_SVGS[patternId] 
+    ? PATTERN_SVGS[patternId](primaryColor) 
+    : '';
+  const patternDataUrl = patternSvg 
+    ? `url("data:image/svg+xml,${encodeURIComponent(patternSvg)}")` 
+    : 'none';
+
+  // Background style based on branding setting
+  const getBackgroundStyle = () => {
+    switch (backgroundStyle) {
+      case 'dark':
+        return `linear-gradient(135deg, ${primaryColor}20 0%, ${accentColor}10 100%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%)`;
+      case 'solid':
+        return `linear-gradient(180deg, ${primaryColor}15 0%, transparent 100%)`;
+      case 'gradient':
+      default:
+        return `linear-gradient(135deg, ${primaryColor}25 0%, ${accentColor}15 50%, transparent 100%)`;
+    }
+  };
 
   return (
     <section className="relative overflow-hidden py-12 md:py-20">
+      {/* Background Layer */}
+      <div 
+        className="absolute inset-0 z-0"
+        style={{
+          background: getBackgroundStyle(),
+        }}
+      />
+
+      {/* Pattern Overlay */}
+      {patternId !== 'none' && (
+        <div 
+          className="absolute inset-0 z-0 opacity-60"
+          style={{
+            backgroundImage: patternDataUrl,
+            backgroundRepeat: 'repeat',
+          }}
+        />
+      )}
+
       {/* Hero Background Image (optional) */}
       {heroImageUrl && (
         <div 
@@ -58,7 +107,34 @@ const DynamicHero = ({
         </div>
       )}
 
-      {/* Floating decorations */}
+      {/* Floating Background Icons */}
+      {backgroundIcons.map((icon, index) => (
+        <motion.div 
+          key={index}
+          className="absolute text-4xl md:text-6xl pointer-events-none select-none"
+          style={{
+            top: `${15 + index * 20}%`,
+            left: index % 2 === 0 ? '5%' : 'auto',
+            right: index % 2 === 1 ? '5%' : 'auto',
+            opacity: 0.15,
+          }}
+          animate={{ 
+            y: [0, -10 - index * 5, 0],
+            rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{ 
+            duration: 4 + index, 
+            repeat: Infinity, 
+            ease: "easeInOut",
+            delay: index * 0.5,
+          }}
+        >
+          {icon}
+        </motion.div>
+      ))}
+
+      {/* Additional floating decorations */}
       <motion.div 
         className="absolute top-10 left-10 opacity-20"
         animate={{ 
@@ -90,6 +166,20 @@ const DynamicHero = ({
         className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full blur-3xl opacity-15 -z-10"
         style={{ backgroundColor: accentColor }}
       />
+
+      {/* Dark mode glow effect for "dark" style */}
+      {backgroundStyle === 'dark' && (
+        <>
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-[100px] opacity-30"
+            style={{ backgroundColor: primaryColor }}
+          />
+          <div 
+            className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full blur-[80px] opacity-20"
+            style={{ backgroundColor: accentColor }}
+          />
+        </>
+      )}
       
       <div className="container relative z-10">
         <motion.div 
