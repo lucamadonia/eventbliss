@@ -33,34 +33,35 @@
     "copyLink": "Copiar enlace",
     "copyCode": "Copiar código"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "La Plataforma Moderna de Planificación de Fiestas",
-    "description": "Planifica eventos inolvidables con tu grupo. Simple, rápido y sin estrés.",
-    "createEvent": "Crear Evento",
-    "joinEvent": "Unirse con Código",
+"landing": {
+    "nav": { "features": "Funciones", "howItWorks": "Cómo funciona", "solutions": "Soluciones", "faq": "FAQ", "login": "Iniciar sesión", "signUp": "Registrarse" },
+    "hero": { "badge": "La plataforma #1 de planificación de eventos", "title": "Planifica Eventos Inolvidables", "subtitle": "Desde despedidas de soltero hasta cumpleaños, organiza eventos grupales con facilidad. División inteligente de costes, sugerencias con IA y colaboración en tiempo real.", "createEvent": "Crear Evento", "joinEvent": "Unirse con Código", "trustedBy": "Más de 10.000 organizadores confían en nosotros" },
     "features": {
-      "title": "Todo lo que necesitas",
-      "subtitle": "Planifica el evento perfecto con nuestras potentes herramientas",
-      "multiEvent": {
-        "title": "Gestión Multi-Evento",
-        "description": "Gestiona múltiples eventos simultáneamente con un panel claro."
-      },
-      "costSplitting": {
-        "title": "División Inteligente de Costes",
-        "description": "Registra gastos y divídelos equitativamente entre todos los participantes."
-      },
-      "messageTemplates": {
-        "title": "Plantillas de Mensajes",
-        "description": "Mensajes de WhatsApp prediseñados para cada ocasión."
-      }
+      "title": "Todo lo que necesitas", "subtitle": "Herramientas potentes para el evento perfecto",
+      "multiEvent": { "title": "Gestión Multi-Evento", "description": "Gestiona múltiples eventos simultáneamente con un panel claro" },
+      "costSplitting": { "title": "División Inteligente de Costes", "description": "Registra gastos y divídelos equitativamente entre todos" },
+      "aiSuggestions": { "title": "Sugerencias con IA", "description": "Obtén recomendaciones personalizadas de actividades y destinos" },
+      "messageTemplates": { "title": "Plantillas de Mensajes", "description": "Mensajes de WhatsApp prediseñados para cada ocasión" },
+      "dateCoordination": { "title": "Coordinación de Fechas", "description": "Encuentra la fecha perfecta que funcione para todos" },
+      "realtime": { "title": "Colaboración en Tiempo Real", "description": "Trabaja junto con tu equipo en tiempo real" }
     },
-    "cta": {
-      "title": "¿Listo para tu evento?",
-      "description": "Comienza gratis y planifica el evento perfecto.",
-      "button": "Crear Evento Gratis"
+    "howItWorks": { "title": "Cómo Funciona", "subtitle": "Planifica tu evento en 4 simples pasos",
+      "step1": { "title": "Crear Evento", "description": "Elige el tipo de evento y establece los detalles básicos" },
+      "step2": { "title": "Invitar Invitados", "description": "Comparte un enlace o código simple con tu grupo" },
+      "step3": { "title": "Recoger Preferencias", "description": "Deja que los invitados voten sobre fechas, destinos y actividades" },
+      "step4": { "title": "Planificar Juntos", "description": "Usa sugerencias de IA y herramientas de colaboración para finalizar" }
     },
-    "footer": "Hecho con ❤️ para eventos inolvidables"
+    "eventTypes": { "title": "Perfecto para Cualquier Evento", "subtitle": "Ya sea un fin de semana salvaje o una reunión íntima", "bachelor": "Despedidas de Soltero", "bachelorette": "Despedidas de Soltera", "birthday": "Fiestas de Cumpleaños", "team": "Eventos de Equipo", "trip": "Viajes en Grupo", "wedding": "Bodas" },
+    "testimonials": { "title": "Amado por Organizadores", "subtitle": "Lo que dicen nuestros usuarios", "testimonial1": { "text": "¡EventBliss hizo que planificar la despedida de soltero de mi amigo fuera muy fácil! Todos pudieron votar." }, "testimonial2": { "text": "La función de división de costes es un salvavidas. ¡No más conversaciones incómodas sobre dinero!" }, "testimonial3": { "text": "He organizado 5 eventos con EventBliss. Las sugerencias de IA son increíblemente útiles." } },
+    "faq": { "title": "Preguntas Frecuentes", "q1": "¿Es EventBliss gratis?", "a1": "¡Sí! EventBliss es gratis para planificación básica. Funciones premium disponibles para usuarios avanzados.", "q2": "¿Cuántos invitados puedo invitar?", "a2": "Puedes invitar invitados ilimitados. No hay restricciones.", "q3": "¿Puedo usar EventBliss para eventos empresariales?", "a3": "¡Absolutamente! EventBliss es perfecto para team building y eventos corporativos.", "q4": "¿Están seguros mis datos?", "a4": "Sí, tomamos la seguridad en serio. Todos los datos están encriptados." },
+    "cta": { "title": "¿Listo para tu Próximo Evento?", "description": "Comienza gratis y crea recuerdos inolvidables.", "button": "Crear tu Evento" },
+    "footer": { "tagline": "Planifica eventos que unen personas", "product": "Producto", "features": "Funciones", "integrations": "Integraciones", "enterprise": "Empresa", "solutions": "Soluciones", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Descargo", "privacy": "Privacidad", "terms": "Términos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos los derechos reservados." }
+  },
+  "legal": {
+    "imprint": { "title": "Aviso Legal", "company": "Información de la Empresa", "registeredCompany": "Empresa registrada en Chipre", "address": "Dirección", "contact": "Contacto", "responsibleContent": "Responsable del Contenido", "disputeResolution": "Resolución de Disputas UE", "disputeText": "La Comisión Europea proporciona una plataforma para la resolución de disputas en línea." },
+    "privacy": { "title": "Política de Privacidad", "lastUpdated": "Última actualización", "intro": "Tu privacidad es importante para nosotros. Esta política explica cómo recopilamos y protegemos tus datos.", "dataCollection": { "title": "Recopilación de Datos", "content": "Recopilamos información que proporcionas directamente, como nombre, email y preferencias." }, "dataUsage": { "title": "Uso de Datos", "content": "Tus datos se usan para proporcionar y mejorar nuestros servicios." }, "cookies": { "title": "Cookies", "content": "Usamos cookies para mejorar tu experiencia." }, "dataSecurity": { "title": "Seguridad de Datos", "content": "Implementamos medidas de seguridad estándar de la industria." }, "userRights": { "title": "Tus Derechos", "content": "Tienes derecho a acceder, corregir o eliminar tus datos." }, "thirdParty": { "title": "Terceros", "content": "Podemos compartir datos con socios de confianza." }, "contact": { "title": "Contacto", "content": "Para consultas de privacidad, contáctanos en:" } },
+    "terms": { "title": "Términos de Servicio", "lastUpdated": "Última actualización", "intro": "Al usar EventBliss, aceptas estos términos.", "acceptance": { "title": "Aceptación", "content": "Al acceder a EventBliss, aceptas estos términos." }, "services": { "title": "Nuestros Servicios", "content": "EventBliss proporciona herramientas de planificación de eventos." }, "payment": { "title": "Términos de Pago", "content": "Las funciones básicas son gratuitas. Las premium pueden requerir pago." }, "prohibited": { "title": "Actividades Prohibidas", "content": "No puedes usar nuestros servicios para actividades ilegales." }, "liability": { "title": "Limitación de Responsabilidad", "content": "EventBliss no es responsable de daños derivados del uso." }, "changes": { "title": "Cambios", "content": "Podemos actualizar estos términos." }, "governingLaw": { "title": "Ley Aplicable", "content": "Estos términos se rigen por las leyes de Chipre." } },
+    "disclaimer": { "title": "Descargo de Responsabilidad", "lastUpdated": "Última actualización", "intro": "Lee este descargo antes de usar EventBliss.", "general": { "title": "Descargo General", "content": "La información en EventBliss es solo para propósitos generales." }, "externalLinks": { "title": "Enlaces Externos", "content": "No somos responsables del contenido de terceros." }, "availability": { "title": "Disponibilidad", "content": "Buscamos 99.9% de disponibilidad pero no podemos garantizar servicio ininterrumpido." }, "limitation": { "title": "Limitación", "content": "No somos responsables de daños indirectos." }, "contact": { "title": "Contacto", "content": "Para preguntas sobre este descargo, contáctanos." } }
   },
   "createEvent": {
     "title": "Crear Evento",

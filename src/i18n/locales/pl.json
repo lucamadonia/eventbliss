@@ -33,34 +33,22 @@
     "copyLink": "Kopiuj link",
     "copyCode": "Kopiuj kod"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "Nowoczesna Platforma Planowania Imprez",
-    "description": "Planuj niezapomniane wydarzenia ze swoją grupą. Prosto, szybko i bez stresu.",
-    "createEvent": "Utwórz Wydarzenie",
-    "joinEvent": "Dołącz z Kodem",
-    "features": {
-      "title": "Wszystko, czego potrzebujesz",
-      "subtitle": "Zaplanuj idealne wydarzenie dzięki naszym potężnym narzędziom",
-      "multiEvent": {
-        "title": "Zarządzanie Wieloma Wydarzeniami",
-        "description": "Zarządzaj wieloma wydarzeniami jednocześnie z przejrzystym dashboardem."
-      },
-      "costSplitting": {
-        "title": "Inteligentny Podział Kosztów",
-        "description": "Śledź wydatki i dziel je sprawiedliwie między wszystkich uczestników."
-      },
-      "messageTemplates": {
-        "title": "Szablony Wiadomości",
-        "description": "Gotowe wiadomości WhatsApp na każdą okazję."
-      }
-    },
-    "cta": {
-      "title": "Gotowy na swoje wydarzenie?",
-      "description": "Zacznij za darmo i zaplanuj idealne wydarzenie.",
-      "button": "Utwórz Darmowe Wydarzenie"
-    },
-    "footer": "Zrobione z ❤️ dla niezapomnianych wydarzeń"
+"landing": {
+    "nav": { "features": "Funkcje", "howItWorks": "Jak to działa", "solutions": "Rozwiązania", "faq": "FAQ", "login": "Zaloguj", "signUp": "Zarejestruj" },
+    "hero": { "badge": "Platforma #1 do planowania wydarzeń", "title": "Planuj Niezapomniane Wydarzenia", "subtitle": "Od wieczorów kawalerskich po urodziny, organizuj wydarzenia grupowe z łatwością. Inteligentny podział kosztów, sugestie AI i współpraca w czasie rzeczywistym.", "createEvent": "Utwórz Wydarzenie", "joinEvent": "Dołącz z Kodem", "trustedBy": "Ponad 10 000 organizatorów nam ufa" },
+    "features": { "title": "Wszystko, czego potrzebujesz", "subtitle": "Potężne narzędzia do idealnego wydarzenia", "multiEvent": { "title": "Zarządzanie Wieloma Wydarzeniami", "description": "Zarządzaj wieloma wydarzeniami jednocześnie" }, "costSplitting": { "title": "Inteligentny Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" }, "aiSuggestions": { "title": "Sugestie AI", "description": "Otrzymuj spersonalizowane rekomendacje" }, "messageTemplates": { "title": "Szablony Wiadomości", "description": "Gotowe wiadomości WhatsApp" }, "dateCoordination": { "title": "Koordynacja Terminów", "description": "Znajdź idealną datę dla wszystkich" }, "realtime": { "title": "Współpraca w Czasie Rzeczywistym", "description": "Pracuj z zespołem w czasie rzeczywistym" } },
+    "howItWorks": { "title": "Jak to Działa", "subtitle": "Zaplanuj w 4 prostych krokach", "step1": { "title": "Utwórz Wydarzenie", "description": "Wybierz typ i ustaw szczegóły" }, "step2": { "title": "Zaproś Gości", "description": "Udostępnij link lub kod" }, "step3": { "title": "Zbierz Preferencje", "description": "Pozwól gościom głosować" }, "step4": { "title": "Planuj Razem", "description": "Użyj sugestii AI do finalizacji" } },
+    "eventTypes": { "title": "Idealne na Każde Wydarzenie", "subtitle": "Czy to dziki weekend czy kameralne spotkanie", "bachelor": "Wieczory Kawalerskie", "bachelorette": "Wieczory Panieńskie", "birthday": "Urodziny", "team": "Wydarzenia Firmowe", "trip": "Wycieczki Grupowe", "wedding": "Wesela" },
+    "testimonials": { "title": "Uwielbiane przez Organizatorów", "subtitle": "Co mówią nasi użytkownicy", "testimonial1": { "text": "EventBliss sprawił, że planowanie było takie proste!" }, "testimonial2": { "text": "Podział kosztów to ratunek!" }, "testimonial3": { "text": "Zorganizowałem 5 wydarzeń. Sugestie AI są niesamowite." } },
+    "faq": { "title": "Często Zadawane Pytania", "q1": "Czy EventBliss jest darmowy?", "a1": "Tak! Darmowy dla podstawowego planowania.", "q2": "Ilu gości mogę zaprosić?", "a2": "Nieograniczenie. Bez limitów.", "q3": "Czy mogę używać do wydarzeń firmowych?", "a3": "Absolutnie! Idealny na team building.", "q4": "Czy moje dane są bezpieczne?", "a4": "Tak, wszystkie dane są szyfrowane." },
+    "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
+    "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." }
+  },
+  "legal": {
+    "imprint": { "title": "Impressum", "company": "Informacje o Firmie", "registeredCompany": "Firma zarejestrowana na Cyprze", "address": "Adres", "contact": "Kontakt", "responsibleContent": "Odpowiedzialny za Treść", "disputeResolution": "Rozstrzyganie Sporów UE", "disputeText": "Komisja Europejska udostępnia platformę do rozstrzygania sporów online." },
+    "privacy": { "title": "Polityka Prywatności", "lastUpdated": "Ostatnia aktualizacja", "intro": "Twoja prywatność jest dla nas ważna.", "dataCollection": { "title": "Zbieranie Danych", "content": "Zbieramy informacje, które podajesz." }, "dataUsage": { "title": "Wykorzystanie Danych", "content": "Dane są używane do świadczenia usług." }, "cookies": { "title": "Cookies", "content": "Używamy cookies." }, "dataSecurity": { "title": "Bezpieczeństwo", "content": "Stosujemy standardowe zabezpieczenia." }, "userRights": { "title": "Twoje Prawa", "content": "Masz prawo dostępu i usunięcia danych." }, "thirdParty": { "title": "Strony Trzecie", "content": "Możemy udostępniać dane zaufanym partnerom." }, "contact": { "title": "Kontakt", "content": "W sprawach prywatności:" } },
+    "terms": { "title": "Regulamin", "lastUpdated": "Ostatnia aktualizacja", "intro": "Używając EventBliss, akceptujesz regulamin.", "acceptance": { "title": "Akceptacja", "content": "Korzystając, akceptujesz warunki." }, "services": { "title": "Nasze Usługi", "content": "EventBliss dostarcza narzędzia do planowania." }, "payment": { "title": "Płatności", "content": "Podstawowe funkcje są darmowe." }, "prohibited": { "title": "Zabronione", "content": "Nie używaj do nielegalnych działań." }, "liability": { "title": "Ograniczenie Odpowiedzialności", "content": "Nie ponosimy odpowiedzialności za szkody." }, "changes": { "title": "Zmiany", "content": "Możemy aktualizować regulamin." }, "governingLaw": { "title": "Prawo Właściwe", "content": "Podlega prawu cypryjskiemu." } },
+    "disclaimer": { "title": "Zastrzeżenia", "lastUpdated": "Ostatnia aktualizacja", "intro": "Przeczytaj przed użyciem.", "general": { "title": "Ogólne", "content": "Informacje są tylko orientacyjne." }, "externalLinks": { "title": "Linki Zewnętrzne", "content": "Nie odpowiadamy za treści stron trzecich." }, "availability": { "title": "Dostępność", "content": "Dążymy do 99,9% dostępności." }, "limitation": { "title": "Ograniczenie", "content": "Nie odpowiadamy za szkody pośrednie." }, "contact": { "title": "Kontakt", "content": "Pytania? Skontaktuj się." } }
   },
   "createEvent": {
     "title": "Utwórz Wydarzenie",

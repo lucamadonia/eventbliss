@@ -33,34 +33,22 @@
     "copyLink": "Linki kopyala",
     "copyCode": "Kodu kopyala"
   },
-  "landing": {
-    "title": "STAG",
-    "subtitle": "Modern Parti Planlama Platformu",
-    "description": "Grubunuzla unutulmaz etkinlikler planlayın. Basit, hızlı ve stressiz.",
-    "createEvent": "Etkinlik Oluştur",
-    "joinEvent": "Kod ile Katıl",
-    "features": {
-      "title": "İhtiyacınız olan her şey",
-      "subtitle": "Güçlü araçlarımızla mükemmel etkinliği planlayın",
-      "multiEvent": {
-        "title": "Çoklu Etkinlik Yönetimi",
-        "description": "Net bir panelle birden fazla etkinliği aynı anda yönetin."
-      },
-      "costSplitting": {
-        "title": "Akıllı Maliyet Bölüşümü",
-        "description": "Harcamaları takip edin ve tüm katılımcılar arasında adil bir şekilde paylaştırın."
-      },
-      "messageTemplates": {
-        "title": "Mesaj Şablonları",
-        "description": "Her durum için hazır WhatsApp mesajları."
-      }
-    },
-    "cta": {
-      "title": "Etkinliğinize hazır mısınız?",
-      "description": "Ücretsiz başlayın ve mükemmel etkinliği planlayın.",
-      "button": "Ücretsiz Etkinlik Oluştur"
-    },
-    "footer": "Unutulmaz etkinlikler için ❤️ ile yapıldı"
+"landing": {
+    "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt" },
+    "hero": { "badge": "#1 Etkinlik Planlama Platformu", "title": "Unutulmaz Etkinlikler Planlayın", "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.", "createEvent": "Etkinlik Oluştur", "joinEvent": "Kod ile Katıl", "trustedBy": "10.000'den fazla organizatör bize güveniyor" },
+    "features": { "title": "İhtiyacınız olan her şey", "subtitle": "Mükemmel etkinlik için güçlü araçlar", "multiEvent": { "title": "Çoklu Etkinlik Yönetimi", "description": "Birden fazla etkinliği aynı anda yönetin" }, "costSplitting": { "title": "Akıllı Maliyet Bölüşümü", "description": "Harcamaları takip edin ve adil şekilde paylaştırın" }, "aiSuggestions": { "title": "AI Önerileri", "description": "Kişiselleştirilmiş öneriler alın" }, "messageTemplates": { "title": "Mesaj Şablonları", "description": "Hazır WhatsApp mesajları" }, "dateCoordination": { "title": "Tarih Koordinasyonu", "description": "Herkes için uygun tarihi bulun" }, "realtime": { "title": "Gerçek Zamanlı İşbirliği", "description": "Ekibinizle gerçek zamanlı çalışın" } },
+    "howItWorks": { "title": "Nasıl Çalışır", "subtitle": "4 basit adımda planlayın", "step1": { "title": "Etkinlik Oluştur", "description": "Türü seçin ve detayları belirleyin" }, "step2": { "title": "Davet Et", "description": "Link veya kod paylaşın" }, "step3": { "title": "Tercihleri Toplayın", "description": "Misafirlerin oy vermesini sağlayın" }, "step4": { "title": "Birlikte Planlayın", "description": "AI önerilerini kullanarak sonuçlandırın" } },
+    "eventTypes": { "title": "Her Etkinlik için Mükemmel", "subtitle": "Vahşi bir hafta sonu veya samimi bir buluşma olsun", "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü Partileri", "team": "Takım Etkinlikleri", "trip": "Grup Gezileri", "wedding": "Düğünler" },
+    "testimonials": { "title": "Organizatörler Tarafından Seviliyor", "subtitle": "Kullanıcılarımız ne diyor", "testimonial1": { "text": "EventBliss planlamayı çok kolaylaştırdı!" }, "testimonial2": { "text": "Maliyet bölüşümü hayat kurtarıcı!" }, "testimonial3": { "text": "5 etkinlik organize ettim. AI önerileri harika." } },
+    "faq": { "title": "Sık Sorulan Sorular", "q1": "EventBliss ücretsiz mi?", "a1": "Evet! Temel planlama için ücretsiz.", "q2": "Kaç misafir davet edebilirim?", "a2": "Sınırsız. Kısıtlama yok.", "q3": "Kurumsal etkinlikler için kullanabilir miyim?", "a3": "Kesinlikle! Takım etkinlikleri için mükemmel.", "q4": "Verilerim güvende mi?", "a4": "Evet, tüm veriler şifrelenmiştir." },
+    "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
+    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." }
+  },
+  "legal": {
+    "imprint": { "title": "Künye", "company": "Şirket Bilgileri", "registeredCompany": "Kıbrıs'ta kayıtlı şirket", "address": "Adres", "contact": "İletişim", "responsibleContent": "İçerik Sorumlusu", "disputeResolution": "AB Uyuşmazlık Çözümü", "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar." },
+    "privacy": { "title": "Gizlilik Politikası", "lastUpdated": "Son güncelleme", "intro": "Gizliliğiniz bizim için önemlidir.", "dataCollection": { "title": "Veri Toplama", "content": "Doğrudan sağladığınız bilgileri topluyoruz." }, "dataUsage": { "title": "Veri Kullanımı", "content": "Verileriniz hizmet sunmak için kullanılır." }, "cookies": { "title": "Çerezler", "content": "Deneyiminizi geliştirmek için çerez kullanıyoruz." }, "dataSecurity": { "title": "Güvenlik", "content": "Standart güvenlik önlemleri uyguluyoruz." }, "userRights": { "title": "Haklarınız", "content": "Verilerinize erişme ve silme hakkınız var." }, "thirdParty": { "title": "Üçüncü Taraflar", "content": "Güvenilir ortaklarla veri paylaşabiliriz." }, "contact": { "title": "İletişim", "content": "Gizlilik soruları için:" } },
+    "terms": { "title": "Hizmet Şartları", "lastUpdated": "Son güncelleme", "intro": "EventBliss'i kullanarak bu şartları kabul ediyorsunuz.", "acceptance": { "title": "Kabul", "content": "Erişerek bu şartları kabul ediyorsunuz." }, "services": { "title": "Hizmetlerimiz", "content": "EventBliss etkinlik planlama araçları sunar." }, "payment": { "title": "Ödeme", "content": "Temel özellikler ücretsizdir." }, "prohibited": { "title": "Yasaklanan", "content": "Yasadışı faaliyetler için kullanamazsınız." }, "liability": { "title": "Sorumluluk Sınırlaması", "content": "Hasarlardan sorumlu değiliz." }, "changes": { "title": "Değişiklikler", "content": "Bu şartları güncelleyebiliriz." }, "governingLaw": { "title": "Geçerli Hukuk", "content": "Kıbrıs yasalarına tabidir." } },
+    "disclaimer": { "title": "Sorumluluk Reddi", "lastUpdated": "Son güncelleme", "intro": "Kullanmadan önce okuyun.", "general": { "title": "Genel", "content": "Bilgiler yalnızca genel amaçlıdır." }, "externalLinks": { "title": "Harici Linkler", "content": "Üçüncü taraf içeriklerinden sorumlu değiliz." }, "availability": { "title": "Kullanılabilirlik", "content": "%99,9 çalışma süresi hedefliyoruz." }, "limitation": { "title": "Sınırlama", "content": "Dolaylı zararlardan sorumlu değiliz." }, "contact": { "title": "İletişim", "content": "Sorular için bize ulaşın." } }
   },
   "createEvent": {
     "title": "Etkinlik Oluştur",
