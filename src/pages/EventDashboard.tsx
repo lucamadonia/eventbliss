@@ -159,7 +159,7 @@ const EventDashboard = () => {
       case "ai":
         return <AIAssistantTab event={event} stats={stats} />;
       case "messages":
-        return <MessagesTab event={event} slug={slug!} />;
+        return <MessagesTab event={event} slug={slug!} participants={participants} responseCount={responseCount} />;
       case "settings":
         return <SettingsTab event={event} participants={participants} onUpdate={refetch} />;
       default:
