@@ -88,6 +88,7 @@ serve(async (req) => {
     logStep("Creating checkout session", { priceId, mode, planType });
     
     // Create checkout session with locale for Stripe UI
+    // Use English locale and allow promotion codes for coupon input
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -99,7 +100,8 @@ serve(async (req) => {
         },
       ],
       mode: mode,
-      locale: stripeLocale as any,
+      locale: "en", // Always English for Stripe UI
+      allow_promotion_codes: true, // Allow users to enter coupon codes
       success_url: `${origin}/premium?success=true`,
       cancel_url: `${origin}/premium?canceled=true`,
       metadata: {

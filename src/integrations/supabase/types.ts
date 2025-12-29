@@ -711,6 +711,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           max_uses: number | null
+          stripe_coupon_id: string | null
           used_count: number | null
           valid_from: string | null
           valid_until: string | null
@@ -724,6 +725,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           max_uses?: number | null
+          stripe_coupon_id?: string | null
           used_count?: number | null
           valid_from?: string | null
           valid_until?: string | null
@@ -737,6 +739,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           max_uses?: number | null
+          stripe_coupon_id?: string | null
           used_count?: number | null
           valid_from?: string | null
           valid_until?: string | null
