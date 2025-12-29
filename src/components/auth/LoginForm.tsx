@@ -14,7 +14,11 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Passwort muss mindestens 6 Zeichen haben" }),
 });
 
-export function LoginForm() {
+interface LoginFormProps {
+  onSwitchToRegister?: () => void;
+}
+
+export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -130,6 +134,19 @@ export function LoginForm() {
           >
             {isLoading ? "Anmelden..." : "Anmelden"}
           </GradientButton>
+
+          {onSwitchToRegister && (
+            <p className="text-center text-sm text-muted-foreground">
+              Noch kein Konto?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-primary hover:underline font-medium"
+              >
+                Jetzt registrieren
+              </button>
+            </p>
+          )}
         </form>
       </GlassCard>
     </motion.div>
