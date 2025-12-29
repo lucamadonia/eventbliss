@@ -1177,7 +1177,9 @@
       "placeholder": "VOUCHER CODE",
       "redeem": "Redeem",
       "success": "Voucher redeemed successfully!",
-      "error": "Invalid voucher code"
+      "error": "Invalid voucher code",
+      "discountHint": "This code gives you a discount!",
+      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout."
     },
     "paywall": {
       "title": "Premium Feature",

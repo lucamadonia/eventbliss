@@ -76,6 +76,11 @@ serve(async (req) => {
     // Process based on voucher type
     let subscriptionId = null;
 
+    // Percentage and fixed discount vouchers must be used in Stripe checkout
+    if (voucher.discount_type === "percentage" || voucher.discount_type === "fixed") {
+      throw new Error("DISCOUNT_VOUCHER:This voucher code gives you a discount. Please click 'Subscribe' or 'Buy once' and enter the code in the Stripe checkout.");
+    }
+
     if (voucher.discount_type === "lifetime") {
       // Create or update subscription to lifetime
       const { data: existingSub } = await supabaseClient
