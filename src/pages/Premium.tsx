@@ -1,7 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity } from "lucide-react";
+import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,8 @@ export default function Premium() {
   const { isPremium, loading: premiumLoading, subscriptionEnd, planType, checkSubscription } = usePremium();
   const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherLoading, setVoucherLoading] = useState(false);
 
   // Handle success/cancel from Stripe
   useEffect(() => {
@@ -77,6 +80,38 @@ export default function Premium() {
       toast.error(t("premium.portalError"));
     } finally {
       setPortalLoading(false);
+    }
+  };
+
+  const handleRedeemVoucher = async () => {
+    if (!voucherCode.trim()) return;
+    
+    if (!user) {
+      toast.error(t("premium.loginRequired"));
+      navigate("/auth");
+      return;
+    }
+
+    setVoucherLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("redeem-voucher", {
+        body: { code: voucherCode.trim().toUpperCase() }
+      });
+      
+      if (error) throw error;
+      
+      if (!data?.success) {
+        throw new Error(data?.error || t("premium.voucher.error"));
+      }
+      
+      toast.success(data.message || t("premium.voucher.success"));
+      setVoucherCode("");
+      checkSubscription();
+    } catch (err: any) {
+      console.error("Voucher error:", err);
+      toast.error(err.message || t("premium.voucher.error"));
+    } finally {
+      setVoucherLoading(false);
     }
   };
 
@@ -317,9 +352,49 @@ export default function Premium() {
         </div>
 
         {!isPremium && (
-          <p className="text-xs text-center text-muted-foreground mt-6">
-            {t("premium.securePayment")}
-          </p>
+          <>
+            <p className="text-xs text-center text-muted-foreground mt-6">
+              {t("premium.securePayment")}
+            </p>
+            
+            {/* Voucher Redemption Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="mt-8">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-lg flex items-center justify-center gap-2">
+                    <Gift className="h-5 w-5 text-primary" />
+                    {t("premium.voucher.title")}
+                  </CardTitle>
+                  <CardDescription>{t("premium.voucher.description")}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                      placeholder={t("premium.voucher.placeholder")}
+                      className="font-mono tracking-wider uppercase"
+                    />
+                    <Button 
+                      onClick={handleRedeemVoucher} 
+                      disabled={voucherLoading || !voucherCode.trim()}
+                    >
+                      {voucherLoading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Gift className="h-4 w-4 mr-2" />
+                      )}
+                      {t("premium.voucher.redeem")}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </>
         )}
       </main>
     </div>

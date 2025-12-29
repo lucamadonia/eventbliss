@@ -1098,6 +1098,7 @@
     "myEvents": "My Events",
     "settings": "Settings",
     "premium": "Premium",
+    "adminArea": "Admin Area",
     "comingSoon": "Coming Soon",
     "noEvents": "No events yet",
     "noEventsDescription": "Create your first event and invite your friends!",
@@ -1159,6 +1160,14 @@
       "customQuestions": "Custom Survey Questions",
       "max_options": "Unlimited Options",
       "unlimitedOptions": "Unlimited Options"
+    },
+    "voucher": {
+      "title": "Redeem Voucher",
+      "description": "Have a voucher code? Redeem it here.",
+      "placeholder": "VOUCHER CODE",
+      "redeem": "Redeem",
+      "success": "Voucher redeemed successfully!",
+      "error": "Invalid voucher code"
     },
     "paywall": {
       "title": "Premium Feature",

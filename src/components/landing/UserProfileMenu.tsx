@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, Settings, LogOut, Calendar, Crown } from "lucide-react";
+import { User, Settings, LogOut, Calendar, Crown, ShieldCheck } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { useAdmin } from "@/hooks/useAdmin";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,13 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export function UserProfileMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuthContext();
+  const { isAdmin } = useAdmin();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -78,10 +79,16 @@ export function UserProfileMenu() {
         >
           <Crown className="mr-2 h-4 w-4" />
           {t("profile.premium")}
-          <Badge variant="secondary" className="ml-auto text-xs">
-            {t("profile.comingSoon")}
-          </Badge>
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem 
+            onClick={() => navigate("/admin")}
+            className="cursor-pointer"
+          >
+            <ShieldCheck className="mr-2 h-4 w-4" />
+            {t("profile.adminArea")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem 
           onClick={handleSignOut}
