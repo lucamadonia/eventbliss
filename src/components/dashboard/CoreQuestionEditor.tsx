@@ -54,6 +54,16 @@ export const CoreQuestionEditor = ({
   const isEnabled = questionConfig?.enabled ?? true;
   const isMultiSelect = questionConfig?.multiSelect ?? false;
 
+  // Translate labels that are translation keys (start with "templates.")
+  const translateLabel = (label: string): string => {
+    if (label.startsWith('templates.')) {
+      const translated = t(label);
+      // If translation returns the key itself, it means no translation found
+      return translated === label ? label.split('.').pop() || label : translated;
+    }
+    return label;
+  };
+
   const toggleEnabled = () => {
     if (onConfigChange && questionConfig) {
       onConfigChange({ ...questionConfig, enabled: !isEnabled });
@@ -205,7 +215,7 @@ export const CoreQuestionEditor = ({
               )}
               
               <Input
-                value={option.label}
+                value={translateLabel(option.label)}
                 onChange={(e) => updateOption(option.value, { label: e.target.value })}
                 className="flex-1"
               />
