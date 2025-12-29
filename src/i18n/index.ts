@@ -44,7 +44,7 @@ i18n
       tr: { translation: tr },
       ar: { translation: ar },
     },
-    fallbackLng: 'de',
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
     },

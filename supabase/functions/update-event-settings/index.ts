@@ -18,7 +18,7 @@ serve(async (req) => {
     );
 
     const body = await req.json();
-    const { event_id, settings, survey_deadline, status, locked_block } = body;
+    const { event_id, settings, survey_deadline, status, locked_block, currency } = body;
 
     if (!event_id) {
       return new Response(
@@ -68,6 +68,10 @@ serve(async (req) => {
 
     if (status !== undefined) {
       updateData.status = status;
+    }
+
+    if (currency !== undefined) {
+      updateData.currency = currency;
     }
 
     // Update event

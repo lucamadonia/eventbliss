@@ -739,6 +739,11 @@
       "changeDate": "Termin ändern",
       "dateLocked": "Termin {{block}} wurde festgelegt!",
       "saveSettings": "Einstellungen speichern",
+      "currency": {
+        "title": "Währung",
+        "label": "Event-Währung",
+        "description": "Diese Währung wird für alle Ausgaben dieses Events verwendet."
+      },
       "dangerZone": {
         "title": "Gefahrenzone",
         "deleteEvent": "Event löschen",
