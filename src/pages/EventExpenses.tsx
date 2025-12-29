@@ -679,7 +679,6 @@ const EventExpenses = () => {
                 <SettlementList 
                   settlements={settlements} 
                   currency={currency} 
-                  balances={balances}
                 />
               </GlassCard>
             </motion.section>
