@@ -718,5 +718,36 @@
       "deleteSuccess": "Cupón eliminado",
       "deleteError": "Error al eliminar"
     }
+  },
+  "templates": {
+    "title": "Elige una plantilla",
+    "subtitle": "Opciones adaptadas para tu evento",
+    "noTemplate": "Continuar sin plantilla",
+    "aiGenerate": "Crear con IA",
+    "aiTitle": "Crear plantilla personalizada",
+    "aiPlaceholder": "Describe tu evento en 1-2 frases, ej. 'Despedida relajada con senderismo y buena comida'...",
+    "aiDescriptionRequired": "Por favor describe tu evento",
+    "aiSuccess": "¡Plantilla creada!",
+    "aiSuccessDescription": "Tu plantilla personalizada ha sido generada",
+    "aiError": "Error al generar la plantilla",
+    "generating": "Generando...",
+    "generate": "Generar",
+    "premiumRequired": "Premium requerido",
+    "premiumRequiredDescription": "La generación con IA es una función premium",
+    "jgaClassic": { "name": "Fiesta Clásica", "description": "Acción, fiesta y momentos inolvidables" },
+    "jgaAdventure": { "name": "Viaje de Aventura", "description": "Acción outdoor y retos en equipo" },
+    "jgaChill": { "name": "Celebración Relajada", "description": "Bienestar, buena comida y tiempo de calidad" },
+    "bacheloretteGlam": { "name": "Fin de Semana Glamour", "description": "Spa, sesión de fotos y cócteles" },
+    "bacheloretteAdventure": { "name": "Escapada Activa", "description": "Senderismo, yoga y naturaleza" },
+    "birthdayParty": { "name": "Fiesta de Cumpleaños", "description": "Celebración con amigos y familia" },
+    "birthdayExperience": { "name": "Experiencia de Cumpleaños", "description": "Actividades únicas y aventuras" },
+    "familyTrip": { "name": "Viaje Familiar", "description": "Diversión para todas las edades" },
+    "friendsTrip": { "name": "Viaje con Amigos", "description": "Aventura y viajes con amigos" },
+    "teamEvent": { "name": "Evento de Equipo", "description": "Teambuilding y experiencias compartidas" },
+    "flexible": { "name": "Flexible", "description": "Total flexibilidad – tú decides" },
+    "tags": { "action": "Acción", "party": "Fiesta", "city": "Ciudad", "outdoor": "Outdoor", "adventure": "Aventura", "sports": "Deportes", "relax": "Relajación", "wellness": "Bienestar", "food": "Gastronomía", "glamour": "Glamour", "active": "Activo", "nature": "Naturaleza", "celebration": "Celebración", "fun": "Diversión", "experience": "Experiencia", "unique": "Único", "memorable": "Memorable", "family": "Familia", "kids": "Niños", "relaxed": "Relajado", "friends": "Amigos", "travel": "Viajes", "team": "Equipo", "corporate": "Corporativo", "teambuilding": "Teambuilding", "flexible": "Flexible", "custom": "Personalizado", "open": "Abierto" },
+    "destinations": { "deCity": "Ciudad en Alemania", "prague": "Praga", "budapest": "Budapest", "barcelona": "Barcelona", "amsterdam": "Ámsterdam", "mallorca": "Mallorca", "lisbon": "Lisboa", "flexible": "Flexible", "alps": "Alpes", "seaCoast": "Costa", "forestNature": "Bosque y Naturaleza", "lakeRegion": "Región de Lagos", "spaHotel": "Hotel Spa", "local": "Local", "wineRegion": "Región Vinícola", "lakeResort": "Resort junto al Lago", "vineyard": "Viñedo", "restaurant": "Restaurante", "eventLocation": "Lugar de Eventos", "rooftopBar": "Rooftop Bar", "nearbyCity": "Ciudad Cercana", "nature": "Naturaleza", "themePark": "Parque Temático", "zoo": "Zoo", "beach": "Playa", "mountains": "Montañas", "farm": "Granja", "cityEurope": "Ciudad en Europa", "beachEurope": "Playa en Europa", "adventureEurope": "Aventura en Europa", "roadTrip": "Road Trip", "conferenceHotel": "Hotel de Conferencias", "outdoorLocation": "Ubicación Outdoor", "eventSpace": "Espacio de Eventos", "office": "Oficina", "domestic": "Nacional", "europe": "Europa", "worldwide": "Mundial" },
+    "activities": { "karting": "Karting", "escapeRoom": "Escape Room", "lasertag": "Laser Tag", "axeThrowing": "Lanzamiento de Hachas", "vrArena": "Arena VR", "bubbleSoccer": "Bubble Soccer", "paintball": "Paintball", "barTour": "Tour de Bares", "casino": "Casino", "bbqParty": "Fiesta BBQ", "rafting": "Rafting", "canyoning": "Barranquismo", "climbing": "Escalada", "hiking": "Senderismo", "mountainBiking": "Bicicleta de Montaña", "survivalTraining": "Supervivencia", "bungee": "Puenting", "paragliding": "Parapente", "quadTour": "Tour en Quad", "cabinBbq": "BBQ en Cabaña", "spaWellness": "Spa y Bienestar", "wineTasting": "Cata de Vinos", "gourmetDinner": "Cena Gourmet", "cookingClass": "Clase de Cocina", "golf": "Golf", "cigarWhiskey": "Puros y Whiskey", "breweryTour": "Tour Cervecero", "boatTrip": "Paseo en Barco", "photoshoot": "Sesión de Fotos", "cocktailClass": "Clase de Cócteles", "yogaRetreat": "Retiro de Yoga", "danceClass": "Clase de Baile", "brunchParty": "Fiesta Brunch", "beachClub": "Beach Club", "shoppingTour": "Tour de Compras", "karaoke": "Karaoke", "kayaking": "Kayak", "horsebackRiding": "Equitación", "picnic": "Picnic", "sunsetBoat": "Paseo al Atardecer", "outdoorCooking": "Cocina Outdoor", "dinnerParty": "Cena", "bowling": "Bolos", "gamesNight": "Noche de Juegos", "cocktailParty": "Fiesta de Cócteles", "dancing": "Baile", "liveMusic": "Música en Vivo", "spaDay": "Día de Spa", "concert": "Concierto", "sportsEvent": "Evento Deportivo", "artClass": "Clase de Arte", "adventurePark": "Parque de Aventuras", "themePark": "Parque Temático", "zooAquarium": "Zoo y Acuario", "beachFun": "Diversión en Playa", "hikingEasy": "Senderismo Fácil", "games": "Juegos", "bikeTour": "Tour en Bici", "swimming": "Natación", "sightseeing": "Turismo", "nightlife": "Vida Nocturna", "foodTour": "Tour Gastronómico", "beach": "Playa", "waterSports": "Deportes Acuáticos", "localExperiences": "Experiencias Locales", "concertsEvents": "Conciertos", "teambuildingGames": "Juegos de Equipo", "workshop": "Taller", "outdoorChallenge": "Reto Outdoor", "sportsTournament": "Torneo Deportivo", "dinnerEvent": "Evento Cena", "creativeWorkshop": "Taller Creativo", "action": "Acción", "chill": "Relax", "outdoor": "Outdoor", "food": "Gastronomía", "culture": "Cultura", "party": "Fiesta", "mixed": "Mixto" },
+    "duration": { "dayTrip": "Excursión de un Día", "weekend": "Fin de Semana (2-3 días)", "longWeekend": "Puente (3-4 días)", "week": "Semana Completa", "twoWeeks": "Dos Semanas", "halfDay": "Medio Día", "fullDay": "Día Completo", "evening": "Noche", "overnight": "Con Noche", "flexible": "Flexible" }
   }
 }

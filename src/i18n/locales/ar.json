@@ -660,5 +660,36 @@
       "deleteSuccess": "تم حذف القسيمة",
       "deleteError": "خطأ في الحذف"
     }
+  },
+  "templates": {
+    "title": "اختر قالباً",
+    "subtitle": "خيارات مخصصة لحدثك",
+    "noTemplate": "المتابعة بدون قالب",
+    "aiGenerate": "إنشاء بالذكاء الاصطناعي",
+    "aiTitle": "إنشاء قالب مخصص",
+    "aiPlaceholder": "صف حدثك في جملة أو جملتين...",
+    "aiDescriptionRequired": "يرجى وصف حدثك",
+    "aiSuccess": "تم إنشاء القالب!",
+    "aiSuccessDescription": "تم إنشاء قالبك المخصص",
+    "aiError": "خطأ في الإنشاء",
+    "generating": "جاري الإنشاء...",
+    "generate": "إنشاء",
+    "premiumRequired": "مطلوب اشتراك مميز",
+    "premiumRequiredDescription": "إنشاء الذكاء الاصطناعي ميزة مميزة",
+    "jgaClassic": { "name": "حفلة كلاسيكية", "description": "أكشن وحفلات ولحظات لا تُنسى" },
+    "jgaAdventure": { "name": "رحلة مغامرات", "description": "مغامرات في الهواء الطلق وتحديات الفريق" },
+    "jgaChill": { "name": "احتفال مريح", "description": "استجمام وطعام جيد ووقت ممتع" },
+    "bacheloretteGlam": { "name": "عطلة نهاية أسبوع فاخرة", "description": "سبا وجلسة تصوير وكوكتيلات" },
+    "bacheloretteAdventure": { "name": "نزهة نشطة", "description": "المشي لمسافات طويلة واليوغا والطبيعة" },
+    "birthdayParty": { "name": "حفلة عيد ميلاد", "description": "احتفال مع الأصدقاء والعائلة" },
+    "birthdayExperience": { "name": "تجربة عيد الميلاد", "description": "أنشطة فريدة ومغامرات" },
+    "familyTrip": { "name": "نزهة عائلية", "description": "متعة لجميع الأعمار" },
+    "friendsTrip": { "name": "رحلة مع الأصدقاء", "description": "مغامرة وسفر مع الأصدقاء" },
+    "teamEvent": { "name": "فعالية الفريق", "description": "بناء الفريق والتجارب المشتركة" },
+    "flexible": { "name": "مرن", "description": "مرونة كاملة - أنت تقرر" },
+    "tags": { "action": "أكشن", "party": "حفلة", "city": "مدينة", "outdoor": "في الهواء الطلق", "adventure": "مغامرة", "sports": "رياضة", "relax": "استرخاء", "wellness": "صحة", "food": "طعام", "glamour": "فخامة", "active": "نشط", "nature": "طبيعة", "celebration": "احتفال", "fun": "متعة", "experience": "تجربة", "unique": "فريد", "memorable": "لا يُنسى", "family": "عائلة", "kids": "أطفال", "relaxed": "مريح", "friends": "أصدقاء", "travel": "سفر", "team": "فريق", "corporate": "شركات", "teambuilding": "بناء الفريق", "flexible": "مرن", "custom": "مخصص", "open": "مفتوح" },
+    "destinations": { "deCity": "مدينة كبيرة في ألمانيا", "prague": "براغ", "budapest": "بودابست", "barcelona": "برشلونة", "amsterdam": "أمستردام", "mallorca": "مايوركا", "lisbon": "لشبونة", "flexible": "مرن", "alps": "جبال الألب", "seaCoast": "الساحل", "forestNature": "الغابة والطبيعة", "lakeRegion": "منطقة البحيرات", "spaHotel": "فندق سبا", "local": "محلي", "wineRegion": "منطقة النبيذ", "lakeResort": "منتجع البحيرة", "vineyard": "كرم", "restaurant": "مطعم", "eventLocation": "موقع الحدث", "rooftopBar": "بار على السطح", "nearbyCity": "مدينة قريبة", "nature": "طبيعة", "themePark": "مدينة ملاهي", "zoo": "حديقة حيوان", "beach": "شاطئ", "mountains": "جبال", "farm": "مزرعة", "cityEurope": "مدينة في أوروبا", "beachEurope": "شاطئ في أوروبا", "adventureEurope": "مغامرة في أوروبا", "roadTrip": "رحلة برية", "conferenceHotel": "فندق مؤتمرات", "outdoorLocation": "موقع خارجي", "eventSpace": "مساحة الحدث", "office": "مكتب", "domestic": "محلي", "europe": "أوروبا", "worldwide": "عالمي" },
+    "activities": { "karting": "سباق السيارات", "escapeRoom": "غرفة الهروب", "lasertag": "ليزر تاغ", "axeThrowing": "رمي الفأس", "vrArena": "ساحة الواقع الافتراضي", "bubbleSoccer": "كرة الفقاعة", "paintball": "بينتبول", "barTour": "جولة الحانات", "casino": "كازينو", "bbqParty": "حفلة شواء", "rafting": "التجديف", "canyoning": "التسلق", "climbing": "التسلق", "hiking": "المشي لمسافات طويلة", "mountainBiking": "ركوب الدراجات الجبلية", "survivalTraining": "تدريب البقاء", "bungee": "القفز بالحبال", "paragliding": "الطيران الشراعي", "quadTour": "جولة رباعية", "cabinBbq": "شواء الكوخ", "spaWellness": "سبا وصحة", "wineTasting": "تذوق النبيذ", "gourmetDinner": "عشاء فاخر", "cookingClass": "دروس الطبخ", "golf": "جولف", "cigarWhiskey": "سيجار وويسكي", "breweryTour": "جولة مصنع الجعة", "boatTrip": "رحلة بالقارب", "photoshoot": "جلسة تصوير", "cocktailClass": "دروس الكوكتيل", "yogaRetreat": "معتكف اليوغا", "danceClass": "دروس الرقص", "brunchParty": "حفلة برانش", "beachClub": "نادي الشاطئ", "shoppingTour": "جولة تسوق", "karaoke": "كاريوكي", "kayaking": "التجديف بالكاياك", "horsebackRiding": "ركوب الخيل", "picnic": "نزهة", "sunsetBoat": "قارب غروب الشمس", "outdoorCooking": "الطبخ في الهواء الطلق", "dinnerParty": "حفلة عشاء", "bowling": "بولينج", "gamesNight": "ليلة الألعاب", "cocktailParty": "حفلة كوكتيل", "dancing": "رقص", "liveMusic": "موسيقى حية", "spaDay": "يوم سبا", "concert": "حفلة موسيقية", "sportsEvent": "حدث رياضي", "artClass": "دروس الفن", "adventurePark": "حديقة المغامرات", "themePark": "مدينة ملاهي", "zooAquarium": "حديقة حيوان ومتحف مائي", "beachFun": "متعة الشاطئ", "hikingEasy": "المشي السهل", "games": "ألعاب", "bikeTour": "جولة بالدراجة", "swimming": "سباحة", "sightseeing": "مشاهدة المعالم", "nightlife": "الحياة الليلية", "foodTour": "جولة طعام", "beach": "شاطئ", "waterSports": "الرياضات المائية", "localExperiences": "تجارب محلية", "concertsEvents": "حفلات", "teambuildingGames": "ألعاب الفريق", "workshop": "ورشة عمل", "outdoorChallenge": "تحدي خارجي", "sportsTournament": "بطولة رياضية", "dinnerEvent": "حدث عشاء", "creativeWorkshop": "ورشة إبداعية", "action": "أكشن", "chill": "استرخاء", "outdoor": "في الهواء الطلق", "food": "طعام", "culture": "ثقافة", "party": "حفلة", "mixed": "مختلط" },
+    "duration": { "dayTrip": "رحلة يوم واحد", "weekend": "عطلة نهاية الأسبوع (2-3 أيام)", "longWeekend": "عطلة نهاية أسبوع طويلة (3-4 أيام)", "week": "أسبوع كامل", "twoWeeks": "أسبوعان", "halfDay": "نصف يوم", "fullDay": "يوم كامل", "evening": "مساء", "overnight": "ليلة واحدة", "flexible": "مرن" }
   }
 }
