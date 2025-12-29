@@ -245,17 +245,11 @@ const DynamicSurveyForm = ({
                             const values = Array.isArray(field.value) ? field.value : [];
                             const isChecked = values.includes(option.value);
                             return (
-                              <div
+                              <label
                                 key={option.value}
                                 className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
                                   isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
                                 }`}
-                                onClick={() => {
-                                  const newValue = isChecked
-                                    ? values.filter((v) => v !== option.value)
-                                    : [...values, option.value];
-                                  field.onChange(newValue);
-                                }}
                               >
                                 <Checkbox
                                   checked={isChecked}
@@ -266,8 +260,8 @@ const DynamicSurveyForm = ({
                                     field.onChange(newValue);
                                   }}
                                 />
-                                <Label className="cursor-pointer flex-1">{option.label}</Label>
-                              </div>
+                                <span className="cursor-pointer flex-1">{option.label}</span>
+                              </label>
                             );
                           })}
                         </div>
@@ -397,17 +391,11 @@ const DynamicSurveyForm = ({
                             const values = Array.isArray(field.value) ? field.value : [];
                             const isChecked = values.includes(option.value);
                             return (
-                              <div
+                              <label
                                 key={option.value}
                                 className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
                                   isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
                                 }`}
-                                onClick={() => {
-                                  const newValue = isChecked
-                                    ? values.filter((v) => v !== option.value)
-                                    : [...values, option.value];
-                                  field.onChange(newValue);
-                                }}
                               >
                                 <Checkbox
                                   checked={isChecked}
@@ -418,8 +406,8 @@ const DynamicSurveyForm = ({
                                     field.onChange(newValue);
                                   }}
                                 />
-                                <Label className="cursor-pointer">{option.label}</Label>
-                              </div>
+                                <span className="cursor-pointer">{option.label}</span>
+                              </label>
                             );
                           })}
                         </div>
@@ -464,17 +452,11 @@ const DynamicSurveyForm = ({
                             const values = Array.isArray(field.value) ? field.value : [];
                             const isChecked = values.includes(option.value);
                             return (
-                              <div
+                              <label
                                 key={option.value}
                                 className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
                                   isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
                                 }`}
-                                onClick={() => {
-                                  const newValue = isChecked
-                                    ? values.filter((v) => v !== option.value)
-                                    : [...values, option.value];
-                                  field.onChange(newValue);
-                                }}
                               >
                                 <Checkbox
                                   checked={isChecked}
@@ -485,10 +467,10 @@ const DynamicSurveyForm = ({
                                     field.onChange(newValue);
                                   }}
                                 />
-                                <Label className="cursor-pointer flex-1">
+                                <span className="cursor-pointer flex-1">
                                   {option.label} {option.emoji}
-                                </Label>
-                              </div>
+                                </span>
+                              </label>
                             );
                           })}
                         </div>
