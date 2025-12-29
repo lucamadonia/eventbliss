@@ -12,6 +12,148 @@ const logStep = (step: string, details?: any) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// Track affiliate commission when a coupon is used
+async function trackAffiliateCommission(
+  supabaseClient: any,
+  session: Stripe.Checkout.Session,
+  stripe: Stripe
+) {
+  try {
+    // Check if a discount/coupon was applied
+    const discounts = session.total_details?.breakdown?.discounts || [];
+    if (discounts.length === 0) {
+      logStep("No discounts applied to session");
+      return;
+    }
+
+    // Get the coupon ID from the discount
+    let stripeCouponId: string | null = null;
+    
+    if (session.discount?.coupon) {
+      stripeCouponId = session.discount.coupon.id;
+    } else if (discounts[0]?.discount?.coupon) {
+      stripeCouponId = discounts[0].discount.coupon.id;
+    }
+
+    if (!stripeCouponId) {
+      logStep("No coupon ID found in session");
+      return;
+    }
+
+    logStep("Coupon found", { stripeCouponId });
+
+    // Find the voucher in our database
+    const { data: voucher, error: voucherError } = await supabaseClient
+      .from("vouchers")
+      .select("id, code")
+      .eq("stripe_coupon_id", stripeCouponId)
+      .maybeSingle();
+
+    if (voucherError || !voucher) {
+      logStep("Voucher not found for coupon", { stripeCouponId, error: voucherError });
+      return;
+    }
+
+    logStep("Found voucher", { voucherId: voucher.id, code: voucher.code });
+
+    // Find the affiliate linked to this voucher
+    const { data: affiliateVoucher, error: avError } = await supabaseClient
+      .from("affiliate_vouchers")
+      .select(`
+        id,
+        custom_commission_type,
+        custom_commission_rate,
+        affiliate:affiliates!inner(
+          id,
+          status,
+          commission_type,
+          commission_rate
+        )
+      `)
+      .eq("voucher_id", voucher.id)
+      .maybeSingle();
+
+    if (avError || !affiliateVoucher) {
+      logStep("No affiliate found for voucher", { voucherId: voucher.id, error: avError });
+      return;
+    }
+
+    const affiliate = affiliateVoucher.affiliate;
+    
+    if (affiliate.status !== 'active') {
+      logStep("Affiliate is not active", { affiliateId: affiliate.id, status: affiliate.status });
+      return;
+    }
+
+    logStep("Found affiliate", { affiliateId: affiliate.id });
+
+    // Determine commission type and rate (custom overrides default)
+    const commissionType = affiliateVoucher.custom_commission_type || affiliate.commission_type;
+    const commissionRate = affiliateVoucher.custom_commission_rate || affiliate.commission_rate;
+
+    // Calculate commission amount (session.amount_total is in cents)
+    const orderAmount = (session.amount_total || 0) / 100; // Convert to decimal
+    let commissionAmount: number;
+
+    if (commissionType === 'percentage') {
+      commissionAmount = (orderAmount * commissionRate) / 100;
+    } else {
+      commissionAmount = commissionRate; // Fixed amount
+    }
+
+    logStep("Calculated commission", { 
+      orderAmount, 
+      commissionType, 
+      commissionRate, 
+      commissionAmount 
+    });
+
+    // Create commission record
+    const { error: commissionError } = await supabaseClient
+      .from("affiliate_commissions")
+      .insert({
+        affiliate_id: affiliate.id,
+        voucher_id: voucher.id,
+        stripe_session_id: session.id,
+        stripe_payment_intent_id: session.payment_intent as string,
+        customer_email: session.customer_email || session.customer_details?.email,
+        order_amount: orderAmount,
+        commission_type: commissionType,
+        commission_rate: commissionRate,
+        commission_amount: commissionAmount,
+        currency: session.currency?.toUpperCase() || 'EUR',
+        status: 'pending'
+      });
+
+    if (commissionError) {
+      logStep("ERROR creating commission", { error: commissionError });
+      return;
+    }
+
+    // Update affiliate's pending balance and total earnings
+    const { error: updateError } = await supabaseClient
+      .from("affiliates")
+      .update({
+        pending_balance: affiliate.pending_balance + commissionAmount,
+        total_earnings: affiliate.total_earnings + commissionAmount
+      })
+      .eq("id", affiliate.id);
+
+    if (updateError) {
+      logStep("ERROR updating affiliate balance", { error: updateError });
+    } else {
+      logStep("Commission tracked successfully", { 
+        affiliateId: affiliate.id, 
+        commissionAmount 
+      });
+    }
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logStep("ERROR in trackAffiliateCommission", { message: errorMessage });
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -67,6 +209,9 @@ serve(async (req) => {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         logStep("Checkout completed", { sessionId: session.id, customerId: session.customer });
+
+        // Track affiliate commission if a coupon was used
+        await trackAffiliateCommission(supabaseClient, session, stripe);
 
         const customerId = session.customer as string;
         const customerEmail = session.customer_email || session.customer_details?.email;
