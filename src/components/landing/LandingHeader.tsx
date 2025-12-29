@@ -59,7 +59,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
             <img 
               src={eventBlissLogo} 
               alt="EventBliss" 
-              className="h-8 md:h-10 w-auto"
+              className="h-48 md:h-56 lg:h-64 w-auto"
             />
           </Link>
 
