@@ -88,6 +88,7 @@ serve(async (req) => {
           id: event.id,
           slug: event.slug,
           name: event.name,
+          access_code: event.access_code,
           honoree_name: event.honoree_name,
           event_type: event.event_type,
           event_date: event.event_date,
