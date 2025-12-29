@@ -712,6 +712,11 @@
       "changeDate": "Change Date",
       "dateLocked": "Date {{block}} has been locked!",
       "saveSettings": "Save Settings",
+      "currency": {
+        "title": "Currency",
+        "label": "Event Currency",
+        "description": "This currency will be used for all expenses in this event."
+      },
       "dangerZone": {
         "title": "Danger Zone",
         "deleteEvent": "Delete Event",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2 } from "lucide-react";
+import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2, Coins } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TeamInviteManager } from "./TeamInviteManager";
+import { currencies } from "@/lib/currencies";
 import type { EventData, Participant } from "@/hooks/useEvent";
 
 interface SettingsTabProps {
@@ -29,6 +30,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
   const [formLocked, setFormLocked] = useState(event.settings?.form_locked || false);
   const [lockedBlock, setLockedBlock] = useState<string>(event.settings?.locked_block || "");
   const [deadline, setDeadline] = useState(event.survey_deadline || "");
+  const [currency, setCurrency] = useState(event.currency || "EUR");
 
   const dateBlocks = (event.settings?.date_blocks || {}) as Record<string, string>;
 
@@ -50,6 +52,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
               locked_block: lockedBlock || null,
             },
             survey_deadline: deadline || null,
+            currency: currency,
           }),
         }
       );
@@ -206,6 +209,37 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
             </Select>
           </div>
         )}
+      </GlassCard>
+
+      {/* Currency Settings */}
+      <GlassCard className="p-6">
+        <h4 className="font-bold mb-4 flex items-center gap-2">
+          <Coins className="w-5 h-5" />
+          {t('dashboard.settings.currency.title')}
+        </h4>
+        
+        <div className="space-y-4">
+          <div className="p-4 rounded-lg bg-background/30">
+            <Label className="font-medium mb-2 block">
+              {t('dashboard.settings.currency.label')}
+            </Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencies.map((curr) => (
+                  <SelectItem key={curr.code} value={curr.code}>
+                    {curr.symbol} {curr.code} - {curr.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-2">
+              {t('dashboard.settings.currency.description')}
+            </p>
+          </div>
+        </div>
       </GlassCard>
 
       {/* Team Invite Manager */}
