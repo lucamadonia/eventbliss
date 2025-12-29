@@ -60,6 +60,7 @@ import { ActivityItem, ACTIVITIES_LIBRARY } from "@/lib/activities-library";
 
 interface Event {
   id: string;
+  slug: string;
   name: string;
   honoree_name?: string;
   event_type?: string;
@@ -326,7 +327,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-2" asChild>
-            <a href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} target="_blank" rel="noopener noreferrer">
+            <a href={`/e/${event.slug}`} target="_blank" rel="noopener noreferrer">
               <Eye className="w-4 h-4" />
               {t('dashboard.form.preview')}
             </a>
@@ -860,7 +861,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
             {t('dashboard.form.previewHint')}
             <ChevronRight className="w-4 h-4 inline mx-1" />
             <a 
-              href={`/e/${event.id.split('-').slice(0, 3).join('-')}`} 
+              href={`/e/${event.slug}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-primary hover:underline"
