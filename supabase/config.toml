@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.get-public-info]
 verify_jwt = false
+
+[functions.get-mapbox-token]
+verify_jwt = false
