@@ -34,7 +34,7 @@
     "copyCode": "Code kopiëren"
   },
 "landing": {
-    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren" },
+    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners" },
     "hero": { "badge": "Het #1 evenementenplanningsplatform", "title": "Plan Onvergetelijke Evenementen", "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.", "createEvent": "Evenement Maken", "joinEvent": "Deelnemen met Code", "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons" },
     "features": {
       "title": "Alles wat je nodig hebt", "subtitle": "Krachtige tools voor het perfecte evenement",
@@ -722,5 +722,13 @@
     "settings": { "title": "Instellingen", "profile": "Profiel", "paymentMethod": "Betaalmethode", "paymentType": "Uitbetalingstype", "bankTransfer": "Bankoverschrijving", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "PayPal Email", "taxId": "BTW-nummer", "saved": "Instellingen opgeslagen", "yourTier": "Jouw Tier", "companyName": "Bedrijfsnaam", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "phone": "Telefoon", "website": "Website" },
     "tiers": { "bronze": "Brons", "silver": "Zilver", "gold": "Goud", "platinum": "Platina", "nextTier": "Volgende tier", "conversionsNeeded": "{{needed}} meer conversies" },
     "notAffiliate": { "title": "Word partner", "description": "Je bent nog geen partner. Wil je deelnemen aan ons affiliateprogramma?", "cta": "Nu aanmelden", "loginRequired": "Inloggen vereist", "loginDesc": "Log in om toegang te krijgen tot het Partnerportaal.", "benefits": { "commission": "Tot 25% commissie", "commissionDesc": "Verdien bij elke aanbeveling", "tracking": "Realtime tracking", "trackingDesc": "Volg alle conversies", "support": "Persoonlijke ondersteuning", "supportDesc": "Direct contact met ons team" } }
+  },
+  "partnerApply": {
+    "hero": { "badge": "Affiliateprogramma", "title": "Word lid van ons partnerprogramma", "description": "Beveel EventBliss aan en verdien tot 25% commissie voor elke succesvolle verwijzing." },
+    "benefits": { "commission": { "title": "Aantrekkelijke commissies", "description": "Tot 25% op elke doorverwezen aankoop" }, "tracking": { "title": "Realtime dashboard", "description": "Volg al je conversies" }, "payouts": { "title": "Snelle uitbetalingen", "description": "Maandelijkse uitbetaling vanaf €50" }, "support": { "title": "Persoonlijke ondersteuning", "description": "We helpen je bij elke stap" } },
+    "stats": { "partners": "Actieve partners", "commissionRate": "Tot", "payouts": "Uitbetaald" },
+    "form": { "title": "Nu aanmelden", "companyName": "Bedrijfsnaam (optioneel)", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "email": "E-mailadres", "emailPlaceholder": "partner@voorbeeld.nl", "phone": "Telefoon (optioneel)", "phonePlaceholder": "+31 6 12345678", "website": "Website (optioneel)", "websitePlaceholder": "https://jouw-website.nl", "taxId": "BTW-nummer (optioneel)", "taxIdPlaceholder": "NL123456789B01", "about": "Over jou / je bedrijf (optioneel)", "aboutPlaceholder": "Vertel ons iets over jezelf...", "promotion": "Hoe wil je EventBliss promoten?", "promotionPlaceholder": "bijv. Blog, Social Media, Nieuwsbrief, Persoonlijke aanbevelingen...", "privacy": "Ik accepteer de", "submit": "Aanmelding versturen", "submitting": "Versturen..." },
+    "success": { "title": "Aanmelding ontvangen!", "description": "Bedankt voor je interesse in ons partnerprogramma.", "nextSteps": "We beoordelen je aanmelding en nemen binnen 2-3 werkdagen contact met je op.", "backToHome": "Terug naar home" },
+    "errors": { "required": "Dit veld is verplicht", "invalidEmail": "Voer een geldig e-mailadres in", "privacyRequired": "Je moet het privacybeleid accepteren", "submitFailed": "Aanmelding kon niet worden verzonden. Probeer het opnieuw." }
   }
 }

@@ -25,6 +25,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
     { label: t("landing.nav.howItWorks"), href: "how-it-works" },
     { label: t("landing.nav.solutions"), href: "solutions" },
     { label: t("landing.nav.faq"), href: "faq" },
+    { label: t("landing.nav.partner"), href: "partner-apply", isRoute: true },
   ];
 
   const handleNavClick = (href: string) => {
@@ -66,13 +67,23 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
             {navItems.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => handleNavClick(item.href)}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </button>
+              item.isRoute ? (
+                <Link
+                  key={item.href}
+                  to={`/${item.href}`}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  key={item.href}
+                  onClick={() => handleNavClick(item.href)}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {item.label}
+                </button>
+              )
             ))}
           </nav>
 
@@ -122,13 +133,24 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
             <div className="container mx-auto px-4 py-4">
               <nav className="flex flex-col gap-2">
                 {navItems.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => handleNavClick(item.href)}
-                    className="text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.label}
-                  </button>
+                  item.isRoute ? (
+                    <Link
+                      key={item.href}
+                      to={`/${item.href}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={item.href}
+                      onClick={() => handleNavClick(item.href)}
+                      className="text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  )
                 ))}
                 {!isAuthenticated && !isLoading && (
                   <>

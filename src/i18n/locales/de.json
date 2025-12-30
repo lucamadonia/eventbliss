@@ -42,7 +42,8 @@
       "solutions": "Lösungen",
       "faq": "FAQ",
       "login": "Anmelden",
-      "signUp": "Registrieren"
+      "signUp": "Registrieren",
+      "partner": "Partner"
     },
     "hero": {
       "badge": "Die #1 Event-Planungs-Plattform",
@@ -110,6 +111,9 @@
       "integrations": "Integrationen",
       "enterprise": "Enterprise",
       "solutions": "Lösungen",
+      "partner": "Partner",
+      "becomePartner": "Partner werden",
+      "partnerPortal": "Partner-Portal",
       "legal": "Rechtliches",
       "imprint": "Impressum",
       "disclaimer": "Haftungsausschluss",
@@ -1639,6 +1643,70 @@
         "support": "Persönlicher Support",
         "supportDesc": "Direkter Kontakt zu unserem Team"
       }
+    }
+  },
+  "partnerApply": {
+    "hero": {
+      "badge": "Affiliate-Programm",
+      "title": "Werde Teil unseres Partnerprogramms",
+      "description": "Empfehle EventBliss und verdiene bis zu 25% Provision für jede erfolgreiche Vermittlung."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Attraktive Provisionen",
+        "description": "Bis zu 25% auf jeden vermittelten Kauf"
+      },
+      "tracking": {
+        "title": "Echtzeit-Dashboard",
+        "description": "Behalte alle Conversions im Blick"
+      },
+      "payouts": {
+        "title": "Schnelle Auszahlungen",
+        "description": "Monatliche Auszahlung ab 50€"
+      },
+      "support": {
+        "title": "Persönlicher Support",
+        "description": "Wir helfen dir bei jedem Schritt"
+      }
+    },
+    "stats": {
+      "partners": "Aktive Partner",
+      "commissionRate": "Bis zu",
+      "payouts": "Ausgezahlt"
+    },
+    "form": {
+      "title": "Jetzt bewerben",
+      "companyName": "Firmenname (optional)",
+      "companyNamePlaceholder": "Deine Firma GmbH",
+      "contactName": "Kontaktname",
+      "contactNamePlaceholder": "Max Mustermann",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "partner@beispiel.de",
+      "phone": "Telefon (optional)",
+      "phonePlaceholder": "+49 123 456789",
+      "website": "Website (optional)",
+      "websitePlaceholder": "https://deine-website.de",
+      "taxId": "Steuernummer / USt-ID (optional)",
+      "taxIdPlaceholder": "DE123456789",
+      "about": "Über dich / dein Unternehmen (optional)",
+      "aboutPlaceholder": "Erzähl uns etwas über dich...",
+      "promotion": "Wie möchtest du EventBliss bewerben?",
+      "promotionPlaceholder": "z.B. Blog, Social Media, Newsletter, persönliche Empfehlungen...",
+      "privacy": "Ich akzeptiere die",
+      "submit": "Bewerbung absenden",
+      "submitting": "Wird gesendet..."
+    },
+    "success": {
+      "title": "Bewerbung erhalten!",
+      "description": "Vielen Dank für dein Interesse an unserem Partnerprogramm.",
+      "nextSteps": "Wir prüfen deine Bewerbung und melden uns innerhalb von 2-3 Werktagen bei dir.",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein",
+      "privacyRequired": "Du musst die Datenschutzerklärung akzeptieren",
+      "submitFailed": "Bewerbung konnte nicht gesendet werden. Bitte versuche es erneut."
     }
   }
 }

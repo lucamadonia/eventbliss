@@ -42,7 +42,8 @@
       "solutions": "Solutions",
       "faq": "FAQ",
       "login": "Login",
-      "signUp": "Sign Up"
+      "signUp": "Sign Up",
+      "partner": "Partners"
     },
     "hero": {
       "badge": "The #1 Event Planning Platform",
@@ -110,6 +111,9 @@
       "integrations": "Integrations",
       "enterprise": "Enterprise",
       "solutions": "Solutions",
+      "partner": "Partners",
+      "becomePartner": "Become a Partner",
+      "partnerPortal": "Partner Portal",
       "legal": "Legal",
       "imprint": "Imprint",
       "disclaimer": "Disclaimer",
@@ -1612,6 +1616,70 @@
         "support": "Personal Support",
         "supportDesc": "Direct contact with our team"
       }
+    }
+  },
+  "partnerApply": {
+    "hero": {
+      "badge": "Affiliate Program",
+      "title": "Join Our Partner Program",
+      "description": "Recommend EventBliss and earn up to 25% commission for every successful referral."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Attractive Commissions",
+        "description": "Up to 25% on every referred purchase"
+      },
+      "tracking": {
+        "title": "Real-time Dashboard",
+        "description": "Track all conversions at a glance"
+      },
+      "payouts": {
+        "title": "Fast Payouts",
+        "description": "Monthly payout from €50"
+      },
+      "support": {
+        "title": "Personal Support",
+        "description": "We help you every step of the way"
+      }
+    },
+    "stats": {
+      "partners": "Active Partners",
+      "commissionRate": "Up to",
+      "payouts": "Paid Out"
+    },
+    "form": {
+      "title": "Apply Now",
+      "companyName": "Company Name (optional)",
+      "companyNamePlaceholder": "Your Company Ltd",
+      "contactName": "Contact Name",
+      "contactNamePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "partner@example.com",
+      "phone": "Phone (optional)",
+      "phonePlaceholder": "+1 234 567 890",
+      "website": "Website (optional)",
+      "websitePlaceholder": "https://your-website.com",
+      "taxId": "Tax ID / VAT Number (optional)",
+      "taxIdPlaceholder": "GB123456789",
+      "about": "About You / Your Company (optional)",
+      "aboutPlaceholder": "Tell us something about yourself...",
+      "promotion": "How do you plan to promote EventBliss?",
+      "promotionPlaceholder": "e.g., Blog, Social Media, Newsletter, Personal Recommendations...",
+      "privacy": "I accept the",
+      "submit": "Submit Application",
+      "submitting": "Submitting..."
+    },
+    "success": {
+      "title": "Application Received!",
+      "description": "Thank you for your interest in our partner program.",
+      "nextSteps": "We will review your application and get back to you within 2-3 business days.",
+      "backToHome": "Back to Home"
+    },
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "privacyRequired": "You must accept the privacy policy",
+      "submitFailed": "Application could not be submitted. Please try again."
     }
   }
 }

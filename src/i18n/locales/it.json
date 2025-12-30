@@ -34,7 +34,7 @@
     "copyCode": "Copia codice"
   },
 "landing": {
-    "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati" },
+    "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati", "partner": "Partner" },
     "hero": { "badge": "La piattaforma #1 per la pianificazione eventi", "title": "Pianifica Eventi Indimenticabili", "subtitle": "Dagli addii al celibato ai compleanni, organizza eventi di gruppo con facilità. Divisione intelligente dei costi, suggerimenti AI e collaborazione in tempo reale.", "createEvent": "Crea Evento", "joinEvent": "Partecipa con Codice", "trustedBy": "Oltre 10.000 organizzatori si fidano di noi" },
     "features": {
       "title": "Tutto ciò di cui hai bisogno", "subtitle": "Strumenti potenti per l'evento perfetto",
@@ -722,5 +722,13 @@
     "settings": { "title": "Impostazioni", "profile": "Profilo", "paymentMethod": "Metodo di pagamento", "paymentType": "Tipo di pagamento", "bankTransfer": "Bonifico bancario", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "Partita IVA", "saved": "Impostazioni salvate", "yourTier": "Il tuo Tier", "companyName": "Nome azienda", "companyNamePlaceholder": "La Tua Azienda SRL", "contactName": "Nome contatto", "contactNamePlaceholder": "Mario Rossi", "phone": "Telefono", "website": "Sito web" },
     "tiers": { "bronze": "Bronzo", "silver": "Argento", "gold": "Oro", "platinum": "Platino", "nextTier": "Prossimo tier", "conversionsNeeded": "{{needed}} conversioni in più" },
     "notAffiliate": { "title": "Diventa partner", "description": "Non sei ancora partner. Vuoi unirti al nostro programma di affiliazione?", "cta": "Candidati ora", "loginRequired": "Accesso richiesto", "loginDesc": "Effettua l'accesso per accedere al Portale Partner.", "benefits": { "commission": "Fino al 25% di commissione", "commissionDesc": "Guadagna su ogni raccomandazione", "tracking": "Tracciamento in tempo reale", "trackingDesc": "Tieni traccia di tutte le conversioni", "support": "Supporto personale", "supportDesc": "Contatto diretto con il nostro team" } }
+  },
+  "partnerApply": {
+    "hero": { "badge": "Programma di affiliazione", "title": "Unisciti al nostro programma partner", "description": "Raccomanda EventBliss e guadagna fino al 25% di commissione per ogni referral riuscito." },
+    "benefits": { "commission": { "title": "Commissioni interessanti", "description": "Fino al 25% su ogni acquisto referenziato" }, "tracking": { "title": "Dashboard in tempo reale", "description": "Monitora tutte le tue conversioni" }, "payouts": { "title": "Pagamenti rapidi", "description": "Pagamento mensile da 50€" }, "support": { "title": "Supporto personalizzato", "description": "Ti aiutiamo in ogni passaggio" } },
+    "stats": { "partners": "Partner attivi", "commissionRate": "Fino a", "payouts": "Pagati" },
+    "form": { "title": "Candidati ora", "companyName": "Nome azienda (opzionale)", "companyNamePlaceholder": "La Tua Azienda SRL", "contactName": "Nome contatto", "contactNamePlaceholder": "Mario Rossi", "email": "Indirizzo email", "emailPlaceholder": "partner@esempio.it", "phone": "Telefono (opzionale)", "phonePlaceholder": "+39 123 456 7890", "website": "Sito web (opzionale)", "websitePlaceholder": "https://tuo-sito.it", "taxId": "Partita IVA (opzionale)", "taxIdPlaceholder": "IT12345678901", "about": "Su di te / la tua azienda (opzionale)", "aboutPlaceholder": "Raccontaci qualcosa di te...", "promotion": "Come intendi promuovere EventBliss?", "promotionPlaceholder": "es. Blog, Social Media, Newsletter, Raccomandazioni personali...", "privacy": "Accetto la", "submit": "Invia candidatura", "submitting": "Invio in corso..." },
+    "success": { "title": "Candidatura ricevuta!", "description": "Grazie per il tuo interesse nel nostro programma partner.", "nextSteps": "Esamineremo la tua candidatura e ti contatteremo entro 2-3 giorni lavorativi.", "backToHome": "Torna alla home" },
+    "errors": { "required": "Questo campo è obbligatorio", "invalidEmail": "Inserisci un indirizzo email valido", "privacyRequired": "Devi accettare l'informativa sulla privacy", "submitFailed": "Impossibile inviare la candidatura. Riprova." }
   }
 }
