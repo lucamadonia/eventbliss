@@ -34,7 +34,7 @@
     "copyCode": "Copiar código"
   },
 "landing": {
-    "nav": { "features": "Funciones", "howItWorks": "Cómo funciona", "solutions": "Soluciones", "faq": "FAQ", "login": "Iniciar sesión", "signUp": "Registrarse" },
+    "nav": { "features": "Funciones", "howItWorks": "Cómo funciona", "solutions": "Soluciones", "faq": "FAQ", "login": "Iniciar sesión", "signUp": "Registrarse", "partner": "Socios" },
     "hero": { "badge": "La plataforma #1 de planificación de eventos", "title": "Planifica Eventos Inolvidables", "subtitle": "Desde despedidas de soltero hasta cumpleaños, organiza eventos grupales con facilidad. División inteligente de costes, sugerencias con IA y colaboración en tiempo real.", "createEvent": "Crear Evento", "joinEvent": "Unirse con Código", "trustedBy": "Más de 10.000 organizadores confían en nosotros" },
     "features": {
       "title": "Todo lo que necesitas", "subtitle": "Herramientas potentes para el evento perfecto",
@@ -767,5 +767,13 @@
     "settings": { "title": "Configuración", "profile": "Perfil", "paymentMethod": "Método de pago", "paymentType": "Tipo de pago", "bankTransfer": "Transferencia bancaria", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "NIF / CIF", "saved": "Configuración guardada", "yourTier": "Tu Tier", "companyName": "Nombre de empresa", "companyNamePlaceholder": "Tu Empresa SL", "contactName": "Nombre de contacto", "contactNamePlaceholder": "Juan García", "phone": "Teléfono", "website": "Sitio web" },
     "tiers": { "bronze": "Bronce", "silver": "Plata", "gold": "Oro", "platinum": "Platino", "nextTier": "Siguiente tier", "conversionsNeeded": "{{needed}} conversiones más" },
     "notAffiliate": { "title": "Hazte socio", "description": "Aún no eres socio. ¿Te gustaría unirte a nuestro programa de afiliados?", "cta": "Solicitar ahora", "loginRequired": "Inicio de sesión requerido", "loginDesc": "Por favor, inicia sesión para acceder al Portal de Socios.", "benefits": { "commission": "Hasta 25% de comisión", "commissionDesc": "Gana con cada recomendación", "tracking": "Seguimiento en tiempo real", "trackingDesc": "Controla todas las conversiones", "support": "Soporte personal", "supportDesc": "Contacto directo con nuestro equipo" } }
+  },
+  "partnerApply": {
+    "hero": { "badge": "Programa de afiliados", "title": "Únete a nuestro programa de socios", "description": "Recomienda EventBliss y gana hasta un 25% de comisión por cada referencia exitosa." },
+    "benefits": { "commission": { "title": "Comisiones atractivas", "description": "Hasta 25% en cada compra referida" }, "tracking": { "title": "Panel en tiempo real", "description": "Controla todas tus conversiones" }, "payouts": { "title": "Pagos rápidos", "description": "Pago mensual desde 50€" }, "support": { "title": "Soporte personalizado", "description": "Te ayudamos en cada paso" } },
+    "stats": { "partners": "Socios activos", "commissionRate": "Hasta", "payouts": "Pagados" },
+    "form": { "title": "Solicitar ahora", "companyName": "Nombre de empresa (opcional)", "companyNamePlaceholder": "Tu Empresa SL", "contactName": "Nombre de contacto", "contactNamePlaceholder": "Juan García", "email": "Correo electrónico", "emailPlaceholder": "socio@ejemplo.es", "phone": "Teléfono (opcional)", "phonePlaceholder": "+34 123 456 789", "website": "Sitio web (opcional)", "websitePlaceholder": "https://tu-web.es", "taxId": "NIF/CIF (opcional)", "taxIdPlaceholder": "B12345678", "about": "Sobre ti / tu empresa (opcional)", "aboutPlaceholder": "Cuéntanos algo sobre ti...", "promotion": "¿Cómo planeas promocionar EventBliss?", "promotionPlaceholder": "ej. Blog, Redes sociales, Newsletter, Recomendaciones personales...", "privacy": "Acepto la", "submit": "Enviar solicitud", "submitting": "Enviando..." },
+    "success": { "title": "¡Solicitud recibida!", "description": "Gracias por tu interés en nuestro programa de socios.", "nextSteps": "Revisaremos tu solicitud y te contactaremos en 2-3 días hábiles.", "backToHome": "Volver al inicio" },
+    "errors": { "required": "Este campo es obligatorio", "invalidEmail": "Por favor, introduce un correo válido", "privacyRequired": "Debes aceptar la política de privacidad", "submitFailed": "No se pudo enviar la solicitud. Por favor, inténtalo de nuevo." }
   }
 }

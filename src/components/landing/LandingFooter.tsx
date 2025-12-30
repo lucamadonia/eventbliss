@@ -13,6 +13,11 @@ export function LandingFooter() {
     { label: t("landing.footer.solutions"), href: "#solutions" },
   ];
 
+  const partnerLinks = [
+    { label: t("landing.footer.becomePartner"), href: "/partner-apply" },
+    { label: t("landing.footer.partnerPortal"), href: "/partner-portal" },
+  ];
+
   const legalLinks = [
     { label: t("landing.footer.imprint"), href: "/legal/imprint" },
     { label: t("landing.footer.privacy"), href: "/legal/privacy" },
@@ -45,7 +50,7 @@ export function LandingFooter() {
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Product & Partner Links */}
           <div>
             <h4 className="font-display font-semibold mb-4">
               {t("landing.footer.product")}
@@ -59,6 +64,22 @@ export function LandingFooter() {
                   >
                     {link.label}
                   </a>
+                </li>
+              ))}
+            </ul>
+
+            <h4 className="font-display font-semibold mb-4 mt-8">
+              {t("landing.footer.partner")}
+            </h4>
+            <ul className="space-y-3">
+              {partnerLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
