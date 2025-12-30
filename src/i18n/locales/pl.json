@@ -695,5 +695,19 @@
     "fitness": { "chill": "Spokojny", "normal": "Normalny", "sporty": "Sportowy" },
     "alcohol": { "yes": "Tak, chętnie", "no": "Raczej nie", "flexible": "Elastyczny" },
     "attendance": { "yes": "Jestem!", "maybe": "Może", "no": "Niestety nie" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Portal Partnerski",
+      "welcome": "Witaj ponownie",
+      "tabs": { "dashboard": "Przegląd", "vouchers": "Kupony", "commissions": "Prowizje", "payouts": "Wypłaty", "settings": "Ustawienia" }
+    },
+    "stats": { "totalEarnings": "Całkowite zarobki", "pendingBalance": "Saldo oczekujące", "paidOut": "Już wypłacone", "conversionRate": "Współczynnik konwersji", "thisMonth": "Ten miesiąc", "allTime": "Wszystko", "tier": "Status Tier" },
+    "vouchers": { "title": "Moje kody rabatowe", "copyCode": "Kopiuj kod", "share": "Udostępnij", "redemptions": "Wykorzystania", "generated": "Wygenerowano", "noVouchers": "Brak przypisanych kuponów", "copied": "Kod skopiowany!", "discount": "Rabat", "active": "Aktywny", "inactive": "Nieaktywny" },
+    "commissions": { "title": "Moje prowizje", "recent": "Ostatnie prowizje", "pending": "Oczekujące", "approved": "Zatwierdzone", "paid": "Wypłacone", "cancelled": "Anulowane", "orderAmount": "Wartość zamówienia", "commission": "Prowizja", "rate": "Stawka", "noCommissions": "Nie znaleziono prowizji", "noCommissionsYet": "Prowizje pojawią się tutaj.", "noResults": "Brak wyników dla tych filtrów", "searchPlaceholder": "Szukaj po kodzie lub emailu..." },
+    "payouts": { "title": "Wypłaty", "availableBalance": "Dostępne saldo", "requestPayout": "Zażądaj wypłaty", "minAmount": "Minimalna kwota: 50€", "readyForPayout": "Gotowe do wypłaty", "processing": "Przetwarzanie", "completed": "Zakończone", "failed": "Niepowodzenie", "pending": "Oczekujące", "reference": "Referencja", "history": "Historia wypłat", "noPayouts": "Brak wypłat", "noPayoutsDesc": "Twoja historia wypłat pojawi się tutaj.", "requested": "Wypłata pomyślnie zażądana!", "confirmTitle": "Potwierdź wypłatę", "confirmDesc": "Czy chcesz zażądać wypłaty na tę kwotę?", "willBeTransferred": "zostanie przelane na twoje konto", "processedAt": "Przetworzone" },
+    "settings": { "title": "Ustawienia", "profile": "Profil", "paymentMethod": "Metoda płatności", "paymentType": "Typ wypłaty", "bankTransfer": "Przelew bankowy", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "NIP", "saved": "Ustawienia zapisane", "yourTier": "Twój Tier", "companyName": "Nazwa firmy", "companyNamePlaceholder": "Twoja Firma Sp. z o.o.", "contactName": "Imię i nazwisko", "contactNamePlaceholder": "Jan Kowalski", "phone": "Telefon", "website": "Strona www" },
+    "tiers": { "bronze": "Brąz", "silver": "Srebro", "gold": "Złoto", "platinum": "Platyna", "nextTier": "Następny tier", "conversionsNeeded": "{{needed}} więcej konwersji" },
+    "notAffiliate": { "title": "Zostań partnerem", "description": "Nie jesteś jeszcze partnerem. Czy chcesz dołączyć do naszego programu partnerskiego?", "cta": "Aplikuj teraz", "loginRequired": "Wymagane logowanie", "loginDesc": "Zaloguj się, aby uzyskać dostęp do Portalu Partnerskiego.", "benefits": { "commission": "Do 25% prowizji", "commissionDesc": "Zarabiaj na każdej rekomendacji", "tracking": "Śledzenie w czasie rzeczywistym", "trackingDesc": "Śledź wszystkie konwersje", "support": "Osobiste wsparcie", "supportDesc": "Bezpośredni kontakt z naszym zespołem" } }
   }
 }

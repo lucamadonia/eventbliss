@@ -708,5 +708,19 @@
     "fitness": { "chill": "Rilassato", "normal": "Normale", "sporty": "Sportivo" },
     "alcohol": { "yes": "Sì, volentieri", "no": "Meglio di no", "flexible": "Flessibile" },
     "attendance": { "yes": "Ci sono!", "maybe": "Forse", "no": "Purtroppo no" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Portale Partner",
+      "welcome": "Bentornato",
+      "tabs": { "dashboard": "Panoramica", "vouchers": "Buoni", "commissions": "Commissioni", "payouts": "Pagamenti", "settings": "Impostazioni" }
+    },
+    "stats": { "totalEarnings": "Guadagni totali", "pendingBalance": "Saldo in sospeso", "paidOut": "Già pagato", "conversionRate": "Tasso di conversione", "thisMonth": "Questo mese", "allTime": "Sempre", "tier": "Stato Tier" },
+    "vouchers": { "title": "I miei codici sconto", "copyCode": "Copia codice", "share": "Condividi", "redemptions": "Riscatti", "generated": "Generato", "noVouchers": "Nessun buono assegnato", "copied": "Codice copiato!", "discount": "Sconto", "active": "Attivo", "inactive": "Inattivo" },
+    "commissions": { "title": "Le mie commissioni", "recent": "Commissioni recenti", "pending": "In sospeso", "approved": "Approvato", "paid": "Pagato", "cancelled": "Annullato", "orderAmount": "Importo ordine", "commission": "Commissione", "rate": "Tasso", "noCommissions": "Nessuna commissione trovata", "noCommissionsYet": "Le commissioni appariranno qui.", "noResults": "Nessun risultato per questi filtri", "searchPlaceholder": "Cerca per buono o email..." },
+    "payouts": { "title": "Pagamenti", "availableBalance": "Saldo disponibile", "requestPayout": "Richiedi pagamento", "minAmount": "Importo minimo: 50€", "readyForPayout": "Pronto per il pagamento", "processing": "In elaborazione", "completed": "Completato", "failed": "Fallito", "pending": "In sospeso", "reference": "Riferimento", "history": "Cronologia pagamenti", "noPayouts": "Nessun pagamento", "noPayoutsDesc": "La tua cronologia apparirà qui.", "requested": "Pagamento richiesto con successo!", "confirmTitle": "Conferma pagamento", "confirmDesc": "Vuoi richiedere un pagamento per questo importo?", "willBeTransferred": "verrà trasferito sul tuo conto registrato", "processedAt": "Elaborato" },
+    "settings": { "title": "Impostazioni", "profile": "Profilo", "paymentMethod": "Metodo di pagamento", "paymentType": "Tipo di pagamento", "bankTransfer": "Bonifico bancario", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "Partita IVA", "saved": "Impostazioni salvate", "yourTier": "Il tuo Tier", "companyName": "Nome azienda", "companyNamePlaceholder": "La Tua Azienda SRL", "contactName": "Nome contatto", "contactNamePlaceholder": "Mario Rossi", "phone": "Telefono", "website": "Sito web" },
+    "tiers": { "bronze": "Bronzo", "silver": "Argento", "gold": "Oro", "platinum": "Platino", "nextTier": "Prossimo tier", "conversionsNeeded": "{{needed}} conversioni in più" },
+    "notAffiliate": { "title": "Diventa partner", "description": "Non sei ancora partner. Vuoi unirti al nostro programma di affiliazione?", "cta": "Candidati ora", "loginRequired": "Accesso richiesto", "loginDesc": "Effettua l'accesso per accedere al Portale Partner.", "benefits": { "commission": "Fino al 25% di commissione", "commissionDesc": "Guadagna su ogni raccomandazione", "tracking": "Tracciamento in tempo reale", "trackingDesc": "Tieni traccia di tutte le conversioni", "support": "Supporto personale", "supportDesc": "Contatto diretto con il nostro team" } }
   }
 }

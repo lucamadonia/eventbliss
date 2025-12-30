@@ -695,5 +695,19 @@
     "fitness": { "chill": "Relaxado", "normal": "Normal", "sporty": "Desportivo" },
     "alcohol": { "yes": "Sim, por favor", "no": "Prefiro não", "flexible": "Flexível" },
     "attendance": { "yes": "Estou dentro!", "maybe": "Talvez", "no": "Infelizmente não" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Portal de Parceiros",
+      "welcome": "Bem-vindo de volta",
+      "tabs": { "dashboard": "Painel", "vouchers": "Cupões", "commissions": "Comissões", "payouts": "Pagamentos", "settings": "Definições" }
+    },
+    "stats": { "totalEarnings": "Ganhos totais", "pendingBalance": "Saldo pendente", "paidOut": "Já pago", "conversionRate": "Taxa de conversão", "thisMonth": "Este mês", "allTime": "Sempre", "tier": "Estado do Tier" },
+    "vouchers": { "title": "Os meus códigos de cupão", "copyCode": "Copiar código", "share": "Partilhar", "redemptions": "Resgates", "generated": "Gerado", "noVouchers": "Sem cupões atribuídos", "copied": "Código copiado!", "discount": "Desconto", "active": "Ativo", "inactive": "Inativo" },
+    "commissions": { "title": "As minhas comissões", "recent": "Comissões recentes", "pending": "Pendente", "approved": "Aprovado", "paid": "Pago", "cancelled": "Cancelado", "orderAmount": "Valor do pedido", "commission": "Comissão", "rate": "Taxa", "noCommissions": "Nenhuma comissão encontrada", "noCommissionsYet": "As comissões aparecerão aqui.", "noResults": "Sem resultados para estes filtros", "searchPlaceholder": "Pesquisar por cupão ou email..." },
+    "payouts": { "title": "Pagamentos", "availableBalance": "Saldo disponível", "requestPayout": "Solicitar pagamento", "minAmount": "Valor mínimo: 50€", "readyForPayout": "Pronto para pagamento", "processing": "A processar", "completed": "Concluído", "failed": "Falhou", "pending": "Pendente", "reference": "Referência", "history": "Histórico de pagamentos", "noPayouts": "Sem pagamentos", "noPayoutsDesc": "O teu histórico de pagamentos aparecerá aqui.", "requested": "Pagamento solicitado com sucesso!", "confirmTitle": "Confirmar pagamento", "confirmDesc": "Queres solicitar um pagamento por este valor?", "willBeTransferred": "será transferido para a tua conta registada", "processedAt": "Processado" },
+    "settings": { "title": "Definições", "profile": "Perfil", "paymentMethod": "Método de pagamento", "paymentType": "Tipo de pagamento", "bankTransfer": "Transferência bancária", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "NIF", "saved": "Definições guardadas", "yourTier": "O teu Tier", "companyName": "Nome da empresa", "companyNamePlaceholder": "A Tua Empresa Lda", "contactName": "Nome de contacto", "contactNamePlaceholder": "João Silva", "phone": "Telefone", "website": "Website" },
+    "tiers": { "bronze": "Bronze", "silver": "Prata", "gold": "Ouro", "platinum": "Platina", "nextTier": "Próximo tier", "conversionsNeeded": "{{needed}} mais conversões" },
+    "notAffiliate": { "title": "Torna-te parceiro", "description": "Ainda não és parceiro. Queres juntar-te ao nosso programa de afiliados?", "cta": "Candidatar agora", "loginRequired": "Login necessário", "loginDesc": "Por favor, inicia sessão para aceder ao Portal de Parceiros.", "benefits": { "commission": "Até 25% de comissão", "commissionDesc": "Ganha em cada recomendação", "tracking": "Rastreamento em tempo real", "trackingDesc": "Acompanha todas as conversões", "support": "Suporte pessoal", "supportDesc": "Contacto direto com a nossa equipa" } }
   }
 }

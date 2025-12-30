@@ -753,5 +753,19 @@
     "fitness": { "chill": "Relajado", "normal": "Normal", "sporty": "Deportivo" },
     "alcohol": { "yes": "Sí, por favor", "no": "Mejor no", "flexible": "Flexible" },
     "attendance": { "yes": "¡Me apunto!", "maybe": "Quizás", "no": "Lamentablemente no" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Portal de Socios",
+      "welcome": "Bienvenido de nuevo",
+      "tabs": { "dashboard": "Panel", "vouchers": "Cupones", "commissions": "Comisiones", "payouts": "Pagos", "settings": "Configuración" }
+    },
+    "stats": { "totalEarnings": "Ganancias totales", "pendingBalance": "Saldo pendiente", "paidOut": "Ya pagado", "conversionRate": "Tasa de conversión", "thisMonth": "Este mes", "allTime": "Todo el tiempo", "tier": "Estado del Tier" },
+    "vouchers": { "title": "Mis códigos de cupón", "copyCode": "Copiar código", "share": "Compartir", "redemptions": "Canjes", "generated": "Generado", "noVouchers": "Sin cupones asignados", "copied": "¡Código copiado!", "discount": "Descuento", "active": "Activo", "inactive": "Inactivo" },
+    "commissions": { "title": "Mis comisiones", "recent": "Comisiones recientes", "pending": "Pendiente", "approved": "Aprobado", "paid": "Pagado", "cancelled": "Cancelado", "orderAmount": "Importe del pedido", "commission": "Comisión", "rate": "Tasa", "noCommissions": "No se encontraron comisiones", "noCommissionsYet": "Las comisiones aparecerán aquí.", "noResults": "Sin resultados para estos filtros", "searchPlaceholder": "Buscar por cupón o email..." },
+    "payouts": { "title": "Pagos", "availableBalance": "Saldo disponible", "requestPayout": "Solicitar pago", "minAmount": "Importe mínimo: 50€", "readyForPayout": "Listo para pago", "processing": "Procesando", "completed": "Completado", "failed": "Fallido", "pending": "Pendiente", "reference": "Referencia", "history": "Historial de pagos", "noPayouts": "Sin pagos", "noPayoutsDesc": "Tu historial de pagos aparecerá aquí.", "requested": "¡Pago solicitado con éxito!", "confirmTitle": "Confirmar pago", "confirmDesc": "¿Quieres solicitar un pago por este importe?", "willBeTransferred": "se transferirá a tu cuenta registrada", "processedAt": "Procesado" },
+    "settings": { "title": "Configuración", "profile": "Perfil", "paymentMethod": "Método de pago", "paymentType": "Tipo de pago", "bankTransfer": "Transferencia bancaria", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "NIF / CIF", "saved": "Configuración guardada", "yourTier": "Tu Tier", "companyName": "Nombre de empresa", "companyNamePlaceholder": "Tu Empresa SL", "contactName": "Nombre de contacto", "contactNamePlaceholder": "Juan García", "phone": "Teléfono", "website": "Sitio web" },
+    "tiers": { "bronze": "Bronce", "silver": "Plata", "gold": "Oro", "platinum": "Platino", "nextTier": "Siguiente tier", "conversionsNeeded": "{{needed}} conversiones más" },
+    "notAffiliate": { "title": "Hazte socio", "description": "Aún no eres socio. ¿Te gustaría unirte a nuestro programa de afiliados?", "cta": "Solicitar ahora", "loginRequired": "Inicio de sesión requerido", "loginDesc": "Por favor, inicia sesión para acceder al Portal de Socios.", "benefits": { "commission": "Hasta 25% de comisión", "commissionDesc": "Gana con cada recomendación", "tracking": "Seguimiento en tiempo real", "trackingDesc": "Controla todas las conversiones", "support": "Soporte personal", "supportDesc": "Contacto directo con nuestro equipo" } }
   }
 }

@@ -90,17 +90,15 @@ export function AffiliateSettingsTab() {
 
     try {
       await updateAffiliate.mutateAsync({
-        affiliateId,
-        data: {
-          company_name: formData.company_name || null,
-          contact_name: formData.contact_name,
-          email: formData.email,
-          phone: formData.phone || null,
-          website: formData.website || null,
-          tax_id: formData.tax_id || null,
-          payout_method: formData.payout_method,
-          payout_details: payoutDetails,
-        },
+        id: affiliateId,
+        company_name: formData.company_name || null,
+        contact_name: formData.contact_name,
+        email: formData.email,
+        phone: formData.phone || null,
+        website: formData.website || null,
+        tax_id: formData.tax_id || null,
+        payout_method: formData.payout_method,
+        payout_details: payoutDetails,
       });
       toast.success(t("affiliate.settings.saved", "Einstellungen gespeichert"));
     } catch (error) {
@@ -122,9 +120,9 @@ export function AffiliateSettingsTab() {
     platinum: { min: 50, next: null, needed: 0 },
   };
 
-  const currentTier = stats?.tier || "bronze";
+  const currentTier = stats?.affiliate?.tier || "bronze";
   const tierInfo = tierThresholds[currentTier as keyof typeof tierThresholds];
-  const conversions = stats?.conversions || 0;
+  const conversions = stats?.vouchers?.totalRedemptions || 0;
   const progress = tierInfo.next 
     ? Math.min(100, ((conversions - tierInfo.min) / (tierInfo.needed - tierInfo.min)) * 100)
     : 100;
@@ -165,9 +163,9 @@ export function AffiliateSettingsTab() {
 
           {tierInfo.next && (
             <div className="mt-4">
-              <div className="flex items-center justify-between text-sm mb-2">
+            <div className="flex items-center justify-between text-sm mb-2">
                 <span className="text-muted-foreground">
-                  {t("affiliate.tiers.nextTier", "Nächstes Tier")}: {t(`affiliate.tiers.${tierInfo.next}`, tierInfo.next)}
+                  {String(t("affiliate.tiers.nextTier", "Nächstes Tier"))}: {String(t(`affiliate.tiers.${tierInfo.next}`, tierInfo.next))}
                 </span>
                 <span className="font-medium">{conversions} / {tierInfo.needed}</span>
               </div>

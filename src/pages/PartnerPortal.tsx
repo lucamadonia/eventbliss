@@ -228,9 +228,9 @@ export default function PartnerPortal() {
           </div>
           
           <Badge 
-            className={`text-sm font-bold px-4 py-2 bg-gradient-to-r ${tierColors[stats?.tier || "bronze"]} text-white border-0`}
+            className={`text-sm font-bold px-4 py-2 bg-gradient-to-r ${tierColors[stats?.affiliate?.tier || "bronze"]} text-white border-0`}
           >
-            {t(`affiliate.tiers.${stats?.tier || "bronze"}`, (stats?.tier || "bronze").toUpperCase())}
+            {String(t(`affiliate.tiers.${stats?.affiliate?.tier || "bronze"}`, (stats?.affiliate?.tier || "bronze").toUpperCase()))}
           </Badge>
         </motion.div>
 

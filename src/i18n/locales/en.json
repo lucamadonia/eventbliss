@@ -1501,5 +1501,117 @@
       "maybe": "Maybe",
       "no": "Unfortunately not"
     }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Partner Portal",
+      "welcome": "Welcome back",
+      "tabs": {
+        "dashboard": "Dashboard",
+        "vouchers": "Vouchers",
+        "commissions": "Commissions",
+        "payouts": "Payouts",
+        "settings": "Settings"
+      }
+    },
+    "stats": {
+      "totalEarnings": "Total Earnings",
+      "pendingBalance": "Pending Balance",
+      "paidOut": "Already Paid",
+      "conversionRate": "Conversion Rate",
+      "thisMonth": "This Month",
+      "allTime": "All Time",
+      "tier": "Tier Status"
+    },
+    "vouchers": {
+      "title": "My Voucher Codes",
+      "copyCode": "Copy Code",
+      "share": "Share",
+      "redemptions": "Redemptions",
+      "generated": "Generated",
+      "noVouchers": "No vouchers assigned yet",
+      "copied": "Code copied!",
+      "discount": "Discount",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "commissions": {
+      "title": "My Commissions",
+      "recent": "Recent Commissions",
+      "pending": "Pending",
+      "approved": "Approved",
+      "paid": "Paid",
+      "cancelled": "Cancelled",
+      "orderAmount": "Order Amount",
+      "commission": "Commission",
+      "rate": "Rate",
+      "noCommissions": "No commissions found",
+      "noCommissionsYet": "When commissions occur, they will appear here.",
+      "noResults": "No results for these filters",
+      "searchPlaceholder": "Search by voucher or email..."
+    },
+    "payouts": {
+      "title": "Payouts",
+      "availableBalance": "Available Balance",
+      "requestPayout": "Request Payout",
+      "minAmount": "Minimum amount: €50",
+      "readyForPayout": "Ready for payout",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending",
+      "reference": "Reference",
+      "history": "Payout History",
+      "noPayouts": "No payouts yet",
+      "noPayoutsDesc": "Your payout history will appear here.",
+      "requested": "Payout successfully requested!",
+      "confirmTitle": "Confirm Payout",
+      "confirmDesc": "Do you want to request a payout for the following amount?",
+      "willBeTransferred": "will be transferred to your registered account",
+      "processedAt": "Processed"
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile",
+      "paymentMethod": "Payment Method",
+      "paymentType": "Payout Method",
+      "bankTransfer": "Bank Transfer",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "PayPal Email",
+      "taxId": "Tax ID / VAT Number",
+      "saved": "Settings saved",
+      "yourTier": "Your Tier",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Your Company Ltd",
+      "contactName": "Contact Name",
+      "contactNamePlaceholder": "John Doe",
+      "phone": "Phone",
+      "website": "Website"
+    },
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum",
+      "nextTier": "Next Tier",
+      "conversionsNeeded": "{{needed}} more conversions"
+    },
+    "notAffiliate": {
+      "title": "Become a Partner",
+      "description": "You are not a partner yet. Would you like to join our affiliate program and earn commissions?",
+      "cta": "Apply Now",
+      "loginRequired": "Login Required",
+      "loginDesc": "Please log in to access the Partner Portal.",
+      "benefits": {
+        "commission": "Up to 25% Commission",
+        "commissionDesc": "Earn on every successful referral",
+        "tracking": "Real-time Tracking",
+        "trackingDesc": "Keep track of all conversions",
+        "support": "Personal Support",
+        "supportDesc": "Direct contact with our team"
+      }
+    }
   }
 }
