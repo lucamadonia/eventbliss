@@ -753,5 +753,19 @@
     "fitness": { "chill": "Détendu", "normal": "Normal", "sporty": "Sportif" },
     "alcohol": { "yes": "Oui, volontiers", "no": "Plutôt pas", "flexible": "Flexible" },
     "attendance": { "yes": "J'en suis !", "maybe": "Peut-être", "no": "Malheureusement non" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Portail Partenaire",
+      "welcome": "Bon retour",
+      "tabs": { "dashboard": "Tableau de bord", "vouchers": "Bons", "commissions": "Commissions", "payouts": "Paiements", "settings": "Paramètres" }
+    },
+    "stats": { "totalEarnings": "Gains totaux", "pendingBalance": "Solde en attente", "paidOut": "Déjà payé", "conversionRate": "Taux de conversion", "thisMonth": "Ce mois", "allTime": "Tout le temps", "tier": "Statut Tier" },
+    "vouchers": { "title": "Mes codes promo", "copyCode": "Copier le code", "share": "Partager", "redemptions": "Utilisations", "generated": "Généré", "noVouchers": "Aucun bon attribué", "copied": "Code copié !", "discount": "Réduction", "active": "Actif", "inactive": "Inactif" },
+    "commissions": { "title": "Mes commissions", "recent": "Commissions récentes", "pending": "En attente", "approved": "Approuvé", "paid": "Payé", "cancelled": "Annulé", "orderAmount": "Montant commande", "commission": "Commission", "rate": "Taux", "noCommissions": "Aucune commission trouvée", "noCommissionsYet": "Les commissions apparaîtront ici.", "noResults": "Aucun résultat pour ces filtres", "searchPlaceholder": "Rechercher par bon ou email..." },
+    "payouts": { "title": "Paiements", "availableBalance": "Solde disponible", "requestPayout": "Demander paiement", "minAmount": "Montant minimum : 50€", "readyForPayout": "Prêt pour le paiement", "processing": "En cours", "completed": "Terminé", "failed": "Échoué", "pending": "En attente", "reference": "Référence", "history": "Historique des paiements", "noPayouts": "Aucun paiement", "noPayoutsDesc": "Votre historique apparaîtra ici.", "requested": "Paiement demandé avec succès !", "confirmTitle": "Confirmer le paiement", "confirmDesc": "Voulez-vous demander un paiement pour ce montant ?", "willBeTransferred": "sera transféré sur votre compte", "processedAt": "Traité" },
+    "settings": { "title": "Paramètres", "profile": "Profil", "paymentMethod": "Mode de paiement", "paymentType": "Type de paiement", "bankTransfer": "Virement bancaire", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "Numéro fiscal / TVA", "saved": "Paramètres enregistrés", "yourTier": "Votre Tier", "companyName": "Nom de l'entreprise", "companyNamePlaceholder": "Votre Entreprise SARL", "contactName": "Nom du contact", "contactNamePlaceholder": "Jean Dupont", "phone": "Téléphone", "website": "Site web" },
+    "tiers": { "bronze": "Bronze", "silver": "Argent", "gold": "Or", "platinum": "Platine", "nextTier": "Tier suivant", "conversionsNeeded": "{{needed}} conversions de plus" },
+    "notAffiliate": { "title": "Devenir partenaire", "description": "Vous n'êtes pas encore partenaire. Voulez-vous rejoindre notre programme d'affiliation ?", "cta": "Postuler maintenant", "loginRequired": "Connexion requise", "loginDesc": "Veuillez vous connecter pour accéder au Portail Partenaire.", "benefits": { "commission": "Jusqu'à 25% de commission", "commissionDesc": "Gagnez sur chaque recommandation", "tracking": "Suivi en temps réel", "trackingDesc": "Suivez toutes les conversions", "support": "Support personnel", "supportDesc": "Contact direct avec notre équipe" } }
   }
 }

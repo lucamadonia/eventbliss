@@ -708,5 +708,19 @@
     "fitness": { "chill": "Ontspannen", "normal": "Normaal", "sporty": "Sportief" },
     "alcohol": { "yes": "Ja graag", "no": "Liever niet", "flexible": "Flexibel" },
     "attendance": { "yes": "Ik doe mee!", "maybe": "Misschien", "no": "Helaas niet" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Partnerportaal",
+      "welcome": "Welkom terug",
+      "tabs": { "dashboard": "Overzicht", "vouchers": "Kortingscodes", "commissions": "Commissies", "payouts": "Uitbetalingen", "settings": "Instellingen" }
+    },
+    "stats": { "totalEarnings": "Totale inkomsten", "pendingBalance": "Openstaand saldo", "paidOut": "Al uitbetaald", "conversionRate": "Conversieratio", "thisMonth": "Deze maand", "allTime": "Altijd", "tier": "Tier status" },
+    "vouchers": { "title": "Mijn kortingscodes", "copyCode": "Code kopiëren", "share": "Delen", "redemptions": "Inwisselingen", "generated": "Gegenereerd", "noVouchers": "Nog geen kortingscodes toegewezen", "copied": "Code gekopieerd!", "discount": "Korting", "active": "Actief", "inactive": "Inactief" },
+    "commissions": { "title": "Mijn commissies", "recent": "Recente commissies", "pending": "In behandeling", "approved": "Goedgekeurd", "paid": "Betaald", "cancelled": "Geannuleerd", "orderAmount": "Orderbedrag", "commission": "Commissie", "rate": "Tarief", "noCommissions": "Geen commissies gevonden", "noCommissionsYet": "Commissies verschijnen hier.", "noResults": "Geen resultaten voor deze filters", "searchPlaceholder": "Zoek op code of email..." },
+    "payouts": { "title": "Uitbetalingen", "availableBalance": "Beschikbaar saldo", "requestPayout": "Uitbetaling aanvragen", "minAmount": "Minimumbedrag: €50", "readyForPayout": "Klaar voor uitbetaling", "processing": "In verwerking", "completed": "Voltooid", "failed": "Mislukt", "pending": "In behandeling", "reference": "Referentie", "history": "Uitbetalingsgeschiedenis", "noPayouts": "Nog geen uitbetalingen", "noPayoutsDesc": "Je uitbetalingsgeschiedenis verschijnt hier.", "requested": "Uitbetaling succesvol aangevraagd!", "confirmTitle": "Uitbetaling bevestigen", "confirmDesc": "Wil je een uitbetaling voor dit bedrag aanvragen?", "willBeTransferred": "wordt overgemaakt naar je geregistreerde rekening", "processedAt": "Verwerkt" },
+    "settings": { "title": "Instellingen", "profile": "Profiel", "paymentMethod": "Betaalmethode", "paymentType": "Uitbetalingstype", "bankTransfer": "Bankoverschrijving", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "PayPal Email", "taxId": "BTW-nummer", "saved": "Instellingen opgeslagen", "yourTier": "Jouw Tier", "companyName": "Bedrijfsnaam", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "phone": "Telefoon", "website": "Website" },
+    "tiers": { "bronze": "Brons", "silver": "Zilver", "gold": "Goud", "platinum": "Platina", "nextTier": "Volgende tier", "conversionsNeeded": "{{needed}} meer conversies" },
+    "notAffiliate": { "title": "Word partner", "description": "Je bent nog geen partner. Wil je deelnemen aan ons affiliateprogramma?", "cta": "Nu aanmelden", "loginRequired": "Inloggen vereist", "loginDesc": "Log in om toegang te krijgen tot het Partnerportaal.", "benefits": { "commission": "Tot 25% commissie", "commissionDesc": "Verdien bij elke aanbeveling", "tracking": "Realtime tracking", "trackingDesc": "Volg alle conversies", "support": "Persoonlijke ondersteuning", "supportDesc": "Direct contact met ons team" } }
   }
 }

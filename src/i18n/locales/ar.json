@@ -695,5 +695,19 @@
     "fitness": { "chill": "مريح", "normal": "عادي", "sporty": "رياضي" },
     "alcohol": { "yes": "نعم من فضلك", "no": "لا أفضل", "flexible": "مرن" },
     "attendance": { "yes": "أنا موجود!", "maybe": "ربما", "no": "للأسف لا" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "بوابة الشركاء",
+      "welcome": "مرحباً بعودتك",
+      "tabs": { "dashboard": "لوحة التحكم", "vouchers": "القسائم", "commissions": "العمولات", "payouts": "المدفوعات", "settings": "الإعدادات" }
+    },
+    "stats": { "totalEarnings": "إجمالي الأرباح", "pendingBalance": "الرصيد المعلق", "paidOut": "تم الدفع", "conversionRate": "معدل التحويل", "thisMonth": "هذا الشهر", "allTime": "كل الوقت", "tier": "حالة المستوى" },
+    "vouchers": { "title": "رموز القسائم الخاصة بي", "copyCode": "نسخ الرمز", "share": "مشاركة", "redemptions": "الاستردادات", "generated": "تم الإنشاء", "noVouchers": "لا توجد قسائم معينة", "copied": "تم نسخ الرمز!", "discount": "خصم", "active": "نشط", "inactive": "غير نشط" },
+    "commissions": { "title": "عمولاتي", "recent": "العمولات الأخيرة", "pending": "قيد الانتظار", "approved": "تمت الموافقة", "paid": "مدفوع", "cancelled": "ملغي", "orderAmount": "مبلغ الطلب", "commission": "العمولة", "rate": "المعدل", "noCommissions": "لم يتم العثور على عمولات", "noCommissionsYet": "ستظهر العمولات هنا.", "noResults": "لا توجد نتائج لهذه الفلاتر", "searchPlaceholder": "البحث بالقسيمة أو البريد الإلكتروني..." },
+    "payouts": { "title": "المدفوعات", "availableBalance": "الرصيد المتاح", "requestPayout": "طلب الدفع", "minAmount": "الحد الأدنى: 50€", "readyForPayout": "جاهز للدفع", "processing": "قيد المعالجة", "completed": "مكتمل", "failed": "فشل", "pending": "قيد الانتظار", "reference": "المرجع", "history": "سجل المدفوعات", "noPayouts": "لا توجد مدفوعات", "noPayoutsDesc": "سيظهر سجل المدفوعات هنا.", "requested": "تم طلب الدفع بنجاح!", "confirmTitle": "تأكيد الدفع", "confirmDesc": "هل تريد طلب دفع لهذا المبلغ؟", "willBeTransferred": "سيتم تحويله إلى حسابك المسجل", "processedAt": "تمت المعالجة" },
+    "settings": { "title": "الإعدادات", "profile": "الملف الشخصي", "paymentMethod": "طريقة الدفع", "paymentType": "نوع الدفع", "bankTransfer": "تحويل بنكي", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "بريد PayPal", "taxId": "الرقم الضريبي", "saved": "تم حفظ الإعدادات", "yourTier": "مستواك", "companyName": "اسم الشركة", "companyNamePlaceholder": "شركتك ش.م.م", "contactName": "اسم جهة الاتصال", "contactNamePlaceholder": "أحمد محمد", "phone": "الهاتف", "website": "الموقع الإلكتروني" },
+    "tiers": { "bronze": "برونزي", "silver": "فضي", "gold": "ذهبي", "platinum": "بلاتيني", "nextTier": "المستوى التالي", "conversionsNeeded": "{{needed}} تحويلات إضافية" },
+    "notAffiliate": { "title": "كن شريكاً", "description": "أنت لست شريكاً بعد. هل ترغب في الانضمام إلى برنامج الشراكة الخاص بنا؟", "cta": "قدم الآن", "loginRequired": "تسجيل الدخول مطلوب", "loginDesc": "يرجى تسجيل الدخول للوصول إلى بوابة الشركاء.", "benefits": { "commission": "عمولة تصل إلى 25%", "commissionDesc": "اكسب على كل إحالة ناجحة", "tracking": "تتبع في الوقت الفعلي", "trackingDesc": "تتبع جميع التحويلات", "support": "دعم شخصي", "supportDesc": "اتصال مباشر مع فريقنا" } }
   }
 }

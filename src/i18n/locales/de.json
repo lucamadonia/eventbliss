@@ -1528,5 +1528,117 @@
       "maybe": "Vielleicht",
       "no": "Leider nicht"
     }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Partner-Portal",
+      "welcome": "Willkommen zurück",
+      "tabs": {
+        "dashboard": "Übersicht",
+        "vouchers": "Gutscheine",
+        "commissions": "Provisionen",
+        "payouts": "Auszahlungen",
+        "settings": "Einstellungen"
+      }
+    },
+    "stats": {
+      "totalEarnings": "Gesamteinnahmen",
+      "pendingBalance": "Offener Betrag",
+      "paidOut": "Bereits ausgezahlt",
+      "conversionRate": "Conversion Rate",
+      "thisMonth": "Diesen Monat",
+      "allTime": "Gesamt",
+      "tier": "Tier-Status"
+    },
+    "vouchers": {
+      "title": "Meine Gutscheincodes",
+      "copyCode": "Code kopieren",
+      "share": "Teilen",
+      "redemptions": "Einlösungen",
+      "generated": "Generiert",
+      "noVouchers": "Noch keine Gutscheine zugewiesen",
+      "copied": "Code kopiert!",
+      "discount": "Rabatt",
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "commissions": {
+      "title": "Meine Provisionen",
+      "recent": "Letzte Provisionen",
+      "pending": "Ausstehend",
+      "approved": "Genehmigt",
+      "paid": "Ausgezahlt",
+      "cancelled": "Storniert",
+      "orderAmount": "Bestellwert",
+      "commission": "Provision",
+      "rate": "Rate",
+      "noCommissions": "Keine Provisionen gefunden",
+      "noCommissionsYet": "Sobald Provisionen anfallen, siehst du sie hier.",
+      "noResults": "Keine Ergebnisse für diese Filter",
+      "searchPlaceholder": "Suche nach Gutschein oder E-Mail..."
+    },
+    "payouts": {
+      "title": "Auszahlungen",
+      "availableBalance": "Verfügbarer Betrag",
+      "requestPayout": "Auszahlung anfordern",
+      "minAmount": "Mindestbetrag: €50",
+      "readyForPayout": "Bereit zur Auszahlung",
+      "processing": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "failed": "Fehlgeschlagen",
+      "pending": "Ausstehend",
+      "reference": "Referenz",
+      "history": "Auszahlungsverlauf",
+      "noPayouts": "Noch keine Auszahlungen",
+      "noPayoutsDesc": "Deine Auszahlungshistorie erscheint hier.",
+      "requested": "Auszahlung erfolgreich angefordert!",
+      "confirmTitle": "Auszahlung bestätigen",
+      "confirmDesc": "Möchtest du eine Auszahlung über folgenden Betrag anfordern?",
+      "willBeTransferred": "wird auf dein hinterlegtes Konto überwiesen",
+      "processedAt": "Bearbeitet"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "profile": "Profil",
+      "paymentMethod": "Zahlungsmethode",
+      "paymentType": "Auszahlungsart",
+      "bankTransfer": "Banküberweisung",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "PayPal E-Mail",
+      "taxId": "Steuernummer / USt-ID",
+      "saved": "Einstellungen gespeichert",
+      "yourTier": "Dein Tier",
+      "companyName": "Firmenname",
+      "companyNamePlaceholder": "Deine Firma GmbH",
+      "contactName": "Kontaktname",
+      "contactNamePlaceholder": "Max Mustermann",
+      "phone": "Telefon",
+      "website": "Website"
+    },
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silber",
+      "gold": "Gold",
+      "platinum": "Platin",
+      "nextTier": "Nächstes Tier",
+      "conversionsNeeded": "{{needed}} weitere Conversions"
+    },
+    "notAffiliate": {
+      "title": "Partner werden",
+      "description": "Du bist noch kein Partner. Möchtest du Teil unseres Affiliate-Programms werden und Provisionen verdienen?",
+      "cta": "Jetzt bewerben",
+      "loginRequired": "Anmeldung erforderlich",
+      "loginDesc": "Bitte melde dich an, um auf das Partner-Portal zuzugreifen.",
+      "benefits": {
+        "commission": "Bis zu 25% Provision",
+        "commissionDesc": "Verdiene bei jeder erfolgreichen Empfehlung",
+        "tracking": "Echtzeit-Tracking",
+        "trackingDesc": "Behalte alle Conversions im Blick",
+        "support": "Persönlicher Support",
+        "supportDesc": "Direkter Kontakt zu unserem Team"
+      }
+    }
   }
 }

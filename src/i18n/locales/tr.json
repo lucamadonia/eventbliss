@@ -695,5 +695,19 @@
     "fitness": { "chill": "Rahat", "normal": "Normal", "sporty": "Sportif" },
     "alcohol": { "yes": "Evet, lütfen", "no": "Tercih etmem", "flexible": "Esnek" },
     "attendance": { "yes": "Katılıyorum!", "maybe": "Belki", "no": "Maalesef hayır" }
+  },
+  "affiliate": {
+    "portal": {
+      "title": "Partner Portalı",
+      "welcome": "Tekrar hoş geldiniz",
+      "tabs": { "dashboard": "Genel Bakış", "vouchers": "Kuponlar", "commissions": "Komisyonlar", "payouts": "Ödemeler", "settings": "Ayarlar" }
+    },
+    "stats": { "totalEarnings": "Toplam Kazanç", "pendingBalance": "Bekleyen Bakiye", "paidOut": "Ödenmiş", "conversionRate": "Dönüşüm Oranı", "thisMonth": "Bu Ay", "allTime": "Tüm Zamanlar", "tier": "Tier Durumu" },
+    "vouchers": { "title": "Kupon Kodlarım", "copyCode": "Kodu Kopyala", "share": "Paylaş", "redemptions": "Kullanımlar", "generated": "Oluşturuldu", "noVouchers": "Henüz kupon atanmadı", "copied": "Kod kopyalandı!", "discount": "İndirim", "active": "Aktif", "inactive": "Pasif" },
+    "commissions": { "title": "Komisyonlarım", "recent": "Son Komisyonlar", "pending": "Beklemede", "approved": "Onaylandı", "paid": "Ödendi", "cancelled": "İptal Edildi", "orderAmount": "Sipariş Tutarı", "commission": "Komisyon", "rate": "Oran", "noCommissions": "Komisyon bulunamadı", "noCommissionsYet": "Komisyonlar burada görünecek.", "noResults": "Bu filtreler için sonuç yok", "searchPlaceholder": "Kupon veya e-posta ile ara..." },
+    "payouts": { "title": "Ödemeler", "availableBalance": "Mevcut Bakiye", "requestPayout": "Ödeme Talep Et", "minAmount": "Minimum tutar: 50€", "readyForPayout": "Ödeme için hazır", "processing": "İşleniyor", "completed": "Tamamlandı", "failed": "Başarısız", "pending": "Beklemede", "reference": "Referans", "history": "Ödeme Geçmişi", "noPayouts": "Henüz ödeme yok", "noPayoutsDesc": "Ödeme geçmişiniz burada görünecek.", "requested": "Ödeme başarıyla talep edildi!", "confirmTitle": "Ödemeyi Onayla", "confirmDesc": "Bu tutar için ödeme talep etmek istiyor musunuz?", "willBeTransferred": "kayıtlı hesabınıza aktarılacak", "processedAt": "İşlendi" },
+    "settings": { "title": "Ayarlar", "profile": "Profil", "paymentMethod": "Ödeme Yöntemi", "paymentType": "Ödeme Türü", "bankTransfer": "Banka Havalesi", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "PayPal E-posta", "taxId": "Vergi Numarası", "saved": "Ayarlar kaydedildi", "yourTier": "Tier'iniz", "companyName": "Şirket Adı", "companyNamePlaceholder": "Şirketiniz Ltd", "contactName": "İletişim Adı", "contactNamePlaceholder": "Ahmet Yılmaz", "phone": "Telefon", "website": "Web Sitesi" },
+    "tiers": { "bronze": "Bronz", "silver": "Gümüş", "gold": "Altın", "platinum": "Platin", "nextTier": "Sonraki tier", "conversionsNeeded": "{{needed}} daha fazla dönüşüm" },
+    "notAffiliate": { "title": "Partner Olun", "description": "Henüz partner değilsiniz. Ortaklık programımıza katılmak ister misiniz?", "cta": "Şimdi Başvur", "loginRequired": "Giriş Gerekli", "loginDesc": "Partner Portalı'na erişmek için lütfen giriş yapın.", "benefits": { "commission": "%25'e kadar komisyon", "commissionDesc": "Her yönlendirmede kazanın", "tracking": "Gerçek zamanlı takip", "trackingDesc": "Tüm dönüşümleri takip edin", "support": "Kişisel destek", "supportDesc": "Ekibimizle doğrudan iletişim" } }
   }
 }

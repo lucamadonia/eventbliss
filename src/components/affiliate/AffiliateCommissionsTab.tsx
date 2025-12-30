@@ -208,7 +208,7 @@ export function AffiliateCommissionsTab() {
                     <div className="flex items-center gap-2">
                       <p className="font-semibold">€{Number(commission.commission_amount).toFixed(2)}</p>
                       <Badge className={getStatusColor(commission.status)}>
-                        {getStatusIcon(commission.status)} {t(`affiliate.commissions.${commission.status}`, commission.status)}
+                        {getStatusIcon(commission.status)} {String(t(`affiliate.commissions.${commission.status}`, commission.status))}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">

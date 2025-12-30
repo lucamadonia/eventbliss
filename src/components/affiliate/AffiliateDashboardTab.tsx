@@ -33,10 +33,18 @@ export function AffiliateDashboardTab({ onRequestPayout, onShareVoucher }: Affil
     platinum: "from-violet-500 to-purple-300",
   };
 
-  const tierGradient = tierColors[stats?.tier || "bronze"] || tierColors.bronze;
+  const currentTier = stats?.affiliate?.tier || "bronze";
+  const tierGradient = tierColors[currentTier] || tierColors.bronze;
+
+  // Get stats from the API response
+  const totalEarnings = stats?.commissions?.totalEarnings || stats?.affiliate?.total_earnings || 0;
+  const pendingBalance = stats?.affiliate?.pending_balance || 0;
+  const conversionRate = stats?.vouchers?.totalRedemptions 
+    ? Math.round((stats.vouchers.totalRedemptions / (stats.vouchers.count || 1)) * 100) 
+    : 0;
 
   // Generate mock monthly data for chart (would come from API in production)
-  const monthlyData = stats?.monthlyPerformance || [
+  const monthlyData = stats?.monthlyStats || [
     { month: "Jan", earnings: 0, conversions: 0 },
     { month: "Feb", earnings: 0, conversions: 0 },
     { month: "Mär", earnings: 0, conversions: 0 },
@@ -80,24 +88,24 @@ export function AffiliateDashboardTab({ onRequestPayout, onShareVoucher }: Affil
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <AffiliateStatsCard
-          title={t("affiliate.stats.totalEarnings", "Gesamteinnahmen")}
-          value={stats?.totalEarnings || 0}
+          title={String(t("affiliate.stats.totalEarnings", "Gesamteinnahmen"))}
+          value={totalEarnings}
           prefix="€"
           icon={Wallet}
           gradient="bg-gradient-to-br from-primary to-pink-500"
           delay={0}
         />
         <AffiliateStatsCard
-          title={t("affiliate.stats.pendingBalance", "Offener Betrag")}
-          value={stats?.pendingBalance || 0}
+          title={String(t("affiliate.stats.pendingBalance", "Offener Betrag"))}
+          value={pendingBalance}
           prefix="€"
           icon={TrendingUp}
           gradient="bg-gradient-to-br from-accent to-cyan-400"
           delay={0.1}
         />
         <AffiliateStatsCard
-          title={t("affiliate.stats.conversionRate", "Conversion Rate")}
-          value={stats?.conversionRate || 0}
+          title={String(t("affiliate.stats.conversionRate", "Conversion Rate"))}
+          value={conversionRate}
           suffix="%"
           icon={Percent}
           gradient="bg-gradient-to-br from-success to-emerald-400"
@@ -114,10 +122,10 @@ export function AffiliateDashboardTab({ onRequestPayout, onShareVoucher }: Affil
             <Award className="w-6 h-6 text-white" />
           </div>
           <p className="text-sm text-muted-foreground font-medium mb-1">
-            {t("affiliate.stats.tier", "Tier-Status")}
+            {String(t("affiliate.stats.tier", "Tier-Status"))}
           </p>
           <Badge className={`text-lg font-bold px-3 py-1 bg-gradient-to-r ${tierGradient} text-white border-0`}>
-            {t(`affiliate.tiers.${stats?.tier || "bronze"}`, stats?.tier?.toUpperCase() || "BRONZE")}
+            {String(t(`affiliate.tiers.${currentTier}`, currentTier.toUpperCase()))}
           </Badge>
         </motion.div>
       </div>
@@ -132,11 +140,11 @@ export function AffiliateDashboardTab({ onRequestPayout, onShareVoucher }: Affil
         <Button 
           onClick={onRequestPayout}
           className="btn-glow gap-2"
-          disabled={(stats?.pendingBalance || 0) < 50}
+          disabled={pendingBalance < 50}
         >
           <Wallet className="w-4 h-4" />
-          {t("affiliate.payouts.requestPayout", "Auszahlung anfordern")}
-          {(stats?.pendingBalance || 0) >= 50 && <ArrowRight className="w-4 h-4" />}
+          {String(t("affiliate.payouts.requestPayout", "Auszahlung anfordern"))}
+          {pendingBalance >= 50 && <ArrowRight className="w-4 h-4" />}
         </Button>
         <Button 
           onClick={onShareVoucher}
@@ -188,7 +196,7 @@ export function AffiliateDashboardTab({ onRequestPayout, onShareVoucher }: Affil
                   </div>
                 </div>
                 <Badge className={getStatusColor(commission.status)}>
-                  {t(`affiliate.commissions.${commission.status}`, commission.status)}
+                  {String(t(`affiliate.commissions.${commission.status}`, commission.status))}
                 </Badge>
               </motion.div>
             ))}

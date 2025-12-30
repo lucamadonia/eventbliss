@@ -34,13 +34,13 @@ export function AffiliatePayoutsTab() {
   const requestPayout = useRequestPayout();
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const pendingBalance = stats?.pendingBalance || 0;
+  const pendingBalance = stats?.affiliate?.pending_balance || 0;
   const minAmount = 50;
   const canRequestPayout = pendingBalance >= minAmount;
 
   const handleRequestPayout = async () => {
     try {
-      await requestPayout.mutateAsync({ amount: pendingBalance });
+      await requestPayout.mutateAsync();
       toast.success(t("affiliate.payouts.requested", "Auszahlung erfolgreich angefordert!"));
       setDialogOpen(false);
     } catch (error: any) {
@@ -213,7 +213,7 @@ export function AffiliatePayoutsTab() {
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-lg">€{Number(payout.amount).toFixed(2)}</p>
                         <Badge className={getStatusColor(payout.status)}>
-                          {t(`affiliate.payouts.${payout.status}`, payout.status)}
+                          {String(t(`affiliate.payouts.${payout.status}`, payout.status))}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
