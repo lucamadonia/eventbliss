@@ -167,6 +167,68 @@
           "title": "Agentur-Verzeichnis",
           "description": "Finde professionelle Event-Agenturen in deiner Nähe"
         }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Teilnehmer",
+          "responses": "Antworten",
+          "responseRate": "Rücklaufquote",
+          "status": "Status",
+          "planning": "Planung",
+          "participantList": "Teilnehmer",
+          "expenses": "Kosten",
+          "messages": "Nachrichten",
+          "askAI": "KI fragen"
+        },
+        "expenses": {
+          "total": "Gesamt",
+          "perPerson": "Pro Person",
+          "recentExpenses": "Letzte Ausgaben",
+          "paidBy": "bezahlt von",
+          "bus": "Busfahrt nach Hamburg",
+          "escapeRoom": "Escape Room",
+          "dinner": "Abendessen Restaurant",
+          "drinks": "Getränke Bar",
+          "gift": "Überraschungsgeschenk"
+        },
+        "ai": {
+          "destinations": "Reiseziele",
+          "activities": "Aktivitäten",
+          "schedule": "Tagesplan",
+          "budget": "Budget",
+          "placeholder": "Wähle eine Option...",
+          "generating": "Generiere...",
+          "inputPlaceholder": "Frag die KI...",
+          "response": "**Top 3 Aktivitätsvorschläge für euren JGA:**\n\n🚤 **Bootstour** - Entspannt über die Alster\n\n🎯 **Escape Room** - Teamwork und Spannung\n\n🍻 **Brauerei-Tour** - Bierverkostung mit Führung\n\n*Basierend auf: Budget €150-250, 8 Teilnehmer*"
+        },
+        "survey": {
+          "selectName": "Wähle deinen Namen",
+          "chooseName": "Namen wählen...",
+          "attendance": "Bist du dabei?",
+          "yes": "Ja, ich bin dabei! 🎉",
+          "maybe": "Vielleicht 🤔",
+          "no": "Leider nein 😢",
+          "budget": "Dein Budget",
+          "activities": "Bevorzugte Aktivitäten",
+          "outdoor": "Outdoor",
+          "wellness": "Wellness",
+          "party": "Party",
+          "culture": "Kultur",
+          "submit": "Antwort absenden"
+        },
+        "agencies": {
+          "clickCity": "Klicke auf eine Stadt",
+          "available": "Verfügbar",
+          "selected": "Ausgewählt",
+          "club": "Club & Nachtleben",
+          "outdoor": "Outdoor & Action",
+          "traditional": "Traditionell & Bier",
+          "adventure": "Abenteuer",
+          "boat": "Bootstouren",
+          "carnival": "Karneval & Party",
+          "luxury": "Luxus & Kultur",
+          "premium": "Premium Events"
+        }
       }
     },
     "cta": {
