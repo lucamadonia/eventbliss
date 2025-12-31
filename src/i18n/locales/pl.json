@@ -94,6 +94,21 @@
       "q6": "Czy jest opcja dożywotnia?", "a6": "Tak! Za jednorazową płatność 19,99€ otrzymujesz dożywotni dostęp do wszystkich funkcji premium.",
       "q7": "Jak działa katalog agencji?", "a7": "Znajdź profesjonalne agencje wieczorów kawalerskich w ponad 50 miastach. Filtruj według kraju, miasta i przeglądaj szczegóły bezpośrednio na interaktywnej mapie."
     },
+    "demo": {
+      "badge": "Interaktywne Demo",
+      "title": "Doświadcz EventBliss w Akcji",
+      "subtitle": "Kliknij funkcje, aby zobaczyć jak łatwe może być planowanie grupowe",
+      "pause": "Wstrzymaj odtwarzanie",
+      "play": "Wznów odtwarzanie",
+      "cta": "Wypróbuj sam",
+      "features": {
+        "dashboard": { "title": "Panel Wydarzenia", "description": "Wszystkie info w jednym miejscu: uczestnicy, daty, zadania" },
+        "expenses": { "title": "Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" },
+        "ai": { "title": "Asystent AI", "description": "Otrzymuj sugestie aktywności i wiadomości" },
+        "survey": { "title": "Ankiety", "description": "Zbieraj preferencje za pomocą niestandardowych ankiet" },
+        "agencies": { "title": "Katalog Agencji", "description": "Znajdź agencje eventowe w pobliżu" }
+      }
+    },
     "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
     "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "partnerPortal": "Portal partnerski", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." }
   },

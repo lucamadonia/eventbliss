@@ -100,6 +100,21 @@
       "q6": "Y a-t-il une option à vie?", "a6": "Oui! Pour un paiement unique de 19,99€, vous obtenez un accès à vie à toutes les fonctionnalités premium.",
       "q7": "Comment fonctionne l'annuaire d'agences?", "a7": "Trouvez des agences professionnelles d'EVG dans plus de 50 villes. Filtrez par pays, ville et consultez les détails directement sur la carte interactive."
     },
+    "demo": {
+      "badge": "Démo Interactive",
+      "title": "Découvrez EventBliss en Action",
+      "subtitle": "Cliquez sur les fonctionnalités pour voir à quel point la planification de groupe peut être simple",
+      "pause": "Mettre en pause",
+      "play": "Reprendre la lecture",
+      "cta": "Essayez vous-même",
+      "features": {
+        "dashboard": { "title": "Tableau de Bord", "description": "Toutes les infos en un coup d'œil: participants, dates, tâches" },
+        "expenses": { "title": "Partage des Coûts", "description": "Suivez les dépenses et partagez-les équitablement" },
+        "ai": { "title": "Assistant IA", "description": "Obtenez des suggestions d'activités et de messages" },
+        "survey": { "title": "Sondages", "description": "Collectez les préférences avec des sondages personnalisés" },
+        "agencies": { "title": "Annuaire d'Agences", "description": "Trouvez des agences événementielles près de chez vous" }
+      }
+    },
     "cta": { "title": "Prêt pour votre Prochain Événement?", "description": "Commencez gratuitement et créez des souvenirs inoubliables.", "button": "Créer votre Événement" },
     "footer": { "tagline": "Planifiez des événements qui rassemblent", "product": "Produit", "features": "Fonctionnalités", "integrations": "Intégrations", "enterprise": "Entreprise", "solutions": "Solutions", "partner": "Partenaires", "becomePartner": "Devenir partenaire", "partnerPortal": "Portail partenaire", "legal": "Légal", "imprint": "Mentions Légales", "disclaimer": "Avertissement", "privacy": "Confidentialité", "terms": "Conditions", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Chypre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tous droits réservés." }
   },

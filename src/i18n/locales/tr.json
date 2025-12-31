@@ -94,6 +94,21 @@
       "q6": "Ömür boyu seçeneği var mı?", "a6": "Evet! Tek seferlik 19,99€ ödeme ile tüm premium özelliklere ömür boyu erişim elde edersiniz.",
       "q7": "Ajans rehberi nasıl çalışır?", "a7": "50'den fazla şehirde profesyonel bekarlığa veda ajansları bulun. Ülke, şehir bazında filtreleyin ve detayları doğrudan interaktif haritada görüntüleyin."
     },
+    "demo": {
+      "badge": "İnteraktif Demo",
+      "title": "EventBliss'i Aksiyonda Deneyimle",
+      "subtitle": "Grup planlamanın ne kadar kolay olabileceğini görmek için özelliklere tıklayın",
+      "pause": "Otomatik oynatmayı duraklat",
+      "play": "Otomatik oynatmayı devam ettir",
+      "cta": "Kendin dene",
+      "features": {
+        "dashboard": { "title": "Etkinlik Paneli", "description": "Bir bakışta tüm bilgiler: katılımcılar, tarihler, görevler" },
+        "expenses": { "title": "Maliyet Bölüşümü", "description": "Harcamaları takip et ve adil şekilde paylaştır" },
+        "ai": { "title": "AI Asistan", "description": "Aktivite ve mesaj önerileri al" },
+        "survey": { "title": "Anketler", "description": "Özel anketlerle tercihleri topla" },
+        "agencies": { "title": "Ajans Rehberi", "description": "Yakınındaki etkinlik ajanslarını bul" }
+      }
+    },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
     "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." }
   },

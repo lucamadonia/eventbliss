@@ -1,6 +1,6 @@
-import { useRef } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Users, Wallet, MessageSquare, Calendar, Zap, Bot, PartyPopper, Cake, Plane, Heart, Briefcase, Star, ChevronDown, Check, Crown, Building2, FileEdit, Download, Globe, MapPin, Shield } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, Users, Wallet, MessageSquare, Calendar, Zap, Bot, PartyPopper, Cake, Plane, Heart, Briefcase, Star, ChevronDown, Check, Crown, Building2, FileEdit, Download, Globe, MapPin, Shield, LayoutDashboard, ClipboardList, Play, Pause } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
@@ -21,9 +21,47 @@ import featureVoting from "@/assets/feature-voting.png";
 import multiDeviceMockup from "@/assets/multi-device-mockup.png";
 import socialProof from "@/assets/social-proof.png";
 
+// Demo feature images mapping
+const demoImages: Record<string, string> = {
+  dashboard: featurePlanning,
+  expenses: featureExpenseTracking,
+  ai: featurePlanning,
+  survey: featureVoting,
+  agencies: featurePlanning,
+};
+
 const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  // Demo section state
+  const [activeDemo, setActiveDemo] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const AUTO_ROTATE_INTERVAL = 4000;
+  
+  const demoFeatures = [
+    { id: "dashboard", icon: LayoutDashboard, gradient: "from-primary to-accent" },
+    { id: "expenses", icon: Wallet, gradient: "from-accent to-neon-pink" },
+    { id: "ai", icon: Bot, gradient: "from-neon-cyan to-primary" },
+    { id: "survey", icon: ClipboardList, gradient: "from-neon-pink to-warning" },
+    { id: "agencies", icon: Building2, gradient: "from-success to-accent" },
+  ];
+  
+  // Auto-rotate demo features
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    
+    const interval = setInterval(() => {
+      setActiveDemo((prev) => (prev + 1) % demoFeatures.length);
+    }, AUTO_ROTATE_INTERVAL);
+    
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, demoFeatures.length]);
+  
+  const handleDemoClick = (index: number) => {
+    setActiveDemo(index);
+    setIsAutoPlaying(false);
+  };
   
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -264,6 +302,157 @@ const Landing = () => {
             <ChevronDown className="w-8 h-8 text-muted-foreground" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* Interactive Demo Section */}
+      <section className="relative py-24 px-4 bg-gradient-to-b from-muted/30 to-background">
+        <div className="container max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">
+              <Play className="w-3 h-3 mr-1" />
+              {t("landing.demo.badge", "Interactive Demo")}
+            </Badge>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              {t("landing.demo.title", "Experience EventBliss in Action")}
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-lg">
+              {t("landing.demo.subtitle", "Click on the features to see how easy group planning can be")}
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <GlassCard className="p-6 md:p-8 relative overflow-hidden">
+              <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
+                {/* Feature Tabs - Left Side */}
+                <div className="lg:col-span-2 space-y-3">
+                  {demoFeatures.map((feature, index) => (
+                    <motion.button
+                      key={feature.id}
+                      onClick={() => handleDemoClick(index)}
+                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
+                        activeDemo === index
+                          ? "bg-primary/10 border-2 border-primary shadow-lg"
+                          : "bg-muted/50 border-2 border-transparent hover:bg-muted hover:border-muted-foreground/20"
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 p-2.5 rounded-lg bg-gradient-to-br ${feature.gradient}`}>
+                          <feature.icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className={`font-semibold mb-1 ${activeDemo === index ? "text-primary" : "text-foreground"}`}>
+                            {t(`landing.demo.features.${feature.id}.title`, feature.id)}
+                          </h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {t(`landing.demo.features.${feature.id}.description`, "")}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Progress bar for active item */}
+                      {activeDemo === index && isAutoPlaying && (
+                        <motion.div
+                          className="mt-3 h-1 bg-primary/20 rounded-full overflow-hidden"
+                        >
+                          <motion.div
+                            className="h-full bg-primary rounded-full"
+                            initial={{ width: "0%" }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: AUTO_ROTATE_INTERVAL / 1000, ease: "linear" }}
+                            key={activeDemo}
+                          />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  ))}
+                  
+                  {/* Play/Pause button */}
+                  <button
+                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-4"
+                  >
+                    {isAutoPlaying ? (
+                      <>
+                        <Pause className="w-4 h-4" />
+                        {t("landing.demo.pause", "Pause auto-play")}
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4" />
+                        {t("landing.demo.play", "Resume auto-play")}
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Screenshot Area - Right Side */}
+                <div className="lg:col-span-3 relative min-h-[300px] md:min-h-[400px]">
+                  {/* Device Frame */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 border border-border/50 overflow-hidden">
+                    {/* Browser-like header */}
+                    <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/50">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-destructive/60" />
+                        <div className="w-3 h-3 rounded-full bg-warning/60" />
+                        <div className="w-3 h-3 rounded-full bg-success/60" />
+                      </div>
+                      <div className="flex-1 mx-4">
+                        <div className="bg-background/50 rounded-md px-3 py-1 text-xs text-muted-foreground text-center">
+                          eventbliss.app/{demoFeatures[activeDemo].id}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Screenshot content */}
+                    <div className="relative h-[calc(100%-48px)] p-4">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeDemo}
+                          initial={{ opacity: 0, x: 50 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -50 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="absolute inset-4"
+                        >
+                          <div className="w-full h-full rounded-lg bg-gradient-to-br from-primary/10 via-accent/10 to-neon-pink/10 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={demoImages[demoFeatures[activeDemo].id]}
+                              alt={t(`landing.demo.features.${demoFeatures[activeDemo].id}.title`, "")}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* CTA */}
+              <div className="text-center mt-8 pt-6 border-t border-border/50">
+                <GradientButton
+                  onClick={() => navigate("/create")}
+                  icon={<ArrowRight className="w-4 h-4" />}
+                >
+                  {t("landing.demo.cta", "Try it yourself")}
+                </GradientButton>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
       </section>
 
       {/* Features Section */}

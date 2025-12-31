@@ -94,6 +94,21 @@
       "q6": "Há opção vitalícia?", "a6": "Sim! Por um pagamento único de 19,99€ obténs acesso vitalício a todas as funcionalidades premium.",
       "q7": "Como funciona o diretório de agências?", "a7": "Encontra agências profissionais de despedidas em mais de 50 cidades. Filtra por país, cidade e consulta detalhes diretamente no mapa interativo."
     },
+    "demo": {
+      "badge": "Demo Interativa",
+      "title": "Experimenta o EventBliss em Ação",
+      "subtitle": "Clica nas funcionalidades para ver como pode ser fácil o planeamento de grupo",
+      "pause": "Pausar reprodução",
+      "play": "Retomar reprodução",
+      "cta": "Experimenta tu mesmo",
+      "features": {
+        "dashboard": { "title": "Painel do Evento", "description": "Todas as infos num relance: participantes, datas, tarefas" },
+        "expenses": { "title": "Divisão de Custos", "description": "Regista despesas e divide-as justamente" },
+        "ai": { "title": "Assistente IA", "description": "Obtém sugestões de atividades e mensagens" },
+        "survey": { "title": "Inquéritos", "description": "Recolhe preferências com inquéritos personalizados" },
+        "agencies": { "title": "Diretório de Agências", "description": "Encontra agências de eventos perto de ti" }
+      }
+    },
     "cta": { "title": "Pronto para o teu Próximo Evento?", "description": "Começa grátis e cria memórias inesquecíveis.", "button": "Criar o teu Evento" },
     "footer": { "tagline": "Planeia eventos que unem pessoas", "product": "Produto", "features": "Funcionalidades", "integrations": "Integrações", "enterprise": "Enterprise", "solutions": "Soluções", "partner": "Parceiros", "becomePartner": "Tornar-se parceiro", "partnerPortal": "Portal de parceiros", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Aviso", "privacy": "Privacidade", "terms": "Termos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos os direitos reservados." }
   },
