@@ -113,6 +113,68 @@
         "ai": { "title": "Assistant IA", "description": "Obtenez des suggestions d'activités et de messages" },
         "survey": { "title": "Sondages", "description": "Collectez les préférences avec des sondages personnalisés" },
         "agencies": { "title": "Annuaire d'Agences", "description": "Trouvez des agences événementielles près de chez vous" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Participants",
+          "responses": "Réponses",
+          "responseRate": "Taux de réponse",
+          "status": "Statut",
+          "planning": "Planification",
+          "participantList": "Participants",
+          "expenses": "Dépenses",
+          "messages": "Messages",
+          "askAI": "Demander à l'IA"
+        },
+        "expenses": {
+          "total": "Total",
+          "perPerson": "Par Personne",
+          "recentExpenses": "Dépenses Récentes",
+          "paidBy": "payé par",
+          "bus": "Trajet en bus vers Hambourg",
+          "escapeRoom": "Escape Room",
+          "dinner": "Dîner au Restaurant",
+          "drinks": "Boissons au Bar",
+          "gift": "Cadeau Surprise"
+        },
+        "ai": {
+          "destinations": "Destinations",
+          "activities": "Activités",
+          "schedule": "Programme",
+          "budget": "Budget",
+          "placeholder": "Choisir une option...",
+          "generating": "Génération...",
+          "inputPlaceholder": "Demander à l'IA...",
+          "response": "**Top 3 suggestions d'activités pour votre EVG:**\n\n🚤 **Tour en bateau** - Détente sur l'eau\n\n🎯 **Escape Room** - Travail d'équipe et suspense\n\n🍻 **Visite de brasserie** - Dégustation de bière avec visite\n\n*Basé sur: Budget €150-250, 8 participants*"
+        },
+        "survey": {
+          "selectName": "Sélectionnez votre nom",
+          "chooseName": "Choisir un nom...",
+          "attendance": "Êtes-vous partant?",
+          "yes": "Oui, je suis là! 🎉",
+          "maybe": "Peut-être 🤔",
+          "no": "Malheureusement non 😢",
+          "budget": "Votre budget",
+          "activities": "Activités préférées",
+          "outdoor": "Plein air",
+          "wellness": "Bien-être",
+          "party": "Fête",
+          "culture": "Culture",
+          "submit": "Envoyer la réponse"
+        },
+        "agencies": {
+          "clickCity": "Cliquez sur une ville",
+          "available": "Disponible",
+          "selected": "Sélectionné",
+          "club": "Club & Vie nocturne",
+          "outdoor": "Outdoor & Action",
+          "traditional": "Traditionnel & Bière",
+          "adventure": "Aventure",
+          "boat": "Tours en bateau",
+          "carnival": "Carnaval & Fête",
+          "luxury": "Luxe & Culture",
+          "premium": "Événements Premium"
+        }
       }
     },
     "cta": { "title": "Prêt pour votre Prochain Événement?", "description": "Commencez gratuitement et créez des souvenirs inoubliables.", "button": "Créer votre Événement" },
