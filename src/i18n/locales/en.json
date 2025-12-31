@@ -139,6 +139,36 @@
       "q7": "How does the Agency Directory work?",
       "a7": "Find professional bachelor party agencies in 50+ cities. Filter by country, city, and view details directly on the interactive map."
     },
+    "demo": {
+      "badge": "Interactive Demo",
+      "title": "Experience EventBliss in Action",
+      "subtitle": "Click on the features to see how easy group planning can be",
+      "pause": "Pause auto-play",
+      "play": "Resume auto-play",
+      "cta": "Try it yourself",
+      "features": {
+        "dashboard": {
+          "title": "Event Dashboard",
+          "description": "All info at a glance: participants, dates, tasks"
+        },
+        "expenses": {
+          "title": "Cost Splitting",
+          "description": "Track expenses and split them fairly among everyone"
+        },
+        "ai": {
+          "title": "AI Assistant",
+          "description": "Get activity and message suggestions"
+        },
+        "survey": {
+          "title": "Surveys",
+          "description": "Collect preferences with custom surveys"
+        },
+        "agencies": {
+          "title": "Agency Directory",
+          "description": "Find professional event agencies near you"
+        }
+      }
+    },
     "cta": {
       "title": "Ready to Plan Your Next Event?",
       "description": "Start for free and create unforgettable memories with your group.",

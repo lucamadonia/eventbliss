@@ -100,6 +100,21 @@
       "q6": "C'è un'opzione a vita?", "a6": "Sì! Con un pagamento unico di 19,99€ ottieni accesso a vita a tutte le funzionalità premium.",
       "q7": "Come funziona la directory agenzie?", "a7": "Trova agenzie professionali per addii in oltre 50 città. Filtra per paese, città e consulta i dettagli direttamente sulla mappa interattiva."
     },
+    "demo": {
+      "badge": "Demo Interattiva",
+      "title": "Scopri EventBliss in Azione",
+      "subtitle": "Clicca sulle funzionalità per vedere quanto può essere facile la pianificazione di gruppo",
+      "pause": "Metti in pausa",
+      "play": "Riprendi riproduzione",
+      "cta": "Provalo tu stesso",
+      "features": {
+        "dashboard": { "title": "Dashboard Evento", "description": "Tutte le info a colpo d'occhio: partecipanti, date, compiti" },
+        "expenses": { "title": "Divisione Costi", "description": "Traccia le spese e dividile equamente" },
+        "ai": { "title": "Assistente AI", "description": "Ottieni suggerimenti per attività e messaggi" },
+        "survey": { "title": "Sondaggi", "description": "Raccogli preferenze con sondaggi personalizzati" },
+        "agencies": { "title": "Directory Agenzie", "description": "Trova agenzie eventi vicino a te" }
+      }
+    },
     "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
     "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "partnerPortal": "Portale partner", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." }
   },

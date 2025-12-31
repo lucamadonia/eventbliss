@@ -100,6 +100,21 @@
       "q6": "Is er een levenslange optie?", "a6": "Ja! Voor een eenmalige betaling van €19,99 krijg je levenslange toegang tot alle premium functies.",
       "q7": "Hoe werkt de bureau directory?", "a7": "Vind professionele vrijgezellenfeest bureaus in 50+ steden. Filter op land, stad en bekijk details direct op de interactieve kaart."
     },
+    "demo": {
+      "badge": "Interactieve Demo",
+      "title": "Ervaar EventBliss in Actie",
+      "subtitle": "Klik op de functies om te zien hoe makkelijk groepsplanning kan zijn",
+      "pause": "Pauzeer afspelen",
+      "play": "Hervat afspelen",
+      "cta": "Probeer het zelf",
+      "features": {
+        "dashboard": { "title": "Evenement Dashboard", "description": "Alle info in één oogopslag: deelnemers, data, taken" },
+        "expenses": { "title": "Kostenverdeling", "description": "Volg uitgaven en verdeel ze eerlijk" },
+        "ai": { "title": "AI Assistent", "description": "Krijg suggesties voor activiteiten en berichten" },
+        "survey": { "title": "Enquêtes", "description": "Verzamel voorkeuren met aangepaste enquêtes" },
+        "agencies": { "title": "Bureau Directory", "description": "Vind evenementenbureaus bij jou in de buurt" }
+      }
+    },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
     "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." }
   },

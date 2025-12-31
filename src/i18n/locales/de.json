@@ -139,6 +139,36 @@
       "q7": "Wie funktioniert das Agentur-Verzeichnis?",
       "a7": "Finde professionelle JGA-Agenturen in über 50 Städten. Filtere nach Land, Stadt und sieh dir Details direkt auf der interaktiven Karte an."
     },
+    "demo": {
+      "badge": "Interaktive Demo",
+      "title": "Erlebe EventBliss in Aktion",
+      "subtitle": "Klicke auf die Features, um zu sehen, wie einfach Gruppenplanung sein kann",
+      "pause": "Auto-Play pausieren",
+      "play": "Auto-Play fortsetzen",
+      "cta": "Jetzt selbst ausprobieren",
+      "features": {
+        "dashboard": {
+          "title": "Event-Dashboard",
+          "description": "Alle Infos auf einen Blick: Teilnehmer, Termine, Aufgaben"
+        },
+        "expenses": {
+          "title": "Kostenaufteilung",
+          "description": "Erfasse Ausgaben und teile sie fair auf alle auf"
+        },
+        "ai": {
+          "title": "KI-Assistent",
+          "description": "Lass dir Aktivitäten und Nachrichten vorschlagen"
+        },
+        "survey": {
+          "title": "Umfragen",
+          "description": "Sammle Präferenzen mit benutzerdefinierten Umfragen"
+        },
+        "agencies": {
+          "title": "Agentur-Verzeichnis",
+          "description": "Finde professionelle Event-Agenturen in deiner Nähe"
+        }
+      }
+    },
     "cta": {
       "title": "Bereit für dein nächstes Event?",
       "description": "Starte kostenlos und schaffe unvergessliche Erinnerungen mit deiner Gruppe.",
