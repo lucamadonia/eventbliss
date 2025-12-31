@@ -36,11 +36,64 @@
 "landing": {
     "nav": { "features": "Funkcje", "howItWorks": "Jak to działa", "solutions": "Rozwiązania", "faq": "FAQ", "login": "Zaloguj", "signUp": "Zarejestruj", "partner": "Partnerzy" },
     "hero": { "badge": "Platforma #1 do planowania wydarzeń", "title": "Planuj Niezapomniane Wydarzenia", "subtitle": "Od wieczorów kawalerskich po urodziny, organizuj wydarzenia grupowe z łatwością. Inteligentny podział kosztów, sugestie AI i współpraca w czasie rzeczywistym.", "createEvent": "Utwórz Wydarzenie", "joinEvent": "Dołącz z Kodem", "trustedBy": "Ponad 10 000 organizatorów nam ufa" },
-    "features": { "title": "Wszystko, czego potrzebujesz", "subtitle": "Potężne narzędzia do idealnego wydarzenia", "multiEvent": { "title": "Zarządzanie Wieloma Wydarzeniami", "description": "Zarządzaj wieloma wydarzeniami jednocześnie" }, "costSplitting": { "title": "Inteligentny Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" }, "aiSuggestions": { "title": "Sugestie AI", "description": "Otrzymuj spersonalizowane rekomendacje" }, "messageTemplates": { "title": "Szablony Wiadomości", "description": "Gotowe wiadomości WhatsApp" }, "dateCoordination": { "title": "Koordynacja Terminów", "description": "Znajdź idealną datę dla wszystkich" }, "realtime": { "title": "Współpraca w Czasie Rzeczywistym", "description": "Pracuj z zespołem w czasie rzeczywistym" } },
+    "features": { "title": "Wszystko, czego potrzebujesz", "subtitle": "Potężne narzędzia do idealnego wydarzenia", 
+      "multiEvent": { "title": "Zarządzanie Wieloma Wydarzeniami", "description": "Zarządzaj wieloma wydarzeniami jednocześnie" }, 
+      "costSplitting": { "title": "Inteligentny Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" }, 
+      "aiSuggestions": { "title": "Sugestie AI", "description": "Otrzymuj spersonalizowane rekomendacje" }, 
+      "messageTemplates": { "title": "Szablony Wiadomości", "description": "Gotowe wiadomości WhatsApp" }, 
+      "dateCoordination": { "title": "Koordynacja Terminów", "description": "Znajdź idealną datę dla wszystkich" }, 
+      "realtime": { "title": "Współpraca w Czasie Rzeczywistym", "description": "Pracuj z zespołem w czasie rzeczywistym" },
+      "agencyDirectory": { "title": "Katalog Agencji", "description": "Znajdź profesjonalne agencje wieczorów kawalerskich w pobliżu z interaktywną mapą" },
+      "formBuilder": { "title": "Kreator Formularzy", "description": "Twórz niestandardowe ankiety i głosowania dla swojego wydarzenia" },
+      "showcaseTitle": "Potężne funkcje, piękny design",
+      "showcaseSubtitle": "Wszystko, czego potrzebujesz do idealnego wydarzenia grupowego"
+    },
     "howItWorks": { "title": "Jak to Działa", "subtitle": "Zaplanuj w 4 prostych krokach", "step1": { "title": "Utwórz Wydarzenie", "description": "Wybierz typ i ustaw szczegóły" }, "step2": { "title": "Zaproś Gości", "description": "Udostępnij link lub kod" }, "step3": { "title": "Zbierz Preferencje", "description": "Pozwól gościom głosować" }, "step4": { "title": "Planuj Razem", "description": "Użyj sugestii AI do finalizacji" } },
     "eventTypes": { "title": "Idealne na Każde Wydarzenie", "subtitle": "Czy to dziki weekend czy kameralne spotkanie", "bachelor": "Wieczory Kawalerskie", "bachelorette": "Wieczory Panieńskie", "birthday": "Urodziny", "team": "Wydarzenia Firmowe", "trip": "Wycieczki Grupowe", "wedding": "Wesela" },
-    "testimonials": { "title": "Uwielbiane przez Organizatorów", "subtitle": "Co mówią nasi użytkownicy", "testimonial1": { "text": "EventBliss sprawił, że planowanie było takie proste!" }, "testimonial2": { "text": "Podział kosztów to ratunek!" }, "testimonial3": { "text": "Zorganizowałem 5 wydarzeń. Sugestie AI są niesamowite." } },
-    "faq": { "title": "Często Zadawane Pytania", "q1": "Czy EventBliss jest darmowy?", "a1": "Tak! Darmowy dla podstawowego planowania.", "q2": "Ilu gości mogę zaprosić?", "a2": "Nieograniczenie. Bez limitów.", "q3": "Czy mogę używać do wydarzeń firmowych?", "a3": "Absolutnie! Idealny na team building.", "q4": "Czy moje dane są bezpieczne?", "a4": "Tak, wszystkie dane są szyfrowane." },
+    "testimonials": { "title": "Uwielbiane przez Organizatorów", "subtitle": "Co mówią nasi użytkownicy", 
+      "testimonial1": { "text": "EventBliss sprawił, że planowanie było takie proste!", "author": "Sarah M.", "role": "Organizatorka wieczorów" }, 
+      "testimonial2": { "text": "Podział kosztów to ratunek!", "author": "Michael K.", "role": "Planista wycieczek grupowych" }, 
+      "testimonial3": { "text": "Zorganizowałem 5 wydarzeń. Sugestie AI są niesamowite.", "author": "Anna L.", "role": "Gospodyni urodzin" } 
+    },
+    "multiDevice": {
+      "title": "Planuj wydarzenia wszędzie, w każdej chwili",
+      "description": "Dostęp do EventBliss z każdego urządzenia. Nasz responsywny design gwarantuje płynne doświadczenie.",
+      "feature1": "Synchronizacja w czasie rzeczywistym na wszystkich urządzeniach",
+      "feature2": "Natychmiastowe powiadomienia o aktualizacjach",
+      "feature3": "Działa offline z auto-synchronizacją",
+      "feature4": "Eksport jako iCal lub PDF",
+      "feature5": "Obsługa wielu walut"
+    },
+    "socialProof": {
+      "quote": "Dołącz do tysięcy szczęśliwych organizatorów",
+      "stats": "Ponad 10 000+ wydarzeń zaplanowanych z sukcesem"
+    },
+    "premium": {
+      "sectionTitle": "Odblokuj więcej z Premium",
+      "sectionSubtitle": "Uzyskaj dostęp do zaawansowanych funkcji i planuj jak profesjonalista",
+      "monthly": "Miesięcznie",
+      "monthlyPrice": "6,99€/miesiąc",
+      "lifetime": "Dożywotnio",
+      "lifetimePrice": "19,99€ jednorazowo",
+      "lifetimeBadge": "Najpopularniejsze",
+      "features": {
+        "ai": "Nieograniczone sugestie AI",
+        "expenses": "Nieograniczone wydatki",
+        "questions": "Niestandardowe pytania ankietowe",
+        "messages": "Zaawansowane szablony wiadomości",
+        "priority": "Priorytetowe wsparcie"
+      },
+      "cta": "Odkryj Premium"
+    },
+    "faq": { "title": "Często Zadawane Pytania", 
+      "q1": "Czy EventBliss jest darmowy?", "a1": "Tak! Darmowy dla podstawowego planowania.", 
+      "q2": "Ilu gości mogę zaprosić?", "a2": "Nieograniczenie. Bez limitów.", 
+      "q3": "Czy mogę używać do wydarzeń firmowych?", "a3": "Absolutnie! Idealny na team building.", 
+      "q4": "Czy moje dane są bezpieczne?", "a4": "Tak, wszystkie dane są szyfrowane.",
+      "q5": "Czym jest EventBliss Premium?", "a5": "Premium odblokowuje zaawansowane funkcje: nieograniczone sugestie AI, niestandardowe pytania ankietowe, zaawansowane szablony wiadomości i priorytetowe wsparcie.",
+      "q6": "Czy jest opcja dożywotnia?", "a6": "Tak! Za jednorazową płatność 19,99€ otrzymujesz dożywotni dostęp do wszystkich funkcji premium.",
+      "q7": "Jak działa katalog agencji?", "a7": "Znajdź profesjonalne agencje wieczorów kawalerskich w ponad 50 miastach. Filtruj według kraju, miasta i przeglądaj szczegóły bezpośrednio na interaktywnej mapie."
+    },
     "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
     "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "partnerPortal": "Portal partnerski", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." }
   },

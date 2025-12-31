@@ -43,7 +43,11 @@
       "aiSuggestions": { "title": "Suggestions IA", "description": "Obtenez des recommandations personnalisées d'activités et de destinations" },
       "messageTemplates": { "title": "Modèles de Messages", "description": "Messages WhatsApp pré-rédigés pour chaque occasion" },
       "dateCoordination": { "title": "Coordination des Dates", "description": "Trouvez la date parfaite qui convient à tous" },
-      "realtime": { "title": "Collaboration en Temps Réel", "description": "Travaillez ensemble avec votre équipe en temps réel" }
+      "realtime": { "title": "Collaboration en Temps Réel", "description": "Travaillez ensemble avec votre équipe en temps réel" },
+      "agencyDirectory": { "title": "Annuaire d'Agences", "description": "Trouvez des agences professionnelles d'EVG près de chez vous avec une carte interactive" },
+      "formBuilder": { "title": "Créateur de Formulaires", "description": "Créez des sondages et votes personnalisés pour votre événement" },
+      "showcaseTitle": "Fonctionnalités puissantes, design élégant",
+      "showcaseSubtitle": "Tout ce dont vous avez besoin pour l'événement de groupe parfait"
     },
     "howItWorks": { "title": "Comment ça Marche", "subtitle": "Planifiez votre événement en 4 étapes simples",
       "step1": { "title": "Créer l'Événement", "description": "Choisissez le type d'événement et définissez les détails" },
@@ -52,10 +56,52 @@
       "step4": { "title": "Planifier Ensemble", "description": "Utilisez les suggestions IA pour finaliser les plans" }
     },
     "eventTypes": { "title": "Parfait pour Tout Événement", "subtitle": "Que ce soit un week-end fou ou un rassemblement intime", "bachelor": "Enterrements de Vie de Garçon", "bachelorette": "Enterrements de Vie de Jeune Fille", "birthday": "Fêtes d'Anniversaire", "team": "Événements d'Équipe", "trip": "Voyages de Groupe", "wedding": "Mariages" },
-    "testimonials": { "title": "Adoré par les Organisateurs", "subtitle": "Ce que disent nos utilisateurs", "testimonial1": { "text": "EventBliss a rendu la planification de l'enterrement de vie de garçon de mon ami si facile! Tout le monde a pu voter." }, "testimonial2": { "text": "La fonction de partage des coûts est un sauveur. Plus de conversations gênantes sur l'argent!" }, "testimonial3": { "text": "J'ai organisé 5 événements avec EventBliss. Les suggestions IA sont incroyablement utiles." } },
-    "faq": { "title": "Questions Fréquentes", "q1": "EventBliss est-il gratuit?", "a1": "Oui! EventBliss est gratuit pour la planification de base. Fonctionnalités premium disponibles.", "q2": "Combien d'invités puis-je inviter?", "a2": "Vous pouvez inviter un nombre illimité d'invités. Aucune restriction.", "q3": "Puis-je utiliser EventBliss pour des événements professionnels?", "a3": "Absolument! EventBliss est parfait pour le team building et les événements d'entreprise.", "q4": "Mes données sont-elles sécurisées?", "a4": "Oui, nous prenons la sécurité au sérieux. Toutes les données sont cryptées." },
+    "testimonials": { "title": "Adoré par les Organisateurs", "subtitle": "Ce que disent nos utilisateurs", 
+      "testimonial1": { "text": "EventBliss a rendu la planification de l'enterrement de vie de garçon de mon ami si facile! Tout le monde a pu voter.", "author": "Sarah M.", "role": "Organisatrice d'EVG" }, 
+      "testimonial2": { "text": "La fonction de partage des coûts est un sauveur. Plus de conversations gênantes sur l'argent!", "author": "Michael K.", "role": "Planificateur de voyages de groupe" }, 
+      "testimonial3": { "text": "J'ai organisé 5 événements avec EventBliss. Les suggestions IA sont incroyablement utiles.", "author": "Anna L.", "role": "Hôtesse d'anniversaire" } 
+    },
+    "multiDevice": {
+      "title": "Planifiez des événements partout, à tout moment",
+      "description": "Accédez à EventBliss depuis n'importe quel appareil. Notre design responsive garantit une expérience fluide.",
+      "feature1": "Synchronisation en temps réel sur tous les appareils",
+      "feature2": "Notifications instantanées des mises à jour",
+      "feature3": "Fonctionne hors ligne avec synchronisation automatique",
+      "feature4": "Exportation en iCal ou PDF",
+      "feature5": "Support multi-devises"
+    },
+    "socialProof": {
+      "quote": "Rejoignez des milliers d'organisateurs heureux",
+      "stats": "Plus de 10 000+ événements planifiés avec succès"
+    },
+    "premium": {
+      "sectionTitle": "Débloquez plus avec Premium",
+      "sectionSubtitle": "Accédez aux fonctionnalités avancées et planifiez comme un pro",
+      "monthly": "Mensuel",
+      "monthlyPrice": "6,99€/mois",
+      "lifetime": "À vie",
+      "lifetimePrice": "19,99€ unique",
+      "lifetimeBadge": "Le plus populaire",
+      "features": {
+        "ai": "Suggestions IA illimitées",
+        "expenses": "Dépenses illimitées",
+        "questions": "Questions de sondage personnalisées",
+        "messages": "Modèles de messages avancés",
+        "priority": "Support prioritaire"
+      },
+      "cta": "Découvrir Premium"
+    },
+    "faq": { "title": "Questions Fréquentes", 
+      "q1": "EventBliss est-il gratuit?", "a1": "Oui! EventBliss est gratuit pour la planification de base. Fonctionnalités premium disponibles.", 
+      "q2": "Combien d'invités puis-je inviter?", "a2": "Vous pouvez inviter un nombre illimité d'invités. Aucune restriction.", 
+      "q3": "Puis-je utiliser EventBliss pour des événements professionnels?", "a3": "Absolument! EventBliss est parfait pour le team building et les événements d'entreprise.", 
+      "q4": "Mes données sont-elles sécurisées?", "a4": "Oui, nous prenons la sécurité au sérieux. Toutes les données sont cryptées.",
+      "q5": "Qu'est-ce qu'EventBliss Premium?", "a5": "Premium débloque des fonctionnalités avancées: suggestions IA illimitées, questions de sondage personnalisées, modèles de messages avancés et support prioritaire.",
+      "q6": "Y a-t-il une option à vie?", "a6": "Oui! Pour un paiement unique de 19,99€, vous obtenez un accès à vie à toutes les fonctionnalités premium.",
+      "q7": "Comment fonctionne l'annuaire d'agences?", "a7": "Trouvez des agences professionnelles d'EVG dans plus de 50 villes. Filtrez par pays, ville et consultez les détails directement sur la carte interactive."
+    },
     "cta": { "title": "Prêt pour votre Prochain Événement?", "description": "Commencez gratuitement et créez des souvenirs inoubliables.", "button": "Créer votre Événement" },
-    "footer": { "tagline": "Planifiez des événements qui rassemblent", "product": "Produit", "features": "Fonctionnalités", "integrations": "Intégrations", "enterprise": "Entreprise", "solutions": "Solutions", "legal": "Légal", "imprint": "Mentions Légales", "disclaimer": "Avertissement", "privacy": "Confidentialité", "terms": "Conditions", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Chypre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tous droits réservés." }
+    "footer": { "tagline": "Planifiez des événements qui rassemblent", "product": "Produit", "features": "Fonctionnalités", "integrations": "Intégrations", "enterprise": "Entreprise", "solutions": "Solutions", "partner": "Partenaires", "becomePartner": "Devenir partenaire", "partnerPortal": "Portail partenaire", "legal": "Légal", "imprint": "Mentions Légales", "disclaimer": "Avertissement", "privacy": "Confidentialité", "terms": "Conditions", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Chypre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tous droits réservés." }
   },
   "legal": {
     "imprint": { "title": "Mentions Légales", "company": "Informations sur l'Entreprise", "registeredCompany": "Société enregistrée à Chypre", "address": "Adresse", "contact": "Contact", "responsibleContent": "Responsable du Contenu", "disputeResolution": "Résolution des Litiges UE", "disputeText": "La Commission européenne fournit une plateforme de résolution des litiges en ligne." },

@@ -61,7 +61,11 @@
       "aiSuggestions": { "title": "AI-Powered Suggestions", "description": "Get personalized activity and destination recommendations" },
       "messageTemplates": { "title": "Message Templates", "description": "Pre-written WhatsApp messages for every occasion" },
       "dateCoordination": { "title": "Date Coordination", "description": "Find the perfect date that works for everyone" },
-      "realtime": { "title": "Real-time Collaboration", "description": "Work together with your team in real-time" }
+      "realtime": { "title": "Real-time Collaboration", "description": "Work together with your team in real-time" },
+      "agencyDirectory": { "title": "Agency Directory", "description": "Find professional bachelor party agencies near you with interactive map" },
+      "formBuilder": { "title": "Form Builder", "description": "Create custom surveys and polls for your event" },
+      "showcaseTitle": "Powerful Features, Beautiful Design",
+      "showcaseSubtitle": "Everything you need to plan the perfect group event"
     },
     "howItWorks": {
       "title": "How It Works",
@@ -84,9 +88,39 @@
     "testimonials": {
       "title": "Loved by Event Planners",
       "subtitle": "See what our users have to say",
-      "testimonial1": { "text": "EventBliss made planning my friend's bachelor party so easy! Everyone could vote and we found the perfect date." },
-      "testimonial2": { "text": "The cost splitting feature is a lifesaver. No more awkward money conversations!" },
-      "testimonial3": { "text": "I've organized 5 events with EventBliss. The AI suggestions are incredibly helpful." }
+      "testimonial1": { "text": "EventBliss made planning my friend's bachelor party so easy! Everyone could vote and we found the perfect date.", "author": "Sarah M.", "role": "Bachelor Party Organizer" },
+      "testimonial2": { "text": "The cost splitting feature is a lifesaver. No more awkward money conversations!", "author": "Michael K.", "role": "Group Trip Planner" },
+      "testimonial3": { "text": "I've organized 5 events with EventBliss. The AI suggestions are incredibly helpful.", "author": "Anna L.", "role": "Birthday Party Host" }
+    },
+    "multiDevice": {
+      "title": "Plan Events Anywhere, Anytime",
+      "description": "Access EventBliss from any device. Our responsive design ensures a seamless experience.",
+      "feature1": "Real-time sync across all devices",
+      "feature2": "Instant notifications for updates",
+      "feature3": "Works offline with auto-sync",
+      "feature4": "Export as iCal or PDF",
+      "feature5": "Multi-currency support"
+    },
+    "socialProof": {
+      "quote": "Join thousands of happy event planners",
+      "stats": "Over 10,000+ events planned successfully"
+    },
+    "premium": {
+      "sectionTitle": "Unlock More with Premium",
+      "sectionSubtitle": "Get access to advanced features and plan like a pro",
+      "monthly": "Monthly",
+      "monthlyPrice": "€6.99/month",
+      "lifetime": "Lifetime",
+      "lifetimePrice": "€19.99 one-time",
+      "lifetimeBadge": "Most Popular",
+      "features": {
+        "ai": "Unlimited AI suggestions",
+        "expenses": "Unlimited expenses",
+        "questions": "Custom survey questions",
+        "messages": "Advanced message templates",
+        "priority": "Priority support"
+      },
+      "cta": "Discover Premium"
     },
     "faq": {
       "title": "Frequently Asked Questions",
@@ -97,7 +131,13 @@
       "q3": "Can I use EventBliss for business events?",
       "a3": "Absolutely! EventBliss is perfect for team building, corporate retreats, and company parties.",
       "q4": "Is my data secure?",
-      "a4": "Yes, we take security seriously. All data is encrypted and stored securely in the cloud."
+      "a4": "Yes, we take security seriously. All data is encrypted and stored securely in the cloud.",
+      "q5": "What is EventBliss Premium?",
+      "a5": "Premium unlocks advanced features: unlimited AI suggestions, custom survey questions, advanced message templates, and priority support.",
+      "q6": "Is there a lifetime option?",
+      "a6": "Yes! For a one-time payment of €19.99 you get lifetime access to all premium features.",
+      "q7": "How does the Agency Directory work?",
+      "a7": "Find professional bachelor party agencies in 50+ cities. Filter by country, city, and view details directly on the interactive map."
     },
     "cta": {
       "title": "Ready to Plan Your Next Event?",

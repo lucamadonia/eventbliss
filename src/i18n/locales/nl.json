@@ -43,7 +43,11 @@
       "aiSuggestions": { "title": "AI-Suggesties", "description": "Krijg gepersonaliseerde aanbevelingen voor activiteiten en bestemmingen" },
       "messageTemplates": { "title": "Berichtsjablonen", "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid" },
       "dateCoordination": { "title": "Datumcoördinatie", "description": "Vind de perfecte datum die voor iedereen werkt" },
-      "realtime": { "title": "Realtime Samenwerking", "description": "Werk samen met je team in realtime" }
+      "realtime": { "title": "Realtime Samenwerking", "description": "Werk samen met je team in realtime" },
+      "agencyDirectory": { "title": "Bureau Directory", "description": "Vind professionele vrijgezellenfeest bureaus bij jou in de buurt met interactieve kaart" },
+      "formBuilder": { "title": "Formulier Bouwer", "description": "Maak aangepaste enquêtes en polls voor je evenement" },
+      "showcaseTitle": "Krachtige functies, prachtig design",
+      "showcaseSubtitle": "Alles wat je nodig hebt voor het perfecte groepsevenement"
     },
     "howItWorks": { "title": "Hoe het Werkt", "subtitle": "Plan je evenement in 4 eenvoudige stappen",
       "step1": { "title": "Evenement Maken", "description": "Kies het type evenement en stel basisdetails in" },
@@ -52,10 +56,52 @@
       "step4": { "title": "Samen Plannen", "description": "Gebruik AI-suggesties en samenwerkingstools om te finaliseren" }
     },
     "eventTypes": { "title": "Perfect voor Elk Evenement", "subtitle": "Of het nu een wild weekend of een intieme bijeenkomst is", "bachelor": "Vrijgezellenfeesten", "bachelorette": "Vrijgezellenfeesten (Dames)", "birthday": "Verjaardagsfeesten", "team": "Team Evenementen", "trip": "Groepsreizen", "wedding": "Bruiloften" },
-    "testimonials": { "title": "Geliefd bij Organisatoren", "subtitle": "Wat onze gebruikers zeggen", "testimonial1": { "text": "EventBliss maakte het plannen van het vrijgezellenfeest van mijn vriend zo makkelijk! Iedereen kon stemmen." }, "testimonial2": { "text": "De kostenverdelingsfunctie is een levensredder. Geen ongemakkelijke geldgesprekken meer!" }, "testimonial3": { "text": "Ik heb 5 evenementen georganiseerd met EventBliss. De AI-suggesties zijn ongelooflijk behulpzaam." } },
-    "faq": { "title": "Veelgestelde Vragen", "q1": "Is EventBliss gratis?", "a1": "Ja! EventBliss is gratis voor basisplanning. Premium functies beschikbaar voor power users.", "q2": "Hoeveel gasten kan ik uitnodigen?", "a2": "Je kunt onbeperkt gasten uitnodigen. Geen beperkingen.", "q3": "Kan ik EventBliss gebruiken voor zakelijke evenementen?", "a3": "Absoluut! EventBliss is perfect voor teambuilding en bedrijfsevenementen.", "q4": "Zijn mijn gegevens veilig?", "a4": "Ja, we nemen beveiliging serieus. Alle gegevens zijn versleuteld." },
+    "testimonials": { "title": "Geliefd bij Organisatoren", "subtitle": "Wat onze gebruikers zeggen", 
+      "testimonial1": { "text": "EventBliss maakte het plannen van het vrijgezellenfeest van mijn vriend zo makkelijk! Iedereen kon stemmen.", "author": "Sarah M.", "role": "Vrijgezellenfeest Organisator" }, 
+      "testimonial2": { "text": "De kostenverdelingsfunctie is een levensredder. Geen ongemakkelijke geldgesprekken meer!", "author": "Michael K.", "role": "Groepsreis Planner" }, 
+      "testimonial3": { "text": "Ik heb 5 evenementen georganiseerd met EventBliss. De AI-suggesties zijn ongelooflijk behulpzaam.", "author": "Anna L.", "role": "Verjaardagsfeest Gastheer" } 
+    },
+    "multiDevice": {
+      "title": "Plan evenementen overal, altijd",
+      "description": "Toegang tot EventBliss vanaf elk apparaat. Ons responsive design garandeert een naadloze ervaring.",
+      "feature1": "Realtime synchronisatie op alle apparaten",
+      "feature2": "Directe meldingen voor updates",
+      "feature3": "Werkt offline met auto-sync",
+      "feature4": "Exporteren als iCal of PDF",
+      "feature5": "Multi-valuta ondersteuning"
+    },
+    "socialProof": {
+      "quote": "Sluit je aan bij duizenden tevreden organisatoren",
+      "stats": "Meer dan 10.000+ evenementen succesvol gepland"
+    },
+    "premium": {
+      "sectionTitle": "Ontgrendel meer met Premium",
+      "sectionSubtitle": "Krijg toegang tot geavanceerde functies en plan als een pro",
+      "monthly": "Maandelijks",
+      "monthlyPrice": "€6,99/maand",
+      "lifetime": "Levenslang",
+      "lifetimePrice": "€19,99 eenmalig",
+      "lifetimeBadge": "Meest populair",
+      "features": {
+        "ai": "Onbeperkte AI-suggesties",
+        "expenses": "Onbeperkte uitgaven",
+        "questions": "Aangepaste enquêtevragen",
+        "messages": "Geavanceerde berichtsjablonen",
+        "priority": "Prioriteit ondersteuning"
+      },
+      "cta": "Ontdek Premium"
+    },
+    "faq": { "title": "Veelgestelde Vragen", 
+      "q1": "Is EventBliss gratis?", "a1": "Ja! EventBliss is gratis voor basisplanning. Premium functies beschikbaar voor power users.", 
+      "q2": "Hoeveel gasten kan ik uitnodigen?", "a2": "Je kunt onbeperkt gasten uitnodigen. Geen beperkingen.", 
+      "q3": "Kan ik EventBliss gebruiken voor zakelijke evenementen?", "a3": "Absoluut! EventBliss is perfect voor teambuilding en bedrijfsevenementen.", 
+      "q4": "Zijn mijn gegevens veilig?", "a4": "Ja, we nemen beveiliging serieus. Alle gegevens zijn versleuteld.",
+      "q5": "Wat is EventBliss Premium?", "a5": "Premium ontgrendelt geavanceerde functies: onbeperkte AI-suggesties, aangepaste enquêtevragen, geavanceerde berichtsjablonen en prioriteit ondersteuning.",
+      "q6": "Is er een levenslange optie?", "a6": "Ja! Voor een eenmalige betaling van €19,99 krijg je levenslange toegang tot alle premium functies.",
+      "q7": "Hoe werkt de bureau directory?", "a7": "Vind professionele vrijgezellenfeest bureaus in 50+ steden. Filter op land, stad en bekijk details direct op de interactieve kaart."
+    },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
-    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." }
+    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." }
   },
   "legal": {
     "imprint": { "title": "Impressum", "company": "Bedrijfsinformatie", "registeredCompany": "Geregistreerd bedrijf in Cyprus", "address": "Adres", "contact": "Contact", "responsibleContent": "Verantwoordelijk voor Inhoud", "disputeResolution": "EU Geschillenbeslechting", "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting." },
