@@ -107,6 +107,68 @@
         "ai": { "title": "AI Asistan", "description": "Aktivite ve mesaj önerileri al" },
         "survey": { "title": "Anketler", "description": "Özel anketlerle tercihleri topla" },
         "agencies": { "title": "Ajans Rehberi", "description": "Yakınındaki etkinlik ajanslarını bul" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Katılımcılar",
+          "responses": "Cevaplar",
+          "responseRate": "Cevap oranı",
+          "status": "Durum",
+          "planning": "Planlama",
+          "participantList": "Katılımcılar",
+          "expenses": "Masraflar",
+          "messages": "Mesajlar",
+          "askAI": "AI'ya Sor"
+        },
+        "expenses": {
+          "total": "Toplam",
+          "perPerson": "Kişi Başı",
+          "recentExpenses": "Son Harcamalar",
+          "paidBy": "ödeyen",
+          "bus": "Hamburg'a otobüs yolculuğu",
+          "escapeRoom": "Escape Room",
+          "dinner": "Restoran Akşam Yemeği",
+          "drinks": "Bar İçecekleri",
+          "gift": "Sürpriz Hediye"
+        },
+        "ai": {
+          "destinations": "Hedefler",
+          "activities": "Aktiviteler",
+          "schedule": "Program",
+          "budget": "Bütçe",
+          "placeholder": "Seçenek seç...",
+          "generating": "Oluşturuluyor...",
+          "inputPlaceholder": "AI'ya sor...",
+          "response": "**Bekarlığa veda için en iyi 3 aktivite önerisi:**\n\n🚤 **Tekne turu** - Suda rahatlama\n\n🎯 **Escape Room** - Takım çalışması ve heyecan\n\n🍻 **Bira fabrikası turu** - Tadım ile tur\n\n*Baz alınan: Bütçe €150-250, 8 katılımcı*"
+        },
+        "survey": {
+          "selectName": "Adınızı seçin",
+          "chooseName": "Ad seç...",
+          "attendance": "Katılacak mısınız?",
+          "yes": "Evet, katılacağım! 🎉",
+          "maybe": "Belki 🤔",
+          "no": "Maalesef hayır 😢",
+          "budget": "Bütçeniz",
+          "activities": "Tercih edilen aktiviteler",
+          "outdoor": "Açık hava",
+          "wellness": "Wellness",
+          "party": "Parti",
+          "culture": "Kültür",
+          "submit": "Cevabı gönder"
+        },
+        "agencies": {
+          "clickCity": "Bir şehre tıklayın",
+          "available": "Mevcut",
+          "selected": "Seçildi",
+          "club": "Kulüp & Gece Hayatı",
+          "outdoor": "Outdoor & Aksiyon",
+          "traditional": "Geleneksel & Bira",
+          "adventure": "Macera",
+          "boat": "Tekne turları",
+          "carnival": "Karnaval & Parti",
+          "luxury": "Lüks & Kültür",
+          "premium": "Premium Etkinlikler"
+        }
       }
     },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },

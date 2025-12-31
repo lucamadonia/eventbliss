@@ -107,6 +107,68 @@
         "ai": { "title": "Asystent AI", "description": "Otrzymuj sugestie aktywności i wiadomości" },
         "survey": { "title": "Ankiety", "description": "Zbieraj preferencje za pomocą niestandardowych ankiet" },
         "agencies": { "title": "Katalog Agencji", "description": "Znajdź agencje eventowe w pobliżu" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Uczestnicy",
+          "responses": "Odpowiedzi",
+          "responseRate": "Wskaźnik odpowiedzi",
+          "status": "Status",
+          "planning": "Planowanie",
+          "participantList": "Uczestnicy",
+          "expenses": "Wydatki",
+          "messages": "Wiadomości",
+          "askAI": "Zapytaj AI"
+        },
+        "expenses": {
+          "total": "Łącznie",
+          "perPerson": "Na Osobę",
+          "recentExpenses": "Ostatnie Wydatki",
+          "paidBy": "zapłacone przez",
+          "bus": "Przejazd autobusem do Hamburga",
+          "escapeRoom": "Escape Room",
+          "dinner": "Kolacja w Restauracji",
+          "drinks": "Napoje w Barze",
+          "gift": "Niespodzianka Prezent"
+        },
+        "ai": {
+          "destinations": "Cele podróży",
+          "activities": "Aktywności",
+          "schedule": "Harmonogram",
+          "budget": "Budżet",
+          "placeholder": "Wybierz opcję...",
+          "generating": "Generowanie...",
+          "inputPlaceholder": "Zapytaj AI...",
+          "response": "**Top 3 sugestie aktywności na wieczór kawalerski:**\n\n🚤 **Rejs łodzią** - Relaks na wodzie\n\n🎯 **Escape Room** - Praca zespołowa i emocje\n\n🍻 **Wycieczka do browaru** - Degustacja piwa z zwiedzaniem\n\n*Na podstawie: Budżet €150-250, 8 uczestników*"
+        },
+        "survey": {
+          "selectName": "Wybierz swoje imię",
+          "chooseName": "Wybierz imię...",
+          "attendance": "Czy będziesz?",
+          "yes": "Tak, będę! 🎉",
+          "maybe": "Może 🤔",
+          "no": "Niestety nie 😢",
+          "budget": "Twój budżet",
+          "activities": "Preferowane aktywności",
+          "outdoor": "Na zewnątrz",
+          "wellness": "Wellness",
+          "party": "Impreza",
+          "culture": "Kultura",
+          "submit": "Wyślij odpowiedź"
+        },
+        "agencies": {
+          "clickCity": "Kliknij na miasto",
+          "available": "Dostępne",
+          "selected": "Wybrane",
+          "club": "Klub & Nocne życie",
+          "outdoor": "Outdoor & Akcja",
+          "traditional": "Tradycyjne & Piwo",
+          "adventure": "Przygoda",
+          "boat": "Rejsy łodzią",
+          "carnival": "Karnawał & Impreza",
+          "luxury": "Luksus & Kultura",
+          "premium": "Premium Events"
+        }
       }
     },
     "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },

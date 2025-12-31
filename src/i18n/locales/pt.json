@@ -107,6 +107,68 @@
         "ai": { "title": "Assistente IA", "description": "Obtém sugestões de atividades e mensagens" },
         "survey": { "title": "Inquéritos", "description": "Recolhe preferências com inquéritos personalizados" },
         "agencies": { "title": "Diretório de Agências", "description": "Encontra agências de eventos perto de ti" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Participantes",
+          "responses": "Respostas",
+          "responseRate": "Taxa de resposta",
+          "status": "Estado",
+          "planning": "Planeamento",
+          "participantList": "Participantes",
+          "expenses": "Despesas",
+          "messages": "Mensagens",
+          "askAI": "Perguntar à IA"
+        },
+        "expenses": {
+          "total": "Total",
+          "perPerson": "Por Pessoa",
+          "recentExpenses": "Despesas Recentes",
+          "paidBy": "pago por",
+          "bus": "Viagem de autocarro para Hamburgo",
+          "escapeRoom": "Escape Room",
+          "dinner": "Jantar no Restaurante",
+          "drinks": "Bebidas no Bar",
+          "gift": "Presente Surpresa"
+        },
+        "ai": {
+          "destinations": "Destinos",
+          "activities": "Atividades",
+          "schedule": "Programa",
+          "budget": "Orçamento",
+          "placeholder": "Escolher opção...",
+          "generating": "A gerar...",
+          "inputPlaceholder": "Perguntar à IA...",
+          "response": "**Top 3 sugestões de atividades para a despedida:**\n\n🚤 **Passeio de barco** - Relaxar na água\n\n🎯 **Escape Room** - Trabalho de equipa e emoção\n\n🍻 **Tour de cervejaria** - Degustação com visita\n\n*Baseado em: Orçamento €150-250, 8 participantes*"
+        },
+        "survey": {
+          "selectName": "Seleciona o teu nome",
+          "chooseName": "Escolher nome...",
+          "attendance": "Vais participar?",
+          "yes": "Sim, conto comigo! 🎉",
+          "maybe": "Talvez 🤔",
+          "no": "Infelizmente não 😢",
+          "budget": "O teu orçamento",
+          "activities": "Atividades preferidas",
+          "outdoor": "Ar livre",
+          "wellness": "Bem-estar",
+          "party": "Festa",
+          "culture": "Cultura",
+          "submit": "Enviar resposta"
+        },
+        "agencies": {
+          "clickCity": "Clica numa cidade",
+          "available": "Disponível",
+          "selected": "Selecionado",
+          "club": "Club & Vida noturna",
+          "outdoor": "Outdoor & Ação",
+          "traditional": "Tradicional & Cerveja",
+          "adventure": "Aventura",
+          "boat": "Passeios de barco",
+          "carnival": "Carnaval & Festa",
+          "luxury": "Luxo & Cultura",
+          "premium": "Eventos Premium"
+        }
       }
     },
     "cta": { "title": "Pronto para o teu Próximo Evento?", "description": "Começa grátis e cria memórias inesquecíveis.", "button": "Criar o teu Evento" },

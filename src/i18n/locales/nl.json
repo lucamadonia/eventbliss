@@ -113,6 +113,68 @@
         "ai": { "title": "AI Assistent", "description": "Krijg suggesties voor activiteiten en berichten" },
         "survey": { "title": "Enquêtes", "description": "Verzamel voorkeuren met aangepaste enquêtes" },
         "agencies": { "title": "Bureau Directory", "description": "Vind evenementenbureaus bij jou in de buurt" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Deelnemers",
+          "responses": "Antwoorden",
+          "responseRate": "Responspercentage",
+          "status": "Status",
+          "planning": "Planning",
+          "participantList": "Deelnemers",
+          "expenses": "Kosten",
+          "messages": "Berichten",
+          "askAI": "Vraag AI"
+        },
+        "expenses": {
+          "total": "Totaal",
+          "perPerson": "Per Persoon",
+          "recentExpenses": "Recente Uitgaven",
+          "paidBy": "betaald door",
+          "bus": "Busrit naar Hamburg",
+          "escapeRoom": "Escape Room",
+          "dinner": "Diner Restaurant",
+          "drinks": "Drankjes Bar",
+          "gift": "Verrassingscadeau"
+        },
+        "ai": {
+          "destinations": "Bestemmingen",
+          "activities": "Activiteiten",
+          "schedule": "Planning",
+          "budget": "Budget",
+          "placeholder": "Kies optie...",
+          "generating": "Genereren...",
+          "inputPlaceholder": "Vraag AI...",
+          "response": "**Top 3 activiteitensuggesties voor je vrijgezellenfeest:**\n\n🚤 **Boottocht** - Ontspanning op het water\n\n🎯 **Escape Room** - Teamwork en spanning\n\n🍻 **Brouwerij tour** - Bierproeverij met rondleiding\n\n*Gebaseerd op: Budget €150-250, 8 deelnemers*"
+        },
+        "survey": {
+          "selectName": "Selecteer je naam",
+          "chooseName": "Kies naam...",
+          "attendance": "Ben je erbij?",
+          "yes": "Ja, ik ben erbij! 🎉",
+          "maybe": "Misschien 🤔",
+          "no": "Helaas niet 😢",
+          "budget": "Je budget",
+          "activities": "Voorkeursactiviteiten",
+          "outdoor": "Buiten",
+          "wellness": "Wellness",
+          "party": "Feest",
+          "culture": "Cultuur",
+          "submit": "Antwoord versturen"
+        },
+        "agencies": {
+          "clickCity": "Klik op een stad",
+          "available": "Beschikbaar",
+          "selected": "Geselecteerd",
+          "club": "Club & Nachtleven",
+          "outdoor": "Outdoor & Actie",
+          "traditional": "Traditioneel & Bier",
+          "adventure": "Avontuur",
+          "boat": "Boottochten",
+          "carnival": "Carnaval & Feest",
+          "luxury": "Luxe & Cultuur",
+          "premium": "Premium Events"
+        }
       }
     },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },

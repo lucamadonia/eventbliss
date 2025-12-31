@@ -113,6 +113,68 @@
         "ai": { "title": "Assistente AI", "description": "Ottieni suggerimenti per attività e messaggi" },
         "survey": { "title": "Sondaggi", "description": "Raccogli preferenze con sondaggi personalizzati" },
         "agencies": { "title": "Directory Agenzie", "description": "Trova agenzie eventi vicino a te" }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Partecipanti",
+          "responses": "Risposte",
+          "responseRate": "Tasso di risposta",
+          "status": "Stato",
+          "planning": "Pianificazione",
+          "participantList": "Partecipanti",
+          "expenses": "Spese",
+          "messages": "Messaggi",
+          "askAI": "Chiedi all'AI"
+        },
+        "expenses": {
+          "total": "Totale",
+          "perPerson": "Per Persona",
+          "recentExpenses": "Spese Recenti",
+          "paidBy": "pagato da",
+          "bus": "Viaggio in bus per Amburgo",
+          "escapeRoom": "Escape Room",
+          "dinner": "Cena al Ristorante",
+          "drinks": "Bevande al Bar",
+          "gift": "Regalo Sorpresa"
+        },
+        "ai": {
+          "destinations": "Destinazioni",
+          "activities": "Attività",
+          "schedule": "Programma",
+          "budget": "Budget",
+          "placeholder": "Scegli un'opzione...",
+          "generating": "Generazione...",
+          "inputPlaceholder": "Chiedi all'AI...",
+          "response": "**Top 3 suggerimenti attività per l'addio al celibato:**\n\n🚤 **Tour in barca** - Relax sull'acqua\n\n🎯 **Escape Room** - Lavoro di squadra ed emozione\n\n🍻 **Tour del birrificio** - Degustazione con visita\n\n*Basato su: Budget €150-250, 8 partecipanti*"
+        },
+        "survey": {
+          "selectName": "Seleziona il tuo nome",
+          "chooseName": "Scegli nome...",
+          "attendance": "Ci sarai?",
+          "yes": "Sì, ci sono! 🎉",
+          "maybe": "Forse 🤔",
+          "no": "Purtroppo no 😢",
+          "budget": "Il tuo budget",
+          "activities": "Attività preferite",
+          "outdoor": "All'aperto",
+          "wellness": "Benessere",
+          "party": "Festa",
+          "culture": "Cultura",
+          "submit": "Invia risposta"
+        },
+        "agencies": {
+          "clickCity": "Clicca su una città",
+          "available": "Disponibile",
+          "selected": "Selezionato",
+          "club": "Club & Vita notturna",
+          "outdoor": "Outdoor & Azione",
+          "traditional": "Tradizionale & Birra",
+          "adventure": "Avventura",
+          "boat": "Tour in barca",
+          "carnival": "Carnevale & Festa",
+          "luxury": "Lusso & Cultura",
+          "premium": "Eventi Premium"
+        }
       }
     },
     "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
