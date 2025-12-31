@@ -43,7 +43,11 @@
       "aiSuggestions": { "title": "Suggerimenti AI", "description": "Ottieni raccomandazioni personalizzate per attività e destinazioni" },
       "messageTemplates": { "title": "Modelli di Messaggi", "description": "Messaggi WhatsApp pre-scritti per ogni occasione" },
       "dateCoordination": { "title": "Coordinamento Date", "description": "Trova la data perfetta che funziona per tutti" },
-      "realtime": { "title": "Collaborazione in Tempo Reale", "description": "Lavora insieme al tuo team in tempo reale" }
+      "realtime": { "title": "Collaborazione in Tempo Reale", "description": "Lavora insieme al tuo team in tempo reale" },
+      "agencyDirectory": { "title": "Directory Agenzie", "description": "Trova agenzie professionali per addio al celibato vicino a te con mappa interattiva" },
+      "formBuilder": { "title": "Costruttore Moduli", "description": "Crea sondaggi e votazioni personalizzati per il tuo evento" },
+      "showcaseTitle": "Funzionalità potenti, design elegante",
+      "showcaseSubtitle": "Tutto ciò di cui hai bisogno per l'evento di gruppo perfetto"
     },
     "howItWorks": { "title": "Come Funziona", "subtitle": "Pianifica il tuo evento in 4 semplici passaggi",
       "step1": { "title": "Crea Evento", "description": "Scegli il tipo di evento e imposta i dettagli di base" },
@@ -52,10 +56,52 @@
       "step4": { "title": "Pianifica Insieme", "description": "Usa suggerimenti AI e strumenti di collaborazione per finalizzare" }
     },
     "eventTypes": { "title": "Perfetto per Ogni Evento", "subtitle": "Che sia un weekend selvaggio o un raduno intimo", "bachelor": "Addii al Celibato", "bachelorette": "Addii al Nubilato", "birthday": "Feste di Compleanno", "team": "Eventi di Team", "trip": "Viaggi di Gruppo", "wedding": "Matrimoni" },
-    "testimonials": { "title": "Amato dagli Organizzatori", "subtitle": "Cosa dicono i nostri utenti", "testimonial1": { "text": "EventBliss ha reso la pianificazione dell'addio al celibato del mio amico così facile! Tutti hanno potuto votare." }, "testimonial2": { "text": "La funzione di divisione dei costi è un salvavita. Niente più conversazioni imbarazzanti sui soldi!" }, "testimonial3": { "text": "Ho organizzato 5 eventi con EventBliss. I suggerimenti AI sono incredibilmente utili." } },
-    "faq": { "title": "Domande Frequenti", "q1": "EventBliss è gratuito?", "a1": "Sì! EventBliss è gratuito per la pianificazione base. Funzionalità premium disponibili.", "q2": "Quanti ospiti posso invitare?", "a2": "Puoi invitare ospiti illimitati. Nessuna restrizione.", "q3": "Posso usare EventBliss per eventi aziendali?", "a3": "Assolutamente! EventBliss è perfetto per team building ed eventi aziendali.", "q4": "I miei dati sono sicuri?", "a4": "Sì, prendiamo la sicurezza seriamente. Tutti i dati sono criptati." },
+    "testimonials": { "title": "Amato dagli Organizzatori", "subtitle": "Cosa dicono i nostri utenti", 
+      "testimonial1": { "text": "EventBliss ha reso la pianificazione dell'addio al celibato del mio amico così facile! Tutti hanno potuto votare.", "author": "Sarah M.", "role": "Organizzatrice di addii" }, 
+      "testimonial2": { "text": "La funzione di divisione dei costi è un salvavita. Niente più conversazioni imbarazzanti sui soldi!", "author": "Michael K.", "role": "Pianificatore viaggi di gruppo" }, 
+      "testimonial3": { "text": "Ho organizzato 5 eventi con EventBliss. I suggerimenti AI sono incredibilmente utili.", "author": "Anna L.", "role": "Ospite di compleanni" } 
+    },
+    "multiDevice": {
+      "title": "Pianifica eventi ovunque, in qualsiasi momento",
+      "description": "Accedi a EventBliss da qualsiasi dispositivo. Il nostro design responsive garantisce un'esperienza fluida.",
+      "feature1": "Sincronizzazione in tempo reale su tutti i dispositivi",
+      "feature2": "Notifiche istantanee degli aggiornamenti",
+      "feature3": "Funziona offline con sincronizzazione automatica",
+      "feature4": "Esportazione come iCal o PDF",
+      "feature5": "Supporto multi-valuta"
+    },
+    "socialProof": {
+      "quote": "Unisciti a migliaia di organizzatori felici",
+      "stats": "Oltre 10.000+ eventi pianificati con successo"
+    },
+    "premium": {
+      "sectionTitle": "Sblocca di più con Premium",
+      "sectionSubtitle": "Accedi alle funzionalità avanzate e pianifica come un professionista",
+      "monthly": "Mensile",
+      "monthlyPrice": "6,99€/mese",
+      "lifetime": "A vita",
+      "lifetimePrice": "19,99€ una tantum",
+      "lifetimeBadge": "Più popolare",
+      "features": {
+        "ai": "Suggerimenti AI illimitati",
+        "expenses": "Spese illimitate",
+        "questions": "Domande sondaggio personalizzate",
+        "messages": "Modelli messaggi avanzati",
+        "priority": "Supporto prioritario"
+      },
+      "cta": "Scopri Premium"
+    },
+    "faq": { "title": "Domande Frequenti", 
+      "q1": "EventBliss è gratuito?", "a1": "Sì! EventBliss è gratuito per la pianificazione base. Funzionalità premium disponibili.", 
+      "q2": "Quanti ospiti posso invitare?", "a2": "Puoi invitare ospiti illimitati. Nessuna restrizione.", 
+      "q3": "Posso usare EventBliss per eventi aziendali?", "a3": "Assolutamente! EventBliss è perfetto per team building ed eventi aziendali.", 
+      "q4": "I miei dati sono sicuri?", "a4": "Sì, prendiamo la sicurezza seriamente. Tutti i dati sono criptati.",
+      "q5": "Cos'è EventBliss Premium?", "a5": "Premium sblocca funzionalità avanzate: suggerimenti AI illimitati, domande sondaggio personalizzate, modelli messaggi avanzati e supporto prioritario.",
+      "q6": "C'è un'opzione a vita?", "a6": "Sì! Con un pagamento unico di 19,99€ ottieni accesso a vita a tutte le funzionalità premium.",
+      "q7": "Come funziona la directory agenzie?", "a7": "Trova agenzie professionali per addii in oltre 50 città. Filtra per paese, città e consulta i dettagli direttamente sulla mappa interattiva."
+    },
     "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
-    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." }
+    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "partnerPortal": "Portale partner", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." }
   },
   "legal": {
     "imprint": { "title": "Note Legali", "company": "Informazioni Azienda", "registeredCompany": "Società registrata a Cipro", "address": "Indirizzo", "contact": "Contatto", "responsibleContent": "Responsabile del Contenuto", "disputeResolution": "Risoluzione Dispute UE", "disputeText": "La Commissione Europea fornisce una piattaforma per la risoluzione delle dispute online." },

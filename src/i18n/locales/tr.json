@@ -36,11 +36,64 @@
 "landing": {
     "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt", "partner": "Ortaklar" },
     "hero": { "badge": "#1 Etkinlik Planlama Platformu", "title": "Unutulmaz Etkinlikler Planlayın", "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.", "createEvent": "Etkinlik Oluştur", "joinEvent": "Kod ile Katıl", "trustedBy": "10.000'den fazla organizatör bize güveniyor" },
-    "features": { "title": "İhtiyacınız olan her şey", "subtitle": "Mükemmel etkinlik için güçlü araçlar", "multiEvent": { "title": "Çoklu Etkinlik Yönetimi", "description": "Birden fazla etkinliği aynı anda yönetin" }, "costSplitting": { "title": "Akıllı Maliyet Bölüşümü", "description": "Harcamaları takip edin ve adil şekilde paylaştırın" }, "aiSuggestions": { "title": "AI Önerileri", "description": "Kişiselleştirilmiş öneriler alın" }, "messageTemplates": { "title": "Mesaj Şablonları", "description": "Hazır WhatsApp mesajları" }, "dateCoordination": { "title": "Tarih Koordinasyonu", "description": "Herkes için uygun tarihi bulun" }, "realtime": { "title": "Gerçek Zamanlı İşbirliği", "description": "Ekibinizle gerçek zamanlı çalışın" } },
+    "features": { "title": "İhtiyacınız olan her şey", "subtitle": "Mükemmel etkinlik için güçlü araçlar", 
+      "multiEvent": { "title": "Çoklu Etkinlik Yönetimi", "description": "Birden fazla etkinliği aynı anda yönetin" }, 
+      "costSplitting": { "title": "Akıllı Maliyet Bölüşümü", "description": "Harcamaları takip edin ve adil şekilde paylaştırın" }, 
+      "aiSuggestions": { "title": "AI Önerileri", "description": "Kişiselleştirilmiş öneriler alın" }, 
+      "messageTemplates": { "title": "Mesaj Şablonları", "description": "Hazır WhatsApp mesajları" }, 
+      "dateCoordination": { "title": "Tarih Koordinasyonu", "description": "Herkes için uygun tarihi bulun" }, 
+      "realtime": { "title": "Gerçek Zamanlı İşbirliği", "description": "Ekibinizle gerçek zamanlı çalışın" },
+      "agencyDirectory": { "title": "Ajans Rehberi", "description": "Yakınınızdaki profesyonel bekarlığa veda ajanslarını interaktif haritada bulun" },
+      "formBuilder": { "title": "Form Oluşturucu", "description": "Etkinliğiniz için özel anketler ve oylamalar oluşturun" },
+      "showcaseTitle": "Güçlü özellikler, şık tasarım",
+      "showcaseSubtitle": "Mükemmel grup etkinliği için ihtiyacınız olan her şey"
+    },
     "howItWorks": { "title": "Nasıl Çalışır", "subtitle": "4 basit adımda planlayın", "step1": { "title": "Etkinlik Oluştur", "description": "Türü seçin ve detayları belirleyin" }, "step2": { "title": "Davet Et", "description": "Link veya kod paylaşın" }, "step3": { "title": "Tercihleri Toplayın", "description": "Misafirlerin oy vermesini sağlayın" }, "step4": { "title": "Birlikte Planlayın", "description": "AI önerilerini kullanarak sonuçlandırın" } },
     "eventTypes": { "title": "Her Etkinlik için Mükemmel", "subtitle": "Vahşi bir hafta sonu veya samimi bir buluşma olsun", "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü Partileri", "team": "Takım Etkinlikleri", "trip": "Grup Gezileri", "wedding": "Düğünler" },
-    "testimonials": { "title": "Organizatörler Tarafından Seviliyor", "subtitle": "Kullanıcılarımız ne diyor", "testimonial1": { "text": "EventBliss planlamayı çok kolaylaştırdı!" }, "testimonial2": { "text": "Maliyet bölüşümü hayat kurtarıcı!" }, "testimonial3": { "text": "5 etkinlik organize ettim. AI önerileri harika." } },
-    "faq": { "title": "Sık Sorulan Sorular", "q1": "EventBliss ücretsiz mi?", "a1": "Evet! Temel planlama için ücretsiz.", "q2": "Kaç misafir davet edebilirim?", "a2": "Sınırsız. Kısıtlama yok.", "q3": "Kurumsal etkinlikler için kullanabilir miyim?", "a3": "Kesinlikle! Takım etkinlikleri için mükemmel.", "q4": "Verilerim güvende mi?", "a4": "Evet, tüm veriler şifrelenmiştir." },
+    "testimonials": { "title": "Organizatörler Tarafından Seviliyor", "subtitle": "Kullanıcılarımız ne diyor", 
+      "testimonial1": { "text": "EventBliss planlamayı çok kolaylaştırdı!", "author": "Sarah M.", "role": "Bekarlığa veda organizatörü" }, 
+      "testimonial2": { "text": "Maliyet bölüşümü hayat kurtarıcı!", "author": "Michael K.", "role": "Grup gezisi planlayıcısı" }, 
+      "testimonial3": { "text": "5 etkinlik organize ettim. AI önerileri harika.", "author": "Anna L.", "role": "Doğum günü ev sahibi" } 
+    },
+    "multiDevice": {
+      "title": "Etkinlikleri her yerde, her zaman planlayın",
+      "description": "EventBliss'e herhangi bir cihazdan erişin. Responsive tasarımımız kusursuz bir deneyim sağlar.",
+      "feature1": "Tüm cihazlarda gerçek zamanlı senkronizasyon",
+      "feature2": "Güncellemeler için anında bildirimler",
+      "feature3": "Otomatik senkronizasyon ile çevrimdışı çalışır",
+      "feature4": "iCal veya PDF olarak dışa aktarma",
+      "feature5": "Çoklu para birimi desteği"
+    },
+    "socialProof": {
+      "quote": "Binlerce mutlu organizatöre katılın",
+      "stats": "10.000'den fazla etkinlik başarıyla planlandı"
+    },
+    "premium": {
+      "sectionTitle": "Premium ile daha fazlasını açın",
+      "sectionSubtitle": "Gelişmiş özelliklere erişin ve profesyonel gibi planlayın",
+      "monthly": "Aylık",
+      "monthlyPrice": "6,99€/ay",
+      "lifetime": "Ömür boyu",
+      "lifetimePrice": "19,99€ tek seferlik",
+      "lifetimeBadge": "En popüler",
+      "features": {
+        "ai": "Sınırsız AI önerileri",
+        "expenses": "Sınırsız harcamalar",
+        "questions": "Özel anket soruları",
+        "messages": "Gelişmiş mesaj şablonları",
+        "priority": "Öncelikli destek"
+      },
+      "cta": "Premium'u Keşfet"
+    },
+    "faq": { "title": "Sık Sorulan Sorular", 
+      "q1": "EventBliss ücretsiz mi?", "a1": "Evet! Temel planlama için ücretsiz.", 
+      "q2": "Kaç misafir davet edebilirim?", "a2": "Sınırsız. Kısıtlama yok.", 
+      "q3": "Kurumsal etkinlikler için kullanabilir miyim?", "a3": "Kesinlikle! Takım etkinlikleri için mükemmel.", 
+      "q4": "Verilerim güvende mi?", "a4": "Evet, tüm veriler şifrelenmiştir.",
+      "q5": "EventBliss Premium nedir?", "a5": "Premium gelişmiş özellikleri açar: sınırsız AI önerileri, özel anket soruları, gelişmiş mesaj şablonları ve öncelikli destek.",
+      "q6": "Ömür boyu seçeneği var mı?", "a6": "Evet! Tek seferlik 19,99€ ödeme ile tüm premium özelliklere ömür boyu erişim elde edersiniz.",
+      "q7": "Ajans rehberi nasıl çalışır?", "a7": "50'den fazla şehirde profesyonel bekarlığa veda ajansları bulun. Ülke, şehir bazında filtreleyin ve detayları doğrudan interaktif haritada görüntüleyin."
+    },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
     "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." }
   },

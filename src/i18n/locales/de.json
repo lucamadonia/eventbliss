@@ -61,7 +61,11 @@
       "aiSuggestions": { "title": "KI-gestützte Vorschläge", "description": "Erhalte personalisierte Aktivitäts- und Reiseziel-Empfehlungen" },
       "messageTemplates": { "title": "Nachrichten-Vorlagen", "description": "Vorgefertigte WhatsApp-Nachrichten für jeden Anlass" },
       "dateCoordination": { "title": "Terminkoordination", "description": "Finde das perfekte Datum, das für alle passt" },
-      "realtime": { "title": "Echtzeit-Zusammenarbeit", "description": "Arbeite in Echtzeit mit deinem Team zusammen" }
+      "realtime": { "title": "Echtzeit-Zusammenarbeit", "description": "Arbeite in Echtzeit mit deinem Team zusammen" },
+      "agencyDirectory": { "title": "Agentur-Verzeichnis", "description": "Finde professionelle JGA-Agenturen in deiner Nähe mit interaktiver Karte" },
+      "formBuilder": { "title": "Formular-Builder", "description": "Erstelle benutzerdefinierte Umfragen und Abstimmungen für dein Event" },
+      "showcaseTitle": "Leistungsstarke Features, schönes Design",
+      "showcaseSubtitle": "Alles was du brauchst für das perfekte Gruppenevent"
     },
     "howItWorks": {
       "title": "So funktioniert's",
@@ -84,9 +88,39 @@
     "testimonials": {
       "title": "Beliebt bei Event-Planern",
       "subtitle": "Das sagen unsere Nutzer",
-      "testimonial1": { "text": "EventBliss hat die Planung des JGAs meines Freundes so einfach gemacht! Alle konnten abstimmen und wir fanden das perfekte Datum." },
-      "testimonial2": { "text": "Die Kostenaufteilung ist ein Lebensretter. Keine peinlichen Geld-Gespräche mehr!" },
-      "testimonial3": { "text": "Ich habe 5 Events mit EventBliss organisiert. Die KI-Vorschläge sind unglaublich hilfreich." }
+      "testimonial1": { "text": "EventBliss hat die Planung des JGAs meines Freundes so einfach gemacht! Alle konnten abstimmen und wir fanden das perfekte Datum.", "author": "Sarah M.", "role": "JGA-Organisatorin" },
+      "testimonial2": { "text": "Die Kostenaufteilung ist ein Lebensretter. Keine peinlichen Geld-Gespräche mehr!", "author": "Michael K.", "role": "Gruppenreise-Planer" },
+      "testimonial3": { "text": "Ich habe 5 Events mit EventBliss organisiert. Die KI-Vorschläge sind unglaublich hilfreich.", "author": "Anna L.", "role": "Geburtstags-Gastgeberin" }
+    },
+    "multiDevice": {
+      "title": "Plane Events überall und jederzeit",
+      "description": "Greife von jedem Gerät auf EventBliss zu. Unser responsives Design garantiert ein nahtloses Erlebnis.",
+      "feature1": "Echtzeit-Sync auf allen Geräten",
+      "feature2": "Sofortige Benachrichtigungen bei Updates",
+      "feature3": "Funktioniert offline mit Auto-Sync",
+      "feature4": "Export als iCal oder PDF",
+      "feature5": "Multi-Währung Support"
+    },
+    "socialProof": {
+      "quote": "Schließe dich tausenden glücklichen Event-Planern an",
+      "stats": "Über 10.000+ erfolgreich geplante Events"
+    },
+    "premium": {
+      "sectionTitle": "Noch mehr Möglichkeiten mit Premium",
+      "sectionSubtitle": "Schalte erweiterte Features frei und plane wie ein Profi",
+      "monthly": "Monatlich",
+      "monthlyPrice": "€6,99/Monat",
+      "lifetime": "Lifetime",
+      "lifetimePrice": "€19,99 einmalig",
+      "lifetimeBadge": "Beliebteste Wahl",
+      "features": {
+        "ai": "Unbegrenzte KI-Vorschläge",
+        "expenses": "Unbegrenzte Ausgaben",
+        "questions": "Benutzerdefinierte Fragen",
+        "messages": "Erweiterte Nachrichten",
+        "priority": "Prioritäts-Support"
+      },
+      "cta": "Premium entdecken"
     },
     "faq": {
       "title": "Häufig gestellte Fragen",
@@ -97,7 +131,13 @@
       "q3": "Kann ich EventBliss für Firmenevents nutzen?",
       "a3": "Absolut! EventBliss ist perfekt für Teambuilding, Firmenausflüge und Betriebsfeiern.",
       "q4": "Sind meine Daten sicher?",
-      "a4": "Ja, wir nehmen Sicherheit ernst. Alle Daten werden verschlüsselt und sicher in der Cloud gespeichert."
+      "a4": "Ja, wir nehmen Sicherheit ernst. Alle Daten werden verschlüsselt und sicher in der Cloud gespeichert.",
+      "q5": "Was ist EventBliss Premium?",
+      "a5": "Premium schaltet erweiterte Features frei: unbegrenzte KI-Vorschläge, benutzerdefinierte Umfragefragen, erweiterte Nachrichtenvorlagen und Prioritäts-Support.",
+      "q6": "Gibt es eine Lifetime-Option?",
+      "a6": "Ja! Für einmalig €19,99 erhältst du lebenslangen Zugang zu allen Premium-Features.",
+      "q7": "Wie funktioniert das Agentur-Verzeichnis?",
+      "a7": "Finde professionelle JGA-Agenturen in über 50 Städten. Filtere nach Land, Stadt und sieh dir Details direkt auf der interaktiven Karte an."
     },
     "cta": {
       "title": "Bereit für dein nächstes Event?",
