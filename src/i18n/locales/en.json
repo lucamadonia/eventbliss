@@ -167,6 +167,68 @@
           "title": "Agency Directory",
           "description": "Find professional event agencies near you"
         }
+      },
+      "live": {
+        "dashboard": {
+          "participants": "Participants",
+          "responses": "Responses",
+          "responseRate": "Response Rate",
+          "status": "Status",
+          "planning": "Planning",
+          "participantList": "Participants",
+          "expenses": "Expenses",
+          "messages": "Messages",
+          "askAI": "Ask AI"
+        },
+        "expenses": {
+          "total": "Total",
+          "perPerson": "Per Person",
+          "recentExpenses": "Recent Expenses",
+          "paidBy": "paid by",
+          "bus": "Bus Trip to Hamburg",
+          "escapeRoom": "Escape Room",
+          "dinner": "Restaurant Dinner",
+          "drinks": "Bar Drinks",
+          "gift": "Surprise Gift"
+        },
+        "ai": {
+          "destinations": "Destinations",
+          "activities": "Activities",
+          "schedule": "Schedule",
+          "budget": "Budget",
+          "placeholder": "Select an option...",
+          "generating": "Generating...",
+          "inputPlaceholder": "Ask AI...",
+          "response": "**Top 3 Activity Suggestions for Your Party:**\n\n🚤 **Boat Tour** - Relaxed trip on the water\n\n🎯 **Escape Room** - Teamwork and excitement\n\n🍻 **Brewery Tour** - Beer tasting with guided tour\n\n*Based on: Budget €150-250, 8 participants*"
+        },
+        "survey": {
+          "selectName": "Select your name",
+          "chooseName": "Choose name...",
+          "attendance": "Can you make it?",
+          "yes": "Yes, I'm in! 🎉",
+          "maybe": "Maybe 🤔",
+          "no": "Unfortunately no 😢",
+          "budget": "Your Budget",
+          "activities": "Preferred Activities",
+          "outdoor": "Outdoor",
+          "wellness": "Wellness",
+          "party": "Party",
+          "culture": "Culture",
+          "submit": "Submit Response"
+        },
+        "agencies": {
+          "clickCity": "Click on a city",
+          "available": "Available",
+          "selected": "Selected",
+          "club": "Club & Nightlife",
+          "outdoor": "Outdoor & Action",
+          "traditional": "Traditional & Beer",
+          "adventure": "Adventure",
+          "boat": "Boat Tours",
+          "carnival": "Carnival & Party",
+          "luxury": "Luxury & Culture",
+          "premium": "Premium Events"
+        }
       }
     },
     "cta": {

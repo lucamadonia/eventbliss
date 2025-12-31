@@ -21,13 +21,20 @@ import featureVoting from "@/assets/feature-voting.png";
 import multiDeviceMockup from "@/assets/multi-device-mockup.png";
 import socialProof from "@/assets/social-proof.png";
 
-// Demo feature images mapping
-const demoImages: Record<string, string> = {
-  dashboard: featurePlanning,
-  expenses: featureExpenseTracking,
-  ai: featurePlanning,
-  survey: featureVoting,
-  agencies: featurePlanning,
+// Live Demo Components
+import { DemoDashboard } from "@/components/landing/demos/DemoDashboard";
+import { DemoExpenses } from "@/components/landing/demos/DemoExpenses";
+import { DemoAIAssistant } from "@/components/landing/demos/DemoAIAssistant";
+import { DemoSurvey } from "@/components/landing/demos/DemoSurvey";
+import { DemoAgencies } from "@/components/landing/demos/DemoAgencies";
+
+// Demo components mapping
+const demoComponents: Record<string, React.ComponentType> = {
+  dashboard: DemoDashboard,
+  expenses: DemoExpenses,
+  ai: DemoAIAssistant,
+  survey: DemoSurvey,
+  agencies: DemoAgencies,
 };
 
 const Landing = () => {
@@ -416,8 +423,8 @@ const Landing = () => {
                       </div>
                     </div>
                     
-                    {/* Screenshot content */}
-                    <div className="relative h-[calc(100%-48px)] p-4">
+                    {/* Live Demo content */}
+                    <div className="relative h-[calc(100%-48px)]">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={activeDemo}
@@ -425,15 +432,12 @@ const Landing = () => {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -50 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="absolute inset-4"
+                          className="absolute inset-0"
                         >
-                          <div className="w-full h-full rounded-lg bg-gradient-to-br from-primary/10 via-accent/10 to-neon-pink/10 flex items-center justify-center overflow-hidden">
-                            <img
-                              src={demoImages[demoFeatures[activeDemo].id]}
-                              alt={t(`landing.demo.features.${demoFeatures[activeDemo].id}.title`, "")}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          </div>
+                          {(() => {
+                            const DemoComponent = demoComponents[demoFeatures[activeDemo].id];
+                            return DemoComponent ? <DemoComponent /> : null;
+                          })()}
                         </motion.div>
                       </AnimatePresence>
                     </div>
