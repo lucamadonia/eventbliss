@@ -15,6 +15,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Pencil,
+  Trash2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,11 +25,23 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { Participant, DashboardPermissions } from "@/hooks/useEvent";
 
 interface TeamInviteManagerProps {
@@ -52,6 +67,8 @@ export function TeamInviteManager({
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
 
   const getInviteLink = (inviteToken: string) => {
     return `${window.location.origin}/e/${eventSlug}/claim/${inviteToken}`;
@@ -136,6 +153,65 @@ export function TeamInviteManager({
     }
   };
 
+  const handleRenameParticipant = async (participantId: string) => {
+    if (!editName.trim()) {
+      toast.error("Name darf nicht leer sein");
+      return;
+    }
+
+    setLoadingStates((prev) => ({ ...prev, [`rename-${participantId}`]: true }));
+
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .update({ name: editName.trim() })
+        .eq("id", participantId);
+
+      if (error) throw error;
+
+      toast.success("Teilnehmer umbenannt");
+      setEditingId(null);
+      setEditName("");
+      onUpdate();
+    } catch (error) {
+      console.error("Error renaming participant:", error);
+      toast.error("Fehler beim Umbenennen");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [`rename-${participantId}`]: false }));
+    }
+  };
+
+  const handleDeleteParticipant = async (participant: Participant) => {
+    setLoadingStates((prev) => ({ ...prev, [`delete-${participant.id}`]: true }));
+
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .delete()
+        .eq("id", participant.id);
+
+      if (error) throw error;
+
+      toast.success(`${participant.name} wurde entfernt`);
+      onUpdate();
+    } catch (error) {
+      console.error("Error deleting participant:", error);
+      toast.error("Fehler beim Entfernen");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [`delete-${participant.id}`]: false }));
+    }
+  };
+
+  const startEditing = (participant: Participant) => {
+    setEditingId(participant.id);
+    setEditName(participant.name);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditName("");
+  };
+
   const getStatusBadge = (participant: Participant) => {
     if (participant.invite_claimed_at) {
       return (
@@ -194,6 +270,9 @@ export function TeamInviteManager({
           const permissions = participant.dashboard_permissions || defaultPermissions;
           const hasAccess = participant.can_access_dashboard;
           const isLoading = loadingStates[participant.id];
+          const isEditing = editingId === participant.id;
+          const isRenameLoading = loadingStates[`rename-${participant.id}`];
+          const isDeleteLoading = loadingStates[`delete-${participant.id}`];
 
           return (
             <Collapsible
@@ -206,24 +285,106 @@ export function TeamInviteManager({
               <div className="rounded-lg border border-border/50 bg-background/30 overflow-hidden">
                 {/* Main row */}
                 <div className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold flex-shrink-0">
                       {participant.name.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{participant.name}</span>
-                        {participant.role === "organizer" && (
-                          <ShieldCheck className="w-4 h-4 text-primary" />
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {getStatusBadge(participant)}
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="h-8 text-sm"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleRenameParticipant(participant.id);
+                              if (e.key === "Escape") cancelEditing();
+                            }}
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleRenameParticipant(participant.id)}
+                            disabled={isRenameLoading}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Check className="w-4 h-4 text-success" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={cancelEditing}
+                            className="h-8 w-8 p-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium truncate">{participant.name}</span>
+                            {participant.role === "organizer" && (
+                              <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {getStatusBadge(participant)}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {/* Edit Button */}
+                    {!isEditing && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditing(participant)}
+                        className="h-8 w-8 p-0"
+                        title="Umbenennen"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    )}
+
+                    {/* Delete Button - only for non-organizers */}
+                    {participant.role !== "organizer" && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            title="Entfernen"
+                            disabled={isDeleteLoading}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Teilnehmer entfernen?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Möchtest du <strong>{participant.name}</strong> wirklich aus dem Event entfernen? 
+                              Diese Aktion kann nicht rückgängig gemacht werden.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteParticipant(participant)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Entfernen
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+
                     {/* Dashboard Access Toggle */}
                     <Switch
                       checked={hasAccess}
@@ -249,7 +410,7 @@ export function TeamInviteManager({
                         ) : (
                           <>
                             <Copy className="w-4 h-4" />
-                            Link kopieren
+                            Link
                           </>
                         )}
                       </Button>
@@ -258,7 +419,7 @@ export function TeamInviteManager({
                     {/* Expand button for permissions */}
                     {hasAccess && (
                       <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Settings className="w-4 h-4" />
                         </Button>
                       </CollapsibleTrigger>
