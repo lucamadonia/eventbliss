@@ -98,7 +98,10 @@ export default function PartnerPortal() {
             <p className="text-muted-foreground mb-8">
               {t("affiliate.notAffiliate.loginDesc", "Bitte melde dich an, um auf das Partner-Portal zuzugreifen.")}
             </p>
-            <Button onClick={() => navigate("/auth")} className="btn-glow">
+            <Button
+              onClick={() => navigate(`/auth?redirect=${encodeURIComponent("/partner-portal")}`)}
+              className="btn-glow"
+            >
               {t("auth.login", "Anmelden")}
             </Button>
           </motion.div>
