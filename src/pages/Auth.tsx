@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { LoginForm } from "@/components/auth/LoginForm";
@@ -8,16 +8,26 @@ import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
+const getSafeRedirect = (value: string | null) => {
+  if (!value) return "/";
+  if (!value.startsWith("/")) return "/";
+  if (value.startsWith("//")) return "/";
+  if (value.startsWith("/auth")) return "/";
+  return value;
+};
+
 const Auth = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = getSafeRedirect(searchParams.get("redirect"));
   const [mode, setMode] = useState<"login" | "register">("login");
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, redirectTo]);
 
   if (isLoading) {
     return (
