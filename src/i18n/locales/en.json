@@ -315,14 +315,34 @@
       "title": "Event Details",
       "subtitle": "Tell us about the event and who it's for.",
       "honoreeName": "Who is the guest of honor?",
-      "honoreeNamePlaceholder": "e.g., Dominik",
       "eventName": "Event Name",
-      "eventNamePlaceholder": "e.g., Dominik's Epic Bachelor Party",
       "eventDate": "Event Date (optional)",
       "organizerName": "Your Name (Organizer)",
       "organizerNamePlaceholder": "e.g., Luca",
       "organizerEmail": "Your Email (optional)",
-      "organizerEmailPlaceholder": "luca@example.com"
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": {
+          "honoreeName": "e.g., Max",
+          "eventName": "e.g., Max's Epic Bachelor Party"
+        },
+        "bachelorette": {
+          "honoreeName": "e.g., Julia",
+          "eventName": "e.g., Julia's Dream Bachelorette"
+        },
+        "birthday": {
+          "honoreeName": "e.g., Lisa",
+          "eventName": "e.g., Lisa's 30th Birthday"
+        },
+        "trip": {
+          "honoreeName": "e.g., The Crew",
+          "eventName": "e.g., Alps Ski Trip 2026"
+        },
+        "other": {
+          "honoreeName": "e.g., Team or Person",
+          "eventName": "e.g., Summer Festival 2026"
+        }
+      }
     },
     "step3": {
       "title": "Add Participants",

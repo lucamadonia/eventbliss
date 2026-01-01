@@ -183,7 +183,24 @@
   "createEvent": {
     "title": "إنشاء فعالية",
     "step1": { "title": "ماذا تخطط؟", "subtitle": "اختر نوع الفعالية التي تريد تنظيمها." },
-    "step2": { "title": "تفاصيل الفعالية", "subtitle": "أخبرنا عن الفعالية ولمن هي.", "honoreeName": "من هو ضيف الشرف؟", "honoreeNamePlaceholder": "مثال: دومينيك", "eventName": "اسم الفعالية", "eventNamePlaceholder": "مثال: حفلة دومينيك الأسطورية", "eventDate": "تاريخ الفعالية (اختياري)", "organizerName": "اسمك (المنظم)", "organizerNamePlaceholder": "مثال: لوكا", "organizerEmail": "بريدك الإلكتروني (اختياري)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "تفاصيل الفعالية", 
+      "subtitle": "أخبرنا عن الفعالية ولمن هي.", 
+      "honoreeName": "من هو ضيف الشرف؟", 
+      "eventName": "اسم الفعالية", 
+      "eventDate": "تاريخ الفعالية (اختياري)", 
+      "organizerName": "اسمك (المنظم)", 
+      "organizerNamePlaceholder": "مثال: لوكا", 
+      "organizerEmail": "بريدك الإلكتروني (اختياري)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "مثال: ماكس", "eventName": "مثال: حفلة توديع العزوبية لماكس" },
+        "bachelorette": { "honoreeName": "مثال: جوليا", "eventName": "مثال: حفلة العروس لجوليا" },
+        "birthday": { "honoreeName": "مثال: ليزا", "eventName": "مثال: عيد ميلاد ليزا الثلاثين" },
+        "trip": { "honoreeName": "مثال: الفريق", "eventName": "مثال: رحلة تزلج 2026" },
+        "other": { "honoreeName": "مثال: فريق أو شخص", "eventName": "مثال: مهرجان صيفي 2026" }
+      }
+    },
     "step3": { "title": "إضافة مشاركين", "subtitle": "أضف الأشخاص الذين تريد دعوتهم.", "namePlaceholder": "أدخل الاسم...", "noParticipants": "لم تتم إضافة مشاركين بعد. يمكنك تخطي هذه الخطوة." },
     "step4": { "title": "مراجعة وإنشاء", "subtitle": "كل شيء جيد؟ لننشئ فعاليتك!", "forHonoree": "لـ {{name}}", "participantCount": "{{count}} مشاركين (بما فيهم أنت)", "organizedBy": "منظم بواسطة {{name}}", "descriptionPlaceholder": "أضف وصفاً (اختياري)" },
     "types": { "bachelor": "حفلة وداع العزوبية", "bachelorette": "حفلة العروس", "birthday": "عيد ميلاد", "trip": "رحلة جماعية", "other": "فعالية أخرى" },

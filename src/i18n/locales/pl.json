@@ -183,7 +183,24 @@
   "createEvent": {
     "title": "Utwórz Wydarzenie",
     "step1": { "title": "Co planujesz?", "subtitle": "Wybierz typ wydarzenia, które chcesz zorganizować." },
-    "step2": { "title": "Szczegóły Wydarzenia", "subtitle": "Opowiedz nam o wydarzeniu i dla kogo jest.", "honoreeName": "Kto jest gościem honorowym?", "honoreeNamePlaceholder": "np. Dominik", "eventName": "Nazwa Wydarzenia", "eventNamePlaceholder": "np. Epicka Impreza Dominika", "eventDate": "Data Wydarzenia (opcjonalnie)", "organizerName": "Twoje Imię (Organizator)", "organizerNamePlaceholder": "np. Luca", "organizerEmail": "Twój Email (opcjonalnie)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "Szczegóły Wydarzenia", 
+      "subtitle": "Opowiedz nam o wydarzeniu i dla kogo jest.", 
+      "honoreeName": "Kto jest gościem honorowym?", 
+      "eventName": "Nazwa Wydarzenia", 
+      "eventDate": "Data Wydarzenia (opcjonalnie)", 
+      "organizerName": "Twoje Imię (Organizator)", 
+      "organizerNamePlaceholder": "np. Luca", 
+      "organizerEmail": "Twój Email (opcjonalnie)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "np. Max", "eventName": "np. Epicki Wieczór Kawalerski Maxa" },
+        "bachelorette": { "honoreeName": "np. Julia", "eventName": "np. Wymarzony Wieczór Panieński Julii" },
+        "birthday": { "honoreeName": "np. Lisa", "eventName": "np. 30. Urodziny Lisy" },
+        "trip": { "honoreeName": "np. Ekipa", "eventName": "np. Wyjazd Narciarski 2026" },
+        "other": { "honoreeName": "np. Zespół lub Osoba", "eventName": "np. Letni Festiwal 2026" }
+      }
+    },
     "step3": { "title": "Dodaj Uczestników", "subtitle": "Dodaj osoby, które chcesz zaprosić.", "namePlaceholder": "Wpisz imię...", "noParticipants": "Brak uczestników. Możesz pominąć ten krok." },
     "step4": { "title": "Przejrzyj i Utwórz", "subtitle": "Wszystko dobrze? Utwórzmy Twoje wydarzenie!", "forHonoree": "dla {{name}}", "participantCount": "{{count}} uczestników (w tym Ty)", "organizedBy": "Organizowane przez {{name}}", "descriptionPlaceholder": "Dodaj opis (opcjonalnie)" },
     "types": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "birthday": "Urodziny", "trip": "Wycieczka Grupowa", "other": "Inne Wydarzenie" },

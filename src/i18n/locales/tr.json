@@ -183,7 +183,24 @@
   "createEvent": {
     "title": "Etkinlik Oluştur",
     "step1": { "title": "Ne planlıyorsunuz?", "subtitle": "Düzenlemek istediğiniz etkinlik türünü seçin." },
-    "step2": { "title": "Etkinlik Detayları", "subtitle": "Etkinlik ve kimin için olduğu hakkında bilgi verin.", "honoreeName": "Onur konuğu kim?", "honoreeNamePlaceholder": "örn. Dominik", "eventName": "Etkinlik Adı", "eventNamePlaceholder": "örn. Dominik'in Epik Partisi", "eventDate": "Etkinlik Tarihi (isteğe bağlı)", "organizerName": "Adınız (Organizatör)", "organizerNamePlaceholder": "örn. Luca", "organizerEmail": "E-postanız (isteğe bağlı)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "Etkinlik Detayları", 
+      "subtitle": "Etkinlik ve kimin için olduğu hakkında bilgi verin.", 
+      "honoreeName": "Onur konuğu kim?", 
+      "eventName": "Etkinlik Adı", 
+      "eventDate": "Etkinlik Tarihi (isteğe bağlı)", 
+      "organizerName": "Adınız (Organizatör)", 
+      "organizerNamePlaceholder": "örn. Luca", 
+      "organizerEmail": "E-postanız (isteğe bağlı)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "örn. Max", "eventName": "örn. Max'in Efsanevi Bekarlığa Veda" },
+        "bachelorette": { "honoreeName": "örn. Julia", "eventName": "örn. Julia'nın Rüya Kına Gecesi" },
+        "birthday": { "honoreeName": "örn. Lisa", "eventName": "örn. Lisa'nın 30. Yaş Günü" },
+        "trip": { "honoreeName": "örn. Ekip", "eventName": "örn. Kayak Turu 2026" },
+        "other": { "honoreeName": "örn. Takım veya Kişi", "eventName": "örn. Yaz Festivali 2026" }
+      }
+    },
     "step3": { "title": "Katılımcı Ekle", "subtitle": "Davet etmek istediğiniz kişileri ekleyin.", "namePlaceholder": "İsim girin...", "noParticipants": "Henüz katılımcı eklenmedi. Bu adımı atlayabilirsiniz." },
     "step4": { "title": "İncele ve Oluştur", "subtitle": "Her şey tamam mı? Etkinliğinizi oluşturalım!", "forHonoree": "{{name}} için", "participantCount": "{{count}} katılımcı (siz dahil)", "organizedBy": "{{name}} tarafından organize ediliyor", "descriptionPlaceholder": "Bir açıklama ekleyin (isteğe bağlı)" },
     "types": { "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü", "trip": "Grup Gezisi", "other": "Diğer Etkinlik" },

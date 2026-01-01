@@ -196,14 +196,34 @@
       "title": "Détails de l'Événement",
       "subtitle": "Parlez-nous de l'événement et pour qui il est.",
       "honoreeName": "Qui est l'invité d'honneur ?",
-      "honoreeNamePlaceholder": "ex. Dominik",
       "eventName": "Nom de l'Événement",
-      "eventNamePlaceholder": "ex. EVG Épique de Dominik",
       "eventDate": "Date de l'Événement (optionnel)",
       "organizerName": "Votre Nom (Organisateur)",
       "organizerNamePlaceholder": "ex. Luca",
       "organizerEmail": "Votre Email (optionnel)",
-      "organizerEmailPlaceholder": "luca@example.com"
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": {
+          "honoreeName": "ex. Max",
+          "eventName": "ex. EVJG Légendaire de Max"
+        },
+        "bachelorette": {
+          "honoreeName": "ex. Julia",
+          "eventName": "ex. EVJF de Rêve de Julia"
+        },
+        "birthday": {
+          "honoreeName": "ex. Lisa",
+          "eventName": "ex. 30ème Anniversaire de Lisa"
+        },
+        "trip": {
+          "honoreeName": "ex. L'Équipe",
+          "eventName": "ex. Voyage Ski Alpes 2026"
+        },
+        "other": {
+          "honoreeName": "ex. Équipe ou Personne",
+          "eventName": "ex. Fête d'Été 2026"
+        }
+      }
     },
     "step3": {
       "title": "Ajouter des Participants",
