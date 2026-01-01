@@ -60,6 +60,7 @@
       "costSplitting": { "title": "Smart Cost Splitting", "description": "Track expenses and split them fairly among all participants" },
       "aiSuggestions": { "title": "AI-Powered Suggestions", "description": "Get personalized activity and destination recommendations" },
       "messageTemplates": { "title": "Message Templates", "description": "Pre-written WhatsApp messages for every occasion" },
+      "planner": { "title": "Activity Planner", "description": "Plan and organize all activities with calendar view, time slots and automatic iCal/PDF export" },
       "dateCoordination": { "title": "Date Coordination", "description": "Find the perfect date that works for everyone" },
       "realtime": { "title": "Real-time Collaboration", "description": "Work together with your team in real-time" },
       "agencyDirectory": { "title": "Agency Directory", "description": "Find professional bachelor party agencies near you with interactive map" },

@@ -60,6 +60,7 @@
       "costSplitting": { "title": "Smarte Kostenaufteilung", "description": "Erfasse Ausgaben und teile sie fair unter allen Teilnehmern auf" },
       "aiSuggestions": { "title": "KI-gestützte Vorschläge", "description": "Erhalte personalisierte Aktivitäts- und Reiseziel-Empfehlungen" },
       "messageTemplates": { "title": "Nachrichten-Vorlagen", "description": "Vorgefertigte WhatsApp-Nachrichten für jeden Anlass" },
+      "planner": { "title": "Aktivitäten-Planner", "description": "Plane und organisiere alle Aktivitäten mit Kalender-Ansicht, Zeitfenstern und automatischem iCal/PDF Export" },
       "dateCoordination": { "title": "Terminkoordination", "description": "Finde das perfekte Datum, das für alle passt" },
       "realtime": { "title": "Echtzeit-Zusammenarbeit", "description": "Arbeite in Echtzeit mit deinem Team zusammen" },
       "agencyDirectory": { "title": "Agentur-Verzeichnis", "description": "Finde professionelle JGA-Agenturen in deiner Nähe mit interaktiver Karte" },

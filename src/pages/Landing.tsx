@@ -103,6 +103,12 @@ const Landing = () => {
     },
     {
       icon: Calendar,
+      title: t("landing.features.planner.title"),
+      description: t("landing.features.planner.description"),
+      gradient: "from-neon-pink to-primary"
+    },
+    {
+      icon: Calendar,
       title: t("landing.features.dateCoordination.title"),
       description: t("landing.features.dateCoordination.description"),
       gradient: "from-success to-accent"
