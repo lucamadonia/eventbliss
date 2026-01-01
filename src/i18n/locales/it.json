@@ -189,7 +189,24 @@
   "createEvent": {
     "title": "Crea Evento",
     "step1": { "title": "Cosa stai organizzando?", "subtitle": "Scegli il tipo di evento che vuoi organizzare." },
-    "step2": { "title": "Dettagli Evento", "subtitle": "Parlaci dell'evento e per chi è.", "honoreeName": "Chi è l'ospite d'onore?", "honoreeNamePlaceholder": "es. Dominik", "eventName": "Nome Evento", "eventNamePlaceholder": "es. Addio al Celibato Epico di Dominik", "eventDate": "Data Evento (opzionale)", "organizerName": "Il Tuo Nome (Organizzatore)", "organizerNamePlaceholder": "es. Luca", "organizerEmail": "La Tua Email (opzionale)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "Dettagli Evento", 
+      "subtitle": "Parlaci dell'evento e per chi è.", 
+      "honoreeName": "Chi è l'ospite d'onore?", 
+      "eventName": "Nome Evento", 
+      "eventDate": "Data Evento (opzionale)", 
+      "organizerName": "Il Tuo Nome (Organizzatore)", 
+      "organizerNamePlaceholder": "es. Luca", 
+      "organizerEmail": "La Tua Email (opzionale)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "es. Max", "eventName": "es. Addio al Celibato Epico di Max" },
+        "bachelorette": { "honoreeName": "es. Julia", "eventName": "es. Addio al Nubilato di Julia" },
+        "birthday": { "honoreeName": "es. Lisa", "eventName": "es. 30° Compleanno di Lisa" },
+        "trip": { "honoreeName": "es. Il Gruppo", "eventName": "es. Settimana Bianca 2026" },
+        "other": { "honoreeName": "es. Team o Persona", "eventName": "es. Festa Estate 2026" }
+      }
+    },
     "step3": { "title": "Aggiungi Partecipanti", "subtitle": "Aggiungi le persone che vuoi invitare.", "namePlaceholder": "Inserisci nome...", "noParticipants": "Nessun partecipante aggiunto. Puoi saltare questo passaggio." },
     "step4": { "title": "Rivedi e Crea", "subtitle": "Tutto bene? Creiamo il tuo evento!", "forHonoree": "per {{name}}", "participantCount": "{{count}} partecipanti (te incluso)", "organizedBy": "Organizzato da {{name}}", "descriptionPlaceholder": "Aggiungi una descrizione (opzionale)" },
     "types": { "bachelor": "Addio al Celibato", "bachelorette": "Addio al Nubilato", "birthday": "Compleanno", "trip": "Viaggio di Gruppo", "other": "Altro Evento" },

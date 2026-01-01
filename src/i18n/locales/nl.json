@@ -189,7 +189,24 @@
   "createEvent": {
     "title": "Evenement Maken",
     "step1": { "title": "Wat plan je?", "subtitle": "Kies het type evenement dat je wilt organiseren." },
-    "step2": { "title": "Evenement Details", "subtitle": "Vertel ons over het evenement en voor wie het is.", "honoreeName": "Wie is de eregast?", "honoreeNamePlaceholder": "bijv. Dominik", "eventName": "Evenement Naam", "eventNamePlaceholder": "bijv. Dominiks Epische Vrijgezellenfeest", "eventDate": "Evenement Datum (optioneel)", "organizerName": "Jouw Naam (Organisator)", "organizerNamePlaceholder": "bijv. Luca", "organizerEmail": "Jouw Email (optioneel)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "Evenement Details", 
+      "subtitle": "Vertel ons over het evenement en voor wie het is.", 
+      "honoreeName": "Wie is de eregast?", 
+      "eventName": "Evenement Naam", 
+      "eventDate": "Evenement Datum (optioneel)", 
+      "organizerName": "Jouw Naam (Organisator)", 
+      "organizerNamePlaceholder": "bijv. Luca", 
+      "organizerEmail": "Jouw Email (optioneel)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "bijv. Max", "eventName": "bijv. Max' Epische Vrijgezellenfeest" },
+        "bachelorette": { "honoreeName": "bijv. Julia", "eventName": "bijv. Julia's Droom Vrijgezellenfeest" },
+        "birthday": { "honoreeName": "bijv. Lisa", "eventName": "bijv. Lisa's 30e Verjaardag" },
+        "trip": { "honoreeName": "bijv. De Crew", "eventName": "bijv. Ski Trip Alpen 2026" },
+        "other": { "honoreeName": "bijv. Team of Persoon", "eventName": "bijv. Zomerfestival 2026" }
+      }
+    },
     "step3": { "title": "Deelnemers Toevoegen", "subtitle": "Voeg de mensen toe die je wilt uitnodigen.", "namePlaceholder": "Voer naam in...", "noParticipants": "Nog geen deelnemers toegevoegd. Je kunt deze stap overslaan." },
     "step4": { "title": "Controleren & Maken", "subtitle": "Alles goed? Laten we je evenement maken!", "forHonoree": "voor {{name}}", "participantCount": "{{count}} deelnemers (inclusief jou)", "organizedBy": "Georganiseerd door {{name}}", "descriptionPlaceholder": "Voeg een beschrijving toe (optioneel)" },
     "types": { "bachelor": "Vrijgezellenfeest", "bachelorette": "Vrijgezellenfeest (dames)", "birthday": "Verjaardag", "trip": "Groepsreis", "other": "Ander Evenement" },

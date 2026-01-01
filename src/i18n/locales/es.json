@@ -196,14 +196,34 @@
       "title": "Detalles del Evento",
       "subtitle": "Cuéntanos sobre el evento y para quién es.",
       "honoreeName": "¿Quién es el invitado de honor?",
-      "honoreeNamePlaceholder": "ej. Dominik",
       "eventName": "Nombre del Evento",
-      "eventNamePlaceholder": "ej. Despedida Épica de Dominik",
       "eventDate": "Fecha del Evento (opcional)",
       "organizerName": "Tu Nombre (Organizador)",
       "organizerNamePlaceholder": "ej. Luca",
       "organizerEmail": "Tu Email (opcional)",
-      "organizerEmailPlaceholder": "luca@example.com"
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": {
+          "honoreeName": "ej. Max",
+          "eventName": "ej. Despedida Épica de Max"
+        },
+        "bachelorette": {
+          "honoreeName": "ej. Julia",
+          "eventName": "ej. Despedida de Julia"
+        },
+        "birthday": {
+          "honoreeName": "ej. Lisa",
+          "eventName": "ej. 30 Cumpleaños de Lisa"
+        },
+        "trip": {
+          "honoreeName": "ej. El Grupo",
+          "eventName": "ej. Viaje de Esquí 2026"
+        },
+        "other": {
+          "honoreeName": "ej. Equipo o Persona",
+          "eventName": "ej. Festival de Verano 2026"
+        }
+      }
     },
     "step3": {
       "title": "Añadir Participantes",

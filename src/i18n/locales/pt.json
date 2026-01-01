@@ -183,7 +183,24 @@
   "createEvent": {
     "title": "Criar Evento",
     "step1": { "title": "O que estás a planear?", "subtitle": "Escolhe o tipo de evento que queres organizar." },
-    "step2": { "title": "Detalhes do Evento", "subtitle": "Conta-nos sobre o evento e para quem é.", "honoreeName": "Quem é o convidado de honra?", "honoreeNamePlaceholder": "ex. Dominik", "eventName": "Nome do Evento", "eventNamePlaceholder": "ex. Despedida Épica do Dominik", "eventDate": "Data do Evento (opcional)", "organizerName": "O Teu Nome (Organizador)", "organizerNamePlaceholder": "ex. Luca", "organizerEmail": "O Teu Email (opcional)", "organizerEmailPlaceholder": "luca@example.com" },
+    "step2": { 
+      "title": "Detalhes do Evento", 
+      "subtitle": "Conta-nos sobre o evento e para quem é.", 
+      "honoreeName": "Quem é o convidado de honra?", 
+      "eventName": "Nome do Evento", 
+      "eventDate": "Data do Evento (opcional)", 
+      "organizerName": "O Teu Nome (Organizador)", 
+      "organizerNamePlaceholder": "ex. Luca", 
+      "organizerEmail": "O Teu Email (opcional)", 
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": { "honoreeName": "ex. Max", "eventName": "ex. Despedida Épica do Max" },
+        "bachelorette": { "honoreeName": "ex. Julia", "eventName": "ex. Despedida de Sonho da Julia" },
+        "birthday": { "honoreeName": "ex. Lisa", "eventName": "ex. 30º Aniversário da Lisa" },
+        "trip": { "honoreeName": "ex. A Turma", "eventName": "ex. Viagem de Ski 2026" },
+        "other": { "honoreeName": "ex. Equipa ou Pessoa", "eventName": "ex. Festival de Verão 2026" }
+      }
+    },
     "step3": { "title": "Adicionar Participantes", "subtitle": "Adiciona as pessoas que queres convidar.", "namePlaceholder": "Inserir nome...", "noParticipants": "Nenhum participante adicionado. Podes saltar este passo." },
     "step4": { "title": "Rever e Criar", "subtitle": "Tudo bem? Vamos criar o teu evento!", "forHonoree": "para {{name}}", "participantCount": "{{count}} participantes (incluindo-te)", "organizedBy": "Organizado por {{name}}", "descriptionPlaceholder": "Adiciona uma descrição (opcional)" },
     "types": { "bachelor": "Despedida de Solteiro", "bachelorette": "Despedida de Solteira", "birthday": "Aniversário", "trip": "Viagem de Grupo", "other": "Outro Evento" },

@@ -315,14 +315,34 @@
       "title": "Event-Details",
       "subtitle": "Erzähl uns vom Event und für wen es ist.",
       "honoreeName": "Wer ist der Ehrengast?",
-      "honoreeNamePlaceholder": "z.B. Dominik",
       "eventName": "Event-Name",
-      "eventNamePlaceholder": "z.B. Dominiks Legendärer JGA",
       "eventDate": "Event-Datum (optional)",
       "organizerName": "Dein Name (Organisator)",
       "organizerNamePlaceholder": "z.B. Luca",
       "organizerEmail": "Deine E-Mail (optional)",
-      "organizerEmailPlaceholder": "luca@example.com"
+      "organizerEmailPlaceholder": "luca@example.com",
+      "placeholders": {
+        "bachelor": {
+          "honoreeName": "z.B. Max",
+          "eventName": "z.B. Max' Legendärer JGA"
+        },
+        "bachelorette": {
+          "honoreeName": "z.B. Julia",
+          "eventName": "z.B. Julias Traumhafter JGA"
+        },
+        "birthday": {
+          "honoreeName": "z.B. Lisa",
+          "eventName": "z.B. Lisas 30. Geburtstag"
+        },
+        "trip": {
+          "honoreeName": "z.B. Die Crew",
+          "eventName": "z.B. Ski-Trip Alpen 2026"
+        },
+        "other": {
+          "honoreeName": "z.B. Team oder Person",
+          "eventName": "z.B. Sommerfest 2026"
+        }
+      }
     },
     "step3": {
       "title": "Teilnehmer hinzufügen",

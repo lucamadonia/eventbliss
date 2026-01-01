@@ -297,7 +297,7 @@ const CreateEvent = () => {
                 <Label htmlFor="honoree_name">{t('createEvent.step2.honoreeName')}</Label>
                 <Input
                   id="honoree_name"
-                  placeholder={t('createEvent.step2.honoreeNamePlaceholder')}
+                  placeholder={t(`createEvent.step2.placeholders.${formData.event_type || 'other'}.honoreeName`)}
                   value={formData.honoree_name}
                   onChange={(e) => updateFormData("honoree_name", e.target.value)}
                   className="bg-background/50 border-border/50"
@@ -308,7 +308,7 @@ const CreateEvent = () => {
                 <Label htmlFor="name">{t('createEvent.step2.eventName')}</Label>
                 <Input
                   id="name"
-                  placeholder={t('createEvent.step2.eventNamePlaceholder')}
+                  placeholder={t(`createEvent.step2.placeholders.${formData.event_type || 'other'}.eventName`)}
                   value={formData.name}
                   onChange={(e) => updateFormData("name", e.target.value)}
                   className="bg-background/50 border-border/50"
