@@ -47,16 +47,20 @@ export interface AffiliateStats {
 }
 
 export function useAffiliateStats() {
-  const { user } = useAuthContext();
+  const { user, session } = useAuthContext();
 
   return useQuery({
     queryKey: ["affiliate-stats", user?.id],
     queryFn: async (): Promise<AffiliateStats> => {
-      const { data, error } = await supabase.functions.invoke("get-affiliate-stats");
+      const { data, error } = await supabase.functions.invoke("get-affiliate-stats", {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
       if (error) throw error;
       return data;
     },
-    enabled: !!user,
+    enabled: !!user && !!session,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
