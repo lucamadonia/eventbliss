@@ -13,6 +13,9 @@ import {
   TrendingUp,
   Users,
   Zap,
+  BarChart3,
+  Megaphone,
+  Link,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -25,6 +28,10 @@ import { AffiliateVouchersTab } from "@/components/affiliate/AffiliateVouchersTa
 import { AffiliateCommissionsTab } from "@/components/affiliate/AffiliateCommissionsTab";
 import { AffiliatePayoutsTab } from "@/components/affiliate/AffiliatePayoutsTab";
 import { AffiliateSettingsTab } from "@/components/affiliate/AffiliateSettingsTab";
+import { AffiliateAnalyticsTab } from "@/components/affiliate/AffiliateAnalyticsTab";
+import { AffiliateMarketingTab } from "@/components/affiliate/AffiliateMarketingTab";
+import { AffiliateLinkGenerator } from "@/components/affiliate/AffiliateLinkGenerator";
+import { AffiliateNotifications } from "@/components/affiliate/AffiliateNotifications";
 
 export default function PartnerPortal() {
   const { t } = useTranslation();
@@ -188,7 +195,10 @@ export default function PartnerPortal() {
                 </motion.div>
               </div>
 
-              <Button className="btn-glow gap-2 text-lg px-8 py-6">
+              <Button 
+                className="btn-glow gap-2 text-lg px-8 py-6"
+                onClick={() => navigate("/partner-apply")}
+              >
                 <Zap className="w-5 h-5" />
                 {t("affiliate.notAffiliate.cta", "Jetzt bewerben")}
               </Button>
@@ -227,11 +237,14 @@ export default function PartnerPortal() {
             </div>
           </div>
           
-          <Badge 
-            className={`text-sm font-bold px-4 py-2 bg-gradient-to-r ${tierColors[stats?.affiliate?.tier || "bronze"]} text-white border-0`}
-          >
-            {String(t(`affiliate.tiers.${stats?.affiliate?.tier || "bronze"}`, (stats?.affiliate?.tier || "bronze").toUpperCase()))}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <AffiliateNotifications affiliateId={stats?.affiliate?.id} />
+            <Badge 
+              className={`text-sm font-bold px-4 py-2 bg-gradient-to-r ${tierColors[stats?.affiliate?.tier || "bronze"]} text-white border-0`}
+            >
+              {String(t(`affiliate.tiers.${stats?.affiliate?.tier || "bronze"}`, (stats?.affiliate?.tier || "bronze").toUpperCase()))}
+            </Badge>
+          </div>
         </motion.div>
 
         {/* Tabs */}
@@ -241,7 +254,7 @@ export default function PartnerPortal() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <TabsList className="glass-card p-1 w-full md:w-auto grid grid-cols-5 md:inline-flex h-auto">
+            <TabsList className="glass-card p-1 w-full md:w-auto grid grid-cols-4 md:grid-cols-8 md:inline-flex h-auto">
               <TabsTrigger 
                 value="dashboard" 
                 className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -252,12 +265,39 @@ export default function PartnerPortal() {
                 </span>
               </TabsTrigger>
               <TabsTrigger 
+                value="analytics"
+                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden md:inline">
+                  {t("affiliate.portal.tabs.analytics", "Analytics")}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
                 value="vouchers"
                 className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 <Ticket className="w-4 h-4" />
                 <span className="hidden md:inline">
                   {t("affiliate.portal.tabs.vouchers", "Gutscheine")}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="links"
+                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Link className="w-4 h-4" />
+                <span className="hidden md:inline">
+                  {t("affiliate.portal.tabs.links", "Links")}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="marketing"
+                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Megaphone className="w-4 h-4" />
+                <span className="hidden md:inline">
+                  {t("affiliate.portal.tabs.marketing", "Marketing")}
                 </span>
               </TabsTrigger>
               <TabsTrigger 
@@ -297,8 +337,20 @@ export default function PartnerPortal() {
             />
           </TabsContent>
 
+          <TabsContent value="analytics" className="mt-6">
+            <AffiliateAnalyticsTab />
+          </TabsContent>
+
           <TabsContent value="vouchers" className="mt-6">
             <AffiliateVouchersTab />
+          </TabsContent>
+
+          <TabsContent value="links" className="mt-6">
+            <AffiliateLinkGenerator />
+          </TabsContent>
+
+          <TabsContent value="marketing" className="mt-6">
+            <AffiliateMarketingTab />
           </TabsContent>
 
           <TabsContent value="commissions" className="mt-6">
