@@ -25,14 +25,25 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    const unauthorized = (message: string) => {
+      logStep("UNAUTHORIZED", { message });
+      return new Response(JSON.stringify({ error: message }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    };
 
-    const token = authHeader.replace("Bearer ", "");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return unauthorized("Missing Authorization header");
+
+    const token = authHeader.replace("Bearer ", "").trim();
+    if (!token) return unauthorized("Missing bearer token");
+
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
+    if (userError) return unauthorized(`Authentication error: ${userError.message}`);
+
     const user = userData.user;
-    if (!user) throw new Error("User not authenticated");
+    if (!user) return unauthorized("User not authenticated");
 
     logStep("User authenticated", { userId: user.id });
 
@@ -62,9 +73,9 @@ serve(async (req) => {
     if (commError) throw new Error(`Error fetching commissions: ${commError.message}`);
 
     // Calculate stats
-    const pendingCommissions = commissions?.filter(c => c.status === 'pending') || [];
-    const approvedCommissions = commissions?.filter(c => c.status === 'approved') || [];
-    const paidCommissions = commissions?.filter(c => c.status === 'paid') || [];
+    const pendingCommissions = commissions?.filter((c) => c.status === "pending") || [];
+    const approvedCommissions = commissions?.filter((c) => c.status === "approved") || [];
+    const paidCommissions = commissions?.filter((c) => c.status === "paid") || [];
 
     const totalPending = pendingCommissions.reduce((sum, c) => sum + parseFloat(c.commission_amount), 0);
     const totalApproved = approvedCommissions.reduce((sum, c) => sum + parseFloat(c.commission_amount), 0);
@@ -73,18 +84,21 @@ serve(async (req) => {
     // Get voucher stats
     const { data: affiliateVouchers, error: avError } = await supabaseClient
       .from("affiliate_vouchers")
-      .select(`
+      .select(
+        `
         id,
         voucher:vouchers(id, code, used_count)
-      `)
+      `
+      )
       .eq("affiliate_id", affiliate.id);
 
     if (avError) throw new Error(`Error fetching vouchers: ${avError.message}`);
 
-    const totalRedemptions = affiliateVouchers?.reduce((sum, av) => {
-      const voucher = av.voucher as any;
-      return sum + (voucher?.used_count || 0);
-    }, 0) || 0;
+    const totalRedemptions =
+      affiliateVouchers?.reduce((sum, av) => {
+        const voucher = av.voucher as any;
+        return sum + (voucher?.used_count || 0);
+      }, 0) || 0;
 
     // Get payout stats
     const { data: payouts, error: payError } = await supabaseClient
@@ -103,16 +117,17 @@ serve(async (req) => {
     for (let i = 11; i >= 0; i--) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-      
-      const monthCommissions = commissions?.filter(c => {
-        const date = new Date(c.created_at);
-        return date >= monthStart && date <= monthEnd;
-      }) || [];
+
+      const monthCommissions =
+        commissions?.filter((c) => {
+          const date = new Date(c.created_at);
+          return date >= monthStart && date <= monthEnd;
+        }) || [];
 
       monthlyStats.push({
         month: monthStart.toISOString().slice(0, 7),
         earnings: monthCommissions.reduce((sum, c) => sum + parseFloat(c.commission_amount), 0),
-        conversions: monthCommissions.length
+        conversions: monthCommissions.length,
       });
     }
 
@@ -138,21 +153,23 @@ serve(async (req) => {
         totalPending,
         totalApproved,
         totalPaid,
-        totalEarnings: totalPending + totalApproved + totalPaid
+        totalEarnings: totalPending + totalApproved + totalPaid,
       },
       vouchers: {
         count: affiliateVouchers?.length || 0,
-        totalRedemptions
+        totalRedemptions,
       },
       payouts: {
         count: payouts?.length || 0,
-        last: lastPayout ? {
-          amount: parseFloat(lastPayout.amount),
-          status: lastPayout.status,
-          date: lastPayout.processed_at || lastPayout.created_at
-        } : null
+        last: lastPayout
+          ? {
+              amount: parseFloat(lastPayout.amount),
+              status: lastPayout.status,
+              date: lastPayout.processed_at || lastPayout.created_at,
+            }
+          : null,
       },
-      monthlyStats
+      monthlyStats,
     };
 
     logStep("Stats calculated", { affiliateId: affiliate.id });
