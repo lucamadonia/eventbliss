@@ -20,6 +20,7 @@ import featureExpenseTracking from "@/assets/feature-expense-tracking.png";
 import featureVoting from "@/assets/feature-voting.png";
 import multiDeviceMockup from "@/assets/multi-device-mockup.png";
 import socialProof from "@/assets/social-proof.png";
+import agenciesHero from "@/assets/agencies-hero.webp";
 
 // Live Demo Components
 import { DemoDashboard } from "@/components/landing/demos/DemoDashboard";
@@ -568,9 +569,13 @@ const Landing = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
+            <GlassCard className="p-4 h-full glass-card-hover group overflow-hidden">
                 <div className="aspect-square rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-neon-cyan/20 to-accent/20 flex items-center justify-center">
-                  <Building2 className="w-16 h-16 text-primary" />
+                  <img
+                    src={agenciesHero}
+                    alt="Agency Directory Feature"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
                 <h3 className="font-display text-lg font-semibold text-center">
                   {t("landing.features.agencyDirectory.title")}
