@@ -10,6 +10,7 @@ const corsHeaders = {
 // Price IDs for different plans
 const PRICE_IDS = {
   monthly: "price_1Sjgb5G3F2f0Er10ZWjNEIjC", // 6.99€/month
+  yearly: "price_1Sl3apG3F2f0Er104W7XLYvH", // 59.99€/year
   lifetime: "price_1SjgbNG3F2f0Er10zF9Midns", // 19.99€ one-time
 };
 
@@ -84,6 +85,8 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://lovable.dev";
     const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS] || PRICE_IDS.monthly;
     const mode = planType === "lifetime" ? "payment" : "subscription";
+    
+    logStep("Selected price", { priceId, mode, planType });
 
     logStep("Creating checkout session", { priceId, mode, planType });
     
