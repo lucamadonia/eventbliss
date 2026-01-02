@@ -11,7 +11,7 @@ import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
 import type { EventData } from "@/hooks/useEvent";
-import type { ParsedActivity } from "@/lib/ai-response-parser";
+import type { ParsedActivity, ParsedTimeBlock, ParsedDay } from "@/lib/ai-response-parser";
 
 interface AIAssistantTabProps {
   event: EventData;
@@ -172,6 +172,32 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     setShowPlannerDialog(true);
   };
 
+  const handleAddTimeBlock = (timeBlock: ParsedTimeBlock, dayName: string) => {
+    // Convert time block to activity format for the dialog
+    const activity: ParsedActivity = {
+      emoji: timeBlock.emoji,
+      title: timeBlock.title,
+      category: timeBlock.category,
+      duration: timeBlock.duration,
+      cost: timeBlock.cost,
+      fitness: 'normal',
+      description: [
+        timeBlock.description,
+        timeBlock.location && `📍 ${timeBlock.location}`,
+        timeBlock.transport && `🚗 ${timeBlock.transport}`,
+        ...timeBlock.tips.map(t => `💡 ${t}`),
+      ].filter(Boolean).join('\n'),
+      rawSection: timeBlock.rawSection,
+    };
+    setSelectedActivity(activity);
+    setShowPlannerDialog(true);
+  };
+
+  const handleAddDay = (day: ParsedDay) => {
+    day.timeBlocks.forEach(block => handleAddTimeBlock(block, day.dayName));
+    toast.success(t('dashboard.ai.dayAdded', 'Tag zum Planer hinzugefügt'));
+  };
+
   // Get context for response card
   const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
   const budgetEntries = Object.entries(stats?.budgets || {});
@@ -278,6 +304,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             participantCount={participantCount || undefined}
             budget={topBudget}
             onAddToPlanner={handleAddToPlanner}
+            onAddTimeBlock={handleAddTimeBlock}
+            onAddDay={handleAddDay}
           />
         </div>
       )}

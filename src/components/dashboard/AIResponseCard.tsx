@@ -18,7 +18,16 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { parseAIResponse, type ParsedActivity, type ParsedAIResponse } from "@/lib/ai-response-parser";
+import { 
+  parseAIResponse, 
+  parseDayPlan,
+  detectResponseType,
+  type ParsedActivity, 
+  type ParsedAIResponse,
+  type ParsedTimeBlock,
+  type ParsedDay,
+} from "@/lib/ai-response-parser";
+import { DayPlanCard } from "./DayPlanCard";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -28,6 +37,8 @@ interface AIResponseCardProps {
   participantCount?: number;
   budget?: string;
   onAddToPlanner?: (activity: ParsedActivity) => void;
+  onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
+  onAddDay?: (day: ParsedDay) => void;
 }
 
 export const AIResponseCard = ({
@@ -36,13 +47,20 @@ export const AIResponseCard = ({
   participantCount,
   budget,
   onAddToPlanner,
+  onAddTimeBlock,
+  onAddDay,
 }: AIResponseCardProps) => {
   const { t } = useTranslation();
   const [expandedActivities, setExpandedActivities] = useState<Set<number>>(new Set());
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   
+  // Detect response type and parse accordingly
+  const responseType = detectResponseType(response);
   const parsed: ParsedAIResponse = parseAIResponse(response);
+  const dayPlan = responseType === 'day_plan' ? parseDayPlan(response) : null;
+  
   const hasStructuredActivities = parsed.activities.length > 0;
+  const hasDayPlan = dayPlan && dayPlan.days.length > 0;
 
   const toggleExpand = (index: number) => {
     setExpandedActivities(prev => {
@@ -84,6 +102,19 @@ export const AIResponseCard = ({
       default: return t('dashboard.ai.fitnessNormal', 'Normal');
     }
   };
+
+  // If day plan detected, render DayPlanCard
+  if (hasDayPlan && dayPlan) {
+    return (
+      <DayPlanCard
+        dayPlan={dayPlan}
+        eventName={eventName}
+        participantCount={participantCount}
+        onAddTimeBlock={onAddTimeBlock}
+        onAddDay={onAddDay}
+      />
+    );
+  }
 
   // If no structured activities found, render as markdown
   if (!hasStructuredActivities) {
