@@ -1892,5 +1892,16 @@
     "form": { "title": "Apply Now", "agencyMode": "Agency Type", "existingAgency": "Select agency from directory", "newAgency": "Register new agency", "searchAgency": "Search agency...", "noAgenciesFound": "No agencies found", "agencyName": "Agency Name", "city": "City", "country": "Country", "contactEmail": "Contact Email", "phone": "Phone", "website": "Website", "motivation": "Why do you want to become a partner?", "motivationPlaceholder": "Tell us about your agency and why a partnership would be beneficial for both sides...", "expectedReferrals": "Expected monthly referrals", "selectOption": "Please select", "payoutMethod": "Preferred Payout", "bankTransfer": "Bank Transfer", "privacy": "I accept the", "submit": "Submit Application", "submitting": "Submitting..." },
     "success": { "title": "Application Submitted!", "description": "Thank you for your interest in a partnership.", "nextSteps": "We will review your application and get back to you within 48 hours.", "backToHome": "Back to Home" },
     "errors": { "submitFailed": "Error submitting the application" }
+  },
+  "agencyPortal": {
+    "title": "Agency Portal",
+    "loginRequired": "Login Required",
+    "loginDesc": "Please log in to access the agency portal.",
+    "activePartner": "Active Partner",
+    "pending": { "title": "Application Pending", "description": "Your agency partner application is being reviewed.", "notice": "We will get back to you within 48 hours." },
+    "notAgency": { "title": "Become an Agency Partner", "description": "You are not yet an agency partner. Register your agency and earn commissions.", "cta": "Apply Now" },
+    "tabs": { "dashboard": "Dashboard", "vouchers": "Vouchers", "commissions": "Commissions", "payouts": "Payouts", "settings": "Settings" },
+    "stats": { "referrals": "Referrals", "bookings": "Bookings", "commission": "Commissions" },
+    "dashboard": { "welcome": "Welcome back!", "subtitle": "Here's an overview of your partner activities.", "agencyInfo": "Agency Info", "name": "Name", "location": "Location", "commissionRate": "Commission Rate", "performance": "Performance", "conversionRate": "Conversion Rate", "avgCommission": "Avg. Commission" }
   }
 }

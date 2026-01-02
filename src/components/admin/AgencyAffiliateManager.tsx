@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { 
   Building2, Search, Plus, Check, X, ExternalLink, 
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENCIES as allAgencies, type Agency } from "@/lib/agencies-data";
+import { getLocalizedCountriesWithPriority } from "@/lib/countries";
 
 interface AgencyAffiliate {
   id: string;
@@ -35,8 +37,33 @@ interface AgencyAffiliate {
   created_at: string;
 }
 
+// Country Select Component for Admin
+function CountrySelectAdmin({ value, onChange, locale }: { value: string; onChange: (val: string) => void; locale: string }) {
+  const countries = useMemo(() => getLocalizedCountriesWithPriority(locale), [locale]);
+  
+  return (
+    <div className="space-y-2">
+      <Label>Land *</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <ScrollArea className="h-[300px]">
+            {countries.map((country) => (
+              <SelectItem key={country.code} value={country.name}>
+                {country.name}
+              </SelectItem>
+            ))}
+          </ScrollArea>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 const AgencyAffiliateManager = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agencyAffiliates, setAgencyAffiliates] = useState<AgencyAffiliate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -680,28 +707,11 @@ const AgencyAffiliateManager = () => {
                   placeholder="z.B. München"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>{t("admin.agencyAffiliate.country", "Land")} *</Label>
-                <Select value={manualAgencyCountry} onValueChange={setManualAgencyCountry}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Deutschland">Deutschland</SelectItem>
-                    <SelectItem value="Österreich">Österreich</SelectItem>
-                    <SelectItem value="Schweiz">Schweiz</SelectItem>
-                    <SelectItem value="Niederlande">Niederlande</SelectItem>
-                    <SelectItem value="Belgien">Belgien</SelectItem>
-                    <SelectItem value="Frankreich">Frankreich</SelectItem>
-                    <SelectItem value="Italien">Italien</SelectItem>
-                    <SelectItem value="Spanien">Spanien</SelectItem>
-                    <SelectItem value="Polen">Polen</SelectItem>
-                    <SelectItem value="Tschechien">Tschechien</SelectItem>
-                    <SelectItem value="Ungarn">Ungarn</SelectItem>
-                    <SelectItem value="Portugal">Portugal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <CountrySelectAdmin 
+                value={manualAgencyCountry} 
+                onChange={setManualAgencyCountry}
+                locale={i18n.language}
+              />
             </div>
 
             <div className="space-y-2">

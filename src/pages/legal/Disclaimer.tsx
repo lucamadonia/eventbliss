@@ -81,8 +81,8 @@ const Disclaimer = () => {
                 <p>MYFAMBLISS GROUP LTD</p>
                 <p>Gladstonos 12-14, 8042 Paphos, Cyprus</p>
                 <p>
-                  <a href="mailto:legal@eventbliss.app" className="text-primary hover:underline">
-                    legal@eventbliss.app
+                  <a href="mailto:info@event-bliss.com" className="text-primary hover:underline">
+                    info@event-bliss.com
                   </a>
                 </p>
               </div>

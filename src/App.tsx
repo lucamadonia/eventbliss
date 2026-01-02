@@ -21,6 +21,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const PartnerPortal = lazy(() => import("./pages/PartnerPortal"));
 const PartnerApply = lazy(() => import("./pages/PartnerApply"));
 const AgencyApply = lazy(() => import("./pages/AgencyApply"));
+const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { languages } from "@/i18n";
@@ -75,6 +76,7 @@ const AppContent = () => {
           <Route path="/partner-portal" element={<Suspense fallback={<PageLoader />}><PartnerPortal /></Suspense>} />
           <Route path="/partner-apply" element={<Suspense fallback={<PageLoader />}><PartnerApply /></Suspense>} />
           <Route path="/agency-apply" element={<Suspense fallback={<PageLoader />}><AgencyApply /></Suspense>} />
+          <Route path="/agency-portal" element={<Suspense fallback={<PageLoader />}><AgencyPortal /></Suspense>} />
           <Route path="/admin/*" element={<Suspense fallback={<PageLoader />}><Admin /></Suspense>} />
           {/* Legal Pages */}
           <Route path="/legal/imprint" element={<Suspense fallback={<PageLoader />}><Imprint /></Suspense>} />

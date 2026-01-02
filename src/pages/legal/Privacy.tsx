@@ -81,10 +81,10 @@ const Privacy = () => {
                 {t("legal.privacy.contact.content")}
               </p>
               <a 
-                href="mailto:privacy@eventbliss.app" 
+                href="mailto:info@event-bliss.com" 
                 className="text-primary hover:underline font-medium"
               >
-                privacy@eventbliss.app
+                info@event-bliss.com
               </a>
             </section>
           </div>
