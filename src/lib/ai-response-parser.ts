@@ -18,6 +18,41 @@ export interface ParsedAIResponse {
   rawResponse: string;
 }
 
+// Extended Activity interface for premium cards
+export interface ParsedActivityExtended extends ParsedActivity {
+  number: number;
+  location?: string;
+  highlights: string[];
+  requirements?: string[];
+}
+
+export interface ParsedActivitiesResponse {
+  intro: string;
+  activities: ParsedActivityExtended[];
+  tips: string[];
+  rawResponse: string;
+}
+
+// Trip Ideas interfaces
+export interface ParsedTripIdea {
+  number: number;
+  emoji: string;
+  title: string;
+  destination: string;
+  cost: string;
+  travelTime?: string;
+  whyPerfect: string[];
+  description: string;
+  highlights: string[];
+}
+
+export interface ParsedTripIdeasResponse {
+  intro: string;
+  ideas: ParsedTripIdea[];
+  tips: string[];
+  rawResponse: string;
+}
+
 // Day Plan specific interfaces
 export interface ParsedTimeBlock {
   time: string;
@@ -894,4 +929,136 @@ export function timeBlockToScheduleData(timeBlock: ParsedTimeBlock) {
       ...timeBlock.warnings.map(w => `⚠️ ${w}`),
     ].filter(Boolean).join('\n'),
   };
+}
+
+/**
+ * Parse activities response into structured format for premium display
+ */
+export function parseActivitiesExtended(response: string): ParsedActivitiesResponse {
+  const parsed = parseAIResponse(response);
+  
+  const activities: ParsedActivityExtended[] = parsed.activities.map((activity, index) => ({
+    ...activity,
+    number: index + 1,
+    location: undefined,
+    highlights: [],
+  }));
+
+  // Try to extract highlights from descriptions
+  activities.forEach(activity => {
+    const highlightMatch = activity.description.match(/✅\s*Highlights?:?\s*([\s\S]*?)(?=\n\n|$)/i);
+    if (highlightMatch) {
+      const highlightLines = highlightMatch[1].split('\n').filter(l => l.trim().startsWith('•') || l.trim().startsWith('-'));
+      activity.highlights = highlightLines.map(l => l.replace(/^[•\-]\s*/, '').trim());
+      activity.description = activity.description.replace(highlightMatch[0], '').trim();
+    }
+  });
+
+  return {
+    intro: parsed.intro,
+    activities,
+    tips: parsed.tips,
+    rawResponse: response,
+  };
+}
+
+/**
+ * Parse trip ideas response into structured format
+ */
+export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
+  const result: ParsedTripIdeasResponse = {
+    intro: '',
+    ideas: [],
+    tips: [],
+    rawResponse: response,
+  };
+
+  if (!response) return result;
+
+  const lines = response.split('\n');
+  let currentIdea: ParsedTripIdea | null = null;
+  let introLines: string[] = [];
+  let foundFirstIdea = false;
+  let ideaCounter = 0;
+  let inWhyPerfect = false;
+  let inHighlights = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    // Detect idea header: ### 🎰 Las Vegas Weekend or similar
+    const ideaMatch = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    if (ideaMatch) {
+      if (currentIdea) result.ideas.push(currentIdea);
+      ideaCounter++;
+      currentIdea = {
+        number: ideaCounter,
+        emoji: ideaMatch[1],
+        title: ideaMatch[2].trim(),
+        destination: '',
+        cost: '',
+        travelTime: '',
+        whyPerfect: [],
+        description: '',
+        highlights: [],
+      };
+      foundFirstIdea = true;
+      inWhyPerfect = false;
+      inHighlights = false;
+      continue;
+    }
+
+    if (currentIdea) {
+      // Parse destination
+      if (/^📍|^Destination:|^Ziel:|^Destino:/i.test(trimmed)) {
+        currentIdea.destination = trimmed.replace(/^📍?\s*(?:Destination|Ziel|Destino)[:\s]*/i, '').trim();
+        continue;
+      }
+      // Parse cost
+      if (/^💰|^Budget:|^Cost:|^Kosten:/i.test(trimmed)) {
+        currentIdea.cost = trimmed.replace(/^💰?\s*(?:Budget|Cost|Kosten)[:\s]*/i, '').trim();
+        continue;
+      }
+      // Parse travel time
+      if (/^✈️|^🗓️|^Reisezeit:|^Travel/i.test(trimmed)) {
+        currentIdea.travelTime = trimmed.replace(/^[✈️🗓️]?\s*(?:Reisezeit|Travel\s*(?:Time)?)[:\s]*/i, '').trim();
+        continue;
+      }
+      // Why perfect section
+      if (/Warum perfekt|Why perfect|✅/i.test(trimmed)) {
+        inWhyPerfect = true;
+        inHighlights = false;
+        continue;
+      }
+      // Highlights section
+      if (/Highlights|🎯/i.test(trimmed)) {
+        inHighlights = true;
+        inWhyPerfect = false;
+        continue;
+      }
+      // List items
+      if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+        const item = trimmed.replace(/^[•\-*]\s*/, '').trim();
+        if (inWhyPerfect) currentIdea.whyPerfect.push(item);
+        else if (inHighlights) currentIdea.highlights.push(item);
+        continue;
+      }
+      // Description
+      if (!inWhyPerfect && !inHighlights && trimmed.length > 10) {
+        currentIdea.description += (currentIdea.description ? ' ' : '') + trimmed;
+      }
+    } else if (!foundFirstIdea) {
+      introLines.push(trimmed);
+    }
+  }
+
+  if (currentIdea) result.ideas.push(currentIdea);
+  result.intro = introLines.join(' ').replace(/^#+\s*/, '').trim();
+
+  // Extract tips
+  const tipMatches = response.match(/💡[^\n]+|Tipp?:?[^\n]+/gi);
+  if (tipMatches) result.tips = tipMatches.slice(0, 5).map(t => t.trim());
+
+  return result;
 }
