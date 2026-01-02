@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import {
   Users,
   Mail,
@@ -82,7 +83,12 @@ export function TeamInviteManager({
   participants,
   onUpdate,
 }: TeamInviteManagerProps) {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
+  
+  // Ensure i18n is ready before rendering
+  if (!ready) {
+    return <SkeletonCard className="p-6" showAvatar={false} />;
+  }
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
