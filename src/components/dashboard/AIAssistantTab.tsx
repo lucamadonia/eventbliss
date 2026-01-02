@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { usePremium } from "@/hooks/usePremium";
 import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
+import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
+import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
 import type { EventData } from "@/hooks/useEvent";
+import type { ParsedActivity } from "@/lib/ai-response-parser";
 
 interface AIAssistantTabProps {
   event: EventData;
@@ -64,6 +67,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   const [response, setResponse] = useState<string | null>(null);
   const [currentType, setCurrentType] = useState<RequestType | null>(null);
   const [chatMessage, setChatMessage] = useState("");
+  const [selectedActivity, setSelectedActivity] = useState<ParsedActivity | null>(null);
+  const [showPlannerDialog, setShowPlannerDialog] = useState(false);
 
   // Show paywall if not premium
   if (!premiumLoading && !isPremium) {
@@ -162,6 +167,18 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     setChatMessage("");
   };
 
+  const handleAddToPlanner = (activity: ParsedActivity) => {
+    setSelectedActivity(activity);
+    setShowPlannerDialog(true);
+  };
+
+  // Get context for response card
+  const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
+  const budgetEntries = Object.entries(stats?.budgets || {});
+  const topBudget = budgetEntries.length > 0 
+    ? budgetEntries.sort((a, b) => b[1] - a[1])[0][0]
+    : undefined;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -242,12 +259,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
       {/* Response */}
       {response && (
-        <GlassCard className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h4 className="font-bold">{t('dashboard.ai.response')}</h4>
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-end">
             <Button
               variant="ghost"
               size="sm"
@@ -259,13 +272,26 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             </Button>
           </div>
           
-          <div className="prose prose-sm prose-invert max-w-none">
-            <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
-              {response}
-            </div>
-          </div>
-        </GlassCard>
+          <AIResponseCard
+            response={response}
+            eventName={event.name}
+            participantCount={participantCount || undefined}
+            budget={topBudget}
+            onAddToPlanner={handleAddToPlanner}
+          />
+        </div>
       )}
+
+      {/* Add to Planner Dialog */}
+      <AddToPlannerDialog
+        open={showPlannerDialog}
+        onOpenChange={setShowPlannerDialog}
+        activity={selectedActivity}
+        eventId={event.id}
+        onSuccess={() => {
+          setSelectedActivity(null);
+        }}
+      />
 
       {/* No Stats Warning */}
       {!stats && (
