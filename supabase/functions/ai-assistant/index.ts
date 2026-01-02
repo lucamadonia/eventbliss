@@ -352,12 +352,22 @@ Sei kreativ aber realistisch!`,
 5. 📝 Kurze Beschreibung
 
 Mische verschiedene Arten: Action, Entspannung, Essen/Trinken, Erlebnis.`,
-      day_plan: `Erstelle einen detaillierten Tagesablauf:
-⏰ Zeitplan mit Uhrzeiten
-🚗 Transport zwischen Aktivitäten
-🍽️ Essen & Trinken Empfehlungen
-💡 Pro-Tipps für die Organisation
-⚠️ Was man beachten sollte`,
+      day_plan: `Erstelle einen detaillierten Tagesablauf im folgenden Format:
+
+## [Wochentag]: [Titel] [Emojis]
+
+### [Uhrzeit] [Emoji] [Aktivitätstitel]
+📍 Ort: [Location/Restaurant/Hotel]
+🚗 Transport: [Transportdetails falls nötig]
+💰 Kosten: [Geschätzte Kosten pro Person]
+💡 Pro-Tipp: [Hilfreicher Tipp]
+⚠️ Wichtig: [Warnung falls relevant]
+
+[Kurze Beschreibung der Aktivität]
+
+---
+
+Wiederhole das Format für jeden Zeitblock. Plane realistisch mit Pufferzeiten.`,
       budget_estimate: `Erstelle eine detaillierte Budget-Schätzung:
 📊 Aufschlüsselung nach Kategorien (Transport, Unterkunft, Aktivitäten, Essen, Extras)
 💰 Gesamtkosten pro Person
@@ -411,12 +421,22 @@ Be creative but realistic!`,
 5. 📝 Brief description
 
 Mix different types: Action, relaxation, food/drinks, experiences.`,
-      day_plan: `Create a detailed day schedule:
-⏰ Timeline with times
-🚗 Transport between activities
-🍽️ Food & drink recommendations
-💡 Pro tips for organization
-⚠️ Things to consider`,
+      day_plan: `Create a detailed day schedule in this format:
+
+## [Day]: [Title] [Emojis]
+
+### [Time] [Emoji] [Activity Title]
+📍 Location: [Place/Restaurant/Hotel]
+🚗 Transport: [Transport details if needed]
+💰 Cost: [Estimated cost per person]
+💡 Pro Tip: [Helpful tip]
+⚠️ Important: [Warning if relevant]
+
+[Brief activity description]
+
+---
+
+Repeat this format for each time block. Plan realistically with buffer times.`,
       budget_estimate: `Create a detailed budget estimate:
 📊 Breakdown by category (Transport, accommodation, activities, food, extras)
 💰 Total cost per person
