@@ -2,6 +2,8 @@
   "theme": {
     "title": "Uiterlijk",
     "description": "Kies je voorkeurs thema",
+    "system": "Systeem",
+    "systemDesc": "Auto (apparaatinstelling)",
     "dark": "Donkere Modus",
     "darkDesc": "Modern & meeslepend",
     "light": "Lichte Modus",

@@ -2,6 +2,8 @@
   "theme": {
     "title": "Görünüm",
     "description": "Tercih ettiğiniz temayı seçin",
+    "system": "Sistem",
+    "systemDesc": "Otomatik (cihaz ayarı)",
     "dark": "Karanlık Mod",
     "darkDesc": "Modern ve sürükleyici",
     "light": "Aydınlık Mod",

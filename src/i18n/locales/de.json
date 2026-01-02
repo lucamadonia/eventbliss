@@ -2,6 +2,8 @@
   "theme": {
     "title": "Erscheinungsbild",
     "description": "Wähle dein bevorzugtes Design",
+    "system": "System",
+    "systemDesc": "Automatisch (Geräteeinstellung)",
     "dark": "Dark Mode",
     "darkDesc": "Modern & immersiv",
     "light": "Light Mode",

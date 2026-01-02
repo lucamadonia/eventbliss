@@ -1,4 +1,4 @@
-import { Moon, Sun, Sparkles } from "lucide-react";
+import { Moon, Sun, Sparkles, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const themes = [
+  { value: "system", icon: Monitor, labelKey: "theme.system", descKey: "theme.systemDesc" },
   { value: "dark", icon: Moon, labelKey: "theme.dark", descKey: "theme.darkDesc" },
   { value: "light", icon: Sun, labelKey: "theme.light", descKey: "theme.lightDesc" },
   { value: "rose", icon: Sparkles, labelKey: "theme.rose", descKey: "theme.roseDesc" },

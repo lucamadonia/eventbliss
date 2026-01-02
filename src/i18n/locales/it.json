@@ -2,6 +2,8 @@
   "theme": {
     "title": "Aspetto",
     "description": "Scegli il tuo tema preferito",
+    "system": "Sistema",
+    "systemDesc": "Auto (impostazione dispositivo)",
     "dark": "Modalità Scura",
     "darkDesc": "Moderno e immersivo",
     "light": "Modalità Chiara",
