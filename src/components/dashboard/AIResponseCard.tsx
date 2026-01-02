@@ -21,13 +21,19 @@ import { toast } from "sonner";
 import { 
   parseAIResponse, 
   parseDayPlan,
+  parseActivitiesExtended,
+  parseTripIdeas,
   detectResponseType,
   type ParsedActivity, 
   type ParsedAIResponse,
   type ParsedTimeBlock,
   type ParsedDay,
+  type ParsedActivityExtended,
+  type ParsedTripIdea,
 } from "@/lib/ai-response-parser";
 import { DayPlanCard } from "./DayPlanCard";
+import { ActivitiesCard } from "./ActivitiesCard";
+import { TripIdeasCard } from "./TripIdeasCard";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -36,9 +42,11 @@ interface AIResponseCardProps {
   eventName?: string;
   participantCount?: number;
   budget?: string;
-  onAddToPlanner?: (activity: ParsedActivity) => void;
+  requestType?: 'trip_ideas' | 'activities' | 'day_plan' | 'budget_estimate' | 'chat';
+  onAddToPlanner?: (activity: ParsedActivity | ParsedActivityExtended) => void;
   onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
   onAddDay?: (day: ParsedDay) => void;
+  onSetDestination?: (tripIdea: ParsedTripIdea) => void;
 }
 
 export const AIResponseCard = ({
@@ -46,9 +54,11 @@ export const AIResponseCard = ({
   eventName,
   participantCount,
   budget,
+  requestType,
   onAddToPlanner,
   onAddTimeBlock,
   onAddDay,
+  onSetDestination,
 }: AIResponseCardProps) => {
   const { t } = useTranslation();
   const [expandedActivities, setExpandedActivities] = useState<Set<number>>(new Set());
@@ -112,6 +122,35 @@ export const AIResponseCard = ({
         participantCount={participantCount}
         onAddTimeBlock={onAddTimeBlock}
         onAddDay={onAddDay}
+      />
+    );
+  }
+
+  // If trip ideas request type, render TripIdeasCard
+  if (requestType === 'trip_ideas') {
+    const tripIdeasData = parseTripIdeas(response);
+    if (tripIdeasData.ideas.length > 0) {
+      return (
+        <TripIdeasCard
+          tripIdeasData={tripIdeasData}
+          eventName={eventName}
+          participantCount={participantCount}
+          onSetDestination={onSetDestination}
+        />
+      );
+    }
+  }
+
+  // If activities request type with structured data, render ActivitiesCard
+  if (requestType === 'activities' && hasStructuredActivities) {
+    const activitiesData = parseActivitiesExtended(response);
+    return (
+      <ActivitiesCard
+        activitiesData={activitiesData}
+        eventName={eventName}
+        participantCount={participantCount}
+        budget={budget}
+        onAddToPlanner={onAddToPlanner}
       />
     );
   }
