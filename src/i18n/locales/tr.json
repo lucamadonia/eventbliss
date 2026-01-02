@@ -470,6 +470,26 @@
     "cityPanel": {
       "title": "{{city}} şehrindeki Ajanslar",
       "agencyCount": "{{count}} ajans"
+    },
+    "emailTemplateOpened": "E-posta şablonu açıldı",
+    "email": {
+      "subjectPrefix": "Talep:",
+      "greeting": "Merhaba",
+      "intro": "bir etkinlik planlıyoruz ve teklifinizi talep etmek istiyoruz.",
+      "eventDetails": "ETKİNLİK DETAYLARI",
+      "eventName": "Etkinlik Adı",
+      "eventType": "Etkinlik Türü",
+      "honoree": "Onur Konuğu",
+      "date": "Tarih",
+      "dateNotSet": "Henüz belirlenmedi",
+      "participants": "Katılımcı Sayısı",
+      "participantNames": "Katılımcılar",
+      "request": "TALEP",
+      "requestText": "Lütfen mevcut aktiviteler, fiyatlar ve olası tarihlerle birlikte teklifinizi bize gönderin.",
+      "referenceCode": "Referans Kodu",
+      "closing": "Saygılarımızla",
+      "planningTeam": "Planlama Ekibi",
+      "generatedBy": "Bu talep EventBliss üzerinden oluşturulmuştur."
     }
   },
   "expenses": {

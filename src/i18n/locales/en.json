@@ -1022,6 +1022,26 @@
     "cityPanel": {
       "title": "Agencies in {{city}}",
       "agencyCount": "{{count}} agency(ies)"
+    },
+    "emailTemplateOpened": "Email template opened",
+    "email": {
+      "subjectPrefix": "Inquiry for",
+      "greeting": "Hello",
+      "intro": "we are planning an event and would like to request your offer.",
+      "eventDetails": "EVENT DETAILS",
+      "eventName": "Event Name",
+      "eventType": "Event Type",
+      "honoree": "Honoree",
+      "date": "Date",
+      "dateNotSet": "Not yet determined",
+      "participants": "Number of Participants",
+      "participantNames": "Participants",
+      "request": "REQUEST",
+      "requestText": "Please send us your offer including available activities, prices, and possible dates.",
+      "referenceCode": "Reference Code",
+      "closing": "Best regards",
+      "planningTeam": "The Planning Team",
+      "generatedBy": "This request was generated via EventBliss."
     }
   },
   "expenses": {

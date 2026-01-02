@@ -470,6 +470,26 @@
     "cityPanel": {
       "title": "وكالات في {{city}}",
       "agencyCount": "{{count}} وكالة/وكالات"
+    },
+    "emailTemplateOpened": "تم فتح قالب البريد الإلكتروني",
+    "email": {
+      "subjectPrefix": "استفسار عن",
+      "greeting": "مرحباً",
+      "intro": "نحن نخطط لفعالية ونود طلب عرضكم.",
+      "eventDetails": "تفاصيل الفعالية",
+      "eventName": "اسم الفعالية",
+      "eventType": "نوع الفعالية",
+      "honoree": "الضيف المكرم",
+      "date": "التاريخ",
+      "dateNotSet": "لم يتم تحديده بعد",
+      "participants": "عدد المشاركين",
+      "participantNames": "المشاركون",
+      "request": "الطلب",
+      "requestText": "يرجى إرسال عرضكم مع الأنشطة المتاحة والأسعار والتواريخ الممكنة.",
+      "referenceCode": "رمز المرجع",
+      "closing": "مع أطيب التحيات",
+      "planningTeam": "فريق التخطيط",
+      "generatedBy": "تم إنشاء هذا الطلب عبر EventBliss."
     }
   },
   "expenses": {

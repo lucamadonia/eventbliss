@@ -524,6 +524,26 @@
     "cityPanel": {
       "title": "Agences à {{city}}",
       "agencyCount": "{{count}} agence(s)"
+    },
+    "emailTemplateOpened": "Modèle d'email ouvert",
+    "email": {
+      "subjectPrefix": "Demande pour",
+      "greeting": "Bonjour",
+      "intro": "nous planifions un événement et aimerions demander votre offre.",
+      "eventDetails": "DÉTAILS DE L'ÉVÉNEMENT",
+      "eventName": "Nom de l'événement",
+      "eventType": "Type d'événement",
+      "honoree": "Invité d'honneur",
+      "date": "Date",
+      "dateNotSet": "Pas encore déterminé",
+      "participants": "Nombre de participants",
+      "participantNames": "Participants",
+      "request": "DEMANDE",
+      "requestText": "Veuillez nous envoyer votre offre avec les activités disponibles, les prix et les dates possibles.",
+      "referenceCode": "Code de référence",
+      "closing": "Cordialement",
+      "planningTeam": "L'équipe de planification",
+      "generatedBy": "Cette demande a été générée via EventBliss."
     }
   },
   "expenses": {
