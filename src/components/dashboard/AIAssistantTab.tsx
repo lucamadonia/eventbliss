@@ -61,7 +61,7 @@ const AI_REQUESTS: AIRequest[] = [
 ];
 
 export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isPremium, loading: premiumLoading } = usePremium();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
@@ -113,7 +113,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       fitness_level: topFitness,
       duration: "weekend",
       // New context fields for dynamic AI responses
-      language: event.locale || 'de',
+      language: i18n.language || event.locale || 'de',
       event_name: event.name,
       event_description: event.description || undefined,
     };
@@ -303,6 +303,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             eventName={event.name}
             participantCount={participantCount || undefined}
             budget={topBudget}
+            requestType={currentType || undefined}
             onAddToPlanner={handleAddToPlanner}
             onAddTimeBlock={handleAddTimeBlock}
             onAddDay={handleAddDay}
