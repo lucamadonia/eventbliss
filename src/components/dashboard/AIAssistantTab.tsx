@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw } from "lucide-react";
+import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { usePremium } from "@/hooks/usePremium";
+import { useAICredits } from "@/hooks/useAICredits";
 import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
@@ -63,6 +65,7 @@ const AI_REQUESTS: AIRequest[] = [
 export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   const { t, i18n } = useTranslation();
   const { isPremium, loading: premiumLoading } = usePremium();
+  const { used, limit, remaining, resetDate, loading: creditsLoading, refetch: refetchCredits } = useAICredits();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [currentType, setCurrentType] = useState<RequestType | null>(null);
@@ -74,6 +77,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   if (!premiumLoading && !isPremium) {
     return <PaywallOverlay feature="ai_assistant" />;
   }
+
+  const creditsExhausted = limit > 0 && remaining <= 0;
 
   const getContext = () => {
     const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
@@ -208,18 +213,46 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Credits Exhausted Warning */}
+      {creditsExhausted && (
+        <GlassCard className="p-4 border-amber-500/30 bg-amber-500/10">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            <div>
+              <p className="font-bold text-amber-600">{t('dashboard.ai.creditsExhausted')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('dashboard.ai.creditsReset', { date: resetDate.toLocaleDateString() })}
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+      )}
+
       {/* Header */}
       <GlassCard className="p-6 bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 rounded-xl bg-gradient-primary">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-gradient-primary">
+              <Sparkles className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h3 className="font-display text-2xl font-bold">{t('dashboard.ai.title')}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t('dashboard.ai.subtitle')}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-display text-2xl font-bold">{t('dashboard.ai.title')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('dashboard.ai.subtitle')}
-            </p>
-          </div>
+          
+          {/* Credits Display */}
+          {!creditsLoading && limit > 0 && (
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2 text-sm">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="font-medium">{remaining}/{limit} {t('dashboard.ai.credits')}</span>
+              </div>
+              <Progress value={(remaining / limit) * 100} className="w-24 h-2" />
+            </div>
+          )}
         </div>
         
         <p className="text-muted-foreground">
@@ -242,9 +275,9 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
               className={`p-4 cursor-pointer transition-all hover:scale-[1.02] ${
                 isActive ? "ring-2 ring-primary" : ""
               }`}
-              onClick={() => !isLoading && handleRequest(req.type)}
+              onClick={() => !isLoading && !creditsExhausted && handleRequest(req.type)}
             >
-              <div className="flex flex-col items-center text-center gap-2">
+              <div className={`flex flex-col items-center text-center gap-2 ${creditsExhausted ? 'opacity-50' : ''}`}>
                 <div className={`p-3 rounded-xl ${
                   isActive ? "bg-primary/30" : "bg-muted/50"
                 }`}>

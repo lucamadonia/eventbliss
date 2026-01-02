@@ -1,8 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+// Credit limits per plan type
+const AI_CREDIT_LIMITS: Record<string, number> = {
+  free: 0,
+  monthly: 50,
+  yearly: 100,
+  lifetime: 75,
 };
 
 interface RequestBody {
@@ -29,6 +38,7 @@ interface RequestBody {
     template_type?: string;
   };
   message?: string;
+  eventId?: string;
 }
 
 // =============================================================================
@@ -300,10 +310,9 @@ const USER_PROMPT_TEMPLATES: Record<string, {
     budget: string;
     destination: string;
     activities: string;
-    restrictions: string;
     fitness: string;
     duration: string;
-    date_info: string;
+    description: string;
   };
   prompts: {
     trip_ideas: string;
@@ -315,277 +324,185 @@ const USER_PROMPT_TEMPLATES: Record<string, {
   };
 }> = {
   de: {
-    context_header: "Event-Kontext:",
+    context_header: "📋 EVENT-KONTEXT",
     event_types: {
-      bachelor: "Junggesellenabschied (JGA)",
-      bachelorette: "JGA (Braut)",
-      birthday: "Geburtstag",
+      bachelor: "Junggesellenabschied (Männer)",
+      bachelorette: "Junggesellinnenabschied (Frauen)",
+      birthday: "Geburtstagsfeier",
       trip: "Gruppenreise",
-      other: "Event",
+      other: "Gruppen-Event",
     },
     labels: {
       honoree: "Ehrengast",
       event_name: "Event-Name",
       participants: "Teilnehmer",
       budget: "Budget pro Person",
-      destination: "Destination-Präferenz",
-      activities: "Bevorzugte Aktivitäten",
-      restrictions: "Einschränkungen",
+      destination: "Reiseziel-Präferenz",
+      activities: "Beliebte Aktivitäten",
       fitness: "Fitness-Level",
       duration: "Dauer",
-      date_info: "Zeitraum",
+      description: "Beschreibung",
     },
     prompts: {
-      trip_ideas: `KRITISCH - EXAKTES FORMAT FÜR REISEIDEEN:
+      trip_ideas: `Generiere 5 kreative und detaillierte Reiseziel-Ideen für dieses Event.
+      
+Für jedes Ziel gib an:
+- 🌍 Zielort (Stadt/Region)
+- ✨ Warum es perfekt passt
+- 🏠 Unterkunfts-Empfehlung
+- 🎯 Top 3 Aktivitäten vor Ort
+- 💰 Geschätztes Budget (Transport + Unterkunft + Aktivitäten)
+- 🗓️ Beste Reisezeit
 
-Schlage 3-4 passende Reiseideen vor. Jede Idee MUSS auf einer EIGENEN ZEILE beginnen mit:
+Formatiere alles übersichtlich mit Emojis und klaren Abschnitten.`,
+      activities: `Generiere 10 passende Aktivitäten für dieses Event.
 
-### [Emoji] [Titel der Reiseidee]
-📍 Ziel: [Destination/Stadt/Region]
-💰 Budget: [Geschätzte Kosten pro Person]
-✈️ Reisezeit: [Empfohlene Dauer]
+Für jede Aktivität gib an:
+- 🎯 Aktivitäts-Name
+- 📝 Kurze Beschreibung (2-3 Sätze)
+- ⏱️ Dauer
+- 💰 Geschätzte Kosten pro Person
+- 💪 Fitness-Level (leicht/mittel/anspruchsvoll)
+- 📍 Möglicher Standort/Anbieter
 
-[Beschreibung 2-3 Sätze]
+Mische actionreiche und entspannte Aktivitäten.`,
+      day_plan: `Erstelle einen detaillierten Tagesplan für dieses Event.
 
-✅ Warum perfekt:
-• [Grund 1]
-• [Grund 2]
+Strukturiere den Tag mit Zeitblöcken:
+- ☀️ Vormittag (8:00-12:00)
+- 🌤️ Mittag (12:00-14:00)  
+- 🌅 Nachmittag (14:00-18:00)
+- 🌙 Abend (18:00-24:00)
 
----
+Für jeden Zeitblock:
+- Aktivität mit Emoji
+- Dauer und Zeitfenster
+- Geschätzte Kosten
+- Praktische Tipps
+- Alternative bei schlechtem Wetter (wenn relevant)`,
+      budget_estimate: `Erstelle eine detaillierte Budgetschätzung für dieses Event.
 
-REGELN: JEDE Idee beginnt mit ### und einem EMOJI. NIEMALS nummerierte Listen verwenden!`,
-      activities: `KRITISCH - EXAKTES FORMAT FÜR AKTIVITÄTEN:
+Kategorien:
+- 🏠 Unterkunft (pro Nacht, pro Person)
+- 🚗 Transport (Anreise + vor Ort)
+- 🎯 Aktivitäten (alle geplanten)
+- 🍽️ Verpflegung (Frühstück, Mittag, Abend, Snacks)
+- 🍻 Getränke/Party
+- 🎁 Sonstiges (Deko, Überraschungen, etc.)
 
-Schlage 5-6 passende Aktivitäten vor. Jede Aktivität MUSS auf einer EIGENEN ZEILE beginnen mit:
+Gib für jede Kategorie:
+- Minimum-Budget
+- Empfohlenes Budget
+- Premium-Budget
 
-### [Emoji] [Aktivitätsname]
-⏱️ Dauer: [Dauer]
-💰 Kosten: [Kosten pro Person]
-💪 Fitness: [Leicht/Normal/Anspruchsvoll]
-🎯 Kategorie: [Action/Food/Wellness/Party/Sightseeing]
+Erstelle am Ende eine Gesamtübersicht.`,
+      chat: `Der Nutzer fragt: {message}
 
-[Beschreibung 2-3 Sätze]
-
----
-
-REGELN: JEDE Aktivität beginnt mit ### und einem EMOJI. NIEMALS nummerierte Listen verwenden!`,
-      day_plan: `KRITISCH - EXAKTES FORMAT FÜR TAGESPLAN:
-
-Jeder neue Tag MUSS auf einer EIGENEN ZEILE beginnen mit:
-
-## [Wochentag]: [Titel] [Emojis]
-
-Jeder Zeitblock MUSS auf einer EIGENEN ZEILE beginnen mit:
-
-### [Uhrzeit] [Emoji] [Aktivitätstitel]
-📍 Ort: [Location/Restaurant/Hotel]
-🚗 Transport: [Transportdetails falls nötig]
-💰 Kosten: [Geschätzte Kosten pro Person]
-💡 Pro-Tipp: [Hilfreicher Tipp]
-
-[Kurze Beschreibung]
-
----
-
-BEISPIEL (GENAU SO FORMATIEREN):
-
-## Freitag: Ankunft & Welcome! ✈️🌃
-
-### 17:00 ✈️ Ankunft am Flughafen
-📍 Ort: Flughafen
-🚗 Transport: Uber zum Hotel
-
-Alle sammeln und gemeinsam zum Hotel fahren.
-
----
-
-### 18:30 🏨 Check-in im Hotel
-📍 Ort: Hotel Name
-💰 Kosten: ca. 50€ pro Person
-
-Zimmer beziehen und frisch machen.
-
----
-
-## Samstag: Action-Tag! 🎲☀️
-
-### 09:00 🍳 Frühstück
-📍 Ort: Hotel Restaurant
-
-Gemeinsames Frühstück zur Stärkung.
-
----
-
-STRENGE REGELN:
-1. JEDER Tag beginnt mit ## auf einer NEUEN ZEILE
-2. JEDER Zeitblock beginnt mit ### auf einer NEUEN ZEILE
-3. NIEMALS Bullet-Points (*) oder (**) für Tage oder Zeitblöcke verwenden!
-4. Zwischen den Tagen MUSS ein klarer Abstand sein
-5. Plane realistisch mit Pufferzeiten zwischen Aktivitäten`,
-      budget_estimate: `Erstelle eine detaillierte Budget-Schätzung:
-📊 Aufschlüsselung nach Kategorien (Transport, Unterkunft, Aktivitäten, Essen, Extras)
-💰 Gesamtkosten pro Person
-💡 Spartipps
-⚠️ Versteckte Kosten`,
-      chat: "Benutzer-Frage: {message}\n\nBeantworte die Frage basierend auf dem Event-Kontext.",
+Beantworte die Frage hilfreich und im Kontext des Events. 
+Gib praktische, umsetzbare Tipps.`,
       message_enhance: {
-        casual: "Mache den Text lockerer, freundlicher und informeller. Nutze mehr Emojis.",
-        formal: "Mache den Text formeller und professioneller. Reduziere Emojis.",
-        shorter: "Kürze den Text auf das Wesentliche.",
-        detailed: "Füge mehr Details und hilfreiche Informationen hinzu.",
-        custom: "{instruction}",
+        casual: "Mache diese Nachricht freundlicher und lockerer, aber behalte alle wichtigen Informationen bei.",
+        formal: "Mache diese Nachricht professioneller und formeller, aber behalte alle wichtigen Informationen bei.",
+        shorter: "Kürze diese Nachricht auf das Wesentliche, ohne wichtige Informationen zu verlieren.",
+        detailed: "Erweitere diese Nachricht mit mehr Details und hilfreichen Informationen.",
+        custom: "Passe diese Nachricht an nach folgender Anweisung: {instruction}",
       },
     },
   },
   en: {
-    context_header: "Event Context:",
+    context_header: "📋 EVENT CONTEXT",
     event_types: {
-      bachelor: "Bachelor Party",
-      bachelorette: "Bachelorette Party",
-      birthday: "Birthday Party",
+      bachelor: "Bachelor Party (Stag)",
+      bachelorette: "Bachelorette Party (Hen)",
+      birthday: "Birthday Celebration",
       trip: "Group Trip",
-      other: "Event",
+      other: "Group Event",
     },
     labels: {
       honoree: "Guest of Honor",
       event_name: "Event Name",
       participants: "Participants",
-      budget: "Budget per person",
-      destination: "Destination preference",
-      activities: "Preferred activities",
-      restrictions: "Restrictions",
-      fitness: "Fitness level",
+      budget: "Budget per Person",
+      destination: "Destination Preference",
+      activities: "Popular Activities",
+      fitness: "Fitness Level",
       duration: "Duration",
-      date_info: "Date range",
+      description: "Description",
     },
     prompts: {
-      trip_ideas: `CRITICAL - EXACT FORMAT FOR TRIP IDEAS:
+      trip_ideas: `Generate 5 creative and detailed destination ideas for this event.
 
-Suggest 3-4 fitting trip ideas. Each idea MUST start on its OWN LINE with:
+For each destination include:
+- 🌍 Destination (City/Region)
+- ✨ Why it's perfect for this group
+- 🏠 Accommodation recommendation
+- 🎯 Top 3 activities there
+- 💰 Estimated budget (transport + accommodation + activities)
+- 🗓️ Best time to visit
 
-### [Emoji] [Trip Title]
-📍 Destination: [City/Region]
-💰 Budget: [Estimated cost per person]
-✈️ Duration: [Recommended duration]
+Format everything clearly with emojis and sections.`,
+      activities: `Generate 10 suitable activities for this event.
 
-[Description 2-3 sentences]
+For each activity include:
+- 🎯 Activity name
+- 📝 Brief description (2-3 sentences)
+- ⏱️ Duration
+- 💰 Estimated cost per person
+- 💪 Fitness level (easy/medium/challenging)
+- 📍 Possible location/provider
 
-✅ Why perfect:
-• [Reason 1]
-• [Reason 2]
-• [Reason 3]
+Mix action-packed and relaxing activities.`,
+      day_plan: `Create a detailed day plan for this event.
 
-🎯 Highlights:
-• [Highlight 1]
-• [Highlight 2]
+Structure the day with time blocks:
+- ☀️ Morning (8:00-12:00)
+- 🌤️ Lunch (12:00-14:00)
+- 🌅 Afternoon (14:00-18:00)
+- 🌙 Evening (18:00-24:00)
 
----
+For each time block:
+- Activity with emoji
+- Duration and time slot
+- Estimated costs
+- Practical tips
+- Bad weather alternative (if relevant)`,
+      budget_estimate: `Create a detailed budget estimate for this event.
 
-STRICT RULES:
-1. EACH idea starts with ### and an EMOJI
-2. NEVER use numbered lists (1. 2. 3.)!
-3. Between ideas MUST be ---
-4. Be creative but realistic!`,
-      activities: `CRITICAL - EXACT FORMAT FOR ACTIVITIES:
+Categories:
+- 🏠 Accommodation (per night, per person)
+- 🚗 Transport (getting there + local)
+- 🎯 Activities (all planned)
+- 🍽️ Food (breakfast, lunch, dinner, snacks)
+- 🍻 Drinks/Party
+- 🎁 Miscellaneous (decorations, surprises, etc.)
 
-Suggest 5-6 fitting activities. Each activity MUST start on its OWN LINE with:
+For each category provide:
+- Minimum budget
+- Recommended budget
+- Premium budget
 
-### [Emoji] [Activity Name]
-📍 Location: [Location if relevant]
-⏱️ Duration: [Duration]
-💰 Cost: [Cost per person]
-💪 Fitness: [Easy/Normal/Challenging]
-🎯 Category: [Action/Food/Wellness/Party/Sightseeing]
+Include a total summary at the end.`,
+      chat: `The user asks: {message}
 
-[Description 2-3 sentences]
-
-✅ Highlights:
-• [Highlight 1]
-• [Highlight 2]
-
----
-
-STRICT RULES:
-1. EACH activity starts with ### and a fitting EMOJI
-2. NEVER use numbered lists (1. 2. 3.)!
-3. Between activities MUST be ---
-4. Mix different types: Action, relaxation, food/drinks, experiences`,
-      day_plan: `CRITICAL - EXACT FORMAT FOR DAY PLAN:
-
-Each new day MUST start on its OWN LINE with:
-
-## [Day]: [Title] [Emojis]
-
-Each time block MUST start on its OWN LINE with:
-
-### [Time] [Emoji] [Activity Title]
-📍 Location: [Place/Restaurant/Hotel]
-🚗 Transport: [Transport details if needed]
-💰 Cost: [Estimated cost per person]
-💡 Pro Tip: [Helpful tip]
-
-[Brief description]
-
----
-
-EXAMPLE (FORMAT EXACTLY LIKE THIS):
-
-## Friday: Arrival & Welcome! ✈️🌃
-
-### 5:00 PM ✈️ Airport Arrival
-📍 Location: Airport
-🚗 Transport: Uber to hotel
-
-Everyone gathers and heads to the hotel together.
-
----
-
-### 6:30 PM 🏨 Hotel Check-in
-📍 Location: Hotel Name
-💰 Cost: ~$50 per person
-
-Get to rooms and freshen up.
-
----
-
-## Saturday: Action Day! 🎲☀️
-
-### 9:00 AM 🍳 Breakfast
-📍 Location: Hotel Restaurant
-
-Group breakfast to fuel up.
-
----
-
-STRICT RULES:
-1. EACH day starts with ## on a NEW LINE
-2. EACH time block starts with ### on a NEW LINE
-3. NEVER use bullet points (*) or (**) for days or time blocks!
-4. There MUST be a clear break between days
-5. Plan realistically with buffer times between activities`,
-      budget_estimate: `Create a detailed budget estimate:
-📊 Breakdown by category (Transport, accommodation, activities, food, extras)
-💰 Total cost per person
-💡 Money-saving tips
-⚠️ Hidden costs`,
-      chat: "User question: {message}\n\nAnswer based on the event context.",
+Answer the question helpfully in the context of the event.
+Provide practical, actionable tips.`,
       message_enhance: {
-        casual: "Make the text more casual, friendly and informal. Use more emojis.",
-        formal: "Make the text more formal and professional. Reduce emojis.",
-        shorter: "Shorten the text to the essentials.",
-        detailed: "Add more details and helpful information.",
-        custom: "{instruction}",
+        casual: "Make this message friendlier and more casual, keeping all important information.",
+        formal: "Make this message more professional and formal, keeping all important information.",
+        shorter: "Shorten this message to the essentials without losing important information.",
+        detailed: "Expand this message with more details and helpful information.",
+        custom: "Adapt this message according to the following instruction: {instruction}",
       },
     },
   },
   fr: {
-    context_header: "Contexte de l'événement:",
+    context_header: "📋 CONTEXTE DE L'ÉVÉNEMENT",
     event_types: {
       bachelor: "Enterrement de vie de garçon",
       bachelorette: "Enterrement de vie de jeune fille",
-      birthday: "Anniversaire",
+      birthday: "Fête d'anniversaire",
       trip: "Voyage de groupe",
-      other: "Événement",
+      other: "Événement de groupe",
     },
     labels: {
       honoree: "Invité d'honneur",
@@ -593,94 +510,85 @@ STRICT RULES:
       participants: "Participants",
       budget: "Budget par personne",
       destination: "Préférence de destination",
-      activities: "Activités préférées",
-      restrictions: "Restrictions",
+      activities: "Activités populaires",
       fitness: "Niveau de forme",
       duration: "Durée",
-      date_info: "Période",
+      description: "Description",
     },
     prompts: {
-      trip_ideas: `IMPORTANT - FORMAT EXACT POUR LES IDÉES DE VOYAGE:
+      trip_ideas: `Génère 5 idées de destinations créatives et détaillées pour cet événement.
 
-Suggère 3-4 idées de voyage. Chaque idée DOIT commencer sur sa PROPRE LIGNE avec:
+Pour chaque destination, indique:
+- 🌍 Destination (Ville/Région)
+- ✨ Pourquoi c'est parfait
+- 🏠 Recommandation d'hébergement
+- 🎯 Top 3 activités sur place
+- 💰 Budget estimé (transport + hébergement + activités)
+- 🗓️ Meilleure période
 
-### [Emoji] [Titre du voyage]
-📍 Destination: [Ville/Région]
-💰 Budget: [Coût estimé par personne]
-✈️ Durée: [Durée recommandée]
+Formate tout clairement avec des emojis et des sections.`,
+      activities: `Génère 10 activités adaptées pour cet événement.
 
-[Description 2-3 phrases]
+Pour chaque activité, indique:
+- 🎯 Nom de l'activité
+- 📝 Brève description (2-3 phrases)
+- ⏱️ Durée
+- 💰 Coût estimé par personne
+- 💪 Niveau de forme (facile/moyen/difficile)
+- 📍 Lieu possible/prestataire
 
-✅ Pourquoi parfait:
-• [Raison 1]
-• [Raison 2]
-• [Raison 3]
+Mélange activités dynamiques et détente.`,
+      day_plan: `Crée un programme détaillé de la journée pour cet événement.
 
-🎯 Points forts:
-• [Point 1]
-• [Point 2]
+Structure la journée avec des créneaux:
+- ☀️ Matin (8h-12h)
+- 🌤️ Midi (12h-14h)
+- 🌅 Après-midi (14h-18h)
+- 🌙 Soir (18h-24h)
 
----
+Pour chaque créneau:
+- Activité avec emoji
+- Durée et horaire
+- Coûts estimés
+- Conseils pratiques
+- Alternative en cas de mauvais temps`,
+      budget_estimate: `Crée une estimation détaillée du budget pour cet événement.
 
-RÈGLES: Utilise ### et un EMOJI pour chaque idée. PAS de listes numérotées!`,
-      activities: `IMPORTANT - FORMAT EXACT POUR LES ACTIVITÉS:
+Catégories:
+- 🏠 Hébergement (par nuit, par personne)
+- 🚗 Transport (aller + sur place)
+- 🎯 Activités (toutes prévues)
+- 🍽️ Repas (petit-déj, déjeuner, dîner, snacks)
+- 🍻 Boissons/Fête
+- 🎁 Divers (déco, surprises, etc.)
 
-Suggère 5-6 activités. Chaque activité DOIT commencer sur sa PROPRE LIGNE avec:
+Pour chaque catégorie:
+- Budget minimum
+- Budget recommandé
+- Budget premium
 
-### [Emoji] [Nom de l'activité]
-📍 Lieu: [Location si pertinent]
-⏱️ Durée: [Durée]
-💰 Coût: [Coût par personne]
-💪 Forme: [Facile/Normal/Exigeant]
-🎯 Catégorie: [Action/Food/Wellness/Party/Visite]
+Inclus un résumé total à la fin.`,
+      chat: `L'utilisateur demande: {message}
 
-[Description 2-3 phrases]
-
-✅ Points forts:
-• [Point 1]
-• [Point 2]
-
----
-
-RÈGLES: Utilise ### et un EMOJI pour chaque activité. PAS de listes numérotées!`,
-      day_plan: `IMPORTANT: Crée un programme STRUCTURÉ avec EXACTEMENT ce format:
-
-## [Jour]: [Titre] [Emojis]
-
-### [Heure] [Emoji] [Titre de l'activité]
-📍 Lieu: [Place/Restaurant/Hôtel]
-🚗 Transport: [Détails transport si nécessaire]
-💰 Coût: [Coût estimé par personne]
-💡 Pro-Tipp: [Conseil utile]
-
-[Brève description]
-
----
-
-RÈGLES: Utilise ## pour chaque jour et ### pour chaque créneau horaire. PAS de points (*)!`,
-      budget_estimate: `Crée une estimation budgétaire détaillée:
-📊 Répartition par catégorie
-💰 Coût total par personne
-💡 Astuces économies
-⚠️ Coûts cachés`,
-      chat: "Question: {message}\n\nRéponds en fonction du contexte.",
+Réponds de manière utile dans le contexte de l'événement.
+Donne des conseils pratiques et applicables.`,
       message_enhance: {
-        casual: "Rends le texte plus décontracté et amical. Utilise plus d'emojis.",
-        formal: "Rends le texte plus formel et professionnel.",
-        shorter: "Raccourcis le texte à l'essentiel.",
-        detailed: "Ajoute plus de détails.",
-        custom: "{instruction}",
+        casual: "Rends ce message plus amical et décontracté, en gardant toutes les informations importantes.",
+        formal: "Rends ce message plus professionnel et formel, en gardant toutes les informations importantes.",
+        shorter: "Raccourcis ce message à l'essentiel sans perdre les informations importantes.",
+        detailed: "Développe ce message avec plus de détails et d'informations utiles.",
+        custom: "Adapte ce message selon l'instruction suivante: {instruction}",
       },
     },
   },
   es: {
-    context_header: "Contexto del evento:",
+    context_header: "📋 CONTEXTO DEL EVENTO",
     event_types: {
       bachelor: "Despedida de soltero",
       bachelorette: "Despedida de soltera",
-      birthday: "Cumpleaños",
+      birthday: "Fiesta de cumpleaños",
       trip: "Viaje en grupo",
-      other: "Evento",
+      other: "Evento grupal",
     },
     labels: {
       honoree: "Invitado de honor",
@@ -688,94 +596,85 @@ RÈGLES: Utilise ## pour chaque jour et ### pour chaque créneau horaire. PAS de
       participants: "Participantes",
       budget: "Presupuesto por persona",
       destination: "Preferencia de destino",
-      activities: "Actividades preferidas",
-      restrictions: "Restricciones",
-      fitness: "Nivel de forma física",
+      activities: "Actividades populares",
+      fitness: "Nivel de fitness",
       duration: "Duración",
-      date_info: "Período",
+      description: "Descripción",
     },
     prompts: {
-      trip_ideas: `IMPORTANTE - FORMATO EXACTO PARA IDEAS DE VIAJE:
+      trip_ideas: `Genera 5 ideas de destinos creativos y detallados para este evento.
 
-Sugiere 3-4 ideas de viaje. Cada idea DEBE comenzar en su PROPIA LÍNEA con:
+Para cada destino incluye:
+- 🌍 Destino (Ciudad/Región)
+- ✨ Por qué es perfecto
+- 🏠 Recomendación de alojamiento
+- 🎯 Top 3 actividades allí
+- 💰 Presupuesto estimado (transporte + alojamiento + actividades)
+- 🗓️ Mejor época para visitar
 
-### [Emoji] [Título del viaje]
-📍 Destino: [Ciudad/Región]
-💰 Presupuesto: [Costo estimado por persona]
-✈️ Duración: [Duración recomendada]
+Formatea todo claramente con emojis y secciones.`,
+      activities: `Genera 10 actividades adecuadas para este evento.
 
-[Descripción 2-3 frases]
+Para cada actividad incluye:
+- 🎯 Nombre de la actividad
+- 📝 Breve descripción (2-3 frases)
+- ⏱️ Duración
+- 💰 Costo estimado por persona
+- 💪 Nivel de fitness (fácil/medio/desafiante)
+- 📍 Posible ubicación/proveedor
 
-✅ Por qué perfecto:
-• [Razón 1]
-• [Razón 2]
-• [Razón 3]
+Mezcla actividades dinámicas y relajantes.`,
+      day_plan: `Crea un plan detallado del día para este evento.
 
-🎯 Destacados:
-• [Destacado 1]
-• [Destacado 2]
+Estructura el día con bloques de tiempo:
+- ☀️ Mañana (8:00-12:00)
+- 🌤️ Mediodía (12:00-14:00)
+- 🌅 Tarde (14:00-18:00)
+- 🌙 Noche (18:00-24:00)
 
----
+Para cada bloque:
+- Actividad con emoji
+- Duración y horario
+- Costos estimados
+- Consejos prácticos
+- Alternativa para mal tiempo`,
+      budget_estimate: `Crea una estimación detallada del presupuesto para este evento.
 
-REGLAS: Usa ### y un EMOJI para cada idea. ¡NO uses listas numeradas!`,
-      activities: `IMPORTANTE - FORMATO EXACTO PARA ACTIVIDADES:
+Categorías:
+- 🏠 Alojamiento (por noche, por persona)
+- 🚗 Transporte (ida + local)
+- 🎯 Actividades (todas las planeadas)
+- 🍽️ Comida (desayuno, almuerzo, cena, snacks)
+- 🍻 Bebidas/Fiesta
+- 🎁 Varios (decoración, sorpresas, etc.)
 
-Sugiere 5-6 actividades. Cada actividad DEBE comenzar en su PROPIA LÍNEA con:
+Para cada categoría:
+- Presupuesto mínimo
+- Presupuesto recomendado
+- Presupuesto premium
 
-### [Emoji] [Nombre de la actividad]
-📍 Lugar: [Ubicación si relevante]
-⏱️ Duración: [Duración]
-💰 Coste: [Coste por persona]
-💪 Forma física: [Fácil/Normal/Exigente]
-🎯 Categoría: [Acción/Comida/Wellness/Fiesta/Turismo]
+Incluye un resumen total al final.`,
+      chat: `El usuario pregunta: {message}
 
-[Descripción 2-3 frases]
-
-✅ Destacados:
-• [Destacado 1]
-• [Destacado 2]
-
----
-
-REGLAS: Usa ### y un EMOJI para cada actividad. ¡NO uses listas numeradas!`,
-      day_plan: `IMPORTANTE: Crea un horario ESTRUCTURADO con EXACTAMENTE este formato:
-
-## [Día]: [Título] [Emojis]
-
-### [Hora] [Emoji] [Título de la actividad]
-📍 Lugar: [Sitio/Restaurante/Hotel]
-🚗 Transporte: [Detalles de transporte]
-💰 Coste: [Coste estimado por persona]
-💡 Pro-Tipp: [Consejo útil]
-
-[Breve descripción]
-
----
-
-REGLAS: Usa ## para cada día y ### para cada bloque horario. ¡NO uses puntos (*)!`,
-      budget_estimate: `Crea una estimación de presupuesto:
-📊 Desglose por categoría
-💰 Costo total por persona
-💡 Consejos de ahorro
-⚠️ Costos ocultos`,
-      chat: "Pregunta: {message}\n\nResponde según el contexto.",
+Responde de manera útil en el contexto del evento.
+Da consejos prácticos y aplicables.`,
       message_enhance: {
-        casual: "Hazlo más casual y amigable. Usa más emojis.",
-        formal: "Hazlo más formal y profesional.",
-        shorter: "Acorta el texto a lo esencial.",
-        detailed: "Añade más detalles.",
-        custom: "{instruction}",
+        casual: "Haz este mensaje más amigable y casual, manteniendo toda la información importante.",
+        formal: "Haz este mensaje más profesional y formal, manteniendo toda la información importante.",
+        shorter: "Acorta este mensaje a lo esencial sin perder información importante.",
+        detailed: "Expande este mensaje con más detalles e información útil.",
+        custom: "Adapta este mensaje según la siguiente instrucción: {instruction}",
       },
     },
   },
   it: {
-    context_header: "Contesto dell'evento:",
+    context_header: "📋 CONTESTO DELL'EVENTO",
     event_types: {
       bachelor: "Addio al celibato",
       bachelorette: "Addio al nubilato",
-      birthday: "Compleanno",
+      birthday: "Festa di compleanno",
       trip: "Viaggio di gruppo",
-      other: "Evento",
+      other: "Evento di gruppo",
     },
     labels: {
       honoree: "Ospite d'onore",
@@ -783,189 +682,171 @@ REGLAS: Usa ## para cada día y ### para cada bloque horario. ¡NO uses puntos (
       participants: "Partecipanti",
       budget: "Budget per persona",
       destination: "Preferenza destinazione",
-      activities: "Attività preferite",
-      restrictions: "Restrizioni",
+      activities: "Attività popolari",
       fitness: "Livello fitness",
       duration: "Durata",
-      date_info: "Periodo",
+      description: "Descrizione",
     },
     prompts: {
-      trip_ideas: `IMPORTANTE - FORMATO ESATTO PER IDEE DI VIAGGIO:
+      trip_ideas: `Genera 5 idee di destinazioni creative e dettagliate per questo evento.
 
-Suggerisci 3-4 idee di viaggio. Ogni idea DEVE iniziare sulla sua PROPRIA RIGA con:
+Per ogni destinazione includi:
+- 🌍 Destinazione (Città/Regione)
+- ✨ Perché è perfetta
+- 🏠 Raccomandazione alloggio
+- 🎯 Top 3 attività sul posto
+- 💰 Budget stimato (trasporto + alloggio + attività)
+- 🗓️ Periodo migliore per visitare
 
-### [Emoji] [Titolo del viaggio]
-📍 Destinazione: [Città/Regione]
-💰 Budget: [Costo stimato a persona]
-✈️ Durata: [Durata consigliata]
+Formatta tutto chiaramente con emoji e sezioni.`,
+      activities: `Genera 10 attività adatte per questo evento.
 
-[Descrizione 2-3 frasi]
+Per ogni attività includi:
+- 🎯 Nome attività
+- 📝 Breve descrizione (2-3 frasi)
+- ⏱️ Durata
+- 💰 Costo stimato per persona
+- 💪 Livello fitness (facile/medio/impegnativo)
+- 📍 Possibile luogo/fornitore
 
-✅ Perché perfetto:
-• [Motivo 1]
-• [Motivo 2]
-• [Motivo 3]
+Mescola attività dinamiche e rilassanti.`,
+      day_plan: `Crea un piano giornaliero dettagliato per questo evento.
 
-🎯 Punti salienti:
-• [Punto 1]
-• [Punto 2]
+Struttura la giornata con blocchi temporali:
+- ☀️ Mattina (8:00-12:00)
+- 🌤️ Pranzo (12:00-14:00)
+- 🌅 Pomeriggio (14:00-18:00)
+- 🌙 Sera (18:00-24:00)
 
----
+Per ogni blocco:
+- Attività con emoji
+- Durata e orario
+- Costi stimati
+- Consigli pratici
+- Alternativa in caso di maltempo`,
+      budget_estimate: `Crea una stima dettagliata del budget per questo evento.
 
-REGOLE: Usa ### e un EMOJI per ogni idea. NON usare liste numerate!`,
-      activities: `IMPORTANTE - FORMATO ESATTO PER ATTIVITÀ:
+Categorie:
+- 🏠 Alloggio (per notte, per persona)
+- 🚗 Trasporto (andata + locale)
+- 🎯 Attività (tutte pianificate)
+- 🍽️ Cibo (colazione, pranzo, cena, snack)
+- 🍻 Bevande/Festa
+- 🎁 Varie (decorazioni, sorprese, ecc.)
 
-Suggerisci 5-6 attività. Ogni attività DEVE iniziare sulla sua PROPRIA RIGA con:
+Per ogni categoria:
+- Budget minimo
+- Budget raccomandato
+- Budget premium
 
-### [Emoji] [Nome dell'attività]
-📍 Luogo: [Posizione se rilevante]
-⏱️ Durata: [Durata]
-💰 Costo: [Costo a persona]
-💪 Forma fisica: [Facile/Normale/Impegnativo]
-🎯 Categoria: [Azione/Cibo/Benessere/Festa/Visite]
+Includi un riepilogo totale alla fine.`,
+      chat: `L'utente chiede: {message}
 
-[Descrizione 2-3 frasi]
-
-✅ Punti salienti:
-• [Punto 1]
-• [Punto 2]
-
----
-
-REGOLE: Usa ### e un EMOJI per ogni attività. NON usare liste numerate!`,
-      day_plan: `IMPORTANTE: Crea un programma STRUTTURATO con ESATTAMENTE questo formato:
-
-## [Giorno]: [Titolo] [Emoji]
-
-### [Ora] [Emoji] [Titolo attività]
-📍 Luogo: [Posto/Ristorante/Hotel]
-🚗 Trasporto: [Dettagli trasporto]
-💰 Costo: [Costo stimato a persona]
-💡 Pro-Tipp: [Consiglio utile]
-
-[Breve descrizione]
-
----
-
-REGOLE: Usa ## per ogni giorno e ### per ogni blocco orario. NON usare punti (*)!`,
-      budget_estimate: `Crea una stima budget:
-📊 Suddivisione per categoria
-💰 Costo totale a persona
-💡 Consigli risparmio
-⚠️ Costi nascosti`,
-      chat: "Domanda: {message}\n\nRispondi in base al contesto.",
+Rispondi in modo utile nel contesto dell'evento.
+Dai consigli pratici e applicabili.`,
       message_enhance: {
-        casual: "Rendilo più casual e amichevole. Usa più emoji.",
-        formal: "Rendilo più formale e professionale.",
-        shorter: "Accorcia il testo all'essenziale.",
-        detailed: "Aggiungi più dettagli.",
-        custom: "{instruction}",
+        casual: "Rendi questo messaggio più amichevole e informale, mantenendo tutte le informazioni importanti.",
+        formal: "Rendi questo messaggio più professionale e formale, mantenendo tutte le informazioni importanti.",
+        shorter: "Accorcia questo messaggio all'essenziale senza perdere informazioni importanti.",
+        detailed: "Espandi questo messaggio con più dettagli e informazioni utili.",
+        custom: "Adatta questo messaggio secondo la seguente istruzione: {instruction}",
       },
     },
   },
   nl: {
-    context_header: "Evenement context:",
+    context_header: "📋 EVENEMENT CONTEXT",
     event_types: {
-      bachelor: "Vrijgezellenfeest (man)",
-      bachelorette: "Vrijgezellenfeest (vrouw)",
-      birthday: "Verjaardag",
+      bachelor: "Vrijgezellenfeest (mannen)",
+      bachelorette: "Vrijgezellenfeest (vrouwen)",
+      birthday: "Verjaardagsfeest",
       trip: "Groepsreis",
-      other: "Evenement",
+      other: "Groepsevenement",
     },
     labels: {
       honoree: "Eregast",
-      event_name: "Evenement naam",
+      event_name: "Evenementnaam",
       participants: "Deelnemers",
       budget: "Budget per persoon",
       destination: "Bestemmingsvoorkeur",
-      activities: "Voorkeursactiviteiten",
-      restrictions: "Beperkingen",
+      activities: "Populaire activiteiten",
       fitness: "Fitnessniveau",
       duration: "Duur",
-      date_info: "Periode",
+      description: "Beschrijving",
     },
     prompts: {
-      trip_ideas: `BELANGRIJK - EXACT FORMAAT VOOR REISIDEEËN:
+      trip_ideas: `Genereer 5 creatieve en gedetailleerde bestemmingsideeën voor dit evenement.
 
-Stel 3-4 passende reisideeën voor. Elk idee MOET op zijn EIGEN REGEL beginnen met:
+Voor elke bestemming, vermeld:
+- 🌍 Bestemming (Stad/Regio)
+- ✨ Waarom het perfect is
+- 🏠 Accommodatie-aanbeveling
+- 🎯 Top 3 activiteiten ter plaatse
+- 💰 Geschat budget (vervoer + accommodatie + activiteiten)
+- 🗓️ Beste reistijd
 
-### [Emoji] [Titel van de reis]
-📍 Bestemming: [Stad/Regio]
-💰 Budget: [Geschatte kosten per persoon]
-✈️ Duur: [Aanbevolen duur]
+Formatteer alles duidelijk met emoji's en secties.`,
+      activities: `Genereer 10 geschikte activiteiten voor dit evenement.
 
-[Beschrijving 2-3 zinnen]
+Voor elke activiteit, vermeld:
+- 🎯 Activiteitsnaam
+- 📝 Korte beschrijving (2-3 zinnen)
+- ⏱️ Duur
+- 💰 Geschatte kosten per persoon
+- 💪 Fitnessniveau (makkelijk/gemiddeld/uitdagend)
+- 📍 Mogelijke locatie/aanbieder
 
-✅ Waarom perfect:
-• [Reden 1]
-• [Reden 2]
-• [Reden 3]
+Mix actieve en ontspannende activiteiten.`,
+      day_plan: `Maak een gedetailleerd dagprogramma voor dit evenement.
 
-🎯 Hoogtepunten:
-• [Hoogtepunt 1]
-• [Hoogtepunt 2]
+Structureer de dag met tijdblokken:
+- ☀️ Ochtend (8:00-12:00)
+- 🌤️ Middag (12:00-14:00)
+- 🌅 Namiddag (14:00-18:00)
+- 🌙 Avond (18:00-24:00)
 
----
+Voor elk tijdblok:
+- Activiteit met emoji
+- Duur en tijdslot
+- Geschatte kosten
+- Praktische tips
+- Slecht weer alternatief`,
+      budget_estimate: `Maak een gedetailleerde budgetschatting voor dit evenement.
 
-REGELS: Gebruik ### en een EMOJI voor elk idee. GEEN genummerde lijsten!`,
-      activities: `BELANGRIJK - EXACT FORMAAT VOOR ACTIVITEITEN:
+Categorieën:
+- 🏠 Accommodatie (per nacht, per persoon)
+- 🚗 Vervoer (heen + lokaal)
+- 🎯 Activiteiten (alle geplande)
+- 🍽️ Eten (ontbijt, lunch, diner, snacks)
+- 🍻 Drinken/Feest
+- 🎁 Overig (decoratie, verrassingen, etc.)
 
-Stel 5-6 passende activiteiten voor. Elke activiteit MOET op zijn EIGEN REGEL beginnen met:
+Voor elke categorie:
+- Minimum budget
+- Aanbevolen budget
+- Premium budget
 
-### [Emoji] [Activiteitsnaam]
-📍 Locatie: [Locatie indien relevant]
-⏱️ Duur: [Duur]
-💰 Kosten: [Kosten per persoon]
-💪 Fitness: [Makkelijk/Normaal/Uitdagend]
-🎯 Categorie: [Actie/Eten/Wellness/Feest/Bezichtiging]
+Voeg een totaaloverzicht toe aan het einde.`,
+      chat: `De gebruiker vraagt: {message}
 
-[Beschrijving 2-3 zinnen]
-
-✅ Hoogtepunten:
-• [Hoogtepunt 1]
-• [Hoogtepunt 2]
-
----
-
-REGELS: Gebruik ### en een EMOJI voor elke activiteit. GEEN genummerde lijsten!`,
-      day_plan: `BELANGRIJK: Maak een GESTRUCTUREERD dagprogramma met EXACT dit formaat:
-
-## [Dag]: [Titel] [Emoji's]
-
-### [Tijd] [Emoji] [Activiteitstitel]
-📍 Locatie: [Plek/Restaurant/Hotel]
-🚗 Vervoer: [Vervoersdetails]
-💰 Kosten: [Geschatte kosten per persoon]
-💡 Pro-Tip: [Nuttige tip]
-
-[Korte beschrijving]
-
----
-
-REGELS: Gebruik ## voor elke dag en ### voor elk tijdblok. GEEN opsommingstekens (*)!`,
-      budget_estimate: `Maak een gedetailleerde budgetschatting:
-📊 Uitsplitsing per categorie
-💰 Totale kosten per persoon
-💡 Bespaartips
-⚠️ Verborgen kosten`,
-      chat: "Vraag: {message}\n\nBeantwoord op basis van de context.",
+Beantwoord de vraag behulpzaam in de context van het evenement.
+Geef praktische, uitvoerbare tips.`,
       message_enhance: {
-        casual: "Maak de tekst informeler en vriendelijker. Gebruik meer emoji's.",
-        formal: "Maak de tekst formeler en professioneler.",
-        shorter: "Verkort de tekst tot de essentie.",
-        detailed: "Voeg meer details toe.",
-        custom: "{instruction}",
+        casual: "Maak dit bericht vriendelijker en informeler, met behoud van alle belangrijke informatie.",
+        formal: "Maak dit bericht professioneler en formeler, met behoud van alle belangrijke informatie.",
+        shorter: "Verkort dit bericht tot de essentie zonder belangrijke informatie te verliezen.",
+        detailed: "Breid dit bericht uit met meer details en nuttige informatie.",
+        custom: "Pas dit bericht aan volgens de volgende instructie: {instruction}",
       },
     },
   },
   pl: {
-    context_header: "Kontekst wydarzenia:",
+    context_header: "📋 KONTEKST WYDARZENIA",
     event_types: {
       bachelor: "Wieczór kawalerski",
       bachelorette: "Wieczór panieński",
-      birthday: "Urodziny",
+      birthday: "Przyjęcie urodzinowe",
       trip: "Wycieczka grupowa",
-      other: "Wydarzenie",
+      other: "Wydarzenie grupowe",
     },
     labels: {
       honoree: "Gość honorowy",
@@ -973,94 +854,85 @@ REGELS: Gebruik ## voor elke dag en ### voor elk tijdblok. GEEN opsommingstekens
       participants: "Uczestnicy",
       budget: "Budżet na osobę",
       destination: "Preferowana destynacja",
-      activities: "Preferowane aktywności",
-      restrictions: "Ograniczenia",
-      fitness: "Poziom kondycji",
+      activities: "Popularne aktywności",
+      fitness: "Poziom sprawności",
       duration: "Czas trwania",
-      date_info: "Okres",
+      description: "Opis",
     },
     prompts: {
-      trip_ideas: `WAŻNE - DOKŁADNY FORMAT DLA POMYSŁÓW NA WYJAZD:
+      trip_ideas: `Wygeneruj 5 kreatywnych i szczegółowych pomysłów na cele podróży dla tego wydarzenia.
 
-Zaproponuj 3-4 pomysły na wyjazd. Każdy pomysł MUSI zaczynać się na WŁASNEJ LINII z:
+Dla każdej destynacji podaj:
+- 🌍 Destynacja (Miasto/Region)
+- ✨ Dlaczego jest idealna
+- 🏠 Rekomendacja zakwaterowania
+- 🎯 Top 3 aktywności na miejscu
+- 💰 Szacowany budżet (transport + zakwaterowanie + aktywności)
+- 🗓️ Najlepszy czas na wizytę
 
-### [Emoji] [Tytuł wycieczki]
-📍 Destynacja: [Miasto/Region]
-💰 Budżet: [Szacunkowy koszt na osobę]
-✈️ Czas trwania: [Zalecana długość]
+Sformatuj wszystko czytelnie z emoji i sekcjami.`,
+      activities: `Wygeneruj 10 odpowiednich aktywności dla tego wydarzenia.
 
-[Opis 2-3 zdania]
+Dla każdej aktywności podaj:
+- 🎯 Nazwa aktywności
+- 📝 Krótki opis (2-3 zdania)
+- ⏱️ Czas trwania
+- 💰 Szacowany koszt na osobę
+- 💪 Poziom sprawności (łatwy/średni/wymagający)
+- 📍 Możliwa lokalizacja/organizator
 
-✅ Dlaczego idealne:
-• [Powód 1]
-• [Powód 2]
-• [Powód 3]
+Połącz aktywności dynamiczne i relaksacyjne.`,
+      day_plan: `Stwórz szczegółowy plan dnia dla tego wydarzenia.
 
-🎯 Najważniejsze:
-• [Punkt 1]
-• [Punkt 2]
+Podziel dzień na bloki czasowe:
+- ☀️ Poranek (8:00-12:00)
+- 🌤️ Południe (12:00-14:00)
+- 🌅 Popołudnie (14:00-18:00)
+- 🌙 Wieczór (18:00-24:00)
 
----
+Dla każdego bloku:
+- Aktywność z emoji
+- Czas trwania i przedział czasowy
+- Szacowane koszty
+- Praktyczne wskazówki
+- Alternatywa na złą pogodę`,
+      budget_estimate: `Stwórz szczegółową szacunkową kalkulację budżetu dla tego wydarzenia.
 
-ZASADY: Użyj ### i EMOJI dla każdego pomysłu. NIE używaj numerowanych list!`,
-      activities: `WAŻNE - DOKŁADNY FORMAT DLA AKTYWNOŚCI:
+Kategorie:
+- 🏠 Zakwaterowanie (za noc, na osobę)
+- 🚗 Transport (dojazd + lokalny)
+- 🎯 Aktywności (wszystkie zaplanowane)
+- 🍽️ Jedzenie (śniadanie, obiad, kolacja, przekąski)
+- 🍻 Napoje/Impreza
+- 🎁 Różne (dekoracje, niespodzianki, itp.)
 
-Zaproponuj 5-6 aktywności. Każda aktywność MUSI zaczynać się na WŁASNEJ LINII z:
+Dla każdej kategorii:
+- Minimalny budżet
+- Zalecany budżet
+- Budżet premium
 
-### [Emoji] [Nazwa aktywności]
-📍 Miejsce: [Lokalizacja jeśli istotna]
-⏱️ Czas trwania: [Czas]
-💰 Koszt: [Koszt na osobę]
-💪 Kondycja: [Łatwy/Normalny/Wymagający]
-🎯 Kategoria: [Akcja/Jedzenie/Wellness/Impreza/Zwiedzanie]
+Dołącz podsumowanie całkowite na końcu.`,
+      chat: `Użytkownik pyta: {message}
 
-[Opis 2-3 zdania]
-
-✅ Najważniejsze:
-• [Punkt 1]
-• [Punkt 2]
-
----
-
-ZASADY: Użyj ### i EMOJI dla każdej aktywności. NIE używaj numerowanych list!`,
-      day_plan: `WAŻNE: Stwórz STRUKTURALNY harmonogram z DOKŁADNIE tym formatem:
-
-## [Dzień]: [Tytuł] [Emoji]
-
-### [Godzina] [Emoji] [Tytuł aktywności]
-📍 Miejsce: [Lokalizacja/Restauracja/Hotel]
-🚗 Transport: [Szczegóły transportu]
-💰 Koszt: [Szacunkowy koszt na osobę]
-💡 Pro-Tip: [Przydatna wskazówka]
-
-[Krótki opis]
-
----
-
-ZASADY: Używaj ## dla każdego dnia i ### dla każdego bloku czasowego. NIE używaj punktorów (*)!`,
-      budget_estimate: `Stwórz szczegółową wycenę:
-📊 Podział na kategorie
-💰 Całkowity koszt na osobę
-💡 Porady oszczędnościowe
-⚠️ Ukryte koszty`,
-      chat: "Pytanie: {message}\n\nOdpowiedz na podstawie kontekstu.",
+Odpowiedz pomocnie w kontekście wydarzenia.
+Daj praktyczne, wykonalne wskazówki.`,
       message_enhance: {
-        casual: "Zrób tekst bardziej swobodny i przyjazny. Użyj więcej emoji.",
-        formal: "Zrób tekst bardziej formalny i profesjonalny.",
-        shorter: "Skróć tekst do esencji.",
-        detailed: "Dodaj więcej szczegółów.",
-        custom: "{instruction}",
+        casual: "Uczyń tę wiadomość bardziej przyjazną i swobodną, zachowując wszystkie ważne informacje.",
+        formal: "Uczyń tę wiadomość bardziej profesjonalną i formalną, zachowując wszystkie ważne informacje.",
+        shorter: "Skróć tę wiadomość do najważniejszych rzeczy bez utraty ważnych informacji.",
+        detailed: "Rozwiń tę wiadomość o więcej szczegółów i pomocnych informacji.",
+        custom: "Dostosuj tę wiadomość zgodnie z następującą instrukcją: {instruction}",
       },
     },
   },
   pt: {
-    context_header: "Contexto do evento:",
+    context_header: "📋 CONTEXTO DO EVENTO",
     event_types: {
       bachelor: "Despedida de solteiro",
       bachelorette: "Despedida de solteira",
-      birthday: "Aniversário",
+      birthday: "Festa de aniversário",
       trip: "Viagem em grupo",
-      other: "Evento",
+      other: "Evento de grupo",
     },
     labels: {
       honoree: "Convidado de honra",
@@ -1068,94 +940,85 @@ ZASADY: Używaj ## dla każdego dnia i ### dla każdego bloku czasowego. NIE uż
       participants: "Participantes",
       budget: "Orçamento por pessoa",
       destination: "Preferência de destino",
-      activities: "Atividades preferidas",
-      restrictions: "Restrições",
-      fitness: "Nível de forma física",
+      activities: "Atividades populares",
+      fitness: "Nível de fitness",
       duration: "Duração",
-      date_info: "Período",
+      description: "Descrição",
     },
     prompts: {
-      trip_ideas: `IMPORTANTE - FORMATO EXATO PARA IDEIAS DE VIAGEM:
+      trip_ideas: `Gera 5 ideias de destinos criativos e detalhados para este evento.
 
-Sugere 3-4 ideias de viagem. Cada ideia DEVE começar na sua PRÓPRIA LINHA com:
+Para cada destino inclui:
+- 🌍 Destino (Cidade/Região)
+- ✨ Porque é perfeito
+- 🏠 Recomendação de alojamento
+- 🎯 Top 3 atividades lá
+- 💰 Orçamento estimado (transporte + alojamento + atividades)
+- 🗓️ Melhor altura para visitar
 
-### [Emoji] [Título da viagem]
-📍 Destino: [Cidade/Região]
-💰 Orçamento: [Custo estimado por pessoa]
-✈️ Duração: [Duração recomendada]
+Formata tudo claramente com emojis e secções.`,
+      activities: `Gera 10 atividades adequadas para este evento.
 
-[Descrição 2-3 frases]
+Para cada atividade inclui:
+- 🎯 Nome da atividade
+- 📝 Breve descrição (2-3 frases)
+- ⏱️ Duração
+- 💰 Custo estimado por pessoa
+- 💪 Nível de fitness (fácil/médio/desafiante)
+- 📍 Possível local/fornecedor
 
-✅ Por que perfeito:
-• [Razão 1]
-• [Razão 2]
-• [Razão 3]
+Mistura atividades dinâmicas e relaxantes.`,
+      day_plan: `Cria um plano detalhado do dia para este evento.
 
-🎯 Destaques:
-• [Destaque 1]
-• [Destaque 2]
+Estrutura o dia com blocos de tempo:
+- ☀️ Manhã (8:00-12:00)
+- 🌤️ Almoço (12:00-14:00)
+- 🌅 Tarde (14:00-18:00)
+- 🌙 Noite (18:00-24:00)
 
----
+Para cada bloco:
+- Atividade com emoji
+- Duração e horário
+- Custos estimados
+- Dicas práticas
+- Alternativa para mau tempo`,
+      budget_estimate: `Cria uma estimativa detalhada do orçamento para este evento.
 
-REGRAS: Usa ### e um EMOJI para cada ideia. NÃO uses listas numeradas!`,
-      activities: `IMPORTANTE - FORMATO EXATO PARA ATIVIDADES:
+Categorias:
+- 🏠 Alojamento (por noite, por pessoa)
+- 🚗 Transporte (ida + local)
+- 🎯 Atividades (todas planeadas)
+- 🍽️ Comida (pequeno-almoço, almoço, jantar, snacks)
+- 🍻 Bebidas/Festa
+- 🎁 Diversos (decoração, surpresas, etc.)
 
-Sugere 5-6 atividades. Cada atividade DEVE começar na sua PRÓPRIA LINHA com:
+Para cada categoria:
+- Orçamento mínimo
+- Orçamento recomendado
+- Orçamento premium
 
-### [Emoji] [Nome da atividade]
-📍 Local: [Localização se relevante]
-⏱️ Duração: [Duração]
-💰 Custo: [Custo por pessoa]
-💪 Forma física: [Fácil/Normal/Exigente]
-🎯 Categoria: [Ação/Comida/Bem-estar/Festa/Turismo]
+Inclui um resumo total no final.`,
+      chat: `O utilizador pergunta: {message}
 
-[Descrição 2-3 frases]
-
-✅ Destaques:
-• [Destaque 1]
-• [Destaque 2]
-
----
-
-REGRAS: Usa ### e um EMOJI para cada atividade. NÃO uses listas numeradas!`,
-      day_plan: `IMPORTANTE: Cria um horário ESTRUTURADO com EXATAMENTE este formato:
-
-## [Dia]: [Título] [Emojis]
-
-### [Hora] [Emoji] [Título da atividade]
-📍 Local: [Sítio/Restaurante/Hotel]
-🚗 Transporte: [Detalhes de transporte]
-💰 Custo: [Custo estimado por pessoa]
-💡 Pro-Dica: [Dica útil]
-
-[Breve descrição]
-
----
-
-REGRAS: Usa ## para cada dia e ### para cada bloco horário. NÃO uses pontos (*)!`,
-      budget_estimate: `Cria uma estimativa de orçamento:
-📊 Divisão por categoria
-💰 Custo total por pessoa
-💡 Dicas de poupança
-⚠️ Custos ocultos`,
-      chat: "Pergunta: {message}\n\nResponde com base no contexto.",
+Responde de forma útil no contexto do evento.
+Dá conselhos práticos e aplicáveis.`,
       message_enhance: {
-        casual: "Torna mais casual e amigável. Usa mais emojis.",
-        formal: "Torna mais formal e profissional.",
-        shorter: "Encurta o texto ao essencial.",
-        detailed: "Adiciona mais detalhes.",
-        custom: "{instruction}",
+        casual: "Torna esta mensagem mais amigável e casual, mantendo toda a informação importante.",
+        formal: "Torna esta mensagem mais profissional e formal, mantendo toda a informação importante.",
+        shorter: "Encurta esta mensagem para o essencial sem perder informação importante.",
+        detailed: "Expande esta mensagem com mais detalhes e informação útil.",
+        custom: "Adapta esta mensagem de acordo com a seguinte instrução: {instruction}",
       },
     },
   },
   tr: {
-    context_header: "Etkinlik bağlamı:",
+    context_header: "📋 ETKİNLİK BAĞLAMI",
     event_types: {
       bachelor: "Bekarlığa veda (erkek)",
       bachelorette: "Bekarlığa veda (kadın)",
-      birthday: "Doğum günü",
+      birthday: "Doğum günü partisi",
       trip: "Grup gezisi",
-      other: "Etkinlik",
+      other: "Grup etkinliği",
     },
     labels: {
       honoree: "Onur konuğu",
@@ -1163,94 +1026,85 @@ REGRAS: Usa ## para cada dia e ### para cada bloco horário. NÃO uses pontos (*
       participants: "Katılımcılar",
       budget: "Kişi başı bütçe",
       destination: "Destinasyon tercihi",
-      activities: "Tercih edilen aktiviteler",
-      restrictions: "Kısıtlamalar",
+      activities: "Popüler aktiviteler",
       fitness: "Fitness seviyesi",
       duration: "Süre",
-      date_info: "Tarih aralığı",
+      description: "Açıklama",
     },
     prompts: {
-      trip_ideas: `ÖNEMLİ - GEZİ FİKİRLERİ İÇİN TAM FORMAT:
+      trip_ideas: `Bu etkinlik için 5 yaratıcı ve detaylı destinasyon fikri üret.
 
-3-4 uygun gezi fikri öner. Her fikir KENDİ SATIRINDA başlamalı:
+Her destinasyon için:
+- 🌍 Destinasyon (Şehir/Bölge)
+- ✨ Neden mükemmel
+- 🏠 Konaklama önerisi
+- 🎯 Oradaki en iyi 3 aktivite
+- 💰 Tahmini bütçe (ulaşım + konaklama + aktiviteler)
+- 🗓️ Ziyaret için en iyi zaman
 
-### [Emoji] [Gezi Başlığı]
-📍 Destinasyon: [Şehir/Bölge]
-💰 Bütçe: [Kişi başı tahmini maliyet]
-✈️ Süre: [Önerilen süre]
+Her şeyi emoji ve bölümlerle düzenle.`,
+      activities: `Bu etkinlik için 10 uygun aktivite üret.
 
-[2-3 cümle açıklama]
+Her aktivite için:
+- 🎯 Aktivite adı
+- 📝 Kısa açıklama (2-3 cümle)
+- ⏱️ Süre
+- 💰 Kişi başı tahmini maliyet
+- 💪 Fitness seviyesi (kolay/orta/zorlu)
+- 📍 Olası konum/sağlayıcı
 
-✅ Neden mükemmel:
-• [Sebep 1]
-• [Sebep 2]
-• [Sebep 3]
+Dinamik ve rahatlatıcı aktiviteleri karıştır.`,
+      day_plan: `Bu etkinlik için detaylı bir günlük plan oluştur.
 
-🎯 Öne çıkanlar:
-• [Öne çıkan 1]
-• [Öne çıkan 2]
+Günü zaman bloklarıyla yapılandır:
+- ☀️ Sabah (8:00-12:00)
+- 🌤️ Öğle (12:00-14:00)
+- 🌅 Öğleden sonra (14:00-18:00)
+- 🌙 Akşam (18:00-24:00)
 
----
+Her blok için:
+- Emoji ile aktivite
+- Süre ve zaman dilimi
+- Tahmini maliyetler
+- Pratik ipuçları
+- Kötü hava alternatifi`,
+      budget_estimate: `Bu etkinlik için detaylı bir bütçe tahmini oluştur.
 
-KURALLAR: Her fikir için ### ve EMOJI kullan. Numaralı liste KULLANMA!`,
-      activities: `ÖNEMLİ - AKTİVİTELER İÇİN TAM FORMAT:
+Kategoriler:
+- 🏠 Konaklama (gece başı, kişi başı)
+- 🚗 Ulaşım (gidiş + yerel)
+- 🎯 Aktiviteler (tüm planlananlar)
+- 🍽️ Yemek (kahvaltı, öğle, akşam, atıştırmalık)
+- 🍻 İçecekler/Parti
+- 🎁 Diğer (dekorasyon, sürprizler, vb.)
 
-5-6 uygun aktivite öner. Her aktivite KENDİ SATIRINDA başlamalı:
+Her kategori için:
+- Minimum bütçe
+- Önerilen bütçe
+- Premium bütçe
 
-### [Emoji] [Aktivite Adı]
-📍 Yer: [Lokasyon eğer gerekli]
-⏱️ Süre: [Süre]
-💰 Maliyet: [Kişi başı maliyet]
-💪 Fitness: [Kolay/Normal/Zorlu]
-🎯 Kategori: [Aksiyon/Yemek/Wellness/Parti/Gezi]
+Sonunda toplam özet ekle.`,
+      chat: `Kullanıcı soruyor: {message}
 
-[2-3 cümle açıklama]
-
-✅ Öne çıkanlar:
-• [Öne çıkan 1]
-• [Öne çıkan 2]
-
----
-
-KURALLAR: Her aktivite için ### ve EMOJI kullan. Numaralı liste KULLANMA!`,
-      day_plan: `ÖNEMLİ: YAPILANDIRILMIŞ bir günlük program oluştur, TAM olarak bu formatla:
-
-## [Gün]: [Başlık] [Emojiler]
-
-### [Saat] [Emoji] [Aktivite Başlığı]
-📍 Yer: [Mekan/Restoran/Otel]
-🚗 Ulaşım: [Ulaşım detayları]
-💰 Maliyet: [Kişi başı tahmini maliyet]
-💡 Pro-İpucu: [Faydalı ipucu]
-
-[Kısa açıklama]
-
----
-
-KURALLAR: Her gün için ## ve her zaman bloğu için ### kullan. Madde işareti (*) KULLANMA!`,
-      budget_estimate: `Detaylı bütçe tahmini oluştur:
-📊 Kategorilere göre dağılım
-💰 Kişi başı toplam maliyet
-💡 Tasarruf ipuçları
-⚠️ Gizli maliyetler`,
-      chat: "Soru: {message}\n\nBağlama göre cevapla.",
+Etkinlik bağlamında yararlı bir şekilde cevap ver.
+Pratik, uygulanabilir ipuçları ver.`,
       message_enhance: {
-        casual: "Metni daha rahat ve samimi yap. Daha çok emoji kullan.",
-        formal: "Metni daha resmi ve profesyonel yap.",
-        shorter: "Metni öze indir.",
-        detailed: "Daha fazla detay ekle.",
-        custom: "{instruction}",
+        casual: "Bu mesajı tüm önemli bilgileri koruyarak daha samimi ve rahat yap.",
+        formal: "Bu mesajı tüm önemli bilgileri koruyarak daha profesyonel ve resmi yap.",
+        shorter: "Bu mesajı önemli bilgileri kaybetmeden özüne indir.",
+        detailed: "Bu mesajı daha fazla detay ve yararlı bilgiyle genişlet.",
+        custom: "Bu mesajı şu talimata göre uyarla: {instruction}",
       },
     },
   },
   ar: {
-    context_header: "سياق الفعالية:",
+    context_header: "📋 سياق الفعالية",
     event_types: {
       bachelor: "حفلة وداع العزوبية (رجال)",
       bachelorette: "حفلة وداع العزوبية (نساء)",
-      birthday: "عيد ميلاد",
+      birthday: "حفلة عيد ميلاد",
       trip: "رحلة جماعية",
-      other: "فعالية",
+      other: "فعالية جماعية",
     },
     labels: {
       honoree: "ضيف الشرف",
@@ -1258,83 +1112,74 @@ KURALLAR: Her gün için ## ve her zaman bloğu için ### kullan. Madde işareti
       participants: "المشاركون",
       budget: "الميزانية للشخص",
       destination: "تفضيل الوجهة",
-      activities: "الأنشطة المفضلة",
-      restrictions: "القيود",
+      activities: "الأنشطة الشائعة",
       fitness: "مستوى اللياقة",
       duration: "المدة",
-      date_info: "الفترة الزمنية",
+      description: "الوصف",
     },
     prompts: {
-      trip_ideas: `مهم - التنسيق الدقيق لأفكار الرحلات:
+      trip_ideas: `أنشئ 5 أفكار وجهات إبداعية ومفصلة لهذه الفعالية.
 
-اقترح 3-4 أفكار رحلات. كل فكرة يجب أن تبدأ على سطرها الخاص مع:
+لكل وجهة اذكر:
+- 🌍 الوجهة (المدينة/المنطقة)
+- ✨ لماذا هي مثالية
+- 🏠 توصية الإقامة
+- 🎯 أفضل 3 أنشطة هناك
+- 💰 الميزانية المقدرة (النقل + الإقامة + الأنشطة)
+- 🗓️ أفضل وقت للزيارة
 
-### [رمز تعبيري] [عنوان الرحلة]
-📍 الوجهة: [المدينة/المنطقة]
-💰 الميزانية: [التكلفة المقدرة للشخص]
-✈️ المدة: [المدة المقترحة]
+نسق كل شيء بوضوح مع الرموز التعبيرية والأقسام.`,
+      activities: `أنشئ 10 أنشطة مناسبة لهذه الفعالية.
 
-[وصف 2-3 جمل]
+لكل نشاط اذكر:
+- 🎯 اسم النشاط
+- 📝 وصف موجز (2-3 جمل)
+- ⏱️ المدة
+- 💰 التكلفة المقدرة للشخص
+- 💪 مستوى اللياقة (سهل/متوسط/صعب)
+- 📍 الموقع/المزود المحتمل
 
-✅ لماذا مثالي:
-• [السبب 1]
-• [السبب 2]
-• [السبب 3]
+امزج الأنشطة النشطة والاسترخائية.`,
+      day_plan: `أنشئ خطة يوم مفصلة لهذه الفعالية.
 
-🎯 أبرز الميزات:
-• [ميزة 1]
-• [ميزة 2]
+هيكل اليوم بفترات زمنية:
+- ☀️ الصباح (8:00-12:00)
+- 🌤️ الظهيرة (12:00-14:00)
+- 🌅 بعد الظهر (14:00-18:00)
+- 🌙 المساء (18:00-24:00)
 
----
+لكل فترة:
+- نشاط مع رمز تعبيري
+- المدة والوقت
+- التكاليف المقدرة
+- نصائح عملية
+- بديل للطقس السيئ`,
+      budget_estimate: `أنشئ تقديراً مفصلاً للميزانية لهذه الفعالية.
 
-القواعد: استخدم ### ورمز تعبيري لكل فكرة. لا تستخدم قوائم مرقمة!`,
-      activities: `مهم - التنسيق الدقيق للأنشطة:
+الفئات:
+- 🏠 الإقامة (لليلة، للشخص)
+- 🚗 النقل (الذهاب + المحلي)
+- 🎯 الأنشطة (كل المخطط لها)
+- 🍽️ الطعام (فطور، غداء، عشاء، وجبات خفيفة)
+- 🍻 المشروبات/الحفلة
+- 🎁 متفرقات (ديكور، مفاجآت، إلخ)
 
-اقترح 5-6 أنشطة. كل نشاط يجب أن يبدأ على سطره الخاص مع:
+لكل فئة:
+- الحد الأدنى للميزانية
+- الميزانية الموصى بها
+- الميزانية المميزة
 
-### [رمز تعبيري] [اسم النشاط]
-📍 الموقع: [المكان إذا كان ذا صلة]
-⏱️ المدة: [المدة]
-💰 التكلفة: [التكلفة للشخص]
-💪 اللياقة: [سهل/عادي/صعب]
-🎯 الفئة: [أكشن/طعام/استرخاء/حفلة/سياحة]
+أضف ملخصاً إجمالياً في النهاية.`,
+      chat: `المستخدم يسأل: {message}
 
-[وصف 2-3 جمل]
-
-✅ أبرز الميزات:
-• [ميزة 1]
-• [ميزة 2]
-
----
-
-القواعد: استخدم ### ورمز تعبيري لكل نشاط. لا تستخدم قوائم مرقمة!`,
-      day_plan: `مهم: أنشئ جدول يومي منظم بالضبط بهذا التنسيق:
-
-## [اليوم]: [العنوان] [الرموز التعبيرية]
-
-### [الوقت] [الرمز] [عنوان النشاط]
-📍 المكان: [الموقع/المطعم/الفندق]
-🚗 التنقل: [تفاصيل النقل]
-💰 التكلفة: [التكلفة المقدرة للشخص]
-💡 نصيحة: [نصيحة مفيدة]
-
-[وصف موجز]
-
----
-
-القواعد: استخدم ## لكل يوم و ### لكل فترة زمنية. لا تستخدم النقاط (*)!`,
-      budget_estimate: `أنشئ تقدير ميزانية مفصل:
-📊 تقسيم حسب الفئة
-💰 التكلفة الإجمالية للشخص
-💡 نصائح التوفير
-⚠️ التكاليف الخفية`,
-      chat: "السؤال: {message}\n\nأجب بناءً على السياق.",
+أجب بشكل مفيد في سياق الفعالية.
+قدم نصائح عملية وقابلة للتنفيذ.`,
       message_enhance: {
-        casual: "اجعل النص أكثر وداً وغير رسمي. استخدم المزيد من الرموز التعبيرية.",
-        formal: "اجعل النص أكثر رسمية واحترافية.",
-        shorter: "اختصر النص للأساسيات.",
-        detailed: "أضف المزيد من التفاصيل.",
-        custom: "{instruction}",
+        casual: "اجعل هذه الرسالة أكثر ودية وعفوية مع الحفاظ على كل المعلومات المهمة.",
+        formal: "اجعل هذه الرسالة أكثر احترافية ورسمية مع الحفاظ على كل المعلومات المهمة.",
+        shorter: "اختصر هذه الرسالة إلى الأساسيات دون فقدان المعلومات المهمة.",
+        detailed: "وسع هذه الرسالة بمزيد من التفاصيل والمعلومات المفيدة.",
+        custom: "عدل هذه الرسالة وفقاً للتعليمات التالية: {instruction}",
       },
     },
   },
@@ -1343,58 +1188,81 @@ KURALLAR: Her gün için ## ve her zaman bloğu için ### kullan. Madde işareti
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
+
 function getSystemPrompt(language: string, eventType: string): string {
-  const lang = SYSTEM_PROMPTS[language] ? language : 'en';
-  const prompts = SYSTEM_PROMPTS[lang];
-  return prompts[eventType] || prompts['other'];
+  const langPrompts = SYSTEM_PROMPTS[language] || SYSTEM_PROMPTS.en;
+  return langPrompts[eventType] || langPrompts.other;
 }
 
 function getPromptTemplate(language: string) {
-  return USER_PROMPT_TEMPLATES[language] || USER_PROMPT_TEMPLATES['en'];
+  return USER_PROMPT_TEMPLATES[language] || USER_PROMPT_TEMPLATES.en;
 }
 
 function buildContextInfo(context: RequestBody['context'], language: string): string {
   const template = getPromptTemplate(language);
-  const eventTypeName = template.event_types[context.event_type] || template.event_types['other'];
+  const eventTypeName = template.event_types[context.event_type] || template.event_types.other;
   
-  let info = `${template.context_header}\n`;
-  
-  // Add event name if provided
-  if (context.event_name) {
-    info += `🎯 ${template.labels.event_name}: ${context.event_name}\n`;
+  let contextLines = [
+    template.context_header,
+    `${template.labels.event_name}: ${context.event_name || 'Event'}`,
+    `Event-Typ: ${eventTypeName}`,
+    `${template.labels.honoree}: ${context.honoree_name}`,
+    `${template.labels.participants}: ${context.participant_count}`,
+  ];
+
+  if (context.event_description) {
+    contextLines.push(`${template.labels.description}: ${context.event_description}`);
   }
-  
-  info += `📋 ${eventTypeName}\n`;
-  info += `👤 ${template.labels.honoree}: ${context.honoree_name}\n`;
-  info += `👥 ${template.labels.participants}: ${context.participant_count}\n`;
-  
   if (context.avg_budget) {
-    info += `💰 ${template.labels.budget}: ${context.avg_budget}\n`;
+    contextLines.push(`${template.labels.budget}: €${context.avg_budget}`);
   }
   if (context.destination_pref) {
-    info += `📍 ${template.labels.destination}: ${context.destination_pref}\n`;
+    contextLines.push(`${template.labels.destination}: ${context.destination_pref}`);
   }
-  if (context.top_activities?.length) {
-    info += `🎯 ${template.labels.activities}: ${context.top_activities.join(", ")}\n`;
-  }
-  if (context.restrictions?.length) {
-    info += `⚠️ ${template.labels.restrictions}: ${context.restrictions.join(", ")}\n`;
+  if (context.top_activities && context.top_activities.length > 0) {
+    contextLines.push(`${template.labels.activities}: ${context.top_activities.join(', ')}`);
   }
   if (context.fitness_level) {
-    info += `💪 ${template.labels.fitness}: ${context.fitness_level}\n`;
+    contextLines.push(`${template.labels.fitness}: ${context.fitness_level}`);
   }
   if (context.duration) {
-    info += `⏱️ ${template.labels.duration}: ${context.duration}\n`;
+    contextLines.push(`${template.labels.duration}: ${context.duration}`);
   }
-  if (context.date_info) {
-    info += `📅 ${template.labels.date_info}: ${context.date_info}\n`;
-  }
-  if (context.event_description) {
-    info += `📝 ${context.event_description}\n`;
+
+  return contextLines.join('\n');
+}
+
+// Helper to determine plan type from subscription
+function determinePlanType(sub: { plan: string; expires_at: string | null; stripe_subscription_id: string | null } | null): string {
+  if (!sub || sub.plan !== 'premium') return 'free';
+  
+  // Lifetime: premium without expiry or subscription id
+  if (!sub.expires_at && !sub.stripe_subscription_id) return 'lifetime';
+  
+  // Check days until expiry to determine yearly vs monthly
+  if (sub.expires_at) {
+    const daysUntilExpiry = Math.ceil((new Date(sub.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return daysUntilExpiry > 32 ? 'yearly' : 'monthly';
   }
   
-  return info;
+  return 'monthly';
 }
+
+// Get start of current month
+function getStartOfMonth(): Date {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+// Get next month reset date
+function getNextMonthReset(): Date {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+}
+
+// =============================================================================
+// MAIN HANDLER
+// =============================================================================
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -1411,14 +1279,93 @@ serve(async (req) => {
       );
     }
 
+    // Initialize Supabase client with service role for credit tracking
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get user from authorization header
+    const authHeader = req.headers.get("authorization");
+    let userId: string | null = null;
+    
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user } } = await supabase.auth.getUser(token);
+      userId = user?.id || null;
+    }
+
     const body: RequestBody = await req.json();
-    const { type, context, message } = body;
+    const { type, context, message, eventId } = body;
     
     // Determine language from context or default to 'de'
     const language = context.language || 'de';
     const eventType = context.event_type || 'other';
 
-    console.log("AI Assistant request:", { type, language, eventType, event_name: context.event_name });
+    console.log("AI Assistant request:", { type, language, eventType, event_name: context.event_name, userId });
+
+    // =========================================================================
+    // CREDIT CHECK (only for authenticated users)
+    // =========================================================================
+    if (userId) {
+      // Get subscription info
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('plan, expires_at, stripe_subscription_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      const planType = determinePlanType(sub);
+      const creditLimit = AI_CREDIT_LIMITS[planType] || 0;
+
+      console.log("User plan:", { planType, creditLimit });
+
+      // Skip credit check for free users (they shouldn't have access anyway via premium check)
+      if (creditLimit > 0) {
+        // Get current month usage
+        const startOfMonth = getStartOfMonth();
+        
+        const { count: usedCredits, error: countError } = await supabase
+          .from('ai_usage')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .gte('created_at', startOfMonth.toISOString());
+
+        if (countError) {
+          console.error("Error counting credits:", countError);
+        }
+
+        const used = usedCredits || 0;
+        console.log("Credit usage:", { used, limit: creditLimit });
+
+        // Check if limit reached
+        if (used >= creditLimit) {
+          const errorMsgs: Record<string, string> = {
+            de: "Du hast dein monatliches AI-Credit-Limit erreicht. Credits werden am 1. des nächsten Monats zurückgesetzt.",
+            en: "You've reached your monthly AI credit limit. Credits reset on the 1st of next month.",
+            fr: "Vous avez atteint votre limite mensuelle de crédits IA. Les crédits se réinitialisent le 1er du mois prochain.",
+            es: "Has alcanzado tu límite mensual de créditos de IA. Los créditos se reinician el 1 del próximo mes.",
+            it: "Hai raggiunto il limite mensile di crediti IA. I crediti si azzerano il 1° del mese prossimo.",
+            nl: "Je hebt je maandelijkse AI-credit limiet bereikt. Credits worden gereset op de 1e van de volgende maand.",
+            pl: "Osiągnąłeś miesięczny limit kredytów AI. Kredyty resetują się 1. dnia następnego miesiąca.",
+            pt: "Atingiste o teu limite mensal de créditos IA. Os créditos são repostos no dia 1 do próximo mês.",
+            tr: "Aylık AI kredi limitinize ulaştınız. Krediler bir sonraki ayın 1'inde sıfırlanır.",
+            ar: "لقد وصلت إلى حد رصيد الذكاء الاصطناعي الشهري. يتم إعادة تعيين الرصيد في الأول من الشهر القادم.",
+          };
+
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: 'CREDIT_LIMIT_REACHED',
+              message: errorMsgs[language] || errorMsgs.en,
+              credits_used: used,
+              credits_limit: creditLimit,
+              resets_at: getNextMonthReset().toISOString(),
+            }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
 
     // Get localized prompts
     const systemPrompt = getSystemPrompt(language, eventType);
@@ -1525,6 +1472,26 @@ Return ONLY the improved message without additional explanations. Keep placehold
     const content = data.choices?.[0]?.message?.content || "No response received.";
 
     console.log("AI response received successfully");
+
+    // =========================================================================
+    // TRACK USAGE (only for authenticated users)
+    // =========================================================================
+    if (userId) {
+      const { error: insertError } = await supabase
+        .from('ai_usage')
+        .insert({
+          user_id: userId,
+          event_id: eventId || null,
+          request_type: type,
+          tokens_used: 1,
+        });
+
+      if (insertError) {
+        console.error("Error tracking AI usage:", insertError);
+      } else {
+        console.log("AI usage tracked successfully");
+      }
+    }
 
     return new Response(
       JSON.stringify({ 
