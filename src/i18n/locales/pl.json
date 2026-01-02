@@ -198,7 +198,45 @@
       }
     },
     "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
-    "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "partnerPortal": "Portal partnerski", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." }
+    "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "becomeAgencyPartner": "Zostań partnerem agencji", "partnerPortal": "Portal partnerski", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." },
+    "agencyApply": {
+      "hero": {
+        "badge": "Partnerstwo Agencyjne",
+        "title": "Zostań Partnerem EventBliss",
+        "description": "Zarabiaj prowizje za każdego klienta, którego przyprowadzisz do EventBliss"
+      },
+      "benefits": {
+        "commission": { "title": "Atrakcyjne Prowizje", "description": "Do 20% za rezerwację" },
+        "tracking": { "title": "Śledzenie Referencji", "description": "Automatyczne przypisanie przez kod e-mail" },
+        "support": { "title": "Wsparcie Partnera", "description": "Dedykowana osoba kontaktowa" },
+        "exclusiveOffers": { "title": "Ekskluzywne Oferty", "description": "Specjalne vouchery dla Twoich klientów" }
+      },
+      "form": {
+        "title": "Aplikuj Teraz",
+        "selectAgency": "Wybierz swoją agencję",
+        "searchAgency": "Szukaj agencji...",
+        "notInList": "Mojej agencji nie ma na liście",
+        "newAgencyName": "Nazwa agencji",
+        "city": "Miasto",
+        "country": "Kraj",
+        "contactEmail": "E-mail kontaktowy",
+        "motivation": "Dlaczego chcesz zostać partnerem?",
+        "expectedReferrals": "Oczekiwane miesięczne polecenia",
+        "payoutMethod": "Preferowana metoda wypłaty",
+        "privacyConsent": "Akceptuję politykę prywatności",
+        "submit": "Wyślij aplikację",
+        "submitting": "Wysyłanie..."
+      },
+      "success": {
+        "title": "Aplikacja wysłana!",
+        "description": "Przejrzymy Twoją aplikację i skontaktujemy się w ciągu 48 godzin."
+      },
+      "stats": {
+        "partners": "Aktywni Partnerzy",
+        "avgCommission": "Śr. Prowizja",
+        "cities": "Miasta"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Impressum", "company": "Informacje o Firmie", "registeredCompany": "Firma zarejestrowana na Cyprze", "address": "Adres", "contact": "Kontakt", "responsibleContent": "Odpowiedzialny za Treść", "disputeResolution": "Rozstrzyganie Sporów UE", "disputeText": "Komisja Europejska udostępnia platformę do rozstrzygania sporów online." },

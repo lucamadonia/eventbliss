@@ -198,7 +198,45 @@
       }
     },
     "cta": { "title": "مستعد لفعاليتك القادمة؟", "description": "ابدأ مجاناً واصنع ذكريات لا تُنسى.", "button": "أنشئ فعاليتك" },
-    "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "partnerPortal": "بوابة الشركاء", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." }
+    "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "becomeAgencyPartner": "كن شريك وكالة", "partnerPortal": "بوابة الشركاء", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." },
+    "agencyApply": {
+      "hero": {
+        "badge": "شراكة الوكالات",
+        "title": "كن شريك EventBliss",
+        "description": "اكسب عمولات عن كل عميل تجلبه إلى EventBliss"
+      },
+      "benefits": {
+        "commission": { "title": "عمولات جذابة", "description": "حتى 20% لكل حجز" },
+        "tracking": { "title": "تتبع الإحالات", "description": "تعيين تلقائي عبر رمز البريد الإلكتروني" },
+        "support": { "title": "دعم الشركاء", "description": "شخص اتصال مخصص" },
+        "exclusiveOffers": { "title": "عروض حصرية", "description": "قسائم خاصة لعملائك" }
+      },
+      "form": {
+        "title": "تقدم الآن",
+        "selectAgency": "اختر وكالتك",
+        "searchAgency": "ابحث عن وكالة...",
+        "notInList": "وكالتي ليست في القائمة",
+        "newAgencyName": "اسم الوكالة",
+        "city": "المدينة",
+        "country": "البلد",
+        "contactEmail": "البريد الإلكتروني للتواصل",
+        "motivation": "لماذا تريد أن تصبح شريكاً؟",
+        "expectedReferrals": "الإحالات الشهرية المتوقعة",
+        "payoutMethod": "طريقة الدفع المفضلة",
+        "privacyConsent": "أوافق على سياسة الخصوصية",
+        "submit": "إرسال الطلب",
+        "submitting": "جار الإرسال..."
+      },
+      "success": {
+        "title": "تم إرسال الطلب!",
+        "description": "سنراجع طلبك ونتواصل معك خلال 48 ساعة."
+      },
+      "stats": {
+        "partners": "الشركاء النشطون",
+        "avgCommission": "متوسط العمولة",
+        "cities": "المدن"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "البصمة", "company": "معلومات الشركة", "registeredCompany": "شركة مسجلة في قبرص", "address": "العنوان", "contact": "اتصل", "responsibleContent": "المسؤول عن المحتوى", "disputeResolution": "حل النزاعات الأوروبي", "disputeText": "تقدم المفوضية الأوروبية منصة لحل النزاعات عبر الإنترنت." },

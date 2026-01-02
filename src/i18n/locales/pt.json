@@ -198,7 +198,45 @@
       }
     },
     "cta": { "title": "Pronto para o teu Próximo Evento?", "description": "Começa grátis e cria memórias inesquecíveis.", "button": "Criar o teu Evento" },
-    "footer": { "tagline": "Planeia eventos que unem pessoas", "product": "Produto", "features": "Funcionalidades", "integrations": "Integrações", "enterprise": "Enterprise", "solutions": "Soluções", "partner": "Parceiros", "becomePartner": "Tornar-se parceiro", "partnerPortal": "Portal de parceiros", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Aviso", "privacy": "Privacidade", "terms": "Termos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos os direitos reservados." }
+    "footer": { "tagline": "Planeia eventos que unem pessoas", "product": "Produto", "features": "Funcionalidades", "integrations": "Integrações", "enterprise": "Enterprise", "solutions": "Soluções", "partner": "Parceiros", "becomePartner": "Tornar-se parceiro", "becomeAgencyPartner": "Tornar-se parceiro de agência", "partnerPortal": "Portal de parceiros", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Aviso", "privacy": "Privacidade", "terms": "Termos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos os direitos reservados." },
+    "agencyApply": {
+      "hero": {
+        "badge": "Parceria de Agência",
+        "title": "Torna-te Parceiro EventBliss",
+        "description": "Ganha comissões por cada cliente que trazes ao EventBliss"
+      },
+      "benefits": {
+        "commission": { "title": "Comissões Atrativas", "description": "Até 20% por reserva" },
+        "tracking": { "title": "Rastreio de Referências", "description": "Atribuição automática por código de e-mail" },
+        "support": { "title": "Suporte ao Parceiro", "description": "Pessoa de contacto dedicada" },
+        "exclusiveOffers": { "title": "Ofertas Exclusivas", "description": "Vouchers especiais para os teus clientes" }
+      },
+      "form": {
+        "title": "Candidatar Agora",
+        "selectAgency": "Seleciona a tua agência",
+        "searchAgency": "Procurar agência...",
+        "notInList": "A minha agência não está na lista",
+        "newAgencyName": "Nome da agência",
+        "city": "Cidade",
+        "country": "País",
+        "contactEmail": "E-mail de contacto",
+        "motivation": "Porque queres tornar-te parceiro?",
+        "expectedReferrals": "Referências mensais esperadas",
+        "payoutMethod": "Método de pagamento preferido",
+        "privacyConsent": "Aceito a política de privacidade",
+        "submit": "Enviar candidatura",
+        "submitting": "A enviar..."
+      },
+      "success": {
+        "title": "Candidatura enviada!",
+        "description": "Analisaremos a tua candidatura e entraremos em contacto dentro de 48 horas."
+      },
+      "stats": {
+        "partners": "Parceiros Ativos",
+        "avgCommission": "Comissão Média",
+        "cities": "Cidades"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Aviso Legal", "company": "Informação da Empresa", "registeredCompany": "Empresa registada em Chipre", "address": "Morada", "contact": "Contacto", "responsibleContent": "Responsável pelo Conteúdo", "disputeResolution": "Resolução de Litígios UE", "disputeText": "A Comissão Europeia fornece uma plataforma para resolução de litígios online." },

@@ -198,7 +198,45 @@
       }
     },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
-    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." }
+    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "becomeAgencyPartner": "Ajans ortağı olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." },
+    "agencyApply": {
+      "hero": {
+        "badge": "Ajans Ortaklığı",
+        "title": "EventBliss Ortağı Olun",
+        "description": "EventBliss'e getirdiğiniz her müşteri için komisyon kazanın"
+      },
+      "benefits": {
+        "commission": { "title": "Çekici Komisyonlar", "description": "Rezervasyon başına %20'ye kadar" },
+        "tracking": { "title": "Referans Takibi", "description": "E-posta kodu ile otomatik atama" },
+        "support": { "title": "Ortak Desteği", "description": "Özel iletişim kişisi" },
+        "exclusiveOffers": { "title": "Özel Teklifler", "description": "Müşterileriniz için özel kuponlar" }
+      },
+      "form": {
+        "title": "Şimdi Başvur",
+        "selectAgency": "Ajansınızı seçin",
+        "searchAgency": "Ajans ara...",
+        "notInList": "Ajansım listede yok",
+        "newAgencyName": "Ajans adı",
+        "city": "Şehir",
+        "country": "Ülke",
+        "contactEmail": "İletişim e-postası",
+        "motivation": "Neden ortak olmak istiyorsunuz?",
+        "expectedReferrals": "Beklenen aylık referanslar",
+        "payoutMethod": "Tercih edilen ödeme yöntemi",
+        "privacyConsent": "Gizlilik politikasını kabul ediyorum",
+        "submit": "Başvuru gönder",
+        "submitting": "Gönderiliyor..."
+      },
+      "success": {
+        "title": "Başvuru gönderildi!",
+        "description": "Başvurunuzu inceleyip 48 saat içinde sizinle iletişime geçeceğiz."
+      },
+      "stats": {
+        "partners": "Aktif Ortaklar",
+        "avgCommission": "Ort. Komisyon",
+        "cities": "Şehirler"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Künye", "company": "Şirket Bilgileri", "registeredCompany": "Kıbrıs'ta kayıtlı şirket", "address": "Adres", "contact": "İletişim", "responsibleContent": "İçerik Sorumlusu", "disputeResolution": "AB Uyuşmazlık Çözümü", "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar." },

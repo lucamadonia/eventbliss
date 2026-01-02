@@ -204,7 +204,45 @@
       }
     },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
-    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." }
+    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "becomeAgencyPartner": "Word agenturpartner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." },
+    "agencyApply": {
+      "hero": {
+        "badge": "Agentuurpartnerschap",
+        "title": "Word EventBliss Partner",
+        "description": "Verdien commissies voor elke klant die je naar EventBliss brengt"
+      },
+      "benefits": {
+        "commission": { "title": "Aantrekkelijke Commissies", "description": "Tot 20% per boeking" },
+        "tracking": { "title": "Referentie Tracking", "description": "Automatische toewijzing via e-mailcode" },
+        "support": { "title": "Partner Ondersteuning", "description": "Toegewijde contactpersoon" },
+        "exclusiveOffers": { "title": "Exclusieve Aanbiedingen", "description": "Speciale vouchers voor je klanten" }
+      },
+      "form": {
+        "title": "Nu Solliciteren",
+        "selectAgency": "Selecteer je agentuur",
+        "searchAgency": "Agentuur zoeken...",
+        "notInList": "Mijn agentuur staat niet in de lijst",
+        "newAgencyName": "Agentuur naam",
+        "city": "Stad",
+        "country": "Land",
+        "contactEmail": "Contact e-mail",
+        "motivation": "Waarom wil je partner worden?",
+        "expectedReferrals": "Verwachte maandelijkse verwijzingen",
+        "payoutMethod": "Voorkeur uitbetaling",
+        "privacyConsent": "Ik ga akkoord met het privacybeleid",
+        "submit": "Aanvraag indienen",
+        "submitting": "Wordt verzonden..."
+      },
+      "success": {
+        "title": "Aanvraag ingediend!",
+        "description": "We beoordelen je aanvraag en nemen binnen 48 uur contact op."
+      },
+      "stats": {
+        "partners": "Actieve Partners",
+        "avgCommission": "Gem. Commissie",
+        "cities": "Steden"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Impressum", "company": "Bedrijfsinformatie", "registeredCompany": "Geregistreerd bedrijf in Cyprus", "address": "Adres", "contact": "Contact", "responsibleContent": "Verantwoordelijk voor Inhoud", "disputeResolution": "EU Geschillenbeslechting", "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting." },
