@@ -501,6 +501,32 @@
         "organizer": "Organizatör",
         "guest": "Misafir"
       }
+    },
+    "ai": {
+      "ideaLabel": "FİKİR",
+      "activityLabel": "AKTİVİTE",
+      "topPick": "Top Pick",
+      "whyPerfect": "Neden mükemmel",
+      "highlights": "Öne Çıkanlar",
+      "travelTips": "Seyahat İpuçları",
+      "budgetTips": "Bütçe İpuçları",
+      "activitySuggestions": "Aktivite Önerileri",
+      "copyAll": "Tümünü Kopyala",
+      "addToPlanner": "Planlayıcıya Ekle",
+      "addedToPlanner": "Planlayıcıya eklendi",
+      "addAllToPlanner": "Tümünü Planlayıcıya Ekle",
+      "allAdded": "Tümü planlayıcıya eklendi",
+      "printOpened": "Yazdırma önizlemesi açıldı",
+      "downloaded": "İndirme başlatıldı",
+      "showDetails": "Detayları Göster",
+      "hideDetails": "Detayları Gizle",
+      "setAsDestination": "Hedef Olarak Ayarla",
+      "destinationSet": "Hedef ayarlandı",
+      "fitnessEasy": "Kolay",
+      "fitnessNormal": "Normal",
+      "fitnessChallenging": "Zorlu",
+      "recommendations": "Öneriler",
+      "dayAdded": "Gün planlayıcıya eklendi"
     }
   },
   "messages": {

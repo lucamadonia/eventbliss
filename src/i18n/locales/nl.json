@@ -507,6 +507,32 @@
         "organizer": "Organisator",
         "guest": "Gast"
       }
+    },
+    "ai": {
+      "ideaLabel": "IDEE",
+      "activityLabel": "ACTIVITEIT",
+      "topPick": "Top Pick",
+      "whyPerfect": "Waarom dit perfect is",
+      "highlights": "Hoogtepunten",
+      "travelTips": "Reistips",
+      "budgetTips": "Budgettips",
+      "activitySuggestions": "Activiteitensuggesties",
+      "copyAll": "Alles Kopiëren",
+      "addToPlanner": "Aan Planner Toevoegen",
+      "addedToPlanner": "Toegevoegd aan planner",
+      "addAllToPlanner": "Alles aan Planner Toevoegen",
+      "allAdded": "Alles toegevoegd aan planner",
+      "printOpened": "Afdrukvoorbeeld geopend",
+      "downloaded": "Download gestart",
+      "showDetails": "Details Tonen",
+      "hideDetails": "Details Verbergen",
+      "setAsDestination": "Als Bestemming Instellen",
+      "destinationSet": "Bestemming ingesteld",
+      "fitnessEasy": "Makkelijk",
+      "fitnessNormal": "Normaal",
+      "fitnessChallenging": "Uitdagend",
+      "recommendations": "Aanbevelingen",
+      "dayAdded": "Dag toegevoegd aan planner"
     }
   },
   "messages": {

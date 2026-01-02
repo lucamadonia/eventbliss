@@ -501,6 +501,32 @@
         "organizer": "Organizator",
         "guest": "Gość"
       }
+    },
+    "ai": {
+      "ideaLabel": "POMYSŁ",
+      "activityLabel": "AKTYWNOŚĆ",
+      "topPick": "Top Pick",
+      "whyPerfect": "Dlaczego to idealne",
+      "highlights": "Najważniejsze",
+      "travelTips": "Wskazówki Podróżne",
+      "budgetTips": "Wskazówki Budżetowe",
+      "activitySuggestions": "Sugestie Aktywności",
+      "copyAll": "Kopiuj Wszystko",
+      "addToPlanner": "Dodaj do Planera",
+      "addedToPlanner": "Dodano do planera",
+      "addAllToPlanner": "Dodaj Wszystko do Planera",
+      "allAdded": "Wszystko dodane do planera",
+      "printOpened": "Podgląd wydruku otwarty",
+      "downloaded": "Pobieranie rozpoczęte",
+      "showDetails": "Pokaż Szczegóły",
+      "hideDetails": "Ukryj Szczegóły",
+      "setAsDestination": "Ustaw jako Cel",
+      "destinationSet": "Cel ustawiony",
+      "fitnessEasy": "Łatwy",
+      "fitnessNormal": "Normalny",
+      "fitnessChallenging": "Wymagający",
+      "recommendations": "Rekomendacje",
+      "dayAdded": "Dzień dodany do planera"
     }
   },
   "messages": {
