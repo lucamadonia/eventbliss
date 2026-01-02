@@ -167,6 +167,35 @@
         "agencies": {
           "title": "Agency Directory",
           "description": "Find professional event agencies near you"
+        },
+        "planner": {
+          "title": "Activity Planner",
+          "description": "Plan and organize all activities with timeline"
+        }
+      },
+      "planner": {
+        "day1": "Day 1",
+        "day2": "Day 2",
+        "day3": "Day 3",
+        "dayCost": "Daily cost p.p.",
+        "eventTitle": "Mario's Bachelor Party - Schedule",
+        "location": "Hamburg, Aug 15-17, 2025",
+        "participants": "8 Participants",
+        "new": "New",
+        "activities": {
+          "breakfast": "Breakfast at Hotel",
+          "escapeRoom": "Escape Room Challenge",
+          "harborTour": "Harbor Tour",
+          "dinner": "Dinner",
+          "barHopping": "Bar Hopping",
+          "brunch": "Brunch",
+          "goKart": "Go-Kart Racing",
+          "cocktailWorkshop": "Cocktail Workshop",
+          "clubNight": "Club Night",
+          "hangoverBreakfast": "Hangover Breakfast",
+          "cityTour": "City Tour",
+          "farewell": "Farewell & Journey Home",
+          "karaoke": "Karaoke Bar"
         }
       },
       "live": {

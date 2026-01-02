@@ -106,7 +106,33 @@
         "expenses": { "title": "تقسيم التكاليف", "description": "تتبع النفقات وقسمها بالتساوي" },
         "ai": { "title": "مساعد AI", "description": "احصل على اقتراحات للأنشطة والرسائل" },
         "survey": { "title": "الاستبيانات", "description": "اجمع التفضيلات باستبيانات مخصصة" },
-        "agencies": { "title": "دليل الوكالات", "description": "اعثر على وكالات الفعاليات بالقرب منك" }
+        "agencies": { "title": "دليل الوكالات", "description": "اعثر على وكالات الفعاليات بالقرب منك" },
+        "planner": { "title": "مخطط الأنشطة", "description": "خطط ونظم جميع الأنشطة مع الجدول الزمني" }
+      },
+      "planner": {
+        "day1": "اليوم 1",
+        "day2": "اليوم 2",
+        "day3": "اليوم 3",
+        "dayCost": "التكلفة اليومية للشخص",
+        "eventTitle": "حفلة وداع ماريو - البرنامج",
+        "location": "هامبورغ، 15-17 أغسطس 2025",
+        "participants": "8 مشاركين",
+        "new": "جديد",
+        "activities": {
+          "breakfast": "فطور في الفندق",
+          "escapeRoom": "تحدي غرفة الهروب",
+          "harborTour": "جولة في الميناء",
+          "dinner": "عشاء",
+          "barHopping": "جولة الحانات",
+          "brunch": "برانش",
+          "goKart": "سباق جو كارت",
+          "cocktailWorkshop": "ورشة كوكتيل",
+          "clubNight": "ليلة في النادي",
+          "hangoverBreakfast": "فطور ما بعد السهرة",
+          "cityTour": "جولة في المدينة",
+          "farewell": "وداع والعودة",
+          "karaoke": "بار كاريوكي"
+        }
       },
       "live": {
         "dashboard": {

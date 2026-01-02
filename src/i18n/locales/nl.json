@@ -112,7 +112,33 @@
         "expenses": { "title": "Kostenverdeling", "description": "Volg uitgaven en verdeel ze eerlijk" },
         "ai": { "title": "AI Assistent", "description": "Krijg suggesties voor activiteiten en berichten" },
         "survey": { "title": "Enquêtes", "description": "Verzamel voorkeuren met aangepaste enquêtes" },
-        "agencies": { "title": "Bureau Directory", "description": "Vind evenementenbureaus bij jou in de buurt" }
+        "agencies": { "title": "Bureau Directory", "description": "Vind evenementenbureaus bij jou in de buurt" },
+        "planner": { "title": "Activiteitenplanner", "description": "Plan en organiseer alle activiteiten met tijdlijn" }
+      },
+      "planner": {
+        "day1": "Dag 1",
+        "day2": "Dag 2",
+        "day3": "Dag 3",
+        "dayCost": "Dagkosten p.p.",
+        "eventTitle": "Mario's Vrijgezellenfeest - Programma",
+        "location": "Hamburg, 15-17 aug 2025",
+        "participants": "8 Deelnemers",
+        "new": "Nieuw",
+        "activities": {
+          "breakfast": "Ontbijt in hotel",
+          "escapeRoom": "Escape Room Uitdaging",
+          "harborTour": "Haventour",
+          "dinner": "Diner",
+          "barHopping": "Kroegentocht",
+          "brunch": "Brunch",
+          "goKart": "Go-kart racen",
+          "cocktailWorkshop": "Cocktailworkshop",
+          "clubNight": "Clubavond",
+          "hangoverBreakfast": "Katerontbijt",
+          "cityTour": "Stadstour",
+          "farewell": "Afscheid & Terugreis",
+          "karaoke": "Karaokebar"
+        }
       },
       "live": {
         "dashboard": {

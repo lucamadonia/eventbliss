@@ -300,7 +300,7 @@ export const AddExpenseDialog = ({
               {t("expenses.amount")} ({currency})
             </Label>
             <div className="relative mt-1.5">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">{currency}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{currency}</span>
               <Input
                 id="amount"
                 type="number"
@@ -308,7 +308,7 @@ export const AddExpenseDialog = ({
                 placeholder="0.00"
                 value={formData.amount}
                 onChange={(e) => setFormData((prev) => ({ ...prev, amount: e.target.value }))}
-                className="bg-background/50 pl-8 text-lg font-medium"
+                className="bg-background/50 pl-12 text-lg font-medium"
               />
             </div>
           </div>
@@ -398,8 +398,7 @@ export const AddExpenseDialog = ({
                 >
                   {splitType === "equal" && (
                     <div className="text-sm text-muted-foreground text-center p-2 bg-background/50 rounded-lg">
-                      {currency}
-                      {(parseFloat(formData.amount) / activeSplitCount).toFixed(2)} {t("expenses.amountPerPerson")} ({activeSplitCount} {t("common.people")})
+                      {currency} {(parseFloat(formData.amount) / activeSplitCount).toFixed(2)} {t("expenses.amountPerPerson")} ({activeSplitCount} {t("common.people")})
                     </div>
                   )}
 
@@ -435,7 +434,7 @@ export const AddExpenseDialog = ({
                           {!split.excluded && splitType !== "equal" && (
                             <div className="flex items-center gap-2">
                               {splitType === "custom" && (
-                                <div className="relative w-20">
+                                <div className="relative w-24">
                                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                                     {currency}
                                   </span>
@@ -446,7 +445,7 @@ export const AddExpenseDialog = ({
                                     onChange={(e) =>
                                       handleSplitChange(split.participantId, "amount", parseFloat(e.target.value) || 0)
                                     }
-                                    className="h-8 text-xs pl-5 pr-1"
+                                    className="h-8 text-xs pl-10 pr-1"
                                   />
                                 </div>
                               )}
