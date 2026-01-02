@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { UserProfileMenu } from "@/components/landing/UserProfileMenu";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
@@ -88,7 +89,8 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
+            <ThemeSwitcher />
             <LanguageSwitcher />
             {isLoading ? (
               <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />
@@ -108,6 +110,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
 
           {/* Mobile Menu Toggle */}
           <div className="flex items-center gap-2 lg:hidden">
+            <ThemeSwitcher />
             <LanguageSwitcher />
             {!isLoading && isAuthenticated && <UserProfileMenu />}
             <Button

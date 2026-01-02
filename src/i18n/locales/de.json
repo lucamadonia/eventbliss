@@ -1,4 +1,14 @@
 {
+  "theme": {
+    "title": "Erscheinungsbild",
+    "description": "Wähle dein bevorzugtes Design",
+    "dark": "Dark Mode",
+    "darkDesc": "Modern & immersiv",
+    "light": "Light Mode",
+    "lightDesc": "Hell & freundlich",
+    "rose": "Rosé Blush",
+    "roseDesc": "Elegant & stilvoll"
+  },
   "common": {
     "save": "Speichern",
     "cancel": "Abbrechen",

@@ -1,4 +1,14 @@
 {
+  "theme": {
+    "title": "Wygląd",
+    "description": "Wybierz preferowany motyw",
+    "dark": "Tryb Ciemny",
+    "darkDesc": "Nowoczesny i immersyjny",
+    "light": "Tryb Jasny",
+    "lightDesc": "Jasny i przyjazny",
+    "rose": "Rosé Blush",
+    "roseDesc": "Elegancki i stylowy"
+  },
   "common": {
     "save": "Zapisz",
     "cancel": "Anuluj",

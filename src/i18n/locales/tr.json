@@ -1,4 +1,14 @@
 {
+  "theme": {
+    "title": "Görünüm",
+    "description": "Tercih ettiğiniz temayı seçin",
+    "dark": "Karanlık Mod",
+    "darkDesc": "Modern ve sürükleyici",
+    "light": "Aydınlık Mod",
+    "lightDesc": "Parlak ve samimi",
+    "rose": "Rosé Blush",
+    "roseDesc": "Zarif ve şık"
+  },
   "common": {
     "save": "Kaydet",
     "cancel": "İptal",
