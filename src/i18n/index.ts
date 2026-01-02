@@ -28,7 +28,7 @@ export const languages = [
 
 export type LanguageCode = typeof languages[number]['code'];
 
-i18n
+export const i18nInitPromise = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({

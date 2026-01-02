@@ -8,6 +8,8 @@ interface PageLoaderProps {
   variant?: "logo" | "lottie";
 }
 
+// Default to lottie variant for modern animation
+
 export const PageLoader = ({ variant = "logo" }: PageLoaderProps) => {
   const { t } = useTranslation();
 
