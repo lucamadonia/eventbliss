@@ -1910,5 +1910,67 @@
       "privacyRequired": "Du musst die Datenschutzerklärung akzeptieren",
       "submitFailed": "Bewerbung konnte nicht gesendet werden. Bitte versuche es erneut."
     }
+  },
+  "agencyApply": {
+    "hero": {
+      "badge": "Agentur-Partnerschaft",
+      "title": "Werde EventBliss-Partner",
+      "description": "Verdiene Provisionen für jeden Kunden, den du zu EventBliss bringst. Exklusive Vorteile für JGA-Agenturen."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Attraktive Provisionen",
+        "description": "Bis zu 20% pro Buchung über deine Empfehlung"
+      },
+      "tracking": {
+        "title": "Referenz-Tracking",
+        "description": "Automatische Zuordnung per eindeutigem Code"
+      },
+      "vouchers": {
+        "title": "Exklusive Voucher",
+        "description": "Spezielle Rabatt-Codes für deine Kunden"
+      },
+      "support": {
+        "title": "Partner-Support",
+        "description": "Dedizierter Ansprechpartner für alle Fragen"
+      }
+    },
+    "stats": {
+      "agencies": "Partner-Agenturen",
+      "commissionRate": "Max. Provision",
+      "payouts": "Ausgezahlt"
+    },
+    "form": {
+      "title": "Jetzt bewerben",
+      "agencyMode": "Agentur-Typ",
+      "existingAgency": "Agentur aus Verzeichnis wählen",
+      "newAgency": "Neue Agentur registrieren",
+      "searchAgency": "Agentur suchen...",
+      "noAgenciesFound": "Keine Agenturen gefunden",
+      "agencyName": "Agenturname",
+      "city": "Stadt",
+      "country": "Land",
+      "contactEmail": "Kontakt-Email",
+      "phone": "Telefon",
+      "website": "Website",
+      "motivation": "Warum möchtest du Partner werden?",
+      "motivationPlaceholder": "Erzähle uns von deiner Agentur und warum eine Partnerschaft für beide Seiten vorteilhaft wäre...",
+      "expectedReferrals": "Erwartete monatliche Empfehlungen",
+      "selectOption": "Bitte wählen",
+      "payoutMethod": "Bevorzugte Auszahlung",
+      "bankTransfer": "Banküberweisung",
+      "privacy": "Ich akzeptiere die",
+      "submit": "Bewerbung einreichen",
+      "submitting": "Wird eingereicht..."
+    },
+    "success": {
+      "title": "Bewerbung eingereicht!",
+      "description": "Vielen Dank für dein Interesse an einer Partnerschaft.",
+      "nextSteps": "Wir prüfen deine Bewerbung und melden uns innerhalb von 48 Stunden.",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "errors": {
+      "submitFailed": "Fehler beim Einreichen der Bewerbung"
+    }
   }
 }
