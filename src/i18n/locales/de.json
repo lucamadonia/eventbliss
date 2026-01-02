@@ -1049,6 +1049,26 @@
     "cityPanel": {
       "title": "Agenturen in {{city}}",
       "agencyCount": "{{count}} Agentur(en)"
+    },
+    "emailTemplateOpened": "Email-Vorlage geöffnet",
+    "email": {
+      "subjectPrefix": "Anfrage für",
+      "greeting": "Guten Tag",
+      "intro": "wir planen ein Event und würden gerne Ihr Angebot anfragen.",
+      "eventDetails": "EVENT-DETAILS",
+      "eventName": "Event-Name",
+      "eventType": "Event-Typ",
+      "honoree": "Ehrengast",
+      "date": "Datum",
+      "dateNotSet": "Noch nicht festgelegt",
+      "participants": "Anzahl Teilnehmer",
+      "participantNames": "Teilnehmer",
+      "request": "ANFRAGE",
+      "requestText": "Bitte senden Sie uns Ihr Angebot mit verfügbaren Aktivitäten, Preisen und möglichen Terminen.",
+      "referenceCode": "Referenz-Code",
+      "closing": "Mit freundlichen Grüßen",
+      "planningTeam": "Das Planungsteam",
+      "generatedBy": "Diese Anfrage wurde über EventBliss generiert."
     }
   },
   "expenses": {

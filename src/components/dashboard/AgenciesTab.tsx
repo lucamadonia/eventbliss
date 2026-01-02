@@ -15,6 +15,7 @@ import {
   List,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { format, parseISO } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,8 +43,29 @@ import {
 } from "@/lib/agencies-data";
 import { cn } from "@/lib/utils";
 import { AgenciesMapView } from "./AgenciesMapView";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-export const AgenciesTab = () => {
+interface Event {
+  id: string;
+  name: string;
+  event_type: string;
+  event_date: string | null;
+  honoree_name: string;
+}
+
+interface Participant {
+  id: string;
+  name: string;
+  role: string;
+}
+
+interface AgenciesTabProps {
+  event?: Event;
+  participants?: Participant[];
+}
+
+export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
@@ -109,6 +131,111 @@ export const AgenciesTab = () => {
     setSearchQuery("");
     setSelectedCountry("all");
     setSelectedCity("all");
+  };
+
+  // Track agency interaction
+  const trackInteraction = async (agency: Agency, interactionType: 'phone' | 'email' | 'website') => {
+    if (!event?.id) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Use type assertion as the table was just created and types may not be updated yet
+      await (supabase.from('agency_interactions' as never) as unknown as ReturnType<typeof supabase.from>).insert({
+        event_id: event.id,
+        agency_id: agency.id,
+        agency_name: agency.name,
+        interaction_type: interactionType,
+        user_id: user?.id || null,
+        metadata: {
+          city: agency.city,
+          country: agency.countryCode,
+          agency_email: agency.email,
+          agency_phone: agency.phone,
+          agency_website: agency.website,
+        },
+      } as never);
+    } catch (err) {
+      console.error('Failed to track interaction:', err);
+    }
+  };
+
+  // Handle email click with dynamic template
+  const handleEmailClick = (agency: Agency) => {
+    // Track the interaction
+    trackInteraction(agency, 'email');
+
+    if (!event) {
+      window.open(`mailto:${agency.email}`, '_blank');
+      return;
+    }
+
+    // Generate reference code
+    const refCode = `EB-${event.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+
+    // Event type labels
+    const eventTypeLabels: Record<string, string> = {
+      bachelor: t('createEvent.types.bachelor', 'Junggesellenabschied'),
+      bachelorette: t('createEvent.types.bachelorette', 'Junggesellinnenabschied'),
+      birthday: t('createEvent.types.birthday', 'Geburtstag'),
+      trip: t('createEvent.types.trip', 'Gruppenreise'),
+      other: t('createEvent.types.other', 'Event'),
+    };
+
+    // Participant info
+    const participantNames = participants.map(p => p.name).join(', ');
+    const participantCount = participants.length;
+    const organizer = participants.find(p => p.role === 'organizer');
+
+    // Format date if available
+    const formattedDate = event.event_date
+      ? format(parseISO(event.event_date), 'dd.MM.yyyy')
+      : t('agencies.email.dateNotSet', 'Noch nicht festgelegt');
+
+    // Build email subject
+    const subject = encodeURIComponent(
+      `${t('agencies.email.subjectPrefix', 'Anfrage für')} ${event.name} - Ref: ${refCode}`
+    );
+
+    // Build email body
+    const body = encodeURIComponent(
+`${t('agencies.email.greeting', 'Guten Tag')},
+
+${t('agencies.email.intro', 'wir planen ein Event und würden gerne Ihr Angebot anfragen.')}
+
+=== ${t('agencies.email.eventDetails', 'EVENT-DETAILS')} ===
+${t('agencies.email.eventName', 'Event-Name')}: ${event.name}
+${t('agencies.email.eventType', 'Event-Typ')}: ${eventTypeLabels[event.event_type] || 'Event'}
+${t('agencies.email.honoree', 'Ehrengast')}: ${event.honoree_name}
+${t('agencies.email.date', 'Datum')}: ${formattedDate}
+${t('agencies.email.participants', 'Anzahl Teilnehmer')}: ${participantCount}
+${participantCount > 0 && participantCount <= 10 ? `${t('agencies.email.participantNames', 'Teilnehmer')}: ${participantNames}` : ''}
+
+=== ${t('agencies.email.request', 'ANFRAGE')} ===
+${t('agencies.email.requestText', 'Bitte senden Sie uns Ihr Angebot mit verfügbaren Aktivitäten, Preisen und möglichen Terminen.')}
+
+${t('agencies.email.referenceCode', 'Referenz-Code')}: ${refCode}
+
+${t('agencies.email.closing', 'Mit freundlichen Grüßen')},
+${organizer?.name || t('agencies.email.planningTeam', 'Das Planungsteam')}
+
+---
+${t('agencies.email.generatedBy', 'Diese Anfrage wurde über EventBliss generiert.')}
+`);
+
+    // Open mailto link
+    window.open(`mailto:${agency.email}?subject=${subject}&body=${body}`, '_blank');
+    toast.success(t('agencies.emailTemplateOpened', 'Email-Vorlage geöffnet'));
+  };
+
+  // Handle phone click
+  const handlePhoneClick = (agency: Agency) => {
+    trackInteraction(agency, 'phone');
+  };
+
+  // Handle website click
+  const handleWebsiteClick = (agency: Agency) => {
+    trackInteraction(agency, 'website');
   };
 
   // Stats
@@ -331,6 +458,7 @@ export const AgenciesTab = () => {
                                         {agency.phone && (
                                           <a
                                             href={`tel:${agency.phone}`}
+                                            onClick={() => handlePhoneClick(agency)}
                                             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                                           >
                                             <Phone className="w-3 h-3" />
@@ -338,13 +466,13 @@ export const AgenciesTab = () => {
                                           </a>
                                         )}
                                         {agency.email && (
-                                          <a
-                                            href={`mailto:${agency.email}`}
-                                            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                                          <button
+                                            onClick={() => handleEmailClick(agency)}
+                                            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
                                           >
                                             <Mail className="w-3 h-3" />
                                             <span className="truncate">{agency.email}</span>
-                                          </a>
+                                          </button>
                                         )}
                                       </div>
 
@@ -352,6 +480,7 @@ export const AgenciesTab = () => {
                                         href={agency.website}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        onClick={() => handleWebsiteClick(agency)}
                                         className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                                       >
                                         <Globe className="w-3 h-3" />

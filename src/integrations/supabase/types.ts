@@ -332,6 +332,47 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_interactions: {
+        Row: {
+          agency_id: string
+          agency_name: string
+          created_at: string | null
+          event_id: string | null
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          agency_id: string
+          agency_name: string
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string
+          agency_name?: string
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_interactions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           access_code: string | null

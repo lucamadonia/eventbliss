@@ -155,7 +155,7 @@ const EventDashboard = () => {
       case "planner":
         return <PlannerTab event={event} participants={participants} />;
       case "agencies":
-        return <AgenciesTab />;
+        return <AgenciesTab event={event} participants={participants} />;
       case "ai":
         return <AIAssistantTab event={event} stats={stats} />;
       case "messages":
