@@ -199,6 +199,26 @@
     },
     "cta": { "title": "Pronto para o teu Próximo Evento?", "description": "Começa grátis e cria memórias inesquecíveis.", "button": "Criar o teu Evento" },
     "footer": { "tagline": "Planeia eventos que unem pessoas", "product": "Produto", "features": "Funcionalidades", "integrations": "Integrações", "enterprise": "Enterprise", "solutions": "Soluções", "partner": "Parceiros", "becomePartner": "Tornar-se parceiro", "becomeAgencyPartner": "Tornar-se parceiro de agência", "partnerPortal": "Portal de parceiros", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Aviso", "privacy": "Privacidade", "terms": "Termos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos os direitos reservados." },
+    "agencyPortal": {
+      "title": "Portal de Agência",
+      "welcome": "Bem-vindo de volta",
+      "pending": {
+        "title": "Candidatura em análise",
+        "description": "A tua candidatura está a ser analisada. Entraremos em contacto dentro de 48 horas."
+      },
+      "tabs": {
+        "dashboard": "Visão geral",
+        "vouchers": "Vouchers",
+        "commissions": "Comissões",
+        "payouts": "Pagamentos",
+        "settings": "Definições"
+      },
+      "stats": {
+        "referrals": "Referências",
+        "bookings": "Reservas",
+        "commission": "Comissão"
+      }
+    },
     "agencyApply": {
       "hero": {
         "badge": "Parceria de Agência",

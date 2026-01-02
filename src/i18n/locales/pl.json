@@ -199,6 +199,26 @@
     },
     "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
     "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "becomeAgencyPartner": "Zostań partnerem agencji", "partnerPortal": "Portal partnerski", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." },
+    "agencyPortal": {
+      "title": "Portal Agencji",
+      "welcome": "Witaj ponownie",
+      "pending": {
+        "title": "Wniosek w trakcie rozpatrywania",
+        "description": "Twój wniosek jest obecnie rozpatrywany. Skontaktujemy się w ciągu 48 godzin."
+      },
+      "tabs": {
+        "dashboard": "Przegląd",
+        "vouchers": "Vouchery",
+        "commissions": "Prowizje",
+        "payouts": "Wypłaty",
+        "settings": "Ustawienia"
+      },
+      "stats": {
+        "referrals": "Polecenia",
+        "bookings": "Rezerwacje",
+        "commission": "Prowizja"
+      }
+    },
     "agencyApply": {
       "hero": {
         "badge": "Partnerstwo Agencyjne",

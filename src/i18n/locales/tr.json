@@ -199,6 +199,26 @@
     },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
     "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "becomeAgencyPartner": "Ajans ortağı olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." },
+    "agencyPortal": {
+      "title": "Ajans Portalı",
+      "welcome": "Tekrar hoş geldiniz",
+      "pending": {
+        "title": "Başvuru inceleniyor",
+        "description": "Başvurunuz inceleniyor. 48 saat içinde sizinle iletişime geçeceğiz."
+      },
+      "tabs": {
+        "dashboard": "Genel Bakış",
+        "vouchers": "Kuponlar",
+        "commissions": "Komisyonlar",
+        "payouts": "Ödemeler",
+        "settings": "Ayarlar"
+      },
+      "stats": {
+        "referrals": "Referanslar",
+        "bookings": "Rezervasyonlar",
+        "commission": "Komisyon"
+      }
+    },
     "agencyApply": {
       "hero": {
         "badge": "Ajans Ortaklığı",

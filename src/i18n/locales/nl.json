@@ -205,6 +205,26 @@
     },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
     "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "becomeAgencyPartner": "Word agenturpartner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." },
+    "agencyPortal": {
+      "title": "Agentuurportaal",
+      "welcome": "Welkom terug",
+      "pending": {
+        "title": "Aanvraag in behandeling",
+        "description": "Je aanvraag wordt momenteel beoordeeld. We nemen binnen 48 uur contact op."
+      },
+      "tabs": {
+        "dashboard": "Overzicht",
+        "vouchers": "Vouchers",
+        "commissions": "Commissies",
+        "payouts": "Uitbetalingen",
+        "settings": "Instellingen"
+      },
+      "stats": {
+        "referrals": "Verwijzingen",
+        "bookings": "Boekingen",
+        "commission": "Commissie"
+      }
+    },
     "agencyApply": {
       "hero": {
         "badge": "Agentuurpartnerschap",
