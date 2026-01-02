@@ -199,6 +199,26 @@
     },
     "cta": { "title": "مستعد لفعاليتك القادمة؟", "description": "ابدأ مجاناً واصنع ذكريات لا تُنسى.", "button": "أنشئ فعاليتك" },
     "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "becomeAgencyPartner": "كن شريك وكالة", "partnerPortal": "بوابة الشركاء", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." },
+    "agencyPortal": {
+      "title": "بوابة الوكالة",
+      "welcome": "مرحباً بعودتك",
+      "pending": {
+        "title": "الطلب قيد المراجعة",
+        "description": "طلبك قيد المراجعة حالياً. سنتواصل معك خلال 48 ساعة."
+      },
+      "tabs": {
+        "dashboard": "نظرة عامة",
+        "vouchers": "القسائم",
+        "commissions": "العمولات",
+        "payouts": "المدفوعات",
+        "settings": "الإعدادات"
+      },
+      "stats": {
+        "referrals": "الإحالات",
+        "bookings": "الحجوزات",
+        "commission": "العمولة"
+      }
+    },
     "agencyApply": {
       "hero": {
         "badge": "شراكة الوكالات",

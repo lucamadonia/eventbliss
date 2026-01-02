@@ -204,7 +204,27 @@
       }
     },
     "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
-    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "becomeAgencyPartner": "Diventa partner agenzia", "partnerPortal": "Portale partner", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." }
+    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "becomeAgencyPartner": "Diventa partner agenzia", "partnerPortal": "Portale partner", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." },
+    "agencyPortal": {
+      "title": "Portale Agenzia",
+      "welcome": "Bentornato",
+      "pending": {
+        "title": "Candidatura in elaborazione",
+        "description": "La tua candidatura è in fase di revisione. Ti contatteremo entro 48 ore."
+      },
+      "tabs": {
+        "dashboard": "Panoramica",
+        "vouchers": "Voucher",
+        "commissions": "Commissioni",
+        "payouts": "Pagamenti",
+        "settings": "Impostazioni"
+      },
+      "stats": {
+        "referrals": "Referenze",
+        "bookings": "Prenotazioni",
+        "commission": "Commissione"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Note Legali", "company": "Informazioni Azienda", "registeredCompany": "Società registrata a Cipro", "address": "Indirizzo", "contact": "Contatto", "responsibleContent": "Responsabile del Contenuto", "disputeResolution": "Risoluzione Dispute UE", "disputeText": "La Commissione Europea fornisce una piattaforma per la risoluzione delle dispute online." },

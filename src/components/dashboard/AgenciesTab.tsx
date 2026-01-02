@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -34,8 +34,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  AGENCIES,
-  COUNTRIES,
+  AGENCIES as STATIC_AGENCIES,
+  COUNTRIES as STATIC_COUNTRIES,
   type Agency,
   searchAgencies,
   getAgenciesByCountry,
@@ -72,13 +72,135 @@ export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [expandedCountries, setExpandedCountries] = useState<string[]>(["DE"]);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [dbAgencies, setDbAgencies] = useState<Agency[]>([]);
+
+  // Load agencies from database
+  useEffect(() => {
+    const loadDbAgencies = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('agency_affiliates')
+          .select('*')
+          .eq('status', 'active')
+          .eq('is_verified', true);
+
+        if (error) throw error;
+
+        if (data) {
+          // Convert database agencies to Agency format
+          const convertedAgencies: Agency[] = data.map((dbAgency, index) => ({
+            id: 1000 + index, // Offset IDs to avoid conflicts with static agencies
+            country: dbAgency.agency_country,
+            countryCode: getCountryCodeFromName(dbAgency.agency_country),
+            city: dbAgency.agency_city,
+            name: dbAgency.agency_name,
+            website: '',
+            phone: '',
+            email: dbAgency.contact_email || '',
+            description: `${dbAgency.agency_name} - ${dbAgency.agency_city}, ${dbAgency.agency_country}`,
+          }));
+          setDbAgencies(convertedAgencies);
+        }
+      } catch (err) {
+        console.error('Failed to load database agencies:', err);
+      }
+    };
+
+    loadDbAgencies();
+  }, []);
+
+  // Helper function to get country code from country name
+  const getCountryCodeFromName = (countryName: string): string => {
+    const countryMap: Record<string, string> = {
+      'Deutschland': 'DE',
+      'Germany': 'DE',
+      'Österreich': 'AT',
+      'Austria': 'AT',
+      'Schweiz': 'CH',
+      'Switzerland': 'CH',
+      'Niederlande': 'NL',
+      'Netherlands': 'NL',
+      'Belgien': 'BE',
+      'Belgium': 'BE',
+      'Frankreich': 'FR',
+      'France': 'FR',
+      'Spanien': 'ES',
+      'Spain': 'ES',
+      'Italien': 'IT',
+      'Italy': 'IT',
+      'Portugal': 'PT',
+      'Polen': 'PL',
+      'Poland': 'PL',
+      'Tschechien': 'CZ',
+      'Czech Republic': 'CZ',
+      'Ungarn': 'HU',
+      'Hungary': 'HU',
+      'Kroatien': 'HR',
+      'Croatia': 'HR',
+      'Griechenland': 'GR',
+      'Greece': 'GR',
+      'Türkei': 'TR',
+      'Turkey': 'TR',
+      'Vereinigtes Königreich': 'GB',
+      'United Kingdom': 'GB',
+      'Irland': 'IE',
+      'Ireland': 'IE',
+      'Dänemark': 'DK',
+      'Denmark': 'DK',
+      'Schweden': 'SE',
+      'Sweden': 'SE',
+      'Norwegen': 'NO',
+      'Norway': 'NO',
+      'Finnland': 'FI',
+      'Finland': 'FI',
+    };
+    return countryMap[countryName] || 'OTHER';
+  };
+
+  // Combine static and database agencies
+  const AGENCIES = useMemo(() => {
+    return [...STATIC_AGENCIES, ...dbAgencies];
+  }, [dbAgencies]);
+
+  // Build dynamic COUNTRIES object including new countries from DB
+  const COUNTRIES = useMemo(() => {
+    const dynamicCountries: Record<string, { name: string; emoji: string }> = { ...STATIC_COUNTRIES };
+    
+    dbAgencies.forEach(agency => {
+      if (!dynamicCountries[agency.countryCode] && agency.countryCode !== 'OTHER') {
+        dynamicCountries[agency.countryCode] = {
+          name: agency.country,
+          emoji: getCountryEmoji(agency.countryCode),
+        };
+      }
+    });
+
+    return dynamicCountries;
+  }, [dbAgencies]);
+
+  // Helper function to get country emoji
+  const getCountryEmoji = (countryCode: string): string => {
+    const emojiMap: Record<string, string> = {
+      DE: '🇩🇪', AT: '🇦🇹', CH: '🇨🇭', NL: '🇳🇱', BE: '🇧🇪',
+      FR: '🇫🇷', ES: '🇪🇸', IT: '🇮🇹', PT: '🇵🇹', PL: '🇵🇱',
+      CZ: '🇨🇿', HU: '🇭🇺', HR: '🇭🇷', GR: '🇬🇷', TR: '🇹🇷',
+      GB: '🇬🇧', IE: '🇮🇪', DK: '🇩🇰', SE: '🇸🇪', NO: '🇳🇴', FI: '🇫🇮',
+    };
+    return emojiMap[countryCode] || '🌍';
+  };
 
   // Filter agencies
   const filteredAgencies = useMemo(() => {
     let agencies = AGENCIES;
 
     if (searchQuery.trim()) {
-      agencies = searchAgencies(searchQuery);
+      const query = searchQuery.toLowerCase();
+      agencies = agencies.filter(a => 
+        a.name.toLowerCase().includes(query) ||
+        a.city.toLowerCase().includes(query) ||
+        a.country.toLowerCase().includes(query) ||
+        a.description.toLowerCase().includes(query)
+      );
     }
 
     if (selectedCountry !== "all") {
@@ -90,7 +212,7 @@ export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
     }
 
     return agencies;
-  }, [searchQuery, selectedCountry, selectedCity]);
+  }, [AGENCIES, searchQuery, selectedCountry, selectedCity]);
 
   // Group by country and city
   const groupedAgencies = useMemo(() => {
@@ -109,13 +231,6 @@ export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
     return groups;
   }, [filteredAgencies]);
 
-  // Available cities based on selected country
-  const availableCities = useMemo(() => {
-    if (selectedCountry === "all") {
-      return [...new Set(AGENCIES.map(a => a.city))].sort();
-    }
-    return getCitiesForCountry(selectedCountry);
-  }, [selectedCountry]);
 
   // Toggle country expansion
   const toggleCountry = (countryCode: string) => {
@@ -237,6 +352,14 @@ ${t('agencies.email.generatedBy', 'Diese Anfrage wurde über EventBliss generier
   const handleWebsiteClick = (agency: Agency) => {
     trackInteraction(agency, 'website');
   };
+
+  // Available cities based on selected country (dynamic)
+  const availableCities = useMemo(() => {
+    if (selectedCountry === "all") {
+      return [...new Set(AGENCIES.map(a => a.city))].sort();
+    }
+    return [...new Set(AGENCIES.filter(a => a.countryCode === selectedCountry).map(a => a.city))].sort();
+  }, [AGENCIES, selectedCountry]);
 
   // Stats
   const stats = {

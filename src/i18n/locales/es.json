@@ -204,7 +204,27 @@
       }
     },
     "cta": { "title": "¿Listo para tu Próximo Evento?", "description": "Comienza gratis y crea recuerdos inolvidables.", "button": "Crear tu Evento" },
-    "footer": { "tagline": "Planifica eventos que unen personas", "product": "Producto", "features": "Funciones", "integrations": "Integraciones", "enterprise": "Empresa", "solutions": "Soluciones", "partner": "Socios", "becomePartner": "Convertirse en socio", "becomeAgencyPartner": "Convertirse en socio de agencia", "partnerPortal": "Portal de socios", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Descargo", "privacy": "Privacidad", "terms": "Términos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos los derechos reservados." }
+    "footer": { "tagline": "Planifica eventos que unen personas", "product": "Producto", "features": "Funciones", "integrations": "Integraciones", "enterprise": "Empresa", "solutions": "Soluciones", "partner": "Socios", "becomePartner": "Convertirse en socio", "becomeAgencyPartner": "Convertirse en socio de agencia", "partnerPortal": "Portal de socios", "legal": "Legal", "imprint": "Aviso Legal", "disclaimer": "Descargo", "privacy": "Privacidad", "terms": "Términos", "contact": "Contacto", "address": "Gladstonos 12-14, 8042 Paphos, Chipre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Todos los derechos reservados." },
+    "agencyPortal": {
+      "title": "Portal de Agencia",
+      "welcome": "Bienvenido",
+      "pending": {
+        "title": "Solicitud en proceso",
+        "description": "Tu solicitud está siendo revisada. Nos pondremos en contacto dentro de 48 horas."
+      },
+      "tabs": {
+        "dashboard": "Resumen",
+        "vouchers": "Cupones",
+        "commissions": "Comisiones",
+        "payouts": "Pagos",
+        "settings": "Configuración"
+      },
+      "stats": {
+        "referrals": "Referencias",
+        "bookings": "Reservas",
+        "commission": "Comisión"
+      }
+    }
   },
   "legal": {
     "imprint": { "title": "Aviso Legal", "company": "Información de la Empresa", "registeredCompany": "Empresa registrada en Chipre", "address": "Dirección", "contact": "Contacto", "responsibleContent": "Responsable del Contenido", "disputeResolution": "Resolución de Disputas UE", "disputeText": "La Comisión Europea proporciona una plataforma para la resolución de disputas en línea." },
