@@ -463,6 +463,11 @@
     },
     "form": {
       "title": "Formulier Bouwer",
+      "subtitle": "Configureer de enquête voor {{eventName}}",
+      "preview": "Voorbeeld",
+      "saving": "Opslaan...",
+      "save": "Opslaan",
+      "successMessage": "Formulierconfiguratie opgeslagen!",
       "coreQuestions": "Kernvragen",
       "customQuestions": "Aangepaste Vragen",
       "questionEnabled": "Vraag ingeschakeld",
@@ -471,7 +476,179 @@
       "multiSelect": "Meervoudige selectie",
       "addQuestion": "Vraag Toevoegen",
       "editOptions": "Opties Bewerken",
-      "saveChanges": "Wijzigingen Opslaan"
+      "saveChanges": "Wijzigingen Opslaan",
+      "tabs": {
+        "content": "Inhoud",
+        "design": "Design",
+        "extras": "Extra's"
+      },
+      "sections": {
+        "attendance": {
+          "title": "Aanwezigheidsvragen",
+          "description": "Aanwezig?, Duur, Gedeeltelijke beschikbaarheid"
+        },
+        "travel": {
+          "title": "Reizen en Fitness",
+          "description": "Reisbereidheid, fitnessniveau, alcohol"
+        },
+        "dates": {
+          "title": "Datumblokken",
+          "configured": "{{count}} data geconfigureerd"
+        },
+        "activities": {
+          "title": "Activiteiten",
+          "selected": "{{count}} van 100+ geselecteerd"
+        },
+        "budget": {
+          "title": "Budgetopties",
+          "options": "{{count}} opties",
+          "placeholder": "bijv. 500-750 €"
+        },
+        "destinations": {
+          "title": "Bestemmingen",
+          "options": "{{count}} opties",
+          "placeholder": "bijv. Amsterdam",
+          "emojiPlaceholder": "Emoji"
+        },
+        "rules": {
+          "title": "No-Go's en Focus",
+          "rulesCount": "{{count}} regels"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "Ben je erbij? *",
+          "description": "Antwoordopties voor de aanwezigheidsvraag"
+        },
+        "duration": {
+          "title": "Voorkeursduur *",
+          "description": "Opties voor de duur van het evenement"
+        },
+        "travel": {
+          "title": "Maximale Reistijd *",
+          "description": "Hoe ver zijn gasten bereid te reizen?"
+        },
+        "fitness": {
+          "title": "Fitnessniveau *",
+          "description": "Voorkeursactiviteitsniveau"
+        },
+        "alcohol": {
+          "title": "Alcoholvoorkeur",
+          "description": "Houding tegenover alcoholische dranken"
+        }
+      },
+      "design": {
+        "templateTitle": "Design Template Kiezen",
+        "templateDescription": "Kies een geschikt design voor je evenement",
+        "brandingTitle": "Branding Aanpassen",
+        "brandingDescription": "Configureer kleuren, teksten en sleuteldatum",
+        "recommendedFor": "Aanbevolen voor dit type evenement",
+        "moreTemplates": "Meer templates",
+        "templates": "Templates"
+      },
+      "extras": {
+        "customQuestionsTitle": "Aangepaste Vragen",
+        "customQuestionsDescription": "Voeg individuele vragen toe aan het formulier"
+      },
+      "noGos": {
+        "title": "No-Go's",
+        "placeholder": "bijv. Geen strippers"
+      },
+      "focusPoints": {
+        "title": "Focus / Wensen",
+        "placeholder": "bijv. Actie en plezier"
+      },
+      "previewHint": "Wijzigingen worden zichtbaar in het enquêteformulier zodra je opslaat.",
+      "openPreview": "Voorbeeld openen",
+      "visible": "Zichtbaar",
+      "hidden": "Verborgen",
+      "selectionType": "Selectietype",
+      "multi": "Multi",
+      "single": "Single",
+      "optionsCount": "{{count}} van max. {{max}} opties",
+      "emojisOptional": "Emoji's optioneel",
+      "newOption": "Nieuwe optie",
+      "dateBlocks": {
+        "addNew": "Nieuw datumblok toevoegen",
+        "from": "Van",
+        "to": "Tot",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "hintOptional": "Opmerking (optioneel)",
+        "hintPlaceholder": "bijv. Pasen, feestdag...",
+        "add": "Toevoegen",
+        "preview": "Voorbeeld",
+        "noBlocks": "Nog geen datumblokken",
+        "noBlocksHint": "Voeg periodes toe waaruit deelnemers kunnen kiezen",
+        "addWarning": "Waarschuwing toevoegen",
+        "removeWarning": "Waarschuwing verwijderen",
+        "defaultWarning": "Mogelijke beperkingen",
+        "hintInput": "Opmerking invoeren..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "Snel toevoegen:",
+        "presets": {
+          "dietary": "Voeding",
+          "songWish": "Muziekwens",
+          "tshirtSize": "T-shirtmaat",
+          "driversLicense": "Rijbewijs",
+          "specialWishes": "Speciale wensen"
+        },
+        "types": {
+          "text": "Korte tekst",
+          "textarea": "Lange tekst",
+          "select": "Dropdown",
+          "radio": "Enkelvoudige keuze",
+          "checkbox": "Meervoudige keuze",
+          "toggle": "Ja/Nee"
+        },
+        "questionPlaceholder": "Vraag invoeren...",
+        "placeholderPlaceholder": "Placeholder tekst (optioneel)",
+        "options": "Opties:",
+        "addOption": "Optie toevoegen",
+        "requiredField": "Verplicht veld",
+        "noQuestions": "Nog geen aangepaste vragen.",
+        "noQuestionsHint": "Gebruik de snelknoppen hierboven of voeg een nieuwe vraag toe.",
+        "addNew": "Nieuwe vraag toevoegen",
+        "questionsConfigured": "aangepaste vra(a)g(en) geconfigureerd"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Activiteiten zoeken...",
+        "selected": "geselecteerd",
+        "custom": "Aangepast",
+        "addCustom": "Aangepaste activiteit toevoegen",
+        "activityName": "Activiteitsnaam",
+        "emoji": "Emoji",
+        "add": "Toevoegen",
+        "all": "Alle",
+        "recommended": "Aanbevolen",
+        "selectedTab": "Geselecteerd",
+        "selectAllRecommended": "Alle aanbevelingen selecteren",
+        "noResults": "Geen activiteiten gevonden",
+        "noResultsHint": "Probeer een andere zoekterm of categorie",
+        "selectedActivities": "Geselecteerde activiteiten",
+        "removeAll": "Alles verwijderen"
+      },
+      "branding": {
+        "primaryColor": "Primaire kleur",
+        "accentColor": "Accentkleur",
+        "resetTemplateColors": "Template kleuren resetten",
+        "heroTexts": "Hero teksten",
+        "heroTitle": "Hero titel",
+        "heroTitleDefault": "Standaard: Evenementnaam",
+        "heroSubtitle": "Hero ondertitel",
+        "heroSubtitlePlaceholder": "Datum vinden en actie plannen",
+        "keyDate": "Sleuteldatum (bijv. trouwdatum)",
+        "keyDateLabel": "Datumlabel",
+        "keyDateLabelPlaceholder": "Bruiloft",
+        "date": "Datum",
+        "selectDate": "Datum selecteren",
+        "backgroundStyle": "Achtergrondstijl",
+        "gradient": "🌈 Verloop",
+        "solid": "🎨 Effen",
+        "dark": "🌙 Donker",
+        "livePreview": "Live voorbeeld van het hero-gebied"
+      }
     },
     "schedule": {
       "title": "Planning",

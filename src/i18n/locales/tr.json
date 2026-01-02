@@ -457,6 +457,11 @@
     },
     "form": {
       "title": "Form Oluşturucu",
+      "subtitle": "{{eventName}} için anketi yapılandır",
+      "preview": "Önizleme",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet",
+      "successMessage": "Form yapılandırması kaydedildi!",
       "coreQuestions": "Ana Sorular",
       "customQuestions": "Özel Sorular",
       "questionEnabled": "Soru etkin",
@@ -465,7 +470,179 @@
       "multiSelect": "Çoklu seçim",
       "addQuestion": "Soru Ekle",
       "editOptions": "Seçenekleri Düzenle",
-      "saveChanges": "Değişiklikleri Kaydet"
+      "saveChanges": "Değişiklikleri Kaydet",
+      "tabs": {
+        "content": "İçerik",
+        "design": "Tasarım",
+        "extras": "Ekstralar"
+      },
+      "sections": {
+        "attendance": {
+          "title": "Katılım Soruları",
+          "description": "Katılıyor musun?, Süre, Kısmi müsaitlik"
+        },
+        "travel": {
+          "title": "Seyahat ve Fitness",
+          "description": "Seyahat istekliliği, fitness seviyesi, alkol"
+        },
+        "dates": {
+          "title": "Tarih Blokları",
+          "configured": "{{count}} tarih yapılandırıldı"
+        },
+        "activities": {
+          "title": "Aktiviteler",
+          "selected": "100+'dan {{count}} seçildi"
+        },
+        "budget": {
+          "title": "Bütçe Seçenekleri",
+          "options": "{{count}} seçenek",
+          "placeholder": "örn. 500-750 €"
+        },
+        "destinations": {
+          "title": "Hedefler",
+          "options": "{{count}} seçenek",
+          "placeholder": "örn. Amsterdam",
+          "emojiPlaceholder": "Emoji"
+        },
+        "rules": {
+          "title": "No-Go ve Odak",
+          "rulesCount": "{{count}} kural"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "Katılıyor musun? *",
+          "description": "Katılım sorusu için cevap seçenekleri"
+        },
+        "duration": {
+          "title": "Tercih Edilen Süre *",
+          "description": "Etkinlik süresi için seçenekler"
+        },
+        "travel": {
+          "title": "Maksimum Seyahat Süresi *",
+          "description": "Misafirler ne kadar seyahat etmeye istekli?"
+        },
+        "fitness": {
+          "title": "Fitness Seviyesi *",
+          "description": "Tercih edilen aktivite seviyesi"
+        },
+        "alcohol": {
+          "title": "Alkol Tercihi",
+          "description": "Alkollü içeceklere karşı tutum"
+        }
+      },
+      "design": {
+        "templateTitle": "Tasarım Şablonu Seç",
+        "templateDescription": "Etkinliğine uygun bir tasarım seç",
+        "brandingTitle": "Marka Kimliğini Özelleştir",
+        "brandingDescription": "Renkleri, metinleri ve anahtar tarihi yapılandır",
+        "recommendedFor": "Bu etkinlik türü için önerilen",
+        "moreTemplates": "Daha fazla şablon",
+        "templates": "Şablonlar"
+      },
+      "extras": {
+        "customQuestionsTitle": "Özel Sorular",
+        "customQuestionsDescription": "Forma bireysel sorular ekle"
+      },
+      "noGos": {
+        "title": "No-Go",
+        "placeholder": "örn. Striptizci yok"
+      },
+      "focusPoints": {
+        "title": "Odak / İstekler",
+        "placeholder": "örn. Aksiyon ve eğlence"
+      },
+      "previewHint": "Değişiklikler kaydettikten sonra anket formunda görünür olacak.",
+      "openPreview": "Önizleme aç",
+      "visible": "Görünür",
+      "hidden": "Gizli",
+      "selectionType": "Seçim türü",
+      "multi": "Çoklu",
+      "single": "Tekli",
+      "optionsCount": "Maks. {{max}} seçenekten {{count}}",
+      "emojisOptional": "Emojiler isteğe bağlı",
+      "newOption": "Yeni seçenek",
+      "dateBlocks": {
+        "addNew": "Yeni tarih bloğu ekle",
+        "from": "Başlangıç",
+        "to": "Bitiş",
+        "startDate": "Başlangıç tarihi",
+        "endDate": "Bitiş tarihi",
+        "hintOptional": "Not (isteğe bağlı)",
+        "hintPlaceholder": "örn. Paskalya, tatil...",
+        "add": "Ekle",
+        "preview": "Önizleme",
+        "noBlocks": "Henüz tarih bloğu yok",
+        "noBlocksHint": "Katılımcıların seçebileceği dönemler ekle",
+        "addWarning": "Uyarı ekle",
+        "removeWarning": "Uyarıyı kaldır",
+        "defaultWarning": "Olası kısıtlamalar",
+        "hintInput": "Not girin..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "Hızlı ekle:",
+        "presets": {
+          "dietary": "Beslenme",
+          "songWish": "Şarkı isteği",
+          "tshirtSize": "Tişört bedeni",
+          "driversLicense": "Ehliyet",
+          "specialWishes": "Özel istekler"
+        },
+        "types": {
+          "text": "Kısa metin",
+          "textarea": "Uzun metin",
+          "select": "Açılır menü",
+          "radio": "Tekli seçim",
+          "checkbox": "Çoklu seçim",
+          "toggle": "Evet/Hayır"
+        },
+        "questionPlaceholder": "Soru girin...",
+        "placeholderPlaceholder": "Yer tutucu metin (isteğe bağlı)",
+        "options": "Seçenekler:",
+        "addOption": "Seçenek ekle",
+        "requiredField": "Zorunlu alan",
+        "noQuestions": "Henüz özel soru yok.",
+        "noQuestionsHint": "Yukarıdaki hızlı butonları kullan veya yeni soru ekle.",
+        "addNew": "Yeni soru ekle",
+        "questionsConfigured": "özel soru(lar) yapılandırıldı"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Aktivite ara...",
+        "selected": "seçildi",
+        "custom": "Özel",
+        "addCustom": "Özel aktivite ekle",
+        "activityName": "Aktivite adı",
+        "emoji": "Emoji",
+        "add": "Ekle",
+        "all": "Tümü",
+        "recommended": "Önerilen",
+        "selectedTab": "Seçilen",
+        "selectAllRecommended": "Tüm önerileri seç",
+        "noResults": "Aktivite bulunamadı",
+        "noResultsHint": "Başka bir terim veya kategori dene",
+        "selectedActivities": "Seçilen aktiviteler",
+        "removeAll": "Tümünü kaldır"
+      },
+      "branding": {
+        "primaryColor": "Ana renk",
+        "accentColor": "Vurgu rengi",
+        "resetTemplateColors": "Şablon renklerini sıfırla",
+        "heroTexts": "Hero metinleri",
+        "heroTitle": "Hero başlığı",
+        "heroTitleDefault": "Varsayılan: Etkinlik adı",
+        "heroSubtitle": "Hero alt başlığı",
+        "heroSubtitlePlaceholder": "Tarih bul ve aksiyon planla",
+        "keyDate": "Anahtar tarih (örn. düğün tarihi)",
+        "keyDateLabel": "Tarih etiketi",
+        "keyDateLabelPlaceholder": "Düğün",
+        "date": "Tarih",
+        "selectDate": "Tarih seç",
+        "backgroundStyle": "Arka plan stili",
+        "gradient": "🌈 Gradyan",
+        "solid": "🎨 Düz",
+        "dark": "🌙 Koyu",
+        "livePreview": "Hero alanının canlı önizlemesi"
+      }
     },
     "schedule": {
       "title": "Program",

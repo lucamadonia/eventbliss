@@ -473,6 +473,11 @@
     },
     "form": {
       "title": "Constructor de Formulario",
+      "subtitle": "Configura la encuesta para {{eventName}}",
+      "preview": "Vista previa",
+      "saving": "Guardando...",
+      "save": "Guardar",
+      "successMessage": "¡Configuración del formulario guardada!",
       "coreQuestions": "Preguntas Principales",
       "customQuestions": "Preguntas Personalizadas",
       "questionEnabled": "Pregunta activada",
@@ -481,7 +486,179 @@
       "multiSelect": "Selección múltiple",
       "addQuestion": "Añadir Pregunta",
       "editOptions": "Editar Opciones",
-      "saveChanges": "Guardar Cambios"
+      "saveChanges": "Guardar Cambios",
+      "tabs": {
+        "content": "Contenido",
+        "design": "Diseño",
+        "extras": "Extras"
+      },
+      "sections": {
+        "attendance": {
+          "title": "Preguntas de Asistencia",
+          "description": "¿Asistes?, Duración, Disponibilidad parcial"
+        },
+        "travel": {
+          "title": "Viaje y Fitness",
+          "description": "Disponibilidad para viajar, nivel de fitness, alcohol"
+        },
+        "dates": {
+          "title": "Bloques de Fechas",
+          "configured": "{{count}} fechas configuradas"
+        },
+        "activities": {
+          "title": "Actividades",
+          "selected": "{{count}} de 100+ seleccionadas"
+        },
+        "budget": {
+          "title": "Opciones de Presupuesto",
+          "options": "{{count}} opciones",
+          "placeholder": "ej. 500-750 €"
+        },
+        "destinations": {
+          "title": "Destinos",
+          "options": "{{count}} opciones",
+          "placeholder": "ej. Ámsterdam",
+          "emojiPlaceholder": "Emoji"
+        },
+        "rules": {
+          "title": "No-Gos y Enfoque",
+          "rulesCount": "{{count}} reglas"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "¿Estás dentro? *",
+          "description": "Opciones de respuesta para la pregunta de asistencia"
+        },
+        "duration": {
+          "title": "Duración Preferida *",
+          "description": "Opciones para la duración del evento"
+        },
+        "travel": {
+          "title": "Tiempo Máximo de Viaje *",
+          "description": "¿Cuánto están dispuestos a viajar los invitados?"
+        },
+        "fitness": {
+          "title": "Nivel de Fitness *",
+          "description": "Nivel de actividad preferido"
+        },
+        "alcohol": {
+          "title": "Preferencia de Alcohol",
+          "description": "Actitud hacia bebidas alcohólicas"
+        }
+      },
+      "design": {
+        "templateTitle": "Elegir Plantilla de Diseño",
+        "templateDescription": "Elige un diseño adecuado para tu evento",
+        "brandingTitle": "Personalizar Branding",
+        "brandingDescription": "Configura colores, textos y fecha clave",
+        "recommendedFor": "Recomendado para este tipo de evento",
+        "moreTemplates": "Más plantillas",
+        "templates": "Plantillas"
+      },
+      "extras": {
+        "customQuestionsTitle": "Preguntas Personalizadas",
+        "customQuestionsDescription": "Añade preguntas individuales al formulario"
+      },
+      "noGos": {
+        "title": "No-Gos",
+        "placeholder": "ej. No strippers"
+      },
+      "focusPoints": {
+        "title": "Enfoque / Deseos",
+        "placeholder": "ej. Acción y diversión"
+      },
+      "previewHint": "Los cambios serán visibles en el formulario de encuesta una vez guardados.",
+      "openPreview": "Abrir vista previa",
+      "visible": "Visible",
+      "hidden": "Oculto",
+      "selectionType": "Tipo de selección",
+      "multi": "Multi",
+      "single": "Single",
+      "optionsCount": "{{count}} de máx. {{max}} opciones",
+      "emojisOptional": "Emojis opcionales",
+      "newOption": "Nueva opción",
+      "dateBlocks": {
+        "addNew": "Añadir nuevo bloque de fechas",
+        "from": "Desde",
+        "to": "Hasta",
+        "startDate": "Fecha de inicio",
+        "endDate": "Fecha de fin",
+        "hintOptional": "Nota (opcional)",
+        "hintPlaceholder": "ej. Pascua, festivo...",
+        "add": "Añadir",
+        "preview": "Vista previa",
+        "noBlocks": "Aún no hay bloques de fechas",
+        "noBlocksHint": "Añade períodos entre los que los participantes puedan elegir",
+        "addWarning": "Añadir advertencia",
+        "removeWarning": "Quitar advertencia",
+        "defaultWarning": "Posibles restricciones",
+        "hintInput": "Introducir nota..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "Añadir rápido:",
+        "presets": {
+          "dietary": "Alimentación",
+          "songWish": "Canción deseada",
+          "tshirtSize": "Talla de camiseta",
+          "driversLicense": "Carnet de conducir",
+          "specialWishes": "Deseos especiales"
+        },
+        "types": {
+          "text": "Texto corto",
+          "textarea": "Texto largo",
+          "select": "Desplegable",
+          "radio": "Opción única",
+          "checkbox": "Opción múltiple",
+          "toggle": "Sí/No"
+        },
+        "questionPlaceholder": "Introducir pregunta...",
+        "placeholderPlaceholder": "Texto de marcador (opcional)",
+        "options": "Opciones:",
+        "addOption": "Añadir opción",
+        "requiredField": "Campo obligatorio",
+        "noQuestions": "Aún no hay preguntas personalizadas.",
+        "noQuestionsHint": "Usa los botones rápidos de arriba o añade una nueva pregunta.",
+        "addNew": "Añadir nueva pregunta",
+        "questionsConfigured": "pregunta(s) personalizada(s) configurada(s)"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Buscar actividades...",
+        "selected": "seleccionadas",
+        "custom": "Personalizadas",
+        "addCustom": "Añadir actividad personalizada",
+        "activityName": "Nombre de actividad",
+        "emoji": "Emoji",
+        "add": "Añadir",
+        "all": "Todas",
+        "recommended": "Recomendadas",
+        "selectedTab": "Seleccionadas",
+        "selectAllRecommended": "Seleccionar todas las recomendaciones",
+        "noResults": "No se encontraron actividades",
+        "noResultsHint": "Prueba con otro término o categoría",
+        "selectedActivities": "Actividades seleccionadas",
+        "removeAll": "Quitar todas"
+      },
+      "branding": {
+        "primaryColor": "Color primario",
+        "accentColor": "Color de acento",
+        "resetTemplateColors": "Restablecer colores de plantilla",
+        "heroTexts": "Textos del hero",
+        "heroTitle": "Título del hero",
+        "heroTitleDefault": "Predeterminado: Nombre del evento",
+        "heroSubtitle": "Subtítulo del hero",
+        "heroSubtitlePlaceholder": "Encontrar fecha y planificar acción",
+        "keyDate": "Fecha clave (ej. fecha de boda)",
+        "keyDateLabel": "Etiqueta de fecha",
+        "keyDateLabelPlaceholder": "Boda",
+        "date": "Fecha",
+        "selectDate": "Seleccionar fecha",
+        "backgroundStyle": "Estilo de fondo",
+        "gradient": "🌈 Gradiente",
+        "solid": "🎨 Sólido",
+        "dark": "🌙 Oscuro",
+        "livePreview": "Vista previa en vivo del área hero"
+      }
     },
     "schedule": {
       "title": "Calendario",

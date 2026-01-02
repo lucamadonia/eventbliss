@@ -8,12 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { 
   Building2, Search, Plus, Check, X, ExternalLink, 
-  Phone, Mail, MapPin, Percent, Euro, TrendingUp, Users, Ticket, Filter
+  Phone, Mail, MapPin, Percent, Euro, TrendingUp, Users, Ticket, Filter, Globe
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENCIES as allAgencies, type Agency } from "@/lib/agencies-data";
@@ -86,6 +87,23 @@ const AgencyAffiliateManager = () => {
   const [manualAgencyEmail, setManualAgencyEmail] = useState("");
   const [manualAgencyPhone, setManualAgencyPhone] = useState("");
   const [manualAgencyWebsite, setManualAgencyWebsite] = useState("");
+  
+  // Multilingual descriptions state
+  const [manualDescriptions, setManualDescriptions] = useState<Record<string, string>>({});
+  const [descriptionLang, setDescriptionLang] = useState("de");
+  
+  const LANGUAGES = [
+    { code: "de", label: "DE", flag: "🇩🇪" },
+    { code: "en", label: "EN", flag: "🇬🇧" },
+    { code: "es", label: "ES", flag: "🇪🇸" },
+    { code: "fr", label: "FR", flag: "🇫🇷" },
+    { code: "it", label: "IT", flag: "🇮🇹" },
+    { code: "nl", label: "NL", flag: "🇳🇱" },
+    { code: "pl", label: "PL", flag: "🇵🇱" },
+    { code: "pt", label: "PT", flag: "🇵🇹" },
+    { code: "tr", label: "TR", flag: "🇹🇷" },
+    { code: "ar", label: "AR", flag: "🇸🇦" },
+  ];
 
   useEffect(() => {
     fetchAgencyAffiliates();
@@ -169,6 +187,8 @@ const AgencyAffiliateManager = () => {
     setManualAgencyPhone("");
     setManualAgencyWebsite("");
     setCommissionRate("10");
+    setManualDescriptions({});
+    setDescriptionLang("de");
   };
 
   const handleAddManualAgency = async () => {
@@ -192,6 +212,18 @@ const AgencyAffiliateManager = () => {
           commission_rate: parseFloat(commissionRate),
           commission_type: "percentage",
           contact_email: manualAgencyEmail || null,
+          phone: manualAgencyPhone || null,
+          website: manualAgencyWebsite || null,
+          description_de: manualDescriptions.de || null,
+          description_en: manualDescriptions.en || null,
+          description_es: manualDescriptions.es || null,
+          description_fr: manualDescriptions.fr || null,
+          description_it: manualDescriptions.it || null,
+          description_nl: manualDescriptions.nl || null,
+          description_pl: manualDescriptions.pl || null,
+          description_pt: manualDescriptions.pt || null,
+          description_tr: manualDescriptions.tr || null,
+          description_ar: manualDescriptions.ar || null,
           status: "active", // Directly active since admin creates it
           is_verified: true,
         } as never);
@@ -758,6 +790,62 @@ const AgencyAffiliateManager = () => {
                   <SelectItem value="20">20%</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Multilingual Descriptions */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <Label>{t("admin.agencyAffiliate.descriptions", "Beschreibungen (mehrsprachig)")}</Label>
+              </div>
+              
+              <Tabs value={descriptionLang} onValueChange={setDescriptionLang}>
+                <TabsList className="grid grid-cols-5 h-auto gap-1">
+                  {LANGUAGES.slice(0, 5).map((lang) => (
+                    <TabsTrigger 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    >
+                      <span className="mr-1">{lang.flag}</span>
+                      {lang.label}
+                      {manualDescriptions[lang.code] && <span className="ml-1 text-success">✓</span>}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <TabsList className="grid grid-cols-5 h-auto gap-1 mt-1">
+                  {LANGUAGES.slice(5).map((lang) => (
+                    <TabsTrigger 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-xs px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    >
+                      <span className="mr-1">{lang.flag}</span>
+                      {lang.label}
+                      {manualDescriptions[lang.code] && <span className="ml-1 text-success">✓</span>}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                {LANGUAGES.map((lang) => (
+                  <TabsContent key={lang.code} value={lang.code} className="mt-3">
+                    <Textarea
+                      value={manualDescriptions[lang.code] || ""}
+                      onChange={(e) => setManualDescriptions(prev => ({
+                        ...prev,
+                        [lang.code]: e.target.value
+                      }))}
+                      placeholder={t("admin.agencyAffiliate.descriptionPlaceholder", "Beschreibung der Agentur auf {{lang}}...", { lang: lang.label })}
+                      rows={3}
+                      className="text-sm"
+                    />
+                  </TabsContent>
+                ))}
+              </Tabs>
+              
+              <p className="text-xs text-muted-foreground">
+                {t("admin.agencyAffiliate.descriptionHint", "Tipp: Beschreibungen werden je nach Benutzersprache angezeigt.")}
+              </p>
             </div>
           </div>
 

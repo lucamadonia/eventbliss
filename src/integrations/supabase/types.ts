@@ -343,13 +343,25 @@ export type Database = {
           commission_type: Database["public"]["Enums"]["commission_type"] | null
           contact_email: string | null
           created_at: string | null
+          description_ar: string | null
+          description_de: string | null
+          description_en: string | null
+          description_es: string | null
+          description_fr: string | null
+          description_it: string | null
+          description_nl: string | null
+          description_pl: string | null
+          description_pt: string | null
+          description_tr: string | null
           id: string
           is_verified: boolean | null
+          phone: string | null
           status: string | null
           total_bookings: number | null
           total_commission: number | null
           total_referrals: number | null
           updated_at: string | null
+          website: string | null
         }
         Insert: {
           affiliate_id?: string | null
@@ -363,13 +375,25 @@ export type Database = {
             | null
           contact_email?: string | null
           created_at?: string | null
+          description_ar?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          description_nl?: string | null
+          description_pl?: string | null
+          description_pt?: string | null
+          description_tr?: string | null
           id?: string
           is_verified?: boolean | null
+          phone?: string | null
           status?: string | null
           total_bookings?: number | null
           total_commission?: number | null
           total_referrals?: number | null
           updated_at?: string | null
+          website?: string | null
         }
         Update: {
           affiliate_id?: string | null
@@ -383,13 +407,25 @@ export type Database = {
             | null
           contact_email?: string | null
           created_at?: string | null
+          description_ar?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          description_nl?: string | null
+          description_pl?: string | null
+          description_pt?: string | null
+          description_tr?: string | null
           id?: string
           is_verified?: boolean | null
+          phone?: string | null
           status?: string | null
           total_bookings?: number | null
           total_commission?: number | null
           total_referrals?: number | null
           updated_at?: string | null
+          website?: string | null
         }
         Relationships: [
           {
