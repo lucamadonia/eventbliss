@@ -1117,6 +1117,7 @@
     }
   },
   "expenses": {
+    "button": "Expenses",
     "title": "Expenses",
     "addExpense": "Add Expense",
     "totalAmount": "Total Amount",

@@ -551,6 +551,32 @@
     "sendViaWhatsApp": "Envoyer via WhatsApp",
     "surveyLink": "Lien du Sondage",
     "accessCode": "Code d'Accès",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "categories": {
+      "before": "Avant l'Événement",
+      "planning": "Planification",
+      "confirmed": "Confirmé",
+      "after": "Après l'Événement"
+    },
+    "ai": {
+      "enhance": "Améliorer avec IA",
+      "dialogTitle": "Améliorer le message avec IA",
+      "dialogDescription": "Adaptez le message à vos besoins avec l'aide de l'IA.",
+      "selectStyle": "Choisir le style",
+      "casual": "Plus décontracté",
+      "formal": "Plus formel",
+      "shorter": "Plus court",
+      "detailed": "Plus détaillé",
+      "custom": "Personnalisé",
+      "customPrompt": "Instructions personnalisées",
+      "customPlaceholder": "ex. Ajoutez plus d'emojis, rendez-le plus drôle...",
+      "originalText": "Texte original",
+      "generateButton": "Générer le message",
+      "enhancing": "Génération en cours...",
+      "result": "Message amélioré",
+      "error": "Erreur lors de la génération. Veuillez réessayer."
+    },
     "proTip": {
       "title": "Conseil Pro",
       "description": "Copiez les messages et partagez-les directement via WhatsApp ou d'autres messageries pour de meilleurs résultats."
@@ -636,6 +662,7 @@
     }
   },
   "expenses": {
+    "button": "Dépenses",
     "title": "Dépenses",
     "addExpense": "Ajouter une Dépense",
     "totalAmount": "Montant Total",

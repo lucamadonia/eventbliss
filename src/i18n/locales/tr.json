@@ -535,6 +535,32 @@
     "sendViaWhatsApp": "WhatsApp ile Gönder",
     "surveyLink": "Anket Linki",
     "accessCode": "Erişim Kodu",
+    "showMore": "Daha fazla göster",
+    "showLess": "Daha az göster",
+    "categories": {
+      "before": "Etkinlik Öncesi",
+      "planning": "Planlama",
+      "confirmed": "Onaylandı",
+      "after": "Etkinlik Sonrası"
+    },
+    "ai": {
+      "enhance": "AI ile Geliştir",
+      "dialogTitle": "Mesajı AI ile Geliştir",
+      "dialogDescription": "AI yardımıyla mesajı ihtiyaçlarınıza göre uyarlayın.",
+      "selectStyle": "Stil Seç",
+      "casual": "Daha rahat",
+      "formal": "Daha resmi",
+      "shorter": "Daha kısa",
+      "detailed": "Daha detaylı",
+      "custom": "Özel",
+      "customPrompt": "Özel talimatlar",
+      "customPlaceholder": "örn. Daha fazla emoji ekle, daha eğlenceli yap...",
+      "originalText": "Orijinal metin",
+      "generateButton": "Mesaj oluştur",
+      "enhancing": "Oluşturuluyor...",
+      "result": "Geliştirilmiş mesaj",
+      "error": "Oluşturma hatası. Lütfen tekrar deneyin."
+    },
     "proTip": {
       "title": "Pro İpucu",
       "description": "Mesajları kopyalayın ve en iyi sonuçlar için doğrudan WhatsApp veya diğer mesajlaşma uygulamaları aracılığıyla paylaşın."
@@ -620,6 +646,7 @@
     }
   },
   "expenses": {
+    "button": "Harcamalar",
     "title": "Harcamalar",
     "addExpense": "Harcama Ekle",
     "totalAmount": "Toplam Tutar",

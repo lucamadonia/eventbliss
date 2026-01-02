@@ -535,6 +535,32 @@
     "sendViaWhatsApp": "Wyślij przez WhatsApp",
     "surveyLink": "Link do Ankiety",
     "accessCode": "Kod Dostępu",
+    "showMore": "Pokaż więcej",
+    "showLess": "Pokaż mniej",
+    "categories": {
+      "before": "Przed Wydarzeniem",
+      "planning": "Planowanie",
+      "confirmed": "Potwierdzone",
+      "after": "Po Wydarzeniu"
+    },
+    "ai": {
+      "enhance": "Ulepsz z AI",
+      "dialogTitle": "Ulepsz wiadomość z AI",
+      "dialogDescription": "Dostosuj wiadomość do swoich potrzeb za pomocą AI.",
+      "selectStyle": "Wybierz styl",
+      "casual": "Bardziej swobodny",
+      "formal": "Bardziej formalny",
+      "shorter": "Krótszy",
+      "detailed": "Bardziej szczegółowy",
+      "custom": "Własny",
+      "customPrompt": "Własne instrukcje",
+      "customPlaceholder": "np. Dodaj więcej emoji, zrób to zabawniejszym...",
+      "originalText": "Oryginalny tekst",
+      "generateButton": "Generuj wiadomość",
+      "enhancing": "Generowanie...",
+      "result": "Ulepszona wiadomość",
+      "error": "Błąd podczas generowania. Spróbuj ponownie."
+    },
     "proTip": {
       "title": "Wskazówka Pro",
       "description": "Skopiuj wiadomości i udostępnij je bezpośrednio przez WhatsApp lub inne komunikatory dla najlepszych rezultatów."
@@ -620,6 +646,7 @@
     }
   },
   "expenses": {
+    "button": "Wydatki",
     "title": "Wydatki",
     "addExpense": "Dodaj Wydatek",
     "totalAmount": "Suma Całkowita",

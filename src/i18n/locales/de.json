@@ -1144,6 +1144,7 @@
     }
   },
   "expenses": {
+    "button": "Kosten",
     "title": "Ausgaben",
     "addExpense": "Ausgabe hinzufügen",
     "totalAmount": "Gesamtbetrag",
