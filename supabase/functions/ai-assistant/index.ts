@@ -1260,6 +1260,9 @@ function getNextMonthReset(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
 }
 
+// Rate limit: max requests per minute
+const RATE_LIMIT_PER_MINUTE = 10;
+
 // =============================================================================
 // MAIN HANDLER
 // =============================================================================
@@ -1272,7 +1275,7 @@ serve(async (req) => {
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
+      console.error("AI service configuration error");
       return new Response(
         JSON.stringify({ success: false, error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -1294,14 +1297,121 @@ serve(async (req) => {
       userId = user?.id || null;
     }
 
-    const body: RequestBody = await req.json();
-    const { type, context, message, eventId } = body;
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid JSON body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (typeof body !== 'object' || body === null) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const rawBody = body as Record<string, unknown>;
+    
+    // Validate type field
+    const validTypes = ["trip_ideas", "activities", "day_plan", "budget_estimate", "chat", "message_enhance"];
+    const type = typeof rawBody.type === 'string' && validTypes.includes(rawBody.type) 
+      ? rawBody.type as RequestBody['type'] 
+      : null;
+    
+    if (!type) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or missing type" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate context object
+    if (typeof rawBody.context !== 'object' || rawBody.context === null) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or missing context" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const rawContext = rawBody.context as Record<string, unknown>;
+    
+    // Sanitize context fields
+    const context: RequestBody['context'] = {
+      event_type: typeof rawContext.event_type === 'string' ? rawContext.event_type.slice(0, 50) : 'other',
+      honoree_name: typeof rawContext.honoree_name === 'string' ? rawContext.honoree_name.slice(0, 200) : '',
+      participant_count: typeof rawContext.participant_count === 'number' ? Math.min(rawContext.participant_count, 1000) : 0,
+      avg_budget: typeof rawContext.avg_budget === 'string' ? rawContext.avg_budget.slice(0, 50) : undefined,
+      top_activities: Array.isArray(rawContext.top_activities) 
+        ? rawContext.top_activities.filter((a): a is string => typeof a === 'string').slice(0, 20).map(a => a.slice(0, 100))
+        : undefined,
+      restrictions: Array.isArray(rawContext.restrictions)
+        ? rawContext.restrictions.filter((r): r is string => typeof r === 'string').slice(0, 20).map(r => r.slice(0, 200))
+        : undefined,
+      destination_pref: typeof rawContext.destination_pref === 'string' ? rawContext.destination_pref.slice(0, 200) : undefined,
+      date_info: typeof rawContext.date_info === 'string' ? rawContext.date_info.slice(0, 100) : undefined,
+      fitness_level: typeof rawContext.fitness_level === 'string' ? rawContext.fitness_level.slice(0, 50) : undefined,
+      duration: typeof rawContext.duration === 'string' ? rawContext.duration.slice(0, 50) : undefined,
+      language: typeof rawContext.language === 'string' ? rawContext.language.slice(0, 5) : undefined,
+      event_name: typeof rawContext.event_name === 'string' ? rawContext.event_name.slice(0, 200) : undefined,
+      event_description: typeof rawContext.event_description === 'string' ? rawContext.event_description.slice(0, 1000) : undefined,
+      original_text: typeof rawContext.original_text === 'string' ? rawContext.original_text.slice(0, 5000) : undefined,
+      enhancement_type: typeof rawContext.enhancement_type === 'string' 
+        ? rawContext.enhancement_type.slice(0, 20) as "casual" | "formal" | "shorter" | "detailed" | "custom"
+        : undefined,
+      custom_instruction: typeof rawContext.custom_instruction === 'string' ? rawContext.custom_instruction.slice(0, 500) : undefined,
+      template_type: typeof rawContext.template_type === 'string' ? rawContext.template_type.slice(0, 100) : undefined,
+    };
+
+    const message = typeof rawBody.message === 'string' ? rawBody.message.slice(0, 2000) : undefined;
+    const eventId = typeof rawBody.eventId === 'string' && /^[0-9a-f-]{36}$/i.test(rawBody.eventId) 
+      ? rawBody.eventId 
+      : undefined;
     
     // Determine language from context or default to 'de'
     const language = context.language || 'de';
     const eventType = context.event_type || 'other';
 
-    console.log("AI Assistant request:", { type, language, eventType, event_name: context.event_name, userId });
+    console.log("AI Assistant request:", { type, language, eventType });
+
+    // =========================================================================
+    // RATE LIMITING (only for authenticated users)
+    // =========================================================================
+    if (userId) {
+      const oneMinuteAgo = new Date(Date.now() - 60000);
+      const { count: recentRequests, error: rateLimitError } = await supabase
+        .from('ai_usage')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .gte('created_at', oneMinuteAgo.toISOString());
+
+      if (!rateLimitError && recentRequests && recentRequests >= RATE_LIMIT_PER_MINUTE) {
+        const errorMsgs: Record<string, string> = {
+          de: "Zu viele Anfragen. Bitte warte einen Moment.",
+          en: "Too many requests. Please wait a moment.",
+          fr: "Trop de requêtes. Veuillez patienter.",
+          es: "Demasiadas solicitudes. Por favor espera.",
+          it: "Troppe richieste. Attendi un momento.",
+          nl: "Te veel verzoeken. Even geduld.",
+          pl: "Za dużo zapytań. Proszę chwilę poczekać.",
+          pt: "Muitos pedidos. Por favor aguarde.",
+          tr: "Çok fazla istek. Lütfen bekleyin.",
+          ar: "طلبات كثيرة جداً. يرجى الانتظار.",
+        };
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'RATE_LIMIT_EXCEEDED',
+            message: errorMsgs[language] || errorMsgs.en 
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
 
     // =========================================================================
     // CREDIT CHECK (only for authenticated users)
@@ -1317,7 +1427,7 @@ serve(async (req) => {
       const planType = determinePlanType(sub);
       const creditLimit = AI_CREDIT_LIMITS[planType] || 0;
 
-      console.log("User plan:", { planType, creditLimit });
+      console.log("User plan check completed");
 
       // Skip credit check for free users (they shouldn't have access anyway via premium check)
       if (creditLimit > 0) {
@@ -1331,11 +1441,11 @@ serve(async (req) => {
           .gte('created_at', startOfMonth.toISOString());
 
         if (countError) {
-          console.error("Error counting credits:", countError);
+          console.error("Error counting credits");
         }
 
         const used = usedCredits || 0;
-        console.log("Credit usage:", { used, limit: creditLimit });
+        console.log("Credit check completed");
 
         // Check if limit reached
         if (used >= creditLimit) {

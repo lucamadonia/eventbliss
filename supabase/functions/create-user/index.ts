@@ -6,11 +6,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CreateUserRequest {
-  email: string;
-  password: string;
-  fullName?: string;
-  plan?: string;
+// Validation helpers
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 255;
+}
+
+function sanitizeString(value: unknown, maxLength = 200): string | null {
+  if (typeof value !== 'string') return null;
+  return value.trim().slice(0, maxLength);
 }
 
 serve(async (req) => {
@@ -43,7 +46,7 @@ serve(async (req) => {
     // Get current user
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      console.error("Auth error:", userError);
+      console.error("Auth error");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -59,20 +62,47 @@ serve(async (req) => {
       .maybeSingle();
 
     if (roleError || !roleData) {
-      console.error("Admin check failed:", roleError);
+      console.error("Admin check failed");
       return new Response(
         JSON.stringify({ error: "Forbidden - Admin access required" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Parse request body
-    const body: CreateUserRequest = await req.json();
-    const { email, password, fullName, plan } = body;
-
-    if (!email || !password) {
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "Email and password are required" }),
+        JSON.stringify({ error: "Invalid JSON body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (typeof body !== 'object' || body === null) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const rawBody = body as Record<string, unknown>;
+    const email = sanitizeString(rawBody.email, 255);
+    const password = sanitizeString(rawBody.password, 100);
+    const fullName = sanitizeString(rawBody.fullName, 200);
+    const plan = sanitizeString(rawBody.plan, 50);
+
+    if (!email || !isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({ error: "Valid email is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!password) {
+      return new Response(
+        JSON.stringify({ error: "Password is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -85,7 +115,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Creating user: ${email}`);
+    console.log("Admin creating new user");
 
     // Create user with admin API
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
@@ -98,14 +128,14 @@ serve(async (req) => {
     });
 
     if (createError) {
-      console.error("Create user error:", createError);
+      console.error("Create user error");
       return new Response(
         JSON.stringify({ error: createError.message }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`User created: ${newUser.user.id}`);
+    console.log("User created successfully");
 
     // Update profile to set must_change_password = true
     const { error: profileError } = await supabaseAdmin
@@ -118,7 +148,7 @@ serve(async (req) => {
       });
 
     if (profileError) {
-      console.error("Profile update error:", profileError);
+      console.error("Profile update error");
       // Don't fail the request, profile will be created by trigger
     }
 
@@ -137,10 +167,10 @@ serve(async (req) => {
         });
 
       if (subError) {
-        console.error("Subscription creation error:", subError);
+        console.error("Subscription creation error");
         // Don't fail the request
       } else {
-        console.log(`Subscription created for user: ${newUser.user.id}, plan: ${plan}`);
+        console.log("Subscription created for new user");
       }
     }
 
@@ -156,7 +186,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Unexpected error in create-user");
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

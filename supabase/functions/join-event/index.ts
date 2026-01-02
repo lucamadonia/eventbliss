@@ -16,7 +16,27 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { access_code } = await req.json();
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid JSON body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (typeof body !== 'object' || body === null) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const rawBody = body as Record<string, unknown>;
+    const access_code = typeof rawBody.access_code === 'string' 
+      ? rawBody.access_code.trim().slice(0, 20) 
+      : null;
 
     if (!access_code) {
       return new Response(
@@ -28,7 +48,18 @@ serve(async (req) => {
       );
     }
 
-    console.log("Looking for event with code:", access_code.toUpperCase());
+    // Validate access code format (alphanumeric only)
+    if (!/^[A-Z0-9]{4,10}$/i.test(access_code)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid access code format" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    console.log("Looking for event with access code");
 
     // Find event by access code
     const { data: event, error: eventError } = await supabase
@@ -38,7 +69,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (eventError) {
-      console.error("Error finding event:", eventError);
+      console.error("Error finding event");
       throw new Error("Failed to find event");
     }
 
@@ -52,7 +83,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("Found event:", event.slug);
+    console.log("Found event by access code");
 
     return new Response(
       JSON.stringify({
@@ -70,10 +101,9 @@ serve(async (req) => {
       }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error in join-event:", error);
+    console.error("Error in join-event");
     return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
+      JSON.stringify({ success: false, error: "Internal server error" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
