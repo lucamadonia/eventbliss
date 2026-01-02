@@ -44,7 +44,9 @@ export const i18nInitPromise = i18n
       tr: { translation: tr },
       ar: { translation: ar },
     },
+    supportedLngs: ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'pl', 'tr', 'ar'],
     fallbackLng: 'en',
+    load: 'languageOnly',
     interpolation: {
       escapeValue: false,
     },

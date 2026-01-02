@@ -608,7 +608,7 @@
       }
     },
     "team": {
-      "title": "Manage Dashboard Access",
+      "title": "Manage Team",
       "description": "Enable dashboard access for participants and share the invite link. With the link they can create an account and verify themselves.",
       "addParticipant": "Add Participant",
       "addParticipantDesc": "Add a new guest to the event",
@@ -621,6 +621,8 @@
       "nameRequired": "Name is required",
       "participantAdded": "{{name}} has been added",
       "addError": "Error adding participant",
+      "invite": "Invite",
+      "removeAccess": "Remove Access",
       "roles": {
         "guest": "Guest",
         "organizer": "Organizer"
@@ -1021,16 +1023,6 @@
         "title": "Danger Zone",
         "deleteEvent": "Delete Event",
         "deleteWarning": "This action cannot be undone."
-      }
-    },
-    "team": {
-      "title": "Manage Team",
-      "invite": "Invite",
-      "permissions": "Permissions",
-      "removeAccess": "Remove Access",
-      "roles": {
-        "organizer": "Organizer",
-        "guest": "Guest"
       }
     }
   },
