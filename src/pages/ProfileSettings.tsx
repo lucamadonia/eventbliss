@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Mail, Lock, AlertTriangle, Trash2, Loader2 } from "lucide-react";
+import { 
+  ChevronLeft, Mail, Lock, AlertTriangle, Trash2, Loader2, 
+  Crown, FileText, ExternalLink, Download, Calendar, CreditCard 
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { usePremium } from "@/hooks/usePremium";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,25 +27,80 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { useEffect } from "react";
+
+interface Invoice {
+  id: string;
+  number: string | null;
+  date: number;
+  amount: number;
+  currency: string;
+  status: string;
+  pdf_url: string | null;
+  hosted_invoice_url: string | null;
+  description: string;
+}
 
 export default function ProfileSettings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isLoading: authLoading, signOut } = useAuthContext();
+  const { isPremium, planType, subscriptionEnd, cancelAtPeriodEnd, loading: premiumLoading } = usePremium();
   
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  
+  // Invoices state
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [isManagingSubscription, setIsManagingSubscription] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Fetch invoices when user is available
+  useEffect(() => {
+    if (user) {
+      fetchInvoices();
+    }
+  }, [user]);
+
+  const fetchInvoices = async () => {
+    setInvoicesLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("list-invoices");
+      if (error) {
+        console.error("Error fetching invoices:", error);
+      } else if (data?.invoices) {
+        setInvoices(data.invoices);
+      }
+    } catch (err) {
+      console.error("Error fetching invoices:", err);
+    } finally {
+      setInvoicesLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsManagingSubscription(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t("common.error");
+      toast.error(errorMessage);
+    } finally {
+      setIsManagingSubscription(false);
+    }
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +124,11 @@ export default function ProfileSettings() {
       if (error) throw error;
 
       toast.success(t("profile.passwordChanged"));
-      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.error");
+      toast.error(errorMessage);
     } finally {
       setIsChangingPassword(false);
     }
@@ -82,15 +142,47 @@ export default function ProfileSettings() {
 
     setIsDeletingAccount(true);
     try {
-      // Note: Full account deletion requires server-side logic
-      // For now, we sign out and show a message
       await signOut();
       toast.success(t("profile.accountDeleteRequested"));
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.error");
+      toast.error(errorMessage);
     } finally {
       setIsDeletingAccount(false);
+    }
+  };
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleDateString();
+  };
+
+  const formatAmount = (amount: number, currency: string) => {
+    return new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(amount / 100);
+  };
+
+  const getPlanLabel = () => {
+    switch (planType) {
+      case "lifetime": return t("profile.subscription.planLifetime");
+      case "yearly": return t("profile.subscription.planYearly");
+      case "monthly": return t("profile.subscription.planMonthly");
+      default: return t("profile.subscription.planFree");
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "paid":
+        return <Badge variant="default" className="bg-green-500 hover:bg-green-600">{t("profile.invoices.paid")}</Badge>;
+      case "open":
+        return <Badge variant="outline" className="border-yellow-500 text-yellow-600">{t("profile.invoices.open")}</Badge>;
+      case "void":
+        return <Badge variant="secondary">{t("profile.invoices.void")}</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
@@ -144,11 +236,167 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
-        {/* Change Password */}
+        {/* Subscription Status */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <Card className={isPremium ? "border-primary/50" : ""}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className={`h-5 w-5 ${isPremium ? "text-primary" : ""}`} />
+                {t("profile.subscription.title")}
+              </CardTitle>
+              <CardDescription>{t("profile.subscription.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {premiumLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-4 w-48" />
+                </div>
+              ) : isPremium ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{t("profile.subscription.status")}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className="bg-primary">{getPlanLabel()}</Badge>
+                        {cancelAtPeriodEnd && (
+                          <Badge variant="outline" className="border-yellow-500 text-yellow-600">
+                            {t("profile.subscription.cancelScheduled")}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {subscriptionEnd && planType !== "lifetime" && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      <span>
+                        {cancelAtPeriodEnd 
+                          ? t("profile.subscription.endsOn", { date: new Date(subscriptionEnd).toLocaleDateString() })
+                          : t("profile.subscription.renewsOn", { date: new Date(subscriptionEnd).toLocaleDateString() })
+                        }
+                      </span>
+                    </div>
+                  )}
+                  
+                  {planType === "lifetime" && (
+                    <p className="text-sm text-muted-foreground">
+                      {t("profile.subscription.lifetimeInfo")}
+                    </p>
+                  )}
+
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleManageSubscription}
+                      disabled={isManagingSubscription}
+                    >
+                      {isManagingSubscription && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      {t("profile.subscription.manage")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">{t("profile.subscription.noSubscription")}</p>
+                  <Button onClick={() => navigate("/premium")}>
+                    <Crown className="mr-2 h-4 w-4" />
+                    {t("profile.subscription.upgradeNow")}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Invoices */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                {t("profile.invoices.title")}
+              </CardTitle>
+              <CardDescription>{t("profile.invoices.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {invoicesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                  ))}
+                </div>
+              ) : invoices.length === 0 ? (
+                <p className="text-muted-foreground text-sm">{t("profile.invoices.noInvoices")}</p>
+              ) : (
+                <div className="space-y-3">
+                  {invoices.map((invoice) => (
+                    <div 
+                      key={invoice.id} 
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className="text-sm font-medium">
+                            {formatDate(invoice.date)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {invoice.number || invoice.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">
+                          {formatAmount(invoice.amount, invoice.currency)}
+                        </span>
+                        {getStatusBadge(invoice.status || "paid")}
+                        {invoice.pdf_url && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => window.open(invoice.pdf_url!, "_blank")}
+                            title={t("profile.invoices.downloadPdf")}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {invoice.hosted_invoice_url && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => window.open(invoice.hosted_invoice_url!, "_blank")}
+                            title={t("profile.invoices.viewOnline")}
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Change Password */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
         >
           <Card>
             <CardHeader>

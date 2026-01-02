@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.request-payout]
 verify_jwt = false
+
+[functions.list-invoices]
+verify_jwt = false
