@@ -28,6 +28,7 @@ import { DemoExpenses } from "@/components/landing/demos/DemoExpenses";
 import { DemoAIAssistant } from "@/components/landing/demos/DemoAIAssistant";
 import { DemoSurvey } from "@/components/landing/demos/DemoSurvey";
 import { DemoAgencies } from "@/components/landing/demos/DemoAgencies";
+import { DemoPlanner } from "@/components/landing/demos/DemoPlanner";
 
 // Demo components mapping
 const demoComponents: Record<string, React.ComponentType> = {
@@ -36,6 +37,7 @@ const demoComponents: Record<string, React.ComponentType> = {
   ai: DemoAIAssistant,
   survey: DemoSurvey,
   agencies: DemoAgencies,
+  planner: DemoPlanner,
 };
 
 const Landing = () => {
@@ -50,6 +52,7 @@ const Landing = () => {
   const demoFeatures = [
     { id: "dashboard", icon: LayoutDashboard, gradient: "from-primary to-accent" },
     { id: "expenses", icon: Wallet, gradient: "from-accent to-neon-pink" },
+    { id: "planner", icon: Calendar, gradient: "from-neon-pink to-primary" },
     { id: "ai", icon: Bot, gradient: "from-neon-cyan to-primary" },
     { id: "survey", icon: ClipboardList, gradient: "from-neon-pink to-warning" },
     { id: "agencies", icon: Building2, gradient: "from-success to-accent" },
