@@ -336,22 +336,39 @@ const USER_PROMPT_TEMPLATES: Record<string, {
       date_info: "Zeitraum",
     },
     prompts: {
-      trip_ideas: `Schlage 3-4 passende Trip-Ideen vor. Für jede Idee:
-1. 🎯 Name/Titel des Trips
-2. 📍 Destination/Ort
-3. 💡 Kurzbeschreibung (2-3 Sätze)
-4. 💰 Geschätzte Kosten pro Person
-5. ✅ Warum es passt
+      trip_ideas: `KRITISCH - EXAKTES FORMAT FÜR REISEIDEEN:
 
-Sei kreativ aber realistisch!`,
-      activities: `Schlage 5-6 passende Aktivitäten vor. Für jede Aktivität:
-1. 🎯 Name der Aktivität
-2. ⏱️ Dauer
-3. 💰 Kosten pro Person
-4. 💪 Fitness-Anforderung
-5. 📝 Kurze Beschreibung
+Schlage 3-4 passende Reiseideen vor. Jede Idee MUSS auf einer EIGENEN ZEILE beginnen mit:
 
-Mische verschiedene Arten: Action, Entspannung, Essen/Trinken, Erlebnis.`,
+### [Emoji] [Titel der Reiseidee]
+📍 Ziel: [Destination/Stadt/Region]
+💰 Budget: [Geschätzte Kosten pro Person]
+✈️ Reisezeit: [Empfohlene Dauer]
+
+[Beschreibung 2-3 Sätze]
+
+✅ Warum perfekt:
+• [Grund 1]
+• [Grund 2]
+
+---
+
+REGELN: JEDE Idee beginnt mit ### und einem EMOJI. NIEMALS nummerierte Listen verwenden!`,
+      activities: `KRITISCH - EXAKTES FORMAT FÜR AKTIVITÄTEN:
+
+Schlage 5-6 passende Aktivitäten vor. Jede Aktivität MUSS auf einer EIGENEN ZEILE beginnen mit:
+
+### [Emoji] [Aktivitätsname]
+⏱️ Dauer: [Dauer]
+💰 Kosten: [Kosten pro Person]
+💪 Fitness: [Leicht/Normal/Anspruchsvoll]
+🎯 Kategorie: [Action/Food/Wellness/Party/Sightseeing]
+
+[Beschreibung 2-3 Sätze]
+
+---
+
+REGELN: JEDE Aktivität beginnt mit ### und einem EMOJI. NIEMALS nummerierte Listen verwenden!`,
       day_plan: `KRITISCH - EXAKTES FORMAT FÜR TAGESPLAN:
 
 Jeder neue Tag MUSS auf einer EIGENEN ZEILE beginnen mit:
@@ -442,22 +459,57 @@ STRENGE REGELN:
       date_info: "Date range",
     },
     prompts: {
-      trip_ideas: `Suggest 3-4 fitting trip ideas. For each idea:
-1. 🎯 Trip name/title
-2. 📍 Destination/location
-3. 💡 Brief description (2-3 sentences)
-4. 💰 Estimated cost per person
-5. ✅ Why it fits
+      trip_ideas: `CRITICAL - EXACT FORMAT FOR TRIP IDEAS:
 
-Be creative but realistic!`,
-      activities: `Suggest 5-6 fitting activities. For each activity:
-1. 🎯 Activity name
-2. ⏱️ Duration
-3. 💰 Cost per person
-4. 💪 Fitness requirement
-5. 📝 Brief description
+Suggest 3-4 fitting trip ideas. Each idea MUST start on its OWN LINE with:
 
-Mix different types: Action, relaxation, food/drinks, experiences.`,
+### [Emoji] [Trip Title]
+📍 Destination: [City/Region]
+💰 Budget: [Estimated cost per person]
+✈️ Duration: [Recommended duration]
+
+[Description 2-3 sentences]
+
+✅ Why perfect:
+• [Reason 1]
+• [Reason 2]
+• [Reason 3]
+
+🎯 Highlights:
+• [Highlight 1]
+• [Highlight 2]
+
+---
+
+STRICT RULES:
+1. EACH idea starts with ### and an EMOJI
+2. NEVER use numbered lists (1. 2. 3.)!
+3. Between ideas MUST be ---
+4. Be creative but realistic!`,
+      activities: `CRITICAL - EXACT FORMAT FOR ACTIVITIES:
+
+Suggest 5-6 fitting activities. Each activity MUST start on its OWN LINE with:
+
+### [Emoji] [Activity Name]
+📍 Location: [Location if relevant]
+⏱️ Duration: [Duration]
+💰 Cost: [Cost per person]
+💪 Fitness: [Easy/Normal/Challenging]
+🎯 Category: [Action/Food/Wellness/Party/Sightseeing]
+
+[Description 2-3 sentences]
+
+✅ Highlights:
+• [Highlight 1]
+• [Highlight 2]
+
+---
+
+STRICT RULES:
+1. EACH activity starts with ### and a fitting EMOJI
+2. NEVER use numbered lists (1. 2. 3.)!
+3. Between activities MUST be ---
+4. Mix different types: Action, relaxation, food/drinks, experiences`,
       day_plan: `CRITICAL - EXACT FORMAT FOR DAY PLAN:
 
 Each new day MUST start on its OWN LINE with:
@@ -548,20 +600,49 @@ STRICT RULES:
       date_info: "Période",
     },
     prompts: {
-      trip_ideas: `Suggère 3-4 idées de voyage adaptées. Pour chaque idée:
-1. 🎯 Nom/titre du voyage
-2. 📍 Destination/lieu
-3. 💡 Brève description (2-3 phrases)
-4. 💰 Coût estimé par personne
-5. ✅ Pourquoi ça convient
+      trip_ideas: `IMPORTANT - FORMAT EXACT POUR LES IDÉES DE VOYAGE:
 
-Sois créatif mais réaliste!`,
-      activities: `Suggère 5-6 activités adaptées. Pour chaque activité:
-1. 🎯 Nom de l'activité
-2. ⏱️ Durée
-3. 💰 Coût par personne
-4. 💪 Niveau de forme requis
-5. 📝 Brève description`,
+Suggère 3-4 idées de voyage. Chaque idée DOIT commencer sur sa PROPRE LIGNE avec:
+
+### [Emoji] [Titre du voyage]
+📍 Destination: [Ville/Région]
+💰 Budget: [Coût estimé par personne]
+✈️ Durée: [Durée recommandée]
+
+[Description 2-3 phrases]
+
+✅ Pourquoi parfait:
+• [Raison 1]
+• [Raison 2]
+• [Raison 3]
+
+🎯 Points forts:
+• [Point 1]
+• [Point 2]
+
+---
+
+RÈGLES: Utilise ### et un EMOJI pour chaque idée. PAS de listes numérotées!`,
+      activities: `IMPORTANT - FORMAT EXACT POUR LES ACTIVITÉS:
+
+Suggère 5-6 activités. Chaque activité DOIT commencer sur sa PROPRE LIGNE avec:
+
+### [Emoji] [Nom de l'activité]
+📍 Lieu: [Location si pertinent]
+⏱️ Durée: [Durée]
+💰 Coût: [Coût par personne]
+💪 Forme: [Facile/Normal/Exigeant]
+🎯 Catégorie: [Action/Food/Wellness/Party/Visite]
+
+[Description 2-3 phrases]
+
+✅ Points forts:
+• [Point 1]
+• [Point 2]
+
+---
+
+RÈGLES: Utilise ### et un EMOJI pour chaque activité. PAS de listes numérotées!`,
       day_plan: `IMPORTANT: Crée un programme STRUCTURÉ avec EXACTEMENT ce format:
 
 ## [Jour]: [Titre] [Emojis]
@@ -614,20 +695,49 @@ RÈGLES: Utilise ## pour chaque jour et ### pour chaque créneau horaire. PAS de
       date_info: "Período",
     },
     prompts: {
-      trip_ideas: `Sugiere 3-4 ideas de viaje. Para cada idea:
-1. 🎯 Nombre del viaje
-2. 📍 Destino
-3. 💡 Descripción breve
-4. 💰 Costo estimado por persona
-5. ✅ Por qué encaja
+      trip_ideas: `IMPORTANTE - FORMATO EXACTO PARA IDEAS DE VIAJE:
 
-¡Sé creativo pero realista!`,
-      activities: `Sugiere 5-6 actividades. Para cada actividad:
-1. 🎯 Nombre
-2. ⏱️ Duración
-3. 💰 Costo por persona
-4. 💪 Nivel de forma requerido
-5. 📝 Descripción breve`,
+Sugiere 3-4 ideas de viaje. Cada idea DEBE comenzar en su PROPIA LÍNEA con:
+
+### [Emoji] [Título del viaje]
+📍 Destino: [Ciudad/Región]
+💰 Presupuesto: [Costo estimado por persona]
+✈️ Duración: [Duración recomendada]
+
+[Descripción 2-3 frases]
+
+✅ Por qué perfecto:
+• [Razón 1]
+• [Razón 2]
+• [Razón 3]
+
+🎯 Destacados:
+• [Destacado 1]
+• [Destacado 2]
+
+---
+
+REGLAS: Usa ### y un EMOJI para cada idea. ¡NO uses listas numeradas!`,
+      activities: `IMPORTANTE - FORMATO EXACTO PARA ACTIVIDADES:
+
+Sugiere 5-6 actividades. Cada actividad DEBE comenzar en su PROPIA LÍNEA con:
+
+### [Emoji] [Nombre de la actividad]
+📍 Lugar: [Ubicación si relevante]
+⏱️ Duración: [Duración]
+💰 Coste: [Coste por persona]
+💪 Forma física: [Fácil/Normal/Exigente]
+🎯 Categoría: [Acción/Comida/Wellness/Fiesta/Turismo]
+
+[Descripción 2-3 frases]
+
+✅ Destacados:
+• [Destacado 1]
+• [Destacado 2]
+
+---
+
+REGLAS: Usa ### y un EMOJI para cada actividad. ¡NO uses listas numeradas!`,
       day_plan: `IMPORTANTE: Crea un horario ESTRUCTURADO con EXACTAMENTE este formato:
 
 ## [Día]: [Título] [Emojis]
@@ -680,20 +790,49 @@ REGLAS: Usa ## para cada día y ### para cada bloque horario. ¡NO uses puntos (
       date_info: "Periodo",
     },
     prompts: {
-      trip_ideas: `Suggerisci 3-4 idee di viaggio. Per ogni idea:
-1. 🎯 Nome del viaggio
-2. 📍 Destinazione
-3. 💡 Breve descrizione
-4. 💰 Costo stimato a persona
-5. ✅ Perché è adatto
+      trip_ideas: `IMPORTANTE - FORMATO ESATTO PER IDEE DI VIAGGIO:
 
-Sii creativo ma realistico!`,
-      activities: `Suggerisci 5-6 attività. Per ogni attività:
-1. 🎯 Nome
-2. ⏱️ Durata
-3. 💰 Costo a persona
-4. 💪 Requisito fitness
-5. 📝 Breve descrizione`,
+Suggerisci 3-4 idee di viaggio. Ogni idea DEVE iniziare sulla sua PROPRIA RIGA con:
+
+### [Emoji] [Titolo del viaggio]
+📍 Destinazione: [Città/Regione]
+💰 Budget: [Costo stimato a persona]
+✈️ Durata: [Durata consigliata]
+
+[Descrizione 2-3 frasi]
+
+✅ Perché perfetto:
+• [Motivo 1]
+• [Motivo 2]
+• [Motivo 3]
+
+🎯 Punti salienti:
+• [Punto 1]
+• [Punto 2]
+
+---
+
+REGOLE: Usa ### e un EMOJI per ogni idea. NON usare liste numerate!`,
+      activities: `IMPORTANTE - FORMATO ESATTO PER ATTIVITÀ:
+
+Suggerisci 5-6 attività. Ogni attività DEVE iniziare sulla sua PROPRIA RIGA con:
+
+### [Emoji] [Nome dell'attività]
+📍 Luogo: [Posizione se rilevante]
+⏱️ Durata: [Durata]
+💰 Costo: [Costo a persona]
+💪 Forma fisica: [Facile/Normale/Impegnativo]
+🎯 Categoria: [Azione/Cibo/Benessere/Festa/Visite]
+
+[Descrizione 2-3 frasi]
+
+✅ Punti salienti:
+• [Punto 1]
+• [Punto 2]
+
+---
+
+REGOLE: Usa ### e un EMOJI per ogni attività. NON usare liste numerate!`,
       day_plan: `IMPORTANTE: Crea un programma STRUTTURATO con ESATTAMENTE questo formato:
 
 ## [Giorno]: [Titolo] [Emoji]
@@ -746,20 +885,49 @@ REGOLE: Usa ## per ogni giorno e ### per ogni blocco orario. NON usare punti (*)
       date_info: "Periode",
     },
     prompts: {
-      trip_ideas: `Stel 3-4 passende reisideeën voor. Per idee:
-1. 🎯 Naam van de reis
-2. 📍 Bestemming
-3. 💡 Korte beschrijving
-4. 💰 Geschatte kosten per persoon
-5. ✅ Waarom het past
+      trip_ideas: `BELANGRIJK - EXACT FORMAAT VOOR REISIDEEËN:
 
-Wees creatief maar realistisch!`,
-      activities: `Stel 5-6 passende activiteiten voor. Per activiteit:
-1. 🎯 Naam
-2. ⏱️ Duur
-3. 💰 Kosten per persoon
-4. 💪 Fitnessvereiste
-5. 📝 Korte beschrijving`,
+Stel 3-4 passende reisideeën voor. Elk idee MOET op zijn EIGEN REGEL beginnen met:
+
+### [Emoji] [Titel van de reis]
+📍 Bestemming: [Stad/Regio]
+💰 Budget: [Geschatte kosten per persoon]
+✈️ Duur: [Aanbevolen duur]
+
+[Beschrijving 2-3 zinnen]
+
+✅ Waarom perfect:
+• [Reden 1]
+• [Reden 2]
+• [Reden 3]
+
+🎯 Hoogtepunten:
+• [Hoogtepunt 1]
+• [Hoogtepunt 2]
+
+---
+
+REGELS: Gebruik ### en een EMOJI voor elk idee. GEEN genummerde lijsten!`,
+      activities: `BELANGRIJK - EXACT FORMAAT VOOR ACTIVITEITEN:
+
+Stel 5-6 passende activiteiten voor. Elke activiteit MOET op zijn EIGEN REGEL beginnen met:
+
+### [Emoji] [Activiteitsnaam]
+📍 Locatie: [Locatie indien relevant]
+⏱️ Duur: [Duur]
+💰 Kosten: [Kosten per persoon]
+💪 Fitness: [Makkelijk/Normaal/Uitdagend]
+🎯 Categorie: [Actie/Eten/Wellness/Feest/Bezichtiging]
+
+[Beschrijving 2-3 zinnen]
+
+✅ Hoogtepunten:
+• [Hoogtepunt 1]
+• [Hoogtepunt 2]
+
+---
+
+REGELS: Gebruik ### en een EMOJI voor elke activiteit. GEEN genummerde lijsten!`,
       day_plan: `BELANGRIJK: Maak een GESTRUCTUREERD dagprogramma met EXACT dit formaat:
 
 ## [Dag]: [Titel] [Emoji's]
@@ -812,20 +980,49 @@ REGELS: Gebruik ## voor elke dag en ### voor elk tijdblok. GEEN opsommingstekens
       date_info: "Okres",
     },
     prompts: {
-      trip_ideas: `Zaproponuj 3-4 pomysły na wyjazd. Dla każdego:
-1. 🎯 Nazwa wycieczki
-2. 📍 Destynacja
-3. 💡 Krótki opis
-4. 💰 Szacunkowy koszt na osobę
-5. ✅ Dlaczego pasuje
+      trip_ideas: `WAŻNE - DOKŁADNY FORMAT DLA POMYSŁÓW NA WYJAZD:
 
-Bądź kreatywny ale realistyczny!`,
-      activities: `Zaproponuj 5-6 aktywności. Dla każdej:
-1. 🎯 Nazwa
-2. ⏱️ Czas trwania
-3. 💰 Koszt na osobę
-4. 💪 Wymagana kondycja
-5. 📝 Krótki opis`,
+Zaproponuj 3-4 pomysły na wyjazd. Każdy pomysł MUSI zaczynać się na WŁASNEJ LINII z:
+
+### [Emoji] [Tytuł wycieczki]
+📍 Destynacja: [Miasto/Region]
+💰 Budżet: [Szacunkowy koszt na osobę]
+✈️ Czas trwania: [Zalecana długość]
+
+[Opis 2-3 zdania]
+
+✅ Dlaczego idealne:
+• [Powód 1]
+• [Powód 2]
+• [Powód 3]
+
+🎯 Najważniejsze:
+• [Punkt 1]
+• [Punkt 2]
+
+---
+
+ZASADY: Użyj ### i EMOJI dla każdego pomysłu. NIE używaj numerowanych list!`,
+      activities: `WAŻNE - DOKŁADNY FORMAT DLA AKTYWNOŚCI:
+
+Zaproponuj 5-6 aktywności. Każda aktywność MUSI zaczynać się na WŁASNEJ LINII z:
+
+### [Emoji] [Nazwa aktywności]
+📍 Miejsce: [Lokalizacja jeśli istotna]
+⏱️ Czas trwania: [Czas]
+💰 Koszt: [Koszt na osobę]
+💪 Kondycja: [Łatwy/Normalny/Wymagający]
+🎯 Kategoria: [Akcja/Jedzenie/Wellness/Impreza/Zwiedzanie]
+
+[Opis 2-3 zdania]
+
+✅ Najważniejsze:
+• [Punkt 1]
+• [Punkt 2]
+
+---
+
+ZASADY: Użyj ### i EMOJI dla każdej aktywności. NIE używaj numerowanych list!`,
       day_plan: `WAŻNE: Stwórz STRUKTURALNY harmonogram z DOKŁADNIE tym formatem:
 
 ## [Dzień]: [Tytuł] [Emoji]
@@ -878,20 +1075,49 @@ ZASADY: Używaj ## dla każdego dnia i ### dla każdego bloku czasowego. NIE uż
       date_info: "Período",
     },
     prompts: {
-      trip_ideas: `Sugere 3-4 ideias de viagem. Para cada uma:
-1. 🎯 Nome da viagem
-2. 📍 Destino
-3. 💡 Descrição breve
-4. 💰 Custo estimado por pessoa
-5. ✅ Por que encaixa
+      trip_ideas: `IMPORTANTE - FORMATO EXATO PARA IDEIAS DE VIAGEM:
 
-Sê criativo mas realista!`,
-      activities: `Sugere 5-6 atividades. Para cada uma:
-1. 🎯 Nome
-2. ⏱️ Duração
-3. 💰 Custo por pessoa
-4. 💪 Requisito de forma física
-5. 📝 Descrição breve`,
+Sugere 3-4 ideias de viagem. Cada ideia DEVE começar na sua PRÓPRIA LINHA com:
+
+### [Emoji] [Título da viagem]
+📍 Destino: [Cidade/Região]
+💰 Orçamento: [Custo estimado por pessoa]
+✈️ Duração: [Duração recomendada]
+
+[Descrição 2-3 frases]
+
+✅ Por que perfeito:
+• [Razão 1]
+• [Razão 2]
+• [Razão 3]
+
+🎯 Destaques:
+• [Destaque 1]
+• [Destaque 2]
+
+---
+
+REGRAS: Usa ### e um EMOJI para cada ideia. NÃO uses listas numeradas!`,
+      activities: `IMPORTANTE - FORMATO EXATO PARA ATIVIDADES:
+
+Sugere 5-6 atividades. Cada atividade DEVE começar na sua PRÓPRIA LINHA com:
+
+### [Emoji] [Nome da atividade]
+📍 Local: [Localização se relevante]
+⏱️ Duração: [Duração]
+💰 Custo: [Custo por pessoa]
+💪 Forma física: [Fácil/Normal/Exigente]
+🎯 Categoria: [Ação/Comida/Bem-estar/Festa/Turismo]
+
+[Descrição 2-3 frases]
+
+✅ Destaques:
+• [Destaque 1]
+• [Destaque 2]
+
+---
+
+REGRAS: Usa ### e um EMOJI para cada atividade. NÃO uses listas numeradas!`,
       day_plan: `IMPORTANTE: Cria um horário ESTRUTURADO com EXATAMENTE este formato:
 
 ## [Dia]: [Título] [Emojis]
@@ -944,20 +1170,49 @@ REGRAS: Usa ## para cada dia e ### para cada bloco horário. NÃO uses pontos (*
       date_info: "Tarih aralığı",
     },
     prompts: {
-      trip_ideas: `3-4 uygun gezi fikri öner. Her biri için:
-1. 🎯 Gezi adı
-2. 📍 Destinasyon
-3. 💡 Kısa açıklama
-4. 💰 Kişi başı tahmini maliyet
-5. ✅ Neden uygun
+      trip_ideas: `ÖNEMLİ - GEZİ FİKİRLERİ İÇİN TAM FORMAT:
 
-Yaratıcı ama gerçekçi ol!`,
-      activities: `5-6 uygun aktivite öner. Her biri için:
-1. 🎯 Ad
-2. ⏱️ Süre
-3. 💰 Kişi başı maliyet
-4. 💪 Fitness gereksinimi
-5. 📝 Kısa açıklama`,
+3-4 uygun gezi fikri öner. Her fikir KENDİ SATIRINDA başlamalı:
+
+### [Emoji] [Gezi Başlığı]
+📍 Destinasyon: [Şehir/Bölge]
+💰 Bütçe: [Kişi başı tahmini maliyet]
+✈️ Süre: [Önerilen süre]
+
+[2-3 cümle açıklama]
+
+✅ Neden mükemmel:
+• [Sebep 1]
+• [Sebep 2]
+• [Sebep 3]
+
+🎯 Öne çıkanlar:
+• [Öne çıkan 1]
+• [Öne çıkan 2]
+
+---
+
+KURALLAR: Her fikir için ### ve EMOJI kullan. Numaralı liste KULLANMA!`,
+      activities: `ÖNEMLİ - AKTİVİTELER İÇİN TAM FORMAT:
+
+5-6 uygun aktivite öner. Her aktivite KENDİ SATIRINDA başlamalı:
+
+### [Emoji] [Aktivite Adı]
+📍 Yer: [Lokasyon eğer gerekli]
+⏱️ Süre: [Süre]
+💰 Maliyet: [Kişi başı maliyet]
+💪 Fitness: [Kolay/Normal/Zorlu]
+🎯 Kategori: [Aksiyon/Yemek/Wellness/Parti/Gezi]
+
+[2-3 cümle açıklama]
+
+✅ Öne çıkanlar:
+• [Öne çıkan 1]
+• [Öne çıkan 2]
+
+---
+
+KURALLAR: Her aktivite için ### ve EMOJI kullan. Numaralı liste KULLANMA!`,
       day_plan: `ÖNEMLİ: YAPILANDIRILMIŞ bir günlük program oluştur, TAM olarak bu formatla:
 
 ## [Gün]: [Başlık] [Emojiler]
@@ -1010,20 +1265,49 @@ KURALLAR: Her gün için ## ve her zaman bloğu için ### kullan. Madde işareti
       date_info: "الفترة الزمنية",
     },
     prompts: {
-      trip_ideas: `اقترح 3-4 أفكار رحلات. لكل فكرة:
-1. 🎯 اسم الرحلة
-2. 📍 الوجهة
-3. 💡 وصف موجز
-4. 💰 التكلفة المقدرة للشخص
-5. ✅ لماذا تناسب
+      trip_ideas: `مهم - التنسيق الدقيق لأفكار الرحلات:
 
-كن مبدعاً لكن واقعياً!`,
-      activities: `اقترح 5-6 أنشطة. لكل نشاط:
-1. 🎯 الاسم
-2. ⏱️ المدة
-3. 💰 التكلفة للشخص
-4. 💪 متطلبات اللياقة
-5. 📝 وصف موجز`,
+اقترح 3-4 أفكار رحلات. كل فكرة يجب أن تبدأ على سطرها الخاص مع:
+
+### [رمز تعبيري] [عنوان الرحلة]
+📍 الوجهة: [المدينة/المنطقة]
+💰 الميزانية: [التكلفة المقدرة للشخص]
+✈️ المدة: [المدة المقترحة]
+
+[وصف 2-3 جمل]
+
+✅ لماذا مثالي:
+• [السبب 1]
+• [السبب 2]
+• [السبب 3]
+
+🎯 أبرز الميزات:
+• [ميزة 1]
+• [ميزة 2]
+
+---
+
+القواعد: استخدم ### ورمز تعبيري لكل فكرة. لا تستخدم قوائم مرقمة!`,
+      activities: `مهم - التنسيق الدقيق للأنشطة:
+
+اقترح 5-6 أنشطة. كل نشاط يجب أن يبدأ على سطره الخاص مع:
+
+### [رمز تعبيري] [اسم النشاط]
+📍 الموقع: [المكان إذا كان ذا صلة]
+⏱️ المدة: [المدة]
+💰 التكلفة: [التكلفة للشخص]
+💪 اللياقة: [سهل/عادي/صعب]
+🎯 الفئة: [أكشن/طعام/استرخاء/حفلة/سياحة]
+
+[وصف 2-3 جمل]
+
+✅ أبرز الميزات:
+• [ميزة 1]
+• [ميزة 2]
+
+---
+
+القواعد: استخدم ### ورمز تعبيري لكل نشاط. لا تستخدم قوائم مرقمة!`,
       day_plan: `مهم: أنشئ جدول يومي منظم بالضبط بهذا التنسيق:
 
 ## [اليوم]: [العنوان] [الرموز التعبيرية]
