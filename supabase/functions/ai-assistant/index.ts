@@ -352,27 +352,59 @@ Sei kreativ aber realistisch!`,
 5. 📝 Kurze Beschreibung
 
 Mische verschiedene Arten: Action, Entspannung, Essen/Trinken, Erlebnis.`,
-      day_plan: `WICHTIG: Erstelle einen STRUKTURIERTEN Tagesablauf mit EXAKT diesem Format:
+      day_plan: `KRITISCH - EXAKTES FORMAT FÜR TAGESPLAN:
+
+Jeder neue Tag MUSS auf einer EIGENEN ZEILE beginnen mit:
 
 ## [Wochentag]: [Titel] [Emojis]
+
+Jeder Zeitblock MUSS auf einer EIGENEN ZEILE beginnen mit:
 
 ### [Uhrzeit] [Emoji] [Aktivitätstitel]
 📍 Ort: [Location/Restaurant/Hotel]
 🚗 Transport: [Transportdetails falls nötig]
 💰 Kosten: [Geschätzte Kosten pro Person]
 💡 Pro-Tipp: [Hilfreicher Tipp]
-⚠️ Wichtig: [Warnung falls relevant]
 
-[Kurze Beschreibung der Aktivität]
+[Kurze Beschreibung]
 
 ---
 
-REGELN:
-- Verwende ## für jeden Tag-Header (z.B. ## Freitag: Ankunft & Welcome! ✈️)
-- Verwende ### für jeden Zeitblock (z.B. ### 17:00 ✈️ Ankunft am Flughafen)
-- KEINE Bullet-Points (*) für Zeitblöcke - NUR ### verwenden!
-- Jeder Zeitblock MUSS eine eigene ### Zeile haben
-- Plane realistisch mit Pufferzeiten zwischen Aktivitäten`,
+BEISPIEL (GENAU SO FORMATIEREN):
+
+## Freitag: Ankunft & Welcome! ✈️🌃
+
+### 17:00 ✈️ Ankunft am Flughafen
+📍 Ort: Flughafen
+🚗 Transport: Uber zum Hotel
+
+Alle sammeln und gemeinsam zum Hotel fahren.
+
+---
+
+### 18:30 🏨 Check-in im Hotel
+📍 Ort: Hotel Name
+💰 Kosten: ca. 50€ pro Person
+
+Zimmer beziehen und frisch machen.
+
+---
+
+## Samstag: Action-Tag! 🎲☀️
+
+### 09:00 🍳 Frühstück
+📍 Ort: Hotel Restaurant
+
+Gemeinsames Frühstück zur Stärkung.
+
+---
+
+STRENGE REGELN:
+1. JEDER Tag beginnt mit ## auf einer NEUEN ZEILE
+2. JEDER Zeitblock beginnt mit ### auf einer NEUEN ZEILE
+3. NIEMALS Bullet-Points (*) oder (**) für Tage oder Zeitblöcke verwenden!
+4. Zwischen den Tagen MUSS ein klarer Abstand sein
+5. Plane realistisch mit Pufferzeiten zwischen Aktivitäten`,
       budget_estimate: `Erstelle eine detaillierte Budget-Schätzung:
 📊 Aufschlüsselung nach Kategorien (Transport, Unterkunft, Aktivitäten, Essen, Extras)
 💰 Gesamtkosten pro Person
@@ -426,27 +458,59 @@ Be creative but realistic!`,
 5. 📝 Brief description
 
 Mix different types: Action, relaxation, food/drinks, experiences.`,
-      day_plan: `IMPORTANT: Create a STRUCTURED day schedule using EXACTLY this format:
+      day_plan: `CRITICAL - EXACT FORMAT FOR DAY PLAN:
+
+Each new day MUST start on its OWN LINE with:
 
 ## [Day]: [Title] [Emojis]
+
+Each time block MUST start on its OWN LINE with:
 
 ### [Time] [Emoji] [Activity Title]
 📍 Location: [Place/Restaurant/Hotel]
 🚗 Transport: [Transport details if needed]
 💰 Cost: [Estimated cost per person]
 💡 Pro Tip: [Helpful tip]
-⚠️ Important: [Warning if relevant]
 
-[Brief activity description]
+[Brief description]
 
 ---
 
-RULES:
-- Use ## for each day header (e.g. ## Friday: Arrival & Welcome! ✈️)
-- Use ### for each time block (e.g. ### 5:00 PM ✈️ Airport Arrival)
-- NO bullet points (*) for time blocks - ONLY use ###!
-- Each time block MUST have its own ### line
-- Plan realistically with buffer times between activities`,
+EXAMPLE (FORMAT EXACTLY LIKE THIS):
+
+## Friday: Arrival & Welcome! ✈️🌃
+
+### 5:00 PM ✈️ Airport Arrival
+📍 Location: Airport
+🚗 Transport: Uber to hotel
+
+Everyone gathers and heads to the hotel together.
+
+---
+
+### 6:30 PM 🏨 Hotel Check-in
+📍 Location: Hotel Name
+💰 Cost: ~$50 per person
+
+Get to rooms and freshen up.
+
+---
+
+## Saturday: Action Day! 🎲☀️
+
+### 9:00 AM 🍳 Breakfast
+📍 Location: Hotel Restaurant
+
+Group breakfast to fuel up.
+
+---
+
+STRICT RULES:
+1. EACH day starts with ## on a NEW LINE
+2. EACH time block starts with ### on a NEW LINE
+3. NEVER use bullet points (*) or (**) for days or time blocks!
+4. There MUST be a clear break between days
+5. Plan realistically with buffer times between activities`,
       budget_estimate: `Create a detailed budget estimate:
 📊 Breakdown by category (Transport, accommodation, activities, food, extras)
 💰 Total cost per person
