@@ -425,6 +425,11 @@
     },
     "form": {
       "title": "Costruttore Modulo",
+      "subtitle": "Configura il sondaggio per {{eventName}}",
+      "preview": "Anteprima",
+      "saving": "Salvataggio...",
+      "save": "Salva",
+      "successMessage": "Configurazione modulo salvata!",
       "coreQuestions": "Domande Principali",
       "customQuestions": "Domande Personalizzate",
       "questionEnabled": "Domanda attivata",
@@ -433,7 +438,179 @@
       "multiSelect": "Selezione multipla",
       "addQuestion": "Aggiungi Domanda",
       "editOptions": "Modifica Opzioni",
-      "saveChanges": "Salva Modifiche"
+      "saveChanges": "Salva Modifiche",
+      "tabs": {
+        "content": "Contenuto",
+        "design": "Design",
+        "extras": "Extra"
+      },
+      "sections": {
+        "attendance": {
+          "title": "Domande sulla Partecipazione",
+          "description": "Partecipi?, Durata, Disponibilità parziale"
+        },
+        "travel": {
+          "title": "Viaggio e Fitness",
+          "description": "Disponibilità a viaggiare, livello fitness, alcol"
+        },
+        "dates": {
+          "title": "Blocchi di Date",
+          "configured": "{{count}} date configurate"
+        },
+        "activities": {
+          "title": "Attività",
+          "selected": "{{count}} di 100+ selezionate"
+        },
+        "budget": {
+          "title": "Opzioni Budget",
+          "options": "{{count}} opzioni",
+          "placeholder": "es. 500-750 €"
+        },
+        "destinations": {
+          "title": "Destinazioni",
+          "options": "{{count}} opzioni",
+          "placeholder": "es. Amsterdam",
+          "emojiPlaceholder": "Emoji"
+        },
+        "rules": {
+          "title": "No-Go e Focus",
+          "rulesCount": "{{count}} regole"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "Ci sei? *",
+          "description": "Opzioni di risposta per la domanda sulla partecipazione"
+        },
+        "duration": {
+          "title": "Durata Preferita *",
+          "description": "Opzioni per la durata dell'evento"
+        },
+        "travel": {
+          "title": "Tempo di Viaggio Massimo *",
+          "description": "Quanto sono disposti a viaggiare gli ospiti?"
+        },
+        "fitness": {
+          "title": "Livello di Fitness *",
+          "description": "Livello di attività preferito"
+        },
+        "alcohol": {
+          "title": "Preferenza Alcol",
+          "description": "Atteggiamento verso le bevande alcoliche"
+        }
+      },
+      "design": {
+        "templateTitle": "Scegli Template Design",
+        "templateDescription": "Scegli un design adatto al tuo evento",
+        "brandingTitle": "Personalizza Branding",
+        "brandingDescription": "Configura colori, testi e data chiave",
+        "recommendedFor": "Raccomandato per questo tipo di evento",
+        "moreTemplates": "Altri template",
+        "templates": "Template"
+      },
+      "extras": {
+        "customQuestionsTitle": "Domande Personalizzate",
+        "customQuestionsDescription": "Aggiungi domande individuali al modulo"
+      },
+      "noGos": {
+        "title": "No-Go",
+        "placeholder": "es. No spogliarelliste"
+      },
+      "focusPoints": {
+        "title": "Focus / Desideri",
+        "placeholder": "es. Azione e divertimento"
+      },
+      "previewHint": "Le modifiche saranno visibili nel modulo del sondaggio una volta salvate.",
+      "openPreview": "Apri anteprima",
+      "visible": "Visibile",
+      "hidden": "Nascosto",
+      "selectionType": "Tipo di selezione",
+      "multi": "Multi",
+      "single": "Single",
+      "optionsCount": "{{count}} di max. {{max}} opzioni",
+      "emojisOptional": "Emoji opzionali",
+      "newOption": "Nuova opzione",
+      "dateBlocks": {
+        "addNew": "Aggiungi nuovo blocco date",
+        "from": "Da",
+        "to": "A",
+        "startDate": "Data inizio",
+        "endDate": "Data fine",
+        "hintOptional": "Nota (opzionale)",
+        "hintPlaceholder": "es. Pasqua, festivo...",
+        "add": "Aggiungi",
+        "preview": "Anteprima",
+        "noBlocks": "Nessun blocco date ancora",
+        "noBlocksHint": "Aggiungi periodi tra cui i partecipanti possono scegliere",
+        "addWarning": "Aggiungi avviso",
+        "removeWarning": "Rimuovi avviso",
+        "defaultWarning": "Possibili restrizioni",
+        "hintInput": "Inserisci nota..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "Aggiunta rapida:",
+        "presets": {
+          "dietary": "Alimentazione",
+          "songWish": "Canzone desiderata",
+          "tshirtSize": "Taglia maglietta",
+          "driversLicense": "Patente di guida",
+          "specialWishes": "Desideri speciali"
+        },
+        "types": {
+          "text": "Testo breve",
+          "textarea": "Testo lungo",
+          "select": "Menu a discesa",
+          "radio": "Scelta singola",
+          "checkbox": "Scelta multipla",
+          "toggle": "Sì/No"
+        },
+        "questionPlaceholder": "Inserisci domanda...",
+        "placeholderPlaceholder": "Testo segnaposto (opzionale)",
+        "options": "Opzioni:",
+        "addOption": "Aggiungi opzione",
+        "requiredField": "Campo obbligatorio",
+        "noQuestions": "Nessuna domanda personalizzata ancora.",
+        "noQuestionsHint": "Usa i pulsanti rapidi sopra o aggiungi una nuova domanda.",
+        "addNew": "Aggiungi nuova domanda",
+        "questionsConfigured": "domanda/e personalizzata/e configurata/e"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "Cerca attività...",
+        "selected": "selezionate",
+        "custom": "Personalizzate",
+        "addCustom": "Aggiungi attività personalizzata",
+        "activityName": "Nome attività",
+        "emoji": "Emoji",
+        "add": "Aggiungi",
+        "all": "Tutte",
+        "recommended": "Raccomandate",
+        "selectedTab": "Selezionate",
+        "selectAllRecommended": "Seleziona tutte le raccomandazioni",
+        "noResults": "Nessuna attività trovata",
+        "noResultsHint": "Prova un altro termine o categoria",
+        "selectedActivities": "Attività selezionate",
+        "removeAll": "Rimuovi tutte"
+      },
+      "branding": {
+        "primaryColor": "Colore primario",
+        "accentColor": "Colore accento",
+        "resetTemplateColors": "Ripristina colori template",
+        "heroTexts": "Testi hero",
+        "heroTitle": "Titolo hero",
+        "heroTitleDefault": "Predefinito: Nome evento",
+        "heroSubtitle": "Sottotitolo hero",
+        "heroSubtitlePlaceholder": "Trova la data e pianifica l'azione",
+        "keyDate": "Data chiave (es. data matrimonio)",
+        "keyDateLabel": "Etichetta data",
+        "keyDateLabelPlaceholder": "Matrimonio",
+        "date": "Data",
+        "selectDate": "Seleziona data",
+        "backgroundStyle": "Stile sfondo",
+        "gradient": "🌈 Gradiente",
+        "solid": "🎨 Solido",
+        "dark": "🌙 Scuro",
+        "livePreview": "Anteprima live dell'area hero"
+      }
     },
     "schedule": {
       "title": "Programma",

@@ -457,6 +457,11 @@
     },
     "form": {
       "title": "منشئ النموذج",
+      "subtitle": "قم بتكوين الاستبيان لـ {{eventName}}",
+      "preview": "معاينة",
+      "saving": "جاري الحفظ...",
+      "save": "حفظ",
+      "successMessage": "تم حفظ إعدادات النموذج!",
       "coreQuestions": "الأسئلة الأساسية",
       "customQuestions": "أسئلة مخصصة",
       "questionEnabled": "السؤال مفعل",
@@ -465,7 +470,179 @@
       "multiSelect": "اختيار متعدد",
       "addQuestion": "إضافة سؤال",
       "editOptions": "تعديل الخيارات",
-      "saveChanges": "حفظ التغييرات"
+      "saveChanges": "حفظ التغييرات",
+      "tabs": {
+        "content": "المحتوى",
+        "design": "التصميم",
+        "extras": "إضافات"
+      },
+      "sections": {
+        "attendance": {
+          "title": "أسئلة الحضور",
+          "description": "هل ستحضر؟، المدة، التوفر الجزئي"
+        },
+        "travel": {
+          "title": "السفر واللياقة",
+          "description": "الاستعداد للسفر، مستوى اللياقة، الكحول"
+        },
+        "dates": {
+          "title": "فترات التواريخ",
+          "configured": "{{count}} تواريخ مُكوَّنة"
+        },
+        "activities": {
+          "title": "الأنشطة",
+          "selected": "{{count}} من 100+ مختارة"
+        },
+        "budget": {
+          "title": "خيارات الميزانية",
+          "options": "{{count}} خيارات",
+          "placeholder": "مثال: 500-750 €"
+        },
+        "destinations": {
+          "title": "الوجهات",
+          "options": "{{count}} خيارات",
+          "placeholder": "مثال: أمستردام",
+          "emojiPlaceholder": "إيموجي"
+        },
+        "rules": {
+          "title": "الممنوعات والتركيز",
+          "rulesCount": "{{count}} قواعد"
+        }
+      },
+      "questions": {
+        "attendance": {
+          "title": "هل أنت معنا؟ *",
+          "description": "خيارات الإجابة لسؤال الحضور"
+        },
+        "duration": {
+          "title": "المدة المفضلة *",
+          "description": "خيارات لمدة الفعالية"
+        },
+        "travel": {
+          "title": "الحد الأقصى لوقت السفر *",
+          "description": "إلى أي مدى يرغب الضيوف في السفر؟"
+        },
+        "fitness": {
+          "title": "مستوى اللياقة *",
+          "description": "مستوى النشاط المفضل"
+        },
+        "alcohol": {
+          "title": "تفضيل الكحول",
+          "description": "الموقف تجاه المشروبات الكحولية"
+        }
+      },
+      "design": {
+        "templateTitle": "اختر قالب التصميم",
+        "templateDescription": "اختر تصميمًا مناسبًا لفعاليتك",
+        "brandingTitle": "تخصيص العلامة التجارية",
+        "brandingDescription": "قم بتكوين الألوان والنصوص والتاريخ الرئيسي",
+        "recommendedFor": "موصى به لهذا النوع من الفعاليات",
+        "moreTemplates": "المزيد من القوالب",
+        "templates": "القوالب"
+      },
+      "extras": {
+        "customQuestionsTitle": "أسئلة مخصصة",
+        "customQuestionsDescription": "أضف أسئلة فردية إلى النموذج"
+      },
+      "noGos": {
+        "title": "الممنوعات",
+        "placeholder": "مثال: لا راقصات"
+      },
+      "focusPoints": {
+        "title": "التركيز / الرغبات",
+        "placeholder": "مثال: الحركة والمرح"
+      },
+      "previewHint": "ستظهر التغييرات في نموذج الاستبيان بمجرد الحفظ.",
+      "openPreview": "فتح المعاينة",
+      "visible": "مرئي",
+      "hidden": "مخفي",
+      "selectionType": "نوع الاختيار",
+      "multi": "متعدد",
+      "single": "واحد",
+      "optionsCount": "{{count}} من الحد الأقصى {{max}} خيار",
+      "emojisOptional": "الإيموجي اختيارية",
+      "newOption": "خيار جديد",
+      "dateBlocks": {
+        "addNew": "إضافة فترة تواريخ جديدة",
+        "from": "من",
+        "to": "إلى",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "hintOptional": "ملاحظة (اختياري)",
+        "hintPlaceholder": "مثال: عيد الفصح، عطلة...",
+        "add": "إضافة",
+        "preview": "معاينة",
+        "noBlocks": "لا توجد فترات تواريخ بعد",
+        "noBlocksHint": "أضف فترات يمكن للمشاركين الاختيار منها",
+        "addWarning": "إضافة تحذير",
+        "removeWarning": "إزالة التحذير",
+        "defaultWarning": "قيود محتملة",
+        "hintInput": "أدخل الملاحظة..."
+      },
+      "customQuestionBuilder": {
+        "quickAdd": "إضافة سريعة:",
+        "presets": {
+          "dietary": "النظام الغذائي",
+          "songWish": "أغنية مرغوبة",
+          "tshirtSize": "مقاس التيشيرت",
+          "driversLicense": "رخصة القيادة",
+          "specialWishes": "أمنيات خاصة"
+        },
+        "types": {
+          "text": "نص قصير",
+          "textarea": "نص طويل",
+          "select": "قائمة منسدلة",
+          "radio": "اختيار واحد",
+          "checkbox": "اختيار متعدد",
+          "toggle": "نعم/لا"
+        },
+        "questionPlaceholder": "أدخل السؤال...",
+        "placeholderPlaceholder": "نص توضيحي (اختياري)",
+        "options": "الخيارات:",
+        "addOption": "إضافة خيار",
+        "requiredField": "حقل مطلوب",
+        "noQuestions": "لا توجد أسئلة مخصصة بعد.",
+        "noQuestionsHint": "استخدم أزرار الإضافة السريعة أعلاه أو أضف سؤالًا جديدًا.",
+        "addNew": "إضافة سؤال جديد",
+        "questionsConfigured": "سؤال/أسئلة مخصصة مُكوَّنة"
+      },
+      "activitySelector": {
+        "searchPlaceholder": "البحث عن أنشطة...",
+        "selected": "مختارة",
+        "custom": "مخصصة",
+        "addCustom": "إضافة نشاط مخصص",
+        "activityName": "اسم النشاط",
+        "emoji": "إيموجي",
+        "add": "إضافة",
+        "all": "الكل",
+        "recommended": "موصى بها",
+        "selectedTab": "المختارة",
+        "selectAllRecommended": "اختر جميع التوصيات",
+        "noResults": "لم يتم العثور على أنشطة",
+        "noResultsHint": "جرب مصطلحًا أو فئة أخرى",
+        "selectedActivities": "الأنشطة المختارة",
+        "removeAll": "إزالة الكل"
+      },
+      "branding": {
+        "primaryColor": "اللون الرئيسي",
+        "accentColor": "لون التمييز",
+        "resetTemplateColors": "إعادة تعيين ألوان القالب",
+        "heroTexts": "نصوص البطل",
+        "heroTitle": "عنوان البطل",
+        "heroTitleDefault": "الافتراضي: اسم الفعالية",
+        "heroSubtitle": "العنوان الفرعي للبطل",
+        "heroSubtitlePlaceholder": "ابحث عن التاريخ وخطط للحدث",
+        "keyDate": "التاريخ الرئيسي (مثال: تاريخ الزفاف)",
+        "keyDateLabel": "تسمية التاريخ",
+        "keyDateLabelPlaceholder": "الزفاف",
+        "date": "التاريخ",
+        "selectDate": "اختر التاريخ",
+        "backgroundStyle": "نمط الخلفية",
+        "gradient": "🌈 تدرج",
+        "solid": "🎨 صلب",
+        "dark": "🌙 داكن",
+        "livePreview": "معاينة مباشرة لمنطقة البطل"
+      }
     },
     "schedule": {
       "title": "الجدول",
