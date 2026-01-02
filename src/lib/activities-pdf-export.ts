@@ -22,40 +22,34 @@ const localeMap: Record<string, Locale> = {
   ar: ar,
 };
 
-const TRANSLATIONS = {
-  de: {
-    activities: "Aktivitäts-Vorschläge",
-    participants: "Teilnehmer",
-    budget: "Budget",
-    duration: "Dauer",
-    cost: "Kosten",
-    fitness: "Fitness",
-    highlights: "Highlights",
-    tips: "Tipps",
-    generatedBy: "Erstellt mit EventBliss",
-    activity: "AKTIVITÄT",
-    fitnessEasy: "Leicht",
-    fitnessNormal: "Normal",
-    fitnessChallenging: "Anspruchsvoll",
-  },
-  en: {
-    activities: "Activity Suggestions",
-    participants: "Participants",
-    budget: "Budget",
-    duration: "Duration",
-    cost: "Cost",
-    fitness: "Fitness",
-    highlights: "Highlights",
-    tips: "Tips",
-    generatedBy: "Created with EventBliss",
-    activity: "ACTIVITY",
-    fitnessEasy: "Easy",
-    fitnessNormal: "Normal",
-    fitnessChallenging: "Challenging",
-  },
+const TRANSLATIONS: Record<string, {
+  activities: string;
+  participants: string;
+  budget: string;
+  duration: string;
+  cost: string;
+  fitness: string;
+  highlights: string;
+  tips: string;
+  generatedBy: string;
+  activity: string;
+  fitnessEasy: string;
+  fitnessNormal: string;
+  fitnessChallenging: string;
+}> = {
+  de: { activities: "Aktivitäts-Vorschläge", participants: "Teilnehmer", budget: "Budget", duration: "Dauer", cost: "Kosten", fitness: "Fitness", highlights: "Highlights", tips: "Tipps", generatedBy: "Erstellt mit EventBliss", activity: "AKTIVITÄT", fitnessEasy: "Leicht", fitnessNormal: "Normal", fitnessChallenging: "Anspruchsvoll" },
+  en: { activities: "Activity Suggestions", participants: "Participants", budget: "Budget", duration: "Duration", cost: "Cost", fitness: "Fitness", highlights: "Highlights", tips: "Tips", generatedBy: "Created with EventBliss", activity: "ACTIVITY", fitnessEasy: "Easy", fitnessNormal: "Normal", fitnessChallenging: "Challenging" },
+  es: { activities: "Sugerencias de actividades", participants: "Participantes", budget: "Presupuesto", duration: "Duración", cost: "Coste", fitness: "Forma física", highlights: "Destacados", tips: "Consejos", generatedBy: "Creado con EventBliss", activity: "ACTIVIDAD", fitnessEasy: "Fácil", fitnessNormal: "Normal", fitnessChallenging: "Exigente" },
+  fr: { activities: "Suggestions d'activités", participants: "Participants", budget: "Budget", duration: "Durée", cost: "Coût", fitness: "Forme", highlights: "Points forts", tips: "Conseils", generatedBy: "Créé avec EventBliss", activity: "ACTIVITÉ", fitnessEasy: "Facile", fitnessNormal: "Normal", fitnessChallenging: "Exigeant" },
+  it: { activities: "Suggerimenti attività", participants: "Partecipanti", budget: "Budget", duration: "Durata", cost: "Costo", fitness: "Forma fisica", highlights: "Punti salienti", tips: "Consigli", generatedBy: "Creato con EventBliss", activity: "ATTIVITÀ", fitnessEasy: "Facile", fitnessNormal: "Normale", fitnessChallenging: "Impegnativo" },
+  nl: { activities: "Activiteitsuggesties", participants: "Deelnemers", budget: "Budget", duration: "Duur", cost: "Kosten", fitness: "Fitness", highlights: "Hoogtepunten", tips: "Tips", generatedBy: "Gemaakt met EventBliss", activity: "ACTIVITEIT", fitnessEasy: "Makkelijk", fitnessNormal: "Normaal", fitnessChallenging: "Uitdagend" },
+  pl: { activities: "Sugestie aktywności", participants: "Uczestnicy", budget: "Budżet", duration: "Czas", cost: "Koszt", fitness: "Kondycja", highlights: "Najważniejsze", tips: "Wskazówki", generatedBy: "Utworzono z EventBliss", activity: "AKTYWNOŚĆ", fitnessEasy: "Łatwe", fitnessNormal: "Normalne", fitnessChallenging: "Wymagające" },
+  pt: { activities: "Sugestões de atividades", participants: "Participantes", budget: "Orçamento", duration: "Duração", cost: "Custo", fitness: "Forma física", highlights: "Destaques", tips: "Dicas", generatedBy: "Criado com EventBliss", activity: "ATIVIDADE", fitnessEasy: "Fácil", fitnessNormal: "Normal", fitnessChallenging: "Desafiante" },
+  tr: { activities: "Aktivite önerileri", participants: "Katılımcılar", budget: "Bütçe", duration: "Süre", cost: "Maliyet", fitness: "Fitness", highlights: "Öne çıkanlar", tips: "İpuçları", generatedBy: "EventBliss ile oluşturuldu", activity: "AKTİVİTE", fitnessEasy: "Kolay", fitnessNormal: "Normal", fitnessChallenging: "Zorlu" },
+  ar: { activities: "اقتراحات الأنشطة", participants: "المشاركون", budget: "الميزانية", duration: "المدة", cost: "التكلفة", fitness: "اللياقة", highlights: "أبرز الميزات", tips: "نصائح", generatedBy: "تم الإنشاء بواسطة EventBliss", activity: "نشاط", fitnessEasy: "سهل", fitnessNormal: "عادي", fitnessChallenging: "صعب" },
 };
 
-function getTranslation(locale: string, key: keyof typeof TRANSLATIONS.en): string {
+function getTranslation<K extends keyof typeof TRANSLATIONS.en>(locale: string, key: K): string {
   const lang = locale.substring(0, 2) as keyof typeof TRANSLATIONS;
   return TRANSLATIONS[lang]?.[key] || TRANSLATIONS.en[key];
 }

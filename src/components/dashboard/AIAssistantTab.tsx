@@ -113,7 +113,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       fitness_level: topFitness,
       duration: "weekend",
       // New context fields for dynamic AI responses
-      language: i18n.language || event.locale || 'de',
+      // Normalize language to 2-letter code (es-ES -> es, pt-BR -> pt)
+      language: (i18n.language || event.locale || 'en').toLowerCase().split(/[-_]/)[0],
       event_name: event.name,
       event_description: event.description || undefined,
     };

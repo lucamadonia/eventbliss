@@ -21,36 +21,32 @@ const localeMap: Record<string, Locale> = {
   ar: ar,
 };
 
-const TRANSLATIONS = {
-  de: {
-    tripIdeas: "Reiseideen",
-    participants: "Teilnehmer",
-    destination: "Ziel",
-    cost: "Budget",
-    travelTime: "Reisezeit",
-    whyPerfect: "Warum perfekt",
-    highlights: "Highlights",
-    tips: "Reisetipps",
-    generatedBy: "Erstellt mit EventBliss",
-    idea: "IDEE",
-    topPick: "Top Pick",
-  },
-  en: {
-    tripIdeas: "Trip Ideas",
-    participants: "Participants",
-    destination: "Destination",
-    cost: "Budget",
-    travelTime: "Travel Time",
-    whyPerfect: "Why Perfect",
-    highlights: "Highlights",
-    tips: "Travel Tips",
-    generatedBy: "Created with EventBliss",
-    idea: "IDEA",
-    topPick: "Top Pick",
-  },
+const TRANSLATIONS: Record<string, {
+  tripIdeas: string;
+  participants: string;
+  destination: string;
+  cost: string;
+  travelTime: string;
+  whyPerfect: string;
+  highlights: string;
+  tips: string;
+  generatedBy: string;
+  idea: string;
+  topPick: string;
+}> = {
+  de: { tripIdeas: "Reiseideen", participants: "Teilnehmer", destination: "Ziel", cost: "Budget", travelTime: "Reisezeit", whyPerfect: "Warum perfekt", highlights: "Highlights", tips: "Reisetipps", generatedBy: "Erstellt mit EventBliss", idea: "IDEE", topPick: "Top Pick" },
+  en: { tripIdeas: "Trip Ideas", participants: "Participants", destination: "Destination", cost: "Budget", travelTime: "Travel Time", whyPerfect: "Why Perfect", highlights: "Highlights", tips: "Travel Tips", generatedBy: "Created with EventBliss", idea: "IDEA", topPick: "Top Pick" },
+  es: { tripIdeas: "Ideas de viaje", participants: "Participantes", destination: "Destino", cost: "Presupuesto", travelTime: "Duración", whyPerfect: "Por qué perfecto", highlights: "Destacados", tips: "Consejos de viaje", generatedBy: "Creado con EventBliss", idea: "IDEA", topPick: "Mejor opción" },
+  fr: { tripIdeas: "Idées de voyage", participants: "Participants", destination: "Destination", cost: "Budget", travelTime: "Durée", whyPerfect: "Pourquoi parfait", highlights: "Points forts", tips: "Conseils voyage", generatedBy: "Créé avec EventBliss", idea: "IDÉE", topPick: "Meilleur choix" },
+  it: { tripIdeas: "Idee di viaggio", participants: "Partecipanti", destination: "Destinazione", cost: "Budget", travelTime: "Durata", whyPerfect: "Perché perfetto", highlights: "Punti salienti", tips: "Consigli viaggio", generatedBy: "Creato con EventBliss", idea: "IDEA", topPick: "Scelta top" },
+  nl: { tripIdeas: "Reisideeën", participants: "Deelnemers", destination: "Bestemming", cost: "Budget", travelTime: "Reistijd", whyPerfect: "Waarom perfect", highlights: "Hoogtepunten", tips: "Reistips", generatedBy: "Gemaakt met EventBliss", idea: "IDEE", topPick: "Topkeuze" },
+  pl: { tripIdeas: "Pomysły na podróż", participants: "Uczestnicy", destination: "Cel", cost: "Budżet", travelTime: "Czas podróży", whyPerfect: "Dlaczego idealne", highlights: "Najważniejsze", tips: "Wskazówki", generatedBy: "Utworzono z EventBliss", idea: "POMYSŁ", topPick: "Najlepszy wybór" },
+  pt: { tripIdeas: "Ideias de viagem", participants: "Participantes", destination: "Destino", cost: "Orçamento", travelTime: "Duração", whyPerfect: "Por que perfeito", highlights: "Destaques", tips: "Dicas de viagem", generatedBy: "Criado com EventBliss", idea: "IDEIA", topPick: "Melhor escolha" },
+  tr: { tripIdeas: "Seyahat fikirleri", participants: "Katılımcılar", destination: "Hedef", cost: "Bütçe", travelTime: "Süre", whyPerfect: "Neden mükemmel", highlights: "Öne çıkanlar", tips: "Seyahat ipuçları", generatedBy: "EventBliss ile oluşturuldu", idea: "FİKİR", topPick: "En iyi seçim" },
+  ar: { tripIdeas: "أفكار السفر", participants: "المشاركون", destination: "الوجهة", cost: "الميزانية", travelTime: "المدة", whyPerfect: "لماذا مثالي", highlights: "أبرز الميزات", tips: "نصائح السفر", generatedBy: "تم الإنشاء بواسطة EventBliss", idea: "فكرة", topPick: "الخيار الأفضل" },
 };
 
-function getTranslation(locale: string, key: keyof typeof TRANSLATIONS.en): string {
+function getTranslation<K extends keyof typeof TRANSLATIONS.en>(locale: string, key: K): string {
   const lang = locale.substring(0, 2) as keyof typeof TRANSLATIONS;
   return TRANSLATIONS[lang]?.[key] || TRANSLATIONS.en[key];
 }

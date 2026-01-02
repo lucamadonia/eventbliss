@@ -141,18 +141,20 @@ export const AIResponseCard = ({
     }
   }
 
-  // If activities request type with structured data, render ActivitiesCard
-  if (requestType === 'activities' && hasStructuredActivities) {
+  // If activities request type, ALWAYS try parseActivitiesExtended first (more robust for multilingual)
+  if (requestType === 'activities') {
     const activitiesData = parseActivitiesExtended(response);
-    return (
-      <ActivitiesCard
-        activitiesData={activitiesData}
-        eventName={eventName}
-        participantCount={participantCount}
-        budget={budget}
-        onAddToPlanner={onAddToPlanner}
-      />
-    );
+    if (activitiesData.activities.length > 0) {
+      return (
+        <ActivitiesCard
+          activitiesData={activitiesData}
+          eventName={eventName}
+          participantCount={participantCount}
+          budget={budget}
+          onAddToPlanner={onAddToPlanner}
+        />
+      );
+    }
   }
 
   // If no structured activities found, render as markdown
