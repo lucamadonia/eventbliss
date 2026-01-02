@@ -330,6 +330,23 @@
     "alreadySubmitted": "Je hebt al geantwoord",
     "submitSuccess": "Antwoord succesvol verzonden!",
     "submitError": "Fout bij verzenden van antwoord",
+    "info": {
+      "title": "Belangrijke Info",
+      "noGos": "No-Gos",
+      "focus": "Focus / Wensen",
+      "privacy": "Geen telefoonnummers. Alleen planningsgegevens.",
+      "defaultNoGos": [
+        "Geen strippers",
+        "Geen straatverkoop",
+        "Geen kroegentochten"
+      ],
+      "defaultFocusPoints": [
+        "Actie, plezier, activiteiten",
+        "Gedeelde ervaringen",
+        "Cool in plaats van gênant",
+        "Niemand wordt gedwongen"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Wie ben jij?",

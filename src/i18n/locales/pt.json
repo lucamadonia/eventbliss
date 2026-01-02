@@ -324,6 +324,23 @@
     "alreadySubmitted": "Já respondeste",
     "submitSuccess": "Resposta submetida com sucesso!",
     "submitError": "Erro ao submeter resposta",
+    "info": {
+      "title": "Info Importante",
+      "noGos": "A Evitar",
+      "focus": "Foco / Desejos",
+      "privacy": "Sem números de telefone. Apenas dados de planeamento.",
+      "defaultNoGos": [
+        "Sem strippers",
+        "Sem vendedores ambulantes",
+        "Sem tours de bares"
+      ],
+      "defaultFocusPoints": [
+        "Ação, diversão, atividades",
+        "Experiências partilhadas",
+        "Fixe em vez de constrangedor",
+        "Ninguém é forçado"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Quem és tu?",
