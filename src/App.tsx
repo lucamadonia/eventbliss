@@ -95,7 +95,9 @@ const App = () => (
   >
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppContent />
+        <Suspense fallback={<PageLoader />}>
+          <AppContent />
+        </Suspense>
       </AuthProvider>
     </QueryClientProvider>
   </ThemeProvider>
