@@ -659,6 +659,16 @@
   "agencies": {
     "title": "Agencias de Fiestas",
     "subtitle": "Encuentra proveedores profesionales cerca de ti",
+    "stats": "{{total}} agencias en {{countries}} países y {{cities}} ciudades",
+    "agenciesInCities": "{{agencies}} agencias en {{cities}} ciudades",
+    "searchPlaceholder": "Buscar agencia...",
+    "country": "País",
+    "allCountries": "Todos los países",
+    "city": "Ciudad",
+    "filteredOf": "{{filtered}} de {{total}} agencias",
+    "noAgenciesDesc": "Prueba con otros ajustes de filtro o un término de búsqueda diferente.",
+    "resetFilters": "Restablecer filtros",
+    "visitWebsite": "Visitar sitio web",
     "viewMode": {
       "list": "Lista",
       "map": "Mapa"

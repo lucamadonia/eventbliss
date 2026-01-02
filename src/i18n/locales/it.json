@@ -611,6 +611,16 @@
   "agencies": {
     "title": "Agenzie per Feste",
     "subtitle": "Trova fornitori professionali vicino a te",
+    "stats": "{{total}} agenzie in {{countries}} paesi e {{cities}} città",
+    "agenciesInCities": "{{agencies}} agenzie in {{cities}} città",
+    "searchPlaceholder": "Cerca agenzia...",
+    "country": "Paese",
+    "allCountries": "Tutti i paesi",
+    "city": "Città",
+    "filteredOf": "{{filtered}} di {{total}} agenzie",
+    "noAgenciesDesc": "Prova con altri filtri o un termine di ricerca diverso.",
+    "resetFilters": "Reimposta filtri",
+    "visitWebsite": "Visita il sito web",
     "viewMode": {
       "list": "Lista",
       "map": "Mappa"

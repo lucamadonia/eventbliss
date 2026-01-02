@@ -643,6 +643,16 @@
   "agencies": {
     "title": "Agencje Eventowe",
     "subtitle": "Znajdź profesjonalnych dostawców w pobliżu",
+    "stats": "{{total}} agencji w {{countries}} krajach i {{cities}} miastach",
+    "agenciesInCities": "{{agencies}} agencji w {{cities}} miastach",
+    "searchPlaceholder": "Szukaj agencji...",
+    "country": "Kraj",
+    "allCountries": "Wszystkie kraje",
+    "city": "Miasto",
+    "filteredOf": "{{filtered}} z {{total}} agencji",
+    "noAgenciesDesc": "Spróbuj innych ustawień filtra lub innego hasła wyszukiwania.",
+    "resetFilters": "Zresetuj filtry",
+    "visitWebsite": "Odwiedź stronę",
     "viewMode": {
       "list": "Lista",
       "map": "Mapa"
