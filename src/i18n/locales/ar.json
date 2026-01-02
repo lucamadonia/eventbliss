@@ -1320,5 +1320,43 @@
     "form": { "title": "قدم الآن", "companyName": "اسم الشركة (اختياري)", "companyNamePlaceholder": "شركتك ش.م.م", "contactName": "اسم جهة الاتصال", "contactNamePlaceholder": "أحمد محمد", "email": "البريد الإلكتروني", "emailPlaceholder": "شريك@مثال.com", "phone": "الهاتف (اختياري)", "phonePlaceholder": "+966 50 123 4567", "website": "الموقع الإلكتروني (اختياري)", "websitePlaceholder": "https://موقعك.com", "taxId": "الرقم الضريبي (اختياري)", "taxIdPlaceholder": "123456789012345", "about": "عنك / عن شركتك (اختياري)", "aboutPlaceholder": "أخبرنا عن نفسك...", "promotion": "كيف تخطط للترويج لـ EventBliss؟", "promotionPlaceholder": "مثل: مدونة، وسائل التواصل الاجتماعي، النشرة الإخبارية، التوصيات الشخصية...", "privacy": "أوافق على", "submit": "إرسال الطلب", "submitting": "جارٍ الإرسال..." },
     "success": { "title": "تم استلام الطلب!", "description": "شكراً لاهتمامك ببرنامج الشراكة الخاص بنا.", "nextSteps": "سنراجع طلبك ونتواصل معك خلال 2-3 أيام عمل.", "backToHome": "العودة للصفحة الرئيسية" },
     "errors": { "required": "هذا الحقل مطلوب", "invalidEmail": "يرجى إدخال بريد إلكتروني صالح", "privacyRequired": "يجب قبول سياسة الخصوصية", "submitFailed": "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى." }
+  },
+  "aiCredits": {
+    "title": "رصيد الذكاء الاصطناعي",
+    "credits": "رصيد AI",
+    "creditsRemaining": "{{remaining}} من {{limit}} رصيد",
+    "creditsExhausted": "لا يوجد رصيد AI متبقي",
+    "creditsReset": "سيتم إعادة تعيين رصيدك في {{date}}",
+    "upgradeForMore": "قم بالترقية للحصول على المزيد من الرصيد",
+    "limitReached": "تم الوصول إلى حد الرصيد",
+    "monthly": "50 رصيد AI/شهر",
+    "yearly": "100 رصيد AI/شهر",
+    "lifetime": "75 رصيد AI/شهر",
+    "description": "للتخطيط بالذكاء الاصطناعي",
+    "remaining": "{{remaining}} من {{limit}} رصيد متبقي",
+    "used": "مستخدم",
+    "limit": "الحد الشهري",
+    "resetDate": "إعادة التعيين التالية",
+    "noCredits": "لا يوجد رصيد - يتطلب اشتراك Premium",
+    "perMonth": "رصيد/شهر"
+  },
+  "admin": {
+    "credits": {
+      "title": "إدارة الرصيد",
+      "description": "تعديلات الرصيد اليدوية للمستخدمين",
+      "userSearch": "البحث عن مستخدم (البريد الإلكتروني)",
+      "currentCredits": "الرصيد الحالي",
+      "adjustCredits": "تعديل الرصيد",
+      "addCredits": "إضافة رصيد",
+      "removeCredits": "إزالة رصيد",
+      "reason": "السبب",
+      "reasonPlaceholder": "مثل: مكافأة الشريك، حسن النية، إلخ.",
+      "adjustmentSuccess": "تم تعديل الرصيد بنجاح",
+      "noUser": "المستخدم غير موجود",
+      "adjustmentHistory": "سجل التعديلات",
+      "amount": "المبلغ",
+      "adjustedBy": "تم التعديل بواسطة",
+      "date": "التاريخ"
+    }
   }
 }

@@ -1320,5 +1320,43 @@
     "form": { "title": "Candidatar agora", "companyName": "Nome da empresa (opcional)", "companyNamePlaceholder": "A Tua Empresa Lda", "contactName": "Nome de contacto", "contactNamePlaceholder": "João Silva", "email": "Endereço de email", "emailPlaceholder": "parceiro@exemplo.pt", "phone": "Telefone (opcional)", "phonePlaceholder": "+351 912 345 678", "website": "Website (opcional)", "websitePlaceholder": "https://teu-site.pt", "taxId": "NIF (opcional)", "taxIdPlaceholder": "PT123456789", "about": "Sobre ti / a tua empresa (opcional)", "aboutPlaceholder": "Conta-nos algo sobre ti...", "promotion": "Como planeias promover o EventBliss?", "promotionPlaceholder": "ex. Blog, Redes sociais, Newsletter, Recomendações pessoais...", "privacy": "Aceito a", "submit": "Enviar candidatura", "submitting": "A enviar..." },
     "success": { "title": "Candidatura recebida!", "description": "Obrigado pelo teu interesse no nosso programa de parceiros.", "nextSteps": "Iremos analisar a tua candidatura e contactar-te em 2-3 dias úteis.", "backToHome": "Voltar à página inicial" },
     "errors": { "required": "Este campo é obrigatório", "invalidEmail": "Por favor, introduz um email válido", "privacyRequired": "Deves aceitar a política de privacidade", "submitFailed": "Não foi possível enviar a candidatura. Por favor, tenta novamente." }
+  },
+  "aiCredits": {
+    "title": "Créditos IA",
+    "credits": "Créditos IA",
+    "creditsRemaining": "{{remaining}} de {{limit}} créditos",
+    "creditsExhausted": "Sem créditos IA restantes",
+    "creditsReset": "Os teus créditos serão reiniciados em {{date}}",
+    "upgradeForMore": "Atualiza para mais créditos",
+    "limitReached": "Limite de créditos atingido",
+    "monthly": "50 créditos IA/mês",
+    "yearly": "100 créditos IA/mês",
+    "lifetime": "75 créditos IA/mês",
+    "description": "Para planeamento com IA",
+    "remaining": "{{remaining}} de {{limit}} créditos restantes",
+    "used": "Usados",
+    "limit": "Limite mensal",
+    "resetDate": "Próxima reinicialização",
+    "noCredits": "Sem créditos - Subscrição Premium necessária",
+    "perMonth": "créditos/mês"
+  },
+  "admin": {
+    "credits": {
+      "title": "Gestão de créditos",
+      "description": "Ajustes manuais de créditos para utilizadores",
+      "userSearch": "Pesquisar utilizador (email)",
+      "currentCredits": "Créditos atuais",
+      "adjustCredits": "Ajustar créditos",
+      "addCredits": "Adicionar créditos",
+      "removeCredits": "Remover créditos",
+      "reason": "Motivo",
+      "reasonPlaceholder": "ex. Bónus de parceiro, Cortesia, etc.",
+      "adjustmentSuccess": "Créditos ajustados com sucesso",
+      "noUser": "Utilizador não encontrado",
+      "adjustmentHistory": "Histórico de ajustes",
+      "amount": "Montante",
+      "adjustedBy": "Ajustado por",
+      "date": "Data"
+    }
   }
 }

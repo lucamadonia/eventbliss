@@ -1320,5 +1320,43 @@
     "form": { "title": "Aplikuj teraz", "companyName": "Nazwa firmy (opcjonalnie)", "companyNamePlaceholder": "Twoja Firma Sp. z o.o.", "contactName": "Imię i nazwisko", "contactNamePlaceholder": "Jan Kowalski", "email": "Adres e-mail", "emailPlaceholder": "partner@przyklad.pl", "phone": "Telefon (opcjonalnie)", "phonePlaceholder": "+48 123 456 789", "website": "Strona www (opcjonalnie)", "websitePlaceholder": "https://twoja-strona.pl", "taxId": "NIP (opcjonalnie)", "taxIdPlaceholder": "PL1234567890", "about": "O Tobie / Twojej firmie (opcjonalnie)", "aboutPlaceholder": "Opowiedz nam o sobie...", "promotion": "Jak planujesz promować EventBliss?", "promotionPlaceholder": "np. Blog, Media społecznościowe, Newsletter, Osobiste rekomendacje...", "privacy": "Akceptuję", "submit": "Wyślij aplikację", "submitting": "Wysyłanie..." },
     "success": { "title": "Aplikacja otrzymana!", "description": "Dziękujemy za zainteresowanie naszym programem partnerskim.", "nextSteps": "Przejrzymy Twoją aplikację i skontaktujemy się w ciągu 2-3 dni roboczych.", "backToHome": "Wróć na stronę główną" },
     "errors": { "required": "To pole jest wymagane", "invalidEmail": "Podaj prawidłowy adres e-mail", "privacyRequired": "Musisz zaakceptować politykę prywatności", "submitFailed": "Nie udało się wysłać aplikacji. Spróbuj ponownie." }
+  },
+  "aiCredits": {
+    "title": "Kredyty AI",
+    "credits": "Kredyty AI",
+    "creditsRemaining": "{{remaining}} z {{limit}} kredytów",
+    "creditsExhausted": "Brak pozostałych kredytów AI",
+    "creditsReset": "Twoje kredyty zostaną zresetowane {{date}}",
+    "upgradeForMore": "Ulepsz dla więcej kredytów",
+    "limitReached": "Osiągnięto limit kredytów",
+    "monthly": "50 kredytów AI/miesiąc",
+    "yearly": "100 kredytów AI/miesiąc",
+    "lifetime": "75 kredytów AI/miesiąc",
+    "description": "Do planowania z AI",
+    "remaining": "{{remaining}} z {{limit}} pozostałych kredytów",
+    "used": "Wykorzystane",
+    "limit": "Miesięczny limit",
+    "resetDate": "Następny reset",
+    "noCredits": "Brak kredytów - wymagana subskrypcja Premium",
+    "perMonth": "kredytów/miesiąc"
+  },
+  "admin": {
+    "credits": {
+      "title": "Zarządzanie kredytami",
+      "description": "Ręczne korekty kredytów dla użytkowników",
+      "userSearch": "Szukaj użytkownika (email)",
+      "currentCredits": "Aktualne kredyty",
+      "adjustCredits": "Dostosuj kredyty",
+      "addCredits": "Dodaj kredyty",
+      "removeCredits": "Usuń kredyty",
+      "reason": "Powód",
+      "reasonPlaceholder": "np. Bonus partnerski, Uprzejmość, itp.",
+      "adjustmentSuccess": "Kredyty pomyślnie dostosowane",
+      "noUser": "Nie znaleziono użytkownika",
+      "adjustmentHistory": "Historia korekt",
+      "amount": "Kwota",
+      "adjustedBy": "Dostosowane przez",
+      "date": "Data"
+    }
   }
 }

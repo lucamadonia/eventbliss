@@ -1326,5 +1326,43 @@
     "form": { "title": "Nu aanmelden", "companyName": "Bedrijfsnaam (optioneel)", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "email": "E-mailadres", "emailPlaceholder": "partner@voorbeeld.nl", "phone": "Telefoon (optioneel)", "phonePlaceholder": "+31 6 12345678", "website": "Website (optioneel)", "websitePlaceholder": "https://jouw-website.nl", "taxId": "BTW-nummer (optioneel)", "taxIdPlaceholder": "NL123456789B01", "about": "Over jou / je bedrijf (optioneel)", "aboutPlaceholder": "Vertel ons iets over jezelf...", "promotion": "Hoe wil je EventBliss promoten?", "promotionPlaceholder": "bijv. Blog, Social Media, Nieuwsbrief, Persoonlijke aanbevelingen...", "privacy": "Ik accepteer de", "submit": "Aanmelding versturen", "submitting": "Versturen..." },
     "success": { "title": "Aanmelding ontvangen!", "description": "Bedankt voor je interesse in ons partnerprogramma.", "nextSteps": "We beoordelen je aanmelding en nemen binnen 2-3 werkdagen contact met je op.", "backToHome": "Terug naar home" },
     "errors": { "required": "Dit veld is verplicht", "invalidEmail": "Voer een geldig e-mailadres in", "privacyRequired": "Je moet het privacybeleid accepteren", "submitFailed": "Aanmelding kon niet worden verzonden. Probeer het opnieuw." }
+  },
+  "aiCredits": {
+    "title": "AI-credits",
+    "credits": "AI-credits",
+    "creditsRemaining": "{{remaining}} van {{limit}} credits",
+    "creditsExhausted": "Geen AI-credits meer beschikbaar",
+    "creditsReset": "Je credits worden gereset op {{date}}",
+    "upgradeForMore": "Upgrade voor meer credits",
+    "limitReached": "Credit-limiet bereikt",
+    "monthly": "50 AI-credits/maand",
+    "yearly": "100 AI-credits/maand",
+    "lifetime": "75 AI-credits/maand",
+    "description": "Voor AI-gestuurde planning",
+    "remaining": "{{remaining}} van {{limit}} credits over",
+    "used": "Gebruikt",
+    "limit": "Maandelijks limiet",
+    "resetDate": "Volgende reset",
+    "noCredits": "Geen credits - Premium abonnement vereist",
+    "perMonth": "credits/maand"
+  },
+  "admin": {
+    "credits": {
+      "title": "Credit beheer",
+      "description": "Handmatige credit-aanpassingen voor gebruikers",
+      "userSearch": "Zoek gebruiker (e-mail)",
+      "currentCredits": "Huidige credits",
+      "adjustCredits": "Credits aanpassen",
+      "addCredits": "Credits toevoegen",
+      "removeCredits": "Credits verwijderen",
+      "reason": "Reden",
+      "reasonPlaceholder": "bijv. Partner bonus, Coulance, etc.",
+      "adjustmentSuccess": "Credits succesvol aangepast",
+      "noUser": "Gebruiker niet gevonden",
+      "adjustmentHistory": "Aanpassingsgeschiedenis",
+      "amount": "Bedrag",
+      "adjustedBy": "Aangepast door",
+      "date": "Datum"
+    }
   }
 }
