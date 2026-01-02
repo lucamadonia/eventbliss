@@ -107,6 +107,10 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       top_activities: topActivities,
       fitness_level: topFitness,
       duration: "weekend",
+      // New context fields for dynamic AI responses
+      language: event.locale || 'de',
+      event_name: event.name,
+      event_description: event.description || undefined,
     };
   };
 
