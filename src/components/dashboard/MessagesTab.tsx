@@ -242,6 +242,10 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
             enhancement_type: enhancementType,
             custom_instruction: enhancementType === "custom" ? customInstruction : undefined,
             template_type: selectedTemplate.id,
+            // Pass language context for proper AI responses
+            language: event.locale || i18n.language || 'de',
+            event_name: event.name,
+            event_description: event.description || undefined,
           },
         },
       });
