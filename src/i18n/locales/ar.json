@@ -643,6 +643,16 @@
   "agencies": {
     "title": "وكالات الحفلات",
     "subtitle": "اعثر على مزودين محترفين بالقرب منك",
+    "stats": "{{total}} وكالة في {{countries}} دول و{{cities}} مدن",
+    "agenciesInCities": "{{agencies}} وكالة في {{cities}} مدن",
+    "searchPlaceholder": "بحث عن وكالة...",
+    "country": "البلد",
+    "allCountries": "جميع البلدان",
+    "city": "المدينة",
+    "filteredOf": "{{filtered}} من {{total}} وكالة",
+    "noAgenciesDesc": "جرب إعدادات تصفية أخرى أو مصطلح بحث مختلف.",
+    "resetFilters": "إعادة ضبط الفلاتر",
+    "visitWebsite": "زيارة الموقع",
     "viewMode": {
       "list": "قائمة",
       "map": "خريطة"

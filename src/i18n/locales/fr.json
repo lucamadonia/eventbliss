@@ -659,6 +659,16 @@
   "agencies": {
     "title": "Agences de Fêtes",
     "subtitle": "Trouvez des prestataires professionnels près de chez vous",
+    "stats": "{{total}} agences dans {{countries}} pays et {{cities}} villes",
+    "agenciesInCities": "{{agencies}} agences dans {{cities}} villes",
+    "searchPlaceholder": "Rechercher une agence...",
+    "country": "Pays",
+    "allCountries": "Tous les pays",
+    "city": "Ville",
+    "filteredOf": "{{filtered}} sur {{total}} agences",
+    "noAgenciesDesc": "Essayez d'autres paramètres de filtre ou un terme de recherche différent.",
+    "resetFilters": "Réinitialiser les filtres",
+    "visitWebsite": "Visiter le site web",
     "viewMode": {
       "list": "Liste",
       "map": "Carte"

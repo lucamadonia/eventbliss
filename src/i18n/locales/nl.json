@@ -649,6 +649,16 @@
   "agencies": {
     "title": "Feestbureaus",
     "subtitle": "Vind professionele aanbieders bij jou in de buurt",
+    "stats": "{{total}} bureaus in {{countries}} landen en {{cities}} steden",
+    "agenciesInCities": "{{agencies}} bureaus in {{cities}} steden",
+    "searchPlaceholder": "Bureau zoeken...",
+    "country": "Land",
+    "allCountries": "Alle landen",
+    "city": "Stad",
+    "filteredOf": "{{filtered}} van {{total}} bureaus",
+    "noAgenciesDesc": "Probeer andere filterinstellingen of een andere zoekterm.",
+    "resetFilters": "Filters resetten",
+    "visitWebsite": "Website bezoeken",
     "viewMode": {
       "list": "Lijst",
       "map": "Kaart"

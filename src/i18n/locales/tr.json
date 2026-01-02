@@ -643,6 +643,16 @@
   "agencies": {
     "title": "Parti Ajansları",
     "subtitle": "Yakınlarınızdaki profesyonel sağlayıcıları bulun",
+    "stats": "{{total}} ajans {{countries}} ülke ve {{cities}} şehirde",
+    "agenciesInCities": "{{agencies}} ajans {{cities}} şehirde",
+    "searchPlaceholder": "Ajans ara...",
+    "country": "Ülke",
+    "allCountries": "Tüm ülkeler",
+    "city": "Şehir",
+    "filteredOf": "{{filtered}} / {{total}} ajans",
+    "noAgenciesDesc": "Farklı filtre ayarları veya arama terimi deneyin.",
+    "resetFilters": "Filtreleri sıfırla",
+    "visitWebsite": "Web sitesini ziyaret et",
     "viewMode": {
       "list": "Liste",
       "map": "Harita"
