@@ -558,6 +558,7 @@
     "tabs": {
       "overview": "Übersicht",
       "planner": "Planer",
+      "responses": "Antworten",
       "ideas": "Ideen",
       "form": "Formular",
       "schedule": "Termine",
@@ -566,6 +567,64 @@
       "ai": "KI-Assistent",
       "messages": "Nachrichten",
       "settings": "Einstellungen"
+    },
+    "responses": {
+      "title": "Umfrage-Antworten",
+      "subtitle": "{{count}} Antworten eingegangen",
+      "loading": "Antworten werden geladen...",
+      "noResponses": "Noch keine Antworten",
+      "noResponsesDesc": "Sobald Teilnehmer die Umfrage ausfüllen, erscheinen ihre Antworten hier.",
+      "exportCsv": "CSV Export",
+      "filter": "Filtern",
+      "attendance": {
+        "yes": "Dabei",
+        "maybe": "Vielleicht",
+        "no": "Nicht dabei"
+      },
+      "columns": {
+        "name": "Name",
+        "attendance": "Teilnahme",
+        "duration": "Dauer",
+        "budget": "Budget",
+        "destination": "Reiseziel",
+        "fitness": "Fitness",
+        "alcohol": "Alkohol",
+        "travel": "Reisezeit",
+        "activities": "Aktivitäten",
+        "restrictions": "Einschränkungen",
+        "suggestions": "Wünsche"
+      }
+    },
+    "team": {
+      "title": "Dashboard-Zugänge verwalten",
+      "description": "Aktiviere Dashboard-Zugang für Teilnehmer und teile den Einladungslink. Mit dem Link können sie einen Account erstellen und sich verifizieren.",
+      "addParticipant": "Teilnehmer hinzufügen",
+      "addParticipantDesc": "Füge einen neuen Gast zum Event hinzu",
+      "participantName": "Name",
+      "participantEmail": "E-Mail (optional)",
+      "participantRole": "Rolle",
+      "namePlaceholder": "z.B. Max Mustermann",
+      "emailPlaceholder": "max@example.com",
+      "addButton": "Hinzufügen",
+      "nameRequired": "Name darf nicht leer sein",
+      "participantAdded": "{{name}} wurde hinzugefügt",
+      "addError": "Fehler beim Hinzufügen",
+      "roles": {
+        "guest": "Gast",
+        "organizer": "Organisator"
+      },
+      "status": {
+        "activated": "Aktiviert",
+        "invited": "Eingeladen",
+        "ready": "Bereit",
+        "noAccess": "Kein Zugang"
+      },
+      "permissions": {
+        "viewResponses": "Antworten ansehen",
+        "addExpenses": "Ausgaben eintragen",
+        "viewAllExpenses": "Alle Ausgaben sehen",
+        "editSettings": "Einstellungen bearbeiten"
+      }
     },
     "overview": {
       "title": "Übersicht",

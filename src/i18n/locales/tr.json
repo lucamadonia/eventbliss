@@ -429,6 +429,7 @@
     "tabs": {
       "overview": "Genel Bakış",
       "planner": "Planlayıcı",
+      "responses": "Cevaplar",
       "ideas": "Fikirler",
       "form": "Form",
       "schedule": "Program",
@@ -437,6 +438,64 @@
       "ai": "AI Asistan",
       "messages": "Mesajlar",
       "settings": "Ayarlar"
+    },
+    "responses": {
+      "title": "Anket Cevapları",
+      "subtitle": "{{count}} cevap alındı",
+      "loading": "Cevaplar yükleniyor...",
+      "noResponses": "Henüz cevap yok",
+      "noResponsesDesc": "Katılımcılar anketi tamamladığında, cevapları burada görünecek.",
+      "exportCsv": "CSV İndir",
+      "filter": "Filtrele",
+      "attendance": {
+        "yes": "Katılıyor",
+        "maybe": "Belki",
+        "no": "Katılmıyor"
+      },
+      "columns": {
+        "name": "İsim",
+        "attendance": "Katılım",
+        "duration": "Süre",
+        "budget": "Bütçe",
+        "destination": "Hedef",
+        "fitness": "Kondisyon",
+        "alcohol": "Alkol",
+        "travel": "Seyahat Süresi",
+        "activities": "Aktiviteler",
+        "restrictions": "Kısıtlamalar",
+        "suggestions": "Öneriler"
+      }
+    },
+    "team": {
+      "title": "Panel Erişimini Yönet",
+      "description": "Katılımcılar için panel erişimini etkinleştirin ve davet bağlantısını paylaşın.",
+      "addParticipant": "Katılımcı Ekle",
+      "addParticipantDesc": "Etkinliğe yeni bir misafir ekle",
+      "participantName": "İsim",
+      "participantEmail": "Email (isteğe bağlı)",
+      "participantRole": "Rol",
+      "namePlaceholder": "örn. Ahmet Yılmaz",
+      "emailPlaceholder": "ahmet@example.com",
+      "addButton": "Ekle",
+      "nameRequired": "İsim gerekli",
+      "participantAdded": "{{name}} eklendi",
+      "addError": "Ekleme hatası",
+      "roles": {
+        "guest": "Misafir",
+        "organizer": "Organizatör"
+      },
+      "status": {
+        "activated": "Aktif",
+        "invited": "Davet Edildi",
+        "ready": "Hazır",
+        "noAccess": "Erişim Yok"
+      },
+      "permissions": {
+        "viewResponses": "Cevapları görüntüle",
+        "addExpenses": "Harcama ekle",
+        "viewAllExpenses": "Tüm harcamaları görüntüle",
+        "editSettings": "Ayarları düzenle"
+      }
     },
     "overview": {
       "title": "Genel Bakış",

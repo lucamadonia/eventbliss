@@ -445,6 +445,7 @@
     "tabs": {
       "overview": "Vista General",
       "planner": "Planificador",
+      "responses": "Respuestas",
       "ideas": "Ideas",
       "form": "Formulario",
       "schedule": "Calendario",
@@ -453,6 +454,64 @@
       "ai": "Asistente IA",
       "messages": "Mensajes",
       "settings": "Configuración"
+    },
+    "responses": {
+      "title": "Respuestas de Encuesta",
+      "subtitle": "{{count}} respuestas recibidas",
+      "loading": "Cargando respuestas...",
+      "noResponses": "Sin respuestas aún",
+      "noResponsesDesc": "Cuando los participantes completen la encuesta, sus respuestas aparecerán aquí.",
+      "exportCsv": "Exportar CSV",
+      "filter": "Filtrar",
+      "attendance": {
+        "yes": "Asiste",
+        "maybe": "Quizás",
+        "no": "No asiste"
+      },
+      "columns": {
+        "name": "Nombre",
+        "attendance": "Asistencia",
+        "duration": "Duración",
+        "budget": "Presupuesto",
+        "destination": "Destino",
+        "fitness": "Fitness",
+        "alcohol": "Alcohol",
+        "travel": "Tiempo de Viaje",
+        "activities": "Actividades",
+        "restrictions": "Restricciones",
+        "suggestions": "Sugerencias"
+      }
+    },
+    "team": {
+      "title": "Gestionar Acceso al Dashboard",
+      "description": "Habilita el acceso al dashboard para participantes y comparte el enlace de invitación.",
+      "addParticipant": "Añadir Participante",
+      "addParticipantDesc": "Añade un nuevo invitado al evento",
+      "participantName": "Nombre",
+      "participantEmail": "Email (opcional)",
+      "participantRole": "Rol",
+      "namePlaceholder": "ej. Juan García",
+      "emailPlaceholder": "juan@example.com",
+      "addButton": "Añadir",
+      "nameRequired": "El nombre es obligatorio",
+      "participantAdded": "{{name}} ha sido añadido",
+      "addError": "Error al añadir participante",
+      "roles": {
+        "guest": "Invitado",
+        "organizer": "Organizador"
+      },
+      "status": {
+        "activated": "Activado",
+        "invited": "Invitado",
+        "ready": "Listo",
+        "noAccess": "Sin Acceso"
+      },
+      "permissions": {
+        "viewResponses": "Ver respuestas",
+        "addExpenses": "Añadir gastos",
+        "viewAllExpenses": "Ver todos los gastos",
+        "editSettings": "Editar configuración"
+      }
     },
     "overview": {
       "title": "Vista General",

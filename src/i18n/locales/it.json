@@ -397,6 +397,7 @@
     "tabs": {
       "overview": "Panoramica",
       "planner": "Pianificatore",
+      "responses": "Risposte",
       "ideas": "Idee",
       "form": "Modulo",
       "schedule": "Programma",
@@ -405,6 +406,64 @@
       "ai": "Assistente IA",
       "messages": "Messaggi",
       "settings": "Impostazioni"
+    },
+    "responses": {
+      "title": "Risposte al Sondaggio",
+      "subtitle": "{{count}} risposte ricevute",
+      "loading": "Caricamento risposte...",
+      "noResponses": "Nessuna risposta ancora",
+      "noResponsesDesc": "Quando i partecipanti compileranno il sondaggio, le loro risposte appariranno qui.",
+      "exportCsv": "Esporta CSV",
+      "filter": "Filtra",
+      "attendance": {
+        "yes": "Partecipa",
+        "maybe": "Forse",
+        "no": "Non partecipa"
+      },
+      "columns": {
+        "name": "Nome",
+        "attendance": "Partecipazione",
+        "duration": "Durata",
+        "budget": "Budget",
+        "destination": "Destinazione",
+        "fitness": "Fitness",
+        "alcohol": "Alcol",
+        "travel": "Tempo di Viaggio",
+        "activities": "Attività",
+        "restrictions": "Restrizioni",
+        "suggestions": "Suggerimenti"
+      }
+    },
+    "team": {
+      "title": "Gestisci Accesso Dashboard",
+      "description": "Abilita l'accesso al dashboard per i partecipanti e condividi il link di invito.",
+      "addParticipant": "Aggiungi Partecipante",
+      "addParticipantDesc": "Aggiungi un nuovo ospite all'evento",
+      "participantName": "Nome",
+      "participantEmail": "Email (opzionale)",
+      "participantRole": "Ruolo",
+      "namePlaceholder": "es. Mario Rossi",
+      "emailPlaceholder": "mario@example.com",
+      "addButton": "Aggiungi",
+      "nameRequired": "Il nome è obbligatorio",
+      "participantAdded": "{{name}} è stato aggiunto",
+      "addError": "Errore durante l'aggiunta",
+      "roles": {
+        "guest": "Ospite",
+        "organizer": "Organizzatore"
+      },
+      "status": {
+        "activated": "Attivato",
+        "invited": "Invitato",
+        "ready": "Pronto",
+        "noAccess": "Nessun Accesso"
+      },
+      "permissions": {
+        "viewResponses": "Visualizza risposte",
+        "addExpenses": "Aggiungi spese",
+        "viewAllExpenses": "Visualizza tutte le spese",
+        "editSettings": "Modifica impostazioni"
+      }
     },
     "overview": {
       "title": "Panoramica",

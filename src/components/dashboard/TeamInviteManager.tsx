@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
@@ -18,6 +19,7 @@ import {
   Pencil,
   Trash2,
   X,
+  UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +44,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Participant, DashboardPermissions } from "@/hooks/useEvent";
 
 interface TeamInviteManagerProps {
@@ -64,11 +82,19 @@ export function TeamInviteManager({
   participants,
   onUpdate,
 }: TeamInviteManagerProps) {
+  const { t } = useTranslation();
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  
+  // Add participant state
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [newParticipantName, setNewParticipantName] = useState("");
+  const [newParticipantEmail, setNewParticipantEmail] = useState("");
+  const [newParticipantRole, setNewParticipantRole] = useState<"guest" | "organizer">("guest");
+  const [isAddingParticipant, setIsAddingParticipant] = useState(false);
 
   const getInviteLink = (inviteToken: string) => {
     return `${window.location.origin}/e/${eventSlug}/claim/${inviteToken}`;
@@ -202,6 +228,41 @@ export function TeamInviteManager({
     }
   };
 
+  const handleAddParticipant = async () => {
+    if (!newParticipantName.trim()) {
+      toast.error(t("dashboard.team.nameRequired"));
+      return;
+    }
+
+    setIsAddingParticipant(true);
+
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .insert({
+          event_id: eventId,
+          name: newParticipantName.trim(),
+          email: newParticipantEmail.trim() || null,
+          role: newParticipantRole,
+          status: "invited",
+        });
+
+      if (error) throw error;
+
+      toast.success(t("dashboard.team.participantAdded", { name: newParticipantName }));
+      setAddDialogOpen(false);
+      setNewParticipantName("");
+      setNewParticipantEmail("");
+      setNewParticipantRole("guest");
+      onUpdate();
+    } catch (error) {
+      console.error("Error adding participant:", error);
+      toast.error(t("dashboard.team.addError"));
+    } finally {
+      setIsAddingParticipant(false);
+    }
+  };
+
   const startEditing = (participant: Participant) => {
     setEditingId(participant.id);
     setEditName(participant.name);
@@ -217,7 +278,7 @@ export function TeamInviteManager({
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-success/15 text-success border border-success/30">
           <CheckCircle className="w-3 h-3" />
-          Aktiviert
+          {t("dashboard.team.status.activated")}
         </span>
       );
     }
@@ -225,7 +286,7 @@ export function TeamInviteManager({
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-warning/15 text-warning border border-warning/30">
           <Clock className="w-3 h-3" />
-          Eingeladen
+          {t("dashboard.team.status.invited")}
         </span>
       );
     }
@@ -233,35 +294,96 @@ export function TeamInviteManager({
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-primary/15 text-primary border border-primary/30">
           <Link2 className="w-3 h-3" />
-          Bereit
+          {t("dashboard.team.status.ready")}
         </span>
       );
     }
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
         <XCircle className="w-3 h-3" />
-        Kein Zugang
+        {t("dashboard.team.status.noAccess")}
       </span>
     );
   };
 
   const permissionLabels: Record<keyof DashboardPermissions, { label: string; icon: typeof Eye }> = {
-    can_view_responses: { label: "Antworten ansehen", icon: Eye },
-    can_add_expenses: { label: "Ausgaben eintragen", icon: PlusCircle },
-    can_view_all_expenses: { label: "Alle Ausgaben sehen", icon: Wallet },
-    can_edit_settings: { label: "Einstellungen bearbeiten", icon: Settings },
+    can_view_responses: { label: t("dashboard.team.permissions.viewResponses"), icon: Eye },
+    can_add_expenses: { label: t("dashboard.team.permissions.addExpenses"), icon: PlusCircle },
+    can_view_all_expenses: { label: t("dashboard.team.permissions.viewAllExpenses"), icon: Wallet },
+    can_edit_settings: { label: t("dashboard.team.permissions.editSettings"), icon: Settings },
   };
 
   return (
     <GlassCard className="p-6">
-      <h4 className="font-bold mb-4 flex items-center gap-2">
-        <Shield className="w-5 h-5" />
-        Dashboard-Zugänge verwalten
-      </h4>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-bold flex items-center gap-2">
+          <Shield className="w-5 h-5" />
+          {t("dashboard.team.title")}
+        </h4>
+        
+        {/* Add Participant Button */}
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-2">
+              <UserPlus className="w-4 h-4" />
+              {t("dashboard.team.addParticipant")}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("dashboard.team.addParticipant")}</DialogTitle>
+              <DialogDescription>{t("dashboard.team.addParticipantDesc")}</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="participantName">{t("dashboard.team.participantName")} *</Label>
+                <Input
+                  id="participantName"
+                  value={newParticipantName}
+                  onChange={(e) => setNewParticipantName(e.target.value)}
+                  placeholder={t("dashboard.team.namePlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="participantEmail">{t("dashboard.team.participantEmail")}</Label>
+                <Input
+                  id="participantEmail"
+                  type="email"
+                  value={newParticipantEmail}
+                  onChange={(e) => setNewParticipantEmail(e.target.value)}
+                  placeholder={t("dashboard.team.emailPlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="participantRole">{t("dashboard.team.participantRole")}</Label>
+                <Select
+                  value={newParticipantRole}
+                  onValueChange={(value: "guest" | "organizer") => setNewParticipantRole(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="guest">{t("dashboard.team.roles.guest")}</SelectItem>
+                    <SelectItem value="organizer">{t("dashboard.team.roles.organizer")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
+                {t("common.cancel")}
+              </Button>
+              <Button onClick={handleAddParticipant} disabled={isAddingParticipant}>
+                {isAddingParticipant ? t("common.loading") : t("dashboard.team.addButton")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <p className="text-sm text-muted-foreground mb-6">
-        Aktiviere Dashboard-Zugang für Teilnehmer und teile den Einladungslink.
-        Mit dem Link können sie einen Account erstellen und sich verifizieren.
+        {t("dashboard.team.description")}
       </p>
 
       <div className="space-y-3">
