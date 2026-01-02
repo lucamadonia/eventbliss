@@ -96,7 +96,8 @@ export const TripIdeasCard = ({
   };
 
   const copyIdea = async (idea: ParsedTripIdea, id: string) => {
-    const text = `${idea.emoji} ${idea.title}\n📍 ${idea.destination}\n💰 ${idea.cost}\n\n${idea.description}\n\n✅ Warum perfekt:\n${idea.whyPerfect.map(w => `• ${w}`).join('\n')}`;
+    const whyPerfectLabel = t('dashboard.ai.whyPerfect');
+    const text = `${idea.emoji} ${idea.title}\n📍 ${idea.destination}\n💰 ${idea.cost}\n\n${idea.description}\n\n✅ ${whyPerfectLabel}:\n${idea.whyPerfect.map(w => `• ${w}`).join('\n')}`;
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
     toast.success(t('common.copied'));
@@ -108,20 +109,22 @@ export const TripIdeasCard = ({
     toast.success(t('common.copied'));
   };
 
+  const normalizedLocale = (i18n.language || 'en').toLowerCase().split(/[-_]/)[0];
+
   const handlePrint = () => {
     openTripIdeasPrint(tripIdeasData, {
       name: eventName || 'Event',
       participantCount,
-    }, i18n.language);
-    toast.success(t('dashboard.ai.printOpened', 'Druckvorschau geöffnet'));
+    }, normalizedLocale);
+    toast.success(t('dashboard.ai.printOpened'));
   };
 
   const handleDownload = () => {
     downloadTripIdeasHTML(tripIdeasData, {
       name: eventName || 'Event',
       participantCount,
-    }, i18n.language);
-    toast.success(t('dashboard.ai.downloaded', 'Download gestartet'));
+    }, normalizedLocale);
+    toast.success(t('dashboard.ai.downloaded'));
   };
 
   return (
@@ -134,7 +137,7 @@ export const TripIdeasCard = ({
           </div>
           <div className="flex-1">
             <h3 className="font-display font-bold text-lg">
-              {t('dashboard.ai.tripIdeas', 'Reiseideen')}
+              {t('dashboard.ai.tripIdeas')}
             </h3>
             <div className="flex flex-wrap gap-2 mt-1">
               {eventName && (
@@ -143,7 +146,7 @@ export const TripIdeasCard = ({
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs">
-                🌍 {tripIdeasData.ideas.length} {t('dashboard.ai.ideas', 'Ideen')}
+                🌍 {tripIdeasData.ideas.length} {t('dashboard.ai.ideas')}
               </Badge>
               {participantCount && (
                 <Badge variant="outline" className="text-xs">
@@ -202,7 +205,7 @@ export const TripIdeasCard = ({
                   {/* Idea Number Badge */}
                   <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
                     <span className="text-white font-black text-sm tracking-wider">
-                      {t('dashboard.ai.ideaLabel', 'IDEE')} {ideaNumber}
+                      {t('dashboard.ai.ideaLabel')} {ideaNumber}
                     </span>
                   </div>
 
@@ -215,7 +218,7 @@ export const TripIdeasCard = ({
                       {isTopPick && (
                         <Badge className="bg-white/30 text-white border-0 text-xs">
                           <Star className="w-3 h-3 mr-1 fill-current" />
-                          Top Pick
+                          {t('dashboard.ai.topPick')}
                         </Badge>
                       )}
                     </div>
@@ -273,7 +276,7 @@ export const TripIdeasCard = ({
                         {idea.whyPerfect && idea.whyPerfect.length > 0 && (
                           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
                             <h5 className="text-sm font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                              💡 {t('dashboard.ai.whyPerfect', 'Warum perfekt')}
+                              💡 {t('dashboard.ai.whyPerfect')}
                             </h5>
                             <ul className="space-y-1">
                               {idea.whyPerfect.map((reason, i) => (
@@ -290,7 +293,7 @@ export const TripIdeasCard = ({
                         {idea.highlights && idea.highlights.length > 0 && (
                           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
                             <h5 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
-                              🎯 {t('dashboard.ai.highlights', 'Highlights')}
+                              🎯 {t('dashboard.ai.highlights')}
                             </h5>
                             <ul className="space-y-1">
                               {idea.highlights.map((highlight, i) => (
@@ -319,7 +322,7 @@ export const TripIdeasCard = ({
                             ) : (
                               <Copy className="w-3 h-3 mr-1" />
                             )}
-                            {t('common.copy', 'Kopieren')}
+                            {t('common.copy')}
                           </Button>
                           {onSetDestination && (
                             <Button
@@ -329,11 +332,11 @@ export const TripIdeasCard = ({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onSetDestination(idea);
-                                toast.success(t('dashboard.ai.destinationSet', 'Als Reiseziel festgelegt'));
+                                toast.success(t('dashboard.ai.destinationSet'));
                               }}
                             >
                               <Target className="w-3 h-3 mr-1" />
-                              {t('dashboard.ai.setAsDestination', 'Als Ziel festlegen')}
+                              {t('dashboard.ai.setAsDestination')}
                             </Button>
                           )}
                         </div>
@@ -354,7 +357,7 @@ export const TripIdeasCard = ({
             <Lightbulb className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-bold text-amber-400 mb-2">
-                {t('dashboard.ai.travelTips', 'Reisetipps')}
+                {t('dashboard.ai.travelTips')}
               </h4>
               <ul className="space-y-1">
                 {tripIdeasData.tips.map((tip, index) => (
@@ -372,7 +375,7 @@ export const TripIdeasCard = ({
       <div className="flex flex-wrap gap-2 justify-end">
         <Button variant="outline" size="sm" onClick={copyAll}>
           <Copy className="w-4 h-4 mr-2" />
-          {t('dashboard.ai.copyAll', 'Alles kopieren')}
+          {t('dashboard.ai.copyAll')}
         </Button>
       </div>
     </div>

@@ -127,13 +127,15 @@ export const ActivitiesCard = ({
     toast.success(t('common.copied'));
   };
 
+  const normalizedLocale = (i18n.language || 'en').toLowerCase().split(/[-_]/)[0];
+
   const handlePrint = () => {
     openActivitiesPrint(activitiesData, {
       name: eventName || 'Event',
       participantCount,
       budget,
-    }, i18n.language);
-    toast.success(t('dashboard.ai.printOpened', 'Druckvorschau geöffnet'));
+    }, normalizedLocale);
+    toast.success(t('dashboard.ai.printOpened'));
   };
 
   const handleDownload = () => {
@@ -141,8 +143,8 @@ export const ActivitiesCard = ({
       name: eventName || 'Event',
       participantCount,
       budget,
-    }, i18n.language);
-    toast.success(t('dashboard.ai.downloaded', 'Download gestartet'));
+    }, normalizedLocale);
+    toast.success(t('dashboard.ai.downloaded'));
   };
 
   const getFitnessColor = (fitness: string) => {
@@ -171,7 +173,7 @@ export const ActivitiesCard = ({
           </div>
           <div className="flex-1">
             <h3 className="font-display font-bold text-lg">
-              {t('dashboard.ai.activitySuggestions', 'Aktivitäts-Vorschläge')}
+              {t('dashboard.ai.activitySuggestions')}
             </h3>
             <div className="flex flex-wrap gap-2 mt-1">
               {eventName && (
@@ -180,7 +182,7 @@ export const ActivitiesCard = ({
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs">
-                🎯 {activitiesData.activities.length} {t('dashboard.ai.activities', 'Aktivitäten')}
+                🎯 {activitiesData.activities.length} {t('dashboard.ai.activities')}
               </Badge>
               {participantCount && (
                 <Badge variant="outline" className="text-xs">
@@ -243,7 +245,7 @@ export const ActivitiesCard = ({
                   {/* Activity Number Badge */}
                   <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
                     <span className="text-white font-black text-sm tracking-wider">
-                      {t('dashboard.ai.activityLabel', 'AKTIVITÄT')} {activityNumber}
+                      {t('dashboard.ai.activityLabel')} {activityNumber}
                     </span>
                   </div>
 
@@ -315,7 +317,7 @@ export const ActivitiesCard = ({
                         {activity.highlights && activity.highlights.length > 0 && (
                           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
                             <h5 className="text-sm font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                              ✅ {t('dashboard.ai.highlights', 'Highlights')}
+                              ✅ {t('dashboard.ai.highlights')}
                             </h5>
                             <ul className="space-y-1">
                               {activity.highlights.map((highlight, i) => (
@@ -344,7 +346,7 @@ export const ActivitiesCard = ({
                             ) : (
                               <Copy className="w-3 h-3 mr-1" />
                             )}
-                            {t('common.copy', 'Kopieren')}
+                            {t('common.copy')}
                           </Button>
                           {onAddToPlanner && (
                             <Button
@@ -354,11 +356,11 @@ export const ActivitiesCard = ({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onAddToPlanner(activity);
-                                toast.success(t('dashboard.ai.addedToPlanner', 'Zum Planer hinzugefügt'));
+                                toast.success(t('dashboard.ai.addedToPlanner'));
                               }}
                             >
                               <Plus className="w-3 h-3 mr-1" />
-                              {t('dashboard.ai.addToPlanner', 'Zum Planer')}
+                              {t('dashboard.ai.addToPlanner')}
                             </Button>
                           )}
                         </div>
@@ -379,7 +381,7 @@ export const ActivitiesCard = ({
             <Lightbulb className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-bold text-amber-400 mb-2">
-                {t('dashboard.ai.budgetTips', 'Budget-Tipps')}
+                {t('dashboard.ai.budgetTips')}
               </h4>
               <ul className="space-y-1">
                 {activitiesData.tips.map((tip, index) => (
@@ -397,7 +399,7 @@ export const ActivitiesCard = ({
       <div className="flex flex-wrap gap-2 justify-end">
         <Button variant="outline" size="sm" onClick={copyAll}>
           <Copy className="w-4 h-4 mr-2" />
-          {t('dashboard.ai.copyAll', 'Alles kopieren')}
+          {t('dashboard.ai.copyAll')}
         </Button>
         {onAddToPlanner && activitiesData.activities.length > 1 && (
           <Button
@@ -405,11 +407,11 @@ export const ActivitiesCard = ({
             size="sm"
             onClick={() => {
               activitiesData.activities.forEach(activity => onAddToPlanner(activity));
-              toast.success(t('dashboard.ai.allAdded', 'Alle Aktivitäten hinzugefügt'));
+              toast.success(t('dashboard.ai.allAdded'));
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            {t('dashboard.ai.addAllToPlanner', 'Alle hinzufügen')}
+            {t('dashboard.ai.addAllToPlanner')}
           </Button>
         )}
       </div>
