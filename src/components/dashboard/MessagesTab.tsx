@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp, Wand2, Loader2, Crown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -19,6 +19,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePremium } from "@/hooks/usePremium";
 import { PremiumBadge } from "@/components/premium/PremiumBadge";
 import type { EventData, Participant } from "@/hooks/useEvent";
+
+// DB message template type
+interface DBMessageTemplate {
+  id: string;
+  template_key: string;
+  title: string;
+  content_template: string;
+  emoji_prefix: string | null;
+  sort_order: number | null;
+  locale: string | null;
+}
 
 interface MessagesTabProps {
   event: EventData;
@@ -151,6 +162,10 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
+  // DB Templates State
+  const [dbTemplates, setDbTemplates] = useState<DBMessageTemplate[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(true);
+  
   // AI Enhancement State
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(null);
@@ -163,6 +178,31 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   const surveyLink = `${window.location.origin}/e/${slug}`;
   const accessCode = event.access_code || "STAG2025";
   const totalCount = participants.length;
+
+  // Load DB templates for this event
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('message_templates')
+          .select('id, template_key, title, content_template, emoji_prefix, sort_order, locale')
+          .eq('event_id', event.id)
+          .order('sort_order', { ascending: true });
+
+        if (error) {
+          console.error('Error loading message templates:', error);
+        } else if (data && data.length > 0) {
+          setDbTemplates(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch templates:', err);
+      } finally {
+        setLoadingTemplates(false);
+      }
+    };
+
+    fetchTemplates();
+  }, [event.id]);
 
   // Format event date if available
   const formattedEventDate = event.event_date 
@@ -194,6 +234,30 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
     });
   };
 
+  // Get template text - prioritize DB templates, fallback to i18n
+  const getTemplateTextForId = (templateId: string, templateKey: string): string => {
+    // Check if we have a DB template for this key
+    const dbTemplate = dbTemplates.find(t => t.template_key === templateId);
+    
+    if (dbTemplate) {
+      // Replace placeholders in DB template
+      return dbTemplate.content_template
+        .replace(/\{\{honoree\}\}/g, event.honoree_name)
+        .replace(/\{\{link\}\}/g, surveyLink)
+        .replace(/\{\{code\}\}/g, accessCode)
+        .replace(/\{\{eventDate\}\}/g, formattedEventDate)
+        .replace(/\{\{responseCount\}\}/g, responseCount.toString())
+        .replace(/\{\{totalCount\}\}/g, totalCount.toString())
+        .replace(/\{\{deadline\}\}/g, formattedDeadline)
+        .replace(/\{\{eventName\}\}/g, event.name)
+        .replace(/\{\{meeting_point\}\}/g, "[" + t('messages.placeholders.meetingPoint') + "]")
+        .replace(/\{\{meeting_time\}\}/g, "[" + t('messages.placeholders.meetingTime') + "]");
+    }
+    
+    // Fallback to i18n template
+    return getTemplateText(templateKey);
+  };
+
   const handleCopy = async (text: string, templateId?: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -207,7 +271,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   };
 
   const handleWhatsApp = (template: MessageTemplate) => {
-    const text = getTemplateText(template.templateKey);
+    const text = getTemplateTextForId(template.id, template.templateKey);
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, "_blank");
   };
@@ -229,7 +293,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
     
     setIsEnhancing(true);
     try {
-      const originalText = getTemplateText(selectedTemplate.templateKey);
+      const originalText = getTemplateTextForId(selectedTemplate.id, selectedTemplate.templateKey);
       
       const { data, error } = await supabase.functions.invoke("ai-assistant", {
         body: {
@@ -324,7 +388,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
       {/* Templates */}
       <div className="space-y-4">
         {filteredTemplates.map((template) => {
-          const templateText = getTemplateText(template.templateKey);
+          const templateText = getTemplateTextForId(template.id, template.templateKey);
           const isExpanded = expandedId === template.id;
           
           return (
