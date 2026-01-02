@@ -5,6 +5,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Validation helpers
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 255;
+}
+
+function isValidUUID(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+function sanitizeString(value: unknown, maxLength = 200): string | null {
+  if (typeof value !== 'string') return null;
+  return value.trim().slice(0, maxLength);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -49,23 +63,69 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { action, userId, email, password, fullName } = await req.json();
-
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "User ID required" }), {
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log(`Admin ${caller.email} performing action: ${action} on user: ${userId}`);
+    if (typeof body !== 'object' || body === null) {
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const rawBody = body as Record<string, unknown>;
+    const action = sanitizeString(rawBody.action, 20);
+    const userId = sanitizeString(rawBody.userId, 50);
+    const email = sanitizeString(rawBody.email, 255);
+    const password = sanitizeString(rawBody.password, 100);
+    const fullName = sanitizeString(rawBody.fullName, 200);
+
+    if (!userId || !isValidUUID(userId)) {
+      return new Response(JSON.stringify({ error: "Valid user ID required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!action || !['update', 'resetPassword', 'delete'].includes(action)) {
+      return new Response(JSON.stringify({ error: "Valid action required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log("Admin performing action on user");
 
     switch (action) {
       case "update": {
+        // Validate email if provided
+        if (email && !isValidEmail(email)) {
+          return new Response(JSON.stringify({ error: "Invalid email format" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         // Update auth user
         const updates: { email?: string; password?: string } = {};
         if (email) updates.email = email;
-        if (password) updates.password = password;
+        if (password) {
+          if (password.length < 6) {
+            return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          updates.password = password;
+        }
 
         if (Object.keys(updates).length > 0) {
           const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(
@@ -76,10 +136,10 @@ Deno.serve(async (req) => {
         }
 
         // Update profile
-        if (email || fullName !== undefined) {
+        if (email || fullName !== null) {
           const profileUpdates: { email?: string; full_name?: string } = {};
           if (email) profileUpdates.email = email;
-          if (fullName !== undefined) profileUpdates.full_name = fullName;
+          if (fullName !== null) profileUpdates.full_name = fullName || "";
 
           const { error: profileError } = await supabaseAdmin
             .from("profiles")
@@ -98,6 +158,13 @@ Deno.serve(async (req) => {
       case "resetPassword": {
         if (!password) {
           return new Response(JSON.stringify({ error: "Password required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        if (password.length < 6) {
+          return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -138,7 +205,7 @@ Deno.serve(async (req) => {
         });
     }
   } catch (error) {
-    console.error("Error in update-user function:", error);
+    console.error("Error in update-user function");
     const message = error instanceof Error ? error.message : "Internal server error";
     return new Response(
       JSON.stringify({ error: message }),
