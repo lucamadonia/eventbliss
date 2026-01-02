@@ -478,6 +478,204 @@ const DEFAULT_SETTINGS: {
   },
 };
 
+// =============================================================================
+// MESSAGE TEMPLATES BY EVENT TYPE AND LOCALE
+// =============================================================================
+interface MessageTemplateConfig {
+  event_id: string;
+  template_key: string;
+  title: string;
+  emoji_prefix: string;
+  content_template: string;
+  sort_order: number;
+  locale: string;
+}
+
+type EventType = 'bachelor' | 'bachelorette' | 'birthday' | 'trip' | 'other';
+
+// Localized message templates per event type
+const MESSAGE_TEMPLATES: Record<string, Record<EventType, {
+  kickoff: string;
+  budget_poll: string;
+  accommodation: string;
+  packing_list: string;
+  travel_info: string;
+  countdown: string;
+  gifts: string;
+  motivation: string;
+  payment: string;
+  date_locked: string;
+}>> = {
+  de: {
+    bachelor: {
+      kickoff: `Hey Männer! 🎉\n\nEs ist soweit - wir planen den JGA für {{honoree_name}}! 🥳\n\nDamit wir das perfekte Event organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{link}}\n\n🔑 Zugangscode: {{code}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Reiseziel-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 🚀`,
+      budget_poll: `Männer, damit keiner am Ende pleite ist – was darf der Spaß kosten (pro Person)?\n\n🔘 bis 100 € – Team Sparfuchs\n🔘 150–200 € – Team realistisch\n🔘 250 €+ – Team Eskalation\n\nBitte ehrlich stimmen!`,
+      accommodation: `Wir brauchen ein Bett – oder wenigstens einen Boden.\n\nLieber:\n🔘 Hotel (bequem, aber teurer)\n🔘 Airbnb (mehr Platz & Chaos)\n🔘 Hostel (weniger Komfort, mehr Abenteuer)\n\nWer mit einer Luftmatratze glücklich wird – einfach „Ich bin flexibel" schreiben.`,
+      packing_list: `Jungs, bitte einpacken:\n✅ Ausweis\n✅ Bargeld\n✅ Handy & Ladegerät\n✅ Kopfschmerztabletten (ihr wisst wieso)\n✅ Wechselshirt (für alle Fälle)\n✅ gute Laune`,
+      travel_info: `Anreiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt mit wem? Bitte in die Gruppe schreiben:\n„Fahre selbst + Platz für X Leute"\noder\n„Suche Mitfahrgelegenheit aus [Ort]"`,
+      countdown: `Männer!\nNoch 3 Tage bis zum JGA für {{honoree_name}}. Jetzt nochmal kurz checken:\n✅ Geld überwiesen\n✅ Outfit klar\n✅ Zimmerverteilung verstanden\n✅ Gruppe gemutet – sonst wird der Chat wild\n\nDer Countdown läuft… und keiner kommt raus!`,
+      gifts: `Wer bringt was für {{honoree_name}}?\n🔹 Eine peinliche Aufgabe\n🔹 Ein Geschenk mit Erinnerungswert\n🔹 Ein Shot aus seiner Vergangenheit\n\nBitte kurz in die Gruppe schreiben – damit es nicht 5 Flachmänner und kein Plan gibt 😅`,
+      motivation: `Jungs, ab jetzt wird nicht mehr diskutiert – sondern eskaliert.\nJeder hat heute eine Aufgabe:\n🔸 Spaß haben\n🔸 Bräutigam feiern\n🔸 Nicht verloren gehen\n🔸 Und: Wer meckert, muss 'nen Shot trinken 🍻`,
+      payment: `Kleines Finanz-Update:\nBitte überweist bis {{deadline}} auf folgendes Konto/Link:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nOhne Moos = kein Los. Wer nicht zahlt, wird mit Karaoke bestraft. 😬`,
+      date_locked: `Der Termin steht!\n\n📅 {{locked_date}}\n\nBitte alle vormerken und keine Ausreden mehr! 🎉`,
+    },
+    bachelorette: {
+      kickoff: `Hey Mädels! 🎉\n\nEs ist soweit - wir planen den JGA für {{honoree_name}}! 👰✨\n\nDamit wir das perfekte Event organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{link}}\n\n🔑 Zugangscode: {{code}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Reiseziel-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 💕`,
+      budget_poll: `Ladies, damit keiner am Ende pleite ist – was darf der Spaß kosten (pro Person)?\n\n🔘 bis 100 € – Team Sparfuchs\n🔘 150–200 € – Team realistisch\n🔘 250 €+ – Team Eskalation\n\nBitte ehrlich stimmen! 💖`,
+      accommodation: `Wir brauchen ein Bett – oder wenigstens einen Boden.\n\nLieber:\n🔘 Hotel (bequem, aber teurer)\n🔘 Airbnb (mehr Platz & Girls Night)\n🔘 Hostel (weniger Komfort, mehr Abenteuer)\n\nWer mit einer Luftmatratze glücklich wird – einfach „Ich bin flexibel" schreiben. 💅`,
+      packing_list: `Mädels, bitte einpacken:\n✅ Ausweis\n✅ Bargeld\n✅ Handy & Ladegerät\n✅ Party-Outfit\n✅ Bequeme Schuhe (für später)\n✅ gute Laune 💄✨`,
+      travel_info: `Anreiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt mit wem? Bitte in die Gruppe schreiben:\n„Fahre selbst + Platz für X Mädels"\noder\n„Suche Mitfahrgelegenheit aus [Ort]" 🚗`,
+      countdown: `Ladies!\nNoch 3 Tage bis zum JGA für {{honoree_name}}. Jetzt nochmal kurz checken:\n✅ Geld überwiesen\n✅ Outfit klar\n✅ Zimmerverteilung verstanden\n✅ Accessoires für die Braut eingepackt\n\nDer Countdown läuft! 💍✨`,
+      gifts: `Wer bringt was für {{honoree_name}}?\n💝 Ein peinliches Accessoire\n💝 Ein Geschenk mit Erinnerungswert\n💝 Eine lustige Aufgabe\n\nBitte kurz in die Gruppe schreiben – damit wir nichts vergessen! 🎀`,
+      motivation: `Mädels, ab jetzt wird gefeiert!\nJede hat heute eine Aufgabe:\n🌸 Spaß haben\n🌸 Die Braut feiern\n🌸 Zusammenbleiben\n🌸 Und: Wer meckert, kauft 'ne Runde Prosecco 🥂`,
+      payment: `Kleines Finanz-Update:\nBitte überweist bis {{deadline}} auf folgendes Konto/Link:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nOhne Moos = kein Los. Wer nicht zahlt, muss Karaoke singen! 🎤`,
+      date_locked: `Der Termin steht!\n\n📅 {{locked_date}}\n\nBitte alle vormerken und keine Ausreden mehr! 🎉💕`,
+    },
+    birthday: {
+      kickoff: `Hey Leute! 🎉\n\nWir planen eine Überraschungsfeier für {{honoree_name}}! 🎂\n\nDamit wir das perfekte Event organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{link}}\n\n🔑 Zugangscode: {{code}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Location-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 🚀`,
+      budget_poll: `Damit keiner am Ende pleite ist – was darf die Feier kosten (pro Person)?\n\n🔘 bis 50 € – Klein aber fein\n🔘 50–100 € – Realistisch\n🔘 100 €+ – Richtig feiern\n\nBitte ehrlich stimmen!`,
+      accommodation: `Falls wir länger feiern oder weiter weg fahren – wo übernachten?\n\n🔘 Hotel\n🔘 Airbnb\n🔘 Bei jemandem zu Hause\n🔘 Keine Übernachtung nötig`,
+      packing_list: `Bitte mitbringen:\n✅ Geschenk für {{honoree_name}}\n✅ Gute Laune\n✅ Bequeme Kleidung\n✅ Evtl. Handyladegerät\n✅ Bargeld für spontane Ausgaben`,
+      travel_info: `Anreiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt mit wem? Bitte in die Gruppe schreiben:\n„Fahre selbst + Platz für X Leute"\noder\n„Suche Mitfahrgelegenheit aus [Ort]"`,
+      countdown: `Nur noch 3 Tage bis zur Feier für {{honoree_name}}! 🎂\n\n✅ Geschenk besorgt?\n✅ Outfit klar?\n✅ Treffpunkt notiert?\n\nWir sehen uns bald! 🎉`,
+      gifts: `Wer bringt was für {{honoree_name}}?\n🎁 Hauptgeschenk (Sammelaktion?)\n🎁 Karte unterschreiben\n🎁 Deko mitbringen\n\nBitte kurz in die Gruppe schreiben, damit wir koordiniert sind!`,
+      motivation: `Heute feiern wir {{honoree_name}}!\n\n🎈 Spaß haben\n🎈 Das Geburtstagskind feiern\n🎈 Gute Stimmung verbreiten\n\nLos geht's! 🎉`,
+      payment: `Kurzes Finanz-Update:\nBitte überweist bis {{deadline}} für Geschenk/Location/Essen:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nDanke euch! 🙏`,
+      date_locked: `Der Termin steht!\n\n📅 {{locked_date}}\n\nBitte alle vormerken – {{honoree_name}} wird sich riesig freuen! 🎂🎉`,
+    },
+    trip: {
+      kickoff: `Hey Leute! 🌍\n\nWir planen einen gemeinsamen Trip! ✈️\n\nDamit wir das perfekte Abenteuer organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{link}}\n\n🔑 Zugangscode: {{code}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Reiseziel-Wahl\n\nJe schneller alle antworten, desto schneller können wir buchen! 🚀`,
+      budget_poll: `Damit wir planen können – was darf der Trip kosten (pro Person, inkl. Unterkunft)?\n\n🔘 bis 200 € – Budget-Reise\n🔘 200–500 € – Mittelklasse\n🔘 500–1000 € – Komfortabel\n🔘 1000 €+ – Luxus\n\nBitte ehrlich stimmen!`,
+      accommodation: `Wo übernachten wir am liebsten?\n\n🔘 Hotel (bequem)\n🔘 Airbnb (gemeinsame Unterkunft)\n🔘 Hostel (günstig & social)\n🔘 Camping (Abenteuer)\n\nSchreibt eure Präferenz!`,
+      packing_list: `Packliste für den Trip:\n✅ Ausweis/Reisepass\n✅ Handy & Ladegerät\n✅ Powerbank\n✅ Wetterangepasste Kleidung\n✅ Bequeme Schuhe\n✅ Kamera\n✅ Gute Laune 🌟`,
+      travel_info: `Reiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt/fliegt mit wem?\nBitte in die Gruppe schreiben:\n„Fahre selbst + Platz für X Leute"\noder\n„Suche Reisepartner von [Ort]"`,
+      countdown: `Nur noch 3 Tage bis zum Trip! 🌍\n\n✅ Koffer gepackt?\n✅ Tickets gesichert?\n✅ Reisedokumente bereit?\n✅ Unterkunft bestätigt?\n\nDer Countdown läuft! ✈️`,
+      gifts: `Organisatorisches für die Gruppe:\n📋 Wer übernimmt welche Buchung?\n📋 Gemeinsame Kasse einrichten?\n📋 Notfallnummern austauschen\n\nBitte kurz abstimmen!`,
+      motivation: `Es geht los! 🌍✈️\n\nWas wir heute vorhaben:\n🗺️ Abenteuer erleben\n🗺️ Neue Orte entdecken\n🗺️ Gemeinsam Spaß haben\n\nAuf geht's! 🚀`,
+      payment: `Finanz-Update für den Trip:\nBitte überweist bis {{deadline}} auf folgendes Konto/Link:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nDanke fürs prompte Überweisen! 🙏`,
+      date_locked: `Der Reisetermin steht!\n\n📅 {{locked_date}}\n\nBitte alle Urlaub nehmen und Tickets buchen! ✈️🌍`,
+    },
+    other: {
+      kickoff: `Hey zusammen! 🎉\n\nWir planen ein gemeinsames Event!\n\nDamit wir das perfekt organisieren können, brauchen wir eure Hilfe!\n\n👉 Bitte füllt diese kurze Umfrage aus:\n{{link}}\n\n🔑 Zugangscode: {{code}}\n\nDie Umfrage dauert nur 2-3 Minuten und hilft uns bei:\n📅 Terminfindung\n💰 Budget-Planung\n🎯 Aktivitäten-Auswahl\n📍 Location-Wahl\n\nJe schneller alle antworten, desto schneller können wir loslegen! 🚀`,
+      budget_poll: `Was darf das Event kosten (pro Person)?\n\n🔘 bis 50 €\n🔘 50–100 €\n🔘 100–200 €\n🔘 200 €+\n\nBitte ehrlich stimmen!`,
+      accommodation: `Brauchen wir eine Übernachtung?\n\n🔘 Hotel\n🔘 Airbnb\n🔘 Keine Übernachtung nötig`,
+      packing_list: `Bitte mitbringen:\n✅ Gute Laune\n✅ Handy & Ladegerät\n✅ Bargeld\n✅ Bequeme Kleidung`,
+      travel_info: `Anreiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt mit wem? Bitte in die Gruppe schreiben!`,
+      countdown: `Nur noch 3 Tage! 🎉\n\n✅ Alles vorbereitet?\n✅ Treffpunkt klar?\n\nWir sehen uns bald!`,
+      gifts: `Organisatorisches:\n📋 Wer bringt was mit?\n📋 Wer übernimmt was?\n\nBitte kurz abstimmen!`,
+      motivation: `Heute ist es soweit! 🎉\n\nEinfach Spaß haben und die Zeit genießen!`,
+      payment: `Finanz-Update:\nBitte überweist bis {{deadline}}:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nDanke! 🙏`,
+      date_locked: `Der Termin steht!\n\n📅 {{locked_date}}\n\nBitte alle vormerken! 🎉`,
+    },
+  },
+  en: {
+    bachelor: {
+      kickoff: `Hey guys! 🎉\n\nIt's time to plan the bachelor party for {{honoree_name}}! 🥳\n\nTo organize the perfect event, we need your help!\n\n👉 Please fill out this quick survey:\n{{link}}\n\n🔑 Access code: {{code}}\n\nThe survey takes only 2-3 minutes and helps us with:\n📅 Finding the right date\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe faster everyone responds, the faster we can get started! 🚀`,
+      budget_poll: `Guys, so nobody goes broke – what should the party cost per person?\n\n🔘 up to €100 – Budget team\n🔘 €150–200 – Realistic team\n🔘 €250+ – Go big team\n\nPlease vote honestly!`,
+      accommodation: `We need a place to sleep – or at least a floor.\n\nPreference:\n🔘 Hotel (comfortable, pricier)\n🔘 Airbnb (more space & chaos)\n🔘 Hostel (less comfort, more adventure)\n\nFlexible? Just write "I'm easy"`,
+      packing_list: `Guys, please pack:\n✅ ID\n✅ Cash\n✅ Phone & charger\n✅ Headache pills (you know why)\n✅ Change of clothes\n✅ Good vibes`,
+      travel_info: `Travel plan:\nMeeting point: {{meeting_point}}\nTime: {{meeting_time}}\n\nWho's riding with whom? Please share in the group:\n"Driving + space for X people"\nor\n"Need a ride from [location]"`,
+      countdown: `Guys!\n3 days until the bachelor party for {{honoree_name}}. Quick checklist:\n✅ Money transferred\n✅ Outfit ready\n✅ Room assignments clear\n✅ Group chat muted – things might get wild\n\nCountdown is on!`,
+      gifts: `Who's bringing what for {{honoree_name}}?\n🔹 An embarrassing task\n🔹 A memorable gift\n🔹 Something from his past\n\nPlease share in the group! 😅`,
+      motivation: `Guys, time to party!\nToday's mission:\n🔸 Have fun\n🔸 Celebrate the groom\n🔸 Don't get lost\n🔸 Complainers take a shot 🍻`,
+      payment: `Quick finance update:\nPlease transfer by {{deadline}} to:\n{{payment_link}}\n\nAmount: {{amount}}\n\nNo money = no fun. Non-payers get karaoke duty! 😬`,
+      date_locked: `The date is set!\n\n📅 {{locked_date}}\n\nMark your calendars – no excuses! 🎉`,
+    },
+    bachelorette: {
+      kickoff: `Hey ladies! 🎉\n\nIt's time to plan the bachelorette party for {{honoree_name}}! 👰✨\n\nTo organize the perfect event, we need your help!\n\n👉 Please fill out this quick survey:\n{{link}}\n\n🔑 Access code: {{code}}\n\nThe survey takes only 2-3 minutes! 💕`,
+      budget_poll: `Ladies, what should the party cost per person?\n\n🔘 up to €100 – Budget-friendly\n🔘 €150–200 – Realistic\n🔘 €250+ – Go all out\n\nPlease vote honestly! 💖`,
+      accommodation: `Where should we stay?\n\n🔘 Hotel (comfortable)\n🔘 Airbnb (girls night vibes)\n🔘 Hostel (adventure mode)\n\nFlexible? Let us know! 💅`,
+      packing_list: `Ladies, please pack:\n✅ ID\n✅ Cash\n✅ Phone & charger\n✅ Party outfit\n✅ Comfy shoes (for later)\n✅ Good vibes 💄✨`,
+      travel_info: `Travel plan:\nMeeting point: {{meeting_point}}\nTime: {{meeting_time}}\n\nWho's riding with whom? Share in the group! 🚗`,
+      countdown: `Ladies!\n3 days until the bachelorette for {{honoree_name}}!\n✅ Money transferred\n✅ Outfit ready\n✅ Accessories for the bride packed\n\nCountdown is on! 💍✨`,
+      gifts: `Who's bringing what for {{honoree_name}}?\n💝 Funny accessories\n💝 Memorable gift\n💝 Fun challenges\n\nShare in the group! 🎀`,
+      motivation: `Ladies, let's celebrate!\n🌸 Have fun\n🌸 Celebrate the bride\n🌸 Stick together\n🌸 Complainers buy prosecco 🥂`,
+      payment: `Finance update:\nPlease transfer by {{deadline}} to:\n{{payment_link}}\n\nAmount: {{amount}}\n\nNon-payers get karaoke! 🎤`,
+      date_locked: `The date is set!\n\n📅 {{locked_date}}\n\nMark your calendars! 🎉💕`,
+    },
+    birthday: {
+      kickoff: `Hey everyone! 🎉\n\nWe're planning a surprise party for {{honoree_name}}! 🎂\n\n👉 Please fill out this quick survey:\n{{link}}\n\n🔑 Access code: {{code}}\n\nThe survey takes only 2-3 minutes! 🚀`,
+      budget_poll: `What should the party cost per person?\n\n🔘 up to €50\n🔘 €50–100\n🔘 €100+\n\nPlease vote honestly!`,
+      accommodation: `Do we need overnight accommodation?\n\n🔘 Hotel\n🔘 Airbnb\n🔘 Someone's place\n🔘 Not needed`,
+      packing_list: `Please bring:\n✅ Gift for {{honoree_name}}\n✅ Good vibes\n✅ Comfy clothes\n✅ Cash for extras`,
+      travel_info: `Travel plan:\nMeeting point: {{meeting_point}}\nTime: {{meeting_time}}\n\nShare your travel plans in the group!`,
+      countdown: `3 days until {{honoree_name}}'s party! 🎂\n✅ Gift ready?\n✅ Outfit picked?\n\nSee you soon! 🎉`,
+      gifts: `Who's bringing what for {{honoree_name}}?\n🎁 Main gift (group collection?)\n🎁 Sign the card\n🎁 Bring decorations\n\nCoordinate in the group!`,
+      motivation: `Today we celebrate {{honoree_name}}!\n\n🎈 Have fun\n🎈 Celebrate the birthday person\n🎈 Spread good vibes\n\nLet's go! 🎉`,
+      payment: `Finance update:\nPlease transfer by {{deadline}}:\n{{payment_link}}\n\nAmount: {{amount}}\n\nThanks! 🙏`,
+      date_locked: `The date is set!\n\n📅 {{locked_date}}\n\n{{honoree_name}} will be so happy! 🎂🎉`,
+    },
+    trip: {
+      kickoff: `Hey everyone! 🌍\n\nWe're planning a group trip! ✈️\n\n👉 Please fill out this quick survey:\n{{link}}\n\n🔑 Access code: {{code}}\n\nThe survey takes only 2-3 minutes! 🚀`,
+      budget_poll: `What should the trip cost per person (incl. accommodation)?\n\n🔘 up to €200 – Budget\n🔘 €200–500 – Mid-range\n🔘 €500–1000 – Comfortable\n🔘 €1000+ – Luxury\n\nVote honestly!`,
+      accommodation: `Where should we stay?\n\n🔘 Hotel\n🔘 Airbnb\n🔘 Hostel\n🔘 Camping\n\nShare your preference!`,
+      packing_list: `Packing list:\n✅ ID/Passport\n✅ Phone & charger\n✅ Power bank\n✅ Weather-appropriate clothes\n✅ Comfy shoes\n✅ Camera\n✅ Good vibes 🌟`,
+      travel_info: `Travel plan:\nMeeting point: {{meeting_point}}\nTime: {{meeting_time}}\n\nWho's traveling with whom? Share in the group!`,
+      countdown: `3 days until our trip! 🌍\n\n✅ Packed?\n✅ Tickets ready?\n✅ Documents set?\n\nCountdown is on! ✈️`,
+      gifts: `Organizational stuff:\n📋 Who's handling which booking?\n📋 Set up a group fund?\n📋 Share emergency contacts\n\nPlease coordinate!`,
+      motivation: `Let's go! 🌍✈️\n\n🗺️ Experience adventures\n🗺️ Discover new places\n🗺️ Have fun together\n\nHere we go! 🚀`,
+      payment: `Trip finance update:\nPlease transfer by {{deadline}}:\n{{payment_link}}\n\nAmount: {{amount}}\n\nThanks! 🙏`,
+      date_locked: `The travel date is set!\n\n📅 {{locked_date}}\n\nBook your time off and tickets! ✈️🌍`,
+    },
+    other: {
+      kickoff: `Hey everyone! 🎉\n\nWe're planning an event together!\n\n👉 Please fill out this quick survey:\n{{link}}\n\n🔑 Access code: {{code}}\n\nThe survey takes only 2-3 minutes! 🚀`,
+      budget_poll: `What should the event cost per person?\n\n🔘 up to €50\n🔘 €50–100\n🔘 €100–200\n🔘 €200+\n\nVote honestly!`,
+      accommodation: `Do we need accommodation?\n\n🔘 Hotel\n🔘 Airbnb\n🔘 Not needed`,
+      packing_list: `Please bring:\n✅ Good vibes\n✅ Phone & charger\n✅ Cash\n✅ Comfy clothes`,
+      travel_info: `Travel plan:\nMeeting point: {{meeting_point}}\nTime: {{meeting_time}}\n\nShare in the group!`,
+      countdown: `3 days to go! 🎉\n\n✅ Ready?\n✅ Meeting point clear?\n\nSee you soon!`,
+      gifts: `Organizational stuff:\n📋 Who's bringing what?\n📋 Who's handling what?\n\nPlease coordinate!`,
+      motivation: `Today's the day! 🎉\n\nHave fun and enjoy!`,
+      payment: `Finance update:\nPlease transfer by {{deadline}}:\n{{payment_link}}\n\nAmount: {{amount}}\n\nThanks! 🙏`,
+      date_locked: `The date is set!\n\n📅 {{locked_date}}\n\nMark your calendars! 🎉`,
+    },
+  },
+};
+
+function getMessageTemplates(
+  eventId: string,
+  eventType: string,
+  locale: string,
+  honoreeName: string
+): MessageTemplateConfig[] {
+  // Fallback to 'en' if locale not found, and to 'other' if event type not found
+  const localeTemplates = MESSAGE_TEMPLATES[locale] || MESSAGE_TEMPLATES['en'] || MESSAGE_TEMPLATES['de'];
+  const eventTemplates = localeTemplates[eventType as EventType] || localeTemplates['other'];
+  
+  const templateTitles: Record<string, { title: string; emoji: string }> = {
+    kickoff: { title: 'Kickoff Message', emoji: '🎉' },
+    budget_poll: { title: 'Budget Poll', emoji: '💸' },
+    accommodation: { title: 'Accommodation Poll', emoji: '🏨' },
+    packing_list: { title: 'Packing List', emoji: '🧳' },
+    travel_info: { title: 'Travel Info', emoji: '🗺️' },
+    countdown: { title: 'Countdown Reminder', emoji: '📢' },
+    gifts: { title: 'Gift Coordination', emoji: '🎁' },
+    motivation: { title: 'Motivation', emoji: '🎤' },
+    payment: { title: 'Payment Request', emoji: '🧾' },
+    date_locked: { title: 'Date Confirmed', emoji: '✅' },
+  };
+
+  const templates: MessageTemplateConfig[] = [];
+  let sortOrder = 1;
+
+  for (const [key, content] of Object.entries(eventTemplates)) {
+    const info = templateTitles[key];
+    if (info && content) {
+      templates.push({
+        event_id: eventId,
+        template_key: key,
+        title: info.title,
+        emoji_prefix: info.emoji,
+        content_template: content.replace(/\{\{honoree_name\}\}/g, honoreeName),
+        sort_order: sortOrder++,
+        locale: locale,
+      });
+    }
+  }
+
+  return templates;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -642,103 +840,12 @@ serve(async (req) => {
       }
     }
 
-    // Create default message templates
-    const defaultTemplates = [
-      {
-        event_id: event.id,
-        template_key: "kickoff",
-        title: "Kickoff Message",
-        emoji_prefix: "🎉",
-        content_template: `Hey Männer!\nEiner aus unserer Runde sagt bald offiziell „Ja" – höchste Zeit, gemeinsam einen richtig guten JGA auf die Beine zu stellen.\n\n👉 Bitte füllt die Umfrage aus: {{link}}\nCode: {{code}}\n\nZiel: Ein entspannter, gut geplanter Abend mit allem, was dazugehört.`,
-        sort_order: 1,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "budget_poll",
-        title: "Budget Poll",
-        emoji_prefix: "💸",
-        content_template: `Männer, damit keiner am Ende pleite ist – was darf der Spaß kosten (pro Person)?\n\n🔘 bis 100 € – Team Sparfuchs\n🔘 150–200 € – Team realistisch\n🔘 250 €+ – Team Eskalation\n\nBitte ehrlich stimmen!`,
-        sort_order: 2,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "accommodation",
-        title: "Accommodation Poll",
-        emoji_prefix: "🏨",
-        content_template: `Wir brauchen ein Bett – oder wenigstens einen Boden.\n\nLieber:\n🔘 Hotel (bequem, aber teurer)\n🔘 Airbnb (mehr Platz & Chaos)\n🔘 Hostel (weniger Komfort, mehr Abenteuer)\n\nWer mit einer Luftmatratze glücklich wird – einfach „Ich bin flexibel" schreiben.`,
-        sort_order: 3,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "packing_list",
-        title: "Packing List",
-        emoji_prefix: "🧳",
-        content_template: `Jungs, bitte einpacken:\n✅ Ausweis\n✅ Bargeld\n✅ Handy & Ladegerät\n✅ Kopfschmerztabletten (ihr wisst wieso)\n✅ Wechselshirt (für alle Fälle)\n✅ gute Laune`,
-        sort_order: 4,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "travel_info",
-        title: "Travel Info",
-        emoji_prefix: "🗺️",
-        content_template: `Anreiseplan:\nTreffpunkt: {{meeting_point}}\nUhrzeit: {{meeting_time}}\n\nWer fährt mit wem? Bitte in die Gruppe schreiben:\n„Fahre selbst + Platz für X Leute"\noder\n„Suche Mitfahrgelegenheit aus [Ort]"`,
-        sort_order: 5,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "countdown",
-        title: "Countdown Reminder",
-        emoji_prefix: "📢",
-        content_template: `Männer!\nNoch 3 Tage bis zum JGA. Jetzt nochmal kurz checken:\n✅ Geld überwiesen\n✅ Outfit klar\n✅ Zimmerverteilung verstanden\n✅ Gruppe gemutet – sonst wird der Chat wild\n\nDer Countdown läuft… und keiner kommt raus!`,
-        sort_order: 6,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "gifts",
-        title: "Gift Coordination",
-        emoji_prefix: "🎁",
-        content_template: `Wer bringt was für {{honoree_name}}?\n🔹 Eine peinliche Aufgabe\n🔹 Ein Geschenk mit Erinnerungswert\n🔹 Ein Shot aus seiner Vergangenheit\n\nBitte kurz in die Gruppe schreiben – damit es nicht 5 Flachmänner und kein Plan gibt 😅`,
-        sort_order: 7,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "motivation",
-        title: "Motivation",
-        emoji_prefix: "🎤",
-        content_template: `Jungs, ab jetzt wird nicht mehr diskutiert – sondern eskaliert.\nJeder hat heute eine Aufgabe:\n🔸 Spaß haben\n🔸 Bräutigam feiern\n🔸 Nicht verloren gehen\n🔸 Und: Wer meckert, muss 'nen Shot trinken 🍻`,
-        sort_order: 8,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "payment",
-        title: "Payment Request",
-        emoji_prefix: "🧾",
-        content_template: `Kleines Finanz-Update:\nBitte überweist bis {{deadline}} auf folgendes Konto/Link:\n{{payment_link}}\n\nBetrag: {{amount}}\n\nOhne Moos = kein Los. Wer nicht zahlt, wird mit Karaoke bestraft. 😬`,
-        sort_order: 9,
-        locale,
-      },
-      {
-        event_id: event.id,
-        template_key: "date_locked",
-        title: "Date Confirmed",
-        emoji_prefix: "✅",
-        content_template: `Der Termin steht!\n\n📅 {{locked_date}}\n\nBitte alle vormerken und keine Ausreden mehr! 🎉`,
-        sort_order: 10,
-        locale,
-      },
-    ];
+    // Create event-type specific message templates
+    const messageTemplates = getMessageTemplates(event.id, event_type, locale, honoree_name);
 
     const { error: templatesError } = await supabase
       .from("message_templates")
-      .insert(defaultTemplates);
+      .insert(messageTemplates);
 
     if (templatesError) {
       console.error("Error creating templates:", templatesError);
