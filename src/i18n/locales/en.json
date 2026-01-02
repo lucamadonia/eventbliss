@@ -1883,5 +1883,13 @@
       "privacyRequired": "You must accept the privacy policy",
       "submitFailed": "Application could not be submitted. Please try again."
     }
+  },
+  "agencyApply": {
+    "hero": { "badge": "Agency Partnership", "title": "Become an EventBliss Partner", "description": "Earn commissions for every customer you bring to EventBliss. Exclusive benefits for event agencies." },
+    "benefits": { "commission": { "title": "Attractive Commissions", "description": "Up to 20% per booking through your referral" }, "tracking": { "title": "Reference Tracking", "description": "Automatic attribution via unique code" }, "vouchers": { "title": "Exclusive Vouchers", "description": "Special discount codes for your customers" }, "support": { "title": "Partner Support", "description": "Dedicated contact for all questions" } },
+    "stats": { "agencies": "Partner Agencies", "commissionRate": "Max. Commission", "payouts": "Paid Out" },
+    "form": { "title": "Apply Now", "agencyMode": "Agency Type", "existingAgency": "Select agency from directory", "newAgency": "Register new agency", "searchAgency": "Search agency...", "noAgenciesFound": "No agencies found", "agencyName": "Agency Name", "city": "City", "country": "Country", "contactEmail": "Contact Email", "phone": "Phone", "website": "Website", "motivation": "Why do you want to become a partner?", "motivationPlaceholder": "Tell us about your agency and why a partnership would be beneficial for both sides...", "expectedReferrals": "Expected monthly referrals", "selectOption": "Please select", "payoutMethod": "Preferred Payout", "bankTransfer": "Bank Transfer", "privacy": "I accept the", "submit": "Submit Application", "submitting": "Submitting..." },
+    "success": { "title": "Application Submitted!", "description": "Thank you for your interest in a partnership.", "nextSteps": "We will review your application and get back to you within 48 hours.", "backToHome": "Back to Home" },
+    "errors": { "submitFailed": "Error submitting the application" }
   }
 }

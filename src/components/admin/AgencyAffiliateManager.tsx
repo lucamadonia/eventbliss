@@ -8,10 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
   Building2, Search, Plus, Check, X, ExternalLink, 
-  Phone, Mail, MapPin, Percent, Euro, TrendingUp, Users
+  Phone, Mail, MapPin, Percent, Euro, TrendingUp, Users, Ticket, Filter
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENCIES as allAgencies, type Agency } from "@/lib/agencies-data";
@@ -39,7 +40,12 @@ const AgencyAffiliateManager = () => {
   const [agencyAffiliates, setAgencyAffiliates] = useState<AgencyAffiliate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showVoucherDialog, setShowVoucherDialog] = useState(false);
+  const [selectedAgencyForVoucher, setSelectedAgencyForVoucher] = useState<AgencyAffiliate | null>(null);
+  const [availableVouchers, setAvailableVouchers] = useState<Array<{id: string; code: string; discount_type: string; discount_value: number | null}>>([]);
+  const [selectedVoucherId, setSelectedVoucherId] = useState("");
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
   const [commissionRate, setCommissionRate] = useState("10");
   const [contactEmail, setContactEmail] = useState("");
@@ -47,7 +53,21 @@ const AgencyAffiliateManager = () => {
 
   useEffect(() => {
     fetchAgencyAffiliates();
+    fetchVouchers();
   }, []);
+
+  const fetchVouchers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("vouchers")
+        .select("id, code, discount_type, discount_value")
+        .eq("is_active", true);
+      if (error) throw error;
+      setAvailableVouchers(data || []);
+    } catch (error) {
+      console.error("Error fetching vouchers:", error);
+    }
+  };
 
   const fetchAgencyAffiliates = async () => {
     setIsLoading(true);
@@ -102,12 +122,45 @@ const AgencyAffiliateManager = () => {
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from("agency_affiliates" as never)
-        .update({ status, is_verified: status === "active" } as never)
-        .eq("id", id as never);
+      // Find the agency affiliate
+      const affiliate = agencyAffiliates.find(a => a.id === id);
+      
+      if (status === "active" && affiliate && !affiliate.affiliate_id) {
+        // Create an affiliates entry first
+        const { data: newAffiliate, error: affiliateError } = await supabase
+          .from("affiliates")
+          .insert({
+            contact_name: affiliate.agency_name,
+            email: affiliate.contact_email || "",
+            company_name: affiliate.agency_name,
+            status: "active",
+            commission_rate: affiliate.commission_rate,
+            commission_type: affiliate.commission_type as "percentage" | "fixed",
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (affiliateError) throw affiliateError;
+
+        // Update agency_affiliates with the new affiliate_id
+        const { error } = await supabase
+          .from("agency_affiliates" as never)
+          .update({ 
+            status, 
+            is_verified: true,
+            affiliate_id: newAffiliate.id 
+          } as never)
+          .eq("id", id as never);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("agency_affiliates" as never)
+          .update({ status, is_verified: status === "active" } as never)
+          .eq("id", id as never);
+
+        if (error) throw error;
+      }
 
       toast.success(t("admin.agencyAffiliate.statusUpdated", "Status aktualisiert"));
       fetchAgencyAffiliates();
@@ -115,6 +168,47 @@ const AgencyAffiliateManager = () => {
       console.error("Error updating status:", error);
       toast.error(t("admin.agencyAffiliate.statusError", "Fehler beim Aktualisieren"));
     }
+  };
+
+  const handleAssignVoucher = async () => {
+    if (!selectedAgencyForVoucher || !selectedVoucherId) return;
+    
+    if (!selectedAgencyForVoucher.affiliate_id) {
+      toast.error(t("admin.agencyAffiliate.noAffiliateId", "Agentur muss zuerst genehmigt werden"));
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from("affiliate_vouchers")
+        .insert({
+          affiliate_id: selectedAgencyForVoucher.affiliate_id,
+          voucher_id: selectedVoucherId,
+        });
+
+      if (error) throw error;
+
+      toast.success(t("admin.agencyAffiliate.voucherAssigned", "Voucher zugewiesen"));
+      setShowVoucherDialog(false);
+      setSelectedAgencyForVoucher(null);
+      setSelectedVoucherId("");
+    } catch (error: any) {
+      console.error("Error assigning voucher:", error);
+      if (error.message?.includes("duplicate")) {
+        toast.error(t("admin.agencyAffiliate.voucherAlreadyAssigned", "Voucher bereits zugewiesen"));
+      } else {
+        toast.error(t("admin.agencyAffiliate.voucherError", "Fehler beim Zuweisen"));
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const openVoucherDialog = (agency: AgencyAffiliate) => {
+    setSelectedAgencyForVoucher(agency);
+    setSelectedVoucherId("");
+    setShowVoucherDialog(true);
   };
 
   // Get agencies not yet registered as affiliates
@@ -125,6 +219,12 @@ const AgencyAffiliateManager = () => {
     a => a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
          a.city.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Filter agency affiliates by status
+  const filteredAgencyAffiliates = agencyAffiliates.filter(a => {
+    if (statusFilter === "all") return true;
+    return a.status === statusFilter;
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -228,16 +328,36 @@ const AgencyAffiliateManager = () => {
       {/* Agency Affiliates List */}
       <Card>
         <CardHeader>
-          <CardTitle>{t("admin.agencyAffiliate.registeredAgencies", "Registrierte Agenturen")}</CardTitle>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <CardTitle>{t("admin.agencyAffiliate.registeredAgencies", "Registrierte Agenturen")}</CardTitle>
+            <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+              <TabsList>
+                <TabsTrigger value="all" className="gap-1">
+                  <Filter className="h-3 w-3" />
+                  {t("common.all", "Alle")}
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="gap-1">
+                  {t("admin.agencyAffiliate.pending", "Ausstehend")}
+                  {agencyAffiliates.filter(a => a.status === "pending").length > 0 && (
+                    <Badge variant="secondary" className="ml-1 h-5 px-1.5">
+                      {agencyAffiliates.filter(a => a.status === "pending").length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="active">{t("admin.agencyAffiliate.active", "Aktiv")}</TabsTrigger>
+                <TabsTrigger value="suspended">{t("admin.agencyAffiliate.suspended", "Gesperrt")}</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </CardHeader>
         <CardContent>
-          {agencyAffiliates.length === 0 ? (
+          {filteredAgencyAffiliates.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {t("admin.agencyAffiliate.noAgencies", "Noch keine Agentur-Partner registriert")}
             </div>
           ) : (
             <div className="space-y-3">
-              {agencyAffiliates.map((affiliate) => (
+              {filteredAgencyAffiliates.map((affiliate) => (
                 <div
                   key={affiliate.id}
                   className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors gap-4"
@@ -279,6 +399,7 @@ const AgencyAffiliateManager = () => {
                           variant="outline"
                           className="h-8"
                           onClick={() => handleUpdateStatus(affiliate.id, "active")}
+                          title={t("admin.agencyAffiliate.approve", "Genehmigen")}
                         >
                           <Check className="h-4 w-4 text-success" />
                         </Button>
@@ -287,10 +408,23 @@ const AgencyAffiliateManager = () => {
                           variant="outline"
                           className="h-8"
                           onClick={() => handleUpdateStatus(affiliate.id, "suspended")}
+                          title={t("admin.agencyAffiliate.reject", "Ablehnen")}
                         >
                           <X className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
+                    )}
+                    
+                    {affiliate.status === "active" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 gap-1"
+                        onClick={() => openVoucherDialog(affiliate)}
+                      >
+                        <Ticket className="h-4 w-4" />
+                        {t("admin.agencyAffiliate.assignVoucher", "Voucher")}
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -390,6 +524,59 @@ const AgencyAffiliateManager = () => {
               disabled={!selectedAgency || isSaving}
             >
               {isSaving ? t("common.saving", "Speichern...") : t("admin.agencyAffiliate.addPartner", "Partner hinzufügen")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Voucher Assignment Dialog */}
+      <Dialog open={showVoucherDialog} onOpenChange={setShowVoucherDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("admin.agencyAffiliate.assignVoucherTitle", "Voucher zuweisen")}</DialogTitle>
+            <DialogDescription>
+              {selectedAgencyForVoucher && (
+                <>
+                  {t("admin.agencyAffiliate.assignVoucherDesc", "Wähle einen Voucher für")} <strong>{selectedAgencyForVoucher.agency_name}</strong>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t("admin.agencyAffiliate.selectVoucher", "Voucher auswählen")}</Label>
+              <Select value={selectedVoucherId} onValueChange={setSelectedVoucherId}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("admin.agencyAffiliate.selectVoucherPlaceholder", "Voucher wählen...")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableVouchers.map((voucher) => (
+                    <SelectItem key={voucher.id} value={voucher.id}>
+                      <div className="flex items-center gap-2">
+                        <code className="text-xs font-bold">{voucher.code}</code>
+                        <span className="text-muted-foreground text-xs">
+                          {voucher.discount_type === "percentage" && `${voucher.discount_value}%`}
+                          {voucher.discount_type === "fixed" && `${voucher.discount_value}€`}
+                          {voucher.discount_type === "lifetime" && "Lifetime"}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowVoucherDialog(false)}>
+              {t("common.cancel", "Abbrechen")}
+            </Button>
+            <Button 
+              onClick={handleAssignVoucher} 
+              disabled={!selectedVoucherId || isSaving}
+            >
+              {isSaving ? t("common.saving", "Speichern...") : t("admin.agencyAffiliate.assignVoucherBtn", "Voucher zuweisen")}
             </Button>
           </DialogFooter>
         </DialogContent>
