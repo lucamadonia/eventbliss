@@ -933,37 +933,193 @@ export function timeBlockToScheduleData(timeBlock: ParsedTimeBlock) {
 
 /**
  * Parse activities response into structured format for premium display
+ * Supports multiple formats and extracts structured data
  */
 export function parseActivitiesExtended(response: string): ParsedActivitiesResponse {
-  const parsed = parseAIResponse(response);
-  
-  const activities: ParsedActivityExtended[] = parsed.activities.map((activity, index) => ({
-    ...activity,
-    number: index + 1,
-    location: undefined,
-    highlights: [],
-  }));
+  const result: ParsedActivitiesResponse = {
+    intro: '',
+    activities: [],
+    tips: [],
+    rawResponse: response,
+  };
 
-  // Try to extract highlights from descriptions
-  activities.forEach(activity => {
-    const highlightMatch = activity.description.match(/✅\s*Highlights?:?\s*([\s\S]*?)(?=\n\n|$)/i);
-    if (highlightMatch) {
-      const highlightLines = highlightMatch[1].split('\n').filter(l => l.trim().startsWith('•') || l.trim().startsWith('-'));
-      activity.highlights = highlightLines.map(l => l.replace(/^[•\-]\s*/, '').trim());
-      activity.description = activity.description.replace(highlightMatch[0], '').trim();
+  if (!response) return result;
+
+  const lines = response.split('\n');
+  let currentActivity: ParsedActivityExtended | null = null;
+  let introLines: string[] = [];
+  let foundFirstActivity = false;
+  let activityCounter = 0;
+  let inHighlights = false;
+
+  // Category emoji mapping for fallback
+  const CATEGORY_EMOJI_MAP: Record<string, string> = {
+    action: '🎯', food: '🍽️', wellness: '💆', party: '🎉',
+    sightseeing: '📸', adventure: '🏔️', culture: '🎭', nightlife: '🌃',
+    outdoor: '🏞️', sport: '⚽', relaxation: '🧘', other: '✨',
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.match(/^[-=*]{3,}$/)) continue;
+
+    // Detect activity headers - multiple patterns
+    // Pattern 1: ### 🎯 Activity Name
+    const actMatch1 = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    // Pattern 2: **Aktivität 1: Name** or numbered
+    const actMatch2 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:\s]+([^*]+)\*\*/i);
+    // Pattern 3: 1. 🎯 Name
+    const actMatch3 = trimmed.match(/^\*?\*?\s*\d+\.?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(?:Name|Aktivität|Activity)?[:\s]*([^*]+)\*?\*?/iu);
+
+    const actMatch = actMatch1 || actMatch2 || actMatch3;
+
+    if (actMatch) {
+      if (currentActivity) result.activities.push(currentActivity);
+      activityCounter++;
+
+      let emoji = '✨';
+      let title = '';
+
+      if (actMatch1) {
+        emoji = actMatch1[1];
+        title = actMatch1[2].replace(/\*\*/g, '').trim();
+      } else if (actMatch2) {
+        title = actMatch2[2].trim();
+        const emojiInTitle = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}])/u);
+        if (emojiInTitle) {
+          emoji = emojiInTitle[1];
+          title = title.replace(emojiInTitle[0], '').trim();
+        }
+      } else if (actMatch3) {
+        emoji = actMatch3[1];
+        title = actMatch3[2].replace(/\*\*/g, '').trim();
+      }
+
+      currentActivity = {
+        number: activityCounter,
+        emoji,
+        title: title.replace(/^\*\*|\*\*$/g, '').trim(),
+        category: 'other',
+        duration: '',
+        cost: '',
+        fitness: 'normal',
+        description: '',
+        rawSection: '',
+        location: undefined,
+        highlights: [],
+      };
+      foundFirstActivity = true;
+      inHighlights = false;
+      continue;
+    }
+
+    if (currentActivity) {
+      // Parse duration - multilingual
+      if (/^⏱️|^2\.\s*⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:|^Duur:|^Czas:|^Süre:|^مدة:/i.test(trimmed)) {
+        currentActivity.duration = trimmed.replace(/^[\d.]*\s*⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
+        continue;
+      }
+      
+      // Parse cost - multilingual
+      if (/^💰|^3\.\s*💰|^Kosten:|^Cost:|^Coût:|^Costo:|^Custo:|^Maliyet:|^تكلفة:/i.test(trimmed)) {
+        currentActivity.cost = trimmed.replace(/^[\d.]*\s*💰?\s*(?:Kosten|Cost|Coût|Costo|Custo|Maliyet|تكلفة)[:\s]*/i, '').trim();
+        continue;
+      }
+      
+      // Parse fitness - multilingual
+      if (/^💪|^4\.\s*💪|^Fitness:|^Anforderung:|^Requirement:|^Niveau:|^Nivel:|^Livello:|^Kondycja:|^Seviye:|^مستوى:/i.test(trimmed)) {
+        const fitnessText = trimmed.replace(/^[\d.]*\s*💪?\s*(?:Fitness|Anforderung|Requirement|Niveau|Nivel|Livello|Kondycja|Seviye|مستوى)[:\s]*/i, '').toLowerCase();
+        if (fitnessText.match(/leicht|easy|facile|fácil|gemakkelijk|łatwy|kolay|سهل/i)) {
+          currentActivity.fitness = 'easy';
+        } else if (fitnessText.match(/anspruch|challeng|difficile|difícil|moeilijk|trudny|zor|صعب/i)) {
+          currentActivity.fitness = 'challenging';
+        } else {
+          currentActivity.fitness = 'normal';
+        }
+        continue;
+      }
+      
+      // Parse category - multilingual
+      if (/^🎯|^Kategorie:|^Category:|^Catégorie:|^Categoría:|^Categoria:|^Categorie:|^Kategoria:|^Kategori:|^فئة:/i.test(trimmed)) {
+        const cat = trimmed.replace(/^🎯?\s*(?:Kategorie|Category|Catégorie|Categoría|Categoria|Categorie|Kategoria|Kategori|فئة)[:\s]*/i, '').toLowerCase();
+        if (cat.match(/action|aktion|acción|azione|actie|akcja|aksiyon/i)) currentActivity.category = 'action';
+        else if (cat.match(/food|essen|comida|cibo|voedsel|jedzenie|yemek|طعام/i)) currentActivity.category = 'food';
+        else if (cat.match(/wellness|entspannung|bienestar|benessere|ontspanning|relaks|rahatlama/i)) currentActivity.category = 'wellness';
+        else if (cat.match(/party|fiesta|festa|feest|impreza|parti|حفلة/i)) currentActivity.category = 'party';
+        else if (cat.match(/sight|besichtigung|turismo|visite|bezienswaardigh|zwiedzanie|gezi|مشاهدة/i)) currentActivity.category = 'sightseeing';
+        continue;
+      }
+      
+      // Parse location
+      if (/^📍|^Ort:|^Location:|^Lieu:|^Lugar:|^Luogo:|^Locatie:|^Miejsce:|^Yer:|^موقع:/i.test(trimmed)) {
+        currentActivity.location = trimmed.replace(/^📍?\s*(?:Ort|Location|Lieu|Lugar|Luogo|Locatie|Miejsce|Yer|موقع)[:\s]*/i, '').trim();
+        continue;
+      }
+      
+      // Highlights section
+      if (/^✅\s*Highlight|^Highlight/i.test(trimmed)) {
+        inHighlights = true;
+        continue;
+      }
+      
+      // List items
+      if (trimmed.match(/^[•\-✓✔*]\s+/)) {
+        const item = trimmed.replace(/^[•\-✓✔*]\s*/, '').trim();
+        if (inHighlights && item) {
+          currentActivity.highlights.push(item);
+        }
+        continue;
+      }
+      
+      // Description text
+      if (trimmed.length > 15 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^[📍💰⏱️💪🎯✅]/)) {
+        const cleanText = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
+        currentActivity.description += (currentActivity.description ? ' ' : '') + cleanText;
+      }
+    } else if (!foundFirstActivity && !trimmed.match(/^#/)) {
+      introLines.push(trimmed);
+    }
+  }
+
+  if (currentActivity) result.activities.push(currentActivity);
+  result.intro = introLines.join(' ').slice(0, 500).trim();
+
+  // Infer category from emoji if not set
+  result.activities.forEach(act => {
+    if (act.category === 'other' && act.emoji) {
+      const categoryFromEmoji: Record<string, string> = {
+        '🎯': 'action', '🏎️': 'action', '🚁': 'action', '🪂': 'adventure',
+        '🍽️': 'food', '🍕': 'food', '🍻': 'food', '☕': 'food', '🍷': 'food',
+        '💆': 'wellness', '🧘': 'wellness', '🏊': 'wellness', '♨️': 'wellness',
+        '🎉': 'party', '💃': 'party', '🪩': 'party', '🍺': 'party', '🎤': 'party',
+        '🏛️': 'sightseeing', '📸': 'sightseeing', '🗺️': 'sightseeing',
+        '🏔️': 'adventure', '🏞️': 'adventure', '🌊': 'adventure',
+        '🎭': 'culture', '🎨': 'culture',
+      };
+      if (categoryFromEmoji[act.emoji]) {
+        act.category = categoryFromEmoji[act.emoji];
+      }
     }
   });
 
-  return {
-    intro: parsed.intro,
-    activities,
-    tips: parsed.tips,
-    rawResponse: response,
-  };
+  // Extract tips - multilingual
+  const tipMatches = response.match(/💡[^\n]+|Budget-?[Tt]ipp?:?[^\n]+/gi);
+  if (tipMatches) result.tips = tipMatches.slice(0, 5).map(t => t.trim());
+
+  console.log('=== Activities Parser ===');
+  console.log('Activities found:', result.activities.length);
+  result.activities.forEach((a, i) => console.log(`- ACT ${i + 1}: ${a.emoji} ${a.title} [${a.category}]`));
+
+  return result;
 }
 
 /**
  * Parse trip ideas response into structured format
+ * Supports multiple formats:
+ * - ### [Emoji] Title
+ * - **Trip-Idee 1: Title** 🎉
+ * - 1. 🎯 Title
  */
 export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
   const result: ParsedTripIdeasResponse = {
@@ -982,20 +1138,71 @@ export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
   let ideaCounter = 0;
   let inWhyPerfect = false;
   let inHighlights = false;
+  let inDescription = false;
+
+  // Multilingual patterns for section headers
+  const WHY_PERFECT_PATTERNS = [
+    /warum\s*(?:es\s*)?perfekt/i, /why\s*(?:it'?s?\s*)?perfect/i,
+    /pourquoi\s*(?:c'est\s*)?parfait/i, /por\s*qu[ée]\s*(?:es\s*)?perfect[oa]?/i,
+    /perch[eé]\s*(?:[èe]\s*)?perfett[oa]?/i, /waarom\s*perfect/i,
+    /dlaczego\s*ideal/i, /neden\s*mükemmel/i, /لماذا\s*مثالي/i,
+    /✅\s*(?:warum|why|pourquoi|por\s*qu|perch|waarom|dlaczego|neden)/i,
+  ];
+  
+  const HIGHLIGHTS_PATTERNS = [
+    /^🎯\s*highlight/i, /^highlight/i, /^puntos?\s*(?:destacados?|fuertes?)/i,
+    /^points?\s*forts?/i, /^punti\s*salienti/i, /^hoogtepunten/i,
+    /^najważniejsze/i, /^öne\s*çıkanlar/i, /^أبرز/i,
+  ];
 
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    // Detect idea header: ### 🎰 Las Vegas Weekend or similar
-    const ideaMatch = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    // Skip separator lines
+    if (trimmed.match(/^[-=*]{3,}$/)) continue;
+
+    // Detect idea headers - multiple patterns
+    // Pattern 1: ### 🎰 Title
+    const ideaMatch1 = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    // Pattern 2: **Trip-Idee 1: Title** or **Idea 1: Title**
+    const ideaMatch2 = trimmed.match(/^\*\*\s*(?:Trip-?Idee|Idea|Idée|Viaje|Viaggio|Reis|Wycieczka|Viagem|Gezi|فكرة)?\s*(\d+)[:\s]+([^*]+)\*\*/i);
+    // Pattern 3: 1. 🎯 Title or **1. 🎯 Title**
+    const ideaMatch3 = trimmed.match(/^\*?\*?\s*\d+\.?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(?:Name\/Titel|Name|Title|Titre|Nombre|Nome|Naam|Nazwa|İsim|اسم)?[:\s]*([^*]+)\*?\*?/iu);
+    // Pattern 4: Plain numbered: 1. Title (fallback)
+    const ideaMatch4 = trimmed.match(/^\*?\*?\s*(\d+)\.?\s+(.{10,})/);
+    
+    const ideaMatch = ideaMatch1 || ideaMatch2 || ideaMatch3;
+    
     if (ideaMatch) {
       if (currentIdea) result.ideas.push(currentIdea);
       ideaCounter++;
+      
+      let emoji = '✨';
+      let title = '';
+      
+      if (ideaMatch1) {
+        emoji = ideaMatch1[1];
+        title = ideaMatch1[2].replace(/\*\*/g, '').trim();
+      } else if (ideaMatch2) {
+        title = ideaMatch2[2].trim();
+        const emojiInTitle = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}])/u);
+        if (emojiInTitle) {
+          emoji = emojiInTitle[1];
+          title = title.replace(emojiInTitle[0], '').trim();
+        }
+      } else if (ideaMatch3) {
+        emoji = ideaMatch3[1];
+        title = ideaMatch3[2].replace(/\*\*/g, '').trim();
+      }
+      
+      // Clean title from markdown
+      title = title.replace(/^\*\*|\*\*$/g, '').trim();
+
       currentIdea = {
         number: ideaCounter,
-        emoji: ideaMatch[1],
-        title: ideaMatch[2].trim(),
+        emoji,
+        title,
         destination: '',
         cost: '',
         travelTime: '',
@@ -1006,59 +1213,106 @@ export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
       foundFirstIdea = true;
       inWhyPerfect = false;
       inHighlights = false;
+      inDescription = false;
       continue;
     }
 
+    // Check for numbered fallback that might be a new idea (e.g., "2. 📍 Destination")
+    if (ideaMatch4 && !currentIdea && parseInt(ideaMatch4[1]) === 1) {
+      // This is likely an intro line that looks like a numbered list
+    }
+
     if (currentIdea) {
-      // Parse destination
-      if (/^📍|^Destination:|^Ziel:|^Destino:/i.test(trimmed)) {
-        currentIdea.destination = trimmed.replace(/^📍?\s*(?:Destination|Ziel|Destino)[:\s]*/i, '').trim();
+      // Parse destination - multilingual
+      if (/^📍|^2\.\s*📍|^Destination:|^Ziel:|^Destino:|^Destinazione:|^Bestemming:|^Destynacja:|^Destinasyon:|^وجهة:/i.test(trimmed)) {
+        currentIdea.destination = trimmed.replace(/^[\d.]*\s*📍?\s*(?:Destination|Ziel|Destino|Destinazione|Bestemming|Destynacja|Destinasyon|وجهة)[:\s]*/i, '').trim();
+        inWhyPerfect = false;
+        inHighlights = false;
+        inDescription = false;
         continue;
       }
-      // Parse cost
-      if (/^💰|^Budget:|^Cost:|^Kosten:/i.test(trimmed)) {
-        currentIdea.cost = trimmed.replace(/^💰?\s*(?:Budget|Cost|Kosten)[:\s]*/i, '').trim();
+      
+      // Parse cost - multilingual
+      if (/^💰|^4\.\s*💰|^Budget:|^Cost:|^Kosten:|^Costo:|^Coût:|^Custo:|^Maliyet:|^ميزانية:|^(?:Geschätzte\s*)?Kosten|^Estimated\s*cost/i.test(trimmed)) {
+        currentIdea.cost = trimmed.replace(/^[\d.]*\s*💰?\s*(?:Geschätzte\s*)?(?:Budget|Cost|Kosten|Costo|Coût|Custo|Maliyet|ميزانية|Estimated\s*cost)[:\s]*/i, '').trim();
+        inWhyPerfect = false;
+        inHighlights = false;
+        inDescription = false;
         continue;
       }
+      
       // Parse travel time
-      if (/^✈️|^🗓️|^Reisezeit:|^Travel/i.test(trimmed)) {
-        currentIdea.travelTime = trimmed.replace(/^[✈️🗓️]?\s*(?:Reisezeit|Travel\s*(?:Time)?)[:\s]*/i, '').trim();
+      if (/^✈️|^🗓️|^Reisezeit:|^Travel|^Durée|^Duración|^Durata|^Duur|^Czas|^Süre:|^مدة:/i.test(trimmed)) {
+        currentIdea.travelTime = trimmed.replace(/^[✈️🗓️]?\s*(?:Reisezeit|Travel\s*(?:Time)?|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
+        inWhyPerfect = false;
+        inHighlights = false;
+        inDescription = false;
         continue;
       }
-      // Why perfect section
-      if (/Warum perfekt|Why perfect|✅/i.test(trimmed)) {
+      
+      // Why perfect section - check all language patterns
+      if (WHY_PERFECT_PATTERNS.some(p => p.test(trimmed))) {
         inWhyPerfect = true;
         inHighlights = false;
+        inDescription = false;
         continue;
       }
+      
       // Highlights section
-      if (/Highlights|🎯/i.test(trimmed)) {
+      if (HIGHLIGHTS_PATTERNS.some(p => p.test(trimmed))) {
         inHighlights = true;
         inWhyPerfect = false;
+        inDescription = false;
         continue;
       }
-      // List items
-      if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
-        const item = trimmed.replace(/^[•\-*]\s*/, '').trim();
-        if (inWhyPerfect) currentIdea.whyPerfect.push(item);
-        else if (inHighlights) currentIdea.highlights.push(item);
+      
+      // Description section - multilingual
+      if (/^💡\s*(?:Kurzbeschreibung|Brief\s*description|Description|Descripción|Descrizione|Beschrijving|Opis|Açıklama|وصف)/i.test(trimmed)) {
+        inDescription = true;
+        inWhyPerfect = false;
+        inHighlights = false;
+        const desc = trimmed.replace(/^💡\s*(?:Kurzbeschreibung|Brief\s*description|Description|Descripción|Descrizione|Beschrijving|Opis|Açıklama|وصف)[:\s]*/i, '').replace(/^\*\*|\*\*$/g, '').trim();
+        if (desc) currentIdea.description = desc;
         continue;
       }
-      // Description
-      if (!inWhyPerfect && !inHighlights && trimmed.length > 10) {
-        currentIdea.description += (currentIdea.description ? ' ' : '') + trimmed;
+      
+      // List items for why perfect or highlights
+      if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('✓') || trimmed.startsWith('✔') || trimmed.match(/^\*\s+[^*]/)) {
+        const item = trimmed.replace(/^[•\-✓✔*]\s*/, '').replace(/^\*\*|\*\*$/g, '').trim();
+        if (inWhyPerfect && item) {
+          currentIdea.whyPerfect.push(item);
+        } else if (inHighlights && item) {
+          currentIdea.highlights.push(item);
+        }
+        continue;
+      }
+      
+      // General description text (not in special sections, decent length)
+      if (!inWhyPerfect && !inHighlights && trimmed.length > 15 && !trimmed.match(/^[\d]+\./)) {
+        // Skip lines that are clearly metadata
+        if (!trimmed.match(/^[📍💰✈️🗓️💡🎯✅]/)) {
+          const cleanText = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
+          currentIdea.description += (currentIdea.description ? ' ' : '') + cleanText;
+        }
       }
     } else if (!foundFirstIdea) {
-      introLines.push(trimmed);
+      // Intro lines before first idea
+      if (!trimmed.match(/^#/)) {
+        introLines.push(trimmed);
+      }
     }
   }
 
   if (currentIdea) result.ideas.push(currentIdea);
-  result.intro = introLines.join(' ').replace(/^#+\s*/, '').trim();
+  result.intro = introLines.join(' ').replace(/^#+\s*/, '').slice(0, 500).trim();
 
-  // Extract tips
-  const tipMatches = response.match(/💡[^\n]+|Tipp?:?[^\n]+/gi);
+  // Extract tips - multilingual
+  const tipMatches = response.match(/💡[^\n]+|(?:Reise|Travel|Budget)?-?[Tt]ipp?s?:?[^\n]+|Conseil:?[^\n]+|Consejo:?[^\n]+/gi);
   if (tipMatches) result.tips = tipMatches.slice(0, 5).map(t => t.trim());
+
+  console.log('=== Trip Ideas Parser ===');
+  console.log('Ideas found:', result.ideas.length);
+  result.ideas.forEach((idea, i) => console.log(`- IDEA ${i + 1}: ${idea.emoji} ${idea.title} @ ${idea.destination}`));
 
   return result;
 }
