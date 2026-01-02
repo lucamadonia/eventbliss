@@ -608,7 +608,7 @@
       }
     },
     "team": {
-      "title": "Dashboard-Zugänge verwalten",
+      "title": "Team verwalten",
       "description": "Aktiviere Dashboard-Zugang für Teilnehmer und teile den Einladungslink. Mit dem Link können sie einen Account erstellen und sich verifizieren.",
       "addParticipant": "Teilnehmer hinzufügen",
       "addParticipantDesc": "Füge einen neuen Gast zum Event hinzu",
@@ -621,6 +621,8 @@
       "nameRequired": "Name darf nicht leer sein",
       "participantAdded": "{{name}} wurde hinzugefügt",
       "addError": "Fehler beim Hinzufügen",
+      "invite": "Einladen",
+      "removeAccess": "Zugang entfernen",
       "roles": {
         "guest": "Gast",
         "organizer": "Organisator"
@@ -1048,16 +1050,6 @@
         "title": "Gefahrenzone",
         "deleteEvent": "Event löschen",
         "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
-      }
-    },
-    "team": {
-      "title": "Team verwalten",
-      "invite": "Einladen",
-      "permissions": "Berechtigungen",
-      "removeAccess": "Zugang entfernen",
-      "roles": {
-        "organizer": "Organisator",
-        "guest": "Gast"
       }
     }
   },
