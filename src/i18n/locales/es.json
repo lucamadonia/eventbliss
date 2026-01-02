@@ -112,7 +112,33 @@
         "expenses": { "title": "División de Costes", "description": "Registra gastos y divídelos equitativamente" },
         "ai": { "title": "Asistente IA", "description": "Obtén sugerencias de actividades y mensajes" },
         "survey": { "title": "Encuestas", "description": "Recoge preferencias con encuestas personalizadas" },
-        "agencies": { "title": "Directorio de Agencias", "description": "Encuentra agencias de eventos cerca de ti" }
+        "agencies": { "title": "Directorio de Agencias", "description": "Encuentra agencias de eventos cerca de ti" },
+        "planner": { "title": "Planificador de Actividades", "description": "Planifica y organiza todas las actividades con línea de tiempo" }
+      },
+      "planner": {
+        "day1": "Día 1",
+        "day2": "Día 2",
+        "day3": "Día 3",
+        "dayCost": "Coste diario p.p.",
+        "eventTitle": "Despedida de Mario - Programa",
+        "location": "Hamburgo, 15-17 ago 2025",
+        "participants": "8 Participantes",
+        "new": "Nuevo",
+        "activities": {
+          "breakfast": "Desayuno en el hotel",
+          "escapeRoom": "Desafío Escape Room",
+          "harborTour": "Tour del puerto",
+          "dinner": "Cena",
+          "barHopping": "Ruta de bares",
+          "brunch": "Brunch",
+          "goKart": "Carreras de karts",
+          "cocktailWorkshop": "Taller de cócteles",
+          "clubNight": "Noche de club",
+          "hangoverBreakfast": "Desayuno de resaca",
+          "cityTour": "Tour por la ciudad",
+          "farewell": "Despedida & Regreso",
+          "karaoke": "Bar de karaoke"
+        }
       },
       "live": {
         "dashboard": {

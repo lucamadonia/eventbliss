@@ -112,7 +112,33 @@
         "expenses": { "title": "Partage des Coûts", "description": "Suivez les dépenses et partagez-les équitablement" },
         "ai": { "title": "Assistant IA", "description": "Obtenez des suggestions d'activités et de messages" },
         "survey": { "title": "Sondages", "description": "Collectez les préférences avec des sondages personnalisés" },
-        "agencies": { "title": "Annuaire d'Agences", "description": "Trouvez des agences événementielles près de chez vous" }
+        "agencies": { "title": "Annuaire d'Agences", "description": "Trouvez des agences événementielles près de chez vous" },
+        "planner": { "title": "Planificateur d'Activités", "description": "Planifiez et organisez toutes les activités avec chronologie" }
+      },
+      "planner": {
+        "day1": "Jour 1",
+        "day2": "Jour 2",
+        "day3": "Jour 3",
+        "dayCost": "Coût journalier p.p.",
+        "eventTitle": "EVG de Mario - Programme",
+        "location": "Hambourg, 15-17 août 2025",
+        "participants": "8 Participants",
+        "new": "Nouveau",
+        "activities": {
+          "breakfast": "Petit-déjeuner à l'hôtel",
+          "escapeRoom": "Défi Escape Room",
+          "harborTour": "Tour du port",
+          "dinner": "Dîner",
+          "barHopping": "Tournée des bars",
+          "brunch": "Brunch",
+          "goKart": "Course de karting",
+          "cocktailWorkshop": "Atelier cocktails",
+          "clubNight": "Soirée club",
+          "hangoverBreakfast": "Petit-déjeuner de récupération",
+          "cityTour": "Visite de la ville",
+          "farewell": "Au revoir & Retour",
+          "karaoke": "Bar karaoké"
+        }
       },
       "live": {
         "dashboard": {

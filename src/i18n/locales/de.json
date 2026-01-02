@@ -167,6 +167,35 @@
         "agencies": {
           "title": "Agentur-Verzeichnis",
           "description": "Finde professionelle Event-Agenturen in deiner Nähe"
+        },
+        "planner": {
+          "title": "Aktivitäten-Planner",
+          "description": "Plane und organisiere alle Aktivitäten mit Timeline"
+        }
+      },
+      "planner": {
+        "day1": "Tag 1",
+        "day2": "Tag 2",
+        "day3": "Tag 3",
+        "dayCost": "Tageskosten p.P.",
+        "eventTitle": "Marios JGA - Zeitplan",
+        "location": "Hamburg, 15.-17. Aug 2025",
+        "participants": "8 Teilnehmer",
+        "new": "Neu",
+        "activities": {
+          "breakfast": "Frühstück im Hotel",
+          "escapeRoom": "Escape Room Challenge",
+          "harborTour": "Hafentour",
+          "dinner": "Abendessen",
+          "barHopping": "Bar Hopping",
+          "brunch": "Brunch",
+          "goKart": "Go-Kart Rennen",
+          "cocktailWorkshop": "Cocktail Workshop",
+          "clubNight": "Club Night",
+          "hangoverBreakfast": "Katerfrühstück",
+          "cityTour": "Stadtführung",
+          "farewell": "Abschied & Heimreise",
+          "karaoke": "Karaoke Bar"
         }
       },
       "live": {

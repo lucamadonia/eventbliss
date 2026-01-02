@@ -112,7 +112,33 @@
         "expenses": { "title": "Divisione Costi", "description": "Traccia le spese e dividile equamente" },
         "ai": { "title": "Assistente AI", "description": "Ottieni suggerimenti per attività e messaggi" },
         "survey": { "title": "Sondaggi", "description": "Raccogli preferenze con sondaggi personalizzati" },
-        "agencies": { "title": "Directory Agenzie", "description": "Trova agenzie eventi vicino a te" }
+        "agencies": { "title": "Directory Agenzie", "description": "Trova agenzie eventi vicino a te" },
+        "planner": { "title": "Planner Attività", "description": "Pianifica e organizza tutte le attività con timeline" }
+      },
+      "planner": {
+        "day1": "Giorno 1",
+        "day2": "Giorno 2",
+        "day3": "Giorno 3",
+        "dayCost": "Costo giornaliero p.p.",
+        "eventTitle": "Addio al Celibato di Mario - Programma",
+        "location": "Amburgo, 15-17 ago 2025",
+        "participants": "8 Partecipanti",
+        "new": "Nuovo",
+        "activities": {
+          "breakfast": "Colazione in hotel",
+          "escapeRoom": "Sfida Escape Room",
+          "harborTour": "Tour del porto",
+          "dinner": "Cena",
+          "barHopping": "Giro dei bar",
+          "brunch": "Brunch",
+          "goKart": "Gara di go-kart",
+          "cocktailWorkshop": "Workshop cocktail",
+          "clubNight": "Serata in discoteca",
+          "hangoverBreakfast": "Colazione post-sbornia",
+          "cityTour": "Tour della città",
+          "farewell": "Saluti & Ritorno",
+          "karaoke": "Karaoke bar"
+        }
       },
       "live": {
         "dashboard": {

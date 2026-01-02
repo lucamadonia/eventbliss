@@ -106,7 +106,33 @@
         "expenses": { "title": "Maliyet Bölüşümü", "description": "Harcamaları takip et ve adil şekilde paylaştır" },
         "ai": { "title": "AI Asistan", "description": "Aktivite ve mesaj önerileri al" },
         "survey": { "title": "Anketler", "description": "Özel anketlerle tercihleri topla" },
-        "agencies": { "title": "Ajans Rehberi", "description": "Yakınındaki etkinlik ajanslarını bul" }
+        "agencies": { "title": "Ajans Rehberi", "description": "Yakınındaki etkinlik ajanslarını bul" },
+        "planner": { "title": "Aktivite Planlayıcı", "description": "Tüm aktiviteleri zaman çizelgesiyle planla ve organize et" }
+      },
+      "planner": {
+        "day1": "1. Gün",
+        "day2": "2. Gün",
+        "day3": "3. Gün",
+        "dayCost": "Günlük maliyet k.b.",
+        "eventTitle": "Mario'nun Bekarlığa Vedası - Program",
+        "location": "Hamburg, 15-17 Ağu 2025",
+        "participants": "8 Katılımcı",
+        "new": "Yeni",
+        "activities": {
+          "breakfast": "Otelde kahvaltı",
+          "escapeRoom": "Escape Room Mücadelesi",
+          "harborTour": "Liman turu",
+          "dinner": "Akşam yemeği",
+          "barHopping": "Bar turu",
+          "brunch": "Brunch",
+          "goKart": "Go-kart yarışı",
+          "cocktailWorkshop": "Kokteyl atölyesi",
+          "clubNight": "Kulüp gecesi",
+          "hangoverBreakfast": "Akşamdan kalma kahvaltısı",
+          "cityTour": "Şehir turu",
+          "farewell": "Veda & Eve Dönüş",
+          "karaoke": "Karaoke bar"
+        }
       },
       "live": {
         "dashboard": {

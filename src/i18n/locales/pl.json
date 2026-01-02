@@ -106,7 +106,33 @@
         "expenses": { "title": "Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" },
         "ai": { "title": "Asystent AI", "description": "Otrzymuj sugestie aktywności i wiadomości" },
         "survey": { "title": "Ankiety", "description": "Zbieraj preferencje za pomocą niestandardowych ankiet" },
-        "agencies": { "title": "Katalog Agencji", "description": "Znajdź agencje eventowe w pobliżu" }
+        "agencies": { "title": "Katalog Agencji", "description": "Znajdź agencje eventowe w pobliżu" },
+        "planner": { "title": "Planer Aktywności", "description": "Planuj i organizuj wszystkie aktywności z osią czasu" }
+      },
+      "planner": {
+        "day1": "Dzień 1",
+        "day2": "Dzień 2",
+        "day3": "Dzień 3",
+        "dayCost": "Dzienny koszt os.",
+        "eventTitle": "Wieczór Kawalerski Maria - Harmonogram",
+        "location": "Hamburg, 15-17 sie 2025",
+        "participants": "8 Uczestników",
+        "new": "Nowy",
+        "activities": {
+          "breakfast": "Śniadanie w hotelu",
+          "escapeRoom": "Wyzwanie Escape Room",
+          "harborTour": "Wycieczka po porcie",
+          "dinner": "Kolacja",
+          "barHopping": "Pub crawl",
+          "brunch": "Brunch",
+          "goKart": "Wyścigi go-kartów",
+          "cocktailWorkshop": "Warsztat koktajlowy",
+          "clubNight": "Noc w klubie",
+          "hangoverBreakfast": "Śniadanie na kaca",
+          "cityTour": "Zwiedzanie miasta",
+          "farewell": "Pożegnanie & Powrót",
+          "karaoke": "Bar karaoke"
+        }
       },
       "live": {
         "dashboard": {

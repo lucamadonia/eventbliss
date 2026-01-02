@@ -14,32 +14,32 @@ const DemoPlanner = () => {
   const [totalCost, setTotalCost] = useState(0);
   
   const days = [
-    { date: "15. Aug", label: t("landing.demo.planner.day1", "Tag 1") },
-    { date: "16. Aug", label: t("landing.demo.planner.day2", "Tag 2") },
-    { date: "17. Aug", label: t("landing.demo.planner.day3", "Tag 3") },
+    { date: "15. Aug", label: t("landing.demo.planner.day1") },
+    { date: "16. Aug", label: t("landing.demo.planner.day2") },
+    { date: "17. Aug", label: t("landing.demo.planner.day3") },
   ];
   
   const activitiesByDay = [
     // Day 1
     [
-      { time: "10:00", title: "Frühstück im Hotel", category: "food", icon: Utensils, cost: 15, color: "from-amber-500 to-orange-500" },
-      { time: "12:00", title: "Escape Room Challenge", category: "activity", icon: Gamepad2, cost: 35, color: "from-purple-500 to-violet-500" },
-      { time: "15:00", title: "Hafentour", category: "activity", icon: Ship, cost: 25, color: "from-blue-500 to-cyan-500" },
-      { time: "19:00", title: "Abendessen", category: "food", icon: Utensils, cost: 45, color: "from-amber-500 to-orange-500" },
-      { time: "21:00", title: "Bar Hopping", category: "nightlife", icon: Wine, cost: 50, color: "from-pink-500 to-rose-500" },
+      { time: "10:00", titleKey: "breakfast", category: "food", icon: Utensils, cost: 15, color: "from-amber-500 to-orange-500" },
+      { time: "12:00", titleKey: "escapeRoom", category: "activity", icon: Gamepad2, cost: 35, color: "from-purple-500 to-violet-500" },
+      { time: "15:00", titleKey: "harborTour", category: "activity", icon: Ship, cost: 25, color: "from-blue-500 to-cyan-500" },
+      { time: "19:00", titleKey: "dinner", category: "food", icon: Utensils, cost: 45, color: "from-amber-500 to-orange-500" },
+      { time: "21:00", titleKey: "barHopping", category: "nightlife", icon: Wine, cost: 50, color: "from-pink-500 to-rose-500" },
     ],
     // Day 2
     [
-      { time: "11:00", title: "Brunch", category: "food", icon: Utensils, cost: 25, color: "from-amber-500 to-orange-500" },
-      { time: "14:00", title: "Go-Kart Rennen", category: "activity", icon: Gamepad2, cost: 40, color: "from-red-500 to-orange-500" },
-      { time: "18:00", title: "Cocktail Workshop", category: "activity", icon: Wine, cost: 55, color: "from-purple-500 to-pink-500" },
-      { time: "21:00", title: "Club Night", category: "nightlife", icon: Music, cost: 30, color: "from-violet-500 to-purple-500" },
+      { time: "11:00", titleKey: "brunch", category: "food", icon: Utensils, cost: 25, color: "from-amber-500 to-orange-500" },
+      { time: "14:00", titleKey: "goKart", category: "activity", icon: Gamepad2, cost: 40, color: "from-red-500 to-orange-500" },
+      { time: "18:00", titleKey: "cocktailWorkshop", category: "activity", icon: Wine, cost: 55, color: "from-purple-500 to-pink-500" },
+      { time: "21:00", titleKey: "clubNight", category: "nightlife", icon: Music, cost: 30, color: "from-violet-500 to-purple-500" },
     ],
     // Day 3
     [
-      { time: "10:00", title: "Katerfrühstück", category: "food", icon: Utensils, cost: 20, color: "from-amber-500 to-orange-500" },
-      { time: "13:00", title: "Stadtführung", category: "activity", icon: MapPin, cost: 15, color: "from-green-500 to-emerald-500" },
-      { time: "16:00", title: "Abschied & Heimreise", category: "transport", icon: PartyPopper, cost: 0, color: "from-primary to-accent" },
+      { time: "10:00", titleKey: "hangoverBreakfast", category: "food", icon: Utensils, cost: 20, color: "from-amber-500 to-orange-500" },
+      { time: "13:00", titleKey: "cityTour", category: "activity", icon: MapPin, cost: 15, color: "from-green-500 to-emerald-500" },
+      { time: "16:00", titleKey: "farewell", category: "transport", icon: PartyPopper, cost: 0, color: "from-primary to-accent" },
     ],
   ];
   
@@ -86,8 +86,8 @@ const DemoPlanner = () => {
               <Calendar className="w-3.5 h-3.5 text-white" />
             </div>
             <div>
-              <h3 className="text-xs font-bold">Marios JGA - Zeitplan</h3>
-              <p className="text-[9px] text-muted-foreground">Hamburg, 15.-17. Aug 2025</p>
+              <h3 className="text-xs font-bold">{t("landing.demo.planner.eventTitle")}</h3>
+              <p className="text-[9px] text-muted-foreground">{t("landing.demo.planner.location")}</p>
             </div>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/20 border border-success/30">
@@ -96,7 +96,7 @@ const DemoPlanner = () => {
               transition={{ repeat: Infinity, duration: 2 }}
               className="w-1.5 h-1.5 rounded-full bg-success"
             />
-            <span className="text-[8px] text-success font-medium">8 Teilnehmer</span>
+            <span className="text-[8px] text-success font-medium">{t("landing.demo.planner.participants")}</span>
           </div>
         </div>
         
@@ -157,7 +157,7 @@ const DemoPlanner = () => {
                       <Clock className="w-3 h-3 text-muted-foreground" />
                       <span className="text-[10px] font-medium text-muted-foreground">{activity.time}</span>
                     </div>
-                    <h4 className="text-[11px] font-semibold truncate">{activity.title}</h4>
+                    <h4 className="text-[11px] font-semibold truncate">{t(`landing.demo.planner.activities.${activity.titleKey}`)}</h4>
                   </div>
                   
                   {/* Cost & Drag Handle */}
@@ -195,10 +195,10 @@ const DemoPlanner = () => {
                         <Clock className="w-3 h-3 text-success" />
                         <span className="text-[10px] font-medium text-success">23:00</span>
                       </div>
-                      <h4 className="text-[11px] font-semibold text-success">Karaoke Bar 🎤</h4>
+                      <h4 className="text-[11px] font-semibold text-success">{t("landing.demo.planner.activities.karaoke")} 🎤</h4>
                     </div>
                     <span className="text-[10px] font-medium text-success bg-success/10 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                      <Check className="w-3 h-3" /> Neu
+                      <Check className="w-3 h-3" /> {t("landing.demo.planner.new")}
                     </span>
                   </motion.div>
                 )}
@@ -223,7 +223,7 @@ const DemoPlanner = () => {
             </div>
             <div>
               <div className="text-[9px] text-muted-foreground">
-                {t("landing.demo.planner.dayCost", "Tageskosten p.P.")}
+                {t("landing.demo.planner.dayCost")}
               </div>
               <motion.div 
                 key={totalCost}
