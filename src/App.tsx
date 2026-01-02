@@ -26,6 +26,7 @@ const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { languages } from "@/i18n";
+import PageLoader from "@/components/ui/PageLoader";
 import Landing from "./pages/Landing";
 import CreateEvent from "./pages/CreateEvent";
 import JoinEvent from "./pages/JoinEvent";
@@ -38,12 +39,6 @@ import ClaimInvite from "./pages/ClaimInvite";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-  </div>
-);
 
 const AppContent = () => {
   const { i18n } = useTranslation();
@@ -94,9 +89,9 @@ const AppContent = () => {
 const App = () => (
   <ThemeProvider 
     attribute="class" 
-    defaultTheme="dark" 
-    themes={["light", "dark", "rose"]}
-    enableSystem={false}
+    defaultTheme="system" 
+    themes={["light", "dark", "rose", "system"]}
+    enableSystem={true}
   >
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

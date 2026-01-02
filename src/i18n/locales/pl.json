@@ -2,6 +2,8 @@
   "theme": {
     "title": "Wygląd",
     "description": "Wybierz preferowany motyw",
+    "system": "System",
+    "systemDesc": "Auto (ustawienie urządzenia)",
     "dark": "Tryb Ciemny",
     "darkDesc": "Nowoczesny i immersyjny",
     "light": "Tryb Jasny",

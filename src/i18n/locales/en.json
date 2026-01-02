@@ -2,6 +2,8 @@
   "theme": {
     "title": "Appearance",
     "description": "Choose your preferred theme",
+    "system": "System",
+    "systemDesc": "Auto (device setting)",
     "dark": "Dark Mode",
     "darkDesc": "Modern & immersive",
     "light": "Light Mode",
