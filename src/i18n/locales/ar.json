@@ -501,6 +501,32 @@
         "organizer": "منظم",
         "guest": "ضيف"
       }
+    },
+    "ai": {
+      "ideaLabel": "فكرة",
+      "activityLabel": "نشاط",
+      "topPick": "الاختيار الأفضل",
+      "whyPerfect": "لماذا هذا مثالي",
+      "highlights": "أبرز النقاط",
+      "travelTips": "نصائح السفر",
+      "budgetTips": "نصائح الميزانية",
+      "activitySuggestions": "اقتراحات الأنشطة",
+      "copyAll": "نسخ الكل",
+      "addToPlanner": "إضافة إلى المخطط",
+      "addedToPlanner": "تمت الإضافة إلى المخطط",
+      "addAllToPlanner": "إضافة الكل إلى المخطط",
+      "allAdded": "تمت إضافة الكل إلى المخطط",
+      "printOpened": "تم فتح معاينة الطباعة",
+      "downloaded": "بدأ التحميل",
+      "showDetails": "إظهار التفاصيل",
+      "hideDetails": "إخفاء التفاصيل",
+      "setAsDestination": "تعيين كوجهة",
+      "destinationSet": "تم تعيين الوجهة",
+      "fitnessEasy": "سهل",
+      "fitnessNormal": "عادي",
+      "fitnessChallenging": "صعب",
+      "recommendations": "التوصيات",
+      "dayAdded": "تمت إضافة اليوم إلى المخطط"
     }
   },
   "messages": {

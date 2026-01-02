@@ -469,6 +469,32 @@
         "organizer": "Organizzatore",
         "guest": "Ospite"
       }
+    },
+    "ai": {
+      "ideaLabel": "IDEA",
+      "activityLabel": "ATTIVITÀ",
+      "topPick": "Top Pick",
+      "whyPerfect": "Perché è perfetto",
+      "highlights": "Punti di Forza",
+      "travelTips": "Consigli di Viaggio",
+      "budgetTips": "Consigli sul Budget",
+      "activitySuggestions": "Suggerimenti Attività",
+      "copyAll": "Copia Tutto",
+      "addToPlanner": "Aggiungi al Pianificatore",
+      "addedToPlanner": "Aggiunto al pianificatore",
+      "addAllToPlanner": "Aggiungi Tutto al Pianificatore",
+      "allAdded": "Tutto aggiunto al pianificatore",
+      "printOpened": "Anteprima di stampa aperta",
+      "downloaded": "Download avviato",
+      "showDetails": "Mostra Dettagli",
+      "hideDetails": "Nascondi Dettagli",
+      "setAsDestination": "Imposta come Destinazione",
+      "destinationSet": "Destinazione impostata",
+      "fitnessEasy": "Facile",
+      "fitnessNormal": "Normale",
+      "fitnessChallenging": "Impegnativo",
+      "recommendations": "Raccomandazioni",
+      "dayAdded": "Giorno aggiunto al pianificatore"
     }
   },
   "messages": {
