@@ -3,18 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { 
   ChevronLeft, Mail, Lock, AlertTriangle, Trash2, Loader2, 
-  Crown, FileText, ExternalLink, Download, Calendar, CreditCard 
+  Crown, FileText, ExternalLink, Download, Calendar, CreditCard, Sparkles 
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { usePremium } from "@/hooks/usePremium";
+import { useAICredits } from "@/hooks/useAICredits";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +47,7 @@ export default function ProfileSettings() {
   const navigate = useNavigate();
   const { user, isLoading: authLoading, signOut } = useAuthContext();
   const { isPremium, planType, subscriptionEnd, cancelAtPeriodEnd, loading: premiumLoading } = usePremium();
+  const { used: creditsUsed, remaining: creditsRemaining, limit: creditsLimit, resetDate: creditsResetDate, loading: creditsLoading } = useAICredits();
   
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -309,6 +312,51 @@ export default function ProfileSettings() {
                     <Crown className="mr-2 h-4 w-4" />
                     {t("profile.subscription.upgradeNow")}
                   </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* AI Credits */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.075 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                {t("profile.aiCredits.title", "AI-Credits")}
+              </CardTitle>
+              <CardDescription>{t("profile.aiCredits.description", "Deine monatlichen Credits für KI-Funktionen")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {creditsLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-4 w-48" />
+                </div>
+              ) : creditsLimit === 0 ? (
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">{t("profile.aiCredits.noCredits", "Keine Credits - Premium-Abo erforderlich")}</p>
+                  <Button variant="outline" onClick={() => navigate("/premium")}>
+                    <Crown className="mr-2 h-4 w-4" />
+                    {t("profile.subscription.upgradeNow")}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span>{t("profile.aiCredits.used", "Verwendet")}: {creditsUsed}</span>
+                    <span>{t("profile.aiCredits.remaining", "Verbleibend")}: {creditsRemaining}</span>
+                  </div>
+                  <Progress value={creditsLimit > 0 ? (creditsRemaining / creditsLimit) * 100 : 0} className="h-2" />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>{t("profile.aiCredits.limit", "Monatliches Limit")}: {creditsLimit}</span>
+                    <span>{t("profile.aiCredits.resetDate", "Nächstes Reset")}: {creditsResetDate.toLocaleDateString()}</span>
+                  </div>
                 </div>
               )}
             </CardContent>

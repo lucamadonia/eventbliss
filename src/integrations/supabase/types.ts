@@ -490,6 +490,33 @@ export type Database = {
           },
         ]
       }
+      ai_credit_adjustments: {
+        Row: {
+          adjusted_by: string
+          amount: number
+          created_at: string
+          id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          adjusted_by: string
+          amount: number
+          created_at?: string
+          id?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          adjusted_by?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_usage: {
         Row: {
           created_at: string

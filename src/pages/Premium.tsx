@@ -21,7 +21,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
+import { useAICredits } from "@/hooks/useAICredits";
 import { toast } from "sonner";
+import { AI_CREDIT_LIMITS } from "@/lib/ai-credits";
 
 export default function Premium() {
   const { t } = useTranslation();
@@ -29,6 +31,7 @@ export default function Premium() {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { isPremium, loading: premiumLoading, subscriptionEnd, planType, cancelAtPeriodEnd, checkSubscription } = usePremium();
+  const { remaining: creditsRemaining, limit: creditsLimit, loading: creditsLoading } = useAICredits();
   const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "yearly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -297,7 +300,22 @@ export default function Premium() {
                       <span className="text-sm">{t(`premium.features.${feature.key}`)}</span>
                     </div>
                   ))}
+                  {/* AI Credits */}
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm">{t("premium.credits.monthly", "50 AI-Credits/Monat")}</span>
+                  </div>
                 </div>
+
+                {/* Show remaining credits for active monthly plan */}
+                {isMonthlyActive && !creditsLoading && (
+                  <div className="text-center text-sm text-muted-foreground border-t pt-3">
+                    <Sparkles className="h-4 w-4 inline mr-1" />
+                    {t("premium.credits.remaining", "{{remaining}} von {{limit}} Credits verbleibend", { remaining: creditsRemaining, limit: creditsLimit })}
+                  </div>
+                )}
 
                 {premiumLoading ? (
                   <Button className="w-full" size="lg" disabled>
@@ -409,7 +427,22 @@ export default function Premium() {
                       <span className="text-sm">{t(`premium.features.${feature.key}`)}</span>
                     </div>
                   ))}
+                  {/* AI Credits */}
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">{t("premium.credits.yearly", "100 AI-Credits/Monat")}</span>
+                  </div>
                 </div>
+
+                {/* Show remaining credits for active yearly plan */}
+                {isYearlyActive && !creditsLoading && (
+                  <div className="text-center text-sm text-muted-foreground border-t pt-3">
+                    <Sparkles className="h-4 w-4 inline mr-1" />
+                    {t("premium.credits.remaining", "{{remaining}} von {{limit}} Credits verbleibend", { remaining: creditsRemaining, limit: creditsLimit })}
+                  </div>
+                )}
 
                 {premiumLoading ? (
                   <Button className="w-full" size="lg" disabled>
@@ -508,6 +541,13 @@ export default function Premium() {
                       <span className="text-sm">{t(`premium.features.${feature.key}`)}</span>
                     </div>
                   ))}
+                  {/* AI Credits */}
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm">{t("premium.credits.lifetime", "75 AI-Credits/Monat")}</span>
+                  </div>
                   {/* Extra lifetime benefit */}
                   <div className="flex items-center gap-3">
                     <div className="rounded-full bg-primary/10 p-2">
@@ -516,6 +556,14 @@ export default function Premium() {
                     <span className="text-sm font-medium">{t("premium.foreverAccess")}</span>
                   </div>
                 </div>
+
+                {/* Show remaining credits for active lifetime plan */}
+                {isLifetimeActive && !creditsLoading && (
+                  <div className="text-center text-sm text-muted-foreground border-t pt-3">
+                    <Sparkles className="h-4 w-4 inline mr-1" />
+                    {t("premium.credits.remaining", "{{remaining}} von {{limit}} Credits verbleibend", { remaining: creditsRemaining, limit: creditsLimit })}
+                  </div>
+                )}
 
                 {premiumLoading ? (
                   <Button className="w-full" size="lg" disabled>

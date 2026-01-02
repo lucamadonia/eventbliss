@@ -9,6 +9,7 @@ interface AICredits {
   limit: number;
   remaining: number;
   resetDate: Date;
+  bonusCredits: number;
 }
 
 export function useAICredits() {
@@ -19,6 +20,7 @@ export function useAICredits() {
     limit: 0,
     remaining: 0,
     resetDate: getNextMonthReset(),
+    bonusCredits: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +31,7 @@ export function useAICredits() {
         limit: 0,
         remaining: 0,
         resetDate: getNextMonthReset(),
+        bonusCredits: 0,
       });
       setLoading(false);
       return;
@@ -37,6 +40,7 @@ export function useAICredits() {
     try {
       const startOfMonth = getStartOfMonth();
 
+      // Get usage count
       const { count, error } = await supabase
         .from("ai_usage")
         .select("*", { count: "exact", head: true })
@@ -47,14 +51,24 @@ export function useAICredits() {
         console.error("Error fetching AI usage:", error);
       }
 
-      const limit = AI_CREDIT_LIMITS[planType as PlanType] || 0;
+      // Get bonus credits from adjustments
+      const { data: adjustments } = await supabase
+        .from("ai_credit_adjustments")
+        .select("amount")
+        .eq("user_id", user.id)
+        .gte("created_at", startOfMonth.toISOString());
+
+      const bonusCredits = adjustments?.reduce((sum, adj) => sum + adj.amount, 0) || 0;
+      const baseLimit = AI_CREDIT_LIMITS[planType as PlanType] || 0;
+      const effectiveLimit = baseLimit + bonusCredits;
       const used = count || 0;
 
       setCredits({
         used,
-        limit,
-        remaining: Math.max(0, limit - used),
+        limit: effectiveLimit,
+        remaining: Math.max(0, effectiveLimit - used),
         resetDate: getNextMonthReset(),
+        bonusCredits,
       });
     } catch (err) {
       console.error("Error in fetchCredits:", err);
