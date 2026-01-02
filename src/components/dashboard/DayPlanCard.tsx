@@ -13,7 +13,8 @@ import {
   Lightbulb,
   AlertTriangle,
   Calendar,
-  Sparkles,
+  FileText,
+  Download,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { toast } from "sonner";
 import { type ParsedDayPlan, type ParsedDay, type ParsedTimeBlock } from "@/lib/ai-response-parser";
 import { CATEGORY_CONFIG } from "@/lib/category-config";
 import { cn } from "@/lib/utils";
+import { openDayPlanPrint, downloadDayPlanHTML } from "@/lib/day-plan-pdf-export";
 
 interface DayPlanCardProps {
   dayPlan: ParsedDayPlan;
@@ -31,6 +33,52 @@ interface DayPlanCardProps {
   onAddDay?: (day: ParsedDay) => void;
 }
 
+// Premium day colors with gradients
+const DAY_STYLES = [
+  { 
+    gradient: 'from-indigo-600 via-indigo-500 to-blue-500',
+    bgLight: 'bg-indigo-500/10',
+    border: 'border-indigo-500/30',
+    text: 'text-indigo-400',
+    dot: 'bg-indigo-500',
+  },
+  { 
+    gradient: 'from-emerald-600 via-emerald-500 to-teal-500',
+    bgLight: 'bg-emerald-500/10',
+    border: 'border-emerald-500/30',
+    text: 'text-emerald-400',
+    dot: 'bg-emerald-500',
+  },
+  { 
+    gradient: 'from-orange-600 via-orange-500 to-amber-500',
+    bgLight: 'bg-orange-500/10',
+    border: 'border-orange-500/30',
+    text: 'text-orange-400',
+    dot: 'bg-orange-500',
+  },
+  { 
+    gradient: 'from-violet-600 via-violet-500 to-purple-500',
+    bgLight: 'bg-violet-500/10',
+    border: 'border-violet-500/30',
+    text: 'text-violet-400',
+    dot: 'bg-violet-500',
+  },
+  { 
+    gradient: 'from-rose-600 via-rose-500 to-pink-500',
+    bgLight: 'bg-rose-500/10',
+    border: 'border-rose-500/30',
+    text: 'text-rose-400',
+    dot: 'bg-rose-500',
+  },
+  { 
+    gradient: 'from-cyan-600 via-cyan-500 to-sky-500',
+    bgLight: 'bg-cyan-500/10',
+    border: 'border-cyan-500/30',
+    text: 'text-cyan-400',
+    dot: 'bg-cyan-500',
+  },
+];
+
 export const DayPlanCard = ({
   dayPlan,
   eventName,
@@ -38,7 +86,7 @@ export const DayPlanCard = ({
   onAddTimeBlock,
   onAddDay,
 }: DayPlanCardProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]));
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -80,19 +128,28 @@ export const DayPlanCard = ({
     toast.success(t('common.copied'));
   };
 
+  const handlePrint = () => {
+    openDayPlanPrint(dayPlan, { 
+      name: eventName || 'Event', 
+      participantCount 
+    }, i18n.language);
+    toast.success(t('dashboard.ai.printOpened', 'Druckvorschau geöffnet'));
+  };
+
+  const handleDownload = () => {
+    downloadDayPlanHTML(dayPlan, { 
+      name: eventName || 'Event', 
+      participantCount 
+    }, i18n.language);
+    toast.success(t('dashboard.ai.downloaded', 'Download gestartet'));
+  };
+
   const getCategoryConfig = (category: string) => {
     return CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG] || CATEGORY_CONFIG.other;
   };
 
-  const getDayGradient = (index: number) => {
-    const gradients = [
-      'from-blue-500/20 to-indigo-500/10',
-      'from-emerald-500/20 to-teal-500/10',
-      'from-orange-500/20 to-amber-500/10',
-      'from-purple-500/20 to-pink-500/10',
-      'from-rose-500/20 to-red-500/10',
-    ];
-    return gradients[index % gradients.length];
+  const getDayStyle = (index: number) => {
+    return DAY_STYLES[index % DAY_STYLES.length];
   };
 
   return (
@@ -136,42 +193,54 @@ export const DayPlanCard = ({
       )}
 
       {/* Days */}
-      <div className="space-y-4">
-        {dayPlan.days.map((day, dayIndex) => (
+      <div className="space-y-6">
+        {dayPlan.days.map((day, dayIndex) => {
+          const dayStyle = getDayStyle(dayIndex);
+          const tagNumber = dayIndex + 1;
+
+          return (
           <motion.div
             key={dayIndex}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dayIndex * 0.1 }}
           >
-            <GlassCard className="p-0 overflow-hidden">
-              {/* Day Header */}
+            <GlassCard className={cn("p-0 overflow-hidden border-2", dayStyle.border)}>
+              {/* Premium Day Header with TAG number */}
               <button
                 onClick={() => toggleDay(dayIndex)}
                 className={cn(
-                  "w-full p-4 flex items-center justify-between",
+                  "w-full p-4 flex items-center gap-4",
                   "bg-gradient-to-r",
-                  getDayGradient(dayIndex),
-                  "hover:opacity-90 transition-opacity"
+                  dayStyle.gradient,
+                  "hover:opacity-95 transition-opacity"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{day.emoji}</span>
-                  <div className="text-left">
-                    <h4 className="font-bold text-foreground">
-                      {day.dayName}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {day.title} • {day.timeBlocks.length} {t('dashboard.ai.activities', 'Aktivitäten')}
-                    </p>
-                  </div>
+                {/* TAG Badge */}
+                <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                  <span className="text-white font-black text-sm tracking-wider">
+                    TAG {tagNumber}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
+                
+                {/* Day Info */}
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-white text-lg uppercase tracking-wide">
+                    {day.dayName}
+                  </h4>
+                  <p className="text-white/80 text-sm">
+                    {day.title} • {day.timeBlocks.length} {t('dashboard.ai.activities', 'Aktivitäten')}
+                  </p>
+                </div>
+
+                {/* Emoji & Actions */}
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{day.emoji}</span>
                   {onAddDay && (
                     <Button
                       size="sm"
-                      variant="ghost"
-                      className="text-xs"
+                      variant="secondary"
+                      className="text-xs bg-white/20 hover:bg-white/30 text-white border-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         onAddDay(day);
@@ -182,9 +251,9 @@ export const DayPlanCard = ({
                     </Button>
                   )}
                   {expandedDays.has(dayIndex) ? (
-                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                    <ChevronUp className="w-5 h-5 text-white/80" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                    <ChevronDown className="w-5 h-5 text-white/80" />
                   )}
                 </div>
               </button>
@@ -362,7 +431,8 @@ export const DayPlanCard = ({
               </AnimatePresence>
             </GlassCard>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
 
       {/* General Tips */}
@@ -388,6 +458,14 @@ export const DayPlanCard = ({
 
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 justify-end">
+        <Button variant="outline" size="sm" onClick={handleDownload}>
+          <Download className="w-4 h-4 mr-2" />
+          {t('dashboard.ai.download', 'Download')}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handlePrint}>
+          <FileText className="w-4 h-4 mr-2" />
+          {t('dashboard.ai.print', 'PDF Drucken')}
+        </Button>
         <Button variant="outline" size="sm" onClick={copyAll}>
           <Copy className="w-4 h-4 mr-2" />
           {t('dashboard.ai.copyAll', 'Alles kopieren')}

@@ -145,6 +145,10 @@ function findDayHeaders(response: string): DayHeader[] {
  * 3. **Day: Title** (bold block)
  * 4. Day: Title (plain)
  */
+/**
+ * NEW LINE-BY-LINE PARSER - More robust day detection
+ * Handles AI output variations by detecting day headers and time blocks line by line
+ */
 export function parseDayPlan(response: string): ParsedDayPlan {
   const result: ParsedDayPlan = {
     intro: '',
@@ -155,29 +159,307 @@ export function parseDayPlan(response: string): ParsedDayPlan {
 
   if (!response) return result;
 
+  const lines = response.split('\n');
+  let currentDay: ParsedDay | null = null;
+  let currentTimeBlock: ParsedTimeBlock | null = null;
+  let introLines: string[] = [];
+  let foundFirstDay = false;
+  let dayCounter = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    
+    // Skip empty lines
+    if (!trimmed) continue;
+
+    // Try to match a day header
+    const dayMatch = matchDayHeader(trimmed);
+    if (dayMatch) {
+      // Save previous day if exists
+      if (currentDay) {
+        if (currentTimeBlock) {
+          currentDay.timeBlocks.push(currentTimeBlock);
+          currentTimeBlock = null;
+        }
+        if (currentDay.timeBlocks.length > 0) {
+          result.days.push(currentDay);
+        }
+      }
+
+      dayCounter++;
+      currentDay = {
+        dayName: dayMatch.dayName,
+        title: dayMatch.title,
+        emoji: dayMatch.emoji,
+        timeBlocks: [],
+      };
+      foundFirstDay = true;
+      continue;
+    }
+
+    // Try to match a time block header
+    const timeMatch = matchTimeBlockHeader(trimmed);
+    if (timeMatch) {
+      // If no current day, create one
+      if (!currentDay && foundFirstDay === false) {
+        dayCounter++;
+        currentDay = {
+          dayName: `Tag ${dayCounter}`,
+          title: '',
+          emoji: '📅',
+          timeBlocks: [],
+        };
+        foundFirstDay = true;
+      }
+      
+      if (currentDay) {
+        // Save previous time block
+        if (currentTimeBlock) {
+          currentDay.timeBlocks.push(currentTimeBlock);
+        }
+
+        currentTimeBlock = {
+          time: timeMatch.time,
+          title: timeMatch.title,
+          emoji: timeMatch.emoji,
+          category: inferCategoryFromEmoji(timeMatch.emoji),
+          duration: '',
+          cost: '',
+          location: '',
+          transport: '',
+          tips: [],
+          warnings: [],
+          description: '',
+          rawSection: '',
+        };
+      }
+      continue;
+    }
+
+    // Parse content lines (belong to current time block or intro)
+    if (currentTimeBlock) {
+      parseContentLine(trimmed, currentTimeBlock);
+    } else if (!foundFirstDay) {
+      // Before first day - this is intro
+      introLines.push(trimmed);
+    }
+  }
+
+  // Save last time block and day
+  if (currentTimeBlock && currentDay) {
+    currentDay.timeBlocks.push(currentTimeBlock);
+  }
+  if (currentDay && currentDay.timeBlocks.length > 0) {
+    result.days.push(currentDay);
+  }
+
+  // Set intro
+  result.intro = introLines.join('\n').replace(/^#+\s*/, '').trim();
+
+  // If still no days but have time blocks in intro, create a fallback
+  if (result.days.length === 0) {
+    // Try legacy parsing
+    const legacyResult = legacyParseDayPlan(response);
+    if (legacyResult.days.length > 0) {
+      return legacyResult;
+    }
+  }
+
+  // Extract general tips from entire response
+  const tipMatches = response.match(/💡[^\n]+|(?:Budget-?)?[Tt]ipp?:?[^\n]+/g);
+  if (tipMatches) {
+    result.generalTips = tipMatches.slice(0, 5).map(t => t.trim());
+  }
+
+  console.log('=== Day Plan Parser (Line-by-Line) ===');
+  console.log('Total days found:', result.days.length);
+  result.days.forEach((d, i) => console.log(`- TAG ${i + 1}: ${d.dayName} (${d.timeBlocks.length} blocks)`));
+
+  return result;
+}
+
+/**
+ * Match day header in various formats
+ */
+function matchDayHeader(line: string): { dayName: string; title: string; emoji: string } | null {
+  // All day name patterns
+  const dayNamePattern = '(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Vendredi|Samedi|Dimanche|Viernes|Sábado|Domingo|Tag\\s*\\d+|Day\\s*\\d+|Jour\\s*\\d+|Día\\s*\\d+|Giorno\\s*\\d+)';
+  
+  const patterns = [
+    // ## Freitag: Ankunft & Welcome! ✈️🌃
+    new RegExp(`^##\\s*${dayNamePattern}[:\\s]+(.*)`, 'i'),
+    // ### Freitag: Ankunft
+    new RegExp(`^###\\s*${dayNamePattern}[:\\s]+(.*)`, 'i'),
+    // **Freitag: Ankunft & Welcome! ✈️🌃**
+    new RegExp(`^\\*\\*\\s*${dayNamePattern}[:\\s]+([^*]+)\\*\\*`, 'i'),
+    // **Freitag:** Ankunft
+    new RegExp(`^\\*\\*\\s*${dayNamePattern}\\s*\\*\\*[:\\s]+(.*)`, 'i'),
+    // Freitag: Ankunft (plain, at line start, with enough content)
+    new RegExp(`^${dayNamePattern}[:\\s]+(.{5,})`, 'i'),
+  ];
+
+  for (const pattern of patterns) {
+    const match = line.match(pattern);
+    if (match) {
+      const title = match[2] ? match[2].replace(/\*\*/g, '').trim() : '';
+      const emojiMatch = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu);
+      return {
+        dayName: match[1].trim(),
+        title: title.replace(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu, '').trim(),
+        emoji: emojiMatch ? emojiMatch.join('') : '📅',
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Match time block header in various formats
+ */
+function matchTimeBlockHeader(line: string): { time: string; title: string; emoji: string } | null {
+  const patterns = [
+    // ### 17:00 ✈️ Ankunft am Flughafen
+    /^###\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*(.+)/u,
+    // **17:00 Uhr:** **Ankunft am Flughafen**
+    /^\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^\*]+)\*?\*?/u,
+    // * **17:00 Uhr:** **Ankunft**
+    /^\*\s*\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^\*]+)\*?\*?/u,
+    // **17:00** Ankunft
+    /^\*\*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\*\*[:\s]*(.+)/u,
+    // 17:00 - Ankunft (with dash separator)
+    /^(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*[-–—]\s*(.+)/u,
+    // 17:00 ✈️ Ankunft (plain with emoji)
+    /^(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u,
+  ];
+
+  for (const pattern of patterns) {
+    const match = line.match(pattern);
+    if (match) {
+      const time = match[1] + (match[2] ? ` ${match[2]}` : '');
+      let title = '';
+      let emoji = '📍';
+
+      if (match.length === 5) {
+        // Pattern with separate emoji capture
+        emoji = match[3] || '📍';
+        title = match[4].replace(/\*\*/g, '').trim();
+      } else {
+        // Pattern with title only
+        title = match[3].replace(/\*\*/g, '').trim();
+        const titleEmojiMatch = title.match(/^([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*/u);
+        if (titleEmojiMatch) {
+          emoji = titleEmojiMatch[1];
+          title = title.replace(titleEmojiMatch[0], '').trim();
+        }
+      }
+
+      return { time, title, emoji };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Parse content lines into time block properties
+ */
+function parseContentLine(line: string, block: ParsedTimeBlock): void {
+  const trimmed = line.trim();
+  
+  // Skip separators
+  if (trimmed.startsWith('---')) return;
+
+  // Location: 📍 Ort: Place or 📍 Location: Place
+  if (/^📍|^Ort:|^Location:|^Place:|^Lieu:|^Lugar:|^Luogo:/i.test(trimmed)) {
+    block.location = trimmed.replace(/^📍?\s*(?:Ort|Location|Place|Lieu|Lugar|Luogo)[:\s]*/i, '').trim();
+    return;
+  }
+
+  // Transport: 🚗 Transport: Details
+  if (/^🚗|^🚕|^🚌|^🚇|^Transport/i.test(trimmed)) {
+    block.transport = trimmed.replace(/^[\s🚗🚕🚌🚇]*(?:Transport)[:\s]*/i, '').trim();
+    return;
+  }
+
+  // Cost: 💰 Kosten: ~50€
+  if (/^💰|^Kosten:|^Cost:|^Price:|^Coût:|^Costo:/i.test(trimmed)) {
+    block.cost = trimmed.replace(/^💰?\s*(?:Kosten|Cost|Price|Coût|Costo)[:\s]*/i, '').trim();
+    return;
+  }
+
+  // Duration: ⏱️ Dauer: 2 Stunden
+  if (/^⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:/i.test(trimmed)) {
+    block.duration = trimmed.replace(/^⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata)[:\s]*/i, '').trim();
+    return;
+  }
+
+  // Tips: 💡 Pro-Tipp: ...
+  if (/^💡|^Pro-?Tipp?|^Tip:|^Hint:|^Conseil:/i.test(trimmed)) {
+    block.tips.push(trimmed.replace(/^[\s💡]*(?:Pro-?Tipp?|Tip|Hint|Conseil)[:\s]*/i, '').trim());
+    return;
+  }
+
+  // Warnings: ⚠️ Wichtig: ...
+  if (/^⚠️|^Wichtig:|^Warning:|^Achtung:|^Important:/i.test(trimmed)) {
+    block.warnings.push(trimmed.replace(/^[\s⚠️]*(?:Wichtig|Warning|Achtung|Important)[:\s]*/i, '').trim());
+    return;
+  }
+
+  // Restaurant/Food specific
+  if (/^🍽️|^Restaurant:|^Food:/i.test(trimmed)) {
+    block.location = block.location || trimmed.replace(/^🍽️?\s*(?:Restaurant|Food)[:\s]*/i, '').trim();
+    block.category = 'food';
+    return;
+  }
+
+  // Everything else is description
+  if (trimmed && !trimmed.match(/^[-*]+$/)) {
+    block.description += (block.description ? '\n' : '') + trimmed;
+  }
+}
+
+/**
+ * Infer category from emoji
+ */
+function inferCategoryFromEmoji(emoji: string): string {
+  const categoryMap: Record<string, string> = {
+    '✈️': 'transport', '🚗': 'transport', '🚌': 'transport', '🚇': 'transport', '🚕': 'transport',
+    '🏨': 'accommodation', '🛏️': 'accommodation', '🏠': 'accommodation',
+    '🍽️': 'food', '🍕': 'food', '🍻': 'food', '☕': 'food', '🍳': 'food', '🥂': 'food',
+    '🎲': 'activity', '🎯': 'activity', '🎭': 'activity', '🎡': 'activity', '🎰': 'activity',
+    '🎉': 'party', '💃': 'party', '🪩': 'party', '🍺': 'party',
+    '🏛️': 'sightseeing', '📸': 'sightseeing', '🗺️': 'sightseeing', '🏔️': 'sightseeing',
+    '💆': 'relaxation', '🧘': 'relaxation', '🏊': 'relaxation', '♨️': 'relaxation',
+  };
+  return categoryMap[emoji] || 'other';
+}
+
+/**
+ * Legacy parser fallback - used when line-by-line fails
+ */
+function legacyParseDayPlan(response: string): ParsedDayPlan {
+  const result: ParsedDayPlan = {
+    intro: '',
+    days: [],
+    generalTips: [],
+    rawResponse: response,
+  };
+
   // Find all day headers with positions
   const headers = findDayHeaders(response);
 
-  console.log('=== Day Plan Parser ===');
-  console.log('Found day headers:', headers.length);
-  headers.forEach(h => console.log(`- "${h.dayName}" at position ${h.startIdx}: "${h.title}"`));
-
-  // If we found day headers, split content between them
   if (headers.length > 0) {
-    // Extract intro (content before first day)
     if (headers[0].startIdx > 0) {
       result.intro = response.slice(0, headers[0].startIdx).trim();
     }
 
-    // Extract each day's content
     for (let i = 0; i < headers.length; i++) {
       const header = headers[i];
       const nextHeader = headers[i + 1];
-      
-      // Content starts at the header and ends at next header or end of response
-      const contentStart = header.startIdx;
       const contentEnd = nextHeader ? nextHeader.startIdx : response.length;
-      const dayContent = response.slice(contentStart, contentEnd);
+      const dayContent = response.slice(header.startIdx, contentEnd);
 
       const day = parseDaySection(dayContent, header.dayName, header.title);
       if (day && day.timeBlocks.length > 0) {
@@ -185,10 +467,9 @@ export function parseDayPlan(response: string): ParsedDayPlan {
       }
     }
   } else {
-    // Fallback: No day headers found, check if we have time blocks
+    // Fallback: treat entire response as single day if it has time blocks
     const hasTimeBlocks = response.match(/\d{1,2}:\d{2}\s*(Uhr|AM|PM|h)?/g);
-    if (hasTimeBlocks && hasTimeBlocks.length >= 3) {
-      console.log('No day headers found, treating as single day plan');
+    if (hasTimeBlocks && hasTimeBlocks.length >= 2) {
       const day = parseDaySection(response, 'Tagesplan', '');
       if (day && day.timeBlocks.length > 0) {
         result.days.push(day);
@@ -196,10 +477,6 @@ export function parseDayPlan(response: string): ParsedDayPlan {
     }
   }
 
-  console.log('Parsed days:', result.days.length);
-  result.days.forEach(d => console.log(`- ${d.dayName}: ${d.timeBlocks.length} time blocks`));
-
-  // Extract general tips
   const tipMatches = response.match(/💡[^\n]+|(?:Budget-?)?[Tt]ipp?:?[^\n]+/g);
   if (tipMatches) {
     result.generalTips = tipMatches.slice(0, 5).map(t => t.trim());
