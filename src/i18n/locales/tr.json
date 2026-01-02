@@ -1320,5 +1320,43 @@
     "form": { "title": "Şimdi başvurun", "companyName": "Şirket adı (isteğe bağlı)", "companyNamePlaceholder": "Şirketiniz Ltd", "contactName": "İletişim adı", "contactNamePlaceholder": "Ahmet Yılmaz", "email": "E-posta adresi", "emailPlaceholder": "ortak@ornek.com.tr", "phone": "Telefon (isteğe bağlı)", "phonePlaceholder": "+90 532 123 4567", "website": "Web sitesi (isteğe bağlı)", "websitePlaceholder": "https://siteniz.com.tr", "taxId": "Vergi numarası (isteğe bağlı)", "taxIdPlaceholder": "1234567890", "about": "Hakkınızda / şirketiniz (isteğe bağlı)", "aboutPlaceholder": "Kendinizden bahsedin...", "promotion": "EventBliss'i nasıl tanıtmayı planlıyorsunuz?", "promotionPlaceholder": "örn. Blog, Sosyal medya, Bülten, Kişisel öneriler...", "privacy": "Kabul ediyorum", "submit": "Başvuruyu gönder", "submitting": "Gönderiliyor..." },
     "success": { "title": "Başvuru alındı!", "description": "Ortak programımıza gösterdiğiniz ilgi için teşekkürler.", "nextSteps": "Başvurunuzu inceleyeceğiz ve 2-3 iş günü içinde size geri döneceğiz.", "backToHome": "Ana sayfaya dön" },
     "errors": { "required": "Bu alan gereklidir", "invalidEmail": "Lütfen geçerli bir e-posta adresi girin", "privacyRequired": "Gizlilik politikasını kabul etmelisiniz", "submitFailed": "Başvuru gönderilemedi. Lütfen tekrar deneyin." }
+  },
+  "aiCredits": {
+    "title": "AI Kredileri",
+    "credits": "AI Kredileri",
+    "creditsRemaining": "{{remaining}} / {{limit}} kredi",
+    "creditsExhausted": "AI kredisi kalmadı",
+    "creditsReset": "Kredileriniz {{date}} tarihinde sıfırlanacak",
+    "upgradeForMore": "Daha fazla kredi için yükseltin",
+    "limitReached": "Kredi limiti doldu",
+    "monthly": "50 AI kredisi/ay",
+    "yearly": "100 AI kredisi/ay",
+    "lifetime": "75 AI kredisi/ay",
+    "description": "AI destekli planlama için",
+    "remaining": "{{remaining}} / {{limit}} kalan kredi",
+    "used": "Kullanıldı",
+    "limit": "Aylık limit",
+    "resetDate": "Sonraki sıfırlama",
+    "noCredits": "Kredi yok - Premium abonelik gerekli",
+    "perMonth": "kredi/ay"
+  },
+  "admin": {
+    "credits": {
+      "title": "Kredi Yönetimi",
+      "description": "Kullanıcılar için manuel kredi ayarlamaları",
+      "userSearch": "Kullanıcı ara (e-posta)",
+      "currentCredits": "Mevcut krediler",
+      "adjustCredits": "Kredileri ayarla",
+      "addCredits": "Kredi ekle",
+      "removeCredits": "Kredi kaldır",
+      "reason": "Sebep",
+      "reasonPlaceholder": "örn. Partner bonusu, İyi niyet, vb.",
+      "adjustmentSuccess": "Krediler başarıyla ayarlandı",
+      "noUser": "Kullanıcı bulunamadı",
+      "adjustmentHistory": "Ayarlama geçmişi",
+      "amount": "Miktar",
+      "adjustedBy": "Ayarlayan",
+      "date": "Tarih"
+    }
   }
 }

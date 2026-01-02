@@ -2154,7 +2154,45 @@
       "commissionRate": "Provisionssatz",
       "performance": "Performance",
       "conversionRate": "Konversionsrate",
-      "avgCommission": "Ø Provision"
+    "avgCommission": "Ø Provision"
+    }
+  },
+  "aiCredits": {
+    "title": "AI-Credits",
+    "credits": "AI-Credits",
+    "creditsRemaining": "{{remaining}} von {{limit}} Credits",
+    "creditsExhausted": "Keine AI-Credits mehr verfügbar",
+    "creditsReset": "Deine Credits werden am {{date}} zurückgesetzt",
+    "upgradeForMore": "Upgrade für mehr Credits",
+    "limitReached": "Credit-Limit erreicht",
+    "monthly": "50 AI-Credits/Monat",
+    "yearly": "100 AI-Credits/Monat",
+    "lifetime": "75 AI-Credits/Monat",
+    "description": "Für KI-gestützte Planung",
+    "remaining": "{{remaining}} von {{limit}} Credits verbleibend",
+    "used": "Verwendet",
+    "limit": "Monatliches Limit",
+    "resetDate": "Nächstes Reset",
+    "noCredits": "Keine Credits - Premium-Abo erforderlich",
+    "perMonth": "Credits/Monat"
+  },
+  "admin": {
+    "credits": {
+      "title": "Credit-Management",
+      "description": "Manuelle Credit-Anpassungen für Benutzer",
+      "userSearch": "Benutzer suchen (E-Mail)",
+      "currentCredits": "Aktuelle Credits",
+      "adjustCredits": "Credits anpassen",
+      "addCredits": "Credits hinzufügen",
+      "removeCredits": "Credits entfernen",
+      "reason": "Grund",
+      "reasonPlaceholder": "z.B. Partner-Bonus, Kulanz, etc.",
+      "adjustmentSuccess": "Credits erfolgreich angepasst",
+      "noUser": "Benutzer nicht gefunden",
+      "adjustmentHistory": "Anpassungs-Historie",
+      "amount": "Betrag",
+      "adjustedBy": "Angepasst von",
+      "date": "Datum"
     }
   }
 }

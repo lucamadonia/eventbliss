@@ -1296,5 +1296,43 @@
     "form": { "title": "Candidati ora", "agencyMode": "Tipo di agenzia", "existingAgency": "Seleziona agenzia dall'elenco", "newAgency": "Registra nuova agenzia", "searchAgency": "Cerca agenzia...", "noAgenciesFound": "Nessuna agenzia trovata", "agencyName": "Nome agenzia", "city": "Città", "country": "Paese", "contactEmail": "Email di contatto", "phone": "Telefono", "website": "Sito web", "motivation": "Perché vuoi diventare partner?", "motivationPlaceholder": "Raccontaci della tua agenzia e perché una partnership sarebbe vantaggiosa per entrambi...", "expectedReferrals": "Referral mensili previsti", "selectOption": "Seleziona", "payoutMethod": "Metodo di pagamento preferito", "bankTransfer": "Bonifico bancario", "privacy": "Accetto la", "submit": "Invia candidatura", "submitting": "Invio in corso..." },
     "success": { "title": "Candidatura inviata!", "description": "Grazie per il tuo interesse in una partnership.", "nextSteps": "Esamineremo la tua candidatura e ti contatteremo entro 48 ore.", "backToHome": "Torna alla home" },
     "errors": { "submitFailed": "Errore nell'invio della candidatura" }
+  },
+  "aiCredits": {
+    "title": "Crediti AI",
+    "credits": "Crediti AI",
+    "creditsRemaining": "{{remaining}} di {{limit}} crediti",
+    "creditsExhausted": "Nessun credito AI rimanente",
+    "creditsReset": "I tuoi crediti verranno ripristinati il {{date}}",
+    "upgradeForMore": "Passa a Premium per più crediti",
+    "limitReached": "Limite crediti raggiunto",
+    "monthly": "50 crediti AI/mese",
+    "yearly": "100 crediti AI/mese",
+    "lifetime": "75 crediti AI/mese",
+    "description": "Per la pianificazione con AI",
+    "remaining": "{{remaining}} di {{limit}} crediti rimanenti",
+    "used": "Utilizzati",
+    "limit": "Limite mensile",
+    "resetDate": "Prossimo reset",
+    "noCredits": "Nessun credito - Abbonamento Premium richiesto",
+    "perMonth": "crediti/mese"
+  },
+  "admin": {
+    "credits": {
+      "title": "Gestione crediti",
+      "description": "Regolazioni manuali dei crediti per gli utenti",
+      "userSearch": "Cerca utente (email)",
+      "currentCredits": "Crediti attuali",
+      "adjustCredits": "Regola crediti",
+      "addCredits": "Aggiungi crediti",
+      "removeCredits": "Rimuovi crediti",
+      "reason": "Motivo",
+      "reasonPlaceholder": "es. Bonus partner, Cortesia, ecc.",
+      "adjustmentSuccess": "Crediti regolati con successo",
+      "noUser": "Utente non trovato",
+      "adjustmentHistory": "Storico regolazioni",
+      "amount": "Importo",
+      "adjustedBy": "Regolato da",
+      "date": "Data"
+    }
   }
 }

@@ -1344,5 +1344,43 @@
     "form": { "title": "Solicitar ahora", "agencyMode": "Tipo de agencia", "existingAgency": "Seleccionar agencia del directorio", "newAgency": "Registrar nueva agencia", "searchAgency": "Buscar agencia...", "noAgenciesFound": "No se encontraron agencias", "agencyName": "Nombre de la agencia", "city": "Ciudad", "country": "País", "contactEmail": "Email de contacto", "phone": "Teléfono", "website": "Sitio web", "motivation": "¿Por qué quieres convertirte en socio?", "motivationPlaceholder": "Cuéntanos sobre tu agencia y por qué una asociación sería beneficiosa para ambas partes...", "expectedReferrals": "Referencias mensuales esperadas", "selectOption": "Por favor selecciona", "payoutMethod": "Método de pago preferido", "bankTransfer": "Transferencia bancaria", "privacy": "Acepto la", "submit": "Enviar solicitud", "submitting": "Enviando..." },
     "success": { "title": "¡Solicitud enviada!", "description": "Gracias por tu interés en una asociación.", "nextSteps": "Revisaremos tu solicitud y te contactaremos en 48 horas.", "backToHome": "Volver al inicio" },
     "errors": { "submitFailed": "Error al enviar la solicitud" }
+  },
+  "aiCredits": {
+    "title": "Créditos IA",
+    "credits": "Créditos IA",
+    "creditsRemaining": "{{remaining}} de {{limit}} créditos",
+    "creditsExhausted": "No quedan créditos IA",
+    "creditsReset": "Tus créditos se reiniciarán el {{date}}",
+    "upgradeForMore": "Actualiza para más créditos",
+    "limitReached": "Límite de créditos alcanzado",
+    "monthly": "50 créditos IA/mes",
+    "yearly": "100 créditos IA/mes",
+    "lifetime": "75 créditos IA/mes",
+    "description": "Para planificación con IA",
+    "remaining": "{{remaining}} de {{limit}} créditos restantes",
+    "used": "Usados",
+    "limit": "Límite mensual",
+    "resetDate": "Próximo reinicio",
+    "noCredits": "Sin créditos - Se requiere suscripción Premium",
+    "perMonth": "créditos/mes"
+  },
+  "admin": {
+    "credits": {
+      "title": "Gestión de créditos",
+      "description": "Ajustes manuales de créditos para usuarios",
+      "userSearch": "Buscar usuario (email)",
+      "currentCredits": "Créditos actuales",
+      "adjustCredits": "Ajustar créditos",
+      "addCredits": "Añadir créditos",
+      "removeCredits": "Eliminar créditos",
+      "reason": "Motivo",
+      "reasonPlaceholder": "ej. Bonus de socio, Cortesía, etc.",
+      "adjustmentSuccess": "Créditos ajustados correctamente",
+      "noUser": "Usuario no encontrado",
+      "adjustmentHistory": "Historial de ajustes",
+      "amount": "Cantidad",
+      "adjustedBy": "Ajustado por",
+      "date": "Fecha"
+    }
   }
 }

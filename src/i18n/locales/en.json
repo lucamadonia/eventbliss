@@ -2032,5 +2032,43 @@
     "tabs": { "dashboard": "Dashboard", "vouchers": "Vouchers", "commissions": "Commissions", "payouts": "Payouts", "settings": "Settings" },
     "stats": { "referrals": "Referrals", "bookings": "Bookings", "commission": "Commissions" },
     "dashboard": { "welcome": "Welcome back!", "subtitle": "Here's an overview of your partner activities.", "agencyInfo": "Agency Info", "name": "Name", "location": "Location", "commissionRate": "Commission Rate", "performance": "Performance", "conversionRate": "Conversion Rate", "avgCommission": "Avg. Commission" }
+  },
+  "aiCredits": {
+    "title": "AI Credits",
+    "credits": "AI Credits",
+    "creditsRemaining": "{{remaining}} of {{limit}} credits",
+    "creditsExhausted": "No AI credits remaining",
+    "creditsReset": "Your credits will reset on {{date}}",
+    "upgradeForMore": "Upgrade for more credits",
+    "limitReached": "Credit limit reached",
+    "monthly": "50 AI credits/month",
+    "yearly": "100 AI credits/month",
+    "lifetime": "75 AI credits/month",
+    "description": "For AI-powered planning",
+    "remaining": "{{remaining}} of {{limit}} credits remaining",
+    "used": "Used",
+    "limit": "Monthly limit",
+    "resetDate": "Next reset",
+    "noCredits": "No credits - Premium subscription required",
+    "perMonth": "credits/month"
+  },
+  "admin": {
+    "credits": {
+      "title": "Credit Management",
+      "description": "Manual credit adjustments for users",
+      "userSearch": "Search user (email)",
+      "currentCredits": "Current credits",
+      "adjustCredits": "Adjust credits",
+      "addCredits": "Add credits",
+      "removeCredits": "Remove credits",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g., Partner bonus, Goodwill, etc.",
+      "adjustmentSuccess": "Credits adjusted successfully",
+      "noUser": "User not found",
+      "adjustmentHistory": "Adjustment history",
+      "amount": "Amount",
+      "adjustedBy": "Adjusted by",
+      "date": "Date"
+    }
   }
 }

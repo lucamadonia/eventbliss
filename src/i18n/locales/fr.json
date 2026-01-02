@@ -1344,5 +1344,43 @@
     "form": { "title": "Postuler maintenant", "agencyMode": "Type d'agence", "existingAgency": "Sélectionner une agence du répertoire", "newAgency": "Enregistrer une nouvelle agence", "searchAgency": "Rechercher une agence...", "noAgenciesFound": "Aucune agence trouvée", "agencyName": "Nom de l'agence", "city": "Ville", "country": "Pays", "contactEmail": "Email de contact", "phone": "Téléphone", "website": "Site web", "motivation": "Pourquoi souhaitez-vous devenir partenaire ?", "motivationPlaceholder": "Parlez-nous de votre agence et pourquoi un partenariat serait bénéfique pour les deux parties...", "expectedReferrals": "Recommandations mensuelles attendues", "selectOption": "Veuillez sélectionner", "payoutMethod": "Mode de paiement préféré", "bankTransfer": "Virement bancaire", "privacy": "J'accepte la", "submit": "Soumettre la candidature", "submitting": "Envoi en cours..." },
     "success": { "title": "Candidature soumise !", "description": "Merci pour votre intérêt pour un partenariat.", "nextSteps": "Nous examinerons votre candidature et vous répondrons sous 48 heures.", "backToHome": "Retour à l'accueil" },
     "errors": { "submitFailed": "Erreur lors de la soumission de la candidature" }
+  },
+  "aiCredits": {
+    "title": "Crédits IA",
+    "credits": "Crédits IA",
+    "creditsRemaining": "{{remaining}} sur {{limit}} crédits",
+    "creditsExhausted": "Plus de crédits IA disponibles",
+    "creditsReset": "Vos crédits seront réinitialisés le {{date}}",
+    "upgradeForMore": "Passez à la version supérieure pour plus de crédits",
+    "limitReached": "Limite de crédits atteinte",
+    "monthly": "50 crédits IA/mois",
+    "yearly": "100 crédits IA/mois",
+    "lifetime": "75 crédits IA/mois",
+    "description": "Pour la planification assistée par IA",
+    "remaining": "{{remaining}} sur {{limit}} crédits restants",
+    "used": "Utilisés",
+    "limit": "Limite mensuelle",
+    "resetDate": "Prochaine réinitialisation",
+    "noCredits": "Pas de crédits - Abonnement Premium requis",
+    "perMonth": "crédits/mois"
+  },
+  "admin": {
+    "credits": {
+      "title": "Gestion des crédits",
+      "description": "Ajustements manuels des crédits pour les utilisateurs",
+      "userSearch": "Rechercher utilisateur (email)",
+      "currentCredits": "Crédits actuels",
+      "adjustCredits": "Ajuster les crédits",
+      "addCredits": "Ajouter des crédits",
+      "removeCredits": "Retirer des crédits",
+      "reason": "Raison",
+      "reasonPlaceholder": "ex. Bonus partenaire, Geste commercial, etc.",
+      "adjustmentSuccess": "Crédits ajustés avec succès",
+      "noUser": "Utilisateur non trouvé",
+      "adjustmentHistory": "Historique des ajustements",
+      "amount": "Montant",
+      "adjustedBy": "Ajusté par",
+      "date": "Date"
+    }
   }
 }
