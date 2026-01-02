@@ -43,6 +43,7 @@ const AgencyAffiliateManager = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showVoucherDialog, setShowVoucherDialog] = useState(false);
+  const [showManualAgencyDialog, setShowManualAgencyDialog] = useState(false);
   const [selectedAgencyForVoucher, setSelectedAgencyForVoucher] = useState<AgencyAffiliate | null>(null);
   const [availableVouchers, setAvailableVouchers] = useState<Array<{id: string; code: string; discount_type: string; discount_value: number | null}>>([]);
   const [selectedVoucherId, setSelectedVoucherId] = useState("");
@@ -50,6 +51,14 @@ const AgencyAffiliateManager = () => {
   const [commissionRate, setCommissionRate] = useState("10");
   const [contactEmail, setContactEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Manual agency form state
+  const [manualAgencyName, setManualAgencyName] = useState("");
+  const [manualAgencyCity, setManualAgencyCity] = useState("");
+  const [manualAgencyCountry, setManualAgencyCountry] = useState("Deutschland");
+  const [manualAgencyEmail, setManualAgencyEmail] = useState("");
+  const [manualAgencyPhone, setManualAgencyPhone] = useState("");
+  const [manualAgencyWebsite, setManualAgencyWebsite] = useState("");
 
   useEffect(() => {
     fetchAgencyAffiliates();
@@ -108,9 +117,63 @@ const AgencyAffiliateManager = () => {
 
       toast.success(t("admin.agencyAffiliate.addedSuccess", "Agentur als Partner hinzugefügt"));
       setShowAddDialog(false);
-      setSelectedAgency(null);
-      setCommissionRate("10");
-      setContactEmail("");
+      resetAddDialog();
+      fetchAgencyAffiliates();
+    } catch (error) {
+      console.error("Error adding agency affiliate:", error);
+      toast.error(t("admin.agencyAffiliate.addedError", "Fehler beim Hinzufügen"));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const resetAddDialog = () => {
+    setSelectedAgency(null);
+    setCommissionRate("10");
+    setContactEmail("");
+    setSearchQuery("");
+  };
+
+  const resetManualDialog = () => {
+    setManualAgencyName("");
+    setManualAgencyCity("");
+    setManualAgencyCountry("Deutschland");
+    setManualAgencyEmail("");
+    setManualAgencyPhone("");
+    setManualAgencyWebsite("");
+    setCommissionRate("10");
+  };
+
+  const handleAddManualAgency = async () => {
+    if (!manualAgencyName || !manualAgencyCity || !manualAgencyCountry) {
+      toast.error(t("admin.agencyAffiliate.fillRequired", "Bitte alle Pflichtfelder ausfüllen"));
+      return;
+    }
+    setIsSaving(true);
+
+    try {
+      // Generate a unique ID for the new agency
+      const uniqueId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const { error } = await supabase
+        .from("agency_affiliates" as never)
+        .insert({
+          agency_id: uniqueId,
+          agency_name: manualAgencyName,
+          agency_city: manualAgencyCity,
+          agency_country: manualAgencyCountry,
+          commission_rate: parseFloat(commissionRate),
+          commission_type: "percentage",
+          contact_email: manualAgencyEmail || null,
+          status: "active", // Directly active since admin creates it
+          is_verified: true,
+        } as never);
+
+      if (error) throw error;
+
+      toast.success(t("admin.agencyAffiliate.manualAddedSuccess", "Agentur manuell hinzugefügt"));
+      setShowManualAgencyDialog(false);
+      resetManualDialog();
       fetchAgencyAffiliates();
     } catch (error) {
       console.error("Error adding agency affiliate:", error);
@@ -263,10 +326,16 @@ const AgencyAffiliateManager = () => {
             {t("admin.agencyAffiliate.description", "Verwalte Agentur-Partnerschaften und Provisionen")}
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          {t("admin.agencyAffiliate.addAgency", "Agentur hinzufügen")}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowAddDialog(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t("admin.agencyAffiliate.addAgency", "Agentur hinzufügen")}
+          </Button>
+          <Button variant="outline" onClick={() => setShowManualAgencyDialog(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t("admin.agencyAffiliate.createAgency", "Neue Agentur")}
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -577,6 +646,120 @@ const AgencyAffiliateManager = () => {
               disabled={!selectedVoucherId || isSaving}
             >
               {isSaving ? t("common.saving", "Speichern...") : t("admin.agencyAffiliate.assignVoucherBtn", "Voucher zuweisen")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Agency Creation Dialog */}
+      <Dialog open={showManualAgencyDialog} onOpenChange={setShowManualAgencyDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t("admin.agencyAffiliate.createAgencyTitle", "Neue Agentur manuell anlegen")}</DialogTitle>
+            <DialogDescription>
+              {t("admin.agencyAffiliate.createAgencyDesc", "Erstelle eine neue Agentur, die nicht im Verzeichnis ist")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t("admin.agencyAffiliate.agencyName", "Agenturname")} *</Label>
+              <Input
+                value={manualAgencyName}
+                onChange={(e) => setManualAgencyName(e.target.value)}
+                placeholder="z.B. Party Events GmbH"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>{t("admin.agencyAffiliate.city", "Stadt")} *</Label>
+                <Input
+                  value={manualAgencyCity}
+                  onChange={(e) => setManualAgencyCity(e.target.value)}
+                  placeholder="z.B. München"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("admin.agencyAffiliate.country", "Land")} *</Label>
+                <Select value={manualAgencyCountry} onValueChange={setManualAgencyCountry}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Deutschland">Deutschland</SelectItem>
+                    <SelectItem value="Österreich">Österreich</SelectItem>
+                    <SelectItem value="Schweiz">Schweiz</SelectItem>
+                    <SelectItem value="Niederlande">Niederlande</SelectItem>
+                    <SelectItem value="Belgien">Belgien</SelectItem>
+                    <SelectItem value="Frankreich">Frankreich</SelectItem>
+                    <SelectItem value="Italien">Italien</SelectItem>
+                    <SelectItem value="Spanien">Spanien</SelectItem>
+                    <SelectItem value="Polen">Polen</SelectItem>
+                    <SelectItem value="Tschechien">Tschechien</SelectItem>
+                    <SelectItem value="Ungarn">Ungarn</SelectItem>
+                    <SelectItem value="Portugal">Portugal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("admin.agencyAffiliate.contactEmail", "Kontakt-Email")}</Label>
+              <Input
+                type="email"
+                value={manualAgencyEmail}
+                onChange={(e) => setManualAgencyEmail(e.target.value)}
+                placeholder="partner@agency.com"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>{t("admin.agencyAffiliate.phone", "Telefon")}</Label>
+                <Input
+                  type="tel"
+                  value={manualAgencyPhone}
+                  onChange={(e) => setManualAgencyPhone(e.target.value)}
+                  placeholder="+49 123 456789"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("admin.agencyAffiliate.website", "Website")}</Label>
+                <Input
+                  type="url"
+                  value={manualAgencyWebsite}
+                  onChange={(e) => setManualAgencyWebsite(e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("admin.agencyAffiliate.commissionRate", "Provisionssatz (%)")}</Label>
+              <Select value={commissionRate} onValueChange={setCommissionRate}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5%</SelectItem>
+                  <SelectItem value="10">10% (Standard)</SelectItem>
+                  <SelectItem value="15">15%</SelectItem>
+                  <SelectItem value="20">20%</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowManualAgencyDialog(false)}>
+              {t("common.cancel", "Abbrechen")}
+            </Button>
+            <Button 
+              onClick={handleAddManualAgency} 
+              disabled={!manualAgencyName || !manualAgencyCity || isSaving}
+            >
+              {isSaving ? t("common.saving", "Speichern...") : t("admin.agencyAffiliate.createPartner", "Agentur erstellen")}
             </Button>
           </DialogFooter>
         </DialogContent>

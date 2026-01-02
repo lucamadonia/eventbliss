@@ -15,6 +15,7 @@ export function LandingFooter() {
 
   const partnerLinks = [
     { label: t("landing.footer.becomePartner"), href: "/partner-apply" },
+    { label: t("landing.footer.becomeAgencyPartner"), href: "/agency-apply" },
     { label: t("landing.footer.partnerPortal"), href: "/partner-portal" },
   ];
 
