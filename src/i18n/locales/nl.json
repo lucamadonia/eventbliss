@@ -541,6 +541,32 @@
     "sendViaWhatsApp": "Verstuur via WhatsApp",
     "surveyLink": "Enquête Link",
     "accessCode": "Toegangscode",
+    "showMore": "Meer tonen",
+    "showLess": "Minder tonen",
+    "categories": {
+      "before": "Voor het Event",
+      "planning": "Planning",
+      "confirmed": "Bevestigd",
+      "after": "Na het Event"
+    },
+    "ai": {
+      "enhance": "Verbeteren met AI",
+      "dialogTitle": "Bericht verbeteren met AI",
+      "dialogDescription": "Pas het bericht aan met behulp van AI.",
+      "selectStyle": "Kies stijl",
+      "casual": "Meer informeel",
+      "formal": "Meer formeel",
+      "shorter": "Korter",
+      "detailed": "Meer detail",
+      "custom": "Aangepast",
+      "customPrompt": "Eigen instructies",
+      "customPlaceholder": "bijv. Voeg meer emoji's toe, maak het grappiger...",
+      "originalText": "Originele tekst",
+      "generateButton": "Bericht genereren",
+      "enhancing": "Wordt gegenereerd...",
+      "result": "Verbeterd bericht",
+      "error": "Fout bij genereren. Probeer het opnieuw."
+    },
     "proTip": {
       "title": "Pro Tip",
       "description": "Kopieer de berichten en deel ze direct via WhatsApp of andere messengers voor de beste resultaten."
@@ -626,6 +652,7 @@
     }
   },
   "expenses": {
+    "button": "Kosten",
     "title": "Uitgaven",
     "addExpense": "Uitgave Toevoegen",
     "totalAmount": "Totaalbedrag",

@@ -192,7 +192,7 @@ const EventDashboard = () => {
                 onClick={() => navigate(`/e/${slug}/expenses`)}
                 icon={<Wallet className="w-4 h-4" />}
               >
-                Kosten
+                {t('expenses.button')}
               </GradientButton>
             </div>
           </div>
