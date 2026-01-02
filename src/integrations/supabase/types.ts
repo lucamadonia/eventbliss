@@ -332,35 +332,116 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_affiliates: {
+        Row: {
+          affiliate_id: string | null
+          agency_city: string
+          agency_country: string
+          agency_id: string
+          agency_name: string
+          commission_rate: number | null
+          commission_type: Database["public"]["Enums"]["commission_type"] | null
+          contact_email: string | null
+          created_at: string | null
+          id: string
+          is_verified: boolean | null
+          status: string | null
+          total_bookings: number | null
+          total_commission: number | null
+          total_referrals: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          agency_city: string
+          agency_country: string
+          agency_id: string
+          agency_name: string
+          commission_rate?: number | null
+          commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          contact_email?: string | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          status?: string | null
+          total_bookings?: number | null
+          total_commission?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          agency_city?: string
+          agency_country?: string
+          agency_id?: string
+          agency_name?: string
+          commission_rate?: number | null
+          commission_type?:
+            | Database["public"]["Enums"]["commission_type"]
+            | null
+          contact_email?: string | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          status?: string | null
+          total_bookings?: number | null
+          total_commission?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_affiliates_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_interactions: {
         Row: {
           agency_id: string
           agency_name: string
+          booking_value: number | null
+          converted: boolean | null
+          converted_at: string | null
           created_at: string | null
           event_id: string | null
           id: string
           interaction_type: string
           metadata: Json | null
+          ref_code: string | null
           user_id: string | null
         }
         Insert: {
           agency_id: string
           agency_name: string
+          booking_value?: number | null
+          converted?: boolean | null
+          converted_at?: string | null
           created_at?: string | null
           event_id?: string | null
           id?: string
           interaction_type: string
           metadata?: Json | null
+          ref_code?: string | null
           user_id?: string | null
         }
         Update: {
           agency_id?: string
           agency_name?: string
+          booking_value?: number | null
+          converted?: boolean | null
+          converted_at?: string | null
           created_at?: string | null
           event_id?: string | null
           id?: string
           interaction_type?: string
           metadata?: Json | null
+          ref_code?: string | null
           user_id?: string | null
         }
         Relationships: [
