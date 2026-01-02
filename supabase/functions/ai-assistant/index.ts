@@ -1293,9 +1293,14 @@ serve(async (req) => {
     
     if (authHeader) {
       const token = authHeader.replace("Bearer ", "");
-      const { data: { user } } = await supabase.auth.getUser(token);
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
       userId = user?.id || null;
+      if (authError) {
+        console.log("Auth error (user may not be logged in):", authError.message);
+      }
     }
+    
+    console.log("AI request - userId present:", !!userId);
 
     // Parse and validate request body
     let body: unknown;
