@@ -43,8 +43,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
 import { AGENCIES, type Agency } from "@/lib/agencies-data";
+import { getLocalizedCountriesWithPriority } from "@/lib/countries";
 
 const formSchema = z.object({
   agency_mode: z.enum(["existing", "new"]),
@@ -72,8 +74,43 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+// Country Select Field Component
+function CountrySelectField({ form }: { form: ReturnType<typeof useForm<FormData>> }) {
+  const { t, i18n } = useTranslation();
+  const countries = useMemo(() => getLocalizedCountriesWithPriority(i18n.language), [i18n.language]);
+  
+  return (
+    <FormField
+      control={form.control}
+      name="new_agency_country"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("agencyApply.form.country", "Land")} *</FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <ScrollArea className="h-[300px]">
+                {countries.map((country) => (
+                  <SelectItem key={country.code} value={country.name}>
+                    {country.name}
+                  </SelectItem>
+                ))}
+              </ScrollArea>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 export default function AgencyApply() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -429,28 +466,7 @@ export default function AgencyApply() {
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name="new_agency_country"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t("agencyApply.form.country", "Land")} *</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="Deutschland">Deutschland</SelectItem>
-                                    <SelectItem value="Österreich">Österreich</SelectItem>
-                                    <SelectItem value="Schweiz">Schweiz</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <CountrySelectField form={form} />
                         </div>
                       </div>
                     )}

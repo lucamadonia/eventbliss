@@ -1973,5 +1973,44 @@
     "errors": {
       "submitFailed": "Fehler beim Einreichen der Bewerbung"
     }
+  },
+  "agencyPortal": {
+    "title": "Agentur-Portal",
+    "loginRequired": "Anmeldung erforderlich",
+    "loginDesc": "Bitte melde dich an, um auf das Agentur-Portal zuzugreifen.",
+    "activePartner": "Aktiver Partner",
+    "pending": {
+      "title": "Bewerbung in Bearbeitung",
+      "description": "Deine Bewerbung als Agentur-Partner wird derzeit geprüft.",
+      "notice": "Wir melden uns innerhalb von 48 Stunden bei dir."
+    },
+    "notAgency": {
+      "title": "Agentur-Partner werden",
+      "description": "Du bist noch kein Agentur-Partner. Registriere deine Agentur und verdiene Provisionen.",
+      "cta": "Jetzt bewerben"
+    },
+    "tabs": {
+      "dashboard": "Übersicht",
+      "vouchers": "Gutscheine",
+      "commissions": "Provisionen",
+      "payouts": "Auszahlungen",
+      "settings": "Einstellungen"
+    },
+    "stats": {
+      "referrals": "Empfehlungen",
+      "bookings": "Buchungen",
+      "commission": "Provisionen"
+    },
+    "dashboard": {
+      "welcome": "Willkommen zurück!",
+      "subtitle": "Hier siehst du eine Übersicht deiner Partner-Aktivitäten.",
+      "agencyInfo": "Agentur-Info",
+      "name": "Name",
+      "location": "Standort",
+      "commissionRate": "Provisionssatz",
+      "performance": "Performance",
+      "conversionRate": "Konversionsrate",
+      "avgCommission": "Ø Provision"
+    }
   }
 }

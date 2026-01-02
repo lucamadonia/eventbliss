@@ -17,6 +17,7 @@ export function LandingFooter() {
     { label: t("landing.footer.becomePartner"), href: "/partner-apply" },
     { label: t("landing.footer.becomeAgencyPartner"), href: "/agency-apply" },
     { label: t("landing.footer.partnerPortal"), href: "/partner-portal" },
+    { label: t("landing.footer.agencyPortal", "Agentur-Portal"), href: "/agency-portal" },
   ];
 
   const legalLinks = [
@@ -130,10 +131,10 @@ export function LandingFooter() {
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="w-5 h-5 shrink-0" />
                 <a
-                  href="mailto:info@eventbliss.app"
+                  href="mailto:info@event-bliss.com"
                   className="hover:text-foreground transition-colors"
                 >
-                  info@eventbliss.app
+                  info@event-bliss.com
                 </a>
               </div>
             </div>

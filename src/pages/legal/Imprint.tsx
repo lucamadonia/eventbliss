@@ -73,8 +73,8 @@ const Imprint = () => {
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@eventbliss.app" className="hover:text-foreground transition-colors">
-                  info@eventbliss.app
+                <a href="mailto:info@event-bliss.com" className="hover:text-foreground transition-colors">
+                  info@event-bliss.com
                 </a>
               </p>
             </div>
