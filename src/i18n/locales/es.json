@@ -1,4 +1,14 @@
 {
+  "theme": {
+    "title": "Apariencia",
+    "description": "Elige tu tema preferido",
+    "dark": "Modo Oscuro",
+    "darkDesc": "Moderno e inmersivo",
+    "light": "Modo Claro",
+    "lightDesc": "Claro y amigable",
+    "rose": "Rosé Blush",
+    "roseDesc": "Elegante y con estilo"
+  },
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",

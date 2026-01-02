@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
 import { 
   ChevronLeft, Mail, Lock, AlertTriangle, Trash2, Loader2, 
-  Crown, FileText, ExternalLink, Download, Calendar, CreditCard, Sparkles 
+  Crown, FileText, ExternalLink, Download, Calendar, CreditCard, Sparkles,
+  Palette, Moon, Sun
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,9 +48,16 @@ interface Invoice {
 export default function ProfileSettings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const { user, isLoading: authLoading, signOut } = useAuthContext();
   const { isPremium, planType, subscriptionEnd, cancelAtPeriodEnd, loading: premiumLoading } = usePremium();
   const { used: creditsUsed, remaining: creditsRemaining, limit: creditsLimit, resetDate: creditsResetDate, loading: creditsLoading } = useAICredits();
+
+  const themeOptions = [
+    { value: "dark", icon: Moon, labelKey: "theme.dark", descKey: "theme.darkDesc" },
+    { value: "light", icon: Sun, labelKey: "theme.light", descKey: "theme.lightDesc" },
+    { value: "rose", icon: Sparkles, labelKey: "theme.rose", descKey: "theme.roseDesc" },
+  ];
   
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -359,6 +369,49 @@ export default function ProfileSettings() {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Appearance / Theme */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.085 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5 text-primary" />
+                {t("theme.title", "Appearance")}
+              </CardTitle>
+              <CardDescription>{t("theme.description", "Choose your preferred theme")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RadioGroup
+                value={theme}
+                onValueChange={(value) => setTheme(value)}
+                className="grid gap-3"
+              >
+                {themeOptions.map((opt) => {
+                  const Icon = opt.icon;
+                  return (
+                    <div key={opt.value} className="flex items-center space-x-3">
+                      <RadioGroupItem value={opt.value} id={`theme-${opt.value}`} />
+                      <Label 
+                        htmlFor={`theme-${opt.value}`} 
+                        className="flex items-center gap-3 cursor-pointer flex-1"
+                      >
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex flex-col">
+                          <span className="font-medium">{t(opt.labelKey, opt.value)}</span>
+                          <span className="text-xs text-muted-foreground">{t(opt.descKey, "")}</span>
+                        </div>
+                      </Label>
+                    </div>
+                  );
+                })}
+              </RadioGroup>
             </CardContent>
           </Card>
         </motion.div>

@@ -1,4 +1,14 @@
 {
+  "theme": {
+    "title": "Uiterlijk",
+    "description": "Kies je voorkeurs thema",
+    "dark": "Donkere Modus",
+    "darkDesc": "Modern & meeslepend",
+    "light": "Lichte Modus",
+    "lightDesc": "Helder & vriendelijk",
+    "rose": "Rosé Blush",
+    "roseDesc": "Elegant & stijlvol"
+  },
   "common": {
     "save": "Opslaan",
     "cancel": "Annuleren",

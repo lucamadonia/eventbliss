@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { usePremium } from "./usePremium";
-import { AI_CREDIT_LIMITS, getStartOfMonth, getNextMonthReset, PlanType } from "@/lib/ai-credits";
+import { usePlanConfigs } from "./usePlanConfigs";
+import { getStartOfMonth, getNextMonthReset } from "@/lib/ai-credits";
 
 interface AICredits {
   used: number;
@@ -15,6 +16,7 @@ interface AICredits {
 export function useAICredits() {
   const { user } = useAuth();
   const { planType } = usePremium();
+  const { data: planConfigs, isLoading: planConfigsLoading } = usePlanConfigs();
   const [credits, setCredits] = useState<AICredits>({
     used: 0,
     limit: 0,
@@ -24,16 +26,35 @@ export function useAICredits() {
   });
   const [loading, setLoading] = useState(true);
 
+  // Get AI credits for a plan from plan_configs table
+  const getAICreditsForPlan = useCallback((planKey: string): number => {
+    if (!planConfigs || planConfigs.length === 0) {
+      // Fallback values if no config loaded
+      const fallbacks: Record<string, number> = {
+        free: 0,
+        monthly: 50,
+        yearly: 100,
+        lifetime: 75,
+      };
+      return fallbacks[planKey] || 0;
+    }
+    
+    const config = planConfigs.find((c) => c.plan_key === planKey);
+    return config?.ai_credits_monthly || 0;
+  }, [planConfigs]);
+
   const fetchCredits = useCallback(async () => {
-    if (!user?.id) {
-      setCredits({
-        used: 0,
-        limit: 0,
-        remaining: 0,
-        resetDate: getNextMonthReset(),
-        bonusCredits: 0,
-      });
-      setLoading(false);
+    if (!user?.id || planConfigsLoading) {
+      if (!planConfigsLoading) {
+        setCredits({
+          used: 0,
+          limit: 0,
+          remaining: 0,
+          resetDate: getNextMonthReset(),
+          bonusCredits: 0,
+        });
+        setLoading(false);
+      }
       return;
     }
 
@@ -59,7 +80,8 @@ export function useAICredits() {
         .gte("created_at", startOfMonth.toISOString());
 
       const bonusCredits = adjustments?.reduce((sum, adj) => sum + adj.amount, 0) || 0;
-      const baseLimit = AI_CREDIT_LIMITS[planType as PlanType] || 0;
+      // Get credits dynamically from plan_configs table
+      const baseLimit = getAICreditsForPlan(planType);
       const effectiveLimit = baseLimit + bonusCredits;
       const used = count || 0;
 
@@ -75,7 +97,7 @@ export function useAICredits() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, planType]);
+  }, [user?.id, planType, planConfigsLoading, getAICreditsForPlan]);
 
   useEffect(() => {
     fetchCredits();
@@ -83,7 +105,7 @@ export function useAICredits() {
 
   return {
     ...credits,
-    loading,
+    loading: loading || planConfigsLoading,
     refetch: fetchCredits,
   };
 }
