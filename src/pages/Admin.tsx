@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote, Building2, TrendingUp } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MembersTab } from "@/components/admin/MembersTab";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
@@ -16,6 +16,7 @@ import { CommissionsTab } from "@/components/admin/CommissionsTab";
 import { PayoutsTab } from "@/components/admin/PayoutsTab";
 import { AgencyAnalyticsTab } from "@/components/admin/AgencyAnalyticsTab";
 import { AgencyAffiliateManager } from "@/components/admin/AgencyAffiliateManager";
+import { CreditsTab } from "@/components/admin/CreditsTab";
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -62,10 +63,14 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="credits" className="gap-2">
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.credits", "Credits")}</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <UserPlus className="h-4 w-4" />
@@ -107,6 +112,10 @@ const Admin = () => {
 
           <TabsContent value="stats">
             <StatsOverview />
+          </TabsContent>
+
+          <TabsContent value="credits">
+            <CreditsTab />
           </TabsContent>
 
           <TabsContent value="users">
