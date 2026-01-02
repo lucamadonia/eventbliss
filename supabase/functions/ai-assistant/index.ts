@@ -352,7 +352,7 @@ Sei kreativ aber realistisch!`,
 5. 📝 Kurze Beschreibung
 
 Mische verschiedene Arten: Action, Entspannung, Essen/Trinken, Erlebnis.`,
-      day_plan: `Erstelle einen detaillierten Tagesablauf im folgenden Format:
+      day_plan: `WICHTIG: Erstelle einen STRUKTURIERTEN Tagesablauf mit EXAKT diesem Format:
 
 ## [Wochentag]: [Titel] [Emojis]
 
@@ -367,7 +367,12 @@ Mische verschiedene Arten: Action, Entspannung, Essen/Trinken, Erlebnis.`,
 
 ---
 
-Wiederhole das Format für jeden Zeitblock. Plane realistisch mit Pufferzeiten.`,
+REGELN:
+- Verwende ## für jeden Tag-Header (z.B. ## Freitag: Ankunft & Welcome! ✈️)
+- Verwende ### für jeden Zeitblock (z.B. ### 17:00 ✈️ Ankunft am Flughafen)
+- KEINE Bullet-Points (*) für Zeitblöcke - NUR ### verwenden!
+- Jeder Zeitblock MUSS eine eigene ### Zeile haben
+- Plane realistisch mit Pufferzeiten zwischen Aktivitäten`,
       budget_estimate: `Erstelle eine detaillierte Budget-Schätzung:
 📊 Aufschlüsselung nach Kategorien (Transport, Unterkunft, Aktivitäten, Essen, Extras)
 💰 Gesamtkosten pro Person
@@ -421,7 +426,7 @@ Be creative but realistic!`,
 5. 📝 Brief description
 
 Mix different types: Action, relaxation, food/drinks, experiences.`,
-      day_plan: `Create a detailed day schedule in this format:
+      day_plan: `IMPORTANT: Create a STRUCTURED day schedule using EXACTLY this format:
 
 ## [Day]: [Title] [Emojis]
 
@@ -436,7 +441,12 @@ Mix different types: Action, relaxation, food/drinks, experiences.`,
 
 ---
 
-Repeat this format for each time block. Plan realistically with buffer times.`,
+RULES:
+- Use ## for each day header (e.g. ## Friday: Arrival & Welcome! ✈️)
+- Use ### for each time block (e.g. ### 5:00 PM ✈️ Airport Arrival)
+- NO bullet points (*) for time blocks - ONLY use ###!
+- Each time block MUST have its own ### line
+- Plan realistically with buffer times between activities`,
       budget_estimate: `Create a detailed budget estimate:
 📊 Breakdown by category (Transport, accommodation, activities, food, extras)
 💰 Total cost per person
@@ -488,12 +498,21 @@ Sois créatif mais réaliste!`,
 3. 💰 Coût par personne
 4. 💪 Niveau de forme requis
 5. 📝 Brève description`,
-      day_plan: `Crée un programme détaillé:
-⏰ Planning avec horaires
-🚗 Transport entre activités
-🍽️ Recommandations resto
-💡 Conseils d'organisation
-⚠️ Points à considérer`,
+      day_plan: `IMPORTANT: Crée un programme STRUCTURÉ avec EXACTEMENT ce format:
+
+## [Jour]: [Titre] [Emojis]
+
+### [Heure] [Emoji] [Titre de l'activité]
+📍 Lieu: [Place/Restaurant/Hôtel]
+🚗 Transport: [Détails transport si nécessaire]
+💰 Coût: [Coût estimé par personne]
+💡 Pro-Tipp: [Conseil utile]
+
+[Brève description]
+
+---
+
+RÈGLES: Utilise ## pour chaque jour et ### pour chaque créneau horaire. PAS de points (*)!`,
       budget_estimate: `Crée une estimation budgétaire détaillée:
 📊 Répartition par catégorie
 💰 Coût total par personne
@@ -545,12 +564,21 @@ Sois créatif mais réaliste!`,
 3. 💰 Costo por persona
 4. 💪 Nivel de forma requerido
 5. 📝 Descripción breve`,
-      day_plan: `Crea un horario detallado:
-⏰ Programa con horarios
-🚗 Transporte entre actividades
-🍽️ Recomendaciones de comida
-💡 Consejos de organización
-⚠️ Cosas a considerar`,
+      day_plan: `IMPORTANTE: Crea un horario ESTRUCTURADO con EXACTAMENTE este formato:
+
+## [Día]: [Título] [Emojis]
+
+### [Hora] [Emoji] [Título de la actividad]
+📍 Lugar: [Sitio/Restaurante/Hotel]
+🚗 Transporte: [Detalles de transporte]
+💰 Coste: [Coste estimado por persona]
+💡 Pro-Tipp: [Consejo útil]
+
+[Breve descripción]
+
+---
+
+REGLAS: Usa ## para cada día y ### para cada bloque horario. ¡NO uses puntos (*)!`,
       budget_estimate: `Crea una estimación de presupuesto:
 📊 Desglose por categoría
 💰 Costo total por persona
@@ -602,12 +630,21 @@ Sii creativo ma realistico!`,
 3. 💰 Costo a persona
 4. 💪 Requisito fitness
 5. 📝 Breve descrizione`,
-      day_plan: `Crea un programma dettagliato:
-⏰ Timeline con orari
-🚗 Trasporto tra attività
-🍽️ Raccomandazioni cibo
-💡 Consigli organizzazione
-⚠️ Cose da considerare`,
+      day_plan: `IMPORTANTE: Crea un programma STRUTTURATO con ESATTAMENTE questo formato:
+
+## [Giorno]: [Titolo] [Emoji]
+
+### [Ora] [Emoji] [Titolo attività]
+📍 Luogo: [Posto/Ristorante/Hotel]
+🚗 Trasporto: [Dettagli trasporto]
+💰 Costo: [Costo stimato a persona]
+💡 Pro-Tipp: [Consiglio utile]
+
+[Breve descrizione]
+
+---
+
+REGOLE: Usa ## per ogni giorno e ### per ogni blocco orario. NON usare punti (*)!`,
       budget_estimate: `Crea una stima budget:
 📊 Suddivisione per categoria
 💰 Costo totale a persona
@@ -659,12 +696,21 @@ Wees creatief maar realistisch!`,
 3. 💰 Kosten per persoon
 4. 💪 Fitnessvereiste
 5. 📝 Korte beschrijving`,
-      day_plan: `Maak een gedetailleerd dagprogramma:
-⏰ Tijdschema met tijden
-🚗 Vervoer tussen activiteiten
-🍽️ Eten & drinken aanbevelingen
-💡 Organisatietips
-⚠️ Aandachtspunten`,
+      day_plan: `BELANGRIJK: Maak een GESTRUCTUREERD dagprogramma met EXACT dit formaat:
+
+## [Dag]: [Titel] [Emoji's]
+
+### [Tijd] [Emoji] [Activiteitstitel]
+📍 Locatie: [Plek/Restaurant/Hotel]
+🚗 Vervoer: [Vervoersdetails]
+💰 Kosten: [Geschatte kosten per persoon]
+💡 Pro-Tip: [Nuttige tip]
+
+[Korte beschrijving]
+
+---
+
+REGELS: Gebruik ## voor elke dag en ### voor elk tijdblok. GEEN opsommingstekens (*)!`,
       budget_estimate: `Maak een gedetailleerde budgetschatting:
 📊 Uitsplitsing per categorie
 💰 Totale kosten per persoon
@@ -716,12 +762,21 @@ Bądź kreatywny ale realistyczny!`,
 3. 💰 Koszt na osobę
 4. 💪 Wymagana kondycja
 5. 📝 Krótki opis`,
-      day_plan: `Stwórz szczegółowy harmonogram:
-⏰ Plan z godzinami
-🚗 Transport między aktywnościami
-🍽️ Rekomendacje jedzenia
-💡 Wskazówki organizacyjne
-⚠️ Na co uważać`,
+      day_plan: `WAŻNE: Stwórz STRUKTURALNY harmonogram z DOKŁADNIE tym formatem:
+
+## [Dzień]: [Tytuł] [Emoji]
+
+### [Godzina] [Emoji] [Tytuł aktywności]
+📍 Miejsce: [Lokalizacja/Restauracja/Hotel]
+🚗 Transport: [Szczegóły transportu]
+💰 Koszt: [Szacunkowy koszt na osobę]
+💡 Pro-Tip: [Przydatna wskazówka]
+
+[Krótki opis]
+
+---
+
+ZASADY: Używaj ## dla każdego dnia i ### dla każdego bloku czasowego. NIE używaj punktorów (*)!`,
       budget_estimate: `Stwórz szczegółową wycenę:
 📊 Podział na kategorie
 💰 Całkowity koszt na osobę
@@ -773,12 +828,21 @@ Sê criativo mas realista!`,
 3. 💰 Custo por pessoa
 4. 💪 Requisito de forma física
 5. 📝 Descrição breve`,
-      day_plan: `Cria um horário detalhado:
-⏰ Programa com horários
-🚗 Transporte entre atividades
-🍽️ Recomendações de comida
-💡 Dicas de organização
-⚠️ Coisas a considerar`,
+      day_plan: `IMPORTANTE: Cria um horário ESTRUTURADO com EXATAMENTE este formato:
+
+## [Dia]: [Título] [Emojis]
+
+### [Hora] [Emoji] [Título da atividade]
+📍 Local: [Sítio/Restaurante/Hotel]
+🚗 Transporte: [Detalhes de transporte]
+💰 Custo: [Custo estimado por pessoa]
+💡 Pro-Dica: [Dica útil]
+
+[Breve descrição]
+
+---
+
+REGRAS: Usa ## para cada dia e ### para cada bloco horário. NÃO uses pontos (*)!`,
       budget_estimate: `Cria uma estimativa de orçamento:
 📊 Divisão por categoria
 💰 Custo total por pessoa
@@ -830,12 +894,21 @@ Yaratıcı ama gerçekçi ol!`,
 3. 💰 Kişi başı maliyet
 4. 💪 Fitness gereksinimi
 5. 📝 Kısa açıklama`,
-      day_plan: `Detaylı bir günlük program oluştur:
-⏰ Saatlerle timeline
-🚗 Aktiviteler arası ulaşım
-🍽️ Yemek önerileri
-💡 Organizasyon ipuçları
-⚠️ Dikkat edilecekler`,
+      day_plan: `ÖNEMLİ: YAPILANDIRILMIŞ bir günlük program oluştur, TAM olarak bu formatla:
+
+## [Gün]: [Başlık] [Emojiler]
+
+### [Saat] [Emoji] [Aktivite Başlığı]
+📍 Yer: [Mekan/Restoran/Otel]
+🚗 Ulaşım: [Ulaşım detayları]
+💰 Maliyet: [Kişi başı tahmini maliyet]
+💡 Pro-İpucu: [Faydalı ipucu]
+
+[Kısa açıklama]
+
+---
+
+KURALLAR: Her gün için ## ve her zaman bloğu için ### kullan. Madde işareti (*) KULLANMA!`,
       budget_estimate: `Detaylı bütçe tahmini oluştur:
 📊 Kategorilere göre dağılım
 💰 Kişi başı toplam maliyet
@@ -887,12 +960,21 @@ Yaratıcı ama gerçekçi ol!`,
 3. 💰 التكلفة للشخص
 4. 💪 متطلبات اللياقة
 5. 📝 وصف موجز`,
-      day_plan: `أنشئ جدول يومي مفصل:
-⏰ برنامج بالأوقات
-🚗 التنقل بين الأنشطة
-🍽️ توصيات الطعام
-💡 نصائح التنظيم
-⚠️ أمور يجب مراعاتها`,
+      day_plan: `مهم: أنشئ جدول يومي منظم بالضبط بهذا التنسيق:
+
+## [اليوم]: [العنوان] [الرموز التعبيرية]
+
+### [الوقت] [الرمز] [عنوان النشاط]
+📍 المكان: [الموقع/المطعم/الفندق]
+🚗 التنقل: [تفاصيل النقل]
+💰 التكلفة: [التكلفة المقدرة للشخص]
+💡 نصيحة: [نصيحة مفيدة]
+
+[وصف موجز]
+
+---
+
+القواعد: استخدم ## لكل يوم و ### لكل فترة زمنية. لا تستخدم النقاط (*)!`,
       budget_estimate: `أنشئ تقدير ميزانية مفصل:
 📊 تقسيم حسب الفئة
 💰 التكلفة الإجمالية للشخص

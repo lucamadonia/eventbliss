@@ -54,11 +54,17 @@ export interface ParsedDayPlan {
 export function detectResponseType(response: string): 'day_plan' | 'activities' | 'general' {
   if (!response) return 'general';
   
-  // Day plan patterns: ## Day: Title or time patterns with multiple occurrences
-  const hasDayHeaders = /##\s*(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d|Jour|Día|Giorno|Dag|Dzień|Gün|يوم)/i.test(response);
+  // Day plan patterns - support multiple formats
+  // Pattern 1: ## Day: Title (structured format)
+  const hasStructuredDayHeaders = /##\s*(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d|Jour|Día|Giorno|Dag|Dzień|Gün|يوم)/i.test(response);
+  
+  // Pattern 2: **Day:** Title (bold format the AI sometimes uses)
+  const hasBoldDayHeaders = /\*\*\s*(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d)[:\s]/i.test(response);
+  
+  // Count time patterns
   const timeBlockCount = (response.match(/\d{1,2}:\d{2}\s*(Uhr|AM|PM|h)?/g) || []).length;
   
-  if (hasDayHeaders && timeBlockCount >= 3) return 'day_plan';
+  if ((hasStructuredDayHeaders || hasBoldDayHeaders) && timeBlockCount >= 3) return 'day_plan';
   
   // Activity patterns: ### Emoji Title with metadata
   const activityHeaders = (response.match(/###\s*[\p{Emoji}\u{1F300}-\u{1F9FF}]/gu) || []).length;
@@ -69,6 +75,9 @@ export function detectResponseType(response: string): 'day_plan' | 'activities' 
 
 /**
  * Parse day plan response into structured data
+ * Supports multiple formats:
+ * 1. ## Day: Title (structured)
+ * 2. **Day:** Title (bold)
  */
 export function parseDayPlan(response: string): ParsedDayPlan {
   const result: ParsedDayPlan = {
@@ -80,17 +89,46 @@ export function parseDayPlan(response: string): ParsedDayPlan {
 
   if (!response) return result;
 
-  // Split by day headers (## Day: Title)
-  const dayPattern = /##\s*([^:\n]+):?\s*([^\n]*)/g;
-  const daySections = response.split(/(?=##\s*(?:Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d|Jour|Día|Giorno|Dag|Dzień|Gün|يوم)[^#]*)/i);
+  // Try to split by different day header patterns
+  // Pattern 1: ## Day (structured markdown)
+  // Pattern 2: **Day:** (bold format)
+  const dayPatterns = [
+    /(?=##\s*(?:Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d)[^#]*)/gi,
+    /(?=\*\*\s*(?:Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d)[:\s][^*]*)/gi,
+  ];
 
-  // First section is intro
-  if (daySections.length > 0 && !daySections[0].match(/^##/)) {
-    result.intro = daySections[0].trim();
-    daySections.shift();
+  let daySections: string[] = [];
+  
+  // Try structured format first
+  const structuredSections = response.split(dayPatterns[0]).filter(s => s.trim());
+  if (structuredSections.length > 1) {
+    daySections = structuredSections;
+  } else {
+    // Try bold format
+    const boldSections = response.split(dayPatterns[1]).filter(s => s.trim());
+    if (boldSections.length > 1) {
+      daySections = boldSections;
+    }
   }
 
-  // Parse each day
+  // If no day sections found, try finding time blocks directly
+  if (daySections.length === 0) {
+    const hasTimeBlocks = response.match(/\d{1,2}:\d{2}\s*(Uhr|AM|PM|h)?/g);
+    if (hasTimeBlocks && hasTimeBlocks.length >= 3) {
+      // Treat entire response as single day
+      daySections = [response];
+    }
+  }
+
+  // Extract intro (content before first day)
+  if (daySections.length > 0) {
+    const firstDayStart = response.indexOf(daySections[0]);
+    if (firstDayStart > 0) {
+      result.intro = response.slice(0, firstDayStart).trim();
+    }
+  }
+
+  // Parse each day section
   for (const daySection of daySections) {
     if (!daySection.trim()) continue;
 
@@ -110,16 +148,53 @@ export function parseDayPlan(response: string): ParsedDayPlan {
 }
 
 function parseDaySection(section: string): ParsedDay | null {
-  const lines = section.split('\n');
+  const lines = section.split('\n').filter(l => l.trim());
   if (lines.length === 0) return null;
 
-  // Parse day header: ## Friday: Welcome & Arrival! 🎉
-  const headerMatch = lines[0].match(/##\s*([^:]+):?\s*(.*)/);
-  if (!headerMatch) return null;
+  // Try multiple header patterns
+  let dayName = '';
+  let titleWithEmoji = '';
+  let headerLineIndex = 0;
 
-  const dayName = headerMatch[1].trim();
-  const titleWithEmoji = headerMatch[2].trim();
+  // Pattern 1: ## Friday: Welcome & Arrival! 🎉
+  const structuredMatch = lines[0].match(/##\s*([^:]+):?\s*(.*)/);
+  // Pattern 2: **Friday:** Welcome & Arrival! 🎉
+  const boldMatch = lines[0].match(/\*\*\s*([^:*]+)[:\s]*\*\*\s*(.*)/);
+  // Pattern 3: **Friday: Welcome & Arrival! 🎉**
+  const boldMatch2 = lines[0].match(/\*\*\s*([^:]+):\s*([^*]+)\*\*/);
   
+  if (structuredMatch) {
+    dayName = structuredMatch[1].trim();
+    titleWithEmoji = structuredMatch[2].trim();
+  } else if (boldMatch) {
+    dayName = boldMatch[1].trim();
+    titleWithEmoji = boldMatch[2].trim();
+  } else if (boldMatch2) {
+    dayName = boldMatch2[1].trim();
+    titleWithEmoji = boldMatch2[2].trim();
+  } else {
+    // Try to find day name in first few lines
+    for (let i = 0; i < Math.min(3, lines.length); i++) {
+      const dayNameMatch = lines[i].match(/(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday)/i);
+      if (dayNameMatch) {
+        dayName = dayNameMatch[1];
+        titleWithEmoji = lines[i].replace(dayNameMatch[0], '').replace(/[*#:]/g, '').trim();
+        headerLineIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (!dayName) {
+    // Fallback: use "Tag 1" if we have time blocks
+    const hasTimeBlocks = section.match(/\d{1,2}:\d{2}/);
+    if (hasTimeBlocks) {
+      dayName = 'Tagesplan';
+    } else {
+      return null;
+    }
+  }
+
   // Extract emojis from title
   const emojiMatch = titleWithEmoji.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu);
   const emoji = emojiMatch ? emojiMatch.join('') : '📅';
@@ -132,36 +207,41 @@ function parseDaySection(section: string): ParsedDay | null {
     timeBlocks: [],
   };
 
-  // Parse time blocks
-  const timeBlockPattern = /###?\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*(?:–|-|bis|to)?\s*(?:\d{1,2}:\d{2}\s*(?:Uhr|AM|PM|h)?)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*(.+?)(?=###?\s*\d{1,2}:\d{2}|$)/guis;
+  // Get content after header
+  const sectionContent = lines.slice(headerLineIndex + 1).join('\n');
+
+  // Find all time blocks using multiple patterns
+  const timeMatches: { time: string; emoji: string; title: string; startIdx: number; content: string }[] = [];
   
-  let blockMatch;
-  const sectionContent = section.slice(lines[0].length);
+  // Split by time patterns and extract blocks
+  // Pattern: **17:00 Uhr:** **Title** or * **17:00 Uhr:** **Title** or ### 17:00 🎯 Title
+  const timeRegex = /(?:^|\n)\s*(?:\*\s*)?\*?\*?\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*?\*?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*\*?\*?([^*\n]+?)(?:\*\*)?(?=\n|$)/gmu;
   
-  // Alternative parsing: look for time patterns at start of lines
-  const timeLinePattern = /^\*?\*?\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?:?\s*\*?\*?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*\*?\*?([^*\n]+)\*?\*?/gum;
+  let match;
+  const allMatches: { time: string; emoji: string; title: string; idx: number }[] = [];
   
-  let lastIndex = 0;
-  const matches: { time: string; emoji: string; title: string; startIdx: number; endIdx: number }[] = [];
-  
-  while ((blockMatch = timeLinePattern.exec(sectionContent)) !== null) {
-    matches.push({
-      time: blockMatch[1] + (blockMatch[2] ? ` ${blockMatch[2]}` : ''),
-      emoji: blockMatch[3] || '📍',
-      title: blockMatch[4].trim().replace(/\*\*/g, ''),
-      startIdx: blockMatch.index,
-      endIdx: blockMatch.index + blockMatch[0].length,
+  while ((match = timeRegex.exec(sectionContent)) !== null) {
+    allMatches.push({
+      time: match[1] + (match[2] ? ` ${match[2]}` : ''),
+      emoji: match[3] || '📍',
+      title: match[4].trim().replace(/\*\*/g, ''),
+      idx: match.index,
     });
   }
 
-  // Parse content between time blocks
-  for (let i = 0; i < matches.length; i++) {
-    const match = matches[i];
-    const nextMatch = matches[i + 1];
-    const endIdx = nextMatch ? nextMatch.startIdx : sectionContent.length;
-    const content = sectionContent.slice(match.endIdx, endIdx);
-
-    const timeBlock = parseTimeBlockContent(match.time, match.emoji, match.title, content);
+  // Extract content between time blocks
+  for (let i = 0; i < allMatches.length; i++) {
+    const current = allMatches[i];
+    const next = allMatches[i + 1];
+    
+    // Find the end of current block's header line
+    const headerEndIdx = sectionContent.indexOf('\n', current.idx);
+    const contentStart = headerEndIdx !== -1 ? headerEndIdx : current.idx + 50;
+    const contentEnd = next ? next.idx : sectionContent.length;
+    
+    const content = sectionContent.slice(contentStart, contentEnd).trim();
+    
+    const timeBlock = parseTimeBlockContent(current.time, current.emoji, current.title, content);
     day.timeBlocks.push(timeBlock);
   }
 
