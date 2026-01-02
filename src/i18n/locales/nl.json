@@ -435,6 +435,7 @@
     "tabs": {
       "overview": "Overzicht",
       "planner": "Planner",
+      "responses": "Antwoorden",
       "ideas": "Ideeën",
       "form": "Formulier",
       "schedule": "Planning",
@@ -443,6 +444,64 @@
       "ai": "AI Assistent",
       "messages": "Berichten",
       "settings": "Instellingen"
+    },
+    "responses": {
+      "title": "Enquête Antwoorden",
+      "subtitle": "{{count}} antwoorden ontvangen",
+      "loading": "Antwoorden laden...",
+      "noResponses": "Nog geen antwoorden",
+      "noResponsesDesc": "Wanneer deelnemers de enquête invullen, verschijnen hun antwoorden hier.",
+      "exportCsv": "CSV Exporteren",
+      "filter": "Filteren",
+      "attendance": {
+        "yes": "Aanwezig",
+        "maybe": "Misschien",
+        "no": "Afwezig"
+      },
+      "columns": {
+        "name": "Naam",
+        "attendance": "Aanwezigheid",
+        "duration": "Duur",
+        "budget": "Budget",
+        "destination": "Bestemming",
+        "fitness": "Fitness",
+        "alcohol": "Alcohol",
+        "travel": "Reistijd",
+        "activities": "Activiteiten",
+        "restrictions": "Beperkingen",
+        "suggestions": "Suggesties"
+      }
+    },
+    "team": {
+      "title": "Dashboard Toegang Beheren",
+      "description": "Schakel dashboard toegang in voor deelnemers en deel de uitnodigingslink.",
+      "addParticipant": "Deelnemer Toevoegen",
+      "addParticipantDesc": "Voeg een nieuwe gast toe aan het evenement",
+      "participantName": "Naam",
+      "participantEmail": "Email (optioneel)",
+      "participantRole": "Rol",
+      "namePlaceholder": "bijv. Jan Jansen",
+      "emailPlaceholder": "jan@example.com",
+      "addButton": "Toevoegen",
+      "nameRequired": "Naam is verplicht",
+      "participantAdded": "{{name}} is toegevoegd",
+      "addError": "Fout bij toevoegen",
+      "roles": {
+        "guest": "Gast",
+        "organizer": "Organisator"
+      },
+      "status": {
+        "activated": "Geactiveerd",
+        "invited": "Uitgenodigd",
+        "ready": "Klaar",
+        "noAccess": "Geen Toegang"
+      },
+      "permissions": {
+        "viewResponses": "Antwoorden bekijken",
+        "addExpenses": "Uitgaven toevoegen",
+        "viewAllExpenses": "Alle uitgaven bekijken",
+        "editSettings": "Instellingen bewerken"
+      }
     },
     "overview": {
       "title": "Overzicht",

@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Sparkles,
   ClipboardList,
+  ClipboardCheck,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
@@ -30,11 +31,13 @@ import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import { AgenciesTab } from "@/components/dashboard/AgenciesTab";
 import { PlannerTab } from "@/components/dashboard/PlannerTab";
+import { ResponsesTab } from "@/components/dashboard/ResponsesTab";
 import { FileEdit, Building2 } from "lucide-react";
 
 const tabs = [
   { id: "overview", labelKey: "dashboard.tabs.overview", icon: LayoutDashboard },
   { id: "planner", labelKey: "dashboard.tabs.planner", icon: ClipboardList },
+  { id: "responses", labelKey: "dashboard.tabs.responses", icon: ClipboardCheck },
   { id: "formbuilder", labelKey: "dashboard.tabs.form", icon: FileEdit },
   { id: "schedule", labelKey: "dashboard.tabs.schedule", icon: Calendar },
   { id: "destination", labelKey: "dashboard.tabs.destination", icon: MapPin },
@@ -59,9 +62,18 @@ interface Response {
   id: string;
   participant: string;
   attendance: string;
-  suggestions: string | null;
+  budget: string;
+  destination: string;
+  duration_pref: string;
+  travel_pref: string;
+  fitness_level: string;
+  alcohol: string | null;
   restrictions: string | null;
+  suggestions: string | null;
   partial_days: string | null;
+  preferences: string[];
+  date_blocks: string[];
+  created_at: string;
 }
 
 const EventDashboard = () => {
@@ -144,6 +156,8 @@ const EventDashboard = () => {
             onTabChange={setActiveTab}
           />
         );
+      case "responses":
+        return <ResponsesTab event={event} responses={responses} isLoading={statsLoading} />;
       case "formbuilder":
         return <FormBuilderTab event={event} onUpdate={refetch} />;
       case "schedule":

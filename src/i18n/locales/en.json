@@ -558,6 +558,7 @@
     "tabs": {
       "overview": "Overview",
       "planner": "Planner",
+      "responses": "Responses",
       "ideas": "Ideas",
       "form": "Form",
       "schedule": "Schedule",
@@ -566,6 +567,64 @@
       "ai": "AI Assistant",
       "messages": "Messages",
       "settings": "Settings"
+    },
+    "responses": {
+      "title": "Survey Responses",
+      "subtitle": "{{count}} responses received",
+      "loading": "Loading responses...",
+      "noResponses": "No responses yet",
+      "noResponsesDesc": "Once participants complete the survey, their responses will appear here.",
+      "exportCsv": "Export CSV",
+      "filter": "Filter",
+      "attendance": {
+        "yes": "Attending",
+        "maybe": "Maybe",
+        "no": "Not attending"
+      },
+      "columns": {
+        "name": "Name",
+        "attendance": "Attendance",
+        "duration": "Duration",
+        "budget": "Budget",
+        "destination": "Destination",
+        "fitness": "Fitness",
+        "alcohol": "Alcohol",
+        "travel": "Travel Time",
+        "activities": "Activities",
+        "restrictions": "Restrictions",
+        "suggestions": "Suggestions"
+      }
+    },
+    "team": {
+      "title": "Manage Dashboard Access",
+      "description": "Enable dashboard access for participants and share the invite link. With the link they can create an account and verify themselves.",
+      "addParticipant": "Add Participant",
+      "addParticipantDesc": "Add a new guest to the event",
+      "participantName": "Name",
+      "participantEmail": "Email (optional)",
+      "participantRole": "Role",
+      "namePlaceholder": "e.g. John Doe",
+      "emailPlaceholder": "john@example.com",
+      "addButton": "Add",
+      "nameRequired": "Name is required",
+      "participantAdded": "{{name}} has been added",
+      "addError": "Error adding participant",
+      "roles": {
+        "guest": "Guest",
+        "organizer": "Organizer"
+      },
+      "status": {
+        "activated": "Activated",
+        "invited": "Invited",
+        "ready": "Ready",
+        "noAccess": "No Access"
+      },
+      "permissions": {
+        "viewResponses": "View responses",
+        "addExpenses": "Add expenses",
+        "viewAllExpenses": "View all expenses",
+        "editSettings": "Edit settings"
+      }
     },
     "overview": {
       "title": "Overview",

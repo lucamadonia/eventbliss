@@ -429,6 +429,7 @@
     "tabs": {
       "overview": "Przegląd",
       "planner": "Planer",
+      "responses": "Odpowiedzi",
       "ideas": "Pomysły",
       "form": "Formularz",
       "schedule": "Harmonogram",
@@ -437,6 +438,64 @@
       "ai": "Asystent AI",
       "messages": "Wiadomości",
       "settings": "Ustawienia"
+    },
+    "responses": {
+      "title": "Odpowiedzi z Ankiety",
+      "subtitle": "{{count}} odpowiedzi otrzymanych",
+      "loading": "Ładowanie odpowiedzi...",
+      "noResponses": "Brak odpowiedzi",
+      "noResponsesDesc": "Gdy uczestnicy wypełnią ankietę, ich odpowiedzi pojawią się tutaj.",
+      "exportCsv": "Eksportuj CSV",
+      "filter": "Filtruj",
+      "attendance": {
+        "yes": "Uczestniczy",
+        "maybe": "Może",
+        "no": "Nie uczestniczy"
+      },
+      "columns": {
+        "name": "Imię",
+        "attendance": "Obecność",
+        "duration": "Czas trwania",
+        "budget": "Budżet",
+        "destination": "Cel",
+        "fitness": "Kondycja",
+        "alcohol": "Alkohol",
+        "travel": "Czas podróży",
+        "activities": "Aktywności",
+        "restrictions": "Ograniczenia",
+        "suggestions": "Sugestie"
+      }
+    },
+    "team": {
+      "title": "Zarządzaj Dostępem do Panelu",
+      "description": "Włącz dostęp do panelu dla uczestników i udostępnij link z zaproszeniem.",
+      "addParticipant": "Dodaj Uczestnika",
+      "addParticipantDesc": "Dodaj nowego gościa do wydarzenia",
+      "participantName": "Imię",
+      "participantEmail": "Email (opcjonalnie)",
+      "participantRole": "Rola",
+      "namePlaceholder": "np. Jan Kowalski",
+      "emailPlaceholder": "jan@example.com",
+      "addButton": "Dodaj",
+      "nameRequired": "Imię jest wymagane",
+      "participantAdded": "{{name}} został dodany",
+      "addError": "Błąd podczas dodawania",
+      "roles": {
+        "guest": "Gość",
+        "organizer": "Organizator"
+      },
+      "status": {
+        "activated": "Aktywowany",
+        "invited": "Zaproszony",
+        "ready": "Gotowy",
+        "noAccess": "Brak Dostępu"
+      },
+      "permissions": {
+        "viewResponses": "Przeglądaj odpowiedzi",
+        "addExpenses": "Dodaj wydatki",
+        "viewAllExpenses": "Przeglądaj wszystkie wydatki",
+        "editSettings": "Edytuj ustawienia"
+      }
     },
     "overview": {
       "title": "Przegląd",

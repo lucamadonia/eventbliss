@@ -429,6 +429,7 @@
     "tabs": {
       "overview": "نظرة عامة",
       "planner": "المخطط",
+      "responses": "الردود",
       "ideas": "أفكار",
       "form": "النموذج",
       "schedule": "الجدول",
@@ -437,6 +438,64 @@
       "ai": "مساعد الذكاء الاصطناعي",
       "messages": "الرسائل",
       "settings": "الإعدادات"
+    },
+    "responses": {
+      "title": "ردود الاستبيان",
+      "subtitle": "{{count}} ردود مستلمة",
+      "loading": "جاري تحميل الردود...",
+      "noResponses": "لا توجد ردود بعد",
+      "noResponsesDesc": "عندما يكمل المشاركون الاستبيان، ستظهر ردودهم هنا.",
+      "exportCsv": "تصدير CSV",
+      "filter": "تصفية",
+      "attendance": {
+        "yes": "مشارك",
+        "maybe": "ربما",
+        "no": "غير مشارك"
+      },
+      "columns": {
+        "name": "الاسم",
+        "attendance": "الحضور",
+        "duration": "المدة",
+        "budget": "الميزانية",
+        "destination": "الوجهة",
+        "fitness": "اللياقة",
+        "alcohol": "الكحول",
+        "travel": "وقت السفر",
+        "activities": "الأنشطة",
+        "restrictions": "القيود",
+        "suggestions": "الاقتراحات"
+      }
+    },
+    "team": {
+      "title": "إدارة الوصول للوحة التحكم",
+      "description": "قم بتمكين الوصول للوحة التحكم للمشاركين وشارك رابط الدعوة.",
+      "addParticipant": "إضافة مشارك",
+      "addParticipantDesc": "أضف ضيفًا جديدًا للفعالية",
+      "participantName": "الاسم",
+      "participantEmail": "البريد الإلكتروني (اختياري)",
+      "participantRole": "الدور",
+      "namePlaceholder": "مثال: أحمد محمد",
+      "emailPlaceholder": "ahmed@example.com",
+      "addButton": "إضافة",
+      "nameRequired": "الاسم مطلوب",
+      "participantAdded": "تم إضافة {{name}}",
+      "addError": "خطأ في الإضافة",
+      "roles": {
+        "guest": "ضيف",
+        "organizer": "منظم"
+      },
+      "status": {
+        "activated": "مفعل",
+        "invited": "مدعو",
+        "ready": "جاهز",
+        "noAccess": "لا وصول"
+      },
+      "permissions": {
+        "viewResponses": "عرض الردود",
+        "addExpenses": "إضافة النفقات",
+        "viewAllExpenses": "عرض جميع النفقات",
+        "editSettings": "تعديل الإعدادات"
+      }
     },
     "overview": {
       "title": "نظرة عامة",
