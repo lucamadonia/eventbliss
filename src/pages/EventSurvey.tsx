@@ -80,7 +80,7 @@ const EventSurvey = () => {
         logoUrl={settings.branding?.logo_url}
         templateId={settings.branding?.template_id}
       />
-      <InfoCard />
+      <InfoCard noGos={settings.no_gos} focusPoints={settings.focus_points} />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />
       <DynamicSurveyForm 
         isLocked={isFormLocked} 

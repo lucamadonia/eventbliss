@@ -453,6 +453,23 @@
     "alreadySubmitted": "You have already responded",
     "submitSuccess": "Response submitted successfully!",
     "submitError": "Error submitting response",
+    "info": {
+      "title": "Important Info",
+      "noGos": "No-Gos",
+      "focus": "Focus / Wishes",
+      "privacy": "No phone numbers. Only planning data.",
+      "defaultNoGos": [
+        "No strippers",
+        "No street vendor gimmicks",
+        "No pub crawls / drinking tours"
+      ],
+      "defaultFocusPoints": [
+        "Action, fun, activities",
+        "Shared experiences",
+        "Cool instead of embarrassing",
+        "Nobody is forced into anything"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Who are you?",

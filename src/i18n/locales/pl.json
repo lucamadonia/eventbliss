@@ -324,6 +324,23 @@
     "alreadySubmitted": "Już odpowiedziałeś",
     "submitSuccess": "Odpowiedź przesłana pomyślnie!",
     "submitError": "Błąd podczas przesyłania odpowiedzi",
+    "info": {
+      "title": "Ważne Informacje",
+      "noGos": "Zakazy",
+      "focus": "Cel / Życzenia",
+      "privacy": "Bez numerów telefonów. Tylko dane do planowania.",
+      "defaultNoGos": [
+        "Bez stripterek",
+        "Bez sprzedaży ulicznej",
+        "Bez pubcrawli"
+      ],
+      "defaultFocusPoints": [
+        "Akcja, zabawa, aktywności",
+        "Wspólne przeżycia",
+        "Fajnie zamiast żenująco",
+        "Nikt nie jest zmuszany"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Kim jesteś?",

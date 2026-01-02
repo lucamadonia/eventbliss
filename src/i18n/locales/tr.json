@@ -324,6 +324,23 @@
     "alreadySubmitted": "Zaten cevap verdiniz",
     "submitSuccess": "Cevap başarıyla gönderildi!",
     "submitError": "Cevap gönderilirken hata oluştu",
+    "info": {
+      "title": "Önemli Bilgiler",
+      "noGos": "Yasaklar",
+      "focus": "Odak / İstekler",
+      "privacy": "Telefon numarası yok. Sadece planlama verileri.",
+      "defaultNoGos": [
+        "Striptizci yok",
+        "Sokak satıcısı yok",
+        "Bar turu yok"
+      ],
+      "defaultFocusPoints": [
+        "Aksiyon, eğlence, aktiviteler",
+        "Ortak deneyimler",
+        "Utanç verici değil havalı",
+        "Kimse zorlanmaz"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Siz kimsiniz?",

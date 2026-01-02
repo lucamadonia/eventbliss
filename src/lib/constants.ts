@@ -107,14 +107,16 @@ export const ALCOHOL_OPTIONS = [
   { value: "either", label: "Egal" },
 ] as const;
 
-// No-Go Liste für Anzeige
+// DEPRECATED: No-Go Liste - now uses translations from i18n
+// Kept for backward compatibility, but InfoCard now uses translations
 export const NO_GOS = [
   "Keine Stripper",
   "Kein Bauchladen / Straßenverkauf",
   "Keine Sauf-/Kneipen-/Bartouren",
 ] as const;
 
-// Fokus/Wünsche für Anzeige
+// DEPRECATED: Fokus/Wünsche - now uses translations from i18n  
+// Kept for backward compatibility, but InfoCard now uses translations
 export const FOCUS_POINTS = [
   "Action, Spaß, Aktivitäten",
   "Gemeinsame Erlebnisse",

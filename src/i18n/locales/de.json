@@ -453,6 +453,23 @@
     "alreadySubmitted": "Du hast bereits geantwortet",
     "submitSuccess": "Antwort erfolgreich abgeschickt!",
     "submitError": "Fehler beim Absenden",
+    "info": {
+      "title": "Wichtige Infos",
+      "noGos": "No-Gos",
+      "focus": "Fokus / Wünsche",
+      "privacy": "Keine Telefonnummern. Nur Planungsdaten.",
+      "defaultNoGos": [
+        "Keine Stripper",
+        "Kein Bauchladen / Straßenverkauf",
+        "Keine Sauf-/Kneipen-/Bartouren"
+      ],
+      "defaultFocusPoints": [
+        "Action, Spaß, Aktivitäten",
+        "Gemeinsame Erlebnisse",
+        "Cool statt peinlich",
+        "Niemand wird zu etwas gezwungen"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Wer bist du?",

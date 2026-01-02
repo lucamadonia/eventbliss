@@ -292,6 +292,23 @@
     "alreadySubmitted": "Hai già risposto",
     "submitSuccess": "Risposta inviata con successo!",
     "submitError": "Errore nell'invio della risposta",
+    "info": {
+      "title": "Info Importanti",
+      "noGos": "Da Evitare",
+      "focus": "Focus / Desideri",
+      "privacy": "Niente numeri di telefono. Solo dati di pianificazione.",
+      "defaultNoGos": [
+        "Niente spogliarelliste",
+        "Niente venditori ambulanti",
+        "Niente tour dei pub"
+      ],
+      "defaultFocusPoints": [
+        "Azione, divertimento, attività",
+        "Esperienze condivise",
+        "Figo invece che imbarazzante",
+        "Nessuno è costretto"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Chi sei?",

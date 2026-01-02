@@ -340,6 +340,23 @@
     "alreadySubmitted": "Ya has respondido",
     "submitSuccess": "¡Respuesta enviada con éxito!",
     "submitError": "Error al enviar respuesta",
+    "info": {
+      "title": "Info Importante",
+      "noGos": "No-Gos",
+      "focus": "Enfoque / Deseos",
+      "privacy": "Sin números de teléfono. Solo datos de planificación.",
+      "defaultNoGos": [
+        "Sin strippers",
+        "Sin vendedores ambulantes",
+        "Sin tours de bares"
+      ],
+      "defaultFocusPoints": [
+        "Acción, diversión, actividades",
+        "Experiencias compartidas",
+        "Cool en lugar de vergonzoso",
+        "Nadie es obligado a nada"
+      ]
+    },
     "questions": {
       "name": {
         "label": "¿Quién eres?",

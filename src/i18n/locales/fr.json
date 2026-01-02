@@ -340,6 +340,23 @@
     "alreadySubmitted": "Vous avez déjà répondu",
     "submitSuccess": "Réponse envoyée avec succès !",
     "submitError": "Erreur lors de l'envoi de la réponse",
+    "info": {
+      "title": "Infos Importantes",
+      "noGos": "À éviter",
+      "focus": "Focus / Souhaits",
+      "privacy": "Pas de numéros de téléphone. Uniquement des données de planification.",
+      "defaultNoGos": [
+        "Pas de strip-tease",
+        "Pas de vente ambulante",
+        "Pas de tournées des bars"
+      ],
+      "defaultFocusPoints": [
+        "Action, fun, activités",
+        "Expériences partagées",
+        "Cool plutôt qu'embarrassant",
+        "Personne n'est forcé"
+      ]
+    },
     "questions": {
       "name": {
         "label": "Qui êtes-vous ?",
