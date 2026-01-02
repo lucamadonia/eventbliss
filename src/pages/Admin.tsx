@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MembersTab } from "@/components/admin/MembersTab";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
@@ -17,6 +17,7 @@ import { PayoutsTab } from "@/components/admin/PayoutsTab";
 import { AgencyAnalyticsTab } from "@/components/admin/AgencyAnalyticsTab";
 import { AgencyAffiliateManager } from "@/components/admin/AgencyAffiliateManager";
 import { CreditsTab } from "@/components/admin/CreditsTab";
+import { PlanSettingsTab } from "@/components/admin/PlanSettingsTab";
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -63,7 +64,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
@@ -107,6 +108,10 @@ const Admin = () => {
             <TabsTrigger value="agency-affiliates" className="gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.agencyAffiliates", "Agentur-Partner")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("admin.tabs.settings", "Einstellungen")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -152,6 +157,10 @@ const Admin = () => {
 
           <TabsContent value="agency-affiliates">
             <AgencyAffiliateManager />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <PlanSettingsTab />
           </TabsContent>
         </Tabs>
       </main>

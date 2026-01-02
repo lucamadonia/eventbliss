@@ -53,6 +53,36 @@ export type Database = {
           },
         ]
       }
+      admin_messages: {
+        Row: {
+          admin_id: string
+          content: string
+          created_at: string | null
+          id: string
+          subject: string
+          template_key: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          subject: string
+          template_key?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          subject?: string
+          template_key?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       affiliate_commissions: {
         Row: {
           affiliate_id: string
@@ -898,6 +928,54 @@ export type Database = {
           },
         ]
       }
+      plan_configs: {
+        Row: {
+          ai_credits_monthly: number
+          billing_interval: string | null
+          created_at: string | null
+          display_name: string
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          plan_key: string
+          price_cents: number | null
+          price_currency: string | null
+          sort_order: number | null
+          stripe_price_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_credits_monthly?: number
+          billing_interval?: string | null
+          created_at?: string | null
+          display_name: string
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          plan_key: string
+          price_cents?: number | null
+          price_currency?: string | null
+          sort_order?: number | null
+          stripe_price_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_credits_monthly?: number
+          billing_interval?: string | null
+          created_at?: string | null
+          display_name?: string
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          plan_key?: string
+          price_cents?: number | null
+          price_currency?: string | null
+          sort_order?: number | null
+          stripe_price_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -1109,6 +1187,8 @@ export type Database = {
           created_at: string
           expires_at: string | null
           id: string
+          is_manual: boolean | null
+          notes: string | null
           plan: string
           started_at: string | null
           stripe_customer_id: string | null
@@ -1120,6 +1200,8 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          is_manual?: boolean | null
+          notes?: string | null
           plan?: string
           started_at?: string | null
           stripe_customer_id?: string | null
@@ -1131,6 +1213,8 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          is_manual?: boolean | null
+          notes?: string | null
           plan?: string
           started_at?: string | null
           stripe_customer_id?: string | null
