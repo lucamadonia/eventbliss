@@ -1368,7 +1368,34 @@
     "deleteAccountWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Events und Daten werden dauerhaft gelöscht.",
     "typeDeleteToConfirm": "Tippe DELETE um zu bestätigen",
     "deleteConfirmationRequired": "Bitte tippe DELETE um zu bestätigen.",
-    "accountDeleteRequested": "Account-Löschung angefordert."
+    "accountDeleteRequested": "Account-Löschung angefordert.",
+    "subscription": {
+      "title": "Mein Abonnement",
+      "description": "Verwalte dein Abo und Zahlungsmethoden",
+      "status": "Status",
+      "planMonthly": "Premium (Monatlich)",
+      "planYearly": "Premium (Jährlich)",
+      "planLifetime": "Premium (Lifetime)",
+      "planFree": "Kostenlos",
+      "noSubscription": "Du hast kein aktives Abonnement.",
+      "upgradeNow": "Jetzt Premium werden",
+      "manage": "Abo verwalten",
+      "cancel": "Abo kündigen",
+      "renewsOn": "Verlängerung am {{date}}",
+      "endsOn": "Endet am {{date}}",
+      "lifetimeInfo": "Dein Lifetime-Zugang ist dauerhaft aktiv.",
+      "cancelScheduled": "Kündigung vorgemerkt"
+    },
+    "invoices": {
+      "title": "Meine Rechnungen",
+      "description": "Übersicht deiner Zahlungen",
+      "noInvoices": "Keine Rechnungen vorhanden.",
+      "paid": "Bezahlt",
+      "open": "Offen",
+      "void": "Storniert",
+      "downloadPdf": "PDF herunterladen",
+      "viewOnline": "Online ansehen"
+    }
   },
   "premium": {
     "title": "Premium-Funktionen",

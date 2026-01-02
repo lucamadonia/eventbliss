@@ -1341,7 +1341,34 @@
     "deleteAccountWarning": "This action cannot be undone. All your events and data will be permanently deleted.",
     "typeDeleteToConfirm": "Type DELETE to confirm",
     "deleteConfirmationRequired": "Please type DELETE to confirm.",
-    "accountDeleteRequested": "Account deletion requested."
+    "accountDeleteRequested": "Account deletion requested.",
+    "subscription": {
+      "title": "My Subscription",
+      "description": "Manage your subscription and payment methods",
+      "status": "Status",
+      "planMonthly": "Premium (Monthly)",
+      "planYearly": "Premium (Yearly)",
+      "planLifetime": "Premium (Lifetime)",
+      "planFree": "Free",
+      "noSubscription": "You don't have an active subscription.",
+      "upgradeNow": "Upgrade to Premium",
+      "manage": "Manage Subscription",
+      "cancel": "Cancel Subscription",
+      "renewsOn": "Renews on {{date}}",
+      "endsOn": "Ends on {{date}}",
+      "lifetimeInfo": "Your lifetime access is permanently active.",
+      "cancelScheduled": "Cancellation scheduled"
+    },
+    "invoices": {
+      "title": "My Invoices",
+      "description": "Overview of your payments",
+      "noInvoices": "No invoices found.",
+      "paid": "Paid",
+      "open": "Open",
+      "void": "Void",
+      "downloadPdf": "Download PDF",
+      "viewOnline": "View online"
+    }
   },
   "premium": {
     "title": "Premium Features",
