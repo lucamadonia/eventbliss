@@ -722,8 +722,9 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         </>
       )}
 
-      {/* Activity Form Modal */}
+      {/* Activity Form Modal - key ensures form resets with new defaults */}
       <ActivityForm
+        key={showForm ? `form-${selectedDate}-${prefillTime?.start || 'no-start'}-${prefillTime?.end || 'no-end'}-${editingActivity?.id || 'new'}` : 'closed'}
         open={showForm}
         onClose={() => {
           setShowForm(false);

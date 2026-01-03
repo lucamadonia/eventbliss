@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,8 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_CONFIG, CATEGORY_KEYS, ActivityCategory } from "@/lib/category-config";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface Participant {
   id: string;
@@ -66,12 +68,20 @@ export const ActivityForm = ({
   defaultEndTime,
 }: ActivityFormProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<Partial<Activity>>({
+  const isMobile = useIsMobile();
+  
+  // Use a key to force re-initialization when defaults change
+  const formKey = useMemo(() => 
+    `${open}-${activity?.id || 'new'}-${defaultDate}-${defaultStartTime}-${defaultEndTime}`,
+    [open, activity?.id, defaultDate, defaultStartTime, defaultEndTime]
+  );
+  
+  const [formData, setFormData] = useState<Partial<Activity>>(() => ({
     title: "",
     description: "",
     day_date: defaultDate,
-    start_time: "",
-    end_time: "",
+    start_time: defaultStartTime || "",
+    end_time: defaultEndTime || "",
     location: "",
     location_url: "",
     contact_name: "",
@@ -84,10 +94,13 @@ export const ActivityForm = ({
     notes: "",
     responsible_participant_id: null,
     category: "activity",
-  });
+  }));
   const [newRequirement, setNewRequirement] = useState("");
 
+  // Reset form when opening or when defaults change
   useEffect(() => {
+    if (!open) return;
+    
     if (activity) {
       setFormData({
         title: activity.title,
@@ -109,6 +122,7 @@ export const ActivityForm = ({
         category: activity.category || "activity",
       });
     } else {
+      // For new activities, always use the latest defaults
       setFormData({
         title: "",
         description: "",
@@ -129,7 +143,7 @@ export const ActivityForm = ({
         category: "activity",
       });
     }
-  }, [activity, defaultDate, defaultStartTime, defaultEndTime, open]);
+  }, [formKey]);
 
   const handleChange = (field: keyof Activity, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -164,32 +178,51 @@ export const ActivityForm = ({
     });
   };
 
+  // Auto-set end time when start time changes (if end is empty)
+  const handleStartTimeChange = (newStart: string) => {
+    handleChange("start_time", newStart);
+    
+    // Auto-calculate end time (1 hour later) if end is empty
+    if (newStart && !formData.end_time) {
+      const [hours, minutes] = newStart.split(":").map(Number);
+      const endHour = Math.min(hours + 1, 23);
+      const endTime = `${endHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+      handleChange("end_time", endTime);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className={cn(
+        "max-h-[90vh] overflow-y-auto",
+        isMobile ? "max-w-[95vw] p-4" : "max-w-2xl"
+      )}>
         <DialogHeader>
           <DialogTitle>
             {activity ? t('planner.editActivity') : t('planner.newActivity')}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title & Category */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">{t('planner.form.title')} *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleChange("title", e.target.value)}
-                  placeholder={t('planner.form.titlePlaceholder')}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">{t('planner.form.category')} *</Label>
-                <div className="grid grid-cols-4 gap-1.5 mt-1.5">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Title */}
+          <div>
+            <Label htmlFor="title">{t('planner.form.title')} *</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={(e) => handleChange("title", e.target.value)}
+              placeholder={t('planner.form.titlePlaceholder')}
+              required
+              className="h-11"
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <Label>{t('planner.form.category')} *</Label>
+            {isMobile ? (
+              <ScrollArea className="w-full whitespace-nowrap mt-1.5">
+                <div className="flex gap-2 pb-2">
                   {CATEGORY_KEYS.map((key) => {
                     const config = CATEGORY_CONFIG[key];
                     const isSelected = formData.category === key;
@@ -199,36 +232,67 @@ export const ActivityForm = ({
                         type="button"
                         onClick={() => handleChange("category", key)}
                         className={cn(
-                          "flex flex-col items-center justify-center p-2 rounded-lg border transition-all text-xs",
+                          "flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-xs flex-shrink-0 min-w-[72px]",
                           isSelected
                             ? cn(config.bgClass, config.borderClass, config.colorClass, "border-2")
                             : "border-border/50 hover:border-border bg-background/50"
                         )}
                       >
-                        <span className="text-lg">{config.emoji}</span>
-                        <span className="mt-0.5 truncate w-full text-center">
+                        <span className="text-xl">{config.emoji}</span>
+                        <span className="mt-1 text-[10px]">
                           {t(`planner.categories.${key}`)}
                         </span>
                       </button>
                     );
                   })}
                 </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            ) : (
+              <div className="grid grid-cols-4 gap-1.5 mt-1.5">
+                {CATEGORY_KEYS.map((key) => {
+                  const config = CATEGORY_CONFIG[key];
+                  const isSelected = formData.category === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleChange("category", key)}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-2 rounded-lg border transition-all text-xs",
+                        isSelected
+                          ? cn(config.bgClass, config.borderClass, config.colorClass, "border-2")
+                          : "border-border/50 hover:border-border bg-background/50"
+                      )}
+                    >
+                      <span className="text-lg">{config.emoji}</span>
+                      <span className="mt-0.5 truncate w-full text-center">
+                        {t(`planner.categories.${key}`)}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-            </div>
-            <div>
-              <Label htmlFor="description">{t('planner.form.description')}</Label>
-              <Textarea
-                id="description"
-                value={formData.description || ""}
-                onChange={(e) => handleChange("description", e.target.value)}
-                placeholder={t('planner.form.descriptionPlaceholder')}
-                rows={2}
-              />
-            </div>
+            )}
           </div>
 
-          {/* Date & Time */}
-          <div className="grid grid-cols-3 gap-4">
+          {/* Description */}
+          <div>
+            <Label htmlFor="description">{t('planner.form.description')}</Label>
+            <Textarea
+              id="description"
+              value={formData.description || ""}
+              onChange={(e) => handleChange("description", e.target.value)}
+              placeholder={t('planner.form.descriptionPlaceholder')}
+              rows={2}
+            />
+          </div>
+
+          {/* Date & Time - Responsive */}
+          <div className={cn(
+            "grid gap-3",
+            isMobile ? "grid-cols-1" : "grid-cols-3"
+          )}>
             <div>
               <Label htmlFor="day_date">{t('planner.form.date')} *</Label>
               <Input
@@ -237,30 +301,63 @@ export const ActivityForm = ({
                 value={formData.day_date}
                 onChange={(e) => handleChange("day_date", e.target.value)}
                 required
+                className="h-11"
               />
             </div>
-            <div>
-              <Label htmlFor="start_time">{t('planner.form.startTime')}</Label>
-              <Input
-                id="start_time"
-                type="time"
-                value={formData.start_time || ""}
-                onChange={(e) => handleChange("start_time", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="end_time">{t('planner.form.endTime')}</Label>
-              <Input
-                id="end_time"
-                type="time"
-                value={formData.end_time || ""}
-                onChange={(e) => handleChange("end_time", e.target.value)}
-              />
-            </div>
+            {isMobile ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="start_time">{t('planner.form.startTime')}</Label>
+                  <Input
+                    id="start_time"
+                    type="time"
+                    value={formData.start_time || ""}
+                    onChange={(e) => handleStartTimeChange(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end_time">{t('planner.form.endTime')}</Label>
+                  <Input
+                    id="end_time"
+                    type="time"
+                    value={formData.end_time || ""}
+                    onChange={(e) => handleChange("end_time", e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="start_time">{t('planner.form.startTime')}</Label>
+                  <Input
+                    id="start_time"
+                    type="time"
+                    value={formData.start_time || ""}
+                    onChange={(e) => handleStartTimeChange(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end_time">{t('planner.form.endTime')}</Label>
+                  <Input
+                    id="end_time"
+                    type="time"
+                    value={formData.end_time || ""}
+                    onChange={(e) => handleChange("end_time", e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Location */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Location - Responsive */}
+          <div className={cn(
+            "grid gap-3",
+            isMobile ? "grid-cols-1" : "grid-cols-2"
+          )}>
             <div>
               <Label htmlFor="location">{t('planner.form.location')}</Label>
               <Input
@@ -268,6 +365,7 @@ export const ActivityForm = ({
                 value={formData.location || ""}
                 onChange={(e) => handleChange("location", e.target.value)}
                 placeholder={t('planner.form.locationPlaceholder')}
+                className="h-11"
               />
             </div>
             <div>
@@ -278,6 +376,7 @@ export const ActivityForm = ({
                 value={formData.location_url || ""}
                 onChange={(e) => handleChange("location_url", e.target.value)}
                 placeholder="https://maps.google.com/..."
+                className="h-11"
               />
             </div>
           </div>
@@ -293,7 +392,7 @@ export const ActivityForm = ({
                   e.target.value || null
                 )
               }
-              className="w-full px-3 py-2 rounded-lg bg-background border border-input text-sm"
+              className="w-full px-3 py-2.5 rounded-lg bg-background border border-input text-sm h-11"
             >
               <option value="">{t('planner.form.selectPerson')}</option>
               {participants.map((p) => (
@@ -304,8 +403,11 @@ export const ActivityForm = ({
             </select>
           </div>
 
-          {/* Contact Details */}
-          <div className="grid grid-cols-3 gap-4">
+          {/* Contact Details - Responsive */}
+          <div className={cn(
+            "grid gap-3",
+            isMobile ? "grid-cols-1" : "grid-cols-3"
+          )}>
             <div>
               <Label htmlFor="contact_name">{t('planner.form.contactName')}</Label>
               <Input
@@ -313,6 +415,7 @@ export const ActivityForm = ({
                 value={formData.contact_name || ""}
                 onChange={(e) => handleChange("contact_name", e.target.value)}
                 placeholder={t('planner.form.contactNamePlaceholder')}
+                className="h-11"
               />
             </div>
             <div>
@@ -323,6 +426,7 @@ export const ActivityForm = ({
                 value={formData.contact_phone || ""}
                 onChange={(e) => handleChange("contact_phone", e.target.value)}
                 placeholder="+49..."
+                className="h-11"
               />
             </div>
             <div>
@@ -333,12 +437,16 @@ export const ActivityForm = ({
                 value={formData.contact_email || ""}
                 onChange={(e) => handleChange("contact_email", e.target.value)}
                 placeholder="email@example.com"
+                className="h-11"
               />
             </div>
           </div>
 
-          {/* Cost */}
-          <div className="grid grid-cols-3 gap-4 items-end">
+          {/* Cost - Responsive */}
+          <div className={cn(
+            "grid gap-3 items-end",
+            isMobile ? "grid-cols-2" : "grid-cols-3"
+          )}>
             <div>
               <Label htmlFor="estimated_cost">{t('planner.form.estimatedCost')}</Label>
               <Input
@@ -354,6 +462,7 @@ export const ActivityForm = ({
                   )
                 }
                 placeholder="0.00"
+                className="h-11"
               />
             </div>
             <div>
@@ -362,7 +471,7 @@ export const ActivityForm = ({
                 id="currency"
                 value={formData.currency}
                 onChange={(e) => handleChange("currency", e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-background border border-input text-sm"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-input text-sm h-11"
               >
                 <option value="EUR">EUR (€)</option>
                 <option value="USD">USD ($)</option>
@@ -370,7 +479,10 @@ export const ActivityForm = ({
                 <option value="CHF">CHF</option>
               </select>
             </div>
-            <div className="flex items-center gap-2 pb-2">
+            <div className={cn(
+              "flex items-center gap-2",
+              isMobile ? "col-span-2 pt-1" : "pb-2"
+            )}>
               <Switch
                 id="cost_per_person"
                 checked={formData.cost_per_person}
@@ -393,25 +505,28 @@ export const ActivityForm = ({
                 onChange={(e) => setNewRequirement(e.target.value)}
                 placeholder={t('planner.form.requirementPlaceholder')}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addRequirement())}
+                className="h-11"
               />
-              <Button type="button" variant="outline" onClick={addRequirement}>
+              <Button type="button" variant="outline" onClick={addRequirement} className="h-11">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {(formData.requirements || []).map((req, i) => (
-                <Badge key={i} variant="secondary" className="gap-1">
-                  {req}
-                  <button
-                    type="button"
-                    onClick={() => removeRequirement(i)}
-                    className="hover:text-destructive"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
+            {(formData.requirements?.length ?? 0) > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.requirements?.map((req, i) => (
+                  <Badge key={i} variant="secondary" className="gap-1 py-1.5">
+                    {req}
+                    <button
+                      type="button"
+                      onClick={() => removeRequirement(i)}
+                      className="hover:text-destructive ml-1"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Notes */}
@@ -427,13 +542,29 @@ export const ActivityForm = ({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={onClose}>
-              {t('common.cancel')}
-            </Button>
-            <GradientButton type="submit">
-              {activity ? t('common.save') : t('planner.createActivity')}
-            </GradientButton>
+          <div className={cn(
+            "flex gap-3 pt-4 border-t",
+            isMobile ? "flex-col" : "justify-end"
+          )}>
+            {isMobile ? (
+              <>
+                <GradientButton type="submit" className="w-full h-12">
+                  {activity ? t('common.save') : t('planner.createActivity')}
+                </GradientButton>
+                <Button type="button" variant="outline" onClick={onClose} className="w-full h-12">
+                  {t('common.cancel')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  {t('common.cancel')}
+                </Button>
+                <GradientButton type="submit">
+                  {activity ? t('common.save') : t('planner.createActivity')}
+                </GradientButton>
+              </>
+            )}
           </div>
         </form>
       </DialogContent>

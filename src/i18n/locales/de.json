@@ -1419,7 +1419,9 @@
       "clickToAdd": "Klicke um neue Aktivität zu erstellen",
       "days": "Tage",
       "endTime": "Ende",
-      "helpText": "Klicke auf einen Zeitslot oder ziehe, um neue Aktivitäten zu erstellen. Ziehe bestehende Aktivitäten zum Verschieben."
+      "helpText": "Klicke auf einen Zeitslot oder ziehe, um neue Aktivitäten zu erstellen. Ziehe bestehende Aktivitäten zum Verschieben.",
+      "mobileHint": "Tippe auf eine Aktivität zum Bearbeiten. Wische links/rechts zum Tageswechsel.",
+      "tapToEdit": "Tippe zum Bearbeiten"
     },
     "viewMode": {
       "list": "Liste",

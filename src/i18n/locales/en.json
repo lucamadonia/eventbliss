@@ -1392,7 +1392,9 @@
       "clickToAdd": "Click to add new activity",
       "days": "Days",
       "endTime": "End",
-      "helpText": "Click on a time slot or drag to create new activities. Drag existing activities to move them."
+      "helpText": "Click on a time slot or drag to create new activities. Drag existing activities to move them.",
+      "mobileHint": "Tap an activity to edit. Swipe left/right to change days.",
+      "tapToEdit": "Tap to edit"
     },
     "viewMode": {
       "list": "List",
