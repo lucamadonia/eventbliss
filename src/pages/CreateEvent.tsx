@@ -50,18 +50,7 @@ const eventTypes = [
   { value: "other", labelKey: "createEvent.types.other", icon: Users, emoji: "🎊" },
 ];
 
-const defaultNoGos = [
-  "No strippers",
-  "No street selling / embarrassing tasks",
-  "No pub crawl / bar hopping",
-];
-
-const defaultFocusPoints = [
-  "Action, fun, activities",
-  "Shared experiences",
-  "Cool, not embarrassing",
-  "No one is forced to do anything",
-];
+// No hardcoded defaults - use empty arrays so backend/InfoCard will use localized translations
 
 const CreateEvent = () => {
   const { t } = useTranslation();
@@ -84,8 +73,8 @@ const CreateEvent = () => {
     organizer_name: "",
     organizer_email: "",
     participants: [],
-    no_gos: defaultNoGos,
-    focus_points: defaultFocusPoints,
+    no_gos: [], // Empty = use localized defaults from translations
+    focus_points: [], // Empty = use localized defaults from translations
     template_id: undefined,
     custom_template: undefined,
   });
@@ -139,10 +128,14 @@ const CreateEvent = () => {
         custom_template: undefined,
       }));
     } else if (customConfig) {
+      // Extract no_gos and focus_points from AI-generated template if present
+      const config = customConfig as { no_gos?: string[]; focus_points?: string[] };
       setFormData((prev) => ({ 
         ...prev, 
         template_id: undefined,
         custom_template: customConfig,
+        no_gos: config.no_gos && config.no_gos.length > 0 ? config.no_gos : prev.no_gos,
+        focus_points: config.focus_points && config.focus_points.length > 0 ? config.focus_points : prev.focus_points,
       }));
     }
     setStep(3);

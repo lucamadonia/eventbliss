@@ -1257,6 +1257,9 @@ serve(async (req) => {
         ...(custom_template.travel_options && { travel_options: custom_template.travel_options }),
         ...(custom_template.fitness_options && { fitness_options: custom_template.fitness_options }),
         ...(custom_template.alcohol_options && { alcohol_options: custom_template.alcohol_options }),
+        // Use AI-generated no_gos and focus_points if available
+        ...(custom_template.no_gos && custom_template.no_gos.length > 0 && { no_gos: custom_template.no_gos }),
+        ...(custom_template.focus_points && custom_template.focus_points.length > 0 && { focus_points: custom_template.focus_points }),
       };
     }
 
