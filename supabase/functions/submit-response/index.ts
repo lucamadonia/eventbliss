@@ -101,6 +101,11 @@ serve(async (req) => {
     const alcohol = sanitizeString(rawBody.alcohol, 50);
     const restrictions = sanitizeString(rawBody.restrictions, 1000);
     const suggestions = sanitizeString(rawBody.suggestions, 2000);
+    
+    // Custom answers from dynamic questions
+    const custom_answers = typeof rawBody.custom_answers === 'object' && rawBody.custom_answers !== null 
+      ? rawBody.custom_answers as Record<string, unknown>
+      : {};
 
     // Fetch event to validate access code
     const { data: event, error: eventError } = await supabase
@@ -177,6 +182,7 @@ serve(async (req) => {
         budget_choices: budgetChoices,
         destination_choices: destinationChoices,
         duration_choices: durationChoices,
+        custom_answers: custom_answers,
       },
     };
 

@@ -42,10 +42,12 @@ import {
   type ActivityOption,
   type DateBlockOption,
   type QuestionConfigs,
+  type CustomQuestion,
   mergeWithDefaults,
   getDateBlocksArray,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
+import { Switch } from "@/components/ui/switch";
 import ActivityPreferencesSection from "./ActivityPreferencesSection";
 
 interface Participant {
@@ -73,6 +75,7 @@ const DynamicSurveyForm = ({
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string | boolean>>({});
   
   // Helper to translate template labels
   const translateLabel = (label: string): string => {
@@ -120,6 +123,7 @@ const DynamicSurveyForm = ({
         body: {
           ...data,
           event_id: eventId,
+          custom_answers: customAnswers,
         },
       });
 
@@ -685,6 +689,127 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+
+            {/* Custom Questions from Event Settings */}
+            {config.custom_questions && config.custom_questions.length > 0 && (
+              <div className="form-section space-y-6">
+                <div className="border-t border-border pt-6">
+                  <h3 className="font-display font-semibold text-lg mb-4">Weitere Fragen</h3>
+                </div>
+                {config.custom_questions.map((question: CustomQuestion) => (
+                  <div key={question.id} className="space-y-2">
+                    <Label className="form-label">
+                      {question.label} {question.required && "*"}
+                    </Label>
+                    
+                    {question.type === "toggle" && (
+                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border">
+                        <Switch
+                          checked={customAnswers[question.id] === true}
+                          onCheckedChange={(checked) => 
+                            setCustomAnswers(prev => ({ ...prev, [question.id]: checked }))
+                          }
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {customAnswers[question.id] ? "Ja" : "Nein"}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {question.type === "textarea" && (
+                      <Textarea
+                        placeholder={question.placeholder || "Deine Antwort..."}
+                        className="resize-none"
+                        value={(customAnswers[question.id] as string) || ""}
+                        onChange={(e) => 
+                          setCustomAnswers(prev => ({ ...prev, [question.id]: e.target.value }))
+                        }
+                      />
+                    )}
+                    
+                    {question.type === "text" && (
+                      <Input
+                        placeholder={question.placeholder || "Deine Antwort..."}
+                        value={(customAnswers[question.id] as string) || ""}
+                        onChange={(e) => 
+                          setCustomAnswers(prev => ({ ...prev, [question.id]: e.target.value }))
+                        }
+                      />
+                    )}
+                    
+                    {question.type === "select" && question.options && (
+                      <Select 
+                        value={(customAnswers[question.id] as string) || ""}
+                        onValueChange={(value) => 
+                          setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Bitte auswählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {question.options.map((opt) => (
+                            <SelectItem key={opt} value={opt}>
+                              {opt}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    
+                    {question.type === "radio" && question.options && (
+                      <RadioGroup
+                        value={(customAnswers[question.id] as string) || ""}
+                        onValueChange={(value) => 
+                          setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
+                        }
+                        className="grid gap-2"
+                      >
+                        {question.options.map((opt) => (
+                          <div
+                            key={opt}
+                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                          >
+                            <RadioGroupItem value={opt} id={`${question.id}-${opt}`} />
+                            <Label htmlFor={`${question.id}-${opt}`} className="cursor-pointer flex-1">
+                              {opt}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    )}
+                    
+                    {question.type === "checkbox" && question.options && (
+                      <div className="grid gap-2">
+                        {question.options.map((opt) => {
+                          const currentValues = (customAnswers[question.id] as string || "").split(",").filter(Boolean);
+                          const isChecked = currentValues.includes(opt);
+                          return (
+                            <label
+                              key={opt}
+                              className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                                isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                              }`}
+                            >
+                              <Checkbox
+                                checked={isChecked}
+                                onCheckedChange={(checked) => {
+                                  const newValues = checked
+                                    ? [...currentValues, opt]
+                                    : currentValues.filter((v) => v !== opt);
+                                  setCustomAnswers(prev => ({ ...prev, [question.id]: newValues.join(",") }));
+                                }}
+                              />
+                              <span className="cursor-pointer flex-1">{opt}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Group Code */}
             <div className="form-section">
