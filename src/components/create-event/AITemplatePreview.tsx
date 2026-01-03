@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { 
@@ -10,63 +10,160 @@ import {
   Palette,
   Check,
   RefreshCw,
-  Pencil,
   ArrowRight,
 } from 'lucide-react';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getTemplateById, DesignTemplate } from '@/lib/design-templates';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { Badge } from '@/components/ui/badge';
+import { getTemplateById } from '@/lib/design-templates';
+import { EditableTemplateSection } from './EditableTemplateSection';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface TemplateItem {
+  value: string;
+  label: string;
+  emoji?: string;
+  category?: string;
+}
+
+interface TemplateData {
+  budget_options?: TemplateItem[];
+  destination_options?: TemplateItem[];
+  activity_options?: TemplateItem[];
+  duration_options?: TemplateItem[];
+  branding?: {
+    template_id?: string;
+    primary_color?: string;
+    accent_color?: string;
+  };
+}
 
 interface AITemplatePreviewProps {
-  template: {
-    budget_options?: Array<{ value: string; label: string }>;
-    destination_options?: Array<{ value: string; label: string; emoji?: string }>;
-    activity_options?: Array<{ value: string; label: string; emoji?: string; category?: string }>;
-    duration_options?: Array<{ value: string; label: string }>;
-    branding?: {
-      template_id?: string;
-      primary_color?: string;
-      accent_color?: string;
-    };
+  template: TemplateData;
+  eventContext?: {
+    eventType?: string;
+    honoreeName?: string;
+    description?: string;
   };
-  onApply: () => void;
+  onApply: (modifiedTemplate: TemplateData) => void;
   onRegenerate: () => void;
   onBack: () => void;
   isGenerating?: boolean;
 }
 
+type SectionKey = 'budget' | 'destination' | 'activity' | 'duration';
+
 export function AITemplatePreview({
   template,
+  eventContext,
   onApply,
   onRegenerate,
   onBack,
   isGenerating,
 }: AITemplatePreviewProps) {
   const { t } = useTranslation();
+  
+  // Editable state for each section
+  const [budgetOptions, setBudgetOptions] = useState<TemplateItem[]>(template.budget_options || []);
+  const [destinationOptions, setDestinationOptions] = useState<TemplateItem[]>(template.destination_options || []);
+  const [activityOptions, setActivityOptions] = useState<TemplateItem[]>(template.activity_options || []);
+  const [durationOptions, setDurationOptions] = useState<TemplateItem[]>(template.duration_options || []);
+  const [regeneratingSection, setRegeneratingSection] = useState<SectionKey | null>(null);
 
   const designTemplate = template.branding?.template_id 
     ? getTemplateById(template.branding.template_id) 
     : null;
 
-  // Group activities by category
-  const groupedActivities = React.useMemo(() => {
-    const groups: Record<string, Array<{ value: string; label: string; emoji?: string }>> = {};
-    template.activity_options?.forEach(activity => {
-      const cat = activity.category || 'other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(activity);
-    });
-    return groups;
-  }, [template.activity_options]);
-
-  const getCategoryLabel = (cat: string) => {
+  const getCategoryLabel = useCallback((cat: string) => {
     const key = `templates.aiPreview.category.${cat}`;
     const translated = t(key);
     return translated !== key ? translated : cat.charAt(0).toUpperCase() + cat.slice(1);
+  }, [t]);
+
+  // Regenerate a specific section
+  const handleRegenerateSection = useCallback(async (section: SectionKey, feedback: string) => {
+    setRegeneratingSection(section);
+    
+    try {
+      const currentItems = {
+        budget: budgetOptions,
+        destination: destinationOptions,
+        activity: activityOptions,
+        duration: durationOptions,
+      }[section];
+
+      const { data, error } = await supabase.functions.invoke('regenerate-template-section', {
+        body: {
+          section,
+          currentItems,
+          feedback,
+          eventContext,
+        },
+      });
+
+      if (error) throw error;
+
+      const newItems = data?.items || [];
+      
+      switch (section) {
+        case 'budget':
+          setBudgetOptions(newItems);
+          break;
+        case 'destination':
+          setDestinationOptions(newItems);
+          break;
+        case 'activity':
+          setActivityOptions(newItems);
+          break;
+        case 'duration':
+          setDurationOptions(newItems);
+          break;
+      }
+
+      toast.success(t('templates.aiPreview.sectionRegenerated'));
+    } catch (error) {
+      console.error('Error regenerating section:', error);
+      toast.error(t('common.error'));
+    } finally {
+      setRegeneratingSection(null);
+    }
+  }, [budgetOptions, destinationOptions, activityOptions, durationOptions, eventContext, t]);
+
+  // Handle apply with modified template
+  const handleApply = () => {
+    const modifiedTemplate = {
+      ...template,
+      budget_options: budgetOptions,
+      destination_options: destinationOptions,
+      activity_options: activityOptions,
+      duration_options: durationOptions,
+    };
+    onApply(modifiedTemplate);
   };
+
+  // Item manipulation helpers
+  const createItemHandlers = (
+    items: TemplateItem[],
+    setItems: React.Dispatch<React.SetStateAction<TemplateItem[]>>
+  ) => ({
+    onRemove: (index: number) => {
+      setItems(prev => prev.filter((_, i) => i !== index));
+    },
+    onAdd: (item: TemplateItem) => {
+      setItems(prev => [...prev, item]);
+    },
+    onEdit: (index: number, item: TemplateItem) => {
+      setItems(prev => prev.map((it, i) => i === index ? item : it));
+    },
+  });
+
+  const budgetHandlers = createItemHandlers(budgetOptions, setBudgetOptions);
+  const destinationHandlers = createItemHandlers(destinationOptions, setDestinationOptions);
+  const activityHandlers = createItemHandlers(activityOptions, setActivityOptions);
+  const durationHandlers = createItemHandlers(durationOptions, setDurationOptions);
 
   return (
     <motion.div
@@ -85,63 +182,56 @@ export function AITemplatePreview({
           {t('templates.aiPreview.title')}
         </h2>
         <p className="text-muted-foreground">
-          {t('templates.aiPreview.subtitle')}
+          {t('templates.aiPreview.interactiveSubtitle')}
         </p>
       </div>
 
-      {/* Preview Grid */}
-      <ScrollArea className="h-[50vh] md:h-auto md:max-h-[60vh]">
+      {/* Editable Sections */}
+      <ScrollArea className="h-[50vh] md:h-auto md:max-h-[55vh]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
           {/* Budget Options */}
-          {template.budget_options && template.budget_options.length > 0 && (
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <DollarSign className="w-5 h-5 text-success" />
-                <h3 className="font-semibold">{t('templates.aiPreview.budgetOptions')}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {template.budget_options.map((opt, i) => (
-                  <Badge key={i} variant="secondary" className="text-sm">
-                    {opt.label}
-                  </Badge>
-                ))}
-              </div>
-            </GlassCard>
+          {budgetOptions.length > 0 && (
+            <EditableTemplateSection
+              title={t('templates.aiPreview.budgetOptions')}
+              icon={<DollarSign className="w-5 h-5" />}
+              iconColor="text-success"
+              items={budgetOptions}
+              onItemRemove={budgetHandlers.onRemove}
+              onItemAdd={budgetHandlers.onAdd}
+              onItemEdit={budgetHandlers.onEdit}
+              onRegenerate={(feedback) => handleRegenerateSection('budget', feedback)}
+              isRegenerating={regeneratingSection === 'budget'}
+            />
           )}
 
           {/* Destination Options */}
-          {template.destination_options && template.destination_options.length > 0 && (
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-5 h-5 text-info" />
-                <h3 className="font-semibold">{t('templates.aiPreview.destinationOptions')}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {template.destination_options.map((opt, i) => (
-                  <Badge key={i} variant="secondary" className="text-sm">
-                    {opt.emoji && <span className="mr-1">{opt.emoji}</span>}
-                    {opt.label}
-                  </Badge>
-                ))}
-              </div>
-            </GlassCard>
+          {destinationOptions.length > 0 && (
+            <EditableTemplateSection
+              title={t('templates.aiPreview.destinationOptions')}
+              icon={<MapPin className="w-5 h-5" />}
+              iconColor="text-info"
+              items={destinationOptions}
+              onItemRemove={destinationHandlers.onRemove}
+              onItemAdd={destinationHandlers.onAdd}
+              onItemEdit={destinationHandlers.onEdit}
+              onRegenerate={(feedback) => handleRegenerateSection('destination', feedback)}
+              isRegenerating={regeneratingSection === 'destination'}
+            />
           )}
 
           {/* Duration Options */}
-          {template.duration_options && template.duration_options.length > 0 && (
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Clock className="w-5 h-5 text-warning" />
-                <h3 className="font-semibold">{t('templates.aiPreview.durationOptions')}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {template.duration_options.map((opt, i) => (
-                  <Badge key={i} variant="secondary" className="text-sm">
-                    {opt.label}
-                  </Badge>
-                ))}
-              </div>
-            </GlassCard>
+          {durationOptions.length > 0 && (
+            <EditableTemplateSection
+              title={t('templates.aiPreview.durationOptions')}
+              icon={<Clock className="w-5 h-5" />}
+              iconColor="text-warning"
+              items={durationOptions}
+              onItemRemove={durationHandlers.onRemove}
+              onItemAdd={durationHandlers.onAdd}
+              onItemEdit={durationHandlers.onEdit}
+              onRegenerate={(feedback) => handleRegenerateSection('duration', feedback)}
+              isRegenerating={regeneratingSection === 'duration'}
+            />
           )}
 
           {/* Design Template */}
@@ -171,39 +261,39 @@ export function AITemplatePreview({
           )}
 
           {/* Activities by Category */}
-          {Object.keys(groupedActivities).length > 0 && (
-            <GlassCard className="p-4 md:col-span-2">
-              <div className="flex items-center gap-2 mb-3">
-                <Dumbbell className="w-5 h-5 text-accent" />
-                <h3 className="font-semibold">{t('templates.aiPreview.activityOptions')}</h3>
-              </div>
-              <div className="space-y-3">
-                {Object.entries(groupedActivities).map(([category, activities]) => (
-                  <div key={category}>
-                    <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">
-                      {getCategoryLabel(category)}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {activities.map((act, i) => (
-                        <Badge key={i} variant="outline" className="text-sm">
-                          {act.emoji && <span className="mr-1">{act.emoji}</span>}
-                          {act.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+          {activityOptions.length > 0 && (
+            <div className="md:col-span-2">
+              <EditableTemplateSection
+                title={t('templates.aiPreview.activityOptions')}
+                icon={<Dumbbell className="w-5 h-5" />}
+                iconColor="text-accent"
+                items={activityOptions}
+                onItemRemove={activityHandlers.onRemove}
+                onItemAdd={activityHandlers.onAdd}
+                onItemEdit={activityHandlers.onEdit}
+                onRegenerate={(feedback) => handleRegenerateSection('activity', feedback)}
+                isRegenerating={regeneratingSection === 'activity'}
+                showCategories
+                categoryLabel={getCategoryLabel}
+              />
+            </div>
           )}
         </div>
       </ScrollArea>
 
+      {/* Selected Count */}
+      <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+        <span>💰 {budgetOptions.length}</span>
+        <span>📍 {destinationOptions.length}</span>
+        <span>🎯 {activityOptions.length}</span>
+        <span>⏱️ {durationOptions.length}</span>
+      </div>
+
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
         <GradientButton
-          onClick={onApply}
-          disabled={isGenerating}
+          onClick={handleApply}
+          disabled={isGenerating || regeneratingSection !== null}
           icon={<Check className="w-4 h-4" />}
           className="min-w-[160px]"
         >
@@ -214,17 +304,17 @@ export function AITemplatePreview({
         <Button
           variant="outline"
           onClick={onRegenerate}
-          disabled={isGenerating}
+          disabled={isGenerating || regeneratingSection !== null}
           className="gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
-          {t('templates.aiPreview.regenerate')}
+          {t('templates.aiPreview.regenerateAll')}
         </Button>
         
         <Button
           variant="ghost"
           onClick={onBack}
-          disabled={isGenerating}
+          disabled={isGenerating || regeneratingSection !== null}
           className="text-muted-foreground"
         >
           {t('common.back')}
