@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, Plus, X, Undo2, MessageSquare } from 'lucide-react';
+import { motion, AnimatePresence, Reorder, useMotionValue, useTransform } from 'framer-motion';
+import { RefreshCw, Plus, X, Undo2, MessageSquare, Trash2, GripVertical } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,10 +24,85 @@ interface EditableTemplateSectionProps {
   onItemRemove: (index: number) => void;
   onItemAdd: (item: TemplateItem) => void;
   onItemEdit: (index: number, item: TemplateItem) => void;
+  onReorder: (newItems: TemplateItem[]) => void;
   onRegenerate: (feedback: string) => void;
   isRegenerating?: boolean;
   categoryLabel?: (category: string) => string;
   showCategories?: boolean;
+}
+
+// Custom hook to detect touch devices
+function useTouchDevice() {
+  const [isTouch, setIsTouch] = useState(false);
+  
+  useEffect(() => {
+    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+  
+  return isTouch;
+}
+
+// Swipeable Item Component for mobile
+function SwipeableItem({ 
+  item, 
+  index,
+  onRemove, 
+  onStartEdit,
+  isTouch,
+  children 
+}: { 
+  item: TemplateItem;
+  index: number;
+  onRemove: () => void;
+  onStartEdit: () => void;
+  isTouch: boolean;
+  children: React.ReactNode;
+}) {
+  const x = useMotionValue(0);
+  const background = useTransform(x, [-100, 0], ['hsl(var(--destructive))', 'transparent']);
+  const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragEnd = () => {
+    const currentX = x.get();
+    if (currentX < -80) {
+      // Trigger delete animation
+      onRemove();
+    }
+    setIsDragging(false);
+  };
+
+  if (!isTouch) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-md">
+      {/* Delete background */}
+      <motion.div 
+        className="absolute inset-0 flex items-center justify-end pr-3 rounded-md"
+        style={{ background }}
+      >
+        <motion.div style={{ opacity: deleteOpacity }}>
+          <Trash2 className="w-4 h-4 text-destructive-foreground" />
+        </motion.div>
+      </motion.div>
+      
+      {/* Swipeable content */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -100, right: 0 }}
+        dragElastic={0.1}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={handleDragEnd}
+        style={{ x }}
+        className={cn("relative", isDragging && "z-10")}
+        onDoubleClick={onStartEdit}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
 }
 
 export function EditableTemplateSection({
@@ -38,12 +113,14 @@ export function EditableTemplateSection({
   onItemRemove,
   onItemAdd,
   onItemEdit,
+  onReorder,
   onRegenerate,
   isRegenerating,
   categoryLabel,
   showCategories = false,
 }: EditableTemplateSectionProps) {
   const { t } = useTranslation();
+  const isTouch = useTouchDevice();
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
@@ -112,6 +189,57 @@ export function EditableTemplateSection({
     });
     return groups;
   }, [items, showCategories]);
+
+  // Render item badge with drag handle for desktop
+  const renderItemBadge = (item: TemplateItem, globalIndex: number, isEditing: boolean) => {
+    if (isEditing) {
+      return (
+        <div className="flex items-center gap-1">
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="h-7 text-sm w-32"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSaveEdit();
+              if (e.key === 'Escape') setEditingIndex(null);
+            }}
+          />
+          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={handleSaveEdit}>
+            ✓
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <Badge
+        variant="secondary"
+        className={cn(
+          "text-sm pr-1 gap-1 cursor-grab active:cursor-grabbing group hover:bg-secondary/80 transition-colors select-none",
+          !isTouch && "pl-1"
+        )}
+        onDoubleClick={() => handleStartEdit(globalIndex)}
+      >
+        {!isTouch && (
+          <GripVertical className="w-3 h-3 opacity-40 group-hover:opacity-70 mr-0.5" />
+        )}
+        {item.emoji && <span>{item.emoji}</span>}
+        <span>{item.label}</span>
+        {!isTouch && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove(globalIndex);
+            }}
+            className="ml-1 p-0.5 rounded-full hover:bg-destructive/20 transition-colors opacity-50 group-hover:opacity-100"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </Badge>
+    );
+  };
 
   return (
     <GlassCard className="p-4">
@@ -190,7 +318,7 @@ export function EditableTemplateSection({
         )}
       </AnimatePresence>
 
-      {/* Items */}
+      {/* Items with Drag & Drop */}
       <div className="space-y-3">
         {Object.entries(groupedItems).map(([category, categoryItems]) => (
           <div key={category}>
@@ -199,57 +327,60 @@ export function EditableTemplateSection({
                 {categoryLabel ? categoryLabel(category) : category}
               </p>
             )}
-            <div className="flex flex-wrap gap-2">
+            
+            {/* Reorder Group for Drag & Drop */}
+            <Reorder.Group
+              axis="x"
+              values={categoryItems}
+              onReorder={(newOrder) => {
+                if (showCategories) {
+                  // For categorized items, we need to merge back
+                  const otherItems = items.filter(item => 
+                    (item.category || 'other') !== (category || 'other')
+                  );
+                  onReorder([...otherItems, ...newOrder]);
+                } else {
+                  onReorder(newOrder);
+                }
+              }}
+              className="flex flex-wrap gap-2"
+              layoutScroll
+            >
               <AnimatePresence mode="popLayout">
-                {categoryItems.map((item, i) => {
+                {categoryItems.map((item) => {
                   const globalIndex = items.findIndex(it => it.value === item.value);
                   const isEditing = editingIndex === globalIndex;
                   
                   return (
-                    <motion.div
+                    <Reorder.Item
                       key={item.value}
-                      layout
+                      value={item}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0, x: 50 }}
+                      exit={{ scale: 0.8, opacity: 0, x: -50 }}
+                      whileDrag={{ 
+                        scale: 1.05, 
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+                        zIndex: 50,
+                        cursor: "grabbing"
+                      }}
                       transition={{ duration: 0.2 }}
+                      className="touch-none"
                     >
-                      {isEditing ? (
-                        <div className="flex items-center gap-1">
-                          <Input
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="h-7 text-sm w-32"
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleSaveEdit();
-                              if (e.key === 'Escape') setEditingIndex(null);
-                            }}
-                          />
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={handleSaveEdit}>
-                            ✓
-                          </Button>
-                        </div>
-                      ) : (
-                        <Badge
-                          variant="secondary"
-                          className="text-sm pr-1 gap-1 cursor-pointer group hover:bg-secondary/80 transition-colors"
-                          onDoubleClick={() => handleStartEdit(globalIndex)}
+                      {isTouch ? (
+                        <SwipeableItem
+                          item={item}
+                          index={globalIndex}
+                          onRemove={() => handleRemove(globalIndex)}
+                          onStartEdit={() => handleStartEdit(globalIndex)}
+                          isTouch={isTouch}
                         >
-                          {item.emoji && <span>{item.emoji}</span>}
-                          <span>{item.label}</span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemove(globalIndex);
-                            }}
-                            className="ml-1 p-0.5 rounded-full hover:bg-destructive/20 transition-colors opacity-50 group-hover:opacity-100"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </Badge>
+                          {renderItemBadge(item, globalIndex, isEditing)}
+                        </SwipeableItem>
+                      ) : (
+                        renderItemBadge(item, globalIndex, isEditing)
                       )}
-                    </motion.div>
+                    </Reorder.Item>
                   );
                 })}
               </AnimatePresence>
@@ -289,7 +420,7 @@ export function EditableTemplateSection({
                   {t('templates.aiPreview.addItem')}
                 </Badge>
               )}
-            </div>
+            </Reorder.Group>
           </div>
         ))}
       </div>
@@ -314,9 +445,9 @@ export function EditableTemplateSection({
         )}
       </AnimatePresence>
 
-      {/* Hint */}
+      {/* Hint - different for touch vs desktop */}
       <p className="text-xs text-muted-foreground mt-3 opacity-70">
-        {t('templates.aiPreview.tapToEdit')}
+        {isTouch ? t('templates.aiPreview.swipeHint') : t('templates.aiPreview.dragHint')}
       </p>
     </GlassCard>
   );

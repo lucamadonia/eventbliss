@@ -1311,6 +1311,8 @@
       "addItem": "Dodaj",
       "undoRemove": "Cofnij",
       "tapToEdit": "Kliknij dwukrotnie, aby edytować, X aby usunąć",
+      "swipeHint": "← Przesuń, aby usunąć • Przytrzymaj, aby przeciągnąć",
+      "dragHint": "Przeciągnij, aby zmienić kolejność • Kliknij dwukrotnie, aby edytować",
       "feedbackLabel": "Co powinno być inne?",
       "feedbackPlaceholder": "np. Tańsze opcje, aktywności na świeżym powietrzu...",
       "category": {

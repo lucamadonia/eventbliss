@@ -1327,6 +1327,8 @@
       "addItem": "Ajouter",
       "undoRemove": "Annuler",
       "tapToEdit": "Double-cliquez pour modifier, cliquez sur X pour supprimer",
+      "swipeHint": "← Glissez pour supprimer • Maintenez pour déplacer",
+      "dragHint": "Glissez pour réorganiser • Double-clic pour modifier",
       "feedbackLabel": "Qu'est-ce qui devrait être différent ?",
       "feedbackPlaceholder": "ex. Options plus économiques, activités de plein air...",
       "category": {
