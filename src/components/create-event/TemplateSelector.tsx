@@ -76,9 +76,10 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     }
   };
 
-  const handleApplyTemplate = () => {
-    if (generatedTemplate) {
-      onSelectTemplate(null, generatedTemplate);
+  const handleApplyTemplate = (modifiedTemplate?: object) => {
+    const templateToApply = modifiedTemplate || generatedTemplate;
+    if (templateToApply) {
+      onSelectTemplate(null, templateToApply);
     }
   };
 
@@ -108,6 +109,10 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     return (
       <AITemplatePreview
         template={generatedTemplate as any}
+        eventContext={{
+          eventType,
+          description: aiDescription,
+        }}
         onApply={handleApplyTemplate}
         onRegenerate={handleRegenerate}
         onBack={handleBackFromPreview}

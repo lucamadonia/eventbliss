@@ -68,3 +68,6 @@ verify_jwt = false
 
 [functions.list-invoices]
 verify_jwt = false
+
+[functions.regenerate-template-section]
+verify_jwt = false
