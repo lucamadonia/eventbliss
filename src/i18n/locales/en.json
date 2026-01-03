@@ -837,7 +837,13 @@
         "noQuestions": "No custom questions added yet.",
         "noQuestionsHint": "Use the quick buttons above or add a new question.",
         "addNew": "Add new question",
-        "questionsConfigured": "custom question(s) configured"
+        "questionsConfigured": "custom question(s) configured",
+        "noPreview": "Add questions to see preview",
+        "previewTitle": "Form Preview",
+        "previewDescription": "This is how your custom questions will appear in the survey",
+        "previewReadOnly": "Read-only preview",
+        "untitledQuestion": "Untitled Question",
+        "selectPlaceholder": "Select an option..."
       },
       "activitySelector": {
         "searchPlaceholder": "Search activities...",
@@ -1613,6 +1619,27 @@
     "generate": "Generate",
     "premiumRequired": "Premium required",
     "premiumRequiredDescription": "AI template generation is a premium feature",
+    "aiPreview": {
+      "badge": "AI Generated",
+      "title": "Review Your Template",
+      "subtitle": "Check the AI suggestions before applying them",
+      "reviewMessage": "Please review the suggestions below",
+      "budgetOptions": "Budget Options",
+      "destinationOptions": "Destinations",
+      "activityOptions": "Activities",
+      "durationOptions": "Duration",
+      "recommendedDesign": "Recommended Design",
+      "apply": "Apply Template",
+      "regenerate": "Generate Again",
+      "edit": "Edit Suggestions",
+      "category": {
+        "action": "Action",
+        "chill": "Relaxation",
+        "food": "Food & Drinks",
+        "outdoor": "Outdoor",
+        "other": "Other"
+      }
+    },
     "jgaClassic": {
       "name": "Classic Party",
       "description": "Action, party and unforgettable moments"

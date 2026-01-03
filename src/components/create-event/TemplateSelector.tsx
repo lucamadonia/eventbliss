@@ -12,6 +12,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { getTemplatesForEventType, type EventTemplate } from '@/lib/event-templates';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { AITemplatePreview } from './AITemplatePreview';
 
 interface TemplateSelectorProps {
   eventType: string;
@@ -25,6 +26,8 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
   const [showAiInput, setShowAiInput] = useState(false);
   const [aiDescription, setAiDescription] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedTemplate, setGeneratedTemplate] = useState<object | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const templates = getTemplatesForEventType(eventType);
 
@@ -51,11 +54,13 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
       if (error) throw error;
 
       if (data?.success && data?.template) {
+        // Store template and show preview instead of applying directly
+        setGeneratedTemplate(data.template);
+        setShowPreview(true);
         toast({
           title: t('templates.aiSuccess'),
-          description: t('templates.aiSuccessDescription'),
+          description: t('templates.aiPreview.reviewMessage'),
         });
-        onSelectTemplate(null, data.template);
       } else {
         throw new Error(data?.error || 'Failed to generate template');
       }
@@ -71,9 +76,25 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     }
   };
 
+  const handleApplyTemplate = () => {
+    if (generatedTemplate) {
+      onSelectTemplate(null, generatedTemplate);
+    }
+  };
+
+  const handleRegenerate = () => {
+    setShowPreview(false);
+    setGeneratedTemplate(null);
+    handleAiGenerate();
+  };
+
+  const handleBackFromPreview = () => {
+    setShowPreview(false);
+    setGeneratedTemplate(null);
+  };
+
   const getTranslatedName = (template: EventTemplate) => {
     const translated = t(template.nameKey);
-    // If translation key not found, return fallback
     return translated === template.nameKey ? template.id : translated;
   };
 
@@ -81,6 +102,19 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     const translated = t(template.descriptionKey);
     return translated === template.descriptionKey ? '' : translated;
   };
+
+  // Show AI Template Preview if we have a generated template
+  if (showPreview && generatedTemplate) {
+    return (
+      <AITemplatePreview
+        template={generatedTemplate as any}
+        onApply={handleApplyTemplate}
+        onRegenerate={handleRegenerate}
+        onBack={handleBackFromPreview}
+        isGenerating={isGenerating}
+      />
+    );
+  }
 
   return (
     <motion.div

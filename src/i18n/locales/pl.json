@@ -1291,6 +1291,27 @@
     "generate": "Generuj",
     "premiumRequired": "Wymagane Premium",
     "premiumRequiredDescription": "Generowanie AI to funkcja premium",
+    "aiPreview": {
+      "badge": "Wygenerowane przez AI",
+      "title": "Sprawdź swój szablon",
+      "subtitle": "Przejrzyj sugestie AI przed zastosowaniem",
+      "reviewMessage": "Przejrzyj poniższe sugestie",
+      "budgetOptions": "Opcje budżetu",
+      "destinationOptions": "Destynacje",
+      "activityOptions": "Aktywności",
+      "durationOptions": "Czas trwania",
+      "recommendedDesign": "Zalecany design",
+      "apply": "Zastosuj szablon",
+      "regenerate": "Generuj ponownie",
+      "edit": "Edytuj sugestie",
+      "category": {
+        "action": "Akcja",
+        "chill": "Relaks",
+        "food": "Jedzenie i picie",
+        "outdoor": "Outdoor",
+        "other": "Inne"
+      }
+    },
     "jgaClassic": { "name": "Klasyczna Impreza", "description": "Akcja, impreza i niezapomniane chwile" },
     "jgaAdventure": { "name": "Wyprawa Przygodowa", "description": "Outdoor i wyzwania zespołowe" },
     "jgaChill": { "name": "Relaksujące Świętowanie", "description": "Wellness, dobre jedzenie i jakościowy czas" },
