@@ -1311,6 +1311,8 @@
       "addItem": "Ekle",
       "undoRemove": "Geri al",
       "tapToEdit": "Düzenlemek için çift tıkla, kaldırmak için X'e tıkla",
+      "swipeHint": "← Silmek için kaydır • Taşımak için basılı tut",
+      "dragHint": "Sıralamak için sürükle • Düzenlemek için çift tıkla",
       "feedbackLabel": "Ne farklı olmalı?",
       "feedbackPlaceholder": "örn. Daha uygun fiyatlı seçenekler, açık hava aktiviteleri...",
       "category": {

@@ -1681,6 +1681,8 @@
       "addItem": "Hinzufügen",
       "undoRemove": "Rückgängig",
       "tapToEdit": "Doppelklick zum Bearbeiten, X zum Entfernen",
+      "swipeHint": "← Wischen zum Löschen • Halten zum Verschieben",
+      "dragHint": "Ziehen zum Sortieren • Doppelklick zum Bearbeiten",
       "feedbackLabel": "Was soll anders sein?",
       "feedbackPlaceholder": "z.B. Günstigere Optionen, mehr Outdoor-Aktivitäten...",
       "category": {

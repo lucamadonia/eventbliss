@@ -1317,6 +1317,8 @@
       "addItem": "Toevoegen",
       "undoRemove": "Ongedaan maken",
       "tapToEdit": "Dubbelklik om te bewerken, klik op X om te verwijderen",
+      "swipeHint": "← Veeg om te verwijderen • Houd vast om te slepen",
+      "dragHint": "Sleep om te ordenen • Dubbelklik om te bewerken",
       "feedbackLabel": "Wat moet er anders zijn?",
       "feedbackPlaceholder": "bijv. Goedkopere opties, outdoor activiteiten...",
       "category": {

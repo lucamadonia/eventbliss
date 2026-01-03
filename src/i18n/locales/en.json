@@ -1639,6 +1639,8 @@
       "addItem": "Add",
       "undoRemove": "Undo",
       "tapToEdit": "Double-click to edit, click X to remove",
+      "swipeHint": "← Swipe to delete • Hold to drag",
+      "dragHint": "Drag to reorder • Double-click to edit",
       "feedbackLabel": "What should be different?",
       "feedbackPlaceholder": "e.g. More budget-friendly options, outdoor activities...",
       "category": {

@@ -1279,6 +1279,8 @@
       "addItem": "Aggiungi",
       "undoRemove": "Annulla",
       "tapToEdit": "Doppio clic per modificare, clic su X per rimuovere",
+      "swipeHint": "← Scorri per eliminare • Tieni premuto per trascinare",
+      "dragHint": "Trascina per riordinare • Doppio clic per modificare",
       "feedbackLabel": "Cosa dovrebbe essere diverso?",
       "feedbackPlaceholder": "es. Opzioni più economiche, attività all'aperto...",
       "category": {

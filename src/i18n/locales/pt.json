@@ -1311,6 +1311,8 @@
       "addItem": "Adicionar",
       "undoRemove": "Anular",
       "tapToEdit": "Duplo clique para editar, clique no X para remover",
+      "swipeHint": "← Deslize para eliminar • Mantenha para arrastar",
+      "dragHint": "Arraste para reordenar • Duplo clique para editar",
       "feedbackLabel": "O que deveria ser diferente?",
       "feedbackPlaceholder": "ex. Opções mais baratas, atividades ao ar livre...",
       "category": {

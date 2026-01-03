@@ -158,6 +158,9 @@ export function AITemplatePreview({
     onEdit: (index: number, item: TemplateItem) => {
       setItems(prev => prev.map((it, i) => i === index ? item : it));
     },
+    onReorder: (newItems: TemplateItem[]) => {
+      setItems(newItems);
+    },
   });
 
   const budgetHandlers = createItemHandlers(budgetOptions, setBudgetOptions);
@@ -199,6 +202,7 @@ export function AITemplatePreview({
               onItemRemove={budgetHandlers.onRemove}
               onItemAdd={budgetHandlers.onAdd}
               onItemEdit={budgetHandlers.onEdit}
+              onReorder={budgetHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('budget', feedback)}
               isRegenerating={regeneratingSection === 'budget'}
             />
@@ -214,6 +218,7 @@ export function AITemplatePreview({
               onItemRemove={destinationHandlers.onRemove}
               onItemAdd={destinationHandlers.onAdd}
               onItemEdit={destinationHandlers.onEdit}
+              onReorder={destinationHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('destination', feedback)}
               isRegenerating={regeneratingSection === 'destination'}
             />
@@ -229,6 +234,7 @@ export function AITemplatePreview({
               onItemRemove={durationHandlers.onRemove}
               onItemAdd={durationHandlers.onAdd}
               onItemEdit={durationHandlers.onEdit}
+              onReorder={durationHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('duration', feedback)}
               isRegenerating={regeneratingSection === 'duration'}
             />
@@ -271,6 +277,7 @@ export function AITemplatePreview({
                 onItemRemove={activityHandlers.onRemove}
                 onItemAdd={activityHandlers.onAdd}
                 onItemEdit={activityHandlers.onEdit}
+                onReorder={activityHandlers.onReorder}
                 onRegenerate={(feedback) => handleRegenerateSection('activity', feedback)}
                 isRegenerating={regeneratingSection === 'activity'}
                 showCategories
