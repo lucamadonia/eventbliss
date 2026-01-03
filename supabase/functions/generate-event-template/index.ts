@@ -59,6 +59,12 @@ You MUST respond with ONLY a valid JSON object (no markdown, no explanation, jus
   "duration_options": [
     { "value": "duration_key", "label": "Display Label" }
   ],
+  "no_gos": [
+    "Things the group definitely does NOT want (3-5 items)"
+  ],
+  "focus_points": [
+    "Main wishes and priorities for the event (3-5 items)"
+  ],
   "recommended_design": "design_template_id"
 }
 
@@ -67,8 +73,10 @@ Guidelines:
 - Generate 4-6 destination options based on the description
 - Generate 8-12 activity options that match the event style
 - Generate 3-4 duration options
+- Generate 3-5 no_gos (things to avoid) based on the description - be specific to what the user mentioned they DON'T want
+- Generate 3-5 focus_points (main wishes) based on the description - reflect what the user wants to prioritize
 - recommended_design should be one of: "neon-nights", "beach-vibes", "garden-party", "elegant-dark", "modern-minimal", "sunset-glow", "mountain-escape"
-- All labels should be in the user's language (${language})
+- All labels, no_gos, and focus_points should be in the user's language (${language})
 - Make options specific to the event description, not generic
 - Use appropriate emojis for destinations and activities`;
 
@@ -146,6 +154,8 @@ Generate a custom survey configuration that matches this event perfectly.`;
       destinations: template.destination_options.length,
       activities: template.activity_options.length,
       durations: template.duration_options.length,
+      noGos: template.no_gos?.length || 0,
+      focusPoints: template.focus_points?.length || 0,
     });
 
     return new Response(
