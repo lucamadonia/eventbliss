@@ -901,7 +901,13 @@
         "noQuestions": "Noch keine eigenen Fragen hinzugefügt.",
         "noQuestionsHint": "Nutze die Schnell-Buttons oben oder füge eine neue Frage hinzu.",
         "addNew": "Neue Frage hinzufügen",
-        "questionsConfigured": "eigene Frage(n) konfiguriert"
+        "questionsConfigured": "eigene Frage(n) konfiguriert",
+        "noPreview": "Füge Fragen hinzu, um die Vorschau zu sehen",
+        "previewTitle": "Formular-Vorschau",
+        "previewDescription": "So erscheinen deine eigenen Fragen in der Umfrage",
+        "previewReadOnly": "Nur-Lese-Vorschau",
+        "untitledQuestion": "Frage ohne Titel",
+        "selectPlaceholder": "Option auswählen..."
       }
     },
     "schedule": {
@@ -1655,6 +1661,27 @@
     "generate": "Generieren",
     "premiumRequired": "Premium erforderlich",
     "premiumRequiredDescription": "Die KI-Template-Generierung ist ein Premium-Feature",
+    "aiPreview": {
+      "badge": "KI-generiert",
+      "title": "Template überprüfen",
+      "subtitle": "Prüfe die KI-Vorschläge bevor du sie anwendest",
+      "reviewMessage": "Bitte überprüfe die Vorschläge unten",
+      "budgetOptions": "Budget-Optionen",
+      "destinationOptions": "Reiseziele",
+      "activityOptions": "Aktivitäten",
+      "durationOptions": "Dauer",
+      "recommendedDesign": "Empfohlenes Design",
+      "apply": "Template übernehmen",
+      "regenerate": "Neu generieren",
+      "edit": "Vorschläge bearbeiten",
+      "category": {
+        "action": "Action",
+        "chill": "Entspannung",
+        "food": "Essen & Trinken",
+        "outdoor": "Outdoor",
+        "other": "Sonstiges"
+      }
+    },
     "jgaClassic": {
       "name": "Classic Party",
       "description": "Action, Party und unvergessliche Momente"

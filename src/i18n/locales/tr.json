@@ -1291,6 +1291,27 @@
     "generate": "Oluştur",
     "premiumRequired": "Premium gerekli",
     "premiumRequiredDescription": "AI oluşturma premium özellik",
+    "aiPreview": {
+      "badge": "AI ile oluşturuldu",
+      "title": "Şablonunu kontrol et",
+      "subtitle": "AI önerilerini uygulamadan önce incele",
+      "reviewMessage": "Aşağıdaki önerileri incele",
+      "budgetOptions": "Bütçe seçenekleri",
+      "destinationOptions": "Destinasyonlar",
+      "activityOptions": "Aktiviteler",
+      "durationOptions": "Süre",
+      "recommendedDesign": "Önerilen tasarım",
+      "apply": "Şablonu uygula",
+      "regenerate": "Yeniden oluştur",
+      "edit": "Önerileri düzenle",
+      "category": {
+        "action": "Aksiyon",
+        "chill": "Rahatlama",
+        "food": "Yeme içme",
+        "outdoor": "Outdoor",
+        "other": "Diğer"
+      }
+    },
     "jgaClassic": { "name": "Klasik Parti", "description": "Aksiyon, parti ve unutulmaz anlar" },
     "jgaAdventure": { "name": "Macera Gezisi", "description": "Outdoor aksiyon ve takım meydan okumaları" },
     "jgaChill": { "name": "Rahat Kutlama", "description": "Wellness, güzel yemek ve kaliteli zaman" },

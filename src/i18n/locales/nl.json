@@ -1297,6 +1297,27 @@
     "generate": "Genereer",
     "premiumRequired": "Premium vereist",
     "premiumRequiredDescription": "AI-generatie is een premium functie",
+    "aiPreview": {
+      "badge": "AI-gegenereerd",
+      "title": "Controleer je sjabloon",
+      "subtitle": "Bekijk de AI-suggesties voordat je ze toepast",
+      "reviewMessage": "Bekijk de suggesties hieronder",
+      "budgetOptions": "Budgetopties",
+      "destinationOptions": "Bestemmingen",
+      "activityOptions": "Activiteiten",
+      "durationOptions": "Duur",
+      "recommendedDesign": "Aanbevolen design",
+      "apply": "Sjabloon toepassen",
+      "regenerate": "Opnieuw genereren",
+      "edit": "Suggesties bewerken",
+      "category": {
+        "action": "Actie",
+        "chill": "Ontspanning",
+        "food": "Eten en drinken",
+        "outdoor": "Outdoor",
+        "other": "Overig"
+      }
+    },
     "jgaClassic": { "name": "Klassiek Feest", "description": "Actie, feest en onvergetelijke momenten" },
     "jgaAdventure": { "name": "Avontuur Trip", "description": "Outdoor actie en teamuitdagingen" },
     "jgaChill": { "name": "Relaxte Viering", "description": "Wellness, lekker eten en quality time" },

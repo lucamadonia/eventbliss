@@ -55,6 +55,7 @@ import { AdvancedActivitySelector } from "./AdvancedActivitySelector";
 import { DesignTemplateSelector } from "./DesignTemplateSelector";
 import { BrandingEditor } from "./BrandingEditor";
 import { CustomQuestionBuilder } from "./CustomQuestionBuilder";
+import { CustomQuestionPreview } from "./CustomQuestionPreview";
 import { CoreQuestionEditor } from "./CoreQuestionEditor";
 import { DesignTemplate, getTemplateById } from "@/lib/design-templates";
 import { ActivityItem, ACTIVITIES_LIBRARY } from "@/lib/activities-library";
@@ -858,6 +859,11 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
               questions={customQuestions}
               onChange={setCustomQuestions}
             />
+            
+            {/* Custom Questions Preview */}
+            <div className="mt-6">
+              <CustomQuestionPreview questions={customQuestions} />
+            </div>
           </GlassCard>
         </TabsContent>
       </Tabs>

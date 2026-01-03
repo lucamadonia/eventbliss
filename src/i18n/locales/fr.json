@@ -1307,6 +1307,27 @@
     "generate": "Générer",
     "premiumRequired": "Premium requis",
     "premiumRequiredDescription": "La génération IA est une fonctionnalité premium",
+    "aiPreview": {
+      "badge": "Généré par IA",
+      "title": "Vérifiez votre modèle",
+      "subtitle": "Consultez les suggestions IA avant de les appliquer",
+      "reviewMessage": "Veuillez consulter les suggestions ci-dessous",
+      "budgetOptions": "Options de budget",
+      "destinationOptions": "Destinations",
+      "activityOptions": "Activités",
+      "durationOptions": "Durée",
+      "recommendedDesign": "Design recommandé",
+      "apply": "Appliquer le modèle",
+      "regenerate": "Régénérer",
+      "edit": "Modifier les suggestions",
+      "category": {
+        "action": "Action",
+        "chill": "Détente",
+        "food": "Nourriture et boissons",
+        "outdoor": "Plein air",
+        "other": "Autres"
+      }
+    },
     "jgaClassic": { "name": "Fête Classique", "description": "Action, fête et moments inoubliables" },
     "jgaAdventure": { "name": "Voyage Aventure", "description": "Action outdoor et défis d'équipe" },
     "jgaChill": { "name": "Célébration Détendue", "description": "Bien-être, bonne cuisine et moments de qualité" },

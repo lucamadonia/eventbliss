@@ -1291,6 +1291,27 @@
     "generate": "إنشاء",
     "premiumRequired": "مطلوب اشتراك مميز",
     "premiumRequiredDescription": "إنشاء الذكاء الاصطناعي ميزة مميزة",
+    "aiPreview": {
+      "badge": "تم إنشاؤه بالذكاء الاصطناعي",
+      "title": "راجع قالبك",
+      "subtitle": "تحقق من اقتراحات الذكاء الاصطناعي قبل تطبيقها",
+      "reviewMessage": "راجع الاقتراحات أدناه",
+      "budgetOptions": "خيارات الميزانية",
+      "destinationOptions": "الوجهات",
+      "activityOptions": "الأنشطة",
+      "durationOptions": "المدة",
+      "recommendedDesign": "التصميم الموصى به",
+      "apply": "تطبيق القالب",
+      "regenerate": "إعادة الإنشاء",
+      "edit": "تعديل الاقتراحات",
+      "category": {
+        "action": "أكشن",
+        "chill": "استرخاء",
+        "food": "طعام ومشروبات",
+        "outdoor": "في الهواء الطلق",
+        "other": "أخرى"
+      }
+    },
     "jgaClassic": { "name": "حفلة كلاسيكية", "description": "أكشن وحفلات ولحظات لا تُنسى" },
     "jgaAdventure": { "name": "رحلة مغامرات", "description": "مغامرات في الهواء الطلق وتحديات الفريق" },
     "jgaChill": { "name": "احتفال مريح", "description": "استجمام وطعام جيد ووقت ممتع" },
