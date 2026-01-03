@@ -10,11 +10,13 @@ import {
   Clock,
   MapPin,
   Euro,
+  Plus,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_CONFIG, type ActivityCategory } from "@/lib/category-config";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Activity {
   id: string;
@@ -52,6 +54,7 @@ const localeMap: Record<string, Locale> = {
 
 const HOURS = Array.from({ length: 17 }, (_, i) => i + 7); // 07:00 - 23:00
 const HOUR_HEIGHT = 60; // pixels per hour
+const HOUR_HEIGHT_MOBILE = 50; // smaller on mobile
 const MIN_SLOT_HEIGHT = 30; // minimum activity block height
 const SNAP_INTERVAL = 15; // snap to 15-minute intervals
 
@@ -66,8 +69,10 @@ export const VisualScheduleCalendar = ({
 }: VisualScheduleCalendarProps) => {
   const { t, i18n } = useTranslation();
   const currentLocale = localeMap[i18n.language] || de;
+  const isMobile = useIsMobile();
   
-  const [visibleDaysCount, setVisibleDaysCount] = useState(5);
+  // Auto-set to 1 day on mobile
+  const [visibleDaysCount, setVisibleDaysCount] = useState(() => isMobile ? 1 : 5);
   const [visibleStartIndex, setVisibleStartIndex] = useState(0);
   const [dragState, setDragState] = useState<{
     activityId: string;
@@ -147,9 +152,11 @@ export const VisualScheduleCalendar = ({
     return `${hours.toString().padStart(2, "0")}:${Math.round(minutes).toString().padStart(2, "0")}`;
   };
 
-  // Calculate Y position to time decimal
+  // Calculate Y position to time decimal (use mobile height if applicable)
+  const hourHeight = isMobile ? HOUR_HEIGHT_MOBILE : HOUR_HEIGHT;
+  
   const yToTimeDecimal = (y: number): number => {
-    return 7 + y / HOUR_HEIGHT;
+    return 7 + y / hourHeight;
   };
 
   // Get activity position and size
@@ -160,7 +167,7 @@ export const VisualScheduleCalendar = ({
     // Apply drag offset
     if (isBeingDragged && dragState && dragState.activityId === activity.id) {
       const deltaY = dragState.currentY - dragState.startY;
-      const deltaHours = deltaY / HOUR_HEIGHT;
+      const deltaHours = deltaY / hourHeight;
       startDecimal = timeToDecimal(dragState.originalStartTime) + deltaHours;
       endDecimal = timeToDecimal(dragState.originalEndTime) + deltaHours;
       // Clamp
@@ -179,7 +186,7 @@ export const VisualScheduleCalendar = ({
     // Apply resize offset
     if (isBeingResized && resizeState && resizeState.activityId === activity.id) {
       const deltaY = resizeState.currentY - resizeState.startY;
-      const deltaHours = deltaY / HOUR_HEIGHT;
+      const deltaHours = deltaY / hourHeight;
       endDecimal = Math.max(
         timeToDecimal(activity.start_time) + 0.25,
         Math.min(timeToDecimal(resizeState.originalEndTime) + deltaHours, 23)
@@ -187,8 +194,8 @@ export const VisualScheduleCalendar = ({
     }
     
     const duration = Math.max(endDecimal - startDecimal, 0.25);
-    const top = (startDecimal - 7) * HOUR_HEIGHT;
-    const height = Math.max(duration * HOUR_HEIGHT, MIN_SLOT_HEIGHT);
+    const top = (startDecimal - 7) * hourHeight;
+    const height = Math.max(duration * hourHeight, MIN_SLOT_HEIGHT);
     
     return { top, height, startDecimal, endDecimal };
   };
@@ -283,7 +290,7 @@ export const VisualScheduleCalendar = ({
       const activity = activities.find(a => a.id === dragState.activityId);
       if (activity) {
         const deltaY = dragState.currentY - dragState.startY;
-        const deltaHours = deltaY / HOUR_HEIGHT;
+        const deltaHours = deltaY / hourHeight;
         
         let newStartDecimal = timeToDecimal(dragState.originalStartTime) + deltaHours;
         let newEndDecimal = timeToDecimal(dragState.originalEndTime) + deltaHours;
@@ -319,7 +326,7 @@ export const VisualScheduleCalendar = ({
       const activity = activities.find(a => a.id === resizeState.activityId);
       if (activity) {
         const deltaY = resizeState.currentY - resizeState.startY;
-        const deltaHours = deltaY / HOUR_HEIGHT;
+        const deltaHours = deltaY / hourHeight;
         let newEndDecimal = timeToDecimal(resizeState.originalEndTime) + deltaHours;
         newEndDecimal = Math.max(timeToDecimal(activity.start_time) + 0.25, Math.min(newEndDecimal, 23));
         
@@ -428,112 +435,147 @@ export const VisualScheduleCalendar = ({
   const resizePreview = getResizePreviewTime();
 
   return (
-    <GlassCard className="p-4 overflow-hidden">
+    <GlassCard className={cn("p-4 overflow-hidden", isMobile && "p-2")}>
       {/* Navigation Header */}
-      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-        <div className="flex items-center gap-2">
+      <div className={cn(
+        "flex items-center justify-between mb-4 gap-2",
+        isMobile ? "flex-col items-stretch" : "flex-wrap"
+      )}>
+        <div className="flex items-center justify-between gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setVisibleStartIndex(Math.max(0, visibleStartIndex - 1))}
             disabled={!canGoBack}
+            className={cn(isMobile && "h-10 w-10")}
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
           
-          <h3 className="font-bold text-lg">
-            {t('planner.calendar.weekView')}
-          </h3>
+          {isMobile ? (
+            <div className="flex-1 text-center">
+              <div className="font-bold text-base">
+                {visibleDates[0] && format(parseISO(visibleDates[0]), "EEEE", { locale: currentLocale })}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {visibleDates[0] && format(parseISO(visibleDates[0]), "d. MMMM", { locale: currentLocale })}
+              </div>
+            </div>
+          ) : (
+            <h3 className="font-bold text-lg">
+              {t('planner.calendar.weekView')}
+            </h3>
+          )}
           
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setVisibleStartIndex(Math.min(extendedDates.length - visibleDaysCount, visibleStartIndex + 1))}
             disabled={!canGoForward}
+            className={cn(isMobile && "h-10 w-10")}
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
         
-        {/* Days Count Selector */}
-        <div className="flex items-center gap-1 border border-border rounded-lg overflow-hidden">
-          {[1, 3, 5, 7].map(count => (
-            <button
-              key={count}
-              onClick={() => {
-                setVisibleDaysCount(count);
-                setVisibleStartIndex(Math.min(visibleStartIndex, Math.max(0, extendedDates.length - count)));
-              }}
-              className={cn(
-                "px-3 py-1.5 text-sm transition-colors",
-                visibleDaysCount === count
-                  ? "bg-primary/20 text-primary"
-                  : "hover:bg-muted text-muted-foreground"
-              )}
-            >
-              {count} {t('planner.calendar.days')}
-            </button>
-          ))}
-        </div>
+        {/* Days Count Selector - Hidden on mobile, we use swipe navigation */}
+        {!isMobile && (
+          <div className="flex items-center gap-1 border border-border rounded-lg overflow-hidden">
+            {[1, 3, 5, 7].map(count => (
+              <button
+                key={count}
+                onClick={() => {
+                  setVisibleDaysCount(count);
+                  setVisibleStartIndex(Math.min(visibleStartIndex, Math.max(0, extendedDates.length - count)));
+                }}
+                className={cn(
+                  "px-3 py-1.5 text-sm transition-colors",
+                  visibleDaysCount === count
+                    ? "bg-primary/20 text-primary"
+                    : "hover:bg-muted text-muted-foreground"
+                )}
+              >
+                {count} {t('planner.calendar.days')}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Mobile: Activity count for the day */}
+        {isMobile && visibleDates[0] && (
+          <div className="flex items-center justify-between px-2 py-1.5 bg-muted/30 rounded-lg text-sm">
+            <span className="text-muted-foreground">
+              {getActivitiesForDate(visibleDates[0]).length} {t('planner.calendar.items')}
+            </span>
+            <span className="font-medium">
+              {getActivitiesForDate(visibleDates[0]).reduce((sum, a) => sum + (a.estimated_cost || 0), 0).toFixed(0)} {currency}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Calendar Grid */}
       <div 
         ref={calendarRef}
         className="relative overflow-x-auto overflow-y-auto select-none"
-        style={{ maxHeight: "calc(100vh - 320px)" }}
+        style={{ maxHeight: isMobile ? "calc(100vh - 380px)" : "calc(100vh - 320px)" }}
       >
         {/* Scrollable inner container with min-width */}
-        <div style={{ minWidth: `${60 + (visibleDaysCount * 140)}px` }}>
-        {/* Header Row with Dates */}
-        <div className="grid sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50" 
-             style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}>
-          <div className="p-2 text-center text-xs text-muted-foreground border-r border-border/30">
-            {t('planner.calendar.time')}
+        <div style={{ minWidth: isMobile ? "100%" : `${60 + (visibleDaysCount * 140)}px` }}>
+        {/* Header Row with Dates - Hidden on mobile since we show it in the navigation */}
+        {!isMobile && (
+          <div className="grid sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50" 
+               style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}>
+            <div className="p-2 text-center text-xs text-muted-foreground border-r border-border/30">
+              {t('planner.calendar.time')}
+            </div>
+            {visibleDates.map((date) => {
+              const dateObj = parseISO(date);
+              const dayActivities = getActivitiesForDate(date);
+              const totalCost = dayActivities.reduce((sum, a) => sum + (a.estimated_cost || 0), 0);
+              
+              return (
+                <div key={date} className="p-3 text-center border-r border-border/30 last:border-r-0">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    {format(dateObj, "EEE", { locale: currentLocale })}
+                  </div>
+                  <div className="text-lg font-bold">
+                    {format(dateObj, "d. MMM", { locale: currentLocale })}
+                  </div>
+                  <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mt-1">
+                    <span>{dayActivities.length} {t('planner.calendar.items')}</span>
+                    {totalCost > 0 && (
+                      <>
+                        <span>•</span>
+                        <span>{totalCost.toFixed(0)} {currency}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {visibleDates.map((date) => {
-            const dateObj = parseISO(date);
-            const dayActivities = getActivitiesForDate(date);
-            const totalCost = dayActivities.reduce((sum, a) => sum + (a.estimated_cost || 0), 0);
-            
-            return (
-              <div key={date} className="p-3 text-center border-r border-border/30 last:border-r-0">
-                <div className="text-sm font-medium text-muted-foreground">
-                  {format(dateObj, "EEE", { locale: currentLocale })}
-                </div>
-                <div className="text-lg font-bold">
-                  {format(dateObj, "d. MMM", { locale: currentLocale })}
-                </div>
-                <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mt-1">
-                  <span>{dayActivities.length} {t('planner.calendar.items')}</span>
-                  {totalCost > 0 && (
-                    <>
-                      <span>•</span>
-                      <span>{totalCost.toFixed(0)} {currency}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        )}
 
         {/* Time Grid */}
         <div 
           className="grid relative"
-          style={{ gridTemplateColumns: `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}
+          style={{ gridTemplateColumns: isMobile ? `40px 1fr` : `60px repeat(${visibleDates.length}, minmax(140px, 1fr))` }}
         >
           {/* Time Labels Column */}
           <div className="relative border-r border-border/30">
-            {HOURS.map((hour) => (
+            {HOURS.map((hour, idx) => (
               <div
                 key={hour}
-                className="relative border-b border-border/20 text-right pr-2 text-xs text-muted-foreground"
-                style={{ height: HOUR_HEIGHT }}
+                className="relative border-b border-border/20 text-right pr-1 text-xs text-muted-foreground"
+                style={{ height: hourHeight }}
               >
-                <span className="absolute -top-2 right-2">
-                  {hour.toString().padStart(2, "0")}:00
-                </span>
+                {/* On mobile, show every other hour to save space */}
+                {(!isMobile || idx % 2 === 0) && (
+                  <span className={cn("absolute right-1", isMobile ? "-top-1.5 text-[10px]" : "-top-2")}>
+                    {hour.toString().padStart(2, "0")}:00
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -560,8 +602,11 @@ export const VisualScheduleCalendar = ({
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="border-b border-border/20 hover:bg-primary/5 cursor-crosshair transition-colors"
-                  style={{ height: HOUR_HEIGHT }}
+                  className={cn(
+                    "border-b border-border/20 transition-colors",
+                    isMobile ? "active:bg-primary/10" : "hover:bg-primary/5 cursor-crosshair"
+                  )}
+                  style={{ height: hourHeight }}
                 />
               ))}
               
@@ -593,8 +638,9 @@ export const VisualScheduleCalendar = ({
                     key={activity.id}
                     data-activity={activity.id}
                     className={cn(
-                      "absolute left-1 right-1 rounded-lg p-2 cursor-grab overflow-hidden touch-none",
-                      "border shadow-sm hover:shadow-md transition-shadow",
+                      "absolute left-1 right-1 rounded-lg overflow-hidden touch-none",
+                      "border shadow-sm transition-shadow",
+                      isMobile ? "p-1.5" : "p-2 cursor-grab hover:shadow-md",
                       config.bgClass,
                       config.borderClass,
                       isDragging && "opacity-70 z-50 cursor-grabbing shadow-lg",
@@ -607,17 +653,19 @@ export const VisualScheduleCalendar = ({
                         onActivityClick(activity);
                       }
                     }}
-                    onPointerDown={(e) => handleDragStart(e, activity)}
+                    onPointerDown={(e) => !isMobile && handleDragStart(e, activity)}
                     initial={false}
                     animate={{ 
                       scale: isDragging ? 1.02 : 1,
                       boxShadow: isDragging ? "0 10px 25px rgba(0,0,0,0.2)" : "0 1px 3px rgba(0,0,0,0.1)"
                     }}
                   >
-                    {/* Drag Handle */}
-                    <div className="absolute top-1 left-1 opacity-50 pointer-events-none">
-                      <GripVertical className="w-3 h-3" />
-                    </div>
+                    {/* Drag Handle - Hidden on mobile */}
+                    {!isMobile && (
+                      <div className="absolute top-1 left-1 opacity-50 pointer-events-none">
+                        <GripVertical className="w-3 h-3" />
+                      </div>
+                    )}
                     
                     {/* Time Preview while dragging */}
                     {isDragging && dragPreview && (
@@ -629,45 +677,47 @@ export const VisualScheduleCalendar = ({
                     )}
                     
                     {/* Content */}
-                    <div className="ml-4">
+                    <div className={cn(isMobile ? "ml-0" : "ml-4")}>
                       <div className="flex items-center gap-1 mb-0.5">
-                        <span className="text-xs">{config.emoji}</span>
-                        <span className="font-medium text-xs truncate">{activity.title}</span>
+                        <span className={cn(isMobile ? "text-sm" : "text-xs")}>{config.emoji}</span>
+                        <span className={cn("font-medium truncate", isMobile ? "text-sm" : "text-xs")}>{activity.title}</span>
                       </div>
                       
-                      {height >= 50 && (
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                      {height >= (isMobile ? 40 : 50) && (
+                        <div className={cn("flex items-center gap-2 text-muted-foreground", isMobile ? "text-xs" : "text-[10px]")}>
                           {activity.start_time && (
                             <span className="flex items-center gap-0.5">
-                              <Clock className="w-2.5 h-2.5" />
-                              {activity.start_time}{activity.end_time && ` - ${activity.end_time}`}
+                              <Clock className={cn(isMobile ? "w-3 h-3" : "w-2.5 h-2.5")} />
+                              {activity.start_time?.slice(0, 5)}{activity.end_time && ` - ${activity.end_time.slice(0, 5)}`}
                             </span>
                           )}
                         </div>
                       )}
                       
-                      {height >= 70 && activity.location && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                          <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                      {height >= (isMobile ? 55 : 70) && activity.location && (
+                        <div className={cn("flex items-center gap-1 text-muted-foreground mt-0.5", isMobile ? "text-xs" : "text-[10px]")}>
+                          <MapPin className={cn(isMobile ? "w-3 h-3" : "w-2.5 h-2.5", "flex-shrink-0")} />
                           <span className="truncate">{activity.location}</span>
                         </div>
                       )}
                       
-                      {height >= 85 && activity.estimated_cost && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                          <Euro className="w-2.5 h-2.5" />
+                      {height >= (isMobile ? 70 : 85) && activity.estimated_cost && (
+                        <div className={cn("flex items-center gap-1 text-muted-foreground mt-0.5", isMobile ? "text-xs" : "text-[10px]")}>
+                          <Euro className={cn(isMobile ? "w-3 h-3" : "w-2.5 h-2.5")} />
                           {activity.estimated_cost} {activity.currency}
                         </div>
                       )}
                     </div>
                     
-                    {/* Resize Handle */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize hover:bg-primary/30 rounded-b-lg flex items-center justify-center"
-                      onPointerDown={(e) => handleResizeStart(e, activity)}
-                    >
-                      <div className="w-8 h-1 bg-current opacity-30 rounded-full" />
-                    </div>
+                    {/* Resize Handle - Hidden on mobile */}
+                    {!isMobile && (
+                      <div
+                        className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize hover:bg-primary/30 rounded-b-lg flex items-center justify-center"
+                        onPointerDown={(e) => handleResizeStart(e, activity)}
+                      >
+                        <div className="w-8 h-1 bg-current opacity-30 rounded-full" />
+                      </div>
+                    )}
                     
                     {/* Resize Preview */}
                     {isResizing && resizePreview && (
@@ -686,24 +736,55 @@ export const VisualScheduleCalendar = ({
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/30">
-        <span className="text-xs text-muted-foreground mr-2">{t('planner.calendar.legend')}:</span>
-        {Object.entries(CATEGORY_CONFIG).slice(0, 6).map(([key, config]) => (
-          <div
-            key={key}
-            className={cn("flex items-center gap-1 px-2 py-1 rounded-md text-xs", config.bgClass)}
-          >
-            <span>{config.emoji}</span>
-            <span>{t(`planner.categories.${key}`)}</span>
+      {/* Legend - Scrollable on mobile */}
+      {isMobile ? (
+        <div className="flex gap-2 mt-3 pt-3 border-t border-border/30 overflow-x-auto pb-2">
+          {Object.entries(CATEGORY_CONFIG).slice(0, 6).map(([key, config]) => (
+            <div
+              key={key}
+              className={cn("flex items-center gap-1 px-2 py-1 rounded-md text-xs flex-shrink-0", config.bgClass)}
+            >
+              <span>{config.emoji}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/30">
+            <span className="text-xs text-muted-foreground mr-2">{t('planner.calendar.legend')}:</span>
+            {Object.entries(CATEGORY_CONFIG).slice(0, 6).map(([key, config]) => (
+              <div
+                key={key}
+                className={cn("flex items-center gap-1 px-2 py-1 rounded-md text-xs", config.bgClass)}
+              >
+                <span>{config.emoji}</span>
+                <span>{t(`planner.categories.${key}`)}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      
-      {/* Help Text */}
-      <div className="text-xs text-muted-foreground mt-2">
-        {t('planner.calendar.helpText')}
-      </div>
+          
+          {/* Help Text - Hidden on mobile */}
+          <div className="text-xs text-muted-foreground mt-2">
+            {t('planner.calendar.helpText')}
+          </div>
+        </>
+      )}
+
+      {/* Mobile: Floating Add Button */}
+      {isMobile && (
+        <motion.button
+          className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center"
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            const currentDate = visibleDates[0];
+            if (currentDate) {
+              onTimeSlotClick(currentDate, "10:00|11:00");
+            }
+          }}
+        >
+          <Plus className="w-6 h-6" />
+        </motion.button>
+      )}
     </GlassCard>
   );
 };
