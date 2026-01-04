@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,25 +10,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, CheckCircle } from "lucide-react";
 
-const registerSchema = z.object({
-  email: z.string().email("Bitte gib eine gültige E-Mail-Adresse ein"),
-  password: z.string().min(6, "Passwort muss mindestens 6 Zeichen haben"),
-  confirmPassword: z.string().min(6, "Bitte bestätige dein Passwort"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwörter stimmen nicht überein",
-  path: ["confirmPassword"],
-});
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
-
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
 }
 
 export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+  const { t } = useTranslation();
   const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const registerSchema = z.object({
+    email: z.string().email(t('auth.invalidEmail')),
+    password: z.string().min(6, t('auth.passwordMinLength')),
+    confirmPassword: z.string().min(6, t('auth.confirmPasswordPlaceholder')),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('auth.passwordsMismatch'),
+    path: ["confirmPassword"],
+  });
+
+  type RegisterFormValues = z.infer<typeof registerSchema>;
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -45,18 +47,18 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       
       if (error) {
         if (error.message.includes("already registered")) {
-          toast.error("Diese E-Mail ist bereits registriert. Bitte melde dich an.");
+          toast.error(t('auth.emailAlreadyRegistered'));
           onSwitchToLogin();
         } else {
-          toast.error(error.message || "Registrierung fehlgeschlagen");
+          toast.error(error.message || t('auth.registrationFailed'));
         }
         return;
       }
 
       setIsSuccess(true);
-      toast.success("Registrierung erfolgreich! Du wirst weitergeleitet...");
+      toast.success(t('auth.registrationSuccessRedirect'));
     } catch (err) {
-      toast.error("Ein unerwarteter Fehler ist aufgetreten");
+      toast.error(t('auth.unexpectedError'));
     } finally {
       setIsLoading(false);
     }
@@ -67,10 +69,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       <div className="text-center py-8">
         <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-foreground mb-2">
-          Registrierung erfolgreich!
+          {t('auth.registrationSuccessTitle')}
         </h3>
         <p className="text-muted-foreground">
-          Du wirst in Kürze weitergeleitet...
+          {t('auth.redirecting')}
         </p>
       </div>
     );
@@ -84,13 +86,13 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>E-Mail</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="email"
-                    placeholder="deine@email.de"
+                    placeholder={t('auth.emailPlaceholder')}
                     className="pl-10"
                     {...field}
                   />
@@ -106,13 +108,13 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Passwort</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="password"
-                    placeholder="Mindestens 6 Zeichen"
+                    placeholder={t('auth.minCharsPlaceholder')}
                     className="pl-10"
                     {...field}
                   />
@@ -128,13 +130,13 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Passwort bestätigen</FormLabel>
+              <FormLabel>{t('auth.confirmPassword')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="password"
-                    placeholder="Passwort wiederholen"
+                    placeholder={t('auth.repeatPassword')}
                     className="pl-10"
                     {...field}
                   />
@@ -149,21 +151,21 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Registrieren...
+              {t('auth.registering')}
             </>
           ) : (
-            "Registrieren"
+            t('auth.register')
           )}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          Bereits registriert?{" "}
+          {t('auth.alreadyRegistered')}{" "}
           <button
             type="button"
             onClick={onSwitchToLogin}
             className="text-primary hover:underline font-medium"
           >
-            Jetzt anmelden
+            {t('auth.loginNow')}
           </button>
         </p>
       </form>
