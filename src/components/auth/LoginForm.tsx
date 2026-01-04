@@ -3,28 +3,30 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 
-const loginSchema = z.object({
-  email: z.string().trim().email({ message: "Ungültige E-Mail-Adresse" }),
-  password: z.string().min(6, { message: "Passwort muss mindestens 6 Zeichen haben" }),
-});
-
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
 }
 
 export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+  const { t } = useTranslation();
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const loginSchema = z.object({
+    email: z.string().trim().email({ message: t('auth.invalidEmail') }),
+    password: z.string().min(6, { message: t('auth.passwordMinLength') }),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,16 +51,16 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("E-Mail oder Passwort falsch");
+          toast.error(t('auth.invalidCredentials'));
         } else {
           toast.error(error.message);
         }
         return;
       }
 
-      toast.success("Erfolgreich angemeldet!");
+      toast.success(t('auth.loginSuccess'));
     } catch (error) {
-      toast.error("Ein Fehler ist aufgetreten");
+      toast.error(t('auth.errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -72,9 +74,9 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     >
       <GlassCard className="p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-display text-2xl font-bold mb-2">Willkommen zurück</h1>
+          <h1 className="font-display text-2xl font-bold mb-2">{t('auth.welcomeBack')}</h1>
           <p className="text-muted-foreground">
-            Melde dich an, um auf dein Dashboard zuzugreifen
+            {t('auth.loginSubtitle')}
           </p>
         </div>
 
@@ -82,14 +84,14 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              E-Mail
+              {t('auth.email')}
             </Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="deine@email.de"
+              placeholder={t('auth.emailPlaceholder')}
               className={errors.email ? "border-destructive" : ""}
               autoComplete="email"
             />
@@ -101,7 +103,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div className="space-y-2">
             <Label htmlFor="password" className="flex items-center gap-2">
               <Lock className="w-4 h-4" />
-              Passwort
+              {t('auth.password')}
             </Label>
             <div className="relative">
               <Input
@@ -132,18 +134,18 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             className="w-full"
             icon={isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : undefined}
           >
-            {isLoading ? "Anmelden..." : "Anmelden"}
+            {isLoading ? t('auth.loggingIn') : t('auth.login')}
           </GradientButton>
 
           {onSwitchToRegister && (
             <p className="text-center text-sm text-muted-foreground">
-              Noch kein Konto?{" "}
+              {t('auth.noAccount')}{" "}
               <button
                 type="button"
                 onClick={onSwitchToRegister}
                 className="text-primary hover:underline font-medium"
               >
-                Jetzt registrieren
+                {t('auth.registerNow')}
               </button>
             </p>
           )}

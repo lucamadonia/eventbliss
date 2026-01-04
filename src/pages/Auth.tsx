@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
@@ -17,6 +18,7 @@ const getSafeRedirect = (value: string | null) => {
 };
 
 const Auth = () => {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -63,9 +65,9 @@ const Auth = () => {
             >
               <GlassCard className="p-8 w-full max-w-md">
                 <div className="text-center mb-8">
-                  <h1 className="font-display text-2xl font-bold mb-2">Konto erstellen</h1>
+                  <h1 className="font-display text-2xl font-bold mb-2">{t('auth.createAccount')}</h1>
                   <p className="text-muted-foreground">
-                    Registriere dich, um Events zu erstellen und zu verwalten
+                    {t('auth.registerSubtitle')}
                   </p>
                 </div>
                 <RegisterForm onSwitchToLogin={() => setMode("login")} />
