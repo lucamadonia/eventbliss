@@ -18,6 +18,10 @@ import {
   Sun,
   Sunset,
   Moon,
+  RefreshCw,
+  Expand,
+  Loader2,
+  Sparkles,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -46,6 +50,10 @@ interface DayPlanCardProps {
   participantCount?: number;
   onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
   onAddDay?: (day: ParsedDay) => void;
+  onRegenerate?: (targetDays?: number) => void;
+  onExpand?: (targetDays: number) => void;
+  isLoading?: boolean;
+  remainingCredits?: number;
 }
 
 // Premium day colors with gradients
@@ -352,6 +360,10 @@ export const DayPlanCard = ({
   participantCount,
   onAddTimeBlock,
   onAddDay,
+  onRegenerate,
+  onExpand,
+  isLoading = false,
+  remainingCredits,
 }: DayPlanCardProps) => {
   const { t, i18n } = useTranslation();
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]));
@@ -394,38 +406,95 @@ export const DayPlanCard = ({
     <div className="space-y-4">
       {/* Header */}
       <GlassCard className="p-4 bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent border-primary/20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/20">
-            <Calendar className="w-5 h-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-display font-bold text-lg">
-              {t('dashboard.ai.dayPlan')}
-            </h3>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {eventName && (
-                <Badge variant="secondary" className="text-xs">
-                  {eventName}
-                </Badge>
-              )}
-              <Badge variant="outline" className="text-xs">
-                📅 {dayPlan.days.length} {t('dashboard.ai.days')}
-              </Badge>
-              {participantCount && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/20">
+              <Calendar className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-display font-bold text-lg">
+                {t('dashboard.ai.dayPlan')}
+              </h3>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {eventName && (
+                  <Badge variant="secondary" className="text-xs">
+                    {eventName}
+                  </Badge>
+                )}
                 <Badge variant="outline" className="text-xs">
-                  👥 {participantCount}
+                  📅 {dayPlan.days.length} {t('dashboard.ai.days')}
+                </Badge>
+                {participantCount && (
+                  <Badge variant="outline" className="text-xs">
+                    👥 {participantCount}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={copyAll}>
+                <Copy className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleDownload}>
+                <Download className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Regenerate & Expand Actions */}
+          {(onRegenerate || onExpand) && (
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50">
+              {onRegenerate && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onRegenerate()}
+                  disabled={isLoading || (remainingCredits !== undefined && remainingCredits <= 0)}
+                  className="gap-2"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  {t('aiCredits.regenerate')}
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">
+                    1 <Sparkles className="w-2.5 h-2.5 inline" />
+                  </Badge>
+                </Button>
+              )}
+              
+              {onExpand && dayPlan.days.length < 7 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentDays = dayPlan.days.length;
+                    const targetDays = currentDays <= 3 ? 5 : 7;
+                    onExpand(targetDays);
+                  }}
+                  disabled={isLoading || (remainingCredits !== undefined && remainingCredits <= 0)}
+                  className="gap-2"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Expand className="w-4 h-4" />
+                  )}
+                  {t('aiCredits.expandTo', { days: dayPlan.days.length <= 3 ? 5 : 7 })}
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">
+                    1 <Sparkles className="w-2.5 h-2.5 inline" />
+                  </Badge>
+                </Button>
+              )}
+
+              {dayPlan.days.length >= 7 && (
+                <Badge variant="outline" className="text-xs text-muted-foreground">
+                  {t('aiCredits.maxDaysReached')}
                 </Badge>
               )}
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={copyAll}>
-              <Copy className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleDownload}>
-              <Download className="w-4 h-4" />
-            </Button>
-          </div>
+          )}
         </div>
       </GlassCard>
 
