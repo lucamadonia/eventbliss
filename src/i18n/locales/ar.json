@@ -1345,7 +1345,13 @@
         "food": "طعام ومشروبات",
         "outdoor": "في الهواء الطلق",
         "other": "أخرى"
-      }
+      },
+      "expandSection": "توسيع",
+      "sectionExpanded": "تم توسيع القسم!",
+      "expandFeedbackLabel": "ماذا يجب إضافته؟",
+      "expandFeedbackPlaceholder": "مثال: المزيد من الأنشطة الخارجية، خيارات رومانسية...",
+      "usesOneCredit": "يستخدم 1 رصيد",
+      "noCredits": "لا توجد أرصدة متاحة"
     },
     "jgaClassic": { "name": "حفلة كلاسيكية", "description": "أكشن وحفلات ولحظات لا تُنسى" },
     "jgaAdventure": { "name": "رحلة مغامرات", "description": "مغامرات في الهواء الطلق وتحديات الفريق" },

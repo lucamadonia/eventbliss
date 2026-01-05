@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +20,59 @@ serve(async (req) => {
         JSON.stringify({ error: 'event_type and description are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Get user from auth header for credit tracking
+    const authHeader = req.headers.get('Authorization');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    let userId: string | null = null;
+    
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (!authError && user) {
+        userId = user.id;
+      }
+    }
+
+    // Check and deduct credits if user is authenticated
+    if (userId) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // Get current usage
+      const { count: usedCredits } = await supabase
+        .from('ai_usage')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .gte('created_at', startOfMonth.toISOString());
+
+      // Get user's plan limit from plan_configs
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('plan')
+        .eq('user_id', userId)
+        .single();
+
+      const planKey = subscription?.plan || 'free';
+      
+      const { data: planConfig } = await supabase
+        .from('plan_configs')
+        .select('ai_credits_monthly')
+        .eq('plan_key', planKey)
+        .single();
+
+      const creditLimit = planConfig?.ai_credits_monthly || 0;
+
+      if ((usedCredits || 0) >= creditLimit) {
+        return new Response(
+          JSON.stringify({ error: 'No credits remaining', success: false }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -85,7 +139,7 @@ User description: "${description}"
 
 Generate a custom survey configuration that matches this event perfectly.`;
 
-    console.log('Generating template for:', { event_type, language, description: description.substring(0, 100) });
+    console.log('Generating template for:', { event_type, language, description: description.substring(0, 100), userId: userId || 'anonymous' });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -108,13 +162,13 @@ Generate a custom survey configuration that matches this event perfectly.`;
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.', success: false }),
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
+          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.', success: false }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -147,6 +201,16 @@ Generate a custom survey configuration that matches this event perfectly.`;
         !template.activity_options || !template.duration_options) {
       console.error('Invalid template structure:', template);
       throw new Error('AI response missing required fields');
+    }
+
+    // Record credit usage if user is authenticated
+    if (userId) {
+      await supabase.from('ai_usage').insert({
+        user_id: userId,
+        request_type: 'template_generation',
+        tokens_used: 0,
+      });
+      console.log(`Deducted 1 credit from user: ${userId}`);
     }
 
     console.log('Successfully generated template with', {
