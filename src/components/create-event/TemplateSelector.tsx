@@ -51,7 +51,48 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
         },
       });
 
-      if (error) throw error;
+      // Handle specific error cases
+      if (error) {
+        // Check for authentication or credit errors
+        if (error.message?.includes('401') || data?.error?.includes('Authentication required')) {
+          toast({
+            title: t('common.error'),
+            description: t('templates.loginRequired', 'Please log in to use AI features'),
+            variant: 'destructive',
+          });
+          return;
+        }
+        if (error.message?.includes('402') || data?.error?.includes('No credits')) {
+          toast({
+            title: t('templates.noCredits', 'No AI credits remaining'),
+            description: t('templates.upgradeForCredits', 'Upgrade your plan to get more AI credits'),
+            variant: 'destructive',
+          });
+          return;
+        }
+        throw error;
+      }
+
+      // Also check data for error responses
+      if (data?.error) {
+        if (data.error === 'Authentication required for AI features') {
+          toast({
+            title: t('common.error'),
+            description: t('templates.loginRequired', 'Please log in to use AI features'),
+            variant: 'destructive',
+          });
+          return;
+        }
+        if (data.error === 'No credits remaining') {
+          toast({
+            title: t('templates.noCredits', 'No AI credits remaining'),
+            description: t('templates.upgradeForCredits', 'Upgrade your plan to get more AI credits'),
+            variant: 'destructive',
+          });
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       if (data?.success && data?.template) {
         // Store template and show preview instead of applying directly
@@ -62,7 +103,7 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
           description: t('templates.aiPreview.reviewMessage'),
         });
       } else {
-        throw new Error(data?.error || 'Failed to generate template');
+        throw new Error('Failed to generate template');
       }
     } catch (error) {
       console.error('Error generating template:', error);

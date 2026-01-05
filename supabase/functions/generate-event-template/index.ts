@@ -32,10 +32,17 @@ serve(async (req) => {
     
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '');
+      console.log('Auth token present:', !!token);
       const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (authError) {
+        console.log('Auth error:', authError.message);
+      }
       if (!authError && user) {
         userId = user.id;
+        console.log('User authenticated:', userId);
       }
+    } else {
+      console.log('No Authorization header found');
     }
 
     // Check and deduct credits if user is authenticated
@@ -58,21 +65,36 @@ serve(async (req) => {
         .single();
 
       const planKey = subscription?.plan || 'free';
+      console.log('User plan:', planKey);
       
-      const { data: planConfig } = await supabase
+      const { data: planConfig, error: planError } = await supabase
         .from('plan_configs')
         .select('ai_credits_monthly')
         .eq('plan_key', planKey)
         .single();
 
-      const creditLimit = planConfig?.ai_credits_monthly || 0;
+      if (planError) {
+        console.log('Plan config error:', planError.message);
+      }
+      
+      // Default to 5 credits for free plan if config not found
+      const creditLimit = planConfig?.ai_credits_monthly ?? 5;
+      console.log('Credit check:', { usedCredits, creditLimit, planConfig });
 
       if ((usedCredits || 0) >= creditLimit) {
+        console.log('No credits remaining');
         return new Response(
           JSON.stringify({ error: 'No credits remaining', success: false }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+    } else {
+      // User not authenticated - require login for AI features
+      console.log('User not authenticated - requiring login');
+      return new Response(
+        JSON.stringify({ error: 'Authentication required for AI features', success: false }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
