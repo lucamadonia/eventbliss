@@ -26,6 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { TemplateSelector } from "@/components/create-event/TemplateSelector";
 import { type EventTemplate } from "@/lib/event-templates";
+import { cn } from "@/lib/utils";
 
 interface EventFormData {
   event_type: string;
@@ -563,7 +564,10 @@ const CreateEvent = () => {
 
         {/* Content */}
         <main className="flex-1 flex items-center justify-center px-4 py-8">
-          <div className="w-full max-w-lg">
+          <div className={cn(
+            "w-full",
+            step === 2 ? "max-w-5xl" : "max-w-lg"
+          )}>
             <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
 
             {/* Navigation - hide for step 2 (template selector has its own nav) */}
