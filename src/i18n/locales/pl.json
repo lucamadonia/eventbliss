@@ -1345,7 +1345,13 @@
         "food": "Jedzenie i picie",
         "outdoor": "Outdoor",
         "other": "Inne"
-      }
+      },
+      "expandSection": "Rozszerz",
+      "sectionExpanded": "Sekcja rozszerzona!",
+      "expandFeedbackLabel": "Co powinno zostać dodane?",
+      "expandFeedbackPlaceholder": "np. Więcej aktywności na świeżym powietrzu, romantyczne opcje...",
+      "usesOneCredit": "Kosztuje 1 credit",
+      "noCredits": "Brak dostępnych creditów"
     },
     "jgaClassic": { "name": "Klasyczna Impreza", "description": "Akcja, impreza i niezapomniane chwile" },
     "jgaAdventure": { "name": "Wyprawa Przygodowa", "description": "Outdoor i wyzwania zespołowe" },

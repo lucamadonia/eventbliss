@@ -74,34 +74,34 @@ serve(async (req) => {
     }
 
     const sectionPrompts: Record<string, string> = {
-      budget: `Generate 4-5 budget range options for an event. 
-        Each should have a value (like "budget_100_200"), label (like "€100-200"), and optionally an emoji.
-        Consider different spending levels from budget-friendly to premium.`,
-      destination: `Generate 4-6 destination options for an event.
-        Each should have a value (like "barcelona"), label (like "Barcelona"), and an emoji representing the location.
-        Mix local options with travel destinations.`,
-      activity: `Generate 8-12 activity options for an event.
-        Each should have a value, label, emoji, and category (action, chill, food, outdoor, or other).
-        Provide a diverse mix across categories.`,
-      duration: `Generate 3-4 duration options for an event.
-        Each should have a value (like "weekend"), label (like "Weekend (2-3 days)").
-        Include day trip, weekend, and longer options.`,
+      budget: `Generate 2-3 ADDITIONAL budget range options that complement the existing ones.
+        Look at the existing items and suggest different price ranges that aren't covered yet.
+        Each should have a value (like "budget_100_200"), label (like "€100-200"), and optionally an emoji.`,
+      destination: `Generate 2-3 ADDITIONAL destination options that complement the existing ones.
+        Look at the existing items and suggest different types of destinations.
+        Each should have a value (like "barcelona"), label (like "Barcelona"), and an emoji.`,
+      activity: `Generate 3-5 ADDITIONAL activity options that complement the existing ones.
+        Look at the existing items and suggest activities from different categories that aren't well represented.
+        Each should have a value, label, emoji, and category (action, chill, food, outdoor, or other).`,
+      duration: `Generate 1-2 ADDITIONAL duration options that complement the existing ones.
+        Look at the existing items and suggest different lengths that aren't covered.
+        Each should have a value (like "one_week"), label (like "One Week").`,
     };
 
     const eventType = eventContext?.eventType || 'event';
     const honoreeName = eventContext?.honoreeName || '';
     
-    let systemPrompt = `You are an event planning assistant. Generate creative and appropriate options for a ${eventType}${honoreeName ? ` for ${honoreeName}` : ''}.`;
+    let systemPrompt = `You are an event planning assistant. Generate ADDITIONAL options (not replacements) for a ${eventType}${honoreeName ? ` for ${honoreeName}` : ''}.`;
     
     if (feedback) {
-      systemPrompt += ` The user has requested: "${feedback}". Please incorporate this feedback.`;
+      systemPrompt += ` The user has requested: "${feedback}". Please incorporate this feedback when generating new items.`;
     }
 
     const currentItemsContext = currentItems?.length > 0 
-      ? `Current items that could be replaced or improved: ${JSON.stringify(currentItems)}`
+      ? `Existing items (DO NOT repeat these, generate DIFFERENT ones): ${JSON.stringify(currentItems)}`
       : '';
 
-    console.log(`Regenerating section: ${section} for user: ${userId || 'anonymous'}`);
+    console.log(`Expanding section: ${section} for user: ${userId || 'anonymous'}`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -115,7 +115,7 @@ serve(async (req) => {
           { role: 'system', content: systemPrompt },
           { 
             role: 'user', 
-            content: `${sectionPrompts[section] || 'Generate options for this section.'}\n\n${currentItemsContext}\n\nRespond with a JSON array of items only.`
+            content: `${sectionPrompts[section] || 'Generate additional options for this section.'}\n\n${currentItemsContext}\n\nRespond with a JSON array of NEW items only (not existing ones).`
           }
         ],
         tools: [
@@ -123,7 +123,7 @@ serve(async (req) => {
             type: 'function',
             function: {
               name: 'provide_items',
-              description: 'Provide the generated items for the event template section',
+              description: 'Provide the additional generated items for the event template section',
               parameters: {
                 type: 'object',
                 properties: {
@@ -191,20 +191,20 @@ serve(async (req) => {
     if (userId) {
       await supabase.from('ai_usage').insert({
         user_id: userId,
-        request_type: 'section_regeneration',
+        request_type: 'template_expansion',
         tokens_used: 0,
       });
       console.log(`Deducted 1 credit from user: ${userId}`);
     }
 
-    console.log(`Generated ${items.length} items for section: ${section}`);
+    console.log(`Generated ${items.length} additional items for section: ${section}`);
 
     return new Response(JSON.stringify({ items }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in regenerate-template-section:', error);
+    console.error('Error in expand-template-section:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

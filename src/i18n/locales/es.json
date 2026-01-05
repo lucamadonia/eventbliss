@@ -1361,7 +1361,13 @@
         "food": "Comida y bebida",
         "outdoor": "Outdoor",
         "other": "Otros"
-      }
+      },
+      "expandSection": "Ampliar",
+      "sectionExpanded": "¡Sección ampliada!",
+      "expandFeedbackLabel": "¿Qué debería añadirse?",
+      "expandFeedbackPlaceholder": "ej. Más actividades al aire libre, opciones románticas...",
+      "usesOneCredit": "Usa 1 crédito",
+      "noCredits": "Sin créditos disponibles"
     },
     "jgaClassic": { "name": "Fiesta Clásica", "description": "Acción, fiesta y momentos inolvidables" },
     "jgaAdventure": { "name": "Viaje de Aventura", "description": "Acción outdoor y retos en equipo" },

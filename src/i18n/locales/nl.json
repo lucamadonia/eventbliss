@@ -1351,7 +1351,13 @@
         "food": "Eten en drinken",
         "outdoor": "Outdoor",
         "other": "Overig"
-      }
+      },
+      "expandSection": "Uitbreiden",
+      "sectionExpanded": "Sectie uitgebreid!",
+      "expandFeedbackLabel": "Wat moet worden toegevoegd?",
+      "expandFeedbackPlaceholder": "bijv. Meer outdoor activiteiten, romantische opties...",
+      "usesOneCredit": "Kost 1 credit",
+      "noCredits": "Geen credits beschikbaar"
     },
     "jgaClassic": { "name": "Klassiek Feest", "description": "Actie, feest en onvergetelijke momenten" },
     "jgaAdventure": { "name": "Avontuur Trip", "description": "Outdoor actie en teamuitdagingen" },

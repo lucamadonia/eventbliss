@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, Reorder, useMotionValue, useTransform } from 'framer-motion';
-import { RefreshCw, Plus, X, Undo2, MessageSquare, Trash2, GripVertical } from 'lucide-react';
+import { RefreshCw, Plus, X, Undo2, MessageSquare, Trash2, GripVertical, Sparkles } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,9 +26,12 @@ interface EditableTemplateSectionProps {
   onItemEdit: (index: number, item: TemplateItem) => void;
   onReorder: (newItems: TemplateItem[]) => void;
   onRegenerate: (feedback: string) => void;
+  onExpand?: (feedback: string) => void;
   isRegenerating?: boolean;
+  isExpanding?: boolean;
   categoryLabel?: (category: string) => string;
   showCategories?: boolean;
+  hasCredits?: boolean;
 }
 
 // Custom hook to detect touch devices
@@ -115,13 +118,17 @@ export function EditableTemplateSection({
   onItemEdit,
   onReorder,
   onRegenerate,
+  onExpand,
   isRegenerating,
+  isExpanding,
   categoryLabel,
   showCategories = false,
+  hasCredits = true,
 }: EditableTemplateSectionProps) {
   const { t } = useTranslation();
   const isTouch = useTouchDevice();
   const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackMode, setFeedbackMode] = useState<'regenerate' | 'expand'>('regenerate');
   const [feedback, setFeedback] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
   const [newItemLabel, setNewItemLabel] = useState('');
@@ -169,11 +176,25 @@ export function EditableTemplateSection({
   };
 
   const handleRegenerate = () => {
-    if (showFeedback) {
+    if (!hasCredits) return;
+    if (showFeedback && feedbackMode === 'regenerate') {
       onRegenerate(feedback);
       setFeedback('');
       setShowFeedback(false);
     } else {
+      setFeedbackMode('regenerate');
+      setShowFeedback(true);
+    }
+  };
+
+  const handleExpand = () => {
+    if (!hasCredits || !onExpand) return;
+    if (showFeedback && feedbackMode === 'expand') {
+      onExpand(feedback);
+      setFeedback('');
+      setShowFeedback(false);
+    } else {
+      setFeedbackMode('expand');
       setShowFeedback(true);
     }
   };
@@ -244,7 +265,7 @@ export function EditableTemplateSection({
   return (
     <GlassCard className="p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className={iconColor}>{icon}</span>
           <h3 className="font-semibold">{title}</h3>
@@ -253,12 +274,28 @@ export function EditableTemplateSection({
           </Badge>
         </div>
         <div className="flex items-center gap-1">
+          {/* Expand Button */}
+          {onExpand && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExpand}
+              disabled={isExpanding || isRegenerating || !hasCredits}
+              className="h-8 gap-1 text-xs"
+              title={!hasCredits ? t('templates.aiPreview.noCredits') : undefined}
+            >
+              <Sparkles className={cn("w-3.5 h-3.5", isExpanding && "animate-pulse")} />
+              {t('templates.aiPreview.expandSection')}
+            </Button>
+          )}
+          {/* Regenerate Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleRegenerate}
-            disabled={isRegenerating}
+            disabled={isRegenerating || isExpanding || !hasCredits}
             className="h-8 gap-1 text-xs"
+            title={!hasCredits ? t('templates.aiPreview.noCredits') : undefined}
           >
             <RefreshCw className={cn("w-3.5 h-3.5", isRegenerating && "animate-spin")} />
             {t('templates.aiPreview.regenerateSection')}
@@ -280,13 +317,22 @@ export function EditableTemplateSection({
                 <div className="flex items-center gap-1 mb-1">
                   <MessageSquare className="w-3 h-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
-                    {t('templates.aiPreview.feedbackLabel')}
+                    {feedbackMode === 'expand' 
+                      ? t('templates.aiPreview.expandFeedbackLabel')
+                      : t('templates.aiPreview.feedbackLabel')
+                    }
                   </span>
+                  <Badge variant="secondary" className="text-xs ml-1">
+                    {t('templates.aiPreview.usesOneCredit')}
+                  </Badge>
                 </div>
                 <Textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  placeholder={t('templates.aiPreview.feedbackPlaceholder')}
+                  placeholder={feedbackMode === 'expand'
+                    ? t('templates.aiPreview.expandFeedbackPlaceholder')
+                    : t('templates.aiPreview.feedbackPlaceholder')
+                  }
                   className="min-h-[60px] text-sm resize-none"
                 />
               </div>
@@ -294,14 +340,22 @@ export function EditableTemplateSection({
                 <Button
                   size="sm"
                   onClick={() => {
-                    onRegenerate(feedback);
+                    if (feedbackMode === 'expand' && onExpand) {
+                      onExpand(feedback);
+                    } else {
+                      onRegenerate(feedback);
+                    }
                     setFeedback('');
                     setShowFeedback(false);
                   }}
-                  disabled={isRegenerating}
+                  disabled={isRegenerating || isExpanding}
                   className="h-8"
                 >
-                  <RefreshCw className={cn("w-3.5 h-3.5 mr-1", isRegenerating && "animate-spin")} />
+                  {feedbackMode === 'expand' ? (
+                    <Sparkles className={cn("w-3.5 h-3.5 mr-1", isExpanding && "animate-pulse")} />
+                  ) : (
+                    <RefreshCw className={cn("w-3.5 h-3.5 mr-1", isRegenerating && "animate-spin")} />
+                  )}
                   {t('common.submit')}
                 </Button>
                 <Button

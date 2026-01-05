@@ -1345,7 +1345,13 @@
         "food": "Yeme içme",
         "outdoor": "Outdoor",
         "other": "Diğer"
-      }
+      },
+      "expandSection": "Genişlet",
+      "sectionExpanded": "Bölüm genişletildi!",
+      "expandFeedbackLabel": "Ne eklenmeli?",
+      "expandFeedbackPlaceholder": "örn. Daha fazla açık hava aktivitesi, romantik seçenekler...",
+      "usesOneCredit": "1 kredi kullanır",
+      "noCredits": "Kredi mevcut değil"
     },
     "jgaClassic": { "name": "Klasik Parti", "description": "Aksiyon, parti ve unutulmaz anlar" },
     "jgaAdventure": { "name": "Macera Gezisi", "description": "Outdoor aksiyon ve takım meydan okumaları" },

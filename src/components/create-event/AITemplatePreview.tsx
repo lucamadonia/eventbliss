@@ -11,6 +11,7 @@ import {
   Check,
   RefreshCw,
   ArrowRight,
+  Coins,
 } from 'lucide-react';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import { getTemplateById } from '@/lib/design-templates';
 import { EditableTemplateSection } from './EditableTemplateSection';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAICredits } from '@/hooks/useAICredits';
 
 interface TemplateItem {
   value: string;
@@ -65,6 +67,7 @@ export function AITemplatePreview({
   isGenerating,
 }: AITemplatePreviewProps) {
   const { t } = useTranslation();
+  const { remaining, limit, loading: creditsLoading, refetch: refetchCredits } = useAICredits();
   
   // Editable state for each section
   const [budgetOptions, setBudgetOptions] = useState<TemplateItem[]>(template.budget_options || []);
@@ -72,10 +75,13 @@ export function AITemplatePreview({
   const [activityOptions, setActivityOptions] = useState<TemplateItem[]>(template.activity_options || []);
   const [durationOptions, setDurationOptions] = useState<TemplateItem[]>(template.duration_options || []);
   const [regeneratingSection, setRegeneratingSection] = useState<SectionKey | null>(null);
+  const [expandingSection, setExpandingSection] = useState<SectionKey | null>(null);
 
   const designTemplate = template.branding?.template_id 
     ? getTemplateById(template.branding.template_id) 
     : null;
+
+  const hasCredits = remaining > 0;
 
   const getCategoryLabel = useCallback((cat: string) => {
     const key = `templates.aiPreview.category.${cat}`;
@@ -85,6 +91,11 @@ export function AITemplatePreview({
 
   // Regenerate a specific section
   const handleRegenerateSection = useCallback(async (section: SectionKey, feedback: string) => {
+    if (!hasCredits) {
+      toast.error(t('templates.aiPreview.noCredits'));
+      return;
+    }
+
     setRegeneratingSection(section);
     
     try {
@@ -124,13 +135,70 @@ export function AITemplatePreview({
       }
 
       toast.success(t('templates.aiPreview.sectionRegenerated'));
+      refetchCredits();
     } catch (error) {
       console.error('Error regenerating section:', error);
       toast.error(t('common.error'));
     } finally {
       setRegeneratingSection(null);
     }
-  }, [budgetOptions, destinationOptions, activityOptions, durationOptions, eventContext, t]);
+  }, [budgetOptions, destinationOptions, activityOptions, durationOptions, eventContext, t, hasCredits, refetchCredits]);
+
+  // Expand a specific section with more AI items
+  const handleExpandSection = useCallback(async (section: SectionKey, feedback: string) => {
+    if (!hasCredits) {
+      toast.error(t('templates.aiPreview.noCredits'));
+      return;
+    }
+
+    setExpandingSection(section);
+    
+    try {
+      const currentItems = {
+        budget: budgetOptions,
+        destination: destinationOptions,
+        activity: activityOptions,
+        duration: durationOptions,
+      }[section];
+
+      const { data, error } = await supabase.functions.invoke('expand-template-section', {
+        body: {
+          section,
+          currentItems,
+          feedback,
+          eventContext,
+        },
+      });
+
+      if (error) throw error;
+
+      const newItems = data?.items || [];
+      
+      // Merge new items with existing ones
+      switch (section) {
+        case 'budget':
+          setBudgetOptions(prev => [...prev, ...newItems]);
+          break;
+        case 'destination':
+          setDestinationOptions(prev => [...prev, ...newItems]);
+          break;
+        case 'activity':
+          setActivityOptions(prev => [...prev, ...newItems]);
+          break;
+        case 'duration':
+          setDurationOptions(prev => [...prev, ...newItems]);
+          break;
+      }
+
+      toast.success(t('templates.aiPreview.sectionExpanded'));
+      refetchCredits();
+    } catch (error) {
+      console.error('Error expanding section:', error);
+      toast.error(t('common.error'));
+    } finally {
+      setExpandingSection(null);
+    }
+  }, [budgetOptions, destinationOptions, activityOptions, durationOptions, eventContext, t, hasCredits, refetchCredits]);
 
   // Handle apply with modified template
   const handleApply = () => {
@@ -177,9 +245,17 @@ export function AITemplatePreview({
     >
       {/* Header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full mb-3">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">{t('templates.aiPreview.badge')}</span>
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">{t('templates.aiPreview.badge')}</span>
+          </div>
+          {!creditsLoading && (
+            <Badge variant="outline" className="gap-1.5">
+              <Coins className="w-3.5 h-3.5" />
+              <span>{remaining}/{limit}</span>
+            </Badge>
+          )}
         </div>
         <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
           {t('templates.aiPreview.title')}
@@ -189,9 +265,9 @@ export function AITemplatePreview({
         </p>
       </div>
 
-      {/* Editable Sections */}
-      <ScrollArea className="h-[50vh] md:h-auto md:max-h-[55vh]">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
+      {/* Editable Sections - Improved Layout */}
+      <ScrollArea className="h-[65vh] md:h-auto md:max-h-[70vh]">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pr-4">
           {/* Budget Options */}
           {budgetOptions.length > 0 && (
             <EditableTemplateSection
@@ -204,7 +280,10 @@ export function AITemplatePreview({
               onItemEdit={budgetHandlers.onEdit}
               onReorder={budgetHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('budget', feedback)}
+              onExpand={(feedback) => handleExpandSection('budget', feedback)}
               isRegenerating={regeneratingSection === 'budget'}
+              isExpanding={expandingSection === 'budget'}
+              hasCredits={hasCredits}
             />
           )}
 
@@ -220,7 +299,10 @@ export function AITemplatePreview({
               onItemEdit={destinationHandlers.onEdit}
               onReorder={destinationHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('destination', feedback)}
+              onExpand={(feedback) => handleExpandSection('destination', feedback)}
               isRegenerating={regeneratingSection === 'destination'}
+              isExpanding={expandingSection === 'destination'}
+              hasCredits={hasCredits}
             />
           )}
 
@@ -236,7 +318,10 @@ export function AITemplatePreview({
               onItemEdit={durationHandlers.onEdit}
               onReorder={durationHandlers.onReorder}
               onRegenerate={(feedback) => handleRegenerateSection('duration', feedback)}
+              onExpand={(feedback) => handleExpandSection('duration', feedback)}
               isRegenerating={regeneratingSection === 'duration'}
+              isExpanding={expandingSection === 'duration'}
+              hasCredits={hasCredits}
             />
           )}
 
@@ -266,9 +351,9 @@ export function AITemplatePreview({
             </GlassCard>
           )}
 
-          {/* Activities by Category */}
+          {/* Activities by Category - Full width on larger screens */}
           {activityOptions.length > 0 && (
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 xl:col-span-3">
               <EditableTemplateSection
                 title={t('templates.aiPreview.activityOptions')}
                 icon={<Dumbbell className="w-5 h-5" />}
@@ -279,9 +364,12 @@ export function AITemplatePreview({
                 onItemEdit={activityHandlers.onEdit}
                 onReorder={activityHandlers.onReorder}
                 onRegenerate={(feedback) => handleRegenerateSection('activity', feedback)}
+                onExpand={(feedback) => handleExpandSection('activity', feedback)}
                 isRegenerating={regeneratingSection === 'activity'}
+                isExpanding={expandingSection === 'activity'}
                 showCategories
                 categoryLabel={getCategoryLabel}
+                hasCredits={hasCredits}
               />
             </div>
           )}
@@ -300,7 +388,7 @@ export function AITemplatePreview({
       <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
         <GradientButton
           onClick={handleApply}
-          disabled={isGenerating || regeneratingSection !== null}
+          disabled={isGenerating || regeneratingSection !== null || expandingSection !== null}
           icon={<Check className="w-4 h-4" />}
           className="min-w-[160px]"
         >
@@ -311,17 +399,18 @@ export function AITemplatePreview({
         <Button
           variant="outline"
           onClick={onRegenerate}
-          disabled={isGenerating || regeneratingSection !== null}
+          disabled={isGenerating || regeneratingSection !== null || expandingSection !== null || !hasCredits}
           className="gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
           {t('templates.aiPreview.regenerateAll')}
+          <Badge variant="secondary" className="text-xs ml-1">1</Badge>
         </Button>
         
         <Button
           variant="ghost"
           onClick={onBack}
-          disabled={isGenerating || regeneratingSection !== null}
+          disabled={isGenerating || regeneratingSection !== null || expandingSection !== null}
           className="text-muted-foreground"
         >
           {t('common.back')}

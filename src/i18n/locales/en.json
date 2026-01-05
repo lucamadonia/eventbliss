@@ -1675,7 +1675,13 @@
         "food": "Food & Drinks",
         "outdoor": "Outdoor",
         "other": "Other"
-      }
+      },
+      "expandSection": "Expand",
+      "sectionExpanded": "Section expanded!",
+      "expandFeedbackLabel": "What should be added?",
+      "expandFeedbackPlaceholder": "e.g. More outdoor activities, romantic options...",
+      "usesOneCredit": "Uses 1 credit",
+      "noCredits": "No credits available"
     },
     "jgaClassic": {
       "name": "Classic Party",

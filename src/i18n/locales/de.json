@@ -1717,7 +1717,13 @@
         "food": "Essen & Trinken",
         "outdoor": "Outdoor",
         "other": "Sonstiges"
-      }
+      },
+      "expandSection": "Erweitern",
+      "sectionExpanded": "Bereich erweitert!",
+      "expandFeedbackLabel": "Was soll hinzugefügt werden?",
+      "expandFeedbackPlaceholder": "z.B. Mehr Outdoor-Aktivitäten, romantische Optionen...",
+      "usesOneCredit": "Kostet 1 Credit",
+      "noCredits": "Keine Credits verfügbar"
     },
     "jgaClassic": {
       "name": "Classic Party",
