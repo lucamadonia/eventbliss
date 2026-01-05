@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
@@ -141,31 +142,29 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     setShowDurationSelector(false);
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({
-            type,
-            context: getContext(options?.targetDays),
-            message,
-          }),
-        }
-      );
+      const { data: result, error } = await supabase.functions.invoke("ai-assistant", {
+        body: {
+          type,
+          context: getContext(options?.targetDays),
+          message,
+          eventId: event.id,
+        },
+      });
 
-      const result = await res.json();
-
-      if (!result.success) {
-        if (res.status === 429) {
+      if (error) {
+        console.error("AI function error:", error);
+        if (error.message?.includes('429') || error.message?.includes('rate')) {
           toast.error(t('dashboard.ai.tooManyRequests'));
+        } else if (error.message?.includes('402') || error.message?.includes('credit')) {
+          toast.error(t('aiCredits.noCreditsLeft'));
         } else {
-          throw new Error(result.error || "AI request failed");
+          throw new Error(error.message || "AI request failed");
         }
         return;
+      }
+
+      if (!result?.success) {
+        throw new Error(result?.error || "AI request failed");
       }
 
       setResponse(result.response);
