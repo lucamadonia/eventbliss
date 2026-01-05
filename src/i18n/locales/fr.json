@@ -862,7 +862,13 @@
         "noon": "Midi",
         "evening": "Soir",
         "night": "Nuit"
-      }
+      },
+      "addToPlannerDesc": "Ajoute cette activité à ton plan d'événement",
+      "selectDate": "Sélectionner la date",
+      "pickDate": "Choisir une date",
+      "activityAdded": "Activité ajoutée au planificateur",
+      "addedFromAI": "Ajouté par l'Assistant IA",
+      "costPerPerson": "Coût par personne"
     }
   },
   "messages": {

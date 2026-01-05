@@ -134,7 +134,7 @@ export const AddToPlannerDialog = ({
         <div className="space-y-4 py-4">
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">{t('planner.activityTitle', 'Titel')}</Label>
+            <Label htmlFor="title">{t('planner.form.title')}</Label>
             <Input
               id="title"
               value={formData.title}
@@ -178,7 +178,7 @@ export const AddToPlannerDialog = ({
             <div className="space-y-2">
               <Label htmlFor="start_time">
                 <Clock className="w-3 h-3 inline mr-1" />
-                {t('planner.startTime', 'Start')}
+                {t('planner.form.startTime')}
               </Label>
               <Input
                 id="start_time"
@@ -188,7 +188,7 @@ export const AddToPlannerDialog = ({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="end_time">{t('planner.endTime', 'Ende')}</Label>
+              <Label htmlFor="end_time">{t('planner.form.endTime')}</Label>
               <Input
                 id="end_time"
                 type="time"
@@ -200,7 +200,7 @@ export const AddToPlannerDialog = ({
 
           {/* Category */}
           <div className="space-y-2">
-            <Label>{t('planner.category', 'Kategorie')}</Label>
+            <Label>{t('planner.categories.title')}</Label>
             <Select
               value={formData.category}
               onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
@@ -225,13 +225,13 @@ export const AddToPlannerDialog = ({
           <div className="space-y-2">
             <Label htmlFor="location">
               <MapPin className="w-3 h-3 inline mr-1" />
-              {t('planner.location', 'Ort')}
+              {t('planner.form.location')}
             </Label>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-              placeholder={t('planner.locationPlaceholder', 'z.B. Hauptstraße 123')}
+              placeholder={t('planner.form.locationPlaceholder')}
             />
           </div>
 
@@ -252,7 +252,7 @@ export const AddToPlannerDialog = ({
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">{t('planner.description', 'Beschreibung')}</Label>
+            <Label htmlFor="description">{t('planner.form.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
