@@ -47,6 +47,10 @@ interface AIResponseCardProps {
   onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
   onAddDay?: (day: ParsedDay) => void;
   onSetDestination?: (tripIdea: ParsedTripIdea) => void;
+  onRegenerate?: (targetDays?: number) => void;
+  onExpand?: (targetDays: number) => void;
+  isLoading?: boolean;
+  remainingCredits?: number;
 }
 
 export const AIResponseCard = ({
@@ -59,6 +63,10 @@ export const AIResponseCard = ({
   onAddTimeBlock,
   onAddDay,
   onSetDestination,
+  onRegenerate,
+  onExpand,
+  isLoading,
+  remainingCredits,
 }: AIResponseCardProps) => {
   const { t } = useTranslation();
   const [expandedActivities, setExpandedActivities] = useState<Set<number>>(new Set());
@@ -122,6 +130,10 @@ export const AIResponseCard = ({
         participantCount={participantCount}
         onAddTimeBlock={onAddTimeBlock}
         onAddDay={onAddDay}
+        onRegenerate={onRegenerate}
+        onExpand={onExpand}
+        isLoading={isLoading}
+        remainingCredits={remainingCredits}
       />
     );
   }

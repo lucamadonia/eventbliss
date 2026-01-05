@@ -36,6 +36,8 @@ interface RequestBody {
     enhancement_type?: "casual" | "formal" | "shorter" | "detailed" | "custom";
     custom_instruction?: string;
     template_type?: string;
+    // For day_plan
+    target_days?: number;
   };
   message?: string;
   eventId?: string;
@@ -1620,6 +1622,32 @@ function getNextMonthReset(): Date {
 const RATE_LIMIT_PER_MINUTE = 10;
 
 // =============================================================================
+// DYNAMIC DAY PLAN PROMPTS WITH TARGET DAYS
+// =============================================================================
+function getDayPlanPromptWithDays(language: string, targetDays: number): string {
+  const daysText: Record<string, string> = {
+    de: `Erstelle einen detaillierten ${targetDays}-Tage-Plan für dieses Event.`,
+    en: `Create a detailed ${targetDays}-day plan for this event.`,
+    fr: `Crée un plan détaillé de ${targetDays} jours pour cet événement.`,
+    es: `Crea un plan detallado de ${targetDays} días para este evento.`,
+    it: `Crea un piano dettagliato di ${targetDays} giorni per questo evento.`,
+    nl: `Maak een gedetailleerd ${targetDays}-dagenplan voor dit evenement.`,
+    pl: `Stwórz szczegółowy plan ${targetDays}-dniowy dla tego wydarzenia.`,
+    pt: `Cria um plano detalhado de ${targetDays} dias para este evento.`,
+    tr: `Bu etkinlik için detaylı bir ${targetDays} günlük plan oluştur.`,
+    ar: `أنشئ خطة تفصيلية لمدة ${targetDays} أيام لهذا الحدث.`,
+  };
+
+  const promptTemplate = getPromptTemplate(language);
+  const basePrompt = promptTemplate.prompts.day_plan;
+  
+  // Replace generic "day plan" text with specific days count
+  const daysIntro = daysText[language] || daysText.en;
+  
+  return `${daysIntro}\n\n${basePrompt}`;
+}
+
+// =============================================================================
 // MAIN HANDLER
 // =============================================================================
 
@@ -1726,6 +1754,7 @@ serve(async (req) => {
         : undefined,
       custom_instruction: typeof rawContext.custom_instruction === 'string' ? rawContext.custom_instruction.slice(0, 500) : undefined,
       template_type: typeof rawContext.template_type === 'string' ? rawContext.template_type.slice(0, 100) : undefined,
+      target_days: typeof rawContext.target_days === 'number' ? Math.min(Math.max(rawContext.target_days, 1), 14) : undefined,
     };
 
     const message = typeof rawBody.message === 'string' ? rawBody.message.slice(0, 2000) : undefined;
@@ -1855,7 +1884,10 @@ serve(async (req) => {
         break;
 
       case "day_plan":
-        userPrompt = `${contextInfo}\n\n${promptTemplate.prompts.day_plan}`;
+        // Get target days from context (default to 3 for weekend)
+        const targetDays = context.target_days || 3;
+        const dayPlanPromptWithDays = getDayPlanPromptWithDays(language, targetDays);
+        userPrompt = `${contextInfo}\n\n${dayPlanPromptWithDays}`;
         break;
 
       case "budget_estimate":

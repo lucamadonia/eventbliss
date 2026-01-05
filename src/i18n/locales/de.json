@@ -2244,8 +2244,8 @@
     }
   },
   "aiCredits": {
-    "title": "AI-Credits",
-    "credits": "AI-Credits",
+    "title": "KI-Credits",
+    "credits": "KI-Credits",
     "creditsRemaining": "{{remaining}} von {{limit}} Credits",
     "creditsExhausted": "Keine AI-Credits mehr verfügbar",
     "creditsReset": "Deine Credits werden am {{date}} zurückgesetzt",
@@ -2255,12 +2255,29 @@
     "yearly": "100 AI-Credits/Monat",
     "lifetime": "75 AI-Credits/Monat",
     "description": "Für KI-gestützte Planung",
-    "remaining": "{{remaining}} von {{limit}} Credits verbleibend",
+    "remaining": "Verbleibend",
     "used": "Verwendet",
     "limit": "Monatliches Limit",
     "resetDate": "Nächstes Reset",
+    "reset": "Reset am",
+    "resetOn": "Reset: {{date}}",
     "noCredits": "Keine Credits - Premium-Abo erforderlich",
-    "perMonth": "Credits/Monat"
+    "perMonth": "Credits/Monat",
+    "exhausted": "Keine AI-Credits mehr verfügbar",
+    "lowCredits": "Nur noch {{count}} Credits übrig!",
+    "regenerate": "Neu generieren",
+    "expandTo": "Auf {{days}} Tage erweitern",
+    "maxDaysReached": "Maximum erreicht (7 Tage)",
+    "selectDuration": "Wie viele Tage?",
+    "selectDurationDesc": "Wähle die Anzahl der Tage für deinen Plan",
+    "days3": "Wochenende",
+    "days5": "Kurzurlaub",
+    "days7": "Vollwoche",
+    "generatePlan": "Plan generieren",
+    "generating": "Wird generiert...",
+    "costInfo": "Kostet {{cost}} Credit",
+    "noCreditsLeft": "Keine Credits mehr verfügbar",
+    "creditUsed": "💎 {{remaining}} Credits verbleibend"
   },
   "admin": {
     "credits": {
