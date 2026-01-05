@@ -51,21 +51,36 @@ serve(async (req) => {
         .single();
 
       const planKey = subscription?.plan || 'free';
+      console.log('User plan:', planKey, 'Used credits this month:', usedCredits);
       
-      const { data: planConfig } = await supabase
+      const { data: planConfig, error: planError } = await supabase
         .from('plan_configs')
         .select('ai_credits_monthly')
         .eq('plan_key', planKey)
         .single();
 
-      const creditLimit = planConfig?.ai_credits_monthly || 0;
+      if (planError) {
+        console.log('Plan config error:', planError.message);
+      }
+
+      // Default to 5 credits for free plan if config not found
+      const creditLimit = planConfig?.ai_credits_monthly ?? 5;
+      console.log('Credit check:', { usedCredits, creditLimit });
 
       if ((usedCredits || 0) >= creditLimit) {
+        console.log('No credits remaining');
         return new Response(
           JSON.stringify({ error: 'No credits remaining' }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+    } else {
+      // Require authentication for AI features
+      console.log('User not authenticated - requiring login');
+      return new Response(
+        JSON.stringify({ error: 'Authentication required for AI features' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
