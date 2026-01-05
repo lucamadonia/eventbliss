@@ -840,7 +840,19 @@
       "fitnessNormal": "Normaal",
       "fitnessChallenging": "Uitdagend",
       "recommendations": "AI Aanbevelingen",
-      "dayAdded": "Dag toegevoegd aan planner"
+      "dayAdded": "Dag toegevoegd aan planner",
+      "tag": "DAG",
+      "days": "Dagen",
+      "activity": "Activiteit",
+      "addDay": "Dag Toevoegen",
+      "generalTips": "Algemene Tips",
+      "noActivities": "Geen activiteiten",
+      "timeOfDay": {
+        "morning": "Ochtend",
+        "noon": "Middag",
+        "evening": "Avond",
+        "night": "Nacht"
+      }
     }
   },
   "messages": {

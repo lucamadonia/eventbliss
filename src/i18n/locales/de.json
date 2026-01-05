@@ -1045,7 +1045,19 @@
       "fitnessNormal": "Normal",
       "fitnessChallenging": "Anspruchsvoll",
       "recommendations": "KI-Empfehlungen",
-      "dayAdded": "Tag zum Planer hinzugefügt"
+      "dayAdded": "Tag zum Planer hinzugefügt",
+      "tag": "TAG",
+      "days": "Tage",
+      "activity": "Aktivität",
+      "addDay": "Tag hinzufügen",
+      "generalTips": "Allgemeine Tipps",
+      "noActivities": "Keine Aktivitäten",
+      "timeOfDay": {
+        "morning": "Morgens",
+        "noon": "Mittags",
+        "evening": "Abends",
+        "night": "Nachts"
+      }
     },
     "settings": {
       "title": "Einstellungen",

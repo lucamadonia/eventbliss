@@ -1,7 +1,13 @@
 // Day Plan PDF Export - Premium formatted export for AI-generated day plans
 import { format } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
-import { type ParsedDayPlan, type ParsedDay, type ParsedTimeBlock } from "./ai-response-parser";
+import { 
+  type ParsedDayPlan, 
+  type ParsedDay, 
+  type ParsedTimeBlock,
+  type TimeOfDay,
+  groupTimeBlocksByPeriod,
+} from "./ai-response-parser";
 
 interface EventInfo {
   name: string;
@@ -22,7 +28,26 @@ const localeMap: Record<string, Locale> = {
   ar: ar,
 };
 
-const TRANSLATIONS = {
+const TRANSLATIONS: Record<string, {
+  dayPlan: string;
+  participants: string;
+  days: string;
+  activities: string;
+  location: string;
+  transport: string;
+  cost: string;
+  duration: string;
+  tip: string;
+  warning: string;
+  tips: string;
+  generatedBy: string;
+  tag: string;
+  morning: string;
+  noon: string;
+  evening: string;
+  night: string;
+  noActivities: string;
+}> = {
   de: {
     dayPlan: "Detaillierter Tagesplan",
     participants: "Teilnehmer",
@@ -31,13 +56,17 @@ const TRANSLATIONS = {
     location: "Ort",
     transport: "Transport",
     cost: "Kosten",
+    duration: "Dauer",
     tip: "Pro-Tipp",
     warning: "Wichtig",
     tips: "Tipps",
     generatedBy: "Erstellt mit EventBliss",
-    summary: "Übersicht",
-    timeBlocks: "Aktivitäten",
     tag: "TAG",
+    morning: "Morgens",
+    noon: "Mittags",
+    evening: "Abends",
+    night: "Nachts",
+    noActivities: "Keine Aktivitäten",
   },
   en: {
     dayPlan: "Detailed Day Plan",
@@ -47,13 +76,177 @@ const TRANSLATIONS = {
     location: "Location",
     transport: "Transport",
     cost: "Cost",
+    duration: "Duration",
     tip: "Pro Tip",
     warning: "Important",
     tips: "Tips",
     generatedBy: "Created with EventBliss",
-    summary: "Summary",
-    timeBlocks: "Activities",
     tag: "DAY",
+    morning: "Morning",
+    noon: "Noon",
+    evening: "Evening",
+    night: "Night",
+    noActivities: "No activities",
+  },
+  es: {
+    dayPlan: "Plan Detallado del Día",
+    participants: "Participantes",
+    days: "Días",
+    activities: "Actividades",
+    location: "Ubicación",
+    transport: "Transporte",
+    cost: "Costo",
+    duration: "Duración",
+    tip: "Consejo",
+    warning: "Importante",
+    tips: "Consejos",
+    generatedBy: "Creado con EventBliss",
+    tag: "DÍA",
+    morning: "Mañana",
+    noon: "Mediodía",
+    evening: "Tarde",
+    night: "Noche",
+    noActivities: "Sin actividades",
+  },
+  fr: {
+    dayPlan: "Plan Détaillé de la Journée",
+    participants: "Participants",
+    days: "Jours",
+    activities: "Activités",
+    location: "Lieu",
+    transport: "Transport",
+    cost: "Coût",
+    duration: "Durée",
+    tip: "Conseil",
+    warning: "Important",
+    tips: "Conseils",
+    generatedBy: "Créé avec EventBliss",
+    tag: "JOUR",
+    morning: "Matin",
+    noon: "Midi",
+    evening: "Soir",
+    night: "Nuit",
+    noActivities: "Aucune activité",
+  },
+  it: {
+    dayPlan: "Piano Giornaliero Dettagliato",
+    participants: "Partecipanti",
+    days: "Giorni",
+    activities: "Attività",
+    location: "Luogo",
+    transport: "Trasporto",
+    cost: "Costo",
+    duration: "Durata",
+    tip: "Consiglio",
+    warning: "Importante",
+    tips: "Consigli",
+    generatedBy: "Creato con EventBliss",
+    tag: "GIORNO",
+    morning: "Mattina",
+    noon: "Mezzogiorno",
+    evening: "Sera",
+    night: "Notte",
+    noActivities: "Nessuna attività",
+  },
+  nl: {
+    dayPlan: "Gedetailleerd Dagplan",
+    participants: "Deelnemers",
+    days: "Dagen",
+    activities: "Activiteiten",
+    location: "Locatie",
+    transport: "Vervoer",
+    cost: "Kosten",
+    duration: "Duur",
+    tip: "Tip",
+    warning: "Belangrijk",
+    tips: "Tips",
+    generatedBy: "Gemaakt met EventBliss",
+    tag: "DAG",
+    morning: "Ochtend",
+    noon: "Middag",
+    evening: "Avond",
+    night: "Nacht",
+    noActivities: "Geen activiteiten",
+  },
+  pl: {
+    dayPlan: "Szczegółowy Plan Dnia",
+    participants: "Uczestnicy",
+    days: "Dni",
+    activities: "Aktywności",
+    location: "Lokalizacja",
+    transport: "Transport",
+    cost: "Koszt",
+    duration: "Czas trwania",
+    tip: "Wskazówka",
+    warning: "Ważne",
+    tips: "Wskazówki",
+    generatedBy: "Utworzono z EventBliss",
+    tag: "DZIEŃ",
+    morning: "Rano",
+    noon: "Południe",
+    evening: "Wieczór",
+    night: "Noc",
+    noActivities: "Brak aktywności",
+  },
+  pt: {
+    dayPlan: "Plano Detalhado do Dia",
+    participants: "Participantes",
+    days: "Dias",
+    activities: "Atividades",
+    location: "Local",
+    transport: "Transporte",
+    cost: "Custo",
+    duration: "Duração",
+    tip: "Dica",
+    warning: "Importante",
+    tips: "Dicas",
+    generatedBy: "Criado com EventBliss",
+    tag: "DIA",
+    morning: "Manhã",
+    noon: "Tarde",
+    evening: "Noite",
+    night: "Madrugada",
+    noActivities: "Sem atividades",
+  },
+  tr: {
+    dayPlan: "Detaylı Günlük Plan",
+    participants: "Katılımcılar",
+    days: "Gün",
+    activities: "Aktiviteler",
+    location: "Konum",
+    transport: "Ulaşım",
+    cost: "Maliyet",
+    duration: "Süre",
+    tip: "İpucu",
+    warning: "Önemli",
+    tips: "İpuçları",
+    generatedBy: "EventBliss ile oluşturuldu",
+    tag: "GÜN",
+    morning: "Sabah",
+    noon: "Öğle",
+    evening: "Akşam",
+    night: "Gece",
+    noActivities: "Aktivite yok",
+  },
+  ar: {
+    dayPlan: "الخطة اليومية المفصلة",
+    participants: "المشاركون",
+    days: "أيام",
+    activities: "الأنشطة",
+    location: "الموقع",
+    transport: "النقل",
+    cost: "التكلفة",
+    duration: "المدة",
+    tip: "نصيحة",
+    warning: "مهم",
+    tips: "نصائح",
+    generatedBy: "تم الإنشاء بواسطة EventBliss",
+    tag: "اليوم",
+    morning: "صباحاً",
+    noon: "ظهراً",
+    evening: "مساءً",
+    night: "ليلاً",
+    noActivities: "لا توجد أنشطة",
   },
 };
 
@@ -72,6 +265,64 @@ const DAY_COLORS = [
   { primary: '#0891b2', secondary: '#06b6d4', light: '#ecfeff' }, // Cyan
 ];
 
+// Time period colors and emojis
+const TIME_PERIOD_STYLES: Record<TimeOfDay, { bg: string; border: string; emoji: string }> = {
+  morning: { bg: '#fef3c7', border: '#f59e0b', emoji: '🌅' },
+  noon: { bg: '#fef9c3', border: '#eab308', emoji: '☀️' },
+  evening: { bg: '#ffedd5', border: '#f97316', emoji: '🌆' },
+  night: { bg: '#e0e7ff', border: '#6366f1', emoji: '🌙' },
+};
+
+function renderTimePeriod(
+  period: TimeOfDay,
+  blocks: ParsedTimeBlock[],
+  t: (key: keyof typeof TRANSLATIONS.en) => string,
+  color: typeof DAY_COLORS[0]
+): string {
+  if (blocks.length === 0) return '';
+
+  const style = TIME_PERIOD_STYLES[period];
+  const periodName = t(period as keyof typeof TRANSLATIONS.en);
+
+  let html = `
+    <div class="time-period" style="background: ${style.bg}; border-left: 4px solid ${style.border}; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+      <div class="period-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-weight: 700; font-size: 11pt; color: #1a1a1a;">
+        <span style="font-size: 16pt;">${style.emoji}</span>
+        <span style="text-transform: uppercase; letter-spacing: 1px;">${periodName}</span>
+        <span style="margin-left: auto; font-size: 9pt; font-weight: 500; color: #666;">${blocks.length} ${t('activities')}</span>
+      </div>
+      <div class="period-blocks">
+  `;
+
+  blocks.forEach((block) => {
+    html += `
+      <div class="time-block" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-bottom: 8px;">
+        <div class="time-block-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="time-badge" style="background: ${color.primary}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; font-family: monospace;">${block.time}</span>
+          <span style="font-size: 14pt;">${block.emoji}</span>
+          <span style="font-weight: 600; font-size: 10pt;">${block.title}</span>
+        </div>
+        <div class="block-details" style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 9pt; color: #4b5563;">
+          ${block.location ? `<span>📍 ${block.location}</span>` : ''}
+          ${block.transport ? `<span>🚗 ${block.transport}</span>` : ''}
+          ${block.cost ? `<span>💰 ${block.cost}</span>` : ''}
+          ${block.duration ? `<span>⏱️ ${block.duration}</span>` : ''}
+        </div>
+        ${block.description ? `<div style="font-size: 9pt; color: #6b7280; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6;">${block.description.replace(/\n/g, '<br>')}</div>` : ''}
+        ${block.tips.map(tip => `<div style="display: flex; align-items: flex-start; gap: 6px; background: #fef3c7; padding: 6px 10px; border-radius: 4px; margin-top: 8px; font-size: 8.5pt; border-left: 2px solid #f59e0b;"><span>💡</span><span>${tip}</span></div>`).join('')}
+        ${block.warnings.map(warning => `<div style="display: flex; align-items: flex-start; gap: 6px; background: #fee2e2; padding: 6px 10px; border-radius: 4px; margin-top: 8px; font-size: 8.5pt; border-left: 2px solid #ef4444;"><span>⚠️</span><span>${warning}</span></div>`).join('')}
+      </div>
+    `;
+  });
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  return html;
+}
+
 export function generateDayPlanHTML(
   dayPlan: ParsedDayPlan,
   eventInfo: EventInfo,
@@ -79,10 +330,11 @@ export function generateDayPlanHTML(
 ): string {
   const currentLocale = localeMap[locale] || de;
   const t = (key: keyof typeof TRANSLATIONS.en) => getTranslation(locale, key);
+  const isRTL = locale === 'ar';
 
   let html = `
     <!DOCTYPE html>
-    <html lang="${locale}">
+    <html lang="${locale}" dir="${isRTL ? 'rtl' : 'ltr'}">
     <head>
       <meta charset="utf-8">
       <title>${eventInfo.name} - ${t('dayPlan')}</title>
@@ -104,6 +356,7 @@ export function generateDayPlanHTML(
           color: #1a1a1a;
           background: #fff;
           font-size: 11pt;
+          direction: ${isRTL ? 'rtl' : 'ltr'};
         }
         
         .container {
@@ -142,12 +395,6 @@ export function generateDayPlanHTML(
           color: #666;
         }
         
-        .header .meta span {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-        
         /* Intro */
         .intro {
           background: #f9fafb;
@@ -156,7 +403,7 @@ export function generateDayPlanHTML(
           margin-bottom: 25px;
           font-style: italic;
           color: #4b5563;
-          border-left: 4px solid #4f46e5;
+          border-${isRTL ? 'right' : 'left'}: 4px solid #4f46e5;
         }
         
         /* Day Section */
@@ -169,7 +416,7 @@ export function generateDayPlanHTML(
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 12px 16px;
+          padding: 14px 18px;
           border-radius: 10px;
           margin-bottom: 16px;
           color: white;
@@ -178,7 +425,7 @@ export function generateDayPlanHTML(
         
         .day-number {
           background: rgba(255,255,255,0.25);
-          padding: 4px 12px;
+          padding: 6px 14px;
           border-radius: 6px;
           font-weight: 800;
           font-size: 10pt;
@@ -202,116 +449,7 @@ export function generateDayPlanHTML(
         }
         
         .day-emoji {
-          font-size: 20pt;
-        }
-        
-        /* Time Blocks */
-        .time-blocks {
-          margin-left: 20px;
-          border-left: 2px solid #e5e7eb;
-          padding-left: 20px;
-        }
-        
-        .time-block {
-          position: relative;
-          background: #fff;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          padding: 14px 16px;
-          margin-bottom: 12px;
-          page-break-inside: avoid;
-        }
-        
-        .time-block::before {
-          content: '';
-          position: absolute;
-          left: -26px;
-          top: 20px;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #4f46e5;
-          border: 2px solid #fff;
-          box-shadow: 0 0 0 2px #4f46e5;
-        }
-        
-        .time-block-header {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 10px;
-        }
-        
-        .time-badge {
-          background: #4f46e5;
-          color: white;
-          padding: 3px 10px;
-          border-radius: 4px;
-          font-size: 9pt;
-          font-weight: 600;
-          font-family: 'SF Mono', 'Monaco', monospace;
-        }
-        
-        .block-emoji {
-          font-size: 16pt;
-        }
-        
-        .block-title {
-          font-size: 11pt;
-          font-weight: 600;
-          color: #1a1a1a;
-        }
-        
-        .block-details {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px 16px;
-          margin-bottom: 8px;
-        }
-        
-        .detail-item {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 9pt;
-          color: #4b5563;
-        }
-        
-        .detail-icon {
-          font-size: 10pt;
-        }
-        
-        .block-description {
-          font-size: 9.5pt;
-          color: #6b7280;
-          margin-top: 8px;
-          padding-top: 8px;
-          border-top: 1px solid #f3f4f6;
-        }
-        
-        /* Tips & Warnings */
-        .block-tip {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          background: #fef3c7;
-          padding: 8px 12px;
-          border-radius: 6px;
-          margin-top: 10px;
-          font-size: 9pt;
-          border-left: 3px solid #f59e0b;
-        }
-        
-        .block-warning {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          background: #fee2e2;
-          padding: 8px 12px;
-          border-radius: 6px;
-          margin-top: 10px;
-          font-size: 9pt;
-          border-left: 3px solid #ef4444;
+          font-size: 24pt;
         }
         
         /* General Tips */
@@ -367,7 +505,7 @@ export function generateDayPlanHTML(
             print-color-adjust: exact;
           }
           .day-section { break-inside: avoid; }
-          .time-block { break-inside: avoid; }
+          .time-period { break-inside: avoid; }
           .tips-section { break-inside: avoid; }
         }
       </style>
@@ -394,10 +532,12 @@ export function generateDayPlanHTML(
     `;
   }
 
-  // Days
+  // Days with time period grouping
   dayPlan.days.forEach((day, dayIndex) => {
     const color = DAY_COLORS[dayIndex % DAY_COLORS.length];
     const tagNumber = dayIndex + 1;
+    const blocksByPeriod = day.blocksByPeriod || groupTimeBlocksByPeriod(day.timeBlocks);
+    const periods: TimeOfDay[] = ['morning', 'noon', 'evening', 'night'];
 
     html += `
         <div class="day-section">
@@ -405,36 +545,17 @@ export function generateDayPlanHTML(
             <div class="day-number">${t('tag')} ${tagNumber}</div>
             <div class="day-info">
               <div class="day-name">${day.dayName}</div>
-              <div class="day-title">${day.title}</div>
+              <div class="day-title">${day.title} • ${day.timeBlocks.length} ${t('activities')}</div>
             </div>
             <div class="day-emoji">${day.emoji}</div>
           </div>
           
-          <div class="time-blocks">
+          <div class="day-content">
     `;
 
-    day.timeBlocks.forEach((block) => {
-      html += `
-            <div class="time-block">
-              <div class="time-block-header">
-                <span class="time-badge" style="background: ${color.primary};">${block.time}</span>
-                <span class="block-emoji">${block.emoji}</span>
-                <span class="block-title">${block.title}</span>
-              </div>
-              
-              <div class="block-details">
-                ${block.location ? `<span class="detail-item"><span class="detail-icon">📍</span> ${block.location}</span>` : ''}
-                ${block.transport ? `<span class="detail-item"><span class="detail-icon">🚗</span> ${block.transport}</span>` : ''}
-                ${block.cost ? `<span class="detail-item"><span class="detail-icon">💰</span> ${block.cost}</span>` : ''}
-                ${block.duration ? `<span class="detail-item"><span class="detail-icon">⏱️</span> ${block.duration}</span>` : ''}
-              </div>
-              
-              ${block.description ? `<div class="block-description">${block.description.replace(/\n/g, '<br>')}</div>` : ''}
-              
-              ${block.tips.map(tip => `<div class="block-tip"><span>💡</span><span>${tip}</span></div>`).join('')}
-              ${block.warnings.map(warning => `<div class="block-warning"><span>⚠️</span><span>${warning}</span></div>`).join('')}
-            </div>
-      `;
+    // Render each time period
+    periods.forEach(period => {
+      html += renderTimePeriod(period, blocksByPeriod[period], t, color);
     });
 
     html += `
@@ -499,12 +620,11 @@ export function downloadDayPlanHTML(
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
 
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${eventInfo.name.replace(/\s+/g, '-').toLowerCase()}-tagesplan.html`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${eventInfo.name.replace(/\s+/g, '-')}-tagesplan.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
