@@ -266,8 +266,8 @@ export function AITemplatePreview({
       </div>
 
       {/* Editable Sections - Improved Layout */}
-      <ScrollArea className="h-[65vh] md:h-auto md:max-h-[70vh]">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pr-4">
+      <div className="max-h-[65vh] overflow-y-auto pr-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Budget Options */}
           {budgetOptions.length > 0 && (
             <EditableTemplateSection
@@ -374,7 +374,7 @@ export function AITemplatePreview({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Selected Count */}
       <div className="flex justify-center gap-4 text-sm text-muted-foreground">
