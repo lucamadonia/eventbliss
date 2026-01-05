@@ -157,8 +157,20 @@ export const AIResponseCard = ({
     }
   }
 
+  // Pre-process markdown to fix common issues
+  const preprocessMarkdown = (text: string): string => {
+    return text
+      // Fix double asterisks that aren't properly closed
+      .replace(/\*\*([^*]+)$/gm, '**$1**')
+      // Normalize whitespace around bold markers
+      .replace(/\*\*\s+/g, '**')
+      .replace(/\s+\*\*/g, '**');
+  };
+
   // If no structured activities found, render as markdown
   if (!hasStructuredActivities) {
+    const processedResponse = preprocessMarkdown(response);
+    
     return (
       <GlassCard className="p-6 overflow-hidden">
         <div className="flex items-center gap-2 mb-4">
@@ -170,8 +182,13 @@ export const AIResponseCard = ({
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]}
             components={{
+              h2: ({ children }) => (
+                <h2 className="text-xl font-bold text-foreground mt-6 mb-3 flex items-center gap-2 border-b border-border/50 pb-2">
+                  {children}
+                </h2>
+              ),
               h3: ({ children }) => (
-                <h3 className="text-lg font-bold text-foreground mt-6 mb-2 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-foreground mt-4 mb-2 flex items-center gap-2">
                   {children}
                 </h3>
               ),
@@ -187,9 +204,12 @@ export const AIResponseCard = ({
               p: ({ children }) => (
                 <p className="text-muted-foreground mb-3 leading-relaxed">{children}</p>
               ),
+              hr: () => (
+                <hr className="my-4 border-border/50" />
+              ),
             }}
           >
-            {response}
+            {processedResponse}
           </ReactMarkdown>
         </div>
         

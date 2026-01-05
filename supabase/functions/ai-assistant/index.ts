@@ -375,18 +375,65 @@ Formatiere alles übersichtlich mit Emojis und klaren Abschnitten.`,
 Mische actionreiche und entspannte Aktivitäten. Jede Aktivität MUSS eine Nummer haben!`,
       day_plan: `Erstelle einen detaillierten Tagesplan für dieses Event.
 
-Strukturiere den Tag mit Zeitblöcken:
-- ☀️ Vormittag (8:00-12:00)
-- 🌤️ Mittag (12:00-14:00)  
-- 🌅 Nachmittag (14:00-18:00)
-- 🌙 Abend (18:00-24:00)
+**STRIKT EINZUHALTENDES FORMAT - BITTE GENAU SO AUSGEBEN:**
 
-Für jeden Zeitblock:
-- Aktivität mit Emoji
-- Dauer und Zeitfenster
-- Geschätzte Kosten
-- Praktische Tipps
-- Alternative bei schlechtem Wetter (wenn relevant)`,
+Beginne JEDEN Tag mit diesem exakten Header-Format:
+## [Wochentag]: [Kurztitel] [Emojis]
+
+Dann für JEDEN Zeitblock dieses Format verwenden:
+
+### [HH:MM] [Emoji] [Aktivitäts-Titel]
+📍 **Ort:** [Genauer Ort/Adresse]
+💰 **Kosten:** [ca. XX€ pro Person]
+⏱️ **Dauer:** [X Stunden]
+📝 **Beschreibung:** [2-3 Sätze was man macht]
+💡 **Tipp:** [Praktischer Hinweis]
+
+---
+
+**BEISPIEL (genau so formatieren!):**
+
+## Freitag: Ankunft & Willkommen! ✈️🎉
+
+### 17:00 ✈️ Ankunft am Flughafen
+📍 **Ort:** Las Vegas McCarran International Airport
+💰 **Kosten:** ca. 30€ für Taxi zum Hotel
+⏱️ **Dauer:** 1-2 Stunden
+📝 **Beschreibung:** Ankunft in Vegas, Gepäck abholen und Transfer zum Hotel.
+💡 **Tipp:** Uber/Lyft ist oft günstiger als Taxis.
+
+---
+
+### 19:00 🍽️ Willkommens-Dinner
+📍 **Ort:** Gordon Ramsay Burger, Planet Hollywood
+💰 **Kosten:** ca. 40-60€ pro Person
+⏱️ **Dauer:** 2 Stunden
+📝 **Beschreibung:** Gemeinsames Abendessen zum Einstimmen auf das Wochenende.
+💡 **Tipp:** Reservierung empfohlen für große Gruppen.
+
+---
+
+### 22:00 🎰 Casino Night
+📍 **Ort:** Bellagio Casino Floor
+💰 **Kosten:** Eigenes Spielbudget mitbringen
+⏱️ **Dauer:** 2-3 Stunden
+📝 **Beschreibung:** Erstes Casino-Feeling mit klassischen Spielen.
+💡 **Tipp:** Setze dir ein festes Limit vor dem Spielen.
+
+---
+
+## Samstag: Action & Abenteuer! 🏎️🌃
+
+### 09:00 ☀️ Frühstück
+...
+
+**REGELN:**
+1. Jeder Tag MUSS mit ## [Wochentag]: [Titel] [Emojis] beginnen
+2. Jeder Zeitblock MUSS mit ### [HH:MM] [Emoji] [Titel] beginnen
+3. JEDES Feld (Ort, Kosten, Dauer, Beschreibung, Tipp) MUSS auf eigener Zeile stehen
+4. Zwischen Zeitblöcken IMMER --- als Trenner
+5. KEINE Bullet-Points oder verschachtelten Listen
+6. Verwende konkrete Uhrzeiten im Format HH:MM`,
       budget_estimate: `Erstelle eine detaillierte Budgetschätzung für dieses Event.
 
 Kategorien:
@@ -468,18 +515,65 @@ Format everything clearly with emojis and sections.`,
 Mix action-packed and relaxing activities. Each activity MUST have a number!`,
       day_plan: `Create a detailed day plan for this event.
 
-Structure the day with time blocks:
-- ☀️ Morning (8:00-12:00)
-- 🌤️ Lunch (12:00-14:00)
-- 🌅 Afternoon (14:00-18:00)
-- 🌙 Evening (18:00-24:00)
+**STRICT FORMAT - FOLLOW EXACTLY:**
 
-For each time block:
-- Activity with emoji
-- Duration and time slot
-- Estimated costs
-- Practical tips
-- Bad weather alternative (if relevant)`,
+Start EVERY day with this exact header format:
+## [Weekday]: [Short Title] [Emojis]
+
+Then for EACH time block use this format:
+
+### [HH:MM] [Emoji] [Activity Title]
+📍 **Location:** [Exact place/address]
+💰 **Cost:** [approx. $XX per person]
+⏱️ **Duration:** [X hours]
+📝 **Description:** [2-3 sentences about what you do]
+💡 **Tip:** [Practical hint]
+
+---
+
+**EXAMPLE (format exactly like this!):**
+
+## Friday: Arrival & Welcome! ✈️🎉
+
+### 17:00 ✈️ Arrival at Airport
+📍 **Location:** Las Vegas McCarran International Airport
+💰 **Cost:** approx. $30 for taxi to hotel
+⏱️ **Duration:** 1-2 hours
+📝 **Description:** Arrive in Vegas, grab luggage and transfer to hotel.
+💡 **Tip:** Uber/Lyft is often cheaper than taxis.
+
+---
+
+### 19:00 🍽️ Welcome Dinner
+📍 **Location:** Gordon Ramsay Burger, Planet Hollywood
+💰 **Cost:** approx. $40-60 per person
+⏱️ **Duration:** 2 hours
+📝 **Description:** Group dinner to kick off the weekend together.
+💡 **Tip:** Make a reservation for large groups.
+
+---
+
+### 22:00 🎰 Casino Night
+📍 **Location:** Bellagio Casino Floor
+💰 **Cost:** Bring your own gambling budget
+⏱️ **Duration:** 2-3 hours
+📝 **Description:** First taste of casino vibes with classic games.
+💡 **Tip:** Set a fixed limit before you start playing.
+
+---
+
+## Saturday: Action & Adventure! 🏎️🌃
+
+### 09:00 ☀️ Breakfast
+...
+
+**RULES:**
+1. Every day MUST start with ## [Weekday]: [Title] [Emojis]
+2. Every time block MUST start with ### [HH:MM] [Emoji] [Title]
+3. EVERY field (Location, Cost, Duration, Description, Tip) MUST be on its own line
+4. ALWAYS use --- as separator between time blocks
+5. NO bullet points or nested lists
+6. Use concrete times in HH:MM format`,
       budget_estimate: `Create a detailed budget estimate for this event.
 
 Categories:
@@ -559,20 +653,44 @@ Formate tout clairement avec des emojis et des sections.`,
 ...
 
 Mélange activités dynamiques et détente. Chaque activité DOIT avoir un numéro!`,
-      day_plan: `Crée un programme détaillé de la journée pour cet événement.
+      day_plan: `Crée un programme détaillé pour cet événement.
 
-Structure la journée avec des créneaux:
-- ☀️ Matin (8h-12h)
-- 🌤️ Midi (12h-14h)
-- 🌅 Après-midi (14h-18h)
-- 🌙 Soir (18h-24h)
+**FORMAT STRICT - SUIVRE EXACTEMENT:**
 
-Pour chaque créneau:
-- Activité avec emoji
-- Durée et horaire
-- Coûts estimés
-- Conseils pratiques
-- Alternative en cas de mauvais temps`,
+Commence CHAQUE jour avec ce format d'en-tête:
+## [Jour]: [Titre Court] [Emojis]
+
+Puis pour CHAQUE créneau horaire utilise ce format:
+
+### [HH:MM] [Emoji] [Titre de l'Activité]
+📍 **Lieu:** [Adresse exacte]
+💰 **Coût:** [env. XX€ par personne]
+⏱️ **Durée:** [X heures]
+📝 **Description:** [2-3 phrases décrivant l'activité]
+💡 **Conseil:** [Astuce pratique]
+
+---
+
+**EXEMPLE (formatez exactement ainsi!):**
+
+## Vendredi: Arrivée & Bienvenue! ✈️🎉
+
+### 17:00 ✈️ Arrivée à l'aéroport
+📍 **Lieu:** Aéroport International de Las Vegas
+💰 **Coût:** env. 30€ pour le taxi vers l'hôtel
+⏱️ **Durée:** 1-2 heures
+📝 **Description:** Arrivée à Vegas, récupération des bagages et transfert vers l'hôtel.
+💡 **Conseil:** Uber/Lyft est souvent moins cher que les taxis.
+
+---
+
+**RÈGLES:**
+1. Chaque jour DOIT commencer par ## [Jour]: [Titre] [Emojis]
+2. Chaque créneau DOIT commencer par ### [HH:MM] [Emoji] [Titre]
+3. CHAQUE champ (Lieu, Coût, Durée, Description, Conseil) DOIT être sur sa propre ligne
+4. TOUJOURS utiliser --- comme séparateur entre créneaux
+5. PAS de listes à puces imbriquées
+6. Utiliser des heures concrètes au format HH:MM`,
       budget_estimate: `Crée une estimation détaillée du budget pour cet événement.
 
 Catégories:
@@ -652,20 +770,44 @@ Formatea todo claramente con emojis y secciones.`,
 ...
 
 Mezcla actividades dinámicas y relajantes. ¡Cada actividad DEBE tener un número!`,
-      day_plan: `Crea un plan detallado del día para este evento.
+      day_plan: `Crea un plan detallado para este evento.
 
-Estructura el día con bloques de tiempo:
-- ☀️ Mañana (8:00-12:00)
-- 🌤️ Mediodía (12:00-14:00)
-- 🌅 Tarde (14:00-18:00)
-- 🌙 Noche (18:00-24:00)
+**FORMATO ESTRICTO - SEGUIR EXACTAMENTE:**
 
-Para cada bloque:
-- Actividad con emoji
-- Duración y horario
-- Costos estimados
-- Consejos prácticos
-- Alternativa para mal tiempo`,
+Comienza CADA día con este formato de encabezado:
+## [Día]: [Título Corto] [Emojis]
+
+Luego para CADA bloque horario usa este formato:
+
+### [HH:MM] [Emoji] [Título de Actividad]
+📍 **Lugar:** [Dirección exacta]
+💰 **Costo:** [aprox. XX€ por persona]
+⏱️ **Duración:** [X horas]
+📝 **Descripción:** [2-3 frases describiendo la actividad]
+💡 **Consejo:** [Consejo práctico]
+
+---
+
+**EJEMPLO (formatear exactamente así!):**
+
+## Viernes: Llegada y Bienvenida! ✈️🎉
+
+### 17:00 ✈️ Llegada al Aeropuerto
+📍 **Lugar:** Aeropuerto Internacional de Las Vegas
+💰 **Costo:** aprox. 30€ para taxi al hotel
+⏱️ **Duración:** 1-2 horas
+📝 **Descripción:** Llegada a Vegas, recoger equipaje y traslado al hotel.
+💡 **Consejo:** Uber/Lyft suele ser más barato que los taxis.
+
+---
+
+**REGLAS:**
+1. Cada día DEBE empezar con ## [Día]: [Título] [Emojis]
+2. Cada bloque DEBE empezar con ### [HH:MM] [Emoji] [Título]
+3. CADA campo (Lugar, Costo, Duración, Descripción, Consejo) DEBE estar en su propia línea
+4. SIEMPRE usar --- como separador entre bloques
+5. SIN listas con viñetas anidadas
+6. Usar horarios concretos en formato HH:MM`,
       budget_estimate: `Crea una estimación detallada del presupuesto para este evento.
 
 Categorías:
@@ -745,20 +887,44 @@ Formatta tutto chiaramente con emoji e sezioni.`,
 ...
 
 Mescola attività dinamiche e rilassanti. Ogni attività DEVE avere un numero!`,
-      day_plan: `Crea un piano giornaliero dettagliato per questo evento.
+      day_plan: `Crea un piano dettagliato per questo evento.
 
-Struttura la giornata con blocchi temporali:
-- ☀️ Mattina (8:00-12:00)
-- 🌤️ Pranzo (12:00-14:00)
-- 🌅 Pomeriggio (14:00-18:00)
-- 🌙 Sera (18:00-24:00)
+**FORMATO RIGOROSO - SEGUIRE ESATTAMENTE:**
 
-Per ogni blocco:
-- Attività con emoji
-- Durata e orario
-- Costi stimati
-- Consigli pratici
-- Alternativa in caso di maltempo`,
+Inizia OGNI giorno con questo formato di intestazione:
+## [Giorno]: [Titolo Breve] [Emoji]
+
+Poi per OGNI blocco orario usa questo formato:
+
+### [HH:MM] [Emoji] [Titolo Attività]
+📍 **Luogo:** [Indirizzo esatto]
+💰 **Costo:** [circa XX€ a persona]
+⏱️ **Durata:** [X ore]
+📝 **Descrizione:** [2-3 frasi che descrivono l'attività]
+💡 **Consiglio:** [Suggerimento pratico]
+
+---
+
+**ESEMPIO (formattare esattamente così!):**
+
+## Venerdì: Arrivo e Benvenuto! ✈️🎉
+
+### 17:00 ✈️ Arrivo all'aeroporto
+📍 **Luogo:** Aeroporto Internazionale di Las Vegas
+💰 **Costo:** circa 30€ per taxi all'hotel
+⏱️ **Durata:** 1-2 ore
+📝 **Descrizione:** Arrivo a Vegas, ritiro bagagli e trasferimento in hotel.
+💡 **Consiglio:** Uber/Lyft è spesso più economico dei taxi.
+
+---
+
+**REGOLE:**
+1. Ogni giorno DEVE iniziare con ## [Giorno]: [Titolo] [Emoji]
+2. Ogni blocco DEVE iniziare con ### [HH:MM] [Emoji] [Titolo]
+3. OGNI campo (Luogo, Costo, Durata, Descrizione, Consiglio) DEVE essere su propria riga
+4. SEMPRE usare --- come separatore tra blocchi
+5. NIENTE elenchi puntati annidati
+6. Usare orari concreti in formato HH:MM`,
       budget_estimate: `Crea una stima dettagliata del budget per questo evento.
 
 Categorie:
@@ -838,20 +1004,44 @@ Formatteer alles duidelijk met emoji's en secties.`,
 ...
 
 Mix actieve en ontspannende activiteiten. Elke activiteit MOET een nummer hebben!`,
-      day_plan: `Maak een gedetailleerd dagprogramma voor dit evenement.
+      day_plan: `Maak een gedetailleerd plan voor dit evenement.
 
-Structureer de dag met tijdblokken:
-- ☀️ Ochtend (8:00-12:00)
-- 🌤️ Middag (12:00-14:00)
-- 🌅 Namiddag (14:00-18:00)
-- 🌙 Avond (18:00-24:00)
+**STRIKT FORMAAT - VOLG EXACT:**
 
-Voor elk tijdblok:
-- Activiteit met emoji
-- Duur en tijdslot
-- Geschatte kosten
-- Praktische tips
-- Slecht weer alternatief`,
+Begin ELKE dag met dit header-formaat:
+## [Dag]: [Korte Titel] [Emoji's]
+
+Gebruik dan voor ELK tijdblok dit formaat:
+
+### [HH:MM] [Emoji] [Activiteitstitel]
+📍 **Locatie:** [Exact adres]
+💰 **Kosten:** [ca. €XX per persoon]
+⏱️ **Duur:** [X uur]
+📝 **Beschrijving:** [2-3 zinnen over de activiteit]
+💡 **Tip:** [Praktische tip]
+
+---
+
+**VOORBEELD (formatteer precies zo!):**
+
+## Vrijdag: Aankomst & Welkom! ✈️🎉
+
+### 17:00 ✈️ Aankomst op luchthaven
+📍 **Locatie:** Las Vegas McCarran International Airport
+💰 **Kosten:** ca. €30 voor taxi naar hotel
+⏱️ **Duur:** 1-2 uur
+📝 **Beschrijving:** Aankomst in Vegas, bagage ophalen en transfer naar hotel.
+💡 **Tip:** Uber/Lyft is vaak goedkoper dan taxi's.
+
+---
+
+**REGELS:**
+1. Elke dag MOET beginnen met ## [Dag]: [Titel] [Emoji's]
+2. Elk tijdblok MOET beginnen met ### [HH:MM] [Emoji] [Titel]
+3. ELK veld (Locatie, Kosten, Duur, Beschrijving, Tip) MOET op eigen regel staan
+4. ALTIJD --- als scheidingsteken tussen blokken
+5. GEEN geneste opsommingstekens
+6. Gebruik concrete tijden in HH:MM formaat`,
       budget_estimate: `Maak een gedetailleerde budgetschatting voor dit evenement.
 
 Categorieën:
@@ -931,20 +1121,44 @@ Sformatuj wszystko czytelnie z emoji i sekcjami.`,
 ...
 
 Połącz aktywności dynamiczne i relaksacyjne. Każda aktywność MUSI mieć numer!`,
-      day_plan: `Stwórz szczegółowy plan dnia dla tego wydarzenia.
+      day_plan: `Stwórz szczegółowy plan dla tego wydarzenia.
 
-Podziel dzień na bloki czasowe:
-- ☀️ Poranek (8:00-12:00)
-- 🌤️ Południe (12:00-14:00)
-- 🌅 Popołudnie (14:00-18:00)
-- 🌙 Wieczór (18:00-24:00)
+**ŚCISŁY FORMAT - POSTĘPUJ DOKŁADNIE:**
 
-Dla każdego bloku:
-- Aktywność z emoji
-- Czas trwania i przedział czasowy
-- Szacowane koszty
-- Praktyczne wskazówki
-- Alternatywa na złą pogodę`,
+Rozpocznij KAŻDY dzień od tego formatu nagłówka:
+## [Dzień tygodnia]: [Krótki tytuł] [Emoji]
+
+Następnie dla KAŻDEGO bloku czasowego użyj tego formatu:
+
+### [GG:MM] [Emoji] [Tytuł aktywności]
+📍 **Miejsce:** [Dokładny adres]
+💰 **Koszt:** [ok. XX zł na osobę]
+⏱️ **Czas:** [X godzin]
+📝 **Opis:** [2-3 zdania opisujące aktywność]
+💡 **Wskazówka:** [Praktyczna rada]
+
+---
+
+**PRZYKŁAD (formatuj dokładnie tak!):**
+
+## Piątek: Przyjazd i powitanie! ✈️🎉
+
+### 17:00 ✈️ Przylot na lotnisko
+📍 **Miejsce:** Międzynarodowe lotnisko w Las Vegas
+💰 **Koszt:** ok. 120 zł za taxi do hotelu
+⏱️ **Czas:** 1-2 godziny
+📝 **Opis:** Przylot do Vegas, odbiór bagażu i transfer do hotelu.
+💡 **Wskazówka:** Uber/Lyft jest często tańszy od taksówek.
+
+---
+
+**ZASADY:**
+1. Każdy dzień MUSI zaczynać się od ## [Dzień]: [Tytuł] [Emoji]
+2. Każdy blok MUSI zaczynać się od ### [GG:MM] [Emoji] [Tytuł]
+3. KAŻDE pole (Miejsce, Koszt, Czas, Opis, Wskazówka) MUSI być w osobnej linii
+4. ZAWSZE używaj --- jako separatora między blokami
+5. BEZ zagnieżdżonych list
+6. Używaj konkretnych godzin w formacie GG:MM`,
       budget_estimate: `Stwórz szczegółową szacunkową kalkulację budżetu dla tego wydarzenia.
 
 Kategorie:
@@ -1024,20 +1238,44 @@ Formata tudo claramente com emojis e secções.`,
 ...
 
 Mistura atividades dinâmicas e relaxantes. Cada atividade DEVE ter um número!`,
-      day_plan: `Cria um plano detalhado do dia para este evento.
+      day_plan: `Cria um plano detalhado para este evento.
 
-Estrutura o dia com blocos de tempo:
-- ☀️ Manhã (8:00-12:00)
-- 🌤️ Almoço (12:00-14:00)
-- 🌅 Tarde (14:00-18:00)
-- 🌙 Noite (18:00-24:00)
+**FORMATO RIGOROSO - SEGUE EXATAMENTE:**
 
-Para cada bloco:
-- Atividade com emoji
-- Duração e horário
-- Custos estimados
-- Dicas práticas
-- Alternativa para mau tempo`,
+Começa CADA dia com este formato de cabeçalho:
+## [Dia da semana]: [Título Curto] [Emojis]
+
+Depois para CADA bloco horário usa este formato:
+
+### [HH:MM] [Emoji] [Título da Atividade]
+📍 **Local:** [Endereço exato]
+💰 **Custo:** [aprox. XX€ por pessoa]
+⏱️ **Duração:** [X horas]
+📝 **Descrição:** [2-3 frases a descrever a atividade]
+💡 **Dica:** [Sugestão prática]
+
+---
+
+**EXEMPLO (formatar exatamente assim!):**
+
+## Sexta-feira: Chegada e Boas-vindas! ✈️🎉
+
+### 17:00 ✈️ Chegada ao aeroporto
+📍 **Local:** Aeroporto Internacional de Las Vegas
+💰 **Custo:** aprox. 30€ para táxi até ao hotel
+⏱️ **Duração:** 1-2 horas
+📝 **Descrição:** Chegada a Vegas, recolha de bagagem e transfer para o hotel.
+💡 **Dica:** Uber/Lyft costuma ser mais barato que táxis.
+
+---
+
+**REGRAS:**
+1. Cada dia DEVE começar com ## [Dia]: [Título] [Emojis]
+2. Cada bloco DEVE começar com ### [HH:MM] [Emoji] [Título]
+3. CADA campo (Local, Custo, Duração, Descrição, Dica) DEVE estar na sua própria linha
+4. SEMPRE usar --- como separador entre blocos
+5. SEM listas aninhadas com marcadores
+6. Usar horários concretos no formato HH:MM`,
       budget_estimate: `Cria uma estimativa detalhada do orçamento para este evento.
 
 Categorias:
@@ -1117,20 +1355,44 @@ Her şeyi emoji ve bölümlerle düzenle.`,
 ...
 
 Dinamik ve rahatlatıcı aktiviteleri karıştır. Her aktivite MUTLAKA bir numara içermeli!`,
-      day_plan: `Bu etkinlik için detaylı bir günlük plan oluştur.
+      day_plan: `Bu etkinlik için detaylı bir plan oluştur.
 
-Günü zaman bloklarıyla yapılandır:
-- ☀️ Sabah (8:00-12:00)
-- 🌤️ Öğle (12:00-14:00)
-- 🌅 Öğleden sonra (14:00-18:00)
-- 🌙 Akşam (18:00-24:00)
+**SIKI FORMAT - TAM OLARAK UYGULA:**
 
-Her blok için:
-- Emoji ile aktivite
-- Süre ve zaman dilimi
-- Tahmini maliyetler
-- Pratik ipuçları
-- Kötü hava alternatifi`,
+HER günü bu başlık formatıyla başlat:
+## [Gün]: [Kısa Başlık] [Emojiler]
+
+Sonra HER zaman bloğu için bu formatı kullan:
+
+### [SS:DD] [Emoji] [Aktivite Başlığı]
+📍 **Yer:** [Tam adres]
+💰 **Maliyet:** [yaklaşık XX₺ kişi başı]
+⏱️ **Süre:** [X saat]
+📝 **Açıklama:** [2-3 cümle aktiviteyi anlatan]
+💡 **İpucu:** [Pratik öneri]
+
+---
+
+**ÖRNEK (tam olarak böyle formatla!):**
+
+## Cuma: Varış ve Hoş Geldin! ✈️🎉
+
+### 17:00 ✈️ Havalimanına varış
+📍 **Yer:** Las Vegas Uluslararası Havalimanı
+💰 **Maliyet:** yaklaşık 500₺ otele taksi
+⏱️ **Süre:** 1-2 saat
+📝 **Açıklama:** Vegas'a varış, bagaj alma ve otele transfer.
+💡 **İpucu:** Uber/Lyft genellikle taksilerden daha ucuz.
+
+---
+
+**KURALLAR:**
+1. Her gün MUTLAKA ## [Gün]: [Başlık] [Emojiler] ile başlamalı
+2. Her blok MUTLAKA ### [SS:DD] [Emoji] [Başlık] ile başlamalı
+3. HER alan (Yer, Maliyet, Süre, Açıklama, İpucu) kendi satırında OLMALI
+4. Bloklar arasında HER ZAMAN --- ayırıcı kullan
+5. İç içe madde işaretleri YOK
+6. SS:DD formatında somut saatler kullan`,
       budget_estimate: `Bu etkinlik için detaylı bir bütçe tahmini oluştur.
 
 Kategoriler:
@@ -1210,20 +1472,44 @@ Pratik, uygulanabilir ipuçları ver.`,
 ...
 
 امزج الأنشطة النشطة والاسترخائية. كل نشاط يجب أن يحتوي على رقم!`,
-      day_plan: `أنشئ خطة يوم مفصلة لهذه الفعالية.
+      day_plan: `أنشئ خطة مفصلة لهذه الفعالية.
 
-هيكل اليوم بفترات زمنية:
-- ☀️ الصباح (8:00-12:00)
-- 🌤️ الظهيرة (12:00-14:00)
-- 🌅 بعد الظهر (14:00-18:00)
-- 🌙 المساء (18:00-24:00)
+**تنسيق صارم - اتبعه بالضبط:**
 
-لكل فترة:
-- نشاط مع رمز تعبيري
-- المدة والوقت
-- التكاليف المقدرة
-- نصائح عملية
-- بديل للطقس السيئ`,
+ابدأ كل يوم بهذا التنسيق:
+## [اليوم]: [عنوان قصير] [رموز تعبيرية]
+
+ثم لكل فترة زمنية استخدم هذا التنسيق:
+
+### [SS:DD] [رمز] [عنوان النشاط]
+📍 **الموقع:** [العنوان الدقيق]
+💰 **التكلفة:** [حوالي XX ريال للشخص]
+⏱️ **المدة:** [X ساعات]
+📝 **الوصف:** [2-3 جمل تصف النشاط]
+💡 **نصيحة:** [اقتراح عملي]
+
+---
+
+**مثال (نسق بالضبط هكذا!):**
+
+## الجمعة: الوصول والترحيب! ✈️🎉
+
+### 17:00 ✈️ الوصول للمطار
+📍 **الموقع:** مطار لاس فيغاس الدولي
+💰 **التكلفة:** حوالي 100 ريال للتاكسي
+⏱️ **المدة:** 1-2 ساعة
+📝 **الوصف:** الوصول لفيغاس واستلام الحقائب والانتقال للفندق.
+💡 **نصيحة:** أوبر/ليفت عادة أرخص من التاكسي.
+
+---
+
+**القواعد:**
+1. كل يوم يجب أن يبدأ بـ ## [اليوم]: [العنوان] [الرموز]
+2. كل فترة يجب أن تبدأ بـ ### [SS:DD] [رمز] [العنوان]
+3. كل حقل (الموقع، التكلفة، المدة، الوصف، النصيحة) يجب أن يكون في سطر منفصل
+4. استخدم --- دائماً كفاصل بين الفترات
+5. لا قوائم متداخلة
+6. استخدم أوقات محددة بتنسيق SS:DD`,
       budget_estimate: `أنشئ تقديراً مفصلاً للميزانية لهذه الفعالية.
 
 الفئات:

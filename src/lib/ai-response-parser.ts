@@ -481,59 +481,135 @@ function matchTimeBlockHeader(line: string): { time: string; title: string; emoj
 
 /**
  * Parse content lines into time block properties
+ * Handles multiple formats including:
+ * - 📍 **Ort:** Value (new structured format)
+ * - 📍 Ort: Value (simple format)
+ * - **Location:** Value (bold label format)
  */
 function parseContentLine(line: string, block: ParsedTimeBlock): void {
   const trimmed = line.trim();
   
-  // Skip separators
-  if (trimmed.startsWith('---')) return;
+  // Skip separators and empty bullet points
+  if (trimmed.startsWith('---') || trimmed === '*' || trimmed === '-') return;
 
-  // Location: 📍 Ort: Place or 📍 Location: Place
-  if (/^📍|^Ort:|^Location:|^Place:|^Lieu:|^Lugar:|^Luogo:/i.test(trimmed)) {
-    block.location = trimmed.replace(/^📍?\s*(?:Ort|Location|Place|Lieu|Lugar|Luogo)[:\s]*/i, '').trim();
-    return;
+  // Helper to extract value after label (handles **Label:** Value and Label: Value)
+  const extractValue = (pattern: RegExp): string | null => {
+    const match = trimmed.match(pattern);
+    if (match) {
+      // Remove markdown and clean up
+      return cleanMarkdown(match[1] || '');
+    }
+    return null;
+  };
+
+  // Location: 📍 **Ort:** Place OR 📍 Ort: Place OR **Location:** Place
+  const locationPatterns = [
+    /^📍\s*\*\*(?:Ort|Location|Place|Lieu|Lugar|Luogo|Locatie|Miejsce|Local|Yer|الموقع):\*\*\s*(.+)/i,
+    /^📍\s*(?:Ort|Location|Place|Lieu|Lugar|Luogo|Locatie|Miejsce|Local|Yer|الموقع)?[:\s]*(.+)/i,
+    /^\*\*(?:Ort|Location|Place|Lieu|Lugar|Luogo|Locatie|Miejsce|Local|Yer|الموقع):\*\*\s*(.+)/i,
+    /^(?:Ort|Location|Place|Lieu|Lugar|Luogo|Locatie|Miejsce|Local|Yer):\s*(.+)/i,
+  ];
+  for (const pattern of locationPatterns) {
+    const value = extractValue(pattern);
+    if (value && value.length > 2) {
+      block.location = value;
+      return;
+    }
   }
 
-  // Transport: 🚗 Transport: Details
-  if (/^🚗|^🚕|^🚌|^🚇|^Transport/i.test(trimmed)) {
-    block.transport = trimmed.replace(/^[\s🚗🚕🚌🚇]*(?:Transport)[:\s]*/i, '').trim();
-    return;
+  // Cost: 💰 **Kosten:** ~50€ OR 💰 Kosten: OR **Cost:**
+  const costPatterns = [
+    /^💰\s*\*\*(?:Kosten|Cost|Costo|Coût|Custo|Maliyet|التكلفة|Koszt):\*\*\s*(.+)/i,
+    /^💰\s*(?:Kosten|Cost|Costo|Coût|Custo|Maliyet|التكلفة|Koszt)?[:\s]*(.+)/i,
+    /^\*\*(?:Kosten|Cost|Costo|Coût|Custo|Maliyet|التكلفة|Koszt):\*\*\s*(.+)/i,
+    /^(?:Kosten|Cost|Costo|Coût|Custo|Maliyet|Koszt):\s*(.+)/i,
+  ];
+  for (const pattern of costPatterns) {
+    const value = extractValue(pattern);
+    if (value && value.length > 1) {
+      block.cost = value;
+      return;
+    }
   }
 
-  // Cost: 💰 Kosten: ~50€
-  if (/^💰|^Kosten:|^Cost:|^Price:|^Coût:|^Costo:/i.test(trimmed)) {
-    block.cost = trimmed.replace(/^💰?\s*(?:Kosten|Cost|Price|Coût|Costo)[:\s]*/i, '').trim();
-    return;
+  // Duration: ⏱️ **Dauer:** 2 Stunden
+  const durationPatterns = [
+    /^⏱️\s*\*\*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Duração|Süre|المدة):\*\*\s*(.+)/i,
+    /^⏱️\s*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Duração|Süre|المدة)?[:\s]*(.+)/i,
+    /^\*\*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Duração|Süre|المدة):\*\*\s*(.+)/i,
+    /^(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Duração|Süre):\s*(.+)/i,
+  ];
+  for (const pattern of durationPatterns) {
+    const value = extractValue(pattern);
+    if (value && value.length > 1) {
+      block.duration = value;
+      return;
+    }
   }
 
-  // Duration: ⏱️ Dauer: 2 Stunden
-  if (/^⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:/i.test(trimmed)) {
-    block.duration = trimmed.replace(/^⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata)[:\s]*/i, '').trim();
-    return;
+  // Description: 📝 **Beschreibung:** Text
+  const descPatterns = [
+    /^📝\s*\*\*(?:Beschreibung|Description|Descripción|Descrição|Descrizione|Omschrijving|Opis|Açıklama|الوصف):\*\*\s*(.+)/i,
+    /^📝\s*(.+)/,
+    /^\*\*(?:Beschreibung|Description|Descripción|Descrição|Descrizione|Omschrijving|Opis|Açıklama|الوصف):\*\*\s*(.+)/i,
+  ];
+  for (const pattern of descPatterns) {
+    const value = extractValue(pattern);
+    if (value && value.length > 5) {
+      block.description = (block.description ? block.description + ' ' : '') + value;
+      return;
+    }
   }
 
-  // Tips: 💡 Pro-Tipp: ...
-  if (/^💡|^Pro-?Tipp?|^Tip:|^Hint:|^Conseil:/i.test(trimmed)) {
-    block.tips.push(trimmed.replace(/^[\s💡]*(?:Pro-?Tipp?|Tip|Hint|Conseil)[:\s]*/i, '').trim());
-    return;
+  // Tips: 💡 **Tipp:** ... OR 💡 Tip:
+  const tipPatterns = [
+    /^💡\s*\*\*(?:Tipp?|Tip|Conseil|Consejo|Consiglio|Dica|Wskazówka|İpucu|نصيحة):\*\*\s*(.+)/i,
+    /^💡\s*(?:Tipp?|Tip|Conseil|Consejo|Consiglio|Dica|Wskazówka|İpucu|نصيحة)?[:\s]*(.+)/i,
+    /^\*\*(?:Tipp?|Tip|Conseil|Consejo|Consiglio|Dica|Wskazówka|İpucu|نصيحة):\*\*\s*(.+)/i,
+    /^(?:Pro-?Tipp?|Tip|Conseil|Consejo|Consiglio|Dica|Wskazówka|İpucu):\s*(.+)/i,
+  ];
+  for (const pattern of tipPatterns) {
+    const value = extractValue(pattern);
+    if (value && value.length > 3) {
+      block.tips.push(value);
+      return;
+    }
   }
 
-  // Warnings: ⚠️ Wichtig: ...
-  if (/^⚠️|^Wichtig:|^Warning:|^Achtung:|^Important:/i.test(trimmed)) {
-    block.warnings.push(trimmed.replace(/^[\s⚠️]*(?:Wichtig|Warning|Achtung|Important)[:\s]*/i, '').trim());
-    return;
+  // Transport: 🚗 **Transport:** Details
+  if (/^[🚗🚕🚌🚇🚃]|^Transport/i.test(trimmed)) {
+    const value = trimmed.replace(/^[🚗🚕🚌🚇🚃\s]*\*?\*?(?:Transport)?\*?\*?[:\s]*/i, '').trim();
+    if (value) {
+      block.transport = cleanMarkdown(value);
+      return;
+    }
+  }
+
+  // Warnings: ⚠️ **Wichtig:** ... OR ☔ **Alternativ:**
+  if (/^[⚠️☔]|^Wichtig:|^Warning:|^Achtung:|^Important:|^Alternativ/i.test(trimmed)) {
+    const value = trimmed.replace(/^[\s⚠️☔]*\*?\*?(?:Wichtig|Warning|Achtung|Important|Alternativ|Alternative)?\*?\*?[:\s]*/i, '').trim();
+    if (value) {
+      block.warnings.push(cleanMarkdown(value));
+      return;
+    }
   }
 
   // Restaurant/Food specific
   if (/^🍽️|^Restaurant:|^Food:/i.test(trimmed)) {
-    block.location = block.location || trimmed.replace(/^🍽️?\s*(?:Restaurant|Food)[:\s]*/i, '').trim();
-    block.category = 'food';
+    const value = trimmed.replace(/^🍽️?\s*(?:Restaurant|Food)?[:\s]*/i, '').trim();
+    if (value) {
+      block.location = block.location || cleanMarkdown(value);
+      block.category = 'food';
+    }
     return;
   }
 
-  // Everything else is description
-  if (trimmed && !trimmed.match(/^[-*]+$/)) {
-    block.description += (block.description ? '\n' : '') + trimmed;
+  // Everything else is description (if not starting with emoji labels we already handled)
+  if (trimmed && !trimmed.match(/^[-*]+$/) && !trimmed.match(/^[📍💰⏱️📝💡⚠️☔🚗🚕🚌🚇]/)) {
+    // Also skip if it's a field we might have missed
+    if (!/^\*\*[^*]+:\*\*/i.test(trimmed)) {
+      block.description += (block.description ? '\n' : '') + cleanMarkdown(trimmed);
+    }
   }
 }
 
