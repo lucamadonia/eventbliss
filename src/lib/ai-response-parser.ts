@@ -931,9 +931,25 @@ export function timeBlockToScheduleData(timeBlock: ParsedTimeBlock) {
   };
 }
 
+// Multilingual intro patterns to filter out (not activities)
+const INTRO_PATTERNS = [
+  /^aktivitäten\s+(für|zum)/i, /^activities\s+for/i, /^activités\s+pour/i,
+  /^actividades\s+para/i, /^attività\s+per/i, /^activiteiten\s+voor/i,
+  /^aktywności\s+(dla|na)/i, /^atividades\s+para/i, /^aktiviteler/i, /^أنشطة/,
+  /^hier\s+sind/i, /^here\s+are/i, /^voici/i, /^ecco/i, /^işte/i, /^إليك/,
+  /^top\s*\d+\s*(aktivitäten|activities|activités|actividades|attività)/i,
+  /^empfohlene/i, /^recommended/i, /^conseillé/i, /^recomendad/i,
+];
+
+function isIntroLine(line: string): boolean {
+  const trimmed = line.trim().replace(/^#+\s*/, '').replace(/^\*+\s*/, '');
+  return INTRO_PATTERNS.some(p => p.test(trimmed));
+}
+
 /**
  * Parse activities response into structured format for premium display
  * Supports multiple formats and extracts structured data
+ * FIXED: Now properly filters intro lines and requires numbered activities
  */
 export function parseActivitiesExtended(response: string): ParsedActivitiesResponse {
   const result: ParsedActivitiesResponse = {
@@ -951,6 +967,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
   let foundFirstActivity = false;
   let activityCounter = 0;
   let inHighlights = false;
+  let descriptionBuffer: string[] = [];
 
   // Category emoji mapping for fallback
   const CATEGORY_EMOJI_MAP: Record<string, string> = {
@@ -964,36 +981,59 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
     if (!trimmed) continue;
     if (trimmed.match(/^[-=*]{3,}$/)) continue;
 
-    // Detect activity headers - multiple patterns
-    // Pattern 1: ### 🎯 Activity Name
-    const actMatch1 = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
-    // Pattern 2: **Aktivität 1: Name** or numbered
-    const actMatch2 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:\s]+([^*]+)\*\*/i);
-    // Pattern 3: 1. 🎯 Name
-    const actMatch3 = trimmed.match(/^\*?\*?\s*\d+\.?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(?:Name|Aktivität|Activity)?[:\s]*([^*]+)\*?\*?/iu);
+    // Check if this is an intro line (should not be parsed as activity)
+    if (!foundFirstActivity && isIntroLine(trimmed)) {
+      introLines.push(trimmed.replace(/^#+\s*/, '').replace(/^\*+\s*/, ''));
+      continue;
+    }
 
-    const actMatch = actMatch1 || actMatch2 || actMatch3;
+    // Detect activity headers - FIXED: Must have a number to be an activity
+    // Pattern 1: ### 1. 🎯 Activity Name (numbered with emoji)
+    const actMatch1 = trimmed.match(/^###?\s*(\d+)\.\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    // Pattern 2: **1. 🎯 Activity Name** (bold numbered)
+    const actMatch2 = trimmed.match(/^\*\*\s*(\d+)\.\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*([^*]+)\*\*/u);
+    // Pattern 3: 1. 🎯 Activity Name (plain numbered with emoji)
+    const actMatch3 = trimmed.match(/^(\d+)\.\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u);
+    // Pattern 4: ### 🎯 1. Activity Name (emoji before number)
+    const actMatch4 = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(\d+)\.\s*(.+)/u);
+    // Pattern 5: **Aktivität 1: Name** or numbered label
+    const actMatch5 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:\.\s]+([^*]+)\*\*/i);
+
+    let actMatch = actMatch1 || actMatch2 || actMatch3 || actMatch4 || actMatch5;
 
     if (actMatch) {
-      if (currentActivity) result.activities.push(currentActivity);
+      // Save previous activity with accumulated description
+      if (currentActivity) {
+        if (descriptionBuffer.length > 0) {
+          currentActivity.description = descriptionBuffer.join(' ').trim();
+        }
+        result.activities.push(currentActivity);
+        descriptionBuffer = [];
+      }
       activityCounter++;
 
       let emoji = '✨';
       let title = '';
 
       if (actMatch1) {
-        emoji = actMatch1[1];
-        title = actMatch1[2].replace(/\*\*/g, '').trim();
+        emoji = actMatch1[2];
+        title = actMatch1[3].replace(/\*\*/g, '').trim();
       } else if (actMatch2) {
-        title = actMatch2[2].trim();
+        emoji = actMatch2[2];
+        title = actMatch2[3].trim();
+      } else if (actMatch3) {
+        emoji = actMatch3[2];
+        title = actMatch3[3].replace(/\*\*/g, '').trim();
+      } else if (actMatch4) {
+        emoji = actMatch4[1];
+        title = actMatch4[3].replace(/\*\*/g, '').trim();
+      } else if (actMatch5) {
+        title = actMatch5[2].trim();
         const emojiInTitle = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}])/u);
         if (emojiInTitle) {
           emoji = emojiInTitle[1];
           title = title.replace(emojiInTitle[0], '').trim();
         }
-      } else if (actMatch3) {
-        emoji = actMatch3[1];
-        title = actMatch3[2].replace(/\*\*/g, '').trim();
       }
 
       currentActivity = {
@@ -1015,21 +1055,28 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
     }
 
     if (currentActivity) {
+      // Parse description - multilingual (📝 Beschreibung: or Description:)
+      if (/^📝|^Beschreibung:|^Description:|^Descripción:|^Descrizione:|^Beschrijving:|^Opis:|^Açıklama:|^وصف:/i.test(trimmed)) {
+        const desc = trimmed.replace(/^📝?\s*(?:Beschreibung|Description|Descripción|Descrizione|Beschrijving|Opis|Açıklama|وصف)[:\s]*/i, '').trim();
+        if (desc) descriptionBuffer.push(desc);
+        continue;
+      }
+      
       // Parse duration - multilingual
-      if (/^⏱️|^2\.\s*⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:|^Duur:|^Czas:|^Süre:|^مدة:/i.test(trimmed)) {
-        currentActivity.duration = trimmed.replace(/^[\d.]*\s*⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
+      if (/^⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:|^Duur:|^Czas:|^Süre:|^مدة:/i.test(trimmed)) {
+        currentActivity.duration = trimmed.replace(/^⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
         continue;
       }
       
       // Parse cost - multilingual
-      if (/^💰|^3\.\s*💰|^Kosten:|^Cost:|^Coût:|^Costo:|^Custo:|^Maliyet:|^تكلفة:/i.test(trimmed)) {
-        currentActivity.cost = trimmed.replace(/^[\d.]*\s*💰?\s*(?:Kosten|Cost|Coût|Costo|Custo|Maliyet|تكلفة)[:\s]*/i, '').trim();
+      if (/^💰|^Kosten:|^Cost:|^Coût:|^Costo:|^Custo:|^Maliyet:|^تكلفة:|^Preis:/i.test(trimmed)) {
+        currentActivity.cost = trimmed.replace(/^💰?\s*(?:Kosten|Cost|Coût|Costo|Custo|Maliyet|تكلفة|Preis)[:\s]*/i, '').trim();
         continue;
       }
       
       // Parse fitness - multilingual
-      if (/^💪|^4\.\s*💪|^Fitness:|^Anforderung:|^Requirement:|^Niveau:|^Nivel:|^Livello:|^Kondycja:|^Seviye:|^مستوى:/i.test(trimmed)) {
-        const fitnessText = trimmed.replace(/^[\d.]*\s*💪?\s*(?:Fitness|Anforderung|Requirement|Niveau|Nivel|Livello|Kondycja|Seviye|مستوى)[:\s]*/i, '').toLowerCase();
+      if (/^💪|^Fitness:|^Anforderung:|^Requirement:|^Niveau:|^Nivel:|^Livello:|^Kondycja:|^Seviye:|^مستوى:/i.test(trimmed)) {
+        const fitnessText = trimmed.replace(/^💪?\s*(?:Fitness|Anforderung|Requirement|Niveau|Nivel|Livello|Kondycja|Seviye|مستوى)[:\s]*/i, '').toLowerCase();
         if (fitnessText.match(/leicht|easy|facile|fácil|gemakkelijk|łatwy|kolay|سهل/i)) {
           currentActivity.fitness = 'easy';
         } else if (fitnessText.match(/anspruch|challeng|difficile|difícil|moeilijk|trudny|zor|صعب/i)) {
@@ -1041,13 +1088,14 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
       }
       
       // Parse category - multilingual
-      if (/^🎯|^Kategorie:|^Category:|^Catégorie:|^Categoría:|^Categoria:|^Categorie:|^Kategoria:|^Kategori:|^فئة:/i.test(trimmed)) {
+      if (/^🎯\s*(?:Kategorie|Category)|^Kategorie:|^Category:|^Catégorie:|^Categoría:|^Categoria:|^Categorie:|^Kategoria:|^Kategori:|^فئة:/i.test(trimmed)) {
         const cat = trimmed.replace(/^🎯?\s*(?:Kategorie|Category|Catégorie|Categoría|Categoria|Categorie|Kategoria|Kategori|فئة)[:\s]*/i, '').toLowerCase();
         if (cat.match(/action|aktion|acción|azione|actie|akcja|aksiyon/i)) currentActivity.category = 'action';
         else if (cat.match(/food|essen|comida|cibo|voedsel|jedzenie|yemek|طعام/i)) currentActivity.category = 'food';
         else if (cat.match(/wellness|entspannung|bienestar|benessere|ontspanning|relaks|rahatlama/i)) currentActivity.category = 'wellness';
         else if (cat.match(/party|fiesta|festa|feest|impreza|parti|حفلة/i)) currentActivity.category = 'party';
         else if (cat.match(/sight|besichtigung|turismo|visite|bezienswaardigh|zwiedzanie|gezi|مشاهدة/i)) currentActivity.category = 'sightseeing';
+        else if (cat.match(/adventure|abenteuer|aventura|avventura|avontuur|przygoda|macera/i)) currentActivity.category = 'adventure';
         continue;
       }
       
@@ -1072,17 +1120,26 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
         continue;
       }
       
-      // Description text
-      if (trimmed.length > 15 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^[📍💰⏱️💪🎯✅]/)) {
+      // Description text - improved: capture text that looks like description
+      // Skip metadata prefixes and short lines
+      if (trimmed.length > 20 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^[📍💰⏱️💪🎯✅📝]/) && !trimmed.startsWith('**')) {
         const cleanText = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
-        currentActivity.description += (currentActivity.description ? ' ' : '') + cleanText;
+        descriptionBuffer.push(cleanText);
       }
     } else if (!foundFirstActivity && !trimmed.match(/^#/)) {
+      // Before first activity - collect as intro
       introLines.push(trimmed);
     }
   }
 
-  if (currentActivity) result.activities.push(currentActivity);
+  // Save last activity
+  if (currentActivity) {
+    if (descriptionBuffer.length > 0) {
+      currentActivity.description = descriptionBuffer.join(' ').trim();
+    }
+    result.activities.push(currentActivity);
+  }
+  
   result.intro = introLines.join(' ').slice(0, 500).trim();
 
   // Infer category from emoji if not set
@@ -1090,12 +1147,13 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
     if (act.category === 'other' && act.emoji) {
       const categoryFromEmoji: Record<string, string> = {
         '🎯': 'action', '🏎️': 'action', '🚁': 'action', '🪂': 'adventure',
-        '🍽️': 'food', '🍕': 'food', '🍻': 'food', '☕': 'food', '🍷': 'food',
+        '🍽️': 'food', '🍕': 'food', '🍻': 'food', '☕': 'food', '🍷': 'food', '🍔': 'food', '🍹': 'food',
         '💆': 'wellness', '🧘': 'wellness', '🏊': 'wellness', '♨️': 'wellness',
         '🎉': 'party', '💃': 'party', '🪩': 'party', '🍺': 'party', '🎤': 'party',
         '🏛️': 'sightseeing', '📸': 'sightseeing', '🗺️': 'sightseeing',
-        '🏔️': 'adventure', '🏞️': 'adventure', '🌊': 'adventure',
+        '🏔️': 'adventure', '🏞️': 'adventure', '🌊': 'adventure', '🏜️': 'adventure', '🚴': 'adventure',
         '🎭': 'culture', '🎨': 'culture',
+        '🎱': 'activity', '🔫': 'action',
       };
       if (categoryFromEmoji[act.emoji]) {
         act.category = categoryFromEmoji[act.emoji];
@@ -1109,7 +1167,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
 
   console.log('=== Activities Parser ===');
   console.log('Activities found:', result.activities.length);
-  result.activities.forEach((a, i) => console.log(`- ACT ${i + 1}: ${a.emoji} ${a.title} [${a.category}]`));
+  result.activities.forEach((a, i) => console.log(`- ACT ${i + 1}: ${a.emoji} ${a.title} [${a.category}] desc:${a.description.slice(0,50)}...`));
 
   return result;
 }
