@@ -12,6 +12,7 @@ import { useAICredits } from "@/hooks/useAICredits";
 import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
+import { AIActivitiesSkeleton } from "@/components/dashboard/AIActivitiesSkeleton";
 import type { EventData } from "@/hooks/useEvent";
 import type { ParsedActivity, ParsedTimeBlock, ParsedDay } from "@/lib/ai-response-parser";
 
@@ -316,6 +317,13 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
           </GradientButton>
         </div>
       </GlassCard>
+
+      {/* Loading Skeleton */}
+      {isLoading && !response && (
+        <AIActivitiesSkeleton 
+          count={currentType === 'activities' ? 5 : currentType === 'day_plan' ? 3 : 4} 
+        />
+      )}
 
       {/* Response */}
       {response && (
