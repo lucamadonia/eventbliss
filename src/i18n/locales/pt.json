@@ -846,7 +846,13 @@
         "noon": "Tarde",
         "evening": "Noite",
         "night": "Madrugada"
-      }
+      },
+      "addToPlannerDesc": "Adicione esta atividade ao seu plano de evento",
+      "selectDate": "Selecionar data",
+      "pickDate": "Escolher data",
+      "activityAdded": "Atividade adicionada ao planeador",
+      "addedFromAI": "Adicionado pelo Assistente IA",
+      "costPerPerson": "Custo por pessoa"
     }
   },
   "messages": {

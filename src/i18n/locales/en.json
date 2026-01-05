@@ -1030,7 +1030,13 @@
         "noon": "Noon",
         "evening": "Evening",
         "night": "Night"
-      }
+      },
+      "addToPlannerDesc": "Add this activity to your event plan",
+      "selectDate": "Select date",
+      "pickDate": "Pick a date",
+      "activityAdded": "Activity added to planner",
+      "addedFromAI": "Added from AI Assistant",
+      "costPerPerson": "Cost per person"
     },
     "settings": {
       "title": "Settings",

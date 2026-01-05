@@ -846,7 +846,13 @@
         "noon": "Öğle",
         "evening": "Akşam",
         "night": "Gece"
-      }
+      },
+      "addToPlannerDesc": "Bu aktiviteyi etkinlik planınıza ekleyin",
+      "selectDate": "Tarih seç",
+      "pickDate": "Bir tarih seçin",
+      "activityAdded": "Aktivite planlayıcıya eklendi",
+      "addedFromAI": "AI Asistanı tarafından eklendi",
+      "costPerPerson": "Kişi başı maliyet"
     }
   },
   "messages": {

@@ -1057,7 +1057,13 @@
         "noon": "Mittags",
         "evening": "Abends",
         "night": "Nachts"
-      }
+      },
+      "addToPlannerDesc": "Füge diese Aktivität zu deinem Event-Plan hinzu",
+      "selectDate": "Datum wählen",
+      "pickDate": "Datum auswählen",
+      "activityAdded": "Aktivität zum Planer hinzugefügt",
+      "addedFromAI": "Hinzugefügt von KI-Assistent",
+      "costPerPerson": "Kosten pro Person"
     },
     "settings": {
       "title": "Einstellungen",

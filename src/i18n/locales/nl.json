@@ -852,7 +852,13 @@
         "noon": "Middag",
         "evening": "Avond",
         "night": "Nacht"
-      }
+      },
+      "addToPlannerDesc": "Voeg deze activiteit toe aan je evenementplan",
+      "selectDate": "Datum selecteren",
+      "pickDate": "Kies een datum",
+      "activityAdded": "Activiteit toegevoegd aan planner",
+      "addedFromAI": "Toegevoegd door AI-Assistent",
+      "costPerPerson": "Kosten per persoon"
     }
   },
   "messages": {
