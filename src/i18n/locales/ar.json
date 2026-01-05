@@ -834,7 +834,19 @@
       "fitnessNormal": "عادي",
       "fitnessChallenging": "صعب",
       "recommendations": "توصيات الذكاء الاصطناعي",
-      "dayAdded": "تمت إضافة اليوم إلى المخطط"
+      "dayAdded": "تمت إضافة اليوم إلى المخطط",
+      "tag": "اليوم",
+      "days": "أيام",
+      "activity": "نشاط",
+      "addDay": "إضافة يوم",
+      "generalTips": "نصائح عامة",
+      "noActivities": "لا توجد أنشطة",
+      "timeOfDay": {
+        "morning": "صباحاً",
+        "noon": "ظهراً",
+        "evening": "مساءً",
+        "night": "ليلاً"
+      }
     }
   },
   "messages": {

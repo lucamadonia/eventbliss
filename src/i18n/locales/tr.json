@@ -834,7 +834,19 @@
       "fitnessNormal": "Normal",
       "fitnessChallenging": "Zorlu",
       "recommendations": "AI Önerileri",
-      "dayAdded": "Gün planlayıcıya eklendi"
+      "dayAdded": "Gün planlayıcıya eklendi",
+      "tag": "GÜN",
+      "days": "Gün",
+      "activity": "Aktivite",
+      "addDay": "Gün Ekle",
+      "generalTips": "Genel İpuçları",
+      "noActivities": "Aktivite yok",
+      "timeOfDay": {
+        "morning": "Sabah",
+        "noon": "Öğle",
+        "evening": "Akşam",
+        "night": "Gece"
+      }
     }
   },
   "messages": {

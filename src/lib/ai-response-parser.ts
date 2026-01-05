@@ -53,7 +53,16 @@ export interface ParsedTripIdeasResponse {
   rawResponse: string;
 }
 
-// Day Plan specific interfaces
+// Day Plan specific interfaces - Time of day categorization
+export type TimeOfDay = 'morning' | 'noon' | 'evening' | 'night';
+
+export interface TimeBlocksByPeriod {
+  morning: ParsedTimeBlock[];
+  noon: ParsedTimeBlock[];
+  evening: ParsedTimeBlock[];
+  night: ParsedTimeBlock[];
+}
+
 export interface ParsedTimeBlock {
   time: string;
   title: string;
@@ -67,6 +76,7 @@ export interface ParsedTimeBlock {
   warnings: string[];
   description: string;
   rawSection: string;
+  timeOfDay?: TimeOfDay;
 }
 
 export interface ParsedDay {
@@ -74,6 +84,7 @@ export interface ParsedDay {
   title: string;
   emoji: string;
   timeBlocks: ParsedTimeBlock[];
+  blocksByPeriod?: TimeBlocksByPeriod;
 }
 
 export interface ParsedDayPlan {
@@ -81,6 +92,50 @@ export interface ParsedDayPlan {
   days: ParsedDay[];
   generalTips: string[];
   rawResponse: string;
+}
+
+/**
+ * Determine time of day from time string
+ */
+export function getTimeOfDay(timeString: string): TimeOfDay {
+  const match = timeString.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return 'morning';
+  
+  const hour = parseInt(match[1], 10);
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'noon';
+  if (hour >= 17 && hour < 22) return 'evening';
+  return 'night';
+}
+
+/**
+ * Group time blocks by period of day
+ */
+export function groupTimeBlocksByPeriod(timeBlocks: ParsedTimeBlock[]): TimeBlocksByPeriod {
+  return {
+    morning: timeBlocks.filter(b => getTimeOfDay(b.time) === 'morning'),
+    noon: timeBlocks.filter(b => getTimeOfDay(b.time) === 'noon'),
+    evening: timeBlocks.filter(b => getTimeOfDay(b.time) === 'evening'),
+    night: timeBlocks.filter(b => getTimeOfDay(b.time) === 'night'),
+  };
+}
+
+/**
+ * Clean all markdown and format fields in a time block
+ */
+function cleanTimeBlockFields(block: ParsedTimeBlock): ParsedTimeBlock {
+  return {
+    ...block,
+    title: cleanMarkdown(block.title),
+    description: cleanMarkdown(block.description),
+    location: cleanMarkdown(block.location),
+    transport: cleanMarkdown(block.transport),
+    cost: cleanMarkdown(block.cost),
+    duration: cleanMarkdown(block.duration),
+    tips: block.tips.map(cleanMarkdown),
+    warnings: block.warnings.map(cleanMarkdown),
+    timeOfDay: getTimeOfDay(block.time),
+  };
 }
 
 /**
@@ -305,7 +360,7 @@ export function parseDayPlan(response: string): ParsedDayPlan {
   }
 
   // Set intro
-  result.intro = introLines.join('\n').replace(/^#+\s*/, '').trim();
+  result.intro = cleanMarkdown(introLines.join('\n').replace(/^#+\s*/, '').trim());
 
   // If still no days but have time blocks in intro, create a fallback
   if (result.days.length === 0) {
@@ -319,8 +374,20 @@ export function parseDayPlan(response: string): ParsedDayPlan {
   // Extract general tips from entire response
   const tipMatches = response.match(/💡[^\n]+|(?:Budget-?)?[Tt]ipp?:?[^\n]+/g);
   if (tipMatches) {
-    result.generalTips = tipMatches.slice(0, 5).map(t => t.trim());
+    result.generalTips = tipMatches.slice(0, 5).map(t => cleanMarkdown(t.trim()));
   }
+
+  // Clean all time blocks and group by period
+  result.days = result.days.map(day => {
+    const cleanedBlocks = day.timeBlocks.map(cleanTimeBlockFields);
+    return {
+      ...day,
+      dayName: cleanMarkdown(day.dayName),
+      title: cleanMarkdown(day.title),
+      timeBlocks: cleanedBlocks,
+      blocksByPeriod: groupTimeBlocksByPeriod(cleanedBlocks),
+    };
+  });
 
   console.log('=== Day Plan Parser (Line-by-Line) ===');
   console.log('Total days found:', result.days.length);

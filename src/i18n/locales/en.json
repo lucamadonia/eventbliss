@@ -1018,7 +1018,19 @@
       "fitnessNormal": "Normal",
       "fitnessChallenging": "Challenging",
       "recommendations": "AI Recommendations",
-      "dayAdded": "Day added to planner"
+      "dayAdded": "Day added to planner",
+      "tag": "DAY",
+      "days": "Days",
+      "activity": "Activity",
+      "addDay": "Add Day",
+      "generalTips": "General Tips",
+      "noActivities": "No activities",
+      "timeOfDay": {
+        "morning": "Morning",
+        "noon": "Noon",
+        "evening": "Evening",
+        "night": "Night"
+      }
     },
     "settings": {
       "title": "Settings",

@@ -13,17 +13,31 @@ import {
   Lightbulb,
   AlertTriangle,
   Calendar,
-  FileText,
   Download,
+  Sunrise,
+  Sun,
+  Sunset,
+  Moon,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { type ParsedDayPlan, type ParsedDay, type ParsedTimeBlock } from "@/lib/ai-response-parser";
+import { 
+  type ParsedDayPlan, 
+  type ParsedDay, 
+  type ParsedTimeBlock,
+  type TimeOfDay,
+  groupTimeBlocksByPeriod,
+} from "@/lib/ai-response-parser";
 import { CATEGORY_CONFIG } from "@/lib/category-config";
 import { cn } from "@/lib/utils";
 import { openDayPlanPrint, downloadDayPlanHTML } from "@/lib/day-plan-pdf-export";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface DayPlanCardProps {
   dayPlan: ParsedDayPlan;
@@ -79,6 +93,258 @@ const DAY_STYLES = [
   },
 ];
 
+// Time period configuration with icons, colors, and emojis
+const TIME_PERIOD_CONFIG: Record<TimeOfDay, {
+  emoji: string;
+  gradient: string;
+  border: string;
+  Icon: typeof Sunrise;
+  iconColor: string;
+}> = {
+  morning: {
+    emoji: '🌅',
+    gradient: 'from-amber-500/15 to-orange-500/5',
+    border: 'border-amber-500/30',
+    Icon: Sunrise,
+    iconColor: 'text-amber-500',
+  },
+  noon: {
+    emoji: '☀️',
+    gradient: 'from-yellow-500/15 to-amber-500/5',
+    border: 'border-yellow-500/30',
+    Icon: Sun,
+    iconColor: 'text-yellow-500',
+  },
+  evening: {
+    emoji: '🌆',
+    gradient: 'from-orange-500/15 to-rose-500/5',
+    border: 'border-orange-500/30',
+    Icon: Sunset,
+    iconColor: 'text-orange-500',
+  },
+  night: {
+    emoji: '🌙',
+    gradient: 'from-indigo-500/15 to-purple-500/5',
+    border: 'border-indigo-500/30',
+    Icon: Moon,
+    iconColor: 'text-indigo-400',
+  },
+};
+
+interface TimePeriodSectionProps {
+  period: TimeOfDay;
+  blocks: ParsedTimeBlock[];
+  dayIndex: number;
+  dayName: string;
+  onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
+}
+
+const TimePeriodSection = ({ 
+  period, 
+  blocks, 
+  dayIndex,
+  dayName,
+  onAddTimeBlock,
+}: TimePeriodSectionProps) => {
+  const { t } = useTranslation();
+  const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const config = TIME_PERIOD_CONFIG[period];
+
+  if (blocks.length === 0) return null;
+
+  const toggleBlock = (id: string) => {
+    setExpandedBlocks(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const copyTimeBlock = async (block: ParsedTimeBlock, id: string) => {
+    const text = `${block.time} - ${block.emoji} ${block.title}\n${block.location ? `📍 ${block.location}\n` : ''}${block.cost ? `💰 ${block.cost}\n` : ''}${block.description}`;
+    await navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    toast.success(t('common.copied'));
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const getCategoryConfig = (category: string) => {
+    return CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG] || CATEGORY_CONFIG.other;
+  };
+
+  return (
+    <div className={cn(
+      "rounded-xl border p-4 bg-gradient-to-br",
+      config.gradient,
+      config.border
+    )}>
+      {/* Period Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">{config.emoji}</span>
+        <config.Icon className={cn("w-5 h-5", config.iconColor)} />
+        <h5 className="font-bold text-sm uppercase tracking-wider">
+          {t(`dashboard.ai.timeOfDay.${period}`)}
+        </h5>
+        <Badge variant="outline" className="ml-auto text-xs">
+          {blocks.length} {blocks.length === 1 ? t('dashboard.ai.activity') : t('dashboard.ai.activities')}
+        </Badge>
+      </div>
+
+      {/* Time Blocks */}
+      <div className="space-y-3">
+        {blocks.map((block, blockIndex) => {
+          const blockId = `${dayIndex}-${period}-${blockIndex}`;
+          const isExpanded = expandedBlocks.has(blockId);
+          const categoryConfig = getCategoryConfig(block.category);
+
+          return (
+            <motion.div
+              key={blockId}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: blockIndex * 0.05 }}
+              className="bg-card/60 backdrop-blur-sm rounded-lg p-4 border border-border/50 hover:border-border transition-colors group"
+            >
+              {/* Block Header */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge 
+                  variant="outline" 
+                  className="font-mono text-xs bg-background/80"
+                >
+                  <Clock className="w-3 h-3 mr-1" />
+                  {block.time}
+                </Badge>
+                <span className="text-2xl">{block.emoji}</span>
+                <h6 className="font-semibold text-foreground flex-1 min-w-0">
+                  {block.title}
+                </h6>
+                <Badge 
+                  variant="secondary" 
+                  className={cn("text-xs", categoryConfig.bgClass, categoryConfig.colorClass)}
+                >
+                  {categoryConfig.emoji}
+                </Badge>
+              </div>
+
+              {/* Details Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">
+                {block.location && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="truncate">{block.location}</span>
+                  </div>
+                )}
+                {block.cost && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="text-emerald-500 flex-shrink-0">💰</span>
+                    <span className="truncate">{block.cost}</span>
+                  </div>
+                )}
+                {block.transport && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Car className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    <span className="truncate">{block.transport}</span>
+                  </div>
+                )}
+                {block.duration && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                    <span className="truncate">{block.duration}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Expandable Description */}
+              {(block.description || block.tips.length > 0 || block.warnings.length > 0) && (
+                <Collapsible open={isExpanded} onOpenChange={() => toggleBlock(blockId)}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-3 h-7 text-xs text-muted-foreground w-full justify-center hover:text-foreground"
+                    >
+                      {isExpanded ? (
+                        <>
+                          <ChevronUp className="w-3 h-3 mr-1" />
+                          {t('dashboard.ai.hideDetails')}
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3 mr-1" />
+                          {t('dashboard.ai.showDetails')}
+                        </>
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-3 space-y-3">
+                    {block.description && (
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {block.description}
+                      </p>
+                    )}
+
+                    {block.tips.length > 0 && (
+                      <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        <Lightbulb className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                          {block.tips.map((tip, i) => (
+                            <p key={i}>{tip}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {block.warnings.length > 0 && (
+                      <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                        <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                          {block.warnings.map((warning, i) => (
+                            <p key={i}>{warning}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs"
+                  onClick={() => copyTimeBlock(block, blockId)}
+                >
+                  {copiedId === blockId ? (
+                    <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3 h-3 mr-1" />
+                  )}
+                  {t('common.copy')}
+                </Button>
+                {onAddTimeBlock && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs text-primary hover:text-primary"
+                    onClick={() => onAddTimeBlock(block, dayName)}
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    {t('dashboard.ai.addToPlanner')}
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 export const DayPlanCard = ({
   dayPlan,
   eventName,
@@ -88,39 +354,14 @@ export const DayPlanCard = ({
 }: DayPlanCardProps) => {
   const { t, i18n } = useTranslation();
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]));
-  const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const toggleDay = (index: number) => {
     setExpandedDays(prev => {
       const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
       return next;
     });
-  };
-
-  const toggleBlock = (id: string) => {
-    setExpandedBlocks(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  const copyTimeBlock = async (block: ParsedTimeBlock, id: string) => {
-    const text = `${block.time} - ${block.emoji} ${block.title}\n${block.location ? `📍 ${block.location}\n` : ''}${block.description}`;
-    await navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    toast.success(t('common.copied'));
-    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const copyAll = async () => {
@@ -133,7 +374,7 @@ export const DayPlanCard = ({
       name: eventName || 'Event', 
       participantCount 
     }, i18n.language);
-    toast.success(t('dashboard.ai.printOpened', 'Druckvorschau geöffnet'));
+    toast.success(t('dashboard.ai.printOpened'));
   };
 
   const handleDownload = () => {
@@ -141,11 +382,7 @@ export const DayPlanCard = ({
       name: eventName || 'Event', 
       participantCount 
     }, i18n.language);
-    toast.success(t('dashboard.ai.downloaded', 'Download gestartet'));
-  };
-
-  const getCategoryConfig = (category: string) => {
-    return CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG] || CATEGORY_CONFIG.other;
+    toast.success(t('dashboard.ai.downloaded'));
   };
 
   const getDayStyle = (index: number) => {
@@ -162,7 +399,7 @@ export const DayPlanCard = ({
           </div>
           <div className="flex-1">
             <h3 className="font-display font-bold text-lg">
-              {t('dashboard.ai.dayPlan', 'Detaillierter Tagesplan')}
+              {t('dashboard.ai.dayPlan')}
             </h3>
             <div className="flex flex-wrap gap-2 mt-1">
               {eventName && (
@@ -171,7 +408,7 @@ export const DayPlanCard = ({
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs">
-                📅 {dayPlan.days.length} {t('dashboard.ai.days', 'Tage')}
+                📅 {dayPlan.days.length} {t('dashboard.ai.days')}
               </Badge>
               {participantCount && (
                 <Badge variant="outline" className="text-xs">
@@ -179,6 +416,14 @@ export const DayPlanCard = ({
                 </Badge>
               )}
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={copyAll}>
+              <Copy className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleDownload}>
+              <Download className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </GlassCard>
@@ -197,293 +442,124 @@ export const DayPlanCard = ({
         {dayPlan.days.map((day, dayIndex) => {
           const dayStyle = getDayStyle(dayIndex);
           const tagNumber = dayIndex + 1;
+          const blocksByPeriod = day.blocksByPeriod || groupTimeBlocksByPeriod(day.timeBlocks);
+          const periods: TimeOfDay[] = ['morning', 'noon', 'evening', 'night'];
 
           return (
-          <motion.div
-            key={dayIndex}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: dayIndex * 0.1 }}
-          >
-            <GlassCard className={cn("p-0 overflow-hidden border-2", dayStyle.border)}>
-              {/* Premium Day Header with TAG number */}
-              <button
-                onClick={() => toggleDay(dayIndex)}
-                className={cn(
-                  "w-full p-4 flex items-center gap-4",
-                  "bg-gradient-to-r",
-                  dayStyle.gradient,
-                  "hover:opacity-95 transition-opacity"
-                )}
-              >
-                {/* TAG Badge */}
-                <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-                  <span className="text-white font-black text-sm tracking-wider">
-                    TAG {tagNumber}
-                  </span>
-                </div>
-                
-                {/* Day Info */}
-                <div className="flex-1 text-left">
-                  <h4 className="font-bold text-white text-lg uppercase tracking-wide">
-                    {day.dayName}
-                  </h4>
-                  <p className="text-white/80 text-sm">
-                    {day.title} • {day.timeBlocks.length} {t('dashboard.ai.activities', 'Aktivitäten')}
-                  </p>
-                </div>
+            <motion.div
+              key={dayIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: dayIndex * 0.1 }}
+            >
+              <GlassCard className={cn("p-0 overflow-hidden border-2", dayStyle.border)}>
+                {/* Premium Day Header with TAG number */}
+                <button
+                  onClick={() => toggleDay(dayIndex)}
+                  className={cn(
+                    "w-full p-4 flex items-center gap-4",
+                    "bg-gradient-to-r",
+                    dayStyle.gradient,
+                    "hover:opacity-95 transition-opacity"
+                  )}
+                >
+                  {/* TAG Badge */}
+                  <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                    <span className="text-white font-black text-sm tracking-wider">
+                      {t('dashboard.ai.tag')} {tagNumber}
+                    </span>
+                  </div>
+                  
+                  {/* Day Info */}
+                  <div className="flex-1 text-left">
+                    <h4 className="font-bold text-white text-lg uppercase tracking-wide">
+                      {day.dayName}
+                    </h4>
+                    <p className="text-white/80 text-sm">
+                      {day.title} • {day.timeBlocks.length} {t('dashboard.ai.activities')}
+                    </p>
+                  </div>
 
-                {/* Emoji & Actions */}
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{day.emoji}</span>
-                  {onAddDay && (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="text-xs bg-white/20 hover:bg-white/30 text-white border-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddDay(day);
-                      }}
+                  {/* Emoji & Actions */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{day.emoji}</span>
+                    {onAddDay && (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="text-xs bg-white/20 hover:bg-white/30 text-white border-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddDay(day);
+                        }}
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        {t('dashboard.ai.addDay')}
+                      </Button>
+                    )}
+                    {expandedDays.has(dayIndex) ? (
+                      <ChevronUp className="w-5 h-5 text-white/80" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-white/80" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Time Period Sections */}
+                <AnimatePresence>
+                  {expandedDays.has(dayIndex) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
                     >
-                      <Plus className="w-3 h-3 mr-1" />
-                      {t('dashboard.ai.addDay', 'Tag hinzufügen')}
-                    </Button>
-                  )}
-                  {expandedDays.has(dayIndex) ? (
-                    <ChevronUp className="w-5 h-5 text-white/80" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-white/80" />
-                  )}
-                </div>
-              </button>
+                      <div className="p-4 space-y-4">
+                        {periods.map(period => (
+                          <TimePeriodSection
+                            key={period}
+                            period={period}
+                            blocks={blocksByPeriod[period]}
+                            dayIndex={dayIndex}
+                            dayName={day.dayName}
+                            onAddTimeBlock={onAddTimeBlock}
+                          />
+                        ))}
 
-              {/* Time Blocks */}
-              <AnimatePresence>
-                {expandedDays.has(dayIndex) && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-4 pt-2 space-y-3">
-                      {/* Timeline */}
-                      <div className="relative">
-                        {day.timeBlocks.map((block, blockIndex) => {
-                          const blockId = `${dayIndex}-${blockIndex}`;
-                          const isExpanded = expandedBlocks.has(blockId);
-                          const categoryConfig = getCategoryConfig(block.category);
-
-                          return (
-                            <div key={blockIndex} className="relative pl-6 pb-4 last:pb-0">
-                              {/* Timeline line */}
-                              {blockIndex < day.timeBlocks.length - 1 && (
-                                <div className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-border" />
-                              )}
-                              
-                              {/* Timeline dot */}
-                              <div 
-                                className={cn(
-                                  "absolute left-0 top-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs",
-                                  categoryConfig.bgClass,
-                                  categoryConfig.colorClass
-                                )}
-                              >
-                                {categoryConfig.emoji}
-                              </div>
-
-                              {/* Time Block Card */}
-                              <div className="bg-muted/30 rounded-lg p-3 hover:bg-muted/50 transition-colors group">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    {/* Time & Title */}
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <Badge variant="outline" className="text-xs font-mono">
-                                        <Clock className="w-3 h-3 mr-1" />
-                                        {block.time}
-                                      </Badge>
-                                      <span className="text-lg">{block.emoji}</span>
-                                      <span className="font-semibold text-foreground">
-                                        {block.title}
-                                      </span>
-                                    </div>
-
-                                    {/* Quick info badges */}
-                                    <div className="flex flex-wrap gap-1.5 mt-2">
-                                      {block.location && (
-                                        <Badge variant="secondary" className="text-xs">
-                                          <MapPin className="w-3 h-3 mr-1" />
-                                          {block.location.slice(0, 30)}{block.location.length > 30 ? '...' : ''}
-                                        </Badge>
-                                      )}
-                                      {block.transport && (
-                                        <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                                          <Car className="w-3 h-3 mr-1" />
-                                          {block.transport.slice(0, 25)}{block.transport.length > 25 ? '...' : ''}
-                                        </Badge>
-                                      )}
-                                      {block.cost && (
-                                        <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                                          💰 {block.cost}
-                                        </Badge>
-                                      )}
-                                    </div>
-
-                                    {/* Expandable details */}
-                                    <AnimatePresence>
-                                      {isExpanded && (
-                                        <motion.div
-                                          initial={{ height: 0, opacity: 0 }}
-                                          animate={{ height: 'auto', opacity: 1 }}
-                                          exit={{ height: 0, opacity: 0 }}
-                                          className="mt-3 space-y-2"
-                                        >
-                                          {block.description && (
-                                            <p className="text-sm text-muted-foreground">
-                                              {block.description}
-                                            </p>
-                                          )}
-
-                                          {block.tips.length > 0 && (
-                                            <div className="flex items-start gap-2 p-2 rounded bg-amber-500/10 border border-amber-500/20">
-                                              <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                                              <div className="text-xs text-amber-200">
-                                                {block.tips.map((tip, i) => (
-                                                  <p key={i}>{tip}</p>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          )}
-
-                                          {block.warnings.length > 0 && (
-                                            <div className="flex items-start gap-2 p-2 rounded bg-red-500/10 border border-red-500/20">
-                                              <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                                              <div className="text-xs text-red-200">
-                                                {block.warnings.map((warning, i) => (
-                                                  <p key={i}>{warning}</p>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          )}
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-                                  </div>
-
-                                  {/* Actions */}
-                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-7 w-7 p-0"
-                                      onClick={() => copyTimeBlock(block, blockId)}
-                                    >
-                                      {copiedId === blockId ? (
-                                        <Check className="w-3 h-3 text-emerald-400" />
-                                      ) : (
-                                        <Copy className="w-3 h-3" />
-                                      )}
-                                    </Button>
-                                    {onAddTimeBlock && (
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-7 px-2 text-xs text-primary"
-                                        onClick={() => onAddTimeBlock(block, day.dayName)}
-                                      >
-                                        <Plus className="w-3 h-3 mr-1" />
-                                        <span className="hidden sm:inline">{t('dashboard.ai.addToPlanner', 'Planer')}</span>
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Expand toggle */}
-                                {(block.description || block.tips.length > 0 || block.warnings.length > 0) && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="mt-2 h-6 text-xs text-muted-foreground w-full justify-center"
-                                    onClick={() => toggleBlock(blockId)}
-                                  >
-                                    {isExpanded ? (
-                                      <>
-                                        <ChevronUp className="w-3 h-3 mr-1" />
-                                        {t('dashboard.ai.hideDetails', 'Weniger')}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <ChevronDown className="w-3 h-3 mr-1" />
-                                        {t('dashboard.ai.showDetails', 'Details')}
-                                      </>
-                                    )}
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
+                        {/* No activities fallback */}
+                        {day.timeBlocks.length === 0 && (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p>{t('dashboard.ai.noActivities')}</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </GlassCard>
-          </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </motion.div>
           );
         })}
       </div>
 
       {/* General Tips */}
       {dayPlan.generalTips.length > 0 && (
-        <GlassCard className="p-4 border-amber-500/30 bg-amber-500/5">
-          <div className="flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <h4 className="font-bold text-amber-400 mb-2">
-                {t('dashboard.ai.budgetTip', 'Tipps')}
-              </h4>
-              <ul className="space-y-1">
-                {dayPlan.generalTips.map((tip, index) => (
-                  <li key={index} className="text-sm text-muted-foreground">
-                    {tip}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <GlassCard className="p-4 bg-amber-500/5 border-amber-500/20">
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb className="w-5 h-5 text-amber-500" />
+            <h4 className="font-bold text-sm">{t('dashboard.ai.generalTips')}</h4>
           </div>
+          <ul className="space-y-2">
+            {dayPlan.generalTips.map((tip, index) => (
+              <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                <span className="text-amber-500 mt-0.5">•</span>
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
         </GlassCard>
       )}
-
-      {/* Action buttons */}
-      <div className="flex flex-wrap gap-2 justify-end">
-        <Button variant="outline" size="sm" onClick={handleDownload}>
-          <Download className="w-4 h-4 mr-2" />
-          {t('dashboard.ai.download', 'Download')}
-        </Button>
-        <Button variant="outline" size="sm" onClick={handlePrint}>
-          <FileText className="w-4 h-4 mr-2" />
-          {t('dashboard.ai.print', 'PDF Drucken')}
-        </Button>
-        <Button variant="outline" size="sm" onClick={copyAll}>
-          <Copy className="w-4 h-4 mr-2" />
-          {t('dashboard.ai.copyAll', 'Alles kopieren')}
-        </Button>
-        {onAddDay && dayPlan.days.length > 0 && (
-          <Button 
-            variant="default" 
-            size="sm"
-            onClick={() => {
-              dayPlan.days.forEach(day => onAddDay(day));
-              toast.success(t('dashboard.ai.allDaysAdded', 'Alle Tage hinzugefügt'));
-            }}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            {t('dashboard.ai.addAllDays', 'Alle Tage hinzufügen')}
-          </Button>
-        )}
-      </div>
     </div>
   );
 };

@@ -802,7 +802,19 @@
       "fitnessNormal": "Normale",
       "fitnessChallenging": "Impegnativo",
       "recommendations": "Raccomandazioni IA",
-      "dayAdded": "Giorno aggiunto al pianificatore"
+      "dayAdded": "Giorno aggiunto al pianificatore",
+      "tag": "GIORNO",
+      "days": "Giorni",
+      "activity": "Attività",
+      "addDay": "Aggiungi Giorno",
+      "generalTips": "Consigli Generali",
+      "noActivities": "Nessuna attività",
+      "timeOfDay": {
+        "morning": "Mattina",
+        "noon": "Mezzogiorno",
+        "evening": "Sera",
+        "night": "Notte"
+      }
     }
   },
   "messages": {
