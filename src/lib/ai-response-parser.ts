@@ -141,16 +141,27 @@ function cleanTimeBlockFields(block: ParsedTimeBlock): ParsedTimeBlock {
 /**
  * Clean markdown formatting from text
  * Removes **, *, __, _ and cleans up whitespace
+ * Exported for use in components that need to clean AI output
  */
-function cleanMarkdown(text: string): string {
+export function cleanMarkdown(text: string): string {
   if (!text) return '';
   return text
     .replace(/\*\*/g, '')      // Bold **text**
-    .replace(/(?<!\w)\*(?!\*)/g, '')  // Italic *text* (not part of **)
+    .replace(/\*([^*]+)\*/g, '$1') // Italic *text*
     .replace(/__/g, '')        // Bold __text__
-    .replace(/(?<!\w)_(?!_)/g, ' ')   // Italic _text_ (not part of __)
+    .replace(/_([^_]+)_/g, '$1')   // Italic _text_
+    .replace(/^\*\s+/gm, '')   // Bullet point at line start
+    .replace(/^-\s+/gm, '')    // Dash bullet at line start
     .replace(/\s+/g, ' ')      // Multiple spaces to single
     .trim();
+}
+
+/**
+ * Clean time string - remove spaces in numbers like "1 5:00" → "15:00"
+ */
+function cleanTimeString(time: string): string {
+  // Remove spaces between digits: "1 5:00" → "15:00", "2 2:00" → "22:00"
+  return time.replace(/(\d)\s+(\d)/g, '$1$2').trim();
 }
 
 /**
@@ -159,15 +170,39 @@ function cleanMarkdown(text: string): string {
 export function detectResponseType(response: string): 'day_plan' | 'activities' | 'general' {
   if (!response) return 'general';
   
+  // Comprehensive day name list for all 10 languages
+  const dayNamesPattern = [
+    // German
+    'Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag',
+    // English
+    'Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday',
+    // French
+    'Vendredi|Samedi|Dimanche|Lundi|Mardi|Mercredi|Jeudi',
+    // Spanish
+    'Viernes|Sábado|Domingo|Lunes|Martes|Miércoles|Jueves',
+    // Italian
+    'Venerdì|Sabato|Domenica|Lunedì|Martedì|Mercoledì|Giovedì',
+    // Dutch
+    'Vrijdag|Zaterdag|Zondag|Maandag|Dinsdag|Woensdag|Donderdag',
+    // Polish
+    'Piątek|Sobota|Niedziela|Poniedziałek|Wtorek|Środa|Czwartek',
+    // Portuguese
+    'Sexta|Sábado|Domingo|Segunda|Terça|Quarta|Quinta',
+    // Turkish
+    'Cuma|Cumartesi|Pazar|Pazartesi|Salı|Çarşamba|Perşembe',
+    // Generic patterns
+    'Tag\\s*\\d|Day\\s*\\d|Jour\\s*\\d|Día\\s*\\d|Giorno\\s*\\d|Dag\\s*\\d|Dzień\\s*\\d|Gün\\s*\\d',
+  ].join('|');
+  
   // Day plan patterns - support multiple formats
   // Pattern 1: ## Day: Title (structured format)
-  const hasStructuredDayHeaders = /##\s*(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d|Jour|Día|Giorno|Dag|Dzień|Gün|يوم)/i.test(response);
+  const hasStructuredDayHeaders = new RegExp(`##\\s*(${dayNamesPattern})`, 'i').test(response);
   
   // Pattern 2: **Day:** Title (bold format the AI sometimes uses)
-  const hasBoldDayHeaders = /\*\*\s*(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Tag\s*\d|Day\s*\d)[:\s]/i.test(response);
+  const hasBoldDayHeaders = new RegExp(`\\*\\*\\s*(${dayNamesPattern})[:\\s]`, 'i').test(response);
   
-  // Count time patterns
-  const timeBlockCount = (response.match(/\d{1,2}:\d{2}\s*(Uhr|AM|PM|h)?/g) || []).length;
+  // Count time patterns (also handle malformed times like "1 5:00")
+  const timeBlockCount = (response.match(/\d\s*\d?:\d{2}\s*(Uhr|AM|PM|h)?/g) || []).length;
   
   if ((hasStructuredDayHeaders || hasBoldDayHeaders) && timeBlockCount >= 3) return 'day_plan';
   
@@ -398,10 +433,34 @@ export function parseDayPlan(response: string): ParsedDayPlan {
 
 /**
  * Match day header in various formats
+ * Supports all 10 languages including Italian day names
  */
 function matchDayHeader(line: string): { dayName: string; title: string; emoji: string } | null {
-  // All day name patterns
-  const dayNamePattern = '(Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Vendredi|Samedi|Dimanche|Viernes|Sábado|Domingo|Tag\\s*\\d+|Day\\s*\\d+|Jour\\s*\\d+|Día\\s*\\d+|Giorno\\s*\\d+)';
+  // All day name patterns - comprehensive list for all 10 supported languages
+  const dayNamePattern = '(' + [
+    // German
+    'Freitag|Samstag|Sonntag|Montag|Dienstag|Mittwoch|Donnerstag',
+    // English
+    'Friday|Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday',
+    // French
+    'Vendredi|Samedi|Dimanche|Lundi|Mardi|Mercredi|Jeudi',
+    // Spanish
+    'Viernes|Sábado|Domingo|Lunes|Martes|Miércoles|Jueves',
+    // Italian
+    'Venerdì|Sabato|Domenica|Lunedì|Martedì|Mercoledì|Giovedì',
+    // Dutch
+    'Vrijdag|Zaterdag|Zondag|Maandag|Dinsdag|Woensdag|Donderdag',
+    // Polish
+    'Piątek|Sobota|Niedziela|Poniedziałek|Wtorek|Środa|Czwartek',
+    // Portuguese
+    'Sexta|Sábado|Domingo|Segunda|Terça|Quarta|Quinta',
+    // Turkish
+    'Cuma|Cumartesi|Pazar|Pazartesi|Salı|Çarşamba|Perşembe',
+    // Arabic (transliterated)
+    'الجمعة|السبت|الأحد|الاثنين|الثلاثاء|الأربعاء|الخميس',
+    // Generic day/tag patterns
+    'Tag\\s*\\d+|Day\\s*\\d+|Jour\\s*\\d+|Día\\s*\\d+|Giorno\\s*\\d+|Dag\\s*\\d+|Dzień\\s*\\d+|Gün\\s*\\d+',
+  ].join('|') + ')';
   
   const patterns = [
     // ## Freitag: Ankunft & Welcome! ✈️🌃
@@ -419,10 +478,10 @@ function matchDayHeader(line: string): { dayName: string; title: string; emoji: 
   for (const pattern of patterns) {
     const match = line.match(pattern);
     if (match) {
-      const title = match[2] ? match[2].replace(/\*\*/g, '').trim() : '';
+      const title = match[2] ? cleanMarkdown(match[2]) : '';
       const emojiMatch = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu);
       return {
-        dayName: match[1].trim(),
+        dayName: cleanMarkdown(match[1]),
         title: title.replace(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu, '').trim(),
         emoji: emojiMatch ? emojiMatch.join('') : '📅',
       };
@@ -434,8 +493,12 @@ function matchDayHeader(line: string): { dayName: string; title: string; emoji: 
 
 /**
  * Match time block header in various formats
+ * Handles malformed times like "1 5:00" (should be "15:00")
  */
 function matchTimeBlockHeader(line: string): { time: string; title: string; emoji: string } | null {
+  // First, clean up spaces in time patterns: "1 5:00" → "15:00"
+  const cleanedLine = line.replace(/(\d)\s+(\d)/g, '$1$2');
+  
   const patterns = [
     // ### 17:00 ✈️ Ankunft am Flughafen
     /^###\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*(.+)/u,
@@ -449,22 +512,24 @@ function matchTimeBlockHeader(line: string): { time: string; title: string; emoj
     /^(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*[-–—]\s*(.+)/u,
     // 17:00 ✈️ Ankunft (plain with emoji)
     /^(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(.+)/u,
+    // Plain time at line start: 17:00 Activity Title
+    /^(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s+([^\d].+)/u,
   ];
 
   for (const pattern of patterns) {
-    const match = line.match(pattern);
+    const match = cleanedLine.match(pattern);
     if (match) {
-      const time = match[1] + (match[2] ? ` ${match[2]}` : '');
+      const time = cleanTimeString(match[1]) + (match[2] ? ` ${match[2]}` : '');
       let title = '';
       let emoji = '📍';
 
       if (match.length === 5) {
         // Pattern with separate emoji capture
         emoji = match[3] || '📍';
-        title = match[4].replace(/\*\*/g, '').trim();
+        title = cleanMarkdown(match[4]);
       } else {
         // Pattern with title only
-        title = match[3].replace(/\*\*/g, '').trim();
+        title = cleanMarkdown(match[3]);
         const titleEmojiMatch = title.match(/^([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*/u);
         if (titleEmojiMatch) {
           emoji = titleEmojiMatch[1];
@@ -604,12 +669,37 @@ function parseContentLine(line: string, block: ParsedTimeBlock): void {
     return;
   }
 
+  // Generic **Label:** Value fallback - catch any remaining structured fields
+  const genericLabelMatch = trimmed.match(/^\*?\s*\*\*([^:*]+):\*\*\s*(.+)/);
+  if (genericLabelMatch) {
+    const label = genericLabelMatch[1].toLowerCase();
+    const value = cleanMarkdown(genericLabelMatch[2]);
+    
+    // Map label to appropriate field based on keywords
+    if (/dura|zeit|time|hour|ore|heure|hora|uur|czas|tempo|süre/i.test(label)) {
+      block.duration = block.duration || value;
+      return;
+    } else if (/cost|kost|preis|costo|prix|custo|maliyet|precio|kosten/i.test(label)) {
+      block.cost = block.cost || value;
+      return;
+    } else if (/ort|loc|lieu|lugar|luogo|locatie|miejsce|local|yer|place/i.test(label)) {
+      block.location = block.location || value;
+      return;
+    } else if (/desc|beschr|omschr|opis|açıklama/i.test(label)) {
+      block.description = (block.description ? block.description + ' ' : '') + value;
+      return;
+    } else if (/tip|tipp|conseil|consejo|consiglio|dica|wskazówka|ipucu/i.test(label)) {
+      block.tips.push(value);
+      return;
+    }
+    // If unrecognized label, add to description
+    block.description = (block.description ? block.description + ' ' : '') + value;
+    return;
+  }
+
   // Everything else is description (if not starting with emoji labels we already handled)
   if (trimmed && !trimmed.match(/^[-*]+$/) && !trimmed.match(/^[📍💰⏱️📝💡⚠️☔🚗🚕🚌🚇]/)) {
-    // Also skip if it's a field we might have missed
-    if (!/^\*\*[^*]+:\*\*/i.test(trimmed)) {
-      block.description += (block.description ? '\n' : '') + cleanMarkdown(trimmed);
-    }
+    block.description += (block.description ? '\n' : '') + cleanMarkdown(trimmed);
   }
 }
 

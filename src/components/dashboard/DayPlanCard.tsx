@@ -29,6 +29,7 @@ import {
   type ParsedTimeBlock,
   type TimeOfDay,
   groupTimeBlocksByPeriod,
+  cleanMarkdown,
 } from "@/lib/ai-response-parser";
 import { CATEGORY_CONFIG } from "@/lib/category-config";
 import { cn } from "@/lib/utils";
@@ -218,7 +219,7 @@ const TimePeriodSection = ({
                 </Badge>
                 <span className="text-2xl">{block.emoji}</span>
                 <h6 className="font-semibold text-foreground flex-1 min-w-0">
-                  {block.title}
+                  {cleanMarkdown(block.title)}
                 </h6>
                 <Badge 
                   variant="secondary" 
@@ -233,25 +234,25 @@ const TimePeriodSection = ({
                 {block.location && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-                    <span className="truncate">{block.location}</span>
+                    <span className="truncate">{cleanMarkdown(block.location)}</span>
                   </div>
                 )}
                 {block.cost && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span className="text-emerald-500 flex-shrink-0">💰</span>
-                    <span className="truncate">{block.cost}</span>
+                    <span className="truncate">{cleanMarkdown(block.cost)}</span>
                   </div>
                 )}
                 {block.transport && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Car className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    <span className="truncate">{block.transport}</span>
+                    <span className="truncate">{cleanMarkdown(block.transport)}</span>
                   </div>
                 )}
                 {block.duration && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                    <span className="truncate">{block.duration}</span>
+                    <span className="truncate">{cleanMarkdown(block.duration)}</span>
                   </div>
                 )}
               </div>
@@ -281,7 +282,7 @@ const TimePeriodSection = ({
                   <CollapsibleContent className="mt-3 space-y-3">
                     {block.description && (
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        {block.description}
+                        {cleanMarkdown(block.description)}
                       </p>
                     )}
 
@@ -290,7 +291,7 @@ const TimePeriodSection = ({
                         <Lightbulb className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
                           {block.tips.map((tip, i) => (
-                            <p key={i}>{tip}</p>
+                            <p key={i}>{cleanMarkdown(tip)}</p>
                           ))}
                         </div>
                       </div>
@@ -301,7 +302,7 @@ const TimePeriodSection = ({
                         <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-red-700 dark:text-red-300 space-y-1">
                           {block.warnings.map((warning, i) => (
-                            <p key={i}>{warning}</p>
+                            <p key={i}>{cleanMarkdown(warning)}</p>
                           ))}
                         </div>
                       </div>
@@ -432,7 +433,7 @@ export const DayPlanCard = ({
       {dayPlan.intro && (
         <GlassCard className="p-4">
           <p className="text-muted-foreground leading-relaxed text-sm">
-            {dayPlan.intro}
+            {cleanMarkdown(dayPlan.intro)}
           </p>
         </GlassCard>
       )}
@@ -473,10 +474,10 @@ export const DayPlanCard = ({
                   {/* Day Info */}
                   <div className="flex-1 text-left">
                     <h4 className="font-bold text-white text-lg uppercase tracking-wide">
-                      {day.dayName}
+                      {cleanMarkdown(day.dayName)}
                     </h4>
                     <p className="text-white/80 text-sm">
-                      {day.title} • {day.timeBlocks.length} {t('dashboard.ai.activities')}
+                      {cleanMarkdown(day.title)} • {day.timeBlocks.length} {t('dashboard.ai.activities')}
                     </p>
                   </div>
 
