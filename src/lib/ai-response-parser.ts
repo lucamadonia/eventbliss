@@ -84,6 +84,21 @@ export interface ParsedDayPlan {
 }
 
 /**
+ * Clean markdown formatting from text
+ * Removes **, *, __, _ and cleans up whitespace
+ */
+function cleanMarkdown(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/\*\*/g, '')      // Bold **text**
+    .replace(/(?<!\w)\*(?!\*)/g, '')  // Italic *text* (not part of **)
+    .replace(/__/g, '')        // Bold __text__
+    .replace(/(?<!\w)_(?!_)/g, ' ')   // Italic _text_ (not part of __)
+    .replace(/\s+/g, ' ')      // Multiple spaces to single
+    .trim();
+}
+
+/**
  * Detect if response is a day plan or activities list
  */
 export function detectResponseType(response: string): 'day_plan' | 'activities' | 'general' {
@@ -1056,27 +1071,27 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
 
     if (currentActivity) {
       // Parse description - multilingual (📝 Beschreibung: or Description:)
-      if (/^📝|^Beschreibung:|^Description:|^Descripción:|^Descrizione:|^Beschrijving:|^Opis:|^Açıklama:|^وصف:/i.test(trimmed)) {
-        const desc = trimmed.replace(/^📝?\s*(?:Beschreibung|Description|Descripción|Descrizione|Beschrijving|Opis|Açıklama|وصف)[:\s]*/i, '').trim();
+      if (/^📝|^\*?\*?Beschreibung\*?\*?:|^\*?\*?Description\*?\*?:|^\*?\*?Descripción\*?\*?:|^\*?\*?Descrizione\*?\*?:|^\*?\*?Beschrijving\*?\*?:|^\*?\*?Opis\*?\*?:|^\*?\*?Açıklama\*?\*?:|^وصف:/i.test(trimmed)) {
+        const desc = cleanMarkdown(trimmed.replace(/^📝?\s*\*?\*?(?:Beschreibung|Description|Descripción|Descrizione|Beschrijving|Opis|Açıklama|وصف)\*?\*?[:\s]*/i, ''));
         if (desc) descriptionBuffer.push(desc);
         continue;
       }
       
       // Parse duration - multilingual
-      if (/^⏱️|^Dauer:|^Duration:|^Durée:|^Duración:|^Durata:|^Duur:|^Czas:|^Süre:|^مدة:/i.test(trimmed)) {
-        currentActivity.duration = trimmed.replace(/^⏱️?\s*(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
+      if (/^⏱️|^\*?\*?Dauer\*?\*?:|^\*?\*?Duration\*?\*?:|^\*?\*?Durée\*?\*?:|^\*?\*?Duración\*?\*?:|^\*?\*?Durata\*?\*?:|^\*?\*?Duur\*?\*?:|^\*?\*?Czas\*?\*?:|^\*?\*?Süre\*?\*?:|^مدة:/i.test(trimmed)) {
+        currentActivity.duration = cleanMarkdown(trimmed.replace(/^⏱️?\s*\*?\*?(?:Dauer|Duration|Durée|Duración|Durata|Duur|Czas|Süre|مدة)\*?\*?[:\s]*/i, ''));
         continue;
       }
       
       // Parse cost - multilingual
-      if (/^💰|^Kosten:|^Cost:|^Coût:|^Costo:|^Custo:|^Maliyet:|^تكلفة:|^Preis:/i.test(trimmed)) {
-        currentActivity.cost = trimmed.replace(/^💰?\s*(?:Kosten|Cost|Coût|Costo|Custo|Maliyet|تكلفة|Preis)[:\s]*/i, '').trim();
+      if (/^💰|^\*?\*?Kosten\*?\*?:|^\*?\*?Cost\*?\*?:|^\*?\*?Coût\*?\*?:|^\*?\*?Costo\*?\*?:|^\*?\*?Custo\*?\*?:|^\*?\*?Maliyet\*?\*?:|^تكلفة:|^\*?\*?Preis\*?\*?:/i.test(trimmed)) {
+        currentActivity.cost = cleanMarkdown(trimmed.replace(/^💰?\s*\*?\*?(?:Kosten|Cost|Coût|Costo|Custo|Maliyet|تكلفة|Preis)\*?\*?[:\s]*/i, ''));
         continue;
       }
       
       // Parse fitness - multilingual
-      if (/^💪|^Fitness:|^Anforderung:|^Requirement:|^Niveau:|^Nivel:|^Livello:|^Kondycja:|^Seviye:|^مستوى:/i.test(trimmed)) {
-        const fitnessText = trimmed.replace(/^💪?\s*(?:Fitness|Anforderung|Requirement|Niveau|Nivel|Livello|Kondycja|Seviye|مستوى)[:\s]*/i, '').toLowerCase();
+      if (/^💪|^\*?\*?Fitness\*?\*?:|^\*?\*?Anforderung\*?\*?:|^\*?\*?Requirement\*?\*?:|^\*?\*?Niveau\*?\*?:|^\*?\*?Nivel\*?\*?:|^\*?\*?Livello\*?\*?:|^\*?\*?Kondycja\*?\*?:|^\*?\*?Seviye\*?\*?:|^مستوى:/i.test(trimmed)) {
+        const fitnessText = cleanMarkdown(trimmed.replace(/^💪?\s*\*?\*?(?:Fitness|Anforderung|Requirement|Niveau|Nivel|Livello|Kondycja|Seviye|مستوى)\*?\*?[:\s]*/i, '')).toLowerCase();
         if (fitnessText.match(/leicht|easy|facile|fácil|gemakkelijk|łatwy|kolay|سهل/i)) {
           currentActivity.fitness = 'easy';
         } else if (fitnessText.match(/anspruch|challeng|difficile|difícil|moeilijk|trudny|zor|صعب/i)) {
@@ -1099,9 +1114,9 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
         continue;
       }
       
-      // Parse location
-      if (/^📍|^Ort:|^Location:|^Lieu:|^Lugar:|^Luogo:|^Locatie:|^Miejsce:|^Yer:|^موقع:/i.test(trimmed)) {
-        currentActivity.location = trimmed.replace(/^📍?\s*(?:Ort|Location|Lieu|Lugar|Luogo|Locatie|Miejsce|Yer|موقع)[:\s]*/i, '').trim();
+      // Parse location - multilingual
+      if (/^📍|^\*?\*?Ort\*?\*?:|^\*?\*?Location\*?\*?:|^\*?\*?Lieu\*?\*?:|^\*?\*?Lugar\*?\*?:|^\*?\*?Luogo\*?\*?:|^\*?\*?Locatie\*?\*?:|^\*?\*?Miejsce\*?\*?:|^\*?\*?Yer\*?\*?:|^موقع:/i.test(trimmed)) {
+        currentActivity.location = cleanMarkdown(trimmed.replace(/^📍?\s*\*?\*?(?:Ort|Location|Lieu|Lugar|Luogo|Locatie|Miejsce|Yer|موقع)\*?\*?[:\s]*/i, ''));
         continue;
       }
       
@@ -1123,7 +1138,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
       // Description text - improved: capture text that looks like description
       // Skip metadata prefixes and short lines
       if (trimmed.length > 20 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^[📍💰⏱️💪🎯✅📝]/) && !trimmed.startsWith('**')) {
-        const cleanText = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
+        const cleanText = cleanMarkdown(trimmed);
         descriptionBuffer.push(cleanText);
       }
     } else if (!foundFirstActivity && !trimmed.match(/^#/)) {

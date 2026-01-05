@@ -13,7 +13,7 @@ import { getTemplatesForEventType, type EventTemplate } from '@/lib/event-templa
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { AITemplatePreview } from './AITemplatePreview';
-
+import { AITemplatePreviewSkeleton } from './AITemplatePreviewSkeleton';
 interface TemplateSelectorProps {
   eventType: string;
   onSelectTemplate: (template: EventTemplate | null, customConfig?: object) => void;
@@ -103,6 +103,11 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     const translated = t(template.descriptionKey);
     return translated === template.descriptionKey ? '' : translated;
   };
+
+  // Show Skeleton while generating
+  if (isGenerating && !generatedTemplate) {
+    return <AITemplatePreviewSkeleton />;
+  }
 
   // Show AI Template Preview if we have a generated template
   if (showPreview && generatedTemplate) {
