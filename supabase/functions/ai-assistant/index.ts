@@ -357,15 +357,22 @@ Für jedes Ziel gib an:
 Formatiere alles übersichtlich mit Emojis und klaren Abschnitten.`,
       activities: `Generiere 10 passende Aktivitäten für dieses Event.
 
-Für jede Aktivität gib an:
-- 🎯 Aktivitäts-Name
-- 📝 Kurze Beschreibung (2-3 Sätze)
-- ⏱️ Dauer
-- 💰 Geschätzte Kosten pro Person
-- 💪 Fitness-Level (leicht/mittel/anspruchsvoll)
-- 📍 Möglicher Standort/Anbieter
+**WICHTIG: Formatiere JEDE Aktivität exakt so (mit Nummer am Anfang):**
 
-Mische actionreiche und entspannte Aktivitäten.`,
+### 1. 🎯 [Aktivitätsname]
+📝 **Beschreibung:** [2-3 Sätze die beschreiben was man macht und warum es Spaß macht]
+⏱️ **Dauer:** [z.B. 2-3 Stunden]
+💰 **Kosten:** [z.B. ca. 30-50€ pro Person]
+💪 **Fitness:** [Leicht/Normal/Anspruchsvoll]
+📍 **Ort:** [Möglicher Standort oder Anbieter]
+🎯 **Kategorie:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Nächste Aktivität]
+...
+
+Mische actionreiche und entspannte Aktivitäten. Jede Aktivität MUSS eine Nummer haben!`,
       day_plan: `Erstelle einen detaillierten Tagesplan für dieses Event.
 
 Strukturiere den Tag mit Zeitblöcken:
@@ -443,15 +450,22 @@ For each destination include:
 Format everything clearly with emojis and sections.`,
       activities: `Generate 10 suitable activities for this event.
 
-For each activity include:
-- 🎯 Activity name
-- 📝 Brief description (2-3 sentences)
-- ⏱️ Duration
-- 💰 Estimated cost per person
-- 💪 Fitness level (easy/medium/challenging)
-- 📍 Possible location/provider
+**IMPORTANT: Format EACH activity exactly like this (with number at the start):**
 
-Mix action-packed and relaxing activities.`,
+### 1. 🎯 [Activity Name]
+📝 **Description:** [2-3 sentences describing what you do and why it's fun]
+⏱️ **Duration:** [e.g., 2-3 hours]
+💰 **Cost:** [e.g., approx. $30-50 per person]
+💪 **Fitness:** [Easy/Normal/Challenging]
+📍 **Location:** [Possible venue or provider]
+🎯 **Category:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Next Activity]
+...
+
+Mix action-packed and relaxing activities. Each activity MUST have a number!`,
       day_plan: `Create a detailed day plan for this event.
 
 Structure the day with time blocks:
@@ -529,15 +543,22 @@ Pour chaque destination, indique:
 Formate tout clairement avec des emojis et des sections.`,
       activities: `Génère 10 activités adaptées pour cet événement.
 
-Pour chaque activité, indique:
-- 🎯 Nom de l'activité
-- 📝 Brève description (2-3 phrases)
-- ⏱️ Durée
-- 💰 Coût estimé par personne
-- 💪 Niveau de forme (facile/moyen/difficile)
-- 📍 Lieu possible/prestataire
+**IMPORTANT: Formate CHAQUE activité exactement ainsi (avec numéro au début):**
 
-Mélange activités dynamiques et détente.`,
+### 1. 🎯 [Nom de l'activité]
+📝 **Description:** [2-3 phrases décrivant l'activité et pourquoi c'est amusant]
+⏱️ **Durée:** [ex: 2-3 heures]
+💰 **Coût:** [ex: environ 30-50€ par personne]
+💪 **Fitness:** [Facile/Normal/Difficile]
+📍 **Lieu:** [Lieu ou prestataire possible]
+🎯 **Catégorie:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Activité suivante]
+...
+
+Mélange activités dynamiques et détente. Chaque activité DOIT avoir un numéro!`,
       day_plan: `Crée un programme détaillé de la journée pour cet événement.
 
 Structure la journée avec des créneaux:
@@ -615,15 +636,22 @@ Para cada destino incluye:
 Formatea todo claramente con emojis y secciones.`,
       activities: `Genera 10 actividades adecuadas para este evento.
 
-Para cada actividad incluye:
-- 🎯 Nombre de la actividad
-- 📝 Breve descripción (2-3 frases)
-- ⏱️ Duración
-- 💰 Costo estimado por persona
-- 💪 Nivel de fitness (fácil/medio/desafiante)
-- 📍 Posible ubicación/proveedor
+**IMPORTANTE: Formatea CADA actividad exactamente así (con número al inicio):**
 
-Mezcla actividades dinámicas y relajantes.`,
+### 1. 🎯 [Nombre de la Actividad]
+📝 **Descripción:** [2-3 frases describiendo qué haces y por qué es divertido]
+⏱️ **Duración:** [ej: 2-3 horas]
+💰 **Costo:** [ej: aprox. 30-50€ por persona]
+💪 **Fitness:** [Fácil/Normal/Desafiante]
+📍 **Lugar:** [Ubicación o proveedor posible]
+🎯 **Categoría:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Siguiente Actividad]
+...
+
+Mezcla actividades dinámicas y relajantes. ¡Cada actividad DEBE tener un número!`,
       day_plan: `Crea un plan detallado del día para este evento.
 
 Estructura el día con bloques de tiempo:
@@ -701,15 +729,22 @@ Per ogni destinazione includi:
 Formatta tutto chiaramente con emoji e sezioni.`,
       activities: `Genera 10 attività adatte per questo evento.
 
-Per ogni attività includi:
-- 🎯 Nome attività
-- 📝 Breve descrizione (2-3 frasi)
-- ⏱️ Durata
-- 💰 Costo stimato per persona
-- 💪 Livello fitness (facile/medio/impegnativo)
-- 📍 Possibile luogo/fornitore
+**IMPORTANTE: Formatta OGNI attività esattamente così (con numero all'inizio):**
 
-Mescola attività dinamiche e rilassanti.`,
+### 1. 🎯 [Nome Attività]
+📝 **Descrizione:** [2-3 frasi che descrivono cosa fai e perché è divertente]
+⏱️ **Durata:** [es: 2-3 ore]
+💰 **Costo:** [es: circa 30-50€ a persona]
+💪 **Fitness:** [Facile/Normale/Impegnativo]
+📍 **Luogo:** [Luogo o fornitore possibile]
+🎯 **Categoria:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Prossima Attività]
+...
+
+Mescola attività dinamiche e rilassanti. Ogni attività DEVE avere un numero!`,
       day_plan: `Crea un piano giornaliero dettagliato per questo evento.
 
 Struttura la giornata con blocchi temporali:
@@ -787,15 +822,22 @@ Voor elke bestemming, vermeld:
 Formatteer alles duidelijk met emoji's en secties.`,
       activities: `Genereer 10 geschikte activiteiten voor dit evenement.
 
-Voor elke activiteit, vermeld:
-- 🎯 Activiteitsnaam
-- 📝 Korte beschrijving (2-3 zinnen)
-- ⏱️ Duur
-- 💰 Geschatte kosten per persoon
-- 💪 Fitnessniveau (makkelijk/gemiddeld/uitdagend)
-- 📍 Mogelijke locatie/aanbieder
+**BELANGRIJK: Formatteer ELKE activiteit precies zo (met nummer aan het begin):**
 
-Mix actieve en ontspannende activiteiten.`,
+### 1. 🎯 [Activiteitsnaam]
+📝 **Beschrijving:** [2-3 zinnen die beschrijven wat je doet en waarom het leuk is]
+⏱️ **Duur:** [bijv: 2-3 uur]
+💰 **Kosten:** [bijv: ca. €30-50 per persoon]
+💪 **Fitness:** [Makkelijk/Normaal/Uitdagend]
+📍 **Locatie:** [Mogelijke locatie of aanbieder]
+🎯 **Categorie:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Volgende Activiteit]
+...
+
+Mix actieve en ontspannende activiteiten. Elke activiteit MOET een nummer hebben!`,
       day_plan: `Maak een gedetailleerd dagprogramma voor dit evenement.
 
 Structureer de dag met tijdblokken:
@@ -873,15 +915,22 @@ Dla każdej destynacji podaj:
 Sformatuj wszystko czytelnie z emoji i sekcjami.`,
       activities: `Wygeneruj 10 odpowiednich aktywności dla tego wydarzenia.
 
-Dla każdej aktywności podaj:
-- 🎯 Nazwa aktywności
-- 📝 Krótki opis (2-3 zdania)
-- ⏱️ Czas trwania
-- 💰 Szacowany koszt na osobę
-- 💪 Poziom sprawności (łatwy/średni/wymagający)
-- 📍 Możliwa lokalizacja/organizator
+**WAŻNE: Sformatuj KAŻDĄ aktywność dokładnie tak (z numerem na początku):**
 
-Połącz aktywności dynamiczne i relaksacyjne.`,
+### 1. 🎯 [Nazwa Aktywności]
+📝 **Opis:** [2-3 zdania opisujące co robisz i dlaczego jest to fajne]
+⏱️ **Czas:** [np: 2-3 godziny]
+💰 **Koszt:** [np: ok. 100-200 zł na osobę]
+💪 **Kondycja:** [Łatwy/Normalny/Wymagający]
+📍 **Miejsce:** [Możliwa lokalizacja lub organizator]
+🎯 **Kategoria:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Następna Aktywność]
+...
+
+Połącz aktywności dynamiczne i relaksacyjne. Każda aktywność MUSI mieć numer!`,
       day_plan: `Stwórz szczegółowy plan dnia dla tego wydarzenia.
 
 Podziel dzień na bloki czasowe:
@@ -959,15 +1008,22 @@ Para cada destino inclui:
 Formata tudo claramente com emojis e secções.`,
       activities: `Gera 10 atividades adequadas para este evento.
 
-Para cada atividade inclui:
-- 🎯 Nome da atividade
-- 📝 Breve descrição (2-3 frases)
-- ⏱️ Duração
-- 💰 Custo estimado por pessoa
-- 💪 Nível de fitness (fácil/médio/desafiante)
-- 📍 Possível local/fornecedor
+**IMPORTANTE: Formata CADA atividade exatamente assim (com número no início):**
 
-Mistura atividades dinâmicas e relaxantes.`,
+### 1. 🎯 [Nome da Atividade]
+📝 **Descrição:** [2-3 frases descrevendo o que fazes e porque é divertido]
+⏱️ **Duração:** [ex: 2-3 horas]
+💰 **Custo:** [ex: aprox. 30-50€ por pessoa]
+💪 **Fitness:** [Fácil/Normal/Desafiante]
+📍 **Local:** [Local ou fornecedor possível]
+🎯 **Categoria:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Próxima Atividade]
+...
+
+Mistura atividades dinâmicas e relaxantes. Cada atividade DEVE ter um número!`,
       day_plan: `Cria um plano detalhado do dia para este evento.
 
 Estrutura o dia com blocos de tempo:
@@ -1045,15 +1101,22 @@ Her destinasyon için:
 Her şeyi emoji ve bölümlerle düzenle.`,
       activities: `Bu etkinlik için 10 uygun aktivite üret.
 
-Her aktivite için:
-- 🎯 Aktivite adı
-- 📝 Kısa açıklama (2-3 cümle)
-- ⏱️ Süre
-- 💰 Kişi başı tahmini maliyet
-- 💪 Fitness seviyesi (kolay/orta/zorlu)
-- 📍 Olası konum/sağlayıcı
+**ÖNEMLİ: HER aktiviteyi tam olarak şu şekilde formatla (başta numara ile):**
 
-Dinamik ve rahatlatıcı aktiviteleri karıştır.`,
+### 1. 🎯 [Aktivite Adı]
+📝 **Açıklama:** [Ne yaptığını ve neden eğlenceli olduğunu anlatan 2-3 cümle]
+⏱️ **Süre:** [örn: 2-3 saat]
+💰 **Maliyet:** [örn: kişi başı yaklaşık 500-800₺]
+💪 **Fitness:** [Kolay/Normal/Zorlu]
+📍 **Yer:** [Olası konum veya sağlayıcı]
+🎯 **Kategori:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [Sonraki Aktivite]
+...
+
+Dinamik ve rahatlatıcı aktiviteleri karıştır. Her aktivite MUTLAKA bir numara içermeli!`,
       day_plan: `Bu etkinlik için detaylı bir günlük plan oluştur.
 
 Günü zaman bloklarıyla yapılandır:
@@ -1131,15 +1194,22 @@ Pratik, uygulanabilir ipuçları ver.`,
 نسق كل شيء بوضوح مع الرموز التعبيرية والأقسام.`,
       activities: `أنشئ 10 أنشطة مناسبة لهذه الفعالية.
 
-لكل نشاط اذكر:
-- 🎯 اسم النشاط
-- 📝 وصف موجز (2-3 جمل)
-- ⏱️ المدة
-- 💰 التكلفة المقدرة للشخص
-- 💪 مستوى اللياقة (سهل/متوسط/صعب)
-- 📍 الموقع/المزود المحتمل
+**مهم: نسق كل نشاط بالضبط هكذا (مع رقم في البداية):**
 
-امزج الأنشطة النشطة والاسترخائية.`,
+### 1. 🎯 [اسم النشاط]
+📝 **الوصف:** [2-3 جمل تصف ماذا تفعل ولماذا هو ممتع]
+⏱️ **المدة:** [مثال: 2-3 ساعات]
+💰 **التكلفة:** [مثال: حوالي 100-150 ريال للشخص]
+💪 **اللياقة:** [سهل/عادي/صعب]
+📍 **الموقع:** [الموقع أو المزود المحتمل]
+🎯 **الفئة:** [Action/Food/Wellness/Party/Sightseeing/Adventure]
+
+---
+
+### 2. 🍽️ [النشاط التالي]
+...
+
+امزج الأنشطة النشطة والاسترخائية. كل نشاط يجب أن يحتوي على رقم!`,
       day_plan: `أنشئ خطة يوم مفصلة لهذه الفعالية.
 
 هيكل اليوم بفترات زمنية:
