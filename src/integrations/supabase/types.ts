@@ -1356,7 +1356,13 @@ export type Database = {
     Enums: {
       affiliate_status: "pending" | "active" | "suspended" | "terminated"
       affiliate_tier: "bronze" | "silver" | "gold" | "platinum"
-      app_role: "admin" | "organizer" | "member"
+      app_role:
+        | "admin"
+        | "organizer"
+        | "member"
+        | "agency"
+        | "affiliate"
+        | "moderator"
       commission_status: "pending" | "approved" | "paid" | "cancelled"
       commission_type: "percentage" | "fixed"
       event_status: "draft" | "planning" | "active" | "completed" | "cancelled"
@@ -1503,7 +1509,14 @@ export const Constants = {
     Enums: {
       affiliate_status: ["pending", "active", "suspended", "terminated"],
       affiliate_tier: ["bronze", "silver", "gold", "platinum"],
-      app_role: ["admin", "organizer", "member"],
+      app_role: [
+        "admin",
+        "organizer",
+        "member",
+        "agency",
+        "affiliate",
+        "moderator",
+      ],
       commission_status: ["pending", "approved", "paid", "cancelled"],
       commission_type: ["percentage", "fixed"],
       event_status: ["draft", "planning", "active", "completed", "cancelled"],

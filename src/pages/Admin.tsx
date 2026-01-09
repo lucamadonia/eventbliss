@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, UserPlus, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles, Settings } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MembersTab } from "@/components/admin/MembersTab";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
 import { VouchersTab } from "@/components/admin/VouchersTab";
 import { StatsOverview } from "@/components/admin/StatsOverview";
@@ -26,7 +25,6 @@ const Admin = () => {
   const { isAdmin, isLoading: adminLoading } = useAdmin();
 
   useEffect(() => {
-    // Nur redirecten wenn Auth UND Admin-Check beide fertig sind
     if (authLoading || adminLoading) return;
 
     if (!user) {
@@ -64,7 +62,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
@@ -74,12 +72,8 @@ const Admin = () => {
               <span className="hidden sm:inline">{t("admin.tabs.credits", "Credits")}</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
-              <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("admin.tabs.users", "Benutzer")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="members" className="gap-2">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("admin.tabs.members", "Mitglieder")}</span>
+              <span className="hidden sm:inline">{t("admin.tabs.users", "Benutzer")}</span>
             </TabsTrigger>
             <TabsTrigger value="subscriptions" className="gap-2">
               <CreditCard className="h-4 w-4" />
@@ -125,10 +119,6 @@ const Admin = () => {
 
           <TabsContent value="users">
             <UsersTab />
-          </TabsContent>
-
-          <TabsContent value="members">
-            <MembersTab />
           </TabsContent>
 
           <TabsContent value="subscriptions">
