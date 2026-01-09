@@ -1224,6 +1224,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity_logs: {
+        Row: {
+          action_data: Json | null
+          action_type: string
+          created_at: string
+          id: string
+          performed_by: string | null
+          user_id: string
+        }
+        Insert: {
+          action_data?: Json | null
+          action_type: string
+          created_at?: string
+          id?: string
+          performed_by?: string | null
+          user_id: string
+        }
+        Update: {
+          action_data?: Json | null
+          action_type?: string
+          created_at?: string
+          id?: string
+          performed_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

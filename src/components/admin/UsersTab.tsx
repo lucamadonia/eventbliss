@@ -23,7 +23,7 @@ import { de } from "date-fns/locale";
 import { 
   Search, MoreHorizontal, UserPlus, Eye, Trash2, Key, Mail, Shield, 
   CreditCard, Sparkles, Calendar, MapPin, Building2, Ticket, User,
-  History, Settings, AlertTriangle, Clock, Users, Globe
+  History, Settings, AlertTriangle, Clock, Users, Globe, Filter, LogIn
 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -81,6 +81,15 @@ interface CreditAdjustment {
   created_at: string;
 }
 
+interface ActivityLog {
+  id: string;
+  user_id: string;
+  action_type: string;
+  action_data: Record<string, unknown>;
+  performed_by: string | null;
+  created_at: string;
+}
+
 interface ExtendedUser extends Profile {
   subscription: Subscription | null;
   roles: UserRole[];
@@ -90,7 +99,58 @@ interface ExtendedUser extends Profile {
   aiUsageThisMonth: number;
   eventsCreated: number;
   creditAdjustments: CreditAdjustment[];
+  activityLogs: ActivityLog[];
 }
+
+// Helper functions for activity display
+const getActionIcon = (actionType: string) => {
+  switch (actionType) {
+    case "account_created": return <UserPlus className="h-4 w-4 text-green-500" />;
+    case "plan_change": return <CreditCard className="h-4 w-4 text-blue-500" />;
+    case "role_change": return <Shield className="h-4 w-4 text-purple-500" />;
+    case "password_reset": return <Key className="h-4 w-4 text-orange-500" />;
+    case "credit_adjustment": return <Sparkles className="h-4 w-4 text-yellow-500" />;
+    case "voucher_redeemed": return <Ticket className="h-4 w-4 text-pink-500" />;
+    case "login": return <LogIn className="h-4 w-4 text-cyan-500" />;
+    case "message_sent": return <Mail className="h-4 w-4 text-indigo-500" />;
+    default: return <History className="h-4 w-4 text-muted-foreground" />;
+  }
+};
+
+const getActionLabel = (actionType: string) => {
+  switch (actionType) {
+    case "account_created": return "Account erstellt";
+    case "plan_change": return "Plan geändert";
+    case "role_change": return "Rolle geändert";
+    case "password_reset": return "Passwort zurückgesetzt";
+    case "credit_adjustment": return "Credits angepasst";
+    case "voucher_redeemed": return "Voucher eingelöst";
+    case "login": return "Anmeldung";
+    case "message_sent": return "Nachricht gesendet";
+    default: return actionType;
+  }
+};
+
+const formatActionDetails = (actionType: string, data: Record<string, unknown>) => {
+  switch (actionType) {
+    case "plan_change":
+      return `Von "${data.from || 'free'}" zu "${data.to || 'unknown'}"`;
+    case "role_change":
+      return `Von "${data.from || 'member'}" zu "${data.to || 'unknown'}"`;
+    case "credit_adjustment":
+      return `${Number(data.amount) > 0 ? '+' : ''}${data.amount} Credits${data.reason ? ` - ${data.reason}` : ''}`;
+    case "voucher_redeemed":
+      return `Code: ${data.code || 'N/A'}`;
+    case "password_reset":
+      return data.by_admin ? "Durch Admin" : "Selbst zurückgesetzt";
+    case "message_sent":
+      return String(data.subject || "Nachricht");
+    case "account_created":
+      return "Direkte Registrierung";
+    default:
+      return "";
+  }
+};
 
 export function UsersTab() {
   const { t } = useTranslation();
@@ -101,6 +161,7 @@ export function UsersTab() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+  const [historyFilter, setHistoryFilter] = useState<string>("all");
   
   const [selectedUser, setSelectedUser] = useState<ExtendedUser | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -203,6 +264,15 @@ export function UsersTab() {
     },
   });
 
+  const { data: activityLogs = [] } = useQuery({
+    queryKey: ["admin-activity-logs"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("user_activity_logs").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as ActivityLog[];
+    },
+  });
+
   const extendedUsers = useMemo<ExtendedUser[]>(() => {
     return profiles.map(profile => {
       const subscription = subscriptions.find(s => s.user_id === profile.id) || null;
@@ -214,6 +284,7 @@ export function UsersTab() {
         const agency = agencyAffiliates.find(a => a.affiliate_id === av.affiliate_id);
         if (agency) { agencyInfo = agency; break; }
       }
+      const userActivityLogs = activityLogs.filter(al => al.user_id === profile.id);
       return {
         ...profile,
         subscription,
@@ -224,9 +295,10 @@ export function UsersTab() {
         aiUsageThisMonth: aiUsage.filter(u => u.user_id === profile.id).length,
         eventsCreated: eventsData.filter(e => e.created_by === profile.id).length,
         creditAdjustments: creditAdjustments.filter(c => c.user_id === profile.id),
+        activityLogs: userActivityLogs,
       };
     });
-  }, [profiles, subscriptions, userRoles, redemptions, affiliateVouchers, agencyAffiliates, aiUsage, eventsData, creditAdjustments]);
+  }, [profiles, subscriptions, userRoles, redemptions, affiliateVouchers, agencyAffiliates, aiUsage, eventsData, creditAdjustments, activityLogs]);
 
   const filteredUsers = useMemo(() => {
     return extendedUsers.filter(user => {
@@ -279,6 +351,77 @@ export function UsersTab() {
     return { used: user.aiUsageThisMonth, total: monthlyCredits + adjustmentsTotal };
   };
 
+  // Log activity helper
+  const logActivity = async (userId: string, actionType: string, actionData: Record<string, unknown>) => {
+    const { data: userData } = await supabase.auth.getUser();
+    await supabase.from("user_activity_logs").insert([{
+      user_id: userId,
+      action_type: actionType,
+      action_data: actionData as unknown as Record<string, never>,
+      performed_by: userData.user?.id || null,
+    }]);
+  };
+
+  // Get combined activity for a user (logs + legacy credit adjustments merged)
+  const getUserActivity = (user: ExtendedUser) => {
+    const activities: { id: string; type: string; data: Record<string, unknown>; date: string; performedBy?: string }[] = [];
+    
+    // Add activity logs
+    user.activityLogs.forEach(log => {
+      activities.push({
+        id: log.id,
+        type: log.action_type,
+        data: log.action_data,
+        date: log.created_at,
+        performedBy: log.performed_by || undefined,
+      });
+    });
+    
+    // Add credit adjustments that might not be in logs (legacy)
+    user.creditAdjustments.forEach(adj => {
+      if (!activities.some(a => a.type === "credit_adjustment" && a.data.amount === adj.amount && new Date(a.date).getTime() === new Date(adj.created_at).getTime())) {
+        activities.push({
+          id: adj.id,
+          type: "credit_adjustment",
+          data: { amount: adj.amount, reason: adj.reason },
+          date: adj.created_at,
+          performedBy: adj.adjusted_by || undefined,
+        });
+      }
+    });
+    
+    // Add account creation event if not present
+    if (!activities.some(a => a.type === "account_created") && user.created_at) {
+      activities.push({
+        id: `created-${user.id}`,
+        type: "account_created",
+        data: {},
+        date: user.created_at,
+      });
+    }
+    
+    // Add voucher redemption if exists and not logged
+    if (user.redemptions.length > 0 && !activities.some(a => a.type === "voucher_redeemed")) {
+      const redemption = user.redemptions[0];
+      activities.push({
+        id: redemption.id,
+        type: "voucher_redeemed",
+        data: { code: redemption.voucher?.code || "N/A" },
+        date: redemption.redeemed_at || user.created_at || new Date().toISOString(),
+      });
+    }
+    
+    // Sort by date descending
+    return activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
+
+  // Filter activity by type
+  const getFilteredActivity = (user: ExtendedUser) => {
+    const activities = getUserActivity(user);
+    if (historyFilter === "all") return activities;
+    return activities.filter(a => a.type === historyFilter);
+  };
+
   const createUserMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.functions.invoke("create-user", { body: { email: newUserEmail, password: newUserPassword, fullName: newUserName, role: newUserRole, plan: newUserPlan } });
@@ -290,20 +433,68 @@ export function UsersTab() {
 
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
+      const existingRole = userRoles.find(r => r.user_id === userId);
+      const oldRole = existingRole?.role || "member";
+      
       await supabase.from("user_roles").delete().eq("user_id", userId);
-      if (role !== "member") { const { error } = await supabase.from("user_roles").insert({ user_id: userId, role }); if (error) throw error; }
+      if (role !== "member") { 
+        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role }); 
+        if (error) throw error; 
+      }
+      
+      await logActivity(userId, "role_change", { from: oldRole, to: role });
+      return { oldRole, newRole: role };
     },
-    onSuccess: () => { toast.success("Rolle aktualisiert"); queryClient.invalidateQueries({ queryKey: ["admin-user-roles"] }); },
+    onSuccess: (result, variables) => { 
+      toast.success(`Rolle geändert: ${result.oldRole} → ${result.newRole}`); 
+      queryClient.invalidateQueries({ queryKey: ["admin-user-roles"] }); 
+      queryClient.invalidateQueries({ queryKey: ["admin-activity-logs"] });
+      
+      // Update selectedUser state
+      if (selectedUser && variables.userId === selectedUser.id) {
+        const newRoles = variables.role === "member" ? [] : [{ id: "temp", user_id: variables.userId, role: variables.role }];
+        setSelectedUser({
+          ...selectedUser,
+          roles: newRoles as UserRole[],
+        });
+      }
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const updatePlanMutation = useMutation({
     mutationFn: async ({ userId, plan }: { userId: string; plan: string }) => {
       const existing = subscriptions.find(s => s.user_id === userId);
-      if (existing) { const { error } = await supabase.from("subscriptions").update({ plan, is_manual: true }).eq("id", existing.id); if (error) throw error; }
-      else { const { error } = await supabase.from("subscriptions").insert({ user_id: userId, plan, is_manual: true }); if (error) throw error; }
+      const oldPlan = existing?.plan || "free";
+      
+      if (existing) { 
+        const { error } = await supabase.from("subscriptions").update({ plan, is_manual: true }).eq("id", existing.id); 
+        if (error) throw error; 
+      } else { 
+        const { error } = await supabase.from("subscriptions").insert({ user_id: userId, plan, is_manual: true }); 
+        if (error) throw error; 
+      }
+      
+      await logActivity(userId, "plan_change", { from: oldPlan, to: plan });
+      return { oldPlan, newPlan: plan };
     },
-    onSuccess: () => { toast.success("Plan aktualisiert"); queryClient.invalidateQueries({ queryKey: ["admin-subscriptions"] }); },
+    onSuccess: (result, variables) => { 
+      toast.success(`Plan geändert: ${result.oldPlan} → ${result.newPlan}`); 
+      queryClient.invalidateQueries({ queryKey: ["admin-subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-activity-logs"] });
+      
+      // Update selectedUser state to reflect change immediately
+      if (selectedUser && variables.userId === selectedUser.id) {
+        setSelectedUser({
+          ...selectedUser,
+          subscription: {
+            ...(selectedUser.subscription || { id: "temp", user_id: variables.userId, expires_at: null }),
+            plan: variables.plan,
+            is_manual: true,
+          } as Subscription,
+        });
+      }
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -313,8 +504,16 @@ export function UsersTab() {
       if (!userData.user) throw new Error("Not authenticated");
       const { error } = await supabase.from("ai_credit_adjustments").insert({ user_id: userId, amount, reason, adjusted_by: userData.user.id });
       if (error) throw error;
+      
+      await logActivity(userId, "credit_adjustment", { amount, reason });
     },
-    onSuccess: () => { toast.success("Credits angepasst"); queryClient.invalidateQueries({ queryKey: ["admin-credit-adjustments"] }); setCreditAmount(""); setCreditReason(""); },
+    onSuccess: () => { 
+      toast.success("Credits angepasst"); 
+      queryClient.invalidateQueries({ queryKey: ["admin-credit-adjustments"] }); 
+      queryClient.invalidateQueries({ queryKey: ["admin-activity-logs"] });
+      setCreditAmount(""); 
+      setCreditReason(""); 
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -322,8 +521,14 @@ export function UsersTab() {
     mutationFn: async ({ userId, password }: { userId: string; password: string }) => {
       const { error } = await supabase.functions.invoke("update-user", { body: { userId, password } });
       if (error) throw error;
+      
+      await logActivity(userId, "password_reset", { by_admin: true });
     },
-    onSuccess: () => { toast.success("Passwort zurückgesetzt"); setNewPassword(""); },
+    onSuccess: () => { 
+      toast.success("Passwort zurückgesetzt"); 
+      queryClient.invalidateQueries({ queryKey: ["admin-activity-logs"] });
+      setNewPassword(""); 
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -333,8 +538,15 @@ export function UsersTab() {
       if (!userData.user) throw new Error("Not authenticated");
       const { error } = await supabase.from("admin_messages").insert({ user_id: userId, admin_id: userData.user.id, subject, content });
       if (error) throw error;
+      
+      await logActivity(userId, "message_sent", { subject });
     },
-    onSuccess: () => { toast.success("Nachricht gesendet"); setMessageSubject(""); setMessageContent(""); },
+    onSuccess: () => { 
+      toast.success("Nachricht gesendet"); 
+      queryClient.invalidateQueries({ queryKey: ["admin-activity-logs"] });
+      setMessageSubject(""); 
+      setMessageContent(""); 
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -472,12 +684,72 @@ export function UsersTab() {
                 </TabsContent>
 
                 <TabsContent value="history" className="mt-0 space-y-6">
-                  <div className="space-y-4"><h4 className="font-semibold flex items-center gap-2"><History className="h-4 w-4" />Aktivitäts-Historie</h4>
-                    <div className="space-y-2">
-                      {selectedUser.creditAdjustments.map((adj) => (<div key={adj.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg"><div className={`p-2 rounded-full ${adj.amount > 0 ? "bg-green-500/10" : "bg-red-500/10"}`}><Sparkles className={`h-4 w-4 ${adj.amount > 0 ? "text-green-500" : "text-red-500"}`} /></div><div className="flex-1"><p className="text-sm font-medium">Credits {adj.amount > 0 ? `+${adj.amount}` : adj.amount}</p><p className="text-xs text-muted-foreground">{adj.reason}</p></div><p className="text-xs text-muted-foreground">{format(new Date(adj.created_at), "dd.MM.yy HH:mm", { locale: de })}</p></div>))}
-                      <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg"><div className="p-2 rounded-full bg-primary/10"><UserPlus className="h-4 w-4 text-primary" /></div><div className="flex-1"><p className="text-sm font-medium">Account erstellt</p></div><p className="text-xs text-muted-foreground">{selectedUser.created_at ? format(new Date(selectedUser.created_at), "dd.MM.yy HH:mm", { locale: de }) : "-"}</p></div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold flex items-center gap-2"><History className="h-4 w-4" />Aktivitäts-Historie</h4>
+                      <Select value={historyFilter} onValueChange={setHistoryFilter}>
+                        <SelectTrigger className="w-[180px]">
+                          <Filter className="h-4 w-4 mr-2" />
+                          <SelectValue placeholder="Filter..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Alle Ereignisse</SelectItem>
+                          <SelectItem value="account_created">Account erstellt</SelectItem>
+                          <SelectItem value="plan_change">Plan-Änderungen</SelectItem>
+                          <SelectItem value="role_change">Rollen-Änderungen</SelectItem>
+                          <SelectItem value="credit_adjustment">Credit-Anpassungen</SelectItem>
+                          <SelectItem value="password_reset">Passwort-Resets</SelectItem>
+                          <SelectItem value="voucher_redeemed">Voucher-Einlösungen</SelectItem>
+                          <SelectItem value="message_sent">Nachrichten</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="grid grid-cols-2 gap-4"><div className="bg-muted/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-2"><Calendar className="h-4 w-4 text-muted-foreground" /><span className="text-sm text-muted-foreground">Events erstellt</span></div><p className="text-2xl font-bold">{selectedUser.eventsCreated}</p></div><div className="bg-muted/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-muted-foreground" /><span className="text-sm text-muted-foreground">AI-Anfragen</span></div><p className="text-2xl font-bold">{selectedUser.aiUsageThisMonth}</p></div></div>
+                    
+                    <div className="space-y-2">
+                      {getFilteredActivity(selectedUser).map((activity) => (
+                        <div key={activity.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+                          <div className="mt-0.5 p-2 rounded-full bg-background">
+                            {getActionIcon(activity.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm font-medium">{getActionLabel(activity.type)}</p>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {format(new Date(activity.date), "dd.MM.yy HH:mm", { locale: de })}
+                              </p>
+                            </div>
+                            {formatActionDetails(activity.type, activity.data) && (
+                              <p className="text-sm text-muted-foreground mt-0.5">
+                                {formatActionDetails(activity.type, activity.data)}
+                              </p>
+                            )}
+                            {activity.performedBy && (
+                              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                <Shield className="h-3 w-3" />
+                                Durch Admin
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {getFilteredActivity(selectedUser).length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          Keine Aktivitäten gefunden
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="bg-muted/30 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2"><Calendar className="h-4 w-4 text-muted-foreground" /><span className="text-sm text-muted-foreground">Events erstellt</span></div>
+                        <p className="text-2xl font-bold">{selectedUser.eventsCreated}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-muted-foreground" /><span className="text-sm text-muted-foreground">AI-Anfragen</span></div>
+                        <p className="text-2xl font-bold">{selectedUser.aiUsageThisMonth}</p>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               </ScrollArea>
