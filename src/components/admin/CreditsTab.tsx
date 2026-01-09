@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Search, Plus, Minus, History, User, Loader2 } from "lucide-react";
+import { Sparkles, Search, Plus, Minus, History, User, Loader2, Users, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlanConfigs } from "@/hooks/usePlanConfigs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { AI_CREDIT_LIMITS, getStartOfMonth, PlanType } from "@/lib/ai-credits";
+import { getStartOfMonth, PlanType } from "@/lib/ai-credits";
 
 interface UserCredits {
   userId: string;
   email: string;
+  fullName: string | null;
   planType: PlanType;
   used: number;
   limit: number;
@@ -37,19 +40,120 @@ interface Adjustment {
 export function CreditsTab() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [searchEmail, setSearchEmail] = useState("");
-  const [searchLoading, setSearchLoading] = useState(false);
+  const { data: planConfigs } = usePlanConfigs();
+  
+  // User list state
+  const [allUsers, setAllUsers] = useState<UserCredits[]>([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserCredits | null>(null);
   const [adjustmentType, setAdjustmentType] = useState<"add" | "remove">("add");
   const [adjustmentAmount, setAdjustmentAmount] = useState("");
   const [adjustmentReason, setAdjustmentReason] = useState("");
   const [adjustmentLoading, setAdjustmentLoading] = useState(false);
+  
+  // Adjustments history state
   const [adjustments, setAdjustments] = useState<Adjustment[]>([]);
   const [adjustmentsLoading, setAdjustmentsLoading] = useState(true);
 
   useEffect(() => {
+    fetchAllUsers();
     fetchRecentAdjustments();
   }, []);
+
+  const getAICreditsForPlan = (planKey: string): number => {
+    if (planConfigs && planConfigs.length > 0) {
+      const config = planConfigs.find(c => c.plan_key === planKey);
+      if (config) return config.ai_credits_monthly;
+    }
+    // Fallback values
+    const fallbacks: Record<string, number> = { free: 5, monthly: 50, yearly: 100, lifetime: 75, premium: 50 };
+    return fallbacks[planKey] || 0;
+  };
+
+  const fetchAllUsers = async () => {
+    setUsersLoading(true);
+    try {
+      // Fetch all profiles
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .order("created_at", { ascending: false });
+
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        toast.error(t("admin.credits.fetchError", "Fehler beim Laden der Benutzer"));
+        return;
+      }
+
+      if (!profiles || profiles.length === 0) {
+        setAllUsers([]);
+        return;
+      }
+
+      // Fetch all subscriptions
+      const { data: subscriptions } = await supabase
+        .from("subscriptions")
+        .select("user_id, plan");
+
+      const subscriptionMap = new Map(subscriptions?.map(s => [s.user_id, s.plan]) || []);
+
+      // Get start of month for filtering
+      const startOfMonth = getStartOfMonth();
+
+      // Fetch all AI usage for this month
+      const { data: usageData } = await supabase
+        .from("ai_usage")
+        .select("user_id")
+        .gte("created_at", startOfMonth.toISOString());
+
+      // Count usage per user
+      const usageMap = new Map<string, number>();
+      usageData?.forEach(u => {
+        usageMap.set(u.user_id, (usageMap.get(u.user_id) || 0) + 1);
+      });
+
+      // Fetch all adjustments for this month
+      const { data: adjustmentsData } = await supabase
+        .from("ai_credit_adjustments")
+        .select("user_id, amount")
+        .gte("created_at", startOfMonth.toISOString());
+
+      // Sum adjustments per user
+      const adjustmentsMap = new Map<string, number>();
+      adjustmentsData?.forEach(a => {
+        adjustmentsMap.set(a.user_id, (adjustmentsMap.get(a.user_id) || 0) + a.amount);
+      });
+
+      // Build user credits array
+      const usersWithCredits: UserCredits[] = profiles.map(profile => {
+        const planType = (subscriptionMap.get(profile.id) as PlanType) || "free";
+        const used = usageMap.get(profile.id) || 0;
+        const bonusCredits = adjustmentsMap.get(profile.id) || 0;
+        const limit = getAICreditsForPlan(planType);
+
+        return {
+          userId: profile.id,
+          email: profile.email || "N/A",
+          fullName: profile.full_name,
+          planType,
+          used,
+          limit,
+          bonusCredits,
+        };
+      });
+
+      setAllUsers(usersWithCredits);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      toast.error(t("common.error"));
+    } finally {
+      setUsersLoading(false);
+    }
+  };
 
   const fetchRecentAdjustments = async () => {
     setAdjustmentsLoading(true);
@@ -62,7 +166,6 @@ export function CreditsTab() {
 
       if (error) throw error;
 
-      // Fetch user emails for each adjustment
       if (data && data.length > 0) {
         const userIds = [...new Set(data.map(a => a.user_id))];
         const adminIds = [...new Set(data.map(a => a.adjusted_by))];
@@ -92,68 +195,23 @@ export function CreditsTab() {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchEmail.trim()) return;
+  // Filtered users based on search term
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm.trim()) return allUsers;
+    
+    const term = searchTerm.toLowerCase();
+    return allUsers.filter(u => 
+      u.email.toLowerCase().includes(term) || 
+      (u.fullName && u.fullName.toLowerCase().includes(term))
+    );
+  }, [allUsers, searchTerm]);
 
-    setSearchLoading(true);
-    setSelectedUser(null);
-
-    try {
-      // Find user by email in profiles
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, email")
-        .eq("email", searchEmail.trim().toLowerCase())
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-
-      if (!profile) {
-        toast.error(t("admin.credits.noUser", "Benutzer nicht gefunden"));
-        return;
-      }
-
-      // Get subscription info
-      const { data: subscription } = await supabase
-        .from("subscriptions")
-        .select("plan")
-        .eq("user_id", profile.id)
-        .maybeSingle();
-
-      const planType = (subscription?.plan as PlanType) || "free";
-
-      // Get current month usage
-      const startOfMonth = getStartOfMonth();
-      const { count: usedCredits } = await supabase
-        .from("ai_usage")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", profile.id)
-        .gte("created_at", startOfMonth.toISOString());
-
-      // Get bonus credits from adjustments
-      const { data: bonusData } = await supabase
-        .from("ai_credit_adjustments")
-        .select("amount")
-        .eq("user_id", profile.id)
-        .gte("created_at", startOfMonth.toISOString());
-
-      const bonusCredits = bonusData?.reduce((sum, adj) => sum + adj.amount, 0) || 0;
-      const limit = AI_CREDIT_LIMITS[planType] || 0;
-
-      setSelectedUser({
-        userId: profile.id,
-        email: profile.email || searchEmail,
-        planType,
-        used: usedCredits || 0,
-        limit,
-        bonusCredits,
-      });
-    } catch (err) {
-      console.error("Error searching user:", err);
-      toast.error(t("common.error"));
-    } finally {
-      setSearchLoading(false);
-    }
+  const openAdjustDialog = (userCredits: UserCredits) => {
+    setSelectedUser(userCredits);
+    setAdjustmentType("add");
+    setAdjustmentAmount("");
+    setAdjustmentReason("");
+    setDialogOpen(true);
   };
 
   const handleAdjustCredits = async () => {
@@ -169,7 +227,7 @@ export function CreditsTab() {
 
     setAdjustmentLoading(true);
     try {
-      // Verify admin role before proceeding
+      // Verify admin role
       const { data: adminCheck, error: adminError } = await supabase
         .from("user_roles")
         .select("role")
@@ -188,20 +246,17 @@ export function CreditsTab() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("ai_credit_adjustments")
         .insert({
           user_id: selectedUser.userId,
           amount: finalAmount,
           reason: adjustmentReason.trim(),
           adjusted_by: user.id,
-        })
-        .select()
-        .single();
+        });
 
       if (error) {
         console.error("Credit adjustment error:", error);
-        // Specific error message for RLS errors
         if (error.code === '42501' || error.message.includes('policy') || error.message.includes('RLS')) {
           toast.error(t("admin.credits.rlsError", "Keine Berechtigung. Bitte Admin-Rechte prüfen."));
         } else {
@@ -211,16 +266,14 @@ export function CreditsTab() {
       }
 
       toast.success(t("admin.credits.adjustmentSuccess", "Credits erfolgreich angepasst"));
-      
-      // Reset form
-      setAdjustmentAmount("");
-      setAdjustmentReason("");
-      
-      // Refresh user data
-      setSelectedUser(prev => prev ? {
-        ...prev,
-        bonusCredits: prev.bonusCredits + finalAmount,
-      } : null);
+      setDialogOpen(false);
+
+      // Update local state
+      setAllUsers(prev => prev.map(u => 
+        u.userId === selectedUser.userId 
+          ? { ...u, bonusCredits: u.bonusCredits + finalAmount }
+          : u
+      ));
 
       // Refresh adjustments list
       fetchRecentAdjustments();
@@ -232,146 +285,225 @@ export function CreditsTab() {
     }
   };
 
-  const getPlanBadgeColor = (plan: PlanType) => {
+  const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
-      case "lifetime": return "bg-purple-500";
-      case "yearly": return "bg-primary";
-      case "monthly": return "bg-blue-500";
-      default: return "bg-muted";
+      case "lifetime": return "bg-purple-500 text-white";
+      case "yearly": return "bg-primary text-primary-foreground";
+      case "monthly": return "bg-blue-500 text-white";
+      case "premium": return "bg-amber-500 text-white";
+      default: return "bg-muted text-muted-foreground";
     }
   };
 
+  const getTotalCredits = (u: UserCredits) => u.limit + u.bonusCredits;
+  const getRemainingCredits = (u: UserCredits) => Math.max(0, getTotalCredits(u) - u.used);
+
   return (
     <div className="space-y-6">
+      {/* User List Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            {t("admin.credits.title", "Credit-Management")}
-          </CardTitle>
-          <CardDescription>
-            {t("admin.credits.description", "Manuelle Credit-Anpassungen für Benutzer")}
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                {t("admin.credits.title", "Credit-Management")}
+              </CardTitle>
+              <CardDescription>
+                {t("admin.credits.description", "Manuelle Credit-Anpassungen für Benutzer")}
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={fetchAllUsers} disabled={usersLoading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${usersLoading ? 'animate-spin' : ''}`} />
+              {t("common.refresh", "Aktualisieren")}
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Search User */}
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Label htmlFor="email-search">{t("admin.credits.userSearch", "Benutzer suchen (E-Mail)")}</Label>
-              <Input
-                id="email-search"
-                type="email"
-                placeholder="user@example.com"
-                value={searchEmail}
-                onChange={(e) => setSearchEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              />
-            </div>
-            <div className="flex items-end">
-              <Button onClick={handleSearch} disabled={searchLoading || !searchEmail.trim()}>
-                {searchLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+        <CardContent className="space-y-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t("admin.credits.searchPlaceholder", "Nach E-Mail oder Name suchen...")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
 
-          {/* Selected User Card */}
-          {selectedUser && (
-            <Card className="border-primary/30">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-muted p-2">
-                      <User className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{selectedUser.email}</p>
-                      <Badge className={getPlanBadgeColor(selectedUser.planType)}>
-                        {selectedUser.planType.toUpperCase()}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">
-                      {t("admin.credits.currentCredits", "Aktuelle Credits")}
-                    </p>
-                    <p className="text-2xl font-bold">
-                      {selectedUser.used} / {selectedUser.limit + selectedUser.bonusCredits}
-                    </p>
-                    {selectedUser.bonusCredits !== 0 && (
-                      <p className="text-xs text-muted-foreground">
-                        (Base: {selectedUser.limit}, Bonus: {selectedUser.bonusCredits > 0 ? "+" : ""}{selectedUser.bonusCredits})
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Adjustment Form */}
-                <div className="space-y-4 border-t pt-4">
-                  <h4 className="font-medium">{t("admin.credits.adjustCredits", "Credits anpassen")}</h4>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>{t("admin.credits.action", "Aktion")}</Label>
-                      <Select value={adjustmentType} onValueChange={(v) => setAdjustmentType(v as "add" | "remove")}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="add">
-                            <div className="flex items-center gap-2">
-                              <Plus className="h-4 w-4 text-green-500" />
-                              {t("admin.credits.addCredits", "Credits hinzufügen")}
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="remove">
-                            <div className="flex items-center gap-2">
-                              <Minus className="h-4 w-4 text-red-500" />
-                              {t("admin.credits.removeCredits", "Credits entfernen")}
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>{t("admin.credits.amount", "Anzahl")}</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={adjustmentAmount}
-                        onChange={(e) => setAdjustmentAmount(e.target.value)}
-                        placeholder="10"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>{t("admin.credits.reason", "Grund")}</Label>
-                    <Textarea
-                      value={adjustmentReason}
-                      onChange={(e) => setAdjustmentReason(e.target.value)}
-                      placeholder={t("admin.credits.reasonPlaceholder", "z.B. Partner-Bonus, Kulanz, etc.")}
-                      rows={2}
-                    />
-                  </div>
-
-                  <Button
-                    onClick={handleAdjustCredits}
-                    disabled={adjustmentLoading || !adjustmentAmount || !adjustmentReason.trim()}
-                    className="w-full"
-                  >
-                    {adjustmentLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    {t("admin.credits.applyAdjustment", "Anpassung anwenden")}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Users Table */}
+          {usersLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              {searchTerm ? (
+                <p>{t("admin.credits.noSearchResults", "Keine Benutzer gefunden")}</p>
+              ) : (
+                <p>{t("admin.credits.noUsers", "Keine Benutzer vorhanden")}</p>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("admin.credits.user", "Benutzer")}</TableHead>
+                    <TableHead>{t("admin.credits.plan", "Plan")}</TableHead>
+                    <TableHead className="text-center">{t("admin.credits.used", "Verbraucht")}</TableHead>
+                    <TableHead className="text-center">{t("admin.credits.available", "Verfügbar")}</TableHead>
+                    <TableHead className="text-center">{t("admin.credits.bonus", "Bonus")}</TableHead>
+                    <TableHead className="text-right">{t("common.actions", "Aktionen")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((u) => (
+                    <TableRow key={u.userId}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-full bg-muted p-2">
+                            <User className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-medium truncate max-w-[200px]">{u.email}</p>
+                            {u.fullName && (
+                              <p className="text-sm text-muted-foreground truncate max-w-[200px]">{u.fullName}</p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getPlanBadgeColor(u.planType)}>
+                          {u.planType.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center font-mono">
+                        {u.used}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={`font-mono ${getRemainingCredits(u) <= 0 ? 'text-destructive' : ''}`}>
+                          {getRemainingCredits(u)} / {getTotalCredits(u)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {u.bonusCredits !== 0 && (
+                          <Badge variant={u.bonusCredits > 0 ? "default" : "destructive"}>
+                            {u.bonusCredits > 0 ? "+" : ""}{u.bonusCredits}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="outline" onClick={() => openAdjustDialog(u)}>
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          {t("admin.credits.adjust", "Anpassen")}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+          
+          {!usersLoading && filteredUsers.length > 0 && (
+            <p className="text-sm text-muted-foreground text-center">
+              {t("admin.credits.showingUsers", "{{count}} Benutzer angezeigt", { count: filteredUsers.length })}
+            </p>
           )}
         </CardContent>
       </Card>
+
+      {/* Adjustment Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              {t("admin.credits.adjustCredits", "Credits anpassen")}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="space-y-4">
+              {/* Current Status */}
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div>
+                  <p className="text-sm text-muted-foreground">{t("admin.credits.currentCredits", "Aktuelle Credits")}</p>
+                  <p className="text-2xl font-bold">
+                    {selectedUser.used} / {getTotalCredits(selectedUser)}
+                  </p>
+                </div>
+                <Badge className={getPlanBadgeColor(selectedUser.planType)}>
+                  {selectedUser.planType.toUpperCase()}
+                </Badge>
+              </div>
+
+              {/* Adjustment Form */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>{t("admin.credits.action", "Aktion")}</Label>
+                  <Select value={adjustmentType} onValueChange={(v) => setAdjustmentType(v as "add" | "remove")}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="add">
+                        <div className="flex items-center gap-2">
+                          <Plus className="h-4 w-4 text-green-500" />
+                          {t("admin.credits.addCredits", "Hinzufügen")}
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="remove">
+                        <div className="flex items-center gap-2">
+                          <Minus className="h-4 w-4 text-red-500" />
+                          {t("admin.credits.removeCredits", "Entfernen")}
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{t("admin.credits.amount", "Anzahl")}</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={adjustmentAmount}
+                    onChange={(e) => setAdjustmentAmount(e.target.value)}
+                    placeholder="10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>{t("admin.credits.reason", "Grund")}</Label>
+                <Textarea
+                  value={adjustmentReason}
+                  onChange={(e) => setAdjustmentReason(e.target.value)}
+                  placeholder={t("admin.credits.reasonPlaceholder", "z.B. Partner-Bonus, Kulanz, etc.")}
+                  rows={2}
+                />
+              </div>
+
+              <Button
+                onClick={handleAdjustCredits}
+                disabled={adjustmentLoading || !adjustmentAmount || !adjustmentReason.trim()}
+                className="w-full"
+              >
+                {adjustmentLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {adjustmentType === "add" ? (
+                  <><Plus className="h-4 w-4 mr-2" /> {t("admin.credits.addCreditsBtn", "Credits hinzufügen")}</>
+                ) : (
+                  <><Minus className="h-4 w-4 mr-2" /> {t("admin.credits.removeCreditsBtn", "Credits entfernen")}</>
+                )}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Recent Adjustments */}
       <Card>
