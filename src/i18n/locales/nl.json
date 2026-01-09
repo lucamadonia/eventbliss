@@ -969,8 +969,10 @@
     "emailTemplateOpened": "E-mailsjabloon geopend",
     "email": {
       "subjectPrefix": "Aanvraag voor",
+      "subjectFallback": "Aanvraag voor Vrijgezellenfeest",
       "greeting": "Goedendag",
       "intro": "wij plannen een evenement en zouden graag uw offerte ontvangen.",
+      "fallbackIntro": "wij plannen een evenement en zouden graag uw offerte ontvangen.",
       "eventDetails": "EVENEMENT DETAILS",
       "eventName": "Evenement naam",
       "eventType": "Evenement type",

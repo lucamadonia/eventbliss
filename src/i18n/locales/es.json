@@ -979,8 +979,10 @@
     "emailTemplateOpened": "Plantilla de email abierta",
     "email": {
       "subjectPrefix": "Consulta para",
+      "subjectFallback": "Consulta para Despedida de Soltero",
       "greeting": "Buenos días",
       "intro": "estamos planificando un evento y nos gustaría solicitar su oferta.",
+      "fallbackIntro": "estamos planificando un evento y nos gustaría solicitar su oferta.",
       "eventDetails": "DETALLES DEL EVENTO",
       "eventName": "Nombre del evento",
       "eventType": "Tipo de evento",

@@ -963,8 +963,10 @@
     "emailTemplateOpened": "Szablon e-mail otwarty",
     "email": {
       "subjectPrefix": "Zapytanie dotyczące",
+      "subjectFallback": "Zapytanie dotyczące Wieczoru Kawalerskiego",
       "greeting": "Dzień dobry",
       "intro": "planujemy wydarzenie i chcielibyśmy poprosić o Państwa ofertę.",
+      "fallbackIntro": "planujemy wydarzenie i chcielibyśmy poprosić o Państwa ofertę.",
       "eventDetails": "SZCZEGÓŁY WYDARZENIA",
       "eventName": "Nazwa wydarzenia",
       "eventType": "Typ wydarzenia",

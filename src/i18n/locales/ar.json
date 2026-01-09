@@ -963,8 +963,10 @@
     "emailTemplateOpened": "تم فتح قالب البريد الإلكتروني",
     "email": {
       "subjectPrefix": "استفسار عن",
+      "subjectFallback": "استفسار عن حفلة العزوبية",
       "greeting": "مرحباً",
       "intro": "نحن نخطط لفعالية ونود طلب عرضكم.",
+      "fallbackIntro": "نحن نخطط لفعالية ونود طلب عرضكم.",
       "eventDetails": "تفاصيل الفعالية",
       "eventName": "اسم الفعالية",
       "eventType": "نوع الفعالية",

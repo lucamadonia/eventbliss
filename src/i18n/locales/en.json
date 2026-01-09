@@ -1209,8 +1209,10 @@
     "emailTemplateOpened": "Email template opened",
     "email": {
       "subjectPrefix": "Inquiry for",
+      "subjectFallback": "Inquiry for Bachelor Party",
       "greeting": "Hello",
       "intro": "we are planning an event and would like to request your offer.",
+      "fallbackIntro": "we are planning an event and would like to request your offer.",
       "eventDetails": "EVENT DETAILS",
       "eventName": "Event Name",
       "eventType": "Event Type",

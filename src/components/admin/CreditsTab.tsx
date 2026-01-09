@@ -169,16 +169,46 @@ export function CreditsTab() {
 
     setAdjustmentLoading(true);
     try {
-      const { error } = await supabase
+      // Verify admin role before proceeding
+      const { data: adminCheck, error: adminError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (adminError) {
+        console.error("Admin check error:", adminError);
+        toast.error(t("admin.credits.adminCheckError", "Admin-Status konnte nicht verifiziert werden"));
+        return;
+      }
+
+      if (!adminCheck) {
+        toast.error(t("admin.credits.noPermission", "Keine Admin-Berechtigung vorhanden"));
+        return;
+      }
+
+      const { data, error } = await supabase
         .from("ai_credit_adjustments")
         .insert({
           user_id: selectedUser.userId,
           amount: finalAmount,
           reason: adjustmentReason.trim(),
           adjusted_by: user.id,
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Credit adjustment error:", error);
+        // Specific error message for RLS errors
+        if (error.code === '42501' || error.message.includes('policy') || error.message.includes('RLS')) {
+          toast.error(t("admin.credits.rlsError", "Keine Berechtigung. Bitte Admin-Rechte prüfen."));
+        } else {
+          toast.error(`${t("common.error")}: ${error.message}`);
+        }
+        return;
+      }
 
       toast.success(t("admin.credits.adjustmentSuccess", "Credits erfolgreich angepasst"));
       

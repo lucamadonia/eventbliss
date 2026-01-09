@@ -963,8 +963,10 @@
     "emailTemplateOpened": "E-posta şablonu açıldı",
     "email": {
       "subjectPrefix": "Talep:",
+      "subjectFallback": "Bekarlığa Veda Partisi Talebi",
       "greeting": "Merhaba",
       "intro": "bir etkinlik planlıyoruz ve teklifinizi talep etmek istiyoruz.",
+      "fallbackIntro": "bir etkinlik planlıyoruz ve teklifinizi talep etmek istiyoruz.",
       "eventDetails": "ETKİNLİK DETAYLARI",
       "eventName": "Etkinlik Adı",
       "eventType": "Etkinlik Türü",
