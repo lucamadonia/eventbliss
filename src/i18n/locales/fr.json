@@ -979,8 +979,10 @@
     "emailTemplateOpened": "Modèle d'email ouvert",
     "email": {
       "subjectPrefix": "Demande pour",
+      "subjectFallback": "Demande pour Enterrement de Vie de Garçon",
       "greeting": "Bonjour",
       "intro": "nous planifions un événement et aimerions demander votre offre.",
+      "fallbackIntro": "nous planifions un événement et aimerions demander votre offre.",
       "eventDetails": "DÉTAILS DE L'ÉVÉNEMENT",
       "eventName": "Nom de l'événement",
       "eventType": "Type d'événement",

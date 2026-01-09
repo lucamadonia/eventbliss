@@ -1236,8 +1236,10 @@
     "emailTemplateOpened": "Email-Vorlage geöffnet",
     "email": {
       "subjectPrefix": "Anfrage für",
+      "subjectFallback": "Anfrage für Junggesellenabschied",
       "greeting": "Guten Tag",
       "intro": "wir planen ein Event und würden gerne Ihr Angebot anfragen.",
+      "fallbackIntro": "wir planen ein Event und würden gerne Ihr Angebot anfragen.",
       "eventDetails": "EVENT-DETAILS",
       "eventName": "Event-Name",
       "eventType": "Event-Typ",

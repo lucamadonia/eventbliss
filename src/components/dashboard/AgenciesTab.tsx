@@ -280,8 +280,23 @@ export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
     // Track the interaction
     trackInteraction(agency, 'email');
 
-    if (!event) {
-      window.open(`mailto:${agency.email}`, '_blank');
+    // Fallback template if no event data available
+    if (!event || !event.name) {
+      const subject = encodeURIComponent(
+        t('agencies.email.subjectFallback', 'Anfrage für Junggesellenabschied')
+      );
+      const body = encodeURIComponent(
+`${t('agencies.email.greeting', 'Guten Tag')},
+
+${t('agencies.email.fallbackIntro', 'wir planen ein Event und würden gerne Ihr Angebot anfragen.')}
+
+${t('agencies.email.requestText', 'Bitte senden Sie uns Ihr Angebot mit verfügbaren Aktivitäten, Preisen und möglichen Terminen.')}
+
+${t('agencies.email.closing', 'Mit freundlichen Grüßen')}`
+      );
+      
+      window.open(`mailto:${agency.email}?subject=${subject}&body=${body}`, '_blank');
+      toast.success(t('agencies.emailTemplateOpened', 'Email-Vorlage geöffnet'));
       return;
     }
 

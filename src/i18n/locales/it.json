@@ -931,8 +931,10 @@
     "emailTemplateOpened": "Modello email aperto",
     "email": {
       "subjectPrefix": "Richiesta per",
+      "subjectFallback": "Richiesta per Addio al Celibato",
       "greeting": "Buongiorno",
       "intro": "stiamo pianificando un evento e vorremmo richiedere la vostra offerta.",
+      "fallbackIntro": "stiamo pianificando un evento e vorremmo richiedere la vostra offerta.",
       "eventDetails": "DETTAGLI EVENTO",
       "eventName": "Nome evento",
       "eventType": "Tipo evento",

@@ -963,8 +963,10 @@
     "emailTemplateOpened": "Modelo de email aberto",
     "email": {
       "subjectPrefix": "Pedido para",
+      "subjectFallback": "Pedido para Despedida de Solteiro",
       "greeting": "Bom dia",
       "intro": "estamos a planear um evento e gostaríamos de solicitar a vossa proposta.",
+      "fallbackIntro": "estamos a planear um evento e gostaríamos de solicitar a vossa proposta.",
       "eventDetails": "DETALHES DO EVENTO",
       "eventName": "Nome do evento",
       "eventType": "Tipo de evento",
