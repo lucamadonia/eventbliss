@@ -45,6 +45,15 @@
     "copyLink": "Linki kopyala",
     "copyCode": "Kodu kopyala"
   },
+  "feedback": {
+    "button": "Geri Bildirim",
+    "title": "Geri Bildiriminiz",
+    "description": "Uygulamayı geliştirmemize yardım edin",
+    "placeholder": "Sorununuzu veya fikrinizi açıklayın...",
+    "submit": "Gönder",
+    "thankYou": "Geri bildiriminiz için teşekkürler!",
+    "betaBadge": "Beta Sürümü"
+  },
 "landing": {
     "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt", "partner": "Ortaklar" },
     "hero": { "badge": "#1 Etkinlik Planlama Platformu", "title": "Unutulmaz Etkinlikler Planlayın", "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.", "createEvent": "Etkinlik Oluştur", "joinEvent": "Kod ile Katıl", "trustedBy": "10.000'den fazla organizatör bize güveniyor" },

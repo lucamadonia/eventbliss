@@ -1,25 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Sparkles, Users, Wallet, MessageSquare, Calendar, Zap, Bot, PartyPopper, Cake, Plane, Heart, Briefcase, Star, ChevronDown, Check, Crown, Building2, FileEdit, Download, Globe, MapPin, Shield, LayoutDashboard, ClipboardList, Play, Pause } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Wallet, MessageSquare, Calendar, Zap, Bot, PartyPopper, Cake, Plane, Heart, Briefcase, ChevronDown, Check, Crown, Building2, FileEdit, Download, Globe, LayoutDashboard, ClipboardList, Play, Pause, MessageSquareHeart, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { FloatingElement } from "@/components/ui/FloatingElement";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { CookieBanner } from "@/components/landing/CookieBanner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import eventBlissLogo from "@/assets/eventbliss-logo.png";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import heroImage from "@/assets/hero-image.png";
 import featurePlanning from "@/assets/feature-planning.png";
-import featureBillSplitting from "@/assets/feature-bill-splitting.png";
-import featureExpenseTracking from "@/assets/feature-expense-tracking.png";
 import featureVoting from "@/assets/feature-voting.png";
 import multiDeviceMockup from "@/assets/multi-device-mockup.png";
-import socialProof from "@/assets/social-proof.png";
 import agenciesHero from "@/assets/agencies-hero.webp";
 
 // Live Demo Components
@@ -49,6 +49,12 @@ const Landing = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const AUTO_ROTATE_INTERVAL = 4000;
   
+  // Feedback state
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  
   const demoFeatures = [
     { id: "dashboard", icon: LayoutDashboard, gradient: "from-primary to-accent" },
     { id: "expenses", icon: Wallet, gradient: "from-accent to-neon-pink" },
@@ -77,6 +83,35 @@ const Landing = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim()) return;
+    
+    setFeedbackSubmitting(true);
+    try {
+      const { error } = await supabase.from("user_feedback").insert({
+        message: feedbackText,
+        page_url: window.location.pathname,
+        user_agent: navigator.userAgent,
+      });
+      
+      if (error) throw error;
+      
+      setFeedbackSent(true);
+      setFeedbackText("");
+      
+      // Close dialog after 2 seconds
+      setTimeout(() => {
+        setFeedbackOpen(false);
+        setFeedbackSent(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+      toast.error(t("common.error"));
+    } finally {
+      setFeedbackSubmitting(false);
+    }
   };
 
   const features = [
@@ -168,27 +203,6 @@ const Landing = () => {
     { icon: Heart, label: t("landing.eventTypes.wedding"), color: "text-destructive" }
   ];
 
-  const testimonials = [
-    {
-      text: t("landing.testimonials.testimonial1.text"),
-      author: t("landing.testimonials.testimonial1.author", "Sarah M."),
-      role: t("landing.testimonials.testimonial1.role"),
-      rating: 5
-    },
-    {
-      text: t("landing.testimonials.testimonial2.text"),
-      author: t("landing.testimonials.testimonial2.author", "Michael K."),
-      role: t("landing.testimonials.testimonial2.role"),
-      rating: 5
-    },
-    {
-      text: t("landing.testimonials.testimonial3.text"),
-      author: t("landing.testimonials.testimonial3.author", "Anna L."),
-      role: t("landing.testimonials.testimonial3.role"),
-      rating: 5
-    }
-  ];
-
   const faqs = [
     { q: t("landing.faq.q1"), a: t("landing.faq.a1") },
     { q: t("landing.faq.q2"), a: t("landing.faq.a2") },
@@ -204,12 +218,65 @@ const Landing = () => {
     { icon: Wallet, text: t("landing.premium.features.expenses") },
     { icon: FileEdit, text: t("landing.premium.features.questions") },
     { icon: MessageSquare, text: t("landing.premium.features.messages") },
-    { icon: Shield, text: t("landing.premium.features.priority") }
+    { icon: Crown, text: t("landing.premium.features.priority") }
   ];
 
   return (
     <AnimatedBackground>
       <LandingHeader onScrollToSection={scrollToSection} />
+
+      {/* Floating Feedback Button */}
+      <motion.button
+        onClick={() => setFeedbackOpen(true)}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+      >
+        <MessageSquareHeart className="w-5 h-5" />
+        <span className="hidden sm:inline font-medium">{t("feedback.button")}</span>
+      </motion.button>
+
+      {/* Feedback Dialog */}
+      <Dialog open={feedbackOpen} onOpenChange={setFeedbackOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquareHeart className="w-5 h-5 text-primary" />
+              {t("feedback.title")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("feedback.description")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {!feedbackSent ? (
+            <div className="space-y-4">
+              <Textarea
+                placeholder={t("feedback.placeholder")}
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                rows={4}
+                className="resize-none"
+              />
+              <Button 
+                onClick={handleSubmitFeedback}
+                disabled={!feedbackText.trim() || feedbackSubmitting}
+                className="w-full"
+              >
+                {feedbackSubmitting ? t("common.loading") : t("feedback.submit")}
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <CheckCircle className="w-12 h-12 text-success mx-auto mb-3" />
+              <p className="font-medium text-foreground">{t("feedback.thankYou")}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 pt-24 pb-12">
@@ -217,16 +284,19 @@ const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Text Content */}
             <div className="text-center lg:text-left">
-              {/* Badge */}
+              {/* Beta Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 mb-8"
               >
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-muted-foreground">
-                  {t("landing.hero.badge")}
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                </span>
+                <span className="text-sm font-medium text-accent">
+                  {t("feedback.betaBadge")}
                 </span>
               </motion.div>
 
@@ -255,7 +325,7 @@ const Landing = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8"
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
               >
                 <GradientButton
                   size="lg"
@@ -272,16 +342,6 @@ const Landing = () => {
                   {t("landing.hero.joinEvent")}
                 </GradientButton>
               </motion.div>
-
-              {/* Trust Badge */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-sm text-muted-foreground"
-              >
-                {t("landing.hero.trustedBy")}
-              </motion.p>
             </div>
 
             {/* Right Column - Hero Image */}
@@ -682,34 +742,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Social Proof Image Section */}
-      <section className="relative py-16 px-4">
-        <div className="container max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative rounded-2xl overflow-hidden shadow-2xl"
-          >
-            <img
-              src={socialProof}
-              alt="Friends using EventBliss at a party"
-              className="w-full h-auto"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
-              <p className="text-xl md:text-2xl font-display font-semibold text-foreground mb-2">
-                {t("landing.socialProof.quote")}
-              </p>
-              <p className="text-muted-foreground">
-                {t("landing.socialProof.stats")}
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Premium Section */}
       <section className="relative py-24 px-4 bg-gradient-to-b from-primary/5 via-accent/5 to-background">
         <div className="container max-w-5xl mx-auto">
@@ -887,53 +919,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="relative py-24 px-4 bg-muted/30">
-        <div className="container max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              {t("landing.testimonials.title")}
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-              {t("landing.testimonials.subtitle")}
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.author}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-              >
-                <GlassCard className="p-6 h-full">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-warning fill-warning" />
-                    ))}
-                  </div>
-                  <p className="text-foreground mb-6 italic">"{testimonial.text}"</p>
-                  <div>
-                    <p className="font-semibold">{testimonial.author}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ Section */}
-      <section id="faq" className="relative py-24 px-4">
+      <section id="faq" className="relative py-24 px-4 bg-muted/30">
         <div className="container max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

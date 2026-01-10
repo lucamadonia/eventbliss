@@ -45,6 +45,15 @@
     "copyLink": "Copier le lien",
     "copyCode": "Copier le code"
   },
+  "feedback": {
+    "button": "Feedback",
+    "title": "Votre Feedback",
+    "description": "Aidez-nous à améliorer l'app",
+    "placeholder": "Décrivez votre problème ou idée...",
+    "submit": "Envoyer",
+    "thankYou": "Merci pour votre feedback !",
+    "betaBadge": "Version Bêta"
+  },
 "landing": {
     "nav": { "features": "Fonctionnalités", "howItWorks": "Comment ça marche", "solutions": "Solutions", "faq": "FAQ", "login": "Connexion", "signUp": "S'inscrire", "partner": "Partenaires" },
     "hero": { "badge": "La plateforme #1 de planification d'événements", "title": "Planifiez des Événements Inoubliables", "subtitle": "Des enterrements de vie de garçon aux anniversaires, organisez des événements de groupe facilement. Partage intelligent des coûts, suggestions IA et collaboration en temps réel.", "createEvent": "Créer un Événement", "joinEvent": "Rejoindre avec Code", "trustedBy": "Plus de 10 000 organisateurs nous font confiance" },

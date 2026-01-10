@@ -47,6 +47,15 @@
     "copyLink": "Link kopieren",
     "copyCode": "Code kopieren"
   },
+  "feedback": {
+    "button": "Feedback",
+    "title": "Dein Feedback",
+    "description": "Hilf uns, die App zu verbessern",
+    "placeholder": "Beschreibe dein Problem oder deine Idee...",
+    "submit": "Senden",
+    "thankYou": "Danke für dein Feedback!",
+    "betaBadge": "Beta Version"
+  },
 "landing": {
     "nav": {
       "features": "Funktionen",

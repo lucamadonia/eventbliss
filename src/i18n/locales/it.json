@@ -45,6 +45,15 @@
     "copyLink": "Copia link",
     "copyCode": "Copia codice"
   },
+  "feedback": {
+    "button": "Feedback",
+    "title": "Il Tuo Feedback",
+    "description": "Aiutaci a migliorare l'app",
+    "placeholder": "Descrivi il tuo problema o idea...",
+    "submit": "Invia",
+    "thankYou": "Grazie per il tuo feedback!",
+    "betaBadge": "Versione Beta"
+  },
 "landing": {
     "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati", "partner": "Partner" },
     "hero": { "badge": "La piattaforma #1 per la pianificazione eventi", "title": "Pianifica Eventi Indimenticabili", "subtitle": "Dagli addii al celibato ai compleanni, organizza eventi di gruppo con facilità. Divisione intelligente dei costi, suggerimenti AI e collaborazione in tempo reale.", "createEvent": "Crea Evento", "joinEvent": "Partecipa con Codice", "trustedBy": "Oltre 10.000 organizzatori si fidano di noi" },
