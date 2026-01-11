@@ -168,6 +168,26 @@ export function usePremium(): UsePremiumResult {
     }
   }, [user?.id, authLoading, fetchSubscription]);
 
+  // Listen for auth state changes and check subscription on login
+  useEffect(() => {
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          // Immediately check subscription status on login
+          checkSubscription();
+        } else if (event === "SIGNED_OUT") {
+          setIsPremium(false);
+          setSubscription(null);
+          setSubscriptionEnd(null);
+          setPlan("free");
+          setPlanType("free");
+          setCancelAtPeriodEnd(false);
+        }
+      }
+    );
+    return () => authSubscription.unsubscribe();
+  }, [checkSubscription]);
+
   // Periodic check every minute
   useEffect(() => {
     if (!user?.id) return;
