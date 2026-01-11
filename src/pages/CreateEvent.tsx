@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,9 @@ import {
   Check,
   Copy,
   Share2,
-  MessageCircle
+  MessageCircle,
+  Crown,
+  LogIn
 } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -22,11 +24,20 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { TemplateSelector } from "@/components/create-event/TemplateSelector";
 import { type EventTemplate } from "@/lib/event-templates";
 import { cn } from "@/lib/utils";
+import { useAuthContext } from "@/components/auth/AuthProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface EventFormData {
   event_type: string;
@@ -56,14 +67,23 @@ const eventTypes = [
 const CreateEvent = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isAuthenticated, isPremium, isLoading: authLoading } = useAuthContext();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [createdEvent, setCreatedEvent] = useState<{
     slug: string;
     access_code: string;
     share_link: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Show login prompt when on step 1 and not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated && step === 1) {
+      setShowLoginPrompt(true);
+    }
+  }, [authLoading, isAuthenticated, step]);
 
   const [formData, setFormData] = useState<EventFormData>({
     event_type: "",
@@ -536,6 +556,53 @@ const CreateEvent = () => {
   return (
     <AnimatedBackground>
       <div className="min-h-screen flex flex-col">
+        {/* Login Prompt Dialog */}
+        <Dialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <LogIn className="w-5 h-5 text-primary" />
+                {t('createEvent.loginPrompt.title')}
+              </DialogTitle>
+              <DialogDescription>
+                {t('createEvent.loginPrompt.description')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <ul className="text-sm text-muted-foreground space-y-2">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  {t('createEvent.loginPrompt.benefit1')}
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  {t('createEvent.loginPrompt.benefit2')}
+                </li>
+                <li className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-500" />
+                  {t('createEvent.loginPrompt.benefit3')}
+                </li>
+              </ul>
+              <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                <GradientButton 
+                  onClick={() => navigate("/auth?redirect=/create")}
+                  icon={<LogIn className="w-4 h-4" />}
+                  className="flex-1"
+                >
+                  {t('auth.login')}
+                </GradientButton>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowLoginPrompt(false)}
+                  className="flex-1"
+                >
+                  {t('createEvent.loginPrompt.continueAnyway')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Header */}
         <header className="p-4 flex items-center justify-between">
           <button
@@ -546,20 +613,28 @@ const CreateEvent = () => {
             <span>{step > 1 && step < 6 ? t('common.back') : t('common.home')}</span>
           </button>
 
-          {step < 6 && (
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalSteps }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    i + 1 <= step
-                      ? "w-8 bg-gradient-primary"
-                      : "w-2 bg-muted-foreground/30"
-                  }`}
-                />
-              ))}
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {isPremium && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+                <Crown className="w-4 h-4 text-amber-500" />
+                <span className="text-xs font-medium text-amber-500">Premium</span>
+              </div>
+            )}
+            {step < 6 && (
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalSteps }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      i + 1 <= step
+                        ? "w-8 bg-gradient-primary"
+                        : "w-2 bg-muted-foreground/30"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </header>
 
         {/* Content */}

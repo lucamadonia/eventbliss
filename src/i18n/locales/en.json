@@ -26,6 +26,7 @@
     "add": "Add",
     "remove": "Remove",
     "back": "Back",
+    "home": "Home",
     "next": "Next",
     "submit": "Submit",
     "confirm": "Confirm",
@@ -431,6 +432,14 @@
     },
     "error": {
       "failed": "Failed to create event. Please try again."
+    },
+    "loginPrompt": {
+      "title": "Login Recommended",
+      "description": "With an account, you can manage your events and never lose them.",
+      "benefit1": "Save events in 'My Events'",
+      "benefit2": "Access dashboard from anywhere",
+      "benefit3": "Premium features like AI templates",
+      "continueAnyway": "Continue without login"
     }
   },
   "joinEvent": {
