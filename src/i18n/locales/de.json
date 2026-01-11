@@ -26,6 +26,7 @@
     "add": "Hinzufügen",
     "remove": "Entfernen",
     "back": "Zurück",
+    "home": "Startseite",
     "next": "Weiter",
     "submit": "Absenden",
     "confirm": "Bestätigen",
@@ -431,6 +432,14 @@
     },
     "error": {
       "failed": "Event konnte nicht erstellt werden. Bitte versuche es erneut."
+    },
+    "loginPrompt": {
+      "title": "Login empfohlen",
+      "description": "Mit einem Account kannst du deine Events verwalten und nie verlieren.",
+      "benefit1": "Events in 'Meine Events' speichern",
+      "benefit2": "Dashboard-Zugang von überall",
+      "benefit3": "Premium-Features wie KI-Vorlagen",
+      "continueAnyway": "Ohne Login fortfahren"
     }
   },
   "joinEvent": {

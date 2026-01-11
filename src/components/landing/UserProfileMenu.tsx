@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Settings, LogOut, Calendar, Crown, ShieldCheck } from "lucide-react";
+import { Settings, LogOut, Calendar, Crown, ShieldCheck, CreditCard, Loader2 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,28 @@ export function UserProfileMenu() {
   const { user, signOut, isPremium, planType } = useAuthContext();
   const { isAdmin } = useAdmin();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setIsLoadingPortal(true);
+    const popup = window.open("about:blank", "_blank");
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        popup!.location.href = data.url;
+      } else {
+        popup?.close();
+        toast.error(t("premium.portalError"));
+      }
+    } catch (err) {
+      console.error("Error opening customer portal:", err);
+      popup?.close();
+      toast.error(t("premium.portalError"));
+    } finally {
+      setIsLoadingPortal(false);
+    }
+  };
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -89,6 +112,20 @@ export function UserProfileMenu() {
           <Crown className="mr-2 h-4 w-4" />
           {t("profile.premium")}
         </DropdownMenuItem>
+        {isPremium && planType !== "lifetime" && (
+          <DropdownMenuItem 
+            onClick={handleManageSubscription}
+            className="cursor-pointer"
+            disabled={isLoadingPortal}
+          >
+            {isLoadingPortal ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CreditCard className="mr-2 h-4 w-4" />
+            )}
+            {t("premium.manageSubscription")}
+          </DropdownMenuItem>
+        )}
         {isAdmin && (
           <DropdownMenuItem 
             onClick={() => navigate("/admin")}
