@@ -76,19 +76,33 @@ serve(async (req) => {
     if (subscriptions.data.length > 0) {
       const subscription = subscriptions.data[0];
       const subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      const startedAt = new Date(subscription.start_date * 1000).toISOString();
       const interval = subscription.items.data[0]?.price?.recurring?.interval;
       const isYearly = interval === "year";
       
-      logStep("Active subscription found", { interval, isYearly, cancelAtPeriodEnd: subscription.cancel_at_period_end });
+      logStep("Active subscription found", { 
+        subscriptionId: subscription.id, 
+        interval, 
+        isYearly, 
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        expiresAt: subscriptionEnd 
+      });
 
-      await supabaseClient.from("subscriptions").upsert({
+      // Always upsert to keep DB in sync with Stripe
+      const { error: upsertError } = await supabaseClient.from("subscriptions").upsert({
         user_id: user.id,
         plan: "premium",
         stripe_customer_id: customerId,
         stripe_subscription_id: subscription.id,
         expires_at: subscriptionEnd,
-        started_at: new Date(subscription.start_date * 1000).toISOString(),
+        started_at: startedAt,
       }, { onConflict: "user_id" });
+
+      if (upsertError) {
+        logStep("ERROR upserting subscription", { error: upsertError.message });
+      } else {
+        logStep("Subscription synced to database successfully");
+      }
 
       return new Response(JSON.stringify({
         subscribed: true,

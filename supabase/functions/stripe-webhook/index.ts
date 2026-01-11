@@ -216,10 +216,28 @@ serve(async (req) => {
         const customerId = session.customer as string;
         const customerEmail = session.customer_email || session.customer_details?.email;
         const planType = session.metadata?.plan_type || "monthly";
-        const userId = session.metadata?.user_id;
+        let userId = session.metadata?.user_id;
+
+        // Fallback: Find user by email if user_id is missing from metadata
+        if (!userId && customerEmail) {
+          logStep("No user_id in metadata, searching by email", { email: customerEmail });
+          
+          const { data: profile, error: profileError } = await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("email", customerEmail)
+            .maybeSingle();
+          
+          if (profileError) {
+            logStep("Error searching profile by email", { error: profileError });
+          } else if (profile) {
+            userId = profile.id;
+            logStep("Found user by email", { userId, email: customerEmail });
+          }
+        }
 
         if (!userId) {
-          logStep("ERROR", { message: "No user_id in session metadata" });
+          logStep("ERROR", { message: "No user_id found by metadata or email", customerEmail });
           break;
         }
 

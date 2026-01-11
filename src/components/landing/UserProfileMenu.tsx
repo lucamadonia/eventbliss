@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, Settings, LogOut, Calendar, Crown, ShieldCheck } from "lucide-react";
+import { Settings, LogOut, Calendar, Crown, ShieldCheck } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import {
@@ -13,12 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export function UserProfileMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuthContext();
+  const { user, signOut, isPremium, planType } = useAuthContext();
   const { isAdmin } = useAdmin();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,12 +42,20 @@ export function UserProfileMenu() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full p-1 transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        <button className="relative flex items-center gap-2 rounded-full p-1 transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
           <Avatar className="h-9 w-9 border-2 border-primary/20">
             <AvatarFallback className="bg-primary/10 text-primary font-medium">
               {getInitials(user.email || "U")}
             </AvatarFallback>
           </Avatar>
+          {isPremium && (
+            <Badge 
+              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-amber-500 hover:bg-amber-500 border-2 border-background"
+              title={planType === "lifetime" ? "Lifetime" : planType === "yearly" ? "Yearly" : "Premium"}
+            >
+              <Crown className="h-3 w-3 text-white" />
+            </Badge>
+          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-popover border border-border shadow-lg">
