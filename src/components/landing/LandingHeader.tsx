@@ -19,7 +19,15 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuthContext();
+  
+  // Defensive try-catch for HMR edge cases
+  let authState = { isAuthenticated: false, isLoading: true };
+  try {
+    authState = useAuthContext();
+  } catch (e) {
+    // Context not ready during HMR, use defaults
+  }
+  const { isAuthenticated, isLoading } = authState;
 
   const navItems = [
     { label: t("landing.nav.features"), href: "features" },
