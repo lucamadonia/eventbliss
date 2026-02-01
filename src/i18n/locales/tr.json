@@ -1478,5 +1478,33 @@
       "adjustedBy": "Ayarlayan",
       "date": "Tarih"
     }
-  }
+  },
+  "gamesLibrary": {
+    "categories": { "jga_games": "Bekarlığa Veda Oyunları", "family_games": "Aile Oyunları", "wedding_games": "Düğün Oyunları", "party_games": "Parti Oyunları", "outdoor_games": "Açık Hava Oyunları", "team_games": "Takım Kurma", "icebreaker": "Buz Kırıcılar", "kids_friendly": "Çocuklara Uygun" },
+    "filters": { "title": "Filtreler", "all": "Tümü", "category": "Kategori", "eventType": "Etkinlik Türü", "difficulty": "Zorluk", "kidsFriendly": "Çocuklara uygun", "alcoholFree": "Alkolsüz", "clear": "Filtreleri temizle" },
+    "difficulty": { "easy": "Kolay", "medium": "Orta", "hard": "Zor" },
+    "searchPlaceholder": "Oyun ara...",
+    "resultsCount": "{{count}} oyun bulundu",
+    "noResults": "Oyun bulunamadı. Başka filtreler deneyin.",
+    "showInstructions": "Talimatları göster",
+    "hideInstructions": "Talimatları gizle",
+    "materials": "Malzemeler",
+    "addToPlanner": "Planlayıcıya ekle",
+    "games": {
+      "bingo_tasks": { "name": "Görev Bingo", "description": "Herkes şehirde tamamlanacak eğlenceli görevlerle bingo kartı alır.", "instructions": "Farklı görevlerle bingo kartları oluşturun. Grup şehirde dolaşarak hepsini tamamlamaya çalışır. İlk sırayı dolduran kazanır!" },
+      "beer_pong": { "name": "Beer Pong", "description": "Klasik - topu rakibin bardaklarına at.", "instructions": "Bardakları üçgen şeklinde dizin. Takımlar sırayla atar. İsabet = rakip içer. Bardaksız takım kaybeder." },
+      "truth_or_dare": { "name": "Doğruluk mu Cesaret mi", "description": "Cesur itiraflar ve çılgın görevler için klasik.", "instructions": "Sırayla herkes seçer: Doğruluk veya Cesaret. Reddetmek = ceza!" },
+      "karaoke_battle": { "name": "Karaoke Savaşı", "description": "Kazanmak için şarkı söyle!", "instructions": "Takımlar veya bireyler yarışır. Grup değerlendirir. Performans için puan!" },
+      "shoe_game": { "name": "Ayakkabı Oyunu", "description": "Çift ayakkabılarla soruları cevaplar.", "instructions": "Çift sırt sırta oturur, her biri kendi ayakkabısı ve partnerinkiyle. Sorularda cevabın geçerli olduğu kişinin ayakkabısını kaldırırlar." },
+      "scavenger_hunt": { "name": "Hazine Avı", "description": "İpuçlarını takip et ve bulmacaları çöz.", "instructions": "Bir sonraki yere götüren ipuçları gizleyin. Sonunda hazine bekliyor!" }
+    },
+    "themes": {
+      "80s_retro": { "name": "80ler Retro Parti", "description": "Neon renkler, synth müzik ve omuz vatkaları", "tips": "Neon ışıklar, disko topları ve 80lerin hitleri!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Zarif James Bond atmosferi", "tips": "Kırmızı halı, poker fişleri ve zarif kokteyller!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Bavyera atmosferi", "tips": "Bira masaları, simit, sosis ve müzik!" }
+    }
+  },
+  "ideasHub": { "title": "Oyunlar ve Fikirler", "description": "Etkinliğiniz için 200'den fazla oyun ve 50 tema keşfedin.", "tabs": { "games": "Oyunlar", "themes": "Temalar" }, "stats": { "games": "Oyunlar", "themes": "Temalar", "categories": "Kategoriler", "languages": "Diller" } },
+  "eventTypes": { "bachelor": "Bekarlığa Veda (O)", "bachelorette": "Kına Gecesi", "wedding": "Düğün", "birthday": "Doğum Günü", "family": "Aile", "team": "Takım", "trip": "Gezi", "other": "Diğer" },
+  "landing": { "nav": { "ideas": "Fikirler" } }
 }

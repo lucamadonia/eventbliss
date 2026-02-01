@@ -1478,5 +1478,34 @@
       "adjustedBy": "Ajustado por",
       "date": "Data"
     }
-  }
+  },
+  "gamesLibrary": {
+    "categories": { "jga_games": "Jogos de Despedida", "family_games": "Jogos Familiares", "wedding_games": "Jogos de Casamento", "party_games": "Jogos de Festa", "outdoor_games": "Jogos ao Ar Livre", "team_games": "Team Building", "icebreaker": "Quebra-gelos", "kids_friendly": "Para Crianças" },
+    "filters": { "title": "Filtros", "all": "Todos", "category": "Categoria", "eventType": "Tipo de Evento", "difficulty": "Dificuldade", "kidsFriendly": "Apto para crianças", "alcoholFree": "Sem álcool", "clear": "Limpar filtros" },
+    "difficulty": { "easy": "Fácil", "medium": "Médio", "hard": "Difícil" },
+    "searchPlaceholder": "Pesquisar jogos...",
+    "resultsCount": "{{count}} jogos encontrados",
+    "noResults": "Nenhum jogo encontrado. Tenta outros filtros.",
+    "showInstructions": "Mostrar instruções",
+    "hideInstructions": "Ocultar instruções",
+    "materials": "Materiais",
+    "addToPlanner": "Adicionar ao planeador",
+    "games": {
+      "bingo_tasks": { "name": "Bingo de Desafios", "description": "Cada um recebe um cartão de bingo com desafios divertidos para completar na cidade.", "instructions": "Cria cartões de bingo com diferentes desafios. O grupo percorre a cidade a tentar completá-los. Quem completar uma linha primeiro ganha!" },
+      "beer_pong": { "name": "Beer Pong", "description": "O clássico - atira a bola para os copos do adversário.", "instructions": "Coloca copos em triângulo. As equipas atiram à vez. Acerto = adversário bebe. Equipa sem copos perde." },
+      "truth_or_dare": { "name": "Verdade ou Consequência", "description": "O clássico para confissões ousadas e desafios loucos.", "instructions": "À vez cada um escolhe: Verdade ou Consequência. Recusar = castigo!" },
+      "karaoke_battle": { "name": "Batalha de Karaoke", "description": "Canta para ganhar!", "instructions": "Equipas ou indivíduos competem. O grupo vota. Pontos pela performance!" },
+      "shoe_game": { "name": "Jogo do Sapato", "description": "Os noivos respondem às perguntas com sapatos.", "instructions": "O casal senta-se costas com costas, cada um com o seu sapato e um do parceiro. Nas perguntas levantam o sapato de quem corresponde." },
+      "scavenger_hunt": { "name": "Caça ao Tesouro", "description": "Segue as pistas e resolve enigmas.", "instructions": "Esconde pistas que levam ao próximo local. No final espera um tesouro!" },
+      "charades": { "name": "Mímica", "description": "Adivinha palavras através de mímica em equipas.", "instructions": "Um jogador representa um conceito sem falar. A equipa deve adivinhar no tempo." }
+    },
+    "themes": {
+      "80s_retro": { "name": "Festa Retro 80s", "description": "Cores néon, música synth e ombreiras", "tips": "Luzes néon, bolas de discoteca e hits dos anos 80!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Atmosfera elegante James Bond", "tips": "Tapete vermelho, fichas de póquer e cocktails elegantes!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Ambiente bávaro", "tips": "Mesas de cervejaria, pretzels, salsichas e música!" }
+    }
+  },
+  "ideasHub": { "title": "Jogos e Ideias", "description": "Descobre mais de 200 jogos e 50 temas para o teu evento.", "tabs": { "games": "Jogos", "themes": "Temas" }, "stats": { "games": "Jogos", "themes": "Temas", "categories": "Categorias", "languages": "Idiomas" } },
+  "eventTypes": { "bachelor": "Despedida (Ele)", "bachelorette": "Despedida (Ela)", "wedding": "Casamento", "birthday": "Aniversário", "family": "Família", "team": "Equipa", "trip": "Viagem", "other": "Outro" },
+  "landing": { "nav": { "ideas": "Ideias" } }
 }

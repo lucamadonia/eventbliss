@@ -1484,5 +1484,117 @@
       "adjustedBy": "Aangepast door",
       "date": "Datum"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "Vrijgezellenspellen",
+      "family_games": "Familiespellen",
+      "wedding_games": "Bruiloftspellen",
+      "party_games": "Feestspellen",
+      "outdoor_games": "Buitenspellen",
+      "team_games": "Team Building",
+      "icebreaker": "IJsbrekers",
+      "kids_friendly": "Kindvriendelijk"
+    },
+    "themeCategories": {
+      "retro": "Retro",
+      "elegant": "Elegant",
+      "casual": "Casual",
+      "adventure": "Avontuur",
+      "cultural": "Cultureel",
+      "seasonal": "Seizoensgebonden",
+      "costume": "Verkleed",
+      "relaxation": "Ontspanning"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Filter de resultaten op je voorkeuren",
+      "all": "Alle",
+      "category": "Categorie",
+      "eventType": "Type Evenement",
+      "difficulty": "Moeilijkheid",
+      "kidsFriendly": "Kindvriendelijk",
+      "alcoholFree": "Alcoholvrij",
+      "classic": "Klassiek",
+      "drinking": "Drinkspel",
+      "clear": "Filters wissen"
+    },
+    "difficulty": {
+      "easy": "Makkelijk",
+      "medium": "Gemiddeld",
+      "hard": "Moeilijk"
+    },
+    "searchPlaceholder": "Spellen zoeken...",
+    "searchThemesPlaceholder": "Thema's zoeken...",
+    "random": "Willekeurig",
+    "randomTheme": "Willekeurig thema",
+    "randomPick": "Willekeurige selectie",
+    "randomThemePick": "Willekeurig thema",
+    "resultsCount": "{{count}} spellen gevonden",
+    "themesCount": "{{count}} thema's gevonden",
+    "noResults": "Geen spellen gevonden. Probeer andere filters.",
+    "noThemesFound": "Geen thema's gevonden.",
+    "showInstructions": "Instructies tonen",
+    "hideInstructions": "Instructies verbergen",
+    "showDetails": "Details tonen",
+    "hideDetails": "Details verbergen",
+    "materials": "Materialen",
+    "addToPlanner": "Toevoegen aan planner",
+    "dressCode": "Dresscode",
+    "music": "Muziek",
+    "decorationTips": "Decoratie-ideeën",
+    "colorPalette": "Kleurenpalet",
+    "games": {
+      "bingo_tasks": { "name": "Opdrachten Bingo", "description": "Iedereen krijgt een bingokaart met leuke opdrachten die in de stad moeten worden uitgevoerd.", "instructions": "Maak bingokaarten met verschillende gênante of grappige opdrachten. De groep trekt door de stad en probeert alle opdrachten uit te voeren. Wie het eerst een rij vol heeft, wint!" },
+      "drink_roulette": { "name": "Drink Roulette", "description": "Het rad van fortuin bepaalt wie drinkt.", "instructions": "Draai aan het roulettewiel. De aangewezen persoon moet een shotje of slok nemen. Varianten: opdrachten in plaats van drinken." },
+      "who_am_i": { "name": "Wie Ben Ik?", "description": "Raad de beroemde persoon op je voorhoofd door ja/nee-vragen te stellen.", "instructions": "Iedereen krijgt een naam (beroemd koppel voor vrijgezellenfeesten) op het voorhoofd geplakt. Stel ja/nee-vragen om te ontdekken wie je bent." },
+      "beer_pong": { "name": "Beer Pong", "description": "De klassieker - gooi de bal in de bekers van de tegenstander.", "instructions": "Zet bekers in driehoeksvorm. Teams gooien om de beurt. Raak = tegenstander drinkt en beker wordt verwijderd. Team zonder bekers verliest." },
+      "truth_or_dare": { "name": "Waarheid of Durven", "description": "De klassieker voor gedurfde bekentenissen en gekke opdrachten.", "instructions": "Om de beurt kiest iedereen: Waarheid (eerlijk een vraag beantwoorden) of Durven (een opdracht uitvoeren). Weigeren = straf!" },
+      "karaoke_battle": { "name": "Karaoke Battle", "description": "Zing om de overwinning - hoe vals ook!", "instructions": "Teams of individuen nemen het tegen elkaar op. De groep beoordeelt. Bonuspunten voor performance en lef!" },
+      "shoe_game": { "name": "Schoenspel", "description": "Bruid en bruidegom beantwoorden vragen met schoenen.", "instructions": "Het paar zit rug aan rug, elk met een eigen schoen en een van de partner. Bij vragen houden ze de schoen omhoog van degene op wie het antwoord van toepassing is." },
+      "wedding_bingo": { "name": "Bruiloft Bingo", "description": "Bingo met typische bruiloftmomenten.", "instructions": "Gasten krijgen bingokaarten met typische bruiloftsscènes. Wie het eerst een rij vol heeft, wint!" },
+      "family_feud": { "name": "Familiefeud", "description": "Raad de populairste enquêteantwoorden.", "instructions": "Teams nemen het tegen elkaar op. Bij elke vraag worden de populairste antwoorden geraden. Punten voor treffers!" },
+      "scavenger_hunt": { "name": "Speurtocht", "description": "Volg de aanwijzingen en los raadsels op.", "instructions": "Verstop aanwijzingen die naar de volgende locatie leiden. Aan het einde wacht een schat of verrassing!" },
+      "charades": { "name": "Gebaren", "description": "Raad woorden door gebaren in teams.", "instructions": "Een speler beeldt een concept uit zonder te praten. Het team moet binnen de tijd raden." },
+      "pictionary": { "name": "Pictionary", "description": "Teken en raad begrippen tegen de klok.", "instructions": "Teken het begrip zodat je team het kan raden. Geen letters of symbolen toegestaan!" },
+      "two_truths_lie": { "name": "2 Waarheden en 1 Leugen", "description": "Raad de leugen onder drie beweringen.", "instructions": "Iedereen vertelt drie feiten over zichzelf - twee waar, één gelogen. De groep moet de leugen raden!" }
+    },
+    "themes": {
+      "80s_retro": { "name": "80s Retro Feest", "description": "Neonkleuren, synthesizerkmuziek en schoudervullingen", "tips": "Denk aan neonlichten, discoballen en 80s hits van A-ha tot Madonna!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Elegante James Bond-sfeer met speeltafels", "tips": "Rode loper, pokerfiches, speeltafels en elegante cocktails!" },
+      "tropical_beach": { "name": "Tropisch Strand", "description": "Caribische sfeer met palmen en cocktails", "tips": "Hawaii-hemden, tiki-fakkels, kokosdrinks en tropische muziek!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Beierse gezelligheid", "tips": "Bierbanken, pretzels, braadworst, blaasmuziek en dirndls verplicht!" },
+      "disco_fever": { "name": "Disco Fever", "description": "Glitter, discobal en funk", "tips": "Discobal, glitter, Saturday Night Fever playlist!" },
+      "garden_party": { "name": "Tuinfeest", "description": "Elegant feest in het groen", "tips": "Bloemdecoratie, parasols, picknickmanden en lichte hapjes!" }
+    }
+  },
+  "ideasHub": {
+    "title": "Spellen & Ideeën",
+    "description": "Ontdek meer dan 200 spellen en 50 thema's voor je evenement - van vrijgezellenfeesten tot bruiloften, van familiereünies tot teamevents.",
+    "tabs": {
+      "games": "Spellen",
+      "themes": "Thema's"
+    },
+    "stats": {
+      "games": "Spellen",
+      "themes": "Thema's",
+      "categories": "Categorieën",
+      "languages": "Talen"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "Vrijgezellenfeest (Hij)",
+    "bachelorette": "Vrijgezellenfeest (Zij)",
+    "wedding": "Bruiloft",
+    "birthday": "Verjaardag",
+    "family": "Familie",
+    "team": "Team",
+    "trip": "Reis",
+    "other": "Anders"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Ideeën"
+    }
   }
 }

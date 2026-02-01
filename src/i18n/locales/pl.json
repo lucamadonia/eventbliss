@@ -1478,5 +1478,34 @@
       "adjustedBy": "Dostosowane przez",
       "date": "Data"
     }
-  }
+  },
+  "gamesLibrary": {
+    "categories": { "jga_games": "Gry na Wieczór Kawalerski", "family_games": "Gry Rodzinne", "wedding_games": "Gry Weselne", "party_games": "Gry Imprezowe", "outdoor_games": "Gry na Zewnątrz", "team_games": "Team Building", "icebreaker": "Na Przełamanie Lodów", "kids_friendly": "Dla Dzieci" },
+    "filters": { "title": "Filtry", "all": "Wszystkie", "category": "Kategoria", "eventType": "Typ Wydarzenia", "difficulty": "Trudność", "kidsFriendly": "Dla dzieci", "alcoholFree": "Bez alkoholu", "clear": "Wyczyść filtry" },
+    "difficulty": { "easy": "Łatwy", "medium": "Średni", "hard": "Trudny" },
+    "searchPlaceholder": "Szukaj gier...",
+    "resultsCount": "{{count}} gier znaleziono",
+    "noResults": "Nie znaleziono gier. Spróbuj innych filtrów.",
+    "showInstructions": "Pokaż instrukcje",
+    "hideInstructions": "Ukryj instrukcje",
+    "materials": "Materiały",
+    "addToPlanner": "Dodaj do planera",
+    "games": {
+      "bingo_tasks": { "name": "Bingo Zadań", "description": "Każdy otrzymuje kartę bingo z zabawnymi zadaniami do wykonania w mieście.", "instructions": "Stwórz karty bingo z różnymi zadaniami. Grupa chodzi po mieście próbując je wykonać. Kto pierwszy uzupełni rząd, wygrywa!" },
+      "beer_pong": { "name": "Beer Pong", "description": "Klasyka - wrzuć piłkę do kubków przeciwnika.", "instructions": "Ustaw kubki w trójkąt. Drużyny rzucają na zmianę. Trafienie = przeciwnik pije. Drużyna bez kubków przegrywa." },
+      "truth_or_dare": { "name": "Prawda czy Wyzwanie", "description": "Klasyka dla odważnych wyznań i szalonych wyzwań.", "instructions": "Na zmianę każdy wybiera: Prawda lub Wyzwanie. Odmowa = kara!" },
+      "karaoke_battle": { "name": "Bitwa Karaoke", "description": "Śpiewaj by wygrać!", "instructions": "Drużyny lub pojedynczy gracze rywalizują. Grupa ocenia. Punkty za występ!" },
+      "shoe_game": { "name": "Gra Butów", "description": "Para młoda odpowiada na pytania butami.", "instructions": "Para siedzi tyłem do siebie, każdy z własnym butem i butem partnera. Na pytania unoszą but tego, kogo dotyczy odpowiedź." },
+      "scavenger_hunt": { "name": "Poszukiwanie Skarbów", "description": "Podążaj za wskazówkami i rozwiązuj zagadki.", "instructions": "Ukryj wskazówki prowadzące do następnego miejsca. Na końcu czeka skarb!" },
+      "charades": { "name": "Kalambury", "description": "Zgaduj słowa pokazywane gestami.", "instructions": "Gracz pokazuje pojęcie bez mówienia. Drużyna musi zgadnąć w czasie." }
+    },
+    "themes": {
+      "80s_retro": { "name": "Impreza Retro 80s", "description": "Neonowe kolory, muzyka synth i ramiona", "tips": "Neonowe światła, kule disco i hity lat 80!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Elegancka atmosfera James Bonda", "tips": "Czerwony dywan, żetony pokerowe i eleganckie koktajle!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Bawarska atmosfera", "tips": "Ławy piwne, precle, kiełbaski i muzyka!" }
+    }
+  },
+  "ideasHub": { "title": "Gry i Pomysły", "description": "Odkryj ponad 200 gier i 50 tematów na swoje wydarzenie.", "tabs": { "games": "Gry", "themes": "Tematy" }, "stats": { "games": "Gry", "themes": "Tematy", "categories": "Kategorie", "languages": "Języki" } },
+  "eventTypes": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "wedding": "Wesele", "birthday": "Urodziny", "family": "Rodzina", "team": "Zespół", "trip": "Wyjazd", "other": "Inne" },
+  "landing": { "nav": { "ideas": "Pomysły" } }
 }

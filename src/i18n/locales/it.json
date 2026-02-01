@@ -1454,5 +1454,118 @@
       "adjustedBy": "Regolato da",
       "date": "Data"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "Giochi Addio Celibato",
+      "family_games": "Giochi in Famiglia",
+      "wedding_games": "Giochi da Matrimonio",
+      "party_games": "Giochi di Festa",
+      "outdoor_games": "Giochi all'Aperto",
+      "team_games": "Team Building",
+      "icebreaker": "Rompighiaccio",
+      "kids_friendly": "Per Bambini"
+    },
+    "themeCategories": {
+      "retro": "Retrò",
+      "elegant": "Elegante",
+      "casual": "Casual",
+      "adventure": "Avventura",
+      "cultural": "Culturale",
+      "seasonal": "Stagionale",
+      "costume": "In Costume",
+      "relaxation": "Relax"
+    },
+    "filters": {
+      "title": "Filtri",
+      "description": "Filtra i risultati secondo le tue preferenze",
+      "all": "Tutti",
+      "category": "Categoria",
+      "eventType": "Tipo di Evento",
+      "difficulty": "Difficoltà",
+      "kidsFriendly": "Adatto ai bambini",
+      "alcoholFree": "Senza alcol",
+      "classic": "Classico",
+      "drinking": "Con bevute",
+      "clear": "Cancella filtri"
+    },
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Medio",
+      "hard": "Difficile"
+    },
+    "searchPlaceholder": "Cerca giochi...",
+    "searchThemesPlaceholder": "Cerca temi...",
+    "random": "Casuale",
+    "randomTheme": "Tema casuale",
+    "randomPick": "Selezione casuale",
+    "randomThemePick": "Tema casuale",
+    "resultsCount": "{{count}} giochi trovati",
+    "themesCount": "{{count}} temi trovati",
+    "noResults": "Nessun gioco trovato. Prova altri filtri.",
+    "noThemesFound": "Nessun tema trovato.",
+    "showInstructions": "Mostra istruzioni",
+    "hideInstructions": "Nascondi istruzioni",
+    "showDetails": "Mostra dettagli",
+    "hideDetails": "Nascondi dettagli",
+    "materials": "Materiali",
+    "addToPlanner": "Aggiungi al planner",
+    "dressCode": "Dress code",
+    "music": "Musica",
+    "decorationTips": "Idee decorazione",
+    "colorPalette": "Palette colori",
+    "games": {
+      "bingo_tasks": { "name": "Bingo delle Sfide", "description": "Ognuno riceve una scheda bingo con sfide divertenti da completare in città.", "instructions": "Crea schede bingo con diverse sfide imbarazzanti o divertenti. Il gruppo gira per la città cercando di completarle tutte. Il primo a completare una riga vince!" },
+      "drink_roulette": { "name": "Roulette Alcolica", "description": "La ruota della fortuna decide chi beve.", "instructions": "Fai girare la roulette. La persona indicata deve bere un shot o un sorso. Varianti: sfide invece di bevute." },
+      "who_am_i": { "name": "Chi Sono?", "description": "Indovina il personaggio famoso sulla tua fronte con domande sì/no.", "instructions": "Ognuno riceve un nome (coppia famosa per addii) attaccato sulla fronte. Fai domande sì/no per scoprire chi sei." },
+      "beer_pong": { "name": "Beer Pong", "description": "Il classico - lancia la pallina nei bicchieri avversari.", "instructions": "Disponi i bicchieri a triangolo. Le squadre lanciano a turno. Centro = l'avversario beve e il bicchiere viene tolto. La squadra senza bicchieri perde." },
+      "truth_or_dare": { "name": "Verità o Obbligo", "description": "Il classico per confessioni audaci e sfide pazze.", "instructions": "A turno ognuno sceglie: Verità (rispondere onestamente) o Obbligo (completare un compito). Rifiutare = penitenza!" },
+      "karaoke_battle": { "name": "Battaglia di Karaoke", "description": "Canta per vincere - non importa come!", "instructions": "Squadre o singoli si sfidano. Il gruppo vota. Punti bonus per performance e coraggio!" },
+      "shoe_game": { "name": "Gioco della Scarpa", "description": "Gli sposi rispondono alle domande con le scarpe.", "instructions": "La coppia siede schiena contro schiena, ognuno con la propria scarpa e una del partner. Alle domande alzano la scarpa di chi corrisponde." },
+      "wedding_bingo": { "name": "Bingo da Matrimonio", "description": "Bingo con momenti tipici del matrimonio.", "instructions": "Gli ospiti ricevono schede con scene tipiche del matrimonio. Il primo a completare una riga vince!" },
+      "balloon_dancing": { "name": "Ballo del Palloncino", "description": "Ballate in coppia con un palloncino tra voi.", "instructions": "Le coppie ballano con un palloncino tra loro. Se cade o scoppia, la coppia è eliminata!" },
+      "family_feud": { "name": "Giochi in Famiglia", "description": "Indovina le risposte più popolari del sondaggio.", "instructions": "Le squadre si sfidano. Ad ogni domanda si indovinano le risposte più popolari. Punti per gli azzecchi!" },
+      "scavenger_hunt": { "name": "Caccia al Tesoro", "description": "Segui gli indizi e risolvi gli enigmi.", "instructions": "Nascondi indizi che portano al prossimo luogo. Alla fine aspetta un tesoro o una sorpresa!" },
+      "charades": { "name": "Mimo", "description": "Indovina le parole mimate in squadre.", "instructions": "Un giocatore mima un concetto senza parlare. La squadra deve indovinare nel tempo." },
+      "pictionary": { "name": "Pictionary", "description": "Disegna e indovina concetti contro il tempo.", "instructions": "Disegna il concetto per farlo indovinare alla squadra. Niente lettere o simboli!" },
+      "two_truths_lie": { "name": "2 Verità e 1 Bugia", "description": "Indovina la bugia tra tre affermazioni.", "instructions": "Ognuno racconta tre fatti su di sé - due veri, uno falso. Il gruppo deve indovinare la bugia!" }
+    },
+    "themes": {
+      "80s_retro": { "name": "Festa Retrò 80s", "description": "Colori neon, musica synth e spalline", "tips": "Pensa a luci al neon, palle da discoteca e hit degli 80 da A-ha a Madonna!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Atmosfera elegante James Bond con tavoli da gioco", "tips": "Tappeto rosso, fiches da poker, tavoli da gioco e cocktail eleganti!" },
+      "tropical_beach": { "name": "Spiaggia Tropicale", "description": "Atmosfera caraibica con palme e cocktail", "tips": "Camicie hawaiane, torce tiki, drink al cocco e musica tropicale!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Atmosfera bavarese", "tips": "Tavoli da birreria, pretzel, salsicce, musica da banda e dirndl obbligatori!" },
+      "disco_fever": { "name": "Disco Fever", "description": "Glitter, palla da discoteca e funk", "tips": "Palla da discoteca, glitter, playlist Saturday Night Fever!" },
+      "garden_party": { "name": "Garden Party", "description": "Festa elegante in giardino", "tips": "Decorazioni floreali, ombrelloni, cestini da picnic e piatti leggeri!" }
+    }
+  },
+  "ideasHub": {
+    "title": "Giochi e Idee",
+    "description": "Scopri oltre 200 giochi e 50 temi per il tuo evento - dagli addii ai matrimoni, dalle riunioni familiari agli eventi aziendali.",
+    "tabs": {
+      "games": "Giochi",
+      "themes": "Temi"
+    },
+    "stats": {
+      "games": "Giochi",
+      "themes": "Temi",
+      "categories": "Categorie",
+      "languages": "Lingue"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "Addio Celibato",
+    "bachelorette": "Addio Nubilato",
+    "wedding": "Matrimonio",
+    "birthday": "Compleanno",
+    "family": "Famiglia",
+    "team": "Team",
+    "trip": "Viaggio",
+    "other": "Altro"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Idee"
+    }
   }
 }

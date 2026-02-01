@@ -1502,5 +1502,129 @@
       "adjustedBy": "Ajusté par",
       "date": "Date"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "Jeux EVG/EVJF",
+      "family_games": "Jeux Familiaux",
+      "wedding_games": "Jeux de Mariage",
+      "party_games": "Jeux de Fête",
+      "outdoor_games": "Jeux en Plein Air",
+      "team_games": "Team Building",
+      "icebreaker": "Brise-glaces",
+      "kids_friendly": "Pour Enfants"
+    },
+    "themeCategories": {
+      "retro": "Rétro",
+      "elegant": "Élégant",
+      "casual": "Décontracté",
+      "adventure": "Aventure",
+      "cultural": "Culturel",
+      "seasonal": "Saisonnier",
+      "costume": "Costumé",
+      "relaxation": "Détente"
+    },
+    "filters": {
+      "title": "Filtres",
+      "description": "Filtrez les résultats selon vos préférences",
+      "all": "Tous",
+      "category": "Catégorie",
+      "eventType": "Type d'événement",
+      "difficulty": "Difficulté",
+      "kidsFriendly": "Adapté aux enfants",
+      "alcoholFree": "Sans alcool",
+      "classic": "Classique",
+      "drinking": "Avec boisson",
+      "clear": "Effacer les filtres"
+    },
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile"
+    },
+    "searchPlaceholder": "Rechercher des jeux...",
+    "searchThemesPlaceholder": "Rechercher des thèmes...",
+    "random": "Aléatoire",
+    "randomTheme": "Thème aléatoire",
+    "randomPick": "Sélection aléatoire",
+    "randomThemePick": "Thème aléatoire",
+    "resultsCount": "{{count}} jeux trouvés",
+    "themesCount": "{{count}} thèmes trouvés",
+    "noResults": "Aucun jeu trouvé. Essayez d'autres filtres.",
+    "noThemesFound": "Aucun thème trouvé.",
+    "showInstructions": "Voir les instructions",
+    "hideInstructions": "Masquer les instructions",
+    "showDetails": "Voir les détails",
+    "hideDetails": "Masquer les détails",
+    "materials": "Matériel",
+    "addToPlanner": "Ajouter au planificateur",
+    "dressCode": "Code vestimentaire",
+    "music": "Musique",
+    "decorationTips": "Idées déco",
+    "colorPalette": "Palette de couleurs",
+    "games": {
+      "bingo_tasks": { "name": "Bingo des Défis", "description": "Chacun reçoit une carte de bingo avec des défis amusants à relever en ville.", "instructions": "Créez des cartes de bingo avec différents défis embarrassants ou drôles. Le groupe parcourt la ville en essayant de tout accomplir. Le premier à compléter une ligne gagne !" },
+      "drink_roulette": { "name": "Roulette à Boire", "description": "La roue de la fortune décide qui boit.", "instructions": "Faites tourner la roulette. La personne désignée doit boire un shot ou une gorgée. Variantes : défis au lieu de boissons." },
+      "who_am_i": { "name": "Qui Suis-Je ?", "description": "Devinez la célébrité sur votre front en posant des questions oui/non.", "instructions": "Chacun reçoit un nom (couple célèbre pour les EVG) collé sur le front. Posez des questions oui/non pour découvrir qui vous êtes." },
+      "flunkyball": { "name": "Flunkyball", "description": "Le jeu de boisson ultime en plein air avec balle et bouteille.", "instructions": "Deux équipes face à face, une bouteille au milieu. Lancez la balle sur la bouteille. Si vous touchez, votre équipe boit vite. L'autre équipe doit relever la bouteille et récupérer la balle." },
+      "beer_pong": { "name": "Beer Pong", "description": "Le classique - lancez la balle dans les verres adverses.", "instructions": "Disposez les verres en triangle. Les équipes lancent à tour de rôle. Touché = l'adversaire boit et le verre est retiré. L'équipe sans verres perd." },
+      "groom_bride_quiz": { "name": "Quiz du Marié/de la Mariée", "description": "Le groupe connaît-il bien l'invité d'honneur ?", "instructions": "Préparez des questions sur l'invité d'honneur. Le groupe devine les réponses. Mauvaises réponses = gages !" },
+      "truth_or_dare": { "name": "Action ou Vérité", "description": "Le classique pour des aveux audacieux et des défis fous.", "instructions": "À tour de rôle, chacun choisit : Vérité (répondre honnêtement) ou Action (accomplir une tâche). Refuser = gage !" },
+      "kiss_challenge": { "name": "Défi du Bisou", "description": "Collectez des bisous d'inconnus - plus il y en a, mieux c'est !", "instructions": "L'invité d'honneur doit collecter des bisous d'inconnus. Marques de rouge à lèvres sur un t-shirt blanc. Qui en collecte le plus ?" },
+      "selfie_mission": { "name": "Mission Selfie", "description": "Faites des selfies créatifs selon des consignes.", "instructions": "Chacun reçoit une liste de défis selfie (ex. avec un policier, sur une fontaine, etc.). Celui qui en réussit le plus gagne !" },
+      "costume_tasks": { "name": "Défis Déguisés", "description": "Portez des costumes fous et accomplissez des défis.", "instructions": "L'invité d'honneur doit accomplir des défis en public dans un costume embarrassant. Le groupe documente tout !" },
+      "bucket_list": { "name": "Défi Bucket List", "description": "Vivez des moments inoubliables d'une liste préparée.", "instructions": "Créez une liste d'expériences uniques. Essayez d'en cocher un maximum ce jour-là !" },
+      "karaoke_battle": { "name": "Bataille de Karaoké", "description": "Chantez pour gagner - peu importe la justesse !", "instructions": "Équipes ou individus s'affrontent. Le groupe note. Points bonus pour la performance et le courage !" },
+      "city_rally": { "name": "Rallye Urbain", "description": "Une chasse au trésor en ville avec défis et énigmes.", "instructions": "Les équipes suivent des indices à travers la ville, résolvent des énigmes et accomplissent des défis. L'équipe la plus rapide gagne !" },
+      "photo_scavenger_hunt": { "name": "Chasse Photo", "description": "Photographiez tout ce qui est sur la liste - soyez créatifs !", "instructions": "Chaque équipe reçoit une liste de défis photo. Points pour la créativité et l'exhaustivité." },
+      "shoe_game": { "name": "Jeu du Chaussure", "description": "Les mariés répondent aux questions avec des chaussures.", "instructions": "Le couple s'assoit dos à dos, chacun avec sa propre chaussure et celle de l'autre. Aux questions, ils lèvent la chaussure de celui qui correspond." },
+      "wedding_bingo": { "name": "Bingo de Mariage", "description": "Bingo avec des moments typiques de mariage.", "instructions": "Les invités reçoivent des cartes avec des scènes de mariage typiques. Le premier à compléter une ligne gagne !" },
+      "balloon_dancing": { "name": "Danse au Ballon", "description": "Dansez en duo avec un ballon entre vous.", "instructions": "Les couples dansent avec un ballon entre eux. S'il tombe ou éclate, le couple est éliminé !" },
+      "family_feud": { "name": "Duel Familial", "description": "Devinez les réponses les plus populaires du sondage.", "instructions": "Les équipes s'affrontent. À chaque question, on devine les réponses les plus populaires. Points pour les bonnes réponses !" },
+      "scavenger_hunt": { "name": "Chasse au Trésor", "description": "Suivez les indices et résolvez les énigmes.", "instructions": "Cachez des indices menant au prochain endroit. À la fin, un trésor ou une surprise attend !" },
+      "charades": { "name": "Mimes", "description": "Devinez les mots mimés en équipes.", "instructions": "Un joueur mime un concept sans parler. L'équipe doit deviner dans le temps imparti." },
+      "pictionary": { "name": "Pictionary", "description": "Dessinez et devinez des concepts contre la montre.", "instructions": "Dessinez le concept pour que votre équipe le devine. Pas de lettres ni de symboles autorisés !" },
+      "two_truths_lie": { "name": "2 Vérités et 1 Mensonge", "description": "Devinez le mensonge parmi trois affirmations.", "instructions": "Chacun raconte trois faits sur lui-même - deux vrais, un faux. Le groupe doit deviner le mensonge !" }
+    },
+    "themes": {
+      "80s_retro": { "name": "Fête Rétro 80s", "description": "Couleurs néon, musique synthé et épaulettes", "tips": "Pensez aux néons, boules disco et tubes des années 80 d'A-ha à Madonna !" },
+      "90s_throwback": { "name": "Retour aux 90s", "description": "Grunge, boys bands et premiers mobiles", "tips": "Pochettes d'albums en déco, accessoires Walkman et chansons des Backstreet Boys à Nirvana !" },
+      "casino_royale": { "name": "Casino Royale", "description": "Atmosphère élégante James Bond avec tables de jeu", "tips": "Tapis rouge, jetons de poker, tables de jeu et cocktails élégants !" },
+      "tropical_beach": { "name": "Plage Tropicale", "description": "Ambiance caraïbe avec palmiers et cocktails", "tips": "Chemises hawaïennes, torches tiki, boissons coco et musique tropicale !" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "Gemütlichkeit bavaroise", "tips": "Tables de brasserie, bretzels, saucisses, fanfare et dirndls obligatoires !" },
+      "mexican_fiesta": { "name": "Fiesta Mexicaine", "description": "Couleurs vives, tacos et mariachi", "tips": "Sombreros, piñatas, fanions colorés, margaritas et musique salsa !" },
+      "gatsby_20s": { "name": "Gatsby / Années 20", "description": "Les folles années vingt avec flapper et jazz", "tips": "Déco Art Déco, champagne, boa à plumes, musique swing et charleston !" },
+      "disco_fever": { "name": "Disco Fever", "description": "Paillettes, boule disco et funk", "tips": "Boule disco, paillettes, playlist Saturday Night Fever !" },
+      "garden_party": { "name": "Garden Party", "description": "Fête élégante dans le jardin", "tips": "Déco florale, parasols, paniers pique-nique et mets légers !" }
+    }
+  },
+  "ideasHub": {
+    "title": "Jeux et Idées",
+    "description": "Découvrez plus de 200 jeux et 50 thèmes pour votre événement - des EVG aux mariages, des réunions familiales aux événements d'équipe.",
+    "tabs": {
+      "games": "Jeux",
+      "themes": "Thèmes"
+    },
+    "stats": {
+      "games": "Jeux",
+      "themes": "Thèmes",
+      "categories": "Catégories",
+      "languages": "Langues"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "EVJG",
+    "bachelorette": "EVJF",
+    "wedding": "Mariage",
+    "birthday": "Anniversaire",
+    "family": "Famille",
+    "team": "Équipe",
+    "trip": "Voyage",
+    "other": "Autre"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Idées"
+    }
   }
 }
