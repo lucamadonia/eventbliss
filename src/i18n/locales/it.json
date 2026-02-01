@@ -1562,10 +1562,5 @@
     "team": "Team",
     "trip": "Viaggio",
     "other": "Altro"
-  },
-  "landing": {
-    "nav": {
-      "ideas": "Idee"
-    }
   }
 }

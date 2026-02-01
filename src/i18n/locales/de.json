@@ -2621,10 +2621,5 @@
     "team": "Team",
     "trip": "Reise",
     "other": "Sonstiges"
-  },
-  "landing": {
-    "nav": {
-      "ideas": "Ideen"
-    }
   }
 }

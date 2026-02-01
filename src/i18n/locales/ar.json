@@ -1505,6 +1505,5 @@
     }
   },
   "ideasHub": { "title": "الألعاب والأفكار", "description": "اكتشف أكثر من 200 لعبة و50 موضوع لفعاليتك.", "tabs": { "games": "الألعاب", "themes": "المواضيع" }, "stats": { "games": "الألعاب", "themes": "المواضيع", "categories": "الفئات", "languages": "اللغات" } },
-  "eventTypes": { "bachelor": "حفلة وداع (هو)", "bachelorette": "حفلة وداع (هي)", "wedding": "زفاف", "birthday": "عيد ميلاد", "family": "عائلة", "team": "فريق", "trip": "رحلة", "other": "أخرى" },
-  "landing": { "nav": { "ideas": "أفكار" } }
+  "eventTypes": { "bachelor": "حفلة وداع (هو)", "bachelorette": "حفلة وداع (هي)", "wedding": "زفاف", "birthday": "عيد ميلاد", "family": "عائلة", "team": "فريق", "trip": "رحلة", "other": "أخرى" }
 }

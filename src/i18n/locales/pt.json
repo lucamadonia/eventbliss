@@ -1506,6 +1506,5 @@
     }
   },
   "ideasHub": { "title": "Jogos e Ideias", "description": "Descobre mais de 200 jogos e 50 temas para o teu evento.", "tabs": { "games": "Jogos", "themes": "Temas" }, "stats": { "games": "Jogos", "themes": "Temas", "categories": "Categorias", "languages": "Idiomas" } },
-  "eventTypes": { "bachelor": "Despedida (Ele)", "bachelorette": "Despedida (Ela)", "wedding": "Casamento", "birthday": "Aniversário", "family": "Família", "team": "Equipa", "trip": "Viagem", "other": "Outro" },
-  "landing": { "nav": { "ideas": "Ideias" } }
+  "eventTypes": { "bachelor": "Despedida (Ele)", "bachelorette": "Despedida (Ela)", "wedding": "Casamento", "birthday": "Aniversário", "family": "Família", "team": "Equipa", "trip": "Viagem", "other": "Outro" }
 }

@@ -2334,10 +2334,5 @@
     "team": "Team",
     "trip": "Trip",
     "other": "Other"
-  },
-  "landing": {
-    "nav": {
-      "ideas": "Ideas"
-    }
   }
 }

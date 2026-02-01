@@ -1505,6 +1505,5 @@
     }
   },
   "ideasHub": { "title": "Oyunlar ve Fikirler", "description": "Etkinliğiniz için 200'den fazla oyun ve 50 tema keşfedin.", "tabs": { "games": "Oyunlar", "themes": "Temalar" }, "stats": { "games": "Oyunlar", "themes": "Temalar", "categories": "Kategoriler", "languages": "Diller" } },
-  "eventTypes": { "bachelor": "Bekarlığa Veda (O)", "bachelorette": "Kına Gecesi", "wedding": "Düğün", "birthday": "Doğum Günü", "family": "Aile", "team": "Takım", "trip": "Gezi", "other": "Diğer" },
-  "landing": { "nav": { "ideas": "Fikirler" } }
+  "eventTypes": { "bachelor": "Bekarlığa Veda (O)", "bachelorette": "Kına Gecesi", "wedding": "Düğün", "birthday": "Doğum Günü", "family": "Aile", "team": "Takım", "trip": "Gezi", "other": "Diğer" }
 }
