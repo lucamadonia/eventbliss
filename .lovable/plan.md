@@ -1,99 +1,73 @@
 
-# Plan: Fehlende Übersetzungen auf der Startseite reparieren
+## Ziel
+Die i18n-Fehler auf der kompletten Startseite (Route `/`) beheben, sodass keine rohen Keys wie `landing.hero.title` / `landing.features...` mehr angezeigt werden.
 
-## Problem
+---
 
-Bei der Erweiterung der Ideas Hub wurden neue Navigations-Elemente hinzugefügt, aber die entsprechenden Übersetzungsschlüssel fehlen in den Sprachdateien:
+## Diagnose (Ursache)
+In praktisch allen Sprachdateien gibt es **doppelte Root-Keys** namens `"landing"`.
 
-1. **`landing.nav.ideas`** - Fehlt in ALLEN 10 Sprachdateien
-   - Wird in `LandingHeader.tsx` Zeile 35 verwendet
-   - Zeigt aktuell den rohen Schlüssel "landing.nav.ideas" statt "Ideen"
-
-2. **`landing.footer.agencyPortal`** - Fehlt in den meisten Sprachdateien
-   - Wird in `LandingFooter.tsx` Zeile 20 verwendet
-   - Hat zwar einen Fallback ("Agentur-Portal"), aber sollte übersetzt werden
-
-## Lösung
-
-Hinzufügen der fehlenden Übersetzungsschlüssel in allen 10 Sprachdateien:
-
-### Änderungen pro Sprachdatei
-
-| Datei | Schlüssel | Übersetzung |
-|-------|-----------|-------------|
-| **de.json** | `landing.nav.ideas` | "Ideen" |
-| **de.json** | `landing.footer.agencyPortal` | "Agentur-Portal" |
-| **en.json** | `landing.nav.ideas` | "Ideas" |
-| **en.json** | `landing.footer.agencyPortal` | "Agency Portal" |
-| **es.json** | `landing.nav.ideas` | "Ideas" |
-| **es.json** | `landing.footer.agencyPortal` | "Portal de Agencia" |
-| **fr.json** | `landing.nav.ideas` | "Idées" |
-| **fr.json** | `landing.footer.agencyPortal` | "Portail Agence" |
-| **it.json** | `landing.nav.ideas` | "Idee" |
-| **it.json** | `landing.footer.agencyPortal` | "Portale Agenzia" |
-| **nl.json** | `landing.nav.ideas` | "Ideeën" |
-| **nl.json** | `landing.footer.agencyPortal` | "Agentschap Portaal" |
-| **pl.json** | `landing.nav.ideas` | "Pomysły" |
-| **pl.json** | `landing.footer.agencyPortal` | "Portal Agencji" |
-| **pt.json** | `landing.nav.ideas` | "Ideias" |
-| **pt.json** | `landing.footer.agencyPortal` | "Portal da Agência" |
-| **tr.json** | `landing.nav.ideas` | "Fikirler" |
-| **tr.json** | `landing.footer.agencyPortal` | "Ajans Portalı" |
-| **ar.json** | `landing.nav.ideas` | "أفكار" |
-| **ar.json** | `landing.footer.agencyPortal` | "بوابة الوكالة" |
-
-## Technische Details
-
-Die Änderungen erfolgen im `landing.nav` Objekt jeder Sprachdatei:
+JSON erlaubt zwar syntaktisch doppelte Keys, aber beim Parsen gilt: **der letzte Key gewinnt**.  
+Dadurch überschreibt am Dateiende ein kleiner Block wie:
 
 ```json
-// Vorher (de.json)
-"nav": {
-  "features": "Funktionen",
-  "howItWorks": "So funktioniert's",
-  "solutions": "Lösungen",
-  "faq": "FAQ",
-  "login": "Anmelden",
-  "signUp": "Registrieren",
-  "partner": "Partner"
-}
-
-// Nachher (de.json)
-"nav": {
-  "features": "Funktionen",
-  "howItWorks": "So funktioniert's",
-  "ideas": "Ideen",
-  "solutions": "Lösungen",
-  "faq": "FAQ",
-  "login": "Anmelden",
-  "signUp": "Registrieren",
-  "partner": "Partner"
-}
+"landing": { "nav": { "ideas": "Ideen" } }
 ```
 
-Und im `landing.footer` Objekt:
+die komplette, eigentlich vorhandene Landing-Übersetzungsstruktur (Hero, Features, FAQ, Footer etc.). Ergebnis: Die Startseite findet die meisten `landing.*` Keys nicht mehr → i18n zeigt die Keys als Text.
 
-```json
-// Hinzufügen in footer-Bereich
-"agencyPortal": "Agentur-Portal"
-```
+Beispiel ist sichtbar in `src/i18n/locales/pt.json` (am Ende steht nochmal `"landing": {...}`), ebenso in `de.json`, `es.json`, `fr.json`, `ar.json` und auch `en.json`.
 
-## Betroffene Dateien
+---
 
-| Datei | Aktion |
-|-------|--------|
-| `src/i18n/locales/de.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/en.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/es.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/fr.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/it.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/nl.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/pl.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/pt.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/tr.json` | 2 Schlüssel hinzufügen |
-| `src/i18n/locales/ar.json` | 2 Schlüssel hinzufügen |
+## Umsetzung (Code-Änderungen)
+### 1) Doppelte `landing`-Blocks am Dateiende entfernen (alle 10 Sprachen)
+In diesen Dateien den **zweiten** (späteren) `"landing": { "nav": { "ideas": ... } }`-Block entfernen:
 
-## Geschätzter Aufwand
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
+- `src/i18n/locales/es.json`
+- `src/i18n/locales/fr.json`
+- `src/i18n/locales/it.json`
+- `src/i18n/locales/nl.json`
+- `src/i18n/locales/pl.json`
+- `src/i18n/locales/pt.json`
+- `src/i18n/locales/tr.json`
+- `src/i18n/locales/ar.json`
 
-- 10 Dateien mit je 2 kleinen Änderungen
-- Schnelle Umsetzung (~5 Minuten)
+Wichtig dabei:
+- Wenn der entfernte Block **das letzte Property** war, muss das Property direkt davor **ohne trailing comma** enden.  
+  Beispiel `pt.json`: Nach dem Entfernen muss `"eventTypes": {...}` ohne Komma enden.
+
+### 2) Sicherstellen, dass die Keys im “richtigen” Landing-Block vorhanden sind
+In den “ersten” Landing-Blöcken (die großen, vollständigen) prüfen:
+- `landing.nav.ideas` ist in den großen Blöcken bereits vorhanden (z.B. `de.json` Zeile ~64).
+- `landing.footer.agencyPortal` ist ebenfalls bereits vorhanden in `landing.footer` (z.B. `de.json` Zeile ~303).
+
+Falls in einer Sprache ausnahmsweise doch fehlend, wird es **im ersten Landing-Block** ergänzt (nicht erneut am Dateiende).
+
+---
+
+## Optionaler Guard (damit das nicht wieder passiert)
+Um zukünftige i18n-Probleme schneller zu erkennen:
+- In `src/i18n/index.ts` in DEV einen `missingKey`-Logger aktivieren (z.B. `i18n.on('missingKey', ...)`), der in der Konsole klar zeigt, welche Keys fehlen.
+- Zusätzlich (optional) eine kleine “Landing sanity check”-Utility im Frontend, die beim Rendern von `/` einmal prüft, ob zentrale Keys existieren (z.B. `landing.hero.title`, `landing.footer.tagline`) und im DEV-Modus warnt.
+
+Das ist nicht zwingend nötig, hilft aber, wenn später wieder viele Keys auf einmal geändert werden.
+
+---
+
+## Testplan (End-to-End)
+1) Startseite `/` öffnen
+2) Prüfen, dass Headline/Subheadline/Buttons im Hero korrekt übersetzt sind (keine `landing.*` Keys mehr sichtbar).
+3) Footer prüfen (Tagline, Links, Legal, Kontakt) – insbesondere “Agency Portal”.
+4) Sprache über LanguageSwitcher durchtesten: `de`, `en`, `es`, `fr`, `it`, `nl`, `pl`, `pt`, `tr`, `ar`
+5) Bei `ar`: prüfen, dass RTL weiterhin korrekt greift (Layout/Alignment).
+6) Hard Reload (Cache umgehen) falls im Browser noch alte Bundles geladen sind.
+
+---
+
+## Erwartetes Ergebnis
+- Die Landing-Seite hat wieder ihre vollständigen Übersetzungen.
+- Keine “rohen” i18n-Schlüssel mehr sichtbar.
+- Übersetzungen funktionieren wieder stabil in allen 10 Sprachen, inkl. RTL für Arabisch.
