@@ -1502,5 +1502,146 @@
       "adjustedBy": "Ajustado por",
       "date": "Fecha"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "Juegos de Despedida",
+      "family_games": "Juegos Familiares",
+      "wedding_games": "Juegos de Boda",
+      "party_games": "Juegos de Fiesta",
+      "outdoor_games": "Juegos al Aire Libre",
+      "team_games": "Team Building",
+      "icebreaker": "Rompehielos",
+      "kids_friendly": "Para Niños"
+    },
+    "themeCategories": {
+      "retro": "Retro",
+      "elegant": "Elegante",
+      "casual": "Casual",
+      "adventure": "Aventura",
+      "cultural": "Cultural",
+      "seasonal": "Estacional",
+      "costume": "Disfraces",
+      "relaxation": "Relajación"
+    },
+    "filters": {
+      "title": "Filtros",
+      "description": "Filtra los resultados según tus preferencias",
+      "all": "Todos",
+      "category": "Categoría",
+      "eventType": "Tipo de Evento",
+      "difficulty": "Dificultad",
+      "kidsFriendly": "Apto para niños",
+      "alcoholFree": "Sin alcohol",
+      "classic": "Clásico",
+      "drinking": "Con bebida",
+      "clear": "Limpiar filtros"
+    },
+    "difficulty": {
+      "easy": "Fácil",
+      "medium": "Medio",
+      "hard": "Difícil"
+    },
+    "searchPlaceholder": "Buscar juegos...",
+    "searchThemesPlaceholder": "Buscar temas...",
+    "random": "Aleatorio",
+    "randomTheme": "Tema aleatorio",
+    "randomPick": "Selección aleatoria",
+    "randomThemePick": "Tema aleatorio",
+    "resultsCount": "{{count}} juegos encontrados",
+    "themesCount": "{{count}} temas encontrados",
+    "noResults": "No se encontraron juegos. Prueba otros filtros.",
+    "noThemesFound": "No se encontraron temas.",
+    "showInstructions": "Ver instrucciones",
+    "hideInstructions": "Ocultar instrucciones",
+    "showDetails": "Ver detalles",
+    "hideDetails": "Ocultar detalles",
+    "materials": "Materiales",
+    "addToPlanner": "Añadir al planificador",
+    "dressCode": "Código de vestimenta",
+    "music": "Música",
+    "decorationTips": "Ideas de decoración",
+    "colorPalette": "Paleta de colores",
+    "games": {
+      "bingo_tasks": { "name": "Bingo de Tareas", "description": "Cada uno recibe una tarjeta de bingo con tareas divertidas que completar en la ciudad.", "instructions": "Crea tarjetas de bingo con diferentes tareas vergonzosas o divertidas. El grupo recorre la ciudad intentando completar todas las tareas. ¡El primero en completar una fila gana!" },
+      "drink_roulette": { "name": "Ruleta de Bebidas", "description": "La rueda de la fortuna decide quién bebe.", "instructions": "Gira la ruleta. La persona señalada debe tomar un chupito o un trago. Variantes: tareas en lugar de bebidas." },
+      "who_am_i": { "name": "¿Quién Soy?", "description": "Adivina la persona famosa en tu frente haciendo preguntas de sí/no.", "instructions": "Cada uno recibe un nombre (pareja famosa para despedidas) pegado en la frente. Haz preguntas de sí/no para descubrir quién eres." },
+      "flunkyball": { "name": "Flunkyball", "description": "El juego definitivo de beber al aire libre con pelota y botella.", "instructions": "Dos equipos enfrentados, una botella en medio. Lanza la pelota a la botella. Si aciertas, tu equipo bebe rápido. El otro equipo debe levantar la botella y recuperar la pelota." },
+      "beer_pong": { "name": "Beer Pong", "description": "El clásico - lanza la pelota a los vasos del oponente.", "instructions": "Coloca vasos en forma de triángulo. Los equipos lanzan por turnos. Acierto = el oponente bebe y se retira el vaso. El equipo sin vasos pierde." },
+      "groom_bride_quiz": { "name": "Quiz del Novio/Novia", "description": "¿Cuánto sabe el grupo sobre el homenajeado?", "instructions": "Prepara preguntas sobre la persona de honor. El grupo adivina las respuestas. ¡Respuestas incorrectas = castigos!" },
+      "truth_or_dare": { "name": "Verdad o Reto", "description": "El clásico para confesiones atrevidas y retos locos.", "instructions": "Por turnos cada uno elige: Verdad (responder honestamente una pregunta) o Reto (cumplir una tarea). ¡Rechazar = castigo!" },
+      "kiss_challenge": { "name": "Reto del Beso", "description": "Consigue besos de desconocidos - ¡cuantos más, mejor!", "instructions": "El homenajeado debe conseguir besos de desconocidos. Marcas de pintalabios en una camiseta blanca. ¿Quién consigue más?" },
+      "selfie_mission": { "name": "Misión Selfie", "description": "Haz selfies creativos según instrucciones.", "instructions": "Cada uno recibe una lista de tareas de selfie (ej. con un policía, en una fuente, etc.). ¡El que más complete gana!" },
+      "costume_tasks": { "name": "Tareas de Disfraces", "description": "Lleva disfraces locos y completa tareas.", "instructions": "El homenajeado debe realizar tareas en público con un disfraz vergonzoso. ¡El grupo lo documenta todo!" },
+      "bucket_list": { "name": "Reto Bucket List", "description": "Vive momentos inolvidables de una lista preparada.", "instructions": "Crea una lista de experiencias únicas. ¡Intenta tachar tantas como sea posible en este día!" },
+      "karaoke_battle": { "name": "Batalla de Karaoke", "description": "Canta para ganar - ¡no importa cómo suene!", "instructions": "Equipos o individuos compiten. El grupo vota. ¡Puntos extra por actuación y valentía!" },
+      "city_rally": { "name": "Rally Urbano", "description": "Una búsqueda del tesoro por la ciudad con tareas y acertijos.", "instructions": "Los equipos siguen pistas por la ciudad, resuelven acertijos y completan tareas. ¡El equipo más rápido gana!" },
+      "photo_scavenger_hunt": { "name": "Caza Fotográfica", "description": "Fotografía todo lo de la lista - ¡sé creativo!", "instructions": "Cada equipo recibe una lista de tareas fotográficas. Puntos por creatividad y completitud." },
+      "team_olympiad": { "name": "Olimpiadas en Equipo", "description": "Varias disciplinas, ¡un equipo campeón!", "instructions": "Planifica varias competiciones (carrera de sacos, carrera del huevo, etc.). Los equipos acumulan puntos. Al final se corona al ganador." },
+      "boot_camp": { "name": "Reto Boot Camp", "description": "Desafío fitness para todo el grupo.", "instructions": "Un entrenador o el propio grupo dirige ejercicios. ¿Quién aguanta? ¡Se necesita espíritu de equipo!" },
+      "cocktail_contest": { "name": "Concurso de Cócteles", "description": "¿Quién prepara la mejor bebida?", "instructions": "Cada uno crea su propio cóctel. Cata a ciegas y votación del grupo. ¡El mejor barman gana!" },
+      "wine_tasting": { "name": "Cata de Vinos a Ciegas", "description": "Identifica los vinos con los ojos vendados.", "instructions": "Se catan y valoran distintos vinos a ciegas. Puntos por acertar variedades o regiones." },
+      "tshirt_design": { "name": "Diseño de Camisetas", "description": "Diseña una camiseta única del grupo.", "instructions": "Con pinturas textiles se personalizan camisetas. ¡Recuerdo perfecto del día!" },
+      "embarrassing_songs": { "name": "Cantar Canciones Vergonzosas", "description": "Canta las canciones más vergonzosas en público.", "instructions": "El homenajeado debe cantar canciones vergonzosas seleccionadas en voz alta y con pasión en lugares públicos." },
+      "dare_dice": { "name": "Dados de Retos", "description": "Lanza los dados - ellos deciden el reto.", "instructions": "Tira los dados de tareas. Lo que salga, hay que hacerlo. ¡Sin excusas!" },
+      "never_have_i_ever": { "name": "Yo Nunca Nunca", "description": "Se revelan confesiones y secretos.", "instructions": "Por turnos cada uno dice 'Yo nunca...' El que sí lo haya hecho, bebe o pierde una ficha." },
+      "shoe_game": { "name": "Juego del Zapato", "description": "Los novios responden preguntas con zapatos.", "instructions": "La pareja se sienta espalda con espalda, cada uno con su zapato y uno del otro. En las preguntas levantan el zapato de quien corresponda la respuesta." },
+      "marriage_test": { "name": "Test de Compatibilidad", "description": "Divertidas pruebas testan las habilidades matrimoniales.", "instructions": "La pareja debe superar varias pruebas: cambiar pañales, dar de comer con los ojos vendados, etc." },
+      "wedding_bingo": { "name": "Bingo de Boda", "description": "Bingo con momentos típicos de boda.", "instructions": "Los invitados reciben tarjetas con escenas típicas de boda. ¡El primero en completar una fila gana!" },
+      "balloon_dancing": { "name": "Baile del Globo", "description": "Bailen en pareja con un globo entre ustedes.", "instructions": "Las parejas bailan con un globo entre ellas. ¡Si cae o explota, la pareja queda eliminada!" },
+      "bouquet_toss": { "name": "Lanzamiento del Ramo", "description": "¿Qué soltera atrapa el ramo?", "instructions": "Todas las mujeres solteras se reúnen. La novia lanza el ramo hacia atrás. ¡Quien lo atrape se casa después!" },
+      "family_feud": { "name": "Feud Familiar", "description": "Adivina las respuestas más populares de la encuesta.", "instructions": "Los equipos compiten. En cada pregunta se adivinan las respuestas más populares. ¡Puntos por aciertos!" },
+      "scavenger_hunt": { "name": "Búsqueda del Tesoro", "description": "Sigue las pistas y resuelve acertijos.", "instructions": "Esconde pistas que lleven al siguiente lugar. ¡Al final espera un tesoro o sorpresa!" },
+      "family_bingo": { "name": "Bingo Familiar", "description": "Bingo clásico para toda la familia.", "instructions": "Se cantan números o imágenes. El que complete una fila grita '¡Bingo!' Premios para los ganadores." },
+      "memory_challenge": { "name": "Reto de Memoria", "description": "Pon a prueba tu memoria con parejas de cartas.", "instructions": "Las cartas están boca abajo. Encuentra las parejas. ¡El que más encuentre gana!" },
+      "charades": { "name": "Mímica", "description": "Adivina palabras por mímica en equipos.", "instructions": "Un jugador representa un concepto solo con mímica, sin hablar. El equipo debe adivinar en el tiempo." },
+      "pictionary": { "name": "Pictionary", "description": "Dibuja y adivina conceptos contrarreloj.", "instructions": "Dibuja el concepto para que tu equipo lo adivine. ¡No se permiten letras ni símbolos!" },
+      "two_truths_lie": { "name": "Dos Verdades y Una Mentira", "description": "Adivina la mentira entre tres afirmaciones.", "instructions": "Cada uno cuenta tres hechos sobre sí mismo - dos verdaderos, uno falso. El grupo debe adivinar la mentira." },
+      "human_bingo": { "name": "Bingo Humano", "description": "Encuentra personas que coincidan con las descripciones.", "instructions": "Tarjetas de bingo con características ('Tiene mascota', 'Habla 3 idiomas'). ¡Encuentra personas que coincidan!" }
+    },
+    "themes": {
+      "80s_retro": { "name": "Fiesta Retro 80s", "description": "Colores neón, música sintetizadora y hombreras", "tips": "¡Piensa en luces de neón, bolas de discoteca y éxitos de los 80 desde A-ha hasta Madonna!" },
+      "90s_throwback": { "name": "Vuelta a los 90s", "description": "Grunge, boy bands y los primeros móviles", "tips": "¡Portadas de discos como decoración, accesorios Walkman y canciones desde Backstreet Boys hasta Nirvana!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Elegante atmósfera James Bond con mesas de juego", "tips": "¡Alfombra roja, fichas de póker, mesas de juego y cócteles elegantes!" },
+      "tropical_beach": { "name": "Playa Tropical", "description": "Ambiente caribeño con palmeras y cócteles", "tips": "¡Camisas hawaianas, antorchas tiki, bebidas de coco y música tropical!" },
+      "oktoberfest": { "name": "Oktoberfest", "description": "¡Arriba los barriles! Ambiente bávaro", "tips": "¡Mesas de cervecería, pretzels, salchichas, música de banda y dirndls obligatorios!" },
+      "mexican_fiesta": { "name": "Fiesta Mexicana", "description": "Colores brillantes, tacos y mariachi", "tips": "¡Sombreros, piñatas, banderines coloridos, margaritas y música de salsa!" },
+      "gatsby_20s": { "name": "Gatsby / Años 20", "description": "Los dorados años veinte con flapper y jazz", "tips": "¡Decoración Art Deco, champán, boas de plumas, música swing y charleston!" },
+      "pirates": { "name": "Aventura Pirata", "description": "¡Ahoy! Búsqueda del tesoro y ron", "tips": "¡Mapas del tesoro, parches de ojo, cócteles de ron y banderas piratas!" },
+      "wellness_retreat": { "name": "Retiro de Bienestar", "description": "Pura relajación - spa y autocuidado", "tips": "¡Velas, música relajante, mascarillas faciales, té y snacks saludables!" },
+      "disco_fever": { "name": "Fiebre Disco", "description": "Purpurina, bola de discoteca y funk", "tips": "¡Bola de discoteca, purpurina, playlist de Saturday Night Fever!" },
+      "neon_glow": { "name": "Neón Glow", "description": "Colores brillantes con luz negra", "tips": "¡Luz negra, colores neón, accesorios luminosos y EDM!" },
+      "garden_party": { "name": "Fiesta de Jardín", "description": "Elegante fiesta en el verde", "tips": "¡Decoración floral, sombrillas, cestas de picnic y comida ligera!" },
+      "bbq_grill": { "name": "BBQ & Parrillada", "description": "Asado con amigos y familia", "tips": "¡Parrilla, banco de jardín, luces de hilo y clásicos del BBQ!" }
+    }
+  },
+  "ideasHub": {
+    "title": "Juegos e Ideas",
+    "description": "Descubre más de 200 juegos y 50 temas para tu evento - desde despedidas hasta bodas, desde reuniones familiares hasta eventos de equipo.",
+    "tabs": {
+      "games": "Juegos",
+      "themes": "Temas"
+    },
+    "stats": {
+      "games": "Juegos",
+      "themes": "Temas",
+      "categories": "Categorías",
+      "languages": "Idiomas"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "Despedida (Él)",
+    "bachelorette": "Despedida (Ella)",
+    "wedding": "Boda",
+    "birthday": "Cumpleaños",
+    "family": "Familia",
+    "team": "Equipo",
+    "trip": "Viaje",
+    "other": "Otro"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Ideas"
+    }
   }
 }
