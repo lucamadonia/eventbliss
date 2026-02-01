@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
-import { Search, Shuffle, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Shuffle, X, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ThemeCard } from "./ThemeCard";
+import { FilterPills } from "./FilterPills";
 import { 
   themeIdeas, 
   themeCategories,
@@ -15,7 +15,8 @@ import {
   ThemeItem
 } from "@/lib/theme-ideas-library";
 
-const eventTypes: { id: EventType; emoji: string }[] = [
+const eventTypes: { id: EventType | "all"; emoji: string }[] = [
+  { id: 'all', emoji: '✨' },
   { id: 'bachelor', emoji: '🤵' },
   { id: 'bachelorette', emoji: '👰' },
   { id: 'wedding', emoji: '💒' },
@@ -40,7 +41,6 @@ export const ThemeGallery = ({ preFilterEventType }: ThemeGalleryProps) => {
 
   const filteredThemes = useMemo(() => {
     return themeIdeas.filter(theme => {
-      // Search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const nameMatch = t(theme.nameKey).toLowerCase().includes(query);
@@ -49,12 +49,10 @@ export const ThemeGallery = ({ preFilterEventType }: ThemeGalleryProps) => {
         if (!nameMatch && !descMatch && !tagMatch) return false;
       }
 
-      // Category filter
       if (selectedCategory !== "all" && theme.category !== selectedCategory) {
         return false;
       }
 
-      // Event type filter
       if (selectedEventType !== "all" && !theme.eventTypes.includes(selectedEventType)) {
         return false;
       }
@@ -82,118 +80,167 @@ export const ThemeGallery = ({ preFilterEventType }: ThemeGalleryProps) => {
     selectedCategory !== "all" || 
     (selectedEventType !== "all" && selectedEventType !== preFilterEventType);
 
+  const categoryOptions = [
+    { id: "all" as const, emoji: "✨", label: t('gamesLibrary.filters.all'), count: themeIdeas.length },
+    ...themeCategories.map(cat => ({
+      id: cat.id,
+      emoji: cat.emoji,
+      label: t(cat.labelKey),
+      count: themeIdeas.filter(theme => theme.category === cat.id).length
+    }))
+  ];
+
+  const eventTypeOptions = eventTypes.map(et => ({
+    id: et.id,
+    emoji: et.emoji,
+    label: et.id === "all" 
+      ? t('gamesLibrary.filters.all') 
+      : t(`eventTypes.${et.id}`)
+  }));
+
   return (
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder={t('gamesLibrary.searchThemesPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-12 h-12 text-base bg-card/50 border-border/50 focus:border-primary/50 transition-all"
           />
-        </div>
-        
-        <Button variant="outline" onClick={handleRandomTheme} className="gap-2">
-          <Shuffle className="w-4 h-4" />
-          <span className="hidden sm:inline">{t('gamesLibrary.randomTheme')}</span>
-        </Button>
-      </div>
-
-      {/* Category Quick Filters */}
-      <div className="flex flex-wrap gap-2">
-        <Badge
-          variant={selectedCategory === "all" ? "default" : "outline"}
-          className="cursor-pointer"
-          onClick={() => setSelectedCategory("all")}
-        >
-          {t('gamesLibrary.filters.all')} ({themeIdeas.length})
-        </Badge>
-        {themeCategories.map(cat => {
-          const count = themeIdeas.filter(t => t.category === cat.id).length;
-          return (
-            <Badge
-              key={cat.id}
-              variant={selectedCategory === cat.id ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => setSelectedCategory(cat.id)}
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+              onClick={() => setSearchQuery("")}
             >
-              {cat.emoji} {t(cat.labelKey)} ({count})
-            </Badge>
-          );
-        })}
-      </div>
-
-      {/* Event Type Filter */}
-      <div className="flex flex-wrap gap-2">
-        <span className="text-sm text-muted-foreground self-center mr-2">
-          {t('gamesLibrary.filters.eventType')}:
-        </span>
-        <Badge
-          variant={selectedEventType === "all" ? "default" : "outline"}
-          className="cursor-pointer"
-          onClick={() => setSelectedEventType("all")}
-        >
-          {t('gamesLibrary.filters.all')}
-        </Badge>
-        {eventTypes.map(et => (
-          <Badge
-            key={et.id}
-            variant={selectedEventType === et.id ? "default" : "outline"}
-            className="cursor-pointer"
-            onClick={() => setSelectedEventType(et.id)}
-          >
-            {et.emoji} {t(`eventTypes.${et.id}`)}
-          </Badge>
-        ))}
-      </div>
-
-      {/* Random Theme Display */}
-      {randomTheme && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="p-4 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-primary flex items-center gap-2">
-              <Shuffle className="w-4 h-4" />
-              {t('gamesLibrary.randomThemePick')}
-            </h3>
-            <Button variant="ghost" size="sm" onClick={() => setRandomTheme(null)}>
               <X className="w-4 h-4" />
-            </Button>
-          </div>
-          <ThemeCard theme={randomTheme} />
-        </motion.div>
-      )}
-
-      {/* Results Count */}
-      <p className="text-sm text-muted-foreground">
-        {t('gamesLibrary.themesCount', { count: filteredThemes.length })}
-      </p>
-
-      {/* Themes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredThemes.map(theme => (
-          <ThemeCard key={theme.id} theme={theme} />
-        ))}
-      </div>
-
-      {/* Empty State */}
-      {filteredThemes.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">
-            {t('gamesLibrary.noThemesFound')}
-          </p>
-          {hasActiveFilters && (
-            <Button variant="outline" onClick={clearFilters}>
-              {t('gamesLibrary.filters.clear')}
             </Button>
           )}
         </div>
+        
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button 
+            onClick={handleRandomTheme} 
+            className="gap-2 h-12 px-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+          >
+            <Shuffle className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('gamesLibrary.randomTheme')}</span>
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Category Pills */}
+      <FilterPills
+        options={categoryOptions}
+        value={selectedCategory}
+        onChange={(v) => setSelectedCategory(v as ThemeCategory | "all")}
+      />
+
+      {/* Event Type Filter */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm text-muted-foreground mr-2 font-medium">
+          {t('gamesLibrary.filters.eventType')}:
+        </span>
+        <FilterPills
+          options={eventTypeOptions}
+          value={selectedEventType}
+          onChange={(v) => setSelectedEventType(v as EventType | "all")}
+        />
+      </div>
+
+      {/* Random Theme Display */}
+      <AnimatePresence>
+        {randomTheme && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            className="p-6 rounded-2xl bg-gradient-to-r from-primary/15 via-primary/10 to-accent/15 border border-primary/30 relative overflow-hidden"
+          >
+            {/* Background decoration */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-primary/20 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-accent/20 blur-3xl" />
+            </div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display font-semibold text-lg text-primary flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  {t('gamesLibrary.randomThemePick')}
+                </h3>
+                <Button variant="ghost" size="sm" onClick={() => setRandomTheme(null)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="max-w-md">
+                <ThemeCard theme={randomTheme} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Results Count */}
+      <motion.p 
+        className="text-sm text-muted-foreground flex items-center gap-2"
+        key={filteredThemes.length}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <span className="font-semibold text-foreground">{filteredThemes.length}</span>
+        {t('gamesLibrary.themesCount', { count: filteredThemes.length })}
+      </motion.p>
+
+      {/* Themes Grid with Staggered Animation */}
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        layout
+      >
+        <AnimatePresence mode="popLayout">
+          {filteredThemes.map((theme, index) => (
+            <motion.div
+              key={theme.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ThemeCard theme={theme} index={index} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Empty State */}
+      {filteredThemes.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="text-6xl mb-4"
+          >
+            🎨
+          </motion.div>
+          <p className="text-muted-foreground mb-4 text-lg">
+            {t('gamesLibrary.noThemesFound')}
+          </p>
+          {hasActiveFilters && (
+            <Button variant="outline" onClick={clearFilters} className="gap-2">
+              <X className="w-4 h-4" />
+              {t('gamesLibrary.filters.clear')}
+            </Button>
+          )}
+        </motion.div>
       )}
     </div>
   );

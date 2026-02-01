@@ -2235,6 +2235,7 @@
       "clear": "Clear filters"
     },
     "difficulty": {
+      "label": "Difficulty",
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard"
@@ -2245,12 +2246,12 @@
     "randomTheme": "Random Theme",
     "randomPick": "Random Pick",
     "randomThemePick": "Random Theme",
-    "resultsCount": "{{count}} games found",
-    "themesCount": "{{count}} themes found",
+    "resultsCount": "games found",
+    "themesCount": "themes found",
     "noResults": "No games found. Try different filters.",
     "noThemesFound": "No themes found.",
-    "showInstructions": "Show instructions",
-    "hideInstructions": "Hide instructions",
+    "showInstructions": "Instructions",
+    "hideInstructions": "Hide",
     "showDetails": "Show details",
     "hideDetails": "Hide details",
     "materials": "Materials",
@@ -2259,6 +2260,10 @@
     "music": "Music",
     "decorationTips": "Decoration Tips",
     "colorPalette": "Color Palette",
+    "copied": "copied!",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites",
+    "back": "Back",
     "games": {
       "bingo_tasks": { "name": "Task Bingo", "description": "Everyone gets a bingo card with fun tasks to complete.", "instructions": "Create bingo cards with various embarrassing or fun tasks. The group goes through the city trying to complete all tasks. First to complete a row wins!" },
       "drink_roulette": { "name": "Drink Roulette", "description": "The wheel of fortune decides who drinks.", "instructions": "Spin the roulette wheel. The person the pointer lands on must take a shot or drink." },
@@ -2301,6 +2306,7 @@
   "ideasHub": {
     "title": "Games & Ideas",
     "description": "Discover 200+ games and 50+ themes for your event - from bachelor parties to weddings, family celebrations to team events.",
+    "badge": "Inspiration for your event",
     "tabs": {
       "games": "Games",
       "themes": "Themes"
@@ -2310,6 +2316,11 @@
       "themes": "Themes",
       "categories": "Categories",
       "languages": "Languages"
+    },
+    "cta": {
+      "title": "Ready for your event?",
+      "description": "Create your event for free and use all games and themes in your planning.",
+      "button": "Create Event"
     }
   },
   "eventTypes": {

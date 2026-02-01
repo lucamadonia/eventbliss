@@ -496,6 +496,59 @@
     background-image: var(--gradient-secondary);
   }
 
+  /* 3D Card Effects */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  /* Emoji Glow */
+  .emoji-glow {
+    filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.5));
+  }
+
+  /* Difficulty Meter */
+  .difficulty-meter {
+    @apply h-2 rounded-full bg-muted overflow-hidden;
+  }
+
+  /* Card 3D hover effect */
+  .card-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+
+  .card-3d:hover {
+    transform: rotateY(3deg) rotateX(-2deg) scale(1.02);
+  }
+
+  /* Ripple effect for buttons */
+  .ripple {
+    @apply absolute rounded-full bg-white/30 animate-ping;
+  }
+
+  /* Counter styles */
+  .counter-value {
+    @apply tabular-nums font-bold text-5xl;
+  }
+
+  /* Hover scale with transform */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 10px 40px -10px hsl(var(--primary) / 0.3);
+  }
+
   /* Animation delays */
   .delay-75 { animation-delay: 75ms; }
   .delay-100 { animation-delay: 100ms; }
