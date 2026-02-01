@@ -2199,5 +2199,132 @@
       "adjustedBy": "Adjusted by",
       "date": "Date"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "Bachelor Party Games",
+      "family_games": "Family Games",
+      "wedding_games": "Wedding Games",
+      "party_games": "Party Games",
+      "outdoor_games": "Outdoor Games",
+      "team_games": "Team Building",
+      "icebreaker": "Icebreakers",
+      "kids_friendly": "Kids Games"
+    },
+    "themeCategories": {
+      "retro": "Retro",
+      "elegant": "Elegant",
+      "casual": "Casual",
+      "adventure": "Adventure",
+      "cultural": "Cultural",
+      "seasonal": "Seasonal",
+      "costume": "Costume",
+      "relaxation": "Relaxation"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Filter results by your preferences",
+      "all": "All",
+      "category": "Category",
+      "eventType": "Event Type",
+      "difficulty": "Difficulty",
+      "kidsFriendly": "Kids Friendly",
+      "alcoholFree": "Alcohol Free",
+      "classic": "Classic",
+      "drinking": "Drinking Game",
+      "clear": "Clear filters"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "searchPlaceholder": "Search games...",
+    "searchThemesPlaceholder": "Search themes...",
+    "random": "Random",
+    "randomTheme": "Random Theme",
+    "randomPick": "Random Pick",
+    "randomThemePick": "Random Theme",
+    "resultsCount": "{{count}} games found",
+    "themesCount": "{{count}} themes found",
+    "noResults": "No games found. Try different filters.",
+    "noThemesFound": "No themes found.",
+    "showInstructions": "Show instructions",
+    "hideInstructions": "Hide instructions",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
+    "materials": "Materials",
+    "addToPlanner": "Add to Planner",
+    "dressCode": "Dress Code",
+    "music": "Music",
+    "decorationTips": "Decoration Tips",
+    "colorPalette": "Color Palette",
+    "games": {
+      "bingo_tasks": { "name": "Task Bingo", "description": "Everyone gets a bingo card with fun tasks to complete.", "instructions": "Create bingo cards with various embarrassing or fun tasks. The group goes through the city trying to complete all tasks. First to complete a row wins!" },
+      "drink_roulette": { "name": "Drink Roulette", "description": "The wheel of fortune decides who drinks.", "instructions": "Spin the roulette wheel. The person the pointer lands on must take a shot or drink." },
+      "who_am_i": { "name": "Who Am I?", "description": "Guess the famous person on your forehead through yes/no questions.", "instructions": "Everyone gets a name stuck to their forehead. Ask yes/no questions to figure out who you are." },
+      "flunkyball": { "name": "Flunkyball", "description": "The ultimate outdoor drinking game with ball and bottle.", "instructions": "Two teams face each other, bottle in the middle. Throw the ball at the bottle. If you hit, your team drinks quickly while the other team sets up the bottle." },
+      "beer_pong": { "name": "Beer Pong", "description": "The classic - throw the ball into your opponent's cups.", "instructions": "Set up cups in triangle formation. Teams take turns throwing. Hit = opponent drinks and cup is removed. Team without cups loses." },
+      "groom_bride_quiz": { "name": "Groom/Bride Quiz", "description": "How well does the group know the guest of honor?", "instructions": "Prepare questions about the honoree. The group guesses answers. Wrong answers = penalties!" },
+      "truth_or_dare": { "name": "Truth or Dare", "description": "The classic for brave confessions and crazy tasks.", "instructions": "Take turns choosing: Truth (answer honestly) or Dare (complete a task). Refusal = penalty!" },
+      "kiss_challenge": { "name": "Kiss Challenge", "description": "Collect kisses from strangers - the more the better!", "instructions": "The honoree must collect kisses from strangers. Lipstick prints on a white t-shirt. Who collects the most?" },
+      "selfie_mission": { "name": "Selfie Mission", "description": "Take creative selfies with specific requirements.", "instructions": "Everyone gets a list of selfie tasks (e.g., with a police officer, on a fountain). Most completed wins!" },
+      "costume_tasks": { "name": "Costume Tasks", "description": "Wear crazy costumes and complete tasks.", "instructions": "The honoree must complete tasks in public wearing an embarrassing costume. The group documents everything!" },
+      "bucket_list": { "name": "Bucket List Challenge", "description": "Experience unforgettable moments from a pre-made list.", "instructions": "Create a list of unique experiences. Try to check off as many as possible that day!" },
+      "karaoke_battle": { "name": "Karaoke Battle", "description": "Sing to win - no matter how off-key!", "instructions": "Teams or individuals compete. The group judges. Bonus points for performance and courage!" },
+      "city_rally": { "name": "City Rally", "description": "A scavenger hunt through the city with tasks and puzzles.", "instructions": "Teams follow clues through the city, solve puzzles, and complete tasks. The fastest team wins!" },
+      "photo_scavenger_hunt": { "name": "Photo Scavenger Hunt", "description": "Photograph everything on the list - be creative!", "instructions": "Each team gets a list of photo tasks. Points for creativity and completeness." },
+      "team_olympiad": { "name": "Team Olympiad", "description": "Multiple disciplines, one champion team!", "instructions": "Plan various competitions (sack race, egg race, etc.). Teams collect points. Winner is crowned at the end." },
+      "boot_camp": { "name": "Boot Camp Challenge", "description": "Fitness challenge for the whole group.", "instructions": "A trainer or the group leads exercises. Who can keep up? Team spirit is key!" },
+      "cocktail_contest": { "name": "Cocktail Contest", "description": "Who mixes the best drink?", "instructions": "Everyone creates their own cocktail. Blind tasting and rating by the group. Best bartender wins!" },
+      "wine_tasting": { "name": "Blind Wine Tasting", "description": "Identify wines while blindfolded.", "instructions": "Various wines are tasted blind and rated. Points for correctly guessed varieties or regions." },
+      "tshirt_design": { "name": "T-Shirt Design", "description": "Create a unique group shirt.", "instructions": "T-shirts are individually designed with fabric paints. Perfect memory of the day!" },
+      "embarrassing_songs": { "name": "Sing Embarrassing Songs", "description": "Sing the most embarrassing songs in public.", "instructions": "The honoree must sing selected embarrassing songs loudly and passionately in public places." },
+      "dare_dice": { "name": "Dare Dice", "description": "Roll your fate - the dice determines the task.", "instructions": "Roll the task dice. Whatever it shows must be done. No excuses!" },
+      "never_have_i_ever": { "name": "Never Have I Ever", "description": "Confessions and secrets are revealed.", "instructions": "Take turns saying 'Never have I ever...' Those who have done it drink or lose a chip." },
+      "charades": { "name": "Charades", "description": "Pantomime guessing in teams.", "instructions": "One player acts out a term without speaking. The team must guess within the time limit." },
+      "pictionary": { "name": "Pictionary", "description": "Draw and guess terms against the clock.", "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!" },
+      "family_feud": { "name": "Family Feud", "description": "Guess the most popular survey answers.", "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!" },
+      "scavenger_hunt": { "name": "Scavenger Hunt", "description": "Follow clues and solve puzzles.", "instructions": "Hide clues that lead to the next location. At the end, a treasure or surprise awaits!" },
+      "shoe_game": { "name": "Shoe Game", "description": "Bride and groom answer questions with shoes.", "instructions": "The couple sits back to back, each with their own shoe and one of their partner's. For questions, they raise the shoe of whoever the answer applies to." },
+      "two_truths_lie": { "name": "Two Truths and a Lie", "description": "Guess the lie among three statements.", "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!" },
+      "musical_chairs": { "name": "Musical Chairs", "description": "When the music stops, sit down fast!", "instructions": "Chairs in a circle, one fewer than players. When music stops, sit. No chair = you're out." }
+    },
+    "themes": {
+      "80s_retro": { "name": "80s Retro Party", "description": "Neon colors, synth music and shoulder pads", "tips": "Think neon lights, disco balls and 80s hits from A-ha to Madonna!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Elegant James Bond atmosphere with gaming tables", "tips": "Red carpet, poker chips, gaming tables and elegant cocktails!" },
+      "tropical_beach": { "name": "Tropical Beach", "description": "Caribbean flair with palm trees and cocktails", "tips": "Hawaiian shirts, tiki torches, coconut drinks and tropical music!" },
+      "gatsby_20s": { "name": "Gatsby / 1920s", "description": "The roaring twenties with flappers and jazz", "tips": "Art deco decor, champagne, feather boas, swing music and Charleston!" },
+      "mexican_fiesta": { "name": "Mexican Fiesta", "description": "Colorful, tacos and mariachi", "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!" }
+    }
+  },
+  "ideasHub": {
+    "title": "Games & Ideas",
+    "description": "Discover 200+ games and 50+ themes for your event - from bachelor parties to weddings, family celebrations to team events.",
+    "tabs": {
+      "games": "Games",
+      "themes": "Themes"
+    },
+    "stats": {
+      "games": "Games",
+      "themes": "Themes",
+      "categories": "Categories",
+      "languages": "Languages"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "Bachelor Party",
+    "bachelorette": "Bachelorette Party",
+    "wedding": "Wedding",
+    "birthday": "Birthday",
+    "family": "Family",
+    "team": "Team",
+    "trip": "Trip",
+    "other": "Other"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Ideas"
+    }
   }
 }
