@@ -2323,5 +2323,111 @@
       "adjustedBy": "Angepasst von",
       "date": "Datum"
     }
+  },
+  "gamesLibrary": {
+    "categories": {
+      "jga_games": "JGA-Spiele",
+      "family_games": "Familienspiele",
+      "wedding_games": "Hochzeitsspiele",
+      "party_games": "Party-Spiele",
+      "outdoor_games": "Outdoor-Spiele",
+      "team_games": "Team-Building",
+      "icebreaker": "Kennenlernspiele",
+      "kids_friendly": "Kinderspiele"
+    },
+    "themeCategories": {
+      "retro": "Retro",
+      "elegant": "Elegant",
+      "casual": "Casual",
+      "adventure": "Abenteuer",
+      "cultural": "Kulturell",
+      "seasonal": "Saisonal",
+      "costume": "Kostüm",
+      "relaxation": "Entspannung"
+    },
+    "filters": {
+      "title": "Filter",
+      "description": "Filtere die Ergebnisse nach deinen Wünschen",
+      "all": "Alle",
+      "category": "Kategorie",
+      "eventType": "Event-Typ",
+      "difficulty": "Schwierigkeit",
+      "kidsFriendly": "Kindertauglich",
+      "alcoholFree": "Alkoholfrei",
+      "classic": "Klassiker",
+      "drinking": "Trinkspiel",
+      "clear": "Filter zurücksetzen"
+    },
+    "difficulty": {
+      "easy": "Einfach",
+      "medium": "Mittel",
+      "hard": "Schwer"
+    },
+    "searchPlaceholder": "Spiele suchen...",
+    "searchThemesPlaceholder": "Themen suchen...",
+    "random": "Zufällig",
+    "randomTheme": "Zufälliges Thema",
+    "randomPick": "Zufällige Auswahl",
+    "randomThemePick": "Zufälliges Thema",
+    "resultsCount": "{{count}} Spiele gefunden",
+    "themesCount": "{{count}} Themen gefunden",
+    "noResults": "Keine Spiele gefunden. Versuche andere Filter.",
+    "noThemesFound": "Keine Themen gefunden.",
+    "showInstructions": "Anleitung zeigen",
+    "hideInstructions": "Anleitung ausblenden",
+    "showDetails": "Details zeigen",
+    "hideDetails": "Details ausblenden",
+    "materials": "Material",
+    "addToPlanner": "Zum Planer hinzufügen",
+    "dressCode": "Dresscode",
+    "music": "Musik",
+    "decorationTips": "Deko-Tipps",
+    "colorPalette": "Farbpalette",
+    "games": {
+      "bingo_tasks": { "name": "Aufgaben-Bingo", "description": "Jeder erhält eine Bingo-Karte mit lustigen Aufgaben, die erledigt werden müssen.", "instructions": "Erstelle Bingo-Karten mit verschiedenen Aufgaben. Wer zuerst eine Reihe voll hat, gewinnt!" },
+      "drink_roulette": { "name": "Trink-Roulette", "description": "Das Glücksrad entscheidet, wer trinken muss.", "instructions": "Drehe das Rad - wer getroffen wird, trinkt!" },
+      "who_am_i": { "name": "Wer bin ich?", "description": "Errate die Person auf deinem Zettel durch Ja/Nein-Fragen.", "instructions": "Jeder bekommt einen Namen auf die Stirn geklebt und muss erraten, wer er ist." },
+      "flunkyball": { "name": "Flunkyball", "description": "Das ultimative Outdoor-Trinkspiel mit Ball und Flasche.", "instructions": "Zwei Teams werfen auf eine Flasche. Wer trifft, trinkt - das andere Team muss die Flasche aufstellen." },
+      "beer_pong": { "name": "Beer Pong", "description": "Der Klassiker - wirf den Ball in die Becher des Gegners.", "instructions": "Wirf Tischtennisbälle in die Becher des gegnerischen Teams. Treffer = Gegner trinkt." },
+      "shoe_game": { "name": "Schuhspiel", "description": "Braut und Bräutigam beantworten Fragen, indem sie einen Schuh hochhalten.", "instructions": "Das Paar sitzt Rücken an Rücken. Bei jeder Frage heben sie den Schuh der Person hoch, auf die die Antwort zutrifft." },
+      "charades": { "name": "Scharade", "description": "Pantomime-Raten in Teams.", "instructions": "Ein Spieler stellt einen Begriff pantomimisch dar, das Team muss raten." },
+      "pictionary": { "name": "Pictionary", "description": "Zeichne und rate Begriffe gegen die Zeit.", "instructions": "Zeichne den Begriff so, dass dein Team ihn erraten kann - aber ohne Worte!" },
+      "family_feud": { "name": "Familien-Duell", "description": "Erratet die häufigsten Antworten zu Umfragen.", "instructions": "Teams treten gegeneinander an und versuchen, die populärsten Antworten zu erraten." },
+      "scavenger_hunt": { "name": "Schnitzeljagd", "description": "Folge Hinweisen und löse Rätsel.", "instructions": "Folge den Hinweisen von Station zu Station bis zum Ziel." }
+    },
+    "themes": {
+      "80s_retro": { "name": "80er Retro Party", "description": "Neonfarben, Synthesizer-Musik und Schulterpolster", "tips": "Denke an Neonlichter, Diskokugeln und 80er Hits!" },
+      "casino_royale": { "name": "Casino Royale", "description": "Elegante James-Bond-Atmosphäre mit Spieltischen", "tips": "Roter Teppich, Poker-Chips und Cocktails" },
+      "tropical_beach": { "name": "Tropical Beach", "description": "Karibisches Flair mit Palmen und Cocktails", "tips": "Hawaii-Hemden, Tiki-Fackeln und tropische Drinks" }
+    }
+  },
+  "ideasHub": {
+    "title": "Spiele & Ideen",
+    "description": "Entdecke über 200 Spiele und 50 Themen für dein Event - von JGA bis Hochzeit, von Familienfeiern bis Team-Events.",
+    "tabs": {
+      "games": "Spiele",
+      "themes": "Themen"
+    },
+    "stats": {
+      "games": "Spiele",
+      "themes": "Themen",
+      "categories": "Kategorien",
+      "languages": "Sprachen"
+    }
+  },
+  "eventTypes": {
+    "bachelor": "JGA (Er)",
+    "bachelorette": "JGA (Sie)",
+    "wedding": "Hochzeit",
+    "birthday": "Geburtstag",
+    "family": "Familie",
+    "team": "Team",
+    "trip": "Reise",
+    "other": "Sonstiges"
+  },
+  "landing": {
+    "nav": {
+      "ideas": "Ideen"
+    }
   }
 }
