@@ -55,7 +55,7 @@
     "betaBadge": "Beta Sürümü"
   },
 "landing": {
-    "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt", "partner": "Ortaklar" },
+    "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "ideas": "Fikirler", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt", "partner": "Ortaklar" },
     "hero": { "badge": "#1 Etkinlik Planlama Platformu", "title": "Unutulmaz Etkinlikler Planlayın", "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.", "createEvent": "Etkinlik Oluştur", "joinEvent": "Kod ile Katıl", "trustedBy": "10.000'den fazla organizatör bize güveniyor" },
     "features": { "title": "İhtiyacınız olan her şey", "subtitle": "Mükemmel etkinlik için güçlü araçlar", 
       "multiEvent": { "title": "Çoklu Etkinlik Yönetimi", "description": "Birden fazla etkinliği aynı anda yönetin" }, 
@@ -219,7 +219,7 @@
       }
     },
     "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
-    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "becomeAgencyPartner": "Ajans ortağı olun", "partnerPortal": "Ortak Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." },
+    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "becomeAgencyPartner": "Ajans ortağı olun", "partnerPortal": "Ortak Portalı", "agencyPortal": "Ajans Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." },
     "agencyPortal": {
       "title": "Ajans Portalı",
       "welcome": "Tekrar hoş geldiniz",

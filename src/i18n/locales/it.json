@@ -55,7 +55,7 @@
     "betaBadge": "Versione Beta"
   },
 "landing": {
-    "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati", "partner": "Partner" },
+    "nav": { "features": "Funzionalità", "howItWorks": "Come funziona", "ideas": "Idee", "solutions": "Soluzioni", "faq": "FAQ", "login": "Accedi", "signUp": "Registrati", "partner": "Partner" },
     "hero": { "badge": "La piattaforma #1 per la pianificazione eventi", "title": "Pianifica Eventi Indimenticabili", "subtitle": "Dagli addii al celibato ai compleanni, organizza eventi di gruppo con facilità. Divisione intelligente dei costi, suggerimenti AI e collaborazione in tempo reale.", "createEvent": "Crea Evento", "joinEvent": "Partecipa con Codice", "trustedBy": "Oltre 10.000 organizzatori si fidano di noi" },
     "features": {
       "title": "Tutto ciò di cui hai bisogno", "subtitle": "Strumenti potenti per l'evento perfetto",
@@ -225,7 +225,7 @@
       }
     },
     "cta": { "title": "Pronto per il tuo Prossimo Evento?", "description": "Inizia gratis e crea ricordi indimenticabili.", "button": "Crea il tuo Evento" },
-    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "becomeAgencyPartner": "Diventa partner agenzia", "partnerPortal": "Portale partner", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." },
+    "footer": { "tagline": "Pianifica eventi che uniscono le persone", "product": "Prodotto", "features": "Funzionalità", "integrations": "Integrazioni", "enterprise": "Enterprise", "solutions": "Soluzioni", "partner": "Partner", "becomePartner": "Diventa partner", "becomeAgencyPartner": "Diventa partner agenzia", "partnerPortal": "Portale partner", "agencyPortal": "Portale Agenzia", "legal": "Legale", "imprint": "Note Legali", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Termini", "contact": "Contatto", "address": "Gladstonos 12-14, 8042 Paphos, Cipro", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tutti i diritti riservati." },
     "agencyPortal": {
       "title": "Portale Agenzia",
       "welcome": "Bentornato",

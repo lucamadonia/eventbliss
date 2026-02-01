@@ -55,7 +55,7 @@
     "betaBadge": "Bètaversie"
   },
 "landing": {
-    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners" },
+    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "ideas": "Ideeën", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners" },
     "hero": { "badge": "Het #1 evenementenplanningsplatform", "title": "Plan Onvergetelijke Evenementen", "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.", "createEvent": "Evenement Maken", "joinEvent": "Deelnemen met Code", "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons" },
     "features": {
       "title": "Alles wat je nodig hebt", "subtitle": "Krachtige tools voor het perfecte evenement",
@@ -225,7 +225,7 @@
       }
     },
     "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
-    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "becomeAgencyPartner": "Word agenturpartner", "partnerPortal": "Partner portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." },
+    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "becomeAgencyPartner": "Word agenturpartner", "partnerPortal": "Partner portaal", "agencyPortal": "Agentschap Portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." },
     "agencyPortal": {
       "title": "Agentuurportaal",
       "welcome": "Welkom terug",
