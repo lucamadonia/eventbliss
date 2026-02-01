@@ -1506,6 +1506,5 @@
     }
   },
   "ideasHub": { "title": "Gry i Pomysły", "description": "Odkryj ponad 200 gier i 50 tematów na swoje wydarzenie.", "tabs": { "games": "Gry", "themes": "Tematy" }, "stats": { "games": "Gry", "themes": "Tematy", "categories": "Kategorie", "languages": "Języki" } },
-  "eventTypes": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "wedding": "Wesele", "birthday": "Urodziny", "family": "Rodzina", "team": "Zespół", "trip": "Wyjazd", "other": "Inne" },
-  "landing": { "nav": { "ideas": "Pomysły" } }
+  "eventTypes": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "wedding": "Wesele", "birthday": "Urodziny", "family": "Rodzina", "team": "Zespół", "trip": "Wyjazd", "other": "Inne" }
 }
