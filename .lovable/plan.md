@@ -1,73 +1,152 @@
 
-## Ziel
-Die i18n-Fehler auf der kompletten Startseite (Route `/`) beheben, sodass keine rohen Keys wie `landing.hero.title` / `landing.features...` mehr angezeigt werden.
+# Plan: Detaillierte Spiele-Anleitungen erweitern
 
----
+## Problem
 
-## Diagnose (Ursache)
-In praktisch allen Sprachdateien gibt es **doppelte Root-Keys** namens `"landing"`.
+Die aktuellen Spielanleitungen in der Games Library sind zu kurz und oberflächlich. Die meisten Anleitungen bestehen nur aus 1-2 Sätzen und bieten nicht genug Informationen für die Durchführung der Spiele.
 
-JSON erlaubt zwar syntaktisch doppelte Keys, aber beim Parsen gilt: **der letzte Key gewinnt**.  
-Dadurch überschreibt am Dateiende ein kleiner Block wie:
-
-```json
-"landing": { "nav": { "ideas": "Ideen" } }
+**Beispiel (aktuell):**
+```
+"beer_pong": { 
+  "instructions": "Stellt Becher in Dreiecksform auf. Abwechselnd werfen die Teams. Treffer = Gegner trinkt und Becher wird entfernt. Team ohne Becher verliert." 
+}
 ```
 
-die komplette, eigentlich vorhandene Landing-Übersetzungsstruktur (Hero, Features, FAQ, Footer etc.). Ergebnis: Die Startseite findet die meisten `landing.*` Keys nicht mehr → i18n zeigt die Keys als Text.
-
-Beispiel ist sichtbar in `src/i18n/locales/pt.json` (am Ende steht nochmal `"landing": {...}`), ebenso in `de.json`, `es.json`, `fr.json`, `ar.json` und auch `en.json`.
-
----
-
-## Umsetzung (Code-Änderungen)
-### 1) Doppelte `landing`-Blocks am Dateiende entfernen (alle 10 Sprachen)
-In diesen Dateien den **zweiten** (späteren) `"landing": { "nav": { "ideas": ... } }`-Block entfernen:
-
-- `src/i18n/locales/de.json`
-- `src/i18n/locales/en.json`
-- `src/i18n/locales/es.json`
-- `src/i18n/locales/fr.json`
-- `src/i18n/locales/it.json`
-- `src/i18n/locales/nl.json`
-- `src/i18n/locales/pl.json`
-- `src/i18n/locales/pt.json`
-- `src/i18n/locales/tr.json`
-- `src/i18n/locales/ar.json`
-
-Wichtig dabei:
-- Wenn der entfernte Block **das letzte Property** war, muss das Property direkt davor **ohne trailing comma** enden.  
-  Beispiel `pt.json`: Nach dem Entfernen muss `"eventTypes": {...}` ohne Komma enden.
-
-### 2) Sicherstellen, dass die Keys im “richtigen” Landing-Block vorhanden sind
-In den “ersten” Landing-Blöcken (die großen, vollständigen) prüfen:
-- `landing.nav.ideas` ist in den großen Blöcken bereits vorhanden (z.B. `de.json` Zeile ~64).
-- `landing.footer.agencyPortal` ist ebenfalls bereits vorhanden in `landing.footer` (z.B. `de.json` Zeile ~303).
-
-Falls in einer Sprache ausnahmsweise doch fehlend, wird es **im ersten Landing-Block** ergänzt (nicht erneut am Dateiende).
+**Was fehlt:**
+- Detaillierte Schritt-für-Schritt-Anleitung
+- Vorbereitung und Setup
+- Varianten und Abwandlungen
+- Tipps und Tricks
+- Häufige Fehler
 
 ---
 
-## Optionaler Guard (damit das nicht wieder passiert)
-Um zukünftige i18n-Probleme schneller zu erkennen:
-- In `src/i18n/index.ts` in DEV einen `missingKey`-Logger aktivieren (z.B. `i18n.on('missingKey', ...)`), der in der Konsole klar zeigt, welche Keys fehlen.
-- Zusätzlich (optional) eine kleine “Landing sanity check”-Utility im Frontend, die beim Rendern von `/` einmal prüft, ob zentrale Keys existieren (z.B. `landing.hero.title`, `landing.footer.tagline`) und im DEV-Modus warnt.
+## Lösung
 
-Das ist nicht zwingend nötig, hilft aber, wenn später wieder viele Keys auf einmal geändert werden.
+Erweitern aller 70+ Spielanleitungen mit detaillierten Beschreibungen:
+
+### Neue Struktur pro Spiel
+
+Jede Anleitung wird von ~30-50 Wörtern auf ~150-250 Wörter erweitert mit folgenden Abschnitten:
+
+1. **Vorbereitung** - Was wird vor dem Spiel benötigt?
+2. **Spielablauf** - Schritt-für-Schritt Erklärung
+3. **Regeln** - Wichtige Spielregeln
+4. **Varianten** - Alternative Spielweisen
+5. **Tipps** - Empfehlungen für mehr Spaß
 
 ---
 
-## Testplan (End-to-End)
-1) Startseite `/` öffnen
-2) Prüfen, dass Headline/Subheadline/Buttons im Hero korrekt übersetzt sind (keine `landing.*` Keys mehr sichtbar).
-3) Footer prüfen (Tagline, Links, Legal, Kontakt) – insbesondere “Agency Portal”.
-4) Sprache über LanguageSwitcher durchtesten: `de`, `en`, `es`, `fr`, `it`, `nl`, `pl`, `pt`, `tr`, `ar`
-5) Bei `ar`: prüfen, dass RTL weiterhin korrekt greift (Layout/Alignment).
-6) Hard Reload (Cache umgehen) falls im Browser noch alte Bundles geladen sind.
+## Beispiel: Erweiterte Anleitung
+
+**Beer Pong (aktuell - 38 Wörter):**
+```
+"Stellt Becher in Dreiecksform auf. Abwechselnd werfen die Teams. Treffer = Gegner trinkt und Becher wird entfernt. Team ohne Becher verliert."
+```
+
+**Beer Pong (erweitert - ~200 Wörter):**
+```
+**Vorbereitung:** Stellt 10 Becher pro Team in einer Pyramiden-Formation (4-3-2-1) auf beiden Seiten eines langen Tisches auf. Füllt jeden Becher zu etwa einem Drittel mit Bier. Stellt zusätzlich Wasserbecher zum Reinigen der Bälle bereit.
+
+**Spielablauf:** Zwei Teams stehen sich gegenüber. Abwechselnd wirft jeder Spieler einen Tischtennisball und versucht, ihn in einen gegnerischen Becher zu werfen. Trifft der Ball, muss das gegnerische Team den Becher leertrinken und ihn entfernen.
+
+**Regeln:** 
+• Bei "On Fire" (2+ Treffer hintereinander) darf weiter geworfen werden
+• "Ellbow-Regel": Der Ellbogen darf die Tischkante nicht überqueren
+• "Re-Rack": Jedes Team darf 1-2 mal eine Neuformierung der Becher verlangen
+• Beide Spieler treffen = Bälle zurück, nochmal werfen
+
+**Varianten:** 
+• "Death Cup" - Wer in einen noch vollen Becher trifft, während jemand trinkt, gewinnt sofort
+• "Bounce-Shot" - Ein abgeprallter Ball zählt doppelt, darf aber abgewehrt werden
+
+**Tipps:** Übung macht den Meister! Der perfekte Wurf hat einen leichten Bogen. Für alkoholfreie Varianten: Wasser in den Bechern, Shots daneben zum Trinken.
+```
+
+---
+
+## Technische Umsetzung
+
+### Zu ändernde Dateien
+
+| Datei | Aktion | Beschreibung |
+|-------|--------|--------------|
+| `src/i18n/locales/de.json` | Update | ~70 Spielanleitungen erweitern |
+| `src/i18n/locales/en.json` | Update | ~70 Spielanleitungen erweitern (Englisch) |
+
+**Hinweis:** Die anderen 8 Sprachen werden vorerst nicht aktualisiert, da sie entweder nur Fallback auf DE/EN nutzen oder separat übersetzt werden müssten.
+
+### UI-Anpassungen
+
+Die `GameCard.tsx` ist bereits für längere Texte vorbereitet:
+- ScrollArea für die Anleitung
+- Card-Flip Animation für Details
+- Copy-Button für Anleitung
+
+**Optional (kleinere Verbesserungen):**
+- Markdown-Unterstützung für formatierte Anleitungen (Fett, Listen)
+- Abschnitte visuell trennen
+
+---
+
+## Priorisierte Spiele (Phase 1 - Top 30)
+
+Diese Spiele werden zuerst erweitert, da sie am häufigsten genutzt werden:
+
+### JGA-Klassiker (10)
+1. Beer Pong
+2. Flunkyball
+3. Wahrheit oder Pflicht
+4. Aufgaben-Bingo
+5. Junggesellen-Quiz
+6. Trink-Roulette
+7. Ich hab noch nie
+8. Stadtrallye
+9. Kuss-Challenge
+10. Klopapier-Brautkleid
+
+### Hochzeitsspiele (10)
+11. Schuhspiel
+12. Mr & Mrs Quiz
+13. Zeitungs-Tanz
+14. Braut stehlen
+15. Hochzeits-Bingo
+16. Polaroid-Gästebuch
+17. Jubiläums-Tanz
+18. Brautstrauß werfen
+19. Ring-Wärmen
+20. Kuss-Marathon
+
+### Party & Familie (10)
+21. Scharade
+22. Activity
+23. Tabu
+24. Cards Against Humanity
+25. Schnitzeljagd
+26. Mörderisches Dinner
+27. Wikingerschach
+28. Sackhüpfen
+29. Eierlaufen
+30. Reise nach Jerusalem
+
+---
+
+## Aufwand & Zeitplan
+
+| Phase | Inhalt | Spiele | Status |
+|-------|--------|--------|--------|
+| Phase 1 | Top 30 Spiele | 30 | Zu implementieren |
+| Phase 2 | Weitere JGA/Party | 25 | Später |
+| Phase 3 | Icebreaker & Team | 15 | Später |
+
+**Geschätzter Aufwand pro Spiel:** ~5-10 Minuten (Recherche + Schreiben)
 
 ---
 
 ## Erwartetes Ergebnis
-- Die Landing-Seite hat wieder ihre vollständigen Übersetzungen.
-- Keine “rohen” i18n-Schlüssel mehr sichtbar.
-- Übersetzungen funktionieren wieder stabil in allen 10 Sprachen, inkl. RTL für Arabisch.
+
+Nach der Erweiterung:
+- Jede Spielanleitung hat 150-250 Wörter statt 20-50
+- Klare Struktur mit Vorbereitung, Ablauf, Regeln, Varianten
+- Praktisch umsetzbare Anleitungen für sofortige Nutzung
+- Bessere User Experience in der Ideas Hub
