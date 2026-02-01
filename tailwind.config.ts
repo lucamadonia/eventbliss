@@ -145,6 +145,24 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.3)" },
           "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.6)" },
         },
+        "tilt-3d": {
+          "0%, 100%": { transform: "rotateY(0deg) rotateX(0deg)" },
+          "25%": { transform: "rotateY(5deg) rotateX(-2deg)" },
+          "75%": { transform: "rotateY(-5deg) rotateX(2deg)" },
+        },
+        "float-random": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "25%": { transform: "translateY(-15px) rotate(5deg)" },
+          "75%": { transform: "translateY(10px) rotate(-3deg)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+        "card-flip": {
+          "0%": { transform: "rotateY(0deg)" },
+          "100%": { transform: "rotateY(180deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -160,6 +178,10 @@ export default {
         "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
         float: "float 6s ease-in-out infinite",
         glow: "glow 2s ease-in-out infinite",
+        "tilt-3d": "tilt-3d 4s ease-in-out infinite",
+        "float-random": "float-random 8s ease-in-out infinite",
+        shimmer: "shimmer 2s infinite linear",
+        "card-flip": "card-flip 0.6s ease-in-out",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

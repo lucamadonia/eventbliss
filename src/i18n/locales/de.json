@@ -2359,6 +2359,7 @@
       "clear": "Filter zurücksetzen"
     },
     "difficulty": {
+      "label": "Schwierigkeit",
       "easy": "Einfach",
       "medium": "Mittel",
       "hard": "Schwer"
@@ -2369,20 +2370,24 @@
     "randomTheme": "Zufälliges Thema",
     "randomPick": "Zufällige Auswahl",
     "randomThemePick": "Zufälliges Thema",
-    "resultsCount": "{{count}} Spiele gefunden",
-    "themesCount": "{{count}} Themen gefunden",
+    "resultsCount": "Spiele gefunden",
+    "themesCount": "Themen gefunden",
     "noResults": "Keine Spiele gefunden. Versuche andere Filter.",
     "noThemesFound": "Keine Themen gefunden.",
-    "showInstructions": "Anleitung zeigen",
-    "hideInstructions": "Anleitung ausblenden",
+    "showInstructions": "Anleitung",
+    "hideInstructions": "Ausblenden",
     "showDetails": "Details zeigen",
     "hideDetails": "Details ausblenden",
     "materials": "Material",
-    "addToPlanner": "Zum Planer hinzufügen",
+    "addToPlanner": "Zum Planer",
     "dressCode": "Dresscode",
     "music": "Musik",
     "decorationTips": "Deko-Tipps",
     "colorPalette": "Farbpalette",
+    "copied": "kopiert!",
+    "addedToFavorites": "Zu Favoriten hinzugefügt",
+    "removedFromFavorites": "Aus Favoriten entfernt",
+    "back": "Zurück",
     "games": {
       "bingo_tasks": { "name": "Aufgaben-Bingo", "description": "Jeder erhält eine Bingo-Karte mit lustigen Aufgaben, die in der Stadt erledigt werden müssen.", "instructions": "Erstelle Bingo-Karten mit verschiedenen peinlichen oder lustigen Aufgaben. Die Gruppe zieht durch die Stadt und versucht, alle Aufgaben zu erledigen. Wer zuerst eine Reihe voll hat, gewinnt!" },
       "drink_roulette": { "name": "Trink-Roulette", "description": "Das Glücksrad entscheidet, wer trinken muss.", "instructions": "Drehe das Roulette-Rad. Die Person, auf die der Zeiger zeigt, muss einen Shot oder Schluck trinken. Varianten: Aufgaben statt Trinken." },
@@ -2588,6 +2593,7 @@
   "ideasHub": {
     "title": "Spiele & Ideen",
     "description": "Entdecke über 200 Spiele und 50 Themen für dein Event - von JGA bis Hochzeit, von Familienfeiern bis Team-Events.",
+    "badge": "Inspiration für dein Event",
     "tabs": {
       "games": "Spiele",
       "themes": "Themen"
@@ -2597,6 +2603,11 @@
       "themes": "Themen",
       "categories": "Kategorien",
       "languages": "Sprachen"
+    },
+    "cta": {
+      "title": "Bereit für dein Event?",
+      "description": "Erstelle jetzt kostenlos dein Event und nutze alle Spiele und Themen in deiner Planung.",
+      "button": "Event erstellen"
     }
   },
   "eventTypes": {
