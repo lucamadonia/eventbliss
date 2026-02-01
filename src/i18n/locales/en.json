@@ -61,6 +61,7 @@
     "nav": {
       "features": "Features",
       "howItWorks": "How It Works",
+      "ideas": "Ideas",
       "solutions": "Solutions",
       "faq": "FAQ",
       "login": "Login",
@@ -299,6 +300,7 @@
       "becomePartner": "Become a Partner",
       "becomeAgencyPartner": "Become Agency Partner",
       "partnerPortal": "Partner Portal",
+      "agencyPortal": "Agency Portal",
       "legal": "Legal",
       "imprint": "Imprint",
       "disclaimer": "Disclaimer",

@@ -55,7 +55,7 @@
     "betaBadge": "Version Bêta"
   },
 "landing": {
-    "nav": { "features": "Fonctionnalités", "howItWorks": "Comment ça marche", "solutions": "Solutions", "faq": "FAQ", "login": "Connexion", "signUp": "S'inscrire", "partner": "Partenaires" },
+    "nav": { "features": "Fonctionnalités", "howItWorks": "Comment ça marche", "ideas": "Idées", "solutions": "Solutions", "faq": "FAQ", "login": "Connexion", "signUp": "S'inscrire", "partner": "Partenaires" },
     "hero": { "badge": "La plateforme #1 de planification d'événements", "title": "Planifiez des Événements Inoubliables", "subtitle": "Des enterrements de vie de garçon aux anniversaires, organisez des événements de groupe facilement. Partage intelligent des coûts, suggestions IA et collaboration en temps réel.", "createEvent": "Créer un Événement", "joinEvent": "Rejoindre avec Code", "trustedBy": "Plus de 10 000 organisateurs nous font confiance" },
     "features": {
       "title": "Tout ce dont vous avez besoin", "subtitle": "Outils puissants pour l'événement parfait",
@@ -225,7 +225,7 @@
       }
     },
     "cta": { "title": "Prêt pour votre Prochain Événement?", "description": "Commencez gratuitement et créez des souvenirs inoubliables.", "button": "Créer votre Événement" },
-    "footer": { "tagline": "Planifiez des événements qui rassemblent", "product": "Produit", "features": "Fonctionnalités", "integrations": "Intégrations", "enterprise": "Entreprise", "solutions": "Solutions", "partner": "Partenaires", "becomePartner": "Devenir partenaire", "becomeAgencyPartner": "Devenir partenaire agence", "partnerPortal": "Portail partenaire", "legal": "Légal", "imprint": "Mentions Légales", "disclaimer": "Avertissement", "privacy": "Confidentialité", "terms": "Conditions", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Chypre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tous droits réservés." },
+    "footer": { "tagline": "Planifiez des événements qui rassemblent", "product": "Produit", "features": "Fonctionnalités", "integrations": "Intégrations", "enterprise": "Entreprise", "solutions": "Solutions", "partner": "Partenaires", "becomePartner": "Devenir partenaire", "becomeAgencyPartner": "Devenir partenaire agence", "partnerPortal": "Portail partenaire", "agencyPortal": "Portail Agence", "legal": "Légal", "imprint": "Mentions Légales", "disclaimer": "Avertissement", "privacy": "Confidentialité", "terms": "Conditions", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Chypre", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tous droits réservés." },
     "agencyPortal": {
       "title": "Portail Agence",
       "welcome": "Bienvenue",

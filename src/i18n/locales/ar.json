@@ -55,7 +55,7 @@
     "betaBadge": "نسخة تجريبية"
   },
 "landing": {
-    "nav": { "features": "المميزات", "howItWorks": "كيف يعمل", "solutions": "الحلول", "faq": "الأسئلة الشائعة", "login": "تسجيل الدخول", "signUp": "التسجيل", "partner": "الشركاء" },
+    "nav": { "features": "المميزات", "howItWorks": "كيف يعمل", "ideas": "أفكار", "solutions": "الحلول", "faq": "الأسئلة الشائعة", "login": "تسجيل الدخول", "signUp": "التسجيل", "partner": "الشركاء" },
     "hero": { "badge": "منصة #1 لتخطيط الفعاليات", "title": "خطط لفعاليات لا تُنسى", "subtitle": "من حفلات توديع العزوبية إلى أعياد الميلاد، نظم فعاليات جماعية بسهولة. تقسيم ذكي للتكاليف واقتراحات AI وتعاون في الوقت الفعلي.", "createEvent": "إنشاء فعالية", "joinEvent": "الانضمام بكود", "trustedBy": "يثق بنا أكثر من 10,000 منظم" },
     "features": { "title": "كل ما تحتاجه", "subtitle": "أدوات قوية للفعالية المثالية", 
       "multiEvent": { "title": "إدارة فعاليات متعددة", "description": "أدر عدة فعاليات في وقت واحد" }, 
@@ -219,7 +219,7 @@
       }
     },
     "cta": { "title": "مستعد لفعاليتك القادمة؟", "description": "ابدأ مجاناً واصنع ذكريات لا تُنسى.", "button": "أنشئ فعاليتك" },
-    "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "becomeAgencyPartner": "كن شريك وكالة", "partnerPortal": "بوابة الشركاء", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." },
+    "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "becomeAgencyPartner": "كن شريك وكالة", "partnerPortal": "بوابة الشركاء", "agencyPortal": "بوابة الوكالة", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." },
     "agencyPortal": {
       "title": "بوابة الوكالة",
       "welcome": "مرحباً بعودتك",
