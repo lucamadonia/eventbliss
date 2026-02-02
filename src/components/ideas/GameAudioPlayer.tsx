@@ -37,6 +37,20 @@ const languageVoiceMap: Record<string, string> = {
   ar: "ar-SA"
 };
 
+// Preferred voice patterns - prioritize high-quality voices from Google, Microsoft, Apple
+const preferredVoicePatterns: Record<string, string[]> = {
+  de: ["Google Deutsch", "Microsoft Katja", "Microsoft Hedda", "Anna", "Petra", "Helena"],
+  en: ["Google US English", "Google UK English Female", "Microsoft Zira", "Samantha", "Karen", "Moira"],
+  es: ["Google español", "Microsoft Helena", "Microsoft Laura", "Monica", "Paulina"],
+  fr: ["Google français", "Microsoft Julie", "Microsoft Caroline", "Amélie", "Thomas"],
+  it: ["Google italiano", "Microsoft Elsa", "Alice", "Federica"],
+  nl: ["Google Nederlands", "Microsoft", "Ellen", "Xander"],
+  pl: ["Google polski", "Microsoft Paulina", "Zosia", "Ewa"],
+  pt: ["Google português", "Microsoft Maria", "Joana", "Luciana"],
+  tr: ["Google Türkçe", "Microsoft Tolga", "Yelda"],
+  ar: ["Google العربية", "Microsoft", "Maged", "Laila"]
+};
+
 export const GameAudioPlayer = ({ text, language = "de", onClose, compact = false }: GameAudioPlayerProps) => {
   const { t, i18n } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -59,22 +73,30 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   const currentLang = language || i18n.language || "de";
   const speechLang = languageVoiceMap[currentLang] || "de-DE";
 
-  // Load voices
+  // Load voices with retry logic for Chrome
   useEffect(() => {
     synthRef.current = window.speechSynthesis;
     
     const loadVoices = () => {
       const voices = synthRef.current?.getVoices() || [];
-      setAvailableVoices(voices);
+      if (voices.length > 0) {
+        setAvailableVoices(voices);
+      }
     };
     
+    // Initial load
     loadVoices();
     
+    // Chrome loads voices asynchronously
     if (synthRef.current) {
       synthRef.current.onvoiceschanged = loadVoices;
     }
     
+    // Fallback: retry after short delay (some browsers need this)
+    const retryTimeout = setTimeout(loadVoices, 100);
+    
     return () => {
+      clearTimeout(retryTimeout);
       if (synthRef.current) {
         synthRef.current.cancel();
       }
@@ -84,25 +106,55 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     };
   }, []);
 
-  // Find best matching voice
+  // Find best matching voice with quality prioritization
   const getBestVoice = useCallback(() => {
     if (!availableVoices.length) return null;
     
-    // Try to find a voice matching the exact locale
-    let voice = availableVoices.find(v => v.lang === speechLang);
+    const langPrefix = speechLang.split("-")[0];
+    const preferredPatterns = preferredVoicePatterns[langPrefix] || [];
     
-    // Fallback to language prefix
-    if (!voice) {
-      const langPrefix = speechLang.split("-")[0];
-      voice = availableVoices.find(v => v.lang.startsWith(langPrefix));
-    }
-    
-    // Prefer female voices for better clarity
-    const femaleVoice = availableVoices.find(
-      v => v.lang.startsWith(speechLang.split("-")[0]) && v.name.toLowerCase().includes("female")
+    // Get all voices for this language
+    const languageVoices = availableVoices.filter(v => 
+      v.lang === speechLang || v.lang.startsWith(langPrefix)
     );
     
-    return femaleVoice || voice || availableVoices[0];
+    if (languageVoices.length === 0) {
+      return availableVoices[0];
+    }
+    
+    // 1. Try preferred voice patterns (Google, Microsoft, Apple high-quality)
+    for (const pattern of preferredPatterns) {
+      const match = languageVoices.find(v => 
+        v.name.toLowerCase().includes(pattern.toLowerCase())
+      );
+      if (match) return match;
+    }
+    
+    // 2. Prefer Google voices (they're generally highest quality in Chrome)
+    const googleVoice = languageVoices.find(v => v.name.includes("Google"));
+    if (googleVoice) return googleVoice;
+    
+    // 3. Prefer Microsoft voices (good quality on Windows/Edge)
+    const microsoftVoice = languageVoices.find(v => v.name.includes("Microsoft"));
+    if (microsoftVoice) return microsoftVoice;
+    
+    // 4. Prefer non-compact/enhanced voices (often have "Enhanced" or "Premium" in name)
+    const enhancedVoice = languageVoices.find(v => 
+      v.name.toLowerCase().includes("enhanced") || 
+      v.name.toLowerCase().includes("premium") ||
+      v.name.toLowerCase().includes("neural")
+    );
+    if (enhancedVoice) return enhancedVoice;
+    
+    // 5. Prefer female voices (often clearer for instructions)
+    const femalePatterns = ["female", "frau", "mujer", "femme", "donna", "kobieta"];
+    const femaleVoice = languageVoices.find(v => 
+      femalePatterns.some(p => v.name.toLowerCase().includes(p))
+    );
+    if (femaleVoice) return femaleVoice;
+    
+    // 6. Return first available voice for the language
+    return languageVoices[0];
   }, [availableVoices, speechLang]);
 
   // Clean text for speech (remove markdown)
