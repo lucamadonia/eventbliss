@@ -1,99 +1,162 @@
 
-# Plan: Bessere TTS mit ElevenLabs Integration
+
+# Plan: Neuronale TTS mit VITS-Web + Stimmenauswahl-Dropdown
 
 ## Problem
 
-Die aktuelle Web Speech API (Browser-TTS) klingt roboterhaft und unnatürlich. Die Stimmenqualität variiert stark je nach Browser und Betriebssystem.
+Die Web Speech API klingt roboterhaft und ist nicht mehr zeitgemaess. Die Qualitaet variiert stark je nach Browser und Betriebssystem.
 
-## Lösung
+## Loesung
 
-Integration von ElevenLabs TTS für natürliche, hochwertige Sprachausgabe. Der ElevenLabs Connector muss dafür eingerichtet werden.
+Integration von **VITS-Web** - einer Bibliothek, die neuronale Text-to-Speech direkt im Browser ausfuehrt:
+- Kein API-Key erforderlich
+- Voellig kostenlos (MIT-Lizenz)
+- Menschenaehnliche Stimmen durch neuronale Netzwerke
+- Unterstuetzte Sprachen: de, en, es, fr, it, nl, pl, pt, tr (+ Fallback fuer ar)
+- Modelle werden einmalig heruntergeladen und lokal gespeichert
 
 ---
 
-## 1. ElevenLabs Connector einrichten
-
-Der ElevenLabs Connector ist verfügbar und ermöglicht sichere API-Key-Verwaltung:
+## 1. Abhaengigkeit installieren
 
 ```text
-User → GameAudioPlayer → Edge Function → ElevenLabs API → Audio Stream
+@diffusionstudio/vits-web
 ```
 
-**Vorteile:**
-- Natürliche, menschenähnliche Stimmen
-- Unterstützung für alle 10 Sprachen (multilingual v2 Modell)
-- Konsistente Qualität auf allen Geräten
+Diese Bibliothek ermoeglicht ONNX-basierte neuronale TTS im Browser mit Piper-Modellen.
 
 ---
 
-## 2. Neue Edge Function erstellen
+## 2. Verfuegbare Stimmen pro Sprache
 
-**Datei:** `supabase/functions/game-tts/index.ts`
-
-- Empfängt Text und Sprache vom Frontend
-- Ruft ElevenLabs TTS API auf
-- Streamt Audio zurück zum Browser
-- Verwendet das `eleven_multilingual_v2` Modell für automatische Spracherkennung
-
----
-
-## 3. Sprachauswahl
-
-| Sprache | Stimme | Voice ID |
-|---------|--------|----------|
-| Deutsch | Laura | FGY2WhTYpPnrIDTdsKH5 |
-| Englisch | Sarah | EXAVITQu4vr4xnSDxMaL |
-| Alle anderen | Laura (multilingual) | FGY2WhTYpPnrIDTdsKH5 |
-
-Das multilingual-Modell erkennt automatisch die Sprache des Textes.
+| Sprache | Voice ID | Qualitaet |
+|---------|----------|-----------|
+| Deutsch | de_DE-thorsten-high | Hoch |
+| Englisch | en_US-hfc_female-medium | Mittel |
+| Spanisch | es_ES-sharvard-medium | Mittel |
+| Franzoesisch | fr_FR-upmc-medium | Mittel |
+| Italienisch | it_IT-riccardo-x_low | Niedrig |
+| Niederlaendisch | nl_NL-mls-medium | Mittel |
+| Polnisch | pl_PL-darkman-medium | Mittel |
+| Portugiesisch | pt_PT-tux-medium | Mittel |
+| Tuerkisch | tr_TR-dfki-medium | Mittel |
+| Arabisch | Fallback: Web Speech API | - |
 
 ---
 
-## 4. GameAudioPlayer aktualisieren
+## 3. GameAudioPlayer erweitern
 
-**Datei:** `src/components/ideas/GameAudioPlayer.tsx`
+**Aenderungen:**
 
-Änderungen:
-- Wechsel von Web Speech API zu ElevenLabs Edge Function
-- Fetch-Aufruf an `/functions/v1/game-tts`
-- Audio-Blob abspielen mit HTML5 Audio API
-- Fallback auf Web Speech API wenn ElevenLabs nicht verfügbar
+1. **Stimmenauswahl-Dropdown hinzufuegen**
+   - Zeigt verfuegbare Stimmen fuer die aktuelle Sprache
+   - Wechsel zwischen VITS (neural) und Web Speech (fallback)
+   - Speichert Nutzer-Praeferenz in localStorage
+
+2. **VITS-Integration**
+   - Modell-Download mit Fortschrittsanzeige
+   - Caching im Origin Private File System (OPFS)
+   - Audio-Blob abspielen mit HTML5 Audio API
+
+3. **Fallback-Strategie**
+   - VITS als primaere Engine (wenn Modell verfuegbar)
+   - Web Speech API als Fallback (fuer ar oder wenn VITS fehlschlaegt)
 
 ---
 
-## 5. Implementierungsschritte
+## 4. Architektur
+
+```text
++------------------+
+|  GameAudioPlayer |
++------------------+
+         |
+    +----+----+
+    |         |
+    v         v
++-------+  +------------+
+| VITS  |  | Web Speech |
+| (neu) |  | (fallback) |
++-------+  +------------+
+    |
+    v
++------------------+
+| Lokales Modell   |
+| (~50-80MB/Sprache)|
++------------------+
+```
+
+---
+
+## 5. UI-Erweiterungen
+
+- **Stimmen-Dropdown**: Kompakt unterhalb der Steuerungen
+- **Download-Indikator**: Zeigt Fortschritt beim ersten Laden
+- **Qualitaets-Badge**: Zeigt "Neural" vs "Standard" an
+- **Modell-Status**: Info ob Modell bereits geladen ist
+
+---
+
+## 6. Technische Details
+
+### VITS-Web Nutzung
+
+```text
+// Modell vorladen
+await tts.download('de_DE-thorsten-high', onProgress);
+
+// Sprache synthetisieren
+const wav = await tts.predict({
+  text: "Hallo Welt",
+  voiceId: 'de_DE-thorsten-high'
+});
+
+// Audio abspielen
+const audio = new Audio(URL.createObjectURL(wav));
+audio.play();
+```
+
+### localStorage Schema
+
+```text
+{
+  "tts-preferred-voice-de": "de_DE-thorsten-high",
+  "tts-preferred-voice-en": "en_US-hfc_female-medium",
+  ...
+}
+```
+
+---
+
+## 7. Implementierungsschritte
 
 | Schritt | Aufgabe |
 |---------|---------|
-| 1 | ElevenLabs Connector verbinden (Approval erforderlich) |
-| 2 | Edge Function `game-tts` erstellen |
-| 3 | GameAudioPlayer auf ElevenLabs umstellen |
-| 4 | Fallback für Web Speech API behalten |
-| 5 | Testen in verschiedenen Sprachen |
+| 1 | @diffusionstudio/vits-web installieren |
+| 2 | Voice-Konfiguration mit Mapping je Sprache erstellen |
+| 3 | VITS-Integration in GameAudioPlayer einbauen |
+| 4 | Stimmenauswahl-Dropdown hinzufuegen |
+| 5 | Download-Fortschritt mit Ladebalken anzeigen |
+| 6 | localStorage fuer Nutzerpraeferenz |
+| 7 | Fallback auf Web Speech API implementieren |
 
 ---
 
-## 6. Kosten-Hinweis
+## 8. Vorteile gegenueber ElevenLabs
 
-ElevenLabs berechnet nach Zeichen:
-- ~$0.18 pro 1000 Zeichen
-- Eine Spielanleitung hat ca. 500-1000 Zeichen
-- Kosten pro Vorlesen: ca. $0.09-0.18
+| Aspekt | VITS-Web | ElevenLabs |
+|--------|----------|------------|
+| Kosten | Kostenlos | ~0.18$/1000 Zeichen |
+| API-Key | Nicht noetig | Erforderlich |
+| Privatsphaere | Lokal im Browser | Server-seitig |
+| Offline | Ja (nach Download) | Nein |
+| Qualitaet | Gut (neural) | Sehr gut |
 
 ---
 
-## Technische Details
+## 9. Einschraenkungen
 
-### Edge Function Struktur
+- Erster Download ~50-80MB pro Sprache
+- Arabisch (ar) nicht direkt unterstuetzt - nutzt Web Speech API als Fallback
+- Etwas langsamere Generierung als ElevenLabs (laeuft lokal)
 
-```text
-POST /functions/v1/game-tts
-Body: { text: string, language: string }
-Response: audio/mpeg stream
-```
-
-### Voice Settings
-
-- `stability`: 0.5 (natürliche Variation)
-- `similarity_boost`: 0.75 (Stimmtreue)
-- `model_id`: eleven_multilingual_v2
