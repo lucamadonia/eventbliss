@@ -1,162 +1,88 @@
 
 
-# Plan: Neuronale TTS mit VITS-Web + Stimmenauswahl-Dropdown
+# Plan: Automatischer Modell-Download bei Play + Verbesserte UX
 
 ## Problem
 
-Die Web Speech API klingt roboterhaft und ist nicht mehr zeitgemaess. Die Qualitaet variiert stark je nach Browser und Betriebssystem.
-
-## Loesung
-
-Integration von **VITS-Web** - einer Bibliothek, die neuronale Text-to-Speech direkt im Browser ausfuehrt:
-- Kein API-Key erforderlich
-- Voellig kostenlos (MIT-Lizenz)
-- Menschenaehnliche Stimmen durch neuronale Netzwerke
-- Unterstuetzte Sprachen: de, en, es, fr, it, nl, pl, pt, tr (+ Fallback fuer ar)
-- Modelle werden einmalig heruntergeladen und lokal gespeichert
+Die neuronale TTS (menschlich klingende Stimme) ist zwar implementiert, aber das Modell muss erst manuell heruntergeladen werden (~50MB). Der Nutzer hat wahrscheinlich nicht auf den Download-Button geklickt und hoert daher weiterhin die roboterhafte Browser-Stimme.
 
 ---
 
-## 1. Abhaengigkeit installieren
+## 1. Aenderungen an GameAudioPlayer.tsx
 
+### 1.1 Automatischer Download bei Play-Klick
+
+Wenn der Nutzer auf "Play" klickt und eine neuronale Stimme ausgewaehlt ist, wird automatisch das Modell heruntergeladen (falls noch nicht vorhanden) und danach abgespielt.
+
+**Vorher (manuell):**
 ```text
-@diffusionstudio/vits-web
+1. Nutzer waehlt neuronale Stimme
+2. Nutzer muss "Herunterladen" klicken
+3. Warten auf Download
+4. Dann "Play" klicken
 ```
 
-Diese Bibliothek ermoeglicht ONNX-basierte neuronale TTS im Browser mit Piper-Modellen.
-
----
-
-## 2. Verfuegbare Stimmen pro Sprache
-
-| Sprache | Voice ID | Qualitaet |
-|---------|----------|-----------|
-| Deutsch | de_DE-thorsten-high | Hoch |
-| Englisch | en_US-hfc_female-medium | Mittel |
-| Spanisch | es_ES-sharvard-medium | Mittel |
-| Franzoesisch | fr_FR-upmc-medium | Mittel |
-| Italienisch | it_IT-riccardo-x_low | Niedrig |
-| Niederlaendisch | nl_NL-mls-medium | Mittel |
-| Polnisch | pl_PL-darkman-medium | Mittel |
-| Portugiesisch | pt_PT-tux-medium | Mittel |
-| Tuerkisch | tr_TR-dfki-medium | Mittel |
-| Arabisch | Fallback: Web Speech API | - |
-
----
-
-## 3. GameAudioPlayer erweitern
-
-**Aenderungen:**
-
-1. **Stimmenauswahl-Dropdown hinzufuegen**
-   - Zeigt verfuegbare Stimmen fuer die aktuelle Sprache
-   - Wechsel zwischen VITS (neural) und Web Speech (fallback)
-   - Speichert Nutzer-Praeferenz in localStorage
-
-2. **VITS-Integration**
-   - Modell-Download mit Fortschrittsanzeige
-   - Caching im Origin Private File System (OPFS)
-   - Audio-Blob abspielen mit HTML5 Audio API
-
-3. **Fallback-Strategie**
-   - VITS als primaere Engine (wenn Modell verfuegbar)
-   - Web Speech API als Fallback (fuer ar oder wenn VITS fehlschlaegt)
-
----
-
-## 4. Architektur
-
+**Nachher (automatisch):**
 ```text
-+------------------+
-|  GameAudioPlayer |
-+------------------+
-         |
-    +----+----+
-    |         |
-    v         v
-+-------+  +------------+
-| VITS  |  | Web Speech |
-| (neu) |  | (fallback) |
-+-------+  +------------+
-    |
-    v
-+------------------+
-| Lokales Modell   |
-| (~50-80MB/Sprache)|
-+------------------+
+1. Nutzer klickt "Play"
+2. Modell wird automatisch heruntergeladen (mit Fortschrittsanzeige)
+3. Audio startet automatisch nach Download
 ```
 
+### 1.2 Verbesserte Ladeanzeige
+
+- Zeige waehrend des Downloads einen Spinner mit Prozentangabe
+- Zeige nach erfolgreichem Download eine Erfolgsmeldung
+
+### 1.3 Automatisches Fallback entfernen
+
+Aktuell faellt die Logik auf Web Speech API zurueck, wenn das Modell nicht bereit ist. Das soll NICHT passieren - stattdessen soll der Download gestartet werden.
+
 ---
 
-## 5. UI-Erweiterungen
+## 2. Betroffene Dateien
 
-- **Stimmen-Dropdown**: Kompakt unterhalb der Steuerungen
-- **Download-Indikator**: Zeigt Fortschritt beim ersten Laden
-- **Qualitaets-Badge**: Zeigt "Neural" vs "Standard" an
-- **Modell-Status**: Info ob Modell bereits geladen ist
+| Datei | Aenderung |
+|-------|-----------|
+| `src/components/ideas/GameAudioPlayer.tsx` | Automatischer Download in handlePlay() |
 
 ---
 
-## 6. Technische Details
+## 3. Implementierungsdetails
 
-### VITS-Web Nutzung
+### Neue handlePlay() Logik
 
 ```text
-// Modell vorladen
-await tts.download('de_DE-thorsten-high', onProgress);
-
-// Sprache synthetisieren
-const wav = await tts.predict({
-  text: "Hallo Welt",
-  voiceId: 'de_DE-thorsten-high'
-});
-
-// Audio abspielen
-const audio = new Audio(URL.createObjectURL(wav));
-audio.play();
+handlePlay():
+  1. Wenn neuronale Stimme UND Modell NICHT geladen:
+     → Starte Download mit Fortschrittsanzeige
+     → Nach Download: Starte automatisch Wiedergabe
+  2. Wenn neuronale Stimme UND Modell geladen:
+     → Starte VITS-Wiedergabe sofort
+  3. Wenn Standard-Stimme:
+     → Nutze Web Speech API
 ```
 
-### localStorage Schema
+### UI-Aenderungen
 
-```text
-{
-  "tts-preferred-voice-de": "de_DE-thorsten-high",
-  "tts-preferred-voice-en": "en_US-hfc_female-medium",
-  ...
-}
-```
+1. **Download-Button entfernen** - nicht mehr noetig
+2. **Play-Button zeigt Ladefortschritt** - waehrend Download
+3. **Klarer Status-Text** - "Lade Stimmmodell..." waehrend Download
 
 ---
 
-## 7. Implementierungsschritte
+## 4. Uebersetzungs-Updates
 
-| Schritt | Aufgabe |
-|---------|---------|
-| 1 | @diffusionstudio/vits-web installieren |
-| 2 | Voice-Konfiguration mit Mapping je Sprache erstellen |
-| 3 | VITS-Integration in GameAudioPlayer einbauen |
-| 4 | Stimmenauswahl-Dropdown hinzufuegen |
-| 5 | Download-Fortschritt mit Ladebalken anzeigen |
-| 6 | localStorage fuer Nutzerpraeferenz |
-| 7 | Fallback auf Web Speech API implementieren |
+Neue/aktualisierte Schluessel fuer de.json und en.json:
+- `loadingVoice`: "Lade Stimmmodell..."
+- `firstTimeDownload`: "Erster Start: Lade hochwertige Stimme (~50MB)"
 
 ---
 
-## 8. Vorteile gegenueber ElevenLabs
+## 5. Erwartetes Nutzererlebnis
 
-| Aspekt | VITS-Web | ElevenLabs |
-|--------|----------|------------|
-| Kosten | Kostenlos | ~0.18$/1000 Zeichen |
-| API-Key | Nicht noetig | Erforderlich |
-| Privatsphaere | Lokal im Browser | Server-seitig |
-| Offline | Ja (nach Download) | Nein |
-| Qualitaet | Gut (neural) | Sehr gut |
-
----
-
-## 9. Einschraenkungen
-
-- Erster Download ~50-80MB pro Sprache
-- Arabisch (ar) nicht direkt unterstuetzt - nutzt Web Speech API als Fallback
-- Etwas langsamere Generierung als ElevenLabs (laeuft lokal)
+1. Nutzer klickt "Play"
+2. Sieht "Lade Stimmmodell... 45%" fuer ca. 10-30 Sekunden (je nach Internet)
+3. Audio startet automatisch mit menschlich klingender Stimme
+4. Bei weiteren Klicks: Sofortige Wiedergabe (Modell gecacht)
 
