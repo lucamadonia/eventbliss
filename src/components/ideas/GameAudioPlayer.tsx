@@ -9,7 +9,7 @@ import {
   Volume2,
   VolumeX,
   Loader2,
-  Speech
+  AudioLines
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -275,7 +275,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
-        <Speech className="w-4 h-4 text-primary" />
+        <AudioLines className="w-4 h-4 text-primary" />
         <span className="text-sm font-medium text-foreground">
           {t('gamesLibrary.tts.title')}
         </span>
