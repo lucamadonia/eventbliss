@@ -2409,7 +2409,13 @@
       "stop": "Stop",
       "nextSection": "Nächster Abschnitt",
       "notSupported": "Text-to-Speech wird von deinem Browser nicht unterstützt",
-      "error": "Fehler beim Vorlesen"
+      "error": "Fehler beim Vorlesen",
+      "selectVoice": "Stimme wählen",
+      "downloadRequired": "Modell muss heruntergeladen werden (~50MB)",
+      "download": "Herunterladen",
+      "downloading": "Lädt...",
+      "modelReady": "Neuronales Modell bereit!",
+      "downloadError": "Fehler beim Herunterladen des Modells"
     },
     "games": {
       "bingo_tasks": { 

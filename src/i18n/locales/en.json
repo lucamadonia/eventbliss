@@ -2285,7 +2285,13 @@
       "stop": "Stop",
       "nextSection": "Next Section",
       "notSupported": "Text-to-Speech is not supported by your browser",
-      "error": "Error reading aloud"
+      "error": "Error reading aloud",
+      "selectVoice": "Select voice",
+      "downloadRequired": "Model download required (~50MB)",
+      "download": "Download",
+      "downloading": "Downloading...",
+      "modelReady": "Neural model ready!",
+      "downloadError": "Error downloading model"
     },
     "games": {
       "bingo_tasks": { 
