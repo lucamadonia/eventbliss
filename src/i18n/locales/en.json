@@ -2290,7 +2290,9 @@
       "downloadRequired": "Model download required (~50MB)",
       "download": "Download",
       "downloading": "Downloading...",
-      "modelReady": "Neural model ready!",
+      "loadingVoice": "Loading voice model...",
+      "firstTimeDownload": "First time: Loading high-quality voice (~50MB)",
+      "modelReady": "Voice model ready!",
       "downloadError": "Error downloading model"
     },
     "games": {
