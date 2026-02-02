@@ -311,7 +311,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
                 size="icon" 
                 variant="ghost" 
                 onClick={handlePause}
-                className="h-9 w-9 text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
+                className="h-9 w-9 text-secondary-foreground hover:text-secondary-foreground/80 hover:bg-secondary/50"
               >
                 <Pause className="w-5 h-5" />
               </Button>
@@ -320,7 +320,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
                 size="icon" 
                 variant="ghost" 
                 onClick={handlePlay}
-                className="h-9 w-9 text-green-500 hover:text-green-600 hover:bg-green-500/10"
+                className="h-9 w-9 text-primary hover:text-primary/80 hover:bg-primary/10"
               >
                 <Play className="w-5 h-5" />
               </Button>
