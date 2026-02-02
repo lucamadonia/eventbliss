@@ -10,9 +10,7 @@ import {
   VolumeX,
   Loader2,
   AudioLines,
-  Download,
-  Sparkles,
-  ChevronDown
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -178,28 +176,6 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     }
   };
 
-  // Download neural voice model
-  const downloadModel = async () => {
-    if (!vitsModule || !selectedVoiceId || !isNeural) return;
-    
-    setDownloadProgress(0);
-    
-    try {
-      await vitsModule.download(selectedVoiceId, (progress: { loaded: number; total: number }) => {
-        const percent = Math.round((progress.loaded / progress.total) * 100);
-        setDownloadProgress(percent);
-      });
-      
-      setIsModelReady(true);
-      setDownloadProgress(null);
-      toast.success(t('gamesLibrary.tts.modelReady'));
-    } catch (error) {
-      console.error('Failed to download model:', error);
-      setDownloadProgress(null);
-      toast.error(t('gamesLibrary.tts.downloadError'));
-    }
-  };
-
   // Find best Web Speech voice
   const getBestWebSpeechVoice = useCallback(() => {
     if (!browserVoices.length) return null;
@@ -362,15 +338,41 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     synthRef.current.speak(utterance);
   };
 
-  const handlePlay = useCallback(() => {
+  const handlePlay = useCallback(async () => {
     const cleanedText = cleanTextForSpeech(text);
     
-    if (isNeural && isModelReady && vitsModule) {
-      playWithVITS(cleanedText);
+    // Neural voice selected - download if needed, then play
+    if (isNeural && vitsModule) {
+      if (!isModelReady) {
+        // Start automatic download
+        setDownloadProgress(0);
+        
+        try {
+          await vitsModule.download(selectedVoiceId, (progress: { loaded: number; total: number }) => {
+            const percent = Math.round((progress.loaded / progress.total) * 100);
+            setDownloadProgress(percent);
+          });
+          
+          setIsModelReady(true);
+          setDownloadProgress(null);
+          toast.success(t('gamesLibrary.tts.modelReady'));
+          
+          // Auto-play after download
+          playWithVITS(cleanedText);
+        } catch (error) {
+          console.error('Failed to download model:', error);
+          setDownloadProgress(null);
+          toast.error(t('gamesLibrary.tts.downloadError'));
+        }
+      } else {
+        // Model ready - play immediately
+        playWithVITS(cleanedText);
+      }
     } else {
+      // Standard voice - use Web Speech API
       playWithWebSpeech(cleanedText);
     }
-  }, [text, isNeural, isModelReady, vitsModule, isPaused, volume, isMuted]);
+  }, [text, isNeural, isModelReady, vitsModule, selectedVoiceId, isPaused, volume, isMuted, t]);
 
   const handlePause = () => {
     if (audioRef.current && isNeural) {
@@ -516,36 +518,26 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
         </Select>
       </div>
 
-      {/* Model Download Section (for neural voices) */}
+      {/* Model Info (for neural voices not yet downloaded) */}
       {isNeural && !isModelReady && downloadProgress === null && (
-        <div className="mb-3 p-2 rounded-lg bg-muted/50 border border-border/50">
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-xs text-muted-foreground">
-              {t('gamesLibrary.tts.downloadRequired')}
-            </div>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={downloadModel}
-              className="h-7 text-xs gap-1"
-            >
-              <Download className="w-3 h-3" />
-              {t('gamesLibrary.tts.download')}
-            </Button>
+        <div className="mb-3 p-2 rounded-lg bg-primary/5 border border-primary/20">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Sparkles className="w-3 h-3 text-primary" />
+            <span>{t('gamesLibrary.tts.firstTimeDownload')}</span>
           </div>
         </div>
       )}
 
       {/* Download Progress */}
       {downloadProgress !== null && (
-        <div className="mb-3 p-2 rounded-lg bg-muted/50 border border-border/50">
-          <div className="flex items-center gap-2 mb-1">
-            <Loader2 className="w-3 h-3 animate-spin text-primary" />
-            <span className="text-xs text-muted-foreground">
-              {t('gamesLibrary.tts.downloading')} {downloadProgress}%
+        <div className="mb-3 p-2 rounded-lg bg-primary/10 border border-primary/30">
+          <div className="flex items-center gap-2 mb-2">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            <span className="text-sm font-medium text-foreground">
+              {t('gamesLibrary.tts.loadingVoice')} {downloadProgress}%
             </span>
           </div>
-          <Progress value={downloadProgress} className="h-1" />
+          <Progress value={downloadProgress} className="h-2" />
         </div>
       )}
 
@@ -591,7 +583,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
                 size="icon" 
                 variant="ghost" 
                 onClick={handlePlay}
-                disabled={isNeural && !isModelReady && downloadProgress === null}
+                disabled={downloadProgress !== null}
                 className="h-9 w-9 text-primary hover:text-primary/80 hover:bg-primary/10"
               >
                 <Play className="w-5 h-5" />
