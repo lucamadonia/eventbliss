@@ -1,4 +1,8 @@
 {
+  "gamesLibrary": {
+    "loadMore": "Load more (+{{count}})",
+    "showing": "{{count}} shown"
+  },
   "theme": {
     "title": "Appearance",
     "description": "Choose your preferred theme",

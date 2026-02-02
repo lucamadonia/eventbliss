@@ -28,7 +28,7 @@ const IdeasHub = () => {
       <LandingHeader />
       
       {/* Floating Emojis Background */}
-      <FloatingEmojis emojis={floatingEmojis} count={15} />
+      <FloatingEmojis emojis={floatingEmojis} count={6} />
       
       <main className="min-h-screen pt-24 pb-16 relative">
         <div className="container max-w-7xl mx-auto px-4">
