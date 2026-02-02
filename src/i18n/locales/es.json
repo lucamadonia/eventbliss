@@ -1563,41 +1563,171 @@
     "decorationTips": "Ideas de decoración",
     "colorPalette": "Paleta de colores",
     "games": {
-      "bingo_tasks": { "name": "Bingo de Tareas", "description": "Cada uno recibe una tarjeta de bingo con tareas divertidas que completar en la ciudad.", "instructions": "Crea tarjetas de bingo con diferentes tareas vergonzosas o divertidas. El grupo recorre la ciudad intentando completar todas las tareas. ¡El primero en completar una fila gana!" },
-      "drink_roulette": { "name": "Ruleta de Bebidas", "description": "La rueda de la fortuna decide quién bebe.", "instructions": "Gira la ruleta. La persona señalada debe tomar un chupito o un trago. Variantes: tareas en lugar de bebidas." },
-      "who_am_i": { "name": "¿Quién Soy?", "description": "Adivina la persona famosa en tu frente haciendo preguntas de sí/no.", "instructions": "Cada uno recibe un nombre (pareja famosa para despedidas) pegado en la frente. Haz preguntas de sí/no para descubrir quién eres." },
-      "flunkyball": { "name": "Flunkyball", "description": "El juego definitivo de beber al aire libre con pelota y botella.", "instructions": "Dos equipos enfrentados, una botella en medio. Lanza la pelota a la botella. Si aciertas, tu equipo bebe rápido. El otro equipo debe levantar la botella y recuperar la pelota." },
-      "beer_pong": { "name": "Beer Pong", "description": "El clásico - lanza la pelota a los vasos del oponente.", "instructions": "Coloca vasos en forma de triángulo. Los equipos lanzan por turnos. Acierto = el oponente bebe y se retira el vaso. El equipo sin vasos pierde." },
-      "groom_bride_quiz": { "name": "Quiz del Novio/Novia", "description": "¿Cuánto sabe el grupo sobre el homenajeado?", "instructions": "Prepara preguntas sobre la persona de honor. El grupo adivina las respuestas. ¡Respuestas incorrectas = castigos!" },
-      "truth_or_dare": { "name": "Verdad o Reto", "description": "El clásico para confesiones atrevidas y retos locos.", "instructions": "Por turnos cada uno elige: Verdad (responder honestamente una pregunta) o Reto (cumplir una tarea). ¡Rechazar = castigo!" },
-      "kiss_challenge": { "name": "Reto del Beso", "description": "Consigue besos de desconocidos - ¡cuantos más, mejor!", "instructions": "El homenajeado debe conseguir besos de desconocidos. Marcas de pintalabios en una camiseta blanca. ¿Quién consigue más?" },
-      "selfie_mission": { "name": "Misión Selfie", "description": "Haz selfies creativos según instrucciones.", "instructions": "Cada uno recibe una lista de tareas de selfie (ej. con un policía, en una fuente, etc.). ¡El que más complete gana!" },
-      "costume_tasks": { "name": "Tareas de Disfraces", "description": "Lleva disfraces locos y completa tareas.", "instructions": "El homenajeado debe realizar tareas en público con un disfraz vergonzoso. ¡El grupo lo documenta todo!" },
-      "bucket_list": { "name": "Reto Bucket List", "description": "Vive momentos inolvidables de una lista preparada.", "instructions": "Crea una lista de experiencias únicas. ¡Intenta tachar tantas como sea posible en este día!" },
-      "karaoke_battle": { "name": "Batalla de Karaoke", "description": "Canta para ganar - ¡no importa cómo suene!", "instructions": "Equipos o individuos compiten. El grupo vota. ¡Puntos extra por actuación y valentía!" },
-      "city_rally": { "name": "Rally Urbano", "description": "Una búsqueda del tesoro por la ciudad con tareas y acertijos.", "instructions": "Los equipos siguen pistas por la ciudad, resuelven acertijos y completan tareas. ¡El equipo más rápido gana!" },
-      "photo_scavenger_hunt": { "name": "Caza Fotográfica", "description": "Fotografía todo lo de la lista - ¡sé creativo!", "instructions": "Cada equipo recibe una lista de tareas fotográficas. Puntos por creatividad y completitud." },
-      "team_olympiad": { "name": "Olimpiadas en Equipo", "description": "Varias disciplinas, ¡un equipo campeón!", "instructions": "Planifica varias competiciones (carrera de sacos, carrera del huevo, etc.). Los equipos acumulan puntos. Al final se corona al ganador." },
-      "boot_camp": { "name": "Reto Boot Camp", "description": "Desafío fitness para todo el grupo.", "instructions": "Un entrenador o el propio grupo dirige ejercicios. ¿Quién aguanta? ¡Se necesita espíritu de equipo!" },
-      "cocktail_contest": { "name": "Concurso de Cócteles", "description": "¿Quién prepara la mejor bebida?", "instructions": "Cada uno crea su propio cóctel. Cata a ciegas y votación del grupo. ¡El mejor barman gana!" },
-      "wine_tasting": { "name": "Cata de Vinos a Ciegas", "description": "Identifica los vinos con los ojos vendados.", "instructions": "Se catan y valoran distintos vinos a ciegas. Puntos por acertar variedades o regiones." },
-      "tshirt_design": { "name": "Diseño de Camisetas", "description": "Diseña una camiseta única del grupo.", "instructions": "Con pinturas textiles se personalizan camisetas. ¡Recuerdo perfecto del día!" },
-      "embarrassing_songs": { "name": "Cantar Canciones Vergonzosas", "description": "Canta las canciones más vergonzosas en público.", "instructions": "El homenajeado debe cantar canciones vergonzosas seleccionadas en voz alta y con pasión en lugares públicos." },
-      "dare_dice": { "name": "Dados de Retos", "description": "Lanza los dados - ellos deciden el reto.", "instructions": "Tira los dados de tareas. Lo que salga, hay que hacerlo. ¡Sin excusas!" },
-      "never_have_i_ever": { "name": "Yo Nunca Nunca", "description": "Se revelan confesiones y secretos.", "instructions": "Por turnos cada uno dice 'Yo nunca...' El que sí lo haya hecho, bebe o pierde una ficha." },
-      "shoe_game": { "name": "Juego del Zapato", "description": "Los novios responden preguntas con zapatos.", "instructions": "La pareja se sienta espalda con espalda, cada uno con su zapato y uno del otro. En las preguntas levantan el zapato de quien corresponda la respuesta." },
-      "marriage_test": { "name": "Test de Compatibilidad", "description": "Divertidas pruebas testan las habilidades matrimoniales.", "instructions": "La pareja debe superar varias pruebas: cambiar pañales, dar de comer con los ojos vendados, etc." },
-      "wedding_bingo": { "name": "Bingo de Boda", "description": "Bingo con momentos típicos de boda.", "instructions": "Los invitados reciben tarjetas con escenas típicas de boda. ¡El primero en completar una fila gana!" },
-      "balloon_dancing": { "name": "Baile del Globo", "description": "Bailen en pareja con un globo entre ustedes.", "instructions": "Las parejas bailan con un globo entre ellas. ¡Si cae o explota, la pareja queda eliminada!" },
-      "bouquet_toss": { "name": "Lanzamiento del Ramo", "description": "¿Qué soltera atrapa el ramo?", "instructions": "Todas las mujeres solteras se reúnen. La novia lanza el ramo hacia atrás. ¡Quien lo atrape se casa después!" },
-      "family_feud": { "name": "Feud Familiar", "description": "Adivina las respuestas más populares de la encuesta.", "instructions": "Los equipos compiten. En cada pregunta se adivinan las respuestas más populares. ¡Puntos por aciertos!" },
-      "scavenger_hunt": { "name": "Búsqueda del Tesoro", "description": "Sigue las pistas y resuelve acertijos.", "instructions": "Esconde pistas que lleven al siguiente lugar. ¡Al final espera un tesoro o sorpresa!" },
-      "family_bingo": { "name": "Bingo Familiar", "description": "Bingo clásico para toda la familia.", "instructions": "Se cantan números o imágenes. El que complete una fila grita '¡Bingo!' Premios para los ganadores." },
-      "memory_challenge": { "name": "Reto de Memoria", "description": "Pon a prueba tu memoria con parejas de cartas.", "instructions": "Las cartas están boca abajo. Encuentra las parejas. ¡El que más encuentre gana!" },
-      "charades": { "name": "Mímica", "description": "Adivina palabras por mímica en equipos.", "instructions": "Un jugador representa un concepto solo con mímica, sin hablar. El equipo debe adivinar en el tiempo." },
-      "pictionary": { "name": "Pictionary", "description": "Dibuja y adivina conceptos contrarreloj.", "instructions": "Dibuja el concepto para que tu equipo lo adivine. ¡No se permiten letras ni símbolos!" },
-      "two_truths_lie": { "name": "Dos Verdades y Una Mentira", "description": "Adivina la mentira entre tres afirmaciones.", "instructions": "Cada uno cuenta tres hechos sobre sí mismo - dos verdaderos, uno falso. El grupo debe adivinar la mentira." },
-      "human_bingo": { "name": "Bingo Humano", "description": "Encuentra personas que coincidan con las descripciones.", "instructions": "Tarjetas de bingo con características ('Tiene mascota', 'Habla 3 idiomas'). ¡Encuentra personas que coincidan!" }
+      "bingo_tasks": { 
+        "name": "Bingo de Tareas", 
+        "description": "Cada uno recibe una tarjeta de bingo con tareas divertidas que completar en la ciudad.", 
+        "instructions": "**Preparación:**\nCrea tarjetas de bingo 5x5 con 25 tareas diferentes. Ejemplos: 'Hacer un cumplido a un extraño', 'Foto con policía', 'Cantar una canción'. Cada participante recibe una tarjeta y un bolígrafo.\n\n**Cómo jugar:**\nEl grupo recorre la ciudad. Cada uno intenta completar las tareas de su tarjeta. Las tareas completadas se marcan. Los compañeros pueden ser testigos.\n\n**Reglas:**\n• Primera fila (horizontal, vertical o diagonal) = '¡BINGO!'\n• Las 25 casillas = '¡SUPER-BINGO!'\n• Cada tarea debe documentarse con foto\n\n**Variantes:**\n• Bingo en equipo: Dos equipos compiten\n• Bingo con tragos: Al completar cada casilla se brinda\n\n**Consejos:**\nMezcla tareas fáciles y difíciles. ¡Las mejores tarjetas tienen un buen equilibrio!"
+      },
+      "drink_roulette": { 
+        "name": "Ruleta de Bebidas", 
+        "description": "La rueda de la fortuna decide quién bebe.", 
+        "instructions": "**Preparación:**\nConsigue una ruleta o crea una con nombres/números. Prepara bebidas (shots, cerveza o sin alcohol). A cada jugador se le asigna un número o posición.\n\n**Cómo jugar:**\nPor turnos, cada jugador gira la ruleta. Quien sea señalado debe beber. El que gira puede añadir una tarea adicional.\n\n**Reglas:**\n• Señalado dos veces seguidas: Shot doble\n• La ruleta cae en ti mismo: Todos los demás beben\n• Casilla 'Comodín': El jugador elige quién bebe\n\n**Variantes:**\n• Ruleta de tareas: En lugar de beber, se asignan tareas\n• Ruleta de retos: Casillas con diferentes desafíos\n\n**Consejos:**\nPara más emoción: ¡Escribe acciones especiales en algunas casillas como 'Todos beben' o 'Cascada'!"
+      },
+      "who_am_i": { 
+        "name": "¿Quién Soy?", 
+        "description": "Adivina la persona famosa en tu frente haciendo preguntas de sí/no.", 
+        "instructions": "**Preparación:**\nEscribe nombres de personas famosas en notas adhesivas. Para despedidas, idealmente parejas famosas o nombres relacionados con el tema. Cada uno recibe una nota pegada en la frente sin verla.\n\n**Cómo jugar:**\nPor turnos, cada uno hace una pregunta de sí/no. Si la respuesta es 'sí', puede seguir preguntando. Si es 'no', pasa el turno.\n\n**Reglas:**\n• Solo preguntas de sí/no\n• Máximo 20 preguntas por ronda\n• ¡Sin pistas de los demás!\n\n**Variantes:**\n• Edición parejas: Adivinar parejas famosas\n• Edición películas: Solo personajes de cine\n\n**Consejos:**\n¡Primero aclara género, luego profesión, luego época!"
+      },
+      "flunkyball": { 
+        "name": "Flunkyball", 
+        "description": "El juego definitivo de beber al aire libre con pelota y botella.", 
+        "instructions": "**Preparación:**\nDos equipos se colocan a unos 10 metros de distancia. Cada uno tiene una bebida. En el medio hay una botella con algo de agua. Se necesita una pelota blanda.\n\n**Cómo jugar:**\nEl Equipo A lanza la pelota a la botella. Si acierta: El Equipo A bebe rápido. El Equipo B debe levantar la botella, recuperar la pelota y colocarse. Entonces se detiene al Equipo A.\n\n**Reglas:**\n• La pelota se lanza sentado\n• No dejar la bebida hasta que todos estén de pie\n• La botella debe quedar de pie (no apoyada)\n• El primer equipo en terminar gana\n\n**Variantes:**\n• Relevos: Solo uno por equipo lanza\n• Softcore: Agua en lugar de alcohol\n\n**Consejos:**\n¡Perfecto para parques o jardines!"
+      },
+      "beer_pong": { 
+        "name": "Beer Pong", 
+        "description": "El clásico - lanza la pelota a los vasos del oponente.", 
+        "instructions": "**Preparación:**\nColoca 10 vasos por equipo en formación de pirámide (4-3-2-1) a ambos lados de una mesa larga. Llena cada vaso con un tercio de cerveza. Prepara vasos con agua para limpiar las pelotas.\n\n**Cómo jugar:**\nDos equipos se enfrentan. Alternativamente, cada jugador lanza una pelota de ping-pong. Si acierta en un vaso, el equipo contrario bebe y retira el vaso.\n\n**Reglas:**\n• 'On Fire': 2+ aciertos seguidos = sigue lanzando\n• 'Regla del codo': El codo detrás del borde de la mesa\n• 'Re-Rack': 1-2 reorganizaciones permitidas\n• Ambos jugadores aciertan = pelotas de vuelta\n\n**Variantes:**\n• Death Cup: Acierto en vaso aún lleno = victoria inmediata\n• Bounce-Shot: Rebote cuenta doble, pero puede bloquearse\n\n**Consejos:**\nEl lanzamiento perfecto tiene un ligero arco. Para versión sin alcohol: ¡agua en los vasos, shots al lado!"
+      },
+      "groom_bride_quiz": { 
+        "name": "Quiz del Novio/Novia", 
+        "description": "¿Cuánto sabe el grupo sobre el homenajeado?", 
+        "instructions": "**Preparación:**\nAntes de la despedida, recopila 20-30 preguntas sobre la persona de honor: cosas favoritas, historias vergonzosas, detalles de la relación. ¡Se puede preguntar al novio/a en secreto!\n\n**Cómo jugar:**\nEl moderador hace preguntas. El grupo (o la persona de honor) debe responder. Las respuestas incorrectas conllevan castigos.\n\n**Reglas:**\n• Respuesta incorrecta = Shot/tarea para la persona de honor\n• Respuesta correcta = Shot/tarea para el grupo\n• Comodín: 1x se puede llamar al novio/a\n\n**Variantes:**\n• Quiz en equipo: Grupo vs. persona de honor\n• Speed-Quiz: 10 segundos por respuesta\n\n**Consejos:**\n¡Mezcla preguntas divertidas, vergonzosas y románticas!"
+      },
+      "truth_or_dare": { 
+        "name": "Verdad o Reto", 
+        "description": "El clásico para confesiones atrevidas y retos locos.", 
+        "instructions": "**Preparación:**\nNo se necesita preparación especial, pero las preguntas/tareas preparadas lo hacen más fácil. Una botella para girar es opcional. Prepara bebidas para los que se nieguen.\n\n**Cómo jugar:**\nPor turnos, cada uno elige: 'Verdad' (responder una pregunta honestamente) o 'Reto' (cumplir una tarea). El jugador anterior o el grupo pone la pregunta/tarea.\n\n**Reglas:**\n• Negarse = Castigo (shot, tarea vergonzosa)\n• Se puede cambiar una vez por juego\n• La verdad debe ser honesta (el grupo juzga)\n• Las tareas no deben poner en peligro a nadie\n\n**Variantes:**\n• Edición despedida: Todas las preguntas/tareas sobre relaciones\n• Hardcore: Solo retos, sin verdades\n\n**Consejos:**\n¡Empieza con cosas inofensivas y ve subiendo! Los mejores retos son vergonzosos pero seguros."
+      },
+      "city_rally": { 
+        "name": "Rally Urbano", 
+        "description": "Una búsqueda del tesoro por la ciudad con tareas y acertijos.", 
+        "instructions": "**Preparación:**\nPlanifica una ruta por la ciudad con 8-12 estaciones. Crea pistas que lleven a la siguiente estación. Prepara tareas para cada estación. Forma equipos (2-4 personas).\n\n**Cómo jugar:**\nLos equipos salen escalonados. En cada estación: leer pista, completar tarea, hacer foto, encontrar siguiente pista. El equipo más rápido con todas las tareas gana.\n\n**Reglas:**\n• Todas las tareas deben fotografiarse\n• Límite de tiempo: 2-3 horas\n• GPS o llamadas al organizador permitidas\n• Puntos por velocidad + creatividad\n\n**Variantes:**\n• Rally de bares: Las estaciones son bares/pubs\n• Rally fotográfico: Fotos creativas en lugar de tareas\n\n**Consejos:**\n¡Usa monumentos como estaciones! La mejor rally tiene una mezcla de conocimiento, acción y diversión."
+      },
+      "never_have_i_ever": { 
+        "name": "Yo Nunca Nunca", 
+        "description": "Se revelan confesiones y secretos.", 
+        "instructions": "**Preparación:**\nTodos los jugadores se sientan en círculo. Cada uno tiene una bebida o 10 dedos/fichas. Opcional: Frases preparadas para empezar.\n\n**Cómo jugar:**\nPor turnos, cada uno dice 'Yo nunca...' y añade una afirmación. Todos los que sí lo hayan hecho beben un trago o pierden un dedo/ficha.\n\n**Reglas:**\n• ¡La honestidad es obligatoria!\n• Con 0 dedos: Saltar una ronda o shot especial\n• Se permiten preguntas de seguimiento: '¿En serio? ¡Cuenta!'\n• Pillado mintiendo: Trago de penalización\n\n**Variantes:**\n• Edición despedida: Solo temas de relaciones/citas\n• Modo historia: Quien bebe debe contar la historia\n\n**Consejos:**\n¡Empieza inofensivo y sube la intensidad! Las mejores afirmaciones son específicas pero no demasiado personales."
+      },
+      "toilet_paper_dress": { 
+        "name": "Vestido de Novia de Papel", 
+        "description": "Crea un vestido de novia solo con papel higiénico.", 
+        "instructions": "**Preparación:**\nDivide el grupo en equipos de 3-4 personas. Cada equipo recibe 2-3 rollos de papel higiénico. Opcional: Cinta adhesiva, tijeras (facilita la tarea).\n\n**Cómo jugar:**\nCada equipo elige un 'modelo'. En 10-15 minutos hay que crear un vestido de novia con papel higiénico. El modelo presenta el resultado en una 'pasarela'.\n\n**Reglas:**\n• Límite de tiempo estricto\n• Solo los materiales proporcionados\n• El modelo no puede ayudar\n• El vestido debe sobrevivir a un 'desfile'\n\n**Variantes:**\n• Con velo: Bonus por accesorios\n• Desfile de moda: Con música y comentarista\n\n**Consejos:**\n¡Envuelve el vestido alrededor del cuerpo en lugar de solo colgarlo! Los mejores vestidos tienen estructura."
+      },
+      "shoe_game": { 
+        "name": "Juego del Zapato", 
+        "description": "Los novios responden preguntas con zapatos.", 
+        "instructions": "**Preparación:**\nLa pareja se sienta espalda con espalda en sillas. Cada uno sostiene uno de sus propios zapatos y uno del otro. El moderador tiene una lista de 20-30 preguntas.\n\n**Cómo jugar:**\nEl moderador hace preguntas ('¿Quién cocina mejor?'). La pareja levanta el zapato de la persona a la que se aplica la respuesta - sin coordinarse.\n\n**Reglas:**\n• ¡No se permite coordinación!\n• Misma respuesta: Beso\n• Respuesta diferente: Breve explicación\n• 3 preguntas mal: Tarea de castigo\n\n**Variantes:**\n• Votación de invitados: El público adivina también\n• Versión tragos: Respuesta diferente = ambos beben\n\n**Consejos:**\nMezcla preguntas divertidas ('¿Quién ronca más fuerte?') con románticas ('¿Quién dijo te amo primero?'). ¡Perfecto para bodas!"
+      },
+      "mr_mrs_quiz": { 
+        "name": "Quiz Mr & Mrs", 
+        "description": "¿Quién conoce mejor a su pareja?", 
+        "instructions": "**Preparación:**\nCrea 15-20 preguntas sobre la pareja. Ambos reciben carteles con 'Él' y 'Ella' (o nombres). Las preguntas se acuerdan previamente con uno de los dos en secreto.\n\n**Cómo jugar:**\nLa pareja se sienta junta. En cada pregunta, ambos levantan el cartel de quien corresponda la respuesta. La respuesta 'correcta' fue predeterminada.\n\n**Reglas:**\n• Mostrar simultáneamente (¡sin hacer trampa!)\n• Respuesta correcta = Punto\n• Respuesta incorrecta = Tarea de castigo o shot\n• El que más puntos tiene, gana\n\n**Variantes:**\n• Edición invitados: Los invitados adivinan también\n• Versión vídeo: Las respuestas se grabaron previamente\n\n**Consejos:**\nMezcla preguntas vergonzosas con románticas. ¡Las mejores preguntas revelan historias dulces o divertidas!"
+      },
+      "newspaper_dance": { 
+        "name": "Baile del Periódico", 
+        "description": "¡La pista de baile se hace cada vez más pequeña!", 
+        "instructions": "**Preparación:**\nCada pareja recibe un periódico extendido como pista de baile. Prepara música. Despeja espacio para bailar.\n\n**Cómo jugar:**\nTodas las parejas bailan sobre su periódico. Después de cada ronda, el periódico se dobla (a la mitad). Quien pise fuera o se caiga, queda eliminado.\n\n**Reglas:**\n• Ambos deben permanecer en el periódico\n• ¡Levantar a la pareja está permitido!\n• El periódico no puede romperse\n• Música para = Doblar\n\n**Variantes:**\n• Baile congelado: Al parar la música, congelarse\n• Baile con globo: Además, un globo entre los cuerpos\n\n**Consejos:**\nEl secreto: ¡Pon a tu pareja sobre tus pies o mantén el equilibrio en una pierna!"
+      },
+      "wedding_bingo": { 
+        "name": "Bingo de Boda", 
+        "description": "Bingo con momentos típicos de boda.", 
+        "instructions": "**Preparación:**\nCrea tarjetas de bingo con escenas típicas de boda: 'Alguien llora', 'Discurso del padre de la novia', 'Niño corre por el medio', 'La abuela baila'. Cada invitado recibe una tarjeta.\n\n**Cómo jugar:**\nDurante la boda, los invitados marcan las escenas observadas. Quien complete una fila grita '¡Bingo de boda!' y gana un premio.\n\n**Reglas:**\n• Las escenas deben ocurrir realmente\n• Provocar intencionalmente no cuenta\n• Fila: horizontal, vertical o diagonal\n• Posibles múltiples ganadores\n\n**Consejos:**\n¡Las tarjetas deben ser diferentes! Mezcla momentos inevitables ('Cortar la tarta') con momentos raros ('Alguien derrama vino')."
+      },
+      "charades": { 
+        "name": "Mímica", 
+        "description": "Adivina palabras por mímica en equipos.", 
+        "instructions": "**Preparación:**\nEscribe términos en papelitos (películas, famosos, acciones). Forma equipos (3-6 personas). Prepara un temporizador (60-90 segundos por ronda).\n\n**Cómo jugar:**\nUn jugador saca un término y lo representa con mímica - sin palabras, sonidos ni señalar objetos. El equipo adivina. Si aciertan: Siguiente término.\n\n**Reglas:**\n• Sin hablar, tararear ni hacer sonidos\n• No señalar objetos\n• Mostrar sílabas con dedos está permitido\n• Tiempo por ronda: 60-90 segundos\n• Puntos por cada término adivinado\n\n**Variantes:**\n• Mímica temática: Solo películas, solo profesiones\n• Mímica rápida: 30 segundos por término\n\n**Consejos:**\nAprende gestos comunes: 'Película' (girar cámara), 'Libro' (abrir manos), 'Canción' (simular cantar). ¡Cuanto más loca la actuación, más divertido!"
+      },
+      "activity": { 
+        "name": "Activity", 
+        "description": "Explica, dibuja o representa - juego de fiesta versátil.", 
+        "instructions": "**Preparación:**\nTérminos en tarjetas (o compra el juego Activity). Forma equipos. Prepara material para dibujar. Temporizador (30-60 segundos).\n\n**Cómo jugar:**\nSegún la tarjeta, el término debe explicarse (sin palabras relacionadas), dibujarse o representarse con mímica. El equipo adivina dentro del tiempo.\n\n**Reglas:**\n• Explicar: No decir la palabra\n• Dibujar: Sin letras ni números\n• Mímica: Sin sonidos\n• Por acierto: 1 punto\n• Método incorrecto: 0 puntos\n\n**Variantes:**\n• Modo rápido: Todos los métodos en una ronda\n• Edición despedida: Solo términos de relaciones\n\n**Consejos:**\nMezcla términos fáciles y difíciles. ¡Los momentos más divertidos vienen de las mímicas difíciles!"
+      },
+      "taboo": { 
+        "name": "Tabú", 
+        "description": "Explica el término sin usar las palabras prohibidas.", 
+        "instructions": "**Preparación:**\nPrepara tarjetas de Tabú: Cada tarjeta tiene un término y 5 palabras prohibidas debajo. Forma equipos. Prepara un temporizador.\n\n**Cómo jugar:**\nUn jugador explica el término sin usar las palabras tabú ni sus raíces. Un oponente vigila. El equipo adivina.\n\n**Reglas:**\n• Decir palabra tabú = Término perdido\n• Sin 'Rima con...' ni deletrear\n• El oponente puede gritar '¡Tabú!'\n• 60 segundos por ronda\n• Puntos por cada término adivinado\n\n**Variantes:**\n• Modo experto: 7 palabras tabú\n• Tabú rápido: 30 segundos\n\n**Consejos:**\nLas circunlocuciones e historias funcionan bien. '¡Imagina que...' es un gran comienzo."
+      },
+      "cards_against": { 
+        "name": "Cards Against Humanity", 
+        "description": "El juego de cartas para gente horrible.", 
+        "instructions": "**Preparación:**\nConsigue el mazo de cartas (o imprime online). Cada jugador recibe 10 cartas blancas. Las cartas negras en un montón en el centro.\n\n**Cómo jugar:**\nUn 'Zar de cartas' saca una carta negra y la lee en voz alta. Todos los demás juegan una carta blanca que encaje mejor. El Zar elige al ganador.\n\n**Reglas:**\n• El Zar cambia cada ronda\n• Las cartas blancas se juegan anónimamente\n• El ganador se queda con la carta negra\n• Para __ y __, juega dos cartas blancas\n• ¡La decisión del Zar es final!\n\n**Variantes:**\n• Versión tragos: Todos menos el ganador beben\n• Democracia: Todos votan\n\n**Consejos:**\n¡El Zar determina el humor! Algunos prefieren ingenioso, otros aman lo impactante."
+      },
+      "scavenger_hunt": { 
+        "name": "Búsqueda del Tesoro", 
+        "description": "Sigue las pistas y resuelve acertijos.", 
+        "instructions": "**Preparación:**\nPlanifica 8-15 estaciones con pistas. Cada pista lleva al siguiente lugar. Al final espera un 'tesoro'. Forma equipos o juega todos juntos.\n\n**Cómo jugar:**\nLos equipos empiezan con la primera pista. Cada pista es un acertijo que debe resolverse para encontrar el siguiente lugar. ¡Hasta la meta!\n\n**Reglas:**\n• Seguir el orden\n• Sin ayuda de extraños\n• Todos los miembros del equipo deben estar presentes\n• Fotos en cada estación como prueba\n• El primer equipo en llegar gana\n\n**Variantes:**\n• Caza fotográfica: Tareas de fotos en lugar de lugares\n• Caza con QR: Pistas digitales\n\n**Consejos:**\nLas pistas deben ser difíciles pero resolubles. El 'tesoro' pueden ser snacks, bebidas o una sorpresa."
+      },
+      "murder_mystery": { 
+        "name": "Cena con Asesinato", 
+        "description": "Resuelve el caso mientras cenas.", 
+        "instructions": "**Preparación:**\nCompra un set de Murder Mystery o crea el tuyo. Distribuye roles a los invitados (¡con anticipación!). Decoración acorde al tema. Planifica la cena.\n\n**Cómo jugar:**\nDurante una cena de varios platos, todos interpretan su rol. Se revelan pistas, se interroga a sospechosos. Al final, hay que desenmascarar al asesino.\n\n**Reglas:**\n• Todos permanecen en su personaje\n• El asesino puede mentir, los demás no\n• Las pistas se dan en momentos específicos\n• Discusión e interrogatorio permitidos\n• Al final: Votación\n\n**Consejos:**\nDistribuye los roles con anticipación para que los invitados puedan prepararse. ¡Los disfraces lo hacen más auténtico!"
+      },
+      "kubb": { 
+        "name": "Kubb Vikingo", 
+        "description": "El juego de lanzamiento escandinavo para todas las edades.", 
+        "instructions": "**Preparación:**\nMarca el campo de juego (5x8 metros). Coloca cinco Kubbs por lado. Rey en el medio. Distribuye palos de lanzamiento (6 piezas por equipo).\n\n**Cómo jugar:**\nLos equipos lanzan por turnos a los Kubbs del oponente. Los Kubbs derribados se lanzan al campo enemigo y se colocan allí. Objetivo: Golpear todos los Kubbs, luego el Rey.\n\n**Reglas:**\n• Lanzar palos por debajo (helicóptero prohibido)\n• Primero golpear todos los Kubbs de campo, luego los de base\n• ¡Rey golpeado demasiado pronto = perdido!\n\n**Consejos:**\nLa estrategia es importante: Lanza los Kubbs cerca para reacción en cadena. ¡Cuidado con el Rey!"
+      },
+      "sack_race": { 
+        "name": "Carrera de Sacos", 
+        "description": "El clásico para cada fiesta familiar.", 
+        "instructions": "**Preparación:**\nSacos de patatas o bolsas de basura grandes para cada participante. Marca las líneas de salida y meta (10-20 metros). Obstáculos opcionales.\n\n**Cómo jugar:**\nTodos los participantes se meten en los sacos y los sujetan con ambas manos. A la señal, saltan hacia la meta. El primero en llegar gana.\n\n**Reglas:**\n• Las manos deben quedarse en el saco\n• Caerse = Levantarse y continuar\n• El saco no puede romperse\n• Sin empujones\n\n**Variantes:**\n• Relevos en sacos: Equipos con relevo\n• Circuito de obstáculos: Con slalom\n\n**Consejos:**\n¡Saltos pequeños para equilibrio en lugar de grandes saltos!"
+      },
+      "egg_and_spoon": { 
+        "name": "Carrera del Huevo", 
+        "description": "Equilibra el huevo en la cuchara hasta la meta.", 
+        "instructions": "**Preparación:**\nPara cada participante: Una cuchara y un huevo crudo (o cocido/de plástico). Marca las líneas de salida y meta (15-20 metros).\n\n**Cómo jugar:**\nEl huevo está en la cuchara, que se sujeta con una mano por el mango. A la señal, todos corren a la meta. Si el huevo cae: Volver al inicio.\n\n**Reglas:**\n• Solo una mano en la cuchara\n• La otra mano detrás de la espalda\n• Estabilizar el huevo con la mano = Descalificación\n• Huevo caído: Volver al inicio\n\n**Consejos:**\n¡Lento y constante es mejor que rápido! No mires fijamente al huevo - mira hacia adelante."
+      },
+      "musical_chairs": { 
+        "name": "Sillas Musicales", 
+        "description": "¡Cuando la música para, siéntate rápido!", 
+        "instructions": "**Preparación:**\nColoca sillas en fila o círculo - siempre una menos que jugadores. Prepara música (con opción de pausa).\n\n**Cómo jugar:**\nTodos caminan alrededor de las sillas mientras suena la música. Cuando la música para: ¡Sentarse rápido! Quien no consiga silla, queda eliminado. Se retira una silla.\n\n**Reglas:**\n• No tocar ni reservar antes de que pare la música\n• Sentarse inmediatamente cuando para la música\n• Sin empujones\n• Hay que sentarse en la silla (no solo tocarla)\n• El último jugador con silla gana\n\n**Consejos:**\n¡El controlador de música no debería mirar! Las pausas impredecibles lo hacen más emocionante."
+      },
+      "kiss_challenge": { 
+        "name": "Reto del Beso", 
+        "description": "Consigue besos de desconocidos - ¡cuantos más, mejor!", 
+        "instructions": "**Preparación:**\nConsigue una camiseta blanca para el homenajeado. Proporciona varios pintalabios de colores. ¡No olvides las toallitas desinfectantes!\n\n**Cómo jugar:**\nEl homenajeado debe conseguir besos (marcas de pintalabios) de desconocidos en la camiseta. El grupo acompaña y documenta todo.\n\n**Reglas:**\n• ¡Solo cuentan los besos voluntarios!\n• Preguntar respetuosamente es obligatorio\n• Diferentes colores = Bonus\n• ¡Sin acoso!\n• Límite de tiempo: 1-2 horas\n\n**Consejos:**\nSiempre pregunta amable y respetuosamente. ¡Acepta el 'no'! Los bares y clubes funcionan mejor."
+      },
+      "polaroid_guestbook": { 
+        "name": "Libro de Firmas Polaroid", 
+        "description": "Fotos instantáneas como recuerdo.", 
+        "instructions": "**Preparación:**\nProporciona cámara Polaroid con suficiente película. Libro de firmas/álbum con páginas en blanco. Bolígrafos, pegamento y decoración. Accesorios para fotos divertidas.\n\n**Cómo jugar:**\nLos invitados hacen fotos Polaroid (individuales, parejas, grupos). Las fotos se pegan en el libro de firmas con saludos personales.\n\n**Reglas:**\n• Máx. 2 fotos por invitado (¡la película es cara!)\n• Al menos un saludo por foto\n• Usar la caja de accesorios\n• Dejar secar las fotos antes de pegar"
+      },
+      "ring_warming": { 
+        "name": "Calentamiento de Anillos", 
+        "description": "Todos los invitados bendicen los anillos.", 
+        "instructions": "**Preparación:**\nLos anillos de boda se colocan en una cinta o en una pequeña bolsa. Durante la ceremonia o recepción, se pasa por todos los invitados.\n\n**Cómo jugar:**\nCada invitado sostiene brevemente los anillos en su mano y les da silenciosamente buenos deseos, bendiciones o energía positiva. Luego se pasan.\n\n**Reglas:**\n• Deseos silenciosos (no hablar en voz alta)\n• Solo brevemente cada uno (10-30 segundos)\n• No abrir/probarse el anillo"
+      },
+      "anniversary_dance": { 
+        "name": "Baile de Aniversario", 
+        "description": "Parejas casadas en la pista según años.", 
+        "instructions": "**Preparación:**\nEl DJ o moderador prepara una canción lenta. Se invita a todas las parejas casadas a la pista.\n\n**Cómo jugar:**\nTodas las parejas empiezan a bailar. El moderador pide a las parejas que se sienten: 'Los que llevan menos de 1 año casados...' luego 5 años, 10, 20, etc. La pareja más tiempo casada da consejos.\n\n**Reglas:**\n• ¡Respuestas honestas!\n• Solo parejas legalmente casadas\n• La última pareja recibe un premio"
+      },
+      "bride_stealing": { 
+        "name": "Robo de la Novia", 
+        "description": "La novia es 'secuestrada' y debe ser rescatada.", 
+        "instructions": "**Preparación:**\nUn grupo de invitados planea el 'secuestro' en secreto. Se elige el lugar de destino (bar cercano). Se preparan tareas de rescate.\n\n**Cómo jugar:**\nLa novia es 'secuestrada' durante la celebración y llevada a un bar. El novio debe encontrarla y rescatarla mediante tareas o 'pago'.\n\n**Reglas:**\n• La novia debe estar informada o dar su consentimiento\n• No secuestrar demasiado pronto (después de la cena)\n• Rescate: Tareas, no solo dinero\n• Duración: Máx. 1-2 horas"
+      },
+      "pictionary": { 
+        "name": "Pictionary", 
+        "description": "Dibuja y adivina conceptos contrarreloj.", 
+        "instructions": "**Preparación:**\nPrepara tarjetas con términos. Forma equipos. Proporciona papel grande y rotuladores. Temporizador (60 segundos).\n\n**Cómo jugar:**\nUn jugador dibuja el término sin usar letras ni números. El equipo adivina. Puntos por cada término adivinado a tiempo.\n\n**Reglas:**\n• Sin letras, números ni símbolos\n• Sin hablar ni gestos\n• El dibujante no puede responder preguntas\n\n**Consejos:**\n¡Empieza con el concepto general y añade detalles!"
+      },
+      "family_feud": { 
+        "name": "Feud Familiar", 
+        "description": "Adivina las respuestas más populares de la encuesta.", 
+        "instructions": "**Preparación:**\nPrepara preguntas con respuestas encuestadas (o invéntalas). Forma dos equipos. Prepara un sistema de puntos.\n\n**Cómo jugar:**\nSe hace una pregunta. Los equipos intentan adivinar las respuestas más populares. Puntos según el ranking de la respuesta.\n\n**Reglas:**\n• 3 strikes y el otro equipo puede robar\n• Puntos según popularidad de respuesta\n• El capitán puede consultar al equipo"
+      },
+      "two_truths_lie": { 
+        "name": "Dos Verdades y Una Mentira", 
+        "description": "Adivina la mentira entre tres afirmaciones.", 
+        "instructions": "**Preparación:**\nCada jugador piensa en tres hechos sobre sí mismo: dos verdaderos y uno falso.\n\n**Cómo jugar:**\nCada uno cuenta sus tres hechos. El grupo vota cuál creen que es la mentira. Se revela la verdad.\n\n**Reglas:**\n• Los hechos deben ser creíbles\n• La mentira no debe ser obvia\n• Puntos por adivinar correctamente"
+      },
+      "human_bingo": { 
+        "name": "Bingo Humano", 
+        "description": "Encuentra personas que coincidan con las descripciones.", 
+        "instructions": "**Preparación:**\nCrea tarjetas de bingo con características ('Tiene mascota', 'Habla 3 idiomas', 'Ha viajado a Asia').\n\n**Cómo jugar:**\nLos jugadores van hablando con otros para encontrar personas que coincidan con cada característica. Cuando encuentran una, esa persona firma la casilla.\n\n**Reglas:**\n• Cada persona solo puede firmar una casilla por tarjeta\n• Primera fila/columna/diagonal completa = ¡BINGO!\n\n**Consejos:**\n¡Perfecto para que los invitados se conozcan!"
+      }
     },
     "themes": {
       "80s_retro": { "name": "Fiesta Retro 80s", "description": "Colores neón, música sintetizadora y hombreras", "tips": "¡Piensa en luces de neón, bolas de discoteca y éxitos de los 80 desde A-ha hasta Madonna!" },
