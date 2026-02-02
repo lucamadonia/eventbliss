@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Shuffle, X, Baby, Wine, Star, Sparkles } from "lucide-react";
+import { Search, Filter, Shuffle, X, Baby, Wine, Star, Sparkles, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +33,9 @@ import {
   GameItem
 } from "@/lib/games-library";
 import { cn } from "@/lib/utils";
+
+const INITIAL_DISPLAY_COUNT = 12;
+const LOAD_MORE_COUNT = 12;
 
 const categories: { id: GameCategory | "all"; emoji: string }[] = [
   { id: 'all', emoji: '✨' },
@@ -73,8 +76,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
   const [showAlcoholFreeOnly, setShowAlcoholFreeOnly] = useState(false);
   const [showClassicsOnly, setShowClassicsOnly] = useState(false);
   const [randomGame, setRandomGame] = useState<GameItem | null>(null);
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
 
   const filteredGames = useMemo(() => {
+    // Reset display count when filters change
     return gamesLibrary.filter(game => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -112,6 +117,24 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
     });
   }, [searchQuery, selectedCategory, selectedEventType, selectedDifficulty, showKidsFriendlyOnly, showAlcoholFreeOnly, showClassicsOnly, t]);
 
+  // Reset display count when filters change
+  const displayedGames = useMemo(() => {
+    return filteredGames.slice(0, displayCount);
+  }, [filteredGames, displayCount]);
+
+  const hasMore = displayCount < filteredGames.length;
+  const remainingCount = filteredGames.length - displayCount;
+
+  const handleLoadMore = () => {
+    setDisplayCount(prev => prev + LOAD_MORE_COUNT);
+  };
+
+  // Reset display count when filters change
+  const handleFilterChange = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, value: T) => {
+    setter(value);
+    setDisplayCount(INITIAL_DISPLAY_COUNT);
+  };
+
   const handleRandomGame = () => {
     const random = getRandomGame({
       category: selectedCategory !== "all" ? selectedCategory : undefined,
@@ -130,6 +153,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
     setShowKidsFriendlyOnly(false);
     setShowAlcoholFreeOnly(false);
     setShowClassicsOnly(false);
+    setDisplayCount(INITIAL_DISPLAY_COUNT);
   };
 
   const hasActiveFilters = 
@@ -161,7 +185,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
           <Input
             placeholder={t('gamesLibrary.searchPlaceholder')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setDisplayCount(INITIAL_DISPLAY_COUNT);
+            }}
             className="pl-12 h-12 text-base bg-card/50 border-border/50 focus:border-primary/50 transition-all"
           />
           {searchQuery && (
@@ -169,7 +196,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
               variant="ghost"
               size="icon"
               className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-              onClick={() => setSearchQuery("")}
+              onClick={() => {
+                setSearchQuery("");
+                setDisplayCount(INITIAL_DISPLAY_COUNT);
+              }}
             >
               <X className="w-4 h-4" />
             </Button>
@@ -205,7 +235,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                 {/* Category */}
                 <div className="space-y-2">
                   <Label>{t('gamesLibrary.filters.category')}</Label>
-                  <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as GameCategory | "all")}>
+                  <Select 
+                    value={selectedCategory} 
+                    onValueChange={(v) => handleFilterChange(setSelectedCategory, v as GameCategory | "all")}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -223,7 +256,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                 {/* Event Type */}
                 <div className="space-y-2">
                   <Label>{t('gamesLibrary.filters.eventType')}</Label>
-                  <Select value={selectedEventType} onValueChange={(v) => setSelectedEventType(v as EventType | "all")}>
+                  <Select 
+                    value={selectedEventType} 
+                    onValueChange={(v) => handleFilterChange(setSelectedEventType, v as EventType | "all")}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -241,7 +277,10 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                 {/* Difficulty */}
                 <div className="space-y-2">
                   <Label>{t('gamesLibrary.filters.difficulty')}</Label>
-                  <Select value={selectedDifficulty} onValueChange={(v) => setSelectedDifficulty(v as Difficulty | "all")}>
+                  <Select 
+                    value={selectedDifficulty} 
+                    onValueChange={(v) => handleFilterChange(setSelectedDifficulty, v as Difficulty | "all")}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -260,7 +299,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                     <Checkbox
                       id="kidsFriendly"
                       checked={showKidsFriendlyOnly}
-                      onCheckedChange={(c) => setShowKidsFriendlyOnly(c === true)}
+                      onCheckedChange={(c) => handleFilterChange(setShowKidsFriendlyOnly, c === true)}
                     />
                     <Label htmlFor="kidsFriendly" className="flex items-center gap-2 cursor-pointer">
                       <Baby className="w-4 h-4 text-green-500" />
@@ -272,7 +311,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                     <Checkbox
                       id="alcoholFree"
                       checked={showAlcoholFreeOnly}
-                      onCheckedChange={(c) => setShowAlcoholFreeOnly(c === true)}
+                      onCheckedChange={(c) => handleFilterChange(setShowAlcoholFreeOnly, c === true)}
                     />
                     <Label htmlFor="alcoholFree" className="flex items-center gap-2 cursor-pointer">
                       <Wine className="w-4 h-4 text-purple-500" />
@@ -284,7 +323,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
                     <Checkbox
                       id="classics"
                       checked={showClassicsOnly}
-                      onCheckedChange={(c) => setShowClassicsOnly(c === true)}
+                      onCheckedChange={(c) => handleFilterChange(setShowClassicsOnly, c === true)}
                     />
                     <Label htmlFor="classics" className="flex items-center gap-2 cursor-pointer">
                       <Star className="w-4 h-4 text-amber-500" />
@@ -320,7 +359,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
       <FilterPills
         options={categoryOptions}
         value={selectedCategory}
-        onChange={(v) => setSelectedCategory(v as GameCategory | "all")}
+        onChange={(v) => handleFilterChange(setSelectedCategory, v as GameCategory | "all")}
       />
 
       {/* Random Game Display */}
@@ -365,32 +404,46 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
       >
         <span className="font-semibold text-foreground">{filteredGames.length}</span>
         {t('gamesLibrary.resultsCount', { count: filteredGames.length })}
+        {hasMore && (
+          <span className="text-muted-foreground">
+            ({t('gamesLibrary.showing', { count: displayedGames.length })})
+          </span>
+        )}
       </motion.p>
 
-      {/* Games Grid with Staggered Animation */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        layout
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredGames.map((game, index) => (
-            <motion.div
-              key={game.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <GameCard 
-                game={game} 
-                onAddToPlanner={onAddToPlanner}
-                index={index}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      {/* Games Grid - Simplified animations */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {displayedGames.map((game, index) => (
+          <GameCard 
+            key={game.id}
+            game={game} 
+            onAddToPlanner={onAddToPlanner}
+            index={index}
+          />
+        ))}
+      </div>
+
+      {/* Load More Button */}
+      {hasMore && (
+        <motion.div 
+          className="flex justify-center pt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <Button
+            onClick={handleLoadMore}
+            variant="outline"
+            size="lg"
+            className="gap-2 px-8"
+          >
+            <ChevronDown className="w-4 h-4" />
+            {t('gamesLibrary.loadMore', { count: Math.min(remainingCount, LOAD_MORE_COUNT) })}
+            <Badge variant="secondary" className="ml-2">
+              {remainingCount}
+            </Badge>
+          </Button>
+        </motion.div>
+      )}
 
       {/* Empty State */}
       {filteredGames.length === 0 && (
@@ -399,13 +452,7 @@ export const GamesLibrary = ({ onAddToPlanner, preFilterEventType }: GamesLibrar
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-16"
         >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="text-6xl mb-4"
-          >
-            🎮
-          </motion.div>
+          <div className="text-6xl mb-4">🎮</div>
           <p className="text-muted-foreground mb-4 text-lg">
             {t('gamesLibrary.noResults')}
           </p>

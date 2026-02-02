@@ -1,4 +1,8 @@
 {
+  "gamesLibrary": {
+    "loadMore": "Mehr laden (+{{count}})",
+    "showing": "{{count}} angezeigt"
+  },
   "theme": {
     "title": "Erscheinungsbild",
     "description": "Wähle dein bevorzugtes Design",
