@@ -1563,28 +1563,91 @@
     "decorationTips": "Idées déco",
     "colorPalette": "Palette de couleurs",
     "games": {
-      "bingo_tasks": { "name": "Bingo des Défis", "description": "Chacun reçoit une carte de bingo avec des défis amusants à relever en ville.", "instructions": "Créez des cartes de bingo avec différents défis embarrassants ou drôles. Le groupe parcourt la ville en essayant de tout accomplir. Le premier à compléter une ligne gagne !" },
-      "drink_roulette": { "name": "Roulette à Boire", "description": "La roue de la fortune décide qui boit.", "instructions": "Faites tourner la roulette. La personne désignée doit boire un shot ou une gorgée. Variantes : défis au lieu de boissons." },
-      "who_am_i": { "name": "Qui Suis-Je ?", "description": "Devinez la célébrité sur votre front en posant des questions oui/non.", "instructions": "Chacun reçoit un nom (couple célèbre pour les EVG) collé sur le front. Posez des questions oui/non pour découvrir qui vous êtes." },
-      "flunkyball": { "name": "Flunkyball", "description": "Le jeu de boisson ultime en plein air avec balle et bouteille.", "instructions": "Deux équipes face à face, une bouteille au milieu. Lancez la balle sur la bouteille. Si vous touchez, votre équipe boit vite. L'autre équipe doit relever la bouteille et récupérer la balle." },
-      "beer_pong": { "name": "Beer Pong", "description": "Le classique - lancez la balle dans les verres adverses.", "instructions": "Disposez les verres en triangle. Les équipes lancent à tour de rôle. Touché = l'adversaire boit et le verre est retiré. L'équipe sans verres perd." },
-      "groom_bride_quiz": { "name": "Quiz du Marié/de la Mariée", "description": "Le groupe connaît-il bien l'invité d'honneur ?", "instructions": "Préparez des questions sur l'invité d'honneur. Le groupe devine les réponses. Mauvaises réponses = gages !" },
-      "truth_or_dare": { "name": "Action ou Vérité", "description": "Le classique pour des aveux audacieux et des défis fous.", "instructions": "À tour de rôle, chacun choisit : Vérité (répondre honnêtement) ou Action (accomplir une tâche). Refuser = gage !" },
-      "kiss_challenge": { "name": "Défi du Bisou", "description": "Collectez des bisous d'inconnus - plus il y en a, mieux c'est !", "instructions": "L'invité d'honneur doit collecter des bisous d'inconnus. Marques de rouge à lèvres sur un t-shirt blanc. Qui en collecte le plus ?" },
-      "selfie_mission": { "name": "Mission Selfie", "description": "Faites des selfies créatifs selon des consignes.", "instructions": "Chacun reçoit une liste de défis selfie (ex. avec un policier, sur une fontaine, etc.). Celui qui en réussit le plus gagne !" },
-      "costume_tasks": { "name": "Défis Déguisés", "description": "Portez des costumes fous et accomplissez des défis.", "instructions": "L'invité d'honneur doit accomplir des défis en public dans un costume embarrassant. Le groupe documente tout !" },
-      "bucket_list": { "name": "Défi Bucket List", "description": "Vivez des moments inoubliables d'une liste préparée.", "instructions": "Créez une liste d'expériences uniques. Essayez d'en cocher un maximum ce jour-là !" },
-      "karaoke_battle": { "name": "Bataille de Karaoké", "description": "Chantez pour gagner - peu importe la justesse !", "instructions": "Équipes ou individus s'affrontent. Le groupe note. Points bonus pour la performance et le courage !" },
-      "city_rally": { "name": "Rallye Urbain", "description": "Une chasse au trésor en ville avec défis et énigmes.", "instructions": "Les équipes suivent des indices à travers la ville, résolvent des énigmes et accomplissent des défis. L'équipe la plus rapide gagne !" },
-      "photo_scavenger_hunt": { "name": "Chasse Photo", "description": "Photographiez tout ce qui est sur la liste - soyez créatifs !", "instructions": "Chaque équipe reçoit une liste de défis photo. Points pour la créativité et l'exhaustivité." },
-      "shoe_game": { "name": "Jeu du Chaussure", "description": "Les mariés répondent aux questions avec des chaussures.", "instructions": "Le couple s'assoit dos à dos, chacun avec sa propre chaussure et celle de l'autre. Aux questions, ils lèvent la chaussure de celui qui correspond." },
-      "wedding_bingo": { "name": "Bingo de Mariage", "description": "Bingo avec des moments typiques de mariage.", "instructions": "Les invités reçoivent des cartes avec des scènes de mariage typiques. Le premier à compléter une ligne gagne !" },
-      "balloon_dancing": { "name": "Danse au Ballon", "description": "Dansez en duo avec un ballon entre vous.", "instructions": "Les couples dansent avec un ballon entre eux. S'il tombe ou éclate, le couple est éliminé !" },
-      "family_feud": { "name": "Duel Familial", "description": "Devinez les réponses les plus populaires du sondage.", "instructions": "Les équipes s'affrontent. À chaque question, on devine les réponses les plus populaires. Points pour les bonnes réponses !" },
-      "scavenger_hunt": { "name": "Chasse au Trésor", "description": "Suivez les indices et résolvez les énigmes.", "instructions": "Cachez des indices menant au prochain endroit. À la fin, un trésor ou une surprise attend !" },
-      "charades": { "name": "Mimes", "description": "Devinez les mots mimés en équipes.", "instructions": "Un joueur mime un concept sans parler. L'équipe doit deviner dans le temps imparti." },
-      "pictionary": { "name": "Pictionary", "description": "Dessinez et devinez des concepts contre la montre.", "instructions": "Dessinez le concept pour que votre équipe le devine. Pas de lettres ni de symboles autorisés !" },
-      "two_truths_lie": { "name": "2 Vérités et 1 Mensonge", "description": "Devinez le mensonge parmi trois affirmations.", "instructions": "Chacun raconte trois faits sur lui-même - deux vrais, un faux. Le groupe doit deviner le mensonge !" }
+      "bingo_tasks": { 
+        "name": "Bingo des Défis", 
+        "description": "Chacun reçoit une carte de bingo avec des défis amusants à relever en ville.", 
+        "instructions": "**Préparation:**\nCréez des cartes de bingo 5x5 avec 25 défis différents. Exemples : 'Faire un compliment à un inconnu', 'Photo avec un policier', 'Chanter une chanson'. Chaque participant reçoit une carte et un stylo.\n\n**Déroulement:**\nLe groupe parcourt la ville. Chacun essaie de compléter les défis de sa carte. Les défis accomplis sont cochés. Les coéquipiers peuvent servir de témoins.\n\n**Règles:**\n• Première ligne (horizontale, verticale ou diagonale) = 'BINGO !'\n• Les 25 cases = 'SUPER-BINGO !'\n• Chaque défi doit être documenté par une photo\n\n**Variantes:**\n• Bingo en équipe : Deux équipes s'affrontent\n• Bingo à boire : On trinque à chaque case cochée\n\n**Conseils:**\nMélangez défis faciles et difficiles. Les meilleures cartes ont un bon équilibre !"
+      },
+      "drink_roulette": { 
+        "name": "Roulette à Boire", 
+        "description": "La roue de la fortune décide qui boit.", 
+        "instructions": "**Préparation:**\nProcurez-vous une roulette ou créez-en une avec des noms/numéros. Préparez des boissons (shots, bière ou sans alcool). Un numéro ou position est attribué à chaque joueur.\n\n**Déroulement:**\nÀ tour de rôle, chaque joueur fait tourner la roue. Celui désigné doit boire. Celui qui tourne peut ajouter un défi.\n\n**Règles:**\n• Désigné deux fois de suite : Double shot\n• La roue tombe sur soi : Tous les autres boivent\n• Case 'Joker' : Le joueur choisit qui boit\n\n**Variantes:**\n• Roulette des défis : Des défis au lieu de boire\n• Roulette challenges : Cases avec différents défis\n\n**Conseils:**\nPour plus d'excitation : Écrivez des actions spéciales sur certaines cases comme 'Tout le monde boit' ou 'Cascade' !"
+      },
+      "who_am_i": { 
+        "name": "Qui Suis-Je ?", 
+        "description": "Devinez la célébrité sur votre front en posant des questions oui/non.", 
+        "instructions": "**Préparation:**\nÉcrivez des noms de personnes célèbres sur des post-it. Pour les EVG, idéalement des couples célèbres ou des noms liés au thème. Chacun reçoit un post-it collé sur le front sans le voir.\n\n**Déroulement:**\nÀ tour de rôle, chacun pose une question oui/non. Si 'oui', on peut continuer à questionner. Si 'non', c'est au suivant.\n\n**Règles:**\n• Uniquement des questions oui/non\n• Maximum 20 questions par tour\n• Pas d'indices des autres !\n\n**Variantes:**\n• Édition couples : Deviner des couples célèbres\n• Édition films : Uniquement des personnages de films\n\n**Conseils:**\nD'abord clarifier le genre, puis la profession, puis l'époque !"
+      },
+      "flunkyball": { 
+        "name": "Flunkyball", 
+        "description": "Le jeu de boisson ultime en plein air avec balle et bouteille.", 
+        "instructions": "**Préparation:**\nDeux équipes se placent à environ 10 mètres l'une de l'autre. Chacun a une boisson. Au milieu, une bouteille avec un peu d'eau. Une balle souple est nécessaire.\n\n**Déroulement:**\nL'Équipe A lance la balle sur la bouteille. Si touché : L'Équipe A boit vite. L'Équipe B doit relever la bouteille, récupérer la balle et se replacer.\n\n**Règles:**\n• La balle se lance assis\n• Ne pas poser la boisson tant que tous ne sont pas debout\n• La bouteille doit rester debout\n• La première équipe à finir gagne\n\n**Conseils:**\nParfait pour les parcs ou jardins !"
+      },
+      "beer_pong": { 
+        "name": "Beer Pong", 
+        "description": "Le classique - lancez la balle dans les verres adverses.", 
+        "instructions": "**Préparation:**\nDisposez 10 verres par équipe en formation pyramide (4-3-2-1) de chaque côté d'une longue table. Remplissez chaque verre d'un tiers de bière. Préparez des verres d'eau pour nettoyer les balles.\n\n**Déroulement:**\nDeux équipes s'affrontent. Alternativement, chaque joueur lance une balle de ping-pong. Si touché, l'équipe adverse boit et retire le verre.\n\n**Règles:**\n• 'On Fire' : 2+ touches consécutives = continuer à lancer\n• 'Règle du coude' : Le coude derrière le bord de la table\n• 'Re-Rack' : 1-2 réorganisations autorisées\n\n**Variantes:**\n• Death Cup : Toucher un verre encore plein = victoire immédiate\n• Bounce-Shot : Rebond compte double, mais peut être bloqué\n\n**Conseils:**\nLe lancer parfait a une légère courbe. Pour version sans alcool : eau dans les verres, shots à côté !"
+      },
+      "groom_bride_quiz": { 
+        "name": "Quiz du Marié/de la Mariée", 
+        "description": "Le groupe connaît-il bien l'invité d'honneur ?", 
+        "instructions": "**Préparation:**\nAvant l'EVG, collectez 20-30 questions sur l'invité d'honneur : choses préférées, histoires embarrassantes, détails de la relation. Le partenaire peut être interrogé en secret !\n\n**Déroulement:**\nLe modérateur pose des questions. Le groupe (ou l'invité d'honneur) doit répondre. Les mauvaises réponses entraînent des gages.\n\n**Règles:**\n• Mauvaise réponse = Shot/défi pour l'invité d'honneur\n• Bonne réponse = Shot/défi pour le groupe\n• Joker : 1x le partenaire peut être appelé\n\n**Conseils:**\nMélangez questions drôles, embarrassantes et romantiques !"
+      },
+      "truth_or_dare": { 
+        "name": "Action ou Vérité", 
+        "description": "Le classique pour des aveux audacieux et des défis fous.", 
+        "instructions": "**Préparation:**\nPas de préparation particulière nécessaire, mais des questions/défis préparés facilitent le jeu. Une bouteille à faire tourner est optionnelle.\n\n**Déroulement:**\nÀ tour de rôle, chacun choisit : 'Vérité' (répondre honnêtement) ou 'Action' (accomplir un défi). Le joueur précédent ou le groupe pose la question/le défi.\n\n**Règles:**\n• Refuser = Gage (shot, défi embarrassant)\n• On peut changer une fois par partie\n• La vérité doit être honnête (le groupe juge)\n• Les défis ne doivent mettre personne en danger\n\n**Conseils:**\nCommencez doucement et montez en intensité ! Les meilleurs défis sont embarrassants mais sûrs."
+      },
+      "city_rally": { 
+        "name": "Rallye Urbain", 
+        "description": "Une chasse au trésor en ville avec défis et énigmes.", 
+        "instructions": "**Préparation:**\nPlanifiez un parcours en ville avec 8-12 étapes. Créez des indices menant à l'étape suivante. Préparez des défis pour chaque étape. Formez des équipes (2-4 personnes).\n\n**Déroulement:**\nLes équipes partent en décalé. À chaque étape : lire l'indice, accomplir le défi, prendre une photo, trouver l'indice suivant. L'équipe la plus rapide avec tous les défis gagne.\n\n**Règles:**\n• Tous les défis doivent être photographiés\n• Limite de temps : 2-3 heures\n• GPS ou appels à l'organisateur autorisés\n\n**Conseils:**\nUtilisez des monuments comme étapes ! Le meilleur rallye a un mélange de savoir, action et fun."
+      },
+      "never_have_i_ever": { 
+        "name": "Je N'ai Jamais", 
+        "description": "Confessions et secrets sont révélés.", 
+        "instructions": "**Préparation:**\nTous les joueurs s'assoient en cercle. Chacun a une boisson ou 10 doigts/jetons.\n\n**Déroulement:**\nÀ tour de rôle, chacun dit 'Je n'ai jamais...' et ajoute une affirmation. Tous ceux qui l'ont fait boivent une gorgée ou perdent un doigt/jeton.\n\n**Règles:**\n• L'honnêteté est obligatoire !\n• À 0 doigt : Passer un tour ou shot spécial\n• Questions de suivi autorisées : 'Vraiment ? Raconte !'\n\n**Conseils:**\nCommencez doucement et montez. Les meilleures affirmations sont spécifiques mais pas trop personnelles."
+      },
+      "toilet_paper_dress": { 
+        "name": "Robe de Mariée en PQ", 
+        "description": "Créez une robe de mariée uniquement avec du papier toilette.", 
+        "instructions": "**Préparation:**\nDivisez le groupe en équipes de 3-4 personnes. Chaque équipe reçoit 2-3 rouleaux de papier toilette. Optionnel : Ruban adhésif, ciseaux.\n\n**Déroulement:**\nChaque équipe choisit un 'mannequin'. En 10-15 minutes, une robe de mariée doit être créée avec le papier toilette. Le mannequin présente le résultat sur un 'podium'.\n\n**Règles:**\n• Limite de temps stricte\n• Uniquement les matériaux fournis\n• Le mannequin ne peut pas aider\n• La robe doit survivre à un 'défilé'\n\n**Conseils:**\nEnroulez la robe autour du corps plutôt que de simplement l'accrocher !"
+      },
+      "shoe_game": { 
+        "name": "Jeu de la Chaussure", 
+        "description": "Les mariés répondent aux questions avec des chaussures.", 
+        "instructions": "**Préparation:**\nLe couple s'assoit dos à dos sur des chaises. Chacun tient une de ses propres chaussures et une de son partenaire. Le modérateur a une liste de 20-30 questions.\n\n**Déroulement:**\nLe modérateur pose des questions ('Qui cuisine le mieux ?'). Le couple lève la chaussure de la personne concernée - sans se concerter.\n\n**Règles:**\n• Pas de concertation autorisée !\n• Même réponse : Bisou\n• Réponse différente : Brève explication\n\n**Conseils:**\nMélangez questions drôles ('Qui ronfle le plus fort ?') avec romantiques ('Qui a dit je t'aime en premier ?')."
+      },
+      "wedding_bingo": { 
+        "name": "Bingo de Mariage", 
+        "description": "Bingo avec des moments typiques de mariage.", 
+        "instructions": "**Préparation:**\nCréez des cartes de bingo avec des scènes typiques : 'Quelqu'un pleure', 'Discours du père', 'Enfant court dans l'allée'. Chaque invité reçoit une carte.\n\n**Déroulement:**\nPendant le mariage, les invités cochent les scènes observées. Celui qui complète une ligne crie 'Bingo de mariage !' et gagne un prix.\n\n**Règles:**\n• Les scènes doivent vraiment se produire\n• Provoquer intentionnellement ne compte pas\n• Ligne : horizontale, verticale ou diagonale"
+      },
+      "charades": { 
+        "name": "Mimes", 
+        "description": "Devinez les mots mimés en équipes.", 
+        "instructions": "**Préparation:**\nÉcrivez des termes sur des papiers (films, célébrités, actions). Formez des équipes (3-6 personnes). Préparez un chrono (60-90 secondes par tour).\n\n**Déroulement:**\nUn joueur tire un terme et le mime - sans paroles, sons ni pointage d'objets. L'équipe devine. Si trouvé : Terme suivant.\n\n**Règles:**\n• Pas de paroles, fredonnements ni sons\n• Ne pas pointer d'objets\n• Montrer les syllabes avec les doigts est autorisé\n• Points par terme deviné\n\n**Conseils:**\nApprenez les gestes courants : 'Film' (tourner caméra), 'Livre' (ouvrir mains), 'Chanson' (mimer chanter)."
+      },
+      "scavenger_hunt": { 
+        "name": "Chasse au Trésor", 
+        "description": "Suivez les indices et résolvez les énigmes.", 
+        "instructions": "**Préparation:**\nPlanifiez 8-15 étapes avec des indices. Chaque indice mène au lieu suivant. À la fin, un 'trésor' attend. Formez des équipes ou jouez tous ensemble.\n\n**Déroulement:**\nLes équipes commencent avec le premier indice. Chaque indice est une énigme à résoudre pour trouver le lieu suivant.\n\n**Règles:**\n• Respecter l'ordre\n• Pas d'aide extérieure\n• Tous les membres doivent être présents\n• Photos à chaque étape comme preuve\n\n**Conseils:**\nLes indices doivent être difficiles mais résolubles. Le 'trésor' peut être des snacks, boissons ou une surprise !"
+      },
+      "pictionary": { 
+        "name": "Pictionary", 
+        "description": "Dessinez et devinez des concepts contre la montre.", 
+        "instructions": "**Préparation:**\nPréparez des cartes avec des termes. Formez des équipes. Fournissez du papier et des feutres. Chrono (60 secondes).\n\n**Déroulement:**\nUn joueur dessine le terme sans lettres ni chiffres. L'équipe devine. Points par terme deviné à temps.\n\n**Règles:**\n• Pas de lettres, chiffres ni symboles\n• Pas de paroles ni gestes\n\n**Conseils:**\nCommencez par le concept général et ajoutez des détails !"
+      },
+      "family_feud": { 
+        "name": "Duel Familial", 
+        "description": "Devinez les réponses les plus populaires du sondage.", 
+        "instructions": "**Préparation:**\nPréparez des questions avec des réponses sondées. Formez deux équipes. Préparez un système de points.\n\n**Déroulement:**\nUne question est posée. Les équipes essaient de deviner les réponses les plus populaires. Points selon le classement.\n\n**Règles:**\n• 3 erreurs et l'autre équipe peut voler\n• Points selon la popularité de la réponse"
+      },
+      "two_truths_lie": { 
+        "name": "2 Vérités et 1 Mensonge", 
+        "description": "Devinez le mensonge parmi trois affirmations.", 
+        "instructions": "**Préparation:**\nChaque joueur pense à trois faits sur lui-même : deux vrais et un faux.\n\n**Déroulement:**\nChacun raconte ses trois faits. Le groupe vote lequel est le mensonge. La vérité est révélée.\n\n**Règles:**\n• Les faits doivent être crédibles\n• Le mensonge ne doit pas être évident\n• Points pour deviner correctement"
+      }
     },
     "themes": {
       "80s_retro": { "name": "Fête Rétro 80s", "description": "Couleurs néon, musique synthé et épaulettes", "tips": "Pensez aux néons, boules disco et tubes des années 80 d'A-ha à Madonna !" },
