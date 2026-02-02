@@ -1,88 +1,135 @@
 
 
-# Plan: Automatischer Modell-Download bei Play + Verbesserte UX
+# Plan: Performance-Optimierung der Ideas Hub Seite
 
-## Problem
+## Probleme identifiziert
 
-Die neuronale TTS (menschlich klingende Stimme) ist zwar implementiert, aber das Modell muss erst manuell heruntergeladen werden (~50MB). Der Nutzer hat wahrscheinlich nicht auf den Download-Button geklickt und hoert daher weiterhin die roboterhafte Browser-Stimme.
-
----
-
-## 1. Aenderungen an GameAudioPlayer.tsx
-
-### 1.1 Automatischer Download bei Play-Klick
-
-Wenn der Nutzer auf "Play" klickt und eine neuronale Stimme ausgewaehlt ist, wird automatisch das Modell heruntergeladen (falls noch nicht vorhanden) und danach abgespielt.
-
-**Vorher (manuell):**
-```text
-1. Nutzer waehlt neuronale Stimme
-2. Nutzer muss "Herunterladen" klicken
-3. Warten auf Download
-4. Dann "Play" klicken
-```
-
-**Nachher (automatisch):**
-```text
-1. Nutzer klickt "Play"
-2. Modell wird automatisch heruntergeladen (mit Fortschrittsanzeige)
-3. Audio startet automatisch nach Download
-```
-
-### 1.2 Verbesserte Ladeanzeige
-
-- Zeige waehrend des Downloads einen Spinner mit Prozentangabe
-- Zeige nach erfolgreichem Download eine Erfolgsmeldung
-
-### 1.3 Automatisches Fallback entfernen
-
-Aktuell faellt die Logik auf Web Speech API zurueck, wenn das Modell nicht bereit ist. Das soll NICHT passieren - stattdessen soll der Download gestartet werden.
+| Problem | Ursache | Auswirkung |
+|---------|---------|------------|
+| "Anleitung"-Button reagiert nicht | forwardRef fehlt bei GameCard | AnimatePresence kann Komponente nicht korrekt animieren |
+| Seite laedt langsam | 200+ Spiele werden auf einmal gerendert | Hoher Speicherverbrauch und langsames Rendering |
+| Seite haengt sich auf | Viele gleichzeitige Animationen | CPU-Ueberlastung durch framer-motion |
 
 ---
 
-## 2. Betroffene Dateien
+## 1. GameCard mit forwardRef korrigieren
+
+**Datei:** `src/components/ideas/GameCard.tsx`
+
+Der Konsolenfehler zeigt, dass AnimatePresence versucht, eine Ref an GameCard zu uebergeben, aber die Komponente unterstuetzt das nicht. Das verhindert korrekte Animationen und kann zu fehlerhaftem Verhalten fuehren.
+
+**Aenderung:**
+- Komponente mit `React.forwardRef` umschliessen
+- Ref an das aeussere motion.div Element weitergeben
+
+---
+
+## 2. Virtualisierung / Lazy Loading einfuehren
+
+**Datei:** `src/components/ideas/GamesLibrary.tsx`
+
+Aktuell werden alle 200+ Spiele auf einmal gerendert. Das verursacht:
+- Lange initiale Ladezeit
+- Hoher Speicherverbrauch
+- Viele gleichzeitige Animationen
+
+**Aenderung:**
+- "Mehr laden"-Button statt alle Spiele auf einmal
+- Initial nur 12-18 Spiele anzeigen
+- Bei Klick weitere 12 Spiele laden
+- Animationen bei sichtbaren Karten reduzieren
+
+---
+
+## 3. Animationen optimieren
+
+**Dateien:** `src/components/ideas/GameCard.tsx`, `src/components/ideas/FloatingEmojis.tsx`
+
+**Aenderungen:**
+- Tilt-Effekt (rotateY, rotateX) auf Hover reduzieren oder entfernen
+- `layout` Animation bei AnimatePresence entfernen (verursacht Reflows)
+- FloatingEmojis Anzahl reduzieren (von 15 auf 8)
+- CSS `will-change` Eigenschaft nutzen fuer bessere GPU-Nutzung
+
+---
+
+## 4. Detaillierte Implementierung
+
+### 4.1 GameCard.tsx - forwardRef
+
+```text
+// Vorher:
+export const GameCard = ({ game, onAddToPlanner, index = 0 }: GameCardProps) => {
+
+// Nachher:
+export const GameCard = React.forwardRef<HTMLDivElement, GameCardProps>(
+  ({ game, onAddToPlanner, index = 0 }, ref) => {
+    // ... Komponenten-Code
+    return (
+      <motion.div ref={ref} ...>
+        ...
+      </motion.div>
+    );
+  }
+);
+GameCard.displayName = "GameCard";
+```
+
+### 4.2 GamesLibrary.tsx - Lazy Loading
+
+```text
+// Neue States:
+const [displayCount, setDisplayCount] = useState(12);
+
+// Gefilterte Spiele begrenzen:
+const displayedGames = filteredGames.slice(0, displayCount);
+const hasMore = displayCount < filteredGames.length;
+
+// "Mehr laden" Button am Ende der Grid:
+{hasMore && (
+  <Button onClick={() => setDisplayCount(prev => prev + 12)}>
+    Mehr anzeigen ({filteredGames.length - displayCount} weitere)
+  </Button>
+)}
+```
+
+### 4.3 AnimatePresence vereinfachen
+
+```text
+// Vorher:
+<motion.div layout initial={...} animate={...} exit={...}>
+
+// Nachher:
+<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+```
+
+### 4.4 FloatingEmojis reduzieren
+
+```text
+// In IdeasHub.tsx:
+// Vorher:
+<FloatingEmojis emojis={floatingEmojis} count={15} />
+
+// Nachher:
+<FloatingEmojis emojis={floatingEmojis} count={6} />
+```
+
+---
+
+## 5. Zusammenfassung der Dateiaenderungen
 
 | Datei | Aenderung |
 |-------|-----------|
-| `src/components/ideas/GameAudioPlayer.tsx` | Automatischer Download in handlePlay() |
+| `src/components/ideas/GameCard.tsx` | forwardRef hinzufuegen, Animationen vereinfachen |
+| `src/components/ideas/GamesLibrary.tsx` | Lazy Loading mit "Mehr laden" Button |
+| `src/pages/IdeasHub.tsx` | FloatingEmojis count reduzieren |
 
 ---
 
-## 3. Implementierungsdetails
+## 6. Erwartete Verbesserungen
 
-### Neue handlePlay() Logik
-
-```text
-handlePlay():
-  1. Wenn neuronale Stimme UND Modell NICHT geladen:
-     → Starte Download mit Fortschrittsanzeige
-     → Nach Download: Starte automatisch Wiedergabe
-  2. Wenn neuronale Stimme UND Modell geladen:
-     → Starte VITS-Wiedergabe sofort
-  3. Wenn Standard-Stimme:
-     → Nutze Web Speech API
-```
-
-### UI-Aenderungen
-
-1. **Download-Button entfernen** - nicht mehr noetig
-2. **Play-Button zeigt Ladefortschritt** - waehrend Download
-3. **Klarer Status-Text** - "Lade Stimmmodell..." waehrend Download
-
----
-
-## 4. Uebersetzungs-Updates
-
-Neue/aktualisierte Schluessel fuer de.json und en.json:
-- `loadingVoice`: "Lade Stimmmodell..."
-- `firstTimeDownload`: "Erster Start: Lade hochwertige Stimme (~50MB)"
-
----
-
-## 5. Erwartetes Nutzererlebnis
-
-1. Nutzer klickt "Play"
-2. Sieht "Lade Stimmmodell... 45%" fuer ca. 10-30 Sekunden (je nach Internet)
-3. Audio startet automatisch mit menschlich klingender Stimme
-4. Bei weiteren Klicks: Sofortige Wiedergabe (Modell gecacht)
+- **Anleitung-Button**: Funktioniert wieder korrekt
+- **Initiale Ladezeit**: Von ~200 auf ~12 Karten reduziert
+- **Scroll-Performance**: Deutlich fluessiger
+- **Speicherverbrauch**: Signifikant reduziert
 
