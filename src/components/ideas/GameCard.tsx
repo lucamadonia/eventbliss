@@ -13,6 +13,7 @@ import {
   Sparkles,
   Check
 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -308,9 +309,11 @@ export const GameCard = ({ game, onAddToPlanner, index = 0 }: GameCardProps) => 
 
               {/* Instructions */}
               <ScrollArea className="flex-1 -mx-2 px-2">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(game.instructionsKey)}
-                </p>
+                <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-headings:text-sm prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5">
+                  <ReactMarkdown>
+                    {t(game.instructionsKey)}
+                  </ReactMarkdown>
+                </div>
                 
                 {game.materials && game.materials.length > 0 && (
                   <div className="mt-4 p-3 rounded-lg bg-muted/50">
