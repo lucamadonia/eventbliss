@@ -2266,6 +2266,27 @@
     "addedToFavorites": "Added to favorites",
     "removedFromFavorites": "Removed from favorites",
     "back": "Back",
+    "timer": {
+      "title": "Game Timer",
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "finished": "Time's up!",
+      "timeUp": "The timer has finished. Game over!",
+      "custom": "Min",
+      "sound": "Sound",
+      "notification": "Notification",
+      "fullscreen": "Fullscreen"
+    },
+    "tts": {
+      "title": "Read Instructions",
+      "start": "Read",
+      "pause": "Pause",
+      "stop": "Stop",
+      "nextSection": "Next Section",
+      "notSupported": "Text-to-Speech is not supported by your browser",
+      "error": "Error reading aloud"
+    },
     "games": {
       "bingo_tasks": { 
         "name": "Task Bingo", 

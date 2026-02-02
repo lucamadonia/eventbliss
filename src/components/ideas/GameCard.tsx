@@ -11,9 +11,10 @@ import {
   Copy,
   Share2,
   Sparkles,
-  Check
+  Check,
+  Timer,
+  Volume2
 } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { GameItem, GameCategory } from "@/lib/games-library";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { GameTimer } from "./GameTimer";
+import { GameAudioPlayer } from "./GameAudioPlayer";
+import { GameInstructionsSection } from "./GameInstructionsSection";
 
 interface GameCardProps {
   game: GameItem;
@@ -61,12 +65,15 @@ const getDifficultyPercent = (difficulty: string): string => {
 };
 
 export const GameCard = ({ game, onAddToPlanner, index = 0 }: GameCardProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showTimer, setShowTimer] = useState(false);
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
 
   const primaryCategory = game.categories[0] || "party_games";
+  const instructions = t(game.instructionsKey);
 
   const handleCopyInstructions = async () => {
     const instructions = t(game.instructionsKey);
@@ -288,10 +295,28 @@ export const GameCard = ({ game, onAddToPlanner, index = 0 }: GameCardProps) => 
                     size="icon"
                     variant="ghost"
                     className="h-8 w-8"
+                    onClick={() => setShowAudioPlayer(!showAudioPlayer)}
+                    title={t('gamesLibrary.tts.title')}
+                  >
+                    <Volume2 className={cn("w-4 h-4", showAudioPlayer && "text-primary")} />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                    onClick={() => setShowTimer(!showTimer)}
+                    title={t('gamesLibrary.timer.title')}
+                  >
+                    <Timer className={cn("w-4 h-4", showTimer && "text-primary")} />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
                     onClick={handleCopyInstructions}
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-primary" />
                     ) : (
                       <Copy className="w-4 h-4" />
                     )}
@@ -307,13 +332,44 @@ export const GameCard = ({ game, onAddToPlanner, index = 0 }: GameCardProps) => 
                 </div>
               </div>
 
+              {/* Audio Player */}
+              <AnimatePresence>
+                {showAudioPlayer && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-3"
+                  >
+                    <GameAudioPlayer 
+                      text={instructions} 
+                      language={i18n.language}
+                      compact
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Timer */}
+              <AnimatePresence>
+                {showTimer && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-3"
+                  >
+                    <GameTimer 
+                      compact 
+                      onClose={() => setShowTimer(false)}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Instructions */}
               <ScrollArea className="flex-1 -mx-2 px-2">
-                <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-headings:text-sm prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5">
-                  <ReactMarkdown>
-                    {t(game.instructionsKey)}
-                  </ReactMarkdown>
-                </div>
+                <GameInstructionsSection instructions={instructions} />
                 
                 {game.materials && game.materials.length > 0 && (
                   <div className="mt-4 p-3 rounded-lg bg-muted/50">
