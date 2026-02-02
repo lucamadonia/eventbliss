@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Play, 
   Pause, 
@@ -9,12 +9,33 @@ import {
   Volume2,
   VolumeX,
   Loader2,
-  AudioLines
+  AudioLines,
+  Download,
+  Sparkles,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  getVoicesForLanguage,
+  getDefaultVoice,
+  isNeuralVoice,
+  getStoredVoicePreference,
+  storeVoicePreference,
+  webSpeechLanguages,
+  type VoiceOption,
+} from "@/lib/tts-voice-config";
 
 interface GameAudioPlayerProps {
   text: string;
@@ -23,21 +44,7 @@ interface GameAudioPlayerProps {
   compact?: boolean;
 }
 
-// Language to voice mapping for Web Speech API
-const languageVoiceMap: Record<string, string> = {
-  de: "de-DE",
-  en: "en-US",
-  es: "es-ES",
-  fr: "fr-FR",
-  it: "it-IT",
-  nl: "nl-NL",
-  pl: "pl-PL",
-  pt: "pt-PT",
-  tr: "tr-TR",
-  ar: "ar-SA"
-};
-
-// Preferred voice patterns - prioritize high-quality voices from Google, Microsoft, Apple
+// Preferred voice patterns for Web Speech API fallback
 const preferredVoicePatterns: Record<string, string[]> = {
   de: ["Google Deutsch", "Microsoft Katja", "Microsoft Hedda", "Anna", "Petra", "Helena"],
   en: ["Google US English", "Google UK English Female", "Microsoft Zira", "Samantha", "Karen", "Moira"],
@@ -59,11 +66,18 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
-  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [browserVoices, setBrowserVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [currentSection, setCurrentSection] = useState(0);
+  
+  // Voice selection state
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>("");
+  const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [isModelReady, setIsModelReady] = useState(false);
+  const [vitsModule, setVitsModule] = useState<any>(null);
   
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // Split text into sections for navigation
@@ -71,28 +85,65 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   const sectionHeaders = text.match(/\*\*[^*]+\*\*/g) || [];
   
   const currentLang = language || i18n.language || "de";
-  const speechLang = languageVoiceMap[currentLang] || "de-DE";
+  const speechLang = webSpeechLanguages[currentLang] || "de-DE";
+  
+  // Get available voices for current language
+  const availableVoices = getVoicesForLanguage(currentLang);
+  const selectedVoice = availableVoices.find(v => v.id === selectedVoiceId);
+  const isNeural = selectedVoiceId ? isNeuralVoice(selectedVoiceId) : false;
 
-  // Load voices with retry logic for Chrome
+  // Initialize voice selection from preferences
+  useEffect(() => {
+    const stored = getStoredVoicePreference(currentLang);
+    if (stored && availableVoices.some(v => v.id === stored)) {
+      setSelectedVoiceId(stored);
+    } else {
+      setSelectedVoiceId(getDefaultVoice(currentLang));
+    }
+  }, [currentLang, availableVoices]);
+
+  // Load VITS module dynamically
+  useEffect(() => {
+    if (isNeural && !vitsModule) {
+      import('@diffusionstudio/vits-web').then((module) => {
+        setVitsModule(module);
+      }).catch((err) => {
+        console.error('Failed to load VITS module:', err);
+      });
+    }
+  }, [isNeural, vitsModule]);
+
+  // Check if neural model is ready
+  useEffect(() => {
+    if (isNeural && vitsModule && selectedVoiceId) {
+      // Check if model is already downloaded
+      vitsModule.stored().then((storedVoices: string[]) => {
+        setIsModelReady(storedVoices.includes(selectedVoiceId));
+      }).catch(() => {
+        setIsModelReady(false);
+      });
+    } else {
+      setIsModelReady(false);
+    }
+  }, [isNeural, vitsModule, selectedVoiceId]);
+
+  // Load browser voices for Web Speech API fallback
   useEffect(() => {
     synthRef.current = window.speechSynthesis;
     
     const loadVoices = () => {
       const voices = synthRef.current?.getVoices() || [];
       if (voices.length > 0) {
-        setAvailableVoices(voices);
+        setBrowserVoices(voices);
       }
     };
     
-    // Initial load
     loadVoices();
     
-    // Chrome loads voices asynchronously
     if (synthRef.current) {
       synthRef.current.onvoiceschanged = loadVoices;
     }
     
-    // Fallback: retry after short delay (some browsers need this)
     const retryTimeout = setTimeout(loadVoices, 100);
     
     return () => {
@@ -103,26 +154,67 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
-  // Find best matching voice with quality prioritization
-  const getBestVoice = useCallback(() => {
-    if (!availableVoices.length) return null;
+  // Handle voice selection change
+  const handleVoiceChange = (voiceId: string) => {
+    handleStop();
+    setSelectedVoiceId(voiceId);
+    storeVoicePreference(currentLang, voiceId);
+    setIsModelReady(false);
+    
+    // Check model availability for neural voices
+    if (isNeuralVoice(voiceId) && vitsModule) {
+      vitsModule.stored().then((storedVoices: string[]) => {
+        setIsModelReady(storedVoices.includes(voiceId));
+      }).catch(() => {
+        setIsModelReady(false);
+      });
+    }
+  };
+
+  // Download neural voice model
+  const downloadModel = async () => {
+    if (!vitsModule || !selectedVoiceId || !isNeural) return;
+    
+    setDownloadProgress(0);
+    
+    try {
+      await vitsModule.download(selectedVoiceId, (progress: { loaded: number; total: number }) => {
+        const percent = Math.round((progress.loaded / progress.total) * 100);
+        setDownloadProgress(percent);
+      });
+      
+      setIsModelReady(true);
+      setDownloadProgress(null);
+      toast.success(t('gamesLibrary.tts.modelReady'));
+    } catch (error) {
+      console.error('Failed to download model:', error);
+      setDownloadProgress(null);
+      toast.error(t('gamesLibrary.tts.downloadError'));
+    }
+  };
+
+  // Find best Web Speech voice
+  const getBestWebSpeechVoice = useCallback(() => {
+    if (!browserVoices.length) return null;
     
     const langPrefix = speechLang.split("-")[0];
     const preferredPatterns = preferredVoicePatterns[langPrefix] || [];
     
-    // Get all voices for this language
-    const languageVoices = availableVoices.filter(v => 
+    const languageVoices = browserVoices.filter(v => 
       v.lang === speechLang || v.lang.startsWith(langPrefix)
     );
     
     if (languageVoices.length === 0) {
-      return availableVoices[0];
+      return browserVoices[0];
     }
     
-    // 1. Try preferred voice patterns (Google, Microsoft, Apple high-quality)
     for (const pattern of preferredPatterns) {
       const match = languageVoices.find(v => 
         v.name.toLowerCase().includes(pattern.toLowerCase())
@@ -130,51 +222,85 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
       if (match) return match;
     }
     
-    // 2. Prefer Google voices (they're generally highest quality in Chrome)
     const googleVoice = languageVoices.find(v => v.name.includes("Google"));
     if (googleVoice) return googleVoice;
     
-    // 3. Prefer Microsoft voices (good quality on Windows/Edge)
     const microsoftVoice = languageVoices.find(v => v.name.includes("Microsoft"));
     if (microsoftVoice) return microsoftVoice;
     
-    // 4. Prefer non-compact/enhanced voices (often have "Enhanced" or "Premium" in name)
-    const enhancedVoice = languageVoices.find(v => 
-      v.name.toLowerCase().includes("enhanced") || 
-      v.name.toLowerCase().includes("premium") ||
-      v.name.toLowerCase().includes("neural")
-    );
-    if (enhancedVoice) return enhancedVoice;
-    
-    // 5. Prefer female voices (often clearer for instructions)
-    const femalePatterns = ["female", "frau", "mujer", "femme", "donna", "kobieta"];
-    const femaleVoice = languageVoices.find(v => 
-      femalePatterns.some(p => v.name.toLowerCase().includes(p))
-    );
-    if (femaleVoice) return femaleVoice;
-    
-    // 6. Return first available voice for the language
     return languageVoices[0];
-  }, [availableVoices, speechLang]);
+  }, [browserVoices, speechLang]);
 
-  // Clean text for speech (remove markdown)
+  // Clean text for speech
   const cleanTextForSpeech = (inputText: string): string => {
     return inputText
-      .replace(/\*\*([^*]+)\*\*/g, "$1") // Bold
-      .replace(/\*([^*]+)\*/g, "$1")     // Italic
-      .replace(/^[-•]\s*/gm, "")          // Bullets
-      .replace(/\n+/g, ". ")              // Line breaks to pauses
-      .replace(/\s+/g, " ")               // Multiple spaces
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .replace(/^[-•]\s*/gm, "")
+      .replace(/\n+/g, ". ")
+      .replace(/\s+/g, " ")
       .trim();
   };
 
-  const handlePlay = useCallback(() => {
+  // Play with VITS neural TTS
+  const playWithVITS = async (textToSpeak: string) => {
+    if (!vitsModule || !selectedVoiceId) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const wav = await vitsModule.predict({
+        text: textToSpeak,
+        voiceId: selectedVoiceId,
+      });
+      
+      const audioUrl = URL.createObjectURL(wav);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.volume = isMuted ? 0 : volume / 100;
+      
+      audio.onplay = () => {
+        setIsLoading(false);
+        setIsPlaying(true);
+        setIsPaused(false);
+      };
+      
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          setProgress((audio.currentTime / audio.duration) * 100);
+        }
+      };
+      
+      audio.onended = () => {
+        setIsPlaying(false);
+        setIsPaused(false);
+        setProgress(100);
+        URL.revokeObjectURL(audioUrl);
+        setTimeout(() => setProgress(0), 1000);
+      };
+      
+      audio.onerror = () => {
+        setIsLoading(false);
+        setIsPlaying(false);
+        toast.error(t('gamesLibrary.tts.error'));
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('VITS playback error:', error);
+      setIsLoading(false);
+      toast.error(t('gamesLibrary.tts.error'));
+    }
+  };
+
+  // Play with Web Speech API
+  const playWithWebSpeech = (textToSpeak: string) => {
     if (!synthRef.current) {
       toast.error(t('gamesLibrary.tts.notSupported'));
       return;
     }
 
-    // Check if paused and resume
     if (isPaused && utteranceRef.current) {
       synthRef.current.resume();
       setIsPaused(false);
@@ -182,21 +308,18 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
       return;
     }
 
-    // Cancel any ongoing speech
     synthRef.current.cancel();
-    
     setIsLoading(true);
     
-    const cleanedText = cleanTextForSpeech(text);
-    const utterance = new SpeechSynthesisUtterance(cleanedText);
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
     
-    const voice = getBestVoice();
+    const voice = getBestWebSpeechVoice();
     if (voice) {
       utterance.voice = voice;
     }
     
     utterance.lang = speechLang;
-    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.rate = 0.9;
     utterance.pitch = 1;
     utterance.volume = isMuted ? 0 : volume / 100;
     
@@ -205,8 +328,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
       setIsPlaying(true);
       setIsPaused(false);
       
-      // Estimate progress based on text length
-      const estimatedDuration = cleanedText.length * 60; // ~60ms per character at 0.9 rate
+      const estimatedDuration = textToSpeak.length * 60;
       let elapsed = 0;
       
       progressIntervalRef.current = setInterval(() => {
@@ -238,17 +360,47 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     
     utteranceRef.current = utterance;
     synthRef.current.speak(utterance);
-  }, [text, speechLang, getBestVoice, isPaused, volume, isMuted, t]);
+  };
+
+  const handlePlay = useCallback(() => {
+    const cleanedText = cleanTextForSpeech(text);
+    
+    if (isNeural && isModelReady && vitsModule) {
+      playWithVITS(cleanedText);
+    } else {
+      playWithWebSpeech(cleanedText);
+    }
+  }, [text, isNeural, isModelReady, vitsModule, isPaused, volume, isMuted]);
 
   const handlePause = () => {
-    if (synthRef.current && isPlaying) {
+    if (audioRef.current && isNeural) {
+      audioRef.current.pause();
+      setIsPaused(true);
+      setIsPlaying(false);
+    } else if (synthRef.current && isPlaying) {
       synthRef.current.pause();
       setIsPaused(true);
       setIsPlaying(false);
     }
   };
 
+  const handleResume = () => {
+    if (audioRef.current && isNeural) {
+      audioRef.current.play();
+      setIsPaused(false);
+      setIsPlaying(true);
+    } else if (synthRef.current) {
+      synthRef.current.resume();
+      setIsPaused(false);
+      setIsPlaying(true);
+    }
+  };
+
   const handleStop = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     if (synthRef.current) {
       synthRef.current.cancel();
     }
@@ -267,29 +419,15 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     const nextSection = (currentSection + 1) % sections.length;
     setCurrentSection(nextSection);
     
-    // Play the next section
+    const sectionText = cleanTextForSpeech(
+      (sectionHeaders[nextSection] || "") + " " + sections[nextSection]
+    );
+    
     setTimeout(() => {
-      if (synthRef.current) {
-        const sectionText = cleanTextForSpeech(
-          (sectionHeaders[nextSection] || "") + " " + sections[nextSection]
-        );
-        const utterance = new SpeechSynthesisUtterance(sectionText);
-        const voice = getBestVoice();
-        if (voice) utterance.voice = voice;
-        utterance.lang = speechLang;
-        utterance.rate = 0.9;
-        utterance.volume = isMuted ? 0 : volume / 100;
-        
-        utterance.onstart = () => {
-          setIsPlaying(true);
-          setIsPaused(false);
-        };
-        
-        utterance.onend = () => {
-          setIsPlaying(false);
-        };
-        
-        synthRef.current.speak(utterance);
+      if (isNeural && isModelReady && vitsModule) {
+        playWithVITS(sectionText);
+      } else {
+        playWithWebSpeech(sectionText);
       }
     }, 100);
   };
@@ -298,13 +436,21 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     const newVolume = values[0];
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
+    
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume / 100;
+    }
   };
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    
+    if (audioRef.current) {
+      audioRef.current.volume = newMuted ? 0 : volume / 100;
+    }
   };
 
-  // Check if Speech Synthesis is supported
   const isSupported = typeof window !== "undefined" && "speechSynthesis" in window;
 
   if (!isSupported) {
@@ -325,19 +471,83 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
         compact ? "p-3" : "p-4"
       )}
     >
-      {/* Header */}
+      {/* Header with Voice Selection */}
       <div className="flex items-center gap-2 mb-3">
         <AudioLines className="w-4 h-4 text-primary" />
         <span className="text-sm font-medium text-foreground">
           {t('gamesLibrary.tts.title')}
         </span>
         
-        {availableVoices.length > 0 && (
-          <span className="text-xs text-muted-foreground ml-auto">
-            {getBestVoice()?.name || speechLang}
-          </span>
+        {/* Neural Badge */}
+        {isNeural && (
+          <Badge variant="secondary" className="text-xs gap-1 bg-primary/20 text-primary border-0">
+            <Sparkles className="w-3 h-3" />
+            Neural
+          </Badge>
         )}
       </div>
+
+      {/* Voice Selection Dropdown */}
+      <div className="mb-3">
+        <Select value={selectedVoiceId} onValueChange={handleVoiceChange}>
+          <SelectTrigger className="w-full h-9 text-sm bg-background/50 border-border/50">
+            <SelectValue placeholder={t('gamesLibrary.tts.selectVoice')}>
+              {selectedVoice && (
+                <span className="flex items-center gap-2">
+                  {selectedVoice.engine === 'neural' && <Sparkles className="w-3 h-3 text-primary" />}
+                  {selectedVoice.name}
+                </span>
+              )}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-border z-50">
+            {availableVoices.map((voice) => (
+              <SelectItem key={voice.id} value={voice.id}>
+                <div className="flex items-center gap-2">
+                  {voice.engine === 'neural' && <Sparkles className="w-3 h-3 text-primary" />}
+                  <span>{voice.name}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">
+                    {voice.quality === 'high' ? '★★★' : voice.quality === 'medium' ? '★★' : '★'}
+                  </span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Model Download Section (for neural voices) */}
+      {isNeural && !isModelReady && downloadProgress === null && (
+        <div className="mb-3 p-2 rounded-lg bg-muted/50 border border-border/50">
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-xs text-muted-foreground">
+              {t('gamesLibrary.tts.downloadRequired')}
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={downloadModel}
+              className="h-7 text-xs gap-1"
+            >
+              <Download className="w-3 h-3" />
+              {t('gamesLibrary.tts.download')}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Download Progress */}
+      {downloadProgress !== null && (
+        <div className="mb-3 p-2 rounded-lg bg-muted/50 border border-border/50">
+          <div className="flex items-center gap-2 mb-1">
+            <Loader2 className="w-3 h-3 animate-spin text-primary" />
+            <span className="text-xs text-muted-foreground">
+              {t('gamesLibrary.tts.downloading')} {downloadProgress}%
+            </span>
+          </div>
+          <Progress value={downloadProgress} className="h-1" />
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="relative h-2 rounded-full bg-muted overflow-hidden mb-3">
@@ -367,11 +577,21 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
               >
                 <Pause className="w-5 h-5" />
               </Button>
+            ) : isPaused ? (
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={handleResume}
+                className="h-9 w-9 text-primary hover:text-primary/80 hover:bg-primary/10"
+              >
+                <Play className="w-5 h-5" />
+              </Button>
             ) : (
               <Button 
                 size="icon" 
                 variant="ghost" 
                 onClick={handlePlay}
+                disabled={isNeural && !isModelReady && downloadProgress === null}
                 className="h-9 w-9 text-primary hover:text-primary/80 hover:bg-primary/10"
               >
                 <Play className="w-5 h-5" />
