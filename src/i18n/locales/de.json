@@ -2390,6 +2390,27 @@
     "addedToFavorites": "Zu Favoriten hinzugefügt",
     "removedFromFavorites": "Aus Favoriten entfernt",
     "back": "Zurück",
+    "timer": {
+      "title": "Spiel-Timer",
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Zurücksetzen",
+      "finished": "Zeit abgelaufen!",
+      "timeUp": "Der Timer ist abgelaufen. Das Spiel ist vorbei!",
+      "custom": "Min",
+      "sound": "Ton",
+      "notification": "Benachrichtigung",
+      "fullscreen": "Vollbild"
+    },
+    "tts": {
+      "title": "Anleitung vorlesen",
+      "start": "Vorlesen",
+      "pause": "Pause",
+      "stop": "Stop",
+      "nextSection": "Nächster Abschnitt",
+      "notSupported": "Text-to-Speech wird von deinem Browser nicht unterstützt",
+      "error": "Fehler beim Vorlesen"
+    },
     "games": {
       "bingo_tasks": { 
         "name": "Aufgaben-Bingo", 
