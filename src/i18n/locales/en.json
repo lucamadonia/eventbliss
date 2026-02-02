@@ -2267,35 +2267,159 @@
     "removedFromFavorites": "Removed from favorites",
     "back": "Back",
     "games": {
-      "bingo_tasks": { "name": "Task Bingo", "description": "Everyone gets a bingo card with fun tasks to complete.", "instructions": "Create bingo cards with various embarrassing or fun tasks. The group goes through the city trying to complete all tasks. First to complete a row wins!" },
-      "drink_roulette": { "name": "Drink Roulette", "description": "The wheel of fortune decides who drinks.", "instructions": "Spin the roulette wheel. The person the pointer lands on must take a shot or drink." },
-      "who_am_i": { "name": "Who Am I?", "description": "Guess the famous person on your forehead through yes/no questions.", "instructions": "Everyone gets a name stuck to their forehead. Ask yes/no questions to figure out who you are." },
-      "flunkyball": { "name": "Flunkyball", "description": "The ultimate outdoor drinking game with ball and bottle.", "instructions": "Two teams face each other, bottle in the middle. Throw the ball at the bottle. If you hit, your team drinks quickly while the other team sets up the bottle." },
-      "beer_pong": { "name": "Beer Pong", "description": "The classic - throw the ball into your opponent's cups.", "instructions": "Set up cups in triangle formation. Teams take turns throwing. Hit = opponent drinks and cup is removed. Team without cups loses." },
-      "groom_bride_quiz": { "name": "Groom/Bride Quiz", "description": "How well does the group know the guest of honor?", "instructions": "Prepare questions about the honoree. The group guesses answers. Wrong answers = penalties!" },
-      "truth_or_dare": { "name": "Truth or Dare", "description": "The classic for brave confessions and crazy tasks.", "instructions": "Take turns choosing: Truth (answer honestly) or Dare (complete a task). Refusal = penalty!" },
-      "kiss_challenge": { "name": "Kiss Challenge", "description": "Collect kisses from strangers - the more the better!", "instructions": "The honoree must collect kisses from strangers. Lipstick prints on a white t-shirt. Who collects the most?" },
-      "selfie_mission": { "name": "Selfie Mission", "description": "Take creative selfies with specific requirements.", "instructions": "Everyone gets a list of selfie tasks (e.g., with a police officer, on a fountain). Most completed wins!" },
-      "costume_tasks": { "name": "Costume Tasks", "description": "Wear crazy costumes and complete tasks.", "instructions": "The honoree must complete tasks in public wearing an embarrassing costume. The group documents everything!" },
-      "bucket_list": { "name": "Bucket List Challenge", "description": "Experience unforgettable moments from a pre-made list.", "instructions": "Create a list of unique experiences. Try to check off as many as possible that day!" },
-      "karaoke_battle": { "name": "Karaoke Battle", "description": "Sing to win - no matter how off-key!", "instructions": "Teams or individuals compete. The group judges. Bonus points for performance and courage!" },
-      "city_rally": { "name": "City Rally", "description": "A scavenger hunt through the city with tasks and puzzles.", "instructions": "Teams follow clues through the city, solve puzzles, and complete tasks. The fastest team wins!" },
-      "photo_scavenger_hunt": { "name": "Photo Scavenger Hunt", "description": "Photograph everything on the list - be creative!", "instructions": "Each team gets a list of photo tasks. Points for creativity and completeness." },
-      "team_olympiad": { "name": "Team Olympiad", "description": "Multiple disciplines, one champion team!", "instructions": "Plan various competitions (sack race, egg race, etc.). Teams collect points. Winner is crowned at the end." },
-      "boot_camp": { "name": "Boot Camp Challenge", "description": "Fitness challenge for the whole group.", "instructions": "A trainer or the group leads exercises. Who can keep up? Team spirit is key!" },
-      "cocktail_contest": { "name": "Cocktail Contest", "description": "Who mixes the best drink?", "instructions": "Everyone creates their own cocktail. Blind tasting and rating by the group. Best bartender wins!" },
-      "wine_tasting": { "name": "Blind Wine Tasting", "description": "Identify wines while blindfolded.", "instructions": "Various wines are tasted blind and rated. Points for correctly guessed varieties or regions." },
-      "tshirt_design": { "name": "T-Shirt Design", "description": "Create a unique group shirt.", "instructions": "T-shirts are individually designed with fabric paints. Perfect memory of the day!" },
-      "embarrassing_songs": { "name": "Sing Embarrassing Songs", "description": "Sing the most embarrassing songs in public.", "instructions": "The honoree must sing selected embarrassing songs loudly and passionately in public places." },
-      "dare_dice": { "name": "Dare Dice", "description": "Roll your fate - the dice determines the task.", "instructions": "Roll the task dice. Whatever it shows must be done. No excuses!" },
-      "never_have_i_ever": { "name": "Never Have I Ever", "description": "Confessions and secrets are revealed.", "instructions": "Take turns saying 'Never have I ever...' Those who have done it drink or lose a chip." },
-      "charades": { "name": "Charades", "description": "Pantomime guessing in teams.", "instructions": "One player acts out a term without speaking. The team must guess within the time limit." },
+      "bingo_tasks": { 
+        "name": "Task Bingo", 
+        "description": "Everyone gets a bingo card with fun tasks to complete.", 
+        "instructions": "**Preparation:**\nCreate 5x5 bingo cards with 25 different tasks. Examples: 'Give a stranger a compliment', 'Photo with a police officer', 'Sing a song'. Each participant gets a card and a pen.\n\n**Gameplay:**\nThe group goes through the city. Everyone tries to complete tasks from their card. Completed squares are checked off. Fellow players can serve as witnesses.\n\n**Rules:**\n• First row (horizontal, vertical, or diagonal) = 'BINGO!'\n• All 25 squares = 'Super-BINGO!'\n• Each task must be documented with a photo\n• No task can be skipped\n\n**Variants:**\n• Team Bingo: Two teams compete against each other\n• Drinking Bingo: Toast for each completed square\n• Speed Bingo: 2-hour time limit\n\n**Tips:**\nMix easy and difficult tasks. The best cards have a good balance between embarrassing and doable tasks!"
+      },
+      "drink_roulette": { 
+        "name": "Drink Roulette", 
+        "description": "The wheel of fortune decides who drinks.", 
+        "instructions": "**Preparation:**\nGet a roulette wheel or create one with names/numbers. Set up drinks (shots, beer, or non-alcoholic). Each player gets a number or position assigned.\n\n**Gameplay:**\nTaking turns, each player spins the wheel. Whoever the pointer lands on must drink. The spinner can also assign an additional task.\n\n**Rules:**\n• Hit twice in a row: Double shot\n• Pointer lands on yourself: Everyone else drinks\n• 'Joker' field: Player chooses who drinks\n\n**Variants:**\n• Task Roulette: Tasks instead of drinking\n• Challenge Roulette: Fields with different challenges\n• Truth Roulette: Whoever gets hit must answer a question honestly\n\n**Tips:**\nFor more excitement: Write special actions on some fields like 'Everyone drinks' or 'Waterfall'!"
+      },
+      "who_am_i": { 
+        "name": "Who Am I?", 
+        "description": "Guess the famous person on your forehead through yes/no questions.", 
+        "instructions": "**Preparation:**\nWrite names of famous people on sticky notes - for bachelor parties, ideally celebrity couples or theme-related names. Everyone gets a note stuck to their forehead without seeing it.\n\n**Gameplay:**\nTaking turns, everyone asks a yes/no question ('Am I female?', 'Am I an actor?'). If 'yes', you can keep asking. If 'no', it's the next person's turn.\n\n**Rules:**\n• Only yes/no questions allowed\n• Correct guess: New note or you're out\n• Maximum 20 questions per round\n• No hints from others!\n\n**Variants:**\n• Couples Edition: Guess famous couples\n• Movie Edition: Only movie characters\n• Bachelor Party Special: Exes of the groom/bride\n\n**Tips:**\nWith large groups, play in teams. Question tips: First clarify gender, then profession, then era!"
+      },
+      "flunkyball": { 
+        "name": "Flunkyball", 
+        "description": "The ultimate outdoor drinking game with ball and bottle.", 
+        "instructions": "**Preparation:**\nTwo teams line up about 10 meters apart. Everyone has a drink. In the middle stands a bottle partially filled with water. A soft ball (tennis/softball) is needed.\n\n**Gameplay:**\nTeam A throws the ball at the bottle. If hit: Team A drinks quickly. Team B must set up the bottle, retrieve the ball, and line up. Then Team A is stopped.\n\n**Rules:**\n• Ball must be thrown while sitting\n• Only put down drink when all team members are standing\n• Bottle must stand upright (not leaning)\n• Whoever finishes drinking places bottle upside down\n• First team completely finished wins\n\n**Variants:**\n• Relay: Only one person per team throws\n• Hardcore: Every hit = open a new drink\n• Softcore: Water instead of alcohol\n\n**Tips:**\nPerfect for parks or gardens! The bottle shouldn't tip over too easily. Sunshine makes the game even better!"
+      },
+      "beer_pong": { 
+        "name": "Beer Pong", 
+        "description": "The classic - throw the ball into your opponent's cups.", 
+        "instructions": "**Preparation:**\nSet up 10 cups per team in pyramid formation (4-3-2-1) on both sides of a long table. Fill each cup one-third with beer. Prepare water cups for cleaning the balls.\n\n**Gameplay:**\nTwo teams face each other. Taking turns, each player throws a ping pong ball. If it lands in a cup, the opposing team drinks and removes the cup.\n\n**Rules:**\n• 'On Fire': 2+ hits in a row = keep throwing\n• 'Elbow Rule': Elbow behind table edge\n• 'Re-Rack': 1-2 reformations allowed (at 4 or 2 cups)\n• Both players hit = balls back\n• Opponent may block 'Bounce'\n\n**Variants:**\n• Death Cup: Hit into cup still being drunk = instant win\n• Bounce Shot: Bounced ball counts double, but can be blocked\n• Redemption: Loser can keep throwing until they miss\n\n**Tips:**\nThe perfect throw has a slight arc. For non-alcoholic version: Water in cups, shots on the side!"
+      },
+      "groom_bride_quiz": { 
+        "name": "Groom/Bride Quiz", 
+        "description": "How well does the group know the guest of honor?", 
+        "instructions": "**Preparation:**\nBefore the party, collect 20-30 questions about the guest of honor: Favorite things, embarrassing stories, relationship details. The partner can be secretly interviewed. Note the answers!\n\n**Gameplay:**\nThe moderator asks questions. The group (or the guest of honor) must answer. Wrong answers result in penalties for the guest of honor or the group.\n\n**Rules:**\n• Wrong answer = Shot/task for guest of honor\n• Correct answer = Shot/task for the group\n• Joker: Partner can be called once\n• Intimate questions: Guest of honor may refuse (= penalty)\n\n**Variants:**\n• Team Quiz: Group vs. guest of honor\n• Speed Quiz: 10 seconds per answer\n• Photo Quiz: Show pictures from the past\n\n**Tips:**\nMix funny, embarrassing, and romantic questions. The best questions often come from the partner! Document everything for the wedding newspaper!"
+      },
+      "truth_or_dare": { 
+        "name": "Truth or Dare", 
+        "description": "The classic for brave confessions and crazy tasks.", 
+        "instructions": "**Preparation:**\nNo special preparation needed, but prepared questions/tasks make it easier. A spinning bottle is optional. Drinks for refusers should be ready.\n\n**Gameplay:**\nTaking turns, everyone chooses: 'Truth' (answer a question honestly) or 'Dare' (complete a task). The previous player or the group asks the question/task.\n\n**Rules:**\n• Refusal = Penalty (shot, embarrassing task)\n• Can switch once per game\n• Truth must be honest (group judges)\n• Tasks must not endanger anyone\n\n**Variants:**\n• Bachelor Party Edition: All questions/tasks about relationships\n• Hardcore: Only dare, no truth\n• Dice Version: Even = truth, Odd = dare\n\n**Tips:**\nStart harmless and escalate slowly. The best dares are embarrassing but safe. Respect boundaries!"
+      },
+      "city_rally": { 
+        "name": "City Rally", 
+        "description": "A scavenger hunt through the city with tasks and puzzles.", 
+        "instructions": "**Preparation:**\nPlan a route through the city with 8-12 stations. Create clues leading to the next station. Prepare tasks for each station. Form teams (2-4 people).\n\n**Gameplay:**\nTeams start staggered. At each station: Read clue, complete task, take photo, find next clue. The fastest team with all tasks wins.\n\n**Rules:**\n• All tasks must be photographed\n• Time limit: 2-3 hours\n• GPS tracking or calls to game master allowed\n• Points for speed + creativity\n\n**Variants:**\n• Pub Rally: Stations are bars/pubs\n• Photo Rally: Creative photos instead of tasks\n• QR Code Rally: Clues via QR code\n\n**Tips:**\nUse landmarks as stations. The best rally has a mix of knowledge, action, and fun. End at a bar for the awards ceremony!"
+      },
+      "never_have_i_ever": { 
+        "name": "Never Have I Ever", 
+        "description": "Confessions and secrets are revealed.", 
+        "instructions": "**Preparation:**\nAll players sit in a circle. Everyone has a drink or 10 fingers/chips. Optional: Prepared statements for the start.\n\n**Gameplay:**\nTaking turns, everyone says 'Never have I ever...' and adds a statement. Anyone who has done it drinks a sip or loses a finger/chip.\n\n**Rules:**\n• Honesty is mandatory!\n• At 0 fingers: Must skip a round or take a special shot\n• Follow-up questions allowed: 'Really? Tell us!'\n• Caught lying: Penalty drink\n\n**Variants:**\n• Bachelor Party Edition: Only relationship/dating topics\n• Speed Round: 5 seconds per statement\n• Story Mode: Whoever drinks must tell the story\n\n**Tips:**\nStart harmless and escalate. The best statements are specific enough to be interesting but not too personal. Respect boundaries!"
+      },
+      "toilet_paper_dress": { 
+        "name": "Toilet Paper Wedding Dress", 
+        "description": "Create a wedding dress using only toilet paper.", 
+        "instructions": "**Preparation:**\nDivide the group into teams of 3-4 people. Each team gets 2-3 rolls of toilet paper. Optional: Tape, scissors (makes it easier).\n\n**Gameplay:**\nEach team chooses a 'model'. In 10-15 minutes, a wedding dress must be created from toilet paper. The model presents the result on a 'runway'.\n\n**Rules:**\n• Strict time limit\n• Only provided materials\n• Model may not help\n• Dress must survive a 'catwalk'\n\n**Variants:**\n• With Veil: Bonus for accessories\n• Fashion Show: With music and commentator\n• Jury Rating: Guest of honor rates\n\n**Tips:**\nWrap the dress around the body rather than just hanging! The best dresses have structure (draping, folds). Don't forget photos!"
+      },
+      "shoe_game": { 
+        "name": "Shoe Game", 
+        "description": "Bride and groom answer questions with shoes.", 
+        "instructions": "**Preparation:**\nThe couple sits back to back on chairs. Each holds one of their own shoes and one of their partner's shoes. Moderator has a list of 20-30 questions.\n\n**Gameplay:**\nThe moderator asks questions ('Who's the better cook?'). The couple raises the shoe of the person the answer applies to - without coordinating.\n\n**Rules:**\n• No coordination allowed!\n• Same answer: Kiss\n• Different answer: Brief explanation\n• 3 wrong questions: Penalty task\n\n**Variants:**\n• Guest Voting: Audience guesses along\n• Drinking Version: Different answer = both drink\n• Story Version: Tell a story with each answer\n\n**Tips:**\nMix funny ('Who snores louder?') with romantic questions ('Who said I love you first?'). Perfect for weddings!"
+      },
+      "mr_mrs_quiz": { 
+        "name": "Mr & Mrs Quiz", 
+        "description": "Who knows their partner better?", 
+        "instructions": "**Preparation:**\nCreate 15-20 questions about the couple. Both partners get signs with 'Him' and 'Her' (or names). Questions pre-agreed with one partner secretly.\n\n**Gameplay:**\nThe couple sits next to each other. For each question, both hold up the sign for whom the answer applies. The 'correct' answer was predetermined.\n\n**Rules:**\n• Show simultaneously (no cheating!)\n• Correct answer = Point\n• Wrong answer = Penalty task or shot\n• Most points wins\n\n**Variants:**\n• Guest Edition: Guests guess along\n• Relationship Timeline: Questions chronological\n• Video Version: Answers were pre-recorded\n\n**Tips:**\nMix embarrassing to romantic questions. The best questions reveal sweet or funny stories. Moderator should follow up!"
+      },
+      "newspaper_dance": { 
+        "name": "Newspaper Dance", 
+        "description": "The dance floor gets smaller and smaller!", 
+        "instructions": "**Preparation:**\nEach couple gets an unfolded newspaper as their dance floor. Prepare music. Clear space for dancing.\n\n**Gameplay:**\nAll couples dance on their newspaper. After each round, the newspaper is folded (halved). Whoever steps off the newspaper or falls is eliminated.\n\n**Rules:**\n• Both partners must stay on the newspaper\n• Lifting partner is allowed!\n• Newspaper may not be torn\n• Music stops = Fold\n\n**Variants:**\n• Freeze Dance: Freeze when music stops\n• Balloon Dance: Additionally balloon between bodies\n• Speed Version: Fold newspaper every 30 seconds\n\n**Tips:**\nThe secret: Put partner on your feet or balance on one leg! Perfect for weddings and parties."
+      },
+      "wedding_bingo": { 
+        "name": "Wedding Bingo", 
+        "description": "Bingo with wedding moments.", 
+        "instructions": "**Preparation:**\nCreate bingo cards with typical wedding scenes: 'Someone cries', 'Father of bride speech', 'Child runs through frame', 'Grandma dances'. Each guest gets a card.\n\n**Gameplay:**\nDuring the wedding, guests cross off observed scenes. Whoever completes a row calls 'Wedding Bingo!' and wins a prize.\n\n**Rules:**\n• Scenes must actually happen\n• Intentional triggering doesn't count\n• Row: horizontal, vertical, or diagonal\n• Multiple winners possible\n\n**Variants:**\n• Full House: All squares for main prize\n• Team Bingo: Tables play against each other\n• Photo Bingo: Scenes must be photographed\n\n**Tips:**\nCards should be different! Mix inevitable ('Cutting the cake') with rare moments ('Someone spills wine')."
+      },
+      "polaroid_guestbook": { 
+        "name": "Polaroid Guestbook", 
+        "description": "Instant photos as memories.", 
+        "instructions": "**Preparation:**\nProvide Polaroid camera with enough film. Guestbook/album with blank pages. Pens, glue, and decorations. Props for fun photos.\n\n**Gameplay:**\nGuests take Polaroid photos (individuals, couples, groups). Photos are glued into the guestbook and accompanied by personal greetings.\n\n**Rules:**\n• Max. 2 photos per guest (film is expensive!)\n• At least one greeting per photo\n• Use props box\n• Let photos dry before gluing\n\n**Variants:**\n• Photo Booth: Fixed station with background\n• Task Photos: Recreate specific poses\n• Video Guestbook: Additionally short videos\n\n**Tips:**\nA 'guestbook attendant' helps immensely! Instax cameras are cheaper than real Polaroids. Washi tape instead of glue for nicer decoration!"
+      },
+      "ring_warming": { 
+        "name": "Ring Warming", 
+        "description": "All guests bless the rings.", 
+        "instructions": "**Preparation:**\nThe wedding rings are placed on a ribbon or in a small pouch. During the ceremony or reception, it's passed through all guests.\n\n**Gameplay:**\nEach guest briefly holds the rings in their hand and silently gives them good wishes, blessings, or positive energy. Then they're passed on.\n\n**Rules:**\n• Silent wishes (don't speak aloud)\n• Only briefly each (10-30 seconds)\n• Don't open/try on the ring\n• At ceremony: Rings back to best man\n\n**Variants:**\n• Wish Cards: Additionally written wishes\n• Blessing Round: Everyone speaks a wish aloud\n• Photo Moment: Everyone photographed with ring\n\n**Tips:**\nFor large weddings, start in multiple rows simultaneously. A helper keeps track. Very emotional moment!"
+      },
+      "anniversary_dance": { 
+        "name": "Anniversary Dance", 
+        "description": "Married couples on the dance floor by years.", 
+        "instructions": "**Preparation:**\nDJ or moderator prepares a slow song. All married couples are invited to the dance floor.\n\n**Gameplay:**\nAll couples begin dancing. The moderator asks couples to sit down: 'Those married less than 1 year...' then 5 years, 10, 20, etc. The longest-married couple remains and gives advice.\n\n**Rules:**\n• Honest answers!\n• Only legally married couples\n• The last couple gets a prize\n• Often: Short speech or advice for the newlyweds\n\n**Variants:**\n• Relationship Dance: All couples, not just married\n• Countdown: From long marriage to short\n• Interview: Winning couple is interviewed\n\n**Tips:**\nVery emotional moment! Often grandparents are the winners. Have tissues ready. Perfect moment for photos!"
+      },
+      "kiss_marathon": { 
+        "name": "Kiss Marathon", 
+        "description": "The longest kiss of the evening!", 
+        "instructions": "**Preparation:**\nPrepare stopwatch. Guests gather. Optional: Music and cheering. The couple stands in the center.\n\n**Gameplay:**\nOn command, the couple begins kissing. Guests count the seconds or a moderator times it. Goal: Kiss as long as possible!\n\n**Rules:**\n• Lips may not separate\n• Breathing through nose is allowed\n• No breaking due to laughter\n• Guests may cheer\n\n**Variants:**\n• Couple Challenge: Multiple couples compete\n• Surprise Kiss: Guests call 'Kiss!' when glasses clink\n• Break Record: Beat previous record\n\n**Tips:**\nCheering makes it harder (laughing!). World record is over 58 hours - that's not necessary! 1-2 minutes is impressive."
+      },
+      "bride_stealing": { 
+        "name": "Bride Stealing", 
+        "description": "The bride is 'kidnapped' and must be ransomed.", 
+        "instructions": "**Preparation:**\nA group of guests secretly plans the 'kidnapping'. Target location (nearby bar) is scouted. Ransom tasks are prepared.\n\n**Gameplay:**\nThe bride is 'kidnapped' during the celebration and taken to a bar. The groom must find her and ransom her through tasks or 'payment'.\n\n**Rules:**\n• Bride must be informed or consent\n• Kidnapping not too early (after dinner)\n• Ransom: Tasks, not just money\n• Duration: Max. 1-2 hours\n\n**Variants:**\n• Bar Rally: Multiple bars as stations\n• Task Ransom: Each task = one step closer\n• Team Rescue: Groom + groomsmen\n\n**Tips:**\nAll guests should know what's happening. The bride should really consent! Best coordinated with restaurant/DJ."
+      },
+      "charades": { 
+        "name": "Charades", 
+        "description": "Pantomime guessing in teams.", 
+        "instructions": "**Preparation:**\nWrite terms on slips (movies, celebrities, actions). Form teams (3-6 people). Prepare timer (60-90 seconds per round).\n\n**Gameplay:**\nOne player draws a term and acts it out - no words, sounds, or pointing at objects. The team guesses. On hit: Next term.\n\n**Rules:**\n• No speaking, humming, or sounds\n• Don't point at objects\n• Showing syllables with fingers allowed\n• Time per round: 60-90 seconds\n• Points per guessed term\n\n**Variants:**\n• Themed Charades: Only movies, only professions\n• Speed Charades: 30 seconds per term\n• Reverse: Everyone mimes, one guesses\n\n**Tips:**\nLearn common gestures: 'Movie' (crank camera), 'Book' (open hands), 'Song' (mime singing). The crazier the performance, the funnier!"
+      },
+      "activity": { 
+        "name": "Activity", 
+        "description": "Explain, draw, or act out - versatile party game.", 
+        "instructions": "**Preparation:**\nTerms on cards (or buy Activity game). Form teams. Provide drawing materials. Timer (30-60 seconds).\n\n**Gameplay:**\nDepending on the card, the term must be explained (without related words), drawn, or acted out. The team guesses within time.\n\n**Rules:**\n• Explaining: Don't say the word\n• Drawing: No letters or numbers\n• Pantomime: No sounds\n• Per hit: 1 point\n• Wrong method: 0 points\n\n**Variants:**\n• Speed Mode: All methods in one round\n• Bachelor Party Edition: Only relationship terms\n• Drinking Activity: Wrong guess = Drink\n\n**Tips:**\nMix easy and difficult terms. The funniest moments come from difficult pantomimes. Use a large drawing surface!"
+      },
+      "taboo": { 
+        "name": "Taboo", 
+        "description": "Explain the term without using the forbidden words.", 
+        "instructions": "**Preparation:**\nPrepare Taboo cards: Each card has a term and 5 forbidden words below. Form teams. Prepare timer.\n\n**Gameplay:**\nOne player explains the term without using the taboo words or their word stems. An opponent monitors. The team guesses.\n\n**Rules:**\n• Taboo word said = Term lost\n• No 'Rhymes with...' or spelling\n• Opponent can call 'Taboo!'\n• 60 seconds per round\n• Points per guessed term\n\n**Variants:**\n• Expert Mode: 7 taboo words\n• Speed Taboo: 30 seconds\n• Themed Rounds: Only movies, only sports\n\n**Tips:**\nCircumlocutions and stories work well. 'Imagine...' is a great opener. The taboo words are the obvious ones - be creative!"
+      },
+      "cards_against": { 
+        "name": "Cards Against Humanity", 
+        "description": "The card game for horrible people.", 
+        "instructions": "**Preparation:**\nGet card deck (or print online). Each player receives 10 white cards. Black cards as a pile in the middle.\n\n**Gameplay:**\nA 'Card Czar' draws a black card and reads it aloud. Everyone else plays a white card that fits best. The Czar chooses the winner.\n\n**Rules:**\n• The Czar changes each round\n• White cards played anonymously\n• Winner keeps the black card\n• For __ & __, play two white cards\n• Czar's decision is final!\n\n**Variants:**\n• Drinking Version: Everyone except winner drinks\n• Democracy: Everyone votes\n• Haiku: Three cards into a story\n\n**Tips:**\nThe Czar determines the humor! Some like clever, others love shocking. Play with people who understand dark humor."
+      },
+      "scavenger_hunt": { 
+        "name": "Scavenger Hunt", 
+        "description": "Follow clues and solve puzzles.", 
+        "instructions": "**Preparation:**\nPlan 8-15 stations with clues. Each clue leads to the next location. At the end, a 'treasure' awaits. Form teams or play together.\n\n**Gameplay:**\nTeams start with the first clue. Each clue is a puzzle that must be solved to find the next location. Until the goal!\n\n**Rules:**\n• Follow the order\n• No help from outsiders\n• All team members must be present\n• Photos at each station as proof\n• First team at goal wins\n\n**Variants:**\n• Photo Hunt: Photo tasks instead of locations\n• QR Code Hunt: Digital clues\n• Night Hunt: With flashlights\n\n**Tips:**\nClues should be tricky but solvable. A mix of knowledge, searching, and creativity. The 'treasure' can be snacks, drinks, or a surprise!"
+      },
+      "murder_mystery": { 
+        "name": "Murder Mystery Dinner", 
+        "description": "Solve the murder case while you dine.", 
+        "instructions": "**Preparation:**\nBuy Murder Mystery set or create your own. Distribute roles to guests (in advance!). Decoration matching the theme. Plan dinner.\n\n**Gameplay:**\nDuring a multi-course dinner, everyone plays their role. Clues are revealed, suspects questioned. At the end, the murderer must be unmasked.\n\n**Rules:**\n• Everyone stays in character\n• Murderer may lie, others may not\n• Clues given at specific times\n• Discussion and questioning allowed\n• At the end: Vote\n\n**Variants:**\n• 1920s Gatsby Murder\n• Crime Dinner at restaurant\n• Outdoor: Murder at the castle\n\n**Tips:**\nDistribute roles in advance so guests can prepare. Costumes make it more authentic. Plan 3-4 hours!"
+      },
+      "kubb": { 
+        "name": "Viking Chess", 
+        "description": "The Scandinavian throwing game for all ages.", 
+        "instructions": "**Preparation:**\nMark playing field (5x8 meters). Set up five Kubbs per side. King in the middle. Distribute throwing sticks (6 pieces per team).\n\n**Gameplay:**\nTeams take turns throwing at the opponent's Kubbs. Knocked-over Kubbs are thrown into the opponent's field and set up there. Goal: Hit all Kubbs, then the King.\n\n**Rules:**\n• Throw sticks underhand (helicopter forbidden)\n• First hit all field Kubbs, then base Kubbs\n• King hit too early = lost!\n• Throwing stick must land upright\n\n**Variants:**\n• Speed Kubb: Time limit per round\n• Drinking Kubb: Hit Kubb = Opponent drinks\n• Team Tournament: Multiple teams\n\n**Tips:**\nStrategy is important: Throw Kubbs close together for chain reaction. Be careful with the King - many games were lost this way!"
+      },
+      "sack_race": { 
+        "name": "Sack Race", 
+        "description": "The classic for every family celebration.", 
+        "instructions": "**Preparation:**\nPotato sacks or large trash bags for each participant. Mark start and finish lines (10-20 meters). Obstacles optional.\n\n**Gameplay:**\nAll participants get into the sacks and hold them with both hands. On command, hop to the finish. First to arrive wins.\n\n**Rules:**\n• Hands must stay on the sack\n• Fall = Get up and continue\n• Sack may not be torn\n• No pushing\n• Crossing finish line counts\n\n**Variants:**\n• Relay Sack Race: Teams with handover\n• Obstacle Course: With slalom\n• Pair Sack Race: Two people, one sack\n\n**Tips:**\nSmaller hops for balance rather than big jumps. Play on soft ground (grass). Start children and adults separately for fairness!"
+      },
+      "egg_and_spoon": { 
+        "name": "Egg and Spoon Race", 
+        "description": "Balance the egg on the spoon to the finish.", 
+        "instructions": "**Preparation:**\nFor each participant: A spoon and a raw egg (or hard-boiled/plastic). Mark start and finish lines (15-20 meters).\n\n**Gameplay:**\nThe egg sits on the spoon, held by one hand at the handle. On command, everyone runs to the finish. If the egg drops: Back to start.\n\n**Rules:**\n• Only one hand on the spoon\n• Other hand behind the back\n• Stabilizing egg with hand = Disqualification\n• Dropped egg: Back to start\n• First intact egg at finish wins\n\n**Variants:**\n• Relay: Teams with handover\n• Obstacle Course: With curves and hurdles\n• Water Egg: Spoon with water instead of egg\n\n**Tips:**\nSlow and steady is better than fast! Don't stare at the egg - look ahead. Hard-boiled eggs for less chaos!"
+      },
+      "musical_chairs": { 
+        "name": "Musical Chairs", 
+        "description": "When the music stops, sit down fast!", 
+        "instructions": "**Preparation:**\nSet up chairs in a row or circle - always one fewer than players. Prepare music (with pause option).\n\n**Gameplay:**\nEveryone walks around the chairs while music plays. When music stops: Sit down quickly! Whoever doesn't get a chair is out. One chair is removed.\n\n**Rules:**\n• Don't touch or reserve before music stops\n• Sit immediately when music stops\n• No pushing\n• Must sit on chair (not just touch)\n• Last player with chair wins\n\n**Variants:**\n• Music Freeze: Freeze when stopped, don't sit\n• Team Version: Pairs play together\n• Dance-Off: Eliminated players keep dancing\n\n**Tips:**\nMusic controller shouldn't watch! Unpredictable pauses make it more exciting. Set up chairs stably!"
+      },
+      "kiss_challenge": { 
+        "name": "Kiss Challenge", 
+        "description": "Collect kisses from strangers - the more the better!", 
+        "instructions": "**Preparation:**\nGet white t-shirt for the guest of honor. Provide various colored lipsticks. Don't forget disinfecting wipes!\n\n**Gameplay:**\nThe guest of honor must collect kisses (lipstick prints) from strangers on the t-shirt. The group accompanies and documents everything.\n\n**Rules:**\n• Only voluntary kisses count!\n• Respectful asking is mandatory\n• Different colors = Bonus\n• No harassment!\n• Time limit: 1-2 hours\n\n**Variants:**\n• Photo Kiss: Selfie with each person\n• Signatures: Additionally collect names\n• Challenge Escalation: Find specific 'types'\n\n**Tips:**\nAlways ask friendly and respectfully. Accept 'no'! Bars and clubs work best. The t-shirt is a great souvenir!"
+      },
       "pictionary": { "name": "Pictionary", "description": "Draw and guess terms against the clock.", "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!" },
       "family_feud": { "name": "Family Feud", "description": "Guess the most popular survey answers.", "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!" },
-      "scavenger_hunt": { "name": "Scavenger Hunt", "description": "Follow clues and solve puzzles.", "instructions": "Hide clues that lead to the next location. At the end, a treasure or surprise awaits!" },
-      "shoe_game": { "name": "Shoe Game", "description": "Bride and groom answer questions with shoes.", "instructions": "The couple sits back to back, each with their own shoe and one of their partner's. For questions, they raise the shoe of whoever the answer applies to." },
-      "two_truths_lie": { "name": "Two Truths and a Lie", "description": "Guess the lie among three statements.", "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!" },
-      "musical_chairs": { "name": "Musical Chairs", "description": "When the music stops, sit down fast!", "instructions": "Chairs in a circle, one fewer than players. When music stops, sit. No chair = you're out." }
+      "two_truths_lie": { "name": "Two Truths and a Lie", "description": "Guess the lie among three statements.", "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!" }
     },
     "themes": {
       "80s_retro": { "name": "80s Retro Party", "description": "Neon colors, synth music and shoulder pads", "tips": "Think neon lights, disco balls and 80s hits from A-ha to Madonna!" },
