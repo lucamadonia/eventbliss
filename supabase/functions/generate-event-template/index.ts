@@ -1,12 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -39,7 +37,7 @@ serve(async (req) => {
       }
       if (!authError && user) {
         userId = user.id;
-        console.log('User authenticated:', userId);
+        console.log('User authenticated');
       }
     } else {
       console.log('No Authorization header found');
@@ -161,7 +159,7 @@ User description: "${description}"
 
 Generate a custom survey configuration that matches this event perfectly.`;
 
-    console.log('Generating template for:', { event_type, language, description: description.substring(0, 100), userId: userId || 'anonymous' });
+    console.log('Generating template for:', { event_type, language });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -232,7 +230,7 @@ Generate a custom survey configuration that matches this event perfectly.`;
         request_type: 'template_generation',
         tokens_used: 0,
       });
-      console.log(`Deducted 1 credit from user: ${userId}`);
+      console.log('Credit deducted');
     }
 
     console.log('Successfully generated template with', {

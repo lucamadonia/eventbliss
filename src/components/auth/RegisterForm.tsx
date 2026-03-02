@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, CheckCircle } from "lucide-react";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { createPasswordSchema } from "@/lib/password-validation";
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -22,8 +24,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   const registerSchema = z.object({
     email: z.string().email(t('auth.invalidEmail')),
-    password: z.string().min(6, t('auth.passwordMinLength')),
-    confirmPassword: z.string().min(6, t('auth.confirmPasswordPlaceholder')),
+    password: createPasswordSchema(t),
+    confirmPassword: z.string(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('auth.passwordsMismatch'),
     path: ["confirmPassword"],
@@ -120,6 +122,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   />
                 </div>
               </FormControl>
+              <PasswordStrengthIndicator password={field.value} />
               <FormMessage />
             </FormItem>
           )}

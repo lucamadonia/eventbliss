@@ -11,15 +11,9 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-
-const registerSchema = z.object({
-  email: z.string().trim().email({ message: "Ungültige E-Mail-Adresse" }),
-  password: z.string().min(6, { message: "Passwort muss mindestens 6 Zeichen haben" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwörter stimmen nicht überein",
-  path: ["confirmPassword"],
-});
+import { useTranslation } from "react-i18next";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { createPasswordSchema } from "@/lib/password-validation";
 
 interface InviteData {
   participant_id: string;
@@ -33,6 +27,16 @@ const ClaimInvite = () => {
   const { slug, token } = useParams<{ slug: string; token: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
+
+  const registerSchema = z.object({
+    email: z.string().trim().email({ message: t("auth.invalidEmail") }),
+    password: createPasswordSchema(t),
+    confirmPassword: z.string(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t("auth.passwordsMismatch"),
+    path: ["confirmPassword"],
+  });
 
   const [inviteData, setInviteData] = useState<InviteData | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
@@ -340,6 +344,7 @@ const ClaimInvite = () => {
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
                 )}
+                <PasswordStrengthIndicator password={password} />
               </div>
 
               <div className="space-y-2">

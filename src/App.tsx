@@ -26,6 +26,9 @@ const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AdminRoute } from "@/components/auth/AdminRoute";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { languages } from "@/i18n";
 import PageLoader from "@/components/ui/PageLoader";
 import Landing from "./pages/Landing";
@@ -66,21 +69,21 @@ const AppContent = () => {
           <Route path="/e/:slug/expenses" element={<EventExpenses />} />
           <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
           <Route path="/danke" element={<Danke />} />
-          {/* User Pages */}
-          <Route path="/my-events" element={<Suspense fallback={<PageLoader />}><MyEvents /></Suspense>} />
-          <Route path="/settings" element={<Suspense fallback={<PageLoader />}><ProfileSettings /></Suspense>} />
-          <Route path="/premium" element={<Suspense fallback={<PageLoader />}><Premium /></Suspense>} />
-          <Route path="/partner-portal" element={<Suspense fallback={<PageLoader />}><PartnerPortal /></Suspense>} />
-          <Route path="/partner-apply" element={<Suspense fallback={<PageLoader />}><PartnerApply /></Suspense>} />
-          <Route path="/agency-apply" element={<Suspense fallback={<PageLoader />}><AgencyApply /></Suspense>} />
-          <Route path="/agency-portal" element={<Suspense fallback={<PageLoader />}><AgencyPortal /></Suspense>} />
-          <Route path="/admin/*" element={<Suspense fallback={<PageLoader />}><Admin /></Suspense>} />
-          <Route path="/ideas" element={<Suspense fallback={<PageLoader />}><IdeasHub /></Suspense>} />
+          {/* User Pages (protected) */}
+          <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/settings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><ProfileSettings /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/premium" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><Premium /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/partner-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/partner-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/agency-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/agency-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense></ErrorBoundary>} />
+          <Route path="/ideas" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><IdeasHub /></ProtectedRoute></Suspense></ErrorBoundary>} />
           {/* Legal Pages */}
-          <Route path="/legal/imprint" element={<Suspense fallback={<PageLoader />}><Imprint /></Suspense>} />
-          <Route path="/legal/privacy" element={<Suspense fallback={<PageLoader />}><Privacy /></Suspense>} />
-          <Route path="/legal/terms" element={<Suspense fallback={<PageLoader />}><Terms /></Suspense>} />
-          <Route path="/legal/disclaimer" element={<Suspense fallback={<PageLoader />}><Disclaimer /></Suspense>} />
+          <Route path="/legal/imprint" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Imprint /></Suspense></ErrorBoundary>} />
+          <Route path="/legal/privacy" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Privacy /></Suspense></ErrorBoundary>} />
+          <Route path="/legal/terms" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Terms /></Suspense></ErrorBoundary>} />
+          <Route path="/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
@@ -89,20 +92,22 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <ThemeProvider 
-    attribute="class" 
-    defaultTheme="system" 
-    themes={["light", "dark", "rose", "system"]}
-    enableSystem={true}
-  >
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Suspense fallback={<PageLoader />}>
-          <AppContent />
-        </Suspense>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <ErrorBoundary>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      themes={["light", "dark", "rose", "system"]}
+      enableSystem={true}
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Suspense fallback={<PageLoader />}>
+            <AppContent />
+          </Suspense>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
 );
 
 export default App;

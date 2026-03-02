@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2, Key, Shield } from "lucide-react";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { PASSWORD_MIN_LENGTH } from "@/lib/password-validation";
 
 interface ForcePasswordChangeProps {
   open: boolean;
@@ -25,8 +27,13 @@ export function ForcePasswordChange({ open, onPasswordChanged }: ForcePasswordCh
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error(t("auth.passwordTooShort", "Das Passwort muss mindestens 6 Zeichen haben"));
+    if (newPassword.length < PASSWORD_MIN_LENGTH) {
+      toast.error(t("auth.passwordTooShort"));
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      toast.error(t("auth.passwordRequirements"));
       return;
     }
 
@@ -102,6 +109,8 @@ export function ForcePasswordChange({ open, onPasswordChanged }: ForcePasswordCh
             />
           </div>
           
+          <PasswordStrengthIndicator password={newPassword} />
+
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">
               {t("auth.confirmPassword", "Passwort bestätigen")}
@@ -117,7 +126,7 @@ export function ForcePasswordChange({ open, onPasswordChanged }: ForcePasswordCh
           </div>
 
           <p className="text-xs text-muted-foreground">
-            {t("auth.passwordRequirements", "Das Passwort muss mindestens 6 Zeichen lang sein.")}
+            {t("auth.passwordRequirements")}
           </p>
         </div>
 

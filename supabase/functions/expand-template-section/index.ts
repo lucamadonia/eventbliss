@@ -1,12 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -116,7 +114,7 @@ serve(async (req) => {
       ? `Existing items (DO NOT repeat these, generate DIFFERENT ones): ${JSON.stringify(currentItems)}`
       : '';
 
-    console.log(`Expanding section: ${section} for user: ${userId || 'anonymous'}`);
+    console.log(`Expanding section: ${section}`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -209,7 +207,7 @@ serve(async (req) => {
         request_type: 'template_expansion',
         tokens_used: 0,
       });
-      console.log(`Deducted 1 credit from user: ${userId}`);
+      console.log('Credit deducted');
     }
 
     console.log(`Generated ${items.length} additional items for section: ${section}`);

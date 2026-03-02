@@ -12,9 +12,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
+  onForgotPassword?: () => void;
 }
 
-export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+export function LoginForm({ onSwitchToRegister, onForgotPassword }: LoginFormProps) {
   const { t } = useTranslation();
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
@@ -125,6 +126,17 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             </div>
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password}</p>
+            )}
+            {onForgotPassword && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={onForgotPassword}
+                  className="text-sm text-primary hover:underline"
+                >
+                  {t('auth.forgotPassword')}
+                </button>
+              </div>
             )}
           </div>
 

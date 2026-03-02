@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
@@ -12,6 +8,8 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -33,11 +31,11 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user) throw new Error("User not authenticated");
-    logStep("User authenticated", { userId: user.id });
+    logStep("User authenticated");
 
     const { code } = await req.json();
     if (!code) throw new Error("Voucher code is required");
-    logStep("Voucher code received", { code });
+    logStep("Voucher code received");
 
     // Find the voucher
     const { data: voucher, error: voucherError } = await supabaseClient
@@ -145,11 +143,14 @@ serve(async (req) => {
     });
     if (redemptionError) throw redemptionError;
 
-    // Increment used_count
-    await supabaseClient
-      .from("vouchers")
-      .update({ used_count: voucher.used_count + 1 })
-      .eq("id", voucher.id);
+    // Atomically increment used_count
+    const { error: incrementError } = await supabaseClient.rpc("increment_voucher_used_count", {
+      p_voucher_id: voucher.id,
+      p_max_uses: voucher.max_uses || 999999,
+    });
+    if (incrementError) {
+      throw new Error("Voucher has reached maximum redemptions");
+    }
 
     logStep("Voucher redeemed successfully");
 

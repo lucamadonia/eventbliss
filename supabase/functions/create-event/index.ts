@@ -1,16 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 function generateAccessCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const randomBytes = new Uint8Array(8);
+  crypto.getRandomValues(randomBytes);
   let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(randomBytes[i] % chars.length);
   }
   return code;
 }
@@ -20,7 +18,13 @@ function generateSlug(name: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-  const random = Math.random().toString(36).substring(2, 6);
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const randomBytes = new Uint8Array(8);
+  crypto.getRandomValues(randomBytes);
+  let random = "";
+  for (let i = 0; i < 8; i++) {
+    random += chars.charAt(randomBytes[i] % chars.length);
+  }
   return `${base}-${random}`;
 }
 
@@ -1173,6 +1177,8 @@ function getMessageTemplates(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -1193,7 +1199,7 @@ serve(async (req) => {
       if (!userError && user) {
         userId = user.id;
         userEmail = user.email || null;
-        console.log("Authenticated user:", userId);
+        console.log("User authenticated");
       }
     }
 

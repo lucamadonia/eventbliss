@@ -1,11 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
-};
+import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -131,13 +127,10 @@ async function trackAffiliateCommission(
     }
 
     // Update affiliate's pending balance and total earnings
-    const { error: updateError } = await supabaseClient
-      .from("affiliates")
-      .update({
-        pending_balance: affiliate.pending_balance + commissionAmount,
-        total_earnings: affiliate.total_earnings + commissionAmount
-      })
-      .eq("id", affiliate.id);
+    const { error: updateError } = await supabaseClient.rpc("increment_affiliate_balance", {
+      p_affiliate_id: affiliate.id,
+      p_amount: commissionAmount,
+    });
 
     if (updateError) {
       logStep("ERROR updating affiliate balance", { error: updateError });
@@ -155,6 +148,8 @@ async function trackAffiliateCommission(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeadersWithStripe(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -204,6 +199,27 @@ serve(async (req) => {
     }
 
     logStep("Event received", { type: event.type, id: event.id });
+
+    // Idempotency check - skip already processed events
+    const { data: existingEvent } = await supabaseClient
+      .from("processed_webhook_events")
+      .select("id")
+      .eq("stripe_event_id", event.id)
+      .maybeSingle();
+
+    if (existingEvent) {
+      logStep("Event already processed, skipping", { eventId: event.id });
+      return new Response(JSON.stringify({ received: true, skipped: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Record this event as being processed
+    await supabaseClient.from("processed_webhook_events").insert({
+      stripe_event_id: event.id,
+      event_type: event.type,
+    });
 
     switch (event.type) {
       case "checkout.session.completed": {
