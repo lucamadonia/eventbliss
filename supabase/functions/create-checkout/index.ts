@@ -33,10 +33,12 @@ serve(async (req) => {
     // Parse request body for plan_type and locale
     let planType = "monthly";
     let locale = "de";
+    let returnOrigin = "";
     try {
       const body = await req.json();
       planType = body.plan_type || "monthly";
       locale = body.locale || "de";
+      returnOrigin = body.return_origin || "";
     } catch {
       // No body or invalid JSON, use default
     }
@@ -80,7 +82,7 @@ serve(async (req) => {
       logStep("Found existing customer", { customerId });
     }
 
-    const origin = req.headers.get("origin") || "https://lovable.dev";
+    const origin = returnOrigin || req.headers.get("origin") || "https://lovable.dev";
     const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS] || PRICE_IDS.monthly;
     const mode = planType === "lifetime" ? "payment" : "subscription";
     

@@ -2,6 +2,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { useEffect, useState } from "react";
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift, Calendar, XCircle, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -62,36 +64,65 @@ export default function Premium() {
       return;
     }
 
-    // Open popup immediately (synchronously) to avoid popup blockers
-    const popup = window.open("about:blank", "_blank");
+    if (Capacitor.isNativePlatform()) {
+      setCheckoutLoading(selectedPlanType);
+      try {
+        const { data, error } = await supabase.functions.invoke("create-checkout", {
+          body: {
+            plan_type: selectedPlanType,
+            locale: i18n.language
+          }
+        });
 
-    setCheckoutLoading(selectedPlanType);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { 
-          plan_type: selectedPlanType,
-          locale: i18n.language
+        if (error) throw error;
+
+        if (!data?.url) {
+          toast.error(t("premium.checkoutError"));
+          return;
         }
-      });
-      
-      if (error) throw error;
-      
-      if (data?.url) {
-        if (popup && !popup.closed) {
-          popup.location.href = data.url;
-        } else {
-          // Fallback: open in same tab if popup was blocked
-          window.location.href = data.url;
-        }
-      } else {
-        popup?.close();
+
+        Browser.addListener('browserFinished', () => {
+          window.location.reload();
+        });
+        await Browser.open({ url: data.url });
+      } catch (err) {
+        console.error("Checkout error:", err);
+        toast.error(t("premium.checkoutError"));
+      } finally {
+        setCheckoutLoading(null);
       }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      popup?.close();
-      toast.error(t("premium.checkoutError"));
-    } finally {
-      setCheckoutLoading(null);
+    } else {
+      // Open popup immediately (synchronously) to avoid popup blockers
+      const popup = window.open("about:blank", "_blank");
+
+      setCheckoutLoading(selectedPlanType);
+      try {
+        const { data, error } = await supabase.functions.invoke("create-checkout", {
+          body: {
+            plan_type: selectedPlanType,
+            locale: i18n.language
+          }
+        });
+
+        if (error) throw error;
+
+        if (data?.url) {
+          if (popup && !popup.closed) {
+            popup.location.href = data.url;
+          } else {
+            // Fallback: open in same tab if popup was blocked
+            window.location.href = data.url;
+          }
+        } else {
+          popup?.close();
+        }
+      } catch (err) {
+        console.error("Checkout error:", err);
+        popup?.close();
+        toast.error(t("premium.checkoutError"));
+      } finally {
+        setCheckoutLoading(null);
+      }
     }
   };
 

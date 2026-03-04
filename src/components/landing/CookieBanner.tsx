@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie, Shield, BarChart3, Target, X, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Capacitor } from '@capacitor/core';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -57,7 +58,7 @@ export function CookieBanner() {
     saveConsent(onlyNecessary);
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || Capacitor.isNativePlatform()) return null;
 
   return (
     <AnimatePresence>

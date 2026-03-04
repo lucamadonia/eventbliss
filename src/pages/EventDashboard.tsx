@@ -185,7 +185,7 @@ const EventDashboard = () => {
     <AnimatedBackground>
       <div className="min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-50 glass-card border-b border-border/50">
+        <header className="sticky top-0 z-50 pt-[env(safe-area-inset-top)] glass-card border-b border-border/50">
           <div className="container max-w-6xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">

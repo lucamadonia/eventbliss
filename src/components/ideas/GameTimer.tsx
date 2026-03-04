@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
+import { Haptics } from '@capacitor/haptics';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 import { 
   Play, 
   Pause, 
@@ -99,7 +102,9 @@ export const GameTimer = ({ onClose, defaultMinutes = 10, compact = false }: Gam
 
   // Vibrate on mobile
   const vibrate = useCallback(() => {
-    if ("vibrate" in navigator) {
+    if (Capacitor.isNativePlatform()) {
+      Haptics.vibrate();
+    } else if ("vibrate" in navigator) {
       navigator.vibrate([200, 100, 200, 100, 400]);
     }
   }, []);
@@ -107,8 +112,17 @@ export const GameTimer = ({ onClose, defaultMinutes = 10, compact = false }: Gam
   // Send notification
   const sendNotification = useCallback(() => {
     if (!notificationEnabled) return;
-    
-    if ("Notification" in window && Notification.permission === "granted") {
+
+    if (Capacitor.isNativePlatform()) {
+      LocalNotifications.schedule({
+        notifications: [{
+          title: t('gamesLibrary.timer.finished'),
+          body: t('gamesLibrary.timer.timeUp'),
+          id: Date.now(),
+          schedule: { at: new Date() },
+        }],
+      });
+    } else if ("Notification" in window && Notification.permission === "granted") {
       new Notification(t('gamesLibrary.timer.finished'), {
         body: t('gamesLibrary.timer.timeUp'),
         icon: "/favicon.png"
@@ -118,8 +132,12 @@ export const GameTimer = ({ onClose, defaultMinutes = 10, compact = false }: Gam
 
   // Request notification permission
   useEffect(() => {
-    if (notificationEnabled && "Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
+    if (notificationEnabled) {
+      if (Capacitor.isNativePlatform()) {
+        LocalNotifications.requestPermissions();
+      } else if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
     }
   }, [notificationEnabled]);
 

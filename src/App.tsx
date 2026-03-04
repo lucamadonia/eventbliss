@@ -4,7 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { initDeepLinks } from "@/lib/deep-links";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 
@@ -46,13 +47,19 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const { i18n } = useTranslation();
-  
+  const navigate = useNavigate();
+
   // RTL support for Arabic
   useEffect(() => {
     const currentLang = languages.find(l => l.code === i18n.language);
     document.documentElement.dir = currentLang?.dir || 'ltr';
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
+
+  // Initialize deep links for native platforms
+  useEffect(() => {
+    initDeepLinks(navigate);
+  }, [navigate]);
 
   return (
     <TooltipProvider>
