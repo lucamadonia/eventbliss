@@ -180,6 +180,7 @@ serve(async (req) => {
           is_form_locked: isFormLocked,
           locked_block: lockedBlock,
           creator_is_premium: creatorIsPremium,
+          created_by: event.created_by,
         },
         participants: safeParticipants,
         response_count: responseCount || 0,

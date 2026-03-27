@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
 import { usePremium } from "@/hooks/usePremium";
+import { useParticipantPermissions } from "@/hooks/useParticipantPermissions";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -82,6 +83,7 @@ const EventExpenses = () => {
   const { event, participants, isLoading: eventLoading, error } = useEvent(slug);
   const { isPremium: userIsPremium } = usePremium();
   const isPremium = userIsPremium || event?.creator_is_premium || false;
+  const { permissions, currentParticipant, isOrganizer } = useParticipantPermissions(event, participants);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseShares, setExpenseShares] = useState<ExpenseShare[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
@@ -101,7 +103,7 @@ const EventExpenses = () => {
     return expenses.filter(e => !e.is_planned && !e.deleted_at).length;
   }, [expenses]);
   
-  const canAddExpense = isPremium || actualExpenseCount < MAX_FREE_EXPENSES;
+  const canAddExpense = permissions.can_add_expenses && (isPremium || actualExpenseCount < MAX_FREE_EXPENSES);
 
   // Fetch expenses and shares via edge function (no auth required)
   useEffect(() => {
@@ -201,11 +203,15 @@ const EventExpenses = () => {
 
   // Filter out deleted expenses unless showDeleted is enabled
   const activeExpenses = useMemo(() => {
-    if (showDeleted) {
-      return expenses;
+    let filtered = showDeleted ? expenses : expenses.filter((e) => !e.deleted_at);
+    // Non-organizers without full visibility only see their own expenses + planned
+    if (!permissions.can_view_all_expenses && currentParticipant) {
+      filtered = filtered.filter(
+        (e) => e.is_planned || e.paid_by_participant_id === currentParticipant.id
+      );
     }
-    return expenses.filter((e) => !e.deleted_at);
-  }, [expenses, showDeleted]);
+    return filtered;
+  }, [expenses, showDeleted, permissions.can_view_all_expenses, currentParticipant]);
 
   // Calculate totals (only from non-deleted expenses)
   const actualExpenses = useMemo(() => activeExpenses.filter((e) => !e.is_planned && !e.deleted_at), [activeExpenses]);
@@ -614,7 +620,7 @@ const EventExpenses = () => {
                 </div>
               </div>
 
-              {canAddExpense ? (
+              {permissions.can_add_expenses && (canAddExpense ? (
                 <GradientButton
                   size="sm"
                   icon={<Plus className="w-4 h-4" />}
@@ -632,7 +638,7 @@ const EventExpenses = () => {
                   <Crown className="w-4 h-4 mr-2 text-primary" />
                   {t("common.add")}
                 </Button>
-              )}
+              ))}
             </div>
           </div>
         </header>
@@ -649,8 +655,8 @@ const EventExpenses = () => {
             currency={currency}
           />
 
-          {/* Charts */}
-          {actualExpenses.length > 0 && (
+          {/* Charts (only for users who can view all expenses) */}
+          {permissions.can_view_all_expenses && actualExpenses.length > 0 && (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -669,8 +675,8 @@ const EventExpenses = () => {
             </motion.section>
           )}
 
-          {/* Settlements */}
-          {settlements.length > 0 && (
+          {/* Settlements (only for users who can view all expenses) */}
+          {permissions.can_view_all_expenses && settlements.length > 0 && (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -820,14 +826,16 @@ const EventExpenses = () => {
                       >
                         <Receipt className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
                         <p className="text-muted-foreground">{t("expenses.noExpenses")}</p>
-                        <GradientButton
-                          size="sm"
-                          className="mt-4"
-                          onClick={() => setIsAddingExpense(true)}
-                          icon={<Plus className="w-4 h-4" />}
-                        >
-                          {t("expenses.addFirst")}
-                        </GradientButton>
+                        {permissions.can_add_expenses && (
+                          <GradientButton
+                            size="sm"
+                            className="mt-4"
+                            onClick={() => setIsAddingExpense(true)}
+                            icon={<Plus className="w-4 h-4" />}
+                          >
+                            {t("expenses.addFirst")}
+                          </GradientButton>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

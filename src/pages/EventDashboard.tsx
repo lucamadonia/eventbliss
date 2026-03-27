@@ -18,6 +18,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { useEvent } from "@/hooks/useEvent";
+import { useParticipantPermissions } from "@/hooks/useParticipantPermissions";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -81,10 +82,18 @@ const EventDashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
+  const { allowedTabs } = useParticipantPermissions(event, participants);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState<ResponseStats | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
+
+  // Reset active tab if it's no longer allowed
+  useEffect(() => {
+    if (allowedTabs.length > 0 && !allowedTabs.includes(activeTab)) {
+      setActiveTab(allowedTabs[0]);
+    }
+  }, [allowedTabs, activeTab]);
 
   // Fetch responses and stats
   useEffect(() => {
@@ -216,7 +225,7 @@ const EventDashboard = () => {
         <nav className="sticky top-[73px] z-40 glass-card border-b border-border/50 overflow-x-auto">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="flex gap-1 py-2">
-              {tabs.map((tab) => {
+              {tabs.filter(tab => allowedTabs.includes(tab.id)).map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button

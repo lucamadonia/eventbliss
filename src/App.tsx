@@ -45,9 +45,16 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const DeepLinkHandler = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    initDeepLinks(navigate);
+  }, [navigate]);
+  return null;
+};
+
 const AppContent = () => {
   const { i18n } = useTranslation();
-  const navigate = useNavigate();
 
   // RTL support for Arabic
   useEffect(() => {
@@ -56,14 +63,10 @@ const AppContent = () => {
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
 
-  // Initialize deep links for native platforms
-  useEffect(() => {
-    initDeepLinks(navigate);
-  }, [navigate]);
-
   return (
     <TooltipProvider>
       <BrowserRouter>
+        <DeepLinkHandler />
         <Toaster />
         <Sonner />
         <Routes>

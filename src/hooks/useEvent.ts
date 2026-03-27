@@ -20,6 +20,7 @@ export interface EventData {
   is_form_locked: boolean;
   locked_block: string | null;
   creator_is_premium: boolean;
+  created_by: string | null;
 }
 
 export interface DashboardPermissions {
