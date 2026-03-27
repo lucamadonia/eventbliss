@@ -74,3 +74,6 @@ verify_jwt = false
 
 [functions.expand-template-section]
 verify_jwt = false
+
+[functions.get-expenses]
+verify_jwt = false
