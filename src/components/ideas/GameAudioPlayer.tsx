@@ -288,11 +288,13 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
         return;
       }
 
-      const response = await supabase.functions.invoke('voxtral-tts', {
+      const response = await supabase.functions.invoke('ai-assistant', {
         body: {
-          text: textToSpeak,
-          voice: voxtralVoiceId,
-          language: currentLang,
+          type: 'voxtral_tts',
+          tts_text: textToSpeak,
+          tts_voice: voxtralVoiceId,
+          tts_speed: 1.0,
+          context: { event_type: 'other', honoree_name: '', participant_count: 0 },
         },
       });
 
@@ -300,7 +302,6 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
         throw new Error(response.error.message);
       }
 
-      // Response data is the audio blob
       const audioBlob = response.data instanceof Blob
         ? response.data
         : new Blob([response.data], { type: 'audio/mpeg' });

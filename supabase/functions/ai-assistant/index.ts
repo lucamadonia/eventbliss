@@ -11,7 +11,7 @@ const AI_CREDIT_LIMITS: Record<string, number> = {
 };
 
 interface RequestBody {
-  type: "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "message_enhance";
+  type: "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "message_enhance" | "voxtral_tts";
   context: {
     event_type: string;
     honoree_name: string;
@@ -1705,7 +1705,7 @@ serve(async (req) => {
     const rawBody = body as Record<string, unknown>;
     
     // Validate type field
-    const validTypes = ["trip_ideas", "activities", "day_plan", "budget_estimate", "chat", "message_enhance"];
+    const validTypes = ["trip_ideas", "activities", "day_plan", "budget_estimate", "chat", "message_enhance", "voxtral_tts"];
     const type = typeof rawBody.type === 'string' && validTypes.includes(rawBody.type) 
       ? rawBody.type as RequestBody['type'] 
       : null;
@@ -1799,6 +1799,66 @@ serve(async (req) => {
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+    }
+
+    // =========================================================================
+    // VOXTRAL TTS HANDLER (early return - no AI credits needed)
+    // =========================================================================
+    if (type === "voxtral_tts") {
+      const ttsText = typeof rawBody.tts_text === 'string' ? rawBody.tts_text.slice(0, 2000) : '';
+      const ttsVoice = typeof rawBody.tts_voice === 'string' ? rawBody.tts_voice.slice(0, 50) : 'aria';
+      const ttsSpeed = typeof rawBody.tts_speed === 'number' ? Math.min(Math.max(rawBody.tts_speed, 0.5), 2.0) : 1.0;
+
+      if (!ttsText) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Text ist erforderlich" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const mistralApiKey = Deno.env.get("MISTRAL_API_KEY");
+      if (!mistralApiKey) {
+        console.error("MISTRAL_API_KEY not configured");
+        return new Response(
+          JSON.stringify({ success: false, error: "TTS-Service nicht konfiguriert" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.log("Voxtral TTS request:", { textLength: ttsText.length, voice: ttsVoice });
+
+      const ttsResponse = await fetch("https://api.mistral.ai/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${mistralApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "voxtral-tts",
+          input: ttsText,
+          voice: ttsVoice,
+          response_format: "mp3",
+          speed: ttsSpeed,
+        }),
+      });
+
+      if (!ttsResponse.ok) {
+        const errText = await ttsResponse.text();
+        console.error("Mistral TTS error:", ttsResponse.status, errText);
+        return new Response(
+          JSON.stringify({ success: false, error: "TTS-Generierung fehlgeschlagen" }),
+          { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const audioData = await ttsResponse.arrayBuffer();
+      return new Response(audioData, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "audio/mpeg",
+          "Cache-Control": "private, max-age=3600",
+        },
+      });
     }
 
     // =========================================================================
