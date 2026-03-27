@@ -19,6 +19,7 @@ export interface EventData {
   survey_deadline: string | null;
   is_form_locked: boolean;
   locked_block: string | null;
+  creator_is_premium: boolean;
 }
 
 export interface DashboardPermissions {

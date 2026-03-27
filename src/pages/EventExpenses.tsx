@@ -80,7 +80,8 @@ const EventExpenses = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { event, participants, isLoading: eventLoading, error } = useEvent(slug);
-  const { isPremium } = usePremium();
+  const { isPremium: userIsPremium } = usePremium();
+  const isPremium = userIsPremium || event?.creator_is_premium || false;
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseShares, setExpenseShares] = useState<ExpenseShare[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
@@ -102,49 +103,38 @@ const EventExpenses = () => {
   
   const canAddExpense = isPremium || actualExpenseCount < MAX_FREE_EXPENSES;
 
-  // Fetch expenses and shares from database
+  // Fetch expenses and shares via edge function (no auth required)
   useEffect(() => {
     const fetchExpenses = async () => {
       if (!event?.id) return;
 
       setIsLoadingExpenses(true);
       try {
-        const { data: expensesData, error: expensesError } = await supabase
-          .from("expenses")
-          .select("*")
-          .eq("event_id", event.id)
-          .order("created_at", { ascending: false });
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-expenses?event_id=${event.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+          }
+        );
 
-        if (expensesError) throw expensesError;
+        if (!response.ok) throw new Error("Failed to fetch expenses");
+        const result = await response.json();
 
-        // Fetch all expense shares
-        const expenseIds = (expensesData || []).map(e => e.id);
-        let sharesData: ExpenseShare[] = [];
-        if (expenseIds.length > 0) {
-          const { data: shares, error: sharesError } = await supabase
-            .from("expense_shares")
-            .select("*")
-            .in("expense_id", expenseIds);
-          
-          if (sharesError) throw sharesError;
-          sharesData = (shares || []).map(s => ({
-            id: s.id,
-            expense_id: s.expense_id,
-            participant_id: s.participant_id,
-            amount: Number(s.amount),
-            is_paid: s.is_paid || false,
-          }));
-        }
+        const expensesData = result.expenses || [];
+        const sharesData = (result.shares || []).map((s: any) => ({
+          id: s.id,
+          expense_id: s.expense_id,
+          participant_id: s.participant_id,
+          amount: Number(s.amount),
+          is_paid: s.is_paid || false,
+        }));
         setExpenseShares(sharesData);
 
-        const { data: activitiesData, error: activitiesError } = await supabase
-          .from("schedule_activities")
-          .select("id, title, estimated_cost, currency, category, day_date")
-          .eq("event_id", event.id)
-          .not("estimated_cost", "is", null);
-
-        if (activitiesError) throw activitiesError;
-
+        const activitiesData = result.activities || [];
         const mappedExpenses: Expense[] = (expensesData || []).map((exp) => {
           const paidByParticipant = participants.find((p) => p.id === exp.paid_by_participant_id);
           return {

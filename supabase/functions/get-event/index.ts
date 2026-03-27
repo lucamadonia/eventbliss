@@ -149,7 +149,14 @@ serve(async (req) => {
     const isFormLocked = settings.form_locked === true;
     const lockedBlock = settings.locked_block;
 
-    console.log("Event found, participants:", safeParticipants?.length || 0);
+    // Check if event creator has premium
+    let creatorIsPremium = false;
+    if (event.created_by) {
+      const { data: premiumCheck } = await supabase.rpc("is_premium", { _user_id: event.created_by });
+      creatorIsPremium = premiumCheck === true;
+    }
+
+    console.log("Event found, participants:", safeParticipants?.length || 0, "creator_premium:", creatorIsPremium);
 
     return new Response(
       JSON.stringify({
@@ -172,6 +179,7 @@ serve(async (req) => {
           survey_deadline: event.survey_deadline,
           is_form_locked: isFormLocked,
           locked_block: lockedBlock,
+          creator_is_premium: creatorIsPremium,
         },
         participants: safeParticipants,
         response_count: responseCount || 0,
