@@ -29,11 +29,14 @@ import {
   getVoicesForLanguage,
   getDefaultVoice,
   isNeuralVoice,
+  isVoxtralVoice,
+  getVoxtralVoiceId,
   getStoredVoicePreference,
   storeVoicePreference,
   webSpeechLanguages,
   type VoiceOption,
 } from "@/lib/tts-voice-config";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GameAudioPlayerProps {
   text: string;
@@ -88,6 +91,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   // Get available voices for current language
   const availableVoices = getVoicesForLanguage(currentLang);
   const selectedVoice = availableVoices.find(v => v.id === selectedVoiceId);
+  const isVoxtral = selectedVoiceId ? isVoxtralVoice(selectedVoiceId) : false;
   const isNeural = selectedVoiceId ? isNeuralVoice(selectedVoiceId) : false;
 
   // Initialize voice selection from preferences
@@ -270,6 +274,78 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     }
   };
 
+  // Play with Voxtral TTS (Mistral Cloud)
+  const playWithVoxtral = async (textToSpeak: string) => {
+    setIsLoading(true);
+
+    try {
+      const voxtralVoiceId = getVoxtralVoiceId(selectedVoiceId, currentLang);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error(t('gamesLibrary.tts.error'));
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await supabase.functions.invoke('voxtral-tts', {
+        body: {
+          text: textToSpeak,
+          voice: voxtralVoiceId,
+          language: currentLang,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      // Response data is the audio blob
+      const audioBlob = response.data instanceof Blob
+        ? response.data
+        : new Blob([response.data], { type: 'audio/mpeg' });
+
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      audio.volume = isMuted ? 0 : volume / 100;
+
+      audio.onplay = () => {
+        setIsLoading(false);
+        setIsPlaying(true);
+        setIsPaused(false);
+      };
+
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          setProgress((audio.currentTime / audio.duration) * 100);
+        }
+      };
+
+      audio.onended = () => {
+        setIsPlaying(false);
+        setIsPaused(false);
+        setProgress(100);
+        URL.revokeObjectURL(audioUrl);
+        setTimeout(() => setProgress(0), 1000);
+      };
+
+      audio.onerror = () => {
+        setIsLoading(false);
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+        toast.error(t('gamesLibrary.tts.error'));
+      };
+
+      await audio.play();
+    } catch (error) {
+      console.error('Voxtral playback error:', error);
+      setIsLoading(false);
+      toast.error(t('gamesLibrary.tts.error'));
+    }
+  };
+
   // Play with Web Speech API
   const playWithWebSpeech = (textToSpeak: string) => {
     if (!synthRef.current) {
@@ -340,24 +416,28 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
 
   const handlePlay = useCallback(async () => {
     const cleanedText = cleanTextForSpeech(text);
-    
-    // Neural voice selected - download if needed, then play
+
+    // Voxtral cloud voice - call Mistral API via Supabase
+    if (isVoxtral) {
+      playWithVoxtral(cleanedText);
+      return;
+    }
+
+    // Local neural voice - download if needed, then play
     if (isNeural && vitsModule) {
       if (!isModelReady) {
-        // Start automatic download
         setDownloadProgress(0);
-        
+
         try {
           await vitsModule.download(selectedVoiceId, (progress: { loaded: number; total: number }) => {
             const percent = Math.round((progress.loaded / progress.total) * 100);
             setDownloadProgress(percent);
           });
-          
+
           setIsModelReady(true);
           setDownloadProgress(null);
           toast.success(t('gamesLibrary.tts.modelReady'));
-          
-          // Auto-play after download
+
           playWithVITS(cleanedText);
         } catch (error) {
           console.error('Failed to download model:', error);
@@ -365,17 +445,16 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
           toast.error(t('gamesLibrary.tts.downloadError'));
         }
       } else {
-        // Model ready - play immediately
         playWithVITS(cleanedText);
       }
     } else {
       // Standard voice - use Web Speech API
       playWithWebSpeech(cleanedText);
     }
-  }, [text, isNeural, isModelReady, vitsModule, selectedVoiceId, isPaused, volume, isMuted, t]);
+  }, [text, isVoxtral, isNeural, isModelReady, vitsModule, selectedVoiceId, isPaused, volume, isMuted, t]);
 
   const handlePause = () => {
-    if (audioRef.current && isNeural) {
+    if (audioRef.current && (isNeural || isVoxtral)) {
       audioRef.current.pause();
       setIsPaused(true);
       setIsPlaying(false);
@@ -387,7 +466,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   };
 
   const handleResume = () => {
-    if (audioRef.current && isNeural) {
+    if (audioRef.current && (isNeural || isVoxtral)) {
       audioRef.current.play();
       setIsPaused(false);
       setIsPlaying(true);
@@ -426,7 +505,9 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     );
     
     setTimeout(() => {
-      if (isNeural && isModelReady && vitsModule) {
+      if (isVoxtral) {
+        playWithVoxtral(sectionText);
+      } else if (isNeural && isModelReady && vitsModule) {
         playWithVITS(sectionText);
       } else {
         playWithWebSpeech(sectionText);
@@ -480,8 +561,14 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
           {t('gamesLibrary.tts.title')}
         </span>
         
-        {/* Neural Badge */}
-        {isNeural && (
+        {/* Engine Badge */}
+        {isVoxtral && (
+          <Badge variant="secondary" className="text-xs gap-1 bg-violet-500/20 text-violet-600 dark:text-violet-400 border-0">
+            <Sparkles className="w-3 h-3" />
+            Voxtral AI
+          </Badge>
+        )}
+        {isNeural && !isVoxtral && (
           <Badge variant="secondary" className="text-xs gap-1 bg-primary/20 text-primary border-0">
             <Sparkles className="w-3 h-3" />
             Neural
@@ -506,8 +593,9 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
             {availableVoices.map((voice) => (
               <SelectItem key={voice.id} value={voice.id}>
                 <div className="flex items-center gap-2">
+                  {voice.engine === 'voxtral' && <Sparkles className="w-3 h-3 text-violet-500" />}
                   {voice.engine === 'neural' && <Sparkles className="w-3 h-3 text-primary" />}
-                  <span>{voice.name}</span>
+                  <span className={voice.engine === 'voxtral' ? 'font-medium' : ''}>{voice.name}</span>
                   <span className="text-xs text-muted-foreground ml-auto">
                     {voice.quality === 'high' ? '★★★' : voice.quality === 'medium' ? '★★' : '★'}
                   </span>
@@ -518,8 +606,18 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
         </Select>
       </div>
 
-      {/* Model Info (for neural voices not yet downloaded) */}
-      {isNeural && !isModelReady && downloadProgress === null && (
+      {/* Voxtral cloud info */}
+      {isVoxtral && (
+        <div className="mb-3 p-2 rounded-lg bg-violet-500/5 border border-violet-500/20">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Sparkles className="w-3 h-3 text-violet-500" />
+            <span>{currentLang === 'de' ? 'Mistral Voxtral AI — höchste Sprachqualität' : 'Mistral Voxtral AI — highest voice quality'}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Model Info (for local neural voices not yet downloaded) */}
+      {isNeural && !isVoxtral && !isModelReady && downloadProgress === null && (
         <div className="mb-3 p-2 rounded-lg bg-primary/5 border border-primary/20">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Sparkles className="w-3 h-3 text-primary" />
