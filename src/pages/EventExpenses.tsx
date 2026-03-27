@@ -134,14 +134,7 @@ const EventExpenses = () => {
         }));
         setExpenseShares(sharesData);
 
-        const { data: activitiesData, error: activitiesError } = await supabase
-          .from("schedule_activities")
-          .select("id, title, estimated_cost, currency, category, day_date")
-          .eq("event_id", event.id)
-          .not("estimated_cost", "is", null);
-
-        if (activitiesError) throw activitiesError;
-
+        const activitiesData = result.activities || [];
         const mappedExpenses: Expense[] = (expensesData || []).map((exp) => {
           const paidByParticipant = participants.find((p) => p.id === exp.paid_by_participant_id);
           return {
