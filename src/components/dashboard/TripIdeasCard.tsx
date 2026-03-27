@@ -14,6 +14,9 @@ import {
   Download,
   FileText,
   Calendar,
+  Volume2,
+  Loader2,
+  Square,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -22,6 +25,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { type ParsedTripIdeasResponse, type ParsedTripIdea } from "@/lib/ai-response-parser";
 import { openTripIdeasPrint, downloadTripIdeasHTML } from "@/lib/trip-ideas-pdf-export";
+import { supabase } from "@/integrations/supabase/client";
+import { getVoxtralVoiceId, getDefaultVoice, isVoxtralVoice } from "@/lib/tts-voice-config";
 
 interface TripIdeasCardProps {
   tripIdeasData: ParsedTripIdeasResponse;
@@ -76,8 +81,66 @@ export const TripIdeasCard = ({
   onSetDestination,
 }: TripIdeasCardProps) => {
   const { t, i18n } = useTranslation();
-  const [expandedIdeas, setExpandedIdeas] = useState<Set<number>>(new Set([0])); // First one expanded by default
+  const [expandedIdeas, setExpandedIdeas] = useState<Set<number>>(new Set([0]));
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [ttsPlaying, setTtsPlaying] = useState<string | null>(null);
+  const [ttsLoading, setTtsLoading] = useState<string | null>(null);
+  const ttsAudioRef = useState<HTMLAudioElement | null>(null);
+
+  const stopTts = () => {
+    if (ttsAudioRef[0]) {
+      ttsAudioRef[0].pause();
+      ttsAudioRef[0] = null;
+    }
+    setTtsPlaying(null);
+    setTtsLoading(null);
+  };
+
+  const playTts = async (text: string, id: string) => {
+    if (ttsPlaying === id) {
+      stopTts();
+      return;
+    }
+    stopTts();
+    setTtsLoading(id);
+
+    try {
+      const currentLang = (i18n.language || 'de').split('-')[0];
+      const defaultVoice = getDefaultVoice(currentLang);
+      const voxtralVoiceId = isVoxtralVoice(defaultVoice)
+        ? getVoxtralVoiceId(defaultVoice, currentLang)
+        : 'aria';
+
+      const response = await supabase.functions.invoke('ai-assistant', {
+        body: {
+          type: 'voxtral_tts',
+          tts_text: text.slice(0, 2000),
+          tts_voice: voxtralVoiceId,
+          tts_speed: 1.0,
+          context: { event_type: 'other', honoree_name: '', participant_count: 0 },
+        },
+      });
+
+      if (response.error) throw new Error(response.error.message);
+
+      const audioBlob = response.data instanceof Blob
+        ? response.data
+        : new Blob([response.data], { type: 'audio/mpeg' });
+
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      ttsAudioRef[0] = audio;
+
+      audio.onplay = () => { setTtsLoading(null); setTtsPlaying(id); };
+      audio.onended = () => { stopTts(); URL.revokeObjectURL(audioUrl); };
+      audio.onerror = () => { stopTts(); URL.revokeObjectURL(audioUrl); };
+
+      await audio.play();
+    } catch {
+      setTtsLoading(null);
+      toast.error(t('common.error', 'Fehler'));
+    }
+  };
 
   const toggleIdea = (index: number) => {
     setExpandedIdeas(prev => {
@@ -308,22 +371,43 @@ export const TripIdeasCard = ({
 
                         {/* Actions */}
                         <div className="flex items-center justify-between pt-2 border-t border-border/30">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyIdea(idea, ideaId);
-                            }}
-                          >
-                            {copiedId === ideaId ? (
-                              <Check className="w-3 h-3 text-emerald-400 mr-1" />
-                            ) : (
-                              <Copy className="w-3 h-3 mr-1" />
-                            )}
-                            {t('common.copy')}
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const fullText = `${idea.title}. ${idea.destination}. ${idea.description}. ${idea.whyPerfect.join('. ')}`;
+                                playTts(fullText, ideaId);
+                              }}
+                            >
+                              {ttsLoading === ideaId ? (
+                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                              ) : ttsPlaying === ideaId ? (
+                                <Square className="w-3 h-3 text-violet-500 mr-1" />
+                              ) : (
+                                <Volume2 className="w-3 h-3 mr-1" />
+                              )}
+                              {ttsPlaying === ideaId ? 'Stop' : t('dashboard.ai.listen', 'Vorlesen')}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyIdea(idea, ideaId);
+                              }}
+                            >
+                              {copiedId === ideaId ? (
+                                <Check className="w-3 h-3 text-emerald-400 mr-1" />
+                              ) : (
+                                <Copy className="w-3 h-3 mr-1" />
+                              )}
+                              {t('common.copy')}
+                            </Button>
+                          </div>
                           {onSetDestination && (
                             <Button
                               size="sm"
