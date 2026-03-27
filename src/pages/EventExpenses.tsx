@@ -80,7 +80,8 @@ const EventExpenses = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { event, participants, isLoading: eventLoading, error } = useEvent(slug);
-  const { isPremium } = usePremium();
+  const { isPremium: userIsPremium } = usePremium();
+  const isPremium = userIsPremium || event?.creator_is_premium || false;
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseShares, setExpenseShares] = useState<ExpenseShare[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
