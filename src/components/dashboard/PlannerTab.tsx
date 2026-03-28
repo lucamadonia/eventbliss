@@ -638,23 +638,23 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
                   </GlassCard>
                 ) : (
                   <>
-                    {activitiesForDate.map((activity, index) => (
-                      <ActivityCard
-                        key={activity.id}
-                        activity={activity}
-                        participants={participants}
-                        comments={comments[activity.id] || []}
-                        onEdit={() => {
-                          setEditingActivity(activity);
-                          setShowForm(true);
-                        }}
-                        onDelete={() => handleDeleteActivity(activity.id)}
-                        onAddComment={(content, participantId) =>
-                          handleAddComment(activity.id, content, participantId)
-                        }
-                        index={index}
-                      />
-                    ))}
+                      {activitiesForDate.map((activity, index) => (
+                        <ActivityCard
+                          key={activity.id}
+                          activity={activity}
+                          participants={participants}
+                          comments={comments[activity.id] || []}
+                          onEdit={() => {
+                            setEditingActivity(activity);
+                            setShowForm(true);
+                          }}
+                          onDelete={() => handleDeleteActivity(activity.id)}
+                          onAddComment={(content, participantId) =>
+                            handleAddComment(activity.id, content, participantId)
+                          }
+                          index={index}
+                        />
+                      ))}
 
                     {/* Daily Summary */}
                     <GlassCard className="p-4 bg-primary/5">
