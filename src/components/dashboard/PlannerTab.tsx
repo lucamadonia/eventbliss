@@ -13,7 +13,6 @@ import {
   FileText,
   CalendarDays,
   ChevronDown,
-  LogIn,
   CalendarPlus,
   LayoutList,
   LayoutGrid,

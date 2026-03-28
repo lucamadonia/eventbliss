@@ -79,6 +79,7 @@ interface ActivityCardProps {
   onDelete: () => void;
   onAddComment: (content: string, participantId: string) => void;
   index: number;
+  canManage?: boolean;
 }
 
 export const ActivityCard = ({
@@ -89,6 +90,7 @@ export const ActivityCard = ({
   onDelete,
   onAddComment,
   index,
+  canManage = true,
 }: ActivityCardProps) => {
   const { t } = useTranslation();
   const [showComments, setShowComments] = useState(false);
@@ -151,41 +153,43 @@ export const ActivityCard = ({
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onEdit}
-                className="h-8 w-8"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{t('planner.deleteConfirm')}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('planner.deleteConfirmDescription')}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={onDelete}>
-                      {t('common.delete')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            {canManage && (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onEdit}
+                  className="h-8 w-8"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t('planner.deleteConfirm')}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('planner.deleteConfirmDescription')}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={onDelete}>
+                        {t('common.delete')}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
           </div>
 
           {/* Details Grid */}
