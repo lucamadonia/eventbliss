@@ -138,36 +138,15 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ActivityCategory | 'all'>('all');
   const [customDates, setCustomDates] = useState<string[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>(() => isMobile ? 'list' : 'calendar');
   const [prefillTime, setPrefillTime] = useState<PrefillTime | null>(null);
 
   const currentLocale = localeMap[i18n.language] || de;
 
-  // Check authentication and participant status
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-      
-      if (user) {
-        // Find participant linked to this user
-        const participant = participants.find(p => p.id && participants.some(part => part.id));
-        if (participant) {
-          setCurrentParticipant(participant);
-        }
-      }
-    };
-    
-    checkAuth();
-  }, [participants]);
-
   // Generate dates based on event date, custom dates, or activities
   const getEventDates = () => {
     const allDates = new Set<string>();
-    
-    // Add event date ± 1 day if available
+
     if (event.event_date) {
       const baseDate = parseISO(event.event_date);
       if (isValid(baseDate)) {
@@ -176,23 +155,20 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         allDates.add(format(addDays(baseDate, 1), "yyyy-MM-dd"));
       }
     }
-    
-    // Add dates from existing activities
-    activities.forEach(a => {
+
+    activities.forEach((a) => {
       if (a.day_date) {
         allDates.add(a.day_date);
       }
     });
-    
-    // Add custom dates
-    customDates.forEach(d => allDates.add(d));
-    
-    // If no dates at all, use today
+
+    customDates.forEach((d) => allDates.add(d));
+
     if (allDates.size === 0) {
       const today = new Date();
       allDates.add(format(today, "yyyy-MM-dd"));
     }
-    
+
     return Array.from(allDates).sort();
   };
 
@@ -200,53 +176,48 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
 
   useEffect(() => {
     if (!selectedDate && eventDates.length > 0) {
-      // Prefer event date, then first date
       if (event.event_date && eventDates.includes(event.event_date)) {
         setSelectedDate(event.event_date);
       } else {
         setSelectedDate(eventDates[0]);
       }
     }
-  }, [eventDates, event.event_date]);
+  }, [eventDates, event.event_date, selectedDate]);
 
   const fetchActivities = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("schedule_activities")
-        .select("*")
-        .eq("event_id", event.id)
-        .order("day_date", { ascending: true })
-        .order("start_time", { ascending: true })
-        .order("sort_order", { ascending: true });
-
-      if (error) throw error;
-      setActivities((data || []) as Activity[]);
-
-      // Fetch comments for all activities
-      if (data && data.length > 0) {
-        const activityIds = data.map(a => a.id);
-        const { data: commentsData, error: commentsError } = await supabase
-          .from("activity_comments")
-          .select("*")
-          .in("activity_id", activityIds)
-          .order("created_at", { ascending: true });
-
-        if (!commentsError && commentsData) {
-          const commentsByActivity: Record<string, Comment[]> = {};
-          commentsData.forEach(comment => {
-            if (!commentsByActivity[comment.activity_id]) {
-              commentsByActivity[comment.activity_id] = [];
-            }
-            const participant = participants.find(p => p.id === comment.participant_id);
-            commentsByActivity[comment.activity_id].push({
-              ...comment,
-              participant_name: participant?.name || t('common.unknown'),
-            });
-          });
-          setComments(commentsByActivity);
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-planner-data?event_id=${event.id}`,
+        {
+          headers: {
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
         }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch planner data");
       }
+
+      const result = await response.json();
+      const activitiesData = Array.isArray(result.activities) ? result.activities : [];
+      const commentsData = Array.isArray(result.comments) ? result.comments : [];
+
+      setActivities(activitiesData as Activity[]);
+
+      const commentsByActivity: Record<string, Comment[]> = {};
+      commentsData.forEach((comment: Comment & { activity_id: string; participant_id?: string }) => {
+        if (!commentsByActivity[comment.activity_id]) {
+          commentsByActivity[comment.activity_id] = [];
+        }
+        const participant = participants.find((p) => p.id === comment.participant_id);
+        commentsByActivity[comment.activity_id].push({
+          ...comment,
+          participant_name: participant?.name || t('common.unknown'),
+        });
+      });
+      setComments(commentsByActivity);
     } catch (error) {
       console.error("Error fetching activities:", error);
       toast({
@@ -261,10 +232,9 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
 
   useEffect(() => {
     fetchActivities();
-  }, [event.id]);
+  }, [event.id, participants, t]);
 
   const handleSaveActivity = async (activityData: Partial<Activity>) => {
-    // Check authentication before saving
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast({
@@ -277,7 +247,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
 
     try {
       let savedActivityId: string | null = null;
-      
+
       if (editingActivity) {
         const { error } = await supabase
           .from("schedule_activities")
@@ -297,11 +267,10 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
         if (error) throw error;
         savedActivityId = insertedData?.id;
         toast({ title: t('common.success'), description: t('planner.activityCreated') });
-        
-        // Sync cost to expenses if cost is set
+
         if (activityData.estimated_cost && activityData.estimated_cost > 0 && savedActivityId) {
           const expenseCategory = categoryToExpenseCategory[activityData.category || 'other'] || 'other';
-          
+
           await supabase
             .from("expenses")
             .insert([{
@@ -320,8 +289,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
       fetchActivities();
     } catch (error: any) {
       console.error("Error saving activity:", error);
-      
-      // Check if it's an RLS error
+
       if (error.code === '42501' || error.message?.includes('row-level security')) {
         toast({
           title: t('planner.authRequired'),
@@ -402,7 +370,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
   };
 
   const activitiesForDate = selectedDate
-    ? activities.filter(a => {
+    ? activities.filter((a) => {
         const dateMatch = a.day_date === selectedDate;
         const categoryMatch = selectedCategory === 'all' || a.category === selectedCategory;
         return dateMatch && categoryMatch;
@@ -410,7 +378,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
     : [];
 
   const allActivitiesForDate = selectedDate
-    ? activities.filter(a => a.day_date === selectedDate)
+    ? activities.filter((a) => a.day_date === selectedDate)
     : [];
 
   const totalCostForDate = allActivitiesForDate.reduce((sum, a) => {
@@ -422,20 +390,6 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
-    );
-  }
-
-  // Show auth warning if not authenticated
-  if (isAuthenticated === false) {
-    return (
-      <GlassCard className="p-8 text-center">
-        <LogIn className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="font-bold text-lg mb-2">{t('planner.authRequired')}</h3>
-        <p className="text-muted-foreground mb-4">{t('planner.loginToAdd')}</p>
-        <GradientButton onClick={() => navigate('/auth')}>
-          {t('auth.login')}
-        </GradientButton>
-      </GlassCard>
     );
   }
 
