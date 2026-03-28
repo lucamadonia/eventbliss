@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.get-expenses]
 verify_jwt = false
+
+[functions.get-planner-data]
+verify_jwt = false
