@@ -281,30 +281,37 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
     try {
       const voxtralVoiceId = getVoxtralVoiceId(selectedVoiceId, currentLang);
 
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error(t('gamesLibrary.tts.error'));
-        setIsLoading(false);
-        return;
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'apikey': anonKey,
+      };
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
       }
 
-      const response = await supabase.functions.invoke('ai-assistant', {
-        body: {
+      const fetchResponse = await fetch(`${supabaseUrl}/functions/v1/ai-assistant`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
           type: 'voxtral_tts',
           tts_text: textToSpeak,
           tts_voice: voxtralVoiceId,
           tts_speed: 1.0,
           context: { event_type: 'other', honoree_name: '', participant_count: 0 },
-        },
+        }),
       });
 
-      if (response.error) {
-        throw new Error(response.error.message);
+      if (!fetchResponse.ok) {
+        const errData = await fetchResponse.text();
+        console.error('Voxtral TTS error:', fetchResponse.status, errData);
+        throw new Error('TTS request failed');
       }
 
-      const audioBlob = response.data instanceof Blob
-        ? response.data
-        : new Blob([response.data], { type: 'audio/mpeg' });
+      const audioBlob = await fetchResponse.blob();
 
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
