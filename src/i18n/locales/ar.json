@@ -1793,5 +1793,112 @@
       "depositPending": "العربون معلق",
       "viewHistory": "عرض السجل"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "ألعاب EventBliss",
+      "subtitle": "ألعاب حفلات لكل مناسبة",
+      "quickStart": "بداية سريعة",
+      "allGames": "جميع الألعاب",
+      "comingSoon": "قريباً",
+      "players": "لاعبون",
+      "duration": "دقيقة",
+      "categories": {
+        "all": "الكل",
+        "thrill": "إثارة",
+        "knowledge": "معرفة",
+        "communication": "تواصل",
+        "speed": "سرعة",
+        "social": "اجتماعي",
+        "creative": "إبداعي"
+      }
+    },
+    "setup": {
+      "addPlayer": "إضافة لاعب",
+      "removePlayer": "إزالة",
+      "playerName": "اسم اللاعب",
+      "selectMode": "اختر الوضع",
+      "settings": "الإعدادات",
+      "timer": "المؤقت",
+      "rounds": "الجولات",
+      "difficulty": "الصعوبة",
+      "easy": "سهل",
+      "medium": "متوسط",
+      "hard": "صعب",
+      "startGame": "!ابدأ اللعبة",
+      "minPlayers": "مطلوب {{count}} لاعبين على الأقل"
+    },
+    "play": {
+      "round": "جولة",
+      "of": "من",
+      "score": "النتيجة",
+      "next": "!التالي",
+      "correct": "!صحيح",
+      "wrong": "!خطأ",
+      "skip": "تخطي",
+      "pause": "إيقاف مؤقت",
+      "resume": "استئناف",
+      "timeUp": "!انتهى الوقت",
+      "yourTurn": "دورك"
+    },
+    "results": {
+      "gameOver": "!انتهت اللعبة",
+      "winner": "الفائز",
+      "leaderboard": "لوحة المتصدرين",
+      "points": "نقاط",
+      "streak": "أفضل سلسلة",
+      "playAgain": "العب مرة أخرى",
+      "otherGame": "لعبة أخرى",
+      "share": "مشاركة النتائج"
+    },
+    "bomb": {
+      "name": "القنبلة الموقوتة",
+      "desc": "من سينفجر؟",
+      "category": "إثارة",
+      "passPhone": "!مرر الهاتف",
+      "boom": "!بوم",
+      "gotHit": "!أصيب",
+      "nameItem": "اذكر {{category}}",
+      "modes": {
+        "category": "قنبلة الفئات",
+        "quiz": "قنبلة الأسئلة",
+        "speed": "قنبلة السرعة"
+      }
+    },
+    "headup": {
+      "name": "خمّن الكلمة",
+      "desc": "خمّن الكلمة على جبينك",
+      "category": "اشرح",
+      "holdToForehead": "ضع الهاتف على جبينك",
+      "tiltForward": "أمِل للأمام = صحيح",
+      "tiltBack": "أمِل للخلف = تخطي",
+      "wordsGuessed": "كلمات تم تخمينها",
+      "wordsSkipped": "كلمات تم تخطيها"
+    },
+    "taboo": {
+      "name": "الكلمة المحظورة",
+      "desc": "اشرح بدون كلمات محظورة",
+      "category": "تواصل",
+      "forbidden": "كلمات محظورة",
+      "buzzer": "!محظور",
+      "explain": "اشرح هذه الكلمة",
+      "teamA": "الفريق أ",
+      "teamB": "الفريق ب",
+      "yourTeam": "فريقك يشرح"
+    },
+    "categoryGame": {
+      "name": "فئة بالوقت",
+      "desc": "سباق ضد الساعة",
+      "category": "سرعة",
+      "nameFromCategory": ":اذكر شيئاً من",
+      "alreadySaid": "!قيلت من قبل",
+      "said": "!قيلت",
+      "wordsNamed": "كلمات مذكورة",
+      "modes": {
+        "classic": "كلاسيكي",
+        "rapidFire": "نار سريعة",
+        "letterLock": "قفل الحروف"
+      }
+    }
   }
 }

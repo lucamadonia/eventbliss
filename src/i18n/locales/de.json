@@ -3095,5 +3095,112 @@
       "depositPending": "Anzahlung ausstehend",
       "viewHistory": "Verlauf anzeigen"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "EventBliss Spiele",
+      "subtitle": "Partyspiele für jeden Anlass",
+      "quickStart": "Schnellstart",
+      "allGames": "Alle Spiele",
+      "comingSoon": "Demnächst",
+      "players": "Spieler",
+      "duration": "Min",
+      "categories": {
+        "all": "Alle",
+        "thrill": "Nervenkitzel",
+        "knowledge": "Wissen",
+        "communication": "Kommunikation",
+        "speed": "Geschwindigkeit",
+        "social": "Sozial",
+        "creative": "Kreativ"
+      }
+    },
+    "setup": {
+      "addPlayer": "Spieler hinzufügen",
+      "removePlayer": "Entfernen",
+      "playerName": "Spielername",
+      "selectMode": "Modus wählen",
+      "settings": "Einstellungen",
+      "timer": "Timer",
+      "rounds": "Runden",
+      "difficulty": "Schwierigkeit",
+      "easy": "Leicht",
+      "medium": "Mittel",
+      "hard": "Schwer",
+      "startGame": "Spiel starten!",
+      "minPlayers": "Mindestens {{count}} Spieler benötigt"
+    },
+    "play": {
+      "round": "Runde",
+      "of": "von",
+      "score": "Punkte",
+      "next": "Weiter!",
+      "correct": "Richtig!",
+      "wrong": "Falsch!",
+      "skip": "Überspringen",
+      "pause": "Pause",
+      "resume": "Fortsetzen",
+      "timeUp": "Zeit abgelaufen!",
+      "yourTurn": "Du bist dran"
+    },
+    "results": {
+      "gameOver": "Spiel vorbei!",
+      "winner": "Gewinner",
+      "leaderboard": "Bestenliste",
+      "points": "Punkte",
+      "streak": "Beste Serie",
+      "playAgain": "Nochmal spielen",
+      "otherGame": "Anderes Spiel",
+      "share": "Ergebnisse teilen"
+    },
+    "bomb": {
+      "name": "Tickende Bombe",
+      "desc": "Wen erwischt es?",
+      "category": "Nervenkitzel",
+      "passPhone": "Handy weitergeben!",
+      "boom": "BUMM!",
+      "gotHit": "wurde erwischt!",
+      "nameItem": "Nenne ein(e) {{category}}",
+      "modes": {
+        "category": "Kategorie-Bombe",
+        "quiz": "Quiz-Bombe",
+        "speed": "Speed-Bombe"
+      }
+    },
+    "headup": {
+      "name": "Stirnraten",
+      "desc": "Errate das Wort auf deiner Stirn",
+      "category": "Erklären",
+      "holdToForehead": "Halte das Handy an die Stirn",
+      "tiltForward": "Nach vorne kippen = Richtig",
+      "tiltBack": "Nach hinten kippen = Überspringen",
+      "wordsGuessed": "Wörter erraten",
+      "wordsSkipped": "Wörter übersprungen"
+    },
+    "taboo": {
+      "name": "Wortverbot",
+      "desc": "Erkläre ohne verbotene Wörter",
+      "category": "Kommunikation",
+      "forbidden": "Verbotene Wörter",
+      "buzzer": "TABU!",
+      "explain": "Erkläre dieses Wort",
+      "teamA": "Team A",
+      "teamB": "Team B",
+      "yourTeam": "Dein Team erklärt"
+    },
+    "categoryGame": {
+      "name": "Zeit-Kategorie",
+      "desc": "Wettlauf gegen die Uhr",
+      "category": "Geschwindigkeit",
+      "nameFromCategory": "Nenne etwas aus:",
+      "alreadySaid": "Schon gesagt!",
+      "said": "Gesagt!",
+      "wordsNamed": "Wörter genannt",
+      "modes": {
+        "classic": "Klassisch",
+        "rapidFire": "Schnellfeuer",
+        "letterLock": "Buchstabensperre"
+      }
+    }
   }
 }

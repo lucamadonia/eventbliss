@@ -1972,5 +1972,112 @@
       "depositPending": "Acompte en Attente",
       "viewHistory": "Voir l'Historique"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "Jeux EventBliss",
+      "subtitle": "Jeux de soirée pour chaque occasion",
+      "quickStart": "Démarrage Rapide",
+      "allGames": "Tous les Jeux",
+      "comingSoon": "Bientôt",
+      "players": "Joueurs",
+      "duration": "Min",
+      "categories": {
+        "all": "Tous",
+        "thrill": "Frisson",
+        "knowledge": "Culture",
+        "communication": "Communication",
+        "speed": "Vitesse",
+        "social": "Social",
+        "creative": "Créatif"
+      }
+    },
+    "setup": {
+      "addPlayer": "Ajouter un Joueur",
+      "removePlayer": "Supprimer",
+      "playerName": "Nom du Joueur",
+      "selectMode": "Choisir le Mode",
+      "settings": "Paramètres",
+      "timer": "Chrono",
+      "rounds": "Manches",
+      "difficulty": "Difficulté",
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile",
+      "startGame": "Commencer !",
+      "minPlayers": "Minimum {{count}} joueurs requis"
+    },
+    "play": {
+      "round": "Manche",
+      "of": "sur",
+      "score": "Score",
+      "next": "Suivant !",
+      "correct": "Correct !",
+      "wrong": "Faux !",
+      "skip": "Passer",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "timeUp": "Temps écoulé !",
+      "yourTurn": "À ton tour"
+    },
+    "results": {
+      "gameOver": "Fin de la Partie !",
+      "winner": "Gagnant",
+      "leaderboard": "Classement",
+      "points": "Points",
+      "streak": "Meilleure Série",
+      "playAgain": "Rejouer",
+      "otherGame": "Autre Jeu",
+      "share": "Partager les Résultats"
+    },
+    "bomb": {
+      "name": "Bombe à Retardement",
+      "desc": "Qui se fait exploser ?",
+      "category": "Frisson",
+      "passPhone": "Passe le téléphone !",
+      "boom": "BOOM !",
+      "gotHit": "a été touché !",
+      "nameItem": "Nomme un(e) {{category}}",
+      "modes": {
+        "category": "Bombe Catégorie",
+        "quiz": "Bombe Quiz",
+        "speed": "Bombe Vitesse"
+      }
+    },
+    "headup": {
+      "name": "Devine-Tête",
+      "desc": "Devine le mot sur ton front",
+      "category": "Expliquer",
+      "holdToForehead": "Tiens le téléphone sur ton front",
+      "tiltForward": "Incliner en avant = Correct",
+      "tiltBack": "Incliner en arrière = Passer",
+      "wordsGuessed": "Mots Devinés",
+      "wordsSkipped": "Mots Passés"
+    },
+    "taboo": {
+      "name": "Mot Interdit",
+      "desc": "Explique sans mots interdits",
+      "category": "Communication",
+      "forbidden": "Mots Interdits",
+      "buzzer": "TABOU !",
+      "explain": "Explique ce mot",
+      "teamA": "Équipe A",
+      "teamB": "Équipe B",
+      "yourTeam": "Ton équipe explique"
+    },
+    "categoryGame": {
+      "name": "Chrono Catégorie",
+      "desc": "Course contre la montre",
+      "category": "Vitesse",
+      "nameFromCategory": "Nomme quelque chose de :",
+      "alreadySaid": "Déjà dit !",
+      "said": "Dit !",
+      "wordsNamed": "Mots Nommés",
+      "modes": {
+        "classic": "Classique",
+        "rapidFire": "Tir Rapide",
+        "letterLock": "Lettre Bloquée"
+      }
+    }
   }
 }

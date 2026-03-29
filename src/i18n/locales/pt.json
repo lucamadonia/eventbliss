@@ -1794,5 +1794,112 @@
       "depositPending": "Sinal Pendente",
       "viewHistory": "Ver Histórico"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "Jogos EventBliss",
+      "subtitle": "Jogos de festa para cada ocasião",
+      "quickStart": "Início Rápido",
+      "allGames": "Todos os Jogos",
+      "comingSoon": "Em Breve",
+      "players": "Jogadores",
+      "duration": "Min",
+      "categories": {
+        "all": "Todos",
+        "thrill": "Emoção",
+        "knowledge": "Conhecimento",
+        "communication": "Comunicação",
+        "speed": "Velocidade",
+        "social": "Social",
+        "creative": "Criativo"
+      }
+    },
+    "setup": {
+      "addPlayer": "Adicionar Jogador",
+      "removePlayer": "Remover",
+      "playerName": "Nome do Jogador",
+      "selectMode": "Selecionar Modo",
+      "settings": "Configurações",
+      "timer": "Cronómetro",
+      "rounds": "Rodadas",
+      "difficulty": "Dificuldade",
+      "easy": "Fácil",
+      "medium": "Médio",
+      "hard": "Difícil",
+      "startGame": "Começar!",
+      "minPlayers": "Mínimo de {{count}} jogadores necessários"
+    },
+    "play": {
+      "round": "Rodada",
+      "of": "de",
+      "score": "Pontuação",
+      "next": "Próximo!",
+      "correct": "Correto!",
+      "wrong": "Errado!",
+      "skip": "Pular",
+      "pause": "Pausa",
+      "resume": "Retomar",
+      "timeUp": "Tempo Esgotado!",
+      "yourTurn": "Sua Vez"
+    },
+    "results": {
+      "gameOver": "Fim de Jogo!",
+      "winner": "Vencedor",
+      "leaderboard": "Classificação",
+      "points": "Pontos",
+      "streak": "Melhor Sequência",
+      "playAgain": "Jogar Novamente",
+      "otherGame": "Outro Jogo",
+      "share": "Compartilhar Resultados"
+    },
+    "bomb": {
+      "name": "Bomba-Relógio",
+      "desc": "Quem explode?",
+      "category": "Emoção",
+      "passPhone": "Passa o telemóvel!",
+      "boom": "BOOM!",
+      "gotHit": "foi atingido!",
+      "nameItem": "Diz um(a) {{category}}",
+      "modes": {
+        "category": "Bomba de Categoria",
+        "quiz": "Bomba Quiz",
+        "speed": "Bomba Rápida"
+      }
+    },
+    "headup": {
+      "name": "Heads Up",
+      "desc": "Adivinha a palavra na tua testa",
+      "category": "Explicar",
+      "holdToForehead": "Segura o telemóvel na testa",
+      "tiltForward": "Inclinar para frente = Correto",
+      "tiltBack": "Inclinar para trás = Pular",
+      "wordsGuessed": "Palavras Adivinhadas",
+      "wordsSkipped": "Palavras Puladas"
+    },
+    "taboo": {
+      "name": "Palavra Proibida",
+      "desc": "Explica sem palavras proibidas",
+      "category": "Comunicação",
+      "forbidden": "Palavras Proibidas",
+      "buzzer": "TABU!",
+      "explain": "Explica esta palavra",
+      "teamA": "Equipa A",
+      "teamB": "Equipa B",
+      "yourTeam": "A tua equipa explica"
+    },
+    "categoryGame": {
+      "name": "Categoria Cronometrada",
+      "desc": "Corrida contra o relógio",
+      "category": "Velocidade",
+      "nameFromCategory": "Diz algo de:",
+      "alreadySaid": "Já dito!",
+      "said": "Dito!",
+      "wordsNamed": "Palavras Nomeadas",
+      "modes": {
+        "classic": "Clássico",
+        "rapidFire": "Fogo Rápido",
+        "letterLock": "Bloqueio de Letra"
+      }
+    }
   }
 }

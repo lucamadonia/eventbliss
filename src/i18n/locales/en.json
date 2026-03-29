@@ -2811,5 +2811,112 @@
       "depositPending": "Deposit Pending",
       "viewHistory": "View History"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "EventBliss Games",
+      "subtitle": "Party games for every occasion",
+      "quickStart": "Quick Start",
+      "allGames": "All Games",
+      "comingSoon": "Coming Soon",
+      "players": "Players",
+      "duration": "Min",
+      "categories": {
+        "all": "All",
+        "thrill": "Thrill",
+        "knowledge": "Knowledge",
+        "communication": "Communication",
+        "speed": "Speed",
+        "social": "Social",
+        "creative": "Creative"
+      }
+    },
+    "setup": {
+      "addPlayer": "Add Player",
+      "removePlayer": "Remove",
+      "playerName": "Player Name",
+      "selectMode": "Select Mode",
+      "settings": "Settings",
+      "timer": "Timer",
+      "rounds": "Rounds",
+      "difficulty": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "startGame": "Start Game!",
+      "minPlayers": "Minimum {{count}} players needed"
+    },
+    "play": {
+      "round": "Round",
+      "of": "of",
+      "score": "Score",
+      "next": "Next!",
+      "correct": "Correct!",
+      "wrong": "Wrong!",
+      "skip": "Skip",
+      "pause": "Pause",
+      "resume": "Resume",
+      "timeUp": "Time's Up!",
+      "yourTurn": "Your Turn"
+    },
+    "results": {
+      "gameOver": "Game Over!",
+      "winner": "Winner",
+      "leaderboard": "Leaderboard",
+      "points": "Points",
+      "streak": "Best Streak",
+      "playAgain": "Play Again",
+      "otherGame": "Other Game",
+      "share": "Share Results"
+    },
+    "bomb": {
+      "name": "Ticking Bomb",
+      "desc": "Who gets blown up?",
+      "category": "Thrill",
+      "passPhone": "Pass the phone!",
+      "boom": "BOOM!",
+      "gotHit": "got hit!",
+      "nameItem": "Name a {{category}}",
+      "modes": {
+        "category": "Category Bomb",
+        "quiz": "Quiz Bomb",
+        "speed": "Speed Bomb"
+      }
+    },
+    "headup": {
+      "name": "Heads Up",
+      "desc": "Guess the word on your forehead",
+      "category": "Explain",
+      "holdToForehead": "Hold phone to your forehead",
+      "tiltForward": "Tilt forward = Correct",
+      "tiltBack": "Tilt back = Skip",
+      "wordsGuessed": "Words Guessed",
+      "wordsSkipped": "Words Skipped"
+    },
+    "taboo": {
+      "name": "Word Ban",
+      "desc": "Explain without forbidden words",
+      "category": "Communication",
+      "forbidden": "Forbidden Words",
+      "buzzer": "TABOO!",
+      "explain": "Explain this word",
+      "teamA": "Team A",
+      "teamB": "Team B",
+      "yourTeam": "Your team explains"
+    },
+    "categoryGame": {
+      "name": "Category Timer",
+      "desc": "Race against the clock",
+      "category": "Speed",
+      "nameFromCategory": "Name something from:",
+      "alreadySaid": "Already said!",
+      "said": "Said!",
+      "wordsNamed": "Words Named",
+      "modes": {
+        "classic": "Classic",
+        "rapidFire": "Rapid Fire",
+        "letterLock": "Letter Lock"
+      }
+    }
   }
 }

@@ -1793,5 +1793,112 @@
       "depositPending": "Depozito Bekliyor",
       "viewHistory": "Geçmişi Görüntüle"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "EventBliss Oyunları",
+      "subtitle": "Her durum için parti oyunları",
+      "quickStart": "Hızlı Başla",
+      "allGames": "Tüm Oyunlar",
+      "comingSoon": "Yakında",
+      "players": "Oyuncular",
+      "duration": "Dk",
+      "categories": {
+        "all": "Tümü",
+        "thrill": "Heyecan",
+        "knowledge": "Bilgi",
+        "communication": "İletişim",
+        "speed": "Hız",
+        "social": "Sosyal",
+        "creative": "Yaratıcı"
+      }
+    },
+    "setup": {
+      "addPlayer": "Oyuncu Ekle",
+      "removePlayer": "Kaldır",
+      "playerName": "Oyuncu Adı",
+      "selectMode": "Mod Seç",
+      "settings": "Ayarlar",
+      "timer": "Zamanlayıcı",
+      "rounds": "Turlar",
+      "difficulty": "Zorluk",
+      "easy": "Kolay",
+      "medium": "Orta",
+      "hard": "Zor",
+      "startGame": "Oyunu Başlat!",
+      "minPlayers": "En az {{count}} oyuncu gerekli"
+    },
+    "play": {
+      "round": "Tur",
+      "of": "/",
+      "score": "Skor",
+      "next": "Sonraki!",
+      "correct": "Doğru!",
+      "wrong": "Yanlış!",
+      "skip": "Atla",
+      "pause": "Duraklat",
+      "resume": "Devam Et",
+      "timeUp": "Süre Doldu!",
+      "yourTurn": "Senin Sıran"
+    },
+    "results": {
+      "gameOver": "Oyun Bitti!",
+      "winner": "Kazanan",
+      "leaderboard": "Sıralama",
+      "points": "Puan",
+      "streak": "En İyi Seri",
+      "playAgain": "Tekrar Oyna",
+      "otherGame": "Başka Oyun",
+      "share": "Sonuçları Paylaş"
+    },
+    "bomb": {
+      "name": "Saatli Bomba",
+      "desc": "Kimin elinde patlar?",
+      "category": "Heyecan",
+      "passPhone": "Telefonu ver!",
+      "boom": "BUM!",
+      "gotHit": "vuruldu!",
+      "nameItem": "Bir {{category}} söyle",
+      "modes": {
+        "category": "Kategori Bombası",
+        "quiz": "Quiz Bombası",
+        "speed": "Hız Bombası"
+      }
+    },
+    "headup": {
+      "name": "Heads Up",
+      "desc": "Alnındaki kelimeyi tahmin et",
+      "category": "Açıkla",
+      "holdToForehead": "Telefonu alnına tut",
+      "tiltForward": "Öne eğ = Doğru",
+      "tiltBack": "Arkaya eğ = Atla",
+      "wordsGuessed": "Tahmin Edilen Kelimeler",
+      "wordsSkipped": "Atlanan Kelimeler"
+    },
+    "taboo": {
+      "name": "Yasak Kelime",
+      "desc": "Yasak kelimeler olmadan açıkla",
+      "category": "İletişim",
+      "forbidden": "Yasak Kelimeler",
+      "buzzer": "TABU!",
+      "explain": "Bu kelimeyi açıkla",
+      "teamA": "Takım A",
+      "teamB": "Takım B",
+      "yourTeam": "Senin takımın açıklıyor"
+    },
+    "categoryGame": {
+      "name": "Zamanlı Kategori",
+      "desc": "Saate karşı yarış",
+      "category": "Hız",
+      "nameFromCategory": "Şundan bir şey söyle:",
+      "alreadySaid": "Zaten söylendi!",
+      "said": "Söylendi!",
+      "wordsNamed": "Söylenen Kelimeler",
+      "modes": {
+        "classic": "Klasik",
+        "rapidFire": "Hızlı Atış",
+        "letterLock": "Harf Kilidi"
+      }
+    }
   }
 }

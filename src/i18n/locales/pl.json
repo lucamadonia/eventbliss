@@ -1794,5 +1794,112 @@
       "depositPending": "Zaliczka Oczekująca",
       "viewHistory": "Zobacz Historię"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "Gry EventBliss",
+      "subtitle": "Gry imprezowe na każdą okazję",
+      "quickStart": "Szybki Start",
+      "allGames": "Wszystkie Gry",
+      "comingSoon": "Wkrótce",
+      "players": "Gracze",
+      "duration": "Min",
+      "categories": {
+        "all": "Wszystkie",
+        "thrill": "Emocje",
+        "knowledge": "Wiedza",
+        "communication": "Komunikacja",
+        "speed": "Szybkość",
+        "social": "Towarzyskie",
+        "creative": "Kreatywne"
+      }
+    },
+    "setup": {
+      "addPlayer": "Dodaj Gracza",
+      "removePlayer": "Usuń",
+      "playerName": "Imię Gracza",
+      "selectMode": "Wybierz Tryb",
+      "settings": "Ustawienia",
+      "timer": "Timer",
+      "rounds": "Rundy",
+      "difficulty": "Trudność",
+      "easy": "Łatwy",
+      "medium": "Średni",
+      "hard": "Trudny",
+      "startGame": "Rozpocznij Grę!",
+      "minPlayers": "Wymaganych minimum {{count}} graczy"
+    },
+    "play": {
+      "round": "Runda",
+      "of": "z",
+      "score": "Wynik",
+      "next": "Dalej!",
+      "correct": "Dobrze!",
+      "wrong": "Źle!",
+      "skip": "Pomiń",
+      "pause": "Pauza",
+      "resume": "Wznów",
+      "timeUp": "Czas Minął!",
+      "yourTurn": "Twoja Kolej"
+    },
+    "results": {
+      "gameOver": "Koniec Gry!",
+      "winner": "Zwycięzca",
+      "leaderboard": "Ranking",
+      "points": "Punkty",
+      "streak": "Najlepsza Seria",
+      "playAgain": "Zagraj Ponownie",
+      "otherGame": "Inna Gra",
+      "share": "Udostępnij Wyniki"
+    },
+    "bomb": {
+      "name": "Tykająca Bomba",
+      "desc": "Kogo trafia?",
+      "category": "Emocje",
+      "passPhone": "Podaj telefon!",
+      "boom": "BUM!",
+      "gotHit": "został trafiony!",
+      "nameItem": "Wymień {{category}}",
+      "modes": {
+        "category": "Bomba Kategorii",
+        "quiz": "Bomba Quiz",
+        "speed": "Bomba Szybkości"
+      }
+    },
+    "headup": {
+      "name": "Heads Up",
+      "desc": "Zgadnij słowo na czole",
+      "category": "Wyjaśnij",
+      "holdToForehead": "Przyłóż telefon do czoła",
+      "tiltForward": "Przechyl do przodu = Dobrze",
+      "tiltBack": "Przechyl do tyłu = Pomiń",
+      "wordsGuessed": "Słowa Odgadnięte",
+      "wordsSkipped": "Słowa Pominięte"
+    },
+    "taboo": {
+      "name": "Zakazane Słowo",
+      "desc": "Wyjaśnij bez zakazanych słów",
+      "category": "Komunikacja",
+      "forbidden": "Zakazane Słowa",
+      "buzzer": "TABU!",
+      "explain": "Wyjaśnij to słowo",
+      "teamA": "Drużyna A",
+      "teamB": "Drużyna B",
+      "yourTeam": "Twoja drużyna wyjaśnia"
+    },
+    "categoryGame": {
+      "name": "Kategoria na Czas",
+      "desc": "Wyścig z zegarem",
+      "category": "Szybkość",
+      "nameFromCategory": "Wymień coś z:",
+      "alreadySaid": "Już powiedziane!",
+      "said": "Powiedziane!",
+      "wordsNamed": "Słowa Wymienione",
+      "modes": {
+        "classic": "Klasyczny",
+        "rapidFire": "Szybki Ogień",
+        "letterLock": "Blokada Liter"
+      }
+    }
   }
 }

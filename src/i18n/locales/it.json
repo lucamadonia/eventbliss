@@ -1850,5 +1850,112 @@
       "depositPending": "Acconto in Attesa",
       "viewHistory": "Vedi Storico"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "Giochi EventBliss",
+      "subtitle": "Giochi di società per ogni occasione",
+      "quickStart": "Avvio Rapido",
+      "allGames": "Tutti i Giochi",
+      "comingSoon": "In Arrivo",
+      "players": "Giocatori",
+      "duration": "Min",
+      "categories": {
+        "all": "Tutti",
+        "thrill": "Brivido",
+        "knowledge": "Conoscenza",
+        "communication": "Comunicazione",
+        "speed": "Velocità",
+        "social": "Sociale",
+        "creative": "Creativo"
+      }
+    },
+    "setup": {
+      "addPlayer": "Aggiungi Giocatore",
+      "removePlayer": "Rimuovi",
+      "playerName": "Nome Giocatore",
+      "selectMode": "Seleziona Modalità",
+      "settings": "Impostazioni",
+      "timer": "Timer",
+      "rounds": "Turni",
+      "difficulty": "Difficoltà",
+      "easy": "Facile",
+      "medium": "Medio",
+      "hard": "Difficile",
+      "startGame": "Inizia!",
+      "minPlayers": "Servono almeno {{count}} giocatori"
+    },
+    "play": {
+      "round": "Turno",
+      "of": "di",
+      "score": "Punteggio",
+      "next": "Avanti!",
+      "correct": "Corretto!",
+      "wrong": "Sbagliato!",
+      "skip": "Salta",
+      "pause": "Pausa",
+      "resume": "Riprendi",
+      "timeUp": "Tempo Scaduto!",
+      "yourTurn": "Tocca a Te"
+    },
+    "results": {
+      "gameOver": "Fine del Gioco!",
+      "winner": "Vincitore",
+      "leaderboard": "Classifica",
+      "points": "Punti",
+      "streak": "Miglior Serie",
+      "playAgain": "Gioca Ancora",
+      "otherGame": "Altro Gioco",
+      "share": "Condividi Risultati"
+    },
+    "bomb": {
+      "name": "Bomba a Orologeria",
+      "desc": "Chi salta in aria?",
+      "category": "Brivido",
+      "passPhone": "Passa il telefono!",
+      "boom": "BOOM!",
+      "gotHit": "è stato colpito!",
+      "nameItem": "Nomina un(a) {{category}}",
+      "modes": {
+        "category": "Bomba Categoria",
+        "quiz": "Bomba Quiz",
+        "speed": "Bomba Veloce"
+      }
+    },
+    "headup": {
+      "name": "Indovina Chi",
+      "desc": "Indovina la parola sulla tua fronte",
+      "category": "Spiegare",
+      "holdToForehead": "Tieni il telefono sulla fronte",
+      "tiltForward": "Inclina avanti = Corretto",
+      "tiltBack": "Inclina indietro = Salta",
+      "wordsGuessed": "Parole Indovinate",
+      "wordsSkipped": "Parole Saltate"
+    },
+    "taboo": {
+      "name": "Parola Vietata",
+      "desc": "Spiega senza parole vietate",
+      "category": "Comunicazione",
+      "forbidden": "Parole Vietate",
+      "buzzer": "TABÙ!",
+      "explain": "Spiega questa parola",
+      "teamA": "Squadra A",
+      "teamB": "Squadra B",
+      "yourTeam": "La tua squadra spiega"
+    },
+    "categoryGame": {
+      "name": "Categoria a Tempo",
+      "desc": "Corsa contro il tempo",
+      "category": "Velocità",
+      "nameFromCategory": "Nomina qualcosa di:",
+      "alreadySaid": "Già detto!",
+      "said": "Detto!",
+      "wordsNamed": "Parole Nominate",
+      "modes": {
+        "classic": "Classico",
+        "rapidFire": "Fuoco Rapido",
+        "letterLock": "Blocco Lettera"
+      }
+    }
   }
 }

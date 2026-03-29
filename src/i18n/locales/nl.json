@@ -1879,5 +1879,112 @@
       "depositPending": "Aanbetaling in Afwachting",
       "viewHistory": "Geschiedenis Bekijken"
     }
+  },
+  "games": {
+    "hub": {
+      "title": "EventBliss Spellen",
+      "subtitle": "Feestspellen voor elke gelegenheid",
+      "quickStart": "Snel Starten",
+      "allGames": "Alle Spellen",
+      "comingSoon": "Binnenkort",
+      "players": "Spelers",
+      "duration": "Min",
+      "categories": {
+        "all": "Alle",
+        "thrill": "Spanning",
+        "knowledge": "Kennis",
+        "communication": "Communicatie",
+        "speed": "Snelheid",
+        "social": "Sociaal",
+        "creative": "Creatief"
+      }
+    },
+    "setup": {
+      "addPlayer": "Speler Toevoegen",
+      "removePlayer": "Verwijderen",
+      "playerName": "Spelernaam",
+      "selectMode": "Modus Kiezen",
+      "settings": "Instellingen",
+      "timer": "Timer",
+      "rounds": "Rondes",
+      "difficulty": "Moeilijkheid",
+      "easy": "Makkelijk",
+      "medium": "Gemiddeld",
+      "hard": "Moeilijk",
+      "startGame": "Start Spel!",
+      "minPlayers": "Minimaal {{count}} spelers nodig"
+    },
+    "play": {
+      "round": "Ronde",
+      "of": "van",
+      "score": "Score",
+      "next": "Volgende!",
+      "correct": "Correct!",
+      "wrong": "Fout!",
+      "skip": "Overslaan",
+      "pause": "Pauze",
+      "resume": "Hervatten",
+      "timeUp": "Tijd Voorbij!",
+      "yourTurn": "Jouw Beurt"
+    },
+    "results": {
+      "gameOver": "Spel Afgelopen!",
+      "winner": "Winnaar",
+      "leaderboard": "Ranglijst",
+      "points": "Punten",
+      "streak": "Beste Reeks",
+      "playAgain": "Opnieuw Spelen",
+      "otherGame": "Ander Spel",
+      "share": "Resultaten Delen"
+    },
+    "bomb": {
+      "name": "Tikkende Bom",
+      "desc": "Wie wordt opgeblazen?",
+      "category": "Spanning",
+      "passPhone": "Geef de telefoon door!",
+      "boom": "BOEM!",
+      "gotHit": "is geraakt!",
+      "nameItem": "Noem een {{category}}",
+      "modes": {
+        "category": "Categorie Bom",
+        "quiz": "Quiz Bom",
+        "speed": "Snelheidsbom"
+      }
+    },
+    "headup": {
+      "name": "Heads Up",
+      "desc": "Raad het woord op je voorhoofd",
+      "category": "Uitleggen",
+      "holdToForehead": "Houd de telefoon tegen je voorhoofd",
+      "tiltForward": "Naar voren kantelen = Correct",
+      "tiltBack": "Naar achteren kantelen = Overslaan",
+      "wordsGuessed": "Woorden Geraden",
+      "wordsSkipped": "Woorden Overgeslagen"
+    },
+    "taboo": {
+      "name": "Woordverbod",
+      "desc": "Uitleggen zonder verboden woorden",
+      "category": "Communicatie",
+      "forbidden": "Verboden Woorden",
+      "buzzer": "TABOE!",
+      "explain": "Leg dit woord uit",
+      "teamA": "Team A",
+      "teamB": "Team B",
+      "yourTeam": "Jouw team legt uit"
+    },
+    "categoryGame": {
+      "name": "Categorie Timer",
+      "desc": "Race tegen de klok",
+      "category": "Snelheid",
+      "nameFromCategory": "Noem iets uit:",
+      "alreadySaid": "Al gezegd!",
+      "said": "Gezegd!",
+      "wordsNamed": "Woorden Genoemd",
+      "modes": {
+        "classic": "Klassiek",
+        "rapidFire": "Snelvuur",
+        "letterLock": "Letterslot"
+      }
+    }
   }
 }

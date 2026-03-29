@@ -1,0 +1,135 @@
+export interface HeadUpCategory {
+  id: string;
+  name: string;
+  emoji: string;
+  gradient: string;
+  words: string[];
+}
+
+export const HEADUP_CATEGORIES_DE: HeadUpCategory[] = [
+  {
+    id: 'celebrities',
+    name: 'Prominente',
+    emoji: '🌟',
+    gradient: 'from-amber-500 to-orange-600',
+    words: [
+      'Angela Merkel', 'Albert Einstein', 'Beethoven', 'Heidi Klum',
+      'Thomas Müller', 'Till Schweiger', 'Helene Fischer', 'Michael Schumacher',
+      'Boris Becker', 'Bastian Schweinsteiger', 'Dirk Nowitzki',
+      'Karl Lagerfeld', 'Marlene Dietrich', 'Johann Wolfgang von Goethe',
+      'Wolfgang Amadeus Mozart', 'Rihanna', 'Taylor Swift', 'Cristiano Ronaldo',
+      'Elon Musk', 'Leonardo DiCaprio', 'Beyoncé', 'Lionel Messi',
+      'Adele', 'Ed Sheeran', 'Dwayne Johnson', 'Ariana Grande',
+      'Barack Obama', 'Oprah Winfrey', 'David Beckham', 'Shakira',
+    ],
+  },
+  {
+    id: 'animals',
+    name: 'Tiere',
+    emoji: '🐾',
+    gradient: 'from-green-500 to-emerald-600',
+    words: [
+      'Elefant', 'Pinguin', 'Giraffe', 'Krokodil', 'Delfin',
+      'Schmetterling', 'Chamäleon', 'Kolibri', 'Schildkröte', 'Flamingo',
+      'Gorilla', 'Pfau', 'Känguru', 'Seepferdchen', 'Papagei',
+      'Skorpion', 'Nashorn', 'Waschbär', 'Faultier', 'Gepard',
+      'Erdmännchen', 'Koala', 'Tintenfisch', 'Eisbär', 'Stinktier',
+      'Biber', 'Ameise', 'Panda', 'Dachs', 'Luchs',
+    ],
+  },
+  {
+    id: 'movies',
+    name: 'Filme',
+    emoji: '🎬',
+    gradient: 'from-purple-500 to-violet-600',
+    words: [
+      'Titanic', 'Der König der Löwen', 'Harry Potter', 'Star Wars',
+      'Findet Nemo', 'Jurassic Park', 'Forrest Gump', 'Matrix',
+      'Fluch der Karibik', 'Shrek', 'Frozen', 'Batman',
+      'Der Herr der Ringe', 'Inception', 'Avatar', 'Spider-Man',
+      'Toy Story', 'Die Eiskönigin', 'Rapunzel', 'Aladin',
+      'E.T.', 'Zurück in die Zukunft', 'Ghostbusters', 'Top Gun',
+      'Rocky', 'Indiana Jones', 'Terminator', 'Die Verurteilten',
+      'Fight Club', 'Pulp Fiction',
+    ],
+  },
+  {
+    id: 'food',
+    name: 'Essen & Trinken',
+    emoji: '🍕',
+    gradient: 'from-red-500 to-rose-600',
+    words: [
+      'Spaghetti Bolognese', 'Schnitzel', 'Currywurst', 'Sushi',
+      'Hamburger', 'Pizza Margherita', 'Döner Kebab', 'Tiramisu',
+      'Crêpes', 'Bretzel', 'Apfelstrudel', 'Bratwurst',
+      'Kartoffelpuffer', 'Sachertorte', 'Kaiserschmarrn', 'Fondue',
+      'Lebkuchen', 'Maultaschen', 'Käsespätzle', 'Schweinebraten',
+      'Flammkuchen', 'Sauerbraten', 'Rouladen', 'Gulasch',
+      'Croissant', 'Paella', 'Fish and Chips', 'Tacos',
+      'Ramen', 'Pad Thai',
+    ],
+  },
+  {
+    id: 'sports',
+    name: 'Sport & Freizeit',
+    emoji: '⚽',
+    gradient: 'from-blue-500 to-cyan-600',
+    words: [
+      'Fußball', 'Tennis', 'Schwimmen', 'Skifahren', 'Basketball',
+      'Volleyball', 'Eishockey', 'Surfen', 'Boxen', 'Golf',
+      'Yoga', 'Marathon', 'Snowboarden', 'Klettern', 'Reiten',
+      'Fechten', 'Bogenschießen', 'Tauchen', 'Segeln', 'Rudern',
+      'Karate', 'Skateboardfahren', 'Trampolinspringen', 'Curling',
+      'Dart', 'Tischtennis', 'Badminton', 'Handball', 'Wasserball',
+      'Biathlon',
+    ],
+  },
+  {
+    id: 'professions',
+    name: 'Berufe',
+    emoji: '👷',
+    gradient: 'from-indigo-500 to-blue-600',
+    words: [
+      'Feuerwehrmann', 'Astronaut', 'Zahnarzt', 'Pilot', 'Detektiv',
+      'Bäcker', 'Tierarzt', 'Dirigent', 'Taucher', 'Schiedsrichter',
+      'Zauberer', 'Archäologe', 'Bodyguard', 'Taxifahrer', 'Imker',
+      'Schornsteinfeger', 'Stuntman', 'Chirurg', 'Leuchtturmwärter',
+      'Schafhirte', 'Schmied', 'Maskenbildner', 'Synchronsprecher',
+      'Braumeister', 'Rettungsschwimmer', 'Gärtner', 'Uhrmacher',
+      'Kartograf', 'Metzger', 'Sommelier',
+    ],
+  },
+  {
+    id: 'actions',
+    name: 'Tätigkeiten',
+    emoji: '🏃',
+    gradient: 'from-teal-500 to-green-600',
+    words: [
+      'Haare föhnen', 'Zähne putzen', 'Koffer packen', 'Tanzen',
+      'Schlittschuh laufen', 'Selfie machen', 'Husten', 'Niesen',
+      'Schnarchen', 'Bügeln', 'Staubsaugen', 'Gähnen',
+      'Jonglieren', 'Seilspringen', 'Gitarre spielen', 'Kochen',
+      'Auto waschen', 'Einparken', 'Spülmaschine ausräumen',
+      'Hund Gassi gehen', 'Nägel lackieren', 'Rülpsen',
+      'Luftgitarre spielen', 'Dauerlauf', 'Liegestütze machen',
+      'Schneemann bauen', 'Angeln', 'Tischdecken',
+      'Schuhe binden', 'Pfeifen',
+    ],
+  },
+  {
+    id: 'places',
+    name: 'Orte & Länder',
+    emoji: '🌍',
+    gradient: 'from-sky-500 to-indigo-600',
+    words: [
+      'Paris', 'New York', 'Tokyo', 'Ägypten', 'Australien',
+      'Venedig', 'Hollywood', 'Antarktis', 'Hawaii', 'London',
+      'Sahara', 'Amazonas', 'Bermuda-Dreieck', 'Mount Everest',
+      'Grand Canyon', 'Niagarafälle', 'Kolosseum', 'Freiheitsstatue',
+      'Eiffelturm', 'Brandenburger Tor', 'Neuschwanstein',
+      'Taj Mahal', 'Chinesische Mauer', 'Machu Picchu',
+      'Stonehenge', 'Vatikan', 'Dubai', 'Las Vegas',
+      'Oktoberfest München', 'Schwarzwald',
+    ],
+  },
+];
