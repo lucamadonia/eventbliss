@@ -33,11 +33,23 @@ import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import { AgenciesTab } from "@/components/dashboard/AgenciesTab";
 import { PlannerTab } from "@/components/dashboard/PlannerTab";
 import { ResponsesTab } from "@/components/dashboard/ResponsesTab";
-import { FileEdit, Building2 } from "lucide-react";
+import { ExpensesTab } from "@/components/dashboard/ExpensesTab";
+import { FileEdit, Building2, LogIn } from "lucide-react";
+import { useAuthContext } from "@/components/auth/AuthProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const tabs = [
   { id: "overview", labelKey: "dashboard.tabs.overview", icon: LayoutDashboard },
   { id: "planner", labelKey: "dashboard.tabs.planner", icon: ClipboardList },
+  { id: "expenses", labelKey: "dashboard.tabs.expenses", icon: Wallet },
   { id: "responses", labelKey: "dashboard.tabs.responses", icon: ClipboardCheck },
   { id: "formbuilder", labelKey: "dashboard.tabs.form", icon: FileEdit },
   { id: "schedule", labelKey: "dashboard.tabs.schedule", icon: Calendar },
@@ -82,11 +94,21 @@ const EventDashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
+  const { user } = useAuthContext();
   const { allowedTabs } = useParticipantPermissions(event, participants);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState<ResponseStats | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+
+  const requireAuth = () => {
+    if (!user) {
+      setLoginPromptOpen(true);
+      return true;
+    }
+    return false;
+  };
 
   // Reset active tab if it's no longer allowed
   useEffect(() => {
@@ -165,6 +187,8 @@ const EventDashboard = () => {
             onTabChange={setActiveTab}
           />
         );
+      case "expenses":
+        return <ExpensesTab event={event} participants={participants} />;
       case "responses":
         return <ResponsesTab event={event} responses={responses} isLoading={statsLoading} />;
       case "formbuilder":
@@ -191,6 +215,7 @@ const EventDashboard = () => {
   };
 
   return (
+    <>
     <AnimatedBackground>
       <div className="min-h-screen">
         {/* Header */}
@@ -210,13 +235,7 @@ const EventDashboard = () => {
                 </div>
               </div>
 
-              <GradientButton
-                size="sm"
-                onClick={() => navigate(`/e/${slug}/expenses`)}
-                icon={<Wallet className="w-4 h-4" />}
-              >
-                {t('expenses.button')}
-              </GradientButton>
+{/* Expenses button removed — now integrated as Kosten tab */}
             </div>
           </div>
         </header>
@@ -259,6 +278,31 @@ const EventDashboard = () => {
         </main>
       </div>
     </AnimatedBackground>
+
+    {/* Login Prompt for Anonymous Users */}
+    <Dialog open={loginPromptOpen} onOpenChange={setLoginPromptOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <LogIn className="h-5 w-5" />
+            {t('dashboard.loginRequired', 'Login Required')}
+          </DialogTitle>
+          <DialogDescription>
+            {t('dashboard.loginRequiredDesc', 'You need to register or log in to make changes. Viewing is free!')}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex gap-2">
+          <Button variant="outline" onClick={() => setLoginPromptOpen(false)}>
+            {t('common.cancel', 'Cancel')}
+          </Button>
+          <Button onClick={() => navigate("/auth")}>
+            <LogIn className="h-4 w-4 mr-2" />
+            {t('auth.login', 'Log In / Register')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

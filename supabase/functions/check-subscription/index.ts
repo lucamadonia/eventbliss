@@ -25,7 +25,6 @@ serve(async (req) => {
     logStep("Function started");
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -43,15 +42,35 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    // Check for lifetime subscription
-    if (dbSub && dbSub.plan === "premium" && !dbSub.stripe_subscription_id && !dbSub.expires_at) {
-      logStep("Lifetime subscription found");
+    // Check for lifetime/manual subscription in DB
+    if (dbSub && dbSub.plan === "premium" && (!dbSub.stripe_subscription_id || !dbSub.expires_at)) {
+      logStep("Lifetime/manual subscription found");
       return new Response(JSON.stringify({
         subscribed: true,
         plan: "premium",
         plan_type: "lifetime",
         subscription_end: null,
       }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // If no Stripe key, fall back to DB-only check
+    if (!stripeKey) {
+      logStep("No STRIPE_SECRET_KEY, using DB-only check");
+      if (dbSub && dbSub.plan === "premium") {
+        return new Response(JSON.stringify({
+          subscribed: true,
+          plan: "premium",
+          plan_type: dbSub.stripe_subscription_id ? "monthly" : "lifetime",
+          subscription_end: dbSub.expires_at,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+      return new Response(JSON.stringify({ subscribed: false, plan: "free", plan_type: "free" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });

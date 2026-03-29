@@ -5,6 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 import { Send, AlertCircle, Info, ChevronDown, ChevronUp } from "lucide-react";
+
+import SurveyProgressBar from "./SurveyProgressBar";
+import SurveyQuestionWrapper from "./SurveyQuestionWrapper";
+import SurveyCompletionScreen from "./SurveyCompletionScreen";
+import SurveyDeadlineCountdown from "./SurveyDeadlineCountdown";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -63,18 +68,25 @@ interface DynamicSurveyFormProps {
   eventId: string;
   settings: EventSettings;
   participants: Participant[];
+  eventName?: string;
+  surveyDeadline?: string | null;
+  themeColor?: string;
 }
 
-const DynamicSurveyForm = ({ 
-  isLocked = false, 
-  eventId, 
-  settings, 
-  participants 
+const DynamicSurveyForm = ({
+  isLocked = false,
+  eventId,
+  settings,
+  participants,
+  eventName = "",
+  surveyDeadline = null,
+  themeColor,
 }: DynamicSurveyFormProps) => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [customAnswers, setCustomAnswers] = useState<Record<string, string | boolean>>({});
   
   // Helper to translate template labels
@@ -112,9 +124,36 @@ const DynamicSurveyForm = ({
   });
 
   const watchDestination = form.watch("destination");
-  const showDeCityField = Array.isArray(watchDestination) 
-    ? watchDestination.includes("de_city") 
+  const showDeCityField = Array.isArray(watchDestination)
+    ? watchDestination.includes("de_city")
     : watchDestination === "de_city";
+
+  // Compute progress step tracking
+  const watchedValues = form.watch();
+  const totalSteps = useMemo(() => {
+    let count = 7; // participant, attendance, duration, budget, destination, travel, fitness
+    if (dateBlocks.length > 0) count++;
+    if (config.custom_questions && config.custom_questions.length > 0) count++;
+    count++; // group_code
+    return count;
+  }, [dateBlocks.length, config.custom_questions]);
+
+  const currentStep = useMemo(() => {
+    let filled = 0;
+    if (watchedValues.participant) filled++;
+    if (watchedValues.attendance) filled++;
+    const dur = watchedValues.duration_pref;
+    if (Array.isArray(dur) ? dur.length > 0 : !!dur) filled++;
+    if (dateBlocks.length > 0 && watchedValues.date_blocks && watchedValues.date_blocks.length > 0) filled++;
+    const bud = watchedValues.budget;
+    if (Array.isArray(bud) ? bud.length > 0 : !!bud) filled++;
+    const dest = watchedValues.destination;
+    if (Array.isArray(dest) ? dest.length > 0 : !!dest) filled++;
+    if (watchedValues.travel_pref) filled++;
+    if (watchedValues.fitness_level) filled++;
+    if (watchedValues.group_code) filled++;
+    return Math.min(filled, totalSteps);
+  }, [watchedValues, totalSteps, dateBlocks.length]);
   const onSubmit = async (data: DynamicResponseFormData) => {
     setIsSubmitting(true);
 
@@ -142,7 +181,7 @@ const DynamicSurveyForm = ({
       }
 
       toast.success("Antwort gespeichert!");
-      navigate("/danke");
+      setIsSubmitted(true);
     } catch (error) {
       console.error("Submit error:", error);
       toast.error("Fehler beim Absenden. Bitte versuche es erneut.");
@@ -170,8 +209,29 @@ const DynamicSurveyForm = ({
   // Filter out the honoree from participants (they shouldn't fill out the form)
   const selectableParticipants = participants.filter(p => p.role !== 'honoree');
 
+  if (isSubmitted) {
+    return (
+      <section className="container pb-24 md:pb-8">
+        <SurveyCompletionScreen
+          eventName={eventName}
+          onGoBack={() => navigate("/")}
+        />
+      </section>
+    );
+  }
+
   return (
     <section className="container pb-24 md:pb-8">
+      <SurveyProgressBar
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        themeColor={themeColor}
+      />
+      {surveyDeadline && (
+        <div className="max-w-2xl mx-auto mt-3 mb-1 flex justify-end">
+          <SurveyDeadlineCountdown deadline={surveyDeadline} />
+        </div>
+      )}
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8 animate-slide-up delay-300">
           <h2 className="font-display text-2xl font-semibold mb-2">
@@ -185,7 +245,7 @@ const DynamicSurveyForm = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Participant Selection - Dynamic from DB */}
-            <div className="form-section">
+            <SurveyQuestionWrapper>
               <FormField
                 control={form.control}
                 name="participant"
@@ -210,7 +270,7 @@ const DynamicSurveyForm = ({
                   </FormItem>
                 )}
               />
-            </div>
+            </SurveyQuestionWrapper>
 
             {/* Attendance - Dynamic options */}
             <div className="form-section">

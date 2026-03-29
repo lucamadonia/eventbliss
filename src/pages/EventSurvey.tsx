@@ -82,11 +82,14 @@ const EventSurvey = () => {
       />
       <InfoCard noGos={settings.no_gos} focusPoints={settings.focus_points} />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />
-      <DynamicSurveyForm 
-        isLocked={isFormLocked} 
+      <DynamicSurveyForm
+        isLocked={isFormLocked}
         eventId={event.id}
         settings={settings}
         participants={participants}
+        eventName={event.name}
+        surveyDeadline={event.survey_deadline}
+        themeColor={(event.theme as any)?.primary_color}
       />
     </main>
   );

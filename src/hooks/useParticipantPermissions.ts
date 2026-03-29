@@ -10,7 +10,7 @@ const DEFAULT_PERMISSIONS: DashboardPermissions = {
 };
 
 const ALL_TABS = [
-  "overview", "planner", "responses", "formbuilder", "schedule",
+  "overview", "planner", "expenses", "responses", "formbuilder", "schedule",
   "destination", "ideas", "agencies", "ai", "messages", "settings",
 ];
 
@@ -31,11 +31,13 @@ export function useParticipantPermissions(
 
   return useMemo(() => {
     if (!event || !user) {
+      // Anonymous user: use admin-configured public tabs, fallback to BASE_TABS
+      const publicTabs = (event?.settings as any)?.public_visible_tabs;
       return {
         isOrganizer: false,
         currentParticipant: null,
         permissions: DEFAULT_PERMISSIONS,
-        allowedTabs: BASE_TABS,
+        allowedTabs: Array.isArray(publicTabs) && publicTabs.length > 0 ? publicTabs : BASE_TABS,
       };
     }
 
@@ -64,6 +66,7 @@ export function useParticipantPermissions(
     };
 
     const allowedTabs = [...BASE_TABS];
+    if (permissions.can_add_expenses || permissions.can_view_all_expenses) allowedTabs.push("expenses");
     if (permissions.can_view_responses) allowedTabs.push("responses");
     if (permissions.can_edit_settings) {
       allowedTabs.push("settings", "formbuilder", "destination");

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2, Coins } from "lucide-react";
+import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2, Coins, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -32,6 +32,29 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
   const [deadline, setDeadline] = useState(event.survey_deadline || "");
   const [currency, setCurrency] = useState(event.currency || "EUR");
 
+  const PUBLIC_TAB_OPTIONS = [
+    { key: "overview", label: "Overview", alwaysOn: true },
+    { key: "planner", label: "Planner" },
+    { key: "schedule", label: "Schedule" },
+    { key: "messages", label: "Messages" },
+    { key: "responses", label: "Responses" },
+    { key: "destination", label: "Destination" },
+    { key: "ideas", label: "Ideas Hub" },
+    { key: "agencies", label: "Agencies" },
+    { key: "expenses", label: "Expenses / Costs" },
+  ];
+
+  const defaultPublicTabs = ["overview", "planner", "schedule", "messages"];
+  const [publicVisibleTabs, setPublicVisibleTabs] = useState<string[]>(
+    (event.settings as any)?.public_visible_tabs || defaultPublicTabs
+  );
+
+  const togglePublicTab = (tab: string) => {
+    setPublicVisibleTabs(prev =>
+      prev.includes(tab) ? prev.filter(t => t !== tab) : [...prev, tab]
+    );
+  };
+
   const dateBlocks = (event.settings?.date_blocks || {}) as Record<string, string>;
 
   const handleSaveSettings = async () => {
@@ -50,6 +73,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
             settings: {
               form_locked: formLocked,
               locked_block: lockedBlock || null,
+              public_visible_tabs: publicVisibleTabs,
             },
             survey_deadline: deadline || null,
             currency: currency,
@@ -240,6 +264,34 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
             </p>
           </div>
         </div>
+      </GlassCard>
+
+      {/* Public Visibility Settings */}
+      <GlassCard className="p-6">
+        <h4 className="font-bold mb-4 flex items-center gap-2">
+          <Eye className="w-5 h-5" />
+          {t('dashboard.settings.publicVisibility', 'Public Visibility')}
+        </h4>
+        <p className="text-sm text-muted-foreground mb-4">
+          {t('dashboard.settings.publicVisibilityDesc', 'Choose which tabs visitors can see without logging in (using only the access code).')}
+        </p>
+        <div className="space-y-3">
+          {PUBLIC_TAB_OPTIONS.map((tab) => (
+            <div key={tab.key} className="flex items-center justify-between p-3 rounded-lg bg-background/30">
+              <Label className="font-medium cursor-pointer">
+                {t(`dashboard.tabs.${tab.key}`, tab.label)}
+              </Label>
+              <Switch
+                checked={publicVisibleTabs.includes(tab.key)}
+                onCheckedChange={() => !tab.alwaysOn && togglePublicTab(tab.key)}
+                disabled={tab.alwaysOn}
+              />
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground mt-3">
+          {t('dashboard.settings.publicVisibilityNote', 'Visitors need to register to make changes (add expenses, edit responses, etc.).')}
+        </p>
       </GlassCard>
 
       {/* Team Invite Manager */}
