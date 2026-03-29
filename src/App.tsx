@@ -26,6 +26,7 @@ const AgencyApply = lazy(() => import("./pages/AgencyApply"));
 const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
+const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -79,6 +80,7 @@ const AppContent = () => {
           <Route path="/e/:slug/dashboard" element={<EventDashboard />} />
           <Route path="/e/:slug/expenses" element={<EventExpenses />} />
           <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
+          <Route path="/client/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClientPortal /></Suspense></ErrorBoundary>} />
           <Route path="/danke" element={<Danke />} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />

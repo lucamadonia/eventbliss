@@ -26,12 +26,14 @@ import {
   UserPlus,
   Command,
   ChevronDown,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { useAgency } from "@/hooks/useAgency";
 import { cn } from "@/lib/utils";
 
 import { AgencyOverview } from "@/components/agency/AgencyOverview";
@@ -45,6 +47,8 @@ import { AgencyRunOfShow } from "@/components/agency/AgencyRunOfShow";
 import { AgencyBudgetEngine } from "@/components/agency/AgencyBudgetEngine";
 import { AgencyCalendarView } from "@/components/agency/AgencyCalendarView";
 import { AgencyNotifications } from "@/components/agency/AgencyNotifications";
+import { AgencyOnboarding } from "@/components/agency/AgencyOnboarding";
+import { AgencySettings } from "@/components/agency/AgencySettings";
 
 type Section =
   | "dashboard"
@@ -56,7 +60,8 @@ type Section =
   | "reports"
   | "runofshow"
   | "budgetengine"
-  | "calendar";
+  | "calendar"
+  | "settings";
 
 interface NavItem {
   id: Section;
@@ -76,6 +81,7 @@ const navItems: NavItem[] = [
   { id: "budgetengine", label: "Budget Engine", icon: Wallet },
   { id: "files", label: "Dateien", icon: FolderOpen },
   { id: "reports", label: "Berichte", icon: BarChart3 },
+  { id: "settings", label: "Einstellungen", icon: Settings },
 ];
 
 const sectionLabels: Record<Section, string> = {
@@ -89,6 +95,7 @@ const sectionLabels: Record<Section, string> = {
   budgetengine: "Budget Engine",
   files: "Dateien",
   reports: "Berichte",
+  settings: "Einstellungen",
 };
 
 // Mock events list for the events section
@@ -281,6 +288,7 @@ export default function AgencyDashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useAuth();
+  const { agency, members, isLoading: agencyLoading, createAgency } = useAgency();
   const [activeSection, setActiveSection] = useState<Section>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -331,6 +339,11 @@ export default function AgencyDashboard() {
     );
   }
 
+  // If no agency, show onboarding
+  if (!agencyLoading && !agency && user) {
+    return <AgencyOnboarding onCreateAgency={createAgency} />;
+  }
+
   // If viewing a single event in the event planner
   if (selectedEventId) {
     return (
@@ -369,6 +382,8 @@ export default function AgencyDashboard() {
         return <AgencyFileLibrary />;
       case "reports":
         return <AgencyReports />;
+      case "settings":
+        return <AgencySettings />;
       default:
         return <AgencyOverview onNavigate={(s) => handleNavigate(s as Section)} />;
     }
@@ -404,12 +419,23 @@ export default function AgencyDashboard() {
         <div className={cn("border-b border-white/[0.05]", sidebarCollapsed ? "p-3" : "p-5")}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20 shrink-0">
-                <Building2 className="w-5 h-5 text-white" />
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 shrink-0"
+                style={{
+                  background: agency?.primary_color && agency?.accent_color
+                    ? `linear-gradient(135deg, ${agency.primary_color}, ${agency.accent_color})`
+                    : "linear-gradient(135deg, #8b5cf6, #06b6d4)",
+                }}
+              >
+                {agency?.logo_url ? (
+                  <img src={agency.logo_url} alt={agency.name} className="w-5 h-5 rounded object-cover" />
+                ) : (
+                  <Building2 className="w-5 h-5 text-white" />
+                )}
               </div>
               {!sidebarCollapsed && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <h2 className="text-sm font-bold text-slate-50">EventBliss</h2>
+                  <h2 className="text-sm font-bold text-slate-50">{agency?.name || "EventBliss"}</h2>
                   <div className="flex items-center gap-1.5">
                     <p className="text-[10px] text-slate-500">Agency Dashboard</p>
                     <Badge className="text-[8px] px-1 py-0 h-3.5 bg-violet-500/20 text-violet-300 border-violet-500/30 hover:bg-violet-500/20">

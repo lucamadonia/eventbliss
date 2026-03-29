@@ -3,11 +3,9 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Calendar, Users, DollarSign, Plus, Contact, FileText, Clock, CheckCircle2,
-  AlertCircle, ArrowRight, AlertTriangle, CloudSun, Gauge, ChevronRight, Layers,
+  ArrowRight, ChevronRight, Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
@@ -36,6 +34,17 @@ interface TaskRow {
   assignee_name: string | null;
   priority: string | null;
   events?: { name: string } | null;
+}
+
+function formatActivityTime(date: Date): string {
+  const diff = Date.now() - date.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "gerade eben";
+  if (mins < 60) return `vor ${mins} Min.`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `vor ${hours} Std.`;
+  const days = Math.floor(hours / 24);
+  return `vor ${days} Tag${days > 1 ? "en" : ""}`;
 }
 
 export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
@@ -114,10 +123,76 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
     }))
     .slice(0, 5);
 
-  // Mock activity (would need an activity log table for real data)
-  const mockActivityItems = [
-    { id: "1", user: user?.email?.split("@")[0] || "User", action: "hat die Uebersicht geoeffnet", entity: "", type: "updated" as const, time: "gerade", fullDate: new Date().toLocaleDateString("de-DE") },
-  ];
+  // Real activity feed: tasks + notifications combined
+  const [activityItems, setActivityItems] = useState<
+    { id: string; user: string; action: string; entity?: string; type: "created" | "updated" | "deleted" | "commented" | "assigned"; time: string; fullDate?: string }[]
+  >([]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const [tasksRes, notifsRes] = await Promise.all([
+        (supabase.from as any)("event_tasks")
+          .select("id, title, status, updated_at, events(name)")
+          .order("updated_at", { ascending: false })
+          .limit(10),
+        (supabase.from as any)("agency_notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
+
+      const items: typeof activityItems = [];
+
+      // Map completed/updated tasks to activity items
+      for (const task of tasksRes.data || []) {
+        const ts = task.updated_at ? new Date(task.updated_at) : new Date();
+        const actionType = task.status === "done" ? "created" : "updated";
+        const actionText = task.status === "done" ? "hat abgeschlossen" : "hat aktualisiert";
+        items.push({
+          id: `task-${task.id}`,
+          user: user.email?.split("@")[0] || "User",
+          action: actionText,
+          entity: task.title + (task.events?.name ? ` (${task.events.name})` : ""),
+          type: actionType as "created" | "updated",
+          time: formatActivityTime(ts),
+          fullDate: ts.toLocaleDateString("de-DE"),
+        });
+      }
+
+      // Map notifications to activity items
+      for (const notif of notifsRes.data || []) {
+        const ts = new Date(notif.created_at);
+        const typeMap: Record<string, "created" | "updated" | "assigned" | "commented"> = {
+          deadline: "updated",
+          task: "assigned",
+          budget: "commented",
+          team: "assigned",
+          vendor: "created",
+          system: "updated",
+        };
+        items.push({
+          id: `notif-${notif.id}`,
+          user: user.email?.split("@")[0] || "User",
+          action: notif.title,
+          entity: notif.description || undefined,
+          type: typeMap[notif.type] || "updated",
+          time: formatActivityTime(ts),
+          fullDate: ts.toLocaleDateString("de-DE"),
+        });
+      }
+
+      // Sort by timestamp descending and take top 10
+      items.sort((a, b) => {
+        const dateA = a.fullDate ? new Date(a.fullDate.split(".").reverse().join("-")).getTime() : 0;
+        const dateB = b.fullDate ? new Date(b.fullDate.split(".").reverse().join("-")).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      setActivityItems(items.slice(0, 10));
+    })();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -240,7 +315,7 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
         {/* Recent Activity */}
         <GlassCard className="p-5" delay={0.35} hoverGlow>
           <h3 className="font-semibold text-slate-50 mb-4">Letzte Aktivitaeten</h3>
-          <ActivityFeed items={mockActivityItems} onViewAll={() => {}} />
+          <ActivityFeed items={activityItems} onViewAll={() => {}} />
         </GlassCard>
       </div>
 

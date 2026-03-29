@@ -6,31 +6,52 @@ import {
   Clock,
   Users,
   Building2,
-  UserPlus,
+  CheckSquare,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  useAgencyNotifications,
+  AgencyNotification,
+} from "@/hooks/useAgencyNotifications";
 
-type NotificationType = "budget" | "deadline" | "team" | "vendor" | "registration" | "system";
+type NotificationType = AgencyNotification["type"];
 
-interface Notification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  description: string;
-  time: string;
-  group: "today" | "yesterday" | "earlier";
-  read: boolean;
-}
-
-const typeConfig: Record<NotificationType, { icon: typeof Bell; color: string; bg: string }> = {
-  budget: { icon: DollarSign, color: "text-amber-400", bg: "bg-amber-500/15" },
+const typeConfig: Record<
+  NotificationType,
+  { icon: typeof Bell; color: string; bg: string }
+> = {
   deadline: { icon: Clock, color: "text-red-400", bg: "bg-red-500/15" },
-  team: { icon: Users, color: "text-blue-400", bg: "bg-blue-500/15" },
-  vendor: { icon: Building2, color: "text-emerald-400", bg: "bg-emerald-500/15" },
-  registration: { icon: UserPlus, color: "text-violet-400", bg: "bg-violet-500/15" },
+  task: { icon: CheckSquare, color: "text-blue-400", bg: "bg-blue-500/15" },
+  budget: { icon: DollarSign, color: "text-amber-400", bg: "bg-amber-500/15" },
+  team: { icon: Users, color: "text-green-400", bg: "bg-green-500/15" },
+  vendor: { icon: Building2, color: "text-purple-400", bg: "bg-purple-500/15" },
   system: { icon: Bell, color: "text-slate-400", bg: "bg-slate-500/15" },
 };
+
+function getGroup(dateStr: string): "today" | "yesterday" | "earlier" {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+  if (date >= todayStart) return "today";
+  if (date >= yesterdayStart) return "yesterday";
+  return "earlier";
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const now = Date.now();
+  const diff = now - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "gerade eben";
+  if (mins < 60) return `vor ${mins} Min.`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `vor ${hours} Std.`;
+  const days = Math.floor(hours / 24);
+  return `vor ${days} Tag${days > 1 ? "en" : ""}`;
+}
 
 const groupLabels: Record<string, string> = {
   today: "Heute",
@@ -38,21 +59,16 @@ const groupLabels: Record<string, string> = {
   earlier: "Frueher",
 };
 
-const mockNotifications: Notification[] = [
-  { id: "1", type: "deadline", title: "Deadline morgen", description: "Catering fuer Hochzeit Mueller bestaetigen", time: "vor 10 Min.", group: "today", read: false },
-  { id: "2", type: "budget", title: "Budget-Warnung", description: "Firmenfeier SAP hat 85% des Budgets erreicht", time: "vor 1 Std.", group: "today", read: false },
-  { id: "3", type: "registration", title: "Neue Anmeldung", description: "3 neue Gaeste fuer Konferenz 2026 registriert", time: "vor 2 Std.", group: "today", read: false },
-  { id: "4", type: "vendor", title: "Vendor-Antwort", description: "Fotograf Schulz hat Angebot bestaetigt", time: "vor 5 Std.", group: "yesterday", read: true },
-  { id: "5", type: "team", title: "Team-Update", description: "Anna S. wurde dem JGA Hamburg zugewiesen", time: "vor 1 Tag", group: "yesterday", read: true },
-  { id: "6", type: "system", title: "System-Update", description: "Neue Berichtsfunktionen verfuegbar", time: "vor 3 Tagen", group: "earlier", read: true },
-];
-
 export function AgencyNotifications() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
   const ref = useRef<HTMLDivElement>(null);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+  } = useAgencyNotifications();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -63,14 +79,6 @@ export function AgencyNotifications() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
-
-  function markAllRead() {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  }
-
-  function dismiss(id: string) {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }
 
   const groups = ["today", "yesterday", "earlier"] as const;
 
@@ -99,10 +107,12 @@ export function AgencyNotifications() {
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-              <h3 className="text-sm font-semibold text-slate-50">Benachrichtigungen</h3>
+              <h3 className="text-sm font-semibold text-slate-50">
+                Benachrichtigungen
+              </h3>
               {unreadCount > 0 && (
                 <button
-                  onClick={markAllRead}
+                  onClick={markAllAsRead}
                   className="text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
                 >
                   Alle gelesen
@@ -118,7 +128,9 @@ export function AgencyNotifications() {
                 </p>
               ) : (
                 groups.map((group) => {
-                  const groupItems = notifications.filter((n) => n.group === group);
+                  const groupItems = notifications.filter(
+                    (n) => getGroup(n.created_at) === group,
+                  );
                   if (groupItems.length === 0) return null;
                   return (
                     <div key={group}>
@@ -126,7 +138,8 @@ export function AgencyNotifications() {
                         {groupLabels[group]}
                       </p>
                       {groupItems.map((item, i) => {
-                        const config = typeConfig[item.type];
+                        const config =
+                          typeConfig[item.type] || typeConfig.system;
                         const Icon = config.icon;
                         return (
                           <motion.div
@@ -134,27 +147,44 @@ export function AgencyNotifications() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.03 }}
-                            className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.04] transition-colors group"
+                            onClick={() => {
+                              if (!item.is_read) markAsRead(item.id);
+                            }}
+                            className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.04] transition-colors group cursor-pointer"
                           >
-                            <div className={cn("p-2 rounded-lg shrink-0 mt-0.5", config.bg)}>
-                              <Icon className={cn("w-4 h-4", config.color)} />
+                            <div
+                              className={cn(
+                                "p-2 rounded-lg shrink-0 mt-0.5",
+                                config.bg,
+                              )}
+                            >
+                              <Icon
+                                className={cn("w-4 h-4", config.color)}
+                              />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="text-sm font-medium text-slate-100 truncate">
                                   {item.title}
                                 </p>
-                                {!item.read && (
+                                {!item.is_read && (
                                   <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
                                 )}
                               </div>
-                              <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">
-                                {item.description}
+                              {item.description && (
+                                <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">
+                                  {item.description}
+                                </p>
+                              )}
+                              <p className="text-[10px] text-slate-600 mt-1">
+                                {formatRelativeTime(item.created_at)}
                               </p>
-                              <p className="text-[10px] text-slate-600 mt-1">{item.time}</p>
                             </div>
                             <button
-                              onClick={() => dismiss(item.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteNotification(item.id);
+                              }}
                               className="p-1 rounded-md text-slate-600 hover:text-slate-300 hover:bg-white/[0.06] opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
                             >
                               <X className="w-3.5 h-3.5" />

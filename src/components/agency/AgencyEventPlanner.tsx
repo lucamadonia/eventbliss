@@ -29,6 +29,7 @@ import {
   roleConfig, teamActivityLog, contractStatusConfig,
   availabilityConfig, priorityColors, ratingLabels, mockTeam,
 } from "./AgencyEventPlannerData";
+import { ShareClientLinkDialog } from "./ShareClientLinkDialog";
 
 interface AgencyEventPlannerProps { onBack: () => void; }
 
@@ -194,6 +195,9 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                 </SelectContent>
               </Select>
               <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">Aktiv</Badge>
+              {selectedEventId && user && (
+                <ShareClientLinkDialog eventId={selectedEventId} agencyId={user.id} />
+              )}
             </div>
             {selectedEvent && (
               <div className="flex flex-wrap gap-4 text-sm text-white/50">
