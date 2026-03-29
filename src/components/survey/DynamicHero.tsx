@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Heart, Calendar, PartyPopper, Cake, Plane, Star, Sparkles } from "lucide-react";
 import { type BrandingConfig } from "@/lib/survey-config";
 import { getTemplateById, PATTERN_SVGS } from "@/lib/design-templates";
+import { cn } from "@/lib/utils";
 
 interface DynamicHeroProps {
   eventName: string;
@@ -59,21 +60,34 @@ const DynamicHero = ({
     ? `url("data:image/svg+xml,${encodeURIComponent(patternSvg)}")` 
     : 'none';
 
-  // Background style based on branding setting
+  // Background style based on branding setting — stronger when template is active
   const getBackgroundStyle = () => {
+    const hasTemplate = !!template;
     switch (backgroundStyle) {
       case 'dark':
-        return `linear-gradient(135deg, ${primaryColor}20 0%, ${accentColor}10 100%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%)`;
+        return hasTemplate
+          ? `linear-gradient(135deg, ${primaryColor}40 0%, ${accentColor}20 100%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%)`
+          : `linear-gradient(135deg, ${primaryColor}20 0%, ${accentColor}10 100%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%)`;
       case 'solid':
-        return `linear-gradient(180deg, ${primaryColor}15 0%, transparent 100%)`;
+        return hasTemplate
+          ? `linear-gradient(180deg, ${primaryColor}30 0%, transparent 100%)`
+          : `linear-gradient(180deg, ${primaryColor}15 0%, transparent 100%)`;
       case 'gradient':
       default:
-        return `linear-gradient(135deg, ${primaryColor}25 0%, ${accentColor}15 50%, transparent 100%)`;
+        return hasTemplate
+          ? `linear-gradient(135deg, ${primaryColor}40 0%, ${accentColor}25 50%, transparent 100%)`
+          : `linear-gradient(135deg, ${primaryColor}25 0%, ${accentColor}15 50%, transparent 100%)`;
     }
   };
 
   return (
-    <section className="relative overflow-hidden py-12 md:py-20">
+    <section
+      className="relative overflow-hidden py-12 md:py-20"
+      style={{
+        '--template-primary': primaryColor,
+        '--template-accent': accentColor,
+      } as React.CSSProperties}
+    >
       {/* Background Layer */}
       <div 
         className="absolute inset-0 z-0"
@@ -82,10 +96,10 @@ const DynamicHero = ({
         }}
       />
 
-      {/* Pattern Overlay */}
+      {/* Pattern Overlay - more visible when template is active */}
       {patternId !== 'none' && (
-        <div 
-          className="absolute inset-0 z-0 opacity-60"
+        <div
+          className={cn("absolute inset-0 z-0", template ? "opacity-70" : "opacity-50")}
           style={{
             backgroundImage: patternDataUrl,
             backgroundRepeat: 'repeat',
@@ -107,16 +121,16 @@ const DynamicHero = ({
         </div>
       )}
 
-      {/* Floating Background Icons */}
+      {/* Floating Background Icons - enhanced visibility with template */}
       {backgroundIcons.map((icon, index) => (
-        <motion.div 
+        <motion.div
           key={index}
           className="absolute text-4xl md:text-6xl pointer-events-none select-none"
           style={{
             top: `${15 + index * 20}%`,
             left: index % 2 === 0 ? '5%' : 'auto',
             right: index % 2 === 1 ? '5%' : 'auto',
-            opacity: 0.15,
+            opacity: template ? 0.22 : 0.15,
           }}
           animate={{ 
             y: [0, -10 - index * 5, 0],
@@ -276,7 +290,7 @@ const DynamicHero = ({
 
           {/* Honoree name highlight */}
           {honoreeName && (
-            <motion.p 
+            <motion.p
               className="mt-4 text-muted-foreground"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -287,6 +301,17 @@ const DynamicHero = ({
           )}
         </motion.div>
       </div>
+
+      {/* Template-tinted bottom accent line */}
+      {template && (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1"
+          style={{
+            background: `linear-gradient(90deg, ${primaryColor}, ${accentColor})`,
+            opacity: 0.5,
+          }}
+        />
+      )}
     </section>
   );
 };

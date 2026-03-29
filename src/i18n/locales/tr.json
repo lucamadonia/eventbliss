@@ -1422,7 +1422,47 @@
     "travel": { "daytrip": "Günübirlik gezi", "oneNight": "Bir gece", "twoNights": "İki gece", "flexible": "Esnek" },
     "fitness": { "chill": "Rahat", "normal": "Normal", "sporty": "Sportif" },
     "alcohol": { "yes": "Evet, lütfen", "no": "Tercih etmem", "flexible": "Esnek" },
-    "attendance": { "yes": "Katılıyorum!", "maybe": "Belki", "no": "Maalesef hayır" }
+    "attendance": { "yes": "Katılıyorum!", "maybe": "Belki", "no": "Maalesef hayır" },
+    "designTemplates": "Tasarım Şablonları",
+    "surveyTemplates": "Anket Şablonları",
+    "selectDesign": "Bir Tasarım Seçin",
+    "selectTemplate": "Bir Şablon Seçin",
+    "preview": "Önizleme",
+    "useTemplate": "Şablonu Kullan",
+    "recommended": "Önerilen",
+    "allTemplates": "Tüm Şablonlar",
+    "design": {
+      "jga-classic": { "name": "JGA Klasik", "desc": "Mor-camgöbeği geçişli şenlikli ve parti havasında" },
+      "wedding-elegant": { "name": "Düğün Elegant", "desc": "Roze altın vurgularıyla klasik-zarif" },
+      "birthday-fun": { "name": "Doğum Günü Eğlence", "desc": "Doğum günü partileri için renkli ve neşeli" },
+      "beach-vibes": { "name": "Sahil Havası", "desc": "Sahil gezileri için rahat ve yazlık" },
+      "night-out": { "name": "Gece Dışarı", "desc": "Parti geceleri için karanlık ve göz alıcı" },
+      "modern-minimal": { "name": "Modern Minimal", "desc": "Her durum için temiz ve zamansız" },
+      "tropical-paradise": { "name": "Tropikal Cennet", "desc": "Macera gezileri için egzotik ve renkli" },
+      "royal-purple": { "name": "Kraliyet Moru", "desc": "Özel günler için asil ve lüks" },
+      "sunset-glow": { "name": "Gün Batımı Işıltısı", "desc": "Gün batımı gibi sıcak ve romantik" },
+      "ocean-breeze": { "name": "Okyanus Esintisi", "desc": "Su sporları tutkunları için taze ve denizci" },
+      "ladies-night": { "name": "Kız Gecesi", "desc": "Gelinin bekarlığa veda partisi için pembe ve göz alıcı" },
+      "vegas-neon": { "name": "Vegas Neon", "desc": "Unutulmaz partiler için neon ışıklar" },
+      "oktoberfest": { "name": "Oktoberfest", "desc": "Halk festivali tutkunları için Bavyera tarzı ve geleneksel" },
+      "ski-snow": { "name": "Kayak ve Kar", "desc": "Kayak gezileri için kışlık ve sportif" },
+      "festival-vibes": { "name": "Festival Havası", "desc": "Festival severler için vahşi ve renkli" },
+      "garden-party": { "name": "Bahçe Partisi", "desc": "Bahçe partileri için doğal ve romantik" },
+      "road-trip": { "name": "Yol Gezisi", "desc": "Yol gezileri için maceraperest ve özgür" },
+      "glamour-night": { "name": "Glamour Gecesi", "desc": "Özel akşamlar için asil ve göz alıcı" },
+      "sporty-adventure": { "name": "Sportif Macera", "desc": "Sporcular için aktif ve enerjik" },
+      "retro-vintage": { "name": "Retro Vintage", "desc": "Vintage görünümde nostaljik ve şık" }
+    },
+    "survey": {
+      "jga-classic": { "name": "JGA Klasik", "desc": "Şehir gezileri ve macera ile klasik bekarlığa veda" },
+      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Lüks aktivitelerle premium bekarlığa veda deneyimi" },
+      "bachelorette": { "name": "Kına Gecesi", "desc": "Spa, brunch, dans ve unutulmaz anlar" },
+      "birthday-bash": { "name": "Doğum Günü Partisi", "desc": "Esnek ve eğlenceli doğum günü kutlaması" },
+      "adventure-trip": { "name": "Macera Gezisi", "desc": "Açık hava maceraları, yürüyüş ve adrenalin" },
+      "city-break": { "name": "Şehir Kaçamağı", "desc": "Kültür, yemek ve gezi" },
+      "wedding-rsvp": { "name": "Düğün RSVP", "desc": "Diyet ve konaklama ile zarif düğün yanıtı" },
+      "corporate-retreat": { "name": "Şirket Kampı", "desc": "Takım çalışması, atölyeler ve ağ oluşturma" }
+    }
   },
   "affiliate": {
     "portal": {

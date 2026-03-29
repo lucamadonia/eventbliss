@@ -1428,7 +1428,47 @@
     "travel": { "daytrip": "Dagtrip", "oneNight": "Eén nacht", "twoNights": "Twee nachten", "flexible": "Flexibel" },
     "fitness": { "chill": "Ontspannen", "normal": "Normaal", "sporty": "Sportief" },
     "alcohol": { "yes": "Ja graag", "no": "Liever niet", "flexible": "Flexibel" },
-    "attendance": { "yes": "Ik doe mee!", "maybe": "Misschien", "no": "Helaas niet" }
+    "attendance": { "yes": "Ik doe mee!", "maybe": "Misschien", "no": "Helaas niet" },
+    "designTemplates": "Designsjablonen",
+    "surveyTemplates": "Enquêtesjablonen",
+    "selectDesign": "Kies een Design",
+    "selectTemplate": "Kies een Sjabloon",
+    "preview": "Voorbeeld",
+    "useTemplate": "Sjabloon Gebruiken",
+    "recommended": "Aanbevolen",
+    "allTemplates": "Alle Sjablonen",
+    "design": {
+      "jga-classic": { "name": "JGA Klassiek", "desc": "Feestelijk en partyproof met paars-cyaan verloop" },
+      "wedding-elegant": { "name": "Bruiloft Elegant", "desc": "Klassiek-elegant met roségouden accenten" },
+      "birthday-fun": { "name": "Verjaardag Fun", "desc": "Kleurrijk en vrolijk voor verjaardagsfeesten" },
+      "beach-vibes": { "name": "Strandsfeer", "desc": "Ontspannen en zomers voor stranduitjes" },
+      "night-out": { "name": "Avondje Uit", "desc": "Donker en glamoureus voor feestnachten" },
+      "modern-minimal": { "name": "Modern Minimaal", "desc": "Strak en tijdloos voor alle gelegenheden" },
+      "tropical-paradise": { "name": "Tropisch Paradijs", "desc": "Exotisch en kleurrijk voor avontuurlijke reizen" },
+      "royal-purple": { "name": "Koninklijk Paars", "desc": "Koninklijk en luxueus voor bijzondere gelegenheden" },
+      "sunset-glow": { "name": "Zonsonderganggloed", "desc": "Warm en romantisch als een zonsondergang" },
+      "ocean-breeze": { "name": "Oceaanbries", "desc": "Fris en maritiem voor watersportfans" },
+      "ladies-night": { "name": "Meidenuitje", "desc": "Roze en glamoureus voor het vrijgezellenfeest van de bruid" },
+      "vegas-neon": { "name": "Vegas Neon", "desc": "Neonlichten voor onvergetelijke feesten" },
+      "oktoberfest": { "name": "Oktoberfest", "desc": "Beiers en traditioneel voor volksfeestfans" },
+      "ski-snow": { "name": "Ski & Sneeuw", "desc": "Winters en sportief voor skireizen" },
+      "festival-vibes": { "name": "Festivalsfeer", "desc": "Wild en kleurrijk voor festivalliefhebbers" },
+      "garden-party": { "name": "Tuinfeest", "desc": "Natuurlijk en romantisch voor tuinfeesten" },
+      "road-trip": { "name": "Road Trip", "desc": "Avontuurlijk en vrij voor roadtrips" },
+      "glamour-night": { "name": "Glamouravond", "desc": "Chic en glamoureus voor bijzondere avonden" },
+      "sporty-adventure": { "name": "Sportief Avontuur", "desc": "Actief en energiek voor sportievelingen" },
+      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostalgisch en stijlvol in vintage look" }
+    },
+    "survey": {
+      "jga-classic": { "name": "JGA Klassiek", "desc": "Klassiek vrijgezellenfeest met citytrips en avontuur" },
+      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Premium vrijgezellenervaring met luxe activiteiten" },
+      "bachelorette": { "name": "Vrijgezellenfeest", "desc": "Spa, brunch, dansen en onvergetelijke momenten" },
+      "birthday-bash": { "name": "Verjaardagsfeest", "desc": "Flexibele en leuke verjaardagsviering" },
+      "adventure-trip": { "name": "Avontuurlijke Reis", "desc": "Outdoor avonturen, wandelen en adrenaline" },
+      "city-break": { "name": "Stedentrip", "desc": "Cultuur, eten en sightseeing" },
+      "wedding-rsvp": { "name": "Bruiloft RSVP", "desc": "Elegante bruiloftrespons met dieet en accommodatie" },
+      "corporate-retreat": { "name": "Bedrijfsretraite", "desc": "Teambuilding, workshops en netwerken" }
+    }
   },
   "affiliate": {
     "portal": {

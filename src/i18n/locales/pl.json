@@ -1422,7 +1422,47 @@
     "travel": { "daytrip": "Wycieczka jednodniowa", "oneNight": "Jedna noc", "twoNights": "Dwie noce", "flexible": "Elastyczny" },
     "fitness": { "chill": "Spokojny", "normal": "Normalny", "sporty": "Sportowy" },
     "alcohol": { "yes": "Tak, chętnie", "no": "Raczej nie", "flexible": "Elastyczny" },
-    "attendance": { "yes": "Jestem!", "maybe": "Może", "no": "Niestety nie" }
+    "attendance": { "yes": "Jestem!", "maybe": "Może", "no": "Niestety nie" },
+    "designTemplates": "Szablony Designu",
+    "surveyTemplates": "Szablony Ankiet",
+    "selectDesign": "Wybierz Design",
+    "selectTemplate": "Wybierz Szablon",
+    "preview": "Podgląd",
+    "useTemplate": "Użyj Szablonu",
+    "recommended": "Polecane",
+    "allTemplates": "Wszystkie Szablony",
+    "design": {
+      "jga-classic": { "name": "JGA Klasyczny", "desc": "Świąteczny i gotowy na imprezę z gradientem fioletowo-cyjanowym" },
+      "wedding-elegant": { "name": "Ślub Elegancki", "desc": "Klasycznie elegancki z akcentami w kolorze różowego złota" },
+      "birthday-fun": { "name": "Urodziny Zabawa", "desc": "Kolorowy i wesoły na przyjęcia urodzinowe" },
+      "beach-vibes": { "name": "Klimat Plaży", "desc": "Relaksujący i letni na wycieczki na plażę" },
+      "night-out": { "name": "Nocna Zabawa", "desc": "Ciemny i glamourowy na imprezowe noce" },
+      "modern-minimal": { "name": "Nowoczesny Minimalizm", "desc": "Czysty i ponadczasowy na każdą okazję" },
+      "tropical-paradise": { "name": "Tropikalny Raj", "desc": "Egzotyczny i kolorowy na podróże przygodowe" },
+      "royal-purple": { "name": "Królewski Fiolet", "desc": "Królewski i luksusowy na specjalne okazje" },
+      "sunset-glow": { "name": "Blask Zachodu Słońca", "desc": "Ciepły i romantyczny jak zachód słońca" },
+      "ocean-breeze": { "name": "Bryza Oceanu", "desc": "Świeży i morski dla fanów sportów wodnych" },
+      "ladies-night": { "name": "Wieczór Panieński", "desc": "Różowy i glamourowy na wieczór panieński" },
+      "vegas-neon": { "name": "Vegas Neon", "desc": "Neony na niezapomniane imprezy" },
+      "oktoberfest": { "name": "Oktoberfest", "desc": "Bawarski i tradycyjny dla fanów festynów ludowych" },
+      "ski-snow": { "name": "Narty i Śnieg", "desc": "Zimowy i sportowy na wyjazdy narciarskie" },
+      "festival-vibes": { "name": "Klimat Festiwalu", "desc": "Dziki i kolorowy dla miłośników festiwali" },
+      "garden-party": { "name": "Przyjęcie w Ogrodzie", "desc": "Naturalny i romantyczny na przyjęcia ogrodowe" },
+      "road-trip": { "name": "Podróż Samochodem", "desc": "Przygodowy i wolny na podróże samochodem" },
+      "glamour-night": { "name": "Wieczór Glamour", "desc": "Szlachetny i glamourowy na wyjątkowe wieczory" },
+      "sporty-adventure": { "name": "Sportowa Przygoda", "desc": "Aktywny i energiczny dla sportowców" },
+      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostalgiczny i stylowy w stylu vintage" }
+    },
+    "survey": {
+      "jga-classic": { "name": "JGA Klasyczny", "desc": "Klasyczny wieczór kawalerski z wycieczkami po mieście i przygodą" },
+      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Premiumowe doświadczenie kawalerskie z luksusowymi aktywnościami" },
+      "bachelorette": { "name": "Wieczór Panieński", "desc": "Spa, brunch, taniec i niezapomniane chwile" },
+      "birthday-bash": { "name": "Przyjęcie Urodzinowe", "desc": "Elastyczne i zabawne świętowanie urodzin" },
+      "adventure-trip": { "name": "Podróż Przygodowa", "desc": "Przygody na świeżym powietrzu, wędrówki i adrenalina" },
+      "city-break": { "name": "Wypad do Miasta", "desc": "Kultura, jedzenie i zwiedzanie" },
+      "wedding-rsvp": { "name": "RSVP Ślubne", "desc": "Elegancka odpowiedź ślubna z dietą i zakwaterowaniem" },
+      "corporate-retreat": { "name": "Wyjazd Firmowy", "desc": "Team building, warsztaty i networking" }
+    }
   },
   "affiliate": {
     "portal": {

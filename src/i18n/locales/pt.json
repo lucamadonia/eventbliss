@@ -1422,7 +1422,47 @@
     "travel": { "daytrip": "Passeio de um dia", "oneNight": "Uma noite", "twoNights": "Duas noites", "flexible": "Flexível" },
     "fitness": { "chill": "Relaxado", "normal": "Normal", "sporty": "Desportivo" },
     "alcohol": { "yes": "Sim, por favor", "no": "Prefiro não", "flexible": "Flexível" },
-    "attendance": { "yes": "Estou dentro!", "maybe": "Talvez", "no": "Infelizmente não" }
+    "attendance": { "yes": "Estou dentro!", "maybe": "Talvez", "no": "Infelizmente não" },
+    "designTemplates": "Modelos de Design",
+    "surveyTemplates": "Modelos de Inquérito",
+    "selectDesign": "Escolher um Design",
+    "selectTemplate": "Escolher um Modelo",
+    "preview": "Pré-visualização",
+    "useTemplate": "Usar Modelo",
+    "recommended": "Recomendado",
+    "allTemplates": "Todos os Modelos",
+    "design": {
+      "jga-classic": { "name": "JGA Clássico", "desc": "Festivo e pronto para a festa com degradê roxo-ciano" },
+      "wedding-elegant": { "name": "Casamento Elegante", "desc": "Clássico-elegante com acentos em ouro rosa" },
+      "birthday-fun": { "name": "Aniversário Divertido", "desc": "Colorido e alegre para festas de aniversário" },
+      "beach-vibes": { "name": "Vibrações de Praia", "desc": "Relaxado e estival para passeios à praia" },
+      "night-out": { "name": "Noite Fora", "desc": "Escuro e glamoroso para noites de festa" },
+      "modern-minimal": { "name": "Moderno Minimalista", "desc": "Limpo e intemporal para todas as ocasiões" },
+      "tropical-paradise": { "name": "Paraíso Tropical", "desc": "Exótico e colorido para viagens de aventura" },
+      "royal-purple": { "name": "Roxo Real", "desc": "Real e luxuoso para ocasiões especiais" },
+      "sunset-glow": { "name": "Brilho do Pôr do Sol", "desc": "Quente e romântico como um pôr do sol" },
+      "ocean-breeze": { "name": "Brisa do Oceano", "desc": "Fresco e marítimo para fãs de desportos aquáticos" },
+      "ladies-night": { "name": "Noite de Raparigas", "desc": "Rosa e glamoroso para a despedida de solteira" },
+      "vegas-neon": { "name": "Vegas Néon", "desc": "Luzes néon para festas inesquecíveis" },
+      "oktoberfest": { "name": "Oktoberfest", "desc": "Bávaro e tradicional para fãs de festas populares" },
+      "ski-snow": { "name": "Ski e Neve", "desc": "Invernal e desportivo para viagens de ski" },
+      "festival-vibes": { "name": "Vibrações de Festival", "desc": "Selvagem e colorido para amantes de festivais" },
+      "garden-party": { "name": "Festa no Jardim", "desc": "Natural e romântico para festas no jardim" },
+      "road-trip": { "name": "Viagem de Estrada", "desc": "Aventureiro e livre para viagens de estrada" },
+      "glamour-night": { "name": "Noite de Glamour", "desc": "Nobre e glamoroso para noites especiais" },
+      "sporty-adventure": { "name": "Aventura Desportiva", "desc": "Ativo e enérgico para desportistas" },
+      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostálgico e elegante em visual vintage" }
+    },
+    "survey": {
+      "jga-classic": { "name": "JGA Clássico", "desc": "Despedida de solteiro clássica com viagens urbanas e aventura" },
+      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Experiência premium de despedida com atividades de luxo" },
+      "bachelorette": { "name": "Despedida de Solteira", "desc": "Spa, brunch, dança e momentos inesquecíveis" },
+      "birthday-bash": { "name": "Festa de Aniversário", "desc": "Celebração de aniversário flexível e divertida" },
+      "adventure-trip": { "name": "Viagem de Aventura", "desc": "Aventuras ao ar livre, caminhadas e adrenalina" },
+      "city-break": { "name": "Escapadela Urbana", "desc": "Cultura, gastronomia e turismo" },
+      "wedding-rsvp": { "name": "RSVP Casamento", "desc": "Resposta elegante de casamento com dieta e alojamento" },
+      "corporate-retreat": { "name": "Retiro Empresarial", "desc": "Team building, workshops e networking" }
+    }
   },
   "affiliate": {
     "portal": {

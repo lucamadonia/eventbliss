@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Wand2, ArrowRight, Loader2 } from 'lucide-react';
+import { Sparkles, Wand2, ArrowRight, Loader2, Check, Palette } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientButton } from '@/components/ui/GradientButton';
 import { Button } from '@/components/ui/button';
@@ -10,10 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
 import { usePremium } from '@/hooks/usePremium';
 import { getTemplatesForEventType, type EventTemplate } from '@/lib/event-templates';
+import {
+  getTemplatesForEventType as getDesignTemplatesForEventType,
+  DESIGN_TEMPLATES,
+  PATTERN_SVGS,
+  type DesignTemplate,
+} from '@/lib/design-templates';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { AITemplatePreview } from './AITemplatePreview';
 import { AITemplatePreviewSkeleton } from './AITemplatePreviewSkeleton';
+
 interface TemplateSelectorProps {
   eventType: string;
   onSelectTemplate: (template: EventTemplate | null, customConfig?: object) => void;
@@ -28,8 +36,13 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedTemplate, setGeneratedTemplate] = useState<object | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedDesignTemplate, setSelectedDesignTemplate] = useState<DesignTemplate | null>(null);
 
   const templates = getTemplatesForEventType(eventType);
+  const designTemplates = getDesignTemplatesForEventType(eventType);
+  const otherDesignTemplates = DESIGN_TEMPLATES.filter(
+    dt => !dt.eventTypes.includes(eventType)
+  );
 
   const handleAiGenerate = async () => {
     if (!aiDescription.trim()) {
@@ -189,7 +202,20 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
           <GlassCard
             key={template.id}
             className="p-5 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:ring-2 hover:ring-primary/50 group"
-            onClick={() => onSelectTemplate(template)}
+            onClick={() => {
+              // Attach selected design template branding if chosen
+              if (selectedDesignTemplate) {
+                const branding = {
+                  primary_color: selectedDesignTemplate.branding.primary_color,
+                  accent_color: selectedDesignTemplate.branding.accent_color,
+                  background_style: selectedDesignTemplate.branding.background_style,
+                  template_id: selectedDesignTemplate.id,
+                };
+                onSelectTemplate(template, { branding });
+              } else {
+                onSelectTemplate(template);
+              }
+            }}
           >
             <div className="flex flex-col h-full">
               <div className="flex items-start justify-between mb-3">
@@ -212,6 +238,52 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
             </div>
           </GlassCard>
         ))}
+      </div>
+
+      {/* Design Template Picker */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center gap-2">
+          <Palette className="w-4 h-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">
+            {t('templates.designTitle', 'Design & Farben')}
+          </span>
+          {selectedDesignTemplate && (
+            <Badge variant="outline" className="text-xs border-violet-500/50 text-violet-500">
+              {selectedDesignTemplate.icon} {selectedDesignTemplate.name}
+            </Badge>
+          )}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {designTemplates.map((dt) => (
+            <DesignTemplatePreviewCard
+              key={dt.id}
+              template={dt}
+              isSelected={selectedDesignTemplate?.id === dt.id}
+              onSelect={() => setSelectedDesignTemplate(
+                selectedDesignTemplate?.id === dt.id ? null : dt
+              )}
+            />
+          ))}
+        </div>
+        {otherDesignTemplates.length > 0 && (
+          <details className="group">
+            <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+              {t('templates.moreDesigns', 'Mehr Designs anzeigen')} ({otherDesignTemplates.length})
+            </summary>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-3">
+              {otherDesignTemplates.map((dt) => (
+                <DesignTemplatePreviewCard
+                  key={dt.id}
+                  template={dt}
+                  isSelected={selectedDesignTemplate?.id === dt.id}
+                  onSelect={() => setSelectedDesignTemplate(
+                    selectedDesignTemplate?.id === dt.id ? null : dt
+                  )}
+                />
+              ))}
+            </div>
+          </details>
+        )}
       </div>
 
       {/* AI Template Generator */}
@@ -290,3 +362,90 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
     </motion.div>
   );
 };
+
+function DesignTemplatePreviewCard({
+  template,
+  isSelected,
+  onSelect,
+}: {
+  template: DesignTemplate;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const patternSvg = template.patternId !== 'none' && PATTERN_SVGS[template.patternId]
+    ? PATTERN_SVGS[template.patternId](template.branding.accent_color)
+    : '';
+  const patternDataUrl = patternSvg
+    ? `url("data:image/svg+xml,${encodeURIComponent(patternSvg)}")`
+    : 'none';
+
+  return (
+    <motion.button
+      type="button"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onSelect}
+      className={cn(
+        'relative rounded-xl overflow-hidden border-2 transition-all duration-200 min-h-[130px]',
+        'focus:outline-none focus:ring-2 focus:ring-offset-2',
+        isSelected
+          ? 'border-violet-500 ring-2 ring-violet-500/30 focus:ring-violet-500'
+          : 'border-border/50 hover:border-primary/50 focus:ring-primary'
+      )}
+    >
+      {/* Gradient preview */}
+      <div
+        className="relative h-16 w-full overflow-hidden"
+        style={{ background: template.preview.gradient }}
+      >
+        {patternSvg && (
+          <div
+            className="absolute inset-0 opacity-40"
+            style={{
+              backgroundImage: patternDataUrl,
+              backgroundRepeat: 'repeat',
+            }}
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center gap-1.5 pointer-events-none">
+          {template.backgroundIcons.map((icon, i) => (
+            <motion.span
+              key={i}
+              className="text-base select-none"
+              style={{ opacity: 0.55 }}
+              animate={{ y: [0, -3, 0] }}
+              transition={{
+                duration: 2.5 + i * 0.4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.2,
+              }}
+            >
+              {icon}
+            </motion.span>
+          ))}
+        </div>
+        {isSelected && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute inset-0 bg-violet-500/20 flex items-center justify-center"
+          >
+            <div className="w-7 h-7 bg-violet-500 rounded-full flex items-center justify-center shadow-lg">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+          </motion.div>
+        )}
+      </div>
+      <div className="p-2 bg-card/95 backdrop-blur-sm text-left">
+        <div className="flex items-center gap-1 mb-0.5">
+          <span className="text-sm">{template.icon}</span>
+          <p className="text-[11px] font-semibold text-foreground truncate">{template.name}</p>
+        </div>
+        <p className="text-[10px] text-muted-foreground line-clamp-1 leading-tight">
+          {template.description}
+        </p>
+      </div>
+    </motion.button>
+  );
+}
