@@ -20,8 +20,9 @@ function triggerVibration(intensity: number) {
 
 export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAnswer }: PlayingScreenProps) {
   const player = state.players[state.currentPlayerIndex];
+  const isRandom = state.mode === 'random';
   const timerSeconds = Math.max(0, Math.round((1 - progress) * ((state.timerMin + state.timerMax) / 2)));
-  const pulseSpeed = Math.max(0.3, 1.2 - progress * 0.9);
+  const pulseSpeed = isRandom ? Math.max(0.5, 1.2 - progress * 0.6) : Math.max(0.3, 1.2 - progress * 0.9);
 
   useEffect(() => {
     triggerVibration(progress);
@@ -116,21 +117,39 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
           <motion.div
             className="w-36 h-36 rounded-full flex flex-col items-center justify-center relative"
             style={{
-              background: `conic-gradient(from 0deg, #ff7350 ${progress * 360}deg, #1f1f29 ${progress * 360}deg)`,
-              boxShadow: `0 0 ${20 + progress * 50}px rgba(255,115,80,${0.15 + progress * 0.35})`,
+              background: isRandom
+                ? `conic-gradient(from 0deg, #ff7350 ${(progress > 0.7 ? ((progress - 0.7) / 0.3) : 0) * 360}deg, #1f1f29 ${(progress > 0.7 ? ((progress - 0.7) / 0.3) : 0) * 360}deg)`
+                : `conic-gradient(from 0deg, #ff7350 ${progress * 360}deg, #1f1f29 ${progress * 360}deg)`,
+              boxShadow: isRandom
+                ? `0 0 ${20 + (progress > 0.7 ? (progress - 0.7) / 0.3 * 50 : 0)}px rgba(255,115,80,${0.15 + (progress > 0.7 ? (progress - 0.7) / 0.3 * 0.35 : 0)})`
+                : `0 0 ${20 + progress * 50}px rgba(255,115,80,${0.15 + progress * 0.35})`,
             }}
             animate={{ scale: [1, 1.02, 1] }}
             transition={{ repeat: Infinity, duration: pulseSpeed }}
           >
             <div className="w-[128px] h-[128px] rounded-full bg-[#0d0d15] flex flex-col items-center justify-center">
               <Bomb className="w-8 h-8 text-[#ff7350] mb-1" />
-              <span
-                className="text-3xl font-black text-white tabular-nums"
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-              >
-                {timerSeconds}
-              </span>
-              <span className="text-white/30 text-[10px] uppercase tracking-wider">Sekunden</span>
+              {isRandom ? (
+                <>
+                  <span
+                    className="text-3xl font-black text-[#ff7350] tabular-nums"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                  >
+                    ???
+                  </span>
+                  <span className="text-white/30 text-[10px] uppercase tracking-wider">Random</span>
+                </>
+              ) : (
+                <>
+                  <span
+                    className="text-3xl font-black text-white tabular-nums"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                  >
+                    {timerSeconds}
+                  </span>
+                  <span className="text-white/30 text-[10px] uppercase tracking-wider">Sekunden</span>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
@@ -158,18 +177,20 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
         </div>
       )}
 
-      {/* Intensity Bar */}
-      <div className="relative z-10 w-full max-w-md mx-auto px-4 mb-4">
-        <div className="h-1.5 w-full rounded-full bg-[#1f1f29] overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{
-              width: `${progress * 100}%`,
-              background: 'linear-gradient(90deg, #00e3fd, #ff7350)',
-            }}
-          />
+      {/* Intensity Bar (hidden in random mode) */}
+      {!isRandom && (
+        <div className="relative z-10 w-full max-w-md mx-auto px-4 mb-4">
+          <div className="h-1.5 w-full rounded-full bg-[#1f1f29] overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                width: `${progress * 100}%`,
+                background: 'linear-gradient(90deg, #00e3fd, #ff7350)',
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Action Button */}
       {state.mode !== 'quiz' && (

@@ -1,0 +1,248 @@
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  answers: string[];
+  correctIndex: number;
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+}
+
+export const QUIZ_QUESTIONS_EN: QuizQuestion[] = [
+  // === Geography (20) ===
+  { id: 'geo-1', question: 'What is the capital of Australia?', answers: ['Sydney', 'Melbourne', 'Canberra', 'Brisbane'], correctIndex: 2, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-2', question: 'Which river is the longest in the world?', answers: ['Amazon', 'Nile', 'Yangtze', 'Mississippi'], correctIndex: 1, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-3', question: 'In which country is Machu Picchu?', answers: ['Bolivia', 'Ecuador', 'Peru', 'Colombia'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-4', question: 'How many states does the USA have?', answers: ['48', '49', '50', '52'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-5', question: 'Which is the smallest country in the world?', answers: ['Monaco', 'Vatican City', 'San Marino', 'Liechtenstein'], correctIndex: 1, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-6', question: 'Which sea borders Croatia?', answers: ['Black Sea', 'Mediterranean', 'Adriatic Sea', 'Aegean Sea'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-7', question: 'Which country has the most inhabitants?', answers: ['India', 'China', 'USA', 'Indonesia'], correctIndex: 0, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-8', question: 'What is the largest desert on Earth?', answers: ['Sahara', 'Gobi', 'Antarctica', 'Kalahari'], correctIndex: 2, category: 'Geography', difficulty: 'hard' },
+  { id: 'geo-9', question: 'On which continent is Egypt?', answers: ['Asia', 'Africa', 'Europe', 'South America'], correctIndex: 1, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-10', question: 'Which city is nicknamed the "Big Apple"?', answers: ['Los Angeles', 'Chicago', 'New York', 'Boston'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-11', question: 'Which country is shaped like a boot?', answers: ['Spain', 'Greece', 'Italy', 'Portugal'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-12', question: 'What is the capital of Canada?', answers: ['Toronto', 'Vancouver', 'Montreal', 'Ottawa'], correctIndex: 3, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-13', question: 'Which mountain is the highest in the world?', answers: ['K2', 'Kangchenjunga', 'Mount Everest', 'Lhotse'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-14', question: 'Which country has the most islands?', answers: ['Indonesia', 'Philippines', 'Sweden', 'Norway'], correctIndex: 2, category: 'Geography', difficulty: 'hard' },
+  { id: 'geo-15', question: 'On which river is Paris situated?', answers: ['Rhone', 'Loire', 'Seine', 'Garonne'], correctIndex: 2, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-16', question: 'Which is the largest country by area?', answers: ['Canada', 'China', 'USA', 'Russia'], correctIndex: 3, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-17', question: 'In which country is the Statue of Liberty?', answers: ['France', 'USA', 'England', 'Canada'], correctIndex: 1, category: 'Geography', difficulty: 'easy' },
+  { id: 'geo-18', question: 'Which city lies on the Bosphorus?', answers: ['Athens', 'Istanbul', 'Ankara', 'Bucharest'], correctIndex: 1, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-19', question: 'What is the largest lake in North America?', answers: ['Lake Michigan', 'Lake Huron', 'Lake Superior', 'Lake Erie'], correctIndex: 2, category: 'Geography', difficulty: 'medium' },
+  { id: 'geo-20', question: 'Which US state is the largest by area?', answers: ['Texas', 'California', 'Montana', 'Alaska'], correctIndex: 3, category: 'Geography', difficulty: 'medium' },
+
+  // === History (20) ===
+  { id: 'his-1', question: 'In which year did the Berlin Wall fall?', answers: ['1987', '1988', '1989', '1990'], correctIndex: 2, category: 'History', difficulty: 'easy' },
+  { id: 'his-2', question: 'Who was the first person on the Moon?', answers: ['Buzz Aldrin', 'Neil Armstrong', 'Yuri Gagarin', 'John Glenn'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-3', question: 'Which people built the Pyramids of Giza?', answers: ['Romans', 'Greeks', 'Egyptians', 'Persians'], correctIndex: 2, category: 'History', difficulty: 'easy' },
+  { id: 'his-4', question: 'When did World War I begin?', answers: ['1912', '1914', '1916', '1918'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-5', question: 'Who invented the printing press?', answers: ['Martin Luther', 'Johannes Gutenberg', 'Nicolaus Copernicus', 'Leonardo da Vinci'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-6', question: 'Which ocean did Magellan name the "Pacific"?', answers: ['Atlantic', 'Indian Ocean', 'Pacific', 'Arctic Ocean'], correctIndex: 2, category: 'History', difficulty: 'medium' },
+  { id: 'his-7', question: 'When was the Titanic sunk?', answers: ['1910', '1912', '1914', '1916'], correctIndex: 1, category: 'History', difficulty: 'medium' },
+  { id: 'his-8', question: 'Which Roman emperor had the Colosseum built?', answers: ['Nero', 'Augustus', 'Vespasian', 'Trajan'], correctIndex: 2, category: 'History', difficulty: 'hard' },
+  { id: 'his-9', question: 'In which year did the USA declare independence?', answers: ['1774', '1775', '1776', '1777'], correctIndex: 2, category: 'History', difficulty: 'easy' },
+  { id: 'his-10', question: 'Which country gifted the Statue of Liberty to the USA?', answers: ['England', 'Germany', 'France', 'Spain'], correctIndex: 2, category: 'History', difficulty: 'medium' },
+  { id: 'his-11', question: 'Who painted the Mona Lisa?', answers: ['Michelangelo', 'Raphael', 'Leonardo da Vinci', 'Rembrandt'], correctIndex: 2, category: 'History', difficulty: 'easy' },
+  { id: 'his-12', question: 'Which animal was the emblem of the Roman Empire?', answers: ['Lion', 'Eagle', 'Bear', 'Wolf'], correctIndex: 1, category: 'History', difficulty: 'medium' },
+  { id: 'his-13', question: 'When did World War II end in Europe?', answers: ['1944', '1945', '1946', '1947'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-14', question: 'Who wrote "Das Kapital"?', answers: ['Friedrich Engels', 'Karl Marx', 'Adam Smith', 'Max Weber'], correctIndex: 1, category: 'History', difficulty: 'medium' },
+  { id: 'his-15', question: 'Which city was destroyed by a volcanic eruption in 79 AD?', answers: ['Rome', 'Athens', 'Pompeii', 'Carthage'], correctIndex: 2, category: 'History', difficulty: 'medium' },
+  { id: 'his-16', question: 'Who was the first President of the United States?', answers: ['Thomas Jefferson', 'George Washington', 'John Adams', 'Benjamin Franklin'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-17', question: 'In which year did Columbus reach the Americas?', answers: ['1482', '1492', '1502', '1512'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-18', question: 'Which ancient wonder stood in Babylon?', answers: ['Colossus of Rhodes', 'Hanging Gardens', 'Lighthouse of Pharos', 'Statue of Zeus'], correctIndex: 1, category: 'History', difficulty: 'hard' },
+  { id: 'his-19', question: 'Who led the Protestant Reformation?', answers: ['John Calvin', 'Martin Luther', 'Ulrich Zwingli', 'Jan Hus'], correctIndex: 1, category: 'History', difficulty: 'easy' },
+  { id: 'his-20', question: 'Which empire ruled large parts of South America before colonization?', answers: ['Aztec', 'Maya', 'Inca', 'Olmec'], correctIndex: 2, category: 'History', difficulty: 'medium' },
+
+  // === Sports (20) ===
+  { id: 'spo-1', question: 'How many players does a soccer team have on the field?', answers: ['9', '10', '11', '12'], correctIndex: 2, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-2', question: 'Which country won the 2014 FIFA World Cup?', answers: ['Brazil', 'Argentina', 'Germany', 'Spain'], correctIndex: 2, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-3', question: 'How long is a regulation ice hockey game?', answers: ['60 minutes', '80 minutes', '90 minutes', '120 minutes'], correctIndex: 0, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-4', question: 'Which boxer was known as "The Greatest"?', answers: ['Mike Tyson', 'Muhammad Ali', 'Floyd Mayweather', 'Lennox Lewis'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-5', question: 'How many rings does the Olympic symbol have?', answers: ['3', '4', '5', '6'], correctIndex: 2, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-6', question: 'In which sport is there a "Slam Dunk"?', answers: ['Volleyball', 'Tennis', 'Basketball', 'Handball'], correctIndex: 2, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-7', question: 'Who holds the record for the fastest 100m sprint?', answers: ['Carl Lewis', 'Usain Bolt', 'Tyson Gay', 'Yohan Blake'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-8', question: 'Which Grand Slam tournament is played on grass?', answers: ['Roland Garros', 'US Open', 'Australian Open', 'Wimbledon'], correctIndex: 3, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-9', question: 'How many points do you need to win a volleyball set?', answers: ['15', '21', '25', '30'], correctIndex: 2, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-10', question: 'Which country has the most Olympic gold medals overall?', answers: ['China', 'Russia', 'USA', 'Great Britain'], correctIndex: 2, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-11', question: 'In which city were the 1996 Summer Olympics held?', answers: ['Barcelona', 'Atlanta', 'Sydney', 'Athens'], correctIndex: 1, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-12', question: 'How many sets does a men\'s tennis Grand Slam match need to win?', answers: ['2', '3', '4', '5'], correctIndex: 1, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-13', question: 'What color is the 8-ball in pool billiards?', answers: ['Red', 'Blue', 'Black', 'Green'], correctIndex: 2, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-14', question: 'How long is a marathon in kilometers (rounded)?', answers: ['40 km', '42 km', '44 km', '46 km'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-15', question: 'Which soccer club has the most Champions League titles?', answers: ['FC Barcelona', 'AC Milan', 'Real Madrid', 'Bayern Munich'], correctIndex: 2, category: 'Sports', difficulty: 'medium' },
+  { id: 'spo-16', question: 'In which sport do you score a "Birdie"?', answers: ['Badminton', 'Golf', 'Cricket', 'Tennis'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-17', question: 'How many players are on a basketball team on the court?', answers: ['4', '5', '6', '7'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-18', question: 'Which country is known for Sumo wrestling?', answers: ['China', 'Korea', 'Japan', 'Thailand'], correctIndex: 2, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-19', question: 'What is the Super Bowl?', answers: ['Basketball finals', 'American football championship', 'Baseball World Series', 'Hockey championship'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+  { id: 'spo-20', question: 'Which sport combines swimming, cycling and running?', answers: ['Biathlon', 'Triathlon', 'Pentathlon', 'Decathlon'], correctIndex: 1, category: 'Sports', difficulty: 'easy' },
+
+  // === Science (20) ===
+  { id: 'wis-1', question: 'What is the chemical formula for water?', answers: ['H2O', 'CO2', 'O2', 'NaCl'], correctIndex: 0, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-2', question: 'How many planets does our solar system have?', answers: ['7', '8', '9', '10'], correctIndex: 1, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-3', question: 'Which gas do plants absorb?', answers: ['Oxygen', 'Nitrogen', 'Carbon dioxide', 'Helium'], correctIndex: 2, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-4', question: 'Which organ pumps blood through the body?', answers: ['Lungs', 'Liver', 'Heart', 'Kidney'], correctIndex: 2, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-5', question: 'What is the speed of light?', answers: ['150,000 km/s', '200,000 km/s', '300,000 km/s', '400,000 km/s'], correctIndex: 2, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-6', question: 'Which element has atomic number 1?', answers: ['Helium', 'Hydrogen', 'Lithium', 'Oxygen'], correctIndex: 1, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-7', question: 'What is the unit of electrical voltage?', answers: ['Ampere', 'Watt', 'Volt', 'Ohm'], correctIndex: 2, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-8', question: 'Which planet is closest to the Sun?', answers: ['Venus', 'Mercury', 'Mars', 'Earth'], correctIndex: 1, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-9', question: 'What is the hardest natural substance?', answers: ['Steel', 'Diamond', 'Quartz', 'Sapphire'], correctIndex: 1, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-10', question: 'How many bones does an adult human have approximately?', answers: ['106', '156', '206', '256'], correctIndex: 2, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-11', question: 'Which vitamin does the body produce through sunlight?', answers: ['Vitamin A', 'Vitamin B', 'Vitamin C', 'Vitamin D'], correctIndex: 3, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-12', question: 'What is the chemical formula for table salt?', answers: ['KCl', 'NaCl', 'CaCl2', 'MgCl2'], correctIndex: 1, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-13', question: 'Which planet has the most moons?', answers: ['Jupiter', 'Saturn', 'Uranus', 'Neptune'], correctIndex: 1, category: 'Science', difficulty: 'hard' },
+  { id: 'wis-14', question: 'What does a barometer measure?', answers: ['Temperature', 'Humidity', 'Air pressure', 'Wind speed'], correctIndex: 2, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-15', question: 'Which blood vessel carries blood away from the heart?', answers: ['Vein', 'Artery', 'Capillary', 'Lymph vessel'], correctIndex: 1, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-16', question: 'Who developed the theory of relativity?', answers: ['Isaac Newton', 'Niels Bohr', 'Albert Einstein', 'Max Planck'], correctIndex: 2, category: 'Science', difficulty: 'easy' },
+  { id: 'wis-17', question: 'What is the largest organ of the human body?', answers: ['Liver', 'Skin', 'Lungs', 'Intestines'], correctIndex: 1, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-18', question: 'Which animal has blue blood?', answers: ['Octopus', 'Shark', 'Jellyfish', 'Eel'], correctIndex: 0, category: 'Science', difficulty: 'hard' },
+  { id: 'wis-19', question: 'What is the pH value of pure water?', answers: ['5', '6', '7', '8'], correctIndex: 2, category: 'Science', difficulty: 'medium' },
+  { id: 'wis-20', question: 'Which gas makes up most of Earth\'s atmosphere?', answers: ['Oxygen', 'Nitrogen', 'Carbon dioxide', 'Argon'], correctIndex: 1, category: 'Science', difficulty: 'medium' },
+
+  // === Film & TV (20) ===
+  { id: 'fil-1', question: 'Who plays Jack Sparrow in "Pirates of the Caribbean"?', answers: ['Orlando Bloom', 'Johnny Depp', 'Brad Pitt', 'Leonardo DiCaprio'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-2', question: 'In which movie is the line "I am your father"?', answers: ['Star Trek', 'Star Wars', 'Harry Potter', 'Lord of the Rings'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-3', question: 'What is the main character\'s name in "Breaking Bad"?', answers: ['Jesse Pinkman', 'Saul Goodman', 'Walter White', 'Hank Schrader'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-4', question: 'Which film won the first Academy Award for Best Picture?', answers: ['Wings', 'Sunrise', 'The Jazz Singer', 'Metropolis'], correctIndex: 0, category: 'Film & TV', difficulty: 'hard' },
+  { id: 'fil-5', question: 'What is the clownfish\'s name in "Finding Nemo"?', answers: ['Dory', 'Marlin', 'Nemo', 'Gil'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-6', question: 'Which director made "Titanic" and "Avatar"?', answers: ['Steven Spielberg', 'James Cameron', 'Christopher Nolan', 'Ridley Scott'], correctIndex: 1, category: 'Film & TV', difficulty: 'medium' },
+  { id: 'fil-7', question: 'How many Harry Potter movies are there?', answers: ['6', '7', '8', '9'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-8', question: 'Which series is set in Winterfell?', answers: ['The Witcher', 'Game of Thrones', 'Vikings', 'The Last Kingdom'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-9', question: 'Who plays the Joker in "The Dark Knight"?', answers: ['Jack Nicholson', 'Joaquin Phoenix', 'Heath Ledger', 'Jared Leto'], correctIndex: 2, category: 'Film & TV', difficulty: 'medium' },
+  { id: 'fil-10', question: 'In which city is "Friends" set?', answers: ['Los Angeles', 'Chicago', 'New York', 'Boston'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-11', question: 'Which superhero comes from Krypton?', answers: ['Batman', 'Spider-Man', 'Superman', 'Wonder Woman'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-12', question: 'What is the spaceship in "Star Trek" called?', answers: ['Millennium Falcon', 'Enterprise', 'Serenity', 'Discovery'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-13', question: 'Which Disney film takes place in a Mexican "Land of the Dead"?', answers: ['Moana', 'Encanto', 'Coco', 'Luca'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-14', question: 'Who created "The Simpsons"?', answers: ['Seth MacFarlane', 'Matt Groening', 'Trey Parker', 'Mike Judge'], correctIndex: 1, category: 'Film & TV', difficulty: 'medium' },
+  { id: 'fil-15', question: 'In which movie does Neo fight the Matrix?', answers: ['Inception', 'Blade Runner', 'The Matrix', 'Tron'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-16', question: 'What is the Ice Queen\'s name in the Disney film "Frozen"?', answers: ['Anna', 'Elsa', 'Rapunzel', 'Merida'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-17', question: 'What color is Shrek\'s skin?', answers: ['Blue', 'Green', 'Yellow', 'Brown'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-18', question: 'In which series are there "White Walkers"?', answers: ['The Walking Dead', 'Game of Thrones', 'Stranger Things', 'The 100'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-19', question: 'Who plays Iron Man in the MCU?', answers: ['Chris Evans', 'Chris Hemsworth', 'Robert Downey Jr.', 'Mark Ruffalo'], correctIndex: 2, category: 'Film & TV', difficulty: 'easy' },
+  { id: 'fil-20', question: 'Which series is about a heist drama in Spain?', answers: ['Narcos', 'Money Heist', 'Elite', 'Vis a Vis'], correctIndex: 1, category: 'Film & TV', difficulty: 'easy' },
+
+  // === Music (20) ===
+  { id: 'mus-1', question: 'Which band sang "Bohemian Rhapsody"?', answers: ['The Beatles', 'Led Zeppelin', 'Queen', 'Pink Floyd'], correctIndex: 2, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-2', question: 'From which country does ABBA come?', answers: ['Norway', 'Denmark', 'Finland', 'Sweden'], correctIndex: 3, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-3', question: 'Who is the "King of Pop"?', answers: ['Elvis Presley', 'Michael Jackson', 'Prince', 'Freddie Mercury'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-4', question: 'Which instrument has 88 keys?', answers: ['Organ', 'Accordion', 'Piano', 'Keyboard'], correctIndex: 2, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-5', question: 'Who composed the "Moonlight Sonata"?', answers: ['Mozart', 'Beethoven', 'Bach', 'Chopin'], correctIndex: 1, category: 'Music', difficulty: 'medium' },
+  { id: 'mus-6', question: 'How many strings does a standard guitar have?', answers: ['4', '5', '6', '7'], correctIndex: 2, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-7', question: 'Which rapper is known for "Lose Yourself"?', answers: ['Jay-Z', '50 Cent', 'Eminem', 'Kanye West'], correctIndex: 2, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-8', question: 'Which singer is known as "Queen Bey"?', answers: ['Rihanna', 'Beyonce', 'Adele', 'Taylor Swift'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-9', question: 'From which city do the Beatles come?', answers: ['London', 'Manchester', 'Liverpool', 'Birmingham'], correctIndex: 2, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-10', question: 'Which instrument is played with a bow?', answers: ['Flute', 'Violin', 'Trumpet', 'Guitar'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-11', question: 'What is the famous music festival in the Nevada desert?', answers: ['Coachella', 'Burning Man', 'Tomorrowland', 'Glastonbury'], correctIndex: 1, category: 'Music', difficulty: 'medium' },
+  { id: 'mus-12', question: 'Which composer went deaf and still composed?', answers: ['Mozart', 'Beethoven', 'Haydn', 'Schubert'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-13', question: 'Who is the lead singer of Coldplay?', answers: ['Bono', 'Chris Martin', 'Thom Yorke', 'Brandon Flowers'], correctIndex: 1, category: 'Music', difficulty: 'medium' },
+  { id: 'mus-14', question: 'Which country often wins the Eurovision Song Contest?', answers: ['Sweden', 'Ireland', 'France', 'UK'], correctIndex: 0, category: 'Music', difficulty: 'medium' },
+  { id: 'mus-15', question: 'Which artist is known for "Shape of You"?', answers: ['Justin Bieber', 'Ed Sheeran', 'Bruno Mars', 'The Weeknd'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-16', question: 'How many symphonies did Beethoven write?', answers: ['5', '7', '9', '12'], correctIndex: 2, category: 'Music', difficulty: 'hard' },
+  { id: 'mus-17', question: 'Which music genre originated in Jamaica?', answers: ['Blues', 'Reggae', 'Salsa', 'Samba'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-18', question: 'Who sang "Rolling in the Deep"?', answers: ['Amy Winehouse', 'Adele', 'Lana Del Rey', 'Florence Welch'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+  { id: 'mus-19', question: 'Which brass instrument is the largest in the orchestra?', answers: ['Trombone', 'Tuba', 'French Horn', 'Bassoon'], correctIndex: 1, category: 'Music', difficulty: 'medium' },
+  { id: 'mus-20', question: 'Who sang "Thriller"?', answers: ['Prince', 'Michael Jackson', 'Stevie Wonder', 'James Brown'], correctIndex: 1, category: 'Music', difficulty: 'easy' },
+
+  // === General Knowledge (20) ===
+  { id: 'all-1', question: 'How many days does a leap year have?', answers: ['364', '365', '366', '367'], correctIndex: 2, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-2', question: 'What color do you get when mixing blue and yellow?', answers: ['Red', 'Green', 'Orange', 'Purple'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-3', question: 'How many sides does a cube have?', answers: ['4', '6', '8', '12'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-4', question: 'What does "EU" stand for?', answers: ['European Union', 'Economic Union', 'Eurasian Union', 'Environmental Unit'], correctIndex: 0, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-5', question: 'What animal is the national symbol of the USA?', answers: ['Bear', 'Lion', 'Bald Eagle', 'Buffalo'], correctIndex: 2, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-6', question: 'What is the square root of 144?', answers: ['10', '11', '12', '13'], correctIndex: 2, category: 'General Knowledge', difficulty: 'medium' },
+  { id: 'all-7', question: 'What is the currency of Japan?', answers: ['Won', 'Yuan', 'Yen', 'Rupee'], correctIndex: 2, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-8', question: 'On which day is American Independence Day?', answers: ['July 4', 'June 14', 'January 1', 'December 25'], correctIndex: 0, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-9', question: 'How many stripes are on the American flag?', answers: ['11', '12', '13', '14'], correctIndex: 2, category: 'General Knowledge', difficulty: 'medium' },
+  { id: 'all-10', question: 'What is the difference between a camel and a dromedary?', answers: ['Color', 'Number of humps', 'Size', 'Origin'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-11', question: 'Which zodiac sign starts on March 21?', answers: ['Pisces', 'Aries', 'Taurus', 'Gemini'], correctIndex: 1, category: 'General Knowledge', difficulty: 'medium' },
+  { id: 'all-12', question: 'How many zeros does a million have?', answers: ['5', '6', '7', '8'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-13', question: 'What is the official language of Brazil?', answers: ['Spanish', 'Portuguese', 'French', 'English'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-14', question: 'Who is credited with inventing the light bulb?', answers: ['Nikola Tesla', 'Thomas Edison', 'Alexander Graham Bell', 'James Watt'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-15', question: 'Which metal is liquid at room temperature?', answers: ['Lead', 'Mercury', 'Zinc', 'Tin'], correctIndex: 1, category: 'General Knowledge', difficulty: 'medium' },
+  { id: 'all-16', question: 'How many letters are in the English alphabet?', answers: ['24', '26', '28', '30'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-17', question: 'What does "www" stand for?', answers: ['World Web Wide', 'World Wide Web', 'Web World Wide', 'Wide World Web'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-18', question: 'Which device measures temperature?', answers: ['Barometer', 'Thermometer', 'Hygrometer', 'Tachometer'], correctIndex: 1, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-19', question: 'How many hours are in a day?', answers: ['12', '20', '24', '48'], correctIndex: 2, category: 'General Knowledge', difficulty: 'easy' },
+  { id: 'all-20', question: 'Which organ filters the blood?', answers: ['Heart', 'Lungs', 'Kidney', 'Stomach'], correctIndex: 2, category: 'General Knowledge', difficulty: 'easy' },
+
+  // === Nature (20) ===
+  { id: 'nat-1', question: 'Which animal is the largest in the world?', answers: ['Elephant', 'Giraffe', 'Blue Whale', 'Great White Shark'], correctIndex: 2, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-2', question: 'How many legs does a spider have?', answers: ['6', '8', '10', '12'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-3', question: 'Which bird cannot fly?', answers: ['Eagle', 'Ostrich', 'Parrot', 'Hummingbird'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-4', question: 'Which animal hibernates?', answers: ['Fox', 'Deer', 'Hedgehog', 'Squirrel'], correctIndex: 2, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-5', question: 'What is a diamond made of chemically?', answers: ['Silicon', 'Carbon', 'Iron', 'Calcium'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-6', question: 'Which plant grows the fastest?', answers: ['Oak', 'Bamboo', 'Pine', 'Sunflower'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-7', question: 'What is a male horse called?', answers: ['Mare', 'Foal', 'Stallion', 'Gelding'], correctIndex: 2, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-8', question: 'Which animal has the longest tongue relative to body size?', answers: ['Frog', 'Chameleon', 'Anteater', 'Giraffe'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-9', question: 'What is the fastest land animal?', answers: ['Lion', 'Cheetah', 'Antelope', 'Greyhound'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-10', question: 'Which conifer tree drops its needles in winter?', answers: ['Spruce', 'Pine', 'Larch', 'Fir'], correctIndex: 2, category: 'Nature', difficulty: 'hard' },
+  { id: 'nat-11', question: 'What is the largest land predator?', answers: ['Grizzly Bear', 'Polar Bear', 'Siberian Tiger', 'Lion'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-12', question: 'Which animal can turn its head almost 360 degrees?', answers: ['Cat', 'Owl', 'Chameleon', 'Snake'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-13', question: 'How many hearts does an octopus have?', answers: ['1', '2', '3', '4'], correctIndex: 2, category: 'Nature', difficulty: 'hard' },
+  { id: 'nat-14', question: 'Which flower is the symbol of the Netherlands?', answers: ['Rose', 'Sunflower', 'Tulip', 'Lily'], correctIndex: 2, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-15', question: 'Which animal lives the longest?', answers: ['Elephant', 'Tortoise', 'Parrot', 'Whale'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-16', question: 'Which mammal can fly?', answers: ['Flying Squirrel', 'Bat', 'Flying Fox', 'Sugar Glider'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-17', question: 'How do bees communicate?', answers: ['By singing', 'By dancing', 'By colors', 'By scents'], correctIndex: 1, category: 'Nature', difficulty: 'medium' },
+  { id: 'nat-18', question: 'Which fish is the fastest in the ocean?', answers: ['Shark', 'Tuna', 'Swordfish', 'Sailfish'], correctIndex: 3, category: 'Nature', difficulty: 'hard' },
+  { id: 'nat-19', question: 'What is the fruit of an oak tree?', answers: ['Beechnut', 'Acorn', 'Chestnut', 'Walnut'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+  { id: 'nat-20', question: 'Which animal changes color for camouflage?', answers: ['Gecko', 'Chameleon', 'Frog', 'Snake'], correctIndex: 1, category: 'Nature', difficulty: 'easy' },
+
+  // === Technology (20) ===
+  { id: 'tec-1', question: 'What does "USB" stand for?', answers: ['Universal System Bus', 'Universal Serial Bus', 'Unified Serial Bus', 'Ultra Speed Bus'], correctIndex: 1, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-2', question: 'Who founded Apple?', answers: ['Bill Gates', 'Steve Jobs', 'Elon Musk', 'Jeff Bezos'], correctIndex: 1, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-3', question: 'What does "HTML" stand for?', answers: ['Hyper Text Markup Language', 'High Tech Modern Language', 'Hyper Transfer Markup Language', 'Home Tool Markup Language'], correctIndex: 0, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-4', question: 'Which company developed Android?', answers: ['Apple', 'Microsoft', 'Google', 'Samsung'], correctIndex: 2, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-5', question: 'In which year was the iPhone first introduced?', answers: ['2005', '2006', '2007', '2008'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-6', question: 'What is the difference between RAM and ROM?', answers: ['RAM is faster', 'RAM is volatile, ROM is not', 'ROM is larger', 'No difference'], correctIndex: 1, category: 'Technology', difficulty: 'hard' },
+  { id: 'tec-7', question: 'Which programming language was developed by Guido van Rossum?', answers: ['Java', 'Ruby', 'Python', 'C++'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-8', question: 'What does "AI" stand for?', answers: ['Automated Intelligence', 'Artificial Intelligence', 'Advanced Integration', 'Automated Integration'], correctIndex: 1, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-9', question: 'Which social network was founded in 2004?', answers: ['Twitter', 'Instagram', 'Facebook', 'TikTok'], correctIndex: 2, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-10', question: 'What is Bluetooth?', answers: ['A cable', 'A wireless connection', 'An operating system', 'A browser'], correctIndex: 1, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-11', question: 'Which company makes the PlayStation console?', answers: ['Nintendo', 'Microsoft', 'Sony', 'Sega'], correctIndex: 2, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-12', question: 'What is a "Firewall"?', answers: ['An antivirus program', 'A network security system', 'An operating system', 'A browser plugin'], correctIndex: 1, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-13', question: 'Who invented the World Wide Web?', answers: ['Steve Jobs', 'Bill Gates', 'Tim Berners-Lee', 'Mark Zuckerberg'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-14', question: 'Which operating system is based on Linux?', answers: ['Windows', 'macOS', 'Android', 'iOS'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-15', question: 'What does "GPS" stand for?', answers: ['Global Positioning System', 'General Purpose Software', 'Graphical Processing System', 'Global Processing Standard'], correctIndex: 0, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-16', question: 'Which company is behind the Bing search engine?', answers: ['Google', 'Apple', 'Microsoft', 'Yahoo'], correctIndex: 2, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-17', question: 'What is an internet "Cookie"?', answers: ['A virus', 'A stored data file', 'A program', 'A network'], correctIndex: 1, category: 'Technology', difficulty: 'easy' },
+  { id: 'tec-18', question: 'How many bits are in a byte?', answers: ['4', '6', '8', '16'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-19', question: 'Which company bought WhatsApp in 2014?', answers: ['Google', 'Microsoft', 'Facebook', 'Twitter'], correctIndex: 2, category: 'Technology', difficulty: 'medium' },
+  { id: 'tec-20', question: 'What is "Cloud Computing"?', answers: ['Weather forecasting via PC', 'Data processing over the internet', 'A new operating system', 'Wireless charging'], correctIndex: 1, category: 'Technology', difficulty: 'easy' },
+
+  // === Food & Drinks (20) ===
+  { id: 'ess-1', question: 'From which country does pizza originate?', answers: ['Spain', 'France', 'Italy', 'Greece'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-2', question: 'What is wasabi?', answers: ['A fruit', 'A fish', 'A spicy paste', 'A drink'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-3', question: 'Which drink is made from grapes?', answers: ['Beer', 'Whiskey', 'Wine', 'Vodka'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-4', question: 'What is tofu?', answers: ['A soy-based meat substitute', 'A fish', 'A vegetable', 'A type of noodle'], correctIndex: 0, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-5', question: 'From which country does sushi come?', answers: ['China', 'Korea', 'Japan', 'Thailand'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-6', question: 'Which vitamin is abundant in oranges?', answers: ['Vitamin A', 'Vitamin B', 'Vitamin C', 'Vitamin D'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-7', question: 'What is the main ingredient of guacamole?', answers: ['Tomato', 'Avocado', 'Bell pepper', 'Cucumber'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-8', question: 'Which spice is also called "red gold"?', answers: ['Paprika', 'Saffron', 'Chili', 'Turmeric'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'medium' },
+  { id: 'ess-9', question: 'What is kimchi?', answers: ['Japanese rice', 'Korean fermented vegetables', 'Chinese soup', 'Thai salad'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'medium' },
+  { id: 'ess-10', question: 'Which grain is beer mainly brewed from?', answers: ['Wheat', 'Rice', 'Barley', 'Rye'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'medium' },
+  { id: 'ess-11', question: 'What is a praline?', answers: ['A candy', 'A filled chocolate piece', 'A cookie', 'A cake'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-12', question: 'Which country is known for paella?', answers: ['Italy', 'Portugal', 'Spain', 'France'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-13', question: 'What does "al dente" mean for pasta?', answers: ['Soft cooked', 'Firm to the bite', 'Raw', 'Overcooked'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-14', question: 'Which fruit has its seeds on the outside?', answers: ['Raspberry', 'Strawberry', 'Blackberry', 'Blueberry'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'medium' },
+  { id: 'ess-15', question: 'From which bean is chocolate made?', answers: ['Coffee bean', 'Soybean', 'Cocoa bean', 'Vanilla bean'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-16', question: 'Which vegetable makes you cry when cutting?', answers: ['Garlic', 'Onion', 'Radish', 'Bell pepper'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-17', question: 'What is marzipan mainly made of?', answers: ['Sugar and almonds', 'Flour and butter', 'Chocolate and cream', 'Honey and nuts'], correctIndex: 0, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-18', question: 'Which country produces the most coffee?', answers: ['Colombia', 'Ethiopia', 'Vietnam', 'Brazil'], correctIndex: 3, category: 'Food & Drinks', difficulty: 'medium' },
+  { id: 'ess-19', question: 'What is a croissant typical of?', answers: ['Germany', 'France', 'Italy', 'England'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'easy' },
+  { id: 'ess-20', question: 'Which drink is traditionally served at a British afternoon?', answers: ['Wine', 'Coffee', 'Tea', 'Cocktail'], correctIndex: 2, category: 'Food & Drinks', difficulty: 'easy' },
+];
+
+let _usedIndices: Set<number> = new Set();
+
+export function getRandomQuestion(): QuizQuestion {
+  if (_usedIndices.size >= QUIZ_QUESTIONS_EN.length) {
+    _usedIndices.clear();
+  }
+  let idx: number;
+  do {
+    idx = Math.floor(Math.random() * QUIZ_QUESTIONS_EN.length);
+  } while (_usedIndices.has(idx));
+  _usedIndices.add(idx);
+  return QUIZ_QUESTIONS_EN[idx];
+}
+
+export function resetQuestions(): void {
+  _usedIndices.clear();
+}

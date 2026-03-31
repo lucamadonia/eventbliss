@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target } from 'lucide-react';
+import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { GEO_LOCATIONS, type GeoLocation } from './geo-locations';
+import MapRound, { type MapRoundResult } from './MapRound';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 type Phase = 'setup' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
-type Mode = 'memory' | 'speed' | 'unterschiede';
+type Mode = 'memory' | 'speed' | 'unterschiede' | 'karte';
 
 interface Scene {
   name: string;
@@ -261,10 +263,11 @@ const GAME_MODES: GameMode[] = [
   { id: 'memory', name: 'Memory', desc: 'Merke dir die Szene und beantworte Fragen', icon: <Eye className="w-6 h-6" /> },
   { id: 'speed', name: 'Speed', desc: 'Wer findet es am schnellsten?', icon: <Zap className="w-6 h-6" /> },
   { id: 'unterschiede', name: 'Unterschiede', desc: 'Finde 3 Unterschiede in zwei Bildern', icon: <GitCompare className="w-6 h-6" /> },
+  { id: 'karte', name: 'Karte', desc: 'Finde Staedte und Laender auf der Weltkarte', icon: <MapPin className="w-6 h-6" /> },
 ];
 
 const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 5, max: 20, default: 10, step: 1, label: 'Merke-Zeit (Sek.)' },
+  timer: { min: 5, max: 60, default: 10, step: 1, label: 'Zeit (Sek.)' },
   rounds: { min: 3, max: 15, default: 8, step: 1, label: 'Runden' },
 };
 
@@ -283,6 +286,10 @@ export default function FindItGame() {
   const [totalRounds, setTotalRounds] = useState(8);
   const [studyTime, setStudyTime] = useState(10);
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
+
+  // Geo state (Karte mode)
+  const [geoPool, setGeoPool] = useState<GeoLocation[]>([]);
+  const [currentGeo, setCurrentGeo] = useState<GeoLocation | null>(null);
 
   // Scene state
   const [scenePool, setScenePool] = useState<Scene[]>([]);
@@ -324,6 +331,14 @@ export default function FindItGame() {
     setCurrentPlayerIdx(0);
     setScenePool(shuffleArray([...SCENES]));
     setDiffPool(shuffleArray([...DIFF_SCENES]));
+
+    if (modeId === 'karte') {
+      const shuffledGeo = shuffleArray([...GEO_LOCATIONS]);
+      setGeoPool(shuffledGeo);
+      setCurrentGeo(shuffledGeo[0]);
+      setPhase('question'); // MapRound manages its own phases
+      return;
+    }
 
     // Start first round
     startRound(modeId as Mode, shuffleArray([...SCENES]), shuffleArray([...DIFF_SCENES]), 0, settings.timer);
@@ -619,8 +634,51 @@ export default function FindItGame() {
             </motion.div>
           )}
 
+          {/* Karte Mode (MapRound) */}
+          {phase === 'question' && mode === 'karte' && currentGeo && (
+            <motion.div
+              key={`karte-${round}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0"
+            >
+              <MapRound
+                location={currentGeo}
+                players={players}
+                roundNumber={round + 1}
+                totalRounds={totalRounds}
+                timerSeconds={studyTime}
+                onRoundComplete={(results: MapRoundResult[]) => {
+                  // Apply scoring
+                  const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
+                  setPlayers(prev => prev.map(p => {
+                    const res = results.find(r => r.playerId === p.id);
+                    if (!res) return p;
+                    const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
+                    const isWinner = sorted[0]?.playerId === p.id;
+                    const bonus = isWinner ? 100 : 0;
+                    return { ...p, score: p.score + pts + bonus, correct: p.correct + (isWinner ? 1 : 0) };
+                  }));
+
+                  // Next round or game over
+                  const nextRound = round + 1;
+                  if (nextRound >= totalRounds) {
+                    setPhase('gameOver');
+                  } else {
+                    setRound(nextRound);
+                    const nextGeo = geoPool[(nextRound) % geoPool.length];
+                    setCurrentGeo(nextGeo);
+                    // phase stays 'question', MapRound will re-mount with new location
+                  }
+                }}
+                onExit={() => navigate('/games')}
+              />
+            </motion.div>
+          )}
+
           {/* Question Phase */}
-          {(phase === 'question' || phase === 'answer') && mode !== 'unterschiede' && currentScene && (
+          {(phase === 'question' || phase === 'answer') && mode !== 'unterschiede' && mode !== 'karte' && currentScene && (
             <motion.div
               key={`q-${questionIdx}`}
               initial={{ opacity: 0, x: 30 }}

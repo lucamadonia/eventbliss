@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Gamepad2, Bomb, Brain, MessageSquareOff, Timer, Users, Clock,
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
-  HelpCircle, Palette, Languages, Hand, Dices,
+  HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
+  Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
+  Wine,
 } from "lucide-react";
 
 const CategoryGame = lazy(() => import("@/games/category/CategoryGame"));
@@ -15,6 +17,15 @@ const ImpostorGame = lazy(() => import("@/games/impostor/ImpostorGame"));
 const WordPressGame = lazy(() => import("@/games/wordpress/WordPressGame"));
 const FindItGame = lazy(() => import("@/games/findit/FindItGame"));
 const SplitQuizGame = lazy(() => import("@/games/splitquiz/SplitQuizGame"));
+const SharedQuizGame = lazy(() => import("@/games/sharedquiz/SharedQuizGame"));
+const QuickDrawGame = lazy(() => import("@/games/quickdraw/QuickDrawGame"));
+const TruthDareGame = lazy(() => import("@/games/truthdare/TruthDareGame"));
+const ThisOrThatGame = lazy(() => import("@/games/thisorthat/ThisOrThatGame"));
+const WhoAmIGame = lazy(() => import("@/games/whoami/WhoAmIGame"));
+const EmojiGuessGame = lazy(() => import("@/games/emojiguess/EmojiGuessGame"));
+const FakeOrFactGame = lazy(() => import("@/games/fakeorfact/FakeOrFactGame"));
+const StoryBuilderGame = lazy(() => import("@/games/storybuilder/StoryBuilderGame"));
+const BottleSpinGame = lazy(() => import("@/games/bottlespin/BottleSpinGame"));
 
 // Design tokens
 const C = {
@@ -48,6 +59,15 @@ const allGames: GameCardData[] = [
   { id: "drueck-das-wort", name: "Drück das Wort", desc: "Schnell tippen, schnell denken!", icon: Type, gradient: "from-emerald-500 to-green-600", players: "1-8", duration: "3-10", rating: 4.3 },
   { id: "wo-ist-was", name: "Wo ist was?", desc: "Finde den versteckten Gegenstand", icon: SearchIcon, gradient: "from-cyan-400 to-cyan-600", players: "2-10", duration: "5-15", rating: 4.4 },
   { id: "split-quiz", name: "Split Quiz", desc: "Team-Quiz mit Wissenssplit", icon: Users, gradient: "from-blue-500 to-blue-700", players: "4-30", duration: "10-30", rating: 4.6 },
+  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", desc: "Kooperatives Quiz — Wissen ist aufgeteilt!", icon: Link, gradient: "from-[#00e3fd] to-[#0099cc]", players: "3-10", duration: "10-25", badge: "Neu", rating: 4.8 },
+  { id: "schnellzeichner", name: "Schnellzeichner", desc: "Zeichne & rate — wer erkennt es zuerst?", icon: Pencil, gradient: "from-[#ff7350] to-[#ff4444]", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.7 },
+  { id: "wahrheit-pflicht", name: "Wahrheit oder Pflicht", desc: "Der Klassiker — digital und erweitert!", icon: Heart, gradient: "from-pink-500 to-rose-600", players: "2-20", duration: "10-30", badge: "Neu", rating: 4.8 },
+  { id: "this-or-that", name: "This or That", desc: "Blitz-Entscheidungen — wie tickt die Gruppe?", icon: ArrowLeftRight, gradient: "from-violet-500 to-purple-600", players: "2-20", duration: "5-15", badge: "Neu", rating: 4.5 },
+  { id: "wer-bin-ich", name: "Wer bin ich?", desc: "Errate wer du bist mit Ja/Nein-Fragen", icon: QuestionMark, gradient: "from-amber-400 to-orange-500", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.6 },
+  { id: "emoji-raten", name: "Emoji-Raten", desc: "Erkenne Filme, Songs & mehr aus Emojis", icon: Smile, gradient: "from-yellow-400 to-amber-500", players: "2-10", duration: "5-20", badge: "Neu", rating: 4.7 },
+  { id: "fake-or-fact", name: "Fake or Fact", desc: "Wahrheit oder Lüge? Teste dein Wissen!", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5 },
+  { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4 },
+  { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9 },
 ];
 
 const categories = [
@@ -143,7 +163,7 @@ const GamesHub = () => {
   const { gameId } = useParams();
 
   const handleQuickStart = () => {
-    const playable = allGames.filter(g => ["bomb", "headup", "taboo", "category", "hochstapler", "drueck-das-wort", "wo-ist-was", "split-quiz"].includes(g.id));
+    const playable = allGames;
     const random = playable[Math.floor(Math.random() * playable.length)];
     navigate(`/games/${random.id}`);
   };
@@ -163,6 +183,15 @@ const GamesHub = () => {
   if (gameId === "drueck-das-wort") return <Suspense fallback={GameFallback}><WordPressGame /></Suspense>;
   if (gameId === "wo-ist-was") return <Suspense fallback={GameFallback}><FindItGame /></Suspense>;
   if (gameId === "split-quiz") return <Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense>;
+  if (gameId === "geteilt-gequizzt") return <Suspense fallback={GameFallback}><SharedQuizGame /></Suspense>;
+  if (gameId === "schnellzeichner") return <Suspense fallback={GameFallback}><QuickDrawGame /></Suspense>;
+  if (gameId === "wahrheit-pflicht") return <Suspense fallback={GameFallback}><TruthDareGame /></Suspense>;
+  if (gameId === "this-or-that") return <Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense>;
+  if (gameId === "wer-bin-ich") return <Suspense fallback={GameFallback}><WhoAmIGame /></Suspense>;
+  if (gameId === "emoji-raten") return <Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense>;
+  if (gameId === "fake-or-fact") return <Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense>;
+  if (gameId === "story-builder") return <Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense>;
+  if (gameId === "flaschendrehen") return <Suspense fallback={GameFallback}><BottleSpinGame /></Suspense>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {

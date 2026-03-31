@@ -12,7 +12,7 @@ import BombResultsScreen, { BombRoundEndScreen } from './BombResultsScreen';
 // ---------------------------------------------------------------------------
 
 export type GamePhase = 'setup' | 'playing' | 'explosion' | 'roundEnd' | 'gameOver';
-export type GameMode = 'kategorie' | 'quiz' | 'speed';
+export type GameMode = 'kategorie' | 'quiz' | 'speed' | 'random';
 
 export interface PlayerState {
   name: string;
@@ -124,6 +124,9 @@ function useTickSound(active: boolean, progress: number) {
 // ---------------------------------------------------------------------------
 
 function generateTask(mode: GameMode): { task: string; quiz: QuizQuestion | null } {
+  if (mode === 'random') {
+    return { task: 'Gib die Bombe schnell weiter, bevor sie explodiert!', quiz: null };
+  }
   if (mode === 'quiz') {
     const q = getRandomQuestion();
     return { task: q.question, quiz: q };
@@ -157,12 +160,16 @@ export default function BombGame() {
   const [timerKey, setTimerKey] = useState(0);
   const speedReductionRef = useRef(0);
 
-  const effectiveTimerMin = state.mode === 'speed'
-    ? Math.max(5, (state.timerMin * 1000) - speedReductionRef.current)
-    : state.timerMin * 1000;
-  const effectiveTimerMax = state.mode === 'speed'
-    ? Math.max(8, (state.timerMax * 1000) - speedReductionRef.current)
-    : state.timerMax * 1000;
+  const effectiveTimerMin = state.mode === 'random'
+    ? 15000
+    : state.mode === 'speed'
+      ? Math.max(5, (state.timerMin * 1000) - speedReductionRef.current)
+      : state.timerMin * 1000;
+  const effectiveTimerMax = state.mode === 'random'
+    ? 90000
+    : state.mode === 'speed'
+      ? Math.max(8, (state.timerMax * 1000) - speedReductionRef.current)
+      : state.timerMax * 1000;
 
   const handleExplode = useCallback(() => {
     setTimerActive(false);
