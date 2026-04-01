@@ -94,9 +94,16 @@ function generateRoomCode(): string {
   return code;
 }
 
-function generatePlayerId(): string {
-  return `player-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+// Global singleton player ID — same across all hook instances
+let _globalPlayerId: string | null = null;
+function getGlobalPlayerId(): string {
+  if (!_globalPlayerId) _globalPlayerId = `player-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return _globalPlayerId;
 }
+
+// Global singleton channel — shared across hook instances
+let _globalChannel: RealtimeChannel | null = null;
+let _globalListeners = new Map<string, Set<BroadcastCallback>>();
 
 function pickColor(index: number): string {
   return PLAYER_COLORS[index % PLAYER_COLORS.length];
@@ -115,9 +122,9 @@ export function useGameRoom(): UseGameRoomReturn {
   const [players, setPlayers] = useState<RoomPlayer[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const channelRef = useRef<RealtimeChannel | null>(null);
-  const playerIdRef = useRef<string>(generatePlayerId());
-  const listenersRef = useRef<Map<string, Set<BroadcastCallback>>>(new Map());
+  const channelRef = useRef<RealtimeChannel | null>(_globalChannel);
+  const playerIdRef = useRef<string>(getGlobalPlayerId());
+  const listenersRef = useRef<Map<string, Set<BroadcastCallback>>>(_globalListeners);
 
   // Host is determined dynamically — earliest player OR the room creator
   const isHost = players.length > 0
@@ -137,13 +144,8 @@ export function useGameRoom(): UseGameRoomReturn {
     }
   }, [room?.roomCode]);
 
-  // ---- Cleanup on unmount (DON'T destroy channel — allow rejoin) ----
-  useEffect(() => {
-    return () => {
-      // Only cleanup channel ref, don't remove from Supabase (allow reconnect)
-      channelRef.current = null;
-    };
-  }, []);
+  // ---- DON'T cleanup channel on unmount — keep connection alive across navigation ----
+  // The channel stays open so players remain connected when navigating to a game.
 
   // ---- Resolve presence state into RoomPlayer[] ----
   // Host is always the player with the earliest joinedAt (first to create/join)
@@ -263,6 +265,7 @@ export function useGameRoom(): UseGameRoomReturn {
       });
 
       channelRef.current = channel;
+      _globalChannel = channel; // Keep in sync globally
 
       setRoom({
         roomCode,
@@ -315,21 +318,35 @@ export function useGameRoom(): UseGameRoomReturn {
       channelRef.current.untrack();
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
+      _globalChannel = null;
     }
     setRoom(null);
     setPlayers([]);
     setError(null);
     listenersRef.current.clear();
+    _globalListeners.clear();
     try { localStorage.removeItem("eventbliss_active_room"); } catch { /* ignore */ }
   }, []);
 
   const setReady = useCallback(
     (ready: boolean) => {
       if (!channelRef.current) return;
-      const state = channelRef.current.presenceState<Record<string, unknown>>();
-      const myState = state[playerIdRef.current]?.[0];
+      const presenceState = channelRef.current.presenceState<Record<string, unknown>>();
+      const myKey = playerIdRef.current;
+      const myState = presenceState[myKey]?.[0];
       if (myState) {
         channelRef.current.track({ ...myState, isReady: ready });
+      } else {
+        // Fallback: re-track with minimal state if presence entry not found
+        channelRef.current.track({
+          id: myKey,
+          name: "Spieler",
+          color: pickColor(0),
+          avatar: "?",
+          isReady: ready,
+          isPremium: false,
+          joinedAt: Date.now(),
+        });
       }
     },
     [],

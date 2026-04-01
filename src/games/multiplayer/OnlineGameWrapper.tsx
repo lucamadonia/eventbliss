@@ -209,6 +209,7 @@ export default function OnlineGameWrapper({
     players,
     roomHasPremium,
     isHost,
+    myPlayerId,
     joinRoom,
     leaveRoom,
     broadcast,
@@ -219,11 +220,16 @@ export default function OnlineGameWrapper({
   const [connectionState, setConnectionState] = useState<ConnectionState>("connecting");
   const [playerListExpanded, setPlayerListExpanded] = useState(false);
   const joinedRef = useRef(false);
-  const myPlayerIdRef = useRef(`player-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
 
-  // Auto-join the room on mount
+  // Auto-join the room on mount — but only if NOT already connected
   useEffect(() => {
     if (joinedRef.current) return;
+    // If already in a room (from GameLobby), don't rejoin
+    if (room && room.roomCode === roomCode) {
+      joinedRef.current = true;
+      setConnectionState("connected");
+      return;
+    }
     joinedRef.current = true;
 
     const doJoin = async () => {
@@ -235,10 +241,8 @@ export default function OnlineGameWrapper({
     };
     doJoin();
 
-    return () => {
-      leaveRoom();
-    };
-  }, [roomCode, playerName, joinRoom, leaveRoom]);
+    // DON'T leaveRoom on unmount — keep channel alive
+  }, [roomCode, playerName, joinRoom, room]);
 
   // Track connection state based on room status
   useEffect(() => {
@@ -253,10 +257,7 @@ export default function OnlineGameWrapper({
     }
   }, [error]);
 
-  // Derive my player id from the players list
-  const myPlayerId = players.length > 0
-    ? (players.find((p) => p.name === (playerName || "Spieler"))?.id ?? myPlayerIdRef.current)
-    : myPlayerIdRef.current;
+  // myPlayerId comes from the hook now (global singleton)
 
   const handleRetry = useCallback(() => {
     joinedRef.current = false;
