@@ -76,7 +76,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     requestAnimationFrame(() => { requestAnimationFrame(() => {
       if (cancelled || !guessMapContainerRef.current) return;
       const map = L.map(guessMapContainerRef.current, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false, maxBoundsViscosity: 1.0 });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OSM' }).addTo(map);
       L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#666">OSM</a>').addTo(map);
       map.on('click', (e: L.LeafletMouseEvent) => {
         const { lat, lng } = e.latlng;
@@ -97,7 +97,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       if (cancelled || !resultMapContainerRef.current) return;
       if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
       const map = L.map(resultMapContainerRef.current, { center: [location.lat, location.lng], zoom: 4, zoomControl: false, attributionControl: false });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OSM' }).addTo(map);
       L.marker([location.lat, location.lng], { icon: createTargetIcon() }).addTo(map);
       const bounds = L.latLngBounds([[location.lat, location.lng]]);
       allDoneGuesses.forEach(g => {
