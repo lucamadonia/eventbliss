@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useMemo, useCallback } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
@@ -189,8 +189,7 @@ function getFreePlaysForGame(gameId: string): number {
 const GamesHub = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
-  const [searchParams] = useSearchParams();
-  const roomCode = searchParams.get("room");
+  const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
   const [onlineGameId, setOnlineGameId] = useState<string | null>(null);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
   const [onlinePlayerName] = useState(() => {
