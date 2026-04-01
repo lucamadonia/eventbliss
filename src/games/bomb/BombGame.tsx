@@ -6,6 +6,7 @@ import BombSetupScreen from './BombSetupScreen';
 import BombPlayingScreen from './BombPlayingScreen';
 import BombExplosionScreen from './BombExplosionScreen';
 import BombResultsScreen, { BombRoundEndScreen } from './BombResultsScreen';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types (exported for sub-components)
@@ -154,11 +155,81 @@ const defaultState: GameState = {
 // Main Game Component
 // ---------------------------------------------------------------------------
 
-export default function BombGame() {
+export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const [state, setState] = useState<GameState>({ ...defaultState });
   const [timerActive, setTimerActive] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
   const speedReductionRef = useRef(0);
+
+  // --- Online sync: host broadcasts state, non-host receives ---
+  const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {
+    if (!online || !online.isHost) return;
+    online.broadcast('bomb-state', {
+      ...extra,
+      state: JSON.parse(JSON.stringify(newState)),
+    });
+  }, [online]);
+
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('bomb-state', (data) => {
+      const incoming = data.state as unknown as GameState;
+      if (incoming) {
+        setState(incoming);
+        if (incoming.phase === 'playing') {
+          setTimerActive(true);
+          setTimerKey((k) => k + 1);
+        } else {
+          setTimerActive(false);
+        }
+      }
+    });
+    return unsub;
+  }, [online]);
+
+  // Non-host: listen for player action requests (e.g., "weiter", quiz answer)
+  useEffect(() => {
+    if (!online || !online.isHost) return;
+    const unsub = online.onBroadcast('bomb-action', (data) => {
+      if (data.action === 'weiter') {
+        // Host processes the advance
+        const { task, quiz } = generateTask(state.mode);
+        setState((prev) => {
+          const next = {
+            ...prev,
+            currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+            currentTask: task,
+            currentQuiz: quiz,
+          };
+          broadcastState(next);
+          return next;
+        });
+      } else if (data.action === 'quiz-answer') {
+        const idx = data.answerIndex as number;
+        if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
+          const { task, quiz } = generateTask(state.mode);
+          setState((prev) => {
+            const next = { ...prev, currentTask: task, currentQuiz: quiz };
+            broadcastState(next);
+            return next;
+          });
+        } else {
+          const { task, quiz } = generateTask(state.mode);
+          setState((prev) => {
+            const next = {
+              ...prev,
+              currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+              currentTask: task,
+              currentQuiz: quiz,
+            };
+            broadcastState(next);
+            return next;
+          });
+        }
+      }
+    });
+    return unsub;
+  }, [online, state.mode, state.currentQuiz, broadcastState]);
 
   const effectiveTimerMin = state.mode === 'random'
     ? 15000
@@ -179,14 +250,19 @@ export default function BombGame() {
         ...updated[prev.currentPlayerIndex],
         penalties: updated[prev.currentPlayerIndex].penalties + 1,
       };
-      return {
+      const next = {
         ...prev,
-        phase: 'explosion',
+        phase: 'explosion' as GamePhase,
         players: updated,
         explodedPlayerIndex: prev.currentPlayerIndex,
       };
+      // Broadcast from host after explosion
+      if (online?.isHost) {
+        setTimeout(() => online.broadcast('bomb-state', { state: JSON.parse(JSON.stringify(next)) }), 0);
+      }
+      return next;
     });
-  }, []);
+  }, [online]);
 
   const { progress } = useBombTimer(timerActive, effectiveTimerMin, effectiveTimerMax, handleExplode);
 
@@ -195,42 +271,61 @@ export default function BombGame() {
   const update = (partial: Partial<GameState>) => setState((prev) => ({ ...prev, ...partial }));
 
   const startGame = () => {
+    // Non-host cannot start game
+    if (online && !online.isHost) return;
     resetQuestions();
     speedReductionRef.current = 0;
     const { task, quiz } = generateTask(state.mode);
-    setState((prev) => ({
-      ...prev,
+    const newState: GameState = {
+      ...state,
       phase: 'playing',
       currentPlayerIndex: 0,
       round: 1,
       currentTask: task,
       currentQuiz: quiz,
-      players: prev.players.map((p) => ({ ...p, penalties: 0 })),
-    }));
+      players: state.players.map((p) => ({ ...p, penalties: 0 })),
+    };
+    setState(newState);
     setTimerKey((k) => k + 1);
     setTimerActive(true);
+    broadcastState(newState);
   };
 
   const advancePlayer = () => {
     const { task, quiz } = generateTask(state.mode);
-    setState((prev) => ({
-      ...prev,
-      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
-      currentTask: task,
-      currentQuiz: quiz,
-    }));
+    setState((prev) => {
+      const next = {
+        ...prev,
+        currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+        currentTask: task,
+        currentQuiz: quiz,
+      };
+      broadcastState(next);
+      return next;
+    });
   };
 
   const handleWeiter = () => {
+    if (online && !online.isHost) {
+      // Non-host sends action to host
+      online.broadcast('bomb-action', { action: 'weiter' });
+      return;
+    }
     advancePlayer();
   };
 
   const handleQuizAnswer = (idx: number) => {
+    if (online && !online.isHost) {
+      online.broadcast('bomb-action', { action: 'quiz-answer', answerIndex: idx });
+      return;
+    }
     if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
       // Wrong answer: vibrate + generate new question, but KEEP same player
       if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
       const { task, quiz } = generateTask(state.mode);
-      setState((prev) => ({ ...prev, currentTask: task, currentQuiz: quiz }));
+      const newState = { ...state, currentTask: task, currentQuiz: quiz };
+      setState(newState);
+      broadcastState(newState);
       return;
     }
     // Correct answer: advance to next player
@@ -238,28 +333,36 @@ export default function BombGame() {
   };
 
   const handleExplosionNext = () => {
+    if (online && !online.isHost) return;
     if (state.round >= state.totalRounds) {
-      setState((prev) => ({ ...prev, phase: 'gameOver' }));
+      const next = { ...state, phase: 'gameOver' as GamePhase };
+      setState(next);
+      broadcastState(next);
     } else {
-      setState((prev) => ({ ...prev, phase: 'roundEnd' }));
+      const next = { ...state, phase: 'roundEnd' as GamePhase };
+      setState(next);
+      broadcastState(next);
     }
   };
 
   const handleNextRound = () => {
+    if (online && !online.isHost) return;
     if (state.mode === 'speed') {
       speedReductionRef.current += 3000;
     }
     const { task, quiz } = generateTask(state.mode);
-    setState((prev) => ({
-      ...prev,
+    const next: GameState = {
+      ...state,
       phase: 'playing',
-      round: prev.round + 1,
+      round: state.round + 1,
       currentPlayerIndex: 0,
       currentTask: task,
       currentQuiz: quiz,
-    }));
+    };
+    setState(next);
     setTimerKey((k) => k + 1);
     setTimerActive(true);
+    broadcastState(next);
   };
 
   const handleRestart = () => {

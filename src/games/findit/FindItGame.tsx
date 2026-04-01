@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { GEO_LOCATIONS, type GeoLocation } from './geo-locations';
 import MapRound, { type MapRoundResult } from './MapRound';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -275,7 +276,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // Main Component
 // ---------------------------------------------------------------------------
 
-export default function FindItGame() {
+export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const navigate = useNavigate();
 
   // Core state
@@ -311,6 +312,35 @@ export default function FindItGame() {
   const questionStartRef = useRef(0);
   const studyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const questionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // --- Online sync: host broadcasts, non-host receives ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-state', (data) => {
+      if (data.phase !== undefined) setPhase(data.phase as Phase);
+      if (data.round !== undefined) setRound(data.round as number);
+      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
+      if (data.players) setPlayers(data.players as Player[]);
+      if (data.selectedAnswer !== undefined) setSelectedAnswer(data.selectedAnswer as number | null);
+      if (data.answerCorrect !== undefined) setAnswerCorrect(data.answerCorrect as boolean | null);
+    });
+    return unsub;
+  }, [online]);
+
+  const broadcastFindItState = useCallback((overrides?: Record<string, unknown>) => {
+    if (!online?.isHost) return;
+    online.broadcast('findit-state', {
+      phase, round, currentPlayerIdx, players: JSON.parse(JSON.stringify(players)),
+      selectedAnswer, answerCorrect,
+      ...overrides,
+    });
+  }, [online, phase, round, currentPlayerIdx, players, selectedAnswer, answerCorrect]);
+
+  useEffect(() => {
+    if (online?.isHost && phase !== 'setup') {
+      broadcastFindItState();
+    }
+  }, [phase, round, currentPlayerIdx, selectedAnswer]);
 
   // ------- Setup handler -------
   const handleSetupStart = useCallback((

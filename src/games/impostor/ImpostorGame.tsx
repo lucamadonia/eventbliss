@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -106,7 +107,7 @@ function pickRandom<T>(arr: T[]): T {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function ImpostorGame() {
+export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- Setup state ---
   const [players, setPlayers] = useState<Player[]>(() => [
     createPlayer('Spieler 1'),
@@ -131,6 +132,45 @@ export default function ImpostorGame() {
   const [round, setRound] = useState(1);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // --- Online sync ---
+  useEffect(() => {
+    if (!online) return;
+    // Host broadcasts full impostor state on every phase change
+    if (online.isHost) {
+      const payload = {
+        players: JSON.parse(JSON.stringify(players)),
+        phase, currentWordSet, revealIndex, wordVisible, timeLeft,
+        currentSpeaker, votingPlayer, countdownNum, round,
+      };
+      online.broadcast('impostor-state', payload);
+    }
+  }, [online, phase, revealIndex, wordVisible, currentSpeaker, votingPlayer, countdownNum, round]);
+
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('impostor-state', (data) => {
+      if (data.players) setPlayers(data.players as Player[]);
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentWordSet !== undefined) setCurrentWordSet(data.currentWordSet as WordSet | null);
+      if (data.revealIndex !== undefined) setRevealIndex(data.revealIndex as number);
+      if (data.timeLeft !== undefined) setTimeLeft(data.timeLeft as number);
+      if (data.currentSpeaker !== undefined) setCurrentSpeaker(data.currentSpeaker as number);
+      if (data.votingPlayer !== undefined) setVotingPlayer(data.votingPlayer as number);
+      if (data.round !== undefined) setRound(data.round as number);
+    });
+    return unsub;
+  }, [online]);
+
+  useEffect(() => {
+    if (!online || !online.isHost) return;
+    const unsub = online.onBroadcast('impostor-action', (data) => {
+      if (data.action === 'vote' && typeof data.voterId === 'string' && typeof data.targetId === 'string') {
+        setPlayers((prev) => prev.map((p) => p.id === data.voterId ? { ...p, votedFor: data.targetId as string } : p));
+      }
+    });
+    return unsub;
+  }, [online]);
 
   // --- Derived ---
   const impostors = useMemo(() => players.filter((p) => p.isImpostor), [players]);

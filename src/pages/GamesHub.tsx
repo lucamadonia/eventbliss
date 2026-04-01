@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useMemo, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
+const OnlineGameWrapper = lazy(() => import("@/games/multiplayer/OnlineGameWrapper"));
 
 const CategoryGame = lazy(() => import("@/games/category/CategoryGame"));
 const BombGame = lazy(() => import("@/games/bomb/BombGame"));
@@ -188,8 +189,13 @@ function getFreePlaysForGame(gameId: string): number {
 const GamesHub = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
+  const [searchParams] = useSearchParams();
+  const roomCode = searchParams.get("room");
   const [onlineGameId, setOnlineGameId] = useState<string | null>(null);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
+  const [onlinePlayerName] = useState(() => {
+    try { return localStorage.getItem("eventbliss_player_name") || "Spieler"; } catch { return "Spieler"; }
+  });
   const { isPremium } = usePremium();
 
   const premiumInfoMap = useMemo(() => {
@@ -237,6 +243,38 @@ const GamesHub = () => {
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#cf96ff] border-t-transparent" />
     </div>
   );
+
+  // Online game routing — when ?room=XXXXX is present, wrap game in OnlineGameWrapper
+  if (roomCode && gameId) {
+    const renderOnlineGame = (onlineProps: import("@/games/multiplayer/OnlineGameTypes").OnlineGameProps) => {
+      if (gameId === "bomb") return <BombGame online={onlineProps} />;
+      if (gameId === "hochstapler") return <ImpostorGame online={onlineProps} />;
+      if (gameId === "split-quiz") return <SplitQuizGame onClose={() => navigate("/games")} online={onlineProps} />;
+      if (gameId === "wo-ist-was") return <FindItGame online={onlineProps} />;
+      if (gameId === "category") return <CategoryGame />;
+      if (gameId === "headup") return <HeadUpGame />;
+      if (gameId === "taboo") return <TabooGame />;
+      if (gameId === "drueck-das-wort") return <WordPressGame />;
+      if (gameId === "geteilt-gequizzt") return <SharedQuizGame />;
+      if (gameId === "schnellzeichner") return <QuickDrawGame />;
+      if (gameId === "wahrheit-pflicht") return <TruthDareGame />;
+      if (gameId === "this-or-that") return <ThisOrThatGame />;
+      if (gameId === "wer-bin-ich") return <WhoAmIGame />;
+      if (gameId === "emoji-raten") return <EmojiGuessGame />;
+      if (gameId === "fake-or-fact") return <FakeOrFactGame />;
+      if (gameId === "story-builder") return <StoryBuilderGame />;
+      if (gameId === "flaschendrehen") return <BottleSpinGame />;
+      return null;
+    };
+
+    return (
+      <Suspense fallback={GameFallback}>
+        <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
+          {(onlineProps) => renderOnlineGame(onlineProps)}
+        </OnlineGameWrapper>
+      </Suspense>
+    );
+  }
 
   if (gameId === "category") return <Suspense fallback={GameFallback}><CategoryGame /></Suspense>;
   if (gameId === "bomb") return <Suspense fallback={GameFallback}><BombGame /></Suspense>;

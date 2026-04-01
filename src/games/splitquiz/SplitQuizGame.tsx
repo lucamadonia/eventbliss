@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameTimer } from '../engine/TimerSystem';
 import {
@@ -6,6 +6,7 @@ import {
   Smartphone, Shuffle, Zap, Crown, Star, ChevronRight, X, Plus, Minus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -139,11 +140,12 @@ function shuffle<T>(arr: T[]): T[] {
 interface SplitQuizGameProps {
   players?: string[];
   onClose?: () => void;
+  online?: OnlineGameProps;
 }
 
 const DEFAULT_PLAYERS = ['Spieler 1', 'Spieler 2', 'Spieler 3', 'Spieler 4'];
 
-export default function SplitQuizGame({ players: initialPlayers, onClose }: SplitQuizGameProps) {
+export default function SplitQuizGame({ players: initialPlayers, onClose, online }: SplitQuizGameProps) {
   const startPlayers = initialPlayers && initialPlayers.length >= 4 ? initialPlayers : DEFAULT_PLAYERS;
   /* ---- Setup state ---- */
   const [playerNames, setPlayerNames] = useState<string[]>(startPlayers);
@@ -171,6 +173,38 @@ export default function SplitQuizGame({ players: initialPlayers, onClose }: Spli
 
   /* ---- Round tracking for MVP ---- */
   const playerCorrectMap = useRef<Record<string, number>>({});
+
+  // --- Online sync: host broadcasts state, non-host receives ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('splitquiz-state', (data) => {
+      if (data.phase !== undefined) setPhase(data.phase as Phase);
+      if (data.teamA) setTeamA(data.teamA as TeamState);
+      if (data.teamB) setTeamB(data.teamB as TeamState);
+      if (data.currentRound !== undefined) setCurrentRound(data.currentRound as number);
+      if (data.activeTeamIdx !== undefined) setActiveTeamIdx(data.activeTeamIdx as number);
+      if (data.currentQuestion !== undefined) setCurrentQuestion(data.currentQuestion as QuizQuestion | null);
+      if (data.selectedAnswer !== undefined) setSelectedAnswer(data.selectedAnswer as number | null);
+      if (data.teamAnswered) setTeamAnswered(data.teamAnswered as [boolean, boolean]);
+    });
+    return unsub;
+  }, [online]);
+
+  const broadcastQuizState = useCallback((overrides?: Record<string, unknown>) => {
+    if (!online?.isHost) return;
+    online.broadcast('splitquiz-state', {
+      phase, teamA, teamB, currentRound, activeTeamIdx,
+      currentQuestion, selectedAnswer, teamAnswered,
+      ...overrides,
+    });
+  }, [online, phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, selectedAnswer, teamAnswered]);
+
+  // Broadcast on key state changes
+  useEffect(() => {
+    if (online?.isHost && phase !== 'setup') {
+      broadcastQuizState();
+    }
+  }, [phase, currentRound, activeTeamIdx, selectedAnswer]);
 
   /* ---- Timer ---- */
   const handleTimerExpire = useCallback(() => {
