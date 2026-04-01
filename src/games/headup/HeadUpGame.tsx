@@ -64,7 +64,9 @@ export default function HeadUpGame() {
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
-  const [totalRounds, setTotalRounds] = useState(3);
+  const [playerNames, setPlayerNames] = useState<string[]>(['Spieler 1', 'Spieler 2']);
+  const [newPlayerName, setNewPlayerName] = useState('');
+  const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);
   const [wordQueue, setWordQueue] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -150,10 +152,11 @@ export default function HeadUpGame() {
   }, [screen, advanceWord]);
 
   const handleNextRound = useCallback(() => {
-    setAllRounds((prev) => [...prev, { playerName: `Spieler ${currentRound}`, correct: correctCount, skipped: skippedCount, words: [...roundWords] }]);
+    const name = playerNames[currentRound - 1] || `Spieler ${currentRound}`;
+    setAllRounds((prev) => [...prev, { playerName: name, correct: correctCount, skipped: skippedCount, words: [...roundWords] }]);
     if (currentRound >= totalRounds) setScreen('gameOver');
     else { setCurrentRound((r) => r + 1); handleStartRound(); }
-  }, [currentRound, totalRounds, roundWords, correctCount, skippedCount, handleStartRound]);
+  }, [currentRound, totalRounds, playerNames, roundWords, correctCount, skippedCount, handleStartRound]);
 
   useEffect(() => {
     if (screen === 'gameOver' && !gameRecordedRef.current) {
@@ -237,15 +240,31 @@ export default function HeadUpGame() {
                   className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#df8eff]" />
               </div>
               <div>
-                <label className="text-xs text-[#a8abb3] mb-2 block">Runden</label>
-                <div className="flex gap-2">
-                  {[2, 3, 4, 5].map((r) => (
-                    <button key={r} onClick={() => setTotalRounds(r)}
-                      className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${
-                        totalRounds === r ? 'bg-[#df8eff] text-[#0a0e14] shadow-[0_0_12px_rgba(223,142,255,.3)]' : 'bg-[#151a21] text-[#a8abb3] hover:bg-[#1b2028]'
-                      }`}>{r}</button>
+                <label className="text-xs text-[#a8abb3] mb-2 block">Spieler ({playerNames.length})</label>
+                <div className="space-y-2 mb-3">
+                  {playerNames.map((name, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#df8eff] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">{i + 1}</div>
+                      <input type="text" value={name} maxLength={15}
+                        onChange={(e) => { const n = [...playerNames]; n[i] = e.target.value; setPlayerNames(n); }}
+                        className="flex-1 bg-[#151a21] border border-[#20262f] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#a8abb3]/40 focus:outline-none focus:border-[#df8eff]/40" />
+                      {playerNames.length > 2 && (
+                        <button onClick={() => setPlayerNames(playerNames.filter((_, j) => j !== i))}
+                          className="w-7 h-7 rounded-full bg-[#ff6e84]/10 flex items-center justify-center text-[#ff6e84] text-xs">✕</button>
+                      )}
+                    </div>
                   ))}
                 </div>
+                {playerNames.length < 12 && (
+                  <div className="flex items-center gap-2">
+                    <input type="text" value={newPlayerName} maxLength={15} placeholder="Name hinzufuegen..."
+                      onChange={(e) => setNewPlayerName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
+                      className="flex-1 bg-[#151a21] border border-dashed border-[#df8eff]/20 rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#a8abb3]/30 focus:outline-none focus:border-[#df8eff]/40" />
+                    <button onClick={() => { if (newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
+                      className="px-3 py-1.5 rounded-lg bg-[#df8eff]/10 text-[#df8eff] text-xs font-bold">+</button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -268,6 +287,11 @@ export default function HeadUpGame() {
         {screen === 'ready' && (
           <motion.div key="ready" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col items-center justify-center min-h-[100dvh] p-8 pulse-bg">
+            {/* Current player name */}
+            <div className="mb-4 px-4 py-2 rounded-full bg-[#df8eff]/15 border border-[#df8eff]/25">
+              <span className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1] || `Spieler ${currentRound}`}</span>
+              <span className="text-xs text-[#a8abb3] ml-2">ist dran</span>
+            </div>
             <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }} className="mb-8">
               <div className="w-24 h-40 rounded-2xl border-2 border-[#df8eff]/40 bg-[#151a21]/80 backdrop-blur-xl flex items-center justify-center shadow-[0_0_40px_rgba(223,142,255,.15)]">
                 <Smartphone className="w-12 h-12 text-[#df8eff]" />
