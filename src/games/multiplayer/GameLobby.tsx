@@ -110,7 +110,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
   const { isPremium } = usePremium();
   const { user } = useAuth();
-  const { room, players, roomHasPremium, isHost, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
+  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
 
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
 
@@ -134,12 +134,11 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
   const handleLeave = useCallback(() => { leaveRoom(); setView("menu"); }, [leaveRoom]);
 
+  const me = players.find((p) => p.id === myPlayerId);
+  const myReady = me?.isReady ?? false;
+
   const handleToggleReady = useCallback(() => {
-    const me = players.find((p) => !p.isHost);
-    if (me) { setReady(!me.isReady); } else {
-      const host = players.find((p) => p.isHost);
-      if (host) setReady(!host.isReady);
-    }
+    setReady(!myReady);
   }, [players, setReady]);
 
   const handleShare = useCallback(() => {
@@ -320,17 +319,16 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
               )}
 
               <div className="space-y-2">
-                {!isHost && (
-                  <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleReady}
-                    className="w-full rounded-xl py-3.5 text-sm font-bold transition-all"
-                    style={{
-                      backgroundColor: players.find((p) => !p.isHost)?.isReady ? "rgba(143,245,255,0.15)" : EP.surface2,
-                      color: players.find((p) => !p.isHost)?.isReady ? EP.neonCyan : "rgba(255,255,255,0.6)",
-                      border: `1px solid ${players.find((p) => !p.isHost)?.isReady ? "rgba(143,245,255,0.3)" : EP.border}`,
-                    }}>
-                    {players.find((p) => !p.isHost)?.isReady ? "Bereit!" : "Bereit melden"}
-                  </motion.button>
-                )}
+                {/* Everyone can toggle ready */}
+                <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleReady}
+                  className="w-full rounded-xl py-3.5 text-sm font-bold transition-all"
+                  style={{
+                    backgroundColor: myReady ? "rgba(143,245,255,0.15)" : EP.surface2,
+                    color: myReady ? EP.neonCyan : "rgba(255,255,255,0.6)",
+                    border: `1px solid ${myReady ? "rgba(143,245,255,0.3)" : EP.border}`,
+                  }}>
+                  {myReady ? "✓ Bereit!" : "Bereit melden"}
+                </motion.button>
                 {isHost && (
                   <motion.button whileHover={allReady ? { scale: 1.02 } : {}} whileTap={allReady ? { scale: 0.96 } : {}}
                     disabled={!allReady} onClick={handleStart}

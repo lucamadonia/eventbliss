@@ -32,6 +32,7 @@ export interface UseGameRoomReturn {
   players: RoomPlayer[];
   roomHasPremium: boolean;
   isHost: boolean;
+  myPlayerId: string;
   createRoom: (gameId: string, isPremium?: boolean, hostName?: string) => Promise<string>;
   joinRoom: (code: string, name: string, isPremium?: boolean) => Promise<void>;
   leaveRoom: () => void;
@@ -345,6 +346,7 @@ export function useGameRoom(): UseGameRoomReturn {
     players,
     roomHasPremium,
     isHost,
+    myPlayerId: playerIdRef.current,
     createRoom,
     joinRoom,
     leaveRoom,
