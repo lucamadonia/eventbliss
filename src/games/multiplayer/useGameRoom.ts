@@ -153,6 +153,7 @@ export function useGameRoom(): UseGameRoomReturn {
       colorIndex: number,
       playerIsPremium: boolean = false,
     ) => {
+      try {
       // Clean up any existing channel
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
@@ -235,6 +236,10 @@ export function useGameRoom(): UseGameRoomReturn {
         status: "lobby",
         settings: {},
       });
+      } catch (err) {
+        console.warn("Failed to subscribe to room:", err);
+        setError("Verbindung zum Raum fehlgeschlagen.");
+      }
     },
     [syncPlayers],
   );
