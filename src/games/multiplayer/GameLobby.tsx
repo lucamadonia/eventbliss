@@ -169,9 +169,16 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
     }
   }, []);
 
+  // When game starts (for guests): auto-navigate to the game
+  useEffect(() => {
+    if (room?.status === "playing" && !isHost && room.roomCode) {
+      onStart(players, room.roomCode, selectedGame);
+    }
+  }, [room?.status]);
+
   const handleStart = useCallback(() => {
     if (!isHost || !allReady || !room) return;
-    startGame();
+    startGame(selectedGame);
     onStart(players, room.roomCode, selectedGame);
   }, [isHost, allReady, room, startGame, onStart, players, selectedGame]);
 

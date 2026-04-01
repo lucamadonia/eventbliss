@@ -209,9 +209,10 @@ export function useGameRoom(): UseGameRoomReturn {
       });
 
       // --- Broadcast: game-start ---
-      channel.on("broadcast", { event: "game-start" }, () => {
+      channel.on("broadcast", { event: "game-start" }, ({ payload }) => {
+        const p = payload as { gameId?: string };
         setRoom((prev) =>
-          prev ? { ...prev, status: "playing" } : prev,
+          prev ? { ...prev, status: "playing", gameId: p.gameId || prev.gameId } : prev,
         );
       });
 
@@ -352,15 +353,15 @@ export function useGameRoom(): UseGameRoomReturn {
     [],
   );
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback((gameIdOverride?: string) => {
     if (!channelRef.current || !isHost) return;
     channelRef.current.send({
       type: "broadcast",
       event: "game-start",
-      payload: { startedAt: Date.now() },
+      payload: { startedAt: Date.now(), gameId: gameIdOverride || room?.gameId },
     });
-    setRoom((prev) => (prev ? { ...prev, status: "playing" } : prev));
-  }, [isHost]);
+    setRoom((prev) => (prev ? { ...prev, status: "playing", gameId: gameIdOverride || prev.gameId } : prev));
+  }, [isHost, room?.gameId]);
 
   const broadcast = useCallback(
     (event: string, data: Record<string, unknown>) => {
