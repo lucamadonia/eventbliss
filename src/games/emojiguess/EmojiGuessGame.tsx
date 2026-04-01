@@ -81,6 +81,7 @@ export default function EmojiGuessGame() {
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
   const [currentPuzzle, setCurrentPuzzle] = useState<EmojiPuzzle | null>(null);
   const [showHint, setShowHint] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
   const [pointsAvailable, setPointsAvailable] = useState(100);
   const deck = useRef<EmojiPuzzle[]>([]);
   const deckPos = useRef(0);
@@ -336,22 +337,34 @@ export default function EmojiGuessGame() {
             </motion.div>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-3 px-4 pb-6 pt-3">
+          {/* Answer reveal + Action buttons */}
+          <div className="px-4 pb-6 pt-3 space-y-3">
+            {/* Show answer button */}
             <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleCorrectGuess}
-              className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setShowAnswer(prev => !prev)}
+              className="w-full flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold border border-[#df8eff]/30 text-[#df8eff] bg-[#df8eff]/5"
             >
-              <Eye className="w-5 h-5" /> Erraten!
+              <Eye className="w-4 h-4" />
+              {showAnswer ? currentPuzzle.answer : 'Antwort anzeigen'}
             </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSkip}
-              className="flex-none flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20 rounded-full py-4 px-5 text-white/40"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
+
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { setShowAnswer(false); handleCorrectGuess(); }}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+              >
+                Erraten!
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { setShowAnswer(false); handleSkip(); }}
+                className="flex-none flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20 rounded-full py-4 px-5 text-white/40"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </div>
           </div>
         </div>
       )}

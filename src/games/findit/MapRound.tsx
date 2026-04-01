@@ -39,7 +39,10 @@ function LeafletMap({ onMapClick, children }: { onMapClick?: (lat: number, lng: 
 
     // Create map on the actual DOM node (guaranteed to exist)
     const map = L.map(node, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    // Try CartoDB dark no-labels first, fallback to OSM
+const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' });
+tileLayer.on('tileerror', () => { tileLayer.setUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png'); });
+tileLayer.addTo(map);
 
     if (onMapClick) {
       map.on('click', (e: L.LeafletMouseEvent) => onMapClick(e.latlng.lat, e.latlng.lng));
@@ -160,7 +163,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       {/* GUESSING */}
       {phase === 'guessing' && (
         <div className="absolute inset-0" key={`guess-${guessingPlayerIdx}`}>
-          <LeafletMap onMapClick={handleMapClick}>{storeMapRef}</LeafletMap>
+          <LeafletMap key={`map-${guessingPlayerIdx}-${roundNumber}`} onMapClick={handleMapClick}>{storeMapRef}</LeafletMap>
 
           {/* Overlays */}
           <div className="absolute top-4 left-4 z-[1000]">
