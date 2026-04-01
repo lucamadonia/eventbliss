@@ -46,7 +46,9 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const shareLink = `${window.location.origin}/games/${gameId}?room=${roomCode}`;
+  const baseLink = `${window.location.origin}/games/${gameId}?room=${roomCode}`;
+  const personalLink = (name: string) => `${baseLink}&name=${encodeURIComponent(name)}`;
+  const shareLink = baseLink;
 
   // Fetch user's events
   useEffect(() => {
@@ -100,8 +102,16 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
 
   const buildWhatsAppMessage = useCallback(
     (name: string) =>
-      `Hey ${name}! Komm in unser EventBliss Spiel! 🎮 Room: ${roomCode} → ${shareLink}`,
-    [roomCode, shareLink],
+      `Hey ${name}! Komm in unser EventBliss Spiel! 🎮\nRoom: ${roomCode}\n👉 ${personalLink(name)}`,
+    [roomCode, baseLink],
+  );
+
+  const whatsAppUrl = useCallback(
+    (name: string, phone?: string | null) => {
+      const msg = encodeURIComponent(buildWhatsAppMessage(name));
+      return phone ? `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${msg}` : `https://wa.me/?text=${msg}`;
+    },
+    [buildWhatsAppMessage],
   );
 
   const handleCopyAll = useCallback(() => {
@@ -277,26 +287,22 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
                             <span className="flex-1 truncate text-xs font-medium text-white/60 font-['Be_Vietnam_Pro']">
                               {p.name}
                             </span>
-                            <motion.button
-                              whileTap={{ scale: 0.85 }}
-                              onClick={() => handleCopySingle(p)}
-                              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold transition-colors"
-                              style={{
-                                backgroundColor:
-                                  copiedId === p.id
-                                    ? "rgba(143,245,255,0.15)"
-                                    : "rgba(223,142,255,0.08)",
-                                color:
-                                  copiedId === p.id ? EP.neonCyan : EP.neonPurple,
-                              }}
-                            >
-                              {copiedId === p.id ? (
-                                <Check className="h-3 w-3" />
-                              ) : (
-                                <Send className="h-3 w-3" />
-                              )}
-                              {copiedId === p.id ? "Kopiert" : "Einladen"}
-                            </motion.button>
+                            <div className="flex items-center gap-1">
+                              {/* WhatsApp direct */}
+                              <a href={whatsAppUrl(p.name, p.phone)} target="_blank" rel="noopener noreferrer"
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold"
+                                style={{ backgroundColor: "rgba(37,211,102,0.12)", color: "#25d366" }}>
+                                <Send className="h-3 w-3" /> WA
+                              </a>
+                              {/* Copy personalized link */}
+                              <motion.button whileTap={{ scale: 0.85 }}
+                                onClick={() => { navigator.clipboard.writeText(personalLink(p.name)); setCopiedId(p.id); setTimeout(() => setCopiedId(null), 2000); }}
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold"
+                                style={{ backgroundColor: copiedId === p.id ? "rgba(143,245,255,0.15)" : "rgba(223,142,255,0.08)", color: copiedId === p.id ? EP.neonCyan : EP.neonPurple }}>
+                                {copiedId === p.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                {copiedId === p.id ? "✓" : "Link"}
+                              </motion.button>
+                            </div>
                           </div>
                         ))}
                       </div>

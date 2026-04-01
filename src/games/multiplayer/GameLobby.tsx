@@ -102,9 +102,14 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
 type LobbyView = "menu" | "create" | "join" | "lobby";
 
 export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, minPlayers = 2 }: GameLobbyProps) {
-  const [view, setView] = useState<LobbyView>("menu");
-  const [joinCode, setJoinCode] = useState("");
-  const [joinName, setJoinName] = useState("");
+  // Read name and room from URL params (for personalized invite links)
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const urlName = urlParams?.get('name') || '';
+  const urlRoom = urlParams?.get('room') || '';
+
+  const [view, setView] = useState<LobbyView>(urlRoom ? "join" : "menu");
+  const [joinCode, setJoinCode] = useState(urlRoom);
+  const [joinName, setJoinName] = useState(urlName);
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -125,6 +130,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
     setIsLoading(true);
     try { await joinRoom(joinCode, joinName.trim(), isPremium); setView("lobby"); } finally { setIsLoading(false); }
   }, [joinRoom, joinCode, joinName, isPremium]);
+
+  // Auto-join if name + room come from URL (personalized invite link)
+  useEffect(() => {
+    if (urlRoom && urlName && view === "join" && !room) {
+      handleJoin();
+    }
+  }, []);
 
   const handleStart = useCallback(() => {
     if (!isHost || !allReady || !room) return;
