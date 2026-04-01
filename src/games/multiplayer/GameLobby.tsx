@@ -117,7 +117,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const handleCreate = useCallback(async () => {
     if (!hostName.trim()) return;
     setIsLoading(true);
-    try { await createRoom(gameId, isPremium); setView("lobby"); } finally { setIsLoading(false); }
+    try { await createRoom(gameId, isPremium, hostName.trim()); setView("lobby"); } finally { setIsLoading(false); }
   }, [createRoom, gameId, hostName, isPremium]);
 
   const handleJoin = useCallback(async () => {

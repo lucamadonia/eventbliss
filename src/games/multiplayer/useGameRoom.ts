@@ -32,7 +32,7 @@ export interface UseGameRoomReturn {
   players: RoomPlayer[];
   roomHasPremium: boolean;
   isHost: boolean;
-  createRoom: (gameId: string, isPremium?: boolean) => Promise<string>;
+  createRoom: (gameId: string, isPremium?: boolean, hostName?: string) => Promise<string>;
   joinRoom: (code: string, name: string, isPremium?: boolean) => Promise<void>;
   leaveRoom: () => void;
   setReady: (ready: boolean) => void;
@@ -92,7 +92,10 @@ export function useGameRoom(): UseGameRoomReturn {
   const playerIdRef = useRef<string>(generatePlayerId());
   const listenersRef = useRef<Map<string, Set<BroadcastCallback>>>(new Map());
 
-  const isHost = room?.hostId === playerIdRef.current;
+  // Host is determined dynamically — earliest player OR the room creator
+  const isHost = players.length > 0
+    ? players[0]?.id === playerIdRef.current
+    : room?.hostId === playerIdRef.current;
   const roomHasPremium = players.some((p) => p.isPremium);
 
   // ---- Cleanup on unmount ----
@@ -106,7 +109,8 @@ export function useGameRoom(): UseGameRoomReturn {
   }, []);
 
   // ---- Resolve presence state into RoomPlayer[] ----
-  const syncPlayers = useCallback((channel: RealtimeChannel, hostId: string) => {
+  // Host is always the player with the earliest joinedAt (first to create/join)
+  const syncPlayers = useCallback((channel: RealtimeChannel, _hostIdHint: string) => {
     const state = channel.presenceState<{
       id: string;
       name: string;
@@ -121,18 +125,21 @@ export function useGameRoom(): UseGameRoomReturn {
       .flat()
       .sort((a, b) => a.joinedAt - b.joinedAt);
 
+    // Host = earliest player (first to join the room)
+    const actualHostId = sorted.length > 0 ? sorted[0].id : _hostIdHint;
+
     const mapped: RoomPlayer[] = sorted.map((p) => ({
       id: p.id,
       name: p.name,
       color: p.color,
       avatar: p.avatar,
-      isHost: p.id === hostId,
+      isHost: p.id === actualHostId,
       isReady: p.isReady,
       isPremium: p.isPremium ?? false,
     }));
 
     setPlayers(mapped);
-    setRoom((prev) => (prev ? { ...prev, players: mapped } : prev));
+    setRoom((prev) => (prev ? { ...prev, hostId: actualHostId, players: mapped } : prev));
   }, []);
 
   // ---- Subscribe to a channel ----
@@ -234,11 +241,11 @@ export function useGameRoom(): UseGameRoomReturn {
   // ---- Public API ----
 
   const createRoom = useCallback(
-    async (gameId: string, isPremiumPlayer: boolean = false): Promise<string> => {
+    async (gameId: string, isPremiumPlayer: boolean = false, hostName: string = "Host"): Promise<string> => {
       setError(null);
       const code = generateRoomCode();
       const hostId = playerIdRef.current;
-      subscribe(code, gameId, hostId, "Host", 0, isPremiumPlayer);
+      subscribe(code, gameId, hostId, hostName, 0, isPremiumPlayer);
       return code;
     },
     [subscribe],
@@ -249,71 +256,16 @@ export function useGameRoom(): UseGameRoomReturn {
       setError(null);
       const normalized = code.toUpperCase().trim();
       if (normalized.length !== 6) {
-        setError("Ungultiger Raumcode.");
+        setError("Ungültiger Raumcode.");
         return;
       }
-
-      // We join the channel; the host is determined by presence order
-      // The first player tracked is the host. We subscribe and wait for
-      // presence sync to tell us the host.
-      const playerId = playerIdRef.current;
-
-      const channel = supabase.channel(`game-room:${normalized}`, {
-        config: { presence: { key: playerId } },
-      });
-
-      // Temporary presence sync to discover the host
-      const hostPromise = new Promise<string>((resolve) => {
-        channel.on("presence", { event: "sync" }, () => {
-          const state = channel.presenceState<{
-            id: string;
-            joinedAt: number;
-          }>();
-          const all = Object.values(state).flat();
-          if (all.length > 0) {
-            const earliest = all.reduce((a, b) =>
-              a.joinedAt < b.joinedAt ? a : b,
-            );
-            resolve(earliest.id);
-          }
-        });
-      });
-
-      // We need to unsubscribe this temp channel and re-subscribe properly
-      channel.subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          const colorIndex = Object.keys(channel.presenceState()).length;
-          await channel.track({
-            id: playerId,
-            name,
-            color: pickColor(colorIndex),
-            avatar: getInitial(name),
-            isPremium: isPremiumPlayer,
-            isReady: false,
-            joinedAt: Date.now(),
-          });
-        }
-      });
-
-      // Wait for host discovery (with timeout)
-      const timeout = new Promise<string>((_, reject) =>
-        setTimeout(() => reject(new Error("timeout")), 5000),
-      );
-
-      let hostId: string;
-      try {
-        hostId = await Promise.race([hostPromise, timeout]);
-      } catch {
-        supabase.removeChannel(channel);
-        setError("Raum nicht gefunden oder Zeituberschreitung.");
-        return;
-      }
-
-      // Remove temp channel and set up properly via subscribe()
-      supabase.removeChannel(channel);
-      subscribe(normalized, "", hostId, name, players.length, isPremiumPlayer);
+      // Subscribe directly to the room — NO temporary channel.
+      // Host discovery happens automatically via syncPlayers (earliest joinedAt).
+      // Color is randomized to avoid collision with host.
+      const colorIndex = Math.floor(Math.random() * PLAYER_COLORS.length);
+      subscribe(normalized, "", "", name, colorIndex, isPremiumPlayer);
     },
-    [subscribe, players.length],
+    [subscribe],
   );
 
   const leaveRoom = useCallback(() => {
