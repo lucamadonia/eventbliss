@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { haversineKm } from '../engine/haversine';
@@ -19,37 +18,45 @@ function formatDistance(km: number): string {
   return `${Math.round(km).toLocaleString('de-DE')} km`;
 }
 
-function playerIcon(color: string, initial: string): L.DivIcon {
+function mkIcon(color: string, initial: string): L.DivIcon {
   return L.divIcon({ className: '', iconSize: [32, 32], iconAnchor: [16, 32],
-    html: `<div style="width:32px;height:32px;border-radius:50%;background:${color};border:3px solid white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white;box-shadow:0 0 15px ${color}88;font-family:system-ui">${initial}</div>`,
-  });
+    html: `<div style="width:32px;height:32px;border-radius:50%;background:${color};border:3px solid white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white;box-shadow:0 0 12px ${color}88;font-family:system-ui">${initial}</div>` });
 }
 
-function targetIcon(): L.DivIcon {
+function mkTarget(): L.DivIcon {
   return L.divIcon({ className: '', iconSize: [36, 36], iconAnchor: [18, 36],
-    html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8ff5ff,#00deec);border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px #8ff5ff;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-  });
+    html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8ff5ff,#00deec);border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px #8ff5ff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>` });
 }
 
-// Sub-component: handles click events on the map
-function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
-  useMapEvents({ click: (e) => onMapClick(e.latlng.lat, e.latlng.lng) });
-  return null;
+// ── Standalone map component that initializes Leaflet on a callback ref ──
+function LeafletMap({ onMapClick, children }: { onMapClick?: (lat: number, lng: number) => void; children?: (map: L.Map) => void }) {
+  const mapRef = useRef<L.Map | null>(null);
+
+  const containerCallback = useCallback((node: HTMLDivElement | null) => {
+    // Cleanup old map
+    if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
+    if (!node) return;
+
+    // Create map on the actual DOM node (guaranteed to exist)
+    const map = L.map(node, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    if (onMapClick) {
+      map.on('click', (e: L.LeafletMouseEvent) => onMapClick(e.latlng.lat, e.latlng.lng));
+    }
+
+    mapRef.current = map;
+    // Force layout recalc
+    setTimeout(() => map.invalidateSize(), 50);
+    setTimeout(() => map.invalidateSize(), 300);
+
+    if (children) children(map);
+  }, [onMapClick, children]);
+
+  return <div ref={containerCallback} style={{ height: '100%', width: '100%', background: '#0a0e14' }} />;
 }
 
-// Sub-component: auto-fit bounds when result guesses change
-function FitBounds({ guesses, location }: { guesses: PlayerGuess[]; location: GeoLocation }) {
-  const map = useMap();
-  useEffect(() => {
-    if (guesses.length === 0) return;
-    const bounds = L.latLngBounds([[location.lat, location.lng]]);
-    guesses.forEach(g => bounds.extend([g.lat, g.lng]));
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
-  }, [guesses, location, map]);
-  return null;
-}
-
-const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}.leaflet-container{background:#0a0e14!important}.leaflet-control-attribution{font-size:9px!important;background:transparent!important;color:#666!important}`;
+const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}.leaflet-container{background:#0a0e14!important}.leaflet-control-attribution{display:none!important}`;
 
 export default function MapRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit }: MapRoundProps) {
   const [phase, setPhase] = useState<MapPhase>('showing');
@@ -60,11 +67,13 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const [allDoneGuesses, setAllDoneGuesses] = useState<PlayerGuess[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pinPosRef = useRef<[number, number] | null>(null);
+  const pinMarkerRef = useRef<L.Marker | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
   const currentPlayer = players[guessingPlayerIdx % players.length];
 
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
 
-  // Showing → Guessing auto-transition
+  // Showing → Guessing
   useEffect(() => {
     if (phase !== 'showing') return;
     const t = setTimeout(() => { setPhase('guessing'); setCountdown(timerSeconds); }, 2500);
@@ -80,6 +89,18 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, guessingPlayerIdx]);
 
+  const handleMapClick = useCallback((lat: number, lng: number) => {
+    setPinPos([lat, lng]);
+    if (mapInstanceRef.current) {
+      if (pinMarkerRef.current) pinMarkerRef.current.setLatLng([lat, lng]);
+      else {
+        pinMarkerRef.current = L.marker([lat, lng], { icon: mkIcon(currentPlayer.color, currentPlayer.name.charAt(0).toUpperCase()) }).addTo(mapInstanceRef.current);
+      }
+    }
+  }, [currentPlayer]);
+
+  const storeMapRef = useCallback((map: L.Map) => { mapInstanceRef.current = map; }, []);
+
   const confirmGuess = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     const pos = pinPosRef.current;
@@ -88,7 +109,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     const guess: PlayerGuess = { playerId: currentPlayer.id, playerName: currentPlayer.name, playerColor: currentPlayer.color, lat, lng, distanceKm };
     const updated = [...guesses, guess];
     setGuesses(updated);
-    setPinPos(null);
+    setPinPos(null); pinMarkerRef.current = null; mapInstanceRef.current = null;
     if (guessingPlayerIdx + 1 >= players.length) { setAllDoneGuesses(updated); setPhase('result'); }
     else { setGuessingPlayerIdx(guessingPlayerIdx + 1); setPhase('handoff'); }
   }, [location, currentPlayer, guesses, guessingPlayerIdx, players.length]);
@@ -99,6 +120,19 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const winner = sortedGuesses[0];
   const handoffPlayer = players[(guessingPlayerIdx) % players.length];
 
+  // Result map setup callback
+  const setupResultMap = useCallback((map: L.Map) => {
+    map.setView([location.lat, location.lng], 4);
+    L.marker([location.lat, location.lng], { icon: mkTarget() }).addTo(map);
+    const bounds = L.latLngBounds([[location.lat, location.lng]]);
+    allDoneGuesses.forEach(g => {
+      L.marker([g.lat, g.lng], { icon: mkIcon(g.playerColor, g.playerName.charAt(0).toUpperCase()) }).addTo(map);
+      L.polyline([[g.lat, g.lng], [location.lat, location.lng]], { color: g.playerColor, weight: 2, dashArray: '8 6', opacity: 0.7 }).addTo(map);
+      bounds.extend([g.lat, g.lng]);
+    });
+    setTimeout(() => { map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 }); map.invalidateSize(); }, 100);
+  }, [allDoneGuesses, location]);
+
   return (
     <div className="fixed inset-0 bg-[#0a0e14] overflow-hidden" style={{ fontFamily: "'Plus Jakarta Sans', system-ui" }}>
       <style>{CSS}</style>
@@ -106,7 +140,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       {/* SHOWING */}
       {phase === 'showing' && (
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 z-10"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="absolute top-6 right-6 px-3 py-1.5 rounded-full bg-[#151a21]/60 border border-white/5">
             <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Runde {roundNumber}/{totalRounds}</span>
           </div>
@@ -123,15 +157,10 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
         </motion.div>
       )}
 
-      {/* GUESSING — react-leaflet MapContainer */}
+      {/* GUESSING */}
       {phase === 'guessing' && (
-        <div className="absolute inset-0">
-          <MapContainer center={[20, 10]} zoom={2} zoomControl={false} attributionControl={false}
-            style={{ height: '100%', width: '100%', background: '#0a0e14' }}>
-            <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
-            <ClickHandler onMapClick={(lat, lng) => setPinPos([lat, lng])} />
-            {pinPos && <Marker position={pinPos} icon={playerIcon(currentPlayer.color, currentPlayer.name.charAt(0).toUpperCase())} />}
-          </MapContainer>
+        <div className="absolute inset-0" key={`guess-${guessingPlayerIdx}`}>
+          <LeafletMap onMapClick={handleMapClick}>{storeMapRef}</LeafletMap>
 
           {/* Overlays */}
           <div className="absolute top-4 left-4 z-[1000]">
@@ -211,25 +240,9 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 <h1 className="text-5xl font-black italic text-[#df8eff] text-glow-primary">GEWONNEN!</h1>
               </div>
             )}
-
-            {/* Result map */}
             <div className="aspect-video rounded-xl border border-white/10 overflow-hidden mb-6" style={{ background: '#0f141a' }}>
-              <MapContainer center={[location.lat, location.lng]} zoom={4} zoomControl={false} attributionControl={false}
-                style={{ height: '100%', width: '100%', background: '#0a0e14' }}>
-                <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
-                <Marker position={[location.lat, location.lng]} icon={targetIcon()} />
-                {allDoneGuesses.map(g => (
-                  <Marker key={g.playerId} position={[g.lat, g.lng]} icon={playerIcon(g.playerColor, g.playerName.charAt(0).toUpperCase())} />
-                ))}
-                {allDoneGuesses.map(g => (
-                  <Polyline key={`line-${g.playerId}`} positions={[[g.lat, g.lng], [location.lat, location.lng]]}
-                    pathOptions={{ color: g.playerColor, weight: 2, dashArray: '8 6', opacity: 0.7 }} />
-                ))}
-                <FitBounds guesses={allDoneGuesses} location={location} />
-              </MapContainer>
+              <LeafletMap>{setupResultMap}</LeafletMap>
             </div>
-
-            {/* Stats */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               {winner && (
                 <div className="col-span-2 bg-[#151a21]/60 backdrop-blur-md rounded-xl p-5 border border-white/5">
@@ -251,8 +264,6 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 </div>
               )}
             </div>
-
-            {/* Leaderboard */}
             <div className="space-y-2 mb-6">
               {sortedGuesses.map((g, i) => (
                 <div key={g.playerId} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${i === 0 ? 'bg-[#df8eff]/10 border border-[#df8eff]/20' : 'bg-[#20262f]/40 border border-white/5'}`}>
@@ -263,14 +274,11 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 </div>
               ))}
             </div>
-
-            <div className="space-y-3">
-              <motion.button onClick={handleNextRound}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
-                whileTap={{ scale: 0.95 }}>
-                <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? 'ERGEBNISSE' : 'NAECHSTE RUNDE'}</span>
-              </motion.button>
-            </div>
+            <motion.button onClick={handleNextRound}
+              className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
+              whileTap={{ scale: 0.95 }}>
+              <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? 'ERGEBNISSE' : 'NAECHSTE RUNDE'}</span>
+            </motion.button>
           </div>
         </motion.div>
       )}

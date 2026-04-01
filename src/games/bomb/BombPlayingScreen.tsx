@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bomb, CheckCircle2 } from 'lucide-react';
+import { Bomb, CheckCircle2, XCircle } from 'lucide-react';
 import type { GameState } from './BombGame';
 
 interface PlayingScreenProps {
@@ -8,6 +8,7 @@ interface PlayingScreenProps {
   progress: number;
   onWeiter: () => void;
   onQuizAnswer: (idx: number) => void;
+  onAlleAnswer?: (knows: boolean) => void;
 }
 
 function triggerVibration(intensity: number) {
@@ -18,7 +19,7 @@ function triggerVibration(intensity: number) {
   navigator.vibrate([on, off, on]);
 }
 
-export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAnswer }: PlayingScreenProps) {
+export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAnswer, onAlleAnswer }: PlayingScreenProps) {
   const player = state.players[state.currentPlayerIndex];
   const isRandom = state.randomTimer;
   const timerSeconds = Math.max(0, Math.round((1 - progress) * ((state.timerMin + state.timerMax) / 2)));
@@ -192,8 +193,43 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
         </div>
       )}
 
-      {/* Action Button */}
-      {state.mode !== 'quiz' && (
+      {/* Action Button — Alle antworten mode */}
+      {state.mode === 'alle' && onAlleAnswer && (
+        <div className="relative z-10 w-full max-w-md mx-auto px-4 pb-6 space-y-2">
+          <p className="text-center text-white/40 text-xs font-medium tracking-wide">
+            Keine Wiederholungen erlaubt!
+          </p>
+          <div className="flex gap-3">
+            <motion.button
+              onClick={() => onAlleAnswer(true)}
+              className="flex-1 h-14 rounded-2xl font-bold text-base text-white flex items-center justify-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #00e3fd 0%, #34d399 100%)',
+                boxShadow: '0 8px 32px rgba(0,227,253,0.2), 0 2px 8px rgba(52,211,153,0.15)',
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              GESCHAFFT!
+            </motion.button>
+            <motion.button
+              onClick={() => onAlleAnswer(false)}
+              className="flex-1 h-14 rounded-2xl font-bold text-base text-white flex items-center justify-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #ff6b98 0%, #fc3c00 100%)',
+                boxShadow: '0 8px 32px rgba(255,107,152,0.2), 0 2px 8px rgba(252,60,0,0.15)',
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <XCircle className="w-5 h-5" />
+              WEISS NICHT
+            </motion.button>
+          </div>
+        </div>
+      )}
+
+      {/* Action Button — Default (kategorie, speed) */}
+      {state.mode !== 'quiz' && state.mode !== 'alle' && (
         <div className="relative z-10 w-full max-w-md mx-auto px-4 pb-6">
           <motion.button
             onClick={onWeiter}

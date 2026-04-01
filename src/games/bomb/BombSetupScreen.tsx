@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bomb, Plus, Trash2, User, Zap, Brain, Timer, Hash, Wine, Shuffle } from 'lucide-react';
+import { Bomb, Plus, Trash2, User, Users, Zap, Brain, Timer, Hash, Wine, Shuffle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { GameState, GameMode } from './BombGame';
 
@@ -14,6 +14,7 @@ const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode
   { key: 'kategorie', label: 'Kategorie', desc: 'Nenne etwas aus einer Kategorie', icon: <Brain className="w-4 h-4" /> },
   { key: 'quiz', label: 'Quiz', desc: 'Multiple-Choice Fragen', icon: <Zap className="w-4 h-4" /> },
   { key: 'speed', label: 'Speed', desc: 'Timer wird jede Runde kuerzer', icon: <Timer className="w-4 h-4" /> },
+  { key: 'alle', label: 'Alle antworten', desc: 'Jeder muss eine Antwort geben!', icon: <Users className="w-4 h-4" /> },
 ];
 
 const AVATAR_COLORS = [

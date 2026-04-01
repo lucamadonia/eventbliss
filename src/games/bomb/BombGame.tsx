@@ -6,6 +6,7 @@ import BombSetupScreen from './BombSetupScreen';
 import BombPlayingScreen from './BombPlayingScreen';
 import BombExplosionScreen from './BombExplosionScreen';
 import BombResultsScreen, { BombRoundEndScreen } from './BombResultsScreen';
+import BombTutorial from './BombTutorial';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
@@ -15,7 +16,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 // ---------------------------------------------------------------------------
 
 export type GamePhase = 'setup' | 'playing' | 'explosion' | 'roundEnd' | 'gameOver';
-export type GameMode = 'kategorie' | 'quiz' | 'speed';
+export type GameMode = 'kategorie' | 'quiz' | 'speed' | 'alle';
 
 export interface PlayerState {
   name: string;
@@ -133,6 +134,10 @@ function generateTask(mode: GameMode): { task: string; quiz: QuizQuestion | null
     const q = getRandomQuestion();
     return { task: q.question, quiz: q };
   }
+  if (mode === 'alle') {
+    const { category, letter } = generateCategoryPrompt();
+    return { task: `Nenne: ${category} mit "${letter}"`, quiz: null };
+  }
   const { category, letter } = generateCategoryPrompt();
   return { task: `Nenne ein/eine ${category} mit "${letter}"!`, quiz: null };
 }
@@ -161,6 +166,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const [state, setState] = useState<GameState>({ ...defaultState });
   const [timerActive, setTimerActive] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
   const speedReductionRef = useRef(0);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
@@ -208,6 +214,24 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           broadcastState(next);
           return next;
         });
+      } else if (data.action === 'alle-answer') {
+        const knows = data.knows as boolean;
+        setState((prev) => {
+          const updated = [...prev.players];
+          if (!knows) {
+            updated[prev.currentPlayerIndex] = {
+              ...updated[prev.currentPlayerIndex],
+              penalties: updated[prev.currentPlayerIndex].penalties + 1,
+            };
+          }
+          const next = {
+            ...prev,
+            players: updated,
+            currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+          };
+          broadcastState(next);
+          return next;
+        });
       } else if (data.action === 'quiz-answer') {
         const idx = data.answerIndex as number;
         if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
@@ -250,9 +274,10 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     setTimerActive(false);
     setState((prev) => {
       const updated = [...prev.players];
+      const penaltyAmount = prev.mode === 'alle' ? 2 : 1;
       updated[prev.currentPlayerIndex] = {
         ...updated[prev.currentPlayerIndex],
-        penalties: updated[prev.currentPlayerIndex].penalties + 1,
+        penalties: updated[prev.currentPlayerIndex].penalties + penaltyAmount,
       };
       const next = {
         ...prev,
@@ -290,9 +315,16 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       players: state.players.map((p) => ({ ...p, penalties: 0 })),
     };
     setState(newState);
+    broadcastState(newState);
+
+    // Show tutorial for 'alle' mode once per session
+    if (state.mode === 'alle' && !sessionStorage.getItem('bomb-alle-tutorial-seen')) {
+      setShowTutorial(true);
+      // Don't start timer yet — it begins after tutorial dismissal
+      return;
+    }
     setTimerKey((k) => k + 1);
     setTimerActive(true);
-    broadcastState(newState);
   };
 
   const advancePlayer = () => {
@@ -334,6 +366,36 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     }
     // Correct answer: advance to next player
     advancePlayer();
+  };
+
+  const handleAlleAnswer = (knows: boolean) => {
+    if (online && !online.isHost) {
+      online.broadcast('bomb-action', { action: 'alle-answer', knows });
+      return;
+    }
+    if (!knows) {
+      // Add +1 penalty to current player for not knowing
+      setState((prev) => {
+        const updated = [...prev.players];
+        updated[prev.currentPlayerIndex] = {
+          ...updated[prev.currentPlayerIndex],
+          penalties: updated[prev.currentPlayerIndex].penalties + 1,
+        };
+        return { ...prev, players: updated };
+      });
+    }
+    // Advance to next player — keep the same task/category for this round
+    setState((prev) => ({
+      ...prev,
+      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+    }));
+  };
+
+  const handleTutorialDismiss = () => {
+    setShowTutorial(false);
+    sessionStorage.setItem('bomb-alle-tutorial-seen', 'true');
+    setTimerKey((k) => k + 1);
+    setTimerActive(true);
   };
 
   useEffect(() => {
@@ -405,13 +467,17 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           <BombSetupScreen state={state} onUpdate={update} onStart={startGame} />
         </motion.div>
       )}
-      {state.phase === 'playing' && (
+      {showTutorial && (
+        <BombTutorial onDismiss={handleTutorialDismiss} />
+      )}
+      {state.phase === 'playing' && !showTutorial && (
         <motion.div key={`playing-${timerKey}`} exit={{ opacity: 0 }}>
           <BombPlayingScreen
             state={state}
             progress={progress}
             onWeiter={handleWeiter}
             onQuizAnswer={handleQuizAnswer}
+            onAlleAnswer={handleAlleAnswer}
           />
         </motion.div>
       )}
