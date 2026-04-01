@@ -15,7 +15,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 // ---------------------------------------------------------------------------
 
 export type GamePhase = 'setup' | 'playing' | 'explosion' | 'roundEnd' | 'gameOver';
-export type GameMode = 'kategorie' | 'quiz' | 'speed' | 'random';
+export type GameMode = 'kategorie' | 'quiz' | 'speed';
 
 export interface PlayerState {
   name: string;
@@ -35,6 +35,7 @@ export interface GameState {
   currentQuiz: QuizQuestion | null;
   explodedPlayerIndex: number;
   speedTimerBase: number;
+  randomTimer: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,9 +128,7 @@ function useTickSound(active: boolean, progress: number) {
 // ---------------------------------------------------------------------------
 
 function generateTask(mode: GameMode): { task: string; quiz: QuizQuestion | null } {
-  if (mode === 'random') {
-    return { task: 'Gib die Bombe schnell weiter, bevor sie explodiert!', quiz: null };
-  }
+  // random mode removed — randomTimer is now a flag on GameState
   if (mode === 'quiz') {
     const q = getRandomQuestion();
     return { task: q.question, quiz: q };
@@ -151,6 +150,7 @@ const defaultState: GameState = {
   currentQuiz: null,
   explodedPlayerIndex: -1,
   speedTimerBase: 30,
+  randomTimer: false,
 };
 
 // ---------------------------------------------------------------------------
@@ -235,12 +235,12 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     return unsub;
   }, [online, state.mode, state.currentQuiz, broadcastState]);
 
-  const effectiveTimerMin = state.mode === 'random'
+  const effectiveTimerMin = state.randomTimer
     ? 15000
     : state.mode === 'speed'
       ? Math.max(5, (state.timerMin * 1000) - speedReductionRef.current)
       : state.timerMin * 1000;
-  const effectiveTimerMax = state.mode === 'random'
+  const effectiveTimerMax = state.randomTimer
     ? 90000
     : state.mode === 'speed'
       ? Math.max(8, (state.timerMax * 1000) - speedReductionRef.current)

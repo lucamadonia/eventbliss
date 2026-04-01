@@ -14,7 +14,6 @@ const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode
   { key: 'kategorie', label: 'Kategorie', desc: 'Nenne etwas aus einer Kategorie', icon: <Brain className="w-4 h-4" /> },
   { key: 'quiz', label: 'Quiz', desc: 'Multiple-Choice Fragen', icon: <Zap className="w-4 h-4" /> },
   { key: 'speed', label: 'Speed', desc: 'Timer wird jede Runde kuerzer', icon: <Timer className="w-4 h-4" /> },
-  { key: 'random', label: 'Random', desc: 'Explodiert zufaellig (15–90s)', icon: <Shuffle className="w-4 h-4" /> },
 ];
 
 const AVATAR_COLORS = [
@@ -133,32 +132,51 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">Timer</h2>
-                <span className="text-[#00e3fd] text-sm font-bold">{state.timerMin}–{state.timerMax}s</span>
+                {state.randomTimer ? (
+                  <span className="text-[#ff7350] text-sm font-bold">??? Random</span>
+                ) : (
+                  <span className="text-[#00e3fd] text-sm font-bold">{state.timerMin}–{state.timerMax}s</span>
+                )}
               </div>
-              <div className="space-y-2">
-                <input
-                  type="range"
-                  min={5}
-                  max={state.timerMax - 5}
-                  value={state.timerMin}
-                  onChange={(e) => onUpdate({ timerMin: Number(e.target.value) })}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #00e3fd ${((state.timerMin - 5) / (state.timerMax - 10)) * 100}%, #13131b ${((state.timerMin - 5) / (state.timerMax - 10)) * 100}%)`,
-                  }}
-                />
-                <input
-                  type="range"
-                  min={state.timerMin + 5}
-                  max={60}
-                  value={state.timerMax}
-                  onChange={(e) => onUpdate({ timerMax: Number(e.target.value) })}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #00e3fd ${((state.timerMax - state.timerMin - 5) / (55 - state.timerMin)) * 100}%, #13131b ${((state.timerMax - state.timerMin - 5) / (55 - state.timerMin)) * 100}%)`,
-                  }}
-                />
-              </div>
+              {/* Random toggle */}
+              <button
+                onClick={() => onUpdate({ randomTimer: !state.randomTimer })}
+                className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold mb-2 transition-all ${
+                  state.randomTimer
+                    ? 'bg-[#ff7350] text-white shadow-lg shadow-[#ff7350]/20'
+                    : 'bg-[#13131b] text-white/40 hover:text-white/60'
+                }`}
+              >
+                <Shuffle className="w-3.5 h-3.5" />
+                {state.randomTimer ? 'Random aktiv (15–90s)' : 'Random Timer aktivieren'}
+              </button>
+              {/* Sliders only when not random */}
+              {!state.randomTimer && (
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min={5}
+                    max={state.timerMax - 5}
+                    value={state.timerMin}
+                    onChange={(e) => onUpdate({ timerMin: Number(e.target.value) })}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #00e3fd ${((state.timerMin - 5) / (state.timerMax - 10)) * 100}%, #13131b ${((state.timerMin - 5) / (state.timerMax - 10)) * 100}%)`,
+                    }}
+                  />
+                  <input
+                    type="range"
+                    min={state.timerMin + 5}
+                    max={60}
+                    value={state.timerMax}
+                    onChange={(e) => onUpdate({ timerMax: Number(e.target.value) })}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #00e3fd ${((state.timerMax - state.timerMin - 5) / (55 - state.timerMin)) * 100}%, #13131b ${((state.timerMax - state.timerMin - 5) / (55 - state.timerMin)) * 100}%)`,
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

@@ -20,7 +20,7 @@ function triggerVibration(intensity: number) {
 
 export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAnswer }: PlayingScreenProps) {
   const player = state.players[state.currentPlayerIndex];
-  const isRandom = state.mode === 'random';
+  const isRandom = state.randomTimer;
   const timerSeconds = Math.max(0, Math.round((1 - progress) * ((state.timerMin + state.timerMax) / 2)));
   const pulseSpeed = isRandom ? Math.max(0.5, 1.2 - progress * 0.6) : Math.max(0.3, 1.2 - progress * 0.9);
 
