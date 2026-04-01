@@ -4,7 +4,7 @@ import {
   Copy, Check, ArrowLeft, Users, Crown, CircleDot, UserMinus,
   Share2, Play, Plus, Wifi, WifiOff, Loader2, Sparkles,
 } from "lucide-react";
-import { useGameRoom, type RoomPlayer } from "./useGameRoom";
+import { useGameRoom, getSavedRoom, type RoomPlayer } from "./useGameRoom";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import EventInvite from "./EventInvite";
@@ -117,7 +117,16 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const { user } = useAuth();
   const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
 
+  const savedRoom = getSavedRoom();
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
+
+  // Rejoin a saved room
+  const handleRejoin = useCallback(async () => {
+    if (!savedRoom) return;
+    setIsLoading(true);
+    const name = hostName.trim() || joinName.trim() || "Spieler";
+    try { await joinRoom(savedRoom.roomCode, name, isPremium); setView("lobby"); } finally { setIsLoading(false); }
+  }, [savedRoom, joinRoom, hostName, joinName, isPremium]);
 
   const handleCreate = useCallback(async () => {
     if (!hostName.trim()) return;
@@ -191,6 +200,21 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
           {/* MENU */}
           {view === "menu" && (
             <motion.div key="menu" {...fadeUp} className="space-y-4">
+              {/* Rejoin saved room banner */}
+              {savedRoom && savedRoom.gameId === gameId && (
+                <motion.button whileTap={{ scale: 0.97 }} onClick={handleRejoin}
+                  className="w-full rounded-2xl p-4 text-left flex items-center gap-4"
+                  style={{ backgroundColor: "rgba(143,245,255,0.08)", border: "1px solid rgba(143,245,255,0.25)" }}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: `linear-gradient(135deg, ${EP.neonCyan}, ${EP.neonPurple})` }}>
+                    <Wifi className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold font-['Plus_Jakarta_Sans']" style={{ color: EP.neonCyan }}>Aktiver Raum: {savedRoom.roomCode}</p>
+                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Tippe um wieder beizutreten</p>
+                  </div>
+                </motion.button>
+              )}
+
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={() => setView("create")}
                 className="w-full rounded-2xl p-5 text-left" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                 <div className="flex items-center gap-4">

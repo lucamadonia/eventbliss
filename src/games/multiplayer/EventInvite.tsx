@@ -60,7 +60,7 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
       const { data, error } = await supabase
         .from("events")
         .select("id, name")
-        .eq("creator_id", user.id)
+        .eq("created_by", user.id)
         .order("created_at", { ascending: false })
         .limit(20);
 

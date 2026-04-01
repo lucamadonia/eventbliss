@@ -57,6 +57,32 @@ const PLAYER_COLORS = [
 const ROOM_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 // ---------------------------------------------------------------------------
+// Saved Room
+// ---------------------------------------------------------------------------
+
+export interface SavedRoom {
+  roomCode: string;
+  gameId: string;
+  hostId: string;
+  playerId: string;
+  timestamp: number;
+}
+
+export function getSavedRoom(): SavedRoom | null {
+  try {
+    const raw = localStorage.getItem("eventbliss_active_room");
+    if (!raw) return null;
+    const saved = JSON.parse(raw) as SavedRoom;
+    // Expire after 2 hours
+    if (Date.now() - saved.timestamp > 2 * 60 * 60 * 1000) {
+      localStorage.removeItem("eventbliss_active_room");
+      return null;
+    }
+    return saved;
+  } catch { return null; }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -99,13 +125,23 @@ export function useGameRoom(): UseGameRoomReturn {
     : room?.hostId === playerIdRef.current;
   const roomHasPremium = players.some((p) => p.isPremium);
 
-  // ---- Cleanup on unmount ----
+  // ---- Persist active room to localStorage ----
+  useEffect(() => {
+    if (room) {
+      try {
+        localStorage.setItem("eventbliss_active_room", JSON.stringify({
+          roomCode: room.roomCode, gameId: room.gameId, hostId: room.hostId,
+          playerId: playerIdRef.current, timestamp: Date.now(),
+        }));
+      } catch { /* ignore */ }
+    }
+  }, [room?.roomCode]);
+
+  // ---- Cleanup on unmount (DON'T destroy channel — allow rejoin) ----
   useEffect(() => {
     return () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
+      // Only cleanup channel ref, don't remove from Supabase (allow reconnect)
+      channelRef.current = null;
     };
   }, []);
 
@@ -284,6 +320,7 @@ export function useGameRoom(): UseGameRoomReturn {
     setPlayers([]);
     setError(null);
     listenersRef.current.clear();
+    try { localStorage.removeItem("eventbliss_active_room"); } catch { /* ignore */ }
   }, []);
 
   const setReady = useCallback(
