@@ -70,7 +70,8 @@
       "faq": "FAQ",
       "login": "Login",
       "signUp": "Sign Up",
-      "partner": "Partners"
+      "partner": "Partners",
+      "games": "Games"
     },
     "hero": {
       "badge": "The #1 Event Planning Platform",
@@ -2541,7 +2542,8 @@
       "title": "Ready for your event?",
       "description": "Create your event for free and use all games and themes in your planning.",
       "button": "Create Event"
-    }
+    },
+    "openGames": "Open All Games"
   },
   "eventTypes": {
     "bachelor": "Bachelor Party",

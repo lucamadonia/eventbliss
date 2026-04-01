@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, Timer,
@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
 import { THISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content-de';
@@ -55,6 +57,12 @@ function shuffle<T>(arr: T[]): T[] {
 // Component
 // ---------------------------------------------------------------------------
 
+const EP_STYLE = `
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.neon-glow-cyan { text-shadow: 0 0 20px rgba(143,245,255,0.6), 0 0 40px rgba(143,245,255,0.4); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+`;
+
 export default function ThisOrThatGame() {
   const navigate = useNavigate();
 
@@ -63,6 +71,8 @@ export default function ThisOrThatGame() {
   const [mode, setMode] = useState('classic');
   const [speedTimer, setSpeedTimer] = useState(5);
   const [totalRounds, setTotalRounds] = useState(15);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [currentRound, setCurrentRound] = useState(1);
 
   const [deck] = useState(() => shuffle(THISORTHAT_PAIRS));
@@ -192,6 +202,15 @@ export default function ThisOrThatGame() {
 
   const endDebate = () => setPhase('reveal');
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('this-or-that', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const resetGame = () => {
     setPhase('setup');
     setPlayers([]);
@@ -219,16 +238,20 @@ export default function ThisOrThatGame() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+      <style>{EP_STYLE}</style>
+      {/* Ambient glow orbs */}
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-        <button onClick={() => navigate('/games')} className="p-2 text-white/40 hover:text-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
+        <button onClick={() => navigate('/games')} className="p-2 text-[#a8abb3] hover:text-white">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="text-xs font-bold uppercase tracking-widest text-white/40">
+        <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
           Runde {currentRound}/{totalRounds}
         </div>
-        <div className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs font-bold text-[#00e3fd]">
+        <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-xs font-bold text-[#8ff5ff]">
           {currentPair?.category}
         </div>
       </div>
@@ -246,7 +269,7 @@ export default function ThisOrThatGame() {
               </div>
               <span className="text-white/60 text-sm">{players[voterIdx]?.name} waehlt</span>
               {mode === 'speed' && (
-                <span className={cn("ml-2 font-mono font-bold", speedTimerHook.timeLeft <= 2 ? 'text-red-400 animate-pulse' : 'text-[#ff7350]')}>
+                <span className={cn("ml-2 font-mono font-bold", speedTimerHook.timeLeft <= 2 ? 'text-red-400 animate-pulse' : 'text-[#ff6b98]')}>
                   {speedTimerHook.timeLeft}s
                 </span>
               )}
@@ -255,25 +278,25 @@ export default function ThisOrThatGame() {
             <div className="flex gap-1">
               {players.map((_, i) => (
                 <div key={i} className={cn("w-2 h-2 rounded-full",
-                  i < voterIdx ? 'bg-[#cf96ff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
+                  i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
               ))}
             </div>
             {/* Two cards */}
             <div className="flex gap-4 w-full max-w-md mt-4">
               <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={() => castVote('A')}
-                className="flex-1 rounded-2xl bg-gradient-to-br from-[#cf96ff]/20 to-[#8b5cf6]/20 border-2 border-[#cf96ff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#cf96ff]/60 hover:shadow-[0_0_30px_rgba(207,150,255,0.2)]">
-                <div className="w-12 h-12 rounded-full bg-[#cf96ff]/20 flex items-center justify-center">
-                  <span className="text-[#cf96ff] font-black text-lg">A</span>
+                className="flex-1 rounded-2xl bg-gradient-to-br from-[#df8eff]/20 to-[#8b5cf6]/20 border-2 border-[#df8eff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#df8eff]/60 hover:shadow-[0_0_30px_rgba(207,150,255,0.2)]">
+                <div className="w-12 h-12 rounded-full bg-[#df8eff]/20 flex items-center justify-center">
+                  <span className="text-[#df8eff] font-black text-lg">A</span>
                 </div>
                 <span className="text-xl font-extrabold text-white text-center leading-tight">{currentPair.optionA}</span>
               </motion.button>
 
               <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={() => castVote('B')}
-                className="flex-1 rounded-2xl bg-gradient-to-br from-[#00e3fd]/20 to-[#0ea5e9]/20 border-2 border-[#00e3fd]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#00e3fd]/60 hover:shadow-[0_0_30px_rgba(0,227,253,0.2)]">
-                <div className="w-12 h-12 rounded-full bg-[#00e3fd]/20 flex items-center justify-center">
-                  <span className="text-[#00e3fd] font-black text-lg">B</span>
+                className="flex-1 rounded-2xl bg-gradient-to-br from-[#8ff5ff]/20 to-[#0ea5e9]/20 border-2 border-[#8ff5ff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#8ff5ff]/60 hover:shadow-[0_0_30px_rgba(0,227,253,0.2)]">
+                <div className="w-12 h-12 rounded-full bg-[#8ff5ff]/20 flex items-center justify-center">
+                  <span className="text-[#8ff5ff] font-black text-lg">B</span>
                 </div>
                 <span className="text-xl font-extrabold text-white text-center leading-tight">{currentPair.optionB}</span>
               </motion.button>
@@ -285,17 +308,17 @@ export default function ThisOrThatGame() {
         {phase === 'debate' && currentPair && (
           <motion.div key="debate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
-            <MessageSquare className="w-10 h-10 text-[#ff7350]" />
+            <MessageSquare className="w-10 h-10 text-[#ff6b98]" />
             <h2 className="text-2xl font-extrabold">Debatte!</h2>
             <p className="text-white/40 text-sm text-center">Diskutiert 30 Sekunden ueber eure Wahl</p>
-            <div className="text-4xl font-mono font-black text-[#ff7350]">{debateTimer.timeLeft}s</div>
+            <div className="text-4xl font-mono font-black text-[#ff6b98]">{debateTimer.timeLeft}s</div>
             <div className="flex gap-4 w-full max-w-sm">
-              <div className="flex-1 rounded-2xl bg-[#cf96ff]/10 border border-[#cf96ff]/20 p-4 text-center">
-                <span className="text-lg font-bold text-[#cf96ff]">{currentPair.optionA}</span>
+              <div className="flex-1 rounded-2xl bg-[#df8eff]/10 border border-[#df8eff]/20 p-4 text-center">
+                <span className="text-lg font-bold text-[#df8eff]">{currentPair.optionA}</span>
               </div>
               <div className="text-white/20 self-center font-bold">vs</div>
-              <div className="flex-1 rounded-2xl bg-[#00e3fd]/10 border border-[#00e3fd]/20 p-4 text-center">
-                <span className="text-lg font-bold text-[#00e3fd]">{currentPair.optionB}</span>
+              <div className="flex-1 rounded-2xl bg-[#8ff5ff]/10 border border-[#8ff5ff]/20 p-4 text-center">
+                <span className="text-lg font-bold text-[#8ff5ff]">{currentPair.optionB}</span>
               </div>
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={endDebate}
@@ -309,19 +332,19 @@ export default function ThisOrThatGame() {
         {phase === 'reveal' && currentPair && (
           <motion.div key="reveal" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8">
-            <BarChart3 className="w-8 h-8 text-[#00e3fd]" />
+            <BarChart3 className="w-8 h-8 text-[#8ff5ff]" />
             <h2 className="text-xl font-extrabold">Ergebnis</h2>
             {/* Result cards */}
             <div className="w-full max-w-sm space-y-3">
-              <div className="rounded-2xl bg-[#1f1f29] border border-white/[0.06] p-4">
+              <div className="rounded-2xl bg-[#1b2028] border border-[#44484f]/20 p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#cf96ff] font-bold">{currentPair.optionA}</span>
+                  <span className="text-[#df8eff] font-bold">{currentPair.optionA}</span>
                   <span className="text-white font-black text-lg">{voteStats.aPct}%</span>
                 </div>
                 <div className="h-3 bg-white/5 rounded-full overflow-hidden">
                   <motion.div initial={{ width: 0 }} animate={{ width: `${voteStats.aPct}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className="h-full rounded-full bg-gradient-to-r from-[#cf96ff] to-[#8b5cf6]" />
+                    className="h-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff]" />
                 </div>
                 <div className="flex gap-1 mt-2 flex-wrap">
                   {players.filter((p) => roundVotes[p.id] === 'A').map((p) => (
@@ -330,15 +353,15 @@ export default function ThisOrThatGame() {
                   ))}
                 </div>
               </div>
-              <div className="rounded-2xl bg-[#1f1f29] border border-white/[0.06] p-4">
+              <div className="rounded-2xl bg-[#1b2028] border border-[#44484f]/20 p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#00e3fd] font-bold">{currentPair.optionB}</span>
+                  <span className="text-[#8ff5ff] font-bold">{currentPair.optionB}</span>
                   <span className="text-white font-black text-lg">{voteStats.bPct}%</span>
                 </div>
                 <div className="h-3 bg-white/5 rounded-full overflow-hidden">
                   <motion.div initial={{ width: 0 }} animate={{ width: `${voteStats.bPct}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className="h-full rounded-full bg-gradient-to-r from-[#00e3fd] to-[#0ea5e9]" />
+                    className="h-full rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#0ea5e9]" />
                 </div>
                 <div className="flex gap-1 mt-2 flex-wrap">
                   {players.filter((p) => roundVotes[p.id] === 'B').map((p) => (
@@ -349,7 +372,7 @@ export default function ThisOrThatGame() {
               </div>
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
-              className="w-full max-w-sm flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
+              className="w-full max-w-sm flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
               Weiter <ArrowRight className="w-5 h-5" />
             </motion.button>
           </motion.div>
@@ -359,29 +382,30 @@ export default function ThisOrThatGame() {
         {phase === 'gameOver' && winner && (
           <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
+            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
               Spielende!
             </h2>
-            <div className="text-lg font-bold text-[#00e3fd]">{winner.name} gewinnt!</div>
+            <div className="text-lg font-bold text-[#8ff5ff]">{winner.name} gewinnt!</div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
-                <div key={p.id} className="flex items-center gap-3 bg-[#1f1f29] border border-white/[0.06] rounded-2xl px-4 py-3">
+                <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
                   <span className="text-white/30 text-sm font-bold w-5">#{i + 1}</span>
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#00e3fd] font-bold">{p.score} Pkt.</span>
+                  <span className="text-[#8ff5ff] font-bold">{p.score} Pkt.</span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
                 <RotateCcw className="w-4 h-4" /> Nochmal
               </motion.button>
               <button onClick={() => navigate('/games')}

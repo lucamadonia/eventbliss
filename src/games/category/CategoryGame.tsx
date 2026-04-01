@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   ArrowLeft,
   Timer,
@@ -17,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { useGameTimer } from "@/games/engine/TimerSystem";
-import { CATEGORIES_DE, generateCategoryPrompt } from "@/games/content/categories-de";
+import { getCategories, generateCategoryPrompt } from "@/games/content/categories";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,7 +73,7 @@ function TimerCircle({ percent, timeLeft, total }: { percent: number; timeLeft: 
           cy="70"
           r={radius}
           fill="none"
-          stroke={isLow ? "#ef4444" : "url(#timerGradAmber)"}
+          stroke={isLow ? "#ff6e84" : "url(#timerGradEP)"}
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -79,9 +81,9 @@ function TimerCircle({ percent, timeLeft, total }: { percent: number; timeLeft: 
           transition={{ duration: 0.4, ease: "linear" }}
         />
         <defs>
-          <linearGradient id="timerGradAmber" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#eab308" />
+          <linearGradient id="timerGradEP" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#df8eff" />
+            <stop offset="100%" stopColor="#8ff5ff" />
           </linearGradient>
         </defs>
       </svg>
@@ -105,7 +107,7 @@ function WordChip({ word, isNew }: { word: string; isNew: boolean }) {
     <motion.span
       initial={isNew ? { opacity: 0, scale: 0.6, y: 10 } : false}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      className="inline-block rounded-full border border-white/[0.08] bg-[#13131b]/80 backdrop-blur-xl px-3.5 py-1.5 text-sm font-medium text-white/70"
+      className="inline-block rounded-full border border-white/[0.08] bg-[#151a21]/80 backdrop-blur-xl px-3.5 py-1.5 text-sm font-medium text-white/70"
     >
       {word}
     </motion.span>
@@ -147,22 +149,22 @@ function SetupScreen({
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 pb-28">
       {/* Players Card */}
-      <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-5 space-y-4">
+      <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Users className="h-5 w-5 text-amber-400" />
+          <Users className="h-5 w-5 text-[#df8eff]" />
           <h2 className="text-base font-extrabold font-[Plus_Jakarta_Sans] text-white">Spieler</h2>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {names.map((name, i) => (
             <div key={i} className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-yellow-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#df8eff]/20 to-[#d779ff]/10 border border-[#df8eff]/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-sm">{AVATARS[i % AVATARS.length]}</span>
               </div>
               <input
                 value={name}
                 onChange={(e) => updateName(i, e.target.value)}
                 placeholder={`Spieler ${i + 1}`}
-                className="flex-1 min-w-0 rounded-[0.75rem] border border-white/[0.06] bg-[#13131b] px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-amber-500/30 transition-colors"
+                className="flex-1 min-w-0 rounded-[0.75rem] border border-[#44484f]/20 bg-[#151a21] px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#df8eff]/30 transition-colors"
               />
               {names.length > 2 && (
                 <button onClick={() => removePlayer(i)} className="text-white/20 hover:text-red-400 transition-colors text-lg px-0.5 flex-shrink-0">
@@ -180,7 +182,7 @@ function SetupScreen({
       </div>
 
       {/* Mode Selection Cards */}
-      <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-5 space-y-4">
+      <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-4">
         <h2 className="text-base font-extrabold font-[Plus_Jakarta_Sans] text-white">Spielmodus</h2>
         <div className="grid grid-cols-1 gap-3">
           {(Object.keys(MODE_INFO) as GameMode[]).map((m) => {
@@ -193,18 +195,18 @@ function SetupScreen({
                 onClick={() => handleModeChange(m)}
                 className={`flex items-center gap-3 rounded-[1rem] border p-4 text-left transition-all relative overflow-hidden ${
                   active
-                    ? "border-amber-500/40 bg-amber-500/[0.08] shadow-[0_0_20px_rgba(245,158,11,0.08)]"
-                    : "border-white/[0.06] bg-[#13131b] hover:border-white/10"
+                    ? "border-[#df8eff]/40 bg-[#df8eff]/[0.08] shadow-[0_0_20px_rgba(223,142,255,0.1)]"
+                    : "border-[#44484f]/20 bg-[#151a21] hover:border-white/10"
                 }`}
               >
                 {active && (
-                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#df8eff] to-transparent" />
                 )}
-                <div className={`flex h-10 w-10 items-center justify-center rounded-[0.75rem] ${active ? "bg-amber-500/15" : "bg-white/[0.04]"}`}>
-                  <Icon className={`h-5 w-5 ${active ? "text-amber-400" : "text-white/30"}`} />
+                <div className={`flex h-10 w-10 items-center justify-center rounded-[0.75rem] ${active ? "bg-[#df8eff]/15" : "bg-white/[0.04]"}`}>
+                  <Icon className={`h-5 w-5 ${active ? "text-[#df8eff]" : "text-white/30"}`} />
                 </div>
                 <div>
-                  <span className={`font-semibold ${active ? "text-amber-300" : "text-white/70"}`}>{info.label}</span>
+                  <span className={`font-semibold ${active ? "text-[#df8eff]" : "text-white/70"}`}>{info.label}</span>
                   <p className="text-xs text-white/30">{info.desc}</p>
                 </div>
               </button>
@@ -215,10 +217,10 @@ function SetupScreen({
 
       {/* Settings Bento Grid */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-4 space-y-3">
+        <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">Timer</span>
-            <span className="text-sm font-bold text-amber-400">{timerVal}s</span>
+            <span className="text-sm font-bold text-[#df8eff]">{timerVal}s</span>
           </div>
           <input
             type="range"
@@ -227,13 +229,13 @@ function SetupScreen({
             step={5}
             value={timerVal}
             onChange={(e) => setTimerVal(Number(e.target.value))}
-            className="w-full accent-amber-500 h-1.5"
+            className="w-full accent-[#df8eff] h-1.5"
           />
         </div>
-        <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-4 space-y-3">
+        <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">Runden</span>
-            <span className="text-sm font-bold text-amber-400">{rounds}</span>
+            <span className="text-sm font-bold text-[#df8eff]">{rounds}</span>
           </div>
           <input
             type="range"
@@ -242,20 +244,20 @@ function SetupScreen({
             step={1}
             value={rounds}
             onChange={(e) => setRounds(Number(e.target.value))}
-            className="w-full accent-amber-500 h-1.5"
+            className="w-full accent-[#df8eff] h-1.5"
           />
         </div>
       </div>
 
       {/* Fixed Bottom Start Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0d0d15] via-[#0d0d15] to-transparent z-20">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
         <div className="max-w-lg mx-auto">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             disabled={!canStart}
             onClick={handleStart}
-            className="w-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0d0d15] uppercase tracking-wide shadow-[0_0_30px_rgba(245,158,11,0.25)] transition-opacity disabled:opacity-30 flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] transition-opacity disabled:opacity-30 flex items-center justify-center gap-2"
           >
             <Play className="w-5 h-5" />
             Spiel starten
@@ -299,15 +301,15 @@ function CategoryRevealScreen({
       exit={{ opacity: 0, scale: 1.2 }}
       className="flex flex-col items-center justify-center gap-6 py-20"
     >
-      <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400/60">
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#df8eff]/60">
         Kategorie
       </span>
 
       {/* Glass card for category */}
-      <div className="relative rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-white/[0.06] px-8 py-6">
-        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-t-[1rem]" />
+      <div className="relative rounded-[1rem] bg-[#151a21]/80 backdrop-blur-xl border border-[#44484f]/20 px-8 py-6">
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#df8eff] to-transparent rounded-t-[1rem]" />
         <motion.h1
-          className="text-center text-4xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent"
+          className="text-center text-4xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -321,10 +323,10 @@ function CategoryRevealScreen({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/[0.08] px-5 py-2"
+          className="flex items-center gap-2 rounded-full border border-[#df8eff]/20 bg-[#df8eff]/[0.08] px-5 py-2"
         >
-          <Type className="h-4 w-4 text-amber-400" />
-          <span className="text-sm font-bold text-amber-300">Nur mit "{letter}"</span>
+          <Type className="h-4 w-4 text-[#df8eff]" />
+          <span className="text-sm font-bold text-[#df8eff]">Nur mit "{letter}"</span>
         </motion.div>
       )}
 
@@ -333,7 +335,7 @@ function CategoryRevealScreen({
         initial={{ opacity: 0, scale: 2 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.5 }}
-        className="mt-8 text-7xl font-black text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]"
+        className="mt-8 text-7xl font-black text-[#df8eff] drop-shadow-[0_0_20px_rgba(223,142,255,0.4)]"
       >
         {count > 0 ? count : "Los!"}
       </motion.span>
@@ -408,20 +410,20 @@ function PlayingScreen({
           <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
           <span className="text-sm font-semibold text-white/70">{currentPlayer.name}</span>
         </div>
-        <div className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06]">
+        <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20">
           <span className="text-xs text-white/30">Runde </span>
-          <span className="text-xs font-bold text-amber-400">{words.length + 1}</span>
+          <span className="text-xs font-bold text-[#df8eff]">{words.length + 1}</span>
         </div>
       </div>
 
       {/* Category Glass Card */}
-      <div className="relative rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-white/[0.06] px-6 py-5 text-center">
-        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-t-[1rem]" />
-        <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+      <div className="relative rounded-[1rem] bg-[#151a21]/80 backdrop-blur-xl border border-[#44484f]/20 px-6 py-5 text-center">
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#df8eff] to-transparent rounded-t-[1rem]" />
+        <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
           {category}
         </h2>
         {mode === "letter" && letter && (
-          <span className="text-sm font-bold text-amber-400/60 mt-1 block">Buchstabe: {letter}</span>
+          <span className="text-sm font-bold text-[#df8eff]/60 mt-1 block">Buchstabe: {letter}</span>
         )}
       </div>
 
@@ -430,10 +432,10 @@ function PlayingScreen({
         {players.map((p, i) => (
           <motion.div
             key={p.id}
-            animate={i === currentPlayerIndex ? { scale: [1, 1.2, 1], borderColor: "#f59e0b" } : { scale: 1, borderColor: "rgba(255,255,255,0.06)" }}
+            animate={i === currentPlayerIndex ? { scale: [1, 1.2, 1], borderColor: "#df8eff" } : { scale: 1, borderColor: "rgba(255,255,255,0.06)" }}
             transition={i === currentPlayerIndex ? { repeat: Infinity, duration: 1.5 } : {}}
             className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold ${
-              i === currentPlayerIndex ? "bg-amber-500/15 text-amber-300" : "bg-[#1f1f29] text-white/30"
+              i === currentPlayerIndex ? "bg-[#df8eff]/15 text-[#df8eff]" : "bg-[#1b2028] text-white/30"
             }`}
           >
             {p.name.charAt(0).toUpperCase()}
@@ -459,14 +461,14 @@ function PlayingScreen({
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             placeholder="Wort eingeben..."
-            className={`flex-1 rounded-[1rem] border px-4 py-3 text-white placeholder:text-white/20 outline-none transition-colors bg-[#13131b] ${
-              flash === "duplicate" ? "border-red-500 bg-red-500/[0.08]" : flash === "wrong_letter" ? "border-orange-500 bg-orange-500/[0.08]" : "border-white/[0.06] focus:border-amber-500/30"
+            className={`flex-1 rounded-[1rem] border px-4 py-3 text-white placeholder:text-white/20 outline-none transition-colors bg-[#151a21] ${
+              flash === "duplicate" ? "border-red-500 bg-red-500/[0.08]" : flash === "wrong_letter" ? "border-orange-500 bg-orange-500/[0.08]" : "border-[#44484f]/20 focus:border-[#df8eff]/30"
             }`}
           />
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={handleSubmit}
-            className="rounded-[1rem] bg-amber-500/15 border border-amber-500/20 px-4 text-amber-300 font-semibold hover:bg-amber-500/25 transition-colors"
+            className="rounded-[1rem] bg-[#df8eff]/15 border border-[#df8eff]/20 px-4 text-[#df8eff] font-semibold hover:bg-[#df8eff]/25 transition-colors"
           >
             <Check className="h-5 w-5" />
           </motion.button>
@@ -474,7 +476,7 @@ function PlayingScreen({
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={handleGesagt}
-          className="w-full rounded-full border border-amber-500/15 bg-amber-500/[0.06] py-3 text-sm font-bold text-amber-300 hover:bg-amber-500/10 transition-colors"
+          className="w-full rounded-full border border-[#df8eff]/15 bg-[#df8eff]/[0.06] py-3 text-sm font-bold text-[#df8eff] hover:bg-[#df8eff]/10 transition-colors"
         >
           Gesagt! (verbal)
         </motion.button>
@@ -529,7 +531,7 @@ function RoundEndScreen({
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
       <div className="text-center">
-        <div className="px-4 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] inline-block mb-3">
+        <div className="px-4 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 inline-block mb-3">
           <span className="text-xs text-white/30 uppercase tracking-widest">Runde {round} / {maxRounds}</span>
         </div>
         <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{result.category}</h2>
@@ -539,20 +541,20 @@ function RoundEndScreen({
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="rounded-[1rem] border-l-4 border-[#ff7350] bg-[#1f1f29] p-4 text-center"
+          className="rounded-[1rem] border-l-4 border-[#ff6b98] bg-[#1b2028] p-4 text-center"
         >
-          <Timer className="mx-auto h-8 w-8 text-[#ff7350] mb-2" />
-          <p className="text-lg font-bold text-[#ff7350]">{loser.name}</p>
+          <Timer className="mx-auto h-8 w-8 text-[#ff6b98] mb-2" />
+          <p className="text-lg font-bold text-[#ff6b98]">{loser.name}</p>
           <p className="text-sm text-white/30">Zeit abgelaufen!</p>
         </motion.div>
       )}
 
       {/* Words as pills */}
-      <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-5 space-y-3">
+      <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-3">
         <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">Genannte Worter ({result.words.length})</span>
         <div className="flex flex-wrap gap-2">
           {result.words.map((w, i) => (
-            <span key={i} className="inline-block rounded-full border border-white/[0.06] bg-[#13131b]/80 backdrop-blur-xl px-3.5 py-1.5 text-sm text-white/60">
+            <span key={i} className="inline-block rounded-full border border-[#44484f]/20 bg-[#151a21]/80 backdrop-blur-xl px-3.5 py-1.5 text-sm text-white/60">
               {w.word === "__verbal__" ? `[${players.find(p => p.id === w.playerId)?.name}]` : w.word}
             </span>
           ))}
@@ -561,17 +563,17 @@ function RoundEndScreen({
       </div>
 
       {/* Leaderboard */}
-      <div className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-5 space-y-2">
+      <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-2">
         <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">Punktestand</span>
         {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
           <div key={p.id} className={`flex items-center justify-between rounded-[0.75rem] px-3 py-2.5 ${
-            p.id === result.loserId ? "bg-[#ff7350]/[0.06] border border-[#ff7350]/10" : i === 0 ? "bg-amber-500/[0.06] border border-amber-500/10" : ""
+            p.id === result.loserId ? "bg-[#ff6b98]/[0.06] border border-[#ff6b98]/10" : i === 0 ? "bg-[#df8eff]/[0.06] border border-[#df8eff]/10" : ""
           }`}>
             <div className="flex items-center gap-2">
-              {i === 0 && <Crown className="h-4 w-4 text-amber-400" />}
-              <span className={`font-medium ${p.id === result.loserId ? "text-[#ff7350]" : "text-white/70"}`}>{p.name}</span>
+              {i === 0 && <Crown className="h-4 w-4 text-[#df8eff]" />}
+              <span className={`font-medium ${p.id === result.loserId ? "text-[#ff6b98]" : "text-white/70"}`}>{p.name}</span>
             </div>
-            <span className="font-bold text-amber-400">{p.score} Pkt</span>
+            <span className="font-bold text-[#df8eff]">{p.score} Pkt</span>
           </div>
         ))}
       </div>
@@ -579,7 +581,7 @@ function RoundEndScreen({
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={onNext}
-        className="w-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0d0d15] uppercase tracking-wide shadow-[0_0_30px_rgba(245,158,11,0.25)] flex items-center justify-center gap-2"
+        className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2"
       >
         {round < maxRounds ? "Nachste Runde" : "Ergebnisse"}
       </motion.button>
@@ -603,11 +605,11 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
           animate={{ scale: 1 }}
           transition={{ type: 'spring', bounce: 0.5 }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
-            <Trophy className="w-8 h-8 text-amber-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20 mb-4">
+            <Trophy className="w-8 h-8 text-[#df8eff]" />
           </div>
         </motion.div>
-        <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
           Endergebnis
         </h2>
       </div>
@@ -622,24 +624,24 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
             transition={{ delay: i * 0.1 }}
             className={`flex items-center justify-between rounded-[1rem] border p-4 ${
               i === 0
-                ? "border-amber-500/30 bg-amber-500/[0.08] shadow-[0_0_20px_rgba(245,158,11,0.1)]"
-                : "border-white/[0.06] bg-[#1f1f29]"
+                ? "border-[#df8eff]/30 bg-[#df8eff]/[0.08] shadow-[0_0_20px_rgba(223,142,255,0.1)]"
+                : "border-[#44484f]/20 bg-[#1b2028]"
             }`}
           >
             <div className="flex items-center gap-3">
               <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-black ${
-                i === 0 ? "bg-amber-500/20 text-amber-300" : i === 1 ? "bg-white/[0.06] text-white/50" : "bg-white/[0.03] text-white/30"
+                i === 0 ? "bg-[#df8eff]/20 text-[#df8eff]" : i === 1 ? "bg-white/[0.06] text-white/50" : "bg-white/[0.03] text-white/30"
               }`}>
                 {i + 1}
               </span>
               <div>
-                <span className={`font-bold ${i === 0 ? "text-amber-300" : "text-white/70"}`}>
+                <span className={`font-bold ${i === 0 ? "text-[#df8eff]" : "text-white/70"}`}>
                   {p.name}
                 </span>
                 <p className="text-xs text-white/30">{p.losses} Runde{p.losses !== 1 ? "n" : ""} verloren</p>
               </div>
             </div>
-            <span className={`text-xl font-black ${i === 0 ? "text-amber-400" : "text-white/50"}`}>
+            <span className={`text-xl font-black ${i === 0 ? "text-[#df8eff]" : "text-white/50"}`}>
               {p.score}
             </span>
           </motion.div>
@@ -651,7 +653,7 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={onRestart}
-          className="w-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0d0d15] uppercase tracking-wide shadow-[0_0_30px_rgba(245,158,11,0.25)] flex items-center justify-center gap-2"
+          className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2"
         >
           <RotateCcw className="h-5 w-5" /> Nochmal
         </motion.button>
@@ -678,6 +680,8 @@ export default function CategoryGame() {
   const [mode, setMode] = useState<GameMode>("classic");
   const [maxRounds, setMaxRounds] = useState(5);
   const [timerSeconds, setTimerSeconds] = useState(30);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [currentRound, setCurrentRound] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [roundWords, setRoundWords] = useState<{ word: string; playerId: string }[]>([]);
@@ -689,8 +693,8 @@ export default function CategoryGame() {
   const [currentLetter, setCurrentLetter] = useState<string | undefined>();
 
   const pickCategory = useCallback(() => {
-    const available = CATEGORIES_DE.filter((c) => !usedCategories.has(c));
-    const pool = available.length > 0 ? available : CATEGORIES_DE;
+    const available = getCategories().filter((c) => !usedCategories.has(c));
+    const pool = available.length > 0 ? available : getCategories();
     const cat = pool[Math.floor(Math.random() * pool.length)];
     setUsedCategories((prev) => new Set(prev).add(cat));
     setCurrentCategory(cat);
@@ -714,7 +718,7 @@ export default function CategoryGame() {
       setRoundResults([]);
       saidWordsRef.current.clear();
       setUsedCategories(new Set());
-      const available = CATEGORIES_DE;
+      const available = getCategories();
       const cat = available[Math.floor(Math.random() * available.length)];
       setCurrentCategory(cat);
       setUsedCategories(new Set([cat]));
@@ -781,6 +785,15 @@ export default function CategoryGame() {
     setPhase("categoryReveal");
   }, [currentRound, maxRounds, pickCategory]);
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('category', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const handleRestart = useCallback(() => {
     setPhase("setup");
     setPlayers([]);
@@ -792,7 +805,7 @@ export default function CategoryGame() {
 
   return (
     <AnimatedBackground>
-      <div className="min-h-screen bg-[#0d0d15]/90">
+      <div className="min-h-screen bg-[#0a0e14]/90">
         <div className="mx-auto max-w-lg px-4 py-6">
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
@@ -804,10 +817,10 @@ export default function CategoryGame() {
               <span className="text-sm font-medium">{phase === "setup" ? "Zuruck" : "Beenden"}</span>
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-[0.5rem] bg-[#1f1f29] border border-amber-500/20 flex items-center justify-center">
-                <Timer className="h-4 w-4 text-amber-400" />
+              <div className="w-8 h-8 rounded-[0.5rem] bg-[#1b2028] border border-[#df8eff]/20 flex items-center justify-center">
+                <Timer className="h-4 w-4 text-[#df8eff]" />
               </div>
-              <span className="text-lg font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+              <span className="text-lg font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
                 Zeit-Kategorie
               </span>
             </div>
@@ -850,7 +863,10 @@ export default function CategoryGame() {
               />
             )}
             {phase === "gameOver" && (
-              <GameOverScreen key="gameOver" players={players} onRestart={handleRestart} />
+              <div key="gameOver">
+                <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
+                <GameOverScreen players={players} onRestart={handleRestart} />
+              </div>
             )}
           </AnimatePresence>
         </div>

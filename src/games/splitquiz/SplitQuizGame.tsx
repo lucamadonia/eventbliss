@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameTimer } from '../engine/TimerSystem';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   Play, Trophy, RotateCcw, Timer, ArrowRight, ArrowLeft,
   Smartphone, Shuffle, Zap, Crown, Star, ChevronRight, X, Plus, Minus,
@@ -117,8 +119,8 @@ const SPLIT_QUESTIONS: QuizQuestion[] = [
 
 const ALL_CATEGORIES: Category[] = ['Geografie', 'Geschichte', 'Wissenschaft', 'Sport', 'Unterhaltung', 'Allgemeinwissen'];
 
-const TEAM_A_COLOR = '#cf96ff';
-const TEAM_B_COLOR = '#00e3fd';
+const TEAM_A_COLOR = '#df8eff';
+const TEAM_B_COLOR = '#8ff5ff';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -151,6 +153,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const [playerNames, setPlayerNames] = useState<string[]>(startPlayers);
   const [totalRounds, setTotalRounds] = useState(10);
   const [bettingEnabled, setBettingEnabled] = useState(true);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set(ALL_CATEGORIES));
 
   /* ---- Team state ---- */
@@ -402,6 +406,15 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setPhase('handoff');
   }
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winnerScore = Math.max(teamA.score, teamB.score);
+      recordEnd('split-quiz', winnerScore, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   /* ---- Restart ---- */
   function restart() {
     setPhase('setup');
@@ -441,22 +454,22 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- SETUP ---- */
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 px-4 py-6">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6">
         <div className="mx-auto max-w-lg space-y-6">
           {/* Header */}
           <div className="text-center space-y-1">
             {onClose && (
-              <button onClick={onClose} className="absolute top-4 left-4 text-gray-400 hover:text-white">
+              <button onClick={onClose} className="absolute top-4 left-4 text-[#a8abb3] hover:text-white">
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
             <h1 className="text-2xl font-bold text-white">Split Quiz</h1>
-            <p className="text-sm text-gray-400">Jedes Team sieht nur die Hälfte der Antworten!</p>
+            <p className="text-sm text-[#a8abb3]">Jedes Team sieht nur die Hälfte der Antworten!</p>
           </div>
 
           {/* Player names */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Spieler ({playerNames.length})</label>
+            <label className="text-sm font-medium text-[#f1f3fc]">Spieler ({playerNames.length})</label>
             <div className="grid grid-cols-2 gap-2">
               {playerNames.map((name, i) => (
                 <div key={i} className="flex items-center gap-1">
@@ -464,11 +477,11 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                     type="text"
                     value={name}
                     onChange={e => updatePlayerName(i, e.target.value)}
-                    className="flex-1 px-2 py-1.5 rounded-lg bg-white/5 border border-gray-700 text-white text-xs focus:border-blue-500 focus:outline-none"
+                    className="flex-1 px-2 py-1.5 rounded-lg bg-white/5 border border-[#44484f] text-white text-xs focus:border-[#df8eff] focus:outline-none"
                     maxLength={20}
                   />
                   {playerNames.length > 4 && (
-                    <button onClick={() => removePlayer(i)} className="p-1 text-gray-500 hover:text-red-400">
+                    <button onClick={() => removePlayer(i)} className="p-1 text-[#a8abb3]/60 hover:text-red-400">
                       <Minus className="w-3 h-3" />
                     </button>
                   )}
@@ -478,7 +491,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             {playerNames.length < 30 && (
               <button
                 onClick={addPlayer}
-                className="w-full py-2 rounded-xl border border-dashed border-gray-700 text-gray-400 text-xs font-medium flex items-center justify-center gap-1.5 hover:border-gray-500 hover:text-gray-300 transition-colors"
+                className="w-full py-2 rounded-xl border border-dashed border-[#44484f] text-[#a8abb3] text-xs font-medium flex items-center justify-center gap-1.5 hover:border-[#44484f] hover:text-[#f1f3fc] transition-colors"
               >
                 <Plus className="w-3 h-3" /> Spieler hinzufügen
               </button>
@@ -535,27 +548,27 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           {/* Shuffle button */}
           <button
             onClick={reshuffleTeams}
-            className="w-full py-2 rounded-xl border border-gray-700 text-gray-300 text-sm font-medium flex items-center justify-center gap-2 hover:border-gray-500 transition-colors"
+            className="w-full py-2 rounded-xl border border-[#44484f] text-[#f1f3fc] text-sm font-medium flex items-center justify-center gap-2 hover:border-[#44484f] transition-colors"
           >
             <Shuffle className="w-4 h-4" /> Teams neu mischen
           </button>
 
           {/* Rounds */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Runden: {totalRounds}</label>
+            <label className="text-sm font-medium text-[#f1f3fc]">Runden: {totalRounds}</label>
             <input
               type="range"
               min={5}
               max={15}
               value={totalRounds}
               onChange={e => setTotalRounds(Number(e.target.value))}
-              className="w-full accent-blue-500"
+              className="w-full accent-[#df8eff]"
             />
           </div>
 
           {/* Categories */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Kategorien</label>
+            <label className="text-sm font-medium text-[#f1f3fc]">Kategorien</label>
             <div className="flex flex-wrap gap-2">
               {ALL_CATEGORIES.map(cat => (
                 <button
@@ -564,8 +577,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                   className={cn(
                     'px-3 py-1.5 rounded-full text-xs font-medium transition-all border',
                     selectedCategories.has(cat)
-                      ? 'bg-blue-500/20 border-blue-500 text-blue-300'
-                      : 'bg-gray-800/40 border-gray-700 text-gray-500'
+                      ? 'bg-[#df8eff]/20 border-[#df8eff] text-[#df8eff]'
+                      : 'bg-[#1b2028]/40 border-[#44484f] text-[#a8abb3]/60'
                   )}
                 >
                   {cat}
@@ -576,12 +589,12 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
           {/* Betting toggle */}
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-gray-300">Wetten erlauben</span>
+            <span className="text-sm text-[#f1f3fc]">Wetten erlauben</span>
             <button
               onClick={() => setBettingEnabled(!bettingEnabled)}
               className={cn(
                 'w-12 h-6 rounded-full transition-colors relative',
-                bettingEnabled ? 'bg-blue-500' : 'bg-gray-700'
+                bettingEnabled ? 'bg-[#df8eff]' : 'bg-[#20262f]'
               )}
             >
               <motion.div
@@ -596,7 +609,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           <motion.button
             onClick={startGame}
             disabled={teamA.players.length < 1 || teamB.players.length < 1}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(59,130,246,0.4)] disabled:opacity-40"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-white font-bold text-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(223,142,255,0.3)] disabled:opacity-40"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -610,7 +623,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- HANDOFF (pass the phone) ---- */
   if (phase === 'handoff') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
         <motion.div
           className="text-center space-y-6 max-w-sm"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -624,7 +637,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             <Smartphone className="w-16 h-16 mx-auto" style={{ color: activeTeam.color }} />
           </motion.div>
           <div>
-            <p className="text-gray-400 text-sm">Runde {currentRound} / {totalRounds}</p>
+            <p className="text-[#a8abb3] text-sm">Runde {currentRound} / {totalRounds}</p>
             <h2 className="text-2xl font-bold text-white mt-1">
               Gebt das Handy an
             </h2>
@@ -639,7 +652,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
               ))}
             </div>
           </div>
-          <p className="text-gray-500 text-xs">Das andere Team darf NICHT mitsehen!</p>
+          <p className="text-[#a8abb3]/60 text-xs">Das andere Team darf NICHT mitsehen!</p>
           <motion.button
             onClick={beginQuestion}
             className="px-8 py-3.5 rounded-2xl text-white font-bold text-lg shadow-lg"
@@ -657,14 +670,14 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- BETTING ---- */
   if (phase === 'betting' && showBetting && currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
         <motion.div
           className="w-full max-w-sm space-y-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           {/* Timer bar */}
-          <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-[#1b2028] overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{ backgroundColor: activeTeam.color }}
@@ -677,7 +690,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             <p className="text-xs font-medium uppercase tracking-wider" style={{ color: activeTeam.color }}>
               {activeTeam.name} - Wette platzieren
             </p>
-            <p className="text-gray-400 text-sm">Wie sicher seid ihr euch?</p>
+            <p className="text-[#a8abb3] text-sm">Wie sicher seid ihr euch?</p>
           </div>
 
           <div className="flex justify-center gap-3">
@@ -689,7 +702,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                   'w-20 h-20 rounded-2xl font-bold text-xl border-2 transition-all',
                   currentBet === bet
                     ? 'text-white scale-105'
-                    : 'text-gray-400 bg-gray-800/50 border-gray-700'
+                    : 'text-[#a8abb3] bg-[#1b2028]/50 border-[#44484f]'
                 )}
                 style={currentBet === bet ? {
                   borderColor: activeTeam.color,
@@ -704,7 +717,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             ))}
           </div>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[#a8abb3]/60">
             {currentBet === 1 ? '100 Punkte' : currentBet === 2 ? '200 Punkte' : '300 Punkte'} bei richtiger Antwort
           </p>
 
@@ -727,16 +740,16 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     const answerLabels = activeTeamIdx === 0 ? ['A', 'B'] : ['C', 'D'];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 px-4 py-6 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col">
         {/* HUD */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ backgroundColor: `${activeTeam.color}25`, color: activeTeam.color }}>
               {activeTeam.name}
             </span>
-            <span className="text-xs text-gray-500">Runde {currentRound}/{totalRounds}</span>
+            <span className="text-xs text-[#a8abb3]/60">Runde {currentRound}/{totalRounds}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-400">
+          <div className="flex items-center gap-1.5 text-[#a8abb3]">
             <Timer className="w-4 h-4" />
             <span className={cn('text-sm font-bold tabular-nums', timer.timeLeft <= 5 && 'text-red-400')}>
               {timer.timeLeft}s
@@ -745,7 +758,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
         </div>
 
         {/* Timer bar */}
-        <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden mb-6">
+        <div className="h-1.5 rounded-full bg-[#1b2028] overflow-hidden mb-6">
           <motion.div
             className="h-full rounded-full"
             style={{ backgroundColor: timer.timeLeft <= 5 ? '#ef4444' : activeTeam.color }}
@@ -760,7 +773,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             <span style={{ color: TEAM_A_COLOR }}>{teamA.score}</span>
             <span style={{ color: TEAM_B_COLOR }}>{teamB.score}</span>
           </div>
-          <div className="h-2 rounded-full bg-gray-800 overflow-hidden relative">
+          <div className="h-2 rounded-full bg-[#1b2028] overflow-hidden relative">
             <motion.div
               className="h-full rounded-full"
               style={{ background: `linear-gradient(to right, ${TEAM_A_COLOR}, ${TEAM_B_COLOR})` }}
@@ -778,7 +791,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           key={`q-${currentRound}-${activeTeamIdx}`}
         >
           <div className="w-full max-w-md rounded-3xl p-6 backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] mb-6">
-            <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">{currentQuestion.category}</p>
+            <p className="text-xs text-[#a8abb3]/60 mb-2 uppercase tracking-wider">{currentQuestion.category}</p>
             <h2 className="text-xl font-bold text-white leading-tight">{currentQuestion.question}</h2>
             {currentBet > 1 && (
               <p className="mt-2 text-xs font-semibold" style={{ color: activeTeam.color }}>
@@ -822,7 +835,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     const points = isCorrect ? 100 * currentBet : 0;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 px-4 py-6 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col items-center justify-center">
         <AnimatePresence>
           <motion.div
             className="w-full max-w-md space-y-6 text-center"
@@ -874,7 +887,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                     key={i}
                     className={cn(
                       'py-3 px-4 rounded-xl border-2 flex items-center gap-3',
-                      isCorrectAnswer ? 'bg-green-500/15 border-green-500' : wasSelected ? 'bg-red-500/15 border-red-500' : 'bg-gray-800/30 border-gray-700/50'
+                      isCorrectAnswer ? 'bg-green-500/15 border-green-500' : wasSelected ? 'bg-red-500/15 border-red-500' : 'bg-[#1b2028]/30 border-[#44484f]/50'
                     )}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -882,13 +895,13 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                   >
                     <span className={cn(
                       'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold',
-                      isCorrectAnswer ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-400'
+                      isCorrectAnswer ? 'bg-green-500 text-white' : 'bg-[#20262f] text-[#a8abb3]'
                     )}>
                       {['A', 'B', 'C', 'D'][i]}
                     </span>
                     <span className={cn(
                       'text-sm font-medium',
-                      isCorrectAnswer ? 'text-green-300' : wasSelected ? 'text-red-300' : 'text-gray-400'
+                      isCorrectAnswer ? 'text-green-300' : wasSelected ? 'text-red-300' : 'text-[#a8abb3]'
                     )}>
                       {ans}
                     </span>
@@ -904,7 +917,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                 <span style={{ color: TEAM_A_COLOR }}>Team A: {teamA.score}</span>
                 <span style={{ color: TEAM_B_COLOR }}>Team B: {teamB.score}</span>
               </div>
-              <div className="h-3 rounded-full bg-gray-800 overflow-hidden relative">
+              <div className="h-3 rounded-full bg-[#1b2028] overflow-hidden relative">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: `linear-gradient(to right, ${TEAM_A_COLOR}, ${TEAM_A_COLOR})` }}
@@ -945,7 +958,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     const isDraw = teamA.score === teamB.score;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-8">
+        <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <div className="mx-auto max-w-md space-y-6">
           {/* Confetti dots */}
           <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
@@ -988,7 +1002,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-sm text-gray-400 uppercase tracking-wider">Split Quiz</p>
+            <p className="text-sm text-[#a8abb3] uppercase tracking-wider">Split Quiz</p>
             {isDraw ? (
               <h2 className="text-2xl font-bold text-white">Unentschieden!</h2>
             ) : (
@@ -1010,7 +1024,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
               <span style={{ color: TEAM_A_COLOR }}>Team A: {teamA.score}</span>
               <span style={{ color: TEAM_B_COLOR }}>Team B: {teamB.score}</span>
             </div>
-            <div className="h-4 rounded-full bg-gray-800 overflow-hidden relative">
+            <div className="h-4 rounded-full bg-[#1b2028] overflow-hidden relative">
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: TEAM_A_COLOR }}
@@ -1039,10 +1053,10 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                   <span className="text-sm font-bold" style={{ color: team.color }}>{team.name}</span>
                 </div>
                 <p className="text-2xl font-black text-white">{team.score}</p>
-                <p className="text-xs text-gray-400">{team.correctCount} richtige</p>
+                <p className="text-xs text-[#a8abb3]">{team.correctCount} richtige</p>
                 <div className="space-y-1">
                   {team.players.map(p => (
-                    <span key={p} className="block text-xs text-gray-400 truncate">{p}</span>
+                    <span key={p} className="block text-xs text-[#a8abb3] truncate">{p}</span>
                   ))}
                 </div>
               </div>
@@ -1075,9 +1089,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
               { label: 'Fragen', value: totalRounds },
               { label: 'Wetten', value: bettingEnabled ? 'An' : 'Aus' },
             ].map(stat => (
-              <div key={stat.label} className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-3 text-center">
+              <div key={stat.label} className="bg-[#1b2028]/40 border border-[#44484f]/50 rounded-xl p-3 text-center">
                 <p className="text-lg font-bold text-white">{stat.value}</p>
-                <p className="text-[10px] text-gray-400 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-[10px] text-[#a8abb3] uppercase tracking-wider">{stat.label}</p>
               </div>
             ))}
           </motion.div>
@@ -1092,7 +1106,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             {onClose && (
               <motion.button
                 onClick={onClose}
-                className="flex-1 py-3.5 rounded-2xl border-2 border-gray-600 text-gray-300 font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-colors text-sm"
+                className="flex-1 py-3.5 rounded-2xl border-2 border-[#44484f]/60 text-[#f1f3fc] font-semibold flex items-center justify-center gap-2 hover:border-[#44484f] transition-colors text-sm"
                 whileTap={{ scale: 0.97 }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -1101,7 +1115,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             )}
             <motion.button
               onClick={restart}
-              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.4)] text-sm"
+              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >

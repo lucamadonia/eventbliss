@@ -55,7 +55,7 @@
     "betaBadge": "Versión Beta"
   },
 "landing": {
-    "nav": { "features": "Funciones", "howItWorks": "Cómo funciona", "ideas": "Ideas", "solutions": "Soluciones", "faq": "FAQ", "login": "Iniciar sesión", "signUp": "Registrarse", "partner": "Socios" },
+    "nav": { "features": "Funciones", "howItWorks": "Cómo funciona", "ideas": "Ideas", "solutions": "Soluciones", "faq": "FAQ", "login": "Iniciar sesión", "signUp": "Registrarse", "partner": "Socios", "games": "Juegos" },
     "hero": { "badge": "La plataforma #1 de planificación de eventos", "title": "Planifica Eventos Inolvidables", "subtitle": "Desde despedidas de soltero hasta cumpleaños, organiza eventos grupales con facilidad. División inteligente de costes, sugerencias con IA y colaboración en tiempo real.", "createEvent": "Crear Evento", "joinEvent": "Unirse con Código", "trustedBy": "Más de 10.000 organizadores confían en nosotros" },
     "features": {
       "title": "Todo lo que necesitas", "subtitle": "Herramientas potentes para el evento perfecto",
@@ -1819,7 +1819,8 @@
       "themes": "Temas",
       "categories": "Categorías",
       "languages": "Idiomas"
-    }
+    },
+    "openGames": "Abrir Todos los Juegos"
   },
   "eventTypes": {
     "bachelor": "Despedida (Él)",

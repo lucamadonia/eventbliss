@@ -70,7 +70,8 @@
       "faq": "FAQ",
       "login": "Anmelden",
       "signUp": "Registrieren",
-      "partner": "Partner"
+      "partner": "Partner",
+      "games": "Spiele"
     },
     "hero": {
       "badge": "Die #1 Event-Planungs-Plattform",
@@ -2825,7 +2826,8 @@
       "title": "Bereit für dein Event?",
       "description": "Erstelle jetzt kostenlos dein Event und nutze alle Spiele und Themen in deiner Planung.",
       "button": "Event erstellen"
-    }
+    },
+    "openGames": "Alle Spiele öffnen"
   },
   "eventTypes": {
     "bachelor": "JGA (Er)",

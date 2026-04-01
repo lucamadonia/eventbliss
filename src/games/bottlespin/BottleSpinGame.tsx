@@ -1,9 +1,11 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, RotateCcw, Trophy, ThumbsUp, ThumbsDown,
   Timer, Sparkles, Zap, MessageCircle, Wine, Heart,
 } from 'lucide-react';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
@@ -65,6 +67,8 @@ export default function BottleSpinGame() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [mode, setMode] = useState('fragen');
   const [timerSec, setTimerSec] = useState(30);
   const [totalRounds, setTotalRounds] = useState(15);
@@ -155,6 +159,15 @@ export default function BottleSpinGame() {
     if (currentRound >= totalRounds) { setPhase('gameOver'); return; }
     setCurrentRound((r) => r + 1); setSelectedIdx(-1); setPhase('spinning');
   };
+
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('flaschendrehen', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
 
   const resetGame = () => {
     setPhase('setup'); setPlayers([]); setCurrentRound(1); setSelectedIdx(-1);
@@ -437,6 +450,7 @@ export default function BottleSpinGame() {
         {phase === 'gameOver' && (
           <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
+            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
               <div className="relative">
                 <div className="absolute -inset-3 rounded-full bg-amber-500/10 blur-xl" />

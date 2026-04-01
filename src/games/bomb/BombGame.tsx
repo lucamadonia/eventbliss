@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { generateCategoryPrompt } from '../content/categories-de';
-import { getRandomQuestion, resetQuestions, type QuizQuestion } from '../content/questions-de';
+import { generateCategoryPrompt } from '../content/categories';
+import { getRandomQuestion, resetQuestions, type QuizQuestion } from '../content/questions';
 import BombSetupScreen from './BombSetupScreen';
 import BombPlayingScreen from './BombPlayingScreen';
 import BombExplosionScreen from './BombExplosionScreen';
 import BombResultsScreen, { BombRoundEndScreen } from './BombResultsScreen';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 
 // ---------------------------------------------------------------------------
 // Types (exported for sub-components)
@@ -160,6 +162,8 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const [timerActive, setTimerActive] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
   const speedReductionRef = useRef(0);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const recordedRef = useRef(false);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {
@@ -332,6 +336,16 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     advancePlayer();
   };
 
+  useEffect(() => {
+    if (state.phase === 'gameOver' && !recordedRef.current) {
+      recordedRef.current = true;
+      const winner = [...state.players].sort((a, b) => a.penalties - b.penalties)[0];
+      const bestScore = state.totalRounds - (winner?.penalties ?? 0);
+      recordEnd('bomb', Math.max(0, bestScore), true);
+    }
+    if (state.phase === 'setup') recordedRef.current = false;
+  }, [state.phase]);
+
   const handleExplosionNext = () => {
     if (online && !online.isHost) return;
     if (state.round >= state.totalRounds) {
@@ -416,6 +430,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       )}
       {state.phase === 'gameOver' && (
         <motion.div key="gameOver" exit={{ opacity: 0 }}>
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <BombResultsScreen state={state} onRestart={handleRestart} onExit={handleExit} />
         </motion.div>
       )}

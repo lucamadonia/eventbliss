@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Award } from 'lucide-react';
 import type { Achievement } from './types';
 import { RARITY_COLORS, RARITY_LABELS } from './types';
+import { getAchievementText } from './achievement-i18n';
 
 interface AchievementToastProps {
   achievements: Achievement[];
@@ -89,10 +90,10 @@ export function AchievementToast({ achievements, onDismiss }: AchievementToastPr
                   </span>
                 </div>
                 <p className="text-white font-bold text-sm truncate mt-0.5">
-                  {current.name}
+                  {getAchievementText(current.id).name}
                 </p>
                 <p className="text-gray-400 text-xs truncate">
-                  {current.description}
+                  {getAchievementText(current.id).description}
                 </p>
               </div>
 

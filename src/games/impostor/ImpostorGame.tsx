@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   Plus, Minus, User, Play, Eye, EyeOff, ChevronRight,
   Clock, CheckCircle2, Trophy, ArrowLeft, RotateCcw,
@@ -120,6 +122,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Game state ---
   const [phase, setPhase] = useState<Phase>('setup');
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [currentWordSet, setCurrentWordSet] = useState<WordSet | null>(null);
   const [revealIndex, setRevealIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(false);
@@ -382,6 +386,15 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     setBonusResult(null);
   };
 
+  useEffect(() => {
+    if (phase === 'results' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('hochstapler', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const resetGame = () => {
     setRound(1);
     setPhase('setup');
@@ -415,28 +428,28 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- SETUP ---
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-[#0d0d15] px-4 py-8">
+      <div className="min-h-screen bg-[#0a0e14] px-4 py-8">
         <div className="mx-auto max-w-md space-y-6">
           <motion.h1
-            className="text-2xl font-bold text-center bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"
+            className="text-2xl font-bold text-center bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] bg-clip-text text-transparent"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             Hochstapler
           </motion.h1>
-          <p className="text-center text-gray-400 text-sm">
+          <p className="text-center text-[#a8abb3] text-sm">
             Finde den Hochstapler unter euch!
           </p>
 
           {round > 1 && (
-            <div className="text-center text-xs text-purple-400 font-semibold">
+            <div className="text-center text-xs text-[#df8eff] font-semibold">
               Runde {round}
             </div>
           )}
 
           {/* Player list */}
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
               Spieler ({players.length})
             </h2>
             <AnimatePresence initial={false}>
@@ -461,7 +474,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     onChange={(e) => updateName(player.id, e.target.value)}
                     placeholder={`Spieler ${i + 1}`}
                     maxLength={20}
-                    className="flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                    className="flex-1 bg-[#151a21]/60 border border-[#44484f] rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50 text-sm"
                   />
                   {players.length > 4 && (
                     <button
@@ -477,7 +490,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             {players.length < 15 && (
               <motion.button
                 onClick={addPlayer}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 hover:border-purple-500/50 hover:text-purple-400 transition-colors text-sm"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-[#44484f] text-[#a8abb3] hover:border-[#df8eff]/50 hover:text-[#df8eff] transition-colors text-sm"
                 whileTap={{ scale: 0.98 }}
               >
                 <Plus className="w-4 h-4" />
@@ -488,7 +501,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
           {/* Impostor count */}
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
               Hochstapler
             </h2>
             <div className="flex gap-3">
@@ -499,8 +512,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   className={cn(
                     'flex-1 py-3 rounded-2xl border-2 font-semibold text-sm transition-colors',
                     impostorCount === n
-                      ? 'border-pink-500 bg-pink-500/10 text-pink-400'
-                      : 'border-gray-700 bg-gray-800/40 text-gray-400 hover:border-gray-600'
+                      ? 'border-[#ff6b98] bg-[#ff6b98]/10 text-[#ff6b98]'
+                      : 'border-[#44484f] bg-[#151a21]/40 text-[#a8abb3] hover:border-[#44484f]/60'
                   )}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -512,7 +525,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
           {/* Timer */}
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
               Diskussionszeit
             </h2>
             <div className="flex gap-3">
@@ -523,8 +536,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   className={cn(
                     'flex-1 py-3 rounded-2xl border-2 font-semibold text-sm transition-colors',
                     timerDuration === t
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                      : 'border-gray-700 bg-gray-800/40 text-gray-400 hover:border-gray-600'
+                      ? 'border-[#df8eff] bg-[#df8eff]/10 text-[#df8eff]'
+                      : 'border-[#44484f] bg-[#151a21]/40 text-[#a8abb3] hover:border-[#44484f]/60'
                   )}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -541,8 +554,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             className={cn(
               'w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all',
               canStart
-                ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)]'
-                : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] hover:shadow-[0_0_30px_rgba(223,142,255,0.4)]'
+                : 'bg-[#1b2028] text-gray-500 cursor-not-allowed'
             )}
             whileHover={canStart ? { scale: 1.02 } : {}}
             whileTap={canStart ? { scale: 0.98 } : {}}
@@ -559,7 +572,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'wordReveal') {
     const currentPlayer = players[revealIndex];
     return (
-      <div className="min-h-screen bg-[#0d0d15] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center px-4">
         <div className="max-w-sm w-full text-center space-y-8">
           <AnimatePresence mode="wait">
             {!wordVisible ? (
@@ -571,24 +584,24 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 className="space-y-6"
               >
                 <div className="flex justify-center">
-                  <Shield className="w-16 h-16 text-purple-400 opacity-60" />
+                  <Shield className="w-16 h-16 text-[#df8eff] opacity-60" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">
+                  <p className="text-[#a8abb3] text-sm mb-2">
                     {revealIndex + 1} / {players.length}
                   </p>
                   <h2 className="text-2xl font-bold text-white mb-1">
                     Gib das Handy an
                   </h2>
                   <p
-                    className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                    className="text-3xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent"
                   >
                     {currentPlayer.name}
                   </p>
                 </div>
                 <motion.button
                   onClick={handleRevealTap}
-                  className="w-full py-4 rounded-2xl bg-gray-800/80 border border-gray-700 text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-700/80 transition-colors"
+                  className="w-full py-4 rounded-2xl bg-[#1b2028]/80 border border-[#44484f] text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-700/80 transition-colors"
                   whileTap={{ scale: 0.97 }}
                 >
                   <Eye className="w-5 h-5" />
@@ -619,7 +632,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     >
                       HOCHSTAPLER!
                     </motion.p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[#a8abb3] text-sm">
                       Du kennst das Wort nicht. Falle nicht auf!
                     </p>
                     <p className="text-gray-500 text-xs">
@@ -628,10 +641,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-gray-400 text-sm uppercase tracking-wider">
+                    <p className="text-[#a8abb3] text-sm uppercase tracking-wider">
                       {currentWordSet?.category}
                     </p>
-                    <p className="text-5xl font-black text-white drop-shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+                    <p className="text-5xl font-black text-white drop-shadow-[0_0_20px_rgba(223,142,255,0.3)]">
                       {currentWordSet?.word}
                     </p>
                     <p className="text-gray-500 text-xs">
@@ -641,7 +654,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 )}
                 <motion.button
                   onClick={handleRevealTap}
-                  className="w-full py-4 rounded-2xl bg-purple-600/20 border border-purple-500/40 text-purple-300 font-semibold flex items-center justify-center gap-2 hover:bg-purple-600/30 transition-colors"
+                  className="w-full py-4 rounded-2xl bg-purple-600/20 border border-[#df8eff]/40 text-purple-300 font-semibold flex items-center justify-center gap-2 hover:bg-purple-600/30 transition-colors"
                   whileTap={{ scale: 0.97 }}
                 >
                   <EyeOff className="w-5 h-5" />
@@ -659,7 +672,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'discussion') {
     const urgency = timeLeft <= 10;
     return (
-      <div className="min-h-screen bg-[#0d0d15] px-4 py-6">
+      <div className="min-h-screen bg-[#0a0e14] px-4 py-6">
         <div className="mx-auto max-w-md space-y-6">
           {/* Timer */}
           <motion.div
@@ -667,23 +680,23 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               'text-center py-4 rounded-2xl border',
               urgency
                 ? 'border-red-500/50 bg-red-500/10'
-                : 'border-purple-500/30 bg-purple-500/5'
+                : 'border-[#df8eff]/30 bg-[#df8eff]/5'
             )}
             animate={urgency ? { scale: [1, 1.02, 1] } : {}}
             transition={urgency ? { repeat: Infinity, duration: 0.5 } : {}}
           >
-            <Clock className={cn('w-6 h-6 mx-auto mb-1', urgency ? 'text-red-400' : 'text-purple-400')} />
+            <Clock className={cn('w-6 h-6 mx-auto mb-1', urgency ? 'text-red-400' : 'text-[#df8eff]')} />
             <p className={cn('text-4xl font-black', urgency ? 'text-red-400' : 'text-white')}>
               {formatTime(timeLeft)}
             </p>
-            <p className="text-gray-400 text-xs mt-1">
-              Kategorie: <span className="text-purple-400">{currentWordSet?.category}</span>
+            <p className="text-[#a8abb3] text-xs mt-1">
+              Kategorie: <span className="text-[#df8eff]">{currentWordSet?.category}</span>
             </p>
           </motion.div>
 
           {/* Speaker list */}
           <section className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
               Jeder sagt etwas zum Wort
             </h2>
             {players.map((player, i) => (
@@ -694,10 +707,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 className={cn(
                   'w-full flex items-center gap-3 p-3 rounded-xl border transition-colors text-left',
                   i === currentSpeaker && !player.hasSpoken
-                    ? 'border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/50'
+                    ? 'border-[#df8eff] bg-[#df8eff]/10 ring-1 ring-[#df8eff]/50'
                     : player.hasSpoken
-                      ? 'border-gray-700/30 bg-gray-800/20 opacity-60'
-                      : 'border-gray-700/50 bg-gray-800/40 hover:border-gray-600'
+                      ? 'border-[#44484f]/30 bg-[#1b2028]/20 opacity-60'
+                      : 'border-[#44484f]/50 bg-[#151a21]/40 hover:border-[#44484f]/60'
                 )}
                 layout
               >
@@ -717,7 +730,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ repeat: Infinity, duration: 1 }}
                   >
-                    <ChevronRight className="w-5 h-5 text-purple-400" />
+                    <ChevronRight className="w-5 h-5 text-[#df8eff]" />
                   </motion.div>
                 ) : null}
               </motion.button>
@@ -727,7 +740,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           {/* Skip button */}
           <motion.button
             onClick={skipToVoting}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.3)]"
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.3)]"
             whileTap={{ scale: 0.97 }}
           >
             Zur Abstimmung
@@ -742,16 +755,16 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'voting') {
     const voter = players[votingPlayer];
     return (
-      <div className="min-h-screen bg-[#0d0d15] px-4 py-6">
+      <div className="min-h-screen bg-[#0a0e14] px-4 py-6">
         <div className="mx-auto max-w-md space-y-6">
           <div className="text-center space-y-1">
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#a8abb3] text-sm">
               {votingPlayer + 1} / {players.length}
             </p>
             <h2 className="text-xl font-bold text-white">
               {voter.name} stimmt ab
             </h2>
-            <p className="text-gray-400 text-xs">
+            <p className="text-[#a8abb3] text-xs">
               Wer ist der Hochstapler?
             </p>
           </div>
@@ -768,7 +781,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     'relative p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all',
                     isSelf
                       ? 'border-gray-800 bg-gray-900/50 opacity-30 cursor-not-allowed'
-                      : 'border-gray-700 bg-gray-800/40 hover:border-pink-500/60 hover:bg-pink-500/5 active:scale-95'
+                      : 'border-[#44484f] bg-[#151a21]/40 hover:border-[#ff6b98]/60 hover:bg-[#ff6b98]/5 active:scale-95'
                   )}
                   whileHover={!isSelf ? { scale: 1.03 } : {}}
                   whileTap={!isSelf ? { scale: 0.95 } : {}}
@@ -797,7 +810,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- REVEAL COUNTDOWN ---
   if (phase === 'revealCountdown') {
     return (
-      <div className="min-h-screen bg-[#0d0d15] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.span
             key={countdownNum}
@@ -817,7 +830,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- REVEAL ---
   if (phase === 'reveal') {
     return (
-      <div className="min-h-screen bg-[#0d0d15] px-4 py-8 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0e14] px-4 py-8 flex items-center justify-center">
         <div className="max-w-md w-full space-y-8 text-center">
           {/* Result banner */}
           <motion.div
@@ -855,7 +868,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             transition={{ delay: 0.3 }}
             className="space-y-2"
           >
-            <p className="text-gray-400 text-xs uppercase tracking-wider">
+            <p className="text-[#a8abb3] text-xs uppercase tracking-wider">
               Meiste Stimmen
             </p>
             {mostVotedPlayer && (
@@ -886,7 +899,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             transition={{ delay: 0.6 }}
             className="space-y-2"
           >
-            <p className="text-gray-400 text-xs uppercase tracking-wider">
+            <p className="text-[#a8abb3] text-xs uppercase tracking-wider">
               {impostors.length === 1 ? 'Der Hochstapler war' : 'Die Hochstapler waren'}
             </p>
             <div className="flex justify-center gap-3">
@@ -909,19 +922,19 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
-            className="bg-purple-500/10 border border-purple-500/30 rounded-2xl p-4"
+            className="bg-[#df8eff]/10 border border-[#df8eff]/30 rounded-2xl p-4"
           >
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Das Wort war</p>
+            <p className="text-[#a8abb3] text-xs uppercase tracking-wider mb-1">Das Wort war</p>
             <p className="text-3xl font-black text-white drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">
               {currentWordSet?.word}
             </p>
-            <p className="text-purple-400 text-xs mt-1">{currentWordSet?.category}</p>
+            <p className="text-[#df8eff] text-xs mt-1">{currentWordSet?.category}</p>
           </motion.div>
 
           {/* Continue */}
           <motion.button
             onClick={proceedFromReveal}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)]"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)]"
             whileTap={{ scale: 0.97 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -938,7 +951,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- BONUS GUESS ---
   if (phase === 'bonusGuess') {
     return (
-      <div className="min-h-screen bg-[#0d0d15] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center px-4">
         <div className="max-w-sm w-full space-y-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -949,10 +962,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             <h2 className="text-2xl font-bold text-white">
               Bonusrunde!
             </h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#a8abb3] text-sm">
               {impostors.map((i) => i.name).join(' & ')}: Könnt ihr das Wort erraten?
             </p>
-            <p className="text-purple-400 text-xs">
+            <p className="text-[#df8eff] text-xs">
               Kategorie: {currentWordSet?.category}
             </p>
           </motion.div>
@@ -968,7 +981,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 value={bonusGuess}
                 onChange={(e) => setBonusGuess(e.target.value)}
                 placeholder="Wort eingeben..."
-                className="w-full bg-gray-800/60 border border-gray-700 rounded-xl px-4 py-3 text-white text-center text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
+                className="w-full bg-[#151a21]/60 border border-[#44484f] rounded-xl px-4 py-3 text-white text-center text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                 onKeyDown={(e) => e.key === 'Enter' && bonusGuess.trim() && submitBonusGuess()}
               />
               <motion.button
@@ -978,7 +991,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   'w-full py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2',
                   bonusGuess.trim()
                     ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-[0_0_20px_rgba(234,179,8,0.3)]'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#1b2028] text-gray-500 cursor-not-allowed'
                 )}
                 whileTap={bonusGuess.trim() ? { scale: 0.97 } : {}}
               >
@@ -994,10 +1007,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 'py-6 px-4 rounded-2xl border-2',
                 bonusResult
                   ? 'border-yellow-500/50 bg-yellow-500/10'
-                  : 'border-gray-600 bg-gray-800/40'
+                  : 'border-gray-600 bg-[#151a21]/40'
               )}
             >
-              <p className={cn('text-2xl font-black', bonusResult ? 'text-yellow-400' : 'text-gray-400')}>
+              <p className={cn('text-2xl font-black', bonusResult ? 'text-yellow-400' : 'text-[#a8abb3]')}>
                 {bonusResult ? 'RICHTIG! +10 Punkte!' : 'Leider falsch!'}
               </p>
             </motion.div>
@@ -1011,7 +1024,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'results') {
     const sorted = [...players].sort((a, b) => b.score - a.score);
     return (
-      <div className="min-h-screen bg-[#0d0d15] px-4 py-8">
+      <div className="min-h-screen bg-[#0a0e14] px-4 py-8">
+        <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <div className="mx-auto max-w-md space-y-6">
           <motion.div
             className="flex justify-center"
@@ -1030,7 +1044,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <p className="text-gray-400 text-sm uppercase tracking-wider">Rangliste</p>
+            <p className="text-[#a8abb3] text-sm uppercase tracking-wider">Rangliste</p>
           </motion.div>
 
           <div className="space-y-2">
@@ -1041,7 +1055,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   'flex items-center gap-3 p-3 rounded-xl border',
                   i === 0
                     ? 'bg-yellow-500/10 border-yellow-500/30'
-                    : 'bg-gray-800/40 border-gray-700/50'
+                    : 'bg-[#151a21]/40 border-[#44484f]/50'
                 )}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1092,7 +1106,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             </motion.button>
             <motion.button
               onClick={newRound}
-              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)] text-sm"
+              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >

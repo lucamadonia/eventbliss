@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   Type, Plus, Trash2, ChevronRight, RotateCcw, Trophy, Zap,
   Palette, Ban, Gauge, Crown, Target, Flame,
@@ -136,7 +138,7 @@ function ParticleBackground() {
       {particles.map(p => (
         <motion.div
           key={p.id}
-          className="absolute rounded-full bg-emerald-400/20"
+          className="absolute rounded-full bg-[#df8eff]/15"
           style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
           animate={{ y: [0, -30, 0], opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
@@ -178,7 +180,7 @@ function SetupScreen({ onStart }: SetupProps) {
   };
 
   return (
-    <motion.div className="min-h-screen bg-[#0a1a0f] p-4 flex flex-col items-center relative"
+    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center relative"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <ParticleBackground />
       <motion.div className="w-full max-w-md space-y-6 py-8 relative z-10"
@@ -188,27 +190,27 @@ function SetupScreen({ onStart }: SetupProps) {
         <div className="text-center space-y-2">
           <motion.div animate={{ scale: [1, 1.1, 1] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
-            <Type className="w-16 h-16 mx-auto text-emerald-400" />
+            <Type className="w-16 h-16 mx-auto text-[#df8eff]" />
           </motion.div>
           <h1 className="text-3xl font-bold text-white">Drueck das Wort</h1>
-          <p className="text-emerald-300/60 text-sm">Schnell tippen, schnell denken!</p>
+          <p className="text-[#df8eff]/60 text-sm">Schnell tippen, schnell denken!</p>
         </div>
 
         {/* Players */}
-        <div className="backdrop-blur-md bg-white/5 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg">Spieler ({players.length})</h2>
           <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
             {players.map((p, i) => (
               <div key={i} className="flex gap-2 items-center">
-                <span className="text-emerald-400/60 text-sm w-6 text-right">{i + 1}.</span>
+                <span className="text-[#df8eff]/60 text-sm w-6 text-right">{i + 1}.</span>
                 <Input value={p}
                   onChange={e => { const next = [...players]; next[i] = e.target.value; setPlayers(next); }}
                   placeholder={`Spieler ${i + 1}`}
-                  className="bg-white/10 border-emerald-500/20 text-white placeholder:text-gray-500"
+                  className="bg-white/10 border-[#df8eff]/20 text-white placeholder:text-[#a8abb3]/50"
                   maxLength={20} />
                 {players.length > 1 && (
                   <button onClick={() => setPlayers(players.filter((_, idx) => idx !== i))}
-                    className="text-gray-500 hover:text-red-400 transition-colors">
+                    className="text-[#a8abb3]/50 hover:text-red-400 transition-colors">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 )}
@@ -218,45 +220,45 @@ function SetupScreen({ onStart }: SetupProps) {
           {players.length < 8 && (
             <Button variant="ghost" size="sm"
               onClick={() => setPlayers([...players, `Spieler ${players.length + 1}`])}
-              className="text-emerald-400/60 hover:text-white w-full">
+              className="text-[#df8eff]/60 hover:text-white w-full">
               <Plus className="w-4 h-4 mr-1" /> Spieler hinzufuegen
             </Button>
           )}
         </div>
 
         {/* Mode */}
-        <div className="backdrop-blur-md bg-white/5 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg">Spielmodus</h2>
           <div className="grid grid-cols-2 gap-2">
             {modes.map(m => (
               <button key={m.key} onClick={() => setMode(m.key)}
                 className={`text-left p-3 rounded-xl border transition-all ${
                   mode === m.key
-                    ? 'bg-emerald-500/20 border-emerald-500/50 text-white'
-                    : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'
+                    ? 'bg-[#df8eff]/20 border-[#df8eff]/50 text-white'
+                    : 'bg-white/5 border-white/10 text-[#f1f3fc]/70 hover:bg-white/10'
                 }`}>
                 <div className="flex items-center gap-2 mb-1">
                   {m.icon}
                   <span className="font-medium text-sm">{m.label}</span>
                 </div>
-                <div className="text-xs text-gray-400">{m.desc}</div>
+                <div className="text-xs text-[#a8abb3]">{m.desc}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Speed & Rounds */}
-        <div className="backdrop-blur-md bg-white/5 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-4">
           <h2 className="text-white font-semibold text-lg">Einstellungen</h2>
           <div>
-            <label className="text-gray-300 text-sm block mb-2">Geschwindigkeit</label>
+            <label className="text-[#f1f3fc]/70 text-sm block mb-2">Geschwindigkeit</label>
             <div className="flex gap-2">
               {(['slow', 'medium', 'fast'] as Speed[]).map(s => (
                 <button key={s} onClick={() => setSpeed(s)}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                     speed === s
-                      ? 'bg-emerald-500 text-white'
-                      : 'bg-white/10 text-gray-400 hover:bg-white/15'
+                      ? 'bg-[#df8eff] text-white'
+                      : 'bg-white/10 text-[#a8abb3] hover:bg-white/15'
                   }`}>
                   {s === 'slow' ? 'Langsam' : s === 'medium' ? 'Mittel' : 'Schnell'}
                 </button>
@@ -264,10 +266,10 @@ function SetupScreen({ onStart }: SetupProps) {
             </div>
           </div>
           <div>
-            <label className="text-gray-300 text-sm block mb-1">Runden: {rounds}</label>
+            <label className="text-[#f1f3fc]/70 text-sm block mb-1">Runden: {rounds}</label>
             <input type="range" min={3} max={15} step={1} value={rounds}
               onChange={e => setRounds(Number(e.target.value))}
-              className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-emerald-500 cursor-pointer" />
+              className="w-full h-2 rounded-full appearance-none bg-[#20262f] accent-[#df8eff] cursor-pointer" />
           </div>
         </div>
 
@@ -275,8 +277,8 @@ function SetupScreen({ onStart }: SetupProps) {
         <motion.button onClick={handleStart} disabled={!canStart}
           className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
             canStart
-              ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)]'
-              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] hover:shadow-[0_0_30px_rgba(223,142,255,0.4)]'
+              : 'bg-[#1b2028] text-[#a8abb3]/50 cursor-not-allowed'
           }`}
           whileHover={canStart ? { scale: 1.02 } : {}}
           whileTap={canStart ? { scale: 0.98 } : {}}>
@@ -439,7 +441,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
 
   return (
     <motion.div
-      className="fixed inset-0 bg-[#0a1a0f] flex flex-col select-none cursor-pointer z-50"
+      className="fixed inset-0 bg-[#0a0e14] flex flex-col select-none cursor-pointer z-50"
       onClick={handleTap}
       animate={shakeScreen ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
       transition={{ duration: 0.4 }}
@@ -447,8 +449,8 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       <ParticleBackground />
 
       {/* Timer bar */}
-      <div className="w-full h-1.5 bg-gray-800 relative z-10">
-        <motion.div className="h-full bg-gradient-to-r from-emerald-400 to-green-500"
+      <div className="w-full h-1.5 bg-[#1b2028] relative z-10">
+        <motion.div className="h-full bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]"
           animate={{ width: `${progress * 100}%` }}
           transition={{ duration: 0.3 }} />
       </div>
@@ -456,10 +458,10 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       {/* HUD */}
       <div className="flex items-center justify-between px-4 py-3 relative z-10">
         <div className="text-white text-sm">
-          <span className="text-emerald-400/60">Runde</span>{' '}
+          <span className="text-[#df8eff]/60">Runde</span>{' '}
           <span className="font-bold">{round}/{totalRounds}</span>
         </div>
-        <div className="text-emerald-300/80 text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+        <div className="text-[#df8eff]/80 text-xs font-medium px-3 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
           {modeLabel}
         </div>
         <div className="text-white text-sm font-bold">{player.name}</div>
@@ -494,7 +496,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
         {/* Feedback flash */}
         <AnimatePresence>
           {feedback === 'correct' && (
-            <motion.div className="absolute inset-0 bg-emerald-500/10 pointer-events-none"
+            <motion.div className="absolute inset-0 bg-[#df8eff]/10 pointer-events-none"
               initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} />
           )}
           {feedback === 'wrong' && (
@@ -510,7 +512,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
         {/* Word count indicator */}
         {wordIndex > WORDS_PER_TURN && (
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-            className="text-emerald-400 text-2xl font-bold">
+            className="text-[#df8eff] text-2xl font-bold">
             Fertig!
           </motion.div>
         )}
@@ -519,7 +521,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       {/* Bottom HUD */}
       <div className="flex items-center justify-between px-6 py-4 relative z-10">
         <div className="text-center">
-          <div className="text-gray-400 text-[10px] uppercase tracking-wider">Punkte</div>
+          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">Punkte</div>
           <motion.div className="text-white text-2xl font-bold"
             key={score} animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.2 }}>
             {score}
@@ -546,7 +548,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
         )}
 
         <div className="text-center">
-          <div className="text-gray-400 text-[10px] uppercase tracking-wider">Wort</div>
+          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">Wort</div>
           <div className="text-white text-lg font-bold">
             {Math.min(wordIndex, WORDS_PER_TURN)}/{WORDS_PER_TURN}
           </div>
@@ -571,17 +573,17 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
-    <motion.div className="min-h-screen bg-[#0a1a0f] p-4 flex flex-col items-center justify-center relative"
+    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center justify-center relative"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <ParticleBackground />
       <motion.div className="w-full max-w-md space-y-6 relative z-10"
         initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white">Runde {round} von {totalRounds}</h2>
-          <p className="text-emerald-300/60 text-sm mt-1">Zwischenstand</p>
+          <p className="text-[#df8eff]/60 text-sm mt-1">Zwischenstand</p>
         </div>
 
-        <div className="backdrop-blur-md bg-white/5 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           {sorted.map((p, i) => {
             const total = p.correct + p.wrong + p.missed;
             const accuracy = total > 0 ? Math.round((p.correct / total) * 100) : 0;
@@ -590,21 +592,21 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
                 className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
                 initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: i * 0.1 }}>
-                <span className="text-lg font-bold text-emerald-400 w-8">{i === 0 ? <Crown className="w-5 h-5 text-yellow-400" /> : `#${i + 1}`}</span>
+                <span className="text-lg font-bold text-[#df8eff] w-8">{i === 0 ? <Crown className="w-5 h-5 text-[#df8eff]" /> : `#${i + 1}`}</span>
                 <div className="flex-1">
                   <div className="text-white font-semibold">{p.name}</div>
-                  <div className="text-gray-400 text-xs">
+                  <div className="text-[#a8abb3] text-xs">
                     {accuracy}% Genauigkeit | Max Combo: {p.maxCombo}x
                   </div>
                 </div>
-                <span className="text-emerald-400 font-bold text-lg">{p.score}</span>
+                <span className="text-[#df8eff] font-bold text-lg">{p.score}</span>
               </motion.div>
             );
           })}
         </div>
 
         <motion.button onClick={onNextRound}
-          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-600 text-white flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <ChevronRight className="w-5 h-5" />
           {round < totalRounds ? 'Naechste Runde' : 'Ergebnisse'}
@@ -627,7 +629,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
-    <motion.div className="min-h-screen bg-[#0a1a0f] p-4 flex flex-col items-center justify-center relative"
+    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center justify-center relative"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <ParticleBackground />
 
@@ -637,7 +639,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
           <motion.div key={i}
             className="absolute w-3 h-3 rounded-full"
             style={{
-              backgroundColor: ['#10b981', '#22c55e', '#34d399', '#6ee7b7', '#fbbf24', '#f97316'][i % 6],
+              backgroundColor: ['#df8eff', '#d779ff', '#8ff5ff', '#ff6b98', '#00deec', '#df8eff'][i % 6],
               left: `${(i / 24) * 100 + Math.random() * 4}%`,
             }}
             initial={{ y: -20, opacity: 1, rotate: 0 }}
@@ -657,11 +659,11 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
         <div className="text-center space-y-2">
           <motion.div animate={{ rotate: [0, -10, 10, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}>
-            <Trophy className="w-16 h-16 mx-auto text-yellow-400" />
+            <Trophy className="w-16 h-16 mx-auto text-[#df8eff]" />
           </motion.div>
           <h1 className="text-3xl font-bold text-white">Spielende!</h1>
           {sorted.length > 0 && (
-            <p className="text-emerald-300">
+            <p className="text-[#df8eff]">
               <Crown className="w-4 h-4 inline mr-1" />
               {sorted[0].name} gewinnt mit {sorted[0].score} Punkten!
             </p>
@@ -669,36 +671,36 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
         </div>
 
         {/* Leaderboard */}
-        <div className="backdrop-blur-md bg-white/5 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-emerald-400" /> Rangliste
+            <Trophy className="w-5 h-5 text-[#df8eff]" /> Rangliste
           </h2>
           {sorted.map((p, i) => {
             const total = p.correct + p.wrong + p.missed;
             const accuracy = total > 0 ? Math.round((p.correct / total) * 100) : 0;
-            const medals = ['text-yellow-400', 'text-gray-300', 'text-amber-600'];
+            const medals = ['text-[#df8eff]', 'text-[#f1f3fc]/70', 'text-[#8ff5ff]'];
             return (
               <motion.div key={p.name}
-                className={`flex items-center gap-3 p-4 rounded-xl ${i === 0 ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-white/5'}`}
+                className={`flex items-center gap-3 p-4 rounded-xl ${i === 0 ? 'bg-[#df8eff]/10 border border-[#df8eff]/30' : 'bg-white/5'}`}
                 initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: i * 0.15 }}>
-                <span className={`text-xl font-bold w-8 ${medals[i] || 'text-gray-500'}`}>#{i + 1}</span>
+                <span className={`text-xl font-bold w-8 ${medals[i] || 'text-[#a8abb3]/50'}`}>#{i + 1}</span>
                 <div className="flex-1">
                   <div className="text-white font-semibold">{p.name}</div>
-                  <div className="text-gray-400 text-xs flex gap-3">
+                  <div className="text-[#a8abb3] text-xs flex gap-3">
                     <span>{accuracy}% Genauigkeit</span>
                     <span>Combo: {p.maxCombo}x</span>
                     <span>{p.correct} richtig</span>
                   </div>
                 </div>
-                <span className="text-emerald-400 font-bold text-xl">{p.score}</span>
+                <span className="text-[#df8eff] font-bold text-xl">{p.score}</span>
               </motion.div>
             );
           })}
         </div>
 
         <motion.button onClick={onRestart}
-          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-600 text-white flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <RotateCcw className="w-5 h-5" /> Nochmal spielen
         </motion.button>
@@ -720,6 +722,8 @@ export default function WordPressGame() {
   const [totalRounds, setTotalRounds] = useState(5);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [turnQueue, setTurnQueue] = useState<number[]>([]);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     setPlayers(ps);
@@ -762,6 +766,15 @@ export default function WordPressGame() {
     setPhase('playing');
   }, [round, totalRounds, players]);
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('drueck-das-wort', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const handleRestart = useCallback(() => {
     setPhase('setup');
     setPlayers([]);
@@ -802,6 +815,7 @@ export default function WordPressGame() {
       )}
       {phase === 'gameOver' && (
         <motion.div key="gameOver" exit={{ opacity: 0 }}>
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <GameOverScreen players={players} onRestart={handleRestart} />
         </motion.div>
       )}

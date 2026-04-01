@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin } from 'lucide-react';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
@@ -286,6 +288,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const [round, setRound] = useState(0);
   const [totalRounds, setTotalRounds] = useState(8);
   const [studyTime, setStudyTime] = useState(10);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
 
   // Geo state (Karte mode)
@@ -548,6 +552,15 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   }, [currentPlayerIdx, players.length, round, totalRounds, mode, scenePool, diffPool, studyTime]);
 
   // ------- Restart -------
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('wo-ist-was', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const handleRestart = useCallback(() => {
     setPhase('setup');
     setPlayers([]);
@@ -582,7 +595,12 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   }
 
   if (phase === 'gameOver') {
-    return <GameOverScreen players={sortedPlayers} onRestart={handleRestart} onBack={() => navigate('/games')} totalRounds={totalRounds} />;
+    return (
+      <>
+        <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
+        <GameOverScreen players={sortedPlayers} onRestart={handleRestart} onBack={() => navigate('/games')} totalRounds={totalRounds} />
+      </>
+    );
   }
 
   const currentPlayer = players[currentPlayerIdx];

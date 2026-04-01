@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameTimer } from '../engine/TimerSystem';
-import { TABOO_CARDS_DE, type TabooCard } from '../content/taboo-words-de';
+import { getTabooCards, type TabooCard } from '../content/taboo-words';
 import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRight, MessageCircle, Ban } from 'lucide-react';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -63,11 +65,13 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
   const [phase, setPhase] = useState<Phase>('setup');
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const recordedRef = useRef(false);
   const [teams, setTeams] = useState<[Team, Team]>(buildTeams(players));
   const [activeTeamIdx, setActiveTeamIdx] = useState(0);
   const [explainerIdx, setExplainerIdx] = useState<[number, number]>([0, 0]);
   const [currentRound, setCurrentRound] = useState(1);
-  const deck = useRef<TabooCard[]>(shuffle(TABOO_CARDS_DE));
+  const deck = useRef<TabooCard[]>(shuffle(getTabooCards()));
   const deckPos = useRef(0);
   const [currentCard, setCurrentCard] = useState<TabooCard | null>(null);
   const [turnResults, setTurnResults] = useState<CardResult[]>([]);
@@ -90,7 +94,7 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
   }
 
   function drawCard(): TabooCard {
-    if (deckPos.current >= deck.current.length) { deck.current = shuffle(TABOO_CARDS_DE); deckPos.current = 0; }
+    if (deckPos.current >= deck.current.length) { deck.current = shuffle(getTabooCards()); deckPos.current = 0; }
     return deck.current[deckPos.current++];
   }
 
@@ -127,9 +131,18 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
     setActiveTeamIdx(nextTeamIdx); setPhase('turnStart');
   }
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !recordedRef.current) {
+      recordedRef.current = true;
+      const winnerScore = Math.max(teams[0].score, teams[1].score);
+      recordEnd('taboo', winnerScore, true);
+    }
+    if (phase === 'setup') recordedRef.current = false;
+  }, [phase]);
+
   function resetGame() {
     setTeams(buildTeams(players)); setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
-    setTurnResults([]); setCurrentCard(null); deck.current = shuffle(TABOO_CARDS_DE); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
+    setTurnResults([]); setCurrentCard(null); deck.current = shuffle(getTabooCards()); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
   }
 
   const mvp = useMemo(() => { const w = teams[0].score >= teams[1].score ? teams[0] : teams[1]; return w.players[0] ?? 'Unbekannt'; }, [teams]);
@@ -374,6 +387,7 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
       {phase === 'gameOver' && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full pulse-bg">
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
               <Trophy className="w-8 h-8 text-[#df8eff]" />

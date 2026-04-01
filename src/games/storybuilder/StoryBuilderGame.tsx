@@ -5,6 +5,8 @@ import {
   Play, Trophy, RotateCcw, ArrowRight, ArrowLeft,
   BookOpen, Pen, Sparkles, Music, Type, Eye,
 } from 'lucide-react';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
@@ -78,6 +80,8 @@ export default function StoryBuilderGame() {
   const [mode, setMode] = useState<Mode>('classic');
   const [sentencesPerPlayer, setSentencesPerPlayer] = useState(1);
   const [totalRounds, setTotalRounds] = useState(2);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   // Game state
   const [currentRound, setCurrentRound] = useState(1);
@@ -239,6 +243,14 @@ export default function StoryBuilderGame() {
     return () => clearInterval(interval);
   }, [phase, sentences.length, isRevealing]);
 
+  useEffect(() => {
+    if (phase === 'storyReveal' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      recordEnd('story-builder', sentences.length, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   function resetGame() {
     setPhase('setup');
     setPlayers([]);
@@ -261,7 +273,13 @@ export default function StoryBuilderGame() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+      <style>{`
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+      `}</style>
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ---- WRITING ---- */}
       {phase === 'writing' && currentPlayer && (
@@ -282,7 +300,7 @@ export default function StoryBuilderGame() {
               </div>
               <span className="text-sm text-white/60">{currentPlayer.name}</span>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs text-white/40">
+            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
               {currentTurn}/{totalTurns}
             </span>
           </div>
@@ -290,7 +308,7 @@ export default function StoryBuilderGame() {
           <div className="flex-1 flex flex-col items-center justify-center gap-5 px-4 max-w-lg mx-auto w-full">
             {/* Previous sentence (only last one visible) */}
             {lastSentence && (
-              <div className="w-full rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-4">
+              <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4">
                 <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">
                   Letzter Satz von {lastSentence.playerName}
                 </div>
@@ -302,14 +320,14 @@ export default function StoryBuilderGame() {
 
             {/* Prompt (if vorgabe mode) */}
             {mode === 'vorgabe' && currentPrompt && (
-              <div className="flex items-center gap-2 text-[#ff7350] text-sm font-semibold">
+              <div className="flex items-center gap-2 text-[#ff6b98] text-sm font-semibold">
                 <Sparkles className="w-4 h-4" />
                 <span>{currentPrompt}</span>
               </div>
             )}
 
             {mode === 'reimzeit' && (
-              <div className="flex items-center gap-2 text-[#00e3fd] text-sm font-semibold">
+              <div className="flex items-center gap-2 text-[#8ff5ff] text-sm font-semibold">
                 <Music className="w-4 h-4" />
                 <span>Dein Satz muss sich reimen!</span>
               </div>
@@ -324,7 +342,7 @@ export default function StoryBuilderGame() {
                 }}
                 placeholder="Schreibe deinen Satz..."
                 rows={3}
-                className="w-full bg-[#13131b] border-0 text-white rounded-xl px-4 py-3 text-sm placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#cf96ff]/40 resize-none"
+                className="w-full bg-[#151a21] border-0 text-white rounded-xl px-4 py-3 text-sm placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/40 resize-none"
               />
               <div className="absolute bottom-2 right-3 text-[10px] text-white/20">
                 {inputText.length}/{MAX_CHARS}
@@ -339,8 +357,8 @@ export default function StoryBuilderGame() {
               className={cn(
                 'w-full flex items-center justify-center gap-2 py-4 rounded-full font-extrabold text-base transition-all',
                 inputText.trim().length > 0
-                  ? 'bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] shadow-[0_0_25px_rgba(207,150,255,0.25)]'
-                  : 'bg-[#1f1f29] text-white/20 cursor-not-allowed',
+                  ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]'
+                  : 'bg-[#1b2028] text-white/20 cursor-not-allowed',
               )}
             >
               <Pen className="w-4 h-4" /> Abschicken
@@ -359,15 +377,15 @@ export default function StoryBuilderGame() {
           <motion.div
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-20 h-20 rounded-full bg-[#1f1f29] border border-white/[0.06] flex items-center justify-center"
+            className="w-20 h-20 rounded-full bg-[#1b2028] border border-[#44484f]/20 flex items-center justify-center"
           >
-            <ArrowRight className="w-8 h-8 text-[#cf96ff]" />
+            <ArrowRight className="w-8 h-8 text-[#df8eff]" />
           </motion.div>
           <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">
             Geraet weitergeben!
           </h2>
           {players[currentPlayerIdx] && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1f1f29] border border-white/[0.06]">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1b2028] border border-[#44484f]/20">
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                 style={{ backgroundColor: players[currentPlayerIdx].color }}
@@ -381,7 +399,7 @@ export default function StoryBuilderGame() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={confirmPass}
-            className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+            className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
             <Play className="w-5 h-5" /> Bereit!
           </motion.button>
@@ -395,11 +413,12 @@ export default function StoryBuilderGame() {
           animate={{ opacity: 1 }}
           className="flex-1 flex flex-col px-4 py-6 max-w-lg mx-auto w-full"
         >
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#cf96ff]/10 border border-[#cf96ff]/20 mb-3">
-              <BookOpen className="w-6 h-6 text-[#cf96ff]" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20 mb-3">
+              <BookOpen className="w-6 h-6 text-[#df8eff]" />
             </div>
-            <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] bg-clip-text text-transparent">
+            <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
               Eure Geschichte
             </h2>
           </div>
@@ -413,7 +432,7 @@ export default function StoryBuilderGame() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-4"
+                    className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <div
@@ -441,13 +460,13 @@ export default function StoryBuilderGame() {
           </div>
 
           {/* Bottom actions */}
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0d0d15] via-[#0d0d15] to-transparent z-20">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
             <div className="max-w-lg mx-auto space-y-3">
               {revealIdx < sentences.length - 1 ? (
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setRevealIdx(sentences.length - 1)}
-                  className="w-full flex items-center justify-center gap-2 bg-[#1f1f29] border border-white/[0.06] text-white/60 py-3 rounded-full font-semibold text-sm"
+                  className="w-full flex items-center justify-center gap-2 bg-[#1b2028] border border-[#44484f]/20 text-white/60 py-3 rounded-full font-semibold text-sm"
                 >
                   <Eye className="w-4 h-4" /> Alles zeigen
                 </motion.button>
@@ -456,7 +475,7 @@ export default function StoryBuilderGame() {
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={resetGame}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
                   >
                     <RotateCcw className="w-4 h-4" /> Nochmal
                   </motion.button>

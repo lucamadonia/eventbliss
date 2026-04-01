@@ -4,6 +4,8 @@ import {
   Play, Trophy, RotateCcw, ArrowRight, Plus, Minus,
   Pencil, Eraser, Trash2, Undo2, Check, X,
 } from 'lucide-react';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
@@ -65,6 +67,8 @@ export default function QuickDrawGame() {
   ]);
   const [mode, setMode] = useState<Mode>('classic');
   const [totalRounds, setTotalRounds] = useState(8);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
@@ -190,6 +194,15 @@ export default function QuickDrawGame() {
     }
   }
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('schnellzeichner', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   /* ---- Next round ---- */
   function nextRound() {
     if (round >= totalRounds) { setPhase('gameOver'); return; }
@@ -205,17 +218,24 @@ export default function QuickDrawGame() {
   /* ================================================================ */
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+      <style>{`
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.neon-glow-pink { text-shadow: 0 0 20px rgba(255,107,152,0.6), 0 0 40px rgba(255,107,152,0.4); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+      `}</style>
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#ff6b98]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#df8eff]/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ---- SETUP ---- */}
       {phase === 'setup' && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col px-4 py-8 pb-32 max-w-lg mx-auto w-full">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1rem] bg-[#1f1f29] border border-[#ff7350]/20 mb-4">
-              <Pencil className="w-8 h-8 text-[#ff7350]" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1rem] bg-[#1b2028] border border-[#ff6b98]/20 mb-4">
+              <Pencil className="w-8 h-8 text-[#ff6b98]" />
             </div>
-            <h1 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#ff7350] to-[#ff7350]/60 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#ff6b98] to-[#ff6b98]/60 bg-clip-text text-transparent">
               Schnellzeichner
             </h1>
             <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">Zeichne schnell — die anderen raten!</p>
@@ -231,7 +251,7 @@ export default function QuickDrawGame() {
                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
                     style={{ backgroundColor: p.color }}>{getPlayerInitial(p.name)}</div>
                   <input type="text" value={p.name} onChange={e => updateName(p.id, e.target.value)}
-                    maxLength={20} className="flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7350]/50 text-sm" />
+                    maxLength={20} className="flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6b98]/50 text-sm" />
                   {players.length > 2 && (
                     <button onClick={() => removePlayer(p.id)}
                       className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center">
@@ -242,7 +262,7 @@ export default function QuickDrawGame() {
             </AnimatePresence>
             {players.length < 10 && (
               <button onClick={addPlayer}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 hover:border-[#ff7350]/50 hover:text-[#ff7350] transition-colors text-sm">
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 hover:border-[#ff6b98]/50 hover:text-[#ff6b98] transition-colors text-sm">
                 <Plus className="w-4 h-4" /> Spieler hinzufuegen</button>
             )}
           </section>
@@ -254,8 +274,8 @@ export default function QuickDrawGame() {
               {MODES.map(m => (
                 <button key={m.id} onClick={() => setMode(m.id)}
                   className={cn('w-full flex items-center gap-3 p-4 rounded-[1rem] border-2 transition-colors text-left',
-                    mode === m.id ? 'border-[#ff7350] bg-[#ff7350]/10 text-white' : 'border-gray-700 bg-[#1f1f29] text-gray-300 hover:border-gray-600')}>
-                  <Pencil className={cn('w-5 h-5', mode === m.id ? 'text-[#ff7350]' : 'text-white/30')} />
+                    mode === m.id ? 'border-[#ff6b98] bg-[#ff6b98]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
+                  <Pencil className={cn('w-5 h-5', mode === m.id ? 'text-[#ff6b98]' : 'text-white/30')} />
                   <div><div className="text-sm font-semibold">{m.name}</div><div className="text-xs text-white/40">{m.desc}</div></div>
                 </button>
               ))}
@@ -264,20 +284,20 @@ export default function QuickDrawGame() {
 
           {/* Rounds */}
           <section className="mb-6">
-            <div className="bg-[#1f1f29] border border-white/[0.06] rounded-[1rem] p-4">
+            <div className="bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] p-4">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-white/40">Runden</span><span className="text-white font-bold">{totalRounds}</span>
               </div>
               <input type="range" min={3} max={20} step={1} value={totalRounds}
                 onChange={e => setTotalRounds(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-[#ff7350] cursor-pointer" />
+                className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-[#ff6b98] cursor-pointer" />
             </div>
           </section>
 
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0d0d15] via-[#0d0d15] to-transparent z-20">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
             <div className="max-w-lg mx-auto space-y-3">
               <motion.button whileTap={{ scale: 0.97 }} onClick={startGame}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white text-base font-extrabold font-[Plus_Jakarta_Sans] uppercase tracking-wide shadow-[0_0_30px_rgba(255,115,80,0.25)] flex items-center justify-center gap-2">
+                className="w-full py-4 rounded-full bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white text-base font-extrabold font-[Plus_Jakarta_Sans] uppercase tracking-wide shadow-[0_0_20px_rgba(255,107,152,0.3)] flex items-center justify-center gap-2">
                 <Play className="w-5 h-5" /> Spiel starten</motion.button>
               <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">Zurueck</button>
             </div>
@@ -289,20 +309,20 @@ export default function QuickDrawGame() {
       {phase === 'drawerReveal' && currentWord && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
-          <div className="px-4 py-1.5 rounded-full bg-[#1f1f29] border border-white/[0.06]">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ff7350]">Runde {round} / {totalRounds}</span>
+          <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">Runde {round} / {totalRounds}</span>
           </div>
           <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl"
             style={{ backgroundColor: drawer.color }}>{getPlayerInitial(drawer.name)}</div>
           <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{drawer.name} zeichnet!</h2>
           <p className="text-white/40 text-sm">Alle anderen: NICHT hinschauen!</p>
-          <div className="rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-[#ff7350]/30 p-6 shadow-2xl text-center">
-            <div className="text-xs font-bold text-[#ff7350] uppercase tracking-widest mb-2">Dein Wort</div>
+          <div className="rounded-[1rem] bg-[#151a21]/80 backdrop-blur-xl border border-[#ff6b98]/30 p-6 shadow-2xl text-center">
+            <div className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest mb-2">Dein Wort</div>
             <div className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{currentWord.word}</div>
             <div className="mt-2 text-xs text-white/30">{currentWord.category} — Schwierigkeit {'★'.repeat(currentWord.difficulty)}</div>
           </div>
           <motion.button whileTap={{ scale: 0.97 }} onClick={startDrawing}
-            className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white px-8 py-3 rounded-full font-extrabold text-lg shadow-[0_0_25px_rgba(255,115,80,0.25)]">
+            className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white px-8 py-3 rounded-full font-extrabold text-lg shadow-[0_0_20px_rgba(255,107,152,0.3)]">
             <Pencil className="w-5 h-5" /> Zeichnen starten
           </motion.button>
         </motion.div>
@@ -313,19 +333,19 @@ export default function QuickDrawGame() {
         <div className="flex-1 flex flex-col">
           {/* Timer bar */}
           <div className="h-1 bg-white/[0.04]">
-            <motion.div className={cn('h-full', timeLeft > 10 ? 'bg-gradient-to-r from-[#ff7350] to-[#ff4444]' : 'bg-red-500')}
+            <motion.div className={cn('h-full', timeLeft > 10 ? 'bg-gradient-to-r from-[#ff6b98] to-[#ff6b98]' : 'bg-red-500')}
               style={{ width: `${(timeLeft / MODE_TIMERS[mode]) * 100}%` }} />
           </div>
           <div className="flex items-center justify-between px-4 py-2">
             <span className="text-sm font-bold text-white/60">{drawer.name} zeichnet</span>
-            <div className={cn('px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-lg font-mono font-bold',
+            <div className={cn('px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-lg font-mono font-bold',
               timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-white/80')}>{timeLeft}s</div>
           </div>
 
           {/* Canvas */}
           <div className="flex-1 flex items-center justify-center px-4">
-            <div className={cn('w-full max-w-sm aspect-square rounded-2xl border border-white/[0.06] overflow-hidden relative',
-              canvasHidden ? 'bg-[#1f1f29]' : 'bg-white')}>
+            <div className={cn('w-full max-w-sm aspect-square rounded-2xl border border-[#44484f]/20 overflow-hidden relative',
+              canvasHidden ? 'bg-[#1b2028]' : 'bg-white')}>
               {canvasHidden && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                   <span className="text-white/40 font-bold text-lg">Blind-Modus aktiv!</span>
@@ -344,26 +364,26 @@ export default function QuickDrawGame() {
             {([3, 6, 12] as PenSize[]).map(s => (
               <button key={s} onClick={() => { setTool('pen'); setPenSize(s); }}
                 className={cn('w-10 h-10 rounded-xl flex items-center justify-center border transition-colors',
-                  tool === 'pen' && penSize === s ? 'bg-[#ff7350]/20 border-[#ff7350]' : 'bg-[#1f1f29] border-white/[0.06]')}>
+                  tool === 'pen' && penSize === s ? 'bg-[#ff6b98]/20 border-[#ff6b98]' : 'bg-[#1b2028] border-[#44484f]/20')}>
                 <div className="rounded-full bg-black" style={{ width: s + 4, height: s + 4 }} />
               </button>
             ))}
             <button onClick={() => setTool('eraser')}
               className={cn('w-10 h-10 rounded-xl flex items-center justify-center border transition-colors',
-                tool === 'eraser' ? 'bg-[#ff7350]/20 border-[#ff7350]' : 'bg-[#1f1f29] border-white/[0.06]')}>
+                tool === 'eraser' ? 'bg-[#ff6b98]/20 border-[#ff6b98]' : 'bg-[#1b2028] border-[#44484f]/20')}>
               <Eraser className="w-4 h-4 text-white/60" />
             </button>
-            <button onClick={undoCanvas} className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1f1f29] border border-white/[0.06]">
+            <button onClick={undoCanvas} className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20">
               <Undo2 className="w-4 h-4 text-white/60" />
             </button>
-            <button onClick={clearCanvas} className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1f1f29] border border-white/[0.06]">
+            <button onClick={clearCanvas} className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20">
               <Trash2 className="w-4 h-4 text-white/60" />
             </button>
           </div>
 
           <div className="px-4 pb-4">
             <motion.button whileTap={{ scale: 0.97 }} onClick={finishDrawing}
-              className="w-full py-3 rounded-full bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white font-bold shadow-[0_0_20px_rgba(255,115,80,0.2)]">
+              className="w-full py-3 rounded-full bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white font-bold shadow-[0_0_20px_rgba(255,107,152,0.2)]">
               Fertig gezeichnet
             </motion.button>
           </div>
@@ -374,11 +394,11 @@ export default function QuickDrawGame() {
       {phase === 'guessing' && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col items-center gap-5 px-4 py-6 max-w-lg mx-auto w-full">
-          <div className="px-4 py-1.5 rounded-full bg-[#1f1f29] border border-white/[0.06]">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ff7350]">Raten</span>
+          <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">Raten</span>
           </div>
           {drawingDataURL && (
-            <div className="w-full max-w-sm aspect-square rounded-2xl border border-white/[0.06] overflow-hidden bg-white">
+            <div className="w-full max-w-sm aspect-square rounded-2xl border border-[#44484f]/20 overflow-hidden bg-white">
               <img src={drawingDataURL} alt="Zeichnung" className="w-full h-full object-contain" />
             </div>
           )}
@@ -390,9 +410,9 @@ export default function QuickDrawGame() {
           <div className="w-full flex gap-2">
             <input type="text" value={guessInput} onChange={e => setGuessInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submitGuess()}
-              placeholder="Was ist das?" className="flex-1 bg-[#1f1f29] border border-white/[0.06] rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#ff7350]/50" />
+              placeholder="Was ist das?" className="flex-1 bg-[#1b2028] border border-[#44484f]/20 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#ff6b98]/50" />
             <motion.button whileTap={{ scale: 0.95 }} onClick={submitGuess}
-              className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white font-bold">OK</motion.button>
+              className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white font-bold">OK</motion.button>
           </div>
           {guesses.length > 0 && <GuessList guesses={guesses} players={players} />}
         </motion.div>
@@ -413,13 +433,13 @@ export default function QuickDrawGame() {
             <div className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{currentWord.word}</div>
           </div>
           {drawingDataURL && (
-            <div className="w-full max-w-xs aspect-square rounded-2xl border border-white/[0.06] overflow-hidden bg-white">
+            <div className="w-full max-w-xs aspect-square rounded-2xl border border-[#44484f]/20 overflow-hidden bg-white">
               <img src={drawingDataURL} alt="Zeichnung" className="w-full h-full object-contain" />
             </div>
           )}
           <GuessList guesses={guesses} players={players} />
           <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(255,115,80,0.25)]">
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(255,107,152,0.3)]">
             {round >= totalRounds ? 'Ergebnis' : 'Weiter'} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
@@ -429,17 +449,18 @@ export default function QuickDrawGame() {
       {phase === 'gameOver' && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full">
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
               <Trophy className="w-8 h-8 text-amber-400" /></div>
           </motion.div>
-          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Spielende!</h2>
+          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#ff6b98] neon-glow-pink">Spielende!</h2>
           <div className="w-full space-y-2">
             {sorted.map((p, i) => (
               <div key={p.id} className={cn('flex items-center gap-3 rounded-[1rem] px-4 py-3 border',
-                i === 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1f1f29] border-white/[0.06]')}>
+                i === 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1b2028] border-[#44484f]/20')}>
                 <span className={cn('w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm',
-                  i === 0 ? 'bg-amber-500 text-[#0d0d15]' : 'bg-white/10 text-white/40')}>{i + 1}</span>
+                  i === 0 ? 'bg-amber-500 text-[#0a0e14]' : 'bg-white/10 text-white/40')}>{i + 1}</span>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
                   style={{ backgroundColor: p.color }}>{getPlayerInitial(p.name)}</div>
                 <span className="flex-1 font-semibold text-white truncate">{p.name}</span>
@@ -449,7 +470,7 @@ export default function QuickDrawGame() {
           </div>
           <div className="w-full space-y-3 mt-2">
             <motion.button whileTap={{ scale: 0.97 }} onClick={() => setPhase('setup')}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff7350] to-[#ff4444] text-white py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(255,115,80,0.25)]">
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(255,107,152,0.3)]">
               <RotateCcw className="w-4 h-4" /> Nochmal</motion.button>
             <button onClick={() => navigate('/games')}
               className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">Anderes Spiel</button>
@@ -470,7 +491,7 @@ function GuessList({ guesses, players }: { guesses: { playerId: string; guess: s
       {guesses.map((g, i) => {
         const p = players.find(x => x.id === g.playerId);
         return (
-          <div key={i} className="flex items-center gap-2 bg-[#1f1f29] border border-white/[0.04] rounded-[1rem] px-4 py-2.5">
+          <div key={i} className="flex items-center gap-2 bg-[#1b2028] border border-white/[0.04] rounded-[1rem] px-4 py-2.5">
             {g.correct ? <Check className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4 text-red-400" />}
             <span className="text-white/50 text-sm">{p?.name}:</span>
             <span className={cn('font-semibold text-sm', g.correct ? 'text-emerald-300' : 'text-white/60')}>{g.guess}</span>

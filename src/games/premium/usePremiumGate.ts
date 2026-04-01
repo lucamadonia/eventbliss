@@ -26,7 +26,7 @@ export interface PremiumGateResult {
   config: GameTier | undefined;
 }
 
-export function usePremiumGate(gameId: string): PremiumGateResult {
+export function usePremiumGate(gameId: string, roomHasPremium?: boolean): PremiumGateResult {
   const { isPremium, loading } = usePremium();
 
   const config = useMemo(
@@ -34,15 +34,18 @@ export function usePremiumGate(gameId: string): PremiumGateResult {
     [gameId],
   );
 
+  // If anyone in the room has Premium, treat as premium for all players
+  const effectivePremium = isPremium || roomHasPremium === true;
+
   const freeRoundsLimit = config?.freeRoundsLimit ?? 2;
   const freePlaysUsed = getFreePlays(gameId);
   const freePlaysLeft = Math.max(0, freeRoundsLimit - freePlaysUsed);
 
   const isLocked =
-    config?.tier === 'premium' && !isPremium && freePlaysLeft <= 0;
+    config?.tier === 'premium' && !effectivePremium && freePlaysLeft <= 0;
 
   const recordPlay = useCallback(() => {
-    if (config?.tier !== 'premium' || isPremium) return;
+    if (config?.tier !== 'premium' || effectivePremium) return;
     try {
       const key = getTodayKey(gameId);
       const current = Number(localStorage.getItem(key) || '0');
@@ -50,7 +53,7 @@ export function usePremiumGate(gameId: string): PremiumGateResult {
     } catch {
       // localStorage unavailable — silently ignore
     }
-  }, [gameId, config?.tier, isPremium]);
+  }, [gameId, config?.tier, effectivePremium]);
 
   return {
     isPremium,

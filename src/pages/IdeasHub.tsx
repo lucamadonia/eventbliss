@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Gamepad2, Palette, Sparkles, PartyPopper, Users, Globe } from "lucide-react";
+import { Gamepad2, Palette, Sparkles, PartyPopper, Users, Globe, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -139,6 +140,19 @@ const IdeasHub = () => {
 
                 {/* Tab Content */}
                 <TabsContent value="games" className="mt-0">
+                  <div className="flex justify-center mb-6">
+                    <Link to="/games">
+                      <motion.div
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-primary/80 text-white font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 cursor-pointer"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Gamepad2 className="w-5 h-5" />
+                        {t('ideasHub.openGames')}
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.div>
+                    </Link>
+                  </div>
                   <GamesLibrary />
                 </TabsContent>
 

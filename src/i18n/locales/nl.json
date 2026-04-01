@@ -55,7 +55,7 @@
     "betaBadge": "Bètaversie"
   },
 "landing": {
-    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "ideas": "Ideeën", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners" },
+    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "ideas": "Ideeën", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners", "games": "Spellen" },
     "hero": { "badge": "Het #1 evenementenplanningsplatform", "title": "Plan Onvergetelijke Evenementen", "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.", "createEvent": "Evenement Maken", "joinEvent": "Deelnemen met Code", "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons" },
     "features": {
       "title": "Alles wat je nodig hebt", "subtitle": "Krachtige tools voor het perfecte evenement",
@@ -1642,7 +1642,8 @@
       "themes": "Thema's",
       "categories": "Categorieën",
       "languages": "Talen"
-    }
+    },
+    "openGames": "Alle Spellen Openen"
   },
   "eventTypes": {
     "bachelor": "Vrijgezellenfeest (Hij)",

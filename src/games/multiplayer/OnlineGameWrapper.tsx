@@ -207,6 +207,7 @@ export default function OnlineGameWrapper({
   const {
     room,
     players,
+    roomHasPremium,
     isHost,
     joinRoom,
     leaveRoom,
@@ -277,6 +278,7 @@ export default function OnlineGameWrapper({
     roomCode,
     players,
     myPlayerId,
+    roomHasPremium,
     broadcast,
     onBroadcast,
   };

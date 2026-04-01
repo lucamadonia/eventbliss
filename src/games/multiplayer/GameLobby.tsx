@@ -2,9 +2,12 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Check, ArrowLeft, Users, Crown, CircleDot, UserMinus,
-  Share2, Play, Plus, Wifi, WifiOff, Loader2,
+  Share2, Play, Plus, Wifi, WifiOff, Loader2, Sparkles,
 } from "lucide-react";
 import { useGameRoom, type RoomPlayer } from "./useGameRoom";
+import { usePremium } from "@/hooks/usePremium";
+import { useAuth } from "@/hooks/useAuth";
+import EventInvite from "./EventInvite";
 
 const EP = {
   bg: "#0a0e14", surface1: "#151a21", surface2: "#1b2028", surface3: "#20262f",
@@ -68,6 +71,12 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
               <Crown className="h-2.5 w-2.5" /> Host
             </span>
           )}
+          {player.isPremium && (
+            <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+              style={{ backgroundColor: "rgba(249,202,36,0.15)", color: "#f9ca24" }}>
+              <Crown className="h-2.5 w-2.5" /> Premium
+            </span>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -99,21 +108,23 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { room, players, isHost, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
+  const { isPremium } = usePremium();
+  const { user } = useAuth();
+  const { room, players, roomHasPremium, isHost, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
 
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
 
   const handleCreate = useCallback(async () => {
     if (!hostName.trim()) return;
     setIsLoading(true);
-    try { await createRoom(gameId); setView("lobby"); } finally { setIsLoading(false); }
-  }, [createRoom, gameId, hostName]);
+    try { await createRoom(gameId, isPremium); setView("lobby"); } finally { setIsLoading(false); }
+  }, [createRoom, gameId, hostName, isPremium]);
 
   const handleJoin = useCallback(async () => {
     if (!joinName.trim() || !joinCode.trim()) return;
     setIsLoading(true);
-    try { await joinRoom(joinCode, joinName.trim()); setView("lobby"); } finally { setIsLoading(false); }
-  }, [joinRoom, joinCode, joinName]);
+    try { await joinRoom(joinCode, joinName.trim(), isPremium); setView("lobby"); } finally { setIsLoading(false); }
+  }, [joinRoom, joinCode, joinName, isPremium]);
 
   const handleStart = useCallback(() => {
     if (!isHost || !allReady || !room) return;
@@ -281,6 +292,32 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                   </div>
                 )}
               </div>
+
+              {/* Premium sharing banner */}
+              <AnimatePresence>
+                {roomHasPremium ? (
+                  <motion.div {...fadeUp} className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                    style={{ backgroundColor: "rgba(249,202,36,0.08)", border: "1px solid rgba(249,202,36,0.2)" }}>
+                    <Sparkles className="h-5 w-5 flex-shrink-0" style={{ color: "#f9ca24" }} />
+                    <p className="text-xs font-semibold font-['Be_Vietnam_Pro']" style={{ color: "#f9ca24" }}>
+                      Premium-Spiele fuer alle freigeschaltet!
+                    </p>
+                  </motion.div>
+                ) : (
+                  <motion.div {...fadeUp} className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                    style={{ backgroundColor: "rgba(223,142,255,0.06)", border: `1px solid ${EP.border}` }}>
+                    <Crown className="h-5 w-5 flex-shrink-0" style={{ color: EP.neonPurple }} />
+                    <p className="text-[11px] text-white/40 font-['Be_Vietnam_Pro']">
+                      Tipp: Mit einem Premium-Account spielen alle Gaeste kostenlos mit!
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Event invite section */}
+              {user && isHost && (
+                <EventInvite roomCode={room.roomCode} gameId={gameId} />
+              )}
 
               <div className="space-y-2">
                 {!isHost && (

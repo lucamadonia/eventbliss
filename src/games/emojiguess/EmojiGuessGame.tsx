@@ -8,6 +8,8 @@ import {
 import { cn } from '@/lib/utils';
 import { useGameTimer } from '@/games/engine/TimerSystem';
 import { EMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content-de';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 
 // ---------------------------------------------------------------------------
@@ -71,6 +73,8 @@ export default function EmojiGuessGame() {
   const [mode, setMode] = useState('classic');
   const [timerDuration, setTimerDuration] = useState(30);
   const [totalRounds, setTotalRounds] = useState(10);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   // Game state
   const [currentRound, setCurrentRound] = useState(1);
@@ -195,6 +199,15 @@ export default function EmojiGuessGame() {
     startRound();
   }
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('emoji-raten', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   function resetGame() {
     stopTimers();
     setPhase('setup');
@@ -233,7 +246,13 @@ export default function EmojiGuessGame() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+      <style>{`
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+      `}</style>
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* ---- PLAYING ---- */}
       {phase === 'playing' && currentPuzzle && (
         <div className="flex-1 flex flex-col">
@@ -241,7 +260,7 @@ export default function EmojiGuessGame() {
           <div className="h-1 bg-white/[0.04]">
             <motion.div
               className={cn('h-full', timer.percentLeft > 25
-                ? 'bg-gradient-to-r from-[#cf96ff] to-[#00e3fd]'
+                ? 'bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]'
                 : 'bg-red-500')}
               initial={{ width: '100%' }}
               animate={{ width: `${timer.percentLeft}%` }}
@@ -263,7 +282,7 @@ export default function EmojiGuessGame() {
             <div className="flex items-center gap-3">
               <span className="text-xs text-white/40">Runde {currentRound}/{totalRounds}</span>
               <div className={cn(
-                'px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-lg font-mono font-bold',
+                'px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-lg font-mono font-bold',
                 timer.timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-white/80',
               )}>
                 {timer.timeLeft}s
@@ -273,7 +292,7 @@ export default function EmojiGuessGame() {
 
           {/* Category badge */}
           <div className="flex justify-center mb-2">
-            <span className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs font-semibold text-[#cf96ff]">
+            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-semibold text-[#df8eff]">
               {currentPuzzle.category} {'⭐'.repeat(currentPuzzle.difficulty)}
             </span>
           </div>
@@ -283,9 +302,9 @@ export default function EmojiGuessGame() {
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="w-full max-w-sm rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-white/[0.06] p-8 shadow-2xl text-center relative overflow-hidden"
+              className="w-full max-w-sm rounded-[1rem] glass-card border border-[#44484f]/20 p-8 shadow-2xl text-center relative overflow-hidden"
             >
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#cf96ff] via-[#00e3fd] to-[#ff7350]" />
+              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#df8eff] via-[#8ff5ff] to-[#ff6b98]" />
               <motion.div
                 className="text-7xl leading-tight mb-6 pt-2"
                 initial={{ y: 20, opacity: 0 }}
@@ -297,7 +316,7 @@ export default function EmojiGuessGame() {
 
               {/* Points available */}
               <div className="text-sm text-white/40 mb-3">
-                <span className="text-[#00e3fd] font-bold">{pointsAvailable}</span> Punkte moeglich
+                <span className="text-[#8ff5ff] font-bold">{pointsAvailable}</span> Punkte moeglich
               </div>
 
               {/* Hint */}
@@ -307,7 +326,7 @@ export default function EmojiGuessGame() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center justify-center gap-2 text-sm text-[#ff7350]"
+                    className="flex items-center justify-center gap-2 text-sm text-[#ff6b98]"
                   >
                     <Lightbulb className="w-4 h-4" />
                     <span>Beginnt mit: <strong>{currentPuzzle.answer.charAt(0)}</strong></span>
@@ -329,7 +348,7 @@ export default function EmojiGuessGame() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleSkip}
-              className="flex-none flex items-center justify-center bg-[#1f1f29] border border-white/[0.06] rounded-full py-4 px-5 text-white/40"
+              className="flex-none flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20 rounded-full py-4 px-5 text-white/40"
             >
               <ArrowRight className="w-5 h-5" />
             </motion.button>
@@ -349,18 +368,18 @@ export default function EmojiGuessGame() {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', bounce: 0.4 }}
-            className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] bg-clip-text text-transparent text-center"
+            className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent text-center"
           >
             {currentPuzzle.answer}
           </motion.div>
-          <span className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs text-white/40">
+          <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
             {currentPuzzle.category}
           </span>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={advanceRound}
-            className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+            className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
             Weiter <ArrowRight className="w-5 h-5" />
           </motion.button>
@@ -374,6 +393,7 @@ export default function EmojiGuessGame() {
           animate={{ opacity: 1, scale: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full"
         >
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -383,12 +403,12 @@ export default function EmojiGuessGame() {
               <Trophy className="w-8 h-8 text-amber-400" />
             </div>
           </motion.div>
-          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#df8eff] neon-glow">
             Spielende!
           </h2>
 
           {sortedPlayers[0] && (
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1f1f29] border border-amber-500/20">
+            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1b2028] border border-amber-500/20">
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
                 style={{ backgroundColor: sortedPlayers[0].color }}
@@ -414,7 +434,7 @@ export default function EmojiGuessGame() {
                   'flex items-center gap-3 px-4 py-3 rounded-[1rem] border',
                   i === 0
                     ? 'bg-amber-500/10 border-amber-500/20'
-                    : 'bg-[#1f1f29] border-white/[0.06]',
+                    : 'bg-[#1b2028] border-[#44484f]/20',
                 )}
               >
                 <span className="text-sm font-bold text-white/40 w-6 text-center">{i + 1}</span>
@@ -435,7 +455,7 @@ export default function EmojiGuessGame() {
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={resetGame}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
               <RotateCcw className="w-4 h-4" /> Nochmal
             </motion.button>

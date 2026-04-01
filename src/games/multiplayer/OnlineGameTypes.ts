@@ -16,6 +16,8 @@ export interface OnlineGameProps {
   players: RoomPlayer[];
   /** This device's player id */
   myPlayerId: string;
+  /** Whether any player in the room has a Premium subscription */
+  roomHasPremium: boolean;
   /** Send a named event + payload to all devices */
   broadcast: (event: string, data: Record<string, unknown>) => void;
   /** Subscribe to a named event — returns unsubscribe fn */

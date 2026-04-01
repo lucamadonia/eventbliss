@@ -13,6 +13,7 @@ export interface RoomPlayer {
   avatar: string;
   isHost: boolean;
   isReady: boolean;
+  isPremium: boolean;
 }
 
 export interface GameRoom {
@@ -29,9 +30,10 @@ type BroadcastCallback = (data: Record<string, unknown>) => void;
 export interface UseGameRoomReturn {
   room: GameRoom | null;
   players: RoomPlayer[];
+  roomHasPremium: boolean;
   isHost: boolean;
-  createRoom: (gameId: string) => Promise<string>;
-  joinRoom: (code: string, name: string) => Promise<void>;
+  createRoom: (gameId: string, isPremium?: boolean) => Promise<string>;
+  joinRoom: (code: string, name: string, isPremium?: boolean) => Promise<void>;
   leaveRoom: () => void;
   setReady: (ready: boolean) => void;
   startGame: () => void;
@@ -91,6 +93,7 @@ export function useGameRoom(): UseGameRoomReturn {
   const listenersRef = useRef<Map<string, Set<BroadcastCallback>>>(new Map());
 
   const isHost = room?.hostId === playerIdRef.current;
+  const roomHasPremium = players.some((p) => p.isPremium);
 
   // ---- Cleanup on unmount ----
   useEffect(() => {
@@ -110,6 +113,7 @@ export function useGameRoom(): UseGameRoomReturn {
       color: string;
       avatar: string;
       isReady: boolean;
+      isPremium: boolean;
       joinedAt: number;
     }>();
 
@@ -124,6 +128,7 @@ export function useGameRoom(): UseGameRoomReturn {
       avatar: p.avatar,
       isHost: p.id === hostId,
       isReady: p.isReady,
+      isPremium: p.isPremium ?? false,
     }));
 
     setPlayers(mapped);
@@ -138,6 +143,7 @@ export function useGameRoom(): UseGameRoomReturn {
       hostId: string,
       playerName: string,
       colorIndex: number,
+      playerIsPremium: boolean = false,
     ) => {
       // Clean up any existing channel
       if (channelRef.current) {
@@ -205,6 +211,7 @@ export function useGameRoom(): UseGameRoomReturn {
             color: pickColor(colorIndex),
             avatar: getInitial(playerName),
             isReady: playerId === hostId,
+            isPremium: playerIsPremium,
             joinedAt: Date.now(),
           });
         }
@@ -227,18 +234,18 @@ export function useGameRoom(): UseGameRoomReturn {
   // ---- Public API ----
 
   const createRoom = useCallback(
-    async (gameId: string): Promise<string> => {
+    async (gameId: string, isPremiumPlayer: boolean = false): Promise<string> => {
       setError(null);
       const code = generateRoomCode();
       const hostId = playerIdRef.current;
-      subscribe(code, gameId, hostId, "Host", 0);
+      subscribe(code, gameId, hostId, "Host", 0, isPremiumPlayer);
       return code;
     },
     [subscribe],
   );
 
   const joinRoom = useCallback(
-    async (code: string, name: string): Promise<void> => {
+    async (code: string, name: string, isPremiumPlayer: boolean = false): Promise<void> => {
       setError(null);
       const normalized = code.toUpperCase().trim();
       if (normalized.length !== 6) {
@@ -281,6 +288,7 @@ export function useGameRoom(): UseGameRoomReturn {
             name,
             color: pickColor(colorIndex),
             avatar: getInitial(name),
+            isPremium: isPremiumPlayer,
             isReady: false,
             joinedAt: Date.now(),
           });
@@ -303,7 +311,7 @@ export function useGameRoom(): UseGameRoomReturn {
 
       // Remove temp channel and set up properly via subscribe()
       supabase.removeChannel(channel);
-      subscribe(normalized, "", hostId, name, players.length);
+      subscribe(normalized, "", hostId, name, players.length, isPremiumPlayer);
     },
     [subscribe, players.length],
   );
@@ -383,6 +391,7 @@ export function useGameRoom(): UseGameRoomReturn {
   return {
     room,
     players,
+    roomHasPremium,
     isHost,
     createRoom,
     joinRoom,

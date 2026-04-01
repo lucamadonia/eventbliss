@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, ThumbsUp, ThumbsDown,
@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
 import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
@@ -60,6 +62,12 @@ function getIntensityForRound(mode: string, round: number, total: number): (1|2|
 // Component
 // ---------------------------------------------------------------------------
 
+const EP_STYLE = `
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.neon-glow-secondary { text-shadow: 0 0 15px rgba(255,107,152,0.6); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+`;
+
 export default function TruthDareGame() {
   const navigate = useNavigate();
 
@@ -70,6 +78,8 @@ export default function TruthDareGame() {
   const [totalRounds, setTotalRounds] = useState(15);
   const [currentRound, setCurrentRound] = useState(1);
   const [activeIdx, setActiveIdx] = useState(0);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   const [spinAngle, setSpinAngle] = useState(0);
   const [spinTarget, setSpinTarget] = useState(0);
@@ -213,6 +223,15 @@ export default function TruthDareGame() {
   // Reset
   // ---------------------------------------------------------------------------
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('wahrheit-pflicht', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   const resetGame = () => {
     setPhase('setup');
     setPlayers([]);
@@ -243,16 +262,20 @@ export default function TruthDareGame() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+      <style>{EP_STYLE}</style>
+      {/* Ambient glow orbs */}
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-        <button onClick={() => navigate('/games')} className="p-2 text-white/40 hover:text-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
+        <button onClick={() => navigate('/games')} className="p-2 text-[#a8abb3] hover:text-white">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="text-xs font-bold uppercase tracking-widest text-white/40">
+        <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
           Runde {currentRound}/{totalRounds}
         </div>
-        <div className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-sm font-bold text-[#cf96ff]">
+        <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#df8eff]">
           {mode === 'eskalation' ? <Flame className="w-4 h-4 inline" /> : null} {mode}
         </div>
       </div>
@@ -262,11 +285,11 @@ export default function TruthDareGame() {
         {phase === 'spin' && (
           <motion.div key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
-            <h2 className="text-2xl font-extrabold text-white">Wer ist dran?</h2>
+            <h2 className="text-2xl font-extrabold text-white neon-glow">Wer ist dran?</h2>
             {/* Wheel */}
             <div className="relative w-52 h-52">
               <motion.div
-                className="w-full h-full rounded-full border-4 border-[#cf96ff]/30 relative"
+                className="w-full h-full rounded-full border-4 border-[#df8eff]/30 relative"
                 animate={{ rotate: spinAngle }}
                 transition={{ duration: 2.5, ease: [0.2, 0.8, 0.3, 1] }}
               >
@@ -286,10 +309,10 @@ export default function TruthDareGame() {
                 })}
               </motion.div>
               {/* Pointer */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-[#cf96ff] rotate-45 shadow-[0_0_12px_rgba(207,150,255,0.5)]" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-[#df8eff] rotate-45 shadow-[0_0_12px_rgba(223,142,255,0.5)]" />
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={doSpin}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]">
+              className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]">
               <Zap className="w-5 h-5" /> Drehen!
             </motion.button>
           </motion.div>
@@ -310,14 +333,14 @@ export default function TruthDareGame() {
                 disabled={mode === 'nur-pflicht'}
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-pflicht' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
-                  'bg-gradient-to-br from-[#cf96ff] to-[#8b5cf6] text-white shadow-[0_0_25px_rgba(207,150,255,0.3)]')}>
+                  'bg-gradient-to-br from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)]')}>
                 <Heart className="w-6 h-6 mx-auto mb-1" /> Wahrheit
               </motion.button>
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('dare')}
                 disabled={mode === 'nur-wahrheit'}
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-wahrheit' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
-                  'bg-gradient-to-br from-[#ff7350] to-[#ef4444] text-white shadow-[0_0_25px_rgba(255,115,80,0.3)]')}>
+                  'bg-gradient-to-br from-[#ff6b98] to-[#ff6b98]/80 text-white shadow-[0_0_20px_rgba(255,107,152,0.3)]')}>
                 <Flame className="w-6 h-6 mx-auto mb-1" /> Pflicht
               </motion.button>
             </div>
@@ -331,7 +354,7 @@ export default function TruthDareGame() {
             {/* Timer for dares */}
             {choiceType === 'dare' && (
               <div className="flex items-center gap-2">
-                <Timer className={cn("w-5 h-5", timer.timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-[#ff7350]')} />
+                <Timer className={cn("w-5 h-5", timer.timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-[#ff6b98]')} />
                 <span className={cn("text-2xl font-mono font-bold", timer.timeLeft <= 10 ? 'text-red-400' : 'text-white/80')}>
                   {timer.timeLeft}s
                 </span>
@@ -341,14 +364,14 @@ export default function TruthDareGame() {
             <motion.div initial={{ rotateY: 90 }} animate={{ rotateY: 0 }} transition={{ duration: 0.4 }}
               className={cn("w-full max-w-sm rounded-2xl p-6 border shadow-2xl relative overflow-hidden",
                 choiceType === 'truth'
-                  ? 'bg-[#1f1f29] border-[#cf96ff]/20'
-                  : 'bg-[#1f1f29] border-[#ff7350]/20')}>
+                  ? 'bg-[#1b2028] border-[#df8eff]/20'
+                  : 'bg-[#1b2028] border-[#ff6b98]/20')}>
               <div className={cn("absolute inset-x-0 top-0 h-[2px]",
-                choiceType === 'truth' ? 'bg-gradient-to-r from-[#cf96ff] to-[#8b5cf6]' : 'bg-gradient-to-r from-[#ff7350] to-[#ef4444]')} />
+                choiceType === 'truth' ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff]' : 'bg-gradient-to-r from-[#ff6b98] to-[#ff6b98]/80')} />
               <div className="flex items-center gap-2 mb-4">
-                {choiceType === 'truth' ? <Heart className="w-5 h-5 text-[#cf96ff]" /> : <Flame className="w-5 h-5 text-[#ff7350]" />}
+                {choiceType === 'truth' ? <Heart className="w-5 h-5 text-[#df8eff]" /> : <Flame className="w-5 h-5 text-[#ff6b98]" />}
                 <span className={cn("text-xs font-bold uppercase tracking-widest",
-                  choiceType === 'truth' ? 'text-[#cf96ff]' : 'text-[#ff7350]')}>
+                  choiceType === 'truth' ? 'text-[#df8eff]' : 'text-[#ff6b98]')}>
                   {choiceType === 'truth' ? 'Wahrheit' : 'Pflicht'}
                 </span>
                 <span className="ml-auto text-xs text-white/20">{currentItem.category}</span>
@@ -357,7 +380,7 @@ export default function TruthDareGame() {
               <div className="flex gap-1 mt-4">
                 {[1,2,3].map((i) => (
                   <div key={i} className={cn("w-2 h-2 rounded-full",
-                    i <= currentItem.intensity ? (choiceType === 'truth' ? 'bg-[#cf96ff]' : 'bg-[#ff7350]') : 'bg-white/10')} />
+                    i <= currentItem.intensity ? (choiceType === 'truth' ? 'bg-[#df8eff]' : 'bg-[#ff6b98]') : 'bg-white/10')} />
                 ))}
               </div>
             </motion.div>
@@ -365,12 +388,12 @@ export default function TruthDareGame() {
             <div className="flex gap-3 w-full max-w-sm">
               {choiceType === 'dare' ? (
                 <motion.button whileTap={{ scale: 0.97 }} onClick={startVote}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#00e3fd] to-[#0ea5e9] text-[#0d0d15] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(0,227,253,0.25)]">
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#0ea5e9] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(143,245,255,0.25)]">
                   <ThumbsUp className="w-5 h-5" /> Abstimmen
                 </motion.button>
               ) : (
                 <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(207,150,255,0.25)]">
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(207,150,255,0.25)]">
                   Weiter <ArrowRight className="w-5 h-5" />
                 </motion.button>
               )}
@@ -406,7 +429,7 @@ export default function TruthDareGame() {
                   </div>
                   <div className="flex gap-1">
                     {otherPlayers.map((_, i) => (
-                      <div key={i} className={cn("w-2 h-2 rounded-full", i < voterIdx ? 'bg-[#cf96ff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
+                      <div key={i} className={cn("w-2 h-2 rounded-full", i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
                     ))}
                   </div>
                 </>
@@ -419,29 +442,30 @@ export default function TruthDareGame() {
         {phase === 'gameOver' && winner && (
           <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
+            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
               Spielende!
             </h2>
-            <div className="text-lg font-bold text-[#cf96ff]">{winner.name} gewinnt!</div>
+            <div className="text-lg font-bold text-[#df8eff]">{winner.name} gewinnt!</div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
-                <div key={p.id} className="flex items-center gap-3 bg-[#1f1f29] border border-white/[0.06] rounded-2xl px-4 py-3">
+                <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
                   <span className="text-white/30 text-sm font-bold w-5">#{i + 1}</span>
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#cf96ff] font-bold">{p.score} Pkt.</span>
+                  <span className="text-[#df8eff] font-bold">{p.score} Pkt.</span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
                 <RotateCcw className="w-4 h-4" /> Nochmal
               </motion.button>
               <button onClick={() => navigate('/games')}

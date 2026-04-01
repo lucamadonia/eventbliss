@@ -10,6 +10,7 @@ import { useAchievements } from './useAchievements';
 import { Leaderboard } from './Leaderboard';
 import type { Achievement, GameStat, UserAchievement } from './types';
 import { RARITY_COLORS, RARITY_LABELS, GAME_NAMES } from './types';
+import { getAchievementText } from './achievement-i18n';
 
 type Tab = 'overview' | 'achievements' | 'leaderboard';
 
@@ -340,8 +341,8 @@ function AchievementsTab({ allAchievements, unlockedIds, stats }: AchievementsTa
                       {unlocked ? a.icon : '🔒'}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{a.name}</p>
-                      <p className="text-[10px] text-gray-500 line-clamp-2">{a.description}</p>
+                      <p className="text-xs font-bold text-white truncate">{getAchievementText(a.id).name}</p>
+                      <p className="text-[10px] text-gray-500 line-clamp-2">{getAchievementText(a.id).description}</p>
                     </div>
                   </div>
 

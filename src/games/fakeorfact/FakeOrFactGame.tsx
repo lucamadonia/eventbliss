@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,6 +7,8 @@ import {
 import { cn } from '@/lib/utils';
 import { FACTS, THREE_STATEMENTS, type Fact, type ThreeStatements } from './fakeorfact-content-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -68,6 +70,8 @@ export default function FakeOrFactGame() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [mode, setMode] = useState<Mode>('classic');
   const [totalRounds, setTotalRounds] = useState(10);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
 
   // Game state
   const [currentRound, setCurrentRound] = useState(1);
@@ -186,6 +190,15 @@ export default function FakeOrFactGame() {
     setPhase('statement');
   }
 
+  useEffect(() => {
+    if (phase === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      const winner = [...players].sort((a, b) => b.score - a.score)[0];
+      recordEnd('fake-or-fact', winner?.score ?? 0, true);
+    }
+    if (phase === 'setup') gameRecordedRef.current = false;
+  }, [phase]);
+
   function resetGame() {
     setPhase('setup');
     setPlayers([]);
@@ -220,7 +233,13 @@ export default function FakeOrFactGame() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0d0d15] text-white flex flex-col">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+      <style>{`
+.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+      `}</style>
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ---- STATEMENT (Classic) ---- */}
       {phase === 'statement' && mode === 'classic' && currentFact && (
@@ -241,7 +260,7 @@ export default function FakeOrFactGame() {
               </div>
               <span className="text-sm text-white/60">{currentPlayer?.name}</span>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs text-white/40">
+            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
               Runde {currentRound}/{totalRounds}
             </span>
           </div>
@@ -252,10 +271,10 @@ export default function FakeOrFactGame() {
               initial={{ rotateY: 90, opacity: 0 }}
               animate={{ rotateY: 0, opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="w-full max-w-sm rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-white/[0.06] p-6 shadow-2xl relative overflow-hidden"
+              className="w-full max-w-sm rounded-[1rem] glass-card border border-[#44484f]/20 p-6 shadow-2xl relative overflow-hidden"
             >
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#cf96ff] via-[#00e3fd] to-[#ff7350]" />
-              <span className="inline-block px-2 py-0.5 rounded-full bg-[#1f1f29] text-[10px] font-bold text-[#cf96ff] mb-4">
+              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#df8eff] via-[#8ff5ff] to-[#ff6b98]" />
+              <span className="inline-block px-2 py-0.5 rounded-full bg-[#1b2028] text-[10px] font-bold text-[#df8eff] mb-4">
                 {currentFact.category}
               </span>
               <p className="text-xl font-bold font-[Plus_Jakarta_Sans] text-white leading-relaxed">
@@ -302,13 +321,13 @@ export default function FakeOrFactGame() {
               </div>
               <span className="text-sm text-white/60">{currentPlayer?.name}</span>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06] text-xs text-white/40">
+            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
               Runde {currentRound}/{totalRounds}
             </span>
           </div>
 
           <div className="text-center px-4 mb-2">
-            <span className="text-xs font-bold text-[#ff7350] uppercase tracking-widest">
+            <span className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest">
               Welche Aussage ist WAHR?
             </span>
           </div>
@@ -319,10 +338,10 @@ export default function FakeOrFactGame() {
                 key={idx}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleThreeVote(idx)}
-                className="w-full max-w-sm rounded-[1rem] bg-[#13131b]/80 backdrop-blur-xl border border-white/[0.06] p-5 text-left hover:border-[#cf96ff]/30 transition-colors relative overflow-hidden"
+                className="w-full max-w-sm rounded-[1rem] glass-card border border-[#44484f]/20 p-5 text-left hover:border-[#df8eff]/30 transition-colors relative overflow-hidden"
               >
                 <div className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-[#1f1f29] border border-white/[0.06] flex items-center justify-center text-xs font-bold text-[#cf96ff] shrink-0">
+                  <span className="w-7 h-7 rounded-full bg-[#1b2028] border border-[#44484f]/20 flex items-center justify-center text-xs font-bold text-[#df8eff] shrink-0">
                     {idx + 1}
                   </span>
                   <p className="text-sm font-medium text-white/80 leading-relaxed">{stmt}</p>
@@ -363,7 +382,7 @@ export default function FakeOrFactGame() {
               )}>
                 {currentFact.isTrue ? 'WAHR!' : 'FALSCH!'}
               </h2>
-              <div className="w-full rounded-[1rem] bg-[#1f1f29] border border-white/[0.06] p-5">
+              <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5">
                 <p className="text-sm text-white/70 leading-relaxed">{currentFact.explanation}</p>
               </div>
             </>
@@ -371,7 +390,7 @@ export default function FakeOrFactGame() {
 
           {mode === 'three' && currentThree && (
             <>
-              <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-[#00e3fd]">
+              <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-[#8ff5ff]">
                 Die Wahrheit ist...
               </h2>
               <div className="w-full space-y-2">
@@ -382,7 +401,7 @@ export default function FakeOrFactGame() {
                       'w-full rounded-[1rem] border p-4 flex items-start gap-3',
                       idx === currentThree.trueIndex
                         ? 'bg-emerald-500/10 border-emerald-500/30'
-                        : 'bg-[#1f1f29] border-white/[0.06] opacity-60',
+                        : 'bg-[#1b2028] border-[#44484f]/20 opacity-60',
                     )}
                   >
                     {idx === currentThree.trueIndex
@@ -402,9 +421,9 @@ export default function FakeOrFactGame() {
               <span>Richtig: {correctPct}%</span>
               <span>Falsch: {100 - correctPct}%</span>
             </div>
-            <div className="w-full h-3 rounded-full bg-[#1f1f29] overflow-hidden">
+            <div className="w-full h-3 rounded-full bg-[#1b2028] overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-emerald-500 to-[#00e3fd] rounded-full"
+                className="h-full bg-gradient-to-r from-emerald-500 to-[#8ff5ff] rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${correctPct}%` }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -415,7 +434,7 @@ export default function FakeOrFactGame() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={advanceRound}
-            className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+            className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
             Weiter <ArrowRight className="w-5 h-5" />
           </motion.button>
@@ -429,6 +448,7 @@ export default function FakeOrFactGame() {
           animate={{ opacity: 1, scale: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full"
         >
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -438,7 +458,7 @@ export default function FakeOrFactGame() {
               <Trophy className="w-8 h-8 text-amber-400" />
             </div>
           </motion.div>
-          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#df8eff] neon-glow">
             Spielende!
           </h2>
 
@@ -451,7 +471,7 @@ export default function FakeOrFactGame() {
                 transition={{ delay: 0.3 + i * 0.1 }}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-[1rem] border',
-                  i === 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1f1f29] border-white/[0.06]',
+                  i === 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1b2028] border-[#44484f]/20',
                 )}
               >
                 <span className="text-sm font-bold text-white/40 w-6 text-center">{i + 1}</span>
@@ -468,7 +488,7 @@ export default function FakeOrFactGame() {
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={resetGame}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#cf96ff] to-[#a855f7] text-[#0d0d15] py-4 rounded-full font-extrabold text-base shadow-[0_0_25px_rgba(207,150,255,0.25)]"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
               <RotateCcw className="w-4 h-4" /> Nochmal
             </motion.button>

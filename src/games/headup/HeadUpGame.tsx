@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, RotateCcw, ChevronRight, Trophy, Check, X, Play, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import { Haptics } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
-import { HEADUP_CATEGORIES_DE, type HeadUpCategory } from '../content/headup-words-de';
+import { useGameEnd } from '../social/useGameEnd';
+import { GameEndOverlay } from '../social/GameEndOverlay';
+import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
 import { useGameTimer } from '../engine/TimerSystem';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -66,6 +68,8 @@ export default function HeadUpGame() {
   const [currentRound, setCurrentRound] = useState(1);
   const [wordQueue, setWordQueue] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const gameRecordedRef = useRef(false);
   const [roundWords, setRoundWords] = useState<WordResult[]>([]);
   const [allRounds, setAllRounds] = useState<RoundScore[]>([]);
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
@@ -151,6 +155,14 @@ export default function HeadUpGame() {
     else { setCurrentRound((r) => r + 1); handleStartRound(); }
   }, [currentRound, totalRounds, roundWords, correctCount, skippedCount, handleStartRound]);
 
+  useEffect(() => {
+    if (screen === 'gameOver' && !gameRecordedRef.current) {
+      gameRecordedRef.current = true;
+      recordEnd('headup', totalCorrect, true);
+    }
+    if (screen === 'setup') gameRecordedRef.current = false;
+  }, [screen]);
+
   const handleRestart = useCallback(() => {
     setScreen('setup'); setSelectedCategory(null); setCurrentRound(1); setAllRounds([]); setRoundWords([]);
     orientationActiveRef.current = false;
@@ -162,8 +174,8 @@ export default function HeadUpGame() {
   const totalCorrect = finalRounds.reduce((s, r) => s + r.correct, 0);
   const bestRound = finalRounds.reduce((b, r) => (r.correct > b.correct ? r : b), finalRounds[0] ?? { playerName: '', correct: 0, skipped: 0, words: [] });
 
-  const featured = HEADUP_CATEGORIES_DE[0];
-  const gridCats = HEADUP_CATEGORIES_DE.slice(1);
+  const featured = getHeadUpCategories()[0];
+  const gridCats = getHeadUpCategories().slice(1);
 
   return (
     <div className="min-h-[100dvh] bg-[#0a0e14] text-[#f1f3fc] overflow-hidden relative">
@@ -390,6 +402,7 @@ export default function HeadUpGame() {
         {screen === 'gameOver' && (
           <motion.div key="gameOver" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}
             className="p-4 pb-8 max-w-lg mx-auto min-h-[100dvh] flex flex-col pulse-bg">
+            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
             <div className="text-center pt-8 mb-6">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/30 mb-4 shadow-[0_0_40px_rgba(223,142,255,.2)]">
