@@ -110,13 +110,23 @@ export default function MapRound({
   const [pinLat, setPinLat] = useState<number | null>(null);
   const [pinLng, setPinLng] = useState<number | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
+  const [allDoneGuesses, setAllDoneGuesses] = useState<PlayerGuess[]>([]);
 
-  const mapContainerRef = useRef<HTMLDivElement>(null);
+  // Separate refs for guessing and result map containers
+  const guessMapContainerRef = useRef<HTMLDivElement>(null);
+  const resultMapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const pinMarkerRef = useRef<L.Marker | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Refs to track latest pin values (avoids stale closure in confirmGuess)
+  const pinLatRef = useRef<number | null>(null);
+  const pinLngRef = useRef<number | null>(null);
 
   const currentPlayer = players[guessingPlayerIdx % players.length];
+
+  // Keep refs in sync with state
+  useEffect(() => { pinLatRef.current = pinLat; }, [pinLat]);
+  useEffect(() => { pinLngRef.current = pinLng; }, [pinLng]);
 
   // --- Showing phase auto-advance ---
   useEffect(() => {
@@ -144,51 +154,61 @@ export default function MapRound({
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, guessingPlayerIdx]);
 
-  // --- Initialize Leaflet map ---
+  // --- Initialize Leaflet map for guessing phase ---
   useEffect(() => {
-    if (phase !== 'guessing' || !mapContainerRef.current) return;
+    if (phase !== 'guessing' || !guessMapContainerRef.current) return;
+
+    // Destroy previous map instance
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
     }
 
-    const map = L.map(mapContainerRef.current, {
-      center: [20, 10],
-      zoom: 2,
-      zoomControl: false,
-      attributionControl: false,
-      maxBoundsViscosity: 1.0,
+    // Double requestAnimationFrame to ensure DOM has fully rendered
+    let cancelled = false;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled || !guessMapContainerRef.current) return;
+
+        const map = L.map(guessMapContainerRef.current, {
+          center: [20, 10],
+          zoom: 2,
+          zoomControl: false,
+          attributionControl: false,
+          maxBoundsViscosity: 1.0,
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 18,
+          subdomains: 'abcd',
+        }).addTo(map);
+
+        L.control.attribution({ position: 'bottomright', prefix: false })
+          .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#666">OSM</a>')
+          .addTo(map);
+
+        map.on('click', (e: L.LeafletMouseEvent) => {
+          const { lat, lng } = e.latlng;
+          setPinLat(lat);
+          setPinLng(lng);
+
+          if (pinMarkerRef.current) {
+            pinMarkerRef.current.setLatLng([lat, lng]);
+          } else {
+            const icon = createPlayerIcon(currentPlayer.color, currentPlayer.name.charAt(0).toUpperCase());
+            pinMarkerRef.current = L.marker([lat, lng], { icon }).addTo(map);
+          }
+        });
+
+        mapRef.current = map;
+
+        // Force resize after mount to fix display
+        setTimeout(() => map.invalidateSize(), 200);
+      });
     });
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 18,
-      subdomains: 'abcd',
-    }).addTo(map);
-
-    // Small attribution in corner
-    L.control.attribution({ position: 'bottomright', prefix: false })
-      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#666">OSM</a>')
-      .addTo(map);
-
-    map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      setPinLat(lat);
-      setPinLng(lng);
-
-      if (pinMarkerRef.current) {
-        pinMarkerRef.current.setLatLng([lat, lng]);
-      } else {
-        const icon = createPlayerIcon(currentPlayer.color, currentPlayer.name.charAt(0).toUpperCase());
-        pinMarkerRef.current = L.marker([lat, lng], { icon }).addTo(map);
-      }
-    });
-
-    mapRef.current = map;
-
-    // Force resize after mount
-    setTimeout(() => map.invalidateSize(), 100);
 
     return () => {
+      cancelled = true;
       pinMarkerRef.current = null;
       if (mapRef.current) {
         mapRef.current.remove();
@@ -197,13 +217,79 @@ export default function MapRound({
     };
   }, [phase, guessingPlayerIdx]);
 
-  // --- Confirm guess ---
+  // --- Initialize result map when phase transitions to result ---
+  useEffect(() => {
+    if (phase !== 'result' || allDoneGuesses.length === 0) return;
+
+    // Wait for DOM to render
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (cancelled || !resultMapContainerRef.current) return;
+
+          // Destroy previous map
+          if (mapRef.current) {
+            mapRef.current.remove();
+            mapRef.current = null;
+          }
+
+          const map = L.map(resultMapContainerRef.current, {
+            center: [location.lat, location.lng],
+            zoom: 4,
+            zoomControl: false,
+            attributionControl: false,
+          });
+
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 18,
+            subdomains: 'abcd',
+          }).addTo(map);
+
+          // Target marker
+          const targetIcon = createTargetIcon();
+          L.marker([location.lat, location.lng], { icon: targetIcon }).addTo(map);
+
+          // Player markers + lines
+          const bounds = L.latLngBounds([[location.lat, location.lng]]);
+          allDoneGuesses.forEach(g => {
+            const icon = createPlayerIcon(g.playerColor, g.playerName.charAt(0).toUpperCase());
+            L.marker([g.lat, g.lng], { icon }).addTo(map);
+
+            L.polyline(
+              [[g.lat, g.lng], [location.lat, location.lng]],
+              { color: g.playerColor, weight: 2, dashArray: '8 6', opacity: 0.7 },
+            ).addTo(map);
+
+            bounds.extend([g.lat, g.lng]);
+          });
+
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
+          mapRef.current = map;
+          setTimeout(() => map.invalidateSize(), 200);
+        });
+      });
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [phase, allDoneGuesses, location]);
+
+  // --- Confirm guess (uses refs to avoid stale closure) ---
   const confirmGuess = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const guessLat = pinLat ?? 0;
-    const guessLng = pinLng ?? 0;
-    const distanceKm = (pinLat !== null && pinLng !== null)
+    const lat = pinLatRef.current;
+    const lng = pinLngRef.current;
+    const guessLat = lat ?? 0;
+    const guessLng = lng ?? 0;
+    const distanceKm = (lat !== null && lng !== null)
       ? haversineKm(guessLat, guessLng, location.lat, location.lng)
       : 20000; // max penalty if no pin placed
 
@@ -226,65 +312,19 @@ export default function MapRound({
 
     const nextIdx = guessingPlayerIdx + 1;
     if (nextIdx >= players.length) {
-      // All players done → show result
+      // All players done -- store guesses, then transition to result
+      setAllDoneGuesses(updatedGuesses);
       setPhase('result');
-      showResultMap(updatedGuesses);
     } else {
       setGuessingPlayerIdx(nextIdx);
       setPhase('handoff');
     }
-  }, [pinLat, pinLng, location, currentPlayer, guesses, guessingPlayerIdx, players.length]);
+  }, [location, currentPlayer, guesses, guessingPlayerIdx, players.length]);
 
-  // --- Handoff → next guess ---
+  // --- Handoff -> next guess ---
   const handleHandoffReady = () => {
     setPhase('guessing');
     setCountdown(timerSeconds);
-  };
-
-  // --- Show result map with all pins ---
-  const showResultMap = (allGuesses: PlayerGuess[]) => {
-    // Short delay for phase transition, then build result map
-    setTimeout(() => {
-      if (!mapContainerRef.current) return;
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-
-      const map = L.map(mapContainerRef.current, {
-        center: [location.lat, location.lng],
-        zoom: 4,
-        zoomControl: false,
-        attributionControl: false,
-      });
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        subdomains: 'abcd',
-      }).addTo(map);
-
-      // Target marker
-      const targetIcon = createTargetIcon();
-      L.marker([location.lat, location.lng], { icon: targetIcon }).addTo(map);
-
-      // Player markers + lines
-      const bounds = L.latLngBounds([[location.lat, location.lng]]);
-      allGuesses.forEach(g => {
-        const icon = createPlayerIcon(g.playerColor, g.playerName.charAt(0).toUpperCase());
-        L.marker([g.lat, g.lng], { icon }).addTo(map);
-
-        L.polyline(
-          [[g.lat, g.lng], [location.lat, location.lng]],
-          { color: g.playerColor, weight: 2, dashArray: '8 6', opacity: 0.7 },
-        ).addTo(map);
-
-        bounds.extend([g.lat, g.lng]);
-      });
-
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
-      mapRef.current = map;
-      setTimeout(() => map.invalidateSize(), 100);
-    }, 200);
   };
 
   // --- Finish round ---
@@ -324,7 +364,7 @@ export default function MapRound({
       </div>
 
       <AnimatePresence mode="wait">
-        {/* ── SHOWING PHASE ── */}
+        {/* -- SHOWING PHASE -- */}
         {phase === 'showing' && (
           <motion.div
             key="showing"
@@ -354,7 +394,7 @@ export default function MapRound({
           </motion.div>
         )}
 
-        {/* ── GUESSING PHASE ── */}
+        {/* -- GUESSING PHASE -- */}
         {phase === 'guessing' && (
           <motion.div
             key={`guessing-${guessingPlayerIdx}`}
@@ -402,11 +442,11 @@ export default function MapRound({
               </div>
             </div>
 
-            {/* Map container */}
+            {/* Map container -- explicit pixel height for Leaflet */}
             <div
-              ref={mapContainerRef}
-              className="flex-1 rounded-2xl border border-white/[0.06] overflow-hidden"
-              style={{ background: '#13131b', minHeight: '350px', height: '100%', width: '100%' }}
+              ref={guessMapContainerRef}
+              className="rounded-2xl border border-white/[0.06] overflow-hidden"
+              style={{ background: '#13131b', height: '400px', width: '100%' }}
             />
 
             {/* Confirm button */}
@@ -432,7 +472,7 @@ export default function MapRound({
           </motion.div>
         )}
 
-        {/* ── HANDOFF PHASE ── */}
+        {/* -- HANDOFF PHASE -- */}
         {phase === 'handoff' && (
           <motion.div
             key="handoff"
@@ -468,7 +508,7 @@ export default function MapRound({
           </motion.div>
         )}
 
-        {/* ── RESULT PHASE ── */}
+        {/* -- RESULT PHASE -- */}
         {phase === 'result' && (
           <motion.div
             key="result"
@@ -492,11 +532,11 @@ export default function MapRound({
               </motion.div>
             )}
 
-            {/* Result map */}
+            {/* Result map -- explicit pixel height, always-assigned ref */}
             <div
-              ref={mapContainerRef}
-              className="flex-1 rounded-2xl border border-white/[0.06] overflow-hidden mb-3"
-              style={{ background: '#13131b', minHeight: '280px', height: '100%', width: '100%' }}
+              ref={resultMapContainerRef}
+              className="rounded-2xl border border-white/[0.06] overflow-hidden mb-3"
+              style={{ background: '#13131b', height: '300px', width: '100%' }}
             />
 
             {/* Distance leaderboard */}
@@ -510,7 +550,7 @@ export default function MapRound({
                   transition={{ delay: 0.4 + i * 0.1 }}
                 >
                   <span className={`text-sm font-bold w-6 text-center ${i === 0 ? 'text-[#fbbf24]' : 'text-white/40'}`}>
-                    {i === 0 ? '🏆' : `${i + 1}.`}
+                    {i === 0 ? '\uD83C\uDFC6' : `${i + 1}.`}
                   </span>
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"

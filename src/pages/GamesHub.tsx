@@ -1,13 +1,19 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useMemo, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePremium } from "@/hooks/usePremium";
+import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
+import PremiumBadge from "@/games/premium/PremiumBadge";
+import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import {
   Gamepad2, Bomb, Brain, MessageSquareOff, Timer, Users, Clock,
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
   HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
   Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
-  Wine,
+  Wine, Globe, X,
 } from "lucide-react";
+
+const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
 
 const CategoryGame = lazy(() => import("@/games/category/CategoryGame"));
 const BombGame = lazy(() => import("@/games/bomb/BombGame"));
@@ -104,7 +110,7 @@ function RatingStars({ rating }: { rating: number }) {
   );
 }
 
-function GameCard({ game, onClick }: { game: GameCardData; onClick: () => void }) {
+function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData; onClick: () => void; onOnline?: () => void; premiumInfo?: { isLocked: boolean; freePlaysLeft: number; isPremium: boolean } }) {
   const Icon = game.icon;
   return (
     <motion.button
@@ -112,7 +118,7 @@ function GameCard({ game, onClick }: { game: GameCardData; onClick: () => void }
       whileHover={{ scale: 1.02, y: -4 }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="group relative w-full overflow-hidden rounded-[1rem] border border-[#484750]/10 bg-[#1f1f29] text-left transition-all hover:border-[#cf96ff]/30 hover:shadow-[0_0_20px_rgba(207,150,255,0.15)]"
+      className={`group relative w-full overflow-hidden rounded-[1rem] border border-[#484750]/10 bg-[#1f1f29] text-left transition-all hover:border-[#cf96ff]/30 hover:shadow-[0_0_20px_rgba(207,150,255,0.15)] ${premiumInfo?.isLocked ? "opacity-75" : ""}`}
     >
       {/* Gradient header */}
       <div className={`relative flex aspect-[16/9] items-center justify-center bg-gradient-to-br ${game.gradient} overflow-hidden`}>
@@ -120,7 +126,10 @@ function GameCard({ game, onClick }: { game: GameCardData; onClick: () => void }
           backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 50%),
                             radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 40%)`,
         }} />
-        <Icon className="relative z-10 h-12 w-12 text-white drop-shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" />
+        <Icon className={`relative z-10 h-12 w-12 text-white drop-shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${premiumInfo?.isLocked ? "opacity-50" : ""}`} />
+        {premiumInfo && isGamePremium(game.id) && (
+          <PremiumBadge isLocked={premiumInfo.isLocked} freePlaysLeft={premiumInfo.freePlaysLeft} isPremium={premiumInfo.isPremium} />
+        )}
         {game.badge && (
           <span className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider font-['Plus_Jakarta_Sans'] ${
             game.badge === "Hot" ? "bg-[#ff7350] text-white" : "bg-[#00e3fd] text-[#0d0d15]"
@@ -147,25 +156,79 @@ function GameCard({ game, onClick }: { game: GameCardData; onClick: () => void }
 
         <RatingStars rating={game.rating} />
 
-        {/* Spielen button */}
-        <div className="pt-1">
-          <div className="w-full rounded-lg bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-1.5 text-center text-[11px] font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] transition-shadow group-hover:shadow-[0_0_12px_rgba(207,150,255,0.4)]">
+        {/* Spielen + Online buttons */}
+        <div className="pt-1 flex gap-1.5">
+          <div className="flex-1 rounded-lg bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-1.5 text-center text-[11px] font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] transition-shadow group-hover:shadow-[0_0_12px_rgba(207,150,255,0.4)]">
             Spielen
           </div>
+          {onOnline && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onOnline(); }}
+              className="flex items-center justify-center rounded-lg border border-[#df8eff]/25 bg-[#df8eff]/10 px-2 py-1.5 transition-colors hover:bg-[#df8eff]/20"
+              title="Online spielen"
+            >
+              <Globe className="h-3.5 w-3.5 text-[#df8eff]" />
+            </button>
+          )}
         </div>
       </div>
     </motion.button>
   );
 }
 
+function getFreePlaysForGame(gameId: string): number {
+  try {
+    const date = new Date().toISOString().split("T")[0];
+    return Number(localStorage.getItem(`free_plays_${gameId}_${date}`) || "0");
+  } catch {
+    return 0;
+  }
+}
+
 const GamesHub = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
+  const [onlineGameId, setOnlineGameId] = useState<string | null>(null);
+  const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
+  const { isPremium } = usePremium();
+
+  const premiumInfoMap = useMemo(() => {
+    const map: Record<string, { isLocked: boolean; freePlaysLeft: number; isPremium: boolean }> = {};
+    for (const tier of GAME_TIERS) {
+      if (tier.tier === "premium") {
+        const used = getFreePlaysForGame(tier.gameId);
+        const limit = tier.freeRoundsLimit ?? 2;
+        const left = Math.max(0, limit - used);
+        map[tier.gameId] = {
+          isLocked: !isPremium && left <= 0,
+          freePlaysLeft: left,
+          isPremium,
+        };
+      }
+    }
+    return map;
+  }, [isPremium]);
+
+  const handleGameClick = useCallback((game: GameCardData) => {
+    const info = premiumInfoMap[game.id];
+    if (info?.isLocked) {
+      setPaywallGame(game);
+    } else {
+      navigate(`/games/${game.id}`);
+    }
+  }, [premiumInfoMap, navigate]);
 
   const handleQuickStart = () => {
     const playable = allGames;
     const random = playable[Math.floor(Math.random() * playable.length)];
     navigate(`/games/${random.id}`);
+  };
+
+  const handleOnlineStart = (players: any[], roomCode: string) => {
+    if (onlineGameId) {
+      navigate(`/games/${onlineGameId}?room=${roomCode}`);
+    }
+    setOnlineGameId(null);
   };
 
   // Game component routing
@@ -248,11 +311,22 @@ const GamesHub = () => {
               <p className="text-white/50 font-['Be_Vietnam_Pro'] text-sm mb-5">
                 Kein Plan? Kein Problem. Lass den Zufall entscheiden und starte sofort ein zufälliges Partyspiel!
               </p>
-              <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={handleQuickStart}
-                className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] px-6 py-3 text-sm font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]">
-                <Dices className="h-5 w-5" />
-                Random Game
-              </motion.button>
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={handleQuickStart}
+                  className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] px-6 py-3 text-sm font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]">
+                  <Dices className="h-5 w-5" />
+                  Random Game
+                </motion.button>
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    const random = allGames[Math.floor(Math.random() * allGames.length)];
+                    setOnlineGameId(random.id);
+                  }}
+                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-6 py-3 text-sm font-bold text-[#df8eff] font-['Plus_Jakarta_Sans'] transition-all hover:bg-[#df8eff]/20 hover:shadow-[0_0_20px_rgba(223,142,255,0.2)]">
+                  <Globe className="h-5 w-5" />
+                  Online spielen
+                </motion.button>
+              </div>
             </div>
             {/* Decorative gradient orb */}
             <div className="hidden md:block relative h-32 w-32 flex-shrink-0">
@@ -307,12 +381,50 @@ const GamesHub = () => {
           <div className="grid grid-cols-2 gap-3">
             <AnimatePresence>
               {allGames.map((game) => (
-                <GameCard key={game.id} game={game} onClick={() => navigate(`/games/${game.id}`)} />
+                <GameCard key={game.id} game={game} onClick={() => handleGameClick(game)} onOnline={() => setOnlineGameId(game.id)} premiumInfo={premiumInfoMap[game.id]} />
               ))}
             </AnimatePresence>
           </div>
         </motion.section>
       </div>
+
+      {/* Online Lobby Modal */}
+      <AnimatePresence>
+        {onlineGameId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-[#0a0e14]/95 backdrop-blur-xl"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setOnlineGameId(null)}
+              className="absolute top-4 right-4 z-[61] flex h-10 w-10 items-center justify-center rounded-full bg-[#1b2028]"
+            >
+              <X className="h-5 w-5 text-white/60" />
+            </motion.button>
+            <Suspense fallback={GameFallback}>
+              <GameLobby
+                gameId={onlineGameId}
+                gameName={allGames.find((g) => g.id === onlineGameId)?.name ?? "Spiel"}
+                onStart={handleOnlineStart}
+                onBack={() => setOnlineGameId(null)}
+              />
+            </Suspense>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Premium Paywall */}
+      <PremiumPaywall
+        isOpen={!!paywallGame}
+        onClose={() => setPaywallGame(null)}
+        gameName={paywallGame?.name}
+        freePlaysLeft={paywallGame ? (premiumInfoMap[paywallGame.id]?.freePlaysLeft ?? 0) : 0}
+      />
 
       {/* Bottom Nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-4 py-3 bg-[#13131b]/80 backdrop-blur-2xl border-t border-[#484750]/10 rounded-t-[2rem]"
