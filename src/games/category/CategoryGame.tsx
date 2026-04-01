@@ -56,7 +56,7 @@ const AVATARS = ["🎉", "🎈", "🎊", "🎶", "🎵", "🎸", "🎤", "🎭",
 // Timer Circle SVG
 // ---------------------------------------------------------------------------
 
-function TimerCircle({ percent, timeLeft }: { percent: number; timeLeft: number; total: number }) {
+function TimerCircle({ percent, timeLeft, total }: { percent: number; timeLeft: number; total: number }) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - percent / 100);

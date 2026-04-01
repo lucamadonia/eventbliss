@@ -154,7 +154,7 @@ export default function WhoAmIGame() {
     setGuessCorrect(correct);
     if (correct) {
       const qAsked = (activePlayer?.questionsAsked ?? 0) + 1;
-      const bonus = Math.max(1, maxQ - qAsked + 1);
+      const bonus = Math.min(10, Math.max(1, maxQ - qAsked + 1));
       setPlayers((prev) => prev.map((p, i) =>
         i === activeIdx ? { ...p, guessedCorrectly: true, score: p.score + bonus } : p,
       ));

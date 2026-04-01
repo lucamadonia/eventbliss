@@ -86,8 +86,10 @@ export default function ThisOrThatGame() {
       setPhase('reveal');
     } else {
       setVoterIdx((v) => v + 1);
+      speedTimerHook.reset(speedTimer);
+      speedTimerHook.start();
     }
-  }, [voterIdx, players]);
+  }, [voterIdx, players, speedTimerHook, speedTimer]);
 
   const speedTimerHook = useGameTimer(speedTimer, handleSpeedExpire);
 

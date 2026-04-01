@@ -227,8 +227,13 @@ export default function BombGame() {
 
   const handleQuizAnswer = (idx: number) => {
     if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
+      // Wrong answer: vibrate + generate new question, but KEEP same player
       if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+      const { task, quiz } = generateTask(state.mode);
+      setState((prev) => ({ ...prev, currentTask: task, currentQuiz: quiz }));
+      return;
     }
+    // Correct answer: advance to next player
     advancePlayer();
   };
 

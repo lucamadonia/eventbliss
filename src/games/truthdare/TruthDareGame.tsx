@@ -218,6 +218,8 @@ export default function TruthDareGame() {
     setPlayers([]);
     setCurrentRound(1);
     timer.reset(timerSec);
+    truthPos.current = 0;
+    darePos.current = 0;
   };
 
   const winner = useMemo(() =>

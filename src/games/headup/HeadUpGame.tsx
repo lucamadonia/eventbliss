@@ -131,11 +131,15 @@ export default function HeadUpGame() {
       if (beta < -30) advanceWord(false);
     };
     const init = async () => {
-      const DOE = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> };
-      if (typeof DOE.requestPermission === 'function') {
-        try { if ((await DOE.requestPermission()) !== 'granted') return; } catch { return; }
+      try {
+        const DOE = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> };
+        if (typeof DOE.requestPermission === 'function') {
+          try { if ((await DOE.requestPermission()) !== 'granted') return; } catch { return; }
+        }
+        window.addEventListener('deviceorientation', handle);
+      } catch {
+        // Gyroscope unavailable — user can still use manual buttons
       }
-      window.addEventListener('deviceorientation', handle);
     };
     init();
     return () => { window.removeEventListener('deviceorientation', handle); };

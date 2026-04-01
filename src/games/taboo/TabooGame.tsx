@@ -116,6 +116,7 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
   function handleSkip() { if (!currentCard) return; setTurnResults(r => [...r, { card: currentCard, result: 'skipped' }]); setCurrentCard(drawCard()); setCardKey(k => k + 1); }
 
   function endTurn() {
+    timer.pause();
     const correct = turnResults.filter(r => r.result === 'correct').length;
     const taboo = turnResults.filter(r => r.result === 'taboo').length;
     const points = correct - taboo;

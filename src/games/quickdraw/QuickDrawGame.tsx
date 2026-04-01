@@ -145,9 +145,17 @@ export default function QuickDrawGame() {
     const ctx = getCtx(); if (!ctx) return;
     const pos = getCanvasPos(e);
     ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y); ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = tool === 'eraser' ? '#ffffff' : '#000000';
-    ctx.lineWidth = tool === 'eraser' ? penSize * 3 : penSize;
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke(); lastPos.current = pos;
+    if (tool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = penSize * 3;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = penSize;
+    }
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over';
+    lastPos.current = pos;
   };
   const onPointerUp = () => { isDrawing.current = false; lastPos.current = null; };
   const clearCanvas = () => { const ctx = getCtx(); if (!ctx) return; paths.current.push(ctx.getImageData(0, 0, canvasRef.current!.width, canvasRef.current!.height)); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height); };

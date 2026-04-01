@@ -405,8 +405,8 @@ export default function MapRound({
             {/* Map container */}
             <div
               ref={mapContainerRef}
-              className="flex-1 min-h-[350px] rounded-2xl border border-white/[0.06] overflow-hidden"
-              style={{ background: '#13131b' }}
+              className="flex-1 rounded-2xl border border-white/[0.06] overflow-hidden"
+              style={{ background: '#13131b', minHeight: '350px', height: '100%', width: '100%' }}
             />
 
             {/* Confirm button */}
@@ -494,9 +494,9 @@ export default function MapRound({
 
             {/* Result map */}
             <div
-              ref={phase === 'result' ? mapContainerRef : undefined}
-              className="flex-1 min-h-[280px] rounded-2xl border border-white/[0.06] overflow-hidden mb-3"
-              style={{ background: '#13131b' }}
+              ref={mapContainerRef}
+              className="flex-1 rounded-2xl border border-white/[0.06] overflow-hidden mb-3"
+              style={{ background: '#13131b', minHeight: '280px', height: '100%', width: '100%' }}
             />
 
             {/* Distance leaderboard */}

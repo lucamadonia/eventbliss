@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Trophy, RotateCcw, ArrowRight, Plus, Minus,
   Users, Eye, MessageCircle, Lightbulb, HelpCircle, Check, X,
-  ChevronRight, Link,
+  ChevronRight, Link, Crown,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
