@@ -15,10 +15,30 @@ const EP = {
   border: "rgba(223,142,255,0.12)",
 } as const;
 
+const GAME_LIST = [
+  { id: "bomb", name: "Tickende Bombe", icon: "💣" },
+  { id: "headup", name: "Stirnraten", icon: "🧠" },
+  { id: "taboo", name: "Wortverbot", icon: "🚫" },
+  { id: "category", name: "Zeit-Kategorie", icon: "⏱️" },
+  { id: "hochstapler", name: "Hochstapler", icon: "🎭" },
+  { id: "drueck-das-wort", name: "Drück das Wort", icon: "🔤" },
+  { id: "wo-ist-was", name: "Wo ist was?", icon: "🗺️" },
+  { id: "split-quiz", name: "Split Quiz", icon: "🧩" },
+  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", icon: "🔗" },
+  { id: "schnellzeichner", name: "Schnellzeichner", icon: "🎨" },
+  { id: "flaschendrehen", name: "Flaschendrehen", icon: "🍾" },
+  { id: "wahrheit-pflicht", name: "Wahrheit/Pflicht", icon: "❤️" },
+  { id: "this-or-that", name: "This or That", icon: "↔️" },
+  { id: "wer-bin-ich", name: "Wer bin ich?", icon: "❓" },
+  { id: "emoji-raten", name: "Emoji-Raten", icon: "😀" },
+  { id: "fake-or-fact", name: "Fake or Fact", icon: "🎲" },
+  { id: "story-builder", name: "Story Builder", icon: "📖" },
+];
+
 interface GameLobbyProps {
   gameId: string;
   gameName: string;
-  onStart: (players: RoomPlayer[], roomCode: string) => void;
+  onStart: (players: RoomPlayer[], roomCode: string, selectedGameId?: string) => void;
   onBack: () => void;
   maxPlayers?: number;
   minPlayers?: number;
@@ -112,6 +132,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const [joinName, setJoinName] = useState(urlName);
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(gameId);
+  const [showGamePicker, setShowGamePicker] = useState(false);
 
   const { isPremium } = usePremium();
   const { user } = useAuth();
@@ -150,8 +172,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const handleStart = useCallback(() => {
     if (!isHost || !allReady || !room) return;
     startGame();
-    onStart(players, room.roomCode);
-  }, [isHost, allReady, room, startGame, onStart, players]);
+    onStart(players, room.roomCode, selectedGame);
+  }, [isHost, allReady, room, startGame, onStart, players, selectedGame]);
 
   const handleLeave = useCallback(() => { leaveRoom(); setView("menu"); }, [leaveRoom]);
 
@@ -349,9 +371,44 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 )}
               </AnimatePresence>
 
+              {/* Game Picker — Host can switch games */}
+              {isHost && (
+                <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
+                  <motion.button whileTap={{ scale: 0.98 }} onClick={() => setShowGamePicker(v => !v)}
+                    className="flex w-full items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Play className="h-4 w-4" style={{ color: EP.neonPurple }} />
+                      <span className="text-xs font-semibold text-white/70">Spiel: <strong style={{ color: EP.neonPurple }}>{GAME_LIST.find(g => g.id === selectedGame)?.name || gameName}</strong></span>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: EP.neonCyan }}>Wechseln</span>
+                  </motion.button>
+                  <AnimatePresence>
+                    {showGamePicker && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 28 }} className="overflow-hidden">
+                        <div className="px-3 pb-3 grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto">
+                          {GAME_LIST.map(g => (
+                            <motion.button key={g.id} whileTap={{ scale: 0.95 }}
+                              onClick={() => { setSelectedGame(g.id); setShowGamePicker(false); }}
+                              className="flex flex-col items-center gap-1 rounded-xl py-2 px-1 text-center transition-colors"
+                              style={{
+                                backgroundColor: selectedGame === g.id ? "rgba(223,142,255,0.12)" : EP.surface2,
+                                border: selectedGame === g.id ? `1px solid ${EP.neonPurple}40` : "1px solid transparent",
+                              }}>
+                              <span className="text-lg">{g.icon}</span>
+                              <span className="text-[9px] font-semibold leading-tight" style={{ color: selectedGame === g.id ? EP.neonPurple : "rgba(255,255,255,0.5)" }}>{g.name}</span>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
               {/* Event invite section */}
               {user && isHost && (
-                <EventInvite roomCode={room.roomCode} gameId={gameId} />
+                <EventInvite roomCode={room.roomCode} gameId={selectedGame} />
               )}
 
               <div className="space-y-2">

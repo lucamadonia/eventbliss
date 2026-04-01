@@ -229,9 +229,10 @@ const GamesHub = () => {
     navigate(`/games/${random.id}`);
   };
 
-  const handleOnlineStart = (players: any[], roomCode: string) => {
-    if (onlineGameId) {
-      navigate(`/games/${onlineGameId}?room=${roomCode}`);
+  const handleOnlineStart = (players: any[], roomCode: string, selectedGameId?: string) => {
+    const targetGame = selectedGameId || onlineGameId;
+    if (targetGame) {
+      navigate(`/games/${targetGame}?room=${roomCode}`);
     }
     setOnlineGameId(null);
   };
