@@ -180,6 +180,29 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
               )}
             </div>
           </div>
+
+          {/* Gleiche Kategorie Toggle — only for kategorie/alle modes */}
+          {(state.mode === 'kategorie' || state.mode === 'alle') && (
+            <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">Kategorie</h2>
+              </div>
+              <button
+                onClick={() => onUpdate({ sameCategory: !state.sameCategory })}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                  state.sameCategory
+                    ? 'bg-[#cf96ff] text-white shadow-lg shadow-[#cf96ff]/20'
+                    : 'bg-[#13131b] text-white/40 hover:text-white/60'
+                }`}
+              >
+                <Hash className="w-3.5 h-3.5" />
+                {state.sameCategory ? 'Gleiche Kategorie pro Runde' : 'Wechselnde Kategorien'}
+              </button>
+              <p className="text-white/20 text-[10px] mt-2 text-center">
+                {state.sameCategory ? 'Alle Spieler beantworten die gleiche Kategorie' : 'Jeder Spieler bekommt eine neue Kategorie'}
+              </p>
+            </div>
+          )}
         </motion.div>
 
         {/* Spieler Section */}

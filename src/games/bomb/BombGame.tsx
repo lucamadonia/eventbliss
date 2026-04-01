@@ -37,6 +37,7 @@ export interface GameState {
   explodedPlayerIndex: number;
   speedTimerBase: number;
   randomTimer: boolean;
+  sameCategory: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -156,6 +157,7 @@ const defaultState: GameState = {
   explodedPlayerIndex: -1,
   speedTimerBase: 30,
   randomTimer: false,
+  sameCategory: false,
 };
 
 // ---------------------------------------------------------------------------
@@ -328,7 +330,9 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const advancePlayer = () => {
-    const { task, quiz } = generateTask(state.mode);
+    // If sameCategory is on AND mode is kategorie/alle, keep same task for the round
+    const keepTask = state.sameCategory && (state.mode === 'kategorie' || state.mode === 'alle');
+    const { task, quiz } = keepTask ? { task: state.currentTask, quiz: state.currentQuiz } : generateTask(state.mode);
     setState((prev) => {
       const next = {
         ...prev,
