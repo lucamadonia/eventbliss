@@ -634,48 +634,7 @@ export default function FindItGame() {
             </motion.div>
           )}
 
-          {/* Karte Mode (MapRound) */}
-          {phase === 'question' && mode === 'karte' && currentGeo && (
-            <motion.div
-              key={`karte-${round}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0"
-            >
-              <MapRound
-                location={currentGeo}
-                players={players}
-                roundNumber={round + 1}
-                totalRounds={totalRounds}
-                timerSeconds={studyTime}
-                onRoundComplete={(results: MapRoundResult[]) => {
-                  // Apply scoring
-                  const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
-                  setPlayers(prev => prev.map(p => {
-                    const res = results.find(r => r.playerId === p.id);
-                    if (!res) return p;
-                    const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
-                    const isWinner = sorted[0]?.playerId === p.id;
-                    const bonus = isWinner ? 100 : 0;
-                    return { ...p, score: p.score + pts + bonus, correct: p.correct + (isWinner ? 1 : 0) };
-                  }));
-
-                  // Next round or game over
-                  const nextRound = round + 1;
-                  if (nextRound >= totalRounds) {
-                    setPhase('gameOver');
-                  } else {
-                    setRound(nextRound);
-                    const nextGeo = geoPool[(nextRound) % geoPool.length];
-                    setCurrentGeo(nextGeo);
-                    // phase stays 'question', MapRound will re-mount with new location
-                  }
-                }}
-                onExit={() => navigate('/games')}
-              />
-            </motion.div>
-          )}
+          {/* Karte Mode is rendered OUTSIDE AnimatePresence below */}
 
           {/* Question Phase */}
           {(phase === 'question' || phase === 'answer') && mode !== 'unterschiede' && mode !== 'karte' && currentScene && (
@@ -836,6 +795,39 @@ export default function FindItGame() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Karte Mode — rendered OUTSIDE AnimatePresence for proper Leaflet height */}
+        {phase === 'question' && mode === 'karte' && currentGeo && (
+          <div className="fixed inset-0 z-50" style={{ background: '#0a0e14' }}>
+            <MapRound
+              key={`karte-${round}`}
+              location={currentGeo}
+              players={players}
+              roundNumber={round + 1}
+              totalRounds={totalRounds}
+              timerSeconds={Math.max(10, studyTime)}
+              onRoundComplete={(results: MapRoundResult[]) => {
+                const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
+                setPlayers(prev => prev.map(p => {
+                  const res = results.find(r => r.playerId === p.id);
+                  if (!res) return p;
+                  const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
+                  const isWinner = sorted[0]?.playerId === p.id;
+                  const bonus = isWinner ? 100 : 0;
+                  return { ...p, score: p.score + pts + bonus, correct: p.correct + (isWinner ? 1 : 0) };
+                }));
+                const nextRound = round + 1;
+                if (nextRound >= totalRounds) {
+                  setPhase('gameOver');
+                } else {
+                  setRound(nextRound);
+                  setCurrentGeo(geoPool[(nextRound) % geoPool.length]);
+                }
+              }}
+              onExit={() => navigate('/games')}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
