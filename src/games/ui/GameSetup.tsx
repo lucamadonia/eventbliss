@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, User, Play } from "lucide-react";
+import { Plus, Minus, User, Play, Globe, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 
@@ -21,6 +21,13 @@ interface SetupPlayer {
   name: string;
 }
 
+export interface OnlinePlayer {
+  id: string;
+  name: string;
+  color: string;
+  avatar: string;
+}
+
 interface GameSetupProps {
   modes: GameMode[];
   settings: SettingsConfig;
@@ -32,6 +39,7 @@ interface GameSetupProps {
   title?: string;
   minPlayers?: number;
   maxPlayers?: number;
+  onlinePlayers?: OnlinePlayer[];
 }
 
 let nextPlayerId = 1;
@@ -47,11 +55,21 @@ export function GameSetup({
   title = "Spiel einrichten",
   minPlayers = 2,
   maxPlayers = 20,
+  onlinePlayers,
 }: GameSetupProps) {
+  const hasOnline = onlinePlayers && onlinePlayers.length > 0;
+
   const [players, setPlayers] = useState<SetupPlayer[]>(() => [
     createPlayer("Spieler 1"),
     createPlayer("Spieler 2"),
   ]);
+
+  // Auto-populate players from online room
+  useEffect(() => {
+    if (hasOnline && onlinePlayers.length >= 2) {
+      setPlayers(onlinePlayers.map(p => ({ id: p.id, name: p.name })));
+    }
+  }, [hasOnline, onlinePlayers?.length]);
   const [selectedMode, setSelectedMode] = useState(modes[0]?.id ?? "");
   const [timer, setTimer] = useState(settings.timer.default);
   const [rounds, setRounds] = useState(settings.rounds.default);
@@ -81,12 +99,16 @@ export function GameSetup({
 
   const handleStart = () => {
     if (!canStart) return;
-    const mapped = players.map((p, i) => ({
-      id: p.id,
-      name: p.name.trim(),
-      color: getPlayerColor(i),
-      avatar: getPlayerInitial(p.name),
-    }));
+    const mapped = players.map((p, i) => {
+      // Use online player's color if available
+      const onlineMatch = onlinePlayers?.find(op => op.id === p.id);
+      return {
+        id: p.id,
+        name: p.name.trim(),
+        color: onlineMatch?.color || getPlayerColor(i),
+        avatar: onlineMatch?.avatar || getPlayerInitial(p.name),
+      };
+    });
     onStart(mapped, selectedMode, { timer, rounds });
   };
 
@@ -97,9 +119,17 @@ export function GameSetup({
 
         {/* Player list */}
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-            Spieler ({players.length})
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+              Spieler ({players.length})
+            </h2>
+            {hasOnline && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
+                <Wifi className="w-3 h-3 text-[#df8eff]" />
+                <span className="text-[10px] font-bold text-[#df8eff] uppercase tracking-wider">Online Room</span>
+              </div>
+            )}
+          </div>
           <AnimatePresence initial={false}>
             {players.map((player, i) => (
               <motion.div
@@ -122,9 +152,18 @@ export function GameSetup({
                   onChange={(e) => updateName(player.id, e.target.value)}
                   placeholder={`Spieler ${i + 1}`}
                   maxLength={20}
-                  className="flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                  readOnly={!!onlinePlayers?.find(op => op.id === player.id)}
+                  className={cn(
+                    "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm",
+                    onlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
+                  )}
                 />
-                {players.length > minPlayers && (
+                {onlinePlayers?.find(op => op.id === player.id) && (
+                  <div className="w-9 h-9 rounded-xl bg-[#df8eff]/10 flex items-center justify-center" title="Online-Spieler">
+                    <Globe className="w-4 h-4 text-[#df8eff]" />
+                  </div>
+                )}
+                {players.length > minPlayers && !onlinePlayers?.find(op => op.id === player.id) && (
                   <button
                     onClick={() => removePlayer(player.id)}
                     className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"
