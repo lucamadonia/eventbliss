@@ -119,4 +119,52 @@ export const EMOJI_PUZZLES: EmojiPuzzle[] = [
   { emojis: '🧙‍♂️📖⚔️🐴', answer: 'The Witcher', category: 'Videospiele', difficulty: 2 },
   { emojis: '🚀🌌👨‍🚀🔧', answer: 'Among Us', category: 'Videospiele', difficulty: 2 },
   { emojis: '🐉⚔️🗻🏹', answer: 'Skyrim', category: 'Videospiele', difficulty: 3 },
+
+  // Neue Filme (10)
+  { emojis: '🧸🎈🍯', answer: 'Winnie Puuh', category: 'Filme', difficulty: 1 },
+  { emojis: '🦈🏊‍♂️😱', answer: 'Der weisse Hai', category: 'Filme', difficulty: 2 },
+  { emojis: '🐒🍌👑', answer: 'Tarzan', category: 'Filme', difficulty: 2 },
+  { emojis: '🧪⏰🚗💨', answer: 'Zurueck in die Zukunft', category: 'Filme', difficulty: 2 },
+  { emojis: '🎭🌹👻🎵', answer: 'Das Phantom der Oper', category: 'Filme', difficulty: 3 },
+  { emojis: '🧊🦣🐿️', answer: 'Ice Age', category: 'Filme', difficulty: 1 },
+  { emojis: '🏜️🪱🌍', answer: 'Dune', category: 'Filme', difficulty: 3 },
+  { emojis: '🔫🤠🐴🌵', answer: 'Django Unchained', category: 'Filme', difficulty: 3 },
+  { emojis: '👩‍🍳🐀🇫🇷⭐', answer: 'Ratatouille', category: 'Filme', difficulty: 1 },
+  { emojis: '🦸‍♀️🏝️⚔️🛡️', answer: 'Wonder Woman', category: 'Filme', difficulty: 2 },
+
+  // Neue Songs (10)
+  { emojis: '🎤🎵🌍🙏', answer: 'Imagine', category: 'Songs', difficulty: 2 },
+  { emojis: '💜🌧️🎵', answer: 'Purple Rain', category: 'Songs', difficulty: 2 },
+  { emojis: '🏠🛣️🎵', answer: 'Take Me Home Country Roads', category: 'Songs', difficulty: 3 },
+  { emojis: '👻🎵💀👻', answer: 'Thriller', category: 'Songs', difficulty: 1 },
+  { emojis: '🌊🏖️👩‍🦰🎵', answer: 'Ocean Eyes', category: 'Songs', difficulty: 3 },
+  { emojis: '💃🎶🇨🇺', answer: 'Havana', category: 'Songs', difficulty: 2 },
+  { emojis: '🔔🎅🎄⛄', answer: 'Last Christmas', category: 'Songs', difficulty: 1 },
+  { emojis: '🌙✨💤🎵', answer: 'Moonlight Sonata', category: 'Songs', difficulty: 3 },
+  { emojis: '🚗💨🎵🛣️', answer: 'Drive', category: 'Songs', difficulty: 3 },
+  { emojis: '🧡📞🎵', answer: 'Call Me Maybe', category: 'Songs', difficulty: 2 },
+
+  // Neue Sprichwoerter (10)
+  { emojis: '🐦🌅🪱', answer: 'Der fruehere Vogel faengt den Wurm', category: 'Sprichwoerter', difficulty: 1 },
+  { emojis: '🏠🔑❤️', answer: 'Zuhause ist wo das Herz ist', category: 'Sprichwoerter', difficulty: 2 },
+  { emojis: '🍒🍒👫', answer: 'Gleich und gleich gesellt sich gern', category: 'Sprichwoerter', difficulty: 3 },
+  { emojis: '🐕🌳🔔', answer: 'Da liegt der Hund begraben', category: 'Sprichwoerter', difficulty: 2 },
+  { emojis: '🧹🏠✨', answer: 'Ordnung ist das halbe Leben', category: 'Sprichwoerter', difficulty: 2 },
+  { emojis: '💰🗣️❌', answer: 'Ueber Geld spricht man nicht', category: 'Sprichwoerter', difficulty: 2 },
+  { emojis: '🪵👀🌲', answer: 'Den Wald vor lauter Baeumen nicht sehen', category: 'Sprichwoerter', difficulty: 3 },
+  { emojis: '🎯🔨💪', answer: 'Uebung macht den Meister', category: 'Sprichwoerter', difficulty: 1 },
+  { emojis: '🍏🌳⬇️', answer: 'Der Apfel faellt nicht weit vom Stamm', category: 'Sprichwoerter', difficulty: 1 },
+  { emojis: '👀🍲👩‍🍳', answer: 'Viele Koeche verderben den Brei', category: 'Sprichwoerter', difficulty: 2 },
+
+  // Neue Marken (10)
+  { emojis: '🎬🍿❤️', answer: 'Netflix', category: 'Marken', difficulty: 1 },
+  { emojis: '🪑🔧🇸🇪', answer: 'IKEA', category: 'Marken', difficulty: 1 },
+  { emojis: '🏎️🐎🇮🇹', answer: 'Ferrari', category: 'Marken', difficulty: 1 },
+  { emojis: '🎮🍄🔴', answer: 'Nintendo', category: 'Marken', difficulty: 1 },
+  { emojis: '📱💬🟢', answer: 'WhatsApp', category: 'Marken', difficulty: 1 },
+  { emojis: '☕🧜‍♀️🟢', answer: 'Starbucks', category: 'Marken', difficulty: 1 },
+  { emojis: '🏠🔑✈️', answer: 'Airbnb', category: 'Marken', difficulty: 2 },
+  { emojis: '📦📱🛒', answer: 'Amazon', category: 'Marken', difficulty: 1 },
+  { emojis: '🎵🎧📱', answer: 'Spotify', category: 'Marken', difficulty: 1 },
+  { emojis: '🔍📧📺', answer: 'Google', category: 'Marken', difficulty: 1 },
 ];
