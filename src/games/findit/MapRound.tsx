@@ -28,35 +28,36 @@ function mkTarget(): L.DivIcon {
     html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8ff5ff,#00deec);border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px #8ff5ff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>` });
 }
 
-// ── Standalone map component that initializes Leaflet on a callback ref ──
-function LeafletMap({ onMapClick, children }: { onMapClick?: (lat: number, lng: number) => void; children?: (map: L.Map) => void }) {
+// ── Standalone map that initializes once and stays stable ──
+function LeafletMap({ onMapClickRef, onReadyRef }: { onMapClickRef: React.MutableRefObject<((lat: number, lng: number) => void) | null>; onReadyRef: React.MutableRefObject<((map: L.Map) => void) | null> }) {
   const mapRef = useRef<L.Map | null>(null);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
+  const initializedRef = useRef(false);
 
-  const containerCallback = useCallback((node: HTMLDivElement | null) => {
-    // Cleanup old map
-    if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
-    if (!node) return;
+  useEffect(() => {
+    if (initializedRef.current || !nodeRef.current) return;
+    initializedRef.current = true;
 
-    // Create map on the actual DOM node (guaranteed to exist)
-    const map = L.map(node, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
-    // Try CartoDB dark no-labels first, fallback to OSM
-const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' });
-tileLayer.on('tileerror', () => { tileLayer.setUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png'); });
-tileLayer.addTo(map);
+    const map = L.map(nodeRef.current, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
+    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' });
+    tileLayer.on('tileerror', () => { tileLayer.setUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png'); });
+    tileLayer.addTo(map);
 
-    if (onMapClick) {
-      map.on('click', (e: L.LeafletMouseEvent) => onMapClick(e.latlng.lat, e.latlng.lng));
-    }
+    map.on('click', (e: L.LeafletMouseEvent) => {
+      if (onMapClickRef.current) onMapClickRef.current(e.latlng.lat, e.latlng.lng);
+    });
 
     mapRef.current = map;
-    // Force layout recalc
     setTimeout(() => map.invalidateSize(), 50);
     setTimeout(() => map.invalidateSize(), 300);
+    setTimeout(() => map.invalidateSize(), 1000);
 
-    if (children) children(map);
-  }, [onMapClick, children]);
+    if (onReadyRef.current) onReadyRef.current(map);
 
-  return <div ref={containerCallback} style={{ height: '100%', width: '100%', background: '#0a0e14' }} />;
+    return () => { map.remove(); mapRef.current = null; initializedRef.current = false; };
+  }, []);
+
+  return <div ref={nodeRef} style={{ height: '100%', width: '100%', background: '#0a0e14' }} />;
 }
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}.leaflet-container{background:#0a0e14!important}.leaflet-control-attribution{display:none!important}`;
@@ -72,6 +73,10 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const pinPosRef = useRef<[number, number] | null>(null);
   const pinMarkerRef = useRef<L.Marker | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const mapClickRef = useRef<((lat: number, lng: number) => void) | null>(null);
+  const mapReadyRef = useRef<((map: L.Map) => void) | null>(null);
+  const resultMapClickRef = useRef<((lat: number, lng: number) => void) | null>(null);
+  const resultMapReadyRef = useRef<((map: L.Map) => void) | null>(null);
   const currentPlayer = players[guessingPlayerIdx % players.length];
 
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
@@ -92,7 +97,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, guessingPlayerIdx]);
 
-  const handleMapClick = useCallback((lat: number, lng: number) => {
+  // Keep refs in sync — these are read by LeafletMap via ref (no re-render)
+  mapClickRef.current = (lat: number, lng: number) => {
     setPinPos([lat, lng]);
     if (mapInstanceRef.current) {
       if (pinMarkerRef.current) pinMarkerRef.current.setLatLng([lat, lng]);
@@ -100,9 +106,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
         pinMarkerRef.current = L.marker([lat, lng], { icon: mkIcon(currentPlayer.color, currentPlayer.name.charAt(0).toUpperCase()) }).addTo(mapInstanceRef.current);
       }
     }
-  }, [currentPlayer]);
-
-  const storeMapRef = useCallback((map: L.Map) => { mapInstanceRef.current = map; }, []);
+  };
+  mapReadyRef.current = (map: L.Map) => { mapInstanceRef.current = map; };
 
   const confirmGuess = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -123,8 +128,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const winner = sortedGuesses[0];
   const handoffPlayer = players[(guessingPlayerIdx) % players.length];
 
-  // Result map setup callback
-  const setupResultMap = useCallback((map: L.Map) => {
+  // Result map setup — assigned to ref
+  resultMapReadyRef.current = (map: L.Map) => {
     map.setView([location.lat, location.lng], 4);
     L.marker([location.lat, location.lng], { icon: mkTarget() }).addTo(map);
     const bounds = L.latLngBounds([[location.lat, location.lng]]);
@@ -134,7 +139,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       bounds.extend([g.lat, g.lng]);
     });
     setTimeout(() => { map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 }); map.invalidateSize(); }, 100);
-  }, [allDoneGuesses, location]);
+  };
 
   return (
     <div className="fixed inset-0 bg-[#0a0e14] overflow-hidden" style={{ fontFamily: "'Plus Jakarta Sans', system-ui" }}>
@@ -163,7 +168,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       {/* GUESSING */}
       {phase === 'guessing' && (
         <div className="absolute inset-0" key={`guess-${guessingPlayerIdx}`}>
-          <LeafletMap key={`map-${guessingPlayerIdx}-${roundNumber}`} onMapClick={handleMapClick}>{storeMapRef}</LeafletMap>
+          <LeafletMap key={`map-${guessingPlayerIdx}-${roundNumber}`} onMapClickRef={mapClickRef} onReadyRef={mapReadyRef} />
 
           {/* Overlays */}
           <div className="absolute top-4 left-4 z-[1000]">
@@ -244,7 +249,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
               </div>
             )}
             <div className="aspect-video rounded-xl border border-white/10 overflow-hidden mb-6" style={{ background: '#0f141a' }}>
-              <LeafletMap>{setupResultMap}</LeafletMap>
+              <LeafletMap key={`result-${roundNumber}`} onMapClickRef={resultMapClickRef} onReadyRef={resultMapReadyRef} />
             </div>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {winner && (
