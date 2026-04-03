@@ -104,6 +104,12 @@ function getGlobalPlayerId(): string {
 // Global singleton channel — shared across hook instances
 let _globalChannel: RealtimeChannel | null = null;
 let _globalListeners = new Map<string, Set<BroadcastCallback>>();
+let _globalPlayers: RoomPlayer[] = [];
+
+/** Get current online room players (if any room is active). Used by GameSetup auto-detection. */
+export function getOnlineRoomPlayers(): RoomPlayer[] {
+  return _globalPlayers;
+}
 
 function pickColor(index: number): string {
   return PLAYER_COLORS[index % PLAYER_COLORS.length];
@@ -178,6 +184,7 @@ export function useGameRoom(): UseGameRoomReturn {
     }));
 
     setPlayers(mapped);
+    _globalPlayers = mapped; // Keep global in sync
     setRoom((prev) => (prev ? { ...prev, hostId: actualHostId, players: mapped } : prev));
   }, []);
 

@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, User, Play, Globe, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
+import { getOnlineRoomPlayers } from "../multiplayer/useGameRoom";
 
 export interface GameMode {
   id: string;
@@ -57,7 +58,16 @@ export function GameSetup({
   maxPlayers = 20,
   onlinePlayers,
 }: GameSetupProps) {
-  const hasOnline = onlinePlayers && onlinePlayers.length > 0;
+  // Auto-detect online room players if not explicitly passed
+  const autoOnlinePlayers = useMemo(() => {
+    if (onlinePlayers && onlinePlayers.length > 0) return onlinePlayers;
+    const roomPlayers = getOnlineRoomPlayers();
+    if (roomPlayers.length >= 2) {
+      return roomPlayers.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
+    }
+    return undefined;
+  }, [onlinePlayers]);
+  const hasOnline = autoOnlinePlayers && autoOnlinePlayers.length > 0;
 
   const [players, setPlayers] = useState<SetupPlayer[]>(() => [
     createPlayer("Spieler 1"),
@@ -66,10 +76,10 @@ export function GameSetup({
 
   // Auto-populate players from online room
   useEffect(() => {
-    if (hasOnline && onlinePlayers.length >= 2) {
-      setPlayers(onlinePlayers.map(p => ({ id: p.id, name: p.name })));
+    if (hasOnline && autoOnlinePlayers && autoOnlinePlayers.length >= 2) {
+      setPlayers(autoOnlinePlayers.map(p => ({ id: p.id, name: p.name })));
     }
-  }, [hasOnline, onlinePlayers?.length]);
+  }, [hasOnline, autoOnlinePlayers?.length]);
   const [selectedMode, setSelectedMode] = useState(modes[0]?.id ?? "");
   const [timer, setTimer] = useState(settings.timer.default);
   const [rounds, setRounds] = useState(settings.rounds.default);
@@ -101,7 +111,7 @@ export function GameSetup({
     if (!canStart) return;
     const mapped = players.map((p, i) => {
       // Use online player's color if available
-      const onlineMatch = onlinePlayers?.find(op => op.id === p.id);
+      const onlineMatch = autoOnlinePlayers?.find(op => op.id === p.id);
       return {
         id: p.id,
         name: p.name.trim(),
@@ -152,18 +162,18 @@ export function GameSetup({
                   onChange={(e) => updateName(player.id, e.target.value)}
                   placeholder={`Spieler ${i + 1}`}
                   maxLength={20}
-                  readOnly={!!onlinePlayers?.find(op => op.id === player.id)}
+                  readOnly={!!autoOnlinePlayers?.find(op => op.id === player.id)}
                   className={cn(
                     "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm",
-                    onlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
+                    autoOnlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
                   )}
                 />
-                {onlinePlayers?.find(op => op.id === player.id) && (
+                {autoOnlinePlayers?.find(op => op.id === player.id) && (
                   <div className="w-9 h-9 rounded-xl bg-[#df8eff]/10 flex items-center justify-center" title="Online-Spieler">
                     <Globe className="w-4 h-4 text-[#df8eff]" />
                   </div>
                 )}
-                {players.length > minPlayers && !onlinePlayers?.find(op => op.id === player.id) && (
+                {players.length > minPlayers && !autoOnlinePlayers?.find(op => op.id === player.id) && (
                   <button
                     onClick={() => removePlayer(player.id)}
                     className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"
