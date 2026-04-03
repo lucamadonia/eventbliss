@@ -12,6 +12,7 @@ import { lazy, Suspense } from "react";
 // TV Screen (lazy loaded)
 const TVScreen = lazy(() => import("./games/tv/TVScreen"));
 const TVCodeEntryPage = lazy(() => import("./games/tv/TVScreen").then(m => ({ default: m.TVCodeEntry })));
+const GameProfilePage = lazy(() => import("./games/social/GameProfilePage"));
 
 // Legal Pages (lazy loaded)
 const Imprint = lazy(() => import("./pages/legal/Imprint"));
@@ -90,6 +91,7 @@ const AppContent = () => {
           <Route path="/games/:gameId" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GamesHub /></Suspense></ErrorBoundary>} />
           <Route path="/tv" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><TVCodeEntryPage /></Suspense></ErrorBoundary>} />
           <Route path="/tv/:roomCode" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><TVScreen /></Suspense></ErrorBoundary>} />
+          <Route path="/games/profile" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GameProfilePage /></Suspense></ErrorBoundary>} />
           <Route path="/danke" element={<Danke />} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />

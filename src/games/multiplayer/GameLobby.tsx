@@ -4,7 +4,7 @@ import {
   Copy, Check, ArrowLeft, Users, Crown, CircleDot, UserMinus,
   Share2, Play, Plus, Wifi, WifiOff, Loader2, Sparkles,
 } from "lucide-react";
-import { useGameRoom, getSavedRoom, type RoomPlayer } from "./useGameRoom";
+import { useGameRoom, getSavedRoom, getRoomHistory, removeFromRoomHistory, type RoomPlayer } from "./useGameRoom";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import EventInvite from "./EventInvite";
@@ -243,6 +243,31 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                   </div>
                 </motion.button>
               )}
+
+              {/* Room History */}
+              {(() => {
+                const history = getRoomHistory().filter(r => r.roomCode !== savedRoom?.roomCode);
+                if (history.length === 0) return null;
+                return (
+                  <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-white/30">Letzte Raeume</span>
+                    {history.map(r => (
+                      <div key={r.roomCode} className="flex items-center gap-3 rounded-xl px-3 py-2" style={{ backgroundColor: EP.surface2 }}>
+                        <span className="text-sm font-bold tracking-wider" style={{ color: EP.neonPurple }}>{r.roomCode}</span>
+                        <span className="text-xs text-white/30 flex-1">{new Date(r.timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</span>
+                        <motion.button whileTap={{ scale: 0.9 }} onClick={() => { setJoinCode(r.roomCode); setView("join"); }}
+                          className="px-2.5 py-1 rounded-lg text-[10px] font-bold" style={{ backgroundColor: `${EP.neonCyan}15`, color: EP.neonCyan }}>
+                          Beitreten
+                        </motion.button>
+                        <motion.button whileTap={{ scale: 0.9 }} onClick={() => { removeFromRoomHistory(r.roomCode); }}
+                          className="px-2 py-1 rounded-lg text-[10px] font-bold text-white/20 hover:text-[#ff6e84] transition-colors">
+                          ✕
+                        </motion.button>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
 
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={() => setView("create")}
                 className="w-full rounded-2xl p-5 text-left" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>

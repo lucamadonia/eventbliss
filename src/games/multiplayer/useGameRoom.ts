@@ -73,13 +73,41 @@ export function getSavedRoom(): SavedRoom | null {
     const raw = localStorage.getItem("eventbliss_active_room");
     if (!raw) return null;
     const saved = JSON.parse(raw) as SavedRoom;
-    // Expire after 2 hours
     if (Date.now() - saved.timestamp > 2 * 60 * 60 * 1000) {
       localStorage.removeItem("eventbliss_active_room");
       return null;
     }
     return saved;
   } catch { return null; }
+}
+
+/** Get all saved rooms (history, max 10, expire after 24h) */
+export function getRoomHistory(): SavedRoom[] {
+  try {
+    const raw = localStorage.getItem("eventbliss_room_history");
+    if (!raw) return [];
+    const rooms = (JSON.parse(raw) as SavedRoom[]).filter(r => Date.now() - r.timestamp < 24 * 60 * 60 * 1000);
+    localStorage.setItem("eventbliss_room_history", JSON.stringify(rooms));
+    return rooms;
+  } catch { return []; }
+}
+
+function addToRoomHistory(room: SavedRoom) {
+  try {
+    const history = getRoomHistory().filter(r => r.roomCode !== room.roomCode);
+    history.unshift(room);
+    localStorage.setItem("eventbliss_room_history", JSON.stringify(history.slice(0, 10)));
+  } catch { /* ignore */ }
+}
+
+/** Remove a room from history */
+export function removeFromRoomHistory(roomCode: string) {
+  try {
+    const history = getRoomHistory().filter(r => r.roomCode !== roomCode);
+    localStorage.setItem("eventbliss_room_history", JSON.stringify(history));
+    const active = getSavedRoom();
+    if (active?.roomCode === roomCode) localStorage.removeItem("eventbliss_active_room");
+  } catch { /* ignore */ }
 }
 
 // ---------------------------------------------------------------------------
@@ -142,10 +170,9 @@ export function useGameRoom(): UseGameRoomReturn {
   useEffect(() => {
     if (room) {
       try {
-        localStorage.setItem("eventbliss_active_room", JSON.stringify({
-          roomCode: room.roomCode, gameId: room.gameId, hostId: room.hostId,
-          playerId: playerIdRef.current, timestamp: Date.now(),
-        }));
+        const saved = { roomCode: room.roomCode, gameId: room.gameId, hostId: room.hostId, playerId: playerIdRef.current, timestamp: Date.now() };
+        localStorage.setItem("eventbliss_active_room", JSON.stringify(saved));
+        addToRoomHistory(saved);
       } catch { /* ignore */ }
     }
   }, [room?.roomCode]);
