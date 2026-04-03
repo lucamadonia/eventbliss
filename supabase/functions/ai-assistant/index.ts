@@ -1657,7 +1657,9 @@ serve(async (req) => {
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     // Skip LOVABLE_API_KEY check for TTS requests — they only need MISTRAL_API_KEY
-    if (!LOVABLE_API_KEY && type !== "voxtral_tts") {
+    const bodyForTypeCheck = await req.clone().json().catch(() => ({}));
+    const requestType = typeof bodyForTypeCheck?.type === 'string' ? bodyForTypeCheck.type : '';
+    if (!LOVABLE_API_KEY && requestType !== "voxtral_tts") {
       console.error("AI service configuration error");
       return new Response(
         JSON.stringify({ success: false, error: "AI service not configured" }),
