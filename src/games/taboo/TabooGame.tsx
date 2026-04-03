@@ -5,6 +5,7 @@ import { getTabooCards, type TabooCard } from '../content/taboo-words';
 import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRight, MessageCircle, Ban } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -59,9 +60,9 @@ const EP = `
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-interface TabooGameProps { players: string[]; onClose?: () => void }
+interface TabooGameProps { players: string[]; onClose?: () => void; online?: OnlineGameProps }
 
-export default function TabooGame({ players, onClose }: TabooGameProps) {
+export default function TabooGame({ players, onClose, online }: TabooGameProps) {
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
   const [phase, setPhase] = useState<Phase>('setup');
@@ -102,13 +103,34 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
 
   useEffect(() => {
     if (countdown === null) return;
-    if (countdown === 0) { setCountdown(null); setCurrentCard(drawCard()); setCardKey(k => k + 1); timer.reset(timerOption); timer.start(); setPhase('playing'); return; }
+    if (countdown === 0) {
+      setCountdown(null); setCurrentCard(drawCard()); setCardKey(k => k + 1); timer.reset(timerOption); timer.start(); setPhase('playing');
+      if (online?.isHost) {
+        online.broadcast('tv-state', {
+          game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
+          activeTeam: activeTeam.name, explainer, timeLeft: timerOption,
+          round: currentRound, totalRounds,
+        });
+      }
+      return;
+    }
     const t = setTimeout(() => setCountdown(c => (c !== null ? c - 1 : null)), 1000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
 
-  function handleCorrect() { if (!currentCard) return; setTurnResults(r => [...r, { card: currentCard, result: 'correct' }]); setCurrentCard(drawCard()); setCardKey(k => k + 1); }
+  function handleCorrect() {
+    if (!currentCard) return;
+    setTurnResults(r => [...r, { card: currentCard, result: 'correct' }]);
+    const next = drawCard(); setCurrentCard(next); setCardKey(k => k + 1);
+    if (online?.isHost) {
+      online.broadcast('tv-state', {
+        game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
+        activeTeam: activeTeam.name, explainer, timeLeft: timer.timeLeft,
+        round: currentRound, totalRounds,
+      });
+    }
+  }
 
   function handleTaboo() {
     if (!currentCard) return;
@@ -117,7 +139,18 @@ export default function TabooGame({ players, onClose }: TabooGameProps) {
     setTurnResults(r => [...r, { card: currentCard, result: 'taboo' }]); setCurrentCard(drawCard()); setCardKey(k => k + 1);
   }
 
-  function handleSkip() { if (!currentCard) return; setTurnResults(r => [...r, { card: currentCard, result: 'skipped' }]); setCurrentCard(drawCard()); setCardKey(k => k + 1); }
+  function handleSkip() {
+    if (!currentCard) return;
+    setTurnResults(r => [...r, { card: currentCard, result: 'skipped' }]);
+    const next = drawCard(); setCurrentCard(next); setCardKey(k => k + 1);
+    if (online?.isHost) {
+      online.broadcast('tv-state', {
+        game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
+        activeTeam: activeTeam.name, explainer, timeLeft: timer.timeLeft,
+        round: currentRound, totalRounds,
+      });
+    }
+  }
 
   function endTurn() {
     timer.pause();

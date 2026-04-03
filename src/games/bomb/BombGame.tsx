@@ -180,6 +180,16 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       ...extra,
       state: JSON.parse(JSON.stringify(newState)),
     });
+    online.broadcast('tv-state', {
+      game: 'bomb',
+      phase: newState.phase,
+      players: newState.players,
+      currentPlayerIndex: newState.currentPlayerIndex,
+      currentTask: newState.currentTask,
+      round: newState.round,
+      totalRounds: newState.totalRounds,
+      explodedPlayerIndex: newState.explodedPlayerIndex,
+    });
   }, [online]);
 
   useEffect(() => {
@@ -289,7 +299,15 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       };
       // Broadcast from host after explosion
       if (online?.isHost) {
-        setTimeout(() => online.broadcast('bomb-state', { state: JSON.parse(JSON.stringify(next)) }), 0);
+        setTimeout(() => {
+          online.broadcast('bomb-state', { state: JSON.parse(JSON.stringify(next)) });
+          online.broadcast('tv-state', {
+            game: 'bomb', phase: 'explosion',
+            players: next.players, currentPlayerIndex: next.currentPlayerIndex,
+            explodedPlayerIndex: next.explodedPlayerIndex,
+            round: next.round, totalRounds: next.totalRounds,
+          });
+        }, 0);
       }
       return next;
     });

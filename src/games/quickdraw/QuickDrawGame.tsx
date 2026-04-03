@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { DRAW_WORDS, type DrawWord } from './quickdraw-words-de';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -57,7 +58,7 @@ const MODES: { id: Mode; name: string; desc: string }[] = [
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export default function QuickDrawGame() {
+export default function QuickDrawGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   /* ---- Setup ---- */
@@ -159,6 +160,9 @@ export default function QuickDrawGame() {
     }
     ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
     ctx.globalCompositeOperation = 'source-over';
+    if (online?.isHost) {
+      online.broadcast('tv-drawing', { from: lastPos.current, to: pos, size: penSize, tool, color: '#000000' });
+    }
     lastPos.current = pos;
   };
   const onPointerUp = () => { isDrawing.current = false; lastPos.current = null; };
@@ -170,8 +174,22 @@ export default function QuickDrawGame() {
   /* ---- Game flow ---- */
   function startGame() { setPlayers(players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(DRAW_WORDS); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
   function beginRound(dIdx: number) { setDrawerIdx(dIdx); setCurrentWord(drawWord()); setGuesses([]); setGuessInput(''); setCurrentGuesser(0); setDrawingDataURL(null); setTool('pen'); setPenSize(6); setPhase('drawerReveal'); }
-  function startDrawing() { setPhase('drawing'); startTimer(MODE_TIMERS[mode]); setTimeout(initCanvas, 50); }
-  function finishDrawing() { stopTimer(); saveDrawing(); setPhase('guessing'); setCurrentGuesser(0); }
+  function startDrawing() {
+    setPhase('drawing'); startTimer(MODE_TIMERS[mode]); setTimeout(initCanvas, 50);
+    if (online?.isHost) {
+      online.broadcast('tv-state', {
+        game: 'draw', phase: 'drawing', drawer: drawer.name,
+        drawerColor: drawer.color, round, totalRounds, timeLeft: MODE_TIMERS[mode],
+      });
+      online.broadcast('tv-drawing', { type: 'clear' });
+    }
+  }
+  function finishDrawing() {
+    stopTimer(); saveDrawing(); setPhase('guessing'); setCurrentGuesser(0);
+    if (online?.isHost) {
+      online.broadcast('tv-state', { game: 'draw', phase: 'guessing', drawer: drawer.name, drawerColor: drawer.color, round, totalRounds });
+    }
+  }
 
   /* ---- Guessing ---- */
   function submitGuess() {

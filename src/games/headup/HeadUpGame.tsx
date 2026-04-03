@@ -7,6 +7,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
 import { useGameTimer } from '../engine/TimerSystem';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -60,7 +61,7 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function HeadUpGame() {
+export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
@@ -102,6 +103,16 @@ export default function HeadUpGame() {
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
       setTimeout(() => { orientationActiveRef.current = true; }, 500);
+      if (online?.isHost) {
+        online.broadcast('tv-state', {
+          game: 'headup', phase: 'playing',
+          word: wordQueue[0] || '',
+          currentPlayer: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+          correct: 0, skipped: 0, timeLeft: timerDuration,
+          round: currentRound, totalRounds,
+          category: selectedCategory?.name || '',
+        });
+      }
       return;
     }
     const t = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -115,17 +126,30 @@ export default function HeadUpGame() {
   const advanceWord = useCallback((correct: boolean) => {
     if (cooldownRef.current) return;
     cooldownRef.current = true;
+    const newCorrect = correctCount + (correct ? 1 : 0);
+    const newSkipped = skippedCount + (correct ? 0 : 1);
     setRoundWords((prev) => [...prev, { word: currentWord, correct }]);
     setFlash(correct ? 'green' : 'red');
     triggerHaptic(correct ? 'medium' : 'light');
     setTimeout(() => setFlash(null), 300);
     setCurrentWordIndex((prev) => {
       const next = prev + 1;
+      const nextWord = wordQueue[next] ?? wordQueue[0] ?? '';
+      if (online?.isHost) {
+        online.broadcast('tv-state', {
+          game: 'headup', phase: 'playing',
+          word: nextWord,
+          currentPlayer: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+          correct: newCorrect, skipped: newSkipped,
+          timeLeft, round: currentRound, totalRounds,
+          category: selectedCategory?.name || '',
+        });
+      }
       if (next >= wordQueue.length) { setWordQueue((q) => shuffleArray(q)); return 0; }
       return next;
     });
     setTimeout(() => { cooldownRef.current = false; }, 300);
-  }, [currentWord, wordQueue.length]);
+  }, [currentWord, wordQueue.length, online, correctCount, skippedCount, timeLeft, currentRound, totalRounds, playerNames, selectedCategory, wordQueue]);
 
   // ── Device Orientation ───────────────────────────────────────────────────────
   useEffect(() => {
