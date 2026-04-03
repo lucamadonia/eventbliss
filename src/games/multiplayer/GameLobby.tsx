@@ -5,6 +5,7 @@ import {
   Share2, Play, Plus, Wifi, WifiOff, Loader2, Sparkles,
 } from "lucide-react";
 import { useGameRoom, getSavedRoom, getRoomHistory, removeFromRoomHistory, type RoomPlayer } from "./useGameRoom";
+import { useOpenRooms, broadcastRoomCreated } from "./useOpenRooms";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import EventInvite from "./EventInvite";
@@ -138,6 +139,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const { isPremium } = usePremium();
   const { user } = useAuth();
   const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
+  const openRooms = useOpenRooms();
 
   const savedRoom = getSavedRoom();
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
@@ -153,7 +155,11 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const handleCreate = useCallback(async () => {
     if (!hostName.trim()) return;
     setIsLoading(true);
-    try { await createRoom(gameId, isPremium, hostName.trim()); setView("lobby"); } finally { setIsLoading(false); }
+    try {
+      const code = await createRoom(gameId, isPremium, hostName.trim());
+      broadcastRoomCreated({ roomCode: code, gameId, hostName: hostName.trim(), playerCount: 1, timestamp: Date.now() });
+      setView("lobby");
+    } finally { setIsLoading(false); }
   }, [createRoom, gameId, hostName, isPremium]);
 
   const handleJoin = useCallback(async () => {
@@ -295,25 +301,64 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                   </div>
                 </div>
               </motion.button>
+
+              {/* Open Rooms Discovery */}
+              {openRooms.length > 0 && (
+                <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: EP.surface1, border: `1px solid rgba(143,245,255,0.12)` }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-[#8ff5ff] animate-pulse" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8ff5ff]">Offene Raeume</span>
+                  </div>
+                  {openRooms.map(r => (
+                    <motion.button key={r.roomCode} whileTap={{ scale: 0.97 }}
+                      onClick={() => { setJoinCode(r.roomCode); setView("join"); }}
+                      className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+                      style={{ backgroundColor: EP.surface2 }}>
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#df8eff]/20 to-[#8ff5ff]/20 flex items-center justify-center text-xs font-bold text-[#df8eff]">
+                        {r.hostName.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white truncate">{r.hostName}</p>
+                        <p className="text-[10px] text-[#a8abb3]">{r.playerCount} Spieler</p>
+                      </div>
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: `${EP.neonCyan}15`, color: EP.neonCyan }}>
+                        Beitreten
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 
           {/* CREATE */}
           {view === "create" && (
             <motion.div key="create" {...fadeUp} className="space-y-5">
-              <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Dein Name</span>
-                  <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder="z.B. Luca" maxLength={20}
-                    className="mt-2 w-full rounded-xl border px-4 py-3 text-sm font-medium text-white placeholder:text-white/20 focus:outline-none focus:ring-2"
-                    style={{ backgroundColor: EP.surface3, borderColor: EP.border }} />
-                </label>
-                <motion.button whileTap={{ scale: 0.96 }} disabled={!hostName.trim() || isLoading} onClick={handleCreate}
-                  className="w-full rounded-xl py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})` }}>
-                  {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Raum erstellen"}
-                </motion.button>
-              </div>
+              {!isPremium ? (
+                <div className="rounded-2xl p-6 text-center space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
+                  <Crown className="w-12 h-12 mx-auto text-[#fbbf24]" style={{ filter: 'drop-shadow(0 0 15px rgba(251,191,36,0.4))' }} />
+                  <h3 className="text-lg font-bold text-white">Premium Feature</h3>
+                  <p className="text-sm text-white/40">Erstelle Online-Raeume mit einem Premium-Abo. Beitreten ist fuer alle kostenlos!</p>
+                  <a href="/premium" className="inline-block px-6 py-3 rounded-full text-sm font-bold text-white"
+                    style={{ background: `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})`, boxShadow: `0 0 20px rgba(223,142,255,0.3)` }}>
+                    Premium holen
+                  </a>
+                </div>
+              ) : (
+                <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
+                  <label className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Dein Name</span>
+                    <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder="z.B. Luca" maxLength={20}
+                      className="mt-2 w-full rounded-xl border px-4 py-3 text-sm font-medium text-white placeholder:text-white/20 focus:outline-none focus:ring-2"
+                      style={{ backgroundColor: EP.surface3, borderColor: EP.border }} />
+                  </label>
+                  <motion.button whileTap={{ scale: 0.96 }} disabled={!hostName.trim() || isLoading} onClick={handleCreate}
+                    className="w-full rounded-xl py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
+                    style={{ background: `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})` }}>
+                    {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Raum erstellen"}
+                  </motion.button>
+                </div>
+              )}
             </motion.div>
           )}
 
