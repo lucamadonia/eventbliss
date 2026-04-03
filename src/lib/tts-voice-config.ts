@@ -20,34 +20,40 @@ export interface LanguageVoiceConfig {
 }
 
 // Voxtral TTS voices (Mistral Cloud - highest quality)
+// Uses voxtral-mini-tts-2603 model with UUID-based voice IDs
+// Multilingual: voices work with any language input
 export const voxtralVoices: Record<string, VoiceOption[]> = {
   de: [
-    { id: 'voxtral-aria-de', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natürliche weibliche Stimme', voxtralVoiceId: 'aria' },
-    { id: 'voxtral-zeus-de', name: 'Zeus (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Klare männliche Stimme', voxtralVoiceId: 'zeus' },
+    { id: 'voxtral-paul-de', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natuerliche maennliche Stimme', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
+    { id: 'voxtral-paul-happy-de', name: 'Paul Froehlich (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Froehliche maennliche Stimme', voxtralVoiceId: '1024d823-a11e-43ee-bf3d-d440dccc0577' },
+    { id: 'voxtral-jane-de', name: 'Jane (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Weibliche Stimme', voxtralVoiceId: 'a3e41ea8-020b-44c0-8d8b-f6cc03524e31' },
+    { id: 'voxtral-oliver-de', name: 'Oliver (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Britische maennliche Stimme', voxtralVoiceId: 'e3596645-b1af-469e-b857-f18ddedc7652' },
   ],
   en: [
-    { id: 'voxtral-aria-en', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natural female voice', voxtralVoiceId: 'aria' },
-    { id: 'voxtral-zeus-en', name: 'Zeus (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Clear male voice', voxtralVoiceId: 'zeus' },
+    { id: 'voxtral-paul-en', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natural male voice', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
+    { id: 'voxtral-paul-cheerful-en', name: 'Paul Cheerful (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Cheerful male voice', voxtralVoiceId: '01d985cd-5e0c-4457-bfd8-80ba31a5bc03' },
+    { id: 'voxtral-jane-en', name: 'Jane (Voxtral)', engine: 'voxtral', quality: 'high', description: 'British female voice', voxtralVoiceId: 'a3e41ea8-020b-44c0-8d8b-f6cc03524e31' },
+    { id: 'voxtral-oliver-en', name: 'Oliver (Voxtral)', engine: 'voxtral', quality: 'high', description: 'British male voice', voxtralVoiceId: 'e3596645-b1af-469e-b857-f18ddedc7652' },
   ],
   es: [
-    { id: 'voxtral-aria-es', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz femenina natural', voxtralVoiceId: 'aria' },
-    { id: 'voxtral-zeus-es', name: 'Zeus (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz masculina clara', voxtralVoiceId: 'zeus' },
+    { id: 'voxtral-paul-es', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz masculina natural', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
+    { id: 'voxtral-jane-es', name: 'Jane (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz femenina', voxtralVoiceId: 'a3e41ea8-020b-44c0-8d8b-f6cc03524e31' },
   ],
   fr: [
-    { id: 'voxtral-aria-fr', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voix féminine naturelle', voxtralVoiceId: 'aria' },
-    { id: 'voxtral-zeus-fr', name: 'Zeus (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voix masculine claire', voxtralVoiceId: 'zeus' },
+    { id: 'voxtral-paul-fr', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voix masculine naturelle', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
+    { id: 'voxtral-jane-fr', name: 'Jane (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voix feminine', voxtralVoiceId: 'a3e41ea8-020b-44c0-8d8b-f6cc03524e31' },
   ],
   it: [
-    { id: 'voxtral-aria-it', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voce femminile naturale', voxtralVoiceId: 'aria' },
+    { id: 'voxtral-paul-it', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voce maschile naturale', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
   ],
   nl: [
-    { id: 'voxtral-aria-nl', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natuurlijke vrouwelijke stem', voxtralVoiceId: 'aria' },
+    { id: 'voxtral-paul-nl', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Natuurlijke mannelijke stem', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
   ],
   pt: [
-    { id: 'voxtral-aria-pt', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz feminina natural', voxtralVoiceId: 'aria' },
+    { id: 'voxtral-paul-pt', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'Voz masculina natural', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
   ],
   ar: [
-    { id: 'voxtral-aria-ar', name: 'Aria (Voxtral)', engine: 'voxtral', quality: 'high', description: 'صوت أنثوي طبيعي', voxtralVoiceId: 'aria' },
+    { id: 'voxtral-paul-ar', name: 'Paul (Voxtral)', engine: 'voxtral', quality: 'high', description: 'صوت ذكوري طبيعي', voxtralVoiceId: 'c69964a6-ab8b-4f8a-9465-ec0925096ec8' },
   ],
 };
 
