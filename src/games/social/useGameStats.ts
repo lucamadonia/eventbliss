@@ -11,8 +11,9 @@ const db = supabase as any;
 export function useGameStats() {
   const recordGamePlayed = useCallback(
     async (gameId: string, score: number, won: boolean, timePlayed?: number) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
       // Fetch current stats for this game
       const { data: existing } = await db
@@ -43,26 +44,21 @@ export function useGameStats() {
       await db
         .from('game_stats')
         .upsert(stats, { onConflict: 'user_id,game_id' });
+      } catch (e) { console.warn('Failed to record game stats:', e); }
     },
     [],
   );
 
   const getMyStats = useCallback(
     async (gameId?: string): Promise<GameStat[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      let query = db
-        .from('game_stats')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (gameId) {
-        query = query.eq('game_id', gameId);
-      }
-
-      const { data } = await query;
-      return (data as GameStat[]) ?? [];
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+        let query = db.from('game_stats').select('*').eq('user_id', user.id);
+        if (gameId) query = query.eq('game_id', gameId);
+        const { data } = await query;
+        return (data as GameStat[]) ?? [];
+      } catch { return []; }
     },
     [],
   );
