@@ -364,6 +364,12 @@ const GamesHub = () => {
                   <Globe className="h-5 w-5" />
                   Online spielen
                 </motion.button>
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  onClick={() => navigate('/tv')}
+                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 px-6 py-3 text-sm font-bold text-[#8ff5ff] font-['Plus_Jakarta_Sans'] transition-all hover:bg-[#8ff5ff]/20 hover:shadow-[0_0_20px_rgba(143,245,255,0.2)]">
+                  <span className="text-lg">📺</span>
+                  TV Screen
+                </motion.button>
               </div>
             </div>
             {/* Decorative gradient orb */}

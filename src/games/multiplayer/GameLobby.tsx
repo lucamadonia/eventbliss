@@ -445,6 +445,14 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 )}
               </div>
 
+              {/* TV Screen Link */}
+              {isHost && room && (
+                <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "rgba(143,245,255,0.06)", border: "1px solid rgba(143,245,255,0.15)" }}>
+                  <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold mb-1">📺 TV Screen fuer Beamer</p>
+                  <p className="text-xs font-bold text-[#8ff5ff] font-['Be_Vietnam_Pro']">{window.location.origin}/tv/{room.roomCode}</p>
+                </div>
+              )}
+
               <div className="flex items-center justify-center gap-2 text-[10px] text-white/20 font-['Be_Vietnam_Pro']">
                 <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: EP.neonCyan }} />
                 Echtzeit-Verbindung aktiv
