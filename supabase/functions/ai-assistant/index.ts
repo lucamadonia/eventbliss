@@ -1840,7 +1840,6 @@ serve(async (req) => {
           model: "voxtral-mini-tts-2603",
           input: ttsText,
           voice: ttsVoice,
-          speed: ttsSpeed,
         }),
       });
 

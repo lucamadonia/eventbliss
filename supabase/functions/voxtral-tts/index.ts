@@ -78,9 +78,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "voxtral-mini-tts-2603",
         input: text,
-        voice: voice || "aria",
-        response_format: "mp3",
-        speed: speed || 1.0,
+        voice: voice || "c69964a6-ab8b-4f8a-9465-ec0925096ec8",
       }),
     });
 
