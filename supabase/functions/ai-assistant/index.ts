@@ -1656,7 +1656,8 @@ serve(async (req) => {
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    // Skip LOVABLE_API_KEY check for TTS requests — they only need MISTRAL_API_KEY
+    if (!LOVABLE_API_KEY && type !== "voxtral_tts") {
       console.error("AI service configuration error");
       return new Response(
         JSON.stringify({ success: false, error: "AI service not configured" }),
@@ -1806,7 +1807,7 @@ serve(async (req) => {
     // =========================================================================
     if (type === "voxtral_tts") {
       const ttsText = typeof rawBody.tts_text === 'string' ? rawBody.tts_text.slice(0, 2000) : '';
-      const ttsVoice = typeof rawBody.tts_voice === 'string' ? rawBody.tts_voice.slice(0, 50) : 'aria';
+      const ttsVoice = typeof rawBody.tts_voice === 'string' ? rawBody.tts_voice.slice(0, 50) : 'c69964a6-ab8b-4f8a-9465-ec0925096ec8';
       const ttsSpeed = typeof rawBody.tts_speed === 'number' ? Math.min(Math.max(rawBody.tts_speed, 0.5), 2.0) : 1.0;
 
       if (!ttsText) {

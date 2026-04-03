@@ -153,7 +153,7 @@ export function isNeuralVoice(voiceId: string): boolean {
 export function getVoxtralVoiceId(voiceId: string, langCode: string): string {
   const voices = voxtralVoices[langCode] || [];
   const voice = voices.find(v => v.id === voiceId);
-  return voice?.voxtralVoiceId || 'aria';
+  return voice?.voxtralVoiceId || 'c69964a6-ab8b-4f8a-9465-ec0925096ec8';
 }
 
 // Get stored voice preference for a language
