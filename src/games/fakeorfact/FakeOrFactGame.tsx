@@ -360,33 +360,42 @@ export default function FakeOrFactGame() {
           animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full"
         >
-          {mode === 'classic' && currentFact && (
-            <>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', bounce: 0.5 }}
-                className={cn(
-                  'w-20 h-20 rounded-full flex items-center justify-center',
-                  currentFact.isTrue ? 'bg-emerald-500/20' : 'bg-red-500/20',
-                )}
-              >
-                {currentFact.isTrue
-                  ? <Check className="w-10 h-10 text-emerald-400" />
-                  : <X className="w-10 h-10 text-red-400" />
-                }
-              </motion.div>
-              <h2 className={cn(
-                'text-3xl font-extrabold font-[Plus_Jakarta_Sans]',
-                currentFact.isTrue ? 'text-emerald-400' : 'text-red-400',
-              )}>
-                {currentFact.isTrue ? 'WAHR!' : 'FALSCH!'}
-              </h2>
-              <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5">
-                <p className="text-sm text-white/70 leading-relaxed">{currentFact.explanation}</p>
-              </div>
-            </>
-          )}
+          {mode === 'classic' && currentFact && (() => {
+            const wasCorrect = playerVote === currentFact.isTrue;
+            return (
+              <>
+                {/* Player result — clear feedback */}
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}
+                  className={cn('w-20 h-20 rounded-full flex items-center justify-center', wasCorrect ? 'bg-emerald-500/20' : 'bg-red-500/20')}>
+                  {wasCorrect ? <Check className="w-10 h-10 text-emerald-400" /> : <X className="w-10 h-10 text-red-400" />}
+                </motion.div>
+                <h2 className={cn('text-3xl font-extrabold', wasCorrect ? 'text-emerald-400' : 'text-red-400')}>
+                  {wasCorrect ? 'Richtig!' : 'Leider falsch!'}
+                </h2>
+
+                {/* What you said vs what it is */}
+                <div className="w-full flex gap-3">
+                  <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
+                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">Deine Antwort</p>
+                    <p className={cn('text-lg font-bold', playerVote ? 'text-emerald-400' : 'text-red-400')}>
+                      {playerVote ? 'WAHR' : 'FALSCH'}
+                    </p>
+                  </div>
+                  <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
+                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">Tatsaechlich</p>
+                    <p className={cn('text-lg font-bold', currentFact.isTrue ? 'text-emerald-400' : 'text-red-400')}>
+                      {currentFact.isTrue ? 'WAHR' : 'FALSCH'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Explanation */}
+                <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5">
+                  <p className="text-sm text-white/70 leading-relaxed">{currentFact.explanation}</p>
+                </div>
+              </>
+            );
+          })()}
 
           {mode === 'three' && currentThree && (
             <>
