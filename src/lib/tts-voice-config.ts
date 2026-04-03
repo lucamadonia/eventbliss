@@ -126,13 +126,16 @@ export function getVoicesForLanguage(langCode: string): VoiceOption[] {
   return [...voxtral, ...vits, webSpeechOption];
 }
 
-// Get default voice for a language
+// Get default voice for a language (prefer Voxtral cloud for best quality)
 export function getDefaultVoice(langCode: string): string {
-  const voices = vitsVoices[langCode];
-  if (voices && voices.length > 0) {
-    return voices[0].id;
+  const voxtral = voxtralVoices[langCode];
+  if (voxtral && voxtral.length > 0) {
+    return voxtral[0].id;
   }
-  // Fallback to Web Speech for unsupported languages (like Arabic)
+  const vits = vitsVoices[langCode];
+  if (vits && vits.length > 0) {
+    return vits[0].id;
+  }
   return `webspeech-${langCode}`;
 }
 

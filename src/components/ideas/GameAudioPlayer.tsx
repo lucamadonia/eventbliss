@@ -85,7 +85,7 @@ export const GameAudioPlayer = ({ text, language = "de", onClose, compact = fals
   const sections = text.split(/\*\*[^*]+\*\*/).filter(Boolean).map(s => s.trim());
   const sectionHeaders = text.match(/\*\*[^*]+\*\*/g) || [];
   
-  const currentLang = language || i18n.language || "de";
+  const currentLang = (language || i18n.language || "de").split('-')[0].split('_')[0];
   const speechLang = webSpeechLanguages[currentLang] || "de-DE";
   
   // Get available voices for current language
