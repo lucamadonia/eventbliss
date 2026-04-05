@@ -5,7 +5,7 @@ import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { GeoLocation } from './geo-locations';
 
-const GMAP_KEY = 'AIzaSyDStCyAtE42vtQbA2gYLzE_lQuhRmqw0Qk';
+const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
 // Dark map style without labels
 const MAP_STYLE: google.maps.MapTypeStyle[] = [
