@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin } from 'lucide-react';
+import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin, Camera } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
@@ -9,14 +9,16 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { GEO_LOCATIONS, filterByRegion, type GeoLocation } from './geo-locations';
 import WorldFinderSetup from './WorldFinderSetup';
 import MapRound, { type MapRoundResult } from './MapRound';
+import StreetViewRound, { type StreetViewResult } from './StreetViewRound';
+import { getRandomStreetViewLocations, type StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type Phase = 'setup' | 'karteSetup' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
-type Mode = 'memory' | 'speed' | 'unterschiede' | 'karte';
+type Phase = 'setup' | 'karteSetup' | 'streetviewPlay' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
+type Mode = 'memory' | 'speed' | 'unterschiede' | 'karte' | 'streetview';
 
 interface Scene {
   name: string;
@@ -268,6 +270,7 @@ const GAME_MODES: GameMode[] = [
   { id: 'speed', name: 'Speed', desc: 'Wer findet es am schnellsten?', icon: <Zap className="w-6 h-6" /> },
   { id: 'unterschiede', name: 'Unterschiede', desc: 'Finde 3 Unterschiede in zwei Bildern', icon: <GitCompare className="w-6 h-6" /> },
   { id: 'karte', name: 'Karte', desc: 'Finde Staedte und Laender auf der Weltkarte', icon: <MapPin className="w-6 h-6" /> },
+  { id: 'streetview', name: 'Street View', desc: 'Wo bist du? Rate den Standort!', icon: <Camera className="w-6 h-6" /> },
 ];
 
 const SETUP_SETTINGS: SettingsConfig = {
@@ -296,6 +299,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   // Geo state (Karte mode)
   const [geoPool, setGeoPool] = useState<GeoLocation[]>([]);
   const [currentGeo, setCurrentGeo] = useState<GeoLocation | null>(null);
+  const [svLocations, setSvLocations] = useState<StreetViewLocation[]>([]);
+  const [svRound, setSvRound] = useState(0);
 
   // Scene state
   const [scenePool, setScenePool] = useState<Scene[]>([]);
@@ -369,6 +374,15 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
     if (modeId === 'karte') {
       setPhase('karteSetup');
+      return;
+    }
+
+    if (modeId === 'streetview') {
+      const locs = getRandomStreetViewLocations(settings.rounds);
+      setSvLocations(locs);
+      setSvRound(0);
+      setTotalRounds(settings.rounds);
+      setPhase('streetviewPlay');
       return;
     }
 
@@ -888,6 +902,34 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                   setRound(nextRound);
                   setCurrentGeo(geoPool[(nextRound) % geoPool.length]);
                 }
+              }}
+              onExit={() => navigate('/games')}
+            />
+          </div>
+        )}
+
+        {/* Street View Mode */}
+        {phase === 'streetviewPlay' && svLocations[svRound] && (
+          <div className="fixed inset-0 z-50" style={{ background: '#0a0e14' }}>
+            <StreetViewRound
+              key={`sv-${svRound}`}
+              location={svLocations[svRound]}
+              players={players}
+              roundNumber={svRound + 1}
+              totalRounds={totalRounds}
+              timerSeconds={30}
+              onRoundComplete={(results: StreetViewResult[]) => {
+                const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
+                setPlayers(prev => prev.map(p => {
+                  const res = results.find(r => r.playerId === p.id);
+                  if (!res) return p;
+                  const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
+                  const isWinner = sorted[0]?.playerId === p.id;
+                  return { ...p, score: p.score + pts + (isWinner ? 100 : 0), correct: p.correct + (isWinner ? 1 : 0) };
+                }));
+                const next = svRound + 1;
+                if (next >= totalRounds) { setPhase('gameOver'); }
+                else { setSvRound(next); }
               }}
               onExit={() => navigate('/games')}
             />
