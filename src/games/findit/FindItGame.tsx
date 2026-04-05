@@ -566,6 +566,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setGeoPool(shuffled);
     setCurrentGeo(shuffled[0]);
     setTotalRounds(settings.rounds);
+    setStudyTime(60); // 60 seconds per round for map mode
     setPhase('question');
   }, []);
 
