@@ -77,9 +77,17 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const mapReadyRef = useRef<((map: L.Map) => void) | null>(null);
   const resultMapClickRef = useRef<((lat: number, lng: number) => void) | null>(null);
   const resultMapReadyRef = useRef<((map: L.Map) => void) | null>(null);
-  const currentPlayer = players[guessingPlayerIdx % players.length];
 
+  // Refs to avoid stale closures in confirmGuess (called from setInterval)
+  const guessesRef = useRef<PlayerGuess[]>([]);
+  const guessingPlayerIdxRef = useRef(0);
+  useEffect(() => { guessesRef.current = guesses; }, [guesses]);
+  useEffect(() => { guessingPlayerIdxRef.current = guessingPlayerIdx; }, [guessingPlayerIdx]);
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
+
+  const currentPlayer = players[guessingPlayerIdx % players.length];
+  const currentPlayerRef = useRef(currentPlayer);
+  useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
 
   // Showing → Guessing
   useEffect(() => {
@@ -88,14 +96,30 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     return () => clearTimeout(t);
   }, [phase, timerSeconds]);
 
-  // Countdown
+  // Confirm guess — uses REFS to avoid stale closures
+  const confirmGuess = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    const pos = pinPosRef.current;
+    const lat = pos?.[0] ?? 0, lng = pos?.[1] ?? 0;
+    const distanceKm = pos ? haversineKm(lat, lng, location.lat, location.lng) : 20000;
+    const cp = currentPlayerRef.current;
+    const guess: PlayerGuess = { playerId: cp.id, playerName: cp.name, playerColor: cp.color, lat, lng, distanceKm };
+    const updated = [...guessesRef.current, guess];
+    setGuesses(updated);
+    setPinPos(null); pinMarkerRef.current = null; mapInstanceRef.current = null;
+    const nextIdx = guessingPlayerIdxRef.current + 1;
+    if (nextIdx >= players.length) { setAllDoneGuesses(updated); setPhase('result'); }
+    else { setGuessingPlayerIdx(nextIdx); setPhase('handoff'); }
+  }, [location, players.length]);
+
+  // Countdown — calls confirmGuess via ref-safe callback
   useEffect(() => {
     if (phase !== 'guessing') return;
     timerRef.current = setInterval(() => {
-      setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); confirmGuess(); return 0; } return prev - 1; });
+      setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [phase, guessingPlayerIdx]);
+    return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
+  }, [phase, guessingPlayerIdx, confirmGuess]);
 
   // Keep refs in sync — these are read by LeafletMap via ref (no re-render)
   mapClickRef.current = (lat: number, lng: number) => {
@@ -108,19 +132,6 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     }
   };
   mapReadyRef.current = (map: L.Map) => { mapInstanceRef.current = map; };
-
-  const confirmGuess = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    const pos = pinPosRef.current;
-    const lat = pos?.[0] ?? 0, lng = pos?.[1] ?? 0;
-    const distanceKm = pos ? haversineKm(lat, lng, location.lat, location.lng) : 20000;
-    const guess: PlayerGuess = { playerId: currentPlayer.id, playerName: currentPlayer.name, playerColor: currentPlayer.color, lat, lng, distanceKm };
-    const updated = [...guesses, guess];
-    setGuesses(updated);
-    setPinPos(null); pinMarkerRef.current = null; mapInstanceRef.current = null;
-    if (guessingPlayerIdx + 1 >= players.length) { setAllDoneGuesses(updated); setPhase('result'); }
-    else { setGuessingPlayerIdx(guessingPlayerIdx + 1); setPhase('handoff'); }
-  }, [location, currentPlayer, guesses, guessingPlayerIdx, players.length]);
 
   const handleHandoffReady = () => { setPhase('guessing'); setCountdown(timerSeconds); };
   const handleNextRound = () => { onRoundComplete(guesses.map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
