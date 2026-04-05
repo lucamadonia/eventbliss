@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 // ---------------------------------------------------------------------------
 
 interface WorldFinderSetupProps {
-  onStart: (settings: { region: string; difficulty: number; rounds: number }) => void;
+  onStart: (settings: { region: string; difficulty: number; rounds: number; timer: number }) => void;
   onBack: () => void;
 }
 
@@ -53,6 +53,13 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
   const [region, setRegion] = useState('welt');
   const [difficulty, setDifficulty] = useState(1);
   const [rounds, setRounds] = useState(10);
+  const [timer, setTimer] = useState(30);
+  const TIMER_OPTIONS = [
+    { value: 15, label: '15s', desc: 'Blitz' },
+    { value: 30, label: '30s', desc: 'Normal' },
+    { value: 60, label: '60s', desc: 'Entspannt' },
+    { value: 120, label: '120s', desc: 'Explorer' },
+  ];
 
   return (
     <div
@@ -201,6 +208,27 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
             })}
           </div>
         </motion.section>
+        {/* ZEIT PRO RUNDE */}
+        <motion.section variants={sectionVariants} initial="hidden" animate="visible" custom={4} className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-1 rounded-full bg-[#8ff5ff]" />
+            <h2 className="text-sm font-black uppercase tracking-[0.15em] text-[#a8abb3]">Zeit pro Runde</h2>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {TIMER_OPTIONS.map(opt => {
+              const active = timer === opt.value;
+              return (
+                <motion.button key={opt.value} whileTap={{ scale: 0.95 }}
+                  onClick={() => setTimer(opt.value)}
+                  className={cn('flex flex-col items-center gap-1 rounded-xl py-3 transition-all border',
+                    active ? 'border-[#8ff5ff]/40 bg-[#8ff5ff]/10' : 'border-transparent bg-[#151a21]')}>
+                  <span className={cn('text-xl font-black italic', active ? 'text-[#8ff5ff]' : 'text-gray-400')}>{opt.label}</span>
+                  <span className="text-[10px] text-gray-500">{opt.desc}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.section>
       </div>
 
       {/* ── START BUTTON (fixed) ──────────────────────────── */}
@@ -208,7 +236,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => onStart({ region, difficulty, rounds })}
+          onClick={() => onStart({ region, difficulty, rounds, timer })}
           className={cn(
             'relative w-full rounded-2xl py-4 text-xl font-black uppercase tracking-[0.1em] text-white',
             'bg-gradient-to-r from-[#df8eff] to-[#d779ff]',

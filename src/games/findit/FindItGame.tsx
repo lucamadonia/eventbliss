@@ -574,14 +574,14 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  const handleKarteSetup = useCallback((settings: { region: string; difficulty: number; rounds: number }) => {
+  const handleKarteSetup = useCallback((settings: { region: string; difficulty: number; rounds: number; timer?: number }) => {
     const filtered = filterByRegion(GEO_LOCATIONS, settings.region);
     const pool = filtered.length > 0 ? filtered : [...GEO_LOCATIONS];
     const shuffled = shuffleArray(pool);
     setGeoPool(shuffled);
     setCurrentGeo(shuffled[0]);
     setTotalRounds(settings.rounds);
-    setStudyTime(60); // 60 seconds per round for map mode
+    setStudyTime(settings.timer || 30); // configurable timer per round
     setPhase('question');
   }, []);
 
@@ -885,7 +885,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               players={players}
               roundNumber={round + 1}
               totalRounds={totalRounds}
-              timerSeconds={60}
+              timerSeconds={studyTime}
               onRoundComplete={(results: MapRoundResult[]) => {
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {
