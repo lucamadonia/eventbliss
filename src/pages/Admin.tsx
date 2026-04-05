@@ -107,6 +107,10 @@ const Admin = () => {
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.settings", "Einstellungen")}</span>
             </TabsTrigger>
+            <TabsTrigger value="games" className="gap-2" onClick={() => navigate('/admin/games')}>
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">Games Content</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats">
