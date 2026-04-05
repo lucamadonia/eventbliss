@@ -36,24 +36,41 @@ function formatDistance(km: number): string {
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
 
-// Street View component using Google Maps JS API directly
+// Street View component — waits for Google Maps API to load
 function StreetViewPano({ lat, lng }: { lat: number; lng: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const panoRef = useRef<google.maps.StreetViewPanorama | null>(null);
+
   useEffect(() => {
-    if (!containerRef.current || !google?.maps) return;
-    new google.maps.StreetViewPanorama(containerRef.current, {
-      position: { lat, lng },
-      pov: { heading: Math.random() * 360, pitch: 0 },
-      zoom: 1,
-      disableDefaultUI: true,
-      showRoadLabels: false,
-      addressControl: false,
-      linksControl: true,
-      panControl: true,
-      enableCloseButton: false,
-    });
+    if (!containerRef.current) return;
+
+    // Poll until google.maps is available (loaded by APIProvider)
+    let cancelled = false;
+    const tryInit = () => {
+      if (cancelled) return;
+      if (typeof google === 'undefined' || !google.maps) {
+        setTimeout(tryInit, 200);
+        return;
+      }
+      if (!containerRef.current || panoRef.current) return;
+      panoRef.current = new google.maps.StreetViewPanorama(containerRef.current, {
+        position: { lat, lng },
+        pov: { heading: Math.random() * 360, pitch: 0 },
+        zoom: 1,
+        disableDefaultUI: true,
+        showRoadLabels: false,
+        addressControl: false,
+        linksControl: true,
+        panControl: true,
+        enableCloseButton: false,
+      });
+    };
+    tryInit();
+
+    return () => { cancelled = true; panoRef.current = null; };
   }, [lat, lng]);
-  return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
+
+  return <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#0a0e14' }} />;
 }
 
 export default function StreetViewRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit }: Props) {
