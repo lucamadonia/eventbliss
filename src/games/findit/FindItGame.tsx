@@ -6,7 +6,8 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
-import { GEO_LOCATIONS, type GeoLocation } from './geo-locations';
+import { GEO_LOCATIONS, filterByRegion, type GeoLocation } from './geo-locations';
+import WorldFinderSetup from './WorldFinderSetup';
 import MapRound, { type MapRoundResult } from './MapRound';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
@@ -14,7 +15,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 // Types
 // ---------------------------------------------------------------------------
 
-type Phase = 'setup' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
+type Phase = 'setup' | 'karteSetup' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
 type Mode = 'memory' | 'speed' | 'unterschiede' | 'karte';
 
 interface Scene {
@@ -367,10 +368,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setDiffPool(shuffleArray([...DIFF_SCENES]));
 
     if (modeId === 'karte') {
-      const shuffledGeo = shuffleArray([...GEO_LOCATIONS]);
-      setGeoPool(shuffledGeo);
-      setCurrentGeo(shuffledGeo[0]);
-      setPhase('question'); // MapRound manages its own phases
+      setPhase('karteSetup');
       return;
     }
 
@@ -561,6 +559,16 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
+  const handleKarteSetup = useCallback((settings: { region: string; difficulty: number; rounds: number }) => {
+    const filtered = filterByRegion(GEO_LOCATIONS, settings.region);
+    const pool = filtered.length > 0 ? filtered : [...GEO_LOCATIONS];
+    const shuffled = shuffleArray(pool);
+    setGeoPool(shuffled);
+    setCurrentGeo(shuffled[0]);
+    setTotalRounds(settings.rounds);
+    setPhase('question');
+  }, []);
+
   const handleRestart = useCallback(() => {
     setPhase('setup');
     setPlayers([]);
@@ -591,6 +599,14 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
         minPlayers={1}
         maxPlayers={10}
       />
+    );
+  }
+
+  if (phase === 'karteSetup') {
+    return (
+      <div className="fixed inset-0 z-50" style={{ background: '#0a0e14' }}>
+        <WorldFinderSetup onStart={handleKarteSetup} onBack={() => setPhase('setup')} />
+      </div>
     );
   }
 

@@ -202,3 +202,28 @@ export const GEO_LOCATIONS: GeoLocation[] = [
   { name: 'Ecuador', lat: -1.8312, lng: -78.1834, type: 'country' },
   { name: 'Kuba', lat: 21.5218, lng: -77.7812, type: 'country' },
 ];
+
+// ---------------------------------------------------------------------------
+// Region helpers
+// ---------------------------------------------------------------------------
+
+export type GeoRegion = 'europa' | 'asien' | 'amerika' | 'afrika' | 'ozeanien' | 'deutschland';
+
+const DACH_NAMES = new Set([
+  'Deutschland', 'Berlin', 'München', 'Hamburg', 'Köln', 'Stuttgart', 'Dresden',
+  'Leipzig', 'Salzburg', 'Wien', 'Zürich', 'Genf', 'Österreich', 'Schweiz',
+]);
+
+export function getRegion(loc: GeoLocation): GeoRegion {
+  if (DACH_NAMES.has(loc.name)) return 'deutschland';
+  if (loc.lat > 35 && loc.lat < 72 && loc.lng > -25 && loc.lng < 40) return 'europa';
+  if (loc.lat > -10 && loc.lat < 55 && loc.lng > 40 && loc.lng < 180) return 'asien';
+  if (loc.lat > -56 && loc.lat < 72 && loc.lng > -180 && loc.lng < -30) return 'amerika';
+  if (loc.lat > -40 && loc.lat < 38 && loc.lng > -20 && loc.lng < 55) return 'afrika';
+  return 'ozeanien';
+}
+
+export function filterByRegion(locations: GeoLocation[], region: string): GeoLocation[] {
+  if (region === 'welt') return locations;
+  return locations.filter(loc => getRegion(loc) === region);
+}
