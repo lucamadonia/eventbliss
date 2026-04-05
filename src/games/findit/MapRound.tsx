@@ -28,36 +28,39 @@ function mkTarget(): L.DivIcon {
     html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8ff5ff,#00deec);border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px #8ff5ff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>` });
 }
 
-// ── Standalone map — uses callback ref for guaranteed DOM availability ──
+// ── Standalone map — initializes via useEffect after mount ──
 function LeafletMap({ onMapClickRef, onReadyRef }: { onMapClickRef: React.MutableRefObject<((lat: number, lng: number) => void) | null>; onReadyRef: React.MutableRefObject<((map: L.Map) => void) | null> }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
 
-  const initMap = useCallback((node: HTMLDivElement | null) => {
-    // Cleanup previous
-    if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
-    if (!node) return;
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
 
-    const map = L.map(node, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
-    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' });
-    tileLayer.on('tileerror', () => { tileLayer.setUrl('https://tile.openstreetmap.org/{z}/{x}/{y}.png'); });
-    tileLayer.addTo(map);
+    // Small delay to ensure container has rendered dimensions
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
 
-    map.on('click', (e: L.LeafletMouseEvent) => {
-      if (onMapClickRef.current) onMapClickRef.current(e.latlng.lat, e.latlng.lng);
-    });
+      const map = L.map(containerRef.current, { center: [20, 10], zoom: 2, zoomControl: false, attributionControl: false });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
-    mapRef.current = map;
-    setTimeout(() => map.invalidateSize(), 50);
-    setTimeout(() => map.invalidateSize(), 300);
-    setTimeout(() => map.invalidateSize(), 1000);
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        if (onMapClickRef.current) onMapClickRef.current(e.latlng.lat, e.latlng.lng);
+      });
 
-    if (onReadyRef.current) onReadyRef.current(map);
-  }, []); // stable — reads from refs, not props
+      mapRef.current = map;
+      setTimeout(() => map.invalidateSize(), 100);
+      setTimeout(() => map.invalidateSize(), 500);
 
-  // Cleanup on unmount
-  useEffect(() => () => { if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; } }, []);
+      if (onReadyRef.current) onReadyRef.current(map);
+    }, 100);
 
-  return <div ref={initMap} style={{ height: '100%', width: '100%', background: '#0a0e14' }} />;
+    return () => {
+      clearTimeout(timer);
+      if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
+    };
+  }, []); // runs once on mount, cleanup on unmount
+
+  return <div ref={containerRef} style={{ height: '100%', width: '100%', background: '#0a0e14' }} />;
 }
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}.leaflet-container{background:#0a0e14!important}.leaflet-control-attribution{display:none!important}`;
