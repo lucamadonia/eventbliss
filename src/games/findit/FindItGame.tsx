@@ -440,9 +440,10 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     return () => { if (studyTimerRef.current) clearInterval(studyTimerRef.current); };
   }, [phase, mode]);
 
-  // ------- Question countdown timer -------
+  // ------- Question countdown timer (NOT for karte/streetview — they have their own) -------
   useEffect(() => {
     if (phase !== 'question') return;
+    if (mode === 'karte' || mode === 'streetview') return; // MapRound/StreetViewRound handle their own timers
     questionTimerRef.current = setInterval(() => {
       setQuestionCountdown(prev => {
         if (prev <= 1) {

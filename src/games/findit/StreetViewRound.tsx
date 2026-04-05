@@ -8,15 +8,11 @@ import type { StreetViewLocation } from './streetview-locations';
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
 const MAP_STYLE: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#0a0e14' }] },
-  { elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#151a21' }] },
-  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#0f141a' }] },
-  { featureType: 'road', stylers: [{ visibility: 'off' }] },
-  { featureType: 'administrative.country', elementType: 'geometry.stroke', stylers: [{ color: '#1b2028' }, { visibility: 'on' }] },
+  { featureType: 'administrative.locality', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
 ];
 
-function MapStyler() { const map = useMap(); useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE, disableDefaultUI: true }); }, [map]); return null; }
+function MapStyler() { const map = useMap(); useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE }); }, [map]); return null; }
 function ClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
   const map = useMap();
   useEffect(() => { if (!map) return; const l = map.addListener('click', (e: google.maps.MapMouseEvent) => { if (e.latLng) onClick(e.latLng.lat(), e.latLng.lng()); }); return () => l.remove(); }, [map, onClick]);

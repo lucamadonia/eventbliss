@@ -8,14 +8,10 @@ import type { GeoLocation } from './geo-locations';
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
 // Dark map style without labels
+// Normal map style — only hide city/place labels to make guessing harder
 const MAP_STYLE: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#0a0e14' }] },
-  { elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#151a21' }] },
-  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#0f141a' }] },
-  { featureType: 'road', stylers: [{ visibility: 'off' }] },
-  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#1b2028' }, { visibility: 'on' }] },
-  { featureType: 'administrative.country', elementType: 'geometry.stroke', stylers: [{ color: '#df8eff22' }] },
+  { featureType: 'administrative.locality', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
 ];
 
 type MapPhase = 'showing' | 'guessing' | 'handoff' | 'result';
@@ -43,10 +39,10 @@ function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number
   return null;
 }
 
-// Apply dark style
+// Apply style — hide city labels but keep normal map appearance
 function MapStyler() {
   const map = useMap();
-  useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE, disableDefaultUI: true }); }, [map]);
+  useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE }); }, [map]);
   return null;
 }
 
