@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
-import { APIProvider, Map, AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { GeoLocation } from './geo-locations';
 
@@ -137,18 +137,12 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
         {/* GUESSING */}
         {phase === 'guessing' && (
           <div className="absolute inset-0">
-            <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2} mapId="eventbliss-dark"
-              style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
+            <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2}               style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
               disableDefaultUI fullscreenControl={false} mapTypeControl={false} streetViewControl={false}>
               <MapStyler />
               <MapClickHandler onMapClick={handleMapClick} />
               {pinPos && (
-                <AdvancedMarker position={pinPos}>
-                  <div className="w-8 h-8 rounded-full border-3 border-white flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: currentPlayer.color, boxShadow: `0 0 15px ${currentPlayer.color}88` }}>
-                    {currentPlayer.name.charAt(0)}
-                  </div>
-                </AdvancedMarker>
+                <Marker position={pinPos} label={{ text: currentPlayer.name.charAt(0), color: 'white', fontWeight: 'bold' }} />
               )}
             </Map>
 
@@ -236,20 +230,11 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                   style={{ width: '100%', height: '100%' }} disableDefaultUI mapTypeControl={false}>
                   <MapStyler />
                   {/* Target marker */}
-                  <AdvancedMarker position={{ lat: location.lat, lng: location.lng }}>
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8ff5ff] to-[#00deec] border-3 border-white flex items-center justify-center"
-                      style={{ boxShadow: '0 0 15px #8ff5ff' }}>
-                      <MapPin className="w-4 h-4 text-white" />
-                    </div>
-                  </AdvancedMarker>
+                  <Marker position={{ lat: location.lat, lng: location.lng }} label={{ text: '★', color: '#8ff5ff', fontWeight: 'bold', fontSize: '16px' }} />
                   {/* Player markers */}
                   {allDoneGuesses.map(g => (
-                    <AdvancedMarker key={g.playerId} position={{ lat: g.lat, lng: g.lng }}>
-                      <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white"
-                        style={{ background: g.playerColor, boxShadow: `0 0 12px ${g.playerColor}88` }}>
-                        {g.playerName.charAt(0)}
-                      </div>
-                    </AdvancedMarker>
+                    <Marker key={g.playerId} position={{ lat: g.lat, lng: g.lng }}
+                      label={{ text: g.playerName.charAt(0), color: 'white', fontWeight: 'bold' }} />
                   ))}
                 </Map>
               </div>

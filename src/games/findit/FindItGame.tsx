@@ -870,7 +870,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               players={players}
               roundNumber={round + 1}
               totalRounds={totalRounds}
-              timerSeconds={Math.max(10, studyTime)}
+              timerSeconds={60}
               onRoundComplete={(results: MapRoundResult[]) => {
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {
