@@ -79,12 +79,36 @@ const allGames: GameCardData[] = [
 ];
 
 const categories = [
-  { label: "Quiz & Wissen", icon: HelpCircle, color: C.primary },
-  { label: "Wort & Sprache", icon: Languages, color: C.secondary },
-  { label: "Reaktion & Geschick", icon: Hand, color: C.tertiary },
-  { label: "Social & Bluff", icon: Users, color: C.primary },
-  { label: "Kreativ & Spaß", icon: Palette, color: C.secondary },
+  { label: "Alle", icon: Gamepad2, color: C.primary, filter: "alle" },
+  { label: "Quiz & Wissen", icon: HelpCircle, color: C.primary, filter: "quiz" },
+  { label: "Wort & Sprache", icon: Languages, color: C.secondary, filter: "wort" },
+  { label: "Karte & Geografie", icon: Globe, color: C.tertiary, filter: "karte" },
+  { label: "Party & JGA", icon: Heart, color: "#ff6b98", filter: "party" },
+  { label: "Reaktion & Geschick", icon: Hand, color: C.tertiary, filter: "reaktion" },
+  { label: "Social & Bluff", icon: Users, color: C.primary, filter: "social" },
+  { label: "Kreativ & Spaß", icon: Palette, color: C.secondary, filter: "kreativ" },
 ];
+
+// Game category tags
+const GAME_CATEGORIES: Record<string, string[]> = {
+  "bomb": ["quiz", "party"],
+  "headup": ["wort", "party"],
+  "taboo": ["wort", "party"],
+  "category": ["wort", "reaktion"],
+  "hochstapler": ["social", "party"],
+  "drueck-das-wort": ["wort", "reaktion"],
+  "wo-ist-was": ["karte", "quiz"],
+  "split-quiz": ["quiz", "social"],
+  "geteilt-gequizzt": ["quiz", "social"],
+  "schnellzeichner": ["kreativ", "party"],
+  "wahrheit-pflicht": ["party", "social"],
+  "this-or-that": ["party", "social"],
+  "wer-bin-ich": ["social", "party"],
+  "emoji-raten": ["quiz", "kreativ"],
+  "fake-or-fact": ["quiz", "wort"],
+  "story-builder": ["kreativ", "wort"],
+  "flaschendrehen": ["party", "social"],
+};
 
 const recentGames = [
   { name: "Tickende Bombe", icon: Bomb, time: "Vor 2 Std." },
@@ -200,6 +224,12 @@ const GamesHub = () => {
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
   const [onlineGameId, setOnlineGameId] = useState<string | null>(null);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
+  const [activeCategory, setActiveCategory] = useState("alle");
+
+  const filteredGames = useMemo(() => {
+    if (activeCategory === "alle") return allGames;
+    return allGames.filter(g => (GAME_CATEGORIES[g.id] || []).includes(activeCategory));
+  }, [activeCategory]);
   const [onlinePlayerName] = useState(() => {
     try { return localStorage.getItem("eventbliss_player_name") || "Spieler"; } catch { return "Spieler"; }
   });
@@ -392,15 +422,20 @@ const GamesHub = () => {
         {/* Kategorien */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mt-8">
           <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-3">Kategorien</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             {categories.map((cat) => {
               const CatIcon = cat.icon;
+              const active = activeCategory === cat.filter;
               return (
-                <motion.div key={cat.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                  className="flex flex-col items-center justify-center gap-2 min-w-[4.5rem] w-[4.5rem] h-[4.5rem] rounded-2xl bg-[#1f1f29] border border-[#484750]/10 cursor-pointer transition-colors hover:border-white/10">
-                  <CatIcon className="h-5 w-5" style={{ color: cat.color }} />
-                  <span className="text-[9px] font-medium text-white/60 font-['Be_Vietnam_Pro'] text-center leading-tight whitespace-nowrap">{cat.label}</span>
-                </motion.div>
+                <motion.button key={cat.filter} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveCategory(cat.filter)}
+                  className={`flex flex-col items-center justify-center gap-1.5 min-w-[5rem] w-[5rem] h-[4.5rem] rounded-2xl border cursor-pointer transition-all ${
+                    active ? 'border-white/20 shadow-[0_0_15px_rgba(207,150,255,0.15)]' : 'border-[#484750]/10 hover:border-white/10'
+                  }`}
+                  style={{ background: active ? `${typeof cat.color === 'string' ? cat.color : '#cf96ff'}15` : '#1f1f29' }}>
+                  <CatIcon className="h-5 w-5" style={{ color: active ? (typeof cat.color === 'string' ? cat.color : '#cf96ff') : 'rgba(255,255,255,0.4)' }} />
+                  <span className={`text-[9px] font-semibold text-center leading-tight whitespace-nowrap ${active ? 'text-white' : 'text-white/50'}`}>{cat.label}</span>
+                </motion.button>
               );
             })}
           </div>
@@ -432,7 +467,7 @@ const GamesHub = () => {
           <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-4">Alle Spiele</h2>
           <div className="grid grid-cols-2 gap-3">
             <AnimatePresence>
-              {allGames.map((game) => (
+              {filteredGames.map((game) => (
                 <GameCard key={game.id} game={game} onClick={() => handleGameClick(game)} onOnline={() => setOnlineGameId(game.id)} premiumInfo={premiumInfoMap[game.id]} />
               ))}
             </AnimatePresence>
