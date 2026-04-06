@@ -488,32 +488,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 <EventInvite roomCode={room.roomCode} gameId={selectedGame} />
               )}
 
-              <div className="space-y-2">
-                {/* Everyone can toggle ready */}
-                <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleReady}
-                  className="w-full rounded-xl py-3.5 text-sm font-bold transition-all"
-                  style={{
-                    backgroundColor: myReady ? "rgba(143,245,255,0.15)" : EP.surface2,
-                    color: myReady ? EP.neonCyan : "rgba(255,255,255,0.6)",
-                    border: `1px solid ${myReady ? "rgba(143,245,255,0.3)" : EP.border}`,
-                  }}>
-                  {myReady ? "✓ Bereit!" : "Bereit melden"}
-                </motion.button>
-                {isHost && (
-                  <motion.button whileHover={allReady ? { scale: 1.02 } : {}} whileTap={allReady ? { scale: 0.96 } : {}}
-                    disabled={!allReady} onClick={handleStart}
-                    className="w-full rounded-xl py-4 text-sm font-extrabold text-white transition-all disabled:opacity-30 font-['Plus_Jakarta_Sans']"
-                    style={{
-                      background: allReady ? `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})` : EP.surface3,
-                      boxShadow: allReady ? `0 0 24px ${EP.neonPurple}40` : "none",
-                    }}>
-                    <span className="flex items-center justify-center gap-2">
-                      <Play className="h-5 w-5" />
-                      {allReady ? "Spiel starten!" : `Warte auf ${players.filter((p) => !p.isReady).length} Spieler...`}
-                    </span>
-                  </motion.button>
-                )}
-              </div>
+              {/* Spacer for fixed bottom buttons */}
+              <div className="h-28" />
 
               {/* TV Screen Link */}
               {isHost && room && (
@@ -531,6 +507,37 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
           )}
         </AnimatePresence>
       </div>
+
+      {/* Fixed bottom action buttons — always visible on mobile */}
+      {view === "lobby" && room && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-5 pt-3 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/95 to-transparent">
+          <div className="max-w-md mx-auto space-y-2">
+            <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleReady}
+              className="w-full rounded-xl py-3.5 text-sm font-bold transition-all"
+              style={{
+                backgroundColor: myReady ? "rgba(143,245,255,0.15)" : EP.surface2,
+                color: myReady ? EP.neonCyan : "rgba(255,255,255,0.6)",
+                border: `1px solid ${myReady ? "rgba(143,245,255,0.3)" : EP.border}`,
+              }}>
+              {myReady ? "✓ Bereit!" : "Bereit melden"}
+            </motion.button>
+            {isHost && (
+              <motion.button whileTap={allReady ? { scale: 0.96 } : {}}
+                disabled={!allReady} onClick={handleStart}
+                className="w-full rounded-xl py-4 text-sm font-extrabold text-white transition-all disabled:opacity-30"
+                style={{
+                  background: allReady ? `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})` : EP.surface3,
+                  boxShadow: allReady ? `0 0 24px ${EP.neonPurple}40` : "none",
+                }}>
+                <span className="flex items-center justify-center gap-2">
+                  <Play className="h-5 w-5" />
+                  {allReady ? "Spiel starten!" : `Warte auf ${players.filter((p) => !p.isReady).length} Spieler...`}
+                </span>
+              </motion.button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
