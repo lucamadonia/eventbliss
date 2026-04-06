@@ -55,26 +55,27 @@ interface GameCardData {
   duration: string;
   badge?: "Hot" | "Neu";
   rating: number;
+  image?: string;
 }
 
 const allGames: GameCardData[] = [
-  { id: "bomb", name: "Tickende Bombe", desc: "Bei wem knallt's? Nerven aus Stahl gefragt!", icon: Bomb, gradient: "from-[#ff7350] to-[#ff4444]", players: "3-20", duration: "5-20", badge: "Hot", rating: 4.8 },
-  { id: "headup", name: "Stirnraten", desc: "Begriffe erraten mit Stirn-Power", icon: Brain, gradient: "from-[#cf96ff] to-[#9b59b6]", players: "2-20", duration: "5-20", rating: 4.7 },
-  { id: "taboo", name: "Wortverbot", desc: "Erklären ohne Tabu-Wörter", icon: MessageSquareOff, gradient: "from-[#00e3fd] to-[#0099cc]", players: "4-20", duration: "10-30", rating: 4.6 },
-  { id: "category", name: "Zeit-Kategorie", desc: "Gegen die Uhr Begriffe nennen", icon: Timer, gradient: "from-amber-500 to-amber-600", players: "2-15", duration: "5-15", rating: 4.5 },
-  { id: "hochstapler", name: "Hochstapler", desc: "Wer lügt am besten? Entlarve den Faker!", icon: UserX, gradient: "from-[#cf96ff] to-pink-500", players: "4-15", duration: "10-25", badge: "Neu", rating: 4.9 },
-  { id: "drueck-das-wort", name: "Drück das Wort", desc: "Schnell tippen, schnell denken!", icon: Type, gradient: "from-emerald-500 to-green-600", players: "1-8", duration: "3-10", rating: 4.3 },
-  { id: "wo-ist-was", name: "Wo ist was?", desc: "Finde den versteckten Gegenstand", icon: SearchIcon, gradient: "from-cyan-400 to-cyan-600", players: "2-10", duration: "5-15", rating: 4.4 },
-  { id: "split-quiz", name: "Split Quiz", desc: "Team-Quiz mit Wissenssplit", icon: Users, gradient: "from-blue-500 to-blue-700", players: "4-30", duration: "10-30", rating: 4.6 },
-  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", desc: "Kooperatives Quiz — Wissen ist aufgeteilt!", icon: Link, gradient: "from-[#00e3fd] to-[#0099cc]", players: "3-10", duration: "10-25", badge: "Neu", rating: 4.8 },
-  { id: "schnellzeichner", name: "Schnellzeichner", desc: "Zeichne & rate — wer erkennt es zuerst?", icon: Pencil, gradient: "from-[#ff7350] to-[#ff4444]", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.7 },
-  { id: "wahrheit-pflicht", name: "Wahrheit oder Pflicht", desc: "Der Klassiker — digital und erweitert!", icon: Heart, gradient: "from-pink-500 to-rose-600", players: "2-20", duration: "10-30", badge: "Neu", rating: 4.8 },
-  { id: "this-or-that", name: "This or That", desc: "Blitz-Entscheidungen — wie tickt die Gruppe?", icon: ArrowLeftRight, gradient: "from-violet-500 to-purple-600", players: "2-20", duration: "5-15", badge: "Neu", rating: 4.5 },
-  { id: "wer-bin-ich", name: "Wer bin ich?", desc: "Errate wer du bist mit Ja/Nein-Fragen", icon: QuestionMark, gradient: "from-amber-400 to-orange-500", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.6 },
-  { id: "emoji-raten", name: "Emoji-Raten", desc: "Erkenne Filme, Songs & mehr aus Emojis", icon: Smile, gradient: "from-yellow-400 to-amber-500", players: "2-10", duration: "5-20", badge: "Neu", rating: 4.7 },
-  { id: "fake-or-fact", name: "Fake or Fact", desc: "Wahrheit oder Lüge? Teste dein Wissen!", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5 },
-  { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4 },
-  { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9 },
+  { id: "bomb", name: "Tickende Bombe", desc: "Bei wem knallt's? Nerven aus Stahl gefragt!", icon: Bomb, gradient: "from-[#ff7350] to-[#ff4444]", players: "3-20", duration: "5-20", badge: "Hot", rating: 4.8, image: "/images/games/bomb.webp" },
+  { id: "headup", name: "Stirnraten", desc: "Begriffe erraten mit Stirn-Power", icon: Brain, gradient: "from-[#cf96ff] to-[#9b59b6]", players: "2-20", duration: "5-20", rating: 4.7, image: "/images/games/headup.webp" },
+  { id: "taboo", name: "Wortverbot", desc: "Erklären ohne Tabu-Wörter", icon: MessageSquareOff, gradient: "from-[#00e3fd] to-[#0099cc]", players: "4-20", duration: "10-30", rating: 4.6, image: "/images/games/taboo.webp" },
+  { id: "category", name: "Zeit-Kategorie", desc: "Gegen die Uhr Begriffe nennen", icon: Timer, gradient: "from-amber-500 to-amber-600", players: "2-15", duration: "5-15", rating: 4.5, image: "/images/games/category.webp" },
+  { id: "hochstapler", name: "Hochstapler", desc: "Wer lügt am besten? Entlarve den Faker!", icon: UserX, gradient: "from-[#cf96ff] to-pink-500", players: "4-15", duration: "10-25", badge: "Neu", rating: 4.9, image: "/images/games/hochstapler.webp" },
+  { id: "drueck-das-wort", name: "Drück das Wort", desc: "Schnell tippen, schnell denken!", icon: Type, gradient: "from-emerald-500 to-green-600", players: "1-8", duration: "3-10", rating: 4.3, image: "/images/games/drueck-das-wort.webp" },
+  { id: "wo-ist-was", name: "Wo ist was?", desc: "Finde den versteckten Gegenstand", icon: SearchIcon, gradient: "from-cyan-400 to-cyan-600", players: "2-10", duration: "5-15", rating: 4.4, image: "/images/games/wo-ist-was.webp" },
+  { id: "split-quiz", name: "Split Quiz", desc: "Team-Quiz mit Wissenssplit", icon: Users, gradient: "from-blue-500 to-blue-700", players: "4-30", duration: "10-30", rating: 4.6, image: "/images/games/split-quiz.webp" },
+  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", desc: "Kooperatives Quiz — Wissen ist aufgeteilt!", icon: Link, gradient: "from-[#00e3fd] to-[#0099cc]", players: "3-10", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/geteilt-gequizzt.webp" },
+  { id: "schnellzeichner", name: "Schnellzeichner", desc: "Zeichne & rate — wer erkennt es zuerst?", icon: Pencil, gradient: "from-[#ff7350] to-[#ff4444]", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.7, image: "/images/games/schnellzeichner.webp" },
+  { id: "wahrheit-pflicht", name: "Wahrheit oder Pflicht", desc: "Der Klassiker — digital und erweitert!", icon: Heart, gradient: "from-pink-500 to-rose-600", players: "2-20", duration: "10-30", badge: "Neu", rating: 4.8, image: "/images/games/wahrheit-pflicht.webp" },
+  { id: "this-or-that", name: "This or That", desc: "Blitz-Entscheidungen — wie tickt die Gruppe?", icon: ArrowLeftRight, gradient: "from-violet-500 to-purple-600", players: "2-20", duration: "5-15", badge: "Neu", rating: 4.5, image: "/images/games/this-or-that.webp" },
+  { id: "wer-bin-ich", name: "Wer bin ich?", desc: "Errate wer du bist mit Ja/Nein-Fragen", icon: QuestionMark, gradient: "from-amber-400 to-orange-500", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.6, image: "/images/games/wer-bin-ich.webp" },
+  { id: "emoji-raten", name: "Emoji-Raten", desc: "Erkenne Filme, Songs & mehr aus Emojis", icon: Smile, gradient: "from-yellow-400 to-amber-500", players: "2-10", duration: "5-20", badge: "Neu", rating: 4.7, image: "/images/games/emoji-raten.webp" },
+  { id: "fake-or-fact", name: "Fake or Fact", desc: "Wahrheit oder Lüge? Teste dein Wissen!", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5, image: "/images/games/fake-or-fact.webp" },
+  { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
+  { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
 ];
 
 const categories = [
@@ -121,13 +122,20 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
       onClick={onClick}
       className={`group relative w-full overflow-hidden rounded-[1rem] border border-[#484750]/10 bg-[#1f1f29] text-left transition-all hover:border-[#cf96ff]/30 hover:shadow-[0_0_20px_rgba(207,150,255,0.15)] ${premiumInfo?.isLocked ? "opacity-75" : ""}`}
     >
-      {/* Gradient header */}
+      {/* Game card header with image */}
       <div className={`relative flex aspect-[16/9] items-center justify-center bg-gradient-to-br ${game.gradient} overflow-hidden`}>
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 50%),
-                            radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 40%)`,
-        }} />
-        <Icon className={`relative z-10 h-12 w-12 text-white drop-shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${premiumInfo?.isLocked ? "opacity-50" : ""}`} />
+        {game.image && (
+          <img src={game.image} alt={game.name} loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        {!game.image && (
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                              radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 40%)`,
+          }} />
+        )}
+        <Icon className={`relative z-10 h-12 w-12 text-white drop-shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${premiumInfo?.isLocked ? "opacity-50" : ""} ${game.image ? "opacity-0" : ""}`} />
         {premiumInfo && isGamePremium(game.id) && (
           <PremiumBadge isLocked={premiumInfo.isLocked} freePlaysLeft={premiumInfo.freePlaysLeft} isPremium={premiumInfo.isPremium} />
         )}
