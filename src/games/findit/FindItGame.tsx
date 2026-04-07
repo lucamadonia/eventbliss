@@ -248,9 +248,13 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 function parseGrid(grid: string): string[][] {
-  return grid.split('\n').map(row => [...new Intl.Segmenter('en', { granularity: 'grapheme' })].map(() => '').length > 0
-    ? Array.from(new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(row)).map(s => s.segment)
-    : row.split('')
+  const segmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl
+    ? new Intl.Segmenter('en', { granularity: 'grapheme' })
+    : null;
+  return grid.split('\n').map(row =>
+    segmenter
+      ? Array.from(segmenter.segment(row), s => s.segment)
+      : Array.from(row)
   );
 }
 
@@ -322,6 +326,11 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const questionStartRef = useRef(0);
   const studyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const questionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Latest-ref pattern: avoids stale closures across timer callbacks and forward references
+  const handleTimeoutRef = useRef<() => void>(() => {});
+  const advanceQuestionRef = useRef<() => void>(() => {});
+  const advanceRoundRef = useRef<() => void>(() => {});
 
   // --- Online sync: host broadcasts, non-host receives ---
   useEffect(() => {
@@ -448,26 +457,27 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       setQuestionCountdown(prev => {
         if (prev <= 1) {
           clearInterval(questionTimerRef.current!);
-          handleTimeout();
+          handleTimeoutRef.current();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => { if (questionTimerRef.current) clearInterval(questionTimerRef.current); };
-  }, [phase, questionIdx, round]);
+  }, [phase, mode, questionIdx, round, currentPlayerIdx]);
 
   // ------- Handle timeout -------
   const handleTimeout = useCallback(() => {
     if (mode === 'unterschiede') {
-      advanceRound();
+      advanceRoundRef.current();
     } else {
       setAnswerCorrect(false);
       setPlayers(prev => prev.map((p, i) => i === currentPlayerIdx ? { ...p, wrong: p.wrong + 1, streak: 0 } : p));
       setPhase('answer');
-      setTimeout(() => advanceQuestion(), 1500);
+      setTimeout(() => advanceQuestionRef.current(), 1500);
     }
-  }, [mode, currentPlayerIdx, questionIdx, round, totalRounds]);
+  }, [mode, currentPlayerIdx]);
+  handleTimeoutRef.current = handleTimeout;
 
   // ------- Handle answer selection -------
   const handleAnswer = useCallback((optionIdx: number) => {
@@ -501,7 +511,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     }));
 
     setPhase('answer');
-    setTimeout(() => advanceQuestion(), 1500);
+    setTimeout(() => advanceQuestionRef.current(), 1500);
   }, [selectedAnswer, phase, currentScene, questionIdx, currentPlayerIdx]);
 
   // ------- Handle diff tap -------
@@ -518,7 +528,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       ));
       if (newFound.length >= currentDiff.diffs.length) {
         if (questionTimerRef.current) clearInterval(questionTimerRef.current);
-        setTimeout(() => advanceRound(), 1000);
+        setTimeout(() => advanceRoundRef.current(), 1000);
       }
     } else {
       // Wrong tap penalty
@@ -540,9 +550,10 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       setQuestionCountdown(15);
       questionStartRef.current = performance.now();
     } else {
-      advanceRound();
+      advanceRoundRef.current();
     }
   }, [currentScene, questionIdx]);
+  advanceQuestionRef.current = advanceQuestion;
 
   // ------- Advance round -------
   const advanceRound = useCallback(() => {
@@ -562,7 +573,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       setRound(nextRound);
       startRound(mode, scenePool, diffPool, nextRound * players.length + nextPlayer, studyTime);
     }, 1500);
-  }, [currentPlayerIdx, players.length, round, totalRounds, mode, scenePool, diffPool, studyTime]);
+  }, [currentPlayerIdx, players.length, round, totalRounds, mode, scenePool, diffPool, studyTime, startRound]);
+  advanceRoundRef.current = advanceRound;
 
   // ------- Restart -------
   useEffect(() => {

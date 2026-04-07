@@ -60,14 +60,16 @@ const EP = `
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-interface TabooGameProps { players: string[]; onClose?: () => void; online?: OnlineGameProps }
+interface TabooGameProps { players?: string[]; onClose?: () => void; online?: OnlineGameProps }
 
-export default function TabooGame({ players, onClose, online }: TabooGameProps) {
+export default function TabooGame({ players = [], onClose, online }: TabooGameProps) {
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
   const [phase, setPhase] = useState<Phase>('setup');
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
+  const [playerNames, setPlayerNames] = useState<string[]>(players);
+  const [playerInput, setPlayerInput] = useState('');
   const [teams, setTeams] = useState<[Team, Team]>(buildTeams(players));
   const [activeTeamIdx, setActiveTeamIdx] = useState(0);
   const [explainerIdx, setExplainerIdx] = useState<[number, number]>([0, 0]);
@@ -93,6 +95,23 @@ export default function TabooGame({ players, onClose, online }: TabooGameProps) 
       { name: 'Team B', color: 'bg-[#8ff5ff]', textColor: 'text-[#8ff5ff]', borderColor: 'border-[#8ff5ff]', players: s.slice(mid), score: 0 },
     ];
   }
+
+  function addPlayer() {
+    const name = playerInput.trim();
+    if (!name || playerNames.includes(name)) return;
+    const next = [...playerNames, name];
+    setPlayerNames(next);
+    setTeams(buildTeams(next));
+    setPlayerInput('');
+  }
+
+  function removePlayer(name: string) {
+    const next = playerNames.filter(n => n !== name);
+    setPlayerNames(next);
+    setTeams(buildTeams(next));
+  }
+
+  const canStart = teams[0].players.length >= 1 && teams[1].players.length >= 1;
 
   function drawCard(): TabooCard {
     if (deckPos.current >= deck.current.length) { deck.current = shuffle(getTabooCards()); deckPos.current = 0; }
@@ -220,14 +239,56 @@ export default function TabooGame({ players, onClose, online }: TabooGameProps) 
             <h1 className="text-3xl font-black italic tracking-tight text-[#df8eff] neon-glow">WORTVERBOT</h1>
             <p className="text-[#a8abb3] text-sm mt-2 max-w-xs mx-auto">Erklaere Begriffe, ohne die verbotenen Woerter zu verwenden!</p>
           </div>
+          {/* Player input */}
+          <div className="glass-card border border-[#44484f]/30 rounded-2xl p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Users className="w-4 h-4 text-[#df8eff]/70" />
+              <span className="text-xs font-semibold text-[#a8abb3] uppercase tracking-wider">Spieler ({playerNames.length})</span>
+            </div>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={playerInput}
+                onChange={(e) => setPlayerInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPlayer(); } }}
+                placeholder="Name eingeben..."
+                maxLength={20}
+                className="flex-1 px-3 py-2 rounded-full bg-[#f1f3fc]/[0.06] border border-[#44484f]/30 text-sm text-[#f1f3fc] placeholder:text-[#a8abb3]/50 focus:outline-none focus:border-[#df8eff]/50"
+              />
+              <button
+                type="button"
+                onClick={addPlayer}
+                disabled={!playerInput.trim()}
+                className="px-4 py-2 rounded-full bg-[#df8eff] text-[#0a0e14] text-xs font-bold uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_12px_rgba(223,142,255,0.4)] transition-shadow"
+              >
+                +
+              </button>
+            </div>
+            {playerNames.length === 0 && (
+              <p className="text-xs text-[#a8abb3]/60 text-center">Mindestens 2 Spieler hinzufuegen (1 pro Team)</p>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-3 mb-6">
             {teams.map((t, i) => (
               <div key={i} className={`rounded-2xl glass-card border p-4 ${i === 0 ? 'border-[#df8eff]/20' : 'border-[#8ff5ff]/20'}`}>
                 <div className={`text-xs font-bold uppercase tracking-widest mb-3 ${i === 0 ? 'text-[#df8eff]' : 'text-[#8ff5ff]'}`}>{t.name}</div>
-                <div className="space-y-1.5">{t.players.map(p => (
-                  <div key={p} className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-[#df8eff]' : 'bg-[#8ff5ff]'}`} />
-                    <span className="text-sm text-[#f1f3fc]/70 truncate">{p}</span>
+                <div className="space-y-1.5">{t.players.length === 0 ? (
+                  <div className="text-xs text-[#a8abb3]/40 italic">Leer</div>
+                ) : t.players.map(p => (
+                  <div key={p} className="flex items-center justify-between gap-2 group">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${i === 0 ? 'bg-[#df8eff]' : 'bg-[#8ff5ff]'}`} />
+                      <span className="text-sm text-[#f1f3fc]/70 truncate">{p}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removePlayer(p)}
+                      className="text-[#a8abb3]/40 hover:text-[#ff6b98] transition-colors flex-shrink-0"
+                      aria-label={`${p} entfernen`}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}</div>
               </div>
@@ -251,9 +312,18 @@ export default function TabooGame({ players, onClose, online }: TabooGameProps) 
           </div>
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
             <div className="max-w-lg mx-auto space-y-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={() => setPhase('turnStart')}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] text-base font-black italic uppercase tracking-wide shadow-[0_0_30px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" />Spiel starten
+              <motion.button
+                whileTap={canStart ? { scale: 0.97 } : undefined}
+                onClick={() => canStart && setPhase('turnStart')}
+                disabled={!canStart}
+                className={`w-full py-4 rounded-full text-base font-black italic uppercase tracking-wide flex items-center justify-center gap-2 transition-all ${
+                  canStart
+                    ? 'bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] shadow-[0_0_30px_rgba(223,142,255,0.3)]'
+                    : 'bg-[#f1f3fc]/[0.06] text-[#a8abb3]/40 cursor-not-allowed'
+                }`}
+              >
+                <Play className="w-5 h-5" />
+                {canStart ? 'Spiel starten' : 'Spieler hinzufuegen'}
               </motion.button>
               {onClose && <button onClick={onClose} className="w-full py-3 text-[#a8abb3]/50 text-sm hover:text-[#a8abb3] transition">Zurueck</button>}
             </div>
