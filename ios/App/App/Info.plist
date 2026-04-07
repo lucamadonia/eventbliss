@@ -5,7 +5,17 @@
     <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>de</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EventBliss benoetigt Zugriff auf die Kamera, damit du Profilbilder aufnehmen und Fotos mit deinen Spielergebnissen teilen kannst.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>EventBliss benoetigt Zugriff auf deine Fotos, damit du ein Profilbild auswaehlen kannst.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>EventBliss speichert mit deiner Erlaubnis Spielergebnisse und Fotos in deiner Mediathek.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>EventBliss verwendet deinen Standort fuer Geografie-Spiele wie World Finder und Street View.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDisplayName</key>
         <string>EventBliss</string>
 	<key>CFBundleExecutable</key>
