@@ -1,0 +1,145 @@
+name: iOS — Build & TestFlight
+
+# Triggers:
+# - Push to main → auto-build + upload
+# - Manual dispatch → on-demand build
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'public/legal/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release notes for TestFlight build'
+        required: false
+        default: 'New build from GitHub Actions'
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Upload to TestFlight
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    env:
+      BUNDLE_ID: app.eventbliss
+      XCODE_PROJECT: ios/App/App.xcodeproj
+      XCODE_SCHEME: App
+      XCODE_CONFIG: Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python (for codemagic-cli-tools)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Install codemagic-cli-tools
+        run: pip install codemagic-cli-tools
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build web (Capacitor mode)
+        run: CAPACITOR_BUILD=true npm run build
+
+      - name: Capacitor sync iOS
+        run: npx cap sync ios
+
+      - name: Prepare App Store Connect API key
+        env:
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+
+      - name: Fetch signing files from App Store Connect
+        env:
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID"
+
+      - name: Initialize keychain and add certificates
+        run: |
+          keychain initialize
+          keychain add-certificates
+
+      - name: Set provisioning profiles in Xcode project
+        run: xcode-project use-profiles
+
+      - name: Set build number
+        run: |
+          cd ios/App
+          # Use GitHub run number as unique build number (monotonic)
+          agvtool new-version -all ${{ github.run_number }}
+
+      - name: Build IPA
+        run: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME" \
+            --config "$XCODE_CONFIG"
+
+      - name: Upload to TestFlight
+        env:
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          app-store-connect publish \
+            --path "build/ios/ipa/App.ipa" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --testflight \
+            --beta-group "Internal Testers" || \
+          app-store-connect publish \
+            --path "build/ios/ipa/App.ipa" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID"
+
+      - name: Upload IPA as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: |
+            build/ios/ipa/*.ipa
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: |
+            /tmp/xcodebuild_logs/*.log
+            build/ios/xcresult/
+          retention-days: 14
+          if-no-files-found: warn
