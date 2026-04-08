@@ -75,16 +75,36 @@ jobs:
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
 
+      - name: Verify API key file
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          echo "Key path: $KEY_PATH"
+          if [ ! -f "$KEY_PATH" ]; then
+            echo "ERROR: Key file not found at $KEY_PATH"
+            ls -la "$HOME/.appstoreconnect/private_keys/" || true
+            exit 1
+          fi
+          SIZE=$(wc -c < "$KEY_PATH")
+          echo "Key file size: $SIZE bytes"
+          if [ "$SIZE" -lt 100 ]; then
+            echo "ERROR: Key file looks empty or too small"
+            exit 1
+          fi
+          head -1 "$KEY_PATH"
+          tail -1 "$KEY_PATH"
+
       - name: Fetch signing files from App Store Connect
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         run: |
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID"
+            --verbose
 
       - name: Initialize keychain and add certificates
         run: |
