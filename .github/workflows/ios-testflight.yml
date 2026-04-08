@@ -122,6 +122,8 @@ jobs:
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
             --private-key "@file:$KEY_PATH" \
             --verbose
 
@@ -151,16 +153,22 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
         run: |
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+          echo "Uploading: $IPA_PATH"
           app-store-connect publish \
-            --path "build/ios/ipa/App.ipa" \
+            --path "$IPA_PATH" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --private-key "@file:$KEY_PATH" \
             --testflight \
             --beta-group "Internal Testers" || \
           app-store-connect publish \
-            --path "build/ios/ipa/App.ipa" \
+            --path "$IPA_PATH" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID"
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --private-key "@file:$KEY_PATH" \
+            --testflight
 
       - name: Upload IPA as workflow artifact
         if: always()
