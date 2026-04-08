@@ -10,14 +10,20 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
+      // Manual hide — SplashExperience handles the fade-out for a
+      // seamless handoff to the animated JS splash.
+      launchAutoHide: false,
       backgroundColor: '#1a1625',
-      launchAutoHide: true,
+      backgroundColorDark: '#1a1625',
       showSpinner: false,
-      launchShowDuration: 2000,
+      androidSplashResourceName: 'splash',
+      splashFullScreen: true,
+      splashImmersive: true,
     },
     Keyboard: {
       resize: 'body',
       style: 'dark',
+      resizeOnFullScreen: true,
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

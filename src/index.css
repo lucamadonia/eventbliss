@@ -563,4 +563,63 @@
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
   .safe-left { padding-left: env(safe-area-inset-left); }
   .safe-right { padding-right: env(safe-area-inset-right); }
+
+  /* Safe area as HEIGHT (for spacer divs) */
+  .h-safe-top { height: env(safe-area-inset-top); }
+  .h-safe-bottom { height: env(safe-area-inset-bottom); }
+
+  /* Safe area as MARGIN */
+  .mt-safe-top { margin-top: env(safe-area-inset-top); }
+  .mb-safe-bottom { margin-bottom: env(safe-area-inset-bottom); }
+
+  /* Native touch-friendly scroll */
+  .native-scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ==========================================================================
+   Native App Mode — activated when Capacitor wraps the WebView.
+   These rules ONLY apply inside the iOS/Android app shell, never on web.
+   ========================================================================== */
+html.capacitor-native {
+  /* Prevent rubber-band scroll at document level */
+  overscroll-behavior: none;
+  /* Lock root layout to viewport */
+  height: 100%;
+  width: 100%;
+}
+
+html.capacitor-native body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Disable text selection by default — inputs/textareas opt back in */
+  -webkit-user-select: none;
+  user-select: none;
+  /* No elastic bounce */
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  /* Force dark background to match native splash and avoid any flash */
+  background-color: #1a1625 !important;
+}
+
+html.capacitor-native input,
+html.capacitor-native textarea,
+html.capacitor-native [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Hide scrollbars in native mode (touch-friendly) */
+html.capacitor-native ::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Extra bottom padding for pages that need to clear the tab bar */
+html.capacitor-native .pb-tabbar {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }

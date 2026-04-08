@@ -41,6 +41,8 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { languages } from "@/i18n";
 import PageLoader from "@/components/ui/PageLoader";
+import { isNative } from "@/lib/platform";
+const NativeApp = lazy(() => import("@/components/native/NativeApp"));
 import Landing from "./pages/Landing";
 import CreateEvent from "./pages/CreateEvent";
 import JoinEvent from "./pages/JoinEvent";
@@ -71,6 +73,24 @@ const AppContent = () => {
     document.documentElement.dir = currentLang?.dir || 'ltr';
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
+
+  // On native platforms (iOS/Android via Capacitor), render a completely
+  // different app tree with bottom tab bar, animated splash, etc.
+  // Desktop and mobile web are unchanged below.
+  if (isNative()) {
+    return (
+      <TooltipProvider>
+        <BrowserRouter>
+          <DeepLinkHandler />
+          <Toaster />
+          <Sonner />
+          <Suspense fallback={<div className="fixed inset-0 bg-background" />}>
+            <NativeApp />
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider>
