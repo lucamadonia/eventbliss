@@ -1,8 +1,5 @@
 name: iOS — Build & TestFlight
 
-# Triggers:
-# - Push to main → auto-build + upload
-# - Manual dispatch → on-demand build
 on:
   push:
     branches: [main]
@@ -11,27 +8,21 @@ on:
       - 'public/legal/**'
       - '**.md'
   workflow_dispatch:
-    inputs:
-      release_notes:
-        description: 'Release notes for TestFlight build'
-        required: false
-        default: 'New build from GitHub Actions'
 
 concurrency:
   group: ios-testflight
   cancel-in-progress: true
 
+env:
+  BUNDLE_ID: app.eventbliss
+  XCODE_PROJECT: ios/App/App.xcodeproj
+  XCODE_SCHEME: App
+
 jobs:
   build:
     name: Build & Upload to TestFlight
     runs-on: macos-14
-    timeout-minutes: 60
-
-    env:
-      BUNDLE_ID: app.eventbliss
-      XCODE_PROJECT: ios/App/App.xcodeproj
-      XCODE_SCHEME: App
-      XCODE_CONFIG: Release
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -43,19 +34,11 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Setup Python (for codemagic-cli-tools)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Select Xcode
         run: |
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer || \
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
-
-      - name: Install codemagic-cli-tools
-        run: pip install codemagic-cli-tools
 
       - name: Install npm dependencies
         run: npm ci
@@ -66,168 +49,70 @@ jobs:
       - name: Capacitor sync iOS
         run: npx cap sync ios
 
-      - name: Prepare App Store Connect API key (base64-decoded)
+      - name: Install Apple certificate and provisioning profile
         env:
-          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
-          # Detect whether the secret is base64 or raw PEM
-          if echo "$APP_STORE_CONNECT_PRIVATE_KEY" | head -1 | grep -q "BEGIN PRIVATE KEY"; then
-            echo "Detected raw PEM format"
-            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" > "$KEY_PATH"
-          else
-            echo "Detected base64 format — decoding"
-            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" | base64 -d > "$KEY_PATH"
-          fi
-          chmod 600 "$KEY_PATH"
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
 
-      - name: Verify API key file
-        env:
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-        run: |
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
-          if [ ! -f "$KEY_PATH" ]; then
-            echo "ERROR: Key file not found"
-            exit 1
-          fi
-          SIZE=$(wc -c < "$KEY_PATH")
-          echo "Key file size: $SIZE bytes"
-          if [ "$SIZE" -lt 100 ]; then
-            echo "ERROR: Key file looks empty or too small"
-            cat "$KEY_PATH" || true
-            exit 1
-          fi
-          FIRST=$(head -1 "$KEY_PATH")
-          LAST=$(tail -1 "$KEY_PATH")
-          echo "First line: $FIRST"
-          echo "Last line:  $LAST"
-          if ! echo "$FIRST" | grep -q "BEGIN PRIVATE KEY"; then
-            echo "ERROR: Invalid PEM header"
-            exit 1
-          fi
-          if ! echo "$LAST" | grep -q "END PRIVATE KEY"; then
-            echo "ERROR: Invalid PEM footer"
-            exit 1
-          fi
-          echo "✓ Key file looks valid"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
-      - name: Generate RSA private key for Distribution certificate
-        run: |
-          openssl genrsa -out "$HOME/certificate_private_key.pem" 2048
-          chmod 600 "$HOME/certificate_private_key.pem"
+          # Import distribution certificate
+          CERTIFICATE_PATH=$RUNNER_TEMP/distribution.p12
+          echo "$CERTIFICATE_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
+          security import "$CERTIFICATE_PATH" \
+            -P "$CERTIFICATE_PASSWORD" \
+            -A -t cert -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
 
-      - name: Fetch signing files from App Store Connect
-        env:
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-        run: |
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create \
-            --certificate-key "@file:$HOME/certificate_private_key.pem" \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID" \
-            --private-key "@file:$KEY_PATH" \
-            --verbose
+          # Install provisioning profile
+          PP_PATH=$RUNNER_TEMP/distribution.mobileprovision
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Initialize keychain and add certificates
-        run: |
-          keychain initialize
-          keychain add-certificates
+          PROFILE_PLIST=$(/usr/bin/security cms -D -i "$PP_PATH")
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$PROFILE_PLIST")
+          PP_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$PROFILE_PLIST")
 
-      - name: Verify profile installation
-        run: |
-          echo "=== Profile files in standard location ==="
-          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p "$PROFILES_DIR"
-          ls -la "$PROFILES_DIR" || true
-          echo ""
-          echo "=== Parsing each profile ==="
-          for f in "$PROFILES_DIR"/*.mobileprovision; do
-            if [ -f "$f" ]; then
-              echo "--- $f ---"
-              NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
-              UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
-              APPID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
-              echo "  Name:  $NAME"
-              echo "  UUID:  $UUID"
-              echo "  AppID: $APPID"
-            fi
-          done
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PP_UUID".mobileprovision
 
-      - name: Find EventBliss profile and export to env
-        id: profile
-        run: |
-          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
-          MATCHED_PROFILE=""
-          MATCHED_NAME=""
-          MATCHED_UUID=""
-          for f in "$PROFILES_DIR"/*.mobileprovision; do
-            [ -f "$f" ] || continue
-            PLIST=$(/usr/bin/security cms -D -i "$f" 2>/dev/null)
-            APPID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< "$PLIST" 2>/dev/null || echo "")
-            if [[ "$APPID" == *"$BUNDLE_ID" ]]; then
-              MATCHED_PROFILE="$f"
-              MATCHED_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$PLIST")
-              MATCHED_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$PLIST")
-              break
-            fi
-          done
-          if [ -z "$MATCHED_PROFILE" ]; then
-            echo "ERROR: No profile matching bundle ID $BUNDLE_ID found"
-            exit 1
-          fi
-          echo "Matched profile: $MATCHED_NAME ($MATCHED_UUID)"
-          echo "profile_name=$MATCHED_NAME" >> $GITHUB_OUTPUT
-          echo "profile_uuid=$MATCHED_UUID" >> $GITHUB_OUTPUT
-          # Also copy the file to UUID.mobileprovision format (Xcode-expected)
-          cp "$MATCHED_PROFILE" "$PROFILES_DIR/$MATCHED_UUID.mobileprovision"
+          echo "PP_UUID=$PP_UUID" >> $GITHUB_ENV
+          echo "PP_NAME=$PP_NAME" >> $GITHUB_ENV
+          echo "Installed provisioning profile: $PP_NAME ($PP_UUID)"
 
-      - name: Set build number
+      - name: Set build number from run number
         run: |
           cd ios/App
-          # Use GitHub run number as unique build number (monotonic)
           agvtool new-version -all ${{ github.run_number }}
 
-      - name: Show Xcode project settings
-        run: |
-          echo "=== xcodebuild -list ==="
-          xcodebuild -list -project "$XCODE_PROJECT" || true
-          echo ""
-          echo "=== Relevant build settings ==="
-          xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -config "$XCODE_CONFIG" -showBuildSettings 2>&1 | grep -E "CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING_PROFILE|PRODUCT_BUNDLE_IDENTIFIER|SWIFT_VERSION|IPHONEOS_DEPLOYMENT_TARGET" | sort -u || true
-          echo ""
-          echo "=== Installed provisioning profiles ==="
-          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" 2>&1 || true
-          echo ""
-          echo "=== Keychain identities ==="
-          security find-identity -v -p codesigning 2>&1 || true
-
-      - name: Archive with xcodebuild (direct, full output)
+      - name: Build archive
         run: |
           set -o pipefail
           mkdir -p build/ios/xcarchive
-          xcodebuild \
+          xcodebuild archive \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
-            -configuration "$XCODE_CONFIG" \
+            -configuration Release \
             -archivePath "build/ios/xcarchive/App.xcarchive" \
             -destination "generic/platform=iOS" \
-            -allowProvisioningUpdates \
-            DEVELOPMENT_TEAM=WU8U8HD73G \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="${{ steps.profile.outputs.profile_name }}" \
+            PROVISIONING_PROFILE_SPECIFIER="$PP_NAME" \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            archive \
             2>&1 | tee build/ios/xcarchive/archive.log
 
-      - name: Export IPA with xcodebuild
+      - name: Create ExportOptions.plist
         run: |
-          mkdir -p build/ios/ipa
+          mkdir -p build/ios
           cat > build/ios/ExportOptions.plist <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -236,7 +121,7 @@ jobs:
             <key>method</key>
             <string>app-store-connect</string>
             <key>teamID</key>
-            <string>WU8U8HD73G</string>
+            <string>${{ secrets.APPLE_TEAM_ID }}</string>
             <key>signingStyle</key>
             <string>manual</string>
             <key>signingCertificate</key>
@@ -244,7 +129,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
               <key>${{ env.BUNDLE_ID }}</key>
-              <string>${{ steps.profile.outputs.profile_uuid }}</string>
+              <string>$PP_UUID</string>
             </dict>
             <key>stripSwiftSymbols</key>
             <true/>
@@ -257,12 +142,16 @@ jobs:
           </dict>
           </plist>
           PLIST
+          cat build/ios/ExportOptions.plist
+
+      - name: Export IPA
+        run: |
+          mkdir -p build/ios/ipa
           set -o pipefail
           xcodebuild -exportArchive \
             -archivePath "build/ios/xcarchive/App.xcarchive" \
             -exportPath "build/ios/ipa" \
             -exportOptionsPlist "build/ios/ExportOptions.plist" \
-            -allowProvisioningUpdates \
             2>&1 | tee build/ios/ipa/export.log
           echo "=== IPA produced ==="
           find build/ios/ipa -name "*.ipa" -exec ls -la {} \;
@@ -271,23 +160,35 @@ jobs:
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         run: |
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          # Write API key file for xcrun altool / xcodebuild upload
+          mkdir -p ~/private_keys
+          KEY_PATH="$HOME/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          # Support both raw PEM and base64-encoded secret
+          if echo "$APP_STORE_CONNECT_PRIVATE_KEY" | head -1 | grep -q "BEGIN PRIVATE KEY"; then
+            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" > "$KEY_PATH"
+          else
+            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" | base64 --decode > "$KEY_PATH"
+          fi
+          chmod 600 "$KEY_PATH"
+
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
           echo "Uploading: $IPA_PATH"
-          app-store-connect publish \
-            --path "$IPA_PATH" \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID" \
-            --private-key "@file:$KEY_PATH" \
-            --testflight \
-            --beta-group "Internal Testers" || \
-          app-store-connect publish \
-            --path "$IPA_PATH" \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID" \
-            --private-key "@file:$KEY_PATH" \
-            --testflight
+
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+
+      - name: Clean up keychain
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" 2>/dev/null || true
+          rm -f "$RUNNER_TEMP/distribution.p12"
+          rm -f "$RUNNER_TEMP/distribution.mobileprovision"
+          rm -rf ~/private_keys
 
       - name: Upload IPA as workflow artifact
         if: always()
@@ -305,7 +206,8 @@ jobs:
         with:
           name: xcodebuild-logs
           path: |
+            build/ios/xcarchive/archive.log
+            build/ios/ipa/export.log
             /tmp/xcodebuild_logs/*.log
-            build/ios/xcresult/
           retention-days: 14
           if-no-files-found: warn
