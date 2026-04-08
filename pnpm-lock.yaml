@@ -12,14 +12,14 @@ importers:
         specifier: 8.0.2
         version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/app':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.1
+        version: 8.0.1(@capacitor/core@8.0.2)
       '@capacitor/browser':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.3
+        version: 8.0.3(@capacitor/core@8.0.2)
       '@capacitor/camera':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.2
+        version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/cli':
         specifier: 8.0.2
         version: 8.0.2
@@ -27,26 +27,26 @@ importers:
         specifier: 8.0.2
         version: 8.0.2
       '@capacitor/haptics':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.2
+        version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/ios':
         specifier: 8.0.2
         version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/keyboard':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.2
+        version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/local-notifications':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.2
+        version: 8.0.2(@capacitor/core@8.0.2)
       '@capacitor/push-notifications':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.3
+        version: 8.0.3(@capacitor/core@8.0.2)
       '@capacitor/splash-screen':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.1
+        version: 8.0.1(@capacitor/core@8.0.2)
       '@capacitor/status-bar':
-        specifier: 8.0.0
-        version: 8.0.0(@capacitor/core@8.0.2)
+        specifier: 8.0.2
+        version: 8.0.2(@capacitor/core@8.0.2)
       '@diffusionstudio/vits-web':
         specifier: ^1.0.3
         version: 1.0.3
@@ -819,8 +819,8 @@ packages:
     peerDependencies:
       '@capacitor/core': ^8.0.0
 
-  '@capacitor/app@8.0.0':
-    resolution: {integrity: sha512-OwzIkUs4w433Bu9WWAEbEYngXEfJXZ9Wmdb8eoaqzYBgB0W9/3Ed/mh6sAYPNBAZlpyarmewgP7Nb+d3Vrh+xA==}
+  '@capacitor/app@8.0.1':
+    resolution: {integrity: sha512-yeG3yyA0ETKqvgqexwHMBlmVOF13A1hRXzv/km0Ptv5TrNIZvZJK4MTI3uiqvnbHrzoJGP5DwWAjEXEfi90v3Q==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -829,13 +829,13 @@ packages:
     engines: {node: '>=10.3.0'}
     hasBin: true
 
-  '@capacitor/browser@8.0.0':
-    resolution: {integrity: sha512-xey7maszGABKuStvXDV4vXN+EzIyz0o7zlyzw4JKG6o/1GzqeqHqVuE+8Ux+Hks3DZji4LoriWZVgVF6mR6RGg==}
+  '@capacitor/browser@8.0.3':
+    resolution: {integrity: sha512-WJWPHEPbweiFoHYmVlCbZf5yrqJ2Rchx2Xvbmd+3Lf+Zkpq3nXBThThY2CF69lYEg1NINGF9BcHThIOEU1gZlQ==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@capacitor/camera@8.0.0':
-    resolution: {integrity: sha512-Iu8j2oxoIhY2mLuoEckbL7PFgw1XFm1nqmeWdIkILpcT3H9A+BrSDUDlzWqM/EeaDKo6JnhR59tYHwUhOdXaUg==}
+  '@capacitor/camera@8.0.2':
+    resolution: {integrity: sha512-v2BsKFjJSg0dMl/UO7jEvrAvjChCGrzQG5jx4yN2t8LnC7eFDh0YkSg1t+AMNveSDSKCvAsTk/JUzzr5VAvzmg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -852,8 +852,8 @@ packages:
   '@capacitor/core@8.0.2':
     resolution: {integrity: sha512-EXZfxkL6GFJS2cb7TIBR7RiHA5iz6ufDcl1VmUpI2pga3lJ5Ck2+iqbx7N+osL3XYem9ad4XCidJEMm64DX6UQ==}
 
-  '@capacitor/haptics@8.0.0':
-    resolution: {integrity: sha512-DY1IUOjke1T4ITl7mFHQIKCaJJyHYAYRYHG9bVApU7PDOZiMVGMp48Yjzdqjya+wv/AHS5mDabSTUmhJ5uDvBA==}
+  '@capacitor/haptics@8.0.2':
+    resolution: {integrity: sha512-c2hZzRR5Fk1tbTvhG1jhh2XBAf3EhnIerMIb2sl7Mt41Gxx1fhBJFDa0/BI1IbY4loVepyyuqNC9820/GZuoWQ==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -862,28 +862,28 @@ packages:
     peerDependencies:
       '@capacitor/core': ^8.0.0
 
-  '@capacitor/keyboard@8.0.0':
-    resolution: {integrity: sha512-ycPW6iQyFwzDK95jihesj5EGiyyGSfbBqNek11iNp9tBOB7zDeYkUA2S/vPpOETt3dhP6pWr7a9gNVGuEfj11g==}
+  '@capacitor/keyboard@8.0.2':
+    resolution: {integrity: sha512-he6xKmTBp5AhVrWJeEi6RYkJ25FjLLdNruBU2wafpITk3Nb7UdzOj96x3K6etFuEj8/rtn9WXBTs1o2XA86A1A==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@capacitor/local-notifications@8.0.0':
-    resolution: {integrity: sha512-Jn2IJs13vhRyOUtYni7PIPdMDYMILb4uI/rRAi7PmGg2lnaKbM5aWBmHZWt0laTYyVApYIbCWmdgBqWx/IH4dQ==}
+  '@capacitor/local-notifications@8.0.2':
+    resolution: {integrity: sha512-X7KE/I4ZutMTGVHNUyTjIugYcQEcHJRLks+TsPnOriuS+lo0geSTuaRln6zAZlJSSXSoVMSSzHexdSbIjR/8iw==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@capacitor/push-notifications@8.0.0':
-    resolution: {integrity: sha512-xJWQLqAfC8b2ETqAPmwDnkKB4t/lVrbYc2D8VpA2fSu10JFSL/R722Vk0Lfl9Lo9WusmyIiQbVfILNQ3iFNGKw==}
+  '@capacitor/push-notifications@8.0.3':
+    resolution: {integrity: sha512-jmBBoJvOzmzem8YoO9dQJBPFiM1bksTNAoV7yksCBN10BybAOtmBF19vFPt/jr2KGAirnPZz0ne2X0OH/rRGtg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@capacitor/splash-screen@8.0.0':
-    resolution: {integrity: sha512-zkFdUSd6C6gd3s3bIEgtO3DVjfwpaX5mmWU9er8xYTg47zr2toEkGtfyE6CPhhErG09fl4rCqrK5DfnGrXLh9w==}
+  '@capacitor/splash-screen@8.0.1':
+    resolution: {integrity: sha512-c/ew/Z3eA7z8l06WoRAtzVF16VwYYrExmHmfGq1Cg675pVzaC/yuucB8/1xG1vhEfnW4fZ1KhSf/kzR1RiVYgg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@capacitor/status-bar@8.0.0':
-    resolution: {integrity: sha512-aIj3bc7z8lfPgOen8HlrBrkfnxpFnh21OCx6jCUx4Mvv+B6eEkUQ49b32DOddgVfr+igRHLX2SYi7duqIsNDXg==}
+  '@capacitor/status-bar@8.0.2':
+    resolution: {integrity: sha512-WXs8YB8B9eEaPZz+bcdY6t2nForF1FLoj/JU0Dl9RRgQnddnS98FEEyDooQhaY7wivr000j4+SC1FyeJkrFO7A==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -6497,7 +6497,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/app@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/app@8.0.1(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
@@ -6526,11 +6526,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@capacitor/browser@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/browser@8.0.3(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/camera@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/camera@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
@@ -6582,7 +6582,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@capacitor/haptics@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/haptics@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
@@ -6590,23 +6590,23 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/keyboard@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/keyboard@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/local-notifications@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/local-notifications@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/push-notifications@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/push-notifications@8.0.3(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/splash-screen@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/splash-screen@8.0.1(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
-  '@capacitor/status-bar@8.0.0(@capacitor/core@8.0.2)':
+  '@capacitor/status-bar@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
       '@capacitor/core': 8.0.2
 
