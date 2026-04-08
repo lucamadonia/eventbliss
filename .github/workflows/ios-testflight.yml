@@ -113,6 +113,11 @@ jobs:
           fi
           echo "✓ Key file looks valid"
 
+      - name: Generate RSA private key for Distribution certificate
+        run: |
+          openssl genrsa -out "$HOME/certificate_private_key.pem" 2048
+          chmod 600 "$HOME/certificate_private_key.pem"
+
       - name: Fetch signing files from App Store Connect
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
@@ -122,6 +127,7 @@ jobs:
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --certificate-key "@file:$HOME/certificate_private_key.pem" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
             --private-key "@file:$KEY_PATH" \
