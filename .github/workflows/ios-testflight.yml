@@ -138,8 +138,53 @@ jobs:
           keychain initialize
           keychain add-certificates
 
-      - name: Set provisioning profiles in Xcode project
-        run: xcode-project use-profiles
+      - name: Verify profile installation
+        run: |
+          echo "=== Profile files in standard location ==="
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+          ls -la "$PROFILES_DIR" || true
+          echo ""
+          echo "=== Parsing each profile ==="
+          for f in "$PROFILES_DIR"/*.mobileprovision; do
+            if [ -f "$f" ]; then
+              echo "--- $f ---"
+              NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
+              UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
+              APPID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< $(/usr/bin/security cms -D -i "$f" 2>/dev/null) 2>/dev/null || echo "UNKNOWN")
+              echo "  Name:  $NAME"
+              echo "  UUID:  $UUID"
+              echo "  AppID: $APPID"
+            fi
+          done
+
+      - name: Find EventBliss profile and export to env
+        id: profile
+        run: |
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          MATCHED_PROFILE=""
+          MATCHED_NAME=""
+          MATCHED_UUID=""
+          for f in "$PROFILES_DIR"/*.mobileprovision; do
+            [ -f "$f" ] || continue
+            PLIST=$(/usr/bin/security cms -D -i "$f" 2>/dev/null)
+            APPID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< "$PLIST" 2>/dev/null || echo "")
+            if [[ "$APPID" == *"$BUNDLE_ID" ]]; then
+              MATCHED_PROFILE="$f"
+              MATCHED_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$PLIST")
+              MATCHED_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$PLIST")
+              break
+            fi
+          done
+          if [ -z "$MATCHED_PROFILE" ]; then
+            echo "ERROR: No profile matching bundle ID $BUNDLE_ID found"
+            exit 1
+          fi
+          echo "Matched profile: $MATCHED_NAME ($MATCHED_UUID)"
+          echo "profile_name=$MATCHED_NAME" >> $GITHUB_OUTPUT
+          echo "profile_uuid=$MATCHED_UUID" >> $GITHUB_OUTPUT
+          # Also copy the file to UUID.mobileprovision format (Xcode-expected)
+          cp "$MATCHED_PROFILE" "$PROFILES_DIR/$MATCHED_UUID.mobileprovision"
 
       - name: Set build number
         run: |
@@ -175,6 +220,7 @@ jobs:
             DEVELOPMENT_TEAM=WU8U8HD73G \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="${{ steps.profile.outputs.profile_name }}" \
             COMPILER_INDEX_STORE_ENABLE=NO \
             archive \
             2>&1 | tee build/ios/xcarchive/archive.log
@@ -193,6 +239,13 @@ jobs:
             <string>WU8U8HD73G</string>
             <key>signingStyle</key>
             <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.BUNDLE_ID }}</key>
+              <string>${{ steps.profile.outputs.profile_uuid }}</string>
+            </dict>
             <key>stripSwiftSymbols</key>
             <true/>
             <key>uploadBitcode</key>
