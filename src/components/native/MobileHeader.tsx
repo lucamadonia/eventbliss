@@ -36,10 +36,10 @@ export function MobileHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 safe-top",
+        "sticky top-0 z-40 safe-top",
         transparent
           ? "bg-transparent"
-          : "bg-background/70 backdrop-blur-2xl border-b border-white/5"
+          : "bg-background/85 backdrop-blur-2xl border-b border-white/5"
       )}
     >
       <div className="flex items-center justify-between px-2 h-14">

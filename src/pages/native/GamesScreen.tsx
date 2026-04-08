@@ -1,17 +1,19 @@
 /**
  * GamesScreen — native "Play" tab. The fun factor.
- * Horizontal category chips + 2-column tactile game cards.
+ * Uses REAL game thumbnails from /images/games/{id}.webp paired with
+ * canonical game IDs that match the /games/:gameId router.
  */
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Gamepad2,
-  Flame,
   Sparkles,
-  Brain,
+  Flame,
   Users,
+  Brain,
   Zap,
+  Map as MapIcon,
+  Star,
   Lock,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -19,63 +21,66 @@ import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-type Category = "all" | "party" | "word" | "action" | "quiz" | "social";
+type Category = "alle" | "party" | "quiz" | "wort" | "karte" | "reaktion" | "social" | "kreativ";
 
 interface GameMeta {
   id: string;
   name: string;
-  emoji: string;
-  category: Category[];
+  desc: string;
+  image: string;
   gradient: string;
   tier: "free" | "premium";
-  description: string;
+  categories: Category[];
+  badge?: "Hot" | "Neu";
 }
 
+// Canonical IDs matching /games/:gameId router and public/images/games/*.webp
 const GAMES: GameMeta[] = [
-  { id: "bomb", name: "Bombe", emoji: "💣", category: ["party", "word"], gradient: "from-red-500 to-orange-500", tier: "free", description: "Wörter weitergeben bevor's knallt" },
-  { id: "taboo", name: "Tabu", emoji: "🚫", category: ["party", "word"], gradient: "from-purple-500 to-pink-500", tier: "free", description: "Umschreiben ohne Tabuwörter" },
-  { id: "headup", name: "Heads Up", emoji: "🧠", category: ["party", "action"], gradient: "from-amber-500 to-orange-500", tier: "free", description: "Erraten mit dem Handy an der Stirn" },
-  { id: "category", name: "Kategorie", emoji: "📚", category: ["party", "quiz"], gradient: "from-cyan-500 to-teal-500", tier: "free", description: "Gemeinsam Worte finden" },
-  { id: "this-or-that", name: "Dies oder Das", emoji: "⚖️", category: ["social"], gradient: "from-violet-500 to-fuchsia-500", tier: "free", description: "Entweder — oder?" },
-  { id: "hochstapler", name: "Impostor", emoji: "🕵️", category: ["party", "social"], gradient: "from-slate-600 to-gray-700", tier: "premium", description: "Finde den Hochstapler" },
-  { id: "wahrheit-pflicht", name: "Wahrheit/Pflicht", emoji: "🎲", category: ["party", "social"], gradient: "from-pink-500 to-rose-500", tier: "premium", description: "Der Klassiker neu gedacht" },
-  { id: "wer-bin-ich", name: "Wer bin ich?", emoji: "🎭", category: ["party"], gradient: "from-emerald-500 to-teal-500", tier: "premium", description: "Zettel auf die Stirn" },
-  { id: "emoji-raten", name: "Emoji Quiz", emoji: "😀", category: ["quiz"], gradient: "from-yellow-500 to-amber-500", tier: "premium", description: "Errate die Wörter" },
-  { id: "fake-or-fact", name: "Fake or Fact", emoji: "🤔", category: ["quiz"], gradient: "from-blue-500 to-indigo-500", tier: "premium", description: "Stimmt's — oder nicht?" },
-  { id: "schnellzeichner", name: "Quickdraw", emoji: "✏️", category: ["action"], gradient: "from-green-500 to-emerald-500", tier: "premium", description: "Zeichnen unter Zeitdruck" },
-  { id: "flaschendrehen", name: "Flaschendrehen", emoji: "🍾", category: ["party"], gradient: "from-teal-500 to-cyan-500", tier: "premium", description: "Digital & mit Kick" },
-  { id: "split-quiz", name: "Split Quiz", emoji: "🔀", category: ["quiz"], gradient: "from-fuchsia-500 to-purple-500", tier: "premium", description: "Team gegen Team" },
-  { id: "story-builder", name: "Story Builder", emoji: "📖", category: ["word"], gradient: "from-indigo-500 to-violet-500", tier: "premium", description: "Gemeinsam Geschichten" },
-  { id: "wo-ist-was", name: "Wo ist was?", emoji: "🗺️", category: ["quiz", "action"], gradient: "from-sky-500 to-blue-500", tier: "premium", description: "Geo-Quiz" },
-  { id: "drueck-das-wort", name: "Drück das Wort", emoji: "🎤", category: ["word"], gradient: "from-rose-500 to-pink-500", tier: "premium", description: "Sprich, aber nicht diese Worte" },
+  { id: "bomb",            name: "Tickende Bombe",    desc: "Bei wem knallt's?",               image: "/images/games/bomb.webp",            gradient: "from-orange-500 to-red-600",       tier: "free",    badge: "Hot", categories: ["party", "quiz"] },
+  { id: "headup",          name: "Stirnraten",        desc: "Erraten mit Stirn-Power",         image: "/images/games/headup.webp",          gradient: "from-violet-500 to-purple-600",    tier: "free",                  categories: ["party", "wort"] },
+  { id: "taboo",           name: "Wortverbot",        desc: "Ohne Tabu-Wörter erklären",       image: "/images/games/taboo.webp",           gradient: "from-cyan-500 to-blue-600",        tier: "free",                  categories: ["party", "wort"] },
+  { id: "category",        name: "Zeit-Kategorie",    desc: "Gegen die Uhr",                   image: "/images/games/category.webp",        gradient: "from-amber-500 to-orange-600",     tier: "free",                  categories: ["wort", "reaktion"] },
+  { id: "this-or-that",    name: "This or That",      desc: "Blitz-Entscheidungen",            image: "/images/games/this-or-that.webp",    gradient: "from-violet-500 to-fuchsia-600",   tier: "free",    badge: "Neu", categories: ["party", "social"] },
+  { id: "hochstapler",     name: "Hochstapler",       desc: "Entlarve den Faker",              image: "/images/games/hochstapler.webp",     gradient: "from-slate-600 to-gray-800",       tier: "premium", badge: "Neu", categories: ["social", "party"] },
+  { id: "wahrheit-pflicht",name: "Wahrheit/Pflicht",  desc: "Der Klassiker — erweitert",       image: "/images/games/wahrheit-pflicht.webp",gradient: "from-pink-500 to-rose-600",        tier: "premium", badge: "Neu", categories: ["party", "social"] },
+  { id: "wer-bin-ich",     name: "Wer bin ich?",      desc: "Ja/Nein-Fragen zum Sieg",         image: "/images/games/wer-bin-ich.webp",     gradient: "from-amber-400 to-orange-500",     tier: "premium", badge: "Neu", categories: ["social", "party"] },
+  { id: "flaschendrehen",  name: "Flaschendrehen",    desc: "Die Flasche entscheidet",         image: "/images/games/flaschendrehen.webp",  gradient: "from-violet-500 to-pink-500",      tier: "premium", badge: "Hot", categories: ["party", "social"] },
+  { id: "emoji-raten",     name: "Emoji-Raten",       desc: "Filme & Songs aus Emojis",        image: "/images/games/emoji-raten.webp",     gradient: "from-yellow-400 to-amber-500",     tier: "premium", badge: "Neu", categories: ["quiz", "kreativ"] },
+  { id: "fake-or-fact",    name: "Fake or Fact",      desc: "Wahrheit oder Lüge?",             image: "/images/games/fake-or-fact.webp",    gradient: "from-red-500 to-rose-600",         tier: "premium", badge: "Neu", categories: ["quiz", "wort"] },
+  { id: "schnellzeichner", name: "Schnellzeichner",   desc: "Zeichnen unter Druck",            image: "/images/games/schnellzeichner.webp", gradient: "from-orange-500 to-red-500",       tier: "premium", badge: "Neu", categories: ["kreativ", "party"] },
+  { id: "split-quiz",      name: "Split Quiz",        desc: "Team-Quiz mit Split",             image: "/images/games/split-quiz.webp",      gradient: "from-blue-500 to-indigo-700",      tier: "premium",               categories: ["quiz", "social"] },
+  { id: "geteilt-gequizzt",name: "Geteilt & Gequizzt",desc: "Kooperatives Quiz",               image: "/images/games/geteilt-gequizzt.webp",gradient: "from-cyan-500 to-blue-600",        tier: "premium", badge: "Neu", categories: ["quiz", "social"] },
+  { id: "story-builder",   name: "Story Builder",     desc: "Verrückte Geschichten",           image: "/images/games/story-builder.webp",   gradient: "from-teal-400 to-emerald-500",     tier: "premium", badge: "Neu", categories: ["kreativ", "wort"] },
+  { id: "wo-ist-was",      name: "Wo ist was?",       desc: "Finde den Ort",                   image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        tier: "premium",               categories: ["karte", "quiz"] },
+  { id: "drueck-das-wort", name: "Drück das Wort",    desc: "Schnell tippen, schnell denken",  image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium",               categories: ["wort", "reaktion"] },
 ];
 
-const CATEGORIES: { id: Category; label: string; icon: typeof Gamepad2 }[] = [
-  { id: "all", label: "Alle", icon: Sparkles },
-  { id: "party", label: "Party", icon: Flame },
-  { id: "social", label: "Social", icon: Users },
-  { id: "word", label: "Wort", icon: Brain },
-  { id: "action", label: "Action", icon: Zap },
-  { id: "quiz", label: "Quiz", icon: Brain },
+const CATEGORIES: { id: Category; label: string; icon: typeof Sparkles }[] = [
+  { id: "alle",     label: "Alle",     icon: Sparkles },
+  { id: "party",    label: "Party",    icon: Flame },
+  { id: "social",   label: "Social",   icon: Users },
+  { id: "quiz",     label: "Quiz",     icon: Brain },
+  { id: "wort",     label: "Wort",     icon: Brain },
+  { id: "karte",    label: "Karte",    icon: MapIcon },
+  { id: "reaktion", label: "Reaktion", icon: Zap },
+  { id: "kreativ",  label: "Kreativ",  icon: Sparkles },
 ];
 
 export default function GamesScreen() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { isPremium } = usePremium();
-  const [category, setCategory] = useState<Category>("all");
+  const [category, setCategory] = useState<Category>("alle");
 
   const filtered = useMemo(
-    () => (category === "all" ? GAMES : GAMES.filter((g) => g.category.includes(category))),
+    () =>
+      category === "alle"
+        ? GAMES
+        : GAMES.filter((g) => g.categories.includes(category)),
     [category]
   );
 
   const playGame = (game: GameMeta) => {
-    if (game.tier === "premium" && !isPremium) {
-      haptics.warning();
-      navigate("/premium");
-      return;
-    }
     haptics.medium();
     navigate(`/games/${game.id}`);
   };
@@ -84,15 +89,17 @@ export default function GamesScreen() {
     <div className="relative h-full flex flex-col bg-background safe-top">
       {/* Header */}
       <div className="px-5 pt-4 pb-3">
-        <p className="text-sm text-white/50 font-medium">Party Games</p>
-        <h1 className="text-3xl font-display font-bold text-white mt-1">
+        <p className="text-sm text-accent font-semibold uppercase tracking-wider">
+          Party Games
+        </p>
+        <h1 className="text-3xl font-display font-bold text-white mt-1 leading-tight">
           Bereit für Spaß?
         </h1>
       </div>
 
       {/* Category chips */}
-      <div className="px-5 pb-3">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+      <div className="pb-3">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar px-5">
           {CATEGORIES.map((c) => {
             const Icon = c.icon;
             const active = category === c.id;
@@ -127,47 +134,106 @@ export default function GamesScreen() {
           initial="initial"
           animate="animate"
         >
-          {filtered.map((game) => (
-            <motion.button
-              key={game.id}
-              variants={staggerItem}
-              whileTap={{ scale: 0.96 }}
-              transition={spring.snappy}
-              onClick={() => playGame(game)}
-              className={cn(
-                "relative aspect-[3/4] rounded-3xl overflow-hidden p-4 flex flex-col justify-between bg-gradient-to-br text-left border border-white/10",
-                game.gradient
-              )}
-            >
-              {/* Noise overlay */}
-              <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none">
-                <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
-              </div>
-
-              {/* Lock badge */}
-              {game.tier === "premium" && !isPremium && (
-                <div className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-black/50 backdrop-blur flex items-center justify-center border border-white/20">
-                  <Lock className="w-3.5 h-3.5 text-amber-300" />
+          {filtered.map((game) => {
+            const locked = game.tier === "premium" && !isPremium;
+            return (
+              <motion.button
+                key={game.id}
+                variants={staggerItem}
+                whileTap={{ scale: 0.96 }}
+                transition={spring.snappy}
+                onClick={() => playGame(game)}
+                className="relative aspect-[3/4] rounded-3xl overflow-hidden text-left border border-white/10 bg-card group"
+              >
+                {/* Real game image */}
+                <div className="absolute inset-0">
+                  <img
+                    src={game.image}
+                    alt={game.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback: hide broken image, gradient shows through
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  {/* Gradient tint overlay for readability */}
+                  <div
+                    className={cn(
+                      "absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"
+                    )}
+                  />
+                  <div
+                    className={cn(
+                      "absolute inset-0 bg-gradient-to-br mix-blend-overlay opacity-60",
+                      game.gradient
+                    )}
+                  />
                 </div>
-              )}
 
-              {/* Emoji */}
-              <div className="relative text-5xl drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                {game.emoji}
-              </div>
+                {/* Top badges */}
+                <div className="absolute top-2 left-2 right-2 z-10 flex items-start justify-between">
+                  {game.badge ? (
+                    <span
+                      className={cn(
+                        "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide",
+                        game.badge === "Hot"
+                          ? "bg-red-500 text-white"
+                          : "bg-emerald-500 text-white"
+                      )}
+                    >
+                      {game.badge}
+                    </span>
+                  ) : (
+                    <span />
+                  )}
+                  {locked && (
+                    <div className="w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center border border-amber-400/40">
+                      <Lock className="w-3.5 h-3.5 text-amber-300" />
+                    </div>
+                  )}
+                </div>
 
-              {/* Title & desc */}
-              <div className="relative">
-                <p className="text-base font-display font-bold text-white leading-tight">
-                  {game.name}
-                </p>
-                <p className="text-[11px] text-white/70 mt-0.5 line-clamp-2 leading-tight">
-                  {game.description}
-                </p>
-              </div>
-            </motion.button>
-          ))}
+                {/* Title + description */}
+                <div className="absolute inset-x-0 bottom-0 z-10 p-3 space-y-0.5">
+                  <p className="text-base font-display font-bold text-white leading-tight drop-shadow-lg">
+                    {game.name}
+                  </p>
+                  <p className="text-[11px] text-white/80 leading-tight line-clamp-2 drop-shadow">
+                    {game.desc}
+                  </p>
+                </div>
+
+                {/* Hover glow */}
+                <div className="absolute inset-0 ring-1 ring-inset ring-white/0 group-active:ring-primary/50 transition-all rounded-3xl pointer-events-none" />
+              </motion.button>
+            );
+          })}
         </motion.div>
+
+        {/* Footer: premium hint */}
+        {!isPremium && (
+          <motion.button
+            onClick={() => {
+              haptics.light();
+              navigate("/premium");
+            }}
+            className="mx-5 mt-5 mb-2 w-[calc(100%-40px)] relative overflow-hidden rounded-2xl p-4 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-pink-500/20 border border-amber-400/30 flex items-center gap-3 text-left"
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <Star className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-white">
+                Premium freischalten
+              </p>
+              <p className="text-xs text-white/60">
+                Alle 17 Spiele unbegrenzt spielen
+              </p>
+            </div>
+          </motion.button>
+        )}
       </div>
     </div>
   );
