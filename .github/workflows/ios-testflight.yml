@@ -147,12 +147,20 @@ jobs:
           # Use GitHub run number as unique build number (monotonic)
           agvtool new-version -all ${{ github.run_number }}
 
+      - name: Show Xcode project settings
+        run: |
+          xcodebuild -list -project "$XCODE_PROJECT" || true
+          echo "---"
+          xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -config "$XCODE_CONFIG" -showBuildSettings 2>&1 | grep -E "CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING_PROFILE|PRODUCT_BUNDLE_IDENTIFIER|SWIFT_VERSION|IPHONEOS_DEPLOYMENT_TARGET" | sort -u || true
+
       - name: Build IPA
         run: |
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME" \
-            --config "$XCODE_CONFIG"
+            --config "$XCODE_CONFIG" \
+            --verbose \
+            --show-output
 
       - name: Upload to TestFlight
         env:
