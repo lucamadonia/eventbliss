@@ -66,44 +66,63 @@ jobs:
       - name: Capacitor sync iOS
         run: npx cap sync ios
 
-      - name: Prepare App Store Connect API key
+      - name: Prepare App Store Connect API key (base64-decoded)
         env:
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
-          chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          # Detect whether the secret is base64 or raw PEM
+          if echo "$APP_STORE_CONNECT_PRIVATE_KEY" | head -1 | grep -q "BEGIN PRIVATE KEY"; then
+            echo "Detected raw PEM format"
+            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" > "$KEY_PATH"
+          else
+            echo "Detected base64 format — decoding"
+            printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" | base64 -d > "$KEY_PATH"
+          fi
+          chmod 600 "$KEY_PATH"
 
       - name: Verify API key file
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
         run: |
           KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
-          echo "Key path: $KEY_PATH"
           if [ ! -f "$KEY_PATH" ]; then
-            echo "ERROR: Key file not found at $KEY_PATH"
-            ls -la "$HOME/.appstoreconnect/private_keys/" || true
+            echo "ERROR: Key file not found"
             exit 1
           fi
           SIZE=$(wc -c < "$KEY_PATH")
           echo "Key file size: $SIZE bytes"
           if [ "$SIZE" -lt 100 ]; then
             echo "ERROR: Key file looks empty or too small"
+            cat "$KEY_PATH" || true
             exit 1
           fi
-          head -1 "$KEY_PATH"
-          tail -1 "$KEY_PATH"
+          FIRST=$(head -1 "$KEY_PATH")
+          LAST=$(tail -1 "$KEY_PATH")
+          echo "First line: $FIRST"
+          echo "Last line:  $LAST"
+          if ! echo "$FIRST" | grep -q "BEGIN PRIVATE KEY"; then
+            echo "ERROR: Invalid PEM header"
+            exit 1
+          fi
+          if ! echo "$LAST" | grep -q "END PRIVATE KEY"; then
+            echo "ERROR: Invalid PEM footer"
+            exit 1
+          fi
+          echo "✓ Key file looks valid"
 
       - name: Fetch signing files from App Store Connect
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         run: |
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --private-key "@file:$KEY_PATH" \
             --verbose
 
       - name: Initialize keychain and add certificates
