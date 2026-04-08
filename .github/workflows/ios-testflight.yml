@@ -149,18 +149,70 @@ jobs:
 
       - name: Show Xcode project settings
         run: |
+          echo "=== xcodebuild -list ==="
           xcodebuild -list -project "$XCODE_PROJECT" || true
-          echo "---"
+          echo ""
+          echo "=== Relevant build settings ==="
           xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -config "$XCODE_CONFIG" -showBuildSettings 2>&1 | grep -E "CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING_PROFILE|PRODUCT_BUNDLE_IDENTIFIER|SWIFT_VERSION|IPHONEOS_DEPLOYMENT_TARGET" | sort -u || true
+          echo ""
+          echo "=== Installed provisioning profiles ==="
+          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" 2>&1 || true
+          echo ""
+          echo "=== Keychain identities ==="
+          security find-identity -v -p codesigning 2>&1 || true
 
-      - name: Build IPA
+      - name: Archive with xcodebuild (direct, full output)
         run: |
-          xcode-project build-ipa \
-            --project "$XCODE_PROJECT" \
-            --scheme "$XCODE_SCHEME" \
-            --config "$XCODE_CONFIG" \
-            --verbose \
-            --show-output
+          set -o pipefail
+          mkdir -p build/ios/xcarchive
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration "$XCODE_CONFIG" \
+            -archivePath "build/ios/xcarchive/App.xcarchive" \
+            -destination "generic/platform=iOS" \
+            -allowProvisioningUpdates \
+            DEVELOPMENT_TEAM=WU8U8HD73G \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_STYLE=Manual \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            archive \
+            2>&1 | tee build/ios/xcarchive/archive.log
+
+      - name: Export IPA with xcodebuild
+        run: |
+          mkdir -p build/ios/ipa
+          cat > build/ios/ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>WU8U8HD73G</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>destination</key>
+            <string>export</string>
+          </dict>
+          </plist>
+          PLIST
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath "build/ios/xcarchive/App.xcarchive" \
+            -exportPath "build/ios/ipa" \
+            -exportOptionsPlist "build/ios/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            2>&1 | tee build/ios/ipa/export.log
+          echo "=== IPA produced ==="
+          find build/ios/ipa -name "*.ipa" -exec ls -la {} \;
 
       - name: Upload to TestFlight
         env:
