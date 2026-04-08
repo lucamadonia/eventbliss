@@ -28,11 +28,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Select Xcode
         run: |
@@ -40,14 +45,14 @@ jobs:
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
 
-      - name: Install npm dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build web (Capacitor mode)
-        run: CAPACITOR_BUILD=true npm run build
+        run: CAPACITOR_BUILD=true pnpm run build
 
       - name: Capacitor sync iOS
-        run: npx cap sync ios
+        run: pnpm exec cap sync ios
 
       - name: Install Apple certificate and provisioning profile
         env:
