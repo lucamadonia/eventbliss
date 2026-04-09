@@ -296,7 +296,7 @@ function GameItemCard({
             <h3 className="text-base font-semibold text-foreground truncate">
               {t(game.nameKey)}
             </h3>
-            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 leading-relaxed">
               {t(game.descriptionKey)}
             </p>
             <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
@@ -334,9 +334,54 @@ function GameItemCard({
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 pt-0 border-t border-border/50">
-              <p className="text-sm text-foreground/80 leading-relaxed mt-3 whitespace-pre-line">
-                {t(game.instructionsKey)}
-              </p>
+              <div className="text-sm text-foreground/80 leading-relaxed mt-3 space-y-2">
+                {t(game.instructionsKey).split('\n').filter(Boolean).map((line, i) => {
+                  // Render **Label:** sections with emoji + bold styling
+                  const boldMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)/);
+                  if (boldMatch) {
+                    const label = boldMatch[1];
+                    const rest = boldMatch[2];
+                    const emoji = label.toLowerCase().includes('vorbereitung') ? '📋'
+                      : label.toLowerCase().includes('ablauf') ? '🎯'
+                      : label.toLowerCase().includes('tipp') ? '💡'
+                      : label.toLowerCase().includes('variante') ? '🔄'
+                      : label.toLowerCase().includes('material') ? '🧰'
+                      : label.toLowerCase().includes('regeln') ? '📜'
+                      : label.toLowerCase().includes('ziel') ? '🏆'
+                      : label.toLowerCase().includes('dauer') ? '⏱️'
+                      : '▸';
+                    return (
+                      <div key={i}>
+                        <p className="font-bold text-foreground flex items-center gap-1.5 mt-2 mb-1">
+                          <span>{emoji}</span> {label}:
+                        </p>
+                        {rest && <p className="text-foreground/70 pl-6">{rest}</p>}
+                      </div>
+                    );
+                  }
+                  // Bullet points
+                  if (line.startsWith('- ') || line.startsWith('• ')) {
+                    return (
+                      <p key={i} className="text-foreground/70 pl-6 flex gap-1.5">
+                        <span className="text-primary">•</span>
+                        <span>{line.replace(/^[-•]\s*/, '')}</span>
+                      </p>
+                    );
+                  }
+                  // Numbered items
+                  const numMatch = line.match(/^(\d+)[.)]\s*(.*)/);
+                  if (numMatch) {
+                    return (
+                      <p key={i} className="text-foreground/70 pl-6 flex gap-1.5">
+                        <span className="text-primary font-bold min-w-[16px]">{numMatch[1]}.</span>
+                        <span>{numMatch[2]}</span>
+                      </p>
+                    );
+                  }
+                  // Normal paragraph
+                  return <p key={i} className="text-foreground/70">{line}</p>;
+                })}
+              </div>
               {game.materials && game.materials.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Material</p>
