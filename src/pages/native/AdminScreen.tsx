@@ -57,6 +57,7 @@ interface AdminCard {
 
 const ADMIN_CARDS: AdminCard[] = [
   { id: "stats",         label: "Dashboard",       icon: BarChart3,    gradient: "from-violet-500 to-fuchsia-500",  description: "Users, Events, Revenue" },
+  { id: "games",         label: "Games Content",   icon: Gamepad2,     gradient: "from-orange-500 to-red-500",     description: "Fragen & Inhalte" },
   { id: "users",         label: "Users",           icon: Users,        gradient: "from-cyan-500 to-blue-500",      description: "Rollen & Passwörter" },
   { id: "credits",       label: "AI Credits",      icon: Sparkles,     gradient: "from-amber-500 to-orange-500",   description: "Limits & Adjustments" },
   { id: "subscriptions", label: "Subscriptions",   icon: CreditCard,   gradient: "from-emerald-500 to-teal-500",   description: "Pläne verwalten" },
@@ -67,7 +68,6 @@ const ADMIN_CARDS: AdminCard[] = [
   { id: "analytics",     label: "Agency Analytics", icon: TrendingUp,  gradient: "from-sky-500 to-blue-500",       description: "Interaktionen" },
   { id: "agencies",      label: "Agency Affiliates", icon: Building2,  gradient: "from-slate-500 to-gray-600",     description: "Multi-Agency" },
   { id: "settings",      label: "Plan Settings",   icon: Settings,     gradient: "from-purple-500 to-violet-500",  description: "Features & Preise" },
-  { id: "games",         label: "Games Content",   icon: Gamepad2,     gradient: "from-orange-500 to-red-500",     description: "Fragen & Inhalte" },
 ];
 
 function getTabComponent(id: string) {
