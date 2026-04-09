@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { haptics } from "@/hooks/useHaptics";
 
 interface CountdownOverlayProps {
   onComplete: () => void;
@@ -36,13 +37,16 @@ export function CountdownOverlay({ onComplete, startFrom = 3 }: CountdownOverlay
 
   useEffect(() => {
     playTick(false);
+    haptics.heavy(); // Haptic on first tick
     const timer = setInterval(() => {
       setCount((prev) => {
         const next = prev - 1;
         if (next > 0) {
           playTick(false);
+          haptics.heavy(); // Heavy impact on each countdown tick
         } else if (next === 0) {
           playTick(true);
+          haptics.celebrate(); // Triple success burst on GO!
         }
         return next;
       });
@@ -69,6 +73,18 @@ export function CountdownOverlay({ onComplete, startFrom = 3 }: CountdownOverlay
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
+          {/* Pulsing ring on each tick */}
+          <AnimatePresence>
+            <motion.div
+              key={`ring-${count}`}
+              className="absolute w-40 h-40 rounded-full border-2 border-primary"
+              initial={{ scale: 0.5, opacity: 0.8 }}
+              animate={{ scale: 3, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </AnimatePresence>
+
           <AnimatePresence mode="wait">
             <motion.span
               key={display}

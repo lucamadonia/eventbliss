@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Medal, ArrowLeft, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
+import { haptics } from "@/hooks/useHaptics";
 
 interface ResultPlayer {
   name: string;
@@ -77,6 +78,11 @@ export function ResultScreen({
   const longestStreak = useMemo(() => {
     return Math.max(...sorted.map((p) => p.streak), 0);
   }, [sorted]);
+
+  // Celebrate on mount — triple haptic burst for the win screen
+  useEffect(() => {
+    haptics.celebrate();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-950 px-4 py-8 relative">

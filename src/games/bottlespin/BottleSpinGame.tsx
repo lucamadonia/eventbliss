@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import { haptics } from '@/hooks/useHaptics';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
@@ -110,10 +111,17 @@ export default function BottleSpinGame() {
     const sliceAngle = 360 / players.length;
     const targetAngle = targetIdx * sliceAngle;
     const extraSpins = (Math.floor(Math.random() * 4) + 3) * 360;
-    setRotation(rotation + extraSpins + targetAngle - (rotation % 360) + sliceAngle / 2);
+    // Point the bottle neck (top = 0°) directly at the target player.
+    // Players are laid out starting at -π/2 (top), so player 0 = 0°, player 1 = sliceAngle°, etc.
+    // We need the final rotation to land with the neck pointing at targetAngle.
+    const currentNormalized = rotation % 360;
+    const finalAngle = rotation - currentNormalized + extraSpins + targetAngle;
+    setRotation(finalAngle);
     setTimeout(() => {
       setIsSpinning(false); setSelectedIdx(targetIdx); lastSelectedRef.current = targetIdx;
-      playStopSound(); try { navigator.vibrate?.([80, 40, 80]); } catch { /* */ }
+      playStopSound();
+      haptics.success();
+      try { navigator.vibrate?.([80, 40, 80]); } catch { /* */ }
       if (mode !== 'nur-flasche') setTimeout(() => showCard(), 600);
     }, 3200);
   };
@@ -260,21 +268,47 @@ export default function BottleSpinGame() {
               <motion.div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center"
                 animate={{ rotate: rotation }}
                 transition={{ type: 'tween', duration: 3, ease: [0.15, 0.85, 0.25, 1] }}>
-                <svg width="110" height="110" viewBox="0 0 120 120">
+                <svg width="120" height="120" viewBox="0 0 120 120">
                   <defs>
-                    <linearGradient id="btlGradEP" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#df8eff" /><stop offset="50%" stopColor="#ff6b98" /><stop offset="100%" stopColor="#8ff5ff" />
+                    {/* Glass bottle gradient — green tinted glass */}
+                    <linearGradient id="btlGlass" x1="0.3" y1="0" x2="0.8" y2="1">
+                      <stop offset="0%" stopColor="#4ade80" stopOpacity="0.9" />
+                      <stop offset="35%" stopColor="#22c55e" stopOpacity="0.85" />
+                      <stop offset="70%" stopColor="#15803d" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#14532d" stopOpacity="0.95" />
+                    </linearGradient>
+                    {/* Highlight streak */}
+                    <linearGradient id="btlHighlight" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="white" stopOpacity="0" />
+                      <stop offset="40%" stopColor="white" stopOpacity="0.35" />
+                      <stop offset="60%" stopColor="white" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="white" stopOpacity="0" />
                     </linearGradient>
                     <filter id="btlGlowEP">
-                      <feGaussianBlur stdDeviation="4" result="blur" />
+                      <feGaussianBlur stdDeviation="3" result="blur" />
                       <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
                     </filter>
-                    <filter id="centerDotGlow"><feGaussianBlur stdDeviation="2" /></filter>
                   </defs>
-                  <path d="M55 95 L55 55 L47 55 L60 12 L73 55 L65 55 L65 95 Z"
-                    fill="url(#btlGradEP)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#btlGlowEP)" opacity="0.95" />
-                  <circle cx="60" cy="60" r="8" fill="#df8eff" opacity="0.25" filter="url(#centerDotGlow)" />
-                  <circle cx="60" cy="60" r="4" fill="white" opacity="0.3" className="pulse-ring" />
+
+                  {/* === BOTTLE BODY (pointing UP = neck at top) === */}
+                  {/* Bottom half: round body */}
+                  <ellipse cx="60" cy="82" rx="18" ry="22" fill="url(#btlGlass)" filter="url(#btlGlowEP)" />
+                  {/* Shoulder taper */}
+                  <path d="M42 78 Q42 62 52 55 L52 55 L68 55 Q78 62 78 78 Z" fill="url(#btlGlass)" />
+                  {/* Neck */}
+                  <rect x="54" y="22" width="12" height="35" rx="3" fill="url(#btlGlass)" />
+                  {/* Lip / mouth ring */}
+                  <rect x="52" y="18" width="16" height="6" rx="3" fill="url(#btlGlass)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
+                  {/* Pointer tip at very top — so you know where it points */}
+                  <polygon points="60,8 55,18 65,18" fill="#4ade80" opacity="0.9" />
+
+                  {/* Glass highlight streak */}
+                  <rect x="55" y="20" width="5" height="60" rx="2" fill="url(#btlHighlight)" />
+                  <ellipse cx="55" cy="82" rx="5" ry="14" fill="url(#btlHighlight)" opacity="0.5" />
+
+                  {/* Center dot */}
+                  <circle cx="60" cy="60" r="5" fill="white" opacity="0.15" />
+                  <circle cx="60" cy="60" r="2.5" fill="white" opacity="0.3" />
                 </svg>
               </motion.div>
             </div>
