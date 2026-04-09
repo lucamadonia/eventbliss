@@ -2,12 +2,13 @@
  * ProfileScreen — native "Profile" tab.
  * User avatar, settings links, theme toggle, language, premium, logout.
  */
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Crown,
   Settings,
-  Bell,
   Globe,
   Palette,
   Shield,
@@ -15,17 +16,23 @@ import {
   LogOut,
   ChevronRight,
   Sparkles,
+  Check,
+  Moon,
+  Sun,
+  Flower2,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
+import { languages } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 interface Item {
   icon: typeof Settings;
   label: string;
-  to?: string;
+  sublabel?: string;
   onClick?: () => void;
   destructive?: boolean;
 }
@@ -34,6 +41,10 @@ export default function ProfileScreen() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { user, isPremium } = useAuthContext();
+  const { i18n } = useTranslation();
+  const { theme, setTheme } = useTheme();
+  const [showLangPicker, setShowLangPicker] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
 
   const displayName =
     user?.user_metadata?.first_name ||
@@ -42,6 +53,8 @@ export default function ProfileScreen() {
     "Gast";
   const email = user?.email ?? "";
   const initials = displayName.slice(0, 2).toUpperCase();
+
+  const currentLang = languages.find((l) => l.code === i18n.language);
 
   const go = (path: string) => {
     haptics.light();
@@ -54,11 +67,26 @@ export default function ProfileScreen() {
     navigate("/auth");
   };
 
+  const themes = [
+    { id: "dark", label: "Dunkel", icon: Moon },
+    { id: "light", label: "Hell", icon: Sun },
+    { id: "rose", label: "Rosé", icon: Flower2 },
+  ];
+
   const items: Item[] = [
     { icon: Settings, label: "Einstellungen", onClick: () => go("/settings") },
-    { icon: Bell, label: "Benachrichtigungen", onClick: () => go("/settings") },
-    { icon: Globe, label: "Sprache", onClick: () => go("/settings") },
-    { icon: Palette, label: "Darstellung", onClick: () => go("/settings") },
+    {
+      icon: Globe,
+      label: "Sprache",
+      sublabel: `${currentLang?.flag || "🌐"} ${currentLang?.name || "Deutsch"}`,
+      onClick: () => { haptics.light(); setShowLangPicker((v) => !v); setShowThemePicker(false); },
+    },
+    {
+      icon: Palette,
+      label: "Darstellung",
+      sublabel: themes.find((t) => t.id === theme)?.label || "Dunkel",
+      onClick: () => { haptics.light(); setShowThemePicker((v) => !v); setShowLangPicker(false); },
+    },
     { icon: Shield, label: "Datenschutz", onClick: () => go("/legal/privacy") },
     { icon: HelpCircle, label: "Hilfe & Support", onClick: () => go("/legal/imprint") },
     { icon: LogOut, label: "Abmelden", onClick: handleLogout, destructive: true },
@@ -158,30 +186,108 @@ export default function ProfileScreen() {
                 whileTap={{ scale: 0.98, backgroundColor: "rgba(255,255,255,0.05)" }}
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
-                  item.destructive ? "text-red-400" : "text-white"
+                  item.destructive ? "text-red-400" : "text-foreground"
                 )}
               >
                 <div
                   className={cn(
                     "w-9 h-9 rounded-xl flex items-center justify-center",
-                    item.destructive ? "bg-red-500/15" : "bg-white/5"
+                    item.destructive ? "bg-red-500/15" : "bg-foreground/5"
                   )}
                 >
                   <Icon
                     className={cn(
                       "w-4 h-4",
-                      item.destructive ? "text-red-400" : "text-white/80"
+                      item.destructive ? "text-red-400" : "text-foreground/80"
                     )}
                   />
                 </div>
                 <span className="flex-1 text-sm font-medium">{item.label}</span>
-                <ChevronRight className="w-4 h-4 text-white/30" />
+                {item.sublabel && (
+                  <span className="text-xs text-muted-foreground mr-1">{item.sublabel}</span>
+                )}
+                <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
               </motion.button>
             );
           })}
         </motion.div>
 
-        <p className="text-center text-xs text-white/30 mt-6 mb-4">
+        {/* Language picker — inline expand */}
+        <AnimatePresence>
+          {showLangPicker && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
+            >
+              <div className="p-2 max-h-64 overflow-y-auto">
+                {languages.map((lang) => {
+                  const active = i18n.language === lang.code;
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        haptics.select();
+                        i18n.changeLanguage(lang.code);
+                        setShowLangPicker(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
+                        active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
+                      )}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span className="flex-1">{lang.name}</span>
+                      {active && <Check className="w-4 h-4 text-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Theme picker — inline expand */}
+        <AnimatePresence>
+          {showThemePicker && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
+            >
+              <div className="p-2">
+                {themes.map((t) => {
+                  const active = theme === t.id;
+                  const ThemeIcon = t.icon;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        haptics.select();
+                        setTheme(t.id);
+                        setShowThemePicker(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
+                        active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
+                      )}
+                    >
+                      <ThemeIcon className="w-4 h-4" />
+                      <span className="flex-1">{t.label}</span>
+                      {active && <Check className="w-4 h-4 text-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <p className="text-center text-xs text-muted-foreground mt-6 mb-4">
           EventBliss · Version 1.0.0
         </p>
       </div>

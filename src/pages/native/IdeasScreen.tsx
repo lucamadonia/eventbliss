@@ -116,7 +116,7 @@ export default function IdeasScreen() {
   };
 
   return (
-    <div className="relative h-full flex flex-col bg-background safe-top">
+    <div className="relative h-full overflow-y-auto native-scroll bg-background safe-top pb-tabbar">
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <motion.div
@@ -133,7 +133,7 @@ export default function IdeasScreen() {
         />
       </div>
 
-      {/* Header */}
+      {/* Header — scrolls with content */}
       <div className="px-5 pt-4 pb-3">
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-amber-400" />
@@ -145,6 +145,9 @@ export default function IdeasScreen() {
             begeistern
           </span>
         </h1>
+        <p className="text-sm text-white/50 mt-1.5">
+          147 Spiele · 56 Themen · Für jeden Anlass
+        </p>
       </div>
 
       {/* Tab toggle */}
@@ -214,8 +217,8 @@ export default function IdeasScreen() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto native-scroll pb-tabbar">
+      {/* Content — inline in the same scroll container */}
+      <div>
         <AnimatePresence mode="wait">
           {tab === "games" ? (
             <motion.div
