@@ -264,51 +264,67 @@ export default function BottleSpinGame() {
                 );
               })}
 
-              {/* Bottle SVG */}
+              {/* Center table surface — visual anchor for the bottle */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                {/* Outer ring */}
+                <div className="w-[160px] h-[160px] rounded-full border border-white/[0.06] bg-white/[0.02]"
+                  style={{ boxShadow: 'inset 0 0 40px rgba(139,92,246,0.08)' }} />
+              </div>
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="w-[80px] h-[80px] rounded-full border border-white/[0.04] bg-white/[0.01]" />
+              </div>
+
+              {/* Bottle — centered, spinning, lying flat (top-down view) */}
               <motion.div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center"
                 animate={{ rotate: rotation }}
                 transition={{ type: 'tween', duration: 3, ease: [0.15, 0.85, 0.25, 1] }}>
-                <svg width="120" height="120" viewBox="0 0 120 120">
+                <svg width="160" height="160" viewBox="0 0 160 160">
                   <defs>
-                    {/* Glass bottle gradient — green tinted glass */}
-                    <linearGradient id="btlGlass" x1="0.3" y1="0" x2="0.8" y2="1">
-                      <stop offset="0%" stopColor="#4ade80" stopOpacity="0.9" />
-                      <stop offset="35%" stopColor="#22c55e" stopOpacity="0.85" />
-                      <stop offset="70%" stopColor="#15803d" stopOpacity="0.9" />
+                    <linearGradient id="btlGlass" x1="0.3" y1="0" x2="0.7" y2="1">
+                      <stop offset="0%" stopColor="#4ade80" stopOpacity="0.95" />
+                      <stop offset="40%" stopColor="#22c55e" stopOpacity="0.9" />
+                      <stop offset="75%" stopColor="#15803d" stopOpacity="0.9" />
                       <stop offset="100%" stopColor="#14532d" stopOpacity="0.95" />
                     </linearGradient>
-                    {/* Highlight streak */}
                     <linearGradient id="btlHighlight" x1="0" y1="0" x2="1" y2="0">
                       <stop offset="0%" stopColor="white" stopOpacity="0" />
-                      <stop offset="40%" stopColor="white" stopOpacity="0.35" />
-                      <stop offset="60%" stopColor="white" stopOpacity="0.15" />
+                      <stop offset="35%" stopColor="white" stopOpacity="0.4" />
+                      <stop offset="55%" stopColor="white" stopOpacity="0.15" />
                       <stop offset="100%" stopColor="white" stopOpacity="0" />
                     </linearGradient>
                     <filter id="btlGlowEP">
                       <feGaussianBlur stdDeviation="3" result="blur" />
                       <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
                     </filter>
+                    <filter id="btlShadow">
+                      <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.4" />
+                    </filter>
                   </defs>
 
-                  {/* === BOTTLE BODY (pointing UP = neck at top) === */}
-                  {/* Bottom half: round body */}
-                  <ellipse cx="60" cy="82" rx="18" ry="22" fill="url(#btlGlass)" filter="url(#btlGlowEP)" />
-                  {/* Shoulder taper */}
-                  <path d="M42 78 Q42 62 52 55 L52 55 L68 55 Q78 62 78 78 Z" fill="url(#btlGlass)" />
-                  {/* Neck */}
-                  <rect x="54" y="22" width="12" height="35" rx="3" fill="url(#btlGlass)" />
-                  {/* Lip / mouth ring */}
-                  <rect x="52" y="18" width="16" height="6" rx="3" fill="url(#btlGlass)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
-                  {/* Pointer tip at very top — so you know where it points */}
-                  <polygon points="60,8 55,18 65,18" fill="#4ade80" opacity="0.9" />
+                  {/* Bottle drawn centered at (80,80), neck pointing UP.
+                      Body extends from center downward, neck extends upward.
+                      Rotation pivot = SVG center = bottle center of mass. */}
 
-                  {/* Glass highlight streak */}
-                  <rect x="55" y="20" width="5" height="60" rx="2" fill="url(#btlHighlight)" />
-                  <ellipse cx="55" cy="82" rx="5" ry="14" fill="url(#btlHighlight)" opacity="0.5" />
+                  <g filter="url(#btlShadow)">
+                    {/* Body — round bottom half */}
+                    <ellipse cx="80" cy="100" rx="16" ry="20" fill="url(#btlGlass)" />
+                    {/* Shoulder — tapers from body to neck */}
+                    <path d="M64 96 Q64 82 72 76 L72 76 L88 76 Q96 82 96 96 Z" fill="url(#btlGlass)" />
+                    {/* Neck — long and thin */}
+                    <rect x="74" y="35" width="12" height="43" rx="4" fill="url(#btlGlass)" />
+                    {/* Lip ring at top of neck */}
+                    <rect x="72" y="30" width="16" height="7" rx="4" fill="url(#btlGlass)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8" />
+                    {/* Pointer arrow tip — makes it clear where it points */}
+                    <polygon points="80,16 74,30 86,30" fill="#4ade80" opacity="0.95" />
+                  </g>
 
-                  {/* Center dot */}
-                  <circle cx="60" cy="60" r="5" fill="white" opacity="0.15" />
-                  <circle cx="60" cy="60" r="2.5" fill="white" opacity="0.3" />
+                  {/* Glass highlights */}
+                  <rect x="76" y="32" width="4" height="65" rx="2" fill="url(#btlHighlight)" opacity="0.8" />
+                  <ellipse cx="76" cy="100" rx="4" ry="12" fill="url(#btlHighlight)" opacity="0.4" />
+
+                  {/* Center rotation dot */}
+                  <circle cx="80" cy="80" r="4" fill="white" opacity="0.12" />
+                  <circle cx="80" cy="80" r="2" fill="white" opacity="0.25" />
                 </svg>
               </motion.div>
             </div>
