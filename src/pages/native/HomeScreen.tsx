@@ -1,7 +1,8 @@
 /**
  * HomeScreen — native home tab. The app's face on mobile.
- * Ambient background, personalized greeting, primary CTAs, recent events.
+ * Ambient FloatingOrbs, typewriter greeting, pull-to-refresh, event carousel.
  */
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -17,19 +18,39 @@ import {
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useMyEvents } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
+import { FloatingOrbs } from "@/components/vfx/FloatingOrbs";
 import { cn } from "@/lib/utils";
+
+function useTypewriter(text: string, speed = 40) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const timer = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(timer);
+    }, speed);
+    return () => clearInterval(timer);
+  }, [text, speed]);
+  return displayed;
+}
 
 export default function HomeScreen() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const { events = [] } = useMyEvents();
+  const { events = [], refetch } = useMyEvents();
   const haptics = useHaptics();
 
   const firstName =
     user?.user_metadata?.first_name ||
     user?.email?.split("@")[0] ||
     "Freund";
+
+  const greetingText = `Hi ${firstName} 👋`;
+  const typedGreeting = useTypewriter(greetingText, 50);
 
   const upcoming = events
     .filter((e) => !e.archived_at && !e.deleted_at)
@@ -40,40 +61,40 @@ export default function HomeScreen() {
     navigate(path);
   };
 
+  const { containerRef, PullIndicator } = usePullToRefresh({
+    onRefresh: async () => {
+      await refetch();
+    },
+  });
+
   return (
-    <div className="relative h-full overflow-y-auto native-scroll safe-top pb-tabbar">
+    <div
+      ref={containerRef}
+      className="relative h-full overflow-y-auto native-scroll safe-top pb-tabbar"
+    >
+      {/* Pull indicator */}
+      <PullIndicator />
+
       {/* Ambient background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-background" />
-        <motion.div
-          className="absolute top-0 left-0 w-[140%] h-[60vh] -translate-x-1/4 rounded-full blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 60%)",
-          }}
-          animate={{ x: ["-20%", "10%", "-20%"], y: ["0%", "5%", "0%"] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-[30%] right-0 w-[100%] h-[50vh] translate-x-1/4 rounded-full blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent 60%)",
-          }}
-          animate={{ x: ["10%", "-10%", "10%"], y: ["0%", "-5%", "0%"] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-        />
+        <FloatingOrbs />
       </div>
 
-      {/* Greeting */}
+      {/* Greeting — typewriter */}
       <motion.div
         className="px-5 pt-6 pb-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...spring.soft, delay: 0.1 }}
       >
-        <p className="text-sm text-white/50 font-medium">
-          Hi {firstName} 👋
+        <p className="text-sm text-white/50 font-medium h-5">
+          {typedGreeting}
+          <motion.span
+            className="inline-block w-0.5 h-4 bg-primary ml-0.5 align-middle"
+            animate={{ opacity: [1, 0] }}
+            transition={{ duration: 0.6, repeat: Infinity, repeatType: "reverse" }}
+          />
         </p>
         <h1 className="text-3xl font-display font-bold text-white mt-1 tracking-tight leading-tight">
           Let's make it <br />

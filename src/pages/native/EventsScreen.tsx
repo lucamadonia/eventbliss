@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { PartyPopper, Users, Calendar, Plus, Archive, Search } from "lucide-react";
 import { useMyEvents } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,10 @@ type Tab = "active" | "archived";
 export default function EventsScreen() {
   const navigate = useNavigate();
   const haptics = useHaptics();
-  const { events = [], archivedEvents = [], isLoading } = useMyEvents();
+  const { events = [], archivedEvents = [], isLoading, refetch } = useMyEvents();
+  const { containerRef, PullIndicator } = usePullToRefresh({
+    onRefresh: async () => { await refetch(); },
+  });
   const [tab, setTab] = useState<Tab>("active");
   const [query, setQuery] = useState("");
 
@@ -79,7 +83,8 @@ export default function EventsScreen() {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto native-scroll pb-tabbar">
+      <div ref={containerRef} className="flex-1 overflow-y-auto native-scroll pb-tabbar">
+        <PullIndicator />
         {isLoading ? (
           <div className="px-5 space-y-3 mt-2">
             {[1, 2, 3].map((i) => (
