@@ -92,7 +92,7 @@ export default function GamesScreen() {
         <p className="text-sm text-accent font-semibold uppercase tracking-wider">
           Party Games
         </p>
-        <h1 className="text-3xl font-display font-bold text-white mt-1 leading-tight">
+        <h1 className="text-3xl font-display font-bold text-foreground mt-1 leading-tight">
           Bereit für Spaß?
         </h1>
       </div>
@@ -115,7 +115,7 @@ export default function GamesScreen() {
                   "flex-shrink-0 flex items-center gap-1.5 px-4 h-9 rounded-full text-sm font-medium border transition-colors",
                   active
                     ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(139,92,246,0.4)]"
-                    : "bg-white/5 text-white/60 border-white/10"
+                    : "bg-foreground/5 text-muted-foreground border-border"
                 )}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -143,7 +143,7 @@ export default function GamesScreen() {
                 whileTap={{ scale: 0.96 }}
                 transition={spring.snappy}
                 onClick={() => playGame(game)}
-                className="relative aspect-[3/4] rounded-3xl overflow-hidden text-left border border-white/10 bg-card group"
+                className="relative aspect-[3/4] rounded-3xl overflow-hidden text-left border border-border bg-card group"
               >
                 {/* Real game image */}
                 <div className="absolute inset-0">
@@ -225,10 +225,10 @@ export default function GamesScreen() {
               <Star className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-foreground">
                 Premium freischalten
               </p>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-muted-foreground">
                 Alle 17 Spiele unbegrenzt spielen
               </p>
             </div>

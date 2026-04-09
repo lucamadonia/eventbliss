@@ -139,25 +139,25 @@ export default function IdeasScreen() {
           <Star className="w-5 h-5 text-amber-400" />
           <p className="text-sm text-amber-400 font-semibold uppercase tracking-wider">Inspiration</p>
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mt-1 leading-tight">
+        <h1 className="text-3xl font-display font-bold text-foreground mt-1 leading-tight">
           Ideen, die{" "}
           <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-pink-400 bg-clip-text text-transparent">
             begeistern
           </span>
         </h1>
-        <p className="text-sm text-white/50 mt-1.5">
+        <p className="text-sm text-muted-foreground mt-1.5">
           147 Spiele · 56 Themen · Für jeden Anlass
         </p>
       </div>
 
       {/* Tab toggle */}
       <div className="px-5 mb-3">
-        <div className="relative flex gap-1 p-1 rounded-2xl bg-white/5 border border-white/10">
+        <div className="relative flex gap-1 p-1 rounded-2xl bg-foreground/5 border border-border">
           {(["games", "themes"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => switchTab(t)}
-              className="relative flex-1 h-10 text-sm font-medium z-10 text-white/90 flex items-center justify-center gap-1.5"
+              className="relative flex-1 h-10 text-sm font-medium z-10 text-foreground/80 flex items-center justify-center gap-1.5"
             >
               {tab === t && (
                 <motion.div
@@ -178,13 +178,13 @@ export default function IdeasScreen() {
       {/* Search */}
       <div className="px-5 pb-2">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="search"
             placeholder={tab === "games" ? "Spiel suchen..." : "Thema suchen..."}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-primary/50"
+            className="w-full h-10 pl-10 pr-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50"
           />
         </div>
       </div>
@@ -207,7 +207,7 @@ export default function IdeasScreen() {
                   "flex-shrink-0 flex items-center gap-1.5 px-3.5 h-8 rounded-full text-xs font-medium border transition-colors",
                   active
                     ? "bg-primary text-white border-primary shadow-[0_0_16px_rgba(139,92,246,0.4)]"
-                    : "bg-white/5 text-white/60 border-white/10"
+                    : "bg-foreground/5 text-muted-foreground border-border"
                 )}
               >
                 {c.label}
@@ -232,7 +232,7 @@ export default function IdeasScreen() {
                 <GameItemCard key={game.id} game={game} t={t} haptics={haptics} />
               ))}
               {filteredGames.length > 50 && (
-                <p className="text-center text-xs text-white/40 py-4">
+                <p className="text-center text-xs text-muted-foreground/60 py-4">
                   +{filteredGames.length - 50} weitere Spiele
                 </p>
               )}
@@ -278,7 +278,7 @@ function GameItemCard({
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-2xl overflow-hidden bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 text-left"
+      className="rounded-2xl overflow-hidden bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border text-left"
     >
       <button
         onClick={() => {
@@ -293,13 +293,13 @@ function GameItemCard({
             {game.emoji}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-white truncate">
+            <h3 className="text-base font-semibold text-foreground truncate">
               {t(game.nameKey)}
             </h3>
-            <p className="text-xs text-white/50 line-clamp-1 mt-0.5">
+            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
               {t(game.descriptionKey)}
             </p>
-            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/50">
+            <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Users className="w-3 h-3" />
                 {game.groupSize.min}–{game.groupSize.max || "∞"}
@@ -316,7 +316,7 @@ function GameItemCard({
           </div>
           <ChevronRight
             className={cn(
-              "w-4 h-4 text-white/30 transition-transform mt-1 flex-shrink-0",
+              "w-4 h-4 text-muted-foreground/60 transition-transform mt-1 flex-shrink-0",
               expanded && "rotate-90"
             )}
           />
@@ -333,16 +333,16 @@ function GameItemCard({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 pt-0 border-t border-white/5">
-              <p className="text-sm text-white/70 leading-relaxed mt-3 whitespace-pre-line">
+            <div className="px-4 pb-4 pt-0 border-t border-border/50">
+              <p className="text-sm text-foreground/80 leading-relaxed mt-3 whitespace-pre-line">
                 {t(game.instructionsKey)}
               </p>
               {game.materials && game.materials.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-1">Material</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Material</p>
                   <div className="flex flex-wrap gap-1">
                     {game.materials.map((m) => (
-                      <span key={m} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[11px] text-white/70">
+                      <span key={m} className="px-2 py-0.5 rounded-full bg-foreground/5 border border-border text-[11px] text-foreground/80">
                         {m}
                       </span>
                     ))}
@@ -375,7 +375,7 @@ function ThemeItemCard({
         haptics.light();
         setExpanded((e) => !e);
       }}
-      className="aspect-square rounded-3xl p-3 flex flex-col justify-between items-start text-left bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 relative overflow-hidden"
+      className="aspect-square rounded-3xl p-3 flex flex-col justify-between items-start text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border relative overflow-hidden"
     >
       {/* Color palette preview */}
       <div className="flex gap-1 w-full">
@@ -397,16 +397,16 @@ function ThemeItemCard({
 
       {/* Info */}
       <div className="mt-auto">
-        <p className="text-sm font-display font-bold text-white leading-tight">
+        <p className="text-sm font-display font-bold text-foreground leading-tight">
           {t(theme.nameKey)}
         </p>
-        <p className="text-[10px] text-white/50 mt-0.5 line-clamp-2">
+        <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">
           {t(theme.descriptionKey)}
         </p>
       </div>
 
       {/* Category badge */}
-      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-white/10 text-[9px] text-white/60 uppercase tracking-wide font-medium">
+      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-foreground/[0.08] text-[9px] text-muted-foreground uppercase tracking-wide font-medium">
         {theme.category}
       </span>
     </motion.button>
@@ -416,10 +416,10 @@ function ThemeItemCard({
 function EmptyState({ text }: { text: string }) {
   return (
     <div className="py-12 text-center">
-      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
-        <Search className="w-8 h-8 text-white/30" />
+      <div className="w-16 h-16 rounded-full bg-foreground/5 flex items-center justify-center mx-auto mb-3">
+        <Search className="w-8 h-8 text-muted-foreground/60" />
       </div>
-      <p className="text-sm text-white/50">{text}</p>
+      <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );
 }

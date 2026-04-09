@@ -207,7 +207,7 @@ export default function CreateEventFlow() {
               />
             ))}
           </div>
-          <p className="text-xs text-white/40 mt-2">
+          <p className="text-xs text-muted-foreground/60 mt-2">
             Schritt {step} von {totalSteps}
           </p>
         </div>
@@ -274,7 +274,7 @@ export default function CreateEventFlow() {
               "w-full h-14 rounded-2xl font-display font-bold text-lg flex items-center justify-center gap-2 transition-all",
               canProceed()
                 ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_8px_30px_-6px_rgba(139,92,246,0.5)]"
-                : "bg-white/10 text-white/30 cursor-not-allowed"
+                : "bg-foreground/[0.08] text-muted-foreground/60 cursor-not-allowed"
             )}
           >
             {isSubmitting ? (
@@ -302,10 +302,10 @@ export default function CreateEventFlow() {
 function StepType({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
   return (
     <div className="pt-2">
-      <h2 className="text-2xl font-display font-bold text-white mb-1">
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">
         Was feiert ihr?
       </h2>
-      <p className="text-sm text-white/50 mb-6">Wähle den Event-Typ</p>
+      <p className="text-sm text-muted-foreground mb-6">Wähle den Event-Typ</p>
       <div className="space-y-3">
         {EVENT_TYPES.map((type) => {
           const active = selected === type.value;
@@ -318,13 +318,13 @@ function StepType({ selected, onSelect }: { selected: string; onSelect: (v: stri
                 "w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all",
                 active
                   ? `bg-gradient-to-r ${type.gradient} border-transparent shadow-lg`
-                  : "bg-white/5 border-white/10 hover:border-white/20"
+                  : "bg-foreground/5 border-border hover:border-border"
               )}
             >
               <span className="text-3xl">{type.emoji}</span>
               <span className={cn(
                 "text-base font-semibold",
-                active ? "text-white" : "text-white/80"
+                active ? "text-white" : "text-foreground/80"
               )}>
                 {type.label}
               </span>
@@ -356,33 +356,33 @@ function StepDetails({
   return (
     <div className="pt-2 space-y-5">
       <div>
-        <h2 className="text-2xl font-display font-bold text-white mb-1">Details</h2>
-        <p className="text-sm text-white/50">Die Basics für dein Event</p>
+        <h2 className="text-2xl font-display font-bold text-foreground mb-1">Details</h2>
+        <p className="text-sm text-muted-foreground">Die Basics für dein Event</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-white/70 mb-1.5 block">Event-Name *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Event-Name *</label>
           <input
             value={form.name}
             onChange={(e) => update("name", e.target.value)}
             placeholder="z.B. Tims JGA Amsterdam"
-            className="w-full h-12 px-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-base focus:outline-none focus:border-primary/50"
+            className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-white/70 mb-1.5 block">Für wen? *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Für wen? *</label>
           <input
             value={form.honoree_name}
             onChange={(e) => update("honoree_name", e.target.value)}
             placeholder="z.B. Tim"
-            className="w-full h-12 px-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-base focus:outline-none focus:border-primary/50"
+            className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-white/70 mb-1.5 block">
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">
             <Calendar className="w-4 h-4 inline mr-1.5" />
             Datum (optional)
           </label>
@@ -390,17 +390,17 @@ function StepDetails({
             type="date"
             value={form.event_date}
             onChange={(e) => update("event_date", e.target.value)}
-            className="w-full h-12 px-4 rounded-2xl bg-white/5 border border-white/10 text-white text-base focus:outline-none focus:border-primary/50 [color-scheme:dark]"
+            className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base focus:outline-none focus:border-primary/50 [color-scheme:dark]"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-white/70 mb-1.5 block">Dein Name *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Dein Name *</label>
           <input
             value={form.organizer_name}
             onChange={(e) => update("organizer_name", e.target.value)}
             placeholder="Dein Vorname"
-            className="w-full h-12 px-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-base focus:outline-none focus:border-primary/50"
+            className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
       </div>
@@ -423,8 +423,8 @@ function StepGuests({
 }) {
   return (
     <div className="pt-2">
-      <h2 className="text-2xl font-display font-bold text-white mb-1">Gäste</h2>
-      <p className="text-sm text-white/50 mb-5">Wer kommt mit? (optional, kannst du später ergänzen)</p>
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">Gäste</h2>
+      <p className="text-sm text-muted-foreground mb-5">Wer kommt mit? (optional, kannst du später ergänzen)</p>
 
       <div className="flex gap-2 mb-4">
         <input
@@ -432,7 +432,7 @@ function StepGuests({
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onAdd()}
           placeholder="Name eingeben..."
-          className="flex-1 h-12 px-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-base focus:outline-none focus:border-primary/50"
+          className="flex-1 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
         />
         <motion.button
           onClick={onAdd}
@@ -450,27 +450,27 @@ function StepGuests({
               key={`${name}-${i}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-foreground/5 border border-border"
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-xs font-bold text-white">
                 {name.slice(0, 1).toUpperCase()}
               </div>
-              <span className="flex-1 text-sm text-white font-medium">{name}</span>
-              <button onClick={() => onRemove(i)} className="text-white/30 hover:text-white/60">
+              <span className="flex-1 text-sm text-foreground font-medium">{name}</span>
+              <button onClick={() => onRemove(i)} className="text-muted-foreground/60 hover:text-muted-foreground">
                 <X className="w-4 h-4" />
               </button>
             </motion.div>
           ))}
-          <p className="text-xs text-white/40 text-center mt-2">
+          <p className="text-xs text-muted-foreground/60 text-center mt-2">
             {participants.length} Gäst{participants.length === 1 ? "" : "e"}
           </p>
         </div>
       )}
 
       {participants.length === 0 && (
-        <div className="rounded-2xl p-8 border border-dashed border-white/15 text-center mt-4">
-          <Users className="w-10 h-10 text-white/20 mx-auto mb-2" />
-          <p className="text-sm text-white/40">
+        <div className="rounded-2xl p-8 border border-dashed border-border text-center mt-4">
+          <Users className="w-10 h-10 text-muted-foreground/60 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">
             Noch keine Gäste — du kannst sie auch später einladen.
           </p>
         </div>
@@ -483,28 +483,28 @@ function StepReview({ form }: { form: FormData }) {
   const type = EVENT_TYPES.find((t) => t.value === form.event_type);
   return (
     <div className="pt-2">
-      <h2 className="text-2xl font-display font-bold text-white mb-1">Alles korrekt?</h2>
-      <p className="text-sm text-white/50 mb-5">Überprüfe dein Event</p>
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">Alles korrekt?</h2>
+      <p className="text-sm text-muted-foreground mb-5">Überprüfe dein Event</p>
 
       <div className="space-y-3">
-        <div className="rounded-2xl p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
+        <div className="rounded-2xl p-4 bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-3xl">{type?.emoji}</span>
             <div>
-              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                 {type?.label}
               </p>
-              <h3 className="text-xl font-display font-bold text-white">{form.name}</h3>
+              <h3 className="text-xl font-display font-bold text-foreground">{form.name}</h3>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p className="text-white/40 text-xs">Für</p>
-              <p className="text-white font-medium">{form.honoree_name}</p>
+              <p className="text-muted-foreground text-xs">Für</p>
+              <p className="text-foreground font-medium">{form.honoree_name}</p>
             </div>
             <div>
-              <p className="text-white/40 text-xs">Datum</p>
-              <p className="text-white font-medium">
+              <p className="text-muted-foreground text-xs">Datum</p>
+              <p className="text-foreground font-medium">
                 {form.event_date
                   ? new Date(form.event_date).toLocaleDateString("de-DE", {
                       day: "2-digit",
@@ -515,12 +515,12 @@ function StepReview({ form }: { form: FormData }) {
               </p>
             </div>
             <div>
-              <p className="text-white/40 text-xs">Organisator</p>
-              <p className="text-white font-medium">{form.organizer_name}</p>
+              <p className="text-muted-foreground text-xs">Organisator</p>
+              <p className="text-foreground font-medium">{form.organizer_name}</p>
             </div>
             <div>
-              <p className="text-white/40 text-xs">Gäste</p>
-              <p className="text-white font-medium">{form.participants.length || "—"}</p>
+              <p className="text-muted-foreground text-xs">Gäste</p>
+              <p className="text-foreground font-medium">{form.participants.length || "—"}</p>
             </div>
           </div>
         </div>
@@ -559,7 +559,7 @@ function StepSuccess({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="text-2xl font-display font-bold text-white mb-1"
+        className="text-2xl font-display font-bold text-foreground mb-1"
       >
         Event erstellt! 🎉
       </motion.h2>
@@ -567,7 +567,7 @@ function StepSuccess({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="text-sm text-white/50 mb-8"
+        className="text-sm text-muted-foreground mb-8"
       >
         Teile den Link mit deinen Freunden
       </motion.p>
@@ -577,9 +577,9 @@ function StepSuccess({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="w-full rounded-2xl p-4 bg-white/5 border border-white/10 mb-3"
+        className="w-full rounded-2xl p-4 bg-foreground/5 border border-border mb-3"
       >
-        <p className="text-xs text-white/50 mb-1">Zugangscode</p>
+        <p className="text-xs text-muted-foreground mb-1">Zugangscode</p>
         <p className="text-2xl font-display font-bold text-primary tracking-wider">
           {event.access_code}
         </p>
@@ -590,10 +590,10 @@ function StepSuccess({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="w-full rounded-2xl p-4 bg-white/5 border border-white/10 mb-6"
+        className="w-full rounded-2xl p-4 bg-foreground/5 border border-border mb-6"
       >
-        <p className="text-xs text-white/50 mb-1">Link</p>
-        <p className="text-sm text-white/80 truncate">{event.share_link}</p>
+        <p className="text-xs text-muted-foreground mb-1">Link</p>
+        <p className="text-sm text-foreground/80 truncate">{event.share_link}</p>
       </motion.div>
 
       {/* Action buttons */}
@@ -606,7 +606,7 @@ function StepSuccess({
         <motion.button
           onClick={onCopy}
           whileTap={{ scale: 0.96 }}
-          className="w-full h-13 rounded-2xl bg-white/10 border border-white/10 text-white font-semibold flex items-center justify-center gap-2 py-3"
+          className="w-full h-13 rounded-2xl bg-foreground/[0.08] border border-border text-foreground font-semibold flex items-center justify-center gap-2 py-3"
         >
           {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
           {copied ? "Kopiert!" : "Link kopieren"}

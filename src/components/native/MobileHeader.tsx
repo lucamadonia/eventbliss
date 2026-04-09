@@ -39,7 +39,7 @@ export function MobileHeader({
         "sticky top-0 z-40 safe-top",
         transparent
           ? "bg-transparent"
-          : "bg-background/85 backdrop-blur-2xl border-b border-white/5"
+          : "bg-background/85 backdrop-blur-2xl border-b border-border/50"
       )}
     >
       <div className="flex items-center justify-between px-2 h-14">
@@ -47,7 +47,7 @@ export function MobileHeader({
           {showBack && (
             <motion.button
               onClick={handleBack}
-              className="w-10 h-10 flex items-center justify-center rounded-full text-white/90"
+              className="w-10 h-10 flex items-center justify-center rounded-full text-foreground/80"
               whileTap={{ scale: 0.9 }}
               aria-label="Zurück"
             >
@@ -57,7 +57,7 @@ export function MobileHeader({
         </div>
 
         {title && (
-          <h1 className="flex-1 text-center font-display font-semibold text-white text-base truncate px-2">
+          <h1 className="flex-1 text-center font-display font-semibold text-foreground text-base truncate px-2">
             {title}
           </h1>
         )}

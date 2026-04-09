@@ -88,10 +88,10 @@ export default function JoinEventFlow() {
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20 flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-violet-300" />
           </div>
-          <h2 className="text-xl font-display font-bold text-white text-center">
+          <h2 className="text-xl font-display font-bold text-foreground text-center">
             Du wurdest eingeladen?
           </h2>
-          <p className="text-sm text-white/50 text-center mt-1">
+          <p className="text-sm text-muted-foreground text-center mt-1">
             Gib den Zugangscode ein, den du erhalten hast
           </p>
         </motion.div>
@@ -114,7 +114,7 @@ export default function JoinEventFlow() {
               onKeyDown={(e) => e.key === "Enter" && handleLookup()}
               placeholder="Z.B. STAG2025"
               maxLength={20}
-              className="w-full h-16 px-5 rounded-2xl bg-white/5 border-2 border-white/15 text-white text-center text-2xl font-display font-bold tracking-[0.3em] placeholder:text-white/20 placeholder:tracking-widest placeholder:text-lg focus:outline-none focus:border-primary/60 transition-colors uppercase"
+              className="w-full h-16 px-5 rounded-2xl bg-foreground/5 border-2 border-border text-foreground text-center text-2xl font-display font-bold tracking-[0.3em] placeholder:text-muted-foreground/60 placeholder:tracking-widest placeholder:text-lg focus:outline-none focus:border-primary/60 transition-colors uppercase"
               autoCapitalize="characters"
               autoCorrect="off"
               spellCheck={false}
@@ -141,7 +141,7 @@ export default function JoinEventFlow() {
                 "w-full h-14 rounded-2xl font-display font-bold text-lg flex items-center justify-center gap-2 mt-4 transition-all",
                 code.trim()
                   ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_8px_30px_-6px_rgba(139,92,246,0.5)]"
-                  : "bg-white/10 text-white/30 cursor-not-allowed"
+                  : "bg-foreground/[0.08] text-muted-foreground/60 cursor-not-allowed"
               )}
             >
               {isLoading ? (
@@ -166,20 +166,20 @@ export default function JoinEventFlow() {
               transition={spring.bouncy}
               className="space-y-4"
             >
-              <div className="rounded-3xl p-5 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 backdrop-blur">
+              <div className="rounded-3xl p-5 bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border backdrop-blur">
                 <div className="flex items-center gap-4 mb-4">
                   <span className="text-4xl">
                     {EVENT_EMOJI[preview.event_type] || "🎊"}
                   </span>
                   <div className="flex-1">
-                    <p className="text-xs text-white/50 uppercase tracking-wider font-semibold">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                       Event gefunden
                     </p>
-                    <h3 className="text-xl font-display font-bold text-white">
+                    <h3 className="text-xl font-display font-bold text-foreground">
                       {preview.name}
                     </h3>
                     {preview.honoree_name && (
-                      <p className="text-sm text-white/60 mt-0.5">
+                      <p className="text-sm text-muted-foreground mt-0.5">
                         für {preview.honoree_name}
                       </p>
                     )}

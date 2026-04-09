@@ -73,7 +73,7 @@ export function FloatingActionButton() {
                     exit={{ x: 40, opacity: 0, scale: 0.8 }}
                     transition={{ ...spring.bouncy, delay: i * 0.05 }}
                   >
-                    <span className="px-3 py-1.5 rounded-full bg-background/80 backdrop-blur border border-white/10 text-sm text-white font-medium whitespace-nowrap shadow-lg">
+                    <span className="px-3 py-1.5 rounded-full bg-background/80 backdrop-blur border border-border text-sm text-foreground font-medium whitespace-nowrap shadow-lg">
                       {a.label}
                     </span>
                     <div

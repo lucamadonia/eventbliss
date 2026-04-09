@@ -61,7 +61,7 @@ export function TabItem({ tab, active }: Props) {
               "w-6 h-6 transition-colors duration-200",
               active
                 ? "text-primary drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]"
-                : "text-white/50 group-hover:text-white/70"
+                : "text-muted-foreground group-hover:text-foreground/80"
             )}
             strokeWidth={active ? 2.5 : 2}
           />
@@ -69,7 +69,7 @@ export function TabItem({ tab, active }: Props) {
         <motion.span
           className={cn(
             "text-[10px] font-medium tracking-wide",
-            active ? "text-primary" : "text-white/40"
+            active ? "text-primary" : "text-muted-foreground"
           )}
           animate={{ opacity: active ? 1 : 0.7 }}
         >

@@ -75,7 +75,7 @@ export function BottomTabBar() {
           transition={spring.soft}
         >
           <div className="pointer-events-auto mx-3 mb-3 safe-bottom">
-            <div className="relative flex items-center justify-around h-[64px] rounded-[28px] bg-background/70 backdrop-blur-2xl border border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.4)] px-2">
+            <div className="relative flex items-center justify-around h-[64px] rounded-[28px] bg-background/70 backdrop-blur-2xl border border-border shadow-[0_-8px_32px_rgba(0,0,0,0.4)] px-2">
               {/* Ambient glow strip at top */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 

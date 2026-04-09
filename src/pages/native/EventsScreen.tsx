@@ -38,8 +38,8 @@ export default function EventsScreen() {
     <div className="relative h-full flex flex-col bg-background safe-top">
       {/* Header */}
       <div className="px-5 pt-4 pb-2">
-        <h1 className="text-3xl font-display font-bold text-white">Events</h1>
-        <p className="text-sm text-white/50 mt-0.5">
+        <h1 className="text-3xl font-display font-bold text-foreground">Events</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
           {events.length} aktive · {archivedEvents.length} archiviert
         </p>
       </div>
@@ -47,25 +47,25 @@ export default function EventsScreen() {
       {/* Search */}
       <div className="px-5 pb-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="search"
             placeholder="Event suchen..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-primary/50"
+            className="w-full h-11 pl-10 pr-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50"
           />
         </div>
       </div>
 
       {/* Tabs */}
       <div className="px-5 mb-2">
-        <div className="relative flex gap-1 p-1 rounded-2xl bg-white/5 border border-white/10">
+        <div className="relative flex gap-1 p-1 rounded-2xl bg-foreground/5 border border-border">
           {(["active", "archived"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => switchTab(t)}
-              className="relative flex-1 h-9 text-sm font-medium z-10 text-white/90"
+              className="relative flex-1 h-9 text-sm font-medium z-10 text-foreground/80"
             >
               {tab === t && (
                 <motion.div
@@ -90,7 +90,7 @@ export default function EventsScreen() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-24 rounded-2xl bg-white/5 border border-white/5 animate-pulse"
+                className="h-24 rounded-2xl bg-foreground/5 border border-border/50 animate-pulse"
               />
             ))}
           </div>
@@ -100,13 +100,13 @@ export default function EventsScreen() {
               {tab === "active" ? (
                 <PartyPopper className="w-10 h-10 text-primary/60" />
               ) : (
-                <Archive className="w-10 h-10 text-white/40" />
+                <Archive className="w-10 h-10 text-muted-foreground" />
               )}
             </div>
-            <h3 className="text-lg font-display font-semibold text-white mb-1">
+            <h3 className="text-lg font-display font-semibold text-foreground mb-1">
               {tab === "active" ? "Noch keine Events" : "Keine Archivierten"}
             </h3>
-            <p className="text-sm text-white/50 mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               {tab === "active"
                 ? "Plan dein erstes Event und lade Freunde ein."
                 : "Archivierte Events erscheinen hier."}
@@ -142,7 +142,7 @@ export default function EventsScreen() {
                   navigate(`/e/${event.slug}/dashboard`);
                 }}
                 className={cn(
-                  "w-full rounded-2xl p-4 text-left bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur border border-white/10",
+                  "w-full rounded-2xl p-4 text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border",
                   "hover:border-primary/30 transition-colors"
                 )}
               >
@@ -151,15 +151,15 @@ export default function EventsScreen() {
                     <PartyPopper className="w-6 h-6 text-violet-200" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-white truncate">
+                    <h3 className="text-base font-semibold text-foreground truncate">
                       {event.name}
                     </h3>
                     {event.honoree_name && (
-                      <p className="text-xs text-white/50 truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         für {event.honoree_name}
                       </p>
                     )}
-                    <div className="flex items-center gap-3 mt-2 text-xs text-white/60">
+                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       {event.event_date && (
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />

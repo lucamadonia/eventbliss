@@ -88,7 +88,7 @@ export default function HomeScreen() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...spring.soft, delay: 0.1 }}
       >
-        <p className="text-sm text-white/50 font-medium h-5">
+        <p className="text-sm text-muted-foreground font-medium h-5">
           {typedGreeting}
           <motion.span
             className="inline-block w-0.5 h-4 bg-primary ml-0.5 align-middle"
@@ -96,7 +96,7 @@ export default function HomeScreen() {
             transition={{ duration: 0.6, repeat: Infinity, repeatType: "reverse" }}
           />
         </p>
-        <h1 className="text-3xl font-display font-bold text-white mt-1 tracking-tight leading-tight">
+        <h1 className="text-3xl font-display font-bold text-foreground mt-1 tracking-tight leading-tight">
           Let's make it <br />
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">
             epic.
@@ -174,12 +174,12 @@ export default function HomeScreen() {
               onClick={() => go(a.to)}
               whileTap={{ scale: 0.96 }}
               className={cn(
-                "rounded-2xl p-4 bg-gradient-to-br backdrop-blur border border-white/10 text-left",
+                "rounded-2xl p-4 bg-gradient-to-br backdrop-blur border border-border text-left",
                 a.gradient
               )}
             >
               <Icon className={cn("w-6 h-6 mb-2", a.iconColor)} />
-              <p className="text-sm font-semibold text-white">{a.label}</p>
+              <p className="text-sm font-semibold text-foreground">{a.label}</p>
             </motion.button>
           );
         })}
@@ -193,14 +193,14 @@ export default function HomeScreen() {
         transition={{ delay: 0.4 }}
       >
         <div className="flex items-center justify-between px-5 mb-3">
-          <h2 className="text-lg font-display font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-display font-semibold text-foreground flex items-center gap-2">
             <PartyPopper className="w-5 h-5 text-primary" />
             Deine Events
           </h2>
           {upcoming.length > 0 && (
             <button
               onClick={() => go("/my-events")}
-              className="text-xs text-white/50 font-medium flex items-center gap-0.5"
+              className="text-xs text-muted-foreground font-medium flex items-center gap-0.5"
             >
               Alle
               <ChevronRight className="w-3 h-3" />
@@ -209,9 +209,9 @@ export default function HomeScreen() {
         </div>
 
         {upcoming.length === 0 ? (
-          <div className="mx-5 rounded-2xl p-6 border border-dashed border-white/15 bg-white/[0.02] text-center">
+          <div className="mx-5 rounded-2xl p-6 border border-dashed border-border bg-foreground/5 text-center">
             <Sparkles className="w-8 h-8 text-primary/60 mx-auto mb-2" />
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-muted-foreground">
               Noch keine Events — plan dein erstes!
             </p>
           </div>
@@ -226,14 +226,14 @@ export default function HomeScreen() {
                 transition={{ ...spring.soft, delay: 0.1 * i }}
                 onClick={() => go(`/e/${event.slug}/dashboard`)}
                 whileTap={{ scale: 0.97 }}
-                className="flex-shrink-0 w-64 rounded-2xl p-4 bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur border border-white/10 text-left"
+                className="flex-shrink-0 w-64 rounded-2xl p-4 bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border text-left"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20 flex items-center justify-center">
                     <PartyPopper className="w-5 h-5 text-violet-200" />
                   </div>
                   {event.event_date && (
-                    <span className="text-[10px] uppercase tracking-wide text-white/50 font-semibold">
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
                       {new Date(event.event_date).toLocaleDateString("de-DE", {
                         day: "2-digit",
                         month: "short",
@@ -241,13 +241,13 @@ export default function HomeScreen() {
                     </span>
                   )}
                 </div>
-                <p className="text-base font-semibold text-white truncate">
+                <p className="text-base font-semibold text-foreground truncate">
                   {event.name}
                 </p>
-                <p className="text-xs text-white/50 mt-0.5 truncate">
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
                   {event.honoree_name || event.event_type}
                 </p>
-                <div className="flex items-center gap-1 mt-3 text-xs text-white/60">
+                <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
                   <Users className="w-3 h-3" />
                   {event.participant_count} Teilnehmer
                 </div>
@@ -264,14 +264,14 @@ export default function HomeScreen() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, ...spring.soft }}
       >
-        <h2 className="text-lg font-display font-semibold text-white flex items-center gap-2 mb-3">
+        <h2 className="text-lg font-display font-semibold text-foreground flex items-center gap-2 mb-3">
           <Gamepad2 className="w-5 h-5 text-accent" />
           Jetzt spielen
         </h2>
         <motion.button
           onClick={() => go("/games")}
           whileTap={{ scale: 0.98 }}
-          className="w-full relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-cyan-600/30 via-teal-600/20 to-emerald-600/20 border border-cyan-400/20 text-left"
+          className="w-full relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-cyan-600/30 via-teal-600/20 to-emerald-600/20 border border-border text-left"
         >
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)]">
@@ -281,11 +281,11 @@ export default function HomeScreen() {
               <p className="text-xs uppercase tracking-wider text-cyan-300/80 font-semibold">
                 24+ Party Games
               </p>
-              <p className="text-lg font-display font-bold text-white">
+              <p className="text-lg font-display font-bold text-foreground">
                 Taboo, Bomb, Headup & more
               </p>
             </div>
-            <ArrowRight className="w-5 h-5 text-white/60" />
+            <ArrowRight className="w-5 h-5 text-muted-foreground" />
           </div>
         </motion.button>
       </motion.div>
@@ -300,16 +300,16 @@ export default function HomeScreen() {
         <motion.button
           onClick={() => go("/ideas")}
           whileTap={{ scale: 0.98 }}
-          className="w-full rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-400/15 flex items-center gap-3 text-left"
+          className="w-full rounded-2xl p-4 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-border flex items-center gap-3 text-left"
         >
           <div className="w-10 h-10 rounded-xl bg-amber-500/30 flex items-center justify-center">
             <Lightbulb className="w-5 h-5 text-amber-300" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-white">Inspirationen finden</p>
-            <p className="text-xs text-white/50">Themen, Games & Ideen für dein Event</p>
+            <p className="text-sm font-semibold text-foreground">Inspirationen finden</p>
+            <p className="text-xs text-muted-foreground">Themen, Games & Ideen für dein Event</p>
           </div>
-          <ChevronRight className="w-4 h-4 text-white/40" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </motion.button>
       </motion.div>
     </div>

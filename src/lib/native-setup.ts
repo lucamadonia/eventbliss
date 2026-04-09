@@ -8,8 +8,6 @@ export async function initNativeSetup(): Promise<void> {
 
   // Mark the document so CSS can gate native-only styles
   document.documentElement.classList.add('capacitor-native');
-  // Always enforce dark theme in native app (class-based next-themes toggle)
-  document.documentElement.classList.add('dark');
 
   try {
     await StatusBar.setStyle({ style: Style.Dark });
