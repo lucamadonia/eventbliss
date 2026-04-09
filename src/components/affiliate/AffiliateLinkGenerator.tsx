@@ -63,7 +63,7 @@ export function AffiliateLinkGenerator() {
   const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const baseUrl = "https://eventbliss.app";
+  const baseUrl = "https://event-bliss.com";
   const affiliateId = stats?.affiliate?.id?.slice(0, 8) || "affiliate";
 
   const generatedUrl = useMemo(() => {

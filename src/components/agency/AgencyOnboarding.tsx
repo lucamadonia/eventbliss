@@ -133,7 +133,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                 <motion.div variants={fadeUp} className="space-y-3">
                   <label className="text-xs font-medium text-slate-400">URL-Slug</label>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-600">eventbliss.app/</span>
+                    <span className="text-xs text-slate-600">event-bliss.com/</span>
                     <Input
                       value={slug}
                       onChange={(e) => setSlug(generateSlug(e.target.value))}

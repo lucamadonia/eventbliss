@@ -15,7 +15,7 @@ export const isWeb = (): boolean => !isNative();
  * On native: always returns the production URL since the WebView's origin
  * is `capacitor://localhost` which is useless for share links.
  */
-export const PRODUCTION_URL = 'https://eventbliss.app';
+export const PRODUCTION_URL = 'https://event-bliss.com';
 
 export function getBaseUrl(): string {
   if (isNative()) return PRODUCTION_URL;

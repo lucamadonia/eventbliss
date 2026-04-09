@@ -71,13 +71,13 @@ export function AffiliateMarketingTab() {
       id: "facebook-post",
       platform: "facebook",
       type: "Post",
-      text: `🎉 TIPP für alle, die ein Event planen!\n\nIch nutze EventBliss für die Planung von Gruppenevents und bin begeistert. Kostenaufteilung, Terminabstimmung, Vorschläge – alles in einer App!\n\nMit meinem Code "${activeVoucher}" bekommst du ${vouchers?.[0]?.voucher?.discount_value || 20}% Rabatt! 🎁\n\n👉 eventbliss.app`,
+      text: `🎉 TIPP für alle, die ein Event planen!\n\nIch nutze EventBliss für die Planung von Gruppenevents und bin begeistert. Kostenaufteilung, Terminabstimmung, Vorschläge – alles in einer App!\n\nMit meinem Code "${activeVoucher}" bekommst du ${vouchers?.[0]?.voucher?.discount_value || 20}% Rabatt! 🎁\n\n👉 event-bliss.com`,
     },
     {
       id: "whatsapp-share",
       platform: "whatsapp",
       type: "Nachricht",
-      text: `Hey! 👋\n\nKennst du schon EventBliss? Mega praktisch für JGAs, Geburtstage etc.!\n\nMit meinem Code ${activeVoucher} sparst du ${vouchers?.[0]?.voucher?.discount_value || 20}%! 🎉\n\n👉 eventbliss.app`,
+      text: `Hey! 👋\n\nKennst du schon EventBliss? Mega praktisch für JGAs, Geburtstage etc.!\n\nMit meinem Code ${activeVoucher} sparst du ${vouchers?.[0]?.voucher?.discount_value || 20}%! 🎉\n\n👉 event-bliss.com`,
     },
   ];
 
@@ -343,7 +343,7 @@ export function AffiliateMarketingTab() {
                       : `ich habe kürzlich EventBliss entdeckt und bin begeistert! Die App macht Gruppenplanung so viel einfacher. Nutze meinen Code "${activeVoucher}" für ${vouchers?.[0]?.voucher?.discount_value || 20}% Rabatt.`
                     }
                   </p>
-                  <p>Probier es aus: eventbliss.app</p>
+                  <p>Probier es aus: event-bliss.com</p>
                   <p className="text-muted-foreground">Liebe Grüße</p>
                 </div>
               </div>
@@ -354,8 +354,8 @@ export function AffiliateMarketingTab() {
                   className="flex-1 gap-2"
                   onClick={() => {
                     const body = template.id === "newsletter" 
-                      ? `ich möchte dir EventBliss vorstellen – die perfekte App für die Planung von JGAs, Geburtstagen und Gruppenreisen. Mit meinem exklusiven Code "${activeVoucher}" sparst du ${vouchers?.[0]?.voucher?.discount_value || 20}%!\n\nProbier es aus: eventbliss.app`
-                      : `ich habe kürzlich EventBliss entdeckt und bin begeistert! Die App macht Gruppenplanung so viel einfacher. Nutze meinen Code "${activeVoucher}" für ${vouchers?.[0]?.voucher?.discount_value || 20}% Rabatt.\n\nProbier es aus: eventbliss.app`;
+                      ? `ich möchte dir EventBliss vorstellen – die perfekte App für die Planung von JGAs, Geburtstagen und Gruppenreisen. Mit meinem exklusiven Code "${activeVoucher}" sparst du ${vouchers?.[0]?.voucher?.discount_value || 20}%!\n\nProbier es aus: event-bliss.com`
+                      : `ich habe kürzlich EventBliss entdeckt und bin begeistert! Die App macht Gruppenplanung so viel einfacher. Nutze meinen Code "${activeVoucher}" für ${vouchers?.[0]?.voucher?.discount_value || 20}% Rabatt.\n\nProbier es aus: event-bliss.com`;
                     copyToClipboard(body, template.id);
                   }}
                 >

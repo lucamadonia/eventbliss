@@ -488,7 +488,7 @@ const Landing = () => {
                       </div>
                       <div className="flex-1 mx-4">
                         <div className="bg-background/50 rounded-md px-3 py-1 text-xs text-muted-foreground text-center">
-                          eventbliss.app/{demoFeatures[activeDemo].id}
+                          event-bliss.com/{demoFeatures[activeDemo].id}
                         </div>
                       </div>
                     </div>
