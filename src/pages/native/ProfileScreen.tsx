@@ -20,9 +20,11 @@ import {
   Moon,
   Sun,
   Flower2,
+  ShieldCheck,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { useAdmin } from "@/hooks/useAdmin";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +45,7 @@ export default function ProfileScreen() {
   const { user, isPremium } = useAuthContext();
   const { i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const { isAdmin } = useAdmin();
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
 
@@ -74,6 +77,13 @@ export default function ProfileScreen() {
   ];
 
   const items: Item[] = [
+    // Admin — only visible for admin users
+    ...(isAdmin ? [{
+      icon: ShieldCheck,
+      label: "Admin Panel",
+      sublabel: "Dashboard",
+      onClick: () => go("/admin"),
+    } as Item] : []),
     { icon: Settings, label: "Einstellungen", onClick: () => go("/settings") },
     {
       icon: Globe,

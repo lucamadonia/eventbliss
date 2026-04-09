@@ -31,6 +31,7 @@ const IdeasScreen = lazy(() => import("@/pages/native/IdeasScreen"));
 const ProfileScreen = lazy(() => import("@/pages/native/ProfileScreen"));
 const CreateEventFlow = lazy(() => import("@/pages/native/CreateEventFlow"));
 const JoinEventFlow = lazy(() => import("@/pages/native/JoinEventFlow"));
+const AdminScreen = lazy(() => import("@/pages/native/AdminScreen"));
 
 // Existing desktop pages — wrapped in NativeStackPage at route level
 import Auth from "@/pages/Auth";
@@ -145,6 +146,16 @@ export function NativeApp() {
               <Route
                 path="/tv/:roomCode"
                 element={wrap(<TVScreen />, undefined, { fullscreen: true })}
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <Suspense fallback={<PageLoader />}>
+                      <AdminScreen />
+                    </Suspense>
+                  </AdminRoute>
+                }
               />
               <Route
                 path="/admin/*"
