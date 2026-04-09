@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { Capacitor } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
+import { getBaseUrl } from "@/lib/platform";
 
 export interface DashboardPermissions {
   can_view_responses: boolean;
@@ -57,7 +58,7 @@ export function useAuth() {
   const signUp = useCallback(async (email: string, password: string) => {
     const redirectUrl = Capacitor.isNativePlatform()
       ? 'app.eventbliss:///'
-      : `${window.location.origin}/`;
+      : `${getBaseUrl()}/`;
     
     const { error } = await supabase.auth.signUp({
       email,

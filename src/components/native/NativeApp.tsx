@@ -38,6 +38,7 @@ import EventSurvey from "@/pages/EventSurvey";
 const EventDashboard = lazy(() => import("@/pages/EventDashboard"));
 const EventExpenses = lazy(() => import("@/pages/EventExpenses"));
 const Premium = lazy(() => import("@/pages/Premium"));
+const ProfileSettings = lazy(() => import("@/pages/ProfileSettings"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const GamesHub = lazy(() => import("@/pages/GamesHub"));
 const Imprint = lazy(() => import("@/pages/legal/Imprint"));
@@ -81,8 +82,16 @@ export function NativeApp() {
                 element={<ProtectedRoute><IdeasScreen /></ProtectedRoute>}
               />
               <Route
-                path="/settings"
+                path="/profile"
                 element={<ProtectedRoute><ProfileScreen /></ProtectedRoute>}
+              />
+              {/* Settings is a separate stack page (not a tab) */}
+              <Route
+                path="/settings"
+                element={wrap(
+                  <ProtectedRoute><Suspense fallback={<PageLoader />}><ProfileSettings /></Suspense></ProtectedRoute>,
+                  "Einstellungen"
+                )}
               />
 
               {/* Native-designed flows */}

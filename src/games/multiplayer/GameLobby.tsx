@@ -8,6 +8,7 @@ import { useGameRoom, getSavedRoom, getRoomHistory, removeFromRoomHistory, type 
 import { useOpenRooms, broadcastRoomCreated } from "./useOpenRooms";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
+import { getBaseUrl } from "@/lib/platform";
 import EventInvite from "./EventInvite";
 
 const EP = {
@@ -199,7 +200,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
   const handleShare = useCallback(() => {
     if (!room) return;
-    const url = `${window.location.origin}/games?room=${room.roomCode}`;
+    const url = `${getBaseUrl()}/games?room=${room.roomCode}`;
     if (navigator.share) {
       navigator.share({ title: `${gameName} - EventBliss`, text: `Tritt meinem Spiel bei! Code: ${room.roomCode}`, url });
     } else { navigator.clipboard.writeText(url); }
@@ -495,7 +496,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
               {isHost && room && (
                 <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "rgba(143,245,255,0.06)", border: "1px solid rgba(143,245,255,0.15)" }}>
                   <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold mb-1">📺 TV Screen fuer Beamer</p>
-                  <p className="text-xs font-bold text-[#8ff5ff] font-['Be_Vietnam_Pro']">{window.location.origin}/tv/{room.roomCode}</p>
+                  <p className="text-xs font-bold text-[#8ff5ff] font-['Be_Vietnam_Pro']">{getBaseUrl()}/tv/{room.roomCode}</p>
                 </div>
               )}
 

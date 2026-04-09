@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
+import { getBaseUrl } from "@/lib/platform";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { Input } from "@/components/ui/input";
@@ -39,7 +40,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: Capacitor.isNativePlatform()
           ? 'app.eventbliss:///auth?type=recovery'
-          : `${window.location.origin}/auth?type=recovery`,
+          : `${getBaseUrl()}/auth?type=recovery`,
       });
 
       if (error) {

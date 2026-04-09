@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check, Share2, QrCode } from "lucide-react";
+import { getBaseUrl } from "@/lib/platform";
 
 const EP = {
   surface1: "#151a21",
@@ -73,7 +74,7 @@ function useQrDataUrl(text: string): string | null {
 
 export default function RoomInvite({ gameId, roomCode, gameName }: RoomInviteProps) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = `${window.location.origin}/games/${gameId}?room=${roomCode}`;
+  const shareUrl = `${getBaseUrl()}/games/${gameId}?room=${roomCode}`;
   const qrUrl = useQrDataUrl(roomCode + shareUrl);
 
   const handleCopy = useCallback(() => {

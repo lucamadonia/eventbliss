@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getBaseUrl } from "@/lib/platform";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
@@ -103,7 +104,7 @@ export function TeamInviteManager({
   const [isAddingParticipant, setIsAddingParticipant] = useState(false);
 
   const getInviteLink = (inviteToken: string) => {
-    return `${window.location.origin}/e/${eventSlug}/claim/${inviteToken}`;
+    return `${getBaseUrl()}/e/${eventSlug}/claim/${inviteToken}`;
   };
 
   const copyInviteLink = async (participant: Participant) => {

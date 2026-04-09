@@ -8,6 +8,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { getBaseUrl } from "@/lib/platform";
 
 interface ShareClientLinkDialogProps {
   eventId: string;
@@ -62,7 +63,7 @@ export function ShareClientLinkDialog({ eventId, agencyId, trigger }: ShareClien
       if (error) throw error;
 
       const token = (data as any)?.token;
-      const link = `${window.location.origin}/client/${token}`;
+      const link = `${getBaseUrl()}/client/${token}`;
       setGeneratedLink(link);
     } catch (err) {
       console.error("Failed to generate client link:", err);

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { getBaseUrl } from "@/lib/platform";
 
 const EP = {
   bg: "#0a0e14",
@@ -46,7 +47,7 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const baseLink = `${window.location.origin}/games/${gameId}?room=${roomCode}`;
+  const baseLink = `${getBaseUrl()}/games/${gameId}?room=${roomCode}`;
   const personalLink = (name: string) => `${baseLink}&name=${encodeURIComponent(name)}`;
   const shareLink = baseLink;
 

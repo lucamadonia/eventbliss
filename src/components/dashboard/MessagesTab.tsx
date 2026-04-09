@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getBaseUrl } from "@/lib/platform";
 import { MessageSquare, Copy, Check, ExternalLink, Send, Sparkles, ChevronDown, ChevronUp, Wand2, Loader2, Crown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -175,7 +176,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   const [isEnhancing, setIsEnhancing] = useState(false);
 
   const currentLocale = localeMap[i18n.language] || de;
-  const surveyLink = `${window.location.origin}/e/${slug}`;
+  const surveyLink = `${getBaseUrl()}/e/${slug}`;
   const accessCode = event.access_code || "STAG2025";
   const totalCount = participants.length;
 

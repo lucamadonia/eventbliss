@@ -5,6 +5,7 @@ import { Mail, Lock, Loader2, Eye, EyeOff, CheckCircle, XCircle, User } from "lu
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { getBaseUrl } from "@/lib/platform";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
@@ -141,7 +142,7 @@ const ClaimInvite = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/e/${slug}/dashboard`,
+          emailRedirectTo: `${getBaseUrl()}/e/${slug}/dashboard`,
         },
       });
 

@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Share2, Copy, Check, Download } from 'lucide-react';
 import { GAME_NAMES } from './types';
+import { getBaseUrl } from "@/lib/platform";
 
 interface ShareResultsProps {
   gameId: string;
@@ -56,7 +57,7 @@ export function ShareResults({
         await navigator.share({
           title: `EventBliss — ${gameName}`,
           text,
-          url: window.location.origin,
+          url: getBaseUrl(),
         });
       } catch {
         // User cancelled or share failed — ignore

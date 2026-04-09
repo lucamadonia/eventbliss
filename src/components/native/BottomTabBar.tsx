@@ -21,7 +21,7 @@ export const TABS: Tab[] = [
   { to: "/my-events", label: "Events", icon: CalendarHeart, matchPrefix: "/my-events" },
   { to: "/games", label: "Play", icon: Gamepad2, matchPrefix: "/games" },
   { to: "/ideas", label: "Ideas", icon: Lightbulb, matchPrefix: "/ideas" },
-  { to: "/settings", label: "Profile", icon: User, matchPrefix: "/settings" },
+  { to: "/profile", label: "Profile", icon: User, matchPrefix: "/profile" },
 ];
 
 // Routes where the tab bar should be hidden (deep screens, modals, games).

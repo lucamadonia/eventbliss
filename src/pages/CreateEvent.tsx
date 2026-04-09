@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { getBaseUrl } from "@/lib/platform";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -197,7 +198,7 @@ const CreateEvent = () => {
         setCreatedEvent({
           slug: data.event.slug,
           access_code: data.event.access_code,
-          share_link: data.share_link || `${window.location.origin}/e/${data.event.slug}`,
+          share_link: data.share_link || `${getBaseUrl()}/e/${data.event.slug}`,
         });
         setStep(6);
         toast({
