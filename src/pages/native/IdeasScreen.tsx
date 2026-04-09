@@ -64,6 +64,21 @@ const THEME_CATS: { id: ThemeCategory | "all"; label: string }[] = [
 const difficultyColor = { easy: "text-emerald-400", medium: "text-amber-400", hard: "text-red-400" };
 const difficultyLabel = { easy: "Leicht", medium: "Mittel", hard: "Schwer" };
 
+/** Map instruction section labels to emojis — works across all 10 languages */
+function labelEmoji(label: string): string {
+  const l = label.toLowerCase();
+  if (/vorbereitung|preparation|preparación|preparação|przygotowanie|préparation|preparazione|voorbereiding|hazırlık|تحضير/.test(l)) return '📋';
+  if (/ablauf|spielablauf|gameplay|cómo jugar|como jogar|rozgrywka|déroulement|svolgimento|spelverloop|oyun|طريقة/.test(l)) return '🎯';
+  if (/tipp|tips?|consejo|dica|wskazówk|conseil|consiglio|aanwijzing|ipucu|نصائح/.test(l)) return '💡';
+  if (/variante|variant|variación|variação|wariant|variazione|varyant|تنوع/.test(l)) return '🔄';
+  if (/material|materiales|materiais|materiał|matériel|materiali|materiaal|malzeme|مواد/.test(l)) return '🧰';
+  if (/regel|rules?|regla|regra|zasad|règle|regol|kural|قواعد/.test(l)) return '📜';
+  if (/ziel|goal|objetivo|cel|objectif|obiettivo|doel|hedef|هدف/.test(l)) return '🏆';
+  if (/dauer|duration|duración|duração|czas|durée|durata|duur|süre|مدة/.test(l)) return '⏱️';
+  if (/top\s*3|suggestion|vorschläge|sugerencia/.test(l)) return '🌟';
+  return '▸';
+}
+
 export default function IdeasScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -341,15 +356,7 @@ function GameItemCard({
                   if (boldMatch) {
                     const label = boldMatch[1];
                     const rest = boldMatch[2];
-                    const emoji = label.toLowerCase().includes('vorbereitung') ? '📋'
-                      : label.toLowerCase().includes('ablauf') ? '🎯'
-                      : label.toLowerCase().includes('tipp') ? '💡'
-                      : label.toLowerCase().includes('variante') ? '🔄'
-                      : label.toLowerCase().includes('material') ? '🧰'
-                      : label.toLowerCase().includes('regeln') ? '📜'
-                      : label.toLowerCase().includes('ziel') ? '🏆'
-                      : label.toLowerCase().includes('dauer') ? '⏱️'
-                      : '▸';
+                    const emoji = labelEmoji(label);
                     return (
                       <div key={i}>
                         <p className="font-bold text-foreground flex items-center gap-1.5 mt-2 mb-1">
