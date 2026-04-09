@@ -45,6 +45,7 @@ const PayoutsTab = lazy(() => import("@/components/admin/PayoutsTab").then(m => 
 const AgencyAnalyticsTab = lazy(() => import("@/components/admin/AgencyAnalyticsTab").then(m => ({ default: m.AgencyAnalyticsTab })));
 const AgencyAffiliateManager = lazy(() => import("@/components/admin/AgencyAffiliateManager").then(m => ({ default: m.AgencyAffiliateManager })));
 const PlanSettingsTab = lazy(() => import("@/components/admin/PlanSettingsTab").then(m => ({ default: m.PlanSettingsTab })));
+const AdminGames = lazy(() => import("@/pages/AdminGames"));
 
 interface AdminCard {
   id: string;
@@ -66,6 +67,7 @@ const ADMIN_CARDS: AdminCard[] = [
   { id: "analytics",     label: "Agency Analytics", icon: TrendingUp,  gradient: "from-sky-500 to-blue-500",       description: "Interaktionen" },
   { id: "agencies",      label: "Agency Affiliates", icon: Building2,  gradient: "from-slate-500 to-gray-600",     description: "Multi-Agency" },
   { id: "settings",      label: "Plan Settings",   icon: Settings,     gradient: "from-purple-500 to-violet-500",  description: "Features & Preise" },
+  { id: "games",         label: "Games Content",   icon: Gamepad2,     gradient: "from-orange-500 to-red-500",     description: "Fragen & Inhalte" },
 ];
 
 function getTabComponent(id: string) {
@@ -81,6 +83,7 @@ function getTabComponent(id: string) {
     case "analytics":     return <AgencyAnalyticsTab />;
     case "agencies":      return <AgencyAffiliateManager />;
     case "settings":      return <PlanSettingsTab />;
+    case "games":         return <AdminGames />;
     default:              return null;
   }
 }
