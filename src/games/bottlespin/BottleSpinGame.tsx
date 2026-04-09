@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import {
   BOTTLE_CARDS, CATEGORY_META, type BottleCard, type BottleCategory,
 } from './bottlespin-content-de';
@@ -64,7 +65,7 @@ const neonStyles = `
   .float-aura { animation: float-aura 6s ease-in-out infinite; }
 `;
 
-export default function BottleSpinGame() {
+export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -188,6 +189,32 @@ export default function BottleSpinGame() {
   const toggleCategory = (cat: BottleCategory) => {
     setSelectedCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
   };
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, totalRounds, selectedIdx, rotation,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+    });
+  }, [phase, currentRound, selectedIdx, rotation, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.selectedIdx !== undefined) setSelectedIdx(data.selectedIdx as number);
+      if (data.rotation !== undefined) setRotation(data.rotation as number);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
 
   if (phase === 'setup') {
     return (

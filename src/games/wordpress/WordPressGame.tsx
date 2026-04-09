@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -713,7 +714,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
 // Main Game Controller
 // ---------------------------------------------------------------------------
 
-export default function WordPressGame() {
+export default function WordPressGame({ online }: { online?: OnlineGameProps } = {}) {
   const [phase, setPhase] = useState<GamePhase>('setup');
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [mode, setMode] = useState<GameMode>('kategorie');
@@ -782,6 +783,31 @@ export default function WordPressGame() {
     setCurrentPlayerIndex(0);
     setTurnQueue([]);
   }, []);
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, round, totalRounds, currentPlayerIndex,
+      players: players.map(p => ({ name: p.name, score: p.score })),
+    });
+  }, [phase, round, currentPlayerIndex, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as GamePhase);
+      if (data.round) setRound(data.round as number);
+      if (data.currentPlayerIndex !== undefined) setCurrentPlayerIndex(data.currentPlayerIndex as number);
+      if (data.players) {
+        const incoming = data.players as { name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
 
   return (
     <AnimatePresence mode="wait">

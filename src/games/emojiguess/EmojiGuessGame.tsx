@@ -11,6 +11,7 @@ import { EMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content-de';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,7 +65,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function EmojiGuessGame() {
+export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   // Setup state
@@ -230,6 +231,33 @@ export default function EmojiGuessGame() {
     () => [...players].sort((a, b) => b.score - a.score),
     [players],
   );
+
+  /* ---- Online: host broadcasts game state (question sync) ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, totalRounds, currentPlayerIdx,
+      currentPuzzle: currentPuzzle ? { emojis: currentPuzzle.emojis, hint: currentPuzzle.hint, answer: currentPuzzle.answer } : null,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+    });
+  }, [phase, currentRound, currentPlayerIdx, currentPuzzle, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
+      if (data.currentPuzzle) setCurrentPuzzle(data.currentPuzzle as EmojiPuzzle);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
 
   // =========================================================================
   // RENDER

@@ -228,6 +228,33 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     beginRound((drawerIdx + 1) % players.length);
   }
 
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, round, totalRounds, drawerIdx,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+      currentWord: currentWord?.word ?? null,
+      timeLeft,
+    });
+  }, [phase, round, drawerIdx, players, timeLeft, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.round) setRound(data.round as number);
+      if (data.drawerIdx !== undefined) setDrawerIdx(data.drawerIdx as number);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
+
   const sorted = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players]);
   const anyCorrect = guesses.some(g => g.correct);
 

@@ -10,6 +10,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,7 +72,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function StoryBuilderGame() {
+export default function StoryBuilderGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   // Setup
@@ -256,6 +257,29 @@ export default function StoryBuilderGame() {
     setPlayers([]);
     setSentences([]);
   }
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, totalRounds, currentPlayerIdx,
+      sentences: sentences.map(s => ({ playerName: s.playerName, text: s.text })),
+    });
+  }, [phase, currentRound, currentPlayerIdx, sentences, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
+      if (data.sentences) {
+        const incoming = data.sentences as { playerName: string; text: string }[];
+        setSentences(incoming.map(s => ({ playerId: '', playerName: s.playerName, text: s.text })));
+      }
+    });
+  }, [online]);
 
   // =========================================================================
   // RENDER

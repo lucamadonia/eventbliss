@@ -9,6 +9,7 @@ import { FACTS, THREE_STATEMENTS, type Fact, type ThreeStatements } from './fake
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -62,7 +63,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function FakeOrFactGame() {
+export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   // Setup
@@ -216,6 +217,35 @@ export default function FakeOrFactGame() {
     () => [...players].sort((a, b) => b.score - a.score),
     [players],
   );
+
+  /* ---- Online: host broadcasts game state (statement sync) ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, totalRounds, currentPlayerIdx,
+      currentFact: currentFact ? { statement: currentFact.statement, isTrue: currentFact.isTrue } : null,
+      currentThree: currentThree ? { statements: currentThree.statements, trueIndex: currentThree.trueIndex } : null,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+    });
+  }, [phase, currentRound, currentPlayerIdx, currentFact, currentThree, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
+      if (data.currentFact) setCurrentFact(data.currentFact as Fact);
+      if (data.currentThree) setCurrentThree(data.currentThree as ThreeStatements);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
 
   // =========================================================================
   // RENDER

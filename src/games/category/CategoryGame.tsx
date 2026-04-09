@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { useGameTimer } from "@/games/engine/TimerSystem";
 import { getCategories, generateCategoryPrompt } from "@/games/content/categories";
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -672,7 +673,7 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
 // Main Game Component
 // ---------------------------------------------------------------------------
 
-export default function CategoryGame() {
+export default function CategoryGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   const [phase, setPhase] = useState<Phase>("setup");
@@ -800,6 +801,33 @@ export default function CategoryGame() {
     setRoundResults([]);
     setUsedCategories(new Set());
   }, []);
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, maxRounds, currentPlayerIndex, currentCategory, currentLetter,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score, losses: p.losses })),
+    });
+  }, [phase, currentRound, currentPlayerIndex, currentCategory, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.currentPlayerIndex !== undefined) setCurrentPlayerIndex(data.currentPlayerIndex as number);
+      if (data.currentCategory) setCurrentCategory(data.currentCategory as string);
+      if (data.currentLetter !== undefined) setCurrentLetter(data.currentLetter as string | undefined);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number; losses: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score, losses: incoming[i]?.losses ?? p.losses,
+        })));
+      }
+    });
+  }, [online]);
 
   const latestResult = roundResults[roundResults.length - 1];
 

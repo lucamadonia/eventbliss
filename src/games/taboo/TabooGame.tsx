@@ -197,6 +197,41 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setTurnResults([]); setCurrentCard(null); deck.current = shuffle(getTabooCards()); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
   }
 
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, activeTeamIdx, explainerIdx, currentRound, totalRounds,
+      teams: teams.map(t => ({ name: t.name, score: t.score, players: t.players })),
+      timeLeft: timer.timeLeft,
+      currentCard: currentCard ? { term: currentCard.term, forbidden: currentCard.forbidden } : null,
+    });
+  }, [phase, activeTeamIdx, currentRound, teams, timer.timeLeft, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.activeTeamIdx !== undefined) setActiveTeamIdx(data.activeTeamIdx as number);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.teams) {
+        const incoming = data.teams as { name: string; score: number; players: string[] }[];
+        setTeams(prev => [
+          { ...prev[0], score: incoming[0].score, players: incoming[0].players },
+          { ...prev[1], score: incoming[1].score, players: incoming[1].players },
+        ]);
+      }
+      if (data.currentCard) setCurrentCard(data.currentCard as TabooCard);
+    });
+  }, [online]);
+
+  /* ---- Online: determine if it's my turn ---- */
+  const isMyTurn = !online || online.isHost || (() => {
+    const myIdx = online.players.findIndex(p => p.id === online.myPlayerId);
+    return myIdx === activeTeamIdx;
+  })();
+
   const mvp = useMemo(() => { const w = teams[0].score >= teams[1].score ? teams[0] : teams[1]; return w.players[0] ?? 'Unbekannt'; }, [teams]);
   const turnCorrect = turnResults.filter(r => r.result === 'correct').length;
   const turnTaboo = turnResults.filter(r => r.result === 'taboo').length;

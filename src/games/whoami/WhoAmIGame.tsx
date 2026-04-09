@@ -10,6 +10,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { WHOAMI_CHARACTERS, type WhoAmICharacter } from './whoami-content-de';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
@@ -52,7 +53,7 @@ const EP_STYLE = `
 .glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 `;
 
-export default function WhoAmIGame() {
+export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -238,6 +239,31 @@ export default function WhoAmIGame() {
     setPlayers([]);
     setCurrentRound(1);
   };
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, currentRound, totalRounds, activeIdx,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score, character: p.character, questionsAsked: p.questionsAsked })),
+    });
+  }, [phase, currentRound, activeIdx, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+      if (data.activeIdx !== undefined) setActiveIdx(data.activeIdx as number);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number; character: string; questionsAsked: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score, character: incoming[i]?.character ?? p.character,
+        })));
+      }
+    });
+  }, [online]);
 
   const winner = useMemo(() =>
     [...players].sort((a, b) => b.score - a.score)[0], [players]);

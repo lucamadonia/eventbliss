@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { SHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content-de';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -54,7 +55,7 @@ const ANSWER_LABELS = ['A', 'B', 'C', 'D'];
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export default function SharedQuizGame() {
+export default function SharedQuizGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
@@ -168,6 +169,33 @@ export default function SharedQuizGame() {
   ];
 
   const isCorrect = currentQ && selectedAnswer === currentQ.correctIndex;
+
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      phase, round, totalRounds, roleIndices,
+      currentQ: currentQ ? { question: currentQ.question, options: currentQ.options, correctIndex: currentQ.correctIndex } : null,
+      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+    });
+  }, [phase, round, roleIndices, currentQ, players, online]);
+
+  /* ---- Online: non-host syncs state ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.phase) setPhase(data.phase as Phase);
+      if (data.round) setRound(data.round as number);
+      if (data.roleIndices) setRoleIndices(data.roleIndices as [number, number, number]);
+      if (data.currentQ) setCurrentQ(data.currentQ as SharedQuizQuestion);
+      if (data.players) {
+        const incoming = data.players as { id: string; name: string; score: number }[];
+        setPlayers(prev => prev.map((p, i) => ({
+          ...p, score: incoming[i]?.score ?? p.score,
+        })));
+      }
+    });
+  }, [online]);
 
   /* ================================================================ */
   /*  RENDER                                                          */

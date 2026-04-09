@@ -190,6 +190,24 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (screen === 'setup') gameRecordedRef.current = false;
   }, [screen]);
 
+  /* ---- Online: host broadcasts game state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('game-state', {
+      screen, currentWord, currentRound, totalRounds, correctCount, skippedCount,
+      timeLeft, playerName: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+    });
+  }, [screen, currentWord, currentRound, correctCount, skippedCount, timeLeft, online]);
+
+  /* ---- Online: non-host syncs state (sees word to shout) ---- */
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('game-state', (data) => {
+      if (data.screen) setScreen(data.screen as GameScreen);
+      if (data.currentRound) setCurrentRound(data.currentRound as number);
+    });
+  }, [online]);
+
   const handleRestart = useCallback(() => {
     setScreen('setup'); setSelectedCategory(null); setCurrentRound(1); setAllRounds([]); setRoundWords([]);
     orientationActiveRef.current = false;
