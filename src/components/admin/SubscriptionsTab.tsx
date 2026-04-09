@@ -79,7 +79,7 @@ export function SubscriptionsTab() {
     open: boolean;
     subscription: Subscription | null;
   }>({ open: false, subscription: null });
-  const [newPlan, setNewPlan] = useState("free");
+  const [newPlan, setNewPlan] = useState<"free" | "premium">("free");
   const [newExpiry, setNewExpiry] = useState("");
   const [newNotes, setNewNotes] = useState("");
 
@@ -87,7 +87,7 @@ export function SubscriptionsTab() {
   const [createDialog, setCreateDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [userSearchOpen, setUserSearchOpen] = useState(false);
-  const [createPlan, setCreatePlan] = useState("monthly");
+  const [createPlan, setCreatePlan] = useState<"free" | "premium">("premium");
   const [createExpiry, setCreateExpiry] = useState("");
   const [createNotes, setCreateNotes] = useState("");
 
@@ -404,15 +404,13 @@ export function SubscriptionsTab() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>{t("admin.subscriptions.plan", "Plan")}</Label>
-              <Select value={newPlan} onValueChange={setNewPlan}>
+              <Select value={newPlan} onValueChange={(v) => setNewPlan(v as "free" | "premium")}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                  <SelectItem value="lifetime">Lifetime</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -424,7 +422,7 @@ export function SubscriptionsTab() {
                 onChange={(e) => setNewExpiry(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                {t("admin.subscriptions.expiryHint", "Leer lassen für unbegrenzt")}
+                {t("admin.subscriptions.expiryHint", "Leer lassen für Lifetime (unbegrenzt)")}
               </p>
             </div>
             <div className="space-y-2">
@@ -505,17 +503,18 @@ export function SubscriptionsTab() {
             </div>
             <div className="space-y-2">
               <Label>{t("admin.subscriptions.plan", "Plan")}</Label>
-              <Select value={createPlan} onValueChange={setCreatePlan}>
+              <Select value={createPlan} onValueChange={(v) => setCreatePlan(v as "free" | "premium")}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                  <SelectItem value="lifetime">Lifetime</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                Premium + kein Ablaufdatum = Lifetime
+              </p>
             </div>
             <div className="space-y-2">
               <Label>{t("admin.subscriptions.expiryDate", "Ablaufdatum")}</Label>
