@@ -30,7 +30,8 @@ export function NativeShell({ children }: Props) {
   return (
     <div
       ref={swipeRef}
-      className="fixed inset-0 flex flex-col bg-background text-foreground overflow-hidden"
+      className="fixed inset-0 flex flex-col bg-background text-foreground overflow-hidden overflow-x-hidden"
+      style={{ touchAction: 'pan-y pinch-zoom' }}
     >
       {/* Page content — absolutely positioned inside to host transitions */}
       <main className="relative flex-1 overflow-hidden">{children}</main>

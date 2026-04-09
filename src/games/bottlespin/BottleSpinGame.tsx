@@ -264,68 +264,29 @@ export default function BottleSpinGame() {
                 );
               })}
 
-              {/* Center table surface — visual anchor for the bottle */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                {/* Outer ring */}
-                <div className="w-[160px] h-[160px] rounded-full border border-white/[0.06] bg-white/[0.02]"
-                  style={{ boxShadow: 'inset 0 0 40px rgba(139,92,246,0.08)' }} />
-              </div>
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div className="w-[80px] h-[80px] rounded-full border border-white/[0.04] bg-white/[0.01]" />
-              </div>
+              {/* Center table surface */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140px] h-[140px] rounded-full border border-white/[0.06] bg-white/[0.03]"
+                style={{ boxShadow: 'inset 0 0 30px rgba(139,92,246,0.06), 0 0 60px rgba(139,92,246,0.04)' }} />
 
-              {/* Bottle — centered, spinning, lying flat (top-down view) */}
-              <motion.div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center"
+              {/* Spinning bottle — uses emoji for photorealistic look */}
+              <motion.div
+                className="absolute left-1/2 top-1/2 origin-center"
+                style={{ marginLeft: -60, marginTop: -60, width: 120, height: 120 }}
                 animate={{ rotate: rotation }}
                 transition={{ type: 'tween', duration: 3, ease: [0.15, 0.85, 0.25, 1] }}>
-                <svg width="160" height="160" viewBox="0 0 160 160">
-                  <defs>
-                    <linearGradient id="btlGlass" x1="0.3" y1="0" x2="0.7" y2="1">
-                      <stop offset="0%" stopColor="#4ade80" stopOpacity="0.95" />
-                      <stop offset="40%" stopColor="#22c55e" stopOpacity="0.9" />
-                      <stop offset="75%" stopColor="#15803d" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#14532d" stopOpacity="0.95" />
-                    </linearGradient>
-                    <linearGradient id="btlHighlight" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="white" stopOpacity="0" />
-                      <stop offset="35%" stopColor="white" stopOpacity="0.4" />
-                      <stop offset="55%" stopColor="white" stopOpacity="0.15" />
-                      <stop offset="100%" stopColor="white" stopOpacity="0" />
-                    </linearGradient>
-                    <filter id="btlGlowEP">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                    </filter>
-                    <filter id="btlShadow">
-                      <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.4" />
-                    </filter>
-                  </defs>
-
-                  {/* Bottle drawn centered at (80,80), neck pointing UP.
-                      Body extends from center downward, neck extends upward.
-                      Rotation pivot = SVG center = bottle center of mass. */}
-
-                  <g filter="url(#btlShadow)">
-                    {/* Body — round bottom half */}
-                    <ellipse cx="80" cy="100" rx="16" ry="20" fill="url(#btlGlass)" />
-                    {/* Shoulder — tapers from body to neck */}
-                    <path d="M64 96 Q64 82 72 76 L72 76 L88 76 Q96 82 96 96 Z" fill="url(#btlGlass)" />
-                    {/* Neck — long and thin */}
-                    <rect x="74" y="35" width="12" height="43" rx="4" fill="url(#btlGlass)" />
-                    {/* Lip ring at top of neck */}
-                    <rect x="72" y="30" width="16" height="7" rx="4" fill="url(#btlGlass)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8" />
-                    {/* Pointer arrow tip — makes it clear where it points */}
-                    <polygon points="80,16 74,30 86,30" fill="#4ade80" opacity="0.95" />
-                  </g>
-
-                  {/* Glass highlights */}
-                  <rect x="76" y="32" width="4" height="65" rx="2" fill="url(#btlHighlight)" opacity="0.8" />
-                  <ellipse cx="76" cy="100" rx="4" ry="12" fill="url(#btlHighlight)" opacity="0.4" />
-
-                  {/* Center rotation dot */}
-                  <circle cx="80" cy="80" r="4" fill="white" opacity="0.12" />
-                  <circle cx="80" cy="80" r="2" fill="white" opacity="0.25" />
-                </svg>
+                {/* The bottle: a real wine bottle emoji, perfectly centered.
+                    Neck points UP (0° = top = toward first player). */}
+                <div className="w-full h-full flex items-center justify-center relative">
+                  {/* Bottle emoji — system-native rendering = photorealistic on iOS/Android */}
+                  <span className="text-[80px] leading-none select-none" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}>
+                    🍾
+                  </span>
+                  {/* Pointer indicator at the cork/top end */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1">
+                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[10px] border-b-[#df8eff]"
+                      style={{ filter: 'drop-shadow(0 0 6px rgba(223,142,255,0.6))' }} />
+                  </div>
+                </div>
               </motion.div>
             </div>
 
