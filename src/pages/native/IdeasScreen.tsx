@@ -20,6 +20,7 @@ import {
   Gamepad2,
   Palette,
   Search,
+  Volume2,
   Users,
   Clock,
   Flame,
@@ -34,6 +35,7 @@ import {
 import { gamesLibrary, type GameItem, type GameCategory } from "@/lib/games-library";
 import { themeIdeas, type ThemeItem, type ThemeCategory } from "@/lib/theme-ideas-library";
 import { useHaptics } from "@/hooks/useHaptics";
+import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -80,7 +82,7 @@ function labelEmoji(label: string): string {
 }
 
 export default function IdeasScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
 
@@ -244,7 +246,7 @@ export default function IdeasScreen() {
               animate="animate"
             >
               {filteredGames.slice(0, 50).map((game) => (
-                <GameItemCard key={game.id} game={game} t={t} haptics={haptics} />
+                <GameItemCard key={game.id} game={game} t={t} haptics={haptics} language={i18n.language} />
               ))}
               {filteredGames.length > 50 && (
                 <p className="text-center text-xs text-muted-foreground/60 py-4">
@@ -283,12 +285,15 @@ function GameItemCard({
   game,
   t,
   haptics,
+  language,
 }: {
   game: GameItem;
   t: (key: string) => string;
   haptics: ReturnType<typeof import("@/hooks/useHaptics").useHaptics>;
+  language: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [showAudio, setShowAudio] = useState(false);
 
   return (
     <motion.div
@@ -349,7 +354,41 @@ function GameItemCard({
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 pt-0 border-t border-border/50">
-              <div className="text-sm text-foreground/80 leading-relaxed mt-3 space-y-2">
+              {/* Audio button */}
+              <div className="flex items-center gap-2 mt-3 mb-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); haptics.light(); setShowAudio(!showAudio); }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                    showAudio
+                      ? "bg-primary/15 text-primary border-primary/30"
+                      : "bg-foreground/5 text-muted-foreground border-border"
+                  )}
+                >
+                  <Volume2 className="w-3.5 h-3.5" />
+                  Vorlesen
+                </button>
+              </div>
+
+              {/* Audio player */}
+              <AnimatePresence>
+                {showAudio && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-3 overflow-hidden"
+                  >
+                    <GameAudioPlayer
+                      text={t(game.instructionsKey)}
+                      language={language}
+                      compact
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="text-sm text-foreground/80 leading-relaxed space-y-2">
                 {t(game.instructionsKey).split('\n').filter(Boolean).map((line, i) => {
                   // Render **Label:** sections with emoji + bold styling
                   const boldMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)/);
