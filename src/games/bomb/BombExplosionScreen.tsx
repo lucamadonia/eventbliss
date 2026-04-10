@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bomb } from 'lucide-react';
+import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 
 interface ExplosionScreenProps {
   playerName: string;
@@ -12,6 +13,8 @@ function triggerExplosionVibration() {
 }
 
 export default function BombExplosionScreen({ playerName, onNext }: ExplosionScreenProps) {
+  const { isDrinkingMode } = useDrinkingMode();
+
   useEffect(() => {
     triggerExplosionVibration();
   }, []);
@@ -92,6 +95,20 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
       >
         <span className="text-[#ff6e84] font-bold">{playerName}</span> wurde erwischt!
       </motion.p>
+
+      {/* Drinking mode message */}
+      {isDrinkingMode && (
+        <motion.div
+          className="relative z-10 mt-4 px-6 py-3 rounded-2xl bg-amber-500/20 border border-amber-400/30"
+          initial={{ y: 20, opacity: 0, scale: 0.8 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9, type: "spring", bounce: 0.4 }}
+        >
+          <span className="text-2xl font-black text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
+            {"\uD83C\uDF7A"} Prost, du trinkst!
+          </span>
+        </motion.div>
+      )}
 
       {/* Continue button */}
       <motion.div

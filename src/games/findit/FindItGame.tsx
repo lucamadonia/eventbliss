@@ -342,6 +342,20 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       if (data.players) setPlayers(data.players as Player[]);
       if (data.selectedAnswer !== undefined) setSelectedAnswer(data.selectedAnswer as number | null);
       if (data.answerCorrect !== undefined) setAnswerCorrect(data.answerCorrect as boolean | null);
+      // Sync geo/streetview data so all players see the same location
+      if (data.currentGeo) setCurrentGeo(data.currentGeo as GeoLocation);
+      if (data.svLocations) setSvLocations(data.svLocations as StreetViewLocation[]);
+      if (data.svRound !== undefined) setSvRound(data.svRound as number);
+    });
+    return unsub;
+  }, [online]);
+
+  // Listen for other players' map/streetview guesses (for parallel pin placement)
+  useEffect(() => {
+    if (!online) return;
+    const unsub = online.onBroadcast('findit-guess', (data) => {
+      // Host collects all guesses — handled by MapRound/StreetViewRound onRoundComplete
+      // This is for future per-player parallel guessing
     });
     return unsub;
   }, [online]);
@@ -351,15 +365,19 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     online.broadcast('findit-state', {
       phase, round, currentPlayerIdx, players: JSON.parse(JSON.stringify(players)),
       selectedAnswer, answerCorrect,
+      // Include geo data so non-hosts can render the same map/streetview
+      currentGeo: currentGeo ? { lat: currentGeo.lat, lng: currentGeo.lng, name: currentGeo.name } : null,
+      svLocations: svLocations.length > 0 ? svLocations.map(l => ({ lat: l.lat, lng: l.lng, name: l.name, heading: l.heading, pitch: l.pitch })) : null,
+      svRound,
       ...overrides,
     });
-  }, [online, phase, round, currentPlayerIdx, players, selectedAnswer, answerCorrect]);
+  }, [online, phase, round, currentPlayerIdx, players, selectedAnswer, answerCorrect, currentGeo, svLocations, svRound]);
 
   useEffect(() => {
     if (online?.isHost && phase !== 'setup') {
       broadcastFindItState();
     }
-  }, [phase, round, currentPlayerIdx, selectedAnswer]);
+  }, [phase, round, currentPlayerIdx, selectedAnswer, currentGeo, svRound]);
 
   // ------- Setup handler -------
   const handleSetupStart = useCallback((

@@ -2,7 +2,7 @@
  * ProfileScreen — native "Profile" tab.
  * User avatar, settings links, theme toggle, language, premium, logout.
  */
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +26,7 @@ import { useTheme } from "next-themes";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
 import { languages } from "@/i18n";
@@ -48,6 +49,28 @@ export default function ProfileScreen() {
   const { isAdmin } = useAdmin();
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const drinkingMode = useDrinkingMode();
+  const [showBeerBurst, setShowBeerBurst] = useState(false);
+
+  // Easter Egg: tap version text 5 times within 3 seconds
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleVersionTap = useCallback(() => {
+    if (drinkingMode.isActivated) return; // already discovered
+    tapCountRef.current += 1;
+    haptics.light();
+    if (tapCountRef.current === 1) {
+      tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0; }, 3000);
+    }
+    if (tapCountRef.current >= 5) {
+      tapCountRef.current = 0;
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      drinkingMode.activate();
+      haptics.celebrate();
+      setShowBeerBurst(true);
+      setTimeout(() => setShowBeerBurst(false), 2000);
+    }
+  }, [drinkingMode, haptics]);
 
   const displayName =
     user?.user_metadata?.first_name ||
@@ -97,6 +120,13 @@ export default function ProfileScreen() {
       sublabel: themes.find((t) => t.id === theme)?.label || "Dunkel",
       onClick: () => { haptics.light(); setShowThemePicker((v) => !v); setShowLangPicker(false); },
     },
+    // Party-Modus (18+) — only visible after Easter Egg discovery
+    ...(drinkingMode.isActivated ? [{
+      icon: Sparkles,
+      label: "\uD83C\uDF7A Party-Modus (18+)",
+      sublabel: drinkingMode.isDrinkingMode ? "An" : "Aus",
+      onClick: () => { haptics.select(); drinkingMode.toggle(); },
+    } as Item] : []),
     { icon: Shield, label: "Datenschutz", onClick: () => go("/legal/privacy") },
     { icon: HelpCircle, label: "Hilfe & Support", onClick: () => go("/legal/imprint") },
     { icon: LogOut, label: "Abmelden", onClick: handleLogout, destructive: true },
@@ -297,10 +327,74 @@ export default function ProfileScreen() {
           )}
         </AnimatePresence>
 
-        <p className="text-center text-xs text-muted-foreground mt-6 mb-4">
+        <p
+          className="text-center text-xs text-muted-foreground mt-6 mb-4 select-none cursor-default"
+          onClick={handleVersionTap}
+        >
           EventBliss · Version 1.0.0
+          {drinkingMode.isDrinkingMode && (
+            <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-400/30">
+              18+
+            </span>
+          )}
         </p>
       </div>
+
+      {/* Beer burst Easter Egg activation animation */}
+      <AnimatePresence>
+        {showBeerBurst && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Amber flash */}
+            <motion.div
+              className="absolute inset-0 bg-amber-500/20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.4, 0] }}
+              transition={{ duration: 1.2 }}
+            />
+            {/* Beer emojis burst */}
+            {Array.from({ length: 12 }).map((_, i) => {
+              const angle = (i / 12) * 360;
+              const rad = (angle * Math.PI) / 180;
+              const dist = 120 + Math.random() * 60;
+              return (
+                <motion.span
+                  key={i}
+                  className="absolute text-3xl"
+                  initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
+                  animate={{
+                    x: Math.cos(rad) * dist,
+                    y: Math.sin(rad) * dist,
+                    opacity: 0,
+                    scale: 1.2,
+                    rotate: Math.random() * 360,
+                  }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                >
+                  {i % 3 === 0 ? "\uD83C\uDF7B" : i % 3 === 1 ? "\uD83C\uDF7A" : "\uD83C\uDF89"}
+                </motion.span>
+              );
+            })}
+            {/* Central text */}
+            <motion.div
+              className="relative text-center"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: [0, 1.3, 1], opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="text-5xl mb-2">{"\uD83C\uDF7B"}</div>
+              <div className="text-lg font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
+                Party-Modus aktiviert!
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -15,11 +15,15 @@ import {
   Map as MapIcon,
   Star,
   Lock,
+  Plus,
+  LogIn,
+  Wifi,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import GameRoomSheet from "@/components/native/GameRoomSheet";
 
 type Category = "alle" | "party" | "quiz" | "wort" | "karte" | "reaktion" | "social" | "kreativ";
 
@@ -71,6 +75,8 @@ export default function GamesScreen() {
   const haptics = useHaptics();
   const { isPremium } = usePremium();
   const [category, setCategory] = useState<Category>("alle");
+  const [roomSheetOpen, setRoomSheetOpen] = useState(false);
+  const [roomSheetTab, setRoomSheetTab] = useState<"create" | "join">("create");
 
   const filtered = useMemo(
     () =>
@@ -128,6 +134,51 @@ export default function GamesScreen() {
 
       {/* Game grid */}
       <div className="flex-1 overflow-y-auto native-scroll pb-tabbar">
+        {/* Online spielen section */}
+        <motion.div
+          className="mx-5 mb-4 mt-1 rounded-2xl border border-border bg-foreground/[0.03] p-4"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={spring.soft}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center">
+              <Wifi className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground">Online spielen</p>
+              <p className="text-[11px] text-muted-foreground">Mit Freunden in Echtzeit</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              transition={spring.snappy}
+              onClick={() => {
+                haptics.medium();
+                setRoomSheetTab("create");
+                setRoomSheetOpen(true);
+              }}
+              className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(139,92,246,0.4)]"
+            >
+              <Plus className="w-4 h-4" />
+              Raum erstellen
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              transition={spring.snappy}
+              onClick={() => {
+                haptics.medium();
+                setRoomSheetTab("join");
+                setRoomSheetOpen(true);
+              }}
+              className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-foreground/[0.06] border border-border text-foreground text-sm font-semibold"
+            >
+              <LogIn className="w-4 h-4" />
+              Beitreten
+            </motion.button>
+          </div>
+        </motion.div>
         <motion.div
           className="px-5 pt-2 grid grid-cols-2 gap-3"
           variants={stagger}
@@ -235,6 +286,12 @@ export default function GamesScreen() {
           </motion.button>
         )}
       </div>
+      {/* Online Game Room Sheet */}
+      <GameRoomSheet
+        open={roomSheetOpen}
+        onOpenChange={setRoomSheetOpen}
+        initialTab={roomSheetTab}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { getTabooCards, type TabooCard } from '../content/taboo-words';
 import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRight, MessageCircle, Ban } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
@@ -63,6 +64,7 @@ const EP = `
 interface TabooGameProps { players?: string[]; onClose?: () => void; online?: OnlineGameProps }
 
 export default function TabooGame({ players = [], onClose, online }: TabooGameProps) {
+  const { isDrinkingMode } = useDrinkingMode();
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
   const [phase, setPhase] = useState<Phase>('setup');
@@ -256,10 +258,12 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
       {/* TABOO flash overlay */}
       <AnimatePresence>
         {showFlash && (
-          <motion.div initial={{ opacity: 1 }} animate={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-50 bg-[#ff6b98]/70 flex items-center justify-center pointer-events-none">
+          <motion.div initial={{ opacity: 1 }} animate={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: isDrinkingMode ? 0.6 : 0.35 }}
+            className={`fixed inset-0 z-50 flex items-center justify-center pointer-events-none flex-col gap-3 ${isDrinkingMode ? 'bg-amber-500/60' : 'bg-[#ff6b98]/70'}`}>
             <motion.span initial={{ scale: 0.3, opacity: 1 }} animate={{ scale: 2.5, opacity: 0 }} transition={{ duration: 0.35 }}
-              className="text-7xl font-black text-white neon-glow-secondary italic tracking-tight">TABU!</motion.span>
+              className="text-7xl font-black text-white neon-glow-secondary italic tracking-tight">
+              {isDrinkingMode ? '\uD83C\uDF7A Trinken!' : 'TABU!'}
+            </motion.span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -506,8 +510,12 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
                 {r.result === 'taboo' && <X className="w-4 h-4 text-[#ff6e84] shrink-0" />}
                 {r.result === 'skipped' && <ArrowRight className="w-4 h-4 text-[#a8abb3]/40 shrink-0" />}
                 <span className={`${r.result === 'taboo' ? 'line-through text-[#f1f3fc]/40' : 'text-[#f1f3fc]/80'}`}>{r.card.term}</span>
-                <span className={`ml-auto text-xs font-bold ${r.result === 'correct' ? 'text-[#8ff5ff]' : r.result === 'taboo' ? 'text-[#ff6e84]' : 'text-[#a8abb3]/40'}`}>
-                  {r.result === 'correct' ? '+1' : r.result === 'taboo' ? '-1' : '0'}
+                <span className={`ml-auto text-xs font-bold ${r.result === 'correct' ? 'text-[#8ff5ff]' : r.result === 'taboo' ? (isDrinkingMode ? 'text-amber-400' : 'text-[#ff6e84]') : 'text-[#a8abb3]/40'}`}>
+                  {r.result === 'correct'
+                    ? (isDrinkingMode ? '\uD83C\uDF89 Prost!' : '+1')
+                    : r.result === 'taboo'
+                      ? (isDrinkingMode ? '\uD83C\uDF7A Trinken!' : '-1')
+                      : '0'}
                 </span>
               </div>
             ))}

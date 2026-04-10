@@ -10,6 +10,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
+import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
@@ -71,6 +72,7 @@ const EP_STYLE = `
 
 export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
+  const { isDrinkingMode } = useDrinkingMode();
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -354,7 +356,9 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               {activePlayer.avatar}
             </div>
             <h2 className="text-2xl font-extrabold">{activePlayer.name} ist dran!</h2>
-            <p className="text-white/40 text-sm">Waehle Wahrheit oder Pflicht</p>
+            <p className="text-white/40 text-sm">
+              {isDrinkingMode ? 'Waehle — oder trink!' : 'Waehle Wahrheit oder Pflicht'}
+            </p>
             <div className="flex gap-4 w-full max-w-sm">
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('truth')}
                 disabled={mode === 'nur-pflicht'}
@@ -371,6 +375,18 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 <Flame className="w-6 h-6 mx-auto mb-1" /> Pflicht
               </motion.button>
             </div>
+            {isDrinkingMode && (
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={nextRound}
+                className="w-full max-w-sm py-4 rounded-2xl font-extrabold text-lg bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+              >
+                {"\uD83C\uDF7A"} Dann trinkst du!
+              </motion.button>
+            )}
           </motion.div>
         )}
 
@@ -438,7 +454,11 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               if (!voter) return null;
               return (
                 <>
-                  <h2 className="text-xl font-extrabold">Hat {activePlayer.name} es geschafft?</h2>
+                  <h2 className="text-xl font-extrabold">
+                    {isDrinkingMode
+                      ? `Hat ${activePlayer.name} es geschafft? Sonst: \uD83C\uDF7A`
+                      : `Hat ${activePlayer.name} es geschafft?`}
+                  </h2>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
                     style={{ backgroundColor: voter.color }}>
                     {voter.avatar}

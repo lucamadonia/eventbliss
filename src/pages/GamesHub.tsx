@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useMemo, useCallback } from "react";
+import { lazy, Suspense, useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
@@ -222,7 +222,8 @@ const GamesHub = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
-  const [onlineGameId, setOnlineGameId] = useState<string | null>(null);
+  const lobbyParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("lobby") : null;
+  const [onlineGameId, setOnlineGameId] = useState<string | null>(lobbyParam);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
   const [activeCategory, setActiveCategory] = useState("alle");
 
@@ -234,6 +235,13 @@ const GamesHub = () => {
     try { return localStorage.getItem("eventbliss_player_name") || "Spieler"; } catch { return "Spieler"; }
   });
   const { isPremium } = usePremium();
+
+  // Sync ?lobby= URL param to onlineGameId (used by native GameRoomSheet)
+  useEffect(() => {
+    if (lobbyParam && lobbyParam !== onlineGameId) {
+      setOnlineGameId(lobbyParam);
+    }
+  }, [lobbyParam]);
 
   const premiumInfoMap = useMemo(() => {
     const map: Record<string, { isLocked: boolean; freePlaysLeft: number; isPremium: boolean }> = {};

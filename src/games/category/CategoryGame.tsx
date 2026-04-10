@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { useGameTimer } from "@/games/engine/TimerSystem";
 import { getCategories, generateCategoryPrompt } from "@/games/content/categories";
+import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -527,6 +528,7 @@ function RoundEndScreen({
   maxRounds: number;
   onNext: () => void;
 }) {
+  const { isDrinkingMode } = useDrinkingMode();
   const loser = players.find((p) => p.id === result.loserId);
 
   return (
@@ -542,11 +544,17 @@ function RoundEndScreen({
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="rounded-[1rem] border-l-4 border-[#ff6b98] bg-[#1b2028] p-4 text-center"
+          className={`rounded-[1rem] border-l-4 bg-[#1b2028] p-4 text-center ${isDrinkingMode ? 'border-amber-400' : 'border-[#ff6b98]'}`}
         >
-          <Timer className="mx-auto h-8 w-8 text-[#ff6b98] mb-2" />
-          <p className="text-lg font-bold text-[#ff6b98]">{loser.name}</p>
-          <p className="text-sm text-white/30">Zeit abgelaufen!</p>
+          {isDrinkingMode ? (
+            <span className="block text-3xl mb-2">{"\uD83C\uDF7A"}</span>
+          ) : (
+            <Timer className="mx-auto h-8 w-8 text-[#ff6b98] mb-2" />
+          )}
+          <p className={`text-lg font-bold ${isDrinkingMode ? 'text-amber-300' : 'text-[#ff6b98]'}`}>{loser.name}</p>
+          <p className={`text-sm ${isDrinkingMode ? 'text-amber-400/70 font-semibold' : 'text-white/30'}`}>
+            {isDrinkingMode ? '\uD83C\uDF7A Trinken!' : 'Zeit abgelaufen!'}
+          </p>
         </motion.div>
       )}
 
