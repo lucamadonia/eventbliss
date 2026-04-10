@@ -11,6 +11,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
+import { haptics } from '@/hooks/useHaptics';
 import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
@@ -72,7 +73,9 @@ const EP_STYLE = `
 
 export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
-  const { isDrinkingMode } = useDrinkingMode();
+  const drinkingMode = useDrinkingMode();
+  const isDrinkingMode = drinkingMode.isDrinkingMode;
+  const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -381,12 +384,40 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={nextRound}
+                onClick={() => {
+                  const d = drinkingMode.recordDrink();
+                  if (d) {
+                    haptics.warning();
+                    setDisclaimer(d);
+                    setTimeout(() => nextRound(), 2000);
+                  } else {
+                    nextRound();
+                  }
+                }}
                 className="w-full max-w-sm py-4 rounded-2xl font-extrabold text-lg bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
               >
                 {"\uD83C\uDF7A"} Dann trinkst du!
               </motion.button>
             )}
+
+            {/* Disclaimer banner — appears when drink threshold is hit */}
+            <AnimatePresence>
+              {disclaimer && (
+                <motion.div
+                  className="relative z-10 mt-4 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
+                  initial={{ y: 30, opacity: 0, scale: 0.8 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: "spring", bounce: 0.3 }}
+                >
+                  <span className="text-2xl">{disclaimer.emoji}</span>
+                  <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
+                  <p className="text-[10px] text-amber-300/50 mt-1">
+                    Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
 

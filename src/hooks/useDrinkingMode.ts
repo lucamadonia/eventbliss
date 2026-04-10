@@ -58,47 +58,53 @@ function subscribe(listener: Listener) {
 // Hook
 // ---------------------------------------------------------------------------
 
-/** Staggered disclaimer messages based on drink count — multi-language */
+/**
+ * Staggered disclaimer messages — multi-language.
+ *
+ * IMPORTANT: The counter is GLOBAL (not per-player). In a group of
+ * 8 players, drinks are distributed — so if the counter hits 10,
+ * each person only had ~1-2 drinks on average. Thresholds are set
+ * accordingly high to account for group distribution:
+ *
+ *   10 total ≈ 1-2 per person (8 players) → gentle reminder
+ *   20 total ≈ 2-3 per person → stay hydrated
+ *   30 total ≈ 3-4 per person → responsibility hint
+ *   50 total ≈ 6+ per person → serious reminder
+ *   75 total ≈ 9+ per person → please stop
+ *   100 total → legend status
+ */
 const DISCLAIMERS_I18N: Record<string, { at: number; message: string; emoji: string }[]> = {
   de: [
-    { at: 3,  message: "Denk dran: Wasser zwischendurch!", emoji: "💧" },
-    { at: 5,  message: "5 Drinks! Vielleicht eine Pause?", emoji: "😅" },
-    { at: 8,  message: "Du bist gut dabei! Trink verantwortungsvoll.", emoji: "🍃" },
-    { at: 10, message: "10 Drinks! Bitte kein Auto fahren.", emoji: "🚫" },
-    { at: 15, message: "15?! Respekt. Aber vielleicht genug für heute?", emoji: "😵" },
-    { at: 20, message: "OK Champion, ab jetzt nur noch Wasser!", emoji: "🏆" },
-    { at: 30, message: "Du hast offiziell gewonnen. Bitte aufhören.", emoji: "🏅" },
-    { at: 50, message: "LEGENDE. Aber ernsthaft: Bitte auf dich aufpassen!", emoji: "❤️" },
+    { at: 10, message: "10 Runden getrunken! Denkt an Wasser zwischendurch.", emoji: "💧" },
+    { at: 20, message: "20 Runden! Bleibt hydrated — Wasser ist euer Freund.", emoji: "😅" },
+    { at: 30, message: "30 Runden! Ihr seid gut dabei. Trink verantwortungsvoll.", emoji: "🍃" },
+    { at: 50, message: "50 Runden! Bitte kein Auto fahren heute Nacht.", emoji: "🚫" },
+    { at: 75, message: "75?! Respekt. Aber vielleicht langsam genug?", emoji: "😵" },
+    { at: 100, message: "100 RUNDEN. Ihr seid Legenden. Aber bitte auf euch aufpassen!", emoji: "❤️" },
   ],
   en: [
-    { at: 3,  message: "Remember: have some water in between!", emoji: "💧" },
-    { at: 5,  message: "5 drinks! Maybe take a break?", emoji: "😅" },
-    { at: 8,  message: "You're going strong! Drink responsibly.", emoji: "🍃" },
-    { at: 10, message: "10 drinks! Please don't drive.", emoji: "🚫" },
-    { at: 15, message: "15?! Respect. But maybe enough for today?", emoji: "😵" },
-    { at: 20, message: "OK champion, water only from here!", emoji: "🏆" },
-    { at: 30, message: "You've officially won. Please stop now.", emoji: "🏅" },
-    { at: 50, message: "LEGEND. But seriously: take care of yourself!", emoji: "❤️" },
+    { at: 10, message: "10 rounds downed! Remember to drink water too.", emoji: "💧" },
+    { at: 20, message: "20 rounds! Stay hydrated — water is your friend.", emoji: "😅" },
+    { at: 30, message: "30 rounds! You're going strong. Drink responsibly.", emoji: "🍃" },
+    { at: 50, message: "50 rounds! Please don't drive tonight.", emoji: "🚫" },
+    { at: 75, message: "75?! Respect. But maybe slow down?", emoji: "😵" },
+    { at: 100, message: "100 ROUNDS. You're legends. But please take care!", emoji: "❤️" },
   ],
   es: [
-    { at: 3,  message: "¡Recuerda: agua entre medias!", emoji: "💧" },
-    { at: 5,  message: "¡5 tragos! ¿Quizás un descanso?", emoji: "😅" },
-    { at: 8,  message: "¡Vas bien! Bebe con responsabilidad.", emoji: "🍃" },
-    { at: 10, message: "¡10 tragos! Por favor no conduzcas.", emoji: "🚫" },
-    { at: 15, message: "¿¡15!? Respeto. ¿Pero quizás suficiente?", emoji: "😵" },
-    { at: 20, message: "OK campeón, ¡solo agua a partir de ahora!", emoji: "🏆" },
-    { at: 30, message: "Has ganado oficialmente. Para ya.", emoji: "🏅" },
-    { at: 50, message: "LEYENDA. Pero en serio: ¡cuídate!", emoji: "❤️" },
+    { at: 10, message: "¡10 rondas! Recuerden beber agua también.", emoji: "💧" },
+    { at: 20, message: "¡20 rondas! Manténganse hidratados.", emoji: "😅" },
+    { at: 30, message: "¡30 rondas! Van fuerte. Beban con responsabilidad.", emoji: "🍃" },
+    { at: 50, message: "¡50 rondas! Por favor no conduzcan esta noche.", emoji: "🚫" },
+    { at: 75, message: "¿¡75!? Respeto. ¿Pero quizás más despacio?", emoji: "😵" },
+    { at: 100, message: "¡100 RONDAS! Son leyendas. ¡Pero cuídense!", emoji: "❤️" },
   ],
   fr: [
-    { at: 3,  message: "N'oublie pas : de l'eau entre deux !", emoji: "💧" },
-    { at: 5,  message: "5 verres ! Peut-être une pause ?", emoji: "😅" },
-    { at: 8,  message: "Tu assures ! Bois de manière responsable.", emoji: "🍃" },
-    { at: 10, message: "10 verres ! Ne conduis pas s'il te plaît.", emoji: "🚫" },
-    { at: 15, message: "15 ?! Respect. Mais peut-être assez ?", emoji: "😵" },
-    { at: 20, message: "OK champion, que de l'eau maintenant !", emoji: "🏆" },
-    { at: 30, message: "Tu as officiellement gagné. Arrête.", emoji: "🏅" },
-    { at: 50, message: "LÉGENDE. Mais sérieusement : fais attention !", emoji: "❤️" },
+    { at: 10, message: "10 tours ! Pensez à boire de l'eau aussi.", emoji: "💧" },
+    { at: 20, message: "20 tours ! Restez hydratés.", emoji: "😅" },
+    { at: 30, message: "30 tours ! Vous assurez. Buvez responsablement.", emoji: "🍃" },
+    { at: 50, message: "50 tours ! Ne conduisez pas ce soir svp.", emoji: "🚫" },
+    { at: 75, message: "75 ?! Respect. Mais peut-être plus doucement ?", emoji: "😵" },
+    { at: 100, message: "100 TOURS ! Vous êtes des légendes. Mais faites attention !", emoji: "❤️" },
   ],
 };
 

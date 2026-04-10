@@ -139,7 +139,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
               {disclaimer.message}
             </p>
             <p className="text-[10px] text-amber-300/50 mt-1">
-              Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+              Runde {drinkingMode.drinkCount} · Trinkt verantwortungsvoll
             </p>
           </motion.div>
         )}

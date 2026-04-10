@@ -21,6 +21,7 @@ import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { useGameTimer } from "@/games/engine/TimerSystem";
 import { getCategories, generateCategoryPrompt } from "@/games/content/categories";
 import { useDrinkingMode } from "@/hooks/useDrinkingMode";
+import { haptics } from "@/hooks/useHaptics";
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -528,8 +529,23 @@ function RoundEndScreen({
   maxRounds: number;
   onNext: () => void;
 }) {
-  const { isDrinkingMode } = useDrinkingMode();
+  const drinkingMode = useDrinkingMode();
+  const isDrinkingMode = drinkingMode.isDrinkingMode;
+  const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
   const loser = players.find((p) => p.id === result.loserId);
+
+  // Record drink when round ends with a loser in drinking mode
+  useEffect(() => {
+    if (isDrinkingMode && loser) {
+      const d = drinkingMode.recordDrink();
+      if (d) {
+        setTimeout(() => {
+          haptics.warning();
+          setDisclaimer(d);
+        }, 1000);
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
@@ -557,6 +573,25 @@ function RoundEndScreen({
           </p>
         </motion.div>
       )}
+
+      {/* Disclaimer banner — appears when drink threshold is hit */}
+      <AnimatePresence>
+        {disclaimer && (
+          <motion.div
+            className="relative z-10 mt-4 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
+            initial={{ y: 30, opacity: 0, scale: 0.8 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", bounce: 0.3 }}
+          >
+            <span className="text-2xl">{disclaimer.emoji}</span>
+            <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
+            <p className="text-[10px] text-amber-300/50 mt-1">
+              Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Words as pills */}
       <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-3">

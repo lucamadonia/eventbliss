@@ -6,6 +6,7 @@ import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRigh
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
+import { haptics } from '@/hooks/useHaptics';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
@@ -64,7 +65,9 @@ const EP = `
 interface TabooGameProps { players?: string[]; onClose?: () => void; online?: OnlineGameProps }
 
 export default function TabooGame({ players = [], onClose, online }: TabooGameProps) {
-  const { isDrinkingMode } = useDrinkingMode();
+  const drinkingMode = useDrinkingMode();
+  const isDrinkingMode = drinkingMode.isDrinkingMode;
+  const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
   const [phase, setPhase] = useState<Phase>('setup');
@@ -158,6 +161,15 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     playBuzzer(); navigator.vibrate?.([300]);
     setShowFlash(true); setTimeout(() => setShowFlash(false), 350);
     setTurnResults(r => [...r, { card: currentCard, result: 'taboo' }]); setCurrentCard(drawCard()); setCardKey(k => k + 1);
+    if (isDrinkingMode) {
+      const d = drinkingMode.recordDrink();
+      if (d) {
+        setTimeout(() => {
+          haptics.warning();
+          setDisclaimer(d);
+        }, 600);
+      }
+    }
   }
 
   function handleSkip() {
@@ -264,6 +276,25 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
               className="text-7xl font-black text-white neon-glow-secondary italic tracking-tight">
               {isDrinkingMode ? '\uD83C\uDF7A Trinken!' : 'TABU!'}
             </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Disclaimer banner — appears when drink threshold is hit */}
+      <AnimatePresence>
+        {disclaimer && (
+          <motion.div
+            className="fixed bottom-24 left-0 right-0 z-50 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
+            initial={{ y: 30, opacity: 0, scale: 0.8 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", bounce: 0.3 }}
+          >
+            <span className="text-2xl">{disclaimer.emoji}</span>
+            <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
+            <p className="text-[10px] text-amber-300/50 mt-1">
+              Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
