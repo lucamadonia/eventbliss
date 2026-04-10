@@ -15,7 +15,10 @@ export function useTVConnection(roomCode: string) {
   const [gameEnded, setGameEnded] = useState(false);
 
   useEffect(() => {
+    // Subscribe to BOTH channel prefixes so TV works for
+    // online rooms (game-room:) AND offline TV mode (tv-room:)
     const channel = supabase.channel(`game-room:${roomCode}`);
+    const tvChannel = supabase.channel(`tv-room:${roomCode}`);
 
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState<{ id: string; name: string; color: string; avatar: string; isReady: boolean; joinedAt: number }>();
@@ -39,8 +42,21 @@ export function useTVConnection(roomCode: string) {
       if (s) setGameState({ game: 'bomb', phase: s.phase, ...s });
     });
 
+    // Mirror all TV events from the tv-room channel (offline TV mode)
+    tvChannel.on('broadcast', { event: 'tv-state' }, ({ payload }) => { setGameState(payload as TVState); });
+    tvChannel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => { setLeaderboard(((payload as any).scores || []) as TVScore[]); });
+    tvChannel.on('broadcast', { event: 'game-start' }, ({ payload }) => {
+      setGameStarted(true); setGameEnded(false);
+      if (payload) setGameState(payload as TVState);
+    });
+    tvChannel.on('broadcast', { event: 'game-end' }, () => { setGameEnded(true); });
+
     channel.subscribe((status) => { if (status === 'SUBSCRIBED') setIsConnected(true); });
-    return () => { supabase.removeChannel(channel); };
+    tvChannel.subscribe((status) => { if (status === 'SUBSCRIBED') setIsConnected(true); });
+    return () => {
+      supabase.removeChannel(channel);
+      supabase.removeChannel(tvChannel);
+    };
   }, [roomCode]);
 
   return { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded };

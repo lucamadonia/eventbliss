@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
+import { TVBroadcastProvider } from "@/contexts/TVBroadcastContext";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import {
@@ -322,23 +323,25 @@ const GamesHub = () => {
     );
   }
 
-  if (gameId === "category") return <Suspense fallback={GameFallback}><CategoryGame /></Suspense>;
-  if (gameId === "bomb") return <Suspense fallback={GameFallback}><BombGame /></Suspense>;
-  if (gameId === "headup") return <Suspense fallback={GameFallback}><HeadUpGame /></Suspense>;
-  if (gameId === "taboo") return <Suspense fallback={GameFallback}><TabooGame /></Suspense>;
-  if (gameId === "hochstapler") return <Suspense fallback={GameFallback}><ImpostorGame /></Suspense>;
-  if (gameId === "drueck-das-wort") return <Suspense fallback={GameFallback}><WordPressGame /></Suspense>;
-  if (gameId === "wo-ist-was") return <Suspense fallback={GameFallback}><FindItGame /></Suspense>;
-  if (gameId === "split-quiz") return <Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense>;
-  if (gameId === "geteilt-gequizzt") return <Suspense fallback={GameFallback}><SharedQuizGame /></Suspense>;
-  if (gameId === "schnellzeichner") return <Suspense fallback={GameFallback}><QuickDrawGame /></Suspense>;
-  if (gameId === "wahrheit-pflicht") return <Suspense fallback={GameFallback}><TruthDareGame /></Suspense>;
-  if (gameId === "this-or-that") return <Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense>;
-  if (gameId === "wer-bin-ich") return <Suspense fallback={GameFallback}><WhoAmIGame /></Suspense>;
-  if (gameId === "emoji-raten") return <Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense>;
-  if (gameId === "fake-or-fact") return <Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense>;
-  if (gameId === "story-builder") return <Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense>;
-  if (gameId === "flaschendrehen") return <Suspense fallback={GameFallback}><BottleSpinGame /></Suspense>;
+  // Offline games — wrapped in TVBroadcastProvider so they can
+  // optionally connect to a TV screen via the floating 📺 button
+  if (gameId === "category") return <TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "bomb") return <TVBroadcastProvider><Suspense fallback={GameFallback}><BombGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "headup") return <TVBroadcastProvider><Suspense fallback={GameFallback}><HeadUpGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "taboo") return <TVBroadcastProvider><Suspense fallback={GameFallback}><TabooGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "hochstapler") return <TVBroadcastProvider><Suspense fallback={GameFallback}><ImpostorGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "drueck-das-wort") return <TVBroadcastProvider><Suspense fallback={GameFallback}><WordPressGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "wo-ist-was") return <TVBroadcastProvider><Suspense fallback={GameFallback}><FindItGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "split-quiz") return <TVBroadcastProvider><Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense></TVBroadcastProvider>;
+  if (gameId === "geteilt-gequizzt") return <TVBroadcastProvider><Suspense fallback={GameFallback}><SharedQuizGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "schnellzeichner") return <TVBroadcastProvider><Suspense fallback={GameFallback}><QuickDrawGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "wahrheit-pflicht") return <TVBroadcastProvider><Suspense fallback={GameFallback}><TruthDareGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "this-or-that") return <TVBroadcastProvider><Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "wer-bin-ich") return <TVBroadcastProvider><Suspense fallback={GameFallback}><WhoAmIGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "emoji-raten") return <TVBroadcastProvider><Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "fake-or-fact") return <TVBroadcastProvider><Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "story-builder") return <TVBroadcastProvider><Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "flaschendrehen") return <TVBroadcastProvider><Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></TVBroadcastProvider>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {
