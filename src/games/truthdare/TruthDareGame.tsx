@@ -389,6 +389,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   if (d) {
                     haptics.warning();
                     setDisclaimer(d);
+                    setTimeout(() => setDisclaimer(null), 5000);
                     setTimeout(() => nextRound(), 2000);
                   } else {
                     nextRound();

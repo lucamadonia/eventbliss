@@ -167,6 +167,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
         setTimeout(() => {
           haptics.warning();
           setDisclaimer(d);
+          setTimeout(() => setDisclaimer(null), 5000);
         }, 600);
       }
     }

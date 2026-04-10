@@ -542,6 +542,7 @@ function RoundEndScreen({
         setTimeout(() => {
           haptics.warning();
           setDisclaimer(d);
+          setTimeout(() => setDisclaimer(null), 5000);
         }, 1000);
       }
     }

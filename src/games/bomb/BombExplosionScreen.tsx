@@ -28,6 +28,8 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
         setTimeout(() => {
           haptics.warning();
           setDisclaimer(d);
+          // Auto-dismiss after 5 seconds
+          setTimeout(() => setDisclaimer(null), 5000);
         }, 1500);
       }
     }
