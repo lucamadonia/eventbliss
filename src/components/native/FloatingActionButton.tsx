@@ -3,16 +3,27 @@
  * Opens a bottom sheet with quick actions: create event, join, quick game.
  */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calendar, Users, Gamepad2, X } from "lucide-react";
+import { Plus, Calendar, Users, Gamepad2, Wifi, LogIn, X } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { useTabBarVisible } from "./BottomTabBar";
+import GameRoomSheet from "./GameRoomSheet";
+
+interface Action {
+  icon: typeof Calendar;
+  label: string;
+  path?: string;
+  onClick?: () => void;
+  color: string;
+}
 
 export function FloatingActionButton() {
   const [open, setOpen] = useState(false);
+  const [roomSheet, setRoomSheet] = useState<"create" | "join" | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const haptics = useHaptics();
   const visible = useTabBarVisible();
 
@@ -29,10 +40,21 @@ export function FloatingActionButton() {
     setTimeout(() => navigate(path), 120);
   };
 
-  const actions = [
+  const openRoom = (tab: "create" | "join") => {
+    haptics.light();
+    setOpen(false);
+    setTimeout(() => setRoomSheet(tab), 120);
+  };
+
+  // Context-aware actions based on current tab
+  const isGamesTab = location.pathname === "/games";
+
+  const actions: Action[] = [
     { icon: Calendar, label: "Event erstellen", path: "/create", color: "from-violet-500 to-fuchsia-500" },
     { icon: Users, label: "Event beitreten", path: "/join", color: "from-cyan-500 to-teal-500" },
-    { icon: Gamepad2, label: "Quick Game", path: "/games", color: "from-amber-500 to-pink-500" },
+    { icon: Wifi, label: "Raum erstellen", onClick: () => openRoom("create"), color: "from-emerald-500 to-green-500" },
+    { icon: LogIn, label: "Raum beitreten", onClick: () => openRoom("join"), color: "from-sky-500 to-blue-500" },
+    ...(isGamesTab ? [] : [{ icon: Gamepad2, label: "Quick Game", path: "/games", color: "from-amber-500 to-pink-500" } as Action]),
   ];
 
   return (
@@ -65,8 +87,8 @@ export function FloatingActionButton() {
                 const Icon = a.icon;
                 return (
                   <motion.button
-                    key={a.path}
-                    onClick={() => go(a.path)}
+                    key={a.label}
+                    onClick={() => a.onClick ? a.onClick() : a.path && go(a.path)}
                     className="flex items-center gap-3"
                     initial={{ x: 40, opacity: 0, scale: 0.8 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
@@ -102,6 +124,13 @@ export function FloatingActionButton() {
           )}
         </motion.button>
       </div>
+
+      {/* Game Room bottom sheet */}
+      <GameRoomSheet
+        open={roomSheet !== null}
+        onOpenChange={(o) => !o && setRoomSheet(null)}
+        initialTab={roomSheet || "create"}
+      />
     </>
   );
 }
