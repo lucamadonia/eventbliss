@@ -623,3 +623,24 @@ html.capacitor-native ::-webkit-scrollbar {
 html.capacitor-native .pb-tabbar {
   padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
+
+/* No-scrollbar utility — hides scrollbar on horizontal carousels */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Skeleton shimmer for native loading states */
+@keyframes nativeShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.native-skeleton {
+  background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--muted-foreground) / 0.08) 50%, hsl(var(--muted)) 100%);
+  background-size: 200% 100%;
+  animation: nativeShimmer 1.5s infinite ease-in-out;
+  border-radius: 1rem;
+}

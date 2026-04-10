@@ -28,8 +28,17 @@ interface Props {
   onComplete: () => void;
 }
 
+// Match splash bg to theme (avoids flash on handoff)
+function getSplashBg(): string {
+  const cls = document.documentElement.classList;
+  if (cls.contains("rose")) return "#faf5f0"; // warm cream
+  if (cls.contains("light") || (!cls.contains("dark") && window.matchMedia("(prefers-color-scheme: light)").matches)) return "#fafafa";
+  return "#1a1625"; // dark default
+}
+
 export function SplashExperience({ onComplete }: Props) {
   const haptics = useHaptics();
+  const splashBg = getSplashBg();
 
   useEffect(() => {
     // Hide native splash immediately so JS owns the screen
@@ -54,7 +63,7 @@ export function SplashExperience({ onComplete }: Props) {
       <motion.div
         key="splash"
         className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-        style={{ backgroundColor: "#1a1625" }}
+        style={{ backgroundColor: splashBg }}
         initial={{ opacity: 1 }}
         exit={{ opacity: 0, transition: { duration: 0.3, ease: ease.out } }}
       >
@@ -134,10 +143,10 @@ export function SplashExperience({ onComplete }: Props) {
               ease: ease.out,
             }}
           >
-            <p className="text-2xl font-display font-semibold text-white tracking-tight">
+            <p className="text-2xl font-display font-semibold text-foreground tracking-tight">
               EventBliss
             </p>
-            <p className="text-sm text-white/60 mt-1 font-body">
+            <p className="text-sm text-muted-foreground mt-1 font-body">
               Plan events worth remembering
             </p>
           </motion.div>

@@ -41,7 +41,7 @@ function useTypewriter(text: string, speed = 40) {
 export default function HomeScreen() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  const { events = [], refetch } = useMyEvents();
+  const { events = [], isLoading, refetch } = useMyEvents();
   const haptics = useHaptics();
 
   const firstName =
@@ -208,7 +208,13 @@ export default function HomeScreen() {
           )}
         </div>
 
-        {upcoming.length === 0 ? (
+        {isLoading ? (
+          <div className="flex gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex-shrink-0 w-64 h-[140px] rounded-2xl native-skeleton" />
+            ))}
+          </div>
+        ) : upcoming.length === 0 ? (
           <div className="mx-5 rounded-2xl p-6 border border-dashed border-border bg-foreground/5 text-center">
             <Sparkles className="w-8 h-8 text-primary/60 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
