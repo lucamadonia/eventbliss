@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import {
   BOTTLE_CARDS, CATEGORY_META, type BottleCard, type BottleCategory,
 } from './bottlespin-content-de';
@@ -84,6 +85,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   const [declined, setDeclined] = useState(false);
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
+
+  useTVGameBridge('bottlespin', { phase, currentRound, selectedIdx, rotation, players }, [phase, currentRound, selectedIdx]);
 
   const deck = useMemo(() => {
     const filtered = BOTTLE_CARDS.filter((c) => selectedCategories.includes(c.category));

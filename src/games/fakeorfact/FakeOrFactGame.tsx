@@ -10,6 +10,7 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -137,6 +138,8 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
   // ---------------------------------------------------------------------------
   // Game logic
   // ---------------------------------------------------------------------------
+
+  useTVGameBridge('fakeorfact', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
 
   const currentPlayer = players[currentPlayerIdx] ?? null;
 

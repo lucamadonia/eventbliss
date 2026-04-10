@@ -12,6 +12,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,6 +89,8 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
   const deckPos = useRef(0);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useTVGameBridge('emojiguess', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
 
   // Timer
   const handleTimerExpire = useCallback(() => {

@@ -12,6 +12,7 @@ import MapRound, { type MapRoundResult } from './MapRound';
 import StreetViewRound, { type StreetViewResult } from './StreetViewRound';
 import { getRandomStreetViewLocations, type StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -299,6 +300,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
+
+  useTVGameBridge('findit', { phase, round, players, currentPlayerIdx }, [phase, round, currentPlayerIdx]);
 
   // Geo state (Karte mode)
   const [geoPool, setGeoPool] = useState<GeoLocation[]>([]);

@@ -9,6 +9,7 @@ import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-word
 import { useGameTimer } from '../engine/TimerSystem';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [countdown, setCountdown] = useState<number | null>(null);
   const cooldownRef = useRef(false);
   const orientationActiveRef = useRef(false);
+
+  useTVGameBridge('headup', { phase: screen, currentRound, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length }, [screen, currentRound, currentWordIndex]);
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;

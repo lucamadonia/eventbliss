@@ -15,6 +15,7 @@ import { haptics } from '@/hooks/useHaptics';
 import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -94,6 +95,8 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   const [currentItem, setCurrentItem] = useState<TruthQuestion | DareChallenge | null>(null);
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
+
+  useTVGameBridge('truthdare', { phase, currentRound, activeIdx, players }, [phase, currentRound, activeIdx]);
 
   const truthDeck = useMemo(() => shuffle(TRUTH_QUESTIONS), []);
   const dareDeck = useMemo(() => shuffle(DARE_CHALLENGES), []);

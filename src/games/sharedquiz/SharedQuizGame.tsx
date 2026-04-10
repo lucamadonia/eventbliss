@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { SHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -77,6 +78,8 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const [currentQ, setCurrentQ] = useState<SharedQuizQuestion | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [roleIndices, setRoleIndices] = useState<[number, number, number]>([0, 1, 2]);
+
+  useTVGameBridge('sharedquiz', { phase, round, players }, [phase, round]);
 
   /* ---- Player management ---- */
   const nextId = useRef(4);

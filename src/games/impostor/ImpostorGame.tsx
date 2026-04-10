@@ -10,6 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -134,6 +135,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const [bonusGuess, setBonusGuess] = useState('');
   const [bonusResult, setBonusResult] = useState<boolean | null>(null);
   const [round, setRound] = useState(1);
+
+  useTVGameBridge('impostor', { phase, round, players }, [phase, round]);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

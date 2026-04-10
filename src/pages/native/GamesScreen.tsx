@@ -15,6 +15,8 @@ import {
   Map as MapIcon,
   Star,
   Lock,
+  PartyPopper,
+  ChevronRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -126,6 +128,29 @@ export default function GamesScreen() {
             );
           })}
         </div>
+      </div>
+
+      {/* Party Mode CTA */}
+      <div className="px-5 pb-3">
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => {
+            haptics.medium();
+            navigate("/party");
+          }}
+          className="w-full relative overflow-hidden rounded-2xl p-4 bg-gradient-to-r from-[#df8eff]/15 via-[#ff6b98]/10 to-[#f9ca24]/15 border border-[#df8eff]/25 flex items-center gap-3 text-left group"
+        >
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#df8eff] to-[#ff6b98] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(223,142,255,0.3)]">
+            <PartyPopper className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground">Party starten</p>
+            <p className="text-[11px] text-muted-foreground">Mehrere Spiele, eine Rangliste</p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 group-active:translate-x-0.5 transition-transform" />
+          {/* Ambient shimmer */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+        </motion.button>
       </div>
 
       {/* Game grid */}

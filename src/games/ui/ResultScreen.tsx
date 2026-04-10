@@ -1,9 +1,11 @@
 import { useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Trophy, Medal, ArrowLeft, Play } from "lucide-react";
+import { Trophy, Medal, ArrowLeft, Play, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 import { haptics } from "@/hooks/useHaptics";
+import { isPartySessionActive } from "@/hooks/usePartySession";
 
 interface ResultPlayer {
   name: string;
@@ -17,6 +19,7 @@ interface ResultScreenProps {
   onPlayAgain: () => void;
   onBackToHub: () => void;
   totalRounds?: number;
+  gameId?: string;
 }
 
 const confettiColors = [
@@ -64,7 +67,10 @@ export function ResultScreen({
   onPlayAgain,
   onBackToHub,
   totalRounds,
+  gameId,
 }: ResultScreenProps) {
+  const navigate = useNavigate();
+  const partyActive = isPartySessionActive();
   const sorted = useMemo(
     () => [...players].sort((a, b) => b.score - a.score),
     [players]
@@ -204,12 +210,28 @@ export function ResultScreen({
           transition={{ delay: 1.4 }}
         >
           <motion.button
-            onClick={onBackToHub}
+            onClick={() => {
+              haptics.light();
+              if (partyActive) {
+                navigate("/party");
+              } else {
+                onBackToHub();
+              }
+            }}
             className="flex-1 py-3.5 rounded-2xl border-2 border-gray-600 text-gray-300 font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-colors text-sm"
             whileTap={{ scale: 0.97 }}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Anderes Spiel
+            {partyActive ? (
+              <>
+                <PartyPopper className="w-4 h-4" />
+                Zur Party
+              </>
+            ) : (
+              <>
+                <ArrowLeft className="w-4 h-4" />
+                Anderes Spiel
+              </>
+            )}
           </motion.button>
           <motion.button
             onClick={onPlayAgain}

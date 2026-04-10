@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -177,6 +178,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Round tracking for MVP ---- */
   const playerCorrectMap = useRef<Record<string, number>>({});
+
+  useTVGameBridge('splitquiz', { phase, currentRound, players: playerNames, teamA, teamB }, [phase, currentRound, activeTeamIdx]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   useEffect(() => {

@@ -12,6 +12,7 @@ import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { DRAW_WORDS, type DrawWord } from './quickdraw-words-de';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -104,6 +105,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const updateName = (id: string, name: string) => setPlayers(p => p.map(x => x.id === id ? { ...x, name } : x));
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
+
+  useTVGameBridge('quickdraw', { phase, round, drawerIdx, currentWord: currentWord?.word, players }, [phase, round, drawerIdx]);
 
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {

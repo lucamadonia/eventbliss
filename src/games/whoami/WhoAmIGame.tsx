@@ -12,6 +12,7 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { WHOAMI_CHARACTERS, type WhoAmICharacter } from './whoami-content-de';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
@@ -67,6 +68,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   const [currentRound, setCurrentRound] = useState(1);
   const [activeIdx, setActiveIdx] = useState(0);
   const [revealIdx, setRevealIdx] = useState(0);
+
+  useTVGameBridge('whoami', { phase, currentRound, activeIdx, players }, [phase, currentRound, activeIdx]);
 
   // Asking state
   const [currentQuestion, setCurrentQuestion] = useState('');

@@ -12,6 +12,7 @@ import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -102,6 +103,8 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   const promptsPos = useRef(0);
   const startersDeck = useRef<string[]>([]);
   const startersPos = useRef(0);
+
+  useTVGameBridge('storybuilder', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
 
   // Derived
   const currentPlayer = players[currentPlayerIdx] ?? null;

@@ -11,6 +11,7 @@ import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types (exported for sub-components)
@@ -173,6 +174,8 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const speedReductionRef = useRef(0);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
+
+  useTVGameBridge('bomb', { phase: state.phase, players: state.players, currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds, currentTask: state.currentTask }, [state.phase, state.round, state.currentPlayerIndex]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {

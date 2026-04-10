@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -726,6 +727,8 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const [turnQueue, setTurnQueue] = useState<number[]>([]);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
+
+  useTVGameBridge('wordpress', { phase, round, currentPlayerIndex, players }, [phase, round, currentPlayerIndex]);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     setPlayers(ps);

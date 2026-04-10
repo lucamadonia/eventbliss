@@ -12,6 +12,7 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { useGameTimer } from '../engine/TimerSystem';
 import { THISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,6 +83,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const [voterIdx, setVoterIdx] = useState(0);
   const [roundVotes, setRoundVotes] = useState<Record<string, 'A' | 'B'>>({});
   const [history, setHistory] = useState<RoundVote[]>([]);
+
+  useTVGameBridge('thisorthat', { phase, currentRound, currentPair, players }, [phase, currentRound]);
 
   const handleDebateExpire = useCallback(() => setPhase('reveal'), []);
   const debateTimer = useGameTimer(30, handleDebateExpire);

@@ -9,6 +9,7 @@ import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -87,6 +88,8 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const [cardKey, setCardKey] = useState(0);
   const [showFlash, setShowFlash] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+
+  useTVGameBridge('taboo', { phase, currentRound, teams, activeTeamIdx, explainer }, [phase, currentRound, activeTeamIdx]);
 
   const handleTimerExpire = useCallback(() => { setPhase('turnSummary'); }, []);
   const timer = useGameTimer(timerOption, handleTimerExpire);

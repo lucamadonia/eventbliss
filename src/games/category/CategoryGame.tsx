@@ -24,6 +24,7 @@ import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { haptics } from "@/hooks/useHaptics";
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -737,6 +738,8 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
   const [usedCategories, setUsedCategories] = useState<Set<string>>(new Set());
   const [currentCategory, setCurrentCategory] = useState("");
   const [currentLetter, setCurrentLetter] = useState<string | undefined>();
+
+  useTVGameBridge('category', { phase, currentRound, currentPlayerIndex, currentCategory, players }, [phase, currentRound, currentPlayerIndex]);
 
   const pickCategory = useCallback(() => {
     const available = getCategories().filter((c) => !usedCategories.has(c));
