@@ -100,9 +100,8 @@ export default function GameRoomSheet({
   const handleCreate = () => {
     if (!selectedGame) return;
     haptics.medium();
-    // Navigate to GamesHub with ?lobby= param — opens the GameLobby for this game
-    // which handles room creation, player name, code generation, and sharing
-    navigate(`/games?lobby=${selectedGame}`);
+    // Navigate directly to the game with ?room=new — GamesHub handles lobby creation
+    navigate(`/games/${selectedGame}?room=new`);
     onOpenChange(false);
   };
 
@@ -115,8 +114,8 @@ export default function GameRoomSheet({
       return;
     }
     haptics.medium();
-    // Navigate to GamesHub with lobby + room params — GameLobby reads ?room= and auto-opens join view
-    navigate(`/games?lobby=bomb&room=${normalized}`);
+    // Navigate to any game with the room code — GamesHub will load the lobby
+    navigate(`/games/bomb?room=${normalized}`);
     onOpenChange(false);
   };
 

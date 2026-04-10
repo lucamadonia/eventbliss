@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -65,6 +65,15 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       setIsLoading(false);
     }
   };
+
+  // Auto-redirect after successful registration
+  useEffect(() => {
+    if (!isSuccess) return;
+    const timer = setTimeout(() => {
+      window.location.href = "/";
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [isSuccess]);
 
   if (isSuccess) {
     return (
