@@ -100,8 +100,9 @@ export default function GameRoomSheet({
   const handleCreate = () => {
     if (!selectedGame) return;
     haptics.medium();
-    // Navigate directly to the game with ?room=new — GamesHub handles lobby creation
-    navigate(`/games/${selectedGame}?room=new`);
+    // Navigate to GamesHub with ?lobby= param — GamesHub shows the GameLobby modal
+    // which handles room creation, player name entry, code sharing, etc.
+    navigate(`/games/${selectedGame}?lobby=${selectedGame}`);
     onOpenChange(false);
   };
 
