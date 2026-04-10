@@ -916,6 +916,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               roundNumber={round + 1}
               totalRounds={totalRounds}
               timerSeconds={studyTime}
+              online={online}
               onRoundComplete={(results: MapRoundResult[]) => {
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {
@@ -949,6 +950,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               roundNumber={svRound + 1}
               totalRounds={totalRounds}
               timerSeconds={30}
+              online={online}
               onRoundComplete={(results: StreetViewResult[]) => {
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {

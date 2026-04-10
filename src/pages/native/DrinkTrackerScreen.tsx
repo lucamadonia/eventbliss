@@ -268,7 +268,7 @@ export default function DrinkTrackerScreen() {
                 Ja, zurücksetzen
               </button>
               <button
-                onClick={() => setShowResetConfirm(false)}
+                onClick={() => { haptics.light(); setShowResetConfirm(false); }}
                 className="px-4 py-2 rounded-xl bg-foreground/5 border border-border text-muted-foreground text-sm"
               >
                 Abbrechen

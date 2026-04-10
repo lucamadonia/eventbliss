@@ -4,6 +4,7 @@ import { Camera, Check, ChevronRight, Trophy, MapPin, Crosshair, Eye, Timer } fr
 import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { StreetViewLocation } from './streetview-locations';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
@@ -22,7 +23,7 @@ function ClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void
 type Phase = 'explore' | 'guess' | 'result';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; correct: number; wrong: number; streak: number; bestStreak: number; fastestMs: number; }
 export interface StreetViewResult { playerId: string; distanceKm: number; }
-interface Props { location: StreetViewLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: StreetViewResult[]) => void; onExit: () => void; }
+interface Props { location: StreetViewLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: StreetViewResult[]) => void; onExit: () => void; online?: OnlineGameProps; }
 
 function formatDistance(km: number): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
@@ -69,13 +70,15 @@ function StreetViewPano({ lat, lng }: { lat: number; lng: number }) {
   return <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#0a0e14' }} />;
 }
 
-export default function StreetViewRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit }: Props) {
+export default function StreetViewRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: Props) {
   const [phase, setPhase] = useState<Phase>('explore');
   const [playerIdx, setPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<{ playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[]>([]);
   const [pinPos, setPinPos] = useState<{ lat: number; lng: number } | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
   const [exploreTime, setExploreTime] = useState(20); // 20s to explore
+  const [myGuessPlaced, setMyGuessPlaced] = useState(false);
+  const [waitingForResults, setWaitingForResults] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const guessesRef = useRef(guesses);
   const playerIdxRef = useRef(playerIdx);
@@ -84,13 +87,86 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
   useEffect(() => { playerIdxRef.current = playerIdx; }, [playerIdx]);
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
 
-  const currentPlayer = players[playerIdx % players.length];
+  // In online mode, "currentPlayer" is always THIS player
+  const myPlayer = online ? players.find(p => p.id === online.myPlayerId) || players[0] : null;
+  const currentPlayer = online ? myPlayer! : players[playerIdx % players.length];
   const currentPlayerRef = useRef(currentPlayer);
   useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
+
+  // --- Online: Host listens for guesses from all players ---
+  useEffect(() => {
+    if (!online?.isHost) return;
+    const unsub = online.onBroadcast('findit-sv-guess', (data) => {
+      const { playerId, lat, lng } = data as { playerId: string; lat: number; lng: number };
+      const player = players.find(p => p.id === playerId);
+      if (!player) return;
+      const distanceKm = haversineKm(lat, lng, location.lat, location.lng);
+      const guess = { playerId: player.id, playerName: player.name, playerColor: player.color, lat, lng, distanceKm };
+      setGuesses(prev => {
+        if (prev.some(g => g.playerId === playerId)) return prev; // no dupes
+        const updated = [...prev, guess];
+        // If all players have guessed, broadcast results and show result phase
+        if (updated.length >= players.length) {
+          const results = updated.map(g => ({ playerId: g.playerId, playerName: g.playerName, playerColor: g.playerColor, lat: g.lat, lng: g.lng, distanceKm: g.distanceKm }));
+          online.broadcast('findit-sv-results', { results });
+          setPhase('result');
+        }
+        return updated;
+      });
+    });
+    return unsub;
+  }, [online, players, location]);
+
+  // --- Online: Non-host listens for results ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-sv-results', (data) => {
+      const { results } = data as { results: { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[] };
+      setGuesses(results);
+      setWaitingForResults(false);
+      setPhase('result');
+    });
+    return unsub;
+  }, [online]);
+
+  // --- Online: Host broadcasts explore timer countdown ---
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'explore') return;
+    online.broadcast('findit-sv-explore-time', { exploreTime });
+  }, [online, phase, exploreTime]);
+
+  // --- Online: Non-host syncs explore timer ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-sv-explore-time', (data) => {
+      const { exploreTime: t } = data as { exploreTime: number };
+      setExploreTime(t);
+    });
+    return unsub;
+  }, [online]);
+
+  // --- Online: Host broadcasts phase transitions ---
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('findit-sv-phase', { phase, countdown });
+  }, [online, phase]);
+
+  // --- Online: Non-host listens for phase transitions ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-sv-phase', (data) => {
+      const { phase: p, countdown: c } = data as { phase: Phase; countdown: number };
+      if (p === 'guess' && !myGuessPlaced) { setPhase('guess'); setCountdown(c); }
+      // result phase handled by findit-sv-results listener
+    });
+    return unsub;
+  }, [online, myGuessPlaced]);
 
   // Explore countdown
   useEffect(() => {
     if (phase !== 'explore') return;
+    // In online mode, only host runs the timer
+    if (online && !online.isHost) return;
     const t = setInterval(() => {
       setExploreTime(prev => {
         if (prev <= 1) { clearInterval(t); setPhase('guess'); setCountdown(timerSeconds); return 0; }
@@ -98,12 +174,23 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [phase, timerSeconds, playerIdx]);
+  }, [phase, timerSeconds, playerIdx, online]);
 
   const confirmGuess = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     const pos = pinPosRef.current;
     const lat = pos?.lat ?? 0, lng = pos?.lng ?? 0;
+
+    if (online) {
+      // Online mode: broadcast guess to host, then wait
+      online.broadcast('findit-sv-guess', { playerId: online.myPlayerId, lat, lng });
+      setMyGuessPlaced(true);
+      setWaitingForResults(true);
+      // Host also adds own guess via the broadcast listener
+      return;
+    }
+
+    // Offline mode: sequential cycling
     const distanceKm = pos ? haversineKm(lat, lng, location.lat, location.lng) : 20000;
     const cp = currentPlayerRef.current;
     const guess = { playerId: cp.id, playerName: cp.name, playerColor: cp.color, lat, lng, distanceKm };
@@ -113,18 +200,42 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
     const nextIdx = playerIdxRef.current + 1;
     if (nextIdx >= players.length) { setPhase('result'); }
     else { setPlayerIdx(nextIdx); setPhase('explore'); setExploreTime(20); }
-  }, [location, players.length]);
+  }, [location, players.length, online]);
 
   // Guess countdown
   useEffect(() => {
     if (phase !== 'guess') return;
+    // In online mode, skip timer if already guessed
+    if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, playerIdx, confirmGuess]);
+  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced]);
 
-  const handleMapClick = useCallback((lat: number, lng: number) => { setPinPos({ lat, lng }); }, []);
+  // --- Online: Host force-completes round if timer expires and not all guessed ---
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'guess') return;
+    // After guess timer, auto-complete with whoever has guessed
+    const forceTimeout = setTimeout(() => {
+      setGuesses(prev => {
+        if (prev.length >= players.length) return prev; // already done
+        // Fill missing players with max distance
+        const missing = players.filter(p => !prev.some(g => g.playerId === p.id));
+        const filled = [...prev, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
+        const results = filled.map(g => ({ playerId: g.playerId, playerName: g.playerName, playerColor: g.playerColor, lat: g.lat, lng: g.lng, distanceKm: g.distanceKm }));
+        online.broadcast('findit-sv-results', { results });
+        setPhase('result');
+        return filled;
+      });
+    }, (timerSeconds + 2) * 1000); // +2s grace
+    return () => clearTimeout(forceTimeout);
+  }, [online, phase, players, timerSeconds]);
+
+  const handleMapClick = useCallback((lat: number, lng: number) => {
+    if (online && myGuessPlaced) return; // can't change after confirming
+    setPinPos({ lat, lng });
+  }, [online, myGuessPlaced]);
   const sorted = [...guesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sorted[0];
 
@@ -200,13 +311,21 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                 </div>
               </div>
             </div>
-            {pinPos && (
+            {pinPos && !waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#df8eff]/30">
                   <p className="text-xs font-bold text-[#df8eff] tracking-wide">PIN POSITIONIERT</p>
                 </div>
               </div>
             )}
+            {waitingForResults && (
+              <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
+                <div className="bg-[#262c36]/90 backdrop-blur-md px-5 py-3 rounded-xl border border-[#8ff5ff]/30">
+                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">Warte auf andere Spieler...</p>
+                </div>
+              </div>
+            )}
+            {!waitingForResults && (
             <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center px-4">
               <motion.button onClick={confirmGuess} disabled={!pinPos}
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
@@ -217,6 +336,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                 </span>
               </motion.button>
             </div>
+            )}
           </div>
         )}
 

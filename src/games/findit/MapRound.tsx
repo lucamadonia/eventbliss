@@ -4,6 +4,7 @@ import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'l
 import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { GeoLocation } from './geo-locations';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
@@ -18,7 +19,7 @@ type MapPhase = 'showing' | 'guessing' | 'handoff' | 'result';
 interface PlayerGuess { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number; }
 interface Player { id: string; name: string; color: string; avatar: string; score: number; correct: number; wrong: number; streak: number; bestStreak: number; fastestMs: number; }
 export interface MapRoundResult { playerId: string; distanceKm: number; }
-interface MapRoundProps { location: GeoLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: MapRoundResult[]) => void; onExit: () => void; }
+interface MapRoundProps { location: GeoLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: MapRoundResult[]) => void; onExit: () => void; online?: OnlineGameProps; }
 
 function formatDistance(km: number): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
@@ -48,19 +49,23 @@ function MapStyler() {
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
 
-export default function MapRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit }: MapRoundProps) {
+export default function MapRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: MapRoundProps) {
   const [phase, setPhase] = useState<MapPhase>('showing');
   const [guessingPlayerIdx, setGuessingPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<PlayerGuess[]>([]);
   const [pinPos, setPinPos] = useState<{ lat: number; lng: number } | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
   const [allDoneGuesses, setAllDoneGuesses] = useState<PlayerGuess[]>([]);
+  const [myGuessPlaced, setMyGuessPlaced] = useState(false);
+  const [waitingForResults, setWaitingForResults] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const guessesRef = useRef<PlayerGuess[]>([]);
   const guessingIdxRef = useRef(0);
   const pinPosRef = useRef<{ lat: number; lng: number } | null>(null);
 
-  const currentPlayer = players[guessingPlayerIdx % players.length];
+  // In online mode, "currentPlayer" is always THIS player
+  const myPlayer = online ? players.find(p => p.id === online.myPlayerId) || players[0] : null;
+  const currentPlayer = online ? myPlayer! : players[guessingPlayerIdx % players.length];
   const currentPlayerRef = useRef(currentPlayer);
 
   useEffect(() => { guessesRef.current = guesses; }, [guesses]);
@@ -68,17 +73,81 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
 
-  // Showing → Guessing
+  // --- Online: Host listens for guesses from all players ---
+  useEffect(() => {
+    if (!online?.isHost) return;
+    const unsub = online.onBroadcast('findit-map-guess', (data) => {
+      const { playerId, lat, lng } = data as { playerId: string; lat: number; lng: number };
+      const player = players.find(p => p.id === playerId);
+      if (!player) return;
+      const distanceKm = haversineKm(lat, lng, location.lat, location.lng);
+      const guess: PlayerGuess = { playerId: player.id, playerName: player.name, playerColor: player.color, lat, lng, distanceKm };
+      setGuesses(prev => {
+        if (prev.some(g => g.playerId === playerId)) return prev;
+        const updated = [...prev, guess];
+        if (updated.length >= players.length) {
+          const results = updated.map(g => ({ playerId: g.playerId, playerName: g.playerName, playerColor: g.playerColor, lat: g.lat, lng: g.lng, distanceKm: g.distanceKm }));
+          online.broadcast('findit-map-results', { results });
+          setAllDoneGuesses(updated);
+          setPhase('result');
+        }
+        return updated;
+      });
+    });
+    return unsub;
+  }, [online, players, location]);
+
+  // --- Online: Non-host listens for results ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-map-results', (data) => {
+      const { results } = data as { results: PlayerGuess[] };
+      setGuesses(results);
+      setAllDoneGuesses(results);
+      setWaitingForResults(false);
+      setPhase('result');
+    });
+    return unsub;
+  }, [online]);
+
+  // --- Online: Host broadcasts phase transitions ---
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('findit-map-phase', { phase, countdown });
+  }, [online, phase]);
+
+  // --- Online: Non-host listens for phase transitions ---
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    const unsub = online.onBroadcast('findit-map-phase', (data) => {
+      const { phase: p, countdown: c } = data as { phase: MapPhase; countdown: number };
+      if (p === 'guessing' && !myGuessPlaced) { setPhase('guessing'); setCountdown(c); }
+      if (p === 'showing') { setPhase('showing'); }
+    });
+    return unsub;
+  }, [online, myGuessPlaced]);
+
+  // Showing → Guessing (only host drives in online mode)
   useEffect(() => {
     if (phase !== 'showing') return;
+    if (online && !online.isHost) return;
     const t = setTimeout(() => { setPhase('guessing'); setCountdown(timerSeconds); }, 2500);
     return () => clearTimeout(t);
-  }, [phase, timerSeconds]);
+  }, [phase, timerSeconds, online]);
 
   const confirmGuess = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     const pos = pinPosRef.current;
     const lat = pos?.lat ?? 0, lng = pos?.lng ?? 0;
+
+    if (online) {
+      online.broadcast('findit-map-guess', { playerId: online.myPlayerId, lat, lng });
+      setMyGuessPlaced(true);
+      setWaitingForResults(true);
+      return;
+    }
+
+    // Offline mode: sequential cycling
     const distanceKm = pos ? haversineKm(lat, lng, location.lat, location.lng) : 20000;
     const cp = currentPlayerRef.current;
     const guess: PlayerGuess = { playerId: cp.id, playerName: cp.name, playerColor: cp.color, lat, lng, distanceKm };
@@ -88,20 +157,41 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     const nextIdx = guessingIdxRef.current + 1;
     if (nextIdx >= players.length) { setAllDoneGuesses(updated); setPhase('result'); }
     else { setGuessingPlayerIdx(nextIdx); setPhase('handoff'); }
-  }, [location, players.length]);
+  }, [location, players.length, online]);
 
-  // Countdown
+  // Countdown (skip if online and already guessed)
   useEffect(() => {
     if (phase !== 'guessing') return;
+    if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, guessingPlayerIdx, confirmGuess]);
+  }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced]);
 
-  const handleMapClick = useCallback((lat: number, lng: number) => { setPinPos({ lat, lng }); }, []);
+  // --- Online: Host force-completes round if timer expires and not all guessed ---
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'guessing') return;
+    const forceTimeout = setTimeout(() => {
+      setGuesses(prev => {
+        if (prev.length >= players.length) return prev;
+        const missing = players.filter(p => !prev.some(g => g.playerId === p.id));
+        const filled = [...prev, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
+        online.broadcast('findit-map-results', { results: filled });
+        setAllDoneGuesses(filled);
+        setPhase('result');
+        return filled;
+      });
+    }, (timerSeconds + 2) * 1000);
+    return () => clearTimeout(forceTimeout);
+  }, [online, phase, players, timerSeconds]);
+
+  const handleMapClick = useCallback((lat: number, lng: number) => {
+    if (online && myGuessPlaced) return;
+    setPinPos({ lat, lng });
+  }, [online, myGuessPlaced]);
   const handleHandoffReady = () => { setPhase('guessing'); setCountdown(timerSeconds); };
-  const handleNextRound = () => { onRoundComplete(guesses.map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
+  const handleNextRound = () => { onRoundComplete((allDoneGuesses.length ? allDoneGuesses : guesses).map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
   const sortedGuesses = [...allDoneGuesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sortedGuesses[0];
   const handoffPlayer = players[(guessingPlayerIdx) % players.length];
@@ -168,13 +258,21 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 </div>
               </div>
             </div>
-            {pinPos && (
+            {pinPos && !waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[10]">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#df8eff]/30">
                   <p className="text-xs font-bold text-[#df8eff] tracking-wide">PIN POSITIONIERT</p>
                 </div>
               </div>
             )}
+            {waitingForResults && (
+              <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[10]">
+                <div className="bg-[#262c36]/90 backdrop-blur-md px-5 py-3 rounded-xl border border-[#8ff5ff]/30">
+                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">Warte auf andere Spieler...</p>
+                </div>
+              </div>
+            )}
+            {!waitingForResults && (
             <div className="absolute bottom-6 left-0 right-0 z-[10] flex justify-center px-4">
               <motion.button onClick={confirmGuess} disabled={!pinPos}
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
@@ -185,11 +283,12 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 </span>
               </motion.button>
             </div>
+            )}
           </div>
         )}
 
-        {/* HANDOFF */}
-        {phase === 'handoff' && (
+        {/* HANDOFF — only in offline mode */}
+        {phase === 'handoff' && !online && (
           <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-black mb-4"
               style={{ background: handoffPlayer.color, boxShadow: `0 0 30px ${handoffPlayer.color}88` }}>
