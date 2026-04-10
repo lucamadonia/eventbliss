@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -818,6 +819,10 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       )}
       {phase === 'playing' && (
         <motion.div key={`playing-${round}-${currentPlayerIndex}`} exit={{ opacity: 0 }}>
+          <ActivePlayerBanner
+            playerName={players[currentPlayerIndex]?.name ?? '???'}
+            hidden={false}
+          />
           <PlayingScreen
             players={players}
             mode={mode}

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { DRAW_WORDS, type DrawWord } from './quickdraw-words-de';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
@@ -354,6 +355,12 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       {phase === 'drawerReveal' && currentWord && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
+          <ActivePlayerBanner
+            playerName={drawer.name}
+            playerColor={drawer.color}
+            subtitle="zeichnet!"
+            hidden={false}
+          />
           <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
             <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">Runde {round} / {totalRounds}</span>
           </div>

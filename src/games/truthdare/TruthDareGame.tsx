@@ -13,6 +13,7 @@ import { useGameTimer } from '../engine/TimerSystem';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
 import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -354,6 +355,12 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         {phase === 'choice' && activePlayer && (
           <motion.div key="choice" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
+            <ActivePlayerBanner
+              playerName={activePlayer.name}
+              playerColor={activePlayer.color}
+              playerAvatar={activePlayer.avatar}
+              hidden={false}
+            />
             <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
               style={{ backgroundColor: activePlayer.color }}>
               {activePlayer.avatar}

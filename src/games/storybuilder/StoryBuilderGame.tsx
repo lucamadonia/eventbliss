@@ -10,6 +10,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -313,6 +314,12 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
           animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col"
         >
+          <ActivePlayerBanner
+            playerName={currentPlayer.name}
+            playerColor={currentPlayer.color}
+            playerAvatar={currentPlayer.avatar}
+            hidden={false}
+          />
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">

@@ -7,6 +7,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
 import { useGameTimer } from '../engine/TimerSystem';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -329,6 +330,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         {screen === 'ready' && (
           <motion.div key="ready" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col items-center justify-center min-h-[100dvh] p-8 pulse-bg">
+            <ActivePlayerBanner
+              playerName={playerNames[currentRound - 1] || `Spieler ${currentRound}`}
+              hidden={false}
+            />
             {/* Current player name */}
             <div className="mb-4 px-4 py-2 rounded-full bg-[#df8eff]/15 border border-[#df8eff]/25">
               <span className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1] || `Spieler ${currentRound}`}</span>

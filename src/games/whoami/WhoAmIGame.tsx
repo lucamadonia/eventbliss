@@ -10,6 +10,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { WHOAMI_CHARACTERS, type WhoAmICharacter } from './whoami-content-de';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
@@ -339,6 +340,12 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         {phase === 'asking' && activePlayer && (
           <motion.div key="asking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center gap-5 px-4 py-6">
+            <ActivePlayerBanner
+              playerName={activePlayer.name}
+              playerColor={activePlayer.color}
+              playerAvatar={activePlayer.avatar}
+              hidden={false}
+            />
             {/* Player info */}
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"

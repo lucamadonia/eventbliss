@@ -7,6 +7,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 /* ------------------------------------------------------------------ */
@@ -405,6 +406,11 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
       {/* ---- TURN START ---- */}
       {phase === 'turnStart' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4 pulse-bg">
+          <ActivePlayerBanner
+            playerName={explainer}
+            subtitle="erklaert!"
+            hidden={false}
+          />
           <div className="px-4 py-1.5 rounded-full glass-card border border-[#44484f]/30">
             <span className={`text-xs font-bold uppercase tracking-widest ${activeTeam.textColor}`}>Runde {currentRound} / {totalRounds}</span>
           </div>

@@ -22,6 +22,7 @@ import { useGameTimer } from "@/games/engine/TimerSystem";
 import { getCategories, generateCategoryPrompt } from "@/games/content/categories";
 import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { haptics } from "@/hooks/useHaptics";
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 // ---------------------------------------------------------------------------
@@ -911,6 +912,12 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
               />
             )}
             {phase === "playing" && (
+              <>
+              <ActivePlayerBanner
+                playerName={players[currentPlayerIndex]?.name ?? '???'}
+                playerAvatar={AVATARS[currentPlayerIndex % AVATARS.length]}
+                hidden={false}
+              />
               <PlayingScreen
                 key={`playing-${currentRound}`}
                 category={currentCategory}
@@ -923,6 +930,7 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
                 onWordSaid={handleWordSaid}
                 onTimerExpire={handleTimerExpire}
               />
+              </>
             )}
             {phase === "roundEnd" && latestResult && (
               <RoundEndScreen

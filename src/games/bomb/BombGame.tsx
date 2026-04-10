@@ -7,6 +7,7 @@ import BombPlayingScreen from './BombPlayingScreen';
 import BombExplosionScreen from './BombExplosionScreen';
 import BombResultsScreen, { BombRoundEndScreen } from './BombResultsScreen';
 import BombTutorial from './BombTutorial';
+import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
@@ -494,6 +495,10 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       )}
       {state.phase === 'playing' && !showTutorial && (
         <motion.div key={`playing-${timerKey}`} exit={{ opacity: 0 }}>
+          <ActivePlayerBanner
+            playerName={state.players[state.currentPlayerIndex]?.name ?? '???'}
+            hidden={false}
+          />
           <BombPlayingScreen
             state={state}
             progress={progress}
