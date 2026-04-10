@@ -10,6 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -150,9 +151,12 @@ const DEFAULT_PLAYERS = ['Spieler 1', 'Spieler 2', 'Spieler 3', 'Spieler 4'];
 
 export default function SplitQuizGame({ players: initialPlayers, onClose, online }: SplitQuizGameProps) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
   const startPlayers = onlinePlayerNames.length >= 4
     ? onlinePlayerNames
-    : initialPlayers && initialPlayers.length >= 4 ? initialPlayers : DEFAULT_PLAYERS;
+    : partyPlayerNames.length >= 4
+      ? partyPlayerNames
+      : initialPlayers && initialPlayers.length >= 4 ? initialPlayers : DEFAULT_PLAYERS;
   /* ---- Setup state ---- */
   const [playerNames, setPlayerNames] = useState<string[]>(startPlayers);
   const [totalRounds, setTotalRounds] = useState(10);

@@ -285,7 +285,7 @@ export function useGameRoom(): UseGameRoomReturn {
         }
       });
 
-      channel.subscribe(async (status) => {
+      channel.subscribe(async (status, err) => {
         if (status === "SUBSCRIBED") {
           await channel.track({
             id: playerId,
@@ -296,6 +296,13 @@ export function useGameRoom(): UseGameRoomReturn {
             isPremium: playerIsPremium,
             joinedAt: Date.now(),
           });
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.error("Channel subscription failed:", status, err);
+          setError(
+            status === "TIMED_OUT"
+              ? "Verbindung zum Server hat zu lange gedauert. Bitte versuche es erneut."
+              : "Verbindung zum Raum fehlgeschlagen. Bitte versuche es erneut.",
+          );
         }
       });
 
@@ -323,10 +330,23 @@ export function useGameRoom(): UseGameRoomReturn {
   const createRoom = useCallback(
     async (gameId: string, isPremiumPlayer: boolean = false, hostName: string = "Host"): Promise<string> => {
       setError(null);
-      const code = generateRoomCode();
-      const hostId = playerIdRef.current;
-      subscribe(code, gameId, hostId, hostName, 0, isPremiumPlayer);
-      return code;
+      // Check for internet connectivity
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        const msg = "Keine Internetverbindung. Bitte prüfe deine Verbindung und versuche es erneut.";
+        setError(msg);
+        throw new Error(msg);
+      }
+      try {
+        const code = generateRoomCode();
+        const hostId = playerIdRef.current;
+        subscribe(code, gameId, hostId, hostName, 0, isPremiumPlayer);
+        return code;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unbekannter Fehler";
+        console.error("Room creation failed:", err);
+        setError(`Raum konnte nicht erstellt werden: ${message}`);
+        throw err;
+      }
     },
     [subscribe],
   );
@@ -334,16 +354,27 @@ export function useGameRoom(): UseGameRoomReturn {
   const joinRoom = useCallback(
     async (code: string, name: string, isPremiumPlayer: boolean = false): Promise<void> => {
       setError(null);
+      // Check for internet connectivity
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        setError("Keine Internetverbindung. Bitte prüfe deine Verbindung und versuche es erneut.");
+        return;
+      }
       const normalized = code.toUpperCase().trim();
       if (normalized.length !== 6) {
         setError("Ungültiger Raumcode.");
         return;
       }
-      // Subscribe directly to the room — NO temporary channel.
-      // Host discovery happens automatically via syncPlayers (earliest joinedAt).
-      // Color is randomized to avoid collision with host.
-      const colorIndex = Math.floor(Math.random() * PLAYER_COLORS.length);
-      subscribe(normalized, "", "", name, colorIndex, isPremiumPlayer);
+      try {
+        // Subscribe directly to the room — NO temporary channel.
+        // Host discovery happens automatically via syncPlayers (earliest joinedAt).
+        // Color is randomized to avoid collision with host.
+        const colorIndex = Math.floor(Math.random() * PLAYER_COLORS.length);
+        subscribe(normalized, "", "", name, colorIndex, isPremiumPlayer);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unbekannter Fehler";
+        console.error("Room join failed:", err);
+        setError(`Raum beitreten fehlgeschlagen: ${message}`);
+      }
     },
     [subscribe],
   );

@@ -25,6 +25,7 @@ import { haptics } from "@/hooks/useHaptics";
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -727,6 +728,12 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
   const navigate = useNavigate();
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const resolvedPlayerNames = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : [];
   const [phase, setPhase] = useState<Phase>("setup");
   const [players, setPlayers] = useState<CategoryPlayer[]>([]);
   const [mode, setMode] = useState<GameMode>("classic");
@@ -909,7 +916,7 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
 
           {/* Phase Content */}
           <AnimatePresence mode="wait">
-            {phase === "setup" && <SetupScreen key="setup" onStart={handleStart} onlinePlayerNames={onlinePlayerNames} />}
+            {phase === "setup" && <SetupScreen key="setup" onStart={handleStart} onlinePlayerNames={resolvedPlayerNames} />}
             {phase === "categoryReveal" && (
               <CategoryRevealScreen
                 key={`reveal-${currentRound}`}

@@ -4,6 +4,7 @@ import { Plus, Minus, User, Play, Globe, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 import { getOnlineRoomPlayers } from "../multiplayer/useGameRoom";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 export interface GameMode {
   id: string;
@@ -58,12 +59,17 @@ export function GameSetup({
   maxPlayers = 20,
   onlinePlayers,
 }: GameSetupProps) {
-  // Auto-detect online room players if not explicitly passed
+  // Auto-detect players: online room → party session → manual
   const autoOnlinePlayers = useMemo(() => {
     if (onlinePlayers && onlinePlayers.length > 0) return onlinePlayers;
     const roomPlayers = getOnlineRoomPlayers();
     if (roomPlayers.length >= 2) {
       return roomPlayers.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
+    }
+    // Fallback: party session players (Party Night mode)
+    const party = getActivePartySession();
+    if (party?.players && party.players.length >= 2) {
+      return party.players.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
     }
     return undefined;
   }, [onlinePlayers]);

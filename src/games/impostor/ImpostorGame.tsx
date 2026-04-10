@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -112,10 +113,16 @@ function pickRandom<T>(arr: T[]): T {
 
 export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const resolvedNames = onlinePlayerNames.length >= 4
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 4
+      ? partyPlayerNames
+      : [];
   // --- Setup state ---
   const [players, setPlayers] = useState<Player[]>(() =>
-    onlinePlayerNames.length >= 4
-      ? onlinePlayerNames.map(name => createPlayer(name))
+    resolvedNames.length >= 4
+      ? resolvedNames.map(name => createPlayer(name))
       : [
           createPlayer('Spieler 1'),
           createPlayer('Spieler 2'),

@@ -10,6 +10,7 @@ import { haptics } from '@/hooks/useHaptics';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -74,7 +75,12 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const [totalRounds, setTotalRounds] = useState(2);
   // Auto-populate from online room players if available
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const initialPlayers = onlinePlayerNames.length >= 2 ? onlinePlayerNames : players;
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const initialPlayers = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : players;
   const [phase, setPhase] = useState<Phase>('setup');
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);

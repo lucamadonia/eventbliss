@@ -12,6 +12,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 // ---------------------------------------------------------------------------
 // Types (exported for sub-components)
@@ -168,8 +169,14 @@ const defaultState: GameState = {
 
 export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const onlineInitialPlayers = onlinePlayerNames.length >= 2
-    ? onlinePlayerNames.map(name => ({ name, penalties: 0 }))
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const resolvedPlayerNames = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : [];
+  const onlineInitialPlayers = resolvedPlayerNames.length >= 2
+    ? resolvedPlayerNames.map(name => ({ name, penalties: 0 }))
     : undefined;
   const [state, setState] = useState<GameState>({
     ...defaultState,

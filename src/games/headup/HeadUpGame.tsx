@@ -10,6 +10,7 @@ import { useGameTimer } from '../engine/TimerSystem';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -65,7 +66,12 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 
 export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const initialPlayers = onlinePlayerNames.length >= 2 ? onlinePlayerNames : ['Spieler 1', 'Spieler 2'];
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const initialPlayers = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : ['Spieler 1', 'Spieler 2'];
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);

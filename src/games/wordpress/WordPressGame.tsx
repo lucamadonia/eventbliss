@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -721,6 +722,12 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
 
 export default function WordPressGame({ online }: { online?: OnlineGameProps } = {}) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const resolvedPlayerNames = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : [];
   const [phase, setPhase] = useState<GamePhase>('setup');
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [mode, setMode] = useState<GameMode>('kategorie');
@@ -821,7 +828,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     <AnimatePresence mode="wait">
       {phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
-          <SetupScreen onStart={handleStart} onlinePlayerNames={onlinePlayerNames} />
+          <SetupScreen onStart={handleStart} onlinePlayerNames={resolvedPlayerNames} />
         </motion.div>
       )}
       {phase === 'playing' && (

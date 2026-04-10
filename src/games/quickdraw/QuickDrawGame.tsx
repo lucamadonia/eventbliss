@@ -13,6 +13,7 @@ import { DRAW_WORDS, type DrawWord } from './quickdraw-words-de';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -64,8 +65,14 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const navigate = useNavigate();
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const initialPlayers: Player[] = onlinePlayerNames.length >= 2
-    ? onlinePlayerNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
+  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  const resolvedNames = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames
+    : partyPlayerNames.length >= 2
+      ? partyPlayerNames
+      : [];
+  const initialPlayers: Player[] = resolvedNames.length >= 2
+    ? resolvedNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
     : [
         { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
         { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
