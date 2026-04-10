@@ -122,12 +122,21 @@ export default function ProfileScreen() {
       onClick: () => { haptics.light(); setShowThemePicker((v) => !v); setShowLangPicker(false); },
     },
     // Party-Modus (18+) — only visible after Easter Egg discovery
-    ...(drinkingMode.isActivated ? [{
-      icon: Sparkles,
-      label: "\uD83C\uDF7A Party-Modus (18+)",
-      sublabel: drinkingMode.isDrinkingMode ? "An" : "Aus",
-      onClick: () => { haptics.select(); drinkingMode.toggle(); },
-    } as Item] : []),
+    ...(drinkingMode.isActivated ? [
+      {
+        icon: Sparkles,
+        label: "\uD83C\uDF7A Party-Modus (18+)",
+        sublabel: drinkingMode.isDrinkingMode ? "An" : "Aus",
+        onClick: () => { haptics.select(); drinkingMode.toggle(); },
+      } as Item,
+      // Party Stats — only visible when drinking mode is ON
+      ...(drinkingMode.isDrinkingMode ? [{
+        icon: Sparkles,
+        label: "\uD83D\uDCCA Party Stats",
+        sublabel: `${drinkingMode.drinkCount} Runden`,
+        onClick: () => go("/party-stats"),
+      } as Item] : []),
+    ] : []),
     { icon: Shield, label: "Datenschutz", onClick: () => go("/legal/privacy") },
     { icon: HelpCircle, label: "Hilfe & Support", onClick: () => go("/legal/imprint") },
     { icon: LogOut, label: "Abmelden", onClick: handleLogout, destructive: true },

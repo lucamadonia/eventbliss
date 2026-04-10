@@ -32,6 +32,7 @@ const ProfileScreen = lazy(() => import("@/pages/native/ProfileScreen"));
 const CreateEventFlow = lazy(() => import("@/pages/native/CreateEventFlow"));
 const JoinEventFlow = lazy(() => import("@/pages/native/JoinEventFlow"));
 const AdminScreen = lazy(() => import("@/pages/native/AdminScreen"));
+const DrinkTrackerScreen = lazy(() => import("@/pages/native/DrinkTrackerScreen"));
 
 // Existing desktop pages — wrapped in NativeStackPage at route level
 import Auth from "@/pages/Auth";
@@ -98,6 +99,9 @@ export function NativeApp() {
               {/* Native-designed flows */}
               <Route path="/create" element={<CreateEventFlow />} />
               <Route path="/join" element={<JoinEventFlow />} />
+              <Route path="/party-stats" element={
+                <Suspense fallback={<PageLoader />}><DrinkTrackerScreen /></Suspense>
+              } />
 
               {/* Existing pages wrapped in NativeStackPage */}
               <Route
