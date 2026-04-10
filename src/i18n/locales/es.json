@@ -2164,5 +2164,206 @@
         "letterLock": "Bloqueo de Letra"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Hola {{name}} \ud83d\udc4b",
+      "heroTitle": "Haz que sea",
+      "heroHighlight": "\u00e9pico.",
+      "newEvent": "Nuevo Evento",
+      "planParty": "Planear una fiesta",
+      "joinEvent": "Unirse a Evento",
+      "games": "Juegos",
+      "yourEvents": "Tus Eventos",
+      "allEvents": "Todos",
+      "noEventsYet": "A\u00fan no hay eventos \u2014 \u00a1planea el primero!",
+      "participants": "Participantes",
+      "playNow": "Jugar ahora",
+      "partyGamesCount": "24+ Juegos de Fiesta",
+      "partyGamesSubtitle": "Tab\u00fa, Bomba, Headup y m\u00e1s",
+      "findInspiration": "Busca inspiraci\u00f3n",
+      "findInspirationSub": "Temas, juegos e ideas para tu evento"
+    },
+    "games": {
+      "subtitle": "Juegos de Fiesta",
+      "title": "\u00bfListos para divertirse?",
+      "unlockPremium": "Desbloquear Premium",
+      "unlockPremiumSub": "Juega los 17 juegos sin l\u00edmite",
+      "categories": {
+        "alle": "Todos",
+        "party": "Fiesta",
+        "social": "Social",
+        "quiz": "Quiz",
+        "wort": "Palabra",
+        "karte": "Mapa",
+        "reaktion": "Reacci\u00f3n",
+        "kreativ": "Creativo"
+      }
+    },
+    "events": {
+      "title": "Eventos",
+      "countSummary": "{{active}} activos \u00b7 {{archived}} archivados",
+      "searchPlaceholder": "Buscar eventos...",
+      "tabActive": "Activos",
+      "tabArchived": "Archivados",
+      "noEventsTitle": "A\u00fan no hay eventos",
+      "noArchivedTitle": "Sin eventos archivados",
+      "noEventsDesc": "Planea tu primer evento e invita a tus amigos.",
+      "noArchivedDesc": "Los eventos archivados aparecer\u00e1n aqu\u00ed.",
+      "createEvent": "Crear Evento",
+      "forHonoree": "para {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspiraci\u00f3n",
+      "title": "Ideas que",
+      "titleHighlight": "inspiran",
+      "stats": "147 Juegos \u00b7 56 Temas \u00b7 Para cada ocasi\u00f3n",
+      "tabGames": "Juegos ({{count}})",
+      "tabThemes": "Temas ({{count}})",
+      "searchGames": "Buscar juegos...",
+      "searchThemes": "Buscar temas...",
+      "moreGames": "+{{count}} juegos m\u00e1s",
+      "noGames": "No se encontraron juegos",
+      "noThemes": "No se encontraron temas",
+      "readAloud": "Leer en voz alta",
+      "material": "Material",
+      "difficulty": {
+        "easy": "F\u00e1cil",
+        "medium": "Medio",
+        "hard": "Dif\u00edcil"
+      },
+      "categories": {
+        "alle": "Todos",
+        "party": "Fiesta",
+        "jga": "Despedida",
+        "outdoor": "Al Aire Libre",
+        "team": "Equipo",
+        "icebreaker": "Rompe hielo",
+        "familie": "Familia",
+        "hochzeit": "Boda"
+      },
+      "themeCategories": {
+        "alle": "Todos",
+        "retro": "Retro",
+        "elegant": "Elegante",
+        "casual": "Casual",
+        "abenteuer": "Aventura",
+        "saison": "Temporada",
+        "kostuem": "Disfraz",
+        "wellness": "Bienestar"
+      }
+    },
+    "profile": {
+      "settings": "Ajustes",
+      "language": "Idioma",
+      "appearance": "Apariencia",
+      "privacy": "Privacidad",
+      "helpSupport": "Ayuda y Soporte",
+      "logout": "Cerrar sesi\u00f3n",
+      "unlockPremium": "Desbloquear Premium",
+      "unlockPremiumSub": "Todos los Juegos \u00b7 Ilimitado",
+      "version": "EventBliss \u00b7 Versi\u00f3n 1.0.0",
+      "guest": "Invitado",
+      "themeDark": "Oscuro",
+      "themeLight": "Claro",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "Activado",
+      "partyModeOff": "Desactivado",
+      "partyStats": "\ud83d\udcca Estad\u00edsticas de Fiesta",
+      "partyStatsRounds": "{{count}} rondas",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Este modo est\u00e1 pensado para mayores de 18 a\u00f1os. Los juegos con alcohol pueden suponer riesgos para la salud. Bebe con responsabilidad y cuida de los dem\u00e1s.",
+      "partyModeCheckbox": "Tengo al menos 18 a\u00f1os y activo el Party-Modus bajo mi propia responsabilidad.",
+      "partyModeCancel": "Cancelar",
+      "partyModeActivate": "\ud83c\udf7b Activar",
+      "partyModeDisclaimer": "EventBliss no se hace responsable del consumo de bebidas alcoh\u00f3licas.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "\u00a1activado! \ud83d\udd25",
+      "partyModeActivatedDesc": "A partir de ahora bebes en lugar de recibir un castigo",
+      "close": "Cerrar",
+      "adminPanel": "Panel de Admin",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Crear Evento",
+      "headerDone": "\u00a1Listo!",
+      "stepOf": "Paso {{step}} de {{total}}",
+      "stepType": {
+        "title": "\u00bfQu\u00e9 est\u00e1s celebrando?",
+        "subtitle": "Elige el tipo de evento",
+        "bachelor": "Despedida de Soltero",
+        "bachelorette": "Despedida de Soltera",
+        "birthday": "Cumplea\u00f1os",
+        "trip": "Viaje en Grupo",
+        "other": "Otro Evento"
+      },
+      "stepDetails": {
+        "title": "Detalles",
+        "subtitle": "Lo b\u00e1sico de tu evento",
+        "eventName": "Nombre del Evento *",
+        "eventNamePlaceholder": "p. ej. Despedida de Tim en \u00c1msterdam",
+        "honoree": "\u00bfPara qui\u00e9n? *",
+        "honoreePlaceholder": "p. ej. Tim",
+        "date": "Fecha (opcional)",
+        "yourName": "Tu Nombre *",
+        "yourNamePlaceholder": "Tu nombre de pila"
+      },
+      "stepGuests": {
+        "title": "Invitados",
+        "subtitle": "\u00bfQui\u00e9n viene? (opcional, puedes a\u00f1adir despu\u00e9s)",
+        "inputPlaceholder": "Introduce un nombre...",
+        "guestCount_one": "{{count}} invitado",
+        "guestCount_other": "{{count}} invitados",
+        "noGuests": "A\u00fan no hay invitados \u2014 puedes invitarlos despu\u00e9s."
+      },
+      "stepReview": {
+        "title": "\u00bfTodo correcto?",
+        "subtitle": "Revisa tu evento",
+        "forLabel": "Para",
+        "dateLabel": "Fecha",
+        "dateOpen": "Sin definir",
+        "organizer": "Organizador",
+        "guestsLabel": "Invitados"
+      },
+      "stepSuccess": {
+        "title": "\u00a1Evento creado! \ud83c\udf89",
+        "subtitle": "Comparte el enlace con tus amigos",
+        "accessCode": "C\u00f3digo de Acceso",
+        "link": "Enlace",
+        "copyLink": "Copiar enlace",
+        "copied": "\u00a1Copiado!",
+        "shareWhatsApp": "Compartir por WhatsApp",
+        "toDashboard": "Ir al Dashboard",
+        "whatsAppText": "\ud83c\udf89 \u00a1Est\u00e1s invitado!\n\n\u00danete a \"{{name}}\" para {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd C\u00f3digo: {{code}}"
+      },
+      "buttonNext": "Siguiente",
+      "buttonCreate": "Crear Evento"
+    },
+    "join": {
+      "headerTitle": "Unirse a Evento",
+      "title": "\u00bfTienes una invitaci\u00f3n?",
+      "subtitle": "Introduce el c\u00f3digo de acceso que recibiste",
+      "placeholder": "p. ej. STAG2025",
+      "searchButton": "Buscar evento",
+      "errorNotFound": "No se encontr\u00f3 ning\u00fan evento con este c\u00f3digo.",
+      "errorGeneric": "Error al buscar. Por favor, revisa el c\u00f3digo.",
+      "eventFound": "Evento encontrado",
+      "forHonoree": "para {{name}}",
+      "joinButton": "Unirse"
+    },
+    "onboarding": {
+      "slide1Title": "Planea eventos \u00e9picos",
+      "slide1Subtitle": "Despedidas, cumplea\u00f1os, viajes en grupo \u2014 todo desde un solo lugar.",
+      "slide2Title": "Juega 24+ juegos de fiesta",
+      "slide2Subtitle": "Tab\u00fa, Bomba, Headup, Verdad o Reto, Impostor y m\u00e1s.",
+      "slide3Title": "Divide los gastos",
+      "slide3Subtitle": "Registra los gastos y salda cuentas sin conversaciones inc\u00f3modas.",
+      "slide4Title": "Invita a todos",
+      "slide4Subtitle": "Comparte un enlace, recoge confirmaciones y mant\u00e9n a todos al tanto.",
+      "skip": "Saltar",
+      "next": "Siguiente",
+      "getStarted": "Vamos"
+    }
   }
 }

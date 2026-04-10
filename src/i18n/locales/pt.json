@@ -1901,5 +1901,206 @@
         "letterLock": "Bloqueio de Letra"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Ol\u00e1 {{name}} \ud83d\udc4b",
+      "heroTitle": "Vamos tornar isto",
+      "heroHighlight": "\u00e9pico.",
+      "newEvent": "Novo Evento",
+      "planParty": "Planear uma festa",
+      "joinEvent": "Entrar num Evento",
+      "games": "Jogos",
+      "yourEvents": "Os teus Eventos",
+      "allEvents": "Todos",
+      "noEventsYet": "Ainda sem eventos \u2014 planeia o primeiro!",
+      "participants": "Participantes",
+      "playNow": "Jogar agora",
+      "partyGamesCount": "24+ Jogos de Festa",
+      "partyGamesSubtitle": "Tabu, Bomba, Headup e mais",
+      "findInspiration": "Encontra inspira\u00e7\u00e3o",
+      "findInspirationSub": "Temas, jogos e ideias para o teu evento"
+    },
+    "games": {
+      "subtitle": "Jogos de Festa",
+      "title": "Prontos para a divers\u00e3o?",
+      "unlockPremium": "Desbloquear Premium",
+      "unlockPremiumSub": "Joga os 17 jogos sem limite",
+      "categories": {
+        "alle": "Todos",
+        "party": "Festa",
+        "social": "Social",
+        "quiz": "Quiz",
+        "wort": "Palavra",
+        "karte": "Mapa",
+        "reaktion": "Rea\u00e7\u00e3o",
+        "kreativ": "Criativo"
+      }
+    },
+    "events": {
+      "title": "Eventos",
+      "countSummary": "{{active}} ativos \u00b7 {{archived}} arquivados",
+      "searchPlaceholder": "Procurar eventos...",
+      "tabActive": "Ativos",
+      "tabArchived": "Arquivados",
+      "noEventsTitle": "Ainda sem eventos",
+      "noArchivedTitle": "Sem eventos arquivados",
+      "noEventsDesc": "Planeia o teu primeiro evento e convida os teus amigos.",
+      "noArchivedDesc": "Os eventos arquivados aparecer\u00e3o aqui.",
+      "createEvent": "Criar Evento",
+      "forHonoree": "para {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspira\u00e7\u00e3o",
+      "title": "Ideias que",
+      "titleHighlight": "inspiram",
+      "stats": "147 Jogos \u00b7 56 Temas \u00b7 Para cada ocasi\u00e3o",
+      "tabGames": "Jogos ({{count}})",
+      "tabThemes": "Temas ({{count}})",
+      "searchGames": "Procurar jogos...",
+      "searchThemes": "Procurar temas...",
+      "moreGames": "+{{count}} mais jogos",
+      "noGames": "Nenhum jogo encontrado",
+      "noThemes": "Nenhum tema encontrado",
+      "readAloud": "Ler em voz alta",
+      "material": "Material",
+      "difficulty": {
+        "easy": "F\u00e1cil",
+        "medium": "M\u00e9dio",
+        "hard": "Dif\u00edcil"
+      },
+      "categories": {
+        "alle": "Todos",
+        "party": "Festa",
+        "jga": "Despedida",
+        "outdoor": "Ao Ar Livre",
+        "team": "Equipa",
+        "icebreaker": "Quebra-gelo",
+        "familie": "Fam\u00edlia",
+        "hochzeit": "Casamento"
+      },
+      "themeCategories": {
+        "alle": "Todos",
+        "retro": "Retro",
+        "elegant": "Elegante",
+        "casual": "Casual",
+        "abenteuer": "Aventura",
+        "saison": "Sazonal",
+        "kostuem": "Fantasia",
+        "wellness": "Bem-estar"
+      }
+    },
+    "profile": {
+      "settings": "Defini\u00e7\u00f5es",
+      "language": "Idioma",
+      "appearance": "Apar\u00eancia",
+      "privacy": "Privacidade",
+      "helpSupport": "Ajuda e Suporte",
+      "logout": "Terminar sess\u00e3o",
+      "unlockPremium": "Desbloquear Premium",
+      "unlockPremiumSub": "Todos os Jogos \u00b7 Ilimitado",
+      "version": "EventBliss \u00b7 Vers\u00e3o 1.0.0",
+      "guest": "Convidado",
+      "themeDark": "Escuro",
+      "themeLight": "Claro",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "Ligado",
+      "partyModeOff": "Desligado",
+      "partyStats": "\ud83d\udcca Estat\u00edsticas de Festa",
+      "partyStatsRounds": "{{count}} rondas",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Este modo destina-se a maiores de 18 anos. Os jogos com \u00e1lcool podem implicar riscos para a sa\u00fade. Bebe com responsabilidade e cuida dos outros.",
+      "partyModeCheckbox": "Tenho pelo menos 18 anos e ativo o Party-Modus sob minha pr\u00f3pria responsabilidade.",
+      "partyModeCancel": "Cancelar",
+      "partyModeActivate": "\ud83c\udf7b Ativar",
+      "partyModeDisclaimer": "EventBliss n\u00e3o se responsabiliza pelo consumo de bebidas alco\u00f3licas.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "ativado! \ud83d\udd25",
+      "partyModeActivatedDesc": "A partir de agora bebes em vez de receber um castigo",
+      "close": "Fechar",
+      "adminPanel": "Painel Admin",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Criar Evento",
+      "headerDone": "Feito!",
+      "stepOf": "Passo {{step}} de {{total}}",
+      "stepType": {
+        "title": "O que est\u00e1s a celebrar?",
+        "subtitle": "Escolhe o tipo de evento",
+        "bachelor": "Despedida de Solteiro",
+        "bachelorette": "Despedida de Solteira",
+        "birthday": "Anivers\u00e1rio",
+        "trip": "Viagem de Grupo",
+        "other": "Outro Evento"
+      },
+      "stepDetails": {
+        "title": "Detalhes",
+        "subtitle": "O b\u00e1sico do teu evento",
+        "eventName": "Nome do Evento *",
+        "eventNamePlaceholder": "ex. Despedida do Tim em Amesterd\u00e3o",
+        "honoree": "Para quem? *",
+        "honoreePlaceholder": "ex. Tim",
+        "date": "Data (opcional)",
+        "yourName": "O teu Nome *",
+        "yourNamePlaceholder": "O teu primeiro nome"
+      },
+      "stepGuests": {
+        "title": "Convidados",
+        "subtitle": "Quem vem? (opcional, podes adicionar depois)",
+        "inputPlaceholder": "Introduz um nome...",
+        "guestCount_one": "{{count}} convidado",
+        "guestCount_other": "{{count}} convidados",
+        "noGuests": "Ainda sem convidados \u2014 podes convid\u00e1-los depois."
+      },
+      "stepReview": {
+        "title": "Tudo certo?",
+        "subtitle": "Revisa o teu evento",
+        "forLabel": "Para",
+        "dateLabel": "Data",
+        "dateOpen": "Ainda por definir",
+        "organizer": "Organizador",
+        "guestsLabel": "Convidados"
+      },
+      "stepSuccess": {
+        "title": "Evento criado! \ud83c\udf89",
+        "subtitle": "Partilha o link com os teus amigos",
+        "accessCode": "C\u00f3digo de Acesso",
+        "link": "Link",
+        "copyLink": "Copiar link",
+        "copied": "Copiado!",
+        "shareWhatsApp": "Partilhar no WhatsApp",
+        "toDashboard": "Ir para o Dashboard",
+        "whatsAppText": "\ud83c\udf89 Est\u00e1s convidado!\n\nJunta-te a \"{{name}}\" para {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd C\u00f3digo: {{code}}"
+      },
+      "buttonNext": "Seguinte",
+      "buttonCreate": "Criar Evento"
+    },
+    "join": {
+      "headerTitle": "Entrar num Evento",
+      "title": "Recebeste um convite?",
+      "subtitle": "Introduz o c\u00f3digo de acesso que recebeste",
+      "placeholder": "ex. STAG2025",
+      "searchButton": "Encontrar evento",
+      "errorNotFound": "Nenhum evento encontrado com este c\u00f3digo.",
+      "errorGeneric": "Erro ao procurar. Verifica o c\u00f3digo.",
+      "eventFound": "Evento encontrado",
+      "forHonoree": "para {{name}}",
+      "joinButton": "Entrar"
+    },
+    "onboarding": {
+      "slide1Title": "Planeia eventos \u00e9picos",
+      "slide1Subtitle": "Despedidas, anivers\u00e1rios, viagens de grupo \u2014 tudo num s\u00f3 lugar.",
+      "slide2Title": "Joga 24+ jogos de festa",
+      "slide2Subtitle": "Tabu, Bomba, Headup, Verdade ou Consequ\u00eancia, Impostor e mais.",
+      "slide3Title": "Divide os custos",
+      "slide3Subtitle": "Regista as despesas e acerta contas sem conversas constrangedoras.",
+      "slide4Title": "Convida toda a gente",
+      "slide4Subtitle": "Partilha um link, recolhe confirma\u00e7\u00f5es e mant\u00e9m todos informados.",
+      "skip": "Saltar",
+      "next": "Seguinte",
+      "getStarted": "Vamos l\u00e1"
+    }
   }
 }

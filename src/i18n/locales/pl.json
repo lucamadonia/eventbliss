@@ -1901,5 +1901,206 @@
         "letterLock": "Blokada Liter"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Cze\u015b\u0107 {{name}} \ud83d\udc4b",
+      "heroTitle": "Zr\u00f3bmy to",
+      "heroHighlight": "epicko.",
+      "newEvent": "Nowe Wydarzenie",
+      "planParty": "Zaplanuj imprez\u0119",
+      "joinEvent": "Do\u0142\u0105cz do Wydarzenia",
+      "games": "Gry",
+      "yourEvents": "Twoje Wydarzenia",
+      "allEvents": "Wszystkie",
+      "noEventsYet": "Brak wydarze\u0144 \u2014 zaplanuj pierwsze!",
+      "participants": "Uczestnicy",
+      "playNow": "Graj teraz",
+      "partyGamesCount": "24+ Gry Imprezowe",
+      "partyGamesSubtitle": "Tabu, Bomba, Headup i wi\u0119cej",
+      "findInspiration": "Znajd\u017a inspiracj\u0119",
+      "findInspirationSub": "Motywy, gry i pomys\u0142y na Twoje wydarzenie"
+    },
+    "games": {
+      "subtitle": "Gry Imprezowe",
+      "title": "Gotowi na zabaw\u0119?",
+      "unlockPremium": "Odblokuj Premium",
+      "unlockPremiumSub": "Graj we wszystkie 17 gier bez limit\u00f3w",
+      "categories": {
+        "alle": "Wszystkie",
+        "party": "Impreza",
+        "social": "Towarzyskie",
+        "quiz": "Quiz",
+        "wort": "S\u0142owo",
+        "karte": "Mapa",
+        "reaktion": "Reakcja",
+        "kreativ": "Kreatywne"
+      }
+    },
+    "events": {
+      "title": "Wydarzenia",
+      "countSummary": "{{active}} aktywne \u00b7 {{archived}} zarchiwizowane",
+      "searchPlaceholder": "Szukaj wydarze\u0144...",
+      "tabActive": "Aktywne",
+      "tabArchived": "Zarchiwizowane",
+      "noEventsTitle": "Brak wydarze\u0144",
+      "noArchivedTitle": "Brak zarchiwizowanych wydarze\u0144",
+      "noEventsDesc": "Zaplanuj pierwsze wydarzenie i zapro\u015b znajomych.",
+      "noArchivedDesc": "Zarchiwizowane wydarzenia pojawi\u0105 si\u0119 tutaj.",
+      "createEvent": "Utw\u00f3rz Wydarzenie",
+      "forHonoree": "dla {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspiracja",
+      "title": "Pomys\u0142y, kt\u00f3re",
+      "titleHighlight": "inspiruj\u0105",
+      "stats": "147 Gier \u00b7 56 Motyw\u00f3w \u00b7 Na ka\u017cd\u0105 okazj\u0119",
+      "tabGames": "Gry ({{count}})",
+      "tabThemes": "Motywy ({{count}})",
+      "searchGames": "Szukaj gier...",
+      "searchThemes": "Szukaj motyw\u00f3w...",
+      "moreGames": "+{{count}} wi\u0119cej gier",
+      "noGames": "Nie znaleziono gier",
+      "noThemes": "Nie znaleziono motyw\u00f3w",
+      "readAloud": "Czytaj na g\u0142os",
+      "material": "Materia\u0142y",
+      "difficulty": {
+        "easy": "\u0141atwy",
+        "medium": "\u015aredni",
+        "hard": "Trudny"
+      },
+      "categories": {
+        "alle": "Wszystkie",
+        "party": "Impreza",
+        "jga": "Wiecz\u00f3r panie\u0144ski/kawalerski",
+        "outdoor": "Na Zewn\u0105trz",
+        "team": "Dru\u017cyna",
+        "icebreaker": "Na Prze\u0142amanie Lod\u00f3w",
+        "familie": "Rodzina",
+        "hochzeit": "\u015alub"
+      },
+      "themeCategories": {
+        "alle": "Wszystkie",
+        "retro": "Retro",
+        "elegant": "Elegancki",
+        "casual": "Swobodny",
+        "abenteuer": "Przygoda",
+        "saison": "Sezonowy",
+        "kostuem": "Kostium",
+        "wellness": "Wellness"
+      }
+    },
+    "profile": {
+      "settings": "Ustawienia",
+      "language": "J\u0119zyk",
+      "appearance": "Wygl\u0105d",
+      "privacy": "Prywatno\u015b\u0107",
+      "helpSupport": "Pomoc i Wsparcie",
+      "logout": "Wyloguj si\u0119",
+      "unlockPremium": "Odblokuj Premium",
+      "unlockPremiumSub": "Wszystkie Gry \u00b7 Bez Limit\u00f3w",
+      "version": "EventBliss \u00b7 Wersja 1.0.0",
+      "guest": "Go\u015b\u0107",
+      "themeDark": "Ciemny",
+      "themeLight": "Jasny",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "W\u0142\u0105czony",
+      "partyModeOff": "Wy\u0142\u0105czony",
+      "partyStats": "\ud83d\udcca Statystyki Imprezy",
+      "partyStatsRounds": "{{count}} rund",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Ten tryb jest przeznaczony dla os\u00f3b powy\u017cej 18 roku \u017cycia. Gry z alkoholem mog\u0105 stanowi\u0107 zagro\u017cenie dla zdrowia. Pij odpowiedzialnie i dbaj o siebie nawzajem.",
+      "partyModeCheckbox": "Mam co najmniej 18 lat i aktywuj\u0119 Party-Modus na w\u0142asn\u0105 odpowiedzialno\u015b\u0107.",
+      "partyModeCancel": "Anuluj",
+      "partyModeActivate": "\ud83c\udf7b Aktywuj",
+      "partyModeDisclaimer": "EventBliss nie ponosi odpowiedzialno\u015bci za spo\u017cywanie napoj\u00f3w alkoholowych.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "aktywowany! \ud83d\udd25",
+      "partyModeActivatedDesc": "Od teraz pijesz zamiast otrzymywa\u0107 kar\u0119",
+      "close": "Zamknij",
+      "adminPanel": "Panel Admina",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Utw\u00f3rz Wydarzenie",
+      "headerDone": "Gotowe!",
+      "stepOf": "Krok {{step}} z {{total}}",
+      "stepType": {
+        "title": "Co \u015bwi\u0119tujesz?",
+        "subtitle": "Wybierz typ wydarzenia",
+        "bachelor": "Wiecz\u00f3r Kawalerski",
+        "bachelorette": "Wiecz\u00f3r Panie\u0144ski",
+        "birthday": "Urodziny",
+        "trip": "Wycieczka Grupowa",
+        "other": "Inne Wydarzenie"
+      },
+      "stepDetails": {
+        "title": "Szczeg\u00f3\u0142y",
+        "subtitle": "Podstawy Twojego wydarzenia",
+        "eventName": "Nazwa Wydarzenia *",
+        "eventNamePlaceholder": "np. Wiecz\u00f3r kawalerski Tima w Amsterdamie",
+        "honoree": "Dla kogo? *",
+        "honoreePlaceholder": "np. Tim",
+        "date": "Data (opcjonalnie)",
+        "yourName": "Twoje Imi\u0119 *",
+        "yourNamePlaceholder": "Twoje imi\u0119"
+      },
+      "stepGuests": {
+        "title": "Go\u015bcie",
+        "subtitle": "Kto przyjdzie? (opcjonalnie, mo\u017cesz doda\u0107 p\u00f3\u017aniej)",
+        "inputPlaceholder": "Wpisz imi\u0119...",
+        "guestCount_one": "{{count}} go\u015b\u0107",
+        "guestCount_other": "{{count}} go\u015bci",
+        "noGuests": "Jeszcze brak go\u015bci \u2014 mo\u017cesz ich zaprosi\u0107 p\u00f3\u017aniej."
+      },
+      "stepReview": {
+        "title": "Wszystko si\u0119 zgadza?",
+        "subtitle": "Sprawd\u017a swoje wydarzenie",
+        "forLabel": "Dla",
+        "dateLabel": "Data",
+        "dateOpen": "Jeszcze nie ustawiono",
+        "organizer": "Organizator",
+        "guestsLabel": "Go\u015bcie"
+      },
+      "stepSuccess": {
+        "title": "Wydarzenie utworzone! \ud83c\udf89",
+        "subtitle": "Udost\u0119pnij link znajomym",
+        "accessCode": "Kod Dost\u0119pu",
+        "link": "Link",
+        "copyLink": "Kopiuj link",
+        "copied": "Skopiowano!",
+        "shareWhatsApp": "Udost\u0119pnij na WhatsApp",
+        "toDashboard": "Przejd\u017a do Dashboard",
+        "whatsAppText": "\ud83c\udf89 Jeste\u015b zaproszony!\n\nDo\u0142\u0105cz do \"{{name}}\" dla {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Kod: {{code}}"
+      },
+      "buttonNext": "Dalej",
+      "buttonCreate": "Utw\u00f3rz Wydarzenie"
+    },
+    "join": {
+      "headerTitle": "Do\u0142\u0105cz do Wydarzenia",
+      "title": "Masz zaproszenie?",
+      "subtitle": "Wpisz kod dost\u0119pu, kt\u00f3ry otrzyma\u0142e\u015b",
+      "placeholder": "np. STAG2025",
+      "searchButton": "Znajd\u017a wydarzenie",
+      "errorNotFound": "Nie znaleziono wydarzenia z tym kodem.",
+      "errorGeneric": "B\u0142\u0105d wyszukiwania. Sprawd\u017a kod.",
+      "eventFound": "Wydarzenie znalezione",
+      "forHonoree": "dla {{name}}",
+      "joinButton": "Do\u0142\u0105cz"
+    },
+    "onboarding": {
+      "slide1Title": "Planuj epickie wydarzenia",
+      "slide1Subtitle": "Wieczory kawalerskie, urodziny, wycieczki grupowe \u2014 wszystko w jednym miejscu.",
+      "slide2Title": "Graj w 24+ gry imprezowe",
+      "slide2Subtitle": "Tabu, Bomba, Headup, Prawda czy Wyzwanie, Impostor i wi\u0119cej.",
+      "slide3Title": "Podziel koszty",
+      "slide3Subtitle": "\u015aled\u017a wydatki i rozliczaj si\u0119 bez niezr\u0119cznych rozm\u00f3w.",
+      "slide4Title": "Zapro\u015b wszystkich",
+      "slide4Subtitle": "Udost\u0119pnij link, zbierz potwierdzenia i informuj wszystkich na bie\u017c\u0105co.",
+      "skip": "Pomi\u0144",
+      "next": "Dalej",
+      "getStarted": "Zaczynajmy"
+    }
   }
 }

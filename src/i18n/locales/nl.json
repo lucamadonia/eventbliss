@@ -1987,5 +1987,206 @@
         "letterLock": "Letterslot"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Hoi {{name}} \ud83d\udc4b",
+      "heroTitle": "Maak het",
+      "heroHighlight": "episch.",
+      "newEvent": "Nieuw Evenement",
+      "planParty": "Plan een feestje",
+      "joinEvent": "Deelnemen aan Evenement",
+      "games": "Spellen",
+      "yourEvents": "Jouw Evenementen",
+      "allEvents": "Alle",
+      "noEventsYet": "Nog geen evenementen \u2014 plan je eerste!",
+      "participants": "Deelnemers",
+      "playNow": "Nu spelen",
+      "partyGamesCount": "24+ Feestspellen",
+      "partyGamesSubtitle": "Taboe, Bom, Headup en meer",
+      "findInspiration": "Vind inspiratie",
+      "findInspirationSub": "Thema\u2019s, spellen en idee\u00ebn voor je evenement"
+    },
+    "games": {
+      "subtitle": "Feestspellen",
+      "title": "Klaar voor de lol?",
+      "unlockPremium": "Premium ontgrendelen",
+      "unlockPremiumSub": "Speel alle 17 spellen onbeperkt",
+      "categories": {
+        "alle": "Alle",
+        "party": "Feest",
+        "social": "Sociaal",
+        "quiz": "Quiz",
+        "wort": "Woord",
+        "karte": "Kaart",
+        "reaktion": "Reactie",
+        "kreativ": "Creatief"
+      }
+    },
+    "events": {
+      "title": "Evenementen",
+      "countSummary": "{{active}} actief \u00b7 {{archived}} gearchiveerd",
+      "searchPlaceholder": "Evenementen zoeken...",
+      "tabActive": "Actief",
+      "tabArchived": "Gearchiveerd",
+      "noEventsTitle": "Nog geen evenementen",
+      "noArchivedTitle": "Geen gearchiveerde evenementen",
+      "noEventsDesc": "Plan je eerste evenement en nodig vrienden uit.",
+      "noArchivedDesc": "Gearchiveerde evenementen verschijnen hier.",
+      "createEvent": "Evenement Maken",
+      "forHonoree": "voor {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspiratie",
+      "title": "Idee\u00ebn die",
+      "titleHighlight": "inspireren",
+      "stats": "147 Spellen \u00b7 56 Thema\u2019s \u00b7 Voor elke gelegenheid",
+      "tabGames": "Spellen ({{count}})",
+      "tabThemes": "Thema\u2019s ({{count}})",
+      "searchGames": "Spellen zoeken...",
+      "searchThemes": "Thema\u2019s zoeken...",
+      "moreGames": "+{{count}} meer spellen",
+      "noGames": "Geen spellen gevonden",
+      "noThemes": "Geen thema\u2019s gevonden",
+      "readAloud": "Voorlezen",
+      "material": "Materiaal",
+      "difficulty": {
+        "easy": "Makkelijk",
+        "medium": "Gemiddeld",
+        "hard": "Moeilijk"
+      },
+      "categories": {
+        "alle": "Alle",
+        "party": "Feest",
+        "jga": "Vrijgezellenfeest",
+        "outdoor": "Buiten",
+        "team": "Team",
+        "icebreaker": "IJsbreker",
+        "familie": "Familie",
+        "hochzeit": "Bruiloft"
+      },
+      "themeCategories": {
+        "alle": "Alle",
+        "retro": "Retro",
+        "elegant": "Elegant",
+        "casual": "Casual",
+        "abenteuer": "Avontuur",
+        "saison": "Seizoen",
+        "kostuem": "Kostuum",
+        "wellness": "Wellness"
+      }
+    },
+    "profile": {
+      "settings": "Instellingen",
+      "language": "Taal",
+      "appearance": "Uiterlijk",
+      "privacy": "Privacy",
+      "helpSupport": "Hulp & Ondersteuning",
+      "logout": "Uitloggen",
+      "unlockPremium": "Premium ontgrendelen",
+      "unlockPremiumSub": "Alle Spellen \u00b7 Onbeperkt",
+      "version": "EventBliss \u00b7 Versie 1.0.0",
+      "guest": "Gast",
+      "themeDark": "Donker",
+      "themeLight": "Licht",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "Aan",
+      "partyModeOff": "Uit",
+      "partyStats": "\ud83d\udcca Feeststatistieken",
+      "partyStatsRounds": "{{count}} rondes",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Deze modus is bedoeld voor personen van 18 jaar en ouder. Drinkspellen kunnen gezondheidsrisico\u2019s met zich meebrengen. Drink verantwoord en let op elkaar.",
+      "partyModeCheckbox": "Ik ben minstens 18 jaar oud en activeer Party-Modus op eigen verantwoordelijkheid.",
+      "partyModeCancel": "Annuleren",
+      "partyModeActivate": "\ud83c\udf7b Activeren",
+      "partyModeDisclaimer": "EventBliss aanvaardt geen aansprakelijkheid voor het gebruik van alcoholische dranken.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "geactiveerd! \ud83d\udd25",
+      "partyModeActivatedDesc": "Vanaf nu drink je in plaats van een straf te krijgen",
+      "close": "Sluiten",
+      "adminPanel": "Beheerderspaneel",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Evenement Maken",
+      "headerDone": "Klaar!",
+      "stepOf": "Stap {{step}} van {{total}}",
+      "stepType": {
+        "title": "Wat vier je?",
+        "subtitle": "Kies het type evenement",
+        "bachelor": "Vrijgezellenfeest (man)",
+        "bachelorette": "Vrijgezellenfeest (vrouw)",
+        "birthday": "Verjaardag",
+        "trip": "Groepsreis",
+        "other": "Ander Evenement"
+      },
+      "stepDetails": {
+        "title": "Details",
+        "subtitle": "De basis van je evenement",
+        "eventName": "Naam Evenement *",
+        "eventNamePlaceholder": "bijv. Tims Vrijgezellenfeest Amsterdam",
+        "honoree": "Voor wie? *",
+        "honoreePlaceholder": "bijv. Tim",
+        "date": "Datum (optioneel)",
+        "yourName": "Jouw Naam *",
+        "yourNamePlaceholder": "Je voornaam"
+      },
+      "stepGuests": {
+        "title": "Gasten",
+        "subtitle": "Wie komt er? (optioneel, je kunt later toevoegen)",
+        "inputPlaceholder": "Voer een naam in...",
+        "guestCount_one": "{{count}} gast",
+        "guestCount_other": "{{count}} gasten",
+        "noGuests": "Nog geen gasten \u2014 je kunt ze later uitnodigen."
+      },
+      "stepReview": {
+        "title": "Alles klopt?",
+        "subtitle": "Controleer je evenement",
+        "forLabel": "Voor",
+        "dateLabel": "Datum",
+        "dateOpen": "Nog niet ingesteld",
+        "organizer": "Organisator",
+        "guestsLabel": "Gasten"
+      },
+      "stepSuccess": {
+        "title": "Evenement aangemaakt! \ud83c\udf89",
+        "subtitle": "Deel de link met je vrienden",
+        "accessCode": "Toegangscode",
+        "link": "Link",
+        "copyLink": "Link kopi\u00ebren",
+        "copied": "Gekopieerd!",
+        "shareWhatsApp": "Delen via WhatsApp",
+        "toDashboard": "Naar Dashboard",
+        "whatsAppText": "\ud83c\udf89 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Code: {{code}}"
+      },
+      "buttonNext": "Volgende",
+      "buttonCreate": "Evenement Maken"
+    },
+    "join": {
+      "headerTitle": "Deelnemen aan Evenement",
+      "title": "Heb je een uitnodiging?",
+      "subtitle": "Voer de toegangscode in die je hebt ontvangen",
+      "placeholder": "bijv. STAG2025",
+      "searchButton": "Evenement zoeken",
+      "errorNotFound": "Geen evenement gevonden met deze code.",
+      "errorGeneric": "Fout bij het zoeken. Controleer de code.",
+      "eventFound": "Evenement gevonden",
+      "forHonoree": "voor {{name}}",
+      "joinButton": "Deelnemen"
+    },
+    "onboarding": {
+      "slide1Title": "Plan epische evenementen",
+      "slide1Subtitle": "Vrijgezellenfeesten, verjaardagen, groepsreizen \u2014 alles op \u00e9\u00e9n plek.",
+      "slide2Title": "Speel 24+ feestspellen",
+      "slide2Subtitle": "Taboe, Bom, Headup, Waarheid of Durven, Bedrieger en meer.",
+      "slide3Title": "Deel de kosten",
+      "slide3Subtitle": "Houd uitgaven bij en reken af zonder ongemakkelijke gesprekken.",
+      "slide4Title": "Nodig iedereen uit",
+      "slide4Subtitle": "Deel een link, verzamel bevestigingen en houd iedereen op de hoogte.",
+      "skip": "Overslaan",
+      "next": "Volgende",
+      "getStarted": "Laten we gaan"
+    }
   }
 }

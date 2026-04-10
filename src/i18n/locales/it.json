@@ -1958,5 +1958,206 @@
         "letterLock": "Blocco Lettera"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Ciao {{name}} \ud83d\udc4b",
+      "heroTitle": "Rendiamolo",
+      "heroHighlight": "epico.",
+      "newEvent": "Nuovo Evento",
+      "planParty": "Organizza una festa",
+      "joinEvent": "Partecipa a un Evento",
+      "games": "Giochi",
+      "yourEvents": "I tuoi Eventi",
+      "allEvents": "Tutti",
+      "noEventsYet": "Ancora nessun evento \u2014 organizza il primo!",
+      "participants": "Partecipanti",
+      "playNow": "Gioca ora",
+      "partyGamesCount": "24+ Giochi di Gruppo",
+      "partyGamesSubtitle": "Tab\u00f9, Bomba, Headup e altro",
+      "findInspiration": "Trova ispirazione",
+      "findInspirationSub": "Temi, giochi e idee per il tuo evento"
+    },
+    "games": {
+      "subtitle": "Giochi di Gruppo",
+      "title": "Pronti a divertirvi?",
+      "unlockPremium": "Sblocca Premium",
+      "unlockPremiumSub": "Gioca a tutti i 17 giochi senza limiti",
+      "categories": {
+        "alle": "Tutti",
+        "party": "Festa",
+        "social": "Social",
+        "quiz": "Quiz",
+        "wort": "Parola",
+        "karte": "Mappa",
+        "reaktion": "Reazione",
+        "kreativ": "Creativo"
+      }
+    },
+    "events": {
+      "title": "Eventi",
+      "countSummary": "{{active}} attivi \u00b7 {{archived}} archiviati",
+      "searchPlaceholder": "Cerca eventi...",
+      "tabActive": "Attivi",
+      "tabArchived": "Archiviati",
+      "noEventsTitle": "Ancora nessun evento",
+      "noArchivedTitle": "Nessun evento archiviato",
+      "noEventsDesc": "Organizza il tuo primo evento e invita i tuoi amici.",
+      "noArchivedDesc": "Gli eventi archiviati appariranno qui.",
+      "createEvent": "Crea Evento",
+      "forHonoree": "per {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Ispirazione",
+      "title": "Idee che",
+      "titleHighlight": "ispirano",
+      "stats": "147 Giochi \u00b7 56 Temi \u00b7 Per ogni occasione",
+      "tabGames": "Giochi ({{count}})",
+      "tabThemes": "Temi ({{count}})",
+      "searchGames": "Cerca giochi...",
+      "searchThemes": "Cerca temi...",
+      "moreGames": "+{{count}} altri giochi",
+      "noGames": "Nessun gioco trovato",
+      "noThemes": "Nessun tema trovato",
+      "readAloud": "Leggi ad alta voce",
+      "material": "Materiale",
+      "difficulty": {
+        "easy": "Facile",
+        "medium": "Medio",
+        "hard": "Difficile"
+      },
+      "categories": {
+        "alle": "Tutti",
+        "party": "Festa",
+        "jga": "Addio al celibato",
+        "outdoor": "All\u2019aperto",
+        "team": "Squadra",
+        "icebreaker": "Rompighiaccio",
+        "familie": "Famiglia",
+        "hochzeit": "Matrimonio"
+      },
+      "themeCategories": {
+        "alle": "Tutti",
+        "retro": "Retr\u00f2",
+        "elegant": "Elegante",
+        "casual": "Casual",
+        "abenteuer": "Avventura",
+        "saison": "Stagionale",
+        "kostuem": "Costume",
+        "wellness": "Benessere"
+      }
+    },
+    "profile": {
+      "settings": "Impostazioni",
+      "language": "Lingua",
+      "appearance": "Aspetto",
+      "privacy": "Privacy",
+      "helpSupport": "Aiuto e Supporto",
+      "logout": "Esci",
+      "unlockPremium": "Sblocca Premium",
+      "unlockPremiumSub": "Tutti i Giochi \u00b7 Illimitato",
+      "version": "EventBliss \u00b7 Versione 1.0.0",
+      "guest": "Ospite",
+      "themeDark": "Scuro",
+      "themeLight": "Chiaro",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "Attivo",
+      "partyModeOff": "Disattivo",
+      "partyStats": "\ud83d\udcca Statistiche Festa",
+      "partyStatsRounds": "{{count}} turni",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Questa modalit\u00e0 \u00e8 pensata per persone di almeno 18 anni. I giochi alcolici possono comportare rischi per la salute. Bevi responsabilmente e prenditi cura degli altri.",
+      "partyModeCheckbox": "Ho almeno 18 anni e attivo il Party-Modus sotto la mia responsabilit\u00e0.",
+      "partyModeCancel": "Annulla",
+      "partyModeActivate": "\ud83c\udf7b Attiva",
+      "partyModeDisclaimer": "EventBliss non si assume alcuna responsabilit\u00e0 per il consumo di bevande alcoliche.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "attivato! \ud83d\udd25",
+      "partyModeActivatedDesc": "D\u2019ora in poi bevi invece di ricevere una punizione",
+      "close": "Chiudi",
+      "adminPanel": "Pannello Admin",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Crea Evento",
+      "headerDone": "Fatto!",
+      "stepOf": "Passo {{step}} di {{total}}",
+      "stepType": {
+        "title": "Cosa festeggi?",
+        "subtitle": "Scegli il tipo di evento",
+        "bachelor": "Addio al Celibato",
+        "bachelorette": "Addio al Nubilato",
+        "birthday": "Compleanno",
+        "trip": "Viaggio di Gruppo",
+        "other": "Altro Evento"
+      },
+      "stepDetails": {
+        "title": "Dettagli",
+        "subtitle": "Le basi del tuo evento",
+        "eventName": "Nome Evento *",
+        "eventNamePlaceholder": "es. Addio al celibato di Tim ad Amsterdam",
+        "honoree": "Per chi? *",
+        "honoreePlaceholder": "es. Tim",
+        "date": "Data (facoltativo)",
+        "yourName": "Il tuo Nome *",
+        "yourNamePlaceholder": "Il tuo nome"
+      },
+      "stepGuests": {
+        "title": "Ospiti",
+        "subtitle": "Chi viene? (facoltativo, puoi aggiungere dopo)",
+        "inputPlaceholder": "Inserisci un nome...",
+        "guestCount_one": "{{count}} ospite",
+        "guestCount_other": "{{count}} ospiti",
+        "noGuests": "Ancora nessun ospite \u2014 puoi invitarli dopo."
+      },
+      "stepReview": {
+        "title": "Tutto corretto?",
+        "subtitle": "Controlla il tuo evento",
+        "forLabel": "Per",
+        "dateLabel": "Data",
+        "dateOpen": "Non ancora definito",
+        "organizer": "Organizzatore",
+        "guestsLabel": "Ospiti"
+      },
+      "stepSuccess": {
+        "title": "Evento creato! \ud83c\udf89",
+        "subtitle": "Condividi il link con i tuoi amici",
+        "accessCode": "Codice di Accesso",
+        "link": "Link",
+        "copyLink": "Copia link",
+        "copied": "Copiato!",
+        "shareWhatsApp": "Condividi su WhatsApp",
+        "toDashboard": "Vai alla Dashboard",
+        "whatsAppText": "\ud83c\udf89 Sei invitato!\n\nUnisciti a \"{{name}}\" per {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Codice: {{code}}"
+      },
+      "buttonNext": "Avanti",
+      "buttonCreate": "Crea Evento"
+    },
+    "join": {
+      "headerTitle": "Partecipa a un Evento",
+      "title": "Hai ricevuto un invito?",
+      "subtitle": "Inserisci il codice di accesso che hai ricevuto",
+      "placeholder": "es. STAG2025",
+      "searchButton": "Trova evento",
+      "errorNotFound": "Nessun evento trovato con questo codice.",
+      "errorGeneric": "Errore nella ricerca. Controlla il codice.",
+      "eventFound": "Evento trovato",
+      "forHonoree": "per {{name}}",
+      "joinButton": "Partecipa"
+    },
+    "onboarding": {
+      "slide1Title": "Organizza eventi epici",
+      "slide1Subtitle": "Addii al celibato, compleanni, viaggi di gruppo \u2014 tutto in un unico posto.",
+      "slide2Title": "Gioca a 24+ giochi di gruppo",
+      "slide2Subtitle": "Tab\u00f9, Bomba, Headup, Obbligo o Verit\u00e0, Impostore e altro.",
+      "slide3Title": "Dividi le spese",
+      "slide3Subtitle": "Tieni traccia delle spese e salda i conti senza conversazioni imbarazzanti.",
+      "slide4Title": "Invita tutti",
+      "slide4Subtitle": "Condividi un link, raccogli le conferme e tieni tutti aggiornati.",
+      "skip": "Salta",
+      "next": "Avanti",
+      "getStarted": "Iniziamo"
+    }
   }
 }

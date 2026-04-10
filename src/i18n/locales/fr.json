@@ -2080,5 +2080,206 @@
         "letterLock": "Lettre Bloquée"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Salut {{name}} \ud83d\udc4b",
+      "heroTitle": "Rendons-le",
+      "heroHighlight": "\u00e9pique.",
+      "newEvent": "Nouvel \u00c9v\u00e9nement",
+      "planParty": "Organiser une f\u00eate",
+      "joinEvent": "Rejoindre un \u00e9v\u00e9nement",
+      "games": "Jeux",
+      "yourEvents": "Tes \u00c9v\u00e9nements",
+      "allEvents": "Tous",
+      "noEventsYet": "Pas encore d\u2019\u00e9v\u00e9nement \u2014 organise le premier\u00a0!",
+      "participants": "Participants",
+      "playNow": "Jouer maintenant",
+      "partyGamesCount": "24+ Jeux de Soir\u00e9e",
+      "partyGamesSubtitle": "Tabou, Bombe, Headup et plus",
+      "findInspiration": "Trouve l\u2019inspiration",
+      "findInspirationSub": "Th\u00e8mes, jeux et id\u00e9es pour ton \u00e9v\u00e9nement"
+    },
+    "games": {
+      "subtitle": "Jeux de Soir\u00e9e",
+      "title": "Pr\u00eats \u00e0 s\u2019amuser\u00a0?",
+      "unlockPremium": "D\u00e9bloquer Premium",
+      "unlockPremiumSub": "Joue aux 17 jeux sans limite",
+      "categories": {
+        "alle": "Tous",
+        "party": "F\u00eate",
+        "social": "Social",
+        "quiz": "Quiz",
+        "wort": "Mot",
+        "karte": "Carte",
+        "reaktion": "R\u00e9action",
+        "kreativ": "Cr\u00e9atif"
+      }
+    },
+    "events": {
+      "title": "\u00c9v\u00e9nements",
+      "countSummary": "{{active}} actifs \u00b7 {{archived}} archiv\u00e9s",
+      "searchPlaceholder": "Rechercher des \u00e9v\u00e9nements...",
+      "tabActive": "Actifs",
+      "tabArchived": "Archiv\u00e9s",
+      "noEventsTitle": "Pas encore d\u2019\u00e9v\u00e9nements",
+      "noArchivedTitle": "Aucun \u00e9v\u00e9nement archiv\u00e9",
+      "noEventsDesc": "Organise ton premier \u00e9v\u00e9nement et invite tes amis.",
+      "noArchivedDesc": "Les \u00e9v\u00e9nements archiv\u00e9s appara\u00eetront ici.",
+      "createEvent": "Cr\u00e9er un \u00c9v\u00e9nement",
+      "forHonoree": "pour {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspiration",
+      "title": "Des id\u00e9es qui",
+      "titleHighlight": "inspirent",
+      "stats": "147 Jeux \u00b7 56 Th\u00e8mes \u00b7 Pour chaque occasion",
+      "tabGames": "Jeux ({{count}})",
+      "tabThemes": "Th\u00e8mes ({{count}})",
+      "searchGames": "Rechercher des jeux...",
+      "searchThemes": "Rechercher des th\u00e8mes...",
+      "moreGames": "+{{count}} jeux en plus",
+      "noGames": "Aucun jeu trouv\u00e9",
+      "noThemes": "Aucun th\u00e8me trouv\u00e9",
+      "readAloud": "Lire \u00e0 voix haute",
+      "material": "Mat\u00e9riel",
+      "difficulty": {
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+      },
+      "categories": {
+        "alle": "Tous",
+        "party": "F\u00eate",
+        "jga": "Enterrement de vie",
+        "outdoor": "Plein Air",
+        "team": "\u00c9quipe",
+        "icebreaker": "Brise-glace",
+        "familie": "Famille",
+        "hochzeit": "Mariage"
+      },
+      "themeCategories": {
+        "alle": "Tous",
+        "retro": "R\u00e9tro",
+        "elegant": "\u00c9l\u00e9gant",
+        "casual": "D\u00e9contract\u00e9",
+        "abenteuer": "Aventure",
+        "saison": "Saison",
+        "kostuem": "D\u00e9guisement",
+        "wellness": "Bien-\u00eatre"
+      }
+    },
+    "profile": {
+      "settings": "Param\u00e8tres",
+      "language": "Langue",
+      "appearance": "Apparence",
+      "privacy": "Confidentialit\u00e9",
+      "helpSupport": "Aide et Support",
+      "logout": "Se d\u00e9connecter",
+      "unlockPremium": "D\u00e9bloquer Premium",
+      "unlockPremiumSub": "Tous les Jeux \u00b7 Illimit\u00e9",
+      "version": "EventBliss \u00b7 Version 1.0.0",
+      "guest": "Invit\u00e9",
+      "themeDark": "Sombre",
+      "themeLight": "Clair",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "Activ\u00e9",
+      "partyModeOff": "D\u00e9sactiv\u00e9",
+      "partyStats": "\ud83d\udcca Stats de Soir\u00e9e",
+      "partyStatsRounds": "{{count}} manches",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Ce mode est destin\u00e9 aux personnes de 18 ans et plus. Les jeux \u00e0 boire peuvent pr\u00e9senter des risques pour la sant\u00e9. Bois de mani\u00e8re responsable et veille sur les autres.",
+      "partyModeCheckbox": "J\u2019ai au moins 18 ans et j\u2019active le Party-Modus sous ma propre responsabilit\u00e9.",
+      "partyModeCancel": "Annuler",
+      "partyModeActivate": "\ud83c\udf7b Activer",
+      "partyModeDisclaimer": "EventBliss d\u00e9cline toute responsabilit\u00e9 li\u00e9e \u00e0 la consommation de boissons alcooliques.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "activ\u00e9\u00a0! \ud83d\udd25",
+      "partyModeActivatedDesc": "D\u00e9sormais tu bois au lieu d\u2019\u00eatre puni",
+      "close": "Fermer",
+      "adminPanel": "Panneau Admin",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Cr\u00e9er un \u00c9v\u00e9nement",
+      "headerDone": "Termin\u00e9\u00a0!",
+      "stepOf": "\u00c9tape {{step}} sur {{total}}",
+      "stepType": {
+        "title": "Que f\u00eates-tu\u00a0?",
+        "subtitle": "Choisis le type d\u2019\u00e9v\u00e9nement",
+        "bachelor": "Enterrement de vie de gar\u00e7on",
+        "bachelorette": "Enterrement de vie de jeune fille",
+        "birthday": "Anniversaire",
+        "trip": "Voyage de Groupe",
+        "other": "Autre \u00c9v\u00e9nement"
+      },
+      "stepDetails": {
+        "title": "D\u00e9tails",
+        "subtitle": "Les informations de base",
+        "eventName": "Nom de l\u2019\u00c9v\u00e9nement *",
+        "eventNamePlaceholder": "ex. Enterrement de Tim \u00e0 Amsterdam",
+        "honoree": "Pour qui\u00a0? *",
+        "honoreePlaceholder": "ex. Tim",
+        "date": "Date (facultatif)",
+        "yourName": "Ton Nom *",
+        "yourNamePlaceholder": "Ton pr\u00e9nom"
+      },
+      "stepGuests": {
+        "title": "Invit\u00e9s",
+        "subtitle": "Qui vient\u00a0? (facultatif, tu peux ajouter plus tard)",
+        "inputPlaceholder": "Entre un nom...",
+        "guestCount_one": "{{count}} invit\u00e9",
+        "guestCount_other": "{{count}} invit\u00e9s",
+        "noGuests": "Pas encore d\u2019invit\u00e9s \u2014 tu pourras les inviter plus tard."
+      },
+      "stepReview": {
+        "title": "Tout est correct\u00a0?",
+        "subtitle": "V\u00e9rifie ton \u00e9v\u00e9nement",
+        "forLabel": "Pour",
+        "dateLabel": "Date",
+        "dateOpen": "Pas encore d\u00e9fini",
+        "organizer": "Organisateur",
+        "guestsLabel": "Invit\u00e9s"
+      },
+      "stepSuccess": {
+        "title": "\u00c9v\u00e9nement cr\u00e9\u00e9\u00a0! \ud83c\udf89",
+        "subtitle": "Partage le lien avec tes amis",
+        "accessCode": "Code d\u2019Acc\u00e8s",
+        "link": "Lien",
+        "copyLink": "Copier le lien",
+        "copied": "Copi\u00e9\u00a0!",
+        "shareWhatsApp": "Partager sur WhatsApp",
+        "toDashboard": "Aller au Dashboard",
+        "whatsAppText": "\ud83c\udf89 Tu es invit\u00e9\u00a0!\n\nRejoins \"{{name}}\" pour {{honoree}}\u00a0!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Code\u00a0: {{code}}"
+      },
+      "buttonNext": "Suivant",
+      "buttonCreate": "Cr\u00e9er l\u2019\u00c9v\u00e9nement"
+    },
+    "join": {
+      "headerTitle": "Rejoindre un \u00c9v\u00e9nement",
+      "title": "Tu as re\u00e7u une invitation\u00a0?",
+      "subtitle": "Entre le code d\u2019acc\u00e8s que tu as re\u00e7u",
+      "placeholder": "ex. STAG2025",
+      "searchButton": "Trouver l\u2019\u00e9v\u00e9nement",
+      "errorNotFound": "Aucun \u00e9v\u00e9nement trouv\u00e9 avec ce code.",
+      "errorGeneric": "Erreur lors de la recherche. V\u00e9rifie le code.",
+      "eventFound": "\u00c9v\u00e9nement trouv\u00e9",
+      "forHonoree": "pour {{name}}",
+      "joinButton": "Rejoindre"
+    },
+    "onboarding": {
+      "slide1Title": "Organise des \u00e9v\u00e9nements \u00e9piques",
+      "slide1Subtitle": "Enterrements de vie, anniversaires, voyages de groupe \u2014 tout au m\u00eame endroit.",
+      "slide2Title": "Joue \u00e0 24+ jeux de soir\u00e9e",
+      "slide2Subtitle": "Tabou, Bombe, Headup, Action ou V\u00e9rit\u00e9, Imposteur et plus.",
+      "slide3Title": "Partage les frais",
+      "slide3Subtitle": "Suis les d\u00e9penses et r\u00e8gle les comptes sans conversations g\u00eanantes.",
+      "slide4Title": "Invite tout le monde",
+      "slide4Subtitle": "Partage un lien, collecte les r\u00e9ponses et tiens tout le monde au courant.",
+      "skip": "Passer",
+      "next": "Suivant",
+      "getStarted": "C\u2019est parti"
+    }
   }
 }

@@ -1900,5 +1900,206 @@
         "letterLock": "Harf Kilidi"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Merhaba {{name}} \ud83d\udc4b",
+      "heroTitle": "Bunu",
+      "heroHighlight": "epik yapal\u0131m.",
+      "newEvent": "Yeni Etkinlik",
+      "planParty": "Parti planla",
+      "joinEvent": "Etkinli\u011fe Kat\u0131l",
+      "games": "Oyunlar",
+      "yourEvents": "Etkinliklerin",
+      "allEvents": "T\u00fcm\u00fc",
+      "noEventsYet": "Hen\u00fcz etkinlik yok \u2014 ilkini planla!",
+      "participants": "Kat\u0131l\u0131mc\u0131lar",
+      "playNow": "\u015eimdi oyna",
+      "partyGamesCount": "24+ Parti Oyunu",
+      "partyGamesSubtitle": "Tabu, Bomba, Headup ve daha fazlas\u0131",
+      "findInspiration": "\u0130lham bul",
+      "findInspirationSub": "Etkinli\u011fin i\u00e7in temalar, oyunlar ve fikirler"
+    },
+    "games": {
+      "subtitle": "Parti Oyunlar\u0131",
+      "title": "E\u011flenmeye haz\u0131r m\u0131s\u0131n\u0131z?",
+      "unlockPremium": "Premium A\u00e7",
+      "unlockPremiumSub": "17 oyunu s\u0131n\u0131rs\u0131z oyna",
+      "categories": {
+        "alle": "T\u00fcm\u00fc",
+        "party": "Parti",
+        "social": "Sosyal",
+        "quiz": "Bilgi",
+        "wort": "Kelime",
+        "karte": "Harita",
+        "reaktion": "Reaksiyon",
+        "kreativ": "Yarat\u0131c\u0131"
+      }
+    },
+    "events": {
+      "title": "Etkinlikler",
+      "countSummary": "{{active}} aktif \u00b7 {{archived}} ar\u015fivlenmi\u015f",
+      "searchPlaceholder": "Etkinlik ara...",
+      "tabActive": "Aktif",
+      "tabArchived": "Ar\u015fivlenmi\u015f",
+      "noEventsTitle": "Hen\u00fcz etkinlik yok",
+      "noArchivedTitle": "Ar\u015fivlenmi\u015f etkinlik yok",
+      "noEventsDesc": "\u0130lk etkinli\u011fini planla ve arkada\u015flar\u0131n\u0131 davet et.",
+      "noArchivedDesc": "Ar\u015fivlenmi\u015f etkinlikler burada g\u00f6r\u00fcnecek.",
+      "createEvent": "Etkinlik Olu\u015ftur",
+      "forHonoree": "{{name}} i\u00e7in"
+    },
+    "ideas": {
+      "subtitle": "\u0130lham",
+      "title": "\u0130lham veren",
+      "titleHighlight": "fikirler",
+      "stats": "147 Oyun \u00b7 56 Tema \u00b7 Her durum i\u00e7in",
+      "tabGames": "Oyunlar ({{count}})",
+      "tabThemes": "Temalar ({{count}})",
+      "searchGames": "Oyun ara...",
+      "searchThemes": "Tema ara...",
+      "moreGames": "+{{count}} daha fazla oyun",
+      "noGames": "Oyun bulunamad\u0131",
+      "noThemes": "Tema bulunamad\u0131",
+      "readAloud": "Sesli oku",
+      "material": "Malzeme",
+      "difficulty": {
+        "easy": "Kolay",
+        "medium": "Orta",
+        "hard": "Zor"
+      },
+      "categories": {
+        "alle": "T\u00fcm\u00fc",
+        "party": "Parti",
+        "jga": "BekArl\u0131k/K\u0131na",
+        "outdoor": "A\u00e7\u0131k Hava",
+        "team": "Tak\u0131m",
+        "icebreaker": "Buz K\u0131r\u0131c\u0131",
+        "familie": "Aile",
+        "hochzeit": "D\u00fc\u011f\u00fcn"
+      },
+      "themeCategories": {
+        "alle": "T\u00fcm\u00fc",
+        "retro": "Retro",
+        "elegant": "\u015e\u0131k",
+        "casual": "Rahat",
+        "abenteuer": "Macera",
+        "saison": "Mevsimlik",
+        "kostuem": "Kost\u00fcm",
+        "wellness": "Wellness"
+      }
+    },
+    "profile": {
+      "settings": "Ayarlar",
+      "language": "Dil",
+      "appearance": "G\u00f6r\u00fcn\u00fcm",
+      "privacy": "Gizlilik",
+      "helpSupport": "Yard\u0131m ve Destek",
+      "logout": "\u00c7\u0131k\u0131\u015f yap",
+      "unlockPremium": "Premium A\u00e7",
+      "unlockPremiumSub": "T\u00fcm Oyunlar \u00b7 S\u0131n\u0131rs\u0131z",
+      "version": "EventBliss \u00b7 S\u00fcr\u00fcm 1.0.0",
+      "guest": "Misafir",
+      "themeDark": "Koyu",
+      "themeLight": "A\u00e7\u0131k",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "partyModeOn": "A\u00e7\u0131k",
+      "partyModeOff": "Kapal\u0131",
+      "partyStats": "\ud83d\udcca Parti \u0130statistikleri",
+      "partyStatsRounds": "{{count}} tur",
+      "partyModeTitle": "Party-Modus (18+)",
+      "partyModeWarning": "Bu mod 18 ya\u015f ve \u00fczeri i\u00e7indir. \u0130\u00e7ki oyunlar\u0131 sa\u011fl\u0131k riskleri ta\u015f\u0131yabilir. Sorumlu i\u00e7in ve birbirinize dikkat edin.",
+      "partyModeCheckbox": "En az 18 ya\u015f\u0131nday\u0131m ve Party-Modus'u kendi sorumlulu\u011fumda etkinle\u015ftiriyorum.",
+      "partyModeCancel": "\u0130ptal",
+      "partyModeActivate": "\ud83c\udf7b Etkinle\u015ftir",
+      "partyModeDisclaimer": "EventBliss alkoll\u00fc i\u00e7ecek t\u00fcketiminden sorumluluk kabul etmez.",
+      "partyModeActivated": "Party-Modus",
+      "partyModeActivatedSub": "etkinle\u015ftirildi! \ud83d\udd25",
+      "partyModeActivatedDesc": "Art\u0131k ceza almak yerine i\u00e7iyorsun",
+      "close": "Kapat",
+      "adminPanel": "Y\u00f6netici Paneli",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Etkinlik Olu\u015ftur",
+      "headerDone": "Tamam!",
+      "stepOf": "Ad\u0131m {{step}} / {{total}}",
+      "stepType": {
+        "title": "Ne kutluyorsun?",
+        "subtitle": "Etkinlik t\u00fcr\u00fcn\u00fc se\u00e7",
+        "bachelor": "BekArl\u0131\u011fa Veda",
+        "bachelorette": "K\u0131na Gecesi",
+        "birthday": "Do\u011fum G\u00fcn\u00fc",
+        "trip": "Grup Gezisi",
+        "other": "Di\u011fer Etkinlik"
+      },
+      "stepDetails": {
+        "title": "Detaylar",
+        "subtitle": "Etkinli\u011finin temelleri",
+        "eventName": "Etkinlik Ad\u0131 *",
+        "eventNamePlaceholder": "\u00f6rn. Tim\u2019in Bekarlara Veda Amsterdam",
+        "honoree": "Kimin i\u00e7in? *",
+        "honoreePlaceholder": "\u00f6rn. Tim",
+        "date": "Tarih (iste\u011fe ba\u011fl\u0131)",
+        "yourName": "Senin Ad\u0131n *",
+        "yourNamePlaceholder": "Ad\u0131n"
+      },
+      "stepGuests": {
+        "title": "Misafirler",
+        "subtitle": "Kim geliyor? (iste\u011fe ba\u011fl\u0131, sonra ekleyebilirsin)",
+        "inputPlaceholder": "\u0130sim gir...",
+        "guestCount_one": "{{count}} misafir",
+        "guestCount_other": "{{count}} misafir",
+        "noGuests": "Hen\u00fcz misafir yok \u2014 sonra davet edebilirsin."
+      },
+      "stepReview": {
+        "title": "Her \u015fey do\u011fru mu?",
+        "subtitle": "Etkinli\u011fini kontrol et",
+        "forLabel": "\u0130\u00e7in",
+        "dateLabel": "Tarih",
+        "dateOpen": "Hen\u00fcz belirlenmedi",
+        "organizer": "Organizat\u00f6r",
+        "guestsLabel": "Misafirler"
+      },
+      "stepSuccess": {
+        "title": "Etkinlik olu\u015fturuldu! \ud83c\udf89",
+        "subtitle": "Linki arkada\u015flar\u0131nla payla\u015f",
+        "accessCode": "Eri\u015fim Kodu",
+        "link": "Link",
+        "copyLink": "Linki kopyala",
+        "copied": "Kopyaland\u0131!",
+        "shareWhatsApp": "WhatsApp\u2019ta Payla\u015f",
+        "toDashboard": "Dashboard\u2019a Git",
+        "whatsAppText": "\ud83c\udf89 Davetlisin!\n\n\"{{name}}\" etkinli\u011fine {{honoree}} i\u00e7in kat\u0131l!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Kod: {{code}}"
+      },
+      "buttonNext": "\u0130leri",
+      "buttonCreate": "Etkinlik Olu\u015ftur"
+    },
+    "join": {
+      "headerTitle": "Etkinli\u011fe Kat\u0131l",
+      "title": "Davetin var m\u0131?",
+      "subtitle": "Ald\u0131\u011f\u0131n eri\u015fim kodunu gir",
+      "placeholder": "\u00f6rn. STAG2025",
+      "searchButton": "Etkinlik bul",
+      "errorNotFound": "Bu kodla etkinlik bulunamad\u0131.",
+      "errorGeneric": "Arama hatas\u0131. L\u00fctfen kodu kontrol et.",
+      "eventFound": "Etkinlik bulundu",
+      "forHonoree": "{{name}} i\u00e7in",
+      "joinButton": "Kat\u0131l"
+    },
+    "onboarding": {
+      "slide1Title": "Epik etkinlikler planla",
+      "slide1Subtitle": "Bekarlara veda, do\u011fum g\u00fcnleri, grup gezileri \u2014 hepsi tek yerden.",
+      "slide2Title": "24+ parti oyunu oyna",
+      "slide2Subtitle": "Tabu, Bomba, Headup, Do\u011fruluk mu Cesaret mi, Casuslar ve daha fazlas\u0131.",
+      "slide3Title": "Masraflar\u0131 payla\u015f",
+      "slide3Subtitle": "Harcamalar\u0131 takip et ve garip konu\u015fmalar olmadan hesapla\u015f.",
+      "slide4Title": "Herkesi davet et",
+      "slide4Subtitle": "Link payla\u015f, kat\u0131l\u0131m topla ve herkesi bilgilendir.",
+      "skip": "Atla",
+      "next": "\u0130leri",
+      "getStarted": "Hadi ba\u015flayal\u0131m"
+    }
   }
 }
