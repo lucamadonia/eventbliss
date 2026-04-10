@@ -161,6 +161,33 @@ export const ACTIVITIES_LIBRARY: ActivityItem[] = [
   { value: 'terrarium_building', label: 'Terrarium bauen', emoji: '🌱', category: 'creative', tags: ['plants', 'craft'] },
   { value: 'jewelry_making', label: 'Schmuck basteln', emoji: '💎', category: 'creative', tags: ['craft', 'fashion'] },
   { value: 'glassblowing', label: 'Glasbläserei', emoji: '🔥', category: 'creative', tags: ['craft', 'unique'] },
+  { value: 'ceramic_painting', label: 'Keramik bemalen', emoji: '🎨', category: 'creative', tags: ['craft', 'relaxing', 'trendy'] },
+  { value: 'resin_art', label: 'Resin Art / Epoxidharz', emoji: '💎', category: 'creative', tags: ['craft', 'unique', 'trendy'] },
+  { value: 'flower_arrangement', label: 'Blumen binden', emoji: '💐', category: 'creative', tags: ['craft', 'relaxing', 'romantic'] },
+  { value: 'calligraphy', label: 'Kalligraphie Workshop', emoji: '✒️', category: 'creative', tags: ['art', 'skill', 'relaxing'] },
+  { value: 'macrame', label: 'Makramee knüpfen', emoji: '🧶', category: 'creative', tags: ['craft', 'boho', 'relaxing'] },
+  { value: 'embroidery', label: 'Stickerei / Punch Needle', emoji: '🪡', category: 'creative', tags: ['craft', 'trendy'] },
+  { value: 'tie_dye', label: 'Batik / Tie-Dye', emoji: '🌈', category: 'creative', tags: ['craft', 'fun', 'fashion'] },
+
+  // 🍵 FOOD & DRINKS — Workshops (additional)
+  { value: 'matcha_workshop', label: 'Matcha Kurs', emoji: '🍵', category: 'food', tags: ['tea', 'wellness', 'trendy'] },
+  { value: 'sushi_course', label: 'Sushi Kurs', emoji: '🍣', category: 'food', tags: ['cooking', 'japanese'] },
+  { value: 'pasta_making', label: 'Pasta selber machen', emoji: '🍝', category: 'food', tags: ['cooking', 'italian'] },
+  { value: 'chocolate_workshop', label: 'Schokoladen Workshop', emoji: '🍫', category: 'food', tags: ['sweet', 'craft'] },
+  { value: 'cheese_tasting', label: 'Käse-Tasting', emoji: '🧀', category: 'food', tags: ['tasting', 'gourmet'] },
+  { value: 'beer_brewing', label: 'Bier brauen', emoji: '🍺', category: 'food', tags: ['craft', 'drinks'] },
+  { value: 'gin_tasting', label: 'Gin Tasting', emoji: '🍸', category: 'food', tags: ['tasting', 'drinks'] },
+  { value: 'barista_course', label: 'Barista Kurs', emoji: '☕', category: 'food', tags: ['coffee', 'skill'] },
+  { value: 'cake_decorating', label: 'Torten dekorieren', emoji: '🎂', category: 'food', tags: ['baking', 'craft'] },
+  { value: 'dumpling_workshop', label: 'Dumpling Workshop', emoji: '🥟', category: 'food', tags: ['cooking', 'asian'] },
+  { value: 'bread_baking', label: 'Brot backen', emoji: '🍞', category: 'food', tags: ['baking', 'traditional'] },
+
+  // 🧖 CHILL & WELLNESS — additional
+  { value: 'yoga_class', label: 'Yoga Kurs', emoji: '🧘', category: 'chill', tags: ['wellness', 'relaxing'] },
+  { value: 'meditation', label: 'Meditation Session', emoji: '🕯️', category: 'chill', tags: ['wellness', 'mindfulness'] },
+  { value: 'sound_bath', label: 'Klangschalen-Bad', emoji: '🔔', category: 'chill', tags: ['wellness', 'unique'] },
+  { value: 'forest_bathing', label: 'Waldbaden', emoji: '🌲', category: 'chill', tags: ['nature', 'wellness'] },
+  { value: 'ice_bath', label: 'Eisbaden / Wim Hof', emoji: '🧊', category: 'chill', tags: ['wellness', 'extreme', 'trendy'] },
 
   // 🏆 SPORT (15+)
   { value: 'football', label: 'Fußball', emoji: '⚽', category: 'sport', tags: ['team', 'classic'] },
