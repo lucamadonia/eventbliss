@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Bomb } from 'lucide-react';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
+import { haptics } from '@/hooks/useHaptics';
 
 interface ExplosionScreenProps {
   playerName: string;
@@ -13,11 +14,24 @@ function triggerExplosionVibration() {
 }
 
 export default function BombExplosionScreen({ playerName, onNext }: ExplosionScreenProps) {
-  const { isDrinkingMode } = useDrinkingMode();
+  const drinkingMode = useDrinkingMode();
+  const isDrinkingMode = drinkingMode.isDrinkingMode;
+  const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
 
   useEffect(() => {
     triggerExplosionVibration();
-  }, []);
+    // Record drink when explosion happens in drinking mode
+    if (isDrinkingMode) {
+      const d = drinkingMode.recordDrink();
+      if (d) {
+        // Show disclaimer after a short delay
+        setTimeout(() => {
+          haptics.warning();
+          setDisclaimer(d);
+        }, 1500);
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <motion.div
@@ -109,6 +123,27 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
           </span>
         </motion.div>
       )}
+
+      {/* Disclaimer banner — appears when drink threshold is hit */}
+      <AnimatePresence>
+        {disclaimer && (
+          <motion.div
+            className="relative z-10 mt-4 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
+            initial={{ y: 30, opacity: 0, scale: 0.8 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", bounce: 0.3 }}
+          >
+            <span className="text-2xl">{disclaimer.emoji}</span>
+            <p className="text-sm text-amber-200 font-semibold mt-1">
+              {disclaimer.message}
+            </p>
+            <p className="text-[10px] text-amber-300/50 mt-1">
+              Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Continue button */}
       <motion.div
