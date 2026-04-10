@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CalendarHeart, Gamepad2, Wallet, Users, ArrowRight, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -25,8 +26,8 @@ interface Props {
 
 interface Slide {
   icon: typeof CalendarHeart;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   gradient: string;
   accent: string;
 }
@@ -34,35 +35,36 @@ interface Slide {
 const slides: Slide[] = [
   {
     icon: CalendarHeart,
-    title: "Plan epic events",
-    subtitle: "Bachelor parties, birthdays, group trips — all from one place.",
+    titleKey: "native.onboarding.slide1Title",
+    subtitleKey: "native.onboarding.slide1Subtitle",
     gradient: "from-violet-500/30 via-fuchsia-500/20 to-transparent",
     accent: "text-violet-300",
   },
   {
     icon: Gamepad2,
-    title: "Play 24+ party games",
-    subtitle: "Taboo, Bomb, Headup, Truth or Dare, Impostor and more.",
+    titleKey: "native.onboarding.slide2Title",
+    subtitleKey: "native.onboarding.slide2Subtitle",
     gradient: "from-fuchsia-500/30 via-pink-500/20 to-transparent",
     accent: "text-fuchsia-300",
   },
   {
     icon: Wallet,
-    title: "Split the costs",
-    subtitle: "Track expenses and settle up without awkward conversations.",
+    titleKey: "native.onboarding.slide3Title",
+    subtitleKey: "native.onboarding.slide3Subtitle",
     gradient: "from-cyan-500/30 via-teal-500/20 to-transparent",
     accent: "text-cyan-300",
   },
   {
     icon: Users,
-    title: "Invite everyone",
-    subtitle: "Share a link, collect RSVPs, and keep your crew in the loop.",
+    titleKey: "native.onboarding.slide4Title",
+    subtitleKey: "native.onboarding.slide4Subtitle",
     gradient: "from-amber-500/30 via-orange-500/20 to-transparent",
     accent: "text-amber-300",
   },
 ];
 
 export function OnboardingSlides({ onComplete }: Props) {
+  const { t } = useTranslation();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center" });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const haptics = useHaptics();
@@ -112,7 +114,7 @@ export function OnboardingSlides({ onComplete }: Props) {
           onClick={handleSkip}
           className="m-4 px-4 py-2 text-sm text-white/60 hover:text-white/90 font-medium transition-colors"
         >
-          Überspringen
+          {t('native.onboarding.skip')}
         </button>
       </div>
 
@@ -172,10 +174,10 @@ export function OnboardingSlides({ onComplete }: Props) {
                       transition={{ ...spring.soft, delay: 0.1 }}
                     >
                       <h2 className="text-3xl font-display font-bold text-white mb-3 tracking-tight">
-                        {slide.title}
+                        {t(slide.titleKey)}
                       </h2>
                       <p className="text-base text-white/70 font-body leading-relaxed">
-                        {slide.subtitle}
+                        {t(slide.subtitleKey)}
                       </p>
                     </motion.div>
                   )}
@@ -211,12 +213,12 @@ export function OnboardingSlides({ onComplete }: Props) {
         >
           {isLast ? (
             <>
-              Los geht's
+              {t('native.onboarding.getStarted')}
               <Sparkles className="w-5 h-5" />
             </>
           ) : (
             <>
-              Weiter
+              {t('native.onboarding.next')}
               <ArrowRight className="w-5 h-5" />
             </>
           )}

@@ -16,6 +16,7 @@ import {
   Star,
   Lock,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
@@ -56,18 +57,19 @@ const GAMES: GameMeta[] = [
   { id: "drueck-das-wort", name: "Drück das Wort",    desc: "Schnell tippen, schnell denken",  image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium",               categories: ["wort", "reaktion"] },
 ];
 
-const CATEGORIES: { id: Category; label: string; icon: typeof Sparkles }[] = [
-  { id: "alle",     label: "Alle",     icon: Sparkles },
-  { id: "party",    label: "Party",    icon: Flame },
-  { id: "social",   label: "Social",   icon: Users },
-  { id: "quiz",     label: "Quiz",     icon: Brain },
-  { id: "wort",     label: "Wort",     icon: Brain },
-  { id: "karte",    label: "Karte",    icon: MapIcon },
-  { id: "reaktion", label: "Reaktion", icon: Zap },
-  { id: "kreativ",  label: "Kreativ",  icon: Sparkles },
+const CATEGORIES: { id: Category; labelKey: string; icon: typeof Sparkles }[] = [
+  { id: "alle",     labelKey: "native.games.categories.alle",     icon: Sparkles },
+  { id: "party",    labelKey: "native.games.categories.party",    icon: Flame },
+  { id: "social",   labelKey: "native.games.categories.social",   icon: Users },
+  { id: "quiz",     labelKey: "native.games.categories.quiz",     icon: Brain },
+  { id: "wort",     labelKey: "native.games.categories.wort",     icon: Brain },
+  { id: "karte",    labelKey: "native.games.categories.karte",    icon: MapIcon },
+  { id: "reaktion", labelKey: "native.games.categories.reaktion", icon: Zap },
+  { id: "kreativ",  labelKey: "native.games.categories.kreativ",  icon: Sparkles },
 ];
 
 export default function GamesScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { isPremium } = usePremium();
@@ -91,10 +93,10 @@ export default function GamesScreen() {
       {/* Header */}
       <div className="px-5 pt-4 pb-3">
         <p className="text-sm text-accent font-semibold uppercase tracking-wider">
-          Party Games
+          {t('native.games.subtitle')}
         </p>
         <h1 className="text-3xl font-display font-bold text-foreground mt-1 leading-tight">
-          Bereit für Spaß?
+          {t('native.games.title')}
         </h1>
       </div>
 
@@ -120,7 +122,7 @@ export default function GamesScreen() {
                 )}
               >
                 <Icon className="w-3.5 h-3.5" />
-                {c.label}
+                {t(c.labelKey)}
               </motion.button>
             );
           })}
@@ -227,10 +229,10 @@ export default function GamesScreen() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold text-foreground">
-                Premium freischalten
+                {t('native.games.unlockPremium')}
               </p>
               <p className="text-xs text-muted-foreground">
-                Alle 17 Spiele unbegrenzt spielen
+                {t('native.games.unlockPremiumSub')}
               </p>
             </div>
           </motion.button>

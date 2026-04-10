@@ -2920,5 +2920,206 @@
         "letterLock": "Letter Lock"
       }
     }
+  },
+  "native": {
+    "home": {
+      "greeting": "Hi {{name}} \ud83d\udc4b",
+      "heroTitle": "Let's make it",
+      "heroHighlight": "epic.",
+      "newEvent": "New Event",
+      "planParty": "Plan a party",
+      "joinEvent": "Join Event",
+      "games": "Games",
+      "yourEvents": "Your Events",
+      "allEvents": "All",
+      "noEventsYet": "No events yet \u2014 plan your first!",
+      "participants": "Participants",
+      "playNow": "Play now",
+      "partyGamesCount": "24+ Party Games",
+      "partyGamesSubtitle": "Taboo, Bomb, Headup & more",
+      "findInspiration": "Find inspiration",
+      "findInspirationSub": "Themes, games & ideas for your event"
+    },
+    "games": {
+      "subtitle": "Party Games",
+      "title": "Ready for fun?",
+      "unlockPremium": "Unlock Premium",
+      "unlockPremiumSub": "Play all 17 games unlimited",
+      "categories": {
+        "alle": "All",
+        "party": "Party",
+        "social": "Social",
+        "quiz": "Quiz",
+        "wort": "Word",
+        "karte": "Map",
+        "reaktion": "Reaction",
+        "kreativ": "Creative"
+      }
+    },
+    "events": {
+      "title": "Events",
+      "countSummary": "{{active}} active \u00b7 {{archived}} archived",
+      "searchPlaceholder": "Search events...",
+      "tabActive": "Active",
+      "tabArchived": "Archived",
+      "noEventsTitle": "No events yet",
+      "noArchivedTitle": "No archived events",
+      "noEventsDesc": "Plan your first event and invite friends.",
+      "noArchivedDesc": "Archived events will appear here.",
+      "createEvent": "Create Event",
+      "forHonoree": "for {{name}}"
+    },
+    "ideas": {
+      "subtitle": "Inspiration",
+      "title": "Ideas that",
+      "titleHighlight": "inspire",
+      "stats": "147 Games \u00b7 56 Themes \u00b7 For every occasion",
+      "tabGames": "Games ({{count}})",
+      "tabThemes": "Themes ({{count}})",
+      "searchGames": "Search games...",
+      "searchThemes": "Search themes...",
+      "moreGames": "+{{count}} more games",
+      "noGames": "No games found",
+      "noThemes": "No themes found",
+      "readAloud": "Read aloud",
+      "material": "Material",
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "categories": {
+        "alle": "All",
+        "party": "Party",
+        "jga": "Bachelor/ette",
+        "outdoor": "Outdoor",
+        "team": "Team",
+        "icebreaker": "Icebreaker",
+        "familie": "Family",
+        "hochzeit": "Wedding"
+      },
+      "themeCategories": {
+        "alle": "All",
+        "retro": "Retro",
+        "elegant": "Elegant",
+        "casual": "Casual",
+        "abenteuer": "Adventure",
+        "saison": "Seasonal",
+        "kostuem": "Costume",
+        "wellness": "Wellness"
+      }
+    },
+    "profile": {
+      "settings": "Settings",
+      "language": "Language",
+      "appearance": "Appearance",
+      "privacy": "Privacy",
+      "helpSupport": "Help & Support",
+      "logout": "Log out",
+      "unlockPremium": "Unlock Premium",
+      "unlockPremiumSub": "All Games \u00b7 Unlimited",
+      "version": "EventBliss \u00b7 Version 1.0.0",
+      "guest": "Guest",
+      "themeDark": "Dark",
+      "themeLight": "Light",
+      "themeRose": "Ros\u00e9",
+      "partyMode": "\ud83c\udf7a Party Mode (18+)",
+      "partyModeOn": "On",
+      "partyModeOff": "Off",
+      "partyStats": "\ud83d\udcca Party Stats",
+      "partyStatsRounds": "{{count}} rounds",
+      "partyModeTitle": "Party Mode (18+)",
+      "partyModeWarning": "This mode is intended for people aged 18 and over. Drinking games can pose health risks. Please drink responsibly and look out for each other.",
+      "partyModeCheckbox": "I am at least 18 years old and activate Party Mode at my own responsibility.",
+      "partyModeCancel": "Cancel",
+      "partyModeActivate": "\ud83c\udf7b Activate",
+      "partyModeDisclaimer": "EventBliss assumes no liability for the consumption of alcoholic beverages.",
+      "partyModeActivated": "Party Mode",
+      "partyModeActivatedSub": "activated! \ud83d\udd25",
+      "partyModeActivatedDesc": "From now on you drink instead of getting punished",
+      "close": "Close",
+      "adminPanel": "Admin Panel",
+      "adminDashboard": "Dashboard"
+    },
+    "create": {
+      "headerTitle": "Create Event",
+      "headerDone": "Done!",
+      "stepOf": "Step {{step}} of {{total}}",
+      "stepType": {
+        "title": "What are you celebrating?",
+        "subtitle": "Choose the event type",
+        "bachelor": "Bachelor Party",
+        "bachelorette": "Bachelorette Party",
+        "birthday": "Birthday",
+        "trip": "Group Trip",
+        "other": "Other Event"
+      },
+      "stepDetails": {
+        "title": "Details",
+        "subtitle": "The basics for your event",
+        "eventName": "Event Name *",
+        "eventNamePlaceholder": "e.g. Tim's Bachelor Amsterdam",
+        "honoree": "For whom? *",
+        "honoreePlaceholder": "e.g. Tim",
+        "date": "Date (optional)",
+        "yourName": "Your Name *",
+        "yourNamePlaceholder": "Your first name"
+      },
+      "stepGuests": {
+        "title": "Guests",
+        "subtitle": "Who's coming? (optional, you can add later)",
+        "inputPlaceholder": "Enter name...",
+        "guestCount_one": "{{count}} guest",
+        "guestCount_other": "{{count}} guests",
+        "noGuests": "No guests yet \u2014 you can invite them later."
+      },
+      "stepReview": {
+        "title": "All correct?",
+        "subtitle": "Review your event",
+        "forLabel": "For",
+        "dateLabel": "Date",
+        "dateOpen": "Not set yet",
+        "organizer": "Organizer",
+        "guestsLabel": "Guests"
+      },
+      "stepSuccess": {
+        "title": "Event created! \ud83c\udf89",
+        "subtitle": "Share the link with your friends",
+        "accessCode": "Access Code",
+        "link": "Link",
+        "copyLink": "Copy link",
+        "copied": "Copied!",
+        "shareWhatsApp": "Share on WhatsApp",
+        "toDashboard": "Go to Dashboard",
+        "whatsAppText": "\ud83c\udf89 You're invited!\n\nJoin \"{{name}}\" for {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Code: {{code}}"
+      },
+      "buttonNext": "Next",
+      "buttonCreate": "Create Event"
+    },
+    "join": {
+      "headerTitle": "Join Event",
+      "title": "Got an invitation?",
+      "subtitle": "Enter the access code you received",
+      "placeholder": "e.g. STAG2025",
+      "searchButton": "Find event",
+      "errorNotFound": "No event found with this code.",
+      "errorGeneric": "Error searching. Please check the code.",
+      "eventFound": "Event found",
+      "forHonoree": "for {{name}}",
+      "joinButton": "Join"
+    },
+    "onboarding": {
+      "slide1Title": "Plan epic events",
+      "slide1Subtitle": "Bachelor parties, birthdays, group trips \u2014 all from one place.",
+      "slide2Title": "Play 24+ party games",
+      "slide2Subtitle": "Taboo, Bomb, Headup, Truth or Dare, Impostor and more.",
+      "slide3Title": "Split the costs",
+      "slide3Subtitle": "Track expenses and settle up without awkward conversations.",
+      "slide4Title": "Invite everyone",
+      "slide4Subtitle": "Share a link, collect RSVPs, and keep your crew in the loop.",
+      "skip": "Skip",
+      "next": "Next",
+      "getStarted": "Let's go"
+    }
   }
 }

@@ -14,6 +14,7 @@ import {
   PartyPopper,
   Search,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, ease } from "@/lib/motion";
@@ -29,6 +30,7 @@ const EVENT_EMOJI: Record<string, string> = {
 };
 
 export default function JoinEventFlow() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
 
@@ -57,11 +59,11 @@ export default function JoinEventFlow() {
         setPreview(data.event);
       } else {
         haptics.warning();
-        setError(data?.error || "Kein Event mit diesem Code gefunden.");
+        setError(data?.error || t('native.join.errorNotFound'));
       }
     } catch {
       haptics.error();
-      setError("Fehler beim Suchen. Bitte prüfe den Code.");
+      setError(t('native.join.errorGeneric'));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +77,7 @@ export default function JoinEventFlow() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <MobileHeader title="Event beitreten" showBack />
+      <MobileHeader title={t('native.join.headerTitle')} showBack />
 
       <div className="flex-1 overflow-y-auto native-scroll px-5 pb-8">
         {/* Illustration header */}
@@ -89,10 +91,10 @@ export default function JoinEventFlow() {
             <Users className="w-12 h-12 text-violet-300" />
           </div>
           <h2 className="text-xl font-display font-bold text-foreground text-center">
-            Du wurdest eingeladen?
+            {t('native.join.title')}
           </h2>
           <p className="text-sm text-muted-foreground text-center mt-1">
-            Gib den Zugangscode ein, den du erhalten hast
+            {t('native.join.subtitle')}
           </p>
         </motion.div>
 
@@ -112,7 +114,7 @@ export default function JoinEventFlow() {
                 setPreview(null);
               }}
               onKeyDown={(e) => e.key === "Enter" && handleLookup()}
-              placeholder="Z.B. STAG2025"
+              placeholder={t('native.join.placeholder')}
               maxLength={20}
               className="w-full h-16 px-5 rounded-2xl bg-foreground/5 border-2 border-border text-foreground text-center text-2xl font-display font-bold tracking-[0.3em] placeholder:text-muted-foreground/60 placeholder:tracking-widest placeholder:text-lg focus:outline-none focus:border-primary/60 transition-colors uppercase"
               autoCapitalize="characters"
@@ -149,7 +151,7 @@ export default function JoinEventFlow() {
               ) : (
                 <>
                   <Search className="w-5 h-5" />
-                  Event suchen
+                  {t('native.join.searchButton')}
                 </>
               )}
             </motion.button>
@@ -173,14 +175,14 @@ export default function JoinEventFlow() {
                   </span>
                   <div className="flex-1">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                      Event gefunden
+                      {t('native.join.eventFound')}
                     </p>
                     <h3 className="text-xl font-display font-bold text-foreground">
                       {preview.name}
                     </h3>
                     {preview.honoree_name && (
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        für {preview.honoree_name}
+                        {t('native.join.forHonoree', { name: preview.honoree_name })}
                       </p>
                     )}
                   </div>
@@ -201,7 +203,7 @@ export default function JoinEventFlow() {
                 className="w-full h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-display font-bold text-lg flex items-center justify-center gap-2 shadow-[0_8px_30px_-6px_rgba(16,185,129,0.5)]"
               >
                 <PartyPopper className="w-5 h-5" />
-                Beitreten
+                {t('native.join.joinButton')}
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
             </motion.div>

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PartyPopper, Users, Calendar, Plus, Archive, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useMyEvents } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 type Tab = "active" | "archived";
 
 export default function EventsScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { events = [], archivedEvents = [], isLoading, refetch } = useMyEvents();
@@ -38,9 +40,9 @@ export default function EventsScreen() {
     <div className="relative h-full flex flex-col bg-background safe-top">
       {/* Header */}
       <div className="px-5 pt-4 pb-2">
-        <h1 className="text-3xl font-display font-bold text-foreground">Events</h1>
+        <h1 className="text-3xl font-display font-bold text-foreground">{t('native.events.title')}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {events.length} aktive · {archivedEvents.length} archiviert
+          {t('native.events.countSummary', { active: events.length, archived: archivedEvents.length })}
         </p>
       </div>
 
@@ -50,7 +52,7 @@ export default function EventsScreen() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="search"
-            placeholder="Event suchen..."
+            placeholder={t('native.events.searchPlaceholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full h-11 pl-10 pr-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50"
@@ -61,13 +63,13 @@ export default function EventsScreen() {
       {/* Tabs */}
       <div className="px-5 mb-2">
         <div className="relative flex gap-1 p-1 rounded-2xl bg-foreground/5 border border-border">
-          {(["active", "archived"] as Tab[]).map((t) => (
+          {(["active", "archived"] as Tab[]).map((tabId) => (
             <button
-              key={t}
-              onClick={() => switchTab(t)}
+              key={tabId}
+              onClick={() => switchTab(tabId)}
               className="relative flex-1 h-9 text-sm font-medium z-10 text-foreground/80"
             >
-              {tab === t && (
+              {tab === tabId && (
                 <motion.div
                   layoutId="events-tab"
                   className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500"
@@ -75,7 +77,7 @@ export default function EventsScreen() {
                 />
               )}
               <span className="relative">
-                {t === "active" ? "Aktiv" : "Archiviert"}
+                {tabId === "active" ? t('native.events.tabActive') : t('native.events.tabArchived')}
               </span>
             </button>
           ))}
@@ -104,12 +106,12 @@ export default function EventsScreen() {
               )}
             </div>
             <h3 className="text-lg font-display font-semibold text-foreground mb-1">
-              {tab === "active" ? "Noch keine Events" : "Keine Archivierten"}
+              {tab === "active" ? t('native.events.noEventsTitle') : t('native.events.noArchivedTitle')}
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
               {tab === "active"
-                ? "Plan dein erstes Event und lade Freunde ein."
-                : "Archivierte Events erscheinen hier."}
+                ? t('native.events.noEventsDesc')
+                : t('native.events.noArchivedDesc')}
             </p>
             {tab === "active" && (
               <motion.button
@@ -121,7 +123,7 @@ export default function EventsScreen() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-semibold shadow-[0_0_30px_rgba(139,92,246,0.4)]"
               >
                 <Plus className="w-5 h-5" />
-                Event erstellen
+                {t('native.events.createEvent')}
               </motion.button>
             )}
           </div>
@@ -156,7 +158,7 @@ export default function EventsScreen() {
                     </h3>
                     {event.honoree_name && (
                       <p className="text-xs text-muted-foreground truncate">
-                        für {event.honoree_name}
+                        {t('native.events.forHonoree', { name: event.honoree_name })}
                       </p>
                     )}
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">

@@ -41,30 +41,30 @@ import { cn } from "@/lib/utils";
 
 type Tab = "games" | "themes";
 
-const GAME_CATS: { id: GameCategory | "all"; label: string; icon: typeof Flame }[] = [
-  { id: "all", label: "Alle", icon: Sparkles },
-  { id: "party_games", label: "Party", icon: PartyPopper },
-  { id: "jga_games", label: "JGA", icon: Heart },
-  { id: "outdoor_games", label: "Outdoor", icon: MapPin },
-  { id: "team_games", label: "Team", icon: Users },
-  { id: "icebreaker", label: "Icebreaker", icon: Flame },
-  { id: "family_games", label: "Familie", icon: Baby },
-  { id: "wedding_games", label: "Hochzeit", icon: Heart },
+const GAME_CATS: { id: GameCategory | "all"; labelKey: string; icon: typeof Flame }[] = [
+  { id: "all", labelKey: "native.ideas.categories.alle", icon: Sparkles },
+  { id: "party_games", labelKey: "native.ideas.categories.party", icon: PartyPopper },
+  { id: "jga_games", labelKey: "native.ideas.categories.jga", icon: Heart },
+  { id: "outdoor_games", labelKey: "native.ideas.categories.outdoor", icon: MapPin },
+  { id: "team_games", labelKey: "native.ideas.categories.team", icon: Users },
+  { id: "icebreaker", labelKey: "native.ideas.categories.icebreaker", icon: Flame },
+  { id: "family_games", labelKey: "native.ideas.categories.familie", icon: Baby },
+  { id: "wedding_games", labelKey: "native.ideas.categories.hochzeit", icon: Heart },
 ];
 
-const THEME_CATS: { id: ThemeCategory | "all"; label: string }[] = [
-  { id: "all", label: "Alle" },
-  { id: "retro", label: "Retro" },
-  { id: "elegant", label: "Elegant" },
-  { id: "casual", label: "Casual" },
-  { id: "adventure", label: "Abenteuer" },
-  { id: "seasonal", label: "Saison" },
-  { id: "costume", label: "Kostüm" },
-  { id: "relaxation", label: "Wellness" },
+const THEME_CATS: { id: ThemeCategory | "all"; labelKey: string }[] = [
+  { id: "all", labelKey: "native.ideas.themeCategories.alle" },
+  { id: "retro", labelKey: "native.ideas.themeCategories.retro" },
+  { id: "elegant", labelKey: "native.ideas.themeCategories.elegant" },
+  { id: "casual", labelKey: "native.ideas.themeCategories.casual" },
+  { id: "adventure", labelKey: "native.ideas.themeCategories.abenteuer" },
+  { id: "seasonal", labelKey: "native.ideas.themeCategories.saison" },
+  { id: "costume", labelKey: "native.ideas.themeCategories.kostuem" },
+  { id: "relaxation", labelKey: "native.ideas.themeCategories.wellness" },
 ];
 
 const difficultyColor = { easy: "text-emerald-400", medium: "text-amber-400", hard: "text-red-400" };
-const difficultyLabel = { easy: "Leicht", medium: "Mittel", hard: "Schwer" };
+const difficultyLabelKey = { easy: "native.ideas.difficulty.easy", medium: "native.ideas.difficulty.medium", hard: "native.ideas.difficulty.hard" };
 
 /** Map instruction section labels to emojis — works across all 10 languages */
 function labelEmoji(label: string): string {
@@ -154,29 +154,29 @@ export default function IdeasScreen() {
       <div className="px-5 pt-4 pb-3">
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-amber-400" />
-          <p className="text-sm text-amber-400 font-semibold uppercase tracking-wider">Inspiration</p>
+          <p className="text-sm text-amber-400 font-semibold uppercase tracking-wider">{t('native.ideas.subtitle')}</p>
         </div>
         <h1 className="text-3xl font-display font-bold text-foreground mt-1 leading-tight">
-          Ideen, die{" "}
+          {t('native.ideas.title')}{" "}
           <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-pink-400 bg-clip-text text-transparent">
-            begeistern
+            {t('native.ideas.titleHighlight')}
           </span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5">
-          147 Spiele · 56 Themen · Für jeden Anlass
+          {t('native.ideas.stats')}
         </p>
       </div>
 
       {/* Tab toggle */}
       <div className="px-5 mb-3">
         <div className="relative flex gap-1 p-1 rounded-2xl bg-foreground/5 border border-border">
-          {(["games", "themes"] as Tab[]).map((t) => (
+          {(["games", "themes"] as Tab[]).map((tabId) => (
             <button
-              key={t}
-              onClick={() => switchTab(t)}
+              key={tabId}
+              onClick={() => switchTab(tabId)}
               className="relative flex-1 h-10 text-sm font-medium z-10 text-foreground/80 flex items-center justify-center gap-1.5"
             >
-              {tab === t && (
+              {tab === tabId && (
                 <motion.div
                   layoutId="ideas-tab"
                   className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500"
@@ -184,8 +184,8 @@ export default function IdeasScreen() {
                 />
               )}
               <span className="relative flex items-center gap-1.5">
-                {t === "games" ? <Gamepad2 className="w-4 h-4" /> : <Palette className="w-4 h-4" />}
-                {t === "games" ? `Spiele (${filteredGames.length})` : `Themen (${filteredThemes.length})`}
+                {tabId === "games" ? <Gamepad2 className="w-4 h-4" /> : <Palette className="w-4 h-4" />}
+                {tabId === "games" ? t('native.ideas.tabGames', { count: filteredGames.length }) : t('native.ideas.tabThemes', { count: filteredThemes.length })}
               </span>
             </button>
           ))}
@@ -198,7 +198,7 @@ export default function IdeasScreen() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="search"
-            placeholder={tab === "games" ? "Spiel suchen..." : "Thema suchen..."}
+            placeholder={tab === "games" ? t('native.ideas.searchGames') : t('native.ideas.searchThemes')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full h-10 pl-10 pr-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50"
@@ -227,7 +227,7 @@ export default function IdeasScreen() {
                     : "bg-foreground/5 text-muted-foreground border-border"
                 )}
               >
-                {c.label}
+                {t(c.labelKey)}
               </motion.button>
             );
           })}
@@ -250,10 +250,10 @@ export default function IdeasScreen() {
               ))}
               {filteredGames.length > 50 && (
                 <p className="text-center text-xs text-muted-foreground/60 py-4">
-                  +{filteredGames.length - 50} weitere Spiele
+                  {t('native.ideas.moreGames', { count: filteredGames.length - 50 })}
                 </p>
               )}
-              {filteredGames.length === 0 && <EmptyState text="Keine Spiele gefunden" />}
+              {filteredGames.length === 0 && <EmptyState text={t('native.ideas.noGames')} />}
             </motion.div>
           ) : (
             <motion.div
@@ -268,7 +268,7 @@ export default function IdeasScreen() {
               ))}
               {filteredThemes.length === 0 && (
                 <div className="col-span-2">
-                  <EmptyState text="Keine Themen gefunden" />
+                  <EmptyState text={t('native.ideas.noThemes')} />
                 </div>
               )}
             </motion.div>
@@ -330,7 +330,7 @@ function GameItemCard({
               </span>
               <span className={cn("flex items-center gap-1", difficultyColor[game.difficulty])}>
                 <Trophy className="w-3 h-3" />
-                {difficultyLabel[game.difficulty]}
+                {t(difficultyLabelKey[game.difficulty])}
               </span>
             </div>
           </div>
@@ -366,7 +366,7 @@ function GameItemCard({
                   )}
                 >
                   <Volume2 className="w-3.5 h-3.5" />
-                  Vorlesen
+                  {t('native.ideas.readAloud')}
                 </button>
               </div>
 
@@ -430,7 +430,7 @@ function GameItemCard({
               </div>
               {game.materials && game.materials.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Material</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{t('native.ideas.material')}</p>
                   <div className="flex flex-wrap gap-1">
                     {game.materials.map((m) => (
                       <span key={m} className="px-2 py-0.5 rounded-full bg-foreground/5 border border-border text-[11px] text-foreground/80">

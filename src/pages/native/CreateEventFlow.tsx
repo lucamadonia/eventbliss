@@ -39,11 +39,11 @@ import { cn } from "@/lib/utils";
 import { MobileHeader } from "@/components/native/MobileHeader";
 
 const EVENT_TYPES = [
-  { value: "bachelor", label: "JGA (Männer)", emoji: "🎉", gradient: "from-violet-500 to-fuchsia-500" },
-  { value: "bachelorette", label: "JGA (Frauen)", emoji: "💅", gradient: "from-pink-500 to-rose-500" },
-  { value: "birthday", label: "Geburtstag", emoji: "🎂", gradient: "from-amber-500 to-orange-500" },
-  { value: "trip", label: "Gruppenreise", emoji: "✈️", gradient: "from-cyan-500 to-teal-500" },
-  { value: "other", label: "Anderes Event", emoji: "🎊", gradient: "from-emerald-500 to-green-500" },
+  { value: "bachelor", labelKey: "native.create.stepType.bachelor", emoji: "🎉", gradient: "from-violet-500 to-fuchsia-500" },
+  { value: "bachelorette", labelKey: "native.create.stepType.bachelorette", emoji: "💅", gradient: "from-pink-500 to-rose-500" },
+  { value: "birthday", labelKey: "native.create.stepType.birthday", emoji: "🎂", gradient: "from-amber-500 to-orange-500" },
+  { value: "trip", labelKey: "native.create.stepType.trip", emoji: "✈️", gradient: "from-cyan-500 to-teal-500" },
+  { value: "other", labelKey: "native.create.stepType.other", emoji: "🎊", gradient: "from-emerald-500 to-green-500" },
 ];
 
 interface FormData {
@@ -177,7 +177,7 @@ export default function CreateEventFlow() {
   const shareWhatsApp = () => {
     if (!createdEvent) return;
     haptics.light();
-    const text = `🎉 Du bist eingeladen!\n\nKomm zu "${form.name}" für ${form.honoree_name}!\n\n👉 ${createdEvent.share_link}\n📝 Code: ${createdEvent.access_code}`;
+    const text = t('native.create.stepSuccess.whatsAppText', { name: form.name, honoree: form.honoree_name, link: createdEvent.share_link, code: createdEvent.access_code });
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -187,7 +187,7 @@ export default function CreateEventFlow() {
   return (
     <div className="h-full flex flex-col bg-background">
       <MobileHeader
-        title={isSuccess ? "Fertig!" : "Event erstellen"}
+        title={isSuccess ? t('native.create.headerDone') : t('native.create.headerTitle')}
         showBack={!isSuccess}
         onBack={step > 1 && !isSuccess ? back : undefined}
       />
@@ -208,7 +208,7 @@ export default function CreateEventFlow() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground/60 mt-2">
-            Schritt {step} von {totalSteps}
+            {t('native.create.stepOf', { step, total: totalSteps })}
           </p>
         </div>
       )}
@@ -281,12 +281,12 @@ export default function CreateEventFlow() {
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : step === 4 ? (
               <>
-                Event erstellen
+                {t('native.create.buttonCreate')}
                 <Check className="w-5 h-5" />
               </>
             ) : (
               <>
-                Weiter
+                {t('native.create.buttonNext')}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}
@@ -300,12 +300,13 @@ export default function CreateEventFlow() {
 /* ────── Step Sub-Components ────── */
 
 function StepType({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="pt-2">
       <h2 className="text-2xl font-display font-bold text-foreground mb-1">
-        Was feiert ihr?
+        {t('native.create.stepType.title')}
       </h2>
-      <p className="text-sm text-muted-foreground mb-6">Wähle den Event-Typ</p>
+      <p className="text-sm text-muted-foreground mb-6">{t('native.create.stepType.subtitle')}</p>
       <div className="space-y-3">
         {EVENT_TYPES.map((type) => {
           const active = selected === type.value;
@@ -326,7 +327,7 @@ function StepType({ selected, onSelect }: { selected: string; onSelect: (v: stri
                 "text-base font-semibold",
                 active ? "text-white" : "text-foreground/80"
               )}>
-                {type.label}
+                {t(type.labelKey)}
               </span>
               {active && (
                 <motion.div
@@ -353,30 +354,31 @@ function StepDetails({
   form: FormData;
   update: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="pt-2 space-y-5">
       <div>
-        <h2 className="text-2xl font-display font-bold text-foreground mb-1">Details</h2>
-        <p className="text-sm text-muted-foreground">Die Basics für dein Event</p>
+        <h2 className="text-2xl font-display font-bold text-foreground mb-1">{t('native.create.stepDetails.title')}</h2>
+        <p className="text-sm text-muted-foreground">{t('native.create.stepDetails.subtitle')}</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Event-Name *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">{t('native.create.stepDetails.eventName')}</label>
           <input
             value={form.name}
             onChange={(e) => update("name", e.target.value)}
-            placeholder="z.B. Tims JGA Amsterdam"
+            placeholder={t('native.create.stepDetails.eventNamePlaceholder')}
             className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Für wen? *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">{t('native.create.stepDetails.honoree')}</label>
           <input
             value={form.honoree_name}
             onChange={(e) => update("honoree_name", e.target.value)}
-            placeholder="z.B. Tim"
+            placeholder={t('native.create.stepDetails.honoreePlaceholder')}
             className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
@@ -384,7 +386,7 @@ function StepDetails({
         <div>
           <label className="text-sm font-medium text-foreground/80 mb-1.5 block">
             <Calendar className="w-4 h-4 inline mr-1.5" />
-            Datum (optional)
+            {t('native.create.stepDetails.date')}
           </label>
           <input
             type="date"
@@ -395,11 +397,11 @@ function StepDetails({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">Dein Name *</label>
+          <label className="text-sm font-medium text-foreground/80 mb-1.5 block">{t('native.create.stepDetails.yourName')}</label>
           <input
             value={form.organizer_name}
             onChange={(e) => update("organizer_name", e.target.value)}
-            placeholder="Dein Vorname"
+            placeholder={t('native.create.stepDetails.yourNamePlaceholder')}
             className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
@@ -421,17 +423,18 @@ function StepGuests({
   onAdd: () => void;
   onRemove: (i: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="pt-2">
-      <h2 className="text-2xl font-display font-bold text-foreground mb-1">Gäste</h2>
-      <p className="text-sm text-muted-foreground mb-5">Wer kommt mit? (optional, kannst du später ergänzen)</p>
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">{t('native.create.stepGuests.title')}</h2>
+      <p className="text-sm text-muted-foreground mb-5">{t('native.create.stepGuests.subtitle')}</p>
 
       <div className="flex gap-2 mb-4">
         <input
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onAdd()}
-          placeholder="Name eingeben..."
+          placeholder={t('native.create.stepGuests.inputPlaceholder')}
           className="flex-1 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
         />
         <motion.button
@@ -462,7 +465,7 @@ function StepGuests({
             </motion.div>
           ))}
           <p className="text-xs text-muted-foreground/60 text-center mt-2">
-            {participants.length} Gäst{participants.length === 1 ? "" : "e"}
+            {t('native.create.stepGuests.guestCount', { count: participants.length })}
           </p>
         </div>
       )}
@@ -471,7 +474,7 @@ function StepGuests({
         <div className="rounded-2xl p-8 border border-dashed border-border text-center mt-4">
           <Users className="w-10 h-10 text-muted-foreground/60 mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">
-            Noch keine Gäste — du kannst sie auch später einladen.
+            {t('native.create.stepGuests.noGuests')}
           </p>
         </div>
       )}
@@ -480,11 +483,12 @@ function StepGuests({
 }
 
 function StepReview({ form }: { form: FormData }) {
-  const type = EVENT_TYPES.find((t) => t.value === form.event_type);
+  const { t } = useTranslation();
+  const type = EVENT_TYPES.find((et) => et.value === form.event_type);
   return (
     <div className="pt-2">
-      <h2 className="text-2xl font-display font-bold text-foreground mb-1">Alles korrekt?</h2>
-      <p className="text-sm text-muted-foreground mb-5">Überprüfe dein Event</p>
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">{t('native.create.stepReview.title')}</h2>
+      <p className="text-sm text-muted-foreground mb-5">{t('native.create.stepReview.subtitle')}</p>
 
       <div className="space-y-3">
         <div className="rounded-2xl p-4 bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border">
@@ -492,18 +496,18 @@ function StepReview({ form }: { form: FormData }) {
             <span className="text-3xl">{type?.emoji}</span>
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                {type?.label}
+                {type ? t(type.labelKey) : ''}
               </p>
               <h3 className="text-xl font-display font-bold text-foreground">{form.name}</h3>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p className="text-muted-foreground text-xs">Für</p>
+              <p className="text-muted-foreground text-xs">{t('native.create.stepReview.forLabel')}</p>
               <p className="text-foreground font-medium">{form.honoree_name}</p>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Datum</p>
+              <p className="text-muted-foreground text-xs">{t('native.create.stepReview.dateLabel')}</p>
               <p className="text-foreground font-medium">
                 {form.event_date
                   ? new Date(form.event_date).toLocaleDateString("de-DE", {
@@ -511,15 +515,15 @@ function StepReview({ form }: { form: FormData }) {
                       month: "long",
                       year: "numeric",
                     })
-                  : "Noch offen"}
+                  : t('native.create.stepReview.dateOpen')}
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Organisator</p>
+              <p className="text-muted-foreground text-xs">{t('native.create.stepReview.organizer')}</p>
               <p className="text-foreground font-medium">{form.organizer_name}</p>
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Gäste</p>
+              <p className="text-muted-foreground text-xs">{t('native.create.stepReview.guestsLabel')}</p>
               <p className="text-foreground font-medium">{form.participants.length || "—"}</p>
             </div>
           </div>
@@ -544,6 +548,7 @@ function StepSuccess({
   onWhatsApp: () => void;
   onDashboard: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="pt-6 flex flex-col items-center text-center">
       <motion.div
@@ -561,7 +566,7 @@ function StepSuccess({
         transition={{ delay: 0.2 }}
         className="text-2xl font-display font-bold text-foreground mb-1"
       >
-        Event erstellt! 🎉
+        {t('native.create.stepSuccess.title')}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
@@ -569,7 +574,7 @@ function StepSuccess({
         transition={{ delay: 0.3 }}
         className="text-sm text-muted-foreground mb-8"
       >
-        Teile den Link mit deinen Freunden
+        {t('native.create.stepSuccess.subtitle')}
       </motion.p>
 
       {/* Access code */}
@@ -579,7 +584,7 @@ function StepSuccess({
         transition={{ delay: 0.4 }}
         className="w-full rounded-2xl p-4 bg-foreground/5 border border-border mb-3"
       >
-        <p className="text-xs text-muted-foreground mb-1">Zugangscode</p>
+        <p className="text-xs text-muted-foreground mb-1">{t('native.create.stepSuccess.accessCode')}</p>
         <p className="text-2xl font-display font-bold text-primary tracking-wider">
           {event.access_code}
         </p>
@@ -592,7 +597,7 @@ function StepSuccess({
         transition={{ delay: 0.5 }}
         className="w-full rounded-2xl p-4 bg-foreground/5 border border-border mb-6"
       >
-        <p className="text-xs text-muted-foreground mb-1">Link</p>
+        <p className="text-xs text-muted-foreground mb-1">{t('native.create.stepSuccess.link')}</p>
         <p className="text-sm text-foreground/80 truncate">{event.share_link}</p>
       </motion.div>
 
@@ -609,7 +614,7 @@ function StepSuccess({
           className="w-full h-13 rounded-2xl bg-foreground/[0.08] border border-border text-foreground font-semibold flex items-center justify-center gap-2 py-3"
         >
           {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
-          {copied ? "Kopiert!" : "Link kopieren"}
+          {copied ? t('native.create.stepSuccess.copied') : t('native.create.stepSuccess.copyLink')}
         </motion.button>
 
         <motion.button
@@ -618,7 +623,7 @@ function StepSuccess({
           className="w-full h-13 rounded-2xl bg-emerald-600 text-white font-semibold flex items-center justify-center gap-2 py-3"
         >
           <Share2 className="w-5 h-5" />
-          WhatsApp teilen
+          {t('native.create.stepSuccess.shareWhatsApp')}
         </motion.button>
 
         <motion.button
@@ -626,7 +631,7 @@ function StepSuccess({
           whileTap={{ scale: 0.96 }}
           className="w-full h-13 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-semibold flex items-center justify-center gap-2 py-3 shadow-[0_8px_30px_-6px_rgba(139,92,246,0.4)]"
         >
-          Zum Dashboard
+          {t('native.create.stepSuccess.toDashboard')}
           <ArrowRight className="w-5 h-5" />
         </motion.button>
       </motion.div>

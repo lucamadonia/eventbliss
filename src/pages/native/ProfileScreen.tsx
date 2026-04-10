@@ -44,7 +44,7 @@ export default function ProfileScreen() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { user, isPremium } = useAuthContext();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { isAdmin } = useAdmin();
   const [showLangPicker, setShowLangPicker] = useState(false);
@@ -87,7 +87,7 @@ export default function ProfileScreen() {
     user?.user_metadata?.first_name ||
     user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
-    "Gast";
+    t('native.profile.guest');
   const email = user?.email ?? "";
   const initials = displayName.slice(0, 2).toUpperCase();
 
@@ -105,51 +105,51 @@ export default function ProfileScreen() {
   };
 
   const themes = [
-    { id: "dark", label: "Dunkel", icon: Moon },
-    { id: "light", label: "Hell", icon: Sun },
-    { id: "rose", label: "Rosé", icon: Flower2 },
+    { id: "dark", label: t('native.profile.themeDark'), icon: Moon },
+    { id: "light", label: t('native.profile.themeLight'), icon: Sun },
+    { id: "rose", label: t('native.profile.themeRose'), icon: Flower2 },
   ];
 
   const items: Item[] = [
     // Admin — only visible for admin users
     ...(isAdmin ? [{
       icon: ShieldCheck,
-      label: "Admin Panel",
-      sublabel: "Dashboard",
+      label: t('native.profile.adminPanel'),
+      sublabel: t('native.profile.adminDashboard'),
       onClick: () => go("/admin"),
     } as Item] : []),
-    { icon: Settings, label: "Einstellungen", onClick: () => go("/settings") },
+    { icon: Settings, label: t('native.profile.settings'), onClick: () => go("/settings") },
     {
       icon: Globe,
-      label: "Sprache",
+      label: t('native.profile.language'),
       sublabel: `${currentLang?.flag || "🌐"} ${currentLang?.name || "Deutsch"}`,
       onClick: () => { haptics.light(); setShowLangPicker((v) => !v); setShowThemePicker(false); },
     },
     {
       icon: Palette,
-      label: "Darstellung",
-      sublabel: themes.find((t) => t.id === theme)?.label || "Dunkel",
+      label: t('native.profile.appearance'),
+      sublabel: themes.find((th) => th.id === theme)?.label || t('native.profile.themeDark'),
       onClick: () => { haptics.light(); setShowThemePicker((v) => !v); setShowLangPicker(false); },
     },
     // Party-Modus (18+) — only visible after Easter Egg discovery
     ...(drinkingMode.isActivated ? [
       {
         icon: Sparkles,
-        label: "\uD83C\uDF7A Party-Modus (18+)",
-        sublabel: drinkingMode.isDrinkingMode ? "An" : "Aus",
+        label: t('native.profile.partyMode'),
+        sublabel: drinkingMode.isDrinkingMode ? t('native.profile.partyModeOn') : t('native.profile.partyModeOff'),
         onClick: () => { haptics.select(); drinkingMode.toggle(); },
       } as Item,
       // Party Stats — only visible when drinking mode is ON
       ...(drinkingMode.isDrinkingMode ? [{
         icon: Sparkles,
-        label: "\uD83D\uDCCA Party Stats",
-        sublabel: `${drinkingMode.drinkCount} Runden`,
+        label: t('native.profile.partyStats'),
+        sublabel: t('native.profile.partyStatsRounds', { count: drinkingMode.drinkCount }),
         onClick: () => go("/party-stats"),
       } as Item] : []),
     ] : []),
-    { icon: Shield, label: "Datenschutz", onClick: () => go("/legal/privacy") },
-    { icon: HelpCircle, label: "Hilfe & Support", onClick: () => go("/legal/imprint") },
-    { icon: LogOut, label: "Abmelden", onClick: handleLogout, destructive: true },
+    { icon: Shield, label: t('native.profile.privacy'), onClick: () => go("/legal/privacy") },
+    { icon: HelpCircle, label: t('native.profile.helpSupport'), onClick: () => go("/legal/imprint") },
+    { icon: LogOut, label: t('native.profile.logout'), onClick: handleLogout, destructive: true },
   ];
 
   return (
@@ -217,10 +217,10 @@ export default function ProfileScreen() {
             </div>
             <div className="flex-1">
               <p className="text-xs uppercase tracking-wider text-white/90 font-semibold">
-                Premium freischalten
+                {t('native.profile.unlockPremium')}
               </p>
               <p className="text-lg font-display font-bold text-white mt-0.5">
-                Alle Spiele · Unlimited
+                {t('native.profile.unlockPremiumSub')}
               </p>
             </div>
             <ChevronRight className="w-5 h-5 text-white" />
@@ -351,7 +351,7 @@ export default function ProfileScreen() {
           className="text-center text-xs text-muted-foreground mt-6 mb-4 select-none cursor-default"
           onClick={handleVersionTap}
         >
-          EventBliss · Version 1.0.0
+          {t('native.profile.version')}
           {drinkingMode.isDrinkingMode && (
             <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-400/30">
               18+
@@ -380,12 +380,12 @@ export default function ProfileScreen() {
               <div className="text-center mb-4">
                 <span className="text-5xl">🍺</span>
                 <h3 className="text-xl font-display font-bold text-foreground mt-3">
-                  Party-Modus (18+)
+                  {t('native.profile.partyModeTitle')}
                 </h3>
               </div>
 
               <p className="text-sm text-muted-foreground text-center leading-relaxed mb-5">
-                Dieser Modus ist nur für Personen ab 18 Jahren gedacht. Trinkspiele können gesundheitliche Risiken bergen. Bitte trinkt verantwortungsvoll und achtet aufeinander.
+                {t('native.profile.partyModeWarning')}
               </p>
 
               {/* Age checkbox */}
@@ -400,7 +400,7 @@ export default function ProfileScreen() {
                   {ageChecked && <Check className="w-4 h-4 text-white" />}
                 </div>
                 <span className="text-sm text-foreground leading-snug">
-                  Ich bin mindestens 18 Jahre alt und aktiviere den Party-Modus auf eigene Verantwortung.
+                  {t('native.profile.partyModeCheckbox')}
                 </span>
               </button>
 
@@ -410,7 +410,7 @@ export default function ProfileScreen() {
                   onClick={() => { haptics.light(); setShowAgeConfirm(false); }}
                   className="flex-1 h-12 rounded-2xl bg-foreground/5 border border-border text-foreground text-sm font-semibold"
                 >
-                  Abbrechen
+                  {t('native.profile.partyModeCancel')}
                 </button>
                 <motion.button
                   onClick={confirmActivation}
@@ -423,12 +423,12 @@ export default function ProfileScreen() {
                       : "bg-foreground/10 text-muted-foreground/40 cursor-not-allowed"
                   )}
                 >
-                  🍻 Aktivieren
+                  {t('native.profile.partyModeActivate')}
                 </motion.button>
               </div>
 
               <p className="text-[10px] text-muted-foreground/50 text-center mt-4">
-                EventBliss übernimmt keine Haftung für den Konsum alkoholischer Getränke.
+                {t('native.profile.partyModeDisclaimer')}
               </p>
             </motion.div>
           </motion.div>
@@ -547,7 +547,7 @@ export default function ProfileScreen() {
                 transition={{ delay: 0.4, ...spring.soft }}
               >
                 <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
-                  Party-Modus
+                  {t('native.profile.partyModeActivated')}
                 </span>
               </motion.h2>
 
@@ -557,7 +557,7 @@ export default function ProfileScreen() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                aktiviert! 🔥
+                {t('native.profile.partyModeActivatedSub')}
               </motion.p>
 
               <motion.p
@@ -566,7 +566,7 @@ export default function ProfileScreen() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                Ab jetzt wird getrunken statt bestraft
+                {t('native.profile.partyModeActivatedDesc')}
               </motion.p>
             </motion.div>
 
@@ -628,7 +628,7 @@ export default function ProfileScreen() {
             <button
               className="absolute inset-0 z-20"
               onClick={() => setShowBeerBurst(false)}
-              aria-label="Schließen"
+              aria-label={t('native.profile.close')}
             />
           </motion.div>
         )}

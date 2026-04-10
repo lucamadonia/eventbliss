@@ -15,6 +15,7 @@ import {
   Lightbulb,
   ChevronRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useMyEvents } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -39,6 +40,7 @@ function useTypewriter(text: string, speed = 40) {
 }
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { events = [], isLoading, refetch } = useMyEvents();
@@ -49,7 +51,7 @@ export default function HomeScreen() {
     user?.email?.split("@")[0] ||
     "Freund";
 
-  const greetingText = `Hi ${firstName} 👋`;
+  const greetingText = t('native.home.greeting', { name: firstName });
   const typedGreeting = useTypewriter(greetingText, 50);
 
   const upcoming = events
@@ -97,9 +99,9 @@ export default function HomeScreen() {
           />
         </p>
         <h1 className="text-3xl font-display font-bold text-foreground mt-1 tracking-tight leading-tight">
-          Let's make it <br />
+          {t('native.home.heroTitle')} <br />
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">
-            epic.
+            {t('native.home.heroHighlight')}
           </span>
         </h1>
       </motion.div>
@@ -130,10 +132,10 @@ export default function HomeScreen() {
           <div className="relative flex items-center justify-between">
             <div className="text-left">
               <p className="text-xs uppercase tracking-wider text-white/80 font-semibold">
-                Neues Event
+                {t('native.home.newEvent')}
               </p>
               <p className="text-xl font-display font-bold mt-0.5">
-                Party planen
+                {t('native.home.planParty')}
               </p>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
@@ -153,14 +155,14 @@ export default function HomeScreen() {
         {[
           {
             to: "/join",
-            label: "Event beitreten",
+            label: t('native.home.joinEvent'),
             icon: Users,
             gradient: "from-cyan-500/20 to-teal-500/10",
             iconColor: "text-cyan-300",
           },
           {
             to: "/games",
-            label: "Spiele",
+            label: t('native.home.games'),
             icon: Gamepad2,
             gradient: "from-amber-500/20 to-orange-500/10",
             iconColor: "text-amber-300",
@@ -195,14 +197,14 @@ export default function HomeScreen() {
         <div className="flex items-center justify-between px-5 mb-3">
           <h2 className="text-lg font-display font-semibold text-foreground flex items-center gap-2">
             <PartyPopper className="w-5 h-5 text-primary" />
-            Deine Events
+            {t('native.home.yourEvents')}
           </h2>
           {upcoming.length > 0 && (
             <button
               onClick={() => go("/my-events")}
               className="text-xs text-muted-foreground font-medium flex items-center gap-0.5"
             >
-              Alle
+              {t('native.home.allEvents')}
               <ChevronRight className="w-3 h-3" />
             </button>
           )}
@@ -218,7 +220,7 @@ export default function HomeScreen() {
           <div className="mx-5 rounded-2xl p-6 border border-dashed border-border bg-foreground/5 text-center">
             <Sparkles className="w-8 h-8 text-primary/60 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              Noch keine Events — plan dein erstes!
+              {t('native.home.noEventsYet')}
             </p>
           </div>
         ) : (
@@ -255,7 +257,7 @@ export default function HomeScreen() {
                 </p>
                 <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
                   <Users className="w-3 h-3" />
-                  {event.participant_count} Teilnehmer
+                  {event.participant_count} {t('native.home.participants')}
                 </div>
               </motion.button>
             ))}
@@ -272,7 +274,7 @@ export default function HomeScreen() {
       >
         <h2 className="text-lg font-display font-semibold text-foreground flex items-center gap-2 mb-3">
           <Gamepad2 className="w-5 h-5 text-accent" />
-          Jetzt spielen
+          {t('native.home.playNow')}
         </h2>
         <motion.button
           onClick={() => go("/games")}
@@ -285,10 +287,10 @@ export default function HomeScreen() {
             </div>
             <div className="flex-1">
               <p className="text-xs uppercase tracking-wider text-cyan-300/80 font-semibold">
-                24+ Party Games
+                {t('native.home.partyGamesCount')}
               </p>
               <p className="text-lg font-display font-bold text-foreground">
-                Taboo, Bomb, Headup & more
+                {t('native.home.partyGamesSubtitle')}
               </p>
             </div>
             <ArrowRight className="w-5 h-5 text-muted-foreground" />
@@ -312,8 +314,8 @@ export default function HomeScreen() {
             <Lightbulb className="w-5 h-5 text-amber-300" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-foreground">Inspirationen finden</p>
-            <p className="text-xs text-muted-foreground">Themen, Games & Ideen für dein Event</p>
+            <p className="text-sm font-semibold text-foreground">{t('native.home.findInspiration')}</p>
+            <p className="text-xs text-muted-foreground">{t('native.home.findInspirationSub')}</p>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </motion.button>
