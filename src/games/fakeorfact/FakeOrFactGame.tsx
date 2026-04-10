@@ -261,6 +261,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Luegner — Fake or Fact"
+        onlinePlayers={online?.players}
       />
     );
   }

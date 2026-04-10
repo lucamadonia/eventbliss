@@ -296,6 +296,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Story Builder"
+        onlinePlayers={online?.players}
       />
     );
   }

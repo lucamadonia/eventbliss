@@ -149,7 +149,10 @@ interface SplitQuizGameProps {
 const DEFAULT_PLAYERS = ['Spieler 1', 'Spieler 2', 'Spieler 3', 'Spieler 4'];
 
 export default function SplitQuizGame({ players: initialPlayers, onClose, online }: SplitQuizGameProps) {
-  const startPlayers = initialPlayers && initialPlayers.length >= 4 ? initialPlayers : DEFAULT_PLAYERS;
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const startPlayers = onlinePlayerNames.length >= 4
+    ? onlinePlayerNames
+    : initialPlayers && initialPlayers.length >= 4 ? initialPlayers : DEFAULT_PLAYERS;
   /* ---- Setup state ---- */
   const [playerNames, setPlayerNames] = useState<string[]>(startPlayers);
   const [totalRounds, setTotalRounds] = useState(10);

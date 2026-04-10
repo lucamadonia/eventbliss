@@ -157,10 +157,13 @@ function ParticleBackground() {
 
 interface SetupProps {
   onStart: (players: PlayerState[], mode: GameMode, speed: Speed, rounds: number) => void;
+  onlinePlayerNames?: string[];
 }
 
-function SetupScreen({ onStart }: SetupProps) {
-  const [players, setPlayers] = useState<string[]>(['Spieler 1', 'Spieler 2']);
+function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
+  const [players, setPlayers] = useState<string[]>(
+    onlinePlayerNames.length >= 2 ? onlinePlayerNames : ['Spieler 1', 'Spieler 2']
+  );
   const [mode, setMode] = useState<GameMode>('kategorie');
   const [speed, setSpeed] = useState<Speed>('medium');
   const [rounds, setRounds] = useState(5);
@@ -717,6 +720,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
 // ---------------------------------------------------------------------------
 
 export default function WordPressGame({ online }: { online?: OnlineGameProps } = {}) {
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   const [phase, setPhase] = useState<GamePhase>('setup');
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [mode, setMode] = useState<GameMode>('kategorie');
@@ -817,7 +821,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     <AnimatePresence mode="wait">
       {phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
-          <SetupScreen onStart={handleStart} />
+          <SetupScreen onStart={handleStart} onlinePlayerNames={onlinePlayerNames} />
         </motion.div>
       )}
       {phase === 'playing' && (

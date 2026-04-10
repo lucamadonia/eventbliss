@@ -111,13 +111,18 @@ function pickRandom<T>(arr: T[]): T {
 // ---------------------------------------------------------------------------
 
 export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   // --- Setup state ---
-  const [players, setPlayers] = useState<Player[]>(() => [
-    createPlayer('Spieler 1'),
-    createPlayer('Spieler 2'),
-    createPlayer('Spieler 3'),
-    createPlayer('Spieler 4'),
-  ]);
+  const [players, setPlayers] = useState<Player[]>(() =>
+    onlinePlayerNames.length >= 4
+      ? onlinePlayerNames.map(name => createPlayer(name))
+      : [
+          createPlayer('Spieler 1'),
+          createPlayer('Spieler 2'),
+          createPlayer('Spieler 3'),
+          createPlayer('Spieler 4'),
+        ]
+  );
   const [impostorCount, setImpostorCount] = useState(1);
   const [timerDuration, setTimerDuration] = useState(90);
 

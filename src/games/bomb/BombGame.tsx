@@ -167,7 +167,14 @@ const defaultState: GameState = {
 // ---------------------------------------------------------------------------
 
 export default function BombGame({ online }: { online?: OnlineGameProps }) {
-  const [state, setState] = useState<GameState>({ ...defaultState });
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const onlineInitialPlayers = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames.map(name => ({ name, penalties: 0 }))
+    : undefined;
+  const [state, setState] = useState<GameState>({
+    ...defaultState,
+    ...(onlineInitialPlayers ? { players: onlineInitialPlayers } : {}),
+  });
   const [timerActive, setTimerActive] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);

@@ -222,7 +222,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   if (phase === 'setup') {
     return (
       <GameSetup modes={GAME_MODES} settings={SETUP_SETTINGS} onStart={handleStart}
-        title="Flaschendrehen" minPlayers={2} maxPlayers={12} />
+        title="Flaschendrehen" minPlayers={2} maxPlayers={12} onlinePlayers={online?.players} />
     );
   }
 

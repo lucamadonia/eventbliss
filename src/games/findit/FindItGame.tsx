@@ -647,6 +647,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
         title="Wo ist was?"
         minPlayers={1}
         maxPlayers={10}
+        onlinePlayers={online?.players}
       />
     );
   }

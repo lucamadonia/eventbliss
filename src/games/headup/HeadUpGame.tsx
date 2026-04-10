@@ -64,10 +64,12 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const initialPlayers = onlinePlayerNames.length >= 2 ? onlinePlayerNames : ['Spieler 1', 'Spieler 2'];
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
-  const [playerNames, setPlayerNames] = useState<string[]>(['Spieler 1', 'Spieler 2']);
+  const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
   const [newPlayerName, setNewPlayerName] = useState('');
   const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);

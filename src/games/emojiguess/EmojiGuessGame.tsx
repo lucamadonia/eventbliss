@@ -273,6 +273,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Emoji-Raten"
+        onlinePlayers={online?.players}
       />
     );
   }

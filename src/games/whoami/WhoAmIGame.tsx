@@ -285,6 +285,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         title="Wer bin ich?"
         minPlayers={2}
         maxPlayers={10}
+        onlinePlayers={online?.players}
       />
     );
   }

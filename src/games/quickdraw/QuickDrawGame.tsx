@@ -63,11 +63,15 @@ const MODES: { id: Mode; name: string; desc: string }[] = [
 export default function QuickDrawGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
 
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const initialPlayers: Player[] = onlinePlayerNames.length >= 2
+    ? onlinePlayerNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
+    : [
+        { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
+        { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
+      ];
   /* ---- Setup ---- */
-  const [players, setPlayers] = useState<Player[]>([
-    { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
-    { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
-  ]);
+  const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [mode, setMode] = useState<Mode>('classic');
   const [totalRounds, setTotalRounds] = useState(8);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();

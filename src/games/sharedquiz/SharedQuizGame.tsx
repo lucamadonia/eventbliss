@@ -61,12 +61,16 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const initialPlayers: Player[] = onlinePlayerNames.length >= 3
+    ? onlinePlayerNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
+    : [
+        { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
+        { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
+        { id: 'p3', name: 'Spieler 3', color: getPlayerColor(2), score: 0 },
+      ];
   /* ---- Setup ---- */
-  const [players, setPlayers] = useState<Player[]>([
-    { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
-    { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
-    { id: 'p3', name: 'Spieler 3', color: getPlayerColor(2), score: 0 },
-  ]);
+  const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [mode, setMode] = useState<Mode>('trio');
   const [totalRounds, setTotalRounds] = useState(10);
 

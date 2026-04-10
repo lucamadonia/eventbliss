@@ -293,6 +293,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         title="Wahrheit oder Pflicht 2.0"
         minPlayers={2}
         maxPlayers={20}
+        onlinePlayers={online?.players}
       />
     );
   }

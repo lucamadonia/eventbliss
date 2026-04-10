@@ -265,6 +265,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
         title="This or That"
         minPlayers={2}
         maxPlayers={20}
+        onlinePlayers={online?.players}
       />
     );
   }

@@ -72,12 +72,15 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
   const [timerOption, setTimerOption] = useState(60);
   const [totalRounds, setTotalRounds] = useState(2);
+  // Auto-populate from online room players if available
+  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const initialPlayers = onlinePlayerNames.length >= 2 ? onlinePlayerNames : players;
   const [phase, setPhase] = useState<Phase>('setup');
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
-  const [playerNames, setPlayerNames] = useState<string[]>(players);
+  const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
   const [playerInput, setPlayerInput] = useState('');
-  const [teams, setTeams] = useState<[Team, Team]>(buildTeams(players));
+  const [teams, setTeams] = useState<[Team, Team]>(buildTeams(initialPlayers));
   const [activeTeamIdx, setActiveTeamIdx] = useState(0);
   const [explainerIdx, setExplainerIdx] = useState<[number, number]>([0, 0]);
   const [currentRound, setCurrentRound] = useState(1);
