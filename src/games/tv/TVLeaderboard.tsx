@@ -1,59 +1,169 @@
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Medal, Trophy } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import type { TVScore } from './useTVConnection';
 
-const RANK_COLORS = ['#fbbf24', '#a8abb3', '#cd7f32'];
-const RANK_GLOWS = ['0 0 30px rgba(251,191,36,0.4)', '0 0 20px rgba(168,171,179,0.2)', '0 0 20px rgba(205,127,50,0.2)'];
+const spring = { type: 'spring' as const, stiffness: 200, damping: 20 };
 
-export default function TVLeaderboard({ scores }: { scores: TVScore[] }) {
+/* ─── Animated counter ─── */
+function CountUp({ target, duration = 1, delay = 0 }: { target: number; duration?: number; delay?: number }) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const startTime = performance.now();
+      const animate = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / (duration * 1000), 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setValue(Math.round(eased * target));
+        if (progress < 1) rafRef.current = requestAnimationFrame(animate);
+      };
+      rafRef.current = requestAnimationFrame(animate);
+    }, delay * 1000);
+
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [target, duration, delay]);
+
+  return <>{value.toLocaleString('de-DE')}</>;
+}
+
+/* ─── Rank change indicator ─── */
+function RankChange({ current, previous }: { current: number; previous?: number }) {
+  if (previous === undefined) return null;
+  if (current < previous) {
+    return <span className="text-lg font-bold text-green-400 ml-2">↑</span>;
+  }
+  if (current > previous) {
+    return <span className="text-lg font-bold text-red-400 ml-2">↓</span>;
+  }
+  return <span className="text-lg font-bold text-[#a8abb3]/40 ml-2">—</span>;
+}
+
+/* ─── Main TVLeaderboard ─── */
+export default function TVLeaderboard({
+  scores,
+  previousRanks,
+}: {
+  scores: TVScore[];
+  previousRanks?: Record<string, number>;
+}) {
   const sorted = [...scores].sort((a, b) => b.score - a.score);
+  const maxScore = sorted[0]?.score ?? 1;
+
+  // Reveal from bottom to top
+  const reversed = [...sorted].reverse();
 
   return (
-    <motion.div className="min-h-screen flex flex-col items-center justify-center p-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div
+      className="min-h-screen flex flex-col items-center justify-center p-12"
+      style={{ backgroundColor: '#060810' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {/* Title */}
-      <motion.h1 className="text-7xl font-black italic tracking-tighter mb-16 text-center"
-        style={{ background: 'linear-gradient(135deg, #df8eff, #8ff5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 0 30px rgba(223,142,255,0.4))' }}
-        initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
+      <motion.h1
+        className="text-7xl font-black italic tracking-tighter mb-16 text-center"
+        style={{
+          background: 'linear-gradient(135deg, #df8eff, #8ff5ff)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(0 0 30px rgba(223,142,255,0.4))',
+        }}
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 200 }}
+      >
         RANGLISTE
       </motion.h1>
 
-      {/* Leaderboard rows */}
+      {/* Leaderboard rows — revealed bottom-to-top */}
       <div className="w-full max-w-3xl space-y-4">
-        {sorted.map((entry, i) => (
-          <motion.div key={entry.name}
-            className={`flex items-center gap-6 px-8 py-5 rounded-2xl border ${i < 3 ? 'border-white/10' : 'border-white/5'}`}
-            style={{
-              background: i === 0 ? 'linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02))' : i < 3 ? 'rgba(21,26,33,0.6)' : 'rgba(15,20,26,0.4)',
-              boxShadow: i < 3 ? RANK_GLOWS[i] : 'none',
-            }}
-            initial={{ x: i % 2 === 0 ? -200 : 200, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.3 + i * 0.15 }}
-            layout>
-            {/* Rank */}
-            <div className="flex-shrink-0 w-14 text-center">
-              {i === 0 ? <Crown className="w-10 h-10 mx-auto" style={{ color: RANK_COLORS[0], filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.6))' }} />
-                : i < 3 ? <Medal className="w-8 h-8 mx-auto" style={{ color: RANK_COLORS[i] }} />
-                : <span className="text-3xl font-black text-[#a8abb3]/40">{i + 1}</span>}
-            </div>
+        {reversed.map((entry, revIdx) => {
+          const rank = sorted.indexOf(entry);
+          const isFirst = rank === 0;
+          const isTop3 = rank < 3;
+          const staggerDelay = 0.4 * revIdx;
 
-            {/* Avatar */}
-            <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
-              style={{ background: entry.color, boxShadow: i === 0 ? `0 0 20px ${entry.color}66` : 'none' }}>
-              {entry.name.charAt(0).toUpperCase()}
-            </div>
+          return (
+            <motion.div
+              key={entry.name}
+              className={`flex items-center gap-6 px-8 py-5 rounded-2xl border ${isTop3 ? 'border-white/10' : 'border-white/5'}`}
+              style={{
+                background: isFirst
+                  ? 'linear-gradient(135deg, rgba(251,191,36,0.1), rgba(251,191,36,0.03))'
+                  : isTop3
+                    ? 'rgba(21,26,33,0.6)'
+                    : 'rgba(15,20,26,0.4)',
+                boxShadow: isFirst
+                  ? '0 0 30px rgba(251,191,36,0.3)'
+                  : isTop3
+                    ? '0 0 15px rgba(168,171,179,0.1)'
+                    : 'none',
+              }}
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ ...spring, delay: staggerDelay }}
+            >
+              {/* Rank */}
+              <div className="flex-shrink-0 w-14 text-center flex items-center justify-center">
+                {isFirst ? (
+                  <Crown
+                    className="w-10 h-10 mx-auto"
+                    style={{ color: '#fbbf24', filter: 'drop-shadow(0 0 12px rgba(251,191,36,0.7))' }}
+                  />
+                ) : (
+                  <span className={`text-3xl font-black ${isTop3 ? 'text-[#a8abb3]' : 'text-[#a8abb3]/40'}`}>
+                    {rank + 1}
+                  </span>
+                )}
+                <RankChange current={rank + 1} previous={previousRanks?.[entry.name]} />
+              </div>
 
-            {/* Name */}
-            <span className={`text-2xl font-bold flex-1 ${i === 0 ? 'text-[#fbbf24]' : 'text-[#f1f3fc]'}`}>{entry.name}</span>
+              {/* Avatar */}
+              <div
+                className={`rounded-full flex items-center justify-center font-bold text-white flex-shrink-0 ${isFirst ? 'w-16 h-16 text-2xl' : 'w-14 h-14 text-xl'}`}
+                style={{
+                  background: entry.color,
+                  boxShadow: isFirst ? `0 0 25px ${entry.color}66` : 'none',
+                }}
+              >
+                {entry.name.charAt(0).toUpperCase()}
+              </div>
 
-            {/* Score with count-up effect */}
-            <motion.span className={`text-3xl font-black tabular-nums ${i === 0 ? 'text-[#fbbf24]' : i < 3 ? 'text-[#df8eff]' : 'text-[#a8abb3]'}`}
-              initial={{ scale: 1.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.5 + i * 0.15, type: 'spring' }}>
-              {entry.score.toLocaleString('de-DE')}
-            </motion.span>
-          </motion.div>
-        ))}
+              {/* Name + Score bar */}
+              <div className="flex-1 min-w-0">
+                <span className={`text-2xl font-bold block mb-2 ${isFirst ? 'text-[#fbbf24]' : 'text-[#f1f3fc]'}`}>
+                  {entry.name}
+                </span>
+                {/* Score bar */}
+                <div className="h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{
+                      background: 'linear-gradient(90deg, #df8eff, #8ff5ff)',
+                    }}
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${(entry.score / maxScore) * 100}%` }}
+                    transition={{ duration: 1.2, delay: staggerDelay + 0.3, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+
+              {/* Score */}
+              <span
+                className={`text-3xl font-black tabular-nums flex-shrink-0 ${isFirst ? 'text-[#fbbf24]' : isTop3 ? 'text-[#df8eff]' : 'text-[#a8abb3]'}`}
+                style={isFirst ? { textShadow: '0 0 15px rgba(251,191,36,0.4)' } : undefined}
+              >
+                <CountUp target={entry.score} duration={1} delay={staggerDelay + 0.2} />
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.div>
   );
