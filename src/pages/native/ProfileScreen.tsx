@@ -68,7 +68,8 @@ export default function ProfileScreen() {
       drinkingMode.activate();
       haptics.celebrate();
       setShowBeerBurst(true);
-      setTimeout(() => setShowBeerBurst(false), 2000);
+      // Auto-dismiss after 4s, or user can tap to dismiss earlier
+      setTimeout(() => setShowBeerBurst(false), 4000);
     }
   }, [drinkingMode, haptics]);
 
@@ -340,58 +341,201 @@ export default function ProfileScreen() {
         </p>
       </div>
 
-      {/* Beer burst Easter Egg activation animation */}
+      {/* Epic Party-Modus activation — full-screen celebration */}
       <AnimatePresence>
         {showBeerBurst && (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
           >
-            {/* Amber flash */}
+            {/* Dark overlay + amber glow pulse */}
             <motion.div
-              className="absolute inset-0 bg-amber-500/20"
+              className="absolute inset-0 bg-black/70"
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.4, 0] }}
-              transition={{ duration: 1.2 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
             />
-            {/* Beer emojis burst */}
-            {Array.from({ length: 12 }).map((_, i) => {
-              const angle = (i / 12) * 360;
+            <motion.div
+              className="absolute inset-0"
+              style={{ background: "radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.35), transparent 70%)" }}
+              animate={{ scale: [0.8, 1.3, 1], opacity: [0, 1, 0.6] }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            />
+
+            {/* Wave 1 — 20 emojis burst outward */}
+            {Array.from({ length: 20 }).map((_, i) => {
+              const angle = (i / 20) * 360 + Math.random() * 18;
               const rad = (angle * Math.PI) / 180;
-              const dist = 120 + Math.random() * 60;
+              const dist = 150 + Math.random() * 100;
+              const emojis = ["🍻", "🍺", "🎉", "🥂", "🍾", "🎊", "🥳", "🔥"];
               return (
                 <motion.span
-                  key={i}
-                  className="absolute text-3xl"
-                  initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
+                  key={`w1-${i}`}
+                  className="absolute text-4xl"
+                  style={{ filter: "drop-shadow(0 0 8px rgba(245,158,11,0.6))" }}
+                  initial={{ x: 0, y: 0, opacity: 0, scale: 0, rotate: 0 }}
                   animate={{
                     x: Math.cos(rad) * dist,
                     y: Math.sin(rad) * dist,
-                    opacity: 0,
-                    scale: 1.2,
-                    rotate: Math.random() * 360,
+                    opacity: [0, 1, 1, 0],
+                    scale: [0, 1.4, 1.2, 0.6],
+                    rotate: (Math.random() - 0.5) * 540,
                   }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
+                  transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], times: [0, 0.2, 0.7, 1], delay: i * 0.03 }}
                 >
-                  {i % 3 === 0 ? "\uD83C\uDF7B" : i % 3 === 1 ? "\uD83C\uDF7A" : "\uD83C\uDF89"}
+                  {emojis[i % emojis.length]}
                 </motion.span>
               );
             })}
-            {/* Central text */}
+
+            {/* Wave 2 — delayed second burst with different emojis */}
+            {Array.from({ length: 16 }).map((_, i) => {
+              const angle = (i / 16) * 360 + 11;
+              const rad = (angle * Math.PI) / 180;
+              const dist = 100 + Math.random() * 120;
+              const emojis = ["🍹", "🍸", "🎵", "💃", "🕺", "✨", "🌟", "🎶"];
+              return (
+                <motion.span
+                  key={`w2-${i}`}
+                  className="absolute text-3xl"
+                  style={{ filter: "drop-shadow(0 0 6px rgba(236,72,153,0.5))" }}
+                  initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+                  animate={{
+                    x: Math.cos(rad) * dist,
+                    y: Math.sin(rad) * dist,
+                    opacity: [0, 1, 1, 0],
+                    scale: [0, 1.2, 1, 0.4],
+                    rotate: (Math.random() - 0.5) * 360,
+                  }}
+                  transition={{ duration: 1.8, ease: "easeOut", delay: 0.5 + i * 0.04 }}
+                >
+                  {emojis[i % emojis.length]}
+                </motion.span>
+              );
+            })}
+
+            {/* Pulsing rings */}
+            {[0, 0.3, 0.6].map((delay, i) => (
+              <motion.div
+                key={`ring-${i}`}
+                className="absolute w-40 h-40 rounded-full border-2 border-amber-400/60"
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: [0.3, 3.5], opacity: [0.8, 0] }}
+                transition={{ duration: 1.5, delay, ease: "easeOut" }}
+              />
+            ))}
+
+            {/* Central hero — big emoji + text with bounce */}
             <motion.div
-              className="relative text-center"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: [0, 1.3, 1], opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              className="relative text-center z-10"
+              initial={{ scale: 0, opacity: 0, y: 20 }}
+              animate={{ scale: [0, 1.5, 1], opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.15 }}
             >
-              <div className="text-5xl mb-2">{"\uD83C\uDF7B"}</div>
-              <div className="text-lg font-bold text-amber-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
-                Party-Modus aktiviert!
-              </div>
+              {/* Glowing emoji */}
+              <motion.div
+                className="text-8xl mb-4"
+                animate={{ rotate: [0, -10, 10, -5, 5, 0], scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+                style={{ filter: "drop-shadow(0 0 30px rgba(245,158,11,0.8))" }}
+              >
+                🍻
+              </motion.div>
+
+              {/* Title with gradient */}
+              <motion.h2
+                className="text-3xl font-display font-black tracking-tight"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, ...spring.soft }}
+              >
+                <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
+                  Party-Modus
+                </span>
+              </motion.h2>
+
+              <motion.p
+                className="text-lg text-amber-200/80 font-semibold mt-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                aktiviert! 🔥
+              </motion.p>
+
+              <motion.p
+                className="text-sm text-amber-300/50 mt-3 font-medium"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+              >
+                Ab jetzt wird getrunken statt bestraft
+              </motion.p>
             </motion.div>
+
+            {/* Confetti rain — falling from top */}
+            {Array.from({ length: 30 }).map((_, i) => {
+              const colors = ["#F59E0B", "#EC4899", "#8B5CF6", "#06B6D4", "#10B981", "#F43F5E", "#FBBF24", "#A78BFA"];
+              const left = Math.random() * 100;
+              const delay = Math.random() * 1.5;
+              const size = 4 + Math.random() * 6;
+              const isRect = Math.random() > 0.5;
+              return (
+                <motion.div
+                  key={`confetti-${i}`}
+                  className="absolute top-0"
+                  style={{
+                    left: `${left}%`,
+                    width: isRect ? size : size * 0.7,
+                    height: isRect ? size * 0.4 : size * 0.7,
+                    backgroundColor: colors[i % colors.length],
+                    borderRadius: isRect ? "1px" : "50%",
+                  }}
+                  initial={{ y: -20, opacity: 0, rotate: 0 }}
+                  animate={{
+                    y: typeof window !== "undefined" ? window.innerHeight + 20 : 900,
+                    opacity: [0, 1, 1, 0.8, 0],
+                    rotate: (Math.random() - 0.5) * 720,
+                    x: [(Math.random() - 0.5) * 40, (Math.random() - 0.5) * 80],
+                  }}
+                  transition={{
+                    duration: 2.5 + Math.random() * 1.5,
+                    delay: delay + 0.3,
+                    ease: "easeIn",
+                  }}
+                />
+              );
+            })}
+
+            {/* Floating party text badges */}
+            {["PROST! 🍻", "CHEERS! 🥂", "PARTY! 🎉", "SKOL! 🍺"].map((text, i) => (
+              <motion.div
+                key={`badge-${i}`}
+                className="absolute px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-xs font-bold shadow-lg backdrop-blur"
+                style={{ filter: "drop-shadow(0 0 10px rgba(245,158,11,0.5))" }}
+                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                animate={{
+                  opacity: [0, 1, 1, 0],
+                  scale: [0, 1.1, 1, 0.8],
+                  x: (i % 2 === 0 ? -1 : 1) * (80 + Math.random() * 60),
+                  y: -100 - i * 40 + Math.random() * 30,
+                  rotate: (i % 2 === 0 ? -1 : 1) * (5 + Math.random() * 10),
+                }}
+                transition={{ duration: 2, delay: 0.8 + i * 0.25, ease: "easeOut" }}
+              >
+                {text}
+              </motion.div>
+            ))}
+
+            {/* Dismiss tap area */}
+            <button
+              className="absolute inset-0 z-20"
+              onClick={() => setShowBeerBurst(false)}
+              aria-label="Schließen"
+            />
           </motion.div>
         )}
       </AnimatePresence>
