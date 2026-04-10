@@ -51,6 +51,8 @@ export default function ProfileScreen() {
   const [showThemePicker, setShowThemePicker] = useState(false);
   const drinkingMode = useDrinkingMode();
   const [showBeerBurst, setShowBeerBurst] = useState(false);
+  const [showAgeConfirm, setShowAgeConfirm] = useState(false);
+  const [ageChecked, setAgeChecked] = useState(false);
 
   // Easter Egg: tap version text 5 times within 3 seconds
   const tapCountRef = useRef(0);
@@ -65,13 +67,21 @@ export default function ProfileScreen() {
     if (tapCountRef.current >= 5) {
       tapCountRef.current = 0;
       if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-      drinkingMode.activate();
-      haptics.celebrate();
-      setShowBeerBurst(true);
-      // Auto-dismiss after 4s, or user can tap to dismiss earlier
-      setTimeout(() => setShowBeerBurst(false), 4000);
+      // Show age confirmation dialog FIRST — don't activate yet
+      haptics.medium();
+      setShowAgeConfirm(true);
+      setAgeChecked(false);
     }
   }, [drinkingMode, haptics]);
+
+  const confirmActivation = useCallback(() => {
+    if (!ageChecked) return;
+    setShowAgeConfirm(false);
+    drinkingMode.activate();
+    haptics.celebrate();
+    setShowBeerBurst(true);
+    setTimeout(() => setShowBeerBurst(false), 4000);
+  }, [ageChecked, drinkingMode, haptics]);
 
   const displayName =
     user?.user_metadata?.first_name ||
@@ -349,6 +359,81 @@ export default function ProfileScreen() {
           )}
         </p>
       </div>
+
+      {/* Age confirmation dialog — before activation */}
+      <AnimatePresence>
+        {showAgeConfirm && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowAgeConfirm(false)} />
+            <motion.div
+              className="relative w-full max-w-sm rounded-3xl bg-card border border-border p-6 shadow-2xl"
+              initial={{ scale: 0.8, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 30 }}
+              transition={spring.bouncy}
+            >
+              <div className="text-center mb-4">
+                <span className="text-5xl">🍺</span>
+                <h3 className="text-xl font-display font-bold text-foreground mt-3">
+                  Party-Modus (18+)
+                </h3>
+              </div>
+
+              <p className="text-sm text-muted-foreground text-center leading-relaxed mb-5">
+                Dieser Modus ist nur für Personen ab 18 Jahren gedacht. Trinkspiele können gesundheitliche Risiken bergen. Bitte trinkt verantwortungsvoll und achtet aufeinander.
+              </p>
+
+              {/* Age checkbox */}
+              <button
+                onClick={() => { haptics.select(); setAgeChecked(!ageChecked); }}
+                className="w-full flex items-start gap-3 p-3 rounded-2xl bg-foreground/5 border border-border mb-5 text-left"
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors",
+                  ageChecked ? "bg-primary border-primary" : "border-muted-foreground/40"
+                )}>
+                  {ageChecked && <Check className="w-4 h-4 text-white" />}
+                </div>
+                <span className="text-sm text-foreground leading-snug">
+                  Ich bin mindestens 18 Jahre alt und aktiviere den Party-Modus auf eigene Verantwortung.
+                </span>
+              </button>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { haptics.light(); setShowAgeConfirm(false); }}
+                  className="flex-1 h-12 rounded-2xl bg-foreground/5 border border-border text-foreground text-sm font-semibold"
+                >
+                  Abbrechen
+                </button>
+                <motion.button
+                  onClick={confirmActivation}
+                  disabled={!ageChecked}
+                  whileTap={ageChecked ? { scale: 0.96 } : {}}
+                  className={cn(
+                    "flex-1 h-12 rounded-2xl font-semibold text-sm transition-all",
+                    ageChecked
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_4px_20px_-4px_rgba(245,158,11,0.5)]"
+                      : "bg-foreground/10 text-muted-foreground/40 cursor-not-allowed"
+                  )}
+                >
+                  🍻 Aktivieren
+                </motion.button>
+              </div>
+
+              <p className="text-[10px] text-muted-foreground/50 text-center mt-4">
+                EventBliss übernimmt keine Haftung für den Konsum alkoholischer Getränke.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Epic Party-Modus activation — full-screen celebration */}
       <AnimatePresence>
