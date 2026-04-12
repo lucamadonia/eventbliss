@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react";
+import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw, AlertTriangle, Store } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
 import { AIActivitiesSkeleton } from "@/components/dashboard/AIActivitiesSkeleton";
+import { MarketplaceRecommendationCard } from "@/components/dashboard/MarketplaceRecommendationCard";
 import { DayPlanSkeleton } from "@/components/dashboard/DayPlanSkeleton";
 import { CreditIndicator } from "@/components/ai/CreditIndicator";
 import { DayPlanDurationSelector } from "@/components/ai/DayPlanDurationSelector";
@@ -30,7 +31,7 @@ interface AIAssistantTabProps {
   } | null;
 }
 
-type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat";
+type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "recommend_services";
 
 interface AIRequest {
   type: RequestType;
@@ -64,6 +65,12 @@ const AI_REQUESTS: AIRequest[] = [
     labelKey: "dashboard.ai.budgetEstimate",
     descriptionKey: "dashboard.ai.budgetEstimateDesc",
   },
+  {
+    type: "recommend_services" as RequestType,
+    icon: Store,
+    labelKey: "dashboard.ai.recommendServices",
+    descriptionKey: "dashboard.ai.recommendServicesDesc",
+  },
 ];
 
 export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
@@ -72,6 +79,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   const { used, limit, remaining, resetDate, loading: creditsLoading, refetch: refetchCredits } = useAICredits();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
+  const [suggestedCategories, setSuggestedCategories] = useState<string[]>([]);
   const [currentType, setCurrentType] = useState<RequestType | null>(null);
   const [chatMessage, setChatMessage] = useState("");
   const [selectedActivity, setSelectedActivity] = useState<ParsedActivity | null>(null);
@@ -127,6 +135,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       event_name: event.name,
       event_description: event.description || undefined,
       target_days: targetDays,
+      marketplace_hint: "Beruecksichtige verfuegbare Services im EventBliss Marketplace. Empfehle konkrete Kategorien: workshop, entertainment, catering, music, photography, venue, wellness, sport.",
     };
   };
 
@@ -141,12 +150,17 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     setResponse(null);
     setShowDurationSelector(false);
 
+    // For recommend_services, use a pre-built message
+    const aiMessage = type === "recommend_services"
+      ? "Empfehle mir passende buchbare Aktivitaeten und Services fuer unser Event. Beruecksichtige dabei die Vorlieben der Teilnehmer und schlage konkrete Kategorien vor wie Workshops, Catering, Entertainment oder Wellness."
+      : message;
+
     try {
       const { data: result, error } = await supabase.functions.invoke("ai-assistant", {
         body: {
-          type,
+          type: type === "recommend_services" ? "activities" : type,
           context: getContext(options?.targetDays),
-          message,
+          message: aiMessage || message,
           eventId: event.id,
         },
       });
@@ -168,7 +182,20 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       }
 
       setResponse(result.response);
-      
+
+      // Extract marketplace categories from AI response for matching
+      const categories: string[] = [];
+      const responseText = (result.response || "").toLowerCase();
+      if (responseText.includes("cocktail") || responseText.includes("workshop") || responseText.includes("kurs")) categories.push("workshop");
+      if (responseText.includes("escape") || responseText.includes("unterhaltung") || responseText.includes("show") || responseText.includes("krimi")) categories.push("entertainment");
+      if (responseText.includes("essen") || responseText.includes("dinner") || responseText.includes("tasting") || responseText.includes("koch") || responseText.includes("wein")) categories.push("catering");
+      if (responseText.includes("dj") || responseText.includes("musik") || responseText.includes("band") || responseText.includes("karaoke")) categories.push("music");
+      if (responseText.includes("foto") || responseText.includes("shooting") || responseText.includes("kamera")) categories.push("photography");
+      if (responseText.includes("yoga") || responseText.includes("wellness") || responseText.includes("spa") || responseText.includes("massage")) categories.push("wellness");
+      if (responseText.includes("sport") || responseText.includes("kart") || responseText.includes("kletter") || responseText.includes("bowling")) categories.push("sport");
+      if (responseText.includes("location") || responseText.includes("venue") || responseText.includes("raum")) categories.push("venue");
+      setSuggestedCategories([...new Set(categories)]);
+
       // Refetch credits and show animation
       await refetchCredits();
       setCreditAnimation(true);
@@ -421,6 +448,15 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             isLoading={isLoading}
             remainingCredits={remaining}
           />
+
+          {/* Marketplace Recommendations based on AI suggestions */}
+          {response && suggestedCategories.length > 0 && (
+            <MarketplaceRecommendationCard
+              suggestedCategories={suggestedCategories}
+              city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
+              eventType={event.event_type}
+            />
+          )}
         </div>
       )}
 

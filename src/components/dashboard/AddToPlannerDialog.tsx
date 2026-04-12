@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-import { Calendar, Clock, MapPin, DollarSign } from "lucide-react";
+import { Calendar, Clock, MapPin, DollarSign, ShoppingBag, Star, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { type ParsedActivity, activityToScheduleData } from "@/lib/ai-response-parser";
 import { CATEGORY_CONFIG, type ActivityCategory } from "@/lib/category-config";
 
+// Mock marketplace service matches based on activity category
+const MARKETPLACE_MATCHES: Record<string, { slug: string; title: string; agency: string; price: number; rating: number; }[]> = {
+  activity: [
+    { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", agency: "Berlin Events GmbH", price: 3900, rating: 4.8 },
+    { slug: "escape-room-adventure", title: "Escape Room Adventure", agency: "Fun Factory Munich", price: 2500, rating: 4.6 },
+  ],
+  food: [
+    { slug: "wine-tasting-premium", title: "Wine Tasting Premium", agency: "Gourmet Events", price: 4900, rating: 4.9 },
+    { slug: "private-chef-dinner", title: "Private Chef Dinner", agency: "Gourmet Events", price: 8900, rating: 5.0 },
+  ],
+  party: [
+    { slug: "dj-party-paket", title: "DJ & Party Paket", agency: "Berlin Events GmbH", price: 59900, rating: 4.5 },
+    { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", agency: "Berlin Events GmbH", price: 3900, rating: 4.8 },
+  ],
+  relaxation: [
+    { slug: "yoga-retreat-gruppe", title: "Yoga & Wellness Retreat", agency: "Zen Space Munich", price: 2900, rating: 4.4 },
+  ],
+  sightseeing: [
+    { slug: "graffiti-workshop", title: "Graffiti & Street Art", agency: "Urban Arts Cologne", price: 3500, rating: 4.7 },
+  ],
+  other: [
+    { slug: "go-kart-racing", title: "Go-Kart Racing", agency: "Speed Events", price: 3200, rating: 4.7 },
+  ],
+};
+
+function getMarketplaceMatches(category: string) {
+  return MARKETPLACE_MATCHES[category] || MARKETPLACE_MATCHES["other"] || [];
+}
+
 interface AddToPlannerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,7 +79,9 @@ export const AddToPlannerDialog = ({
 }: AddToPlannerDialogProps) => {
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'de' ? de : enUS;
-  
+  const navigate = useNavigate();
+  const matches = activity ? getMarketplaceMatches(formData.category) : [];
+
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [formData, setFormData] = useState({
@@ -261,6 +293,46 @@ export const AddToPlannerDialog = ({
             />
           </div>
         </div>
+
+        {/* Marketplace Service Matches */}
+        {matches.length > 0 && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-primary" />
+              <span className="text-sm font-bold text-primary">Passende Services buchen</span>
+            </div>
+            <div className="space-y-2">
+              {matches.slice(0, 2).map((svc) => (
+                <button
+                  key={svc.slug}
+                  type="button"
+                  onClick={() => navigate(`/marketplace/service/${svc.slug}`)}
+                  className="w-full flex items-center gap-3 rounded-lg border border-border/50 bg-background/50 p-3 text-left hover:bg-primary/5 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{svc.title}</p>
+                    <p className="text-xs text-muted-foreground">{svc.agency}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-bold text-primary">{(svc.price / 100).toFixed(0)} €</p>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      <span className="text-xs text-muted-foreground">{svc.rating}</span>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/marketplace")}
+              className="text-xs text-primary hover:underline font-semibold"
+            >
+              Alle Services im Marketplace ansehen →
+            </button>
+          </div>
+        )}
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
