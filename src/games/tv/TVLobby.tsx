@@ -64,8 +64,8 @@ function WaitingDots() {
   );
 }
 
-export default function TVLobby({ roomCode, players, isConnected }: { roomCode: string; players: TVPlayer[]; isConnected: boolean }) {
-  const joinUrl = `eventbliss.vercel.app/games?room=${roomCode}`;
+export default function TVLobby({ roomCode, players, isConnected, error }: { roomCode: string; players: TVPlayer[]; isConnected: boolean; error?: string | null }) {
+  const joinUrl = `event-bliss.com/games?room=${roomCode}`;
 
   return (
     <motion.div
@@ -79,8 +79,15 @@ export default function TVLobby({ roomCode, players, isConnected }: { roomCode: 
       {/* Connection indicator */}
       <div className="absolute top-6 left-8 flex items-center gap-2 z-10">
         <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-[#8ff5ff] shadow-[0_0_12px_#8ff5ff]' : 'bg-[#ff6e84]'} animate-pulse`} />
-        <span className="text-sm font-bold text-[#a8abb3] tracking-wider">{isConnected ? 'VERBUNDEN' : 'VERBINDE...'}</span>
+        <span className="text-sm font-bold text-[#a8abb3] tracking-wider">{isConnected ? 'VERBUNDEN' : error ? 'FEHLER' : 'VERBINDE...'}</span>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div className="absolute top-14 left-8 z-10 max-w-md">
+          <span className="text-sm font-bold text-[#ff6e84]">{error}</span>
+        </div>
+      )}
 
       {/* Fullscreen button */}
       <button onClick={() => document.documentElement.requestFullscreen?.().catch(() => {})}

@@ -13,6 +13,7 @@ export function useTVConnection(roomCode: string) {
   const [drawing, setDrawing] = useState<unknown[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Subscribe to BOTH channel prefixes so TV works for
@@ -51,13 +52,27 @@ export function useTVConnection(roomCode: string) {
     });
     tvChannel.on('broadcast', { event: 'game-end' }, () => { setGameEnded(true); });
 
-    channel.subscribe((status) => { if (status === 'SUBSCRIBED') setIsConnected(true); });
-    tvChannel.subscribe((status) => { if (status === 'SUBSCRIBED') setIsConnected(true); });
+    channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') setIsConnected(true);
+      else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        setError(status === 'TIMED_OUT'
+          ? 'Verbindung hat zu lange gedauert. Bitte Seite neu laden.'
+          : 'Verbindung fehlgeschlagen. Bitte Seite neu laden.');
+      }
+    });
+    tvChannel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') setIsConnected(true);
+      else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        setError(status === 'TIMED_OUT'
+          ? 'Verbindung hat zu lange gedauert. Bitte Seite neu laden.'
+          : 'Verbindung fehlgeschlagen. Bitte Seite neu laden.');
+      }
+    });
     return () => {
       supabase.removeChannel(channel);
       supabase.removeChannel(tvChannel);
     };
   }, [roomCode]);
 
-  return { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded };
+  return { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error };
 }

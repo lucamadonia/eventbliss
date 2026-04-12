@@ -115,13 +115,14 @@ export default function GameRoomSheet({
       return;
     }
     haptics.medium();
-    // Navigate to any game with the room code — GamesHub will load the lobby
-    navigate(`/games/bomb?room=${normalized}`);
+    // Navigate through GameLobby with room code pre-filled (lobby= triggers
+    // the lobby overlay in GamesHub, room= pre-fills the join code)
+    navigate(`/games/bomb?lobby=bomb&room=${normalized}`);
     onOpenChange(false);
   };
 
   return (
-    <Drawer open={open} onOpenChange={handleOpenChange}>
+    <Drawer open={open} onOpenChange={handleOpenChange} repositionInputs={false} handleOnly>
       <DrawerContent className="max-h-[85vh] bg-background border-border">
         <DrawerHeader className="text-center pb-2">
           <DrawerTitle className="text-xl font-display font-bold text-foreground">

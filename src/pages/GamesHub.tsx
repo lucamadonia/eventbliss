@@ -323,6 +323,32 @@ const GamesHub = () => {
     );
   }
 
+  // Online lobby — when navigating from GameRoomSheet with ?lobby= param
+  // while a gameId is in the URL (e.g. /games/bomb?lobby=bomb).
+  // Must appear BEFORE the offline-game early returns below, otherwise
+  // the offline game component is returned and the lobby is never shown.
+  if (gameId && onlineGameId) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-[#0a0e14]/95 backdrop-blur-xl">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => { setOnlineGameId(null); navigate('/games'); }}
+          className="absolute top-4 right-4 z-[61] flex h-10 w-10 items-center justify-center rounded-full bg-[#1b2028]"
+        >
+          <X className="h-5 w-5 text-white/60" />
+        </motion.button>
+        <Suspense fallback={GameFallback}>
+          <GameLobby
+            gameId={onlineGameId}
+            gameName={allGames.find((g) => g.id === onlineGameId)?.name ?? "Spiel"}
+            onStart={handleOnlineStart}
+            onBack={() => { setOnlineGameId(null); navigate('/games'); }}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+
   // Offline games — wrapped in TVBroadcastProvider so they can
   // optionally connect to a TV screen via the floating 📺 button
   if (gameId === "category") return <TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider>;

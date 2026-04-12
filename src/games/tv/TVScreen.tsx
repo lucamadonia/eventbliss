@@ -53,7 +53,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
 export default function TVScreen() {
   const { roomCode } = useParams<{ roomCode: string }>();
   const code = roomCode || '';
-  const { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded } = useTVConnection(code);
+  const { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error } = useTVConnection(code);
 
   const scores = useMemo(() => {
     if (leaderboard.length > 0) return leaderboard;
@@ -92,7 +92,7 @@ export default function TVScreen() {
 
         {showLobby && !showGame && !showLeaderboard && !showGameOver && (
           <motion.div key="lobby" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <TVLobby roomCode={code} players={players} isConnected={isConnected} />
+            <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
           </motion.div>
         )}
       </AnimatePresence>
