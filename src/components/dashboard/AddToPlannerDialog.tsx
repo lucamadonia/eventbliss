@@ -33,28 +33,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { type ParsedActivity, activityToScheduleData } from "@/lib/ai-response-parser";
 import { CATEGORY_CONFIG, type ActivityCategory } from "@/lib/category-config";
 
-// Mock marketplace service matches based on activity category
+// Only Enterprise-tier agencies are eligible for AI recommendations.
+// When connecting real data: filter by agency_marketplace_subscriptions.tier = 'enterprise'
 const MARKETPLACE_MATCHES: Record<string, { slug: string; title: string; agency: string; price: number; rating: number; }[]> = {
   activity: [
-    { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", agency: "Berlin Events GmbH", price: 3900, rating: 4.8 },
-    { slug: "escape-room-adventure", title: "Escape Room Adventure", agency: "Fun Factory Munich", price: 2500, rating: 4.6 },
+    { slug: "private-chef-dinner", title: "Private Chef Dinner", agency: "Gourmet Events", price: 8900, rating: 5.0 },
   ],
   food: [
     { slug: "wine-tasting-premium", title: "Wine Tasting Premium", agency: "Gourmet Events", price: 4900, rating: 4.9 },
     { slug: "private-chef-dinner", title: "Private Chef Dinner", agency: "Gourmet Events", price: 8900, rating: 5.0 },
   ],
   party: [
-    { slug: "dj-party-paket", title: "DJ & Party Paket", agency: "Berlin Events GmbH", price: 59900, rating: 4.5 },
-    { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", agency: "Berlin Events GmbH", price: 3900, rating: 4.8 },
+    { slug: "private-chef-dinner", title: "Private Chef Dinner", agency: "Gourmet Events", price: 8900, rating: 5.0 },
   ],
-  relaxation: [
-    { slug: "yoga-retreat-gruppe", title: "Yoga & Wellness Retreat", agency: "Zen Space Munich", price: 2900, rating: 4.4 },
-  ],
-  sightseeing: [
-    { slug: "graffiti-workshop", title: "Graffiti & Street Art", agency: "Urban Arts Cologne", price: 3500, rating: 4.7 },
-  ],
+  relaxation: [],
+  sightseeing: [],
   other: [
-    { slug: "go-kart-racing", title: "Go-Kart Racing", agency: "Speed Events", price: 3200, rating: 4.7 },
+    { slug: "fotoshooting-event", title: "Event Fotoshooting", agency: "Lens Masters", price: 34900, rating: 4.8 },
   ],
 };
 
@@ -299,7 +294,7 @@ export const AddToPlannerDialog = ({
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-primary" />
-              <span className="text-sm font-bold text-primary">Passende Services buchen</span>
+              <span className="text-sm font-bold text-primary">Enterprise-Services direkt buchen</span>
             </div>
             <div className="space-y-2">
               {matches.slice(0, 2).map((svc) => (

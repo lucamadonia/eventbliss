@@ -21,6 +21,8 @@ interface MockService {
   category: string;
   city: string;
   gradient: string;
+  /** Only enterprise-tier agencies are eligible for AI recommendations */
+  agencyTier: "starter" | "professional" | "enterprise";
 }
 
 export interface MarketplaceRecommendationCardProps {
@@ -36,19 +38,10 @@ export interface MarketplaceRecommendationCardProps {
 // Mock data — will be replaced with real marketplace API calls
 // ---------------------------------------------------------------------------
 
+// Only Enterprise-tier agencies are shown in AI recommendations.
+// When connecting real data, filter by: agency_marketplace_subscriptions.tier = 'enterprise'
+// AND marketplace_plan_configs.has_ai_integration = true
 const MOCK_MATCHED_SERVICES: MockService[] = [
-  {
-    slug: "cocktail-workshop-berlin",
-    title: "Cocktail Workshop Berlin",
-    agency: "Berlin Events GmbH",
-    price: 3900,
-    priceType: "per_person",
-    rating: 4.8,
-    reviews: 47,
-    category: "workshop",
-    city: "Berlin",
-    gradient: "from-violet-500 to-fuchsia-500",
-  },
   {
     slug: "wine-tasting-premium",
     title: "Wine Tasting Premium",
@@ -60,42 +53,33 @@ const MOCK_MATCHED_SERVICES: MockService[] = [
     category: "catering",
     city: "Hamburg",
     gradient: "from-amber-500 to-orange-500",
+    agencyTier: "enterprise",
   },
   {
-    slug: "escape-room-adventure",
-    title: "Escape Room Adventure",
-    agency: "Fun Factory Munich",
-    price: 2500,
-    priceType: "per_person",
-    rating: 4.6,
-    reviews: 89,
-    category: "entertainment",
-    city: "München",
-    gradient: "from-cyan-500 to-blue-500",
-  },
-  {
-    slug: "graffiti-workshop",
-    title: "Graffiti & Street Art",
-    agency: "Urban Arts Cologne",
-    price: 3500,
-    priceType: "per_person",
-    rating: 4.7,
-    reviews: 22,
-    category: "workshop",
-    city: "Köln",
-    gradient: "from-emerald-500 to-green-500",
-  },
-  {
-    slug: "dj-party-paket",
-    title: "DJ & Party Paket",
-    agency: "Berlin Events GmbH",
-    price: 59900,
+    slug: "fotoshooting-event",
+    title: "Event Fotoshooting",
+    agency: "Lens Masters",
+    price: 34900,
     priceType: "flat_rate",
-    rating: 4.5,
-    reviews: 63,
-    category: "music",
+    rating: 4.8,
+    reviews: 51,
+    category: "photography",
+    city: "Frankfurt",
+    gradient: "from-indigo-500 to-violet-500",
+    agencyTier: "enterprise",
+  },
+  {
+    slug: "private-chef-dinner",
+    title: "Private Chef Dinner",
+    agency: "Gourmet Events",
+    price: 8900,
+    priceType: "per_person",
+    rating: 5.0,
+    reviews: 12,
+    category: "catering",
     city: "Berlin",
-    gradient: "from-pink-500 to-rose-500",
+    gradient: "from-yellow-400 to-amber-500",
+    agencyTier: "enterprise",
   },
 ];
 
@@ -253,11 +237,14 @@ export const MarketplaceRecommendationCard = ({
             <Sparkles className="h-4 w-4 text-purple-300" />
           </div>
           <h3 className="text-base font-bold text-white">
-            Passende Services im Marketplace
+            Direkt buchbare Premium-Services
           </h3>
+          <span className="ml-auto text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400">
+            Enterprise
+          </span>
         </div>
         <p className="text-xs text-white/50 ml-9 mb-4">
-          Basierend auf deiner KI-Planung
+          KI-empfohlene Services von verifizierten Enterprise-Agenturen
         </p>
 
         {/* Scrollable service row */}
