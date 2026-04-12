@@ -30,6 +30,7 @@ import {
   Command,
   ChevronDown,
   Settings,
+  Settings2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +56,7 @@ import { AgencySettings } from "@/components/agency/AgencySettings";
 import AgencyMarketplace from "@/components/agency/AgencyMarketplace";
 import AgencyBookingsManager from "@/components/agency/AgencyBookingsManager";
 import AgencyStripeConnect from "@/components/agency/AgencyStripeConnect";
+import AgencyMarketplaceSettings from "@/components/agency/AgencyMarketplaceSettings";
 
 type Section =
   | "dashboard"
@@ -70,6 +72,7 @@ type Section =
   | "marketplace"
   | "bookings"
   | "stripe"
+  | "marketplace-settings"
   | "settings";
 
 interface NavItem {
@@ -93,6 +96,7 @@ const navItems: NavItem[] = [
   { id: "marketplace", label: "Marketplace", icon: Store },
   { id: "bookings", label: "Buchungen", icon: CalendarCheck },
   { id: "stripe", label: "Zahlungen", icon: CreditCard },
+  { id: "marketplace-settings", label: "Pakete & Einstellungen", icon: Settings2 },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
 
@@ -110,6 +114,7 @@ const sectionLabels: Record<Section, string> = {
   marketplace: "Marketplace",
   bookings: "Buchungen",
   stripe: "Zahlungen",
+  "marketplace-settings": "Pakete & Einstellungen",
   settings: "Einstellungen",
 };
 
@@ -403,6 +408,8 @@ export default function AgencyDashboard() {
         return <AgencyBookingsManager />;
       case "stripe":
         return <AgencyStripeConnect />;
+      case "marketplace-settings":
+        return <AgencyMarketplaceSettings />;
       case "settings":
         return <AgencySettings />;
       default:

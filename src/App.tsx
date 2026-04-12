@@ -34,6 +34,7 @@ const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const GamesHub = lazy(() => import("./pages/GamesHub"));
+const MyBookings = lazy(() => import("@/pages/MyBookings"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const MarketplaceService = lazy(() => import("@/pages/MarketplaceService"));
 const MarketplaceAgency = lazy(() => import("@/pages/MarketplaceAgency"));
@@ -132,6 +133,7 @@ const AppContent = () => {
           <Route path="/agency" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyDashboard /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/admin/*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense></ErrorBoundary>} />
           <Route path="/ideas" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><IdeasHub /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/my-bookings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyBookings /></ProtectedRoute></Suspense></ErrorBoundary>} />
           {/* Legal Pages */}
           <Route path="/legal/imprint" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Imprint /></Suspense></ErrorBoundary>} />
           <Route path="/legal/privacy" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Privacy /></Suspense></ErrorBoundary>} />

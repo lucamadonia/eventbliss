@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Star, Clock, MapPin, Share2, Heart,
+  Star, Clock, MapPin, Share2, Heart, ShieldCheck,
   ChevronRight, Check, AlertTriangle, Minus, Plus, Calendar,
 } from "lucide-react";
 
@@ -322,7 +322,11 @@ export default function MarketplaceService() {
 
               {activeTab === "agentur" && (
                 <motion.div
-                  className={`p-5 rounded-2xl ${C.high} ${C.border} border`}
+                  className={`p-5 rounded-2xl ${C.high} border ${
+                    s.agencyTier === "enterprise"
+                      ? "border-amber-400/40 shadow-lg shadow-amber-400/10"
+                      : C.border
+                  }`}
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >
@@ -331,13 +335,25 @@ export default function MarketplaceService() {
                       {s.agencyName.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-lg">{s.agencyName}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-lg">{s.agencyName}</h3>
+                        {(s.agencyTier === "professional" || s.agencyTier === "enterprise") && (
+                          <ShieldCheck size={18} className="text-[#00e3fd]" />
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 mt-1">
                         <MapPin size={14} className="text-gray-500" />
                         <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">{s.agencyCity}</span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold font-['Be_Vietnam_Pro'] bg-[#cf96ff]/15 text-[#cf96ff] capitalize">
-                          {s.agencyTier}
-                        </span>
+                        {s.agencyTier === "professional" && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold font-['Be_Vietnam_Pro'] bg-[#cf96ff]/15 text-[#cf96ff]">
+                            Pro &#10003;
+                          </span>
+                        )}
+                        {s.agencyTier === "enterprise" && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold font-['Be_Vietnam_Pro'] bg-amber-400/15 text-amber-400">
+                            Enterprise &#10003;
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -346,6 +362,12 @@ export default function MarketplaceService() {
                     className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold font-['Be_Vietnam_Pro'] bg-[#13131b] border border-[#484750]/10 hover:border-[#cf96ff]/30 transition-colors"
                   >
                     Profil ansehen
+                  </button>
+                  <button
+                    onClick={() => navigate(`/marketplace/agency/${s.agencySlug}`)}
+                    className="mt-2 w-full py-2 rounded-xl text-xs font-['Be_Vietnam_Pro'] text-[#cf96ff] hover:text-white transition-colors"
+                  >
+                    Alle Services dieser Agentur &rarr;
                   </button>
                 </motion.div>
               )}
@@ -432,6 +454,21 @@ export default function MarketplaceService() {
             <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] ${cancellation.color}`}>
               Stornierung: {cancellation.label}
             </div>
+
+            {/* Verified Agency Badge */}
+            {(s.agencyTier === "professional" || s.agencyTier === "enterprise") && (
+              <div className="flex items-center gap-1.5 text-xs font-['Be_Vietnam_Pro'] text-[#00e3fd]">
+                <ShieldCheck size={14} />
+                <span>Verifizierte Agentur</span>
+              </div>
+            )}
+
+            {/* Enterprise Partner Badge */}
+            {s.agencyTier === "enterprise" && (
+              <div className="px-3 py-2 rounded-xl text-center text-xs font-semibold font-['Be_Vietnam_Pro'] bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                Enterprise Partner
+              </div>
+            )}
 
             {/* Book Button */}
             <motion.button
