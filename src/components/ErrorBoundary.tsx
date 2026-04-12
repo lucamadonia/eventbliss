@@ -8,16 +8,17 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(): State {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -35,9 +36,17 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="text-center max-w-md">
             <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold mb-2">Etwas ist schiefgelaufen</h1>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-4">
               Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.
             </p>
+            {this.state.error && (
+              <details className="mb-4 text-left">
+                <summary className="text-xs text-muted-foreground cursor-pointer">Fehler-Details</summary>
+                <pre className="mt-2 p-3 rounded bg-muted text-xs overflow-auto max-h-32 text-red-400">
+                  {this.state.error.message}
+                </pre>
+              </details>
+            )}
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => window.location.reload()}

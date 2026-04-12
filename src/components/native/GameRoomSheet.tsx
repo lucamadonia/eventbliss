@@ -1,9 +1,9 @@
 /**
- * GameRoomSheet — bottom sheet for creating/joining online game rooms.
+ * GameRoomSheet — modal dialog for creating/joining online game rooms.
+ * Uses Dialog (not Drawer) to avoid iOS keyboard dismissal issues.
  * Two tabs: "Erstellen" (pick game, create room) and "Beitreten" (enter code).
- * Uses vaul Drawer and existing design patterns (glassmorphism, haptics, spring).
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,12 +14,12 @@ import {
   X,
 } from "lucide-react";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -57,12 +57,11 @@ type Tab = "create" | "join";
 interface GameRoomSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Pre-select a tab when opening */
   initialTab?: Tab;
 }
 
 // ---------------------------------------------------------------------------
-// Component
+// Component — uses Dialog instead of Drawer to avoid iOS keyboard issues
 // ---------------------------------------------------------------------------
 
 export default function GameRoomSheet({
@@ -77,8 +76,9 @@ export default function GameRoomSheet({
   const [joinCode, setJoinCode] = useState("");
   const [joinError, setJoinError] = useState("");
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Reset state when drawer opens
+  // Reset state when dialog opens
   const handleOpenChange = useCallback(
     (next: boolean) => {
       if (next) {
@@ -101,8 +101,6 @@ export default function GameRoomSheet({
   const handleCreate = () => {
     if (!selectedGame) return;
     haptics.medium();
-    // Navigate to GamesHub with ?lobby= param — GamesHub shows the GameLobby modal
-    // which handles room creation, player name entry, code sharing, etc.
     navigate(`/games/${selectedGame}?lobby=${selectedGame}`);
     onOpenChange(false);
   };
@@ -116,30 +114,21 @@ export default function GameRoomSheet({
       return;
     }
     haptics.medium();
-    // Navigate through GameLobby with room code pre-filled (lobby= triggers
-    // the lobby overlay in GamesHub, room= pre-fills the join code)
     navigate(`/games/bomb?lobby=bomb&room=${normalized}`);
     onOpenChange(false);
   };
 
   return (
-    <Drawer open={open} onOpenChange={handleOpenChange} dismissible={false} repositionInputs={false} handleOnly>
-      <DrawerContent className="max-h-[85vh] bg-background border-border" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
-        <DrawerHeader className="text-center pb-2 relative">
-          {/* Explicit close button — drawer is non-dismissible on iOS to prevent keyboard issues */}
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-3 p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-colors"
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <DrawerTitle className="text-xl font-display font-bold text-foreground">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto bg-background border-border sm:max-w-md mx-4 rounded-2xl p-0">
+        <DialogHeader className="text-center p-5 pb-2 relative">
+          <DialogTitle className="text-xl font-display font-bold text-foreground">
             Online spielen
-          </DrawerTitle>
-          <DrawerDescription className="text-muted-foreground">
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             Spiele mit Freunden in Echtzeit
-          </DrawerDescription>
-        </DrawerHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Tab switcher */}
         <div className="flex gap-2 px-5 pb-4">
@@ -157,6 +146,8 @@ export default function GameRoomSheet({
                 onClick={() => {
                   haptics.select();
                   setTab(t.id);
+                  // Auto-focus join input when switching to join tab
+                  if (t.id === "join") setTimeout(() => inputRef.current?.focus(), 100);
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-semibold border transition-colors",
@@ -200,6 +191,7 @@ export default function GameRoomSheet({
                 <JoinTab
                   code={joinCode}
                   error={joinError}
+                  inputRef={inputRef}
                   onCodeChange={(v) => {
                     setJoinCode(v.toUpperCase());
                     setJoinError("");
@@ -210,13 +202,13 @@ export default function GameRoomSheet({
             )}
           </AnimatePresence>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Create Tab — pick a game, then confirm
+// Create Tab
 // ---------------------------------------------------------------------------
 
 function CreateTab({
@@ -234,7 +226,6 @@ function CreateTab({
         Wähle ein Spiel, um einen Raum zu erstellen:
       </p>
 
-      {/* Game picker grid */}
       <div className="grid grid-cols-2 gap-2">
         {ONLINE_GAMES.map((game) => {
           const active = selectedGame === game.id;
@@ -265,7 +256,6 @@ function CreateTab({
         })}
       </div>
 
-      {/* Create button */}
       <motion.button
         onClick={onCreate}
         disabled={!selectedGame}
@@ -286,17 +276,19 @@ function CreateTab({
 }
 
 // ---------------------------------------------------------------------------
-// Join Tab — code input + join button
+// Join Tab
 // ---------------------------------------------------------------------------
 
 function JoinTab({
   code,
   error,
+  inputRef,
   onCodeChange,
   onJoin,
 }: {
   code: string;
   error: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   onCodeChange: (v: string) => void;
   onJoin: () => void;
 }) {
@@ -306,14 +298,16 @@ function JoinTab({
         Gib den 6-stelligen Raumcode ein:
       </p>
 
-      {/* Big code input (JoinEventFlow style) */}
       <div className="relative">
         <input
+          ref={inputRef}
           value={code}
           onChange={(e) => onCodeChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onJoin()}
           placeholder="Z.B. ABC123"
           maxLength={6}
+          inputMode="text"
+          autoComplete="off"
           className="w-full h-16 px-5 rounded-2xl bg-foreground/5 border-2 border-border text-foreground text-center text-2xl font-display font-bold tracking-[0.3em] placeholder:text-muted-foreground/60 placeholder:tracking-widest placeholder:text-lg focus:outline-none focus:border-primary/60 transition-colors uppercase"
           autoCapitalize="characters"
           autoCorrect="off"
@@ -321,7 +315,6 @@ function JoinTab({
         />
       </div>
 
-      {/* Error */}
       <AnimatePresence>
         {error && (
           <motion.p
@@ -335,7 +328,6 @@ function JoinTab({
         )}
       </AnimatePresence>
 
-      {/* Join button */}
       <motion.button
         onClick={onJoin}
         disabled={!code.trim()}
