@@ -133,6 +133,10 @@ function getGlobalPlayerId(): string {
 let _globalChannel: RealtimeChannel | null = null;
 let _globalListeners = new Map<string, Set<BroadcastCallback>>();
 let _globalPlayers: RoomPlayer[] = [];
+/** Global room state — persists across hook instances so OnlineGameWrapper
+ *  can pick up the room created by GameLobby without re-subscribing. */
+let _globalRoom: GameRoom | null = null;
+let _globalRoomCode: string | null = null;
 
 /** Get current online room players (if any room is active). Used by GameSetup auto-detection. */
 export function getOnlineRoomPlayers(): RoomPlayer[] {
@@ -152,13 +156,33 @@ function getInitial(name: string): string {
 // ---------------------------------------------------------------------------
 
 export function useGameRoom(): UseGameRoomReturn {
-  const [room, setRoom] = useState<GameRoom | null>(null);
-  const [players, setPlayers] = useState<RoomPlayer[]>([]);
+  // Initialize from global singletons so state survives across hook instances
+  // (e.g. GameLobby → navigate → OnlineGameWrapper)
+  const [room, setRoom] = useState<GameRoom | null>(_globalRoom);
+  const [players, setPlayers] = useState<RoomPlayer[]>(_globalPlayers);
   const [error, setError] = useState<string | null>(null);
 
   const channelRef = useRef<RealtimeChannel | null>(_globalChannel);
   const playerIdRef = useRef<string>(getGlobalPlayerId());
   const listenersRef = useRef<Map<string, Set<BroadcastCallback>>>(_globalListeners);
+
+  // Wrapped setters that keep global singletons in sync
+  const setRoomSynced = useCallback((updater: GameRoom | null | ((prev: GameRoom | null) => GameRoom | null)) => {
+    setRoom((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      _globalRoom = next;
+      _globalRoomCode = next?.roomCode || null;
+      return next;
+    });
+  }, []);
+
+  const setPlayersSynced = useCallback((updater: RoomPlayer[] | ((prev: RoomPlayer[]) => RoomPlayer[])) => {
+    setPlayers((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      _globalPlayers = next;
+      return next;
+    });
+  }, []);
 
   // Host is determined dynamically — earliest player OR the room creator
   const isHost = players.length > 0
@@ -210,10 +234,9 @@ export function useGameRoom(): UseGameRoomReturn {
       isPremium: p.isPremium ?? false,
     }));
 
-    setPlayers(mapped);
-    _globalPlayers = mapped; // Keep global in sync
-    setRoom((prev) => (prev ? { ...prev, hostId: actualHostId, players: mapped } : prev));
-  }, []);
+    setPlayersSynced(mapped);
+    setRoomSynced((prev) => (prev ? { ...prev, hostId: actualHostId, players: mapped } : prev));
+  }, [setPlayersSynced, setRoomSynced]);
 
   // ---- Subscribe to a channel ----
   const subscribe = useCallback(
@@ -226,12 +249,26 @@ export function useGameRoom(): UseGameRoomReturn {
       playerIsPremium: boolean = false,
     ) => {
       try {
-      // Clean up any existing channel
+      const playerId = playerIdRef.current;
+      const targetTopic = `realtime:game-room:${roomCode}`;
+
+      // If already subscribed to the SAME room, reuse the channel — don't destroy it!
+      // This is critical: when navigating from GameLobby → Game, the channel must survive.
+      if (channelRef.current && (channelRef.current as any).topic === targetTopic) {
+        // Channel already exists for this room — just sync state
+        syncPlayers(channelRef.current, hostId);
+        setRoomSynced({
+          roomCode, hostId: hostId || _globalRoom?.hostId || playerId,
+          players: _globalPlayers, gameId: gameId || _globalRoom?.gameId || "",
+          status: "lobby", settings: _globalRoom?.settings || {},
+        });
+        return;
+      }
+
+      // Different room or no channel — clean up and create new
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
       }
-
-      const playerId = playerIdRef.current;
 
       const channel = supabase.channel(`game-room:${roomCode}`, {
         config: { presence: { key: playerId } },
@@ -245,14 +282,14 @@ export function useGameRoom(): UseGameRoomReturn {
       // --- Broadcast: game-start ---
       channel.on("broadcast", { event: "game-start" }, ({ payload }) => {
         const p = payload as { gameId?: string };
-        setRoom((prev) =>
+        setRoomSynced((prev) =>
           prev ? { ...prev, status: "playing", gameId: p.gameId || prev.gameId } : prev,
         );
       });
 
       // --- Broadcast: game-end ---
       channel.on("broadcast", { event: "game-end" }, () => {
-        setRoom((prev) =>
+        setRoomSynced((prev) =>
           prev ? { ...prev, status: "finished" } : prev,
         );
       });
@@ -262,15 +299,16 @@ export function useGameRoom(): UseGameRoomReturn {
         if ((payload as { playerId: string }).playerId === playerId) {
           supabase.removeChannel(channel);
           channelRef.current = null;
-          setRoom(null);
-          setPlayers([]);
+          _globalChannel = null;
+          setRoomSynced(null);
+          setPlayersSynced([]);
           setError("Du wurdest aus dem Raum entfernt.");
         }
       });
 
       // --- Broadcast: settings-update ---
       channel.on("broadcast", { event: "settings-update" }, ({ payload }) => {
-        setRoom((prev) =>
+        setRoomSynced((prev) =>
           prev
             ? { ...prev, settings: payload as Record<string, unknown> }
             : prev,
@@ -309,7 +347,7 @@ export function useGameRoom(): UseGameRoomReturn {
       channelRef.current = channel;
       _globalChannel = channel; // Keep in sync globally
 
-      setRoom({
+      setRoomSynced({
         roomCode,
         hostId,
         players: [],
@@ -322,7 +360,7 @@ export function useGameRoom(): UseGameRoomReturn {
         setError("Verbindung zum Raum fehlgeschlagen.");
       }
     },
-    [syncPlayers],
+    [syncPlayers, setRoomSynced, setPlayersSynced],
   );
 
   // ---- Public API ----
@@ -386,8 +424,8 @@ export function useGameRoom(): UseGameRoomReturn {
       channelRef.current = null;
       _globalChannel = null;
     }
-    setRoom(null);
-    setPlayers([]);
+    setRoomSynced(null);
+    setPlayersSynced([]);
     setError(null);
     listenersRef.current.clear();
     _globalListeners.clear();
@@ -425,8 +463,8 @@ export function useGameRoom(): UseGameRoomReturn {
       event: "game-start",
       payload: { startedAt: Date.now(), gameId: gameIdOverride || room?.gameId },
     });
-    setRoom((prev) => (prev ? { ...prev, status: "playing", gameId: gameIdOverride || prev.gameId } : prev));
-  }, [isHost, room?.gameId]);
+    setRoomSynced((prev) => (prev ? { ...prev, status: "playing", gameId: gameIdOverride || prev.gameId } : prev));
+  }, [isHost, room?.gameId, setRoomSynced]);
 
   const broadcast = useCallback(
     (event: string, data: Record<string, unknown>) => {
