@@ -13,7 +13,12 @@ import {
   X,
   Map,
   List,
+  ShieldCheck,
+  Star,
+  ShoppingBag,
+  Crown,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import { Input } from "@/components/ui/input";
@@ -65,8 +70,30 @@ interface AgenciesTabProps {
   participants?: Participant[];
 }
 
+// Mock marketplace services per agency (will be replaced with real API)
+const AGENCY_MARKETPLACE_SERVICES: Record<string, { slug: string; title: string; price: number; rating: number; tier: string }[]> = {
+  "Gourmet Events": [
+    { slug: "wine-tasting-premium", title: "Wine Tasting Premium", price: 4900, rating: 4.9, tier: "enterprise" },
+    { slug: "private-chef-dinner", title: "Private Chef Dinner", price: 8900, rating: 5.0, tier: "enterprise" },
+  ],
+  "Berlin Events GmbH": [
+    { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", price: 3900, rating: 4.8, tier: "professional" },
+    { slug: "dj-party-paket", title: "DJ & Party Paket", price: 59900, rating: 4.5, tier: "professional" },
+  ],
+  "Lens Masters": [
+    { slug: "fotoshooting-event", title: "Event Fotoshooting", price: 34900, rating: 4.8, tier: "enterprise" },
+  ],
+};
+
+function getAgencyTier(agencyName: string): "starter" | "professional" | "enterprise" {
+  const services = AGENCY_MARKETPLACE_SERVICES[agencyName];
+  if (!services?.length) return "starter";
+  return services[0].tier as "starter" | "professional" | "enterprise";
+}
+
 export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
@@ -582,15 +609,62 @@ ${t('agencies.email.generatedBy', 'Diese Anfrage wurde über EventBliss generier
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: index * 0.05 }}
                                   >
-                                    <GlassCard className="p-4 h-full flex flex-col hover:border-primary/30 transition-colors group">
+                                    <GlassCard className={cn(
+                                      "p-4 h-full flex flex-col hover:border-primary/30 transition-colors group",
+                                      getAgencyTier(agency.name) === "enterprise" && "ring-2 ring-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]",
+                                      getAgencyTier(agency.name) === "professional" && "ring-1 ring-primary/20",
+                                    )}>
                                       <div className="flex-1">
-                                        <h5 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-                                          {agency.name}
-                                        </h5>
+                                        {/* Agency name + badges */}
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                          <h5 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                                            {agency.name}
+                                          </h5>
+                                          {getAgencyTier(agency.name) !== "starter" && (
+                                            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                                          )}
+                                        </div>
+                                        {/* Tier badge */}
+                                        {getAgencyTier(agency.name) !== "starter" && (
+                                          <div className="flex items-center gap-1.5 mb-2">
+                                            <span className={cn(
+                                              "px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                                              getAgencyTier(agency.name) === "enterprise"
+                                                ? "bg-amber-500/20 text-amber-400"
+                                                : "bg-primary/15 text-primary",
+                                            )}>
+                                              {getAgencyTier(agency.name) === "enterprise" ? "Enterprise ✓" : "Pro ✓"}
+                                            </span>
+                                          </div>
+                                        )}
                                         <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                                           {agency.description}
                                         </p>
                                       </div>
+
+                                      {/* Marketplace Services Preview */}
+                                      {AGENCY_MARKETPLACE_SERVICES[agency.name] && (
+                                        <div className="mb-3 space-y-1.5">
+                                          <div className="flex items-center gap-1 text-xs font-semibold text-primary">
+                                            <ShoppingBag className="w-3 h-3" />
+                                            <span>Buchbare Services</span>
+                                          </div>
+                                          {AGENCY_MARKETPLACE_SERVICES[agency.name].slice(0, 2).map((svc) => (
+                                            <button
+                                              key={svc.slug}
+                                              onClick={() => navigate(`/marketplace/service/${svc.slug}`)}
+                                              className="w-full flex items-center justify-between gap-2 rounded-lg bg-muted/30 px-2.5 py-1.5 text-left hover:bg-primary/10 transition-colors"
+                                            >
+                                              <span className="text-xs font-medium truncate">{svc.title}</span>
+                                              <div className="flex items-center gap-1.5 flex-shrink-0">
+                                                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                                <span className="text-[10px] text-muted-foreground">{svc.rating}</span>
+                                                <span className="text-xs font-bold text-primary">{(svc.price / 100).toFixed(0)}€</span>
+                                              </div>
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
 
                                       <div className="space-y-1 text-xs">
                                         {agency.phone && (
@@ -614,17 +688,38 @@ ${t('agencies.email.generatedBy', 'Diese Anfrage wurde über EventBliss generier
                                         )}
                                       </div>
 
-                                      <a
-                                        href={agency.website}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={() => handleWebsiteClick(agency)}
-                                        className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
-                                      >
-                                        <Globe className="w-3 h-3" />
-                                        {t('agencies.visitWebsite')}
-                                        <ExternalLink className="w-3 h-3" />
-                                      </a>
+                                      {/* Action buttons */}
+                                      <div className="mt-3 flex gap-2">
+                                        {AGENCY_MARKETPLACE_SERVICES[agency.name] ? (
+                                          <button
+                                            onClick={() => navigate(`/marketplace`)}
+                                            className={cn(
+                                              "flex-1 py-2 rounded-lg text-xs font-bold transition-all",
+                                              getAgencyTier(agency.name) === "enterprise"
+                                                ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-black"
+                                                : "bg-gradient-to-r from-primary to-cyan-500 text-black",
+                                            )}
+                                          >
+                                            {getAgencyTier(agency.name) === "enterprise" ? "Direkt buchen" : "Services ansehen"}
+                                          </button>
+                                        ) : (
+                                          <a
+                                            href={agency.website}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => handleWebsiteClick(agency)}
+                                            className="flex-1 py-2 rounded-lg text-xs font-bold text-center bg-muted hover:bg-muted/70 transition-colors"
+                                          >
+                                            Website besuchen
+                                          </a>
+                                        )}
+                                        <button
+                                          onClick={() => handleEmailClick(agency)}
+                                          className="px-3 py-2 rounded-lg text-xs font-bold bg-muted hover:bg-muted/70 transition-colors"
+                                        >
+                                          Anfragen
+                                        </button>
+                                      </div>
                                     </GlassCard>
                                   </motion.div>
                                 ))}
