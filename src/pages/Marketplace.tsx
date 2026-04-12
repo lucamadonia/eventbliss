@@ -65,10 +65,10 @@ const PRICE_FILTERS = [
   { label: "60 \u20AC+", min: 6000, max: Infinity },
 ];
 
-const TIER_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  starter: { bg: "bg-zinc-700/50", text: "text-zinc-300", label: "Starter" },
-  professional: { bg: "bg-purple-500/20", text: "text-[#cf96ff]", label: "Pro" },
-  enterprise: { bg: "bg-amber-500/20", text: "text-amber-400", label: "Enterprise" },
+const TIER_COLORS: Record<string, { bg: string; text: string; label: string; verified: boolean; glow: string }> = {
+  starter: { bg: "bg-zinc-700/50", text: "text-zinc-300", label: "Starter", verified: false, glow: "" },
+  professional: { bg: "bg-purple-500/20", text: "text-[#cf96ff]", label: "Pro ✓", verified: true, glow: "ring-1 ring-[#cf96ff]/20" },
+  enterprise: { bg: "bg-gradient-to-r from-amber-500/25 to-yellow-500/25", text: "text-amber-400", label: "Enterprise ✓", verified: true, glow: "ring-2 ring-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.15)]" },
 };
 
 const containerVariants = {
@@ -97,11 +97,15 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`${C.card} rounded-2xl ${C.border} border overflow-hidden cursor-pointer group relative`}
+      className={`${C.card} rounded-2xl ${C.border} border overflow-hidden cursor-pointer group relative ${tier.glow}`}
     >
-      {/* Featured glow */}
-      {service.featured && (
-        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#cf96ff]/30 via-[#00e3fd]/20 to-[#ff7350]/30 blur-sm -z-10" />
+      {/* Featured / Enterprise glow */}
+      {(service.featured || service.agencyTier === "enterprise") && (
+        <div className={`absolute -inset-[1px] rounded-2xl blur-sm -z-10 ${
+          service.agencyTier === "enterprise"
+            ? "bg-gradient-to-r from-amber-500/30 via-yellow-500/20 to-amber-500/30"
+            : "bg-gradient-to-r from-[#cf96ff]/30 via-[#00e3fd]/20 to-[#ff7350]/30"
+        }`} />
       )}
 
       {/* Cover image placeholder */}
@@ -160,15 +164,38 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
           </div>
         </div>
 
-        {/* Agency */}
+        {/* Agency + Verified Badge */}
         <div className="flex items-center justify-between pt-1 border-t border-white/5">
-          <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] truncate max-w-[60%]">
-            {service.agencyName}
-          </span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] truncate">
+              {service.agencyName}
+            </span>
+            {tier.verified && (
+              <span className="flex items-center gap-0.5 shrink-0" title="Verifizierte Agentur">
+                <svg className="h-3.5 w-3.5 text-[#00e3fd]" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 010-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-5.11-1.36a.75.75 0 00-1.085-1.035l-2.165 2.27-.89-.89a.75.75 0 10-1.06 1.06l1.418 1.418a.75.75 0 001.073-.012l2.71-2.81z" clipRule="evenodd" /></svg>
+              </span>
+            )}
+          </div>
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${tier.bg} ${tier.text} font-['Be_Vietnam_Pro']`}>
             {tier.label}
           </span>
         </div>
+
+        {/* Direct booking CTA for paid tiers */}
+        {tier.verified && (
+          <div className="pt-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onClick(); }}
+              className={`w-full py-2 rounded-xl text-xs font-bold font-['Plus_Jakarta_Sans'] transition-all ${
+                service.agencyTier === "enterprise"
+                  ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                  : "bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-black"
+              }`}
+            >
+              {service.agencyTier === "enterprise" ? "Direkt buchen" : "Jetzt anfragen"}
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -218,8 +245,15 @@ export default function Marketplace() {
       result = result.filter(s => s.city.toLowerCase().includes(c));
     }
     if (ratingFilter) result = result.filter(s => s.rating >= 4);
-    // Featured first
-    result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    // Sort: Enterprise first, then Professional, then Starter. Within same tier: featured first, then by rating.
+    const tierWeight = { enterprise: 3, professional: 2, starter: 1 };
+    result.sort((a, b) => {
+      const tw = (tierWeight[b.agencyTier] || 0) - (tierWeight[a.agencyTier] || 0);
+      if (tw !== 0) return tw;
+      const fw = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+      if (fw !== 0) return fw;
+      return b.rating - a.rating;
+    });
     return result;
   }, [activeCategory, search, activePriceIdx, cityFilter, ratingFilter]);
 
