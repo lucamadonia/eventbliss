@@ -34,6 +34,9 @@ const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const GamesHub = lazy(() => import("./pages/GamesHub"));
+const Marketplace = lazy(() => import("@/pages/Marketplace"));
+const MarketplaceService = lazy(() => import("@/pages/MarketplaceService"));
+const MarketplaceAgency = lazy(() => import("@/pages/MarketplaceAgency"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -114,6 +117,9 @@ const AppContent = () => {
           <Route path="/tv/:roomCode" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><TVScreen /></Suspense></ErrorBoundary>} />
           <Route path="/games/profile" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GameProfilePage /></Suspense></ErrorBoundary>} />
           <Route path="/admin/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AdminGames /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/marketplace" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Marketplace /></Suspense></ErrorBoundary>} />
+          <Route path="/marketplace/service/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceService /></Suspense></ErrorBoundary>} />
+          <Route path="/marketplace/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense></ErrorBoundary>} />
           <Route path="/danke" element={<Danke />} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />

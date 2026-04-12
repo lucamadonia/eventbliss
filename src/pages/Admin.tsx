@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles, Settings } from "lucide-react";
+import { Users, CreditCard, Ticket, BarChart3, ArrowLeft, Shield, Handshake, Coins, Banknote, Building2, TrendingUp, Sparkles, Settings, Store, ShoppingCart, PieChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
 import { VouchersTab } from "@/components/admin/VouchersTab";
@@ -17,6 +17,10 @@ import { AgencyAnalyticsTab } from "@/components/admin/AgencyAnalyticsTab";
 import { AgencyAffiliateManager } from "@/components/admin/AgencyAffiliateManager";
 import { CreditsTab } from "@/components/admin/CreditsTab";
 import { PlanSettingsTab } from "@/components/admin/PlanSettingsTab";
+
+const MarketplaceListingsTab = lazy(() => import("@/components/admin/MarketplaceListingsTab"));
+const MarketplaceBookingsTab = lazy(() => import("@/components/admin/MarketplaceBookingsTab"));
+const MarketplaceStatsTab = lazy(() => import("@/components/admin/MarketplaceStatsTab"));
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -62,7 +66,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-15 lg:w-auto lg:inline-flex">
             <TabsTrigger value="stats" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.stats", "Statistiken")}</span>
@@ -106,6 +110,18 @@ const Admin = () => {
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">{t("admin.tabs.settings", "Einstellungen")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketplace-listings" className="gap-2">
+              <Store className="h-4 w-4" />
+              <span className="hidden sm:inline">Marketplace</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketplace-bookings" className="gap-2">
+              <ShoppingCart className="h-4 w-4" />
+              <span className="hidden sm:inline">Buchungen (MKT)</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketplace-stats" className="gap-2">
+              <PieChart className="h-4 w-4" />
+              <span className="hidden sm:inline">MKT Stats</span>
             </TabsTrigger>
             <TabsTrigger value="games" className="gap-2" onClick={() => navigate('/admin/games')}>
               <Sparkles className="h-4 w-4" />
@@ -155,6 +171,24 @@ const Admin = () => {
 
           <TabsContent value="settings">
             <PlanSettingsTab />
+          </TabsContent>
+
+          <TabsContent value="marketplace-listings">
+            <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+              <MarketplaceListingsTab />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="marketplace-bookings">
+            <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+              <MarketplaceBookingsTab />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="marketplace-stats">
+            <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+              <MarketplaceStatsTab />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </main>

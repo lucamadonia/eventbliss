@@ -19,6 +19,9 @@ import {
   Search,
   Radio,
   Wallet,
+  Store,
+  CreditCard,
+  CalendarCheck,
   PanelLeftClose,
   PanelLeft,
   CalendarDays,
@@ -49,6 +52,9 @@ import { AgencyCalendarView } from "@/components/agency/AgencyCalendarView";
 import { AgencyNotifications } from "@/components/agency/AgencyNotifications";
 import { AgencyOnboarding } from "@/components/agency/AgencyOnboarding";
 import { AgencySettings } from "@/components/agency/AgencySettings";
+import AgencyMarketplace from "@/components/agency/AgencyMarketplace";
+import AgencyBookingsManager from "@/components/agency/AgencyBookingsManager";
+import AgencyStripeConnect from "@/components/agency/AgencyStripeConnect";
 
 type Section =
   | "dashboard"
@@ -61,6 +67,9 @@ type Section =
   | "runofshow"
   | "budgetengine"
   | "calendar"
+  | "marketplace"
+  | "bookings"
+  | "stripe"
   | "settings";
 
 interface NavItem {
@@ -81,6 +90,9 @@ const navItems: NavItem[] = [
   { id: "budgetengine", label: "Budget Engine", icon: Wallet },
   { id: "files", label: "Dateien", icon: FolderOpen },
   { id: "reports", label: "Berichte", icon: BarChart3 },
+  { id: "marketplace", label: "Marketplace", icon: Store },
+  { id: "bookings", label: "Buchungen", icon: CalendarCheck },
+  { id: "stripe", label: "Zahlungen", icon: CreditCard },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
 
@@ -95,6 +107,9 @@ const sectionLabels: Record<Section, string> = {
   budgetengine: "Budget Engine",
   files: "Dateien",
   reports: "Berichte",
+  marketplace: "Marketplace",
+  bookings: "Buchungen",
+  stripe: "Zahlungen",
   settings: "Einstellungen",
 };
 
@@ -382,6 +397,12 @@ export default function AgencyDashboard() {
         return <AgencyFileLibrary />;
       case "reports":
         return <AgencyReports />;
+      case "marketplace":
+        return <AgencyMarketplace />;
+      case "bookings":
+        return <AgencyBookingsManager />;
+      case "stripe":
+        return <AgencyStripeConnect />;
       case "settings":
         return <AgencySettings />;
       default:
