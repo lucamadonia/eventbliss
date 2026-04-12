@@ -349,6 +349,29 @@ const GamesHub = () => {
     );
   }
 
+  // ---- Premium Gate: block direct URL access to locked premium games ----
+  if (gameId && !roomCode) {
+    const tierConfig = GAME_TIERS.find((t) => t.gameId === gameId);
+    if (tierConfig?.tier === "premium" && !isPremium) {
+      const used = getFreePlaysForGame(gameId);
+      const limit = tierConfig.freeRoundsLimit ?? 2;
+      const left = Math.max(0, limit - used);
+      if (left <= 0) {
+        const gameData = allGames.find((g) => g.id === gameId);
+        return (
+          <>
+            <PremiumPaywall
+              isOpen={true}
+              onClose={() => navigate("/games")}
+              gameName={gameData?.name}
+              freePlaysLeft={0}
+            />
+          </>
+        );
+      }
+    }
+  }
+
   // Offline games — wrapped in TVBroadcastProvider so they can
   // optionally connect to a TV screen via the floating 📺 button
   if (gameId === "category") return <TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider>;
