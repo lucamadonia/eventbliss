@@ -11,6 +11,7 @@ import {
   LogIn,
   Gamepad2,
   ArrowRight,
+  X,
 } from "lucide-react";
 import {
   Drawer,
@@ -122,9 +123,16 @@ export default function GameRoomSheet({
   };
 
   return (
-    <Drawer open={open} onOpenChange={handleOpenChange} repositionInputs={false} handleOnly>
-      <DrawerContent className="max-h-[85vh] bg-background border-border">
-        <DrawerHeader className="text-center pb-2">
+    <Drawer open={open} onOpenChange={handleOpenChange} dismissible={false} repositionInputs={false} handleOnly>
+      <DrawerContent className="max-h-[85vh] bg-background border-border" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
+        <DrawerHeader className="text-center pb-2 relative">
+          {/* Explicit close button — drawer is non-dismissible on iOS to prevent keyboard issues */}
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-3 p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-colors"
+          >
+            <X className="w-4 h-4 text-muted-foreground" />
+          </button>
           <DrawerTitle className="text-xl font-display font-bold text-foreground">
             Online spielen
           </DrawerTitle>
