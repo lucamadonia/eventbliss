@@ -137,6 +137,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const [selectedGame, setSelectedGame] = useState(gameId);
   const [showGamePicker, setShowGamePicker] = useState(false);
 
+  // Sync selectedGame with room's gameId (host may switch game in lobby)
+  useEffect(() => {
+    if (room?.gameId && room.gameId !== selectedGame && !isHost) {
+      setSelectedGame(room.gameId);
+    }
+  }, [room?.gameId, isHost]);
+
   const { isPremium } = usePremium();
   const { user } = useAuth();
   const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
@@ -176,10 +183,11 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
     }
   }, []);
 
-  // When game starts (for guests): auto-navigate to the game
+  // When game starts (for guests): auto-navigate to the SAME game the host selected.
+  // CRITICAL: Use room.gameId (from host's broadcast), NOT local selectedGame.
   useEffect(() => {
     if (room?.status === "playing" && !isHost && room.roomCode) {
-      onStart(players, room.roomCode, selectedGame);
+      onStart(players, room.roomCode, room.gameId || selectedGame);
     }
   }, [room?.status]);
 
