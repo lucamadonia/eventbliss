@@ -89,6 +89,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const handleDebateExpire = useCallback(() => setPhase('reveal'), []);
   const debateTimer = useGameTimer(30, handleDebateExpire);
 
+  // speedTimerHook must be declared before handleSpeedExpire uses it
+  const speedTimerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
+
   const handleSpeedExpire = useCallback(() => {
     // auto-pick random if not voted in time
     setRoundVotes((prev) => {
@@ -100,12 +103,13 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       setPhase('reveal');
     } else {
       setVoterIdx((v) => v + 1);
-      speedTimerHook.reset(speedTimer);
-      speedTimerHook.start();
+      speedTimerRef.current?.reset(speedTimer);
+      speedTimerRef.current?.start();
     }
-  }, [voterIdx, players, speedTimerHook, speedTimer]);
+  }, [voterIdx, players, speedTimer]);
 
   const speedTimerHook = useGameTimer(speedTimer, handleSpeedExpire);
+  speedTimerRef.current = speedTimerHook;
 
   // ---------------------------------------------------------------------------
   // Setup

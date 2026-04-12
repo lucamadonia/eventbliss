@@ -19,6 +19,7 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { type Participant } from "@/hooks/useEvent";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -38,26 +39,10 @@ interface Guest {
 
 interface NativeEventGuestsProps {
   eventSlug: string;
+  participants?: Participant[];
+  accessCode?: string | null;
+  onRefetch?: () => void;
 }
-
-/* ------------------------------------------------------------------ */
-/*  Mock Data                                                          */
-/* ------------------------------------------------------------------ */
-
-const MOCK_GUESTS: Guest[] = [
-  { id: "1",  name: "Sarah Mueller",   email: "sarah@mail.de",  role: "organizer", status: "confirmed", avatar: "S" },
-  { id: "2",  name: "Max Hoffmann",    email: "max@mail.de",    role: "guest",     status: "confirmed", avatar: "M" },
-  { id: "3",  name: "Lisa Weber",      email: "lisa@mail.de",   role: "guest",     status: "confirmed", avatar: "L" },
-  { id: "4",  name: "Tom Schmidt",     email: "tom@mail.de",    role: "guest",     status: "maybe",     avatar: "T" },
-  { id: "5",  name: "Anna Klein",      email: "anna@mail.de",   role: "guest",     status: "confirmed", avatar: "A" },
-  { id: "6",  name: "Felix Braun",     email: "felix@mail.de",  role: "guest",     status: "confirmed", avatar: "F" },
-  { id: "7",  name: "Julia Fischer",   email: "julia@mail.de",  role: "guest",     status: "maybe",     avatar: "J" },
-  { id: "8",  name: "Lukas Meyer",     email: "lukas@mail.de",  role: "guest",     status: "confirmed", avatar: "L" },
-  { id: "9",  name: "Emma Richter",    email: "emma@mail.de",   role: "guest",     status: "maybe",     avatar: "E" },
-  { id: "10", name: "Paul Wagner",     email: "paul@mail.de",   role: "guest",     status: "declined",  avatar: "P" },
-];
-
-const ACCESS_CODE = "ABCD1234";
 
 /* ------------------------------------------------------------------ */
 /*  Status config                                                      */
@@ -172,46 +157,63 @@ function GuestCard({ guest }: { guest: Guest }) {
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
-export default function NativeEventGuests({ eventSlug }: NativeEventGuestsProps) {
+export default function NativeEventGuests({ eventSlug, participants, accessCode, onRefetch }: NativeEventGuestsProps) {
   const haptics = useHaptics();
   const [search, setSearch] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
 
+  // Map participants to Guest shape
+  const guests = useMemo<Guest[]>(() => {
+    if (!participants?.length) return [];
+    return participants.map((p) => ({
+      id: p.id,
+      name: p.name,
+      email: p.email || "",
+      role: p.role,
+      status: p.status,
+      avatar: p.name.charAt(0).toUpperCase(),
+    }));
+  }, [participants]);
+
   // Stats
   const stats = useMemo(() => {
-    const confirmed = MOCK_GUESTS.filter((g) => g.status === "confirmed").length;
-    const maybe = MOCK_GUESTS.filter((g) => g.status === "maybe").length;
-    const declined = MOCK_GUESTS.filter((g) => g.status === "declined").length;
+    const confirmed = guests.filter((g) => g.status === "confirmed").length;
+    const maybe = guests.filter((g) => g.status === "maybe").length;
+    const declined = guests.filter((g) => g.status === "declined").length;
     return { confirmed, maybe, declined };
-  }, []);
+  }, [guests]);
 
   // Filtered guests
   const filtered = useMemo(() => {
-    if (!search.trim()) return MOCK_GUESTS;
+    if (!search.trim()) return guests;
     const q = search.toLowerCase();
-    return MOCK_GUESTS.filter(
+    return guests.filter(
       (g) => g.name.toLowerCase().includes(q) || g.email.toLowerCase().includes(q)
     );
-  }, [search]);
+  }, [search, guests]);
+
+  // Share URL using real slug
+  const shareUrl = `${window.location.origin}/e/${eventSlug}`;
 
   // Copy helpers
   const copyLink = useCallback(() => {
-    navigator.clipboard?.writeText(`https://event-bliss.com/e/${eventSlug}`);
+    navigator.clipboard?.writeText(shareUrl);
     setCopiedLink(true);
     haptics.success();
     setTimeout(() => setCopiedLink(false), 2000);
-  }, [eventSlug, haptics]);
+  }, [shareUrl, haptics]);
 
   const copyCode = useCallback(() => {
-    navigator.clipboard?.writeText(ACCESS_CODE);
+    if (!accessCode) return;
+    navigator.clipboard?.writeText(accessCode);
     setCopiedCode(true);
     haptics.success();
     setTimeout(() => setCopiedCode(false), 2000);
-  }, [haptics]);
+  }, [accessCode, haptics]);
 
   const isEmpty = filtered.length === 0 && search.trim() !== "";
-  const noGuests = MOCK_GUESTS.length === 0;
+  const noGuests = guests.length === 0;
 
   return (
     <div className="relative flex flex-col h-full">
@@ -341,8 +343,7 @@ export default function NativeEventGuests({ eventSlug }: NativeEventGuestsProps)
         )}
 
         {/* Invite Section */}
-        {!noGuests && (
-          <motion.div
+        <motion.div
             className="mt-6 flex flex-col gap-3 pb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -412,7 +413,7 @@ export default function NativeEventGuests({ eventSlug }: NativeEventGuestsProps)
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-foreground">Event-Code</p>
                 <p className="text-sm font-mono font-bold tracking-widest text-foreground">
-                  {ACCESS_CODE}
+                  {accessCode || "—"}
                 </p>
               </div>
               <div className="w-8 h-8 rounded-lg bg-foreground/5 border border-border flex items-center justify-center shrink-0">
@@ -424,7 +425,6 @@ export default function NativeEventGuests({ eventSlug }: NativeEventGuestsProps)
               </div>
             </motion.div>
           </motion.div>
-        )}
       </div>
     </div>
   );

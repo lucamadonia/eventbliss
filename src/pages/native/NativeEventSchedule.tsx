@@ -3,7 +3,7 @@
  * Vertical timeline with animated connecting lines, stagger reveal,
  * expand-on-tap activity cards, day selector, and Add Activity FAB.
  */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Calendar,
@@ -17,6 +17,7 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -47,6 +48,7 @@ interface Activity {
   location?: string;
   emoji: string;
   responsible?: string;
+  dayDate: string;
 }
 
 interface DayTab {
@@ -82,23 +84,41 @@ const CATEGORY_OPTIONS: { value: ActivityCategory; label: string }[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Mock data                                                          */
+/*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-const MOCK_ACTIVITIES: Activity[] = [
-  { id: "1", time: "10:00", title: "Fruehstueck im Hotel", category: "food", duration: "1h", cost: null, location: "Hotel Adlon, Berlin", emoji: "\uD83C\uDF73", responsible: "Lisa", description: "Gemeinsames Fruehstueck am grossen Tisch im Wintergarten." },
-  { id: "2", time: "12:00", title: "Escape Room Adventure", category: "activity", duration: "2h", cost: "25\u20AC/P", location: "Exit Games Berlin", emoji: "\uD83D\uDD10", responsible: "Max", description: "Raum: 'Das verlorene Labor'. Schwierigkeitsgrad 4/5!" },
-  { id: "3", time: "14:30", title: "Cocktail Workshop", category: "activity", duration: "2h", cost: "39\u20AC/P", location: "Mixology Bar", emoji: "\uD83C\uDF78", description: "Lernt eure eigenen Signature-Cocktails zu mixen." },
-  { id: "4", time: "17:00", title: "Hotel Check-in & Umziehen", category: "accommodation", duration: "1h", cost: null, location: "Hotel Adlon", emoji: "\uD83C\uDFE8", description: "Zimmer beziehen und fuer den Abend fertig machen." },
-  { id: "5", time: "19:00", title: "Dinner im Steakhaus", category: "food", duration: "2h", cost: "45\u20AC/P", location: "Block House", emoji: "\uD83E\uDD69", responsible: "Tom", description: "Tisch fuer 12 Personen ist reserviert. Dresscode: Smart Casual." },
-  { id: "6", time: "22:00", title: "Club & Party", category: "party", duration: "open", cost: "20\u20AC Eintritt", location: "Berghain", emoji: "\uD83C\uDF89", responsible: "Anna", description: "Gaesteliste ist organisiert. Treffpunkt am Eingang." },
-];
+function getCategoryEmoji(cat: string | null): string {
+  const map: Record<string, string> = {
+    food: "\uD83C\uDF55",
+    activity: "\uD83C\uDFAF",
+    transport: "\uD83D\uDE90",
+    accommodation: "\uD83C\uDFE8",
+    party: "\uD83C\uDF89",
+    sightseeing: "\uD83D\uDDFA",
+    relaxation: "\uD83D\uDC86",
+    other: "\uD83D\uDCCC",
+  };
+  return map[cat || "other"] || "\uD83D\uDCCC";
+}
 
-const MOCK_DAYS: DayTab[] = [
-  { label: "Fr 15.05", date: "2026-05-15", activities: MOCK_ACTIVITIES },
-  { label: "Sa 16.05", date: "2026-05-16", activities: [] },
-  { label: "So 17.05", date: "2026-05-17", activities: [] },
-];
+function formatDayLabel(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  const weekday = d.toLocaleDateString("de-DE", { weekday: "short" });
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  return `${weekday} ${day}.${month}`;
+}
+
+function computeDuration(startTime: string | null, endTime: string | null): string {
+  if (!startTime || !endTime) return "";
+  const start = new Date(`2000-01-01T${startTime}`);
+  const end = new Date(`2000-01-01T${endTime}`);
+  const diffMs = end.getTime() - start.getTime();
+  if (diffMs <= 0) return "";
+  const hours = diffMs / 3_600_000;
+  if (hours >= 1) return `${Math.round(hours * 10) / 10}h`;
+  return `${Math.round(diffMs / 60_000)}min`;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Animation variants                                                 */
@@ -172,6 +192,9 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   const [selectedDay, setSelectedDay] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [allActivities, setAllActivities] = useState<Activity[]>([]);
+  const [eventId, setEventId] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -179,8 +202,71 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   const [formCategory, setFormCategory] = useState<ActivityCategory>("activity");
   const [formNotes, setFormNotes] = useState("");
 
-  const days = MOCK_DAYS;
-  const activities = useMemo(() => days[selectedDay]?.activities ?? [], [selectedDay]);
+  /* ---------- Fetch real data from Supabase ---------- */
+  const fetchActivities = useCallback(async () => {
+    setLoading(true);
+    const { data: eventData } = await supabase
+      .from("events")
+      .select("id, event_date")
+      .eq("slug", eventSlug)
+      .single();
+
+    if (!eventData) {
+      setLoading(false);
+      return;
+    }
+
+    setEventId(eventData.id);
+
+    const { data } = await supabase
+      .from("schedule_activities")
+      .select("*")
+      .eq("event_id", eventData.id)
+      .order("day_date", { ascending: true })
+      .order("start_time", { ascending: true });
+
+    if (data) {
+      setAllActivities(
+        data.map((a) => ({
+          id: a.id,
+          time: a.start_time?.slice(0, 5) || "00:00",
+          title: a.title,
+          category: (a.category as ActivityCategory) || "other",
+          duration: computeDuration(a.start_time, a.end_time),
+          cost: a.estimated_cost
+            ? `${a.estimated_cost}\u20AC${a.cost_per_person ? "/P" : ""}`
+            : null,
+          location: a.location || "",
+          emoji: getCategoryEmoji(a.category),
+          description: a.description || "",
+          dayDate: a.day_date,
+        })),
+      );
+    }
+    setLoading(false);
+  }, [eventSlug]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, [fetchActivities]);
+
+  /* ---------- Group activities by day ---------- */
+  const days: DayTab[] = useMemo(() => {
+    const dayMap = new Map<string, Activity[]>();
+    allActivities.forEach((a) => {
+      const day = a.dayDate || "unknown";
+      dayMap.set(day, [...(dayMap.get(day) || []), a]);
+    });
+    // Sort dates ascending
+    const sorted = [...dayMap.entries()].sort(([a], [b]) => a.localeCompare(b));
+    return sorted.map(([date, acts]) => ({
+      label: formatDayLabel(date),
+      date,
+      activities: acts,
+    }));
+  }, [allActivities]);
+
+  const activities = useMemo(() => days[selectedDay]?.activities ?? [], [days, selectedDay]);
 
   const toggleExpand = useCallback(
     (id: string) => {
@@ -199,15 +285,29 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
     [haptics],
   );
 
-  const handleAddActivity = useCallback(() => {
+  const handleAddActivity = useCallback(async () => {
     haptics.medium();
-    // In production, this would dispatch to the store / API
+    if (!eventId || !formTitle.trim()) return;
+
+    const targetDay = days[selectedDay]?.date || new Date().toISOString().slice(0, 10);
+
+    await supabase.from("schedule_activities").insert({
+      event_id: eventId,
+      title: formTitle.trim(),
+      start_time: formTime || null,
+      category: formCategory,
+      notes: formNotes || null,
+      day_date: targetDay,
+    });
+
     setShowForm(false);
     setFormTitle("");
     setFormTime("12:00");
     setFormCategory("activity");
     setFormNotes("");
-  }, [haptics]);
+    // Refetch to show the new activity
+    fetchActivities();
+  }, [haptics, eventId, formTitle, formTime, formCategory, formNotes, days, selectedDay, fetchActivities]);
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
@@ -216,7 +316,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   return (
     <div className="relative flex flex-col h-full bg-background">
       {/* ------- Day Selector ------- */}
-      {days.length > 1 && (
+      {!loading && days.length > 1 && (
         <div className="flex items-center gap-2 px-5 pt-4 pb-2 overflow-x-auto no-scrollbar">
           {days.map((day, idx) => {
             const active = idx === selectedDay;
@@ -244,7 +344,36 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
 
       {/* ------- Timeline ------- */}
       <div className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
-        {activities.length === 0 ? (
+        {loading ? (
+          /* ---------- Loading Skeleton ---------- */
+          <div className="flex flex-col gap-4 pt-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex items-start gap-0 animate-pulse">
+                <div className="w-[42px] shrink-0 pt-3 text-right">
+                  <div className="h-4 w-10 bg-muted/40 rounded ml-auto" />
+                </div>
+                <div className="relative shrink-0 w-[26px] flex justify-center pt-3.5 z-10">
+                  <div className="w-3 h-3 rounded-full bg-muted/40" />
+                </div>
+                <div className="flex-1 min-w-0 pb-3">
+                  <div className="rounded-2xl p-3.5 border border-border/30 bg-card/40 space-y-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-muted/40 shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <div className="h-4 w-3/4 bg-muted/40 rounded" />
+                        <div className="h-3 w-1/2 bg-muted/30 rounded" />
+                      </div>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <div className="h-5 w-12 bg-muted/30 rounded-md" />
+                      <div className="h-5 w-16 bg-muted/30 rounded-md" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : activities.length === 0 ? (
           /* ---------- Empty State ---------- */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -369,10 +498,12 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
 
                         {/* Badges row */}
                         <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                          {act.duration && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium">
                             <Clock className="w-3 h-3" />
                             {act.duration}
                           </span>
+                          )}
                           {act.cost && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[11px] font-medium">
                               {act.cost}

@@ -35,6 +35,7 @@ const AdminScreen = lazy(() => import("@/pages/native/AdminScreen"));
 const DrinkTrackerScreen = lazy(() => import("@/pages/native/DrinkTrackerScreen"));
 const PartyLobbyScreen = lazy(() => import("@/pages/native/PartyLobbyScreen"));
 const NativeEventDashboard = lazy(() => import("@/pages/native/NativeEventDashboard"));
+const JoinRoomScreen = lazy(() => import("@/pages/native/JoinRoomScreen"));
 
 // Existing desktop pages — wrapped in NativeStackPage at route level
 import Auth from "@/pages/Auth";
@@ -106,6 +107,10 @@ export function NativeApp() {
               } />
               <Route path="/party" element={
                 <Suspense fallback={<PageLoader />}><PartyLobbyScreen /></Suspense>
+              } />
+
+              <Route path="/join-room" element={
+                <Suspense fallback={<PageLoader />}><JoinRoomScreen /></Suspense>
               } />
 
               {/* Existing pages wrapped in NativeStackPage */}

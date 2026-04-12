@@ -6,7 +6,7 @@
  * Design: glassmorphism cards, spring animations, haptics,
  * horizontal pill tab navigation with layoutId morphing.
  */
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import NativeEventGuests from "./NativeEventGuests";
@@ -24,30 +24,21 @@ import {
   UserPlus,
   Receipt,
   Clock,
-  MessageCircle,
   TrendingUp,
   Vote,
+  FileEdit,
+  ClipboardCheck,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useEvent, type EventData, type Participant } from "@/hooks/useEvent";
+import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
+import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
+import { ResponsesTab } from "@/components/dashboard/ResponsesTab";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
-/* ------------------------------------------------------------------ */
-/*  Mock data — will be replaced with real hooks later                 */
-/* ------------------------------------------------------------------ */
-
-const MOCK_EVENT = {
-  name: "Luca's JGA",
-  honoree: "Luca",
-  date: "2026-05-15",
-  type: "bachelor",
-  status: "active" as const,
-  participantCount: 12,
-  yesCount: 8,
-  maybeCount: 3,
-  noCount: 1,
-  avgBudget: "150-250",
-};
 
 const EVENT_TYPE_META: Record<string, { emoji: string; label: string; color: string }> = {
   bachelor:    { emoji: "\uD83C\uDF89", label: "Junggesellenabschied", color: "from-violet-500 to-purple-600" },
@@ -67,7 +58,7 @@ const MOCK_ACTIVITIES = [
 /*  Tab definitions                                                    */
 /* ------------------------------------------------------------------ */
 
-type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "ki" | "einstellungen";
+type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "formular" | "antworten" | "ki" | "einstellungen";
 
 interface TabDef {
   id: TabId;
@@ -80,6 +71,8 @@ const TABS: TabDef[] = [
   { id: "gaeste",        label: "Gaeste",         icon: Users },
   { id: "zeitplan",      label: "Zeitplan",       icon: Calendar },
   { id: "ausgaben",      label: "Ausgaben",       icon: Wallet },
+  { id: "formular",     label: "Formular",       icon: FileEdit },
+  { id: "antworten",    label: "Antworten",      icon: ClipboardCheck },
   { id: "ki",            label: "KI",             icon: Sparkles },
   { id: "einstellungen", label: "Einstellungen",  icon: Settings },
 ];
@@ -87,13 +80,6 @@ const TABS: TabDef[] = [
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
-
-function daysUntil(dateStr: string): number {
-  const target = new Date(dateStr);
-  const now = new Date();
-  const diff = target.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-}
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("de-DE", {
@@ -157,12 +143,16 @@ const tabContentVariants = {
 /*  Overview Tab (inline)                                              */
 /* ------------------------------------------------------------------ */
 
-function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitchTab: (tab: TabId) => void }) {
+function OverviewTab({ event, participants, onSwitchTab }: { event: EventData; participants: Participant[]; onSwitchTab: (tab: TabId) => void }) {
   const haptics = useHaptics();
-  const days = daysUntil(event.date);
-  const typeMeta = EVENT_TYPE_META[event.type] || EVENT_TYPE_META.other;
-  const totalResponses = event.yesCount + event.maybeCount + event.noCount;
-  const responseProgress = totalResponses / event.participantCount;
+  const days = event.event_date
+    ? Math.max(0, Math.ceil((new Date(event.event_date).getTime() - Date.now()) / 86400000))
+    : 0;
+  const typeMeta = EVENT_TYPE_META[event.event_type] || EVENT_TYPE_META.other;
+  const yesCount = participants.filter(p => p.status === "confirmed").length;
+  const maybeCount = participants.filter(p => p.status === "maybe").length;
+  const participantCount = participants.length;
+  const responseProgress = participantCount > 0 ? (yesCount + maybeCount) / participantCount : 0;
 
   const quickActions = useMemo(() => [
     { label: "Gaeste einladen",    icon: UserPlus, gradient: "from-violet-500 to-purple-600", tab: "gaeste" as TabId },
@@ -190,7 +180,7 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h2 className="text-xl font-display font-bold text-foreground">{event.name}</h2>
-              <p className="text-sm text-muted-foreground">Ehrengast: {event.honoree}</p>
+              <p className="text-sm text-muted-foreground">Ehrengast: {event.honoree_name}</p>
             </div>
             <span className="text-2xl">{typeMeta.emoji}</span>
           </div>
@@ -198,7 +188,7 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
-              {formatDate(event.date)}
+              {event.event_date ? formatDate(event.event_date) : "Kein Datum"}
             </span>
             <span className="flex items-center gap-1.5">
               <span className="text-xs">{typeMeta.emoji}</span>
@@ -215,7 +205,7 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
           <div className="mx-auto w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
             <Users className="w-4 h-4 text-white" />
           </div>
-          <p className="text-lg font-display font-bold text-foreground">{event.participantCount}</p>
+          <p className="text-lg font-display font-bold text-foreground">{participantCount}</p>
           <p className="text-[10px] text-muted-foreground leading-tight">Teilnehmer</p>
         </div>
 
@@ -224,7 +214,7 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
           <div className="mx-auto w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
             <Check className="w-4 h-4 text-white" />
           </div>
-          <p className="text-lg font-display font-bold text-foreground">{event.yesCount}</p>
+          <p className="text-lg font-display font-bold text-foreground">{yesCount}</p>
           <p className="text-[10px] text-muted-foreground leading-tight">Zusagen</p>
         </div>
 
@@ -233,8 +223,8 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
           <div className="mx-auto w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center">
             <Wallet className="w-4 h-4 text-white" />
           </div>
-          <p className="text-lg font-display font-bold text-foreground">{event.avgBudget}</p>
-          <p className="text-[10px] text-muted-foreground leading-tight">Budget</p>
+          <p className="text-lg font-display font-bold text-foreground">{maybeCount}</p>
+          <p className="text-[10px] text-muted-foreground leading-tight">Vielleicht</p>
         </div>
       </motion.div>
 
@@ -261,7 +251,7 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
             {days === 0 ? "Heute!" : days === 1 ? "Morgen!" : `In ${days} Tagen`}
           </p>
           <p className="text-sm text-muted-foreground">
-            {event.yesCount} von {event.participantCount} haben zugesagt
+            {yesCount} von {participantCount} haben zugesagt
           </p>
           <div className="h-1.5 w-full rounded-full bg-foreground/10 overflow-hidden">
             <motion.div
@@ -332,24 +322,6 @@ function OverviewTab({ event, onSwitchTab }: { event: typeof MOCK_EVENT; onSwitc
 }
 
 /* ------------------------------------------------------------------ */
-/*  Placeholder tab content                                            */
-/* ------------------------------------------------------------------ */
-
-function PlaceholderTab({ label, icon: Icon }: { label: string; icon: typeof LayoutDashboard }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 border border-violet-500/30 flex items-center justify-center">
-        <Icon className="w-7 h-7 text-violet-400" />
-      </div>
-      <div className="space-y-1">
-        <p className="text-lg font-display font-semibold text-foreground">{label}</p>
-        <p className="text-sm text-muted-foreground">Kommt bald</p>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -358,38 +330,72 @@ export default function NativeEventDashboard() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const [activeTab, setActiveTab] = useState<TabId>("uebersicht");
+  const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
 
-  // Mock data — will be replaced by useEvent(slug) later
-  const event = MOCK_EVENT;
-  const days = daysUntil(event.date);
+  // Build stats from responses — for now pass null, AI will work with basic context
+  const stats = null;
+
+  const daysUntilEvent = event?.event_date
+    ? Math.max(0, Math.ceil((new Date(event.event_date).getTime() - Date.now()) / 86400000))
+    : 0;
 
   const statusBadge = useMemo(() => {
-    switch (event.status) {
+    switch (event?.status) {
       case "active":   return { label: "Aktiv",   color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
       case "planning": return { label: "Planung", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" };
       default:         return { label: "Entwurf", color: "bg-foreground/10 text-muted-foreground border-border" };
     }
-  }, [event.status]);
+  }, [event?.status]);
 
   const switchTab = (tab: TabId) => {
     haptics.select();
     setActiveTab(tab);
   };
 
+  if (isLoading) {
+    return (
+      <div className="relative h-full flex flex-col items-center justify-center bg-background safe-top">
+        <Loader2 className="w-10 h-10 animate-spin text-violet-500 mb-3" />
+        <p className="text-sm text-muted-foreground">Dashboard wird geladen...</p>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="relative h-full flex flex-col items-center justify-center bg-background safe-top px-6">
+        <AlertCircle className="w-12 h-12 text-destructive mb-4" />
+        <h2 className="text-lg font-display font-bold text-foreground mb-1">Event nicht gefunden</h2>
+        <p className="text-sm text-muted-foreground text-center mb-6">Das Event konnte nicht geladen werden.</p>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate(-1)}
+          className="px-5 h-10 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-medium"
+        >
+          Zurueck
+        </motion.button>
+      </div>
+    );
+  }
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "uebersicht":
-        return <OverviewTab event={event} onSwitchTab={switchTab} />;
+        return event ? <OverviewTab event={event} participants={participants} onSwitchTab={switchTab} /> : null;
       case "gaeste":
-        return <NativeEventGuests eventSlug={slug} />;
+        return <NativeEventGuests eventSlug={slug!} participants={participants} accessCode={event?.access_code} onRefetch={refetch} />;
       case "zeitplan":
-        return <NativeEventSchedule eventSlug={slug} />;
+        return <NativeEventSchedule eventSlug={slug!} />;
       case "ausgaben":
-        return <NativeEventExpenses eventSlug={slug} />;
+        return <NativeEventExpenses eventSlug={slug!} />;
+      case "formular":
+        return event ? <FormBuilderTab event={event} onUpdate={refetch} /> : null;
+      case "antworten":
+        return event ? <ResponsesTab event={event} responses={[]} isLoading={false} /> : null;
       case "ki":
-        return <PlaceholderTab label="KI-Assistent" icon={Sparkles} />;
+        return event ? <AIAssistantTab event={event} stats={stats} /> : null;
       case "einstellungen":
-        return <PlaceholderTab label="Einstellungen" icon={Settings} />;
+        return event ? <SettingsTab event={event} participants={participants} onUpdate={refetch} /> : null;
       default:
         return null;
     }
@@ -416,7 +422,7 @@ export default function NativeEventDashboard() {
               {event.name}
             </h1>
             <p className="text-sm text-muted-foreground truncate">
-              Ehrengast: {event.honoree}
+              Ehrengast: {event.honoree_name}
             </p>
           </div>
         </div>
@@ -427,7 +433,7 @@ export default function NativeEventDashboard() {
         {/* Countdown chip */}
         <div className="flex items-center gap-1.5 px-3 h-7 rounded-full bg-foreground/5 border border-border text-xs text-muted-foreground">
           <Clock className="w-3 h-3" />
-          {days === 0 ? "Heute" : days === 1 ? "Morgen" : `In ${days} Tagen`}
+          {daysUntilEvent === 0 ? "Heute" : daysUntilEvent === 1 ? "Morgen" : `In ${daysUntilEvent} Tagen`}
         </div>
 
         {/* Status badge */}
@@ -441,7 +447,7 @@ export default function NativeEventDashboard() {
         {/* Participant count */}
         <div className="flex items-center gap-1.5 px-3 h-7 rounded-full bg-foreground/5 border border-border text-xs text-muted-foreground">
           <Users className="w-3 h-3" />
-          {event.participantCount}
+          {participants.length}
         </div>
       </div>
 

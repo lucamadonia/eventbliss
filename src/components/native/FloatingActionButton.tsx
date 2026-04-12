@@ -53,7 +53,7 @@ export function FloatingActionButton() {
     { icon: Calendar, label: "Event erstellen", path: "/create", color: "from-violet-500 to-fuchsia-500" },
     { icon: Users, label: "Event beitreten", path: "/join", color: "from-cyan-500 to-teal-500" },
     { icon: Wifi, label: "Raum erstellen", onClick: () => openRoom("create"), color: "from-emerald-500 to-green-500" },
-    { icon: LogIn, label: "Raum beitreten", onClick: () => openRoom("join"), color: "from-sky-500 to-blue-500" },
+    { icon: LogIn, label: "Raum beitreten", path: "/join-room", color: "from-sky-500 to-blue-500" },
     ...(isGamesTab ? [] : [{ icon: Gamepad2, label: "Quick Game", path: "/games", color: "from-amber-500 to-pink-500" } as Action]),
   ];
 
