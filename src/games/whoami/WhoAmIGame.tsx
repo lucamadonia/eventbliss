@@ -77,6 +77,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   const [voterIdx, setVoterIdx] = useState(0);
   const [guessAttempt, setGuessAttempt] = useState('');
   const [guessCorrect, setGuessCorrect] = useState<boolean | null>(null);
+  const [characterRevealed, setCharacterRevealed] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Setup
@@ -109,6 +110,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // ---------------------------------------------------------------------------
 
   const nextReveal = () => {
+    setCharacterRevealed(false); // Hide character for next player
     if (revealIdx + 1 >= players.length) {
       setRevealIdx(0);
       setActiveIdx(0);
@@ -320,23 +322,41 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             <p className="text-white/40 text-sm text-center">
               {players[revealIdx]?.name} darf NICHT hinschauen!
             </p>
-            {/* Big reveal card */}
-            <motion.div initial={{ rotateY: 90 }} animate={{ rotateY: 0 }} transition={{ duration: 0.5 }}
-              className="w-full max-w-sm rounded-2xl bg-[#1b2028] border border-[#df8eff]/20 p-6 text-center relative overflow-hidden">
+            {/* Tap-to-reveal card — character is HIDDEN until tapped */}
+            <motion.button
+              onClick={() => { if (!characterRevealed) setCharacterRevealed(true); }}
+              whileTap={!characterRevealed ? { scale: 0.97 } : {}}
+              className="w-full max-w-sm rounded-2xl bg-[#1b2028] border border-[#df8eff]/20 p-6 text-center relative overflow-hidden cursor-pointer"
+            >
               <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]" />
-              <div className="text-white/40 text-sm mb-2">{players[revealIdx]?.name} ist:</div>
-              <div className="text-3xl font-extrabold text-[#df8eff] mb-1">{players[revealIdx]?.character}</div>
-              <div className="flex items-center justify-center gap-2 mt-3">
+              <div className="flex items-center justify-center gap-2 mb-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
                   style={{ backgroundColor: players[revealIdx]?.color }}>
                   {players[revealIdx]?.avatar}
                 </div>
               </div>
-            </motion.div>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={nextReveal}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-              {revealIdx + 1 >= players.length ? <><Play className="w-5 h-5" /> Spiel starten</> : <>Weiter <ArrowRight className="w-5 h-5" /></>}
+              <div className="text-white/40 text-sm mb-2">{players[revealIdx]?.name} ist:</div>
+              <AnimatePresence mode="wait">
+                {characterRevealed ? (
+                  <motion.div key="revealed" initial={{ rotateY: 90, opacity: 0 }} animate={{ rotateY: 0, opacity: 1 }} transition={{ duration: 0.4 }}>
+                    <div className="text-3xl font-extrabold text-[#df8eff] mb-1">{players[revealIdx]?.character}</div>
+                  </motion.div>
+                ) : (
+                  <motion.div key="hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <div className="text-5xl mb-2">❓</div>
+                    <div className="text-sm text-[#8ff5ff] font-bold animate-pulse">Tippe um aufzudecken</div>
+                    <div className="text-xs text-white/30 mt-1">Stelle sicher, dass {players[revealIdx]?.name} NICHT auf das Handy schaut!</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.button>
+            {/* Continue button — only visible AFTER character is revealed */}
+            {characterRevealed && (
+              <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.97 }} onClick={nextReveal}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
+                {revealIdx + 1 >= players.length ? <><Play className="w-5 h-5" /> Spiel starten</> : <>Weiter <ArrowRight className="w-5 h-5" /></>}
+              </motion.button>
+            )}
           </motion.div>
         )}
 
