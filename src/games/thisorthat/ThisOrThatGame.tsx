@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import { THISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
@@ -66,6 +68,7 @@ const EP_STYLE = `
 `;
 
 export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -264,7 +267,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     return (
       <GameSetup
         gameId="thisorthat"
-        modes={GAME_MODES}
+        modes={getTranslatedModes('thisorthat', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="This or That"

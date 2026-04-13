@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
@@ -74,6 +76,7 @@ const EP_STYLE = `
 `;
 
 export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
@@ -288,7 +291,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     return (
       <GameSetup
         gameId="truthdare"
-        modes={GAME_MODES}
+        modes={getTranslatedModes('truthdare', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Wahrheit oder Pflicht 2.0"

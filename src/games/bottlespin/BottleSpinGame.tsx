@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,6 +11,7 @@ import { haptics } from '@/hooks/useHaptics';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -67,6 +69,7 @@ const neonStyles = `
 `;
 
 export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -221,7 +224,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
 
   if (phase === 'setup') {
     return (
-      <GameSetup gameId="bottlespin" modes={GAME_MODES} settings={SETUP_SETTINGS} onStart={handleStart}
+      <GameSetup gameId="bottlespin" modes={getTranslatedModes('bottlespin', GAME_MODES, t)} settings={SETUP_SETTINGS} onStart={handleStart}
         title="Flaschendrehen" minPlayers={2} maxPlayers={12} onlinePlayers={online?.players} />
     );
   }

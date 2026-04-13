@@ -3499,6 +3499,70 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "gameModes": {
+    "bomb": {
+      "kategorie": { "name": "Kategorie", "desc": "Nenne Begriffe einer Kategorie mit einem bestimmten Buchstaben" },
+      "quiz": { "name": "Quiz", "desc": "Beantworte Wissensfragen unter Zeitdruck" },
+      "speed": { "name": "Speed", "desc": "Schnellste Antwort gewinnt — keine Zeit zum Nachdenken!" },
+      "alle": { "name": "Alle Modi", "desc": "Zufälliger Mix aus allen Kategorien und Quiz" }
+    },
+    "category": {
+      "classic": { "name": "Klassisch", "desc": "Reihum Begriffe nennen — wer zögert, verliert" },
+      "rapid": { "name": "Rapid", "desc": "Schnellrunde — nur 5 Sekunden pro Antwort!" },
+      "letter": { "name": "Buchstabe", "desc": "Alle Begriffe müssen mit dem gleichen Buchstaben beginnen" }
+    },
+    "emojiguess": {
+      "classic": { "name": "Klassisch", "desc": "30 Sekunden pro Runde" },
+      "speed": { "name": "Speed", "desc": "10 Sekunden pro Runde" },
+      "team": { "name": "Team", "desc": "Teams wechseln sich ab" }
+    },
+    "fakeorfact": {
+      "classic": { "name": "Klassisch", "desc": "Wahr oder Falsch — eine Aussage, du entscheidest" },
+      "three": { "name": "Zwei Lügen", "desc": "Drei Aussagen — finde die Wahrheit!" }
+    },
+    "truthdare": {
+      "classic": { "name": "Classic", "desc": "Alle Kategorien gemischt" },
+      "eskalation": { "name": "Eskalation", "desc": "Wird jede Runde wilder!" },
+      "nur-wahrheit": { "name": "Nur Wahrheit", "desc": "Nur Fragen, keine Pflicht" },
+      "nur-pflicht": { "name": "Nur Pflicht", "desc": "Nur Aufgaben, keine Fragen" }
+    },
+    "thisorthat": {
+      "classic": { "name": "Classic", "desc": "Kein Zeitdruck, alle stimmen ab" },
+      "speed": { "name": "Speed", "desc": "5 Sekunden pro Spieler!" },
+      "debatte": { "name": "Debatte", "desc": "Nach dem Ergebnis: 30s Diskussion" }
+    },
+    "whoami": {
+      "prominente": { "name": "Prominente", "desc": "Berühmte Persönlichkeiten" },
+      "tiere": { "name": "Tiere", "desc": "Rate das Tier!" },
+      "berufe": { "name": "Berufe", "desc": "Welcher Beruf bist du?" },
+      "filme": { "name": "Filme", "desc": "Filmcharaktere erraten" }
+    },
+    "bottlespin": {
+      "fragen": { "name": "Mit Fragen", "desc": "Flasche + Fragen & Aufgaben" },
+      "nur-flasche": { "name": "Nur Flasche", "desc": "Reines Flaschendrehen" }
+    },
+    "storybuilder": {
+      "classic": { "name": "Klassisch", "desc": "Freier Text — schreib was du willst" },
+      "vorgabe": { "name": "Vorgabe", "desc": "Mit Satzanfängen als Hilfe" },
+      "reimzeit": { "name": "Reimzeit", "desc": "Sätze müssen sich reimen!" }
+    },
+    "sharedquiz": {
+      "trio": { "name": "Trio-Challenge", "desc": "Frage, Antworten & Hinweis verteilt" },
+      "chain": { "name": "Ketten-Quiz", "desc": "Hinweis-Kette von Spieler zu Spieler" },
+      "allornothing": { "name": "Alle oder Keiner", "desc": "Nur Punkte wenn alle richtig liegen" }
+    },
+    "quickdraw": {
+      "classic": { "name": "Klassisch", "desc": "60 Sekunden zum Zeichnen" },
+      "speed": { "name": "Speed", "desc": "Nur 30 Sekunden!" },
+      "blind": { "name": "Blind", "desc": "Zeichnung nach 5s unsichtbar" }
+    },
+    "wordpress": {
+      "kategorie": { "name": "Kategorie-Filter", "desc": "Tippe nur Wörter einer Kategorie!" },
+      "stroop": { "name": "Farb-Wort-Chaos", "desc": "Farbe muss zum Wort passen" },
+      "verboten": { "name": "Verbotenes Wort", "desc": "Tippe alles AUSSER dem verbotenen Wort" },
+      "speed-rush": { "name": "Speed Rush", "desc": "Wörter werden immer schneller!" }
+    }
+  },
   "woIstWas": {
     "modes": {
       "memory": "Memory",

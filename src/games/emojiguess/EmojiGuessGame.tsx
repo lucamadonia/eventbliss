@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,7 @@ import { EMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content-de';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 
@@ -67,6 +69,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // ---------------------------------------------------------------------------
 
 export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Setup state
@@ -270,7 +273,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     return (
       <GameSetup
         gameId="emojiguess"
-        modes={GAME_MODES}
+        modes={getTranslatedModes('emojiguess', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Emoji-Raten"

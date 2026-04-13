@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import {
 import { cn } from '@/lib/utils';
 import { FACTS, THREE_STATEMENTS, type Fact, type ThreeStatements } from './fakeorfact-content-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
@@ -65,6 +67,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // ---------------------------------------------------------------------------
 
 export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Setup
@@ -258,7 +261,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
     return (
       <GameSetup
         gameId="fakeorfact"
-        modes={GAME_MODES}
+        modes={getTranslatedModes('fakeorfact', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Luegner — Fake or Fact"

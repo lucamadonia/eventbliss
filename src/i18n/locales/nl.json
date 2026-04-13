@@ -3661,5 +3661,183 @@
       "time": "Tijd (sec.)",
       "rounds": "Rondes"
     }
+  },
+  "gameModes": {
+    "bomb": {
+      "kategorie": {
+        "name": "Category",
+        "desc": "Name items in a category starting with a specific letter"
+      },
+      "quiz": {
+        "name": "Quiz",
+        "desc": "Answer trivia questions under time pressure"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "Fastest answer wins — no time to think!"
+      },
+      "alle": {
+        "name": "All Modes",
+        "desc": "Random mix of all categories and quiz"
+      }
+    },
+    "category": {
+      "classic": {
+        "name": "Classic",
+        "desc": "Take turns naming items — hesitate and you lose"
+      },
+      "rapid": {
+        "name": "Rapid",
+        "desc": "Quick round — only 5 seconds per answer!"
+      },
+      "letter": {
+        "name": "Letter",
+        "desc": "All items must start with the same letter"
+      }
+    },
+    "emojiguess": {
+      "classic": {
+        "name": "Classic",
+        "desc": "30 seconds per round"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "10 seconds per round"
+      },
+      "team": {
+        "name": "Team",
+        "desc": "Teams take turns"
+      }
+    },
+    "fakeorfact": {
+      "classic": {
+        "name": "Classic",
+        "desc": "True or False — one statement, you decide"
+      },
+      "three": {
+        "name": "Two Lies",
+        "desc": "Three statements — find the truth!"
+      }
+    },
+    "truthdare": {
+      "classic": {
+        "name": "Classic",
+        "desc": "All categories mixed"
+      },
+      "eskalation": {
+        "name": "Escalation",
+        "desc": "Gets wilder every round!"
+      },
+      "nur-wahrheit": {
+        "name": "Truth Only",
+        "desc": "Only questions, no dares"
+      },
+      "nur-pflicht": {
+        "name": "Dare Only",
+        "desc": "Only challenges, no questions"
+      }
+    },
+    "thisorthat": {
+      "classic": {
+        "name": "Classic",
+        "desc": "No time pressure, everyone votes"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "5 seconds per player!"
+      },
+      "debatte": {
+        "name": "Debate",
+        "desc": "After results: 30s discussion"
+      }
+    },
+    "whoami": {
+      "prominente": {
+        "name": "Celebrities",
+        "desc": "Famous personalities"
+      },
+      "tiere": {
+        "name": "Animals",
+        "desc": "Guess the animal!"
+      },
+      "berufe": {
+        "name": "Jobs",
+        "desc": "What job are you?"
+      },
+      "filme": {
+        "name": "Movies",
+        "desc": "Guess film characters"
+      }
+    },
+    "bottlespin": {
+      "fragen": {
+        "name": "With Questions",
+        "desc": "Bottle + questions & challenges"
+      },
+      "nur-flasche": {
+        "name": "Bottle Only",
+        "desc": "Pure spin the bottle"
+      }
+    },
+    "storybuilder": {
+      "classic": {
+        "name": "Classic",
+        "desc": "Free text — write whatever you want"
+      },
+      "vorgabe": {
+        "name": "Prompt",
+        "desc": "With sentence starters as help"
+      },
+      "reimzeit": {
+        "name": "Rhyme Time",
+        "desc": "Sentences must rhyme!"
+      }
+    },
+    "sharedquiz": {
+      "trio": {
+        "name": "Trio Challenge",
+        "desc": "Question, answers & hint distributed"
+      },
+      "chain": {
+        "name": "Chain Quiz",
+        "desc": "Hint chain from player to player"
+      },
+      "allornothing": {
+        "name": "All or Nothing",
+        "desc": "Points only if everyone is right"
+      }
+    },
+    "quickdraw": {
+      "classic": {
+        "name": "Classic",
+        "desc": "60 seconds to draw"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "Only 30 seconds!"
+      },
+      "blind": {
+        "name": "Blind",
+        "desc": "Drawing becomes invisible after 5s"
+      }
+    },
+    "wordpress": {
+      "kategorie": {
+        "name": "Category Filter",
+        "desc": "Only tap words from one category!"
+      },
+      "stroop": {
+        "name": "Color Word Chaos",
+        "desc": "Color must match the word"
+      },
+      "verboten": {
+        "name": "Forbidden Word",
+        "desc": "Tap everything EXCEPT the forbidden word"
+      },
+      "speed-rush": {
+        "name": "Speed Rush",
+        "desc": "Words get faster and faster!"
+      }
+    }
   }
 }

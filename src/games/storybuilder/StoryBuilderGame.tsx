@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -75,6 +77,7 @@ const SETUP_SETTINGS: SettingsConfig = {
 // ---------------------------------------------------------------------------
 
 export default function StoryBuilderGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Setup
@@ -293,7 +296,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     return (
       <GameSetup
         gameId="storybuilder"
-        modes={GAME_MODES}
+        modes={getTranslatedModes('storybuilder', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title="Story Builder"
