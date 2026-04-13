@@ -3217,7 +3217,7 @@
   },
   "nativeDashboard": {
     "eventTypes": { "bachelor": "Bachelor Party", "bachelorette": "Bachelorette Party", "birthday": "Birthday", "wedding": "Wedding", "other": "Event" },
-    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "marketplace": "Marketplace", "services": "Services", "form": "Form", "responses": "Responses", "ai": "AI", "settings": "Settings" },
+    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "marketplace": "Marketplace", "services": "Services", "form": "Form", "responses": "Responses", "messages": "Messages", "ai": "AI", "settings": "Settings" },
     "honoree": "Guest of Honor",
     "noDate": "No date set",
     "participants": "Participants",

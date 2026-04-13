@@ -230,7 +230,7 @@ const GamesHub = () => {
   const [activeCategory, setActiveCategory] = useState("alle");
 
   // Auto-show game rules on first play
-  const { showRules, closeRules } = useAutoShowRules(gameId || '');
+  const { showRules, openRules, closeRules } = useAutoShowRules(gameId || '');
 
   const filteredGames = useMemo(() => {
     if (activeCategory === "alle") return allGames;
@@ -381,15 +381,12 @@ const GamesHub = () => {
   }
 
   // Rules overlay for ALL games — auto-shows on first play + floating ? button to reopen
-  const [rulesOpen, setRulesOpen] = useState(showRules);
-  useEffect(() => { if (showRules) setRulesOpen(true); }, [showRules]);
-
   const rulesOverlay = gameId ? (
     <>
-      <GameRulesModal gameId={gameId} open={rulesOpen} onClose={() => { setRulesOpen(false); closeRules(); }} />
-      {!rulesOpen && (
+      <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
+      {!showRules && (
         <div className="fixed top-4 left-4 z-[55]">
-          <RulesHelpButton onClick={() => setRulesOpen(true)} />
+          <RulesHelpButton onClick={openRules} />
         </div>
       )}
     </>

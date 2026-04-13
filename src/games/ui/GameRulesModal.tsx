@@ -209,25 +209,27 @@ export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
 
 /**
  * Hook: auto-show rules on first play of each game.
+ * sessionStorage is only set when the modal is CLOSED (not on open).
  */
 export function useAutoShowRules(gameId: string) {
   const nid = normalizeGameId(gameId);
   const key = `eb.rules-seen.${nid}`;
-  const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    try {
-      if (!sessionStorage.getItem(key)) {
-        setShow(true);
-        sessionStorage.setItem(key, "1");
-      }
-    } catch { /* private mode */ }
-  }, [key]);
+  // Check synchronously if we should auto-show
+  const shouldAutoShow = (() => {
+    if (!nid) return false;
+    try { return !sessionStorage.getItem(key); } catch { return false; }
+  })();
+
+  const [show, setShow] = useState(shouldAutoShow);
 
   return {
     showRules: show,
     openRules: () => setShow(true),
-    closeRules: () => setShow(false),
+    closeRules: () => {
+      setShow(false);
+      try { sessionStorage.setItem(key, "1"); } catch { /* private mode */ }
+    },
   };
 }
 

@@ -13,9 +13,11 @@ import NativeEventGuests from "./NativeEventGuests";
 import NativeEventSchedule from "./NativeEventSchedule";
 import NativeEventExpenses from "./NativeEventExpenses";
 import NativeResponsesTab from "@/components/native/responses";
+import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import {
   ArrowLeft,
   LayoutDashboard,
+  MessageSquare,
   Users,
   Calendar,
   Wallet,
@@ -138,7 +140,7 @@ function useEventActivities(eventId: string | undefined, t: (key: string, opts?:
 /*  Tab definitions                                                    */
 /* ------------------------------------------------------------------ */
 
-type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "marketplace" | "dienstleister" | "formular" | "antworten" | "ki" | "einstellungen";
+type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "marketplace" | "dienstleister" | "formular" | "antworten" | "nachrichten" | "ki" | "einstellungen";
 
 interface TabDef {
   id: TabId;
@@ -155,6 +157,7 @@ const TABS: TabDef[] = [
   { id: "dienstleister", labelKey: "nativeDashboard.tabs.services",     icon: ShoppingBag },
   { id: "formular",     labelKey: "nativeDashboard.tabs.form",         icon: FileEdit },
   { id: "antworten",    labelKey: "nativeDashboard.tabs.responses",    icon: ClipboardCheck },
+  { id: "nachrichten",  labelKey: "nativeDashboard.tabs.messages",     icon: MessageSquare },
   { id: "ki",            labelKey: "nativeDashboard.tabs.ai",           icon: Sparkles },
   { id: "einstellungen", labelKey: "nativeDashboard.tabs.settings",     icon: Settings },
 ];
@@ -770,6 +773,8 @@ export default function NativeEventDashboard() {
         return event ? <FormBuilderTab event={event} onUpdate={refetch} /> : null;
       case "antworten":
         return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} /> : null;
+      case "nachrichten":
+        return event ? <MessagesTab event={event} /> : null;
       case "ki":
         return event ? <AIAssistantTab event={event} stats={stats} /> : null;
       case "einstellungen":
