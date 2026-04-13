@@ -306,8 +306,10 @@ export default function AdminGames() {
 
   const fields = FIELD_CONFIGS[selectedType]?.fields || [{ key: 'text', label: 'Text', desc: '', type: 'text' as const }];
   const preview = (item: GameContent) => {
-    const de = item.content.de || item.content.en || {};
-    return de[fields[0].key] || de.text || de.question || de.name || de.word || de.term || JSON.stringify(de).slice(0, 60);
+    // Show content in the filtered language, or fall back to DE → EN
+    const lang = filterLang && !filterLang.startsWith('!') ? filterLang : 'de';
+    const data = item.content[lang] || item.content.de || item.content.en || {};
+    return data[fields[0].key] || data.text || data.question || data.name || data.word || data.term || JSON.stringify(data).slice(0, 60);
   };
   const langCount = (item: GameContent) => LANGS.filter(l => item.content[l.code] && Object.values(item.content[l.code]).some(v => v && String(v).length > 0)).length;
 
