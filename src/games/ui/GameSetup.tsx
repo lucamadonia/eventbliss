@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 import { getOnlineRoomPlayers } from "../multiplayer/useGameRoom";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "./GameRulesModal";
 
 export interface GameMode {
   id: string;
@@ -39,6 +40,7 @@ interface GameSetupProps {
     settings: { timer: number; rounds: number }
   ) => void;
   title?: string;
+  gameId?: string;
   minPlayers?: number;
   maxPlayers?: number;
   onlinePlayers?: OnlinePlayer[];
@@ -55,10 +57,13 @@ export function GameSetup({
   settings,
   onStart,
   title = "Spiel einrichten",
+  gameId = "",
   minPlayers = 2,
   maxPlayers = 20,
   onlinePlayers,
 }: GameSetupProps) {
+  const { showRules, openRules, closeRules } = useAutoShowRules(gameId);
+
   // Auto-detect players: only use online/party players when explicitly provided
   // onlinePlayers prop means we are inside an OnlineGameWrapper — show Globe icon
   // getOnlineRoomPlayers() can have stale data from previous rooms — only trust the prop
@@ -140,7 +145,10 @@ export function GameSetup({
   return (
     <div className="min-h-screen bg-gray-950 px-4 py-8">
       <div className="mx-auto max-w-md space-y-6">
-        <h1 className="text-2xl font-bold text-white text-center">{title}</h1>
+        <div className="flex items-center justify-center gap-2">
+          <h1 className="text-2xl font-bold text-white text-center">{title}</h1>
+          {gameId && <RulesHelpButton onClick={openRules} />}
+        </div>
 
         {/* Player list */}
         <section className="space-y-3">
@@ -279,6 +287,9 @@ export function GameSetup({
           Spiel starten!
         </motion.button>
       </div>
+
+      {/* Rules Modal */}
+      {gameId && <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />}
     </div>
   );
 }

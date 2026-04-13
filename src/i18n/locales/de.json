@@ -3668,6 +3668,157 @@
       "sober": "Nüchtern"
     }
   },
+  "gameRules": {
+    "howToPlay": "So geht's",
+    "understood": "Verstanden — los geht's!",
+    "bomb": {
+      "title": "Tickende Bombe",
+      "tagline": "Bei wem knallt's? Beantworte Fragen bevor die Bombe hochgeht — Nervenkitzel pur!",
+      "step1": "Die Bombe tickt und wird an einen Spieler weitergereicht",
+      "step2": "Beantworte die Frage richtig, bevor die Zeit abläuft",
+      "step3": "Falsche Antwort oder zu langsam? BUMM — du bist raus!",
+      "step4": "Der letzte Überlebende gewinnt die Runde",
+      "tip": "Nicht zu lange nachdenken — die Bombe wartet nicht auf dich!"
+    },
+    "taboo": {
+      "title": "Wortverbot",
+      "tagline": "Erkläre Begriffe — aber pass auf, bestimmte Wörter sind absolut TABU!",
+      "step1": "Du siehst einen Begriff und 5 verbotene Wörter",
+      "step2": "Erkläre den Begriff deinem Team — OHNE die Tabu-Wörter zu benutzen",
+      "step3": "Dein Team muss den Begriff erraten bevor die Zeit abläuft",
+      "step4": "Pro erratenen Begriff gibt's einen Punkt",
+      "tip": "Kreativität schlägt Logik — denk um die Ecke!"
+    },
+    "headup": {
+      "title": "Stirnraten",
+      "tagline": "Handy an die Stirn, Freunde beschreiben, du rätst — klingt easy? Von wegen!",
+      "step1": "Halte dein Handy an die Stirn — du siehst den Begriff NICHT",
+      "step2": "Deine Freunde beschreiben dir den Begriff",
+      "step3": "Richtig geraten? Handy nach vorne kippen! Falsch? Handy nach hinten!",
+      "step4": "Schafft so viele Begriffe wie möglich in der Zeit",
+      "tip": "Nicht das Handy fallen lassen — passiert häufiger als du denkst!"
+    },
+    "category": {
+      "title": "Zeit-Kategorie",
+      "tagline": "Nenne Begriffe einer Kategorie — wer zögert, fliegt raus! Schnelligkeit zählt!",
+      "step1": "Eine Kategorie wird angezeigt (z.B. \"Tiere mit A\")",
+      "step2": "Jeder Spieler muss reihum einen passenden Begriff nennen",
+      "step3": "Wer keinen mehr weiß oder zu langsam ist, bekommt einen Punkt",
+      "step4": "Wer die wenigsten Punkte hat, gewinnt",
+      "tip": "Seltene Antworten beeindrucken — \"Axolotl\" statt \"Affe\"!"
+    },
+    "emojiguess": {
+      "title": "Emoji-Raten",
+      "tagline": "Emojis deuten, Antwort raten — sieht leicht aus, ist es aber nicht!",
+      "step1": "Dir werden Emojis angezeigt die etwas darstellen",
+      "step2": "Rate welchen Film, Song oder Promi die Emojis zeigen",
+      "step3": "Je schneller du rätst, desto mehr Punkte",
+      "tip": "Denk an Blockbuster — die offensichtlichste Antwort ist oft richtig!"
+    },
+    "fakeorfact": {
+      "title": "Fake or Fact",
+      "tagline": "Stimmt das wirklich? Entlarve die Fake-Fakten — trau keiner Statistik!",
+      "step1": "Dir wird eine Behauptung angezeigt",
+      "step2": "Entscheide: Ist das WAHR oder FAKE?",
+      "step3": "Nach deiner Antwort siehst du die Erklärung",
+      "step4": "Wer die meisten richtig hat, ist der Fakten-König",
+      "tip": "Die verrücktesten Fakten sind meistens wahr!"
+    },
+    "truthdare": {
+      "title": "Wahrheit oder Pflicht",
+      "tagline": "Der Party-Klassiker — ehrlich antworten oder peinliche Aufgabe? Deine Wahl!",
+      "step1": "Wähle: Wahrheit oder Pflicht?",
+      "step2": "Bei Wahrheit: Beantworte die Frage ehrlich (egal wie peinlich!)",
+      "step3": "Bei Pflicht: Führe die Aufgabe aus (keine Ausreden!)",
+      "step4": "Dann ist der nächste Spieler dran",
+      "tip": "Pflicht wird mit jedem Drink mutiger — das haben wir nicht gesagt!"
+    },
+    "thisorthat": {
+      "title": "This or That",
+      "tagline": "Pizza oder Pasta? Netflix oder Kino? Schwere Entscheidungen stehen bevor!",
+      "step1": "Zwei Optionen werden angezeigt",
+      "step2": "Jeder Spieler entscheidet sich für eine Option",
+      "step3": "Vergleicht eure Antworten — wer ist in der Mehrheit?",
+      "tip": "Es gibt keine falschen Antworten — nur kontroverse Diskussionen!"
+    },
+    "whoami": {
+      "title": "Wer bin ich?",
+      "tagline": "Stelle Ja/Nein-Fragen und errate wer du bist — Sherlock wäre stolz!",
+      "step1": "Jeder Spieler bekommt eine geheime Person/Figur zugewiesen",
+      "step2": "Stelle Ja/Nein-Fragen: \"Bin ich real?\" \"Bin ich berühmt?\"",
+      "step3": "Kombiniere die Hinweise und rate wer du bist",
+      "step4": "Wer es zuerst errät, gewinnt",
+      "tip": "Fang breit an — \"Bin ich eine Frau?\" schließt 50% aus!"
+    },
+    "bottlespin": {
+      "title": "Flaschendrehen",
+      "tagline": "Die Flasche dreht sich... auf wen zeigt sie? Spannung und Spaß garantiert!",
+      "step1": "Die Flasche wird gedreht",
+      "step2": "Auf wen sie zeigt, muss eine Frage beantworten oder Aufgabe machen",
+      "step3": "Dann dreht der nächste Spieler",
+      "tip": "Der Zufall entscheidet — da hilft kein Taktieren!"
+    },
+    "storybuilder": {
+      "title": "Story Builder",
+      "tagline": "Schreibt gemeinsam die verrückteste Geschichte aller Zeiten — Kreativität ohne Grenzen!",
+      "step1": "Ein Story-Starter gibt den Anfang vor",
+      "step2": "Jeder Spieler schreibt reihum einen Satz weiter",
+      "step3": "Am Ende wird die komplette Geschichte vorgelesen",
+      "tip": "Je absurder deine Wendung, desto lustiger die Story!"
+    },
+    "sharedquiz": {
+      "title": "Geteilt & Gequizzt",
+      "tagline": "Quiz-Battle im Team — wer weiß mehr? Zeigt was ihr drauf habt!",
+      "step1": "Eine Frage wird allen Spielern gleichzeitig angezeigt",
+      "step2": "Jeder wählt seine Antwort — keine Absprache!",
+      "step3": "Die richtige Antwort wird enthüllt",
+      "step4": "Wer die meisten richtigen Antworten hat, gewinnt",
+      "tip": "Manchmal ist die unwahrscheinlichste Antwort die richtige!"
+    },
+    "quickdraw": {
+      "title": "Schnellzeichner",
+      "tagline": "Zeichne schnell, rate schneller — Picasso wäre stolz (oder entsetzt)!",
+      "step1": "Dir wird ein Begriff zum Zeichnen angezeigt",
+      "step2": "Zeichne so schnell wie möglich — Strichmännchen sind erlaubt!",
+      "step3": "Die anderen müssen deinen Begriff erraten",
+      "step4": "Je schneller geraten wird, desto mehr Punkte für alle",
+      "tip": "Vergiss Kunstunterricht — hier zählt Geschwindigkeit!"
+    },
+    "splitquiz": {
+      "title": "Split Quiz",
+      "tagline": "Geteiltes Wissen — jeder sieht andere Antworten, aber nur eine ist richtig!",
+      "step1": "Eine Frage wird angezeigt",
+      "step2": "Jeder Spieler sieht unterschiedliche Antwort-Optionen",
+      "step3": "Diskutiert welche Antwort richtig sein könnte",
+      "step4": "Nur wer die richtige hat, bekommt Punkte",
+      "tip": "Vertrau deinem Bauchgefühl — oder dem Nerd in der Gruppe!"
+    },
+    "hochstapler": {
+      "title": "Hochstapler",
+      "tagline": "Einer hat keine Ahnung — finde den Hochstapler! Oder sei selbst einer...",
+      "step1": "Alle Spieler bekommen ein geheimes Wort — EINER bekommt ein anderes",
+      "step2": "Reihum beschreibt jeder das Wort mit einem einzigen Begriff",
+      "step3": "Alle stimmen ab: Wer ist der Hochstapler?",
+      "step4": "Wird der Hochstapler entlarvt, gewinnen die anderen. Bleibt er unerkannt, gewinnt er!",
+      "tip": "Als Hochstapler: Sei vage genug um nicht aufzufallen, aber spezifisch genug um nicht verdächtig zu wirken!"
+    },
+    "wo-ist-was": {
+      "title": "Wo ist was?",
+      "tagline": "Geografie-Challenge — finde den Ort auf der Karte! Je näher, desto besser!",
+      "step1": "Dir wird ein Ort oder eine Sehenswürdigkeit genannt",
+      "step2": "Tippe auf die Karte wo du den Ort vermutest",
+      "step3": "Je näher du am richtigen Ort bist, desto mehr Punkte",
+      "tip": "Europa ist kleiner als du denkst — und Australien größer!"
+    },
+    "flaschendrehen": {
+      "title": "Flaschendrehen",
+      "tagline": "Spin the Bottle — der Klassiker für jede Party! Wer wird's treffen?",
+      "step1": "Die Flasche dreht sich in der Mitte",
+      "step2": "Auf wen sie zeigt, ist dran",
+      "step3": "Beantworte die Frage oder mache die Aufgabe",
+      "tip": "Karma dreht die Flasche — sei nett zu deinen Mitspielern!"
+    }
+  },
   "nativeAdmin": {
     "title": "Admin Panel",
     "areas": "{{count}} Bereiche",
