@@ -45,38 +45,20 @@ interface WordSet {
 // Word Sets
 // ---------------------------------------------------------------------------
 
-const WORD_SETS: WordSet[] = [
-  { category: 'Tiere', word: 'Elefant' },
-  { category: 'Tiere', word: 'Pinguin' },
-  { category: 'Tiere', word: 'Delfin' },
-  { category: 'Essen', word: 'Pizza' },
-  { category: 'Essen', word: 'Sushi' },
-  { category: 'Essen', word: 'Schnitzel' },
-  { category: 'Länder', word: 'Japan' },
-  { category: 'Länder', word: 'Brasilien' },
-  { category: 'Länder', word: 'Ägypten' },
-  { category: 'Berufe', word: 'Feuerwehrmann' },
-  { category: 'Berufe', word: 'Astronaut' },
-  { category: 'Berufe', word: 'Detektiv' },
-  { category: 'Filme', word: 'Titanic' },
-  { category: 'Filme', word: 'Matrix' },
-  { category: 'Filme', word: 'König der Löwen' },
-  { category: 'Sport', word: 'Fußball' },
-  { category: 'Sport', word: 'Surfen' },
-  { category: 'Orte', word: 'Strand' },
-  { category: 'Orte', word: 'Bibliothek' },
-  { category: 'Orte', word: 'Freizeitpark' },
-  { category: 'Musik', word: 'Klavier' },
-  { category: 'Musik', word: 'Schlagzeug' },
-  { category: 'Fahrzeuge', word: 'U-Boot' },
-  { category: 'Fahrzeuge', word: 'Heißluftballon' },
-  { category: 'Kleidung', word: 'Smoking' },
-  { category: 'Natur', word: 'Vulkan' },
-  { category: 'Natur', word: 'Regenbogen' },
-  { category: 'Feiertage', word: 'Silvester' },
-  { category: 'Getränke', word: 'Cappuccino' },
-  { category: 'Spiele', word: 'Schach' },
-];
+// Word sets loaded from dedicated content file (100+ words, multilingual)
+import { IMPOSTOR_WORDS_DE, IMPOSTOR_WORDS_EN, IMPOSTOR_WORDS_ES, IMPOSTOR_WORDS_FR } from './impostor-words';
+import i18n from 'i18next';
+
+function getWordSets(): WordSet[] {
+  const lang = i18n.language?.split('-')[0] || 'de';
+  const map: Record<string, WordSet[]> = {
+    de: IMPOSTOR_WORDS_DE, en: IMPOSTOR_WORDS_EN,
+    es: IMPOSTOR_WORDS_ES, fr: IMPOSTOR_WORDS_FR,
+  };
+  return map[lang] || map.de;
+}
+
+const WORD_SETS = IMPOSTOR_WORDS_DE; // fallback for type inference
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -239,7 +221,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Start game ---
   const startGame = useCallback(() => {
-    const wordSet = pickRandom(WORD_SETS);
+    const wordSet = pickRandom(getWordSets());
     setCurrentWordSet(wordSet);
 
     const shuffledIndices = shuffle(players.map((_, i) => i));
