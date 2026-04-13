@@ -376,17 +376,25 @@ export async function seedAllGameContent(
   onProgress('Lade Hochstapler...');
   try {
     const impMod = await import('../../games/impostor/impostor-words');
-    const deWords = impMod.IMPOSTOR_WORDS_DE || [];
-    const enWords = impMod.IMPOSTOR_WORDS_EN || [];
-    const esWords = impMod.IMPOSTOR_WORDS_ES || [];
-    const frWords = impMod.IMPOSTOR_WORDS_FR || [];
+    const langArrays: Record<string, any[]> = {
+      de: impMod.IMPOSTOR_WORDS_DE || [],
+      en: impMod.IMPOSTOR_WORDS_EN || [],
+      es: impMod.IMPOSTOR_WORDS_ES || [],
+      fr: impMod.IMPOSTOR_WORDS_FR || [],
+      it: impMod.IMPOSTOR_WORDS_IT || [],
+      nl: impMod.IMPOSTOR_WORDS_NL || [],
+      pl: impMod.IMPOSTOR_WORDS_PL || [],
+      pt: impMod.IMPOSTOR_WORDS_PT || [],
+      tr: impMod.IMPOSTOR_WORDS_TR || [],
+      ar: impMod.IMPOSTOR_WORDS_AR || [],
+    };
+    const deWords = langArrays.de;
 
     for (let idx = 0; idx < deWords.length; idx++) {
       const content: Record<string, Record<string, string>> = {};
-      content.de = { word: deWords[idx].word, category: deWords[idx].category };
-      if (enWords[idx]) content.en = { word: enWords[idx].word, category: enWords[idx].category };
-      if (esWords[idx]) content.es = { word: esWords[idx].word, category: esWords[idx].category };
-      if (frWords[idx]) content.fr = { word: frWords[idx].word, category: frWords[idx].category };
+      for (const [lang, arr] of Object.entries(langArrays)) {
+        if (arr[idx]) content[lang] = { word: arr[idx].word, category: arr[idx].category };
+      }
       items.push({
         game_id: 'hochstapler', content_type: 'word_set', content,
         difficulty: 'medium', category: deWords[idx].category, tags: [], is_active: true,

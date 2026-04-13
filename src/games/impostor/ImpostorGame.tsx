@@ -46,14 +46,20 @@ interface WordSet {
 // ---------------------------------------------------------------------------
 
 // Word sets loaded from dedicated content file (100+ words, multilingual)
-import { IMPOSTOR_WORDS_DE, IMPOSTOR_WORDS_EN, IMPOSTOR_WORDS_ES, IMPOSTOR_WORDS_FR } from './impostor-words';
+import {
+  IMPOSTOR_WORDS_DE, IMPOSTOR_WORDS_EN, IMPOSTOR_WORDS_ES, IMPOSTOR_WORDS_FR,
+  IMPOSTOR_WORDS_IT, IMPOSTOR_WORDS_NL, IMPOSTOR_WORDS_PL, IMPOSTOR_WORDS_PT,
+  IMPOSTOR_WORDS_TR, IMPOSTOR_WORDS_AR,
+} from './impostor-words';
 import i18n from 'i18next';
 
 function getWordSets(): WordSet[] {
   const lang = i18n.language?.split('-')[0] || 'de';
   const map: Record<string, WordSet[]> = {
-    de: IMPOSTOR_WORDS_DE, en: IMPOSTOR_WORDS_EN,
-    es: IMPOSTOR_WORDS_ES, fr: IMPOSTOR_WORDS_FR,
+    de: IMPOSTOR_WORDS_DE, en: IMPOSTOR_WORDS_EN, es: IMPOSTOR_WORDS_ES,
+    fr: IMPOSTOR_WORDS_FR, it: IMPOSTOR_WORDS_IT, nl: IMPOSTOR_WORDS_NL,
+    pl: IMPOSTOR_WORDS_PL, pt: IMPOSTOR_WORDS_PT, tr: IMPOSTOR_WORDS_TR,
+    ar: IMPOSTOR_WORDS_AR,
   };
   return map[lang] || map.de;
 }
