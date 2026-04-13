@@ -257,6 +257,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
   if (phase === 'setup') {
     return (
       <GameSetup
+        gameId="fakeorfact"
         modes={GAME_MODES}
         settings={SETUP_SETTINGS}
         onStart={handleStart}

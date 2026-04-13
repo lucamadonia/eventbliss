@@ -1,5 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import {
   Play, Trophy, RotateCcw, ArrowRight, Plus, Minus,
   Users, Eye, MessageCircle, Lightbulb, HelpCircle, Check, X,

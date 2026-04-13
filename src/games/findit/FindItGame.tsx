@@ -641,6 +641,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'setup') {
     return (
       <GameSetup
+        gameId="wo-ist-was"
         modes={GAME_MODES}
         settings={SETUP_SETTINGS}
         onStart={handleSetupStart}

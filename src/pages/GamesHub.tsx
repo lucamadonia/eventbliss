@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
 import { TVBroadcastProvider } from "@/contexts/TVBroadcastContext";
+import { GameRulesModal, useAutoShowRules } from "@/games/ui/GameRulesModal";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import {
@@ -228,6 +229,9 @@ const GamesHub = () => {
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
   const [activeCategory, setActiveCategory] = useState("alle");
 
+  // Auto-show game rules on first play
+  const { showRules, closeRules } = useAutoShowRules(gameId || '');
+
   const filteredGames = useMemo(() => {
     if (activeCategory === "alle") return allGames;
     return allGames.filter(g => (GAME_CATEGORIES[g.id] || []).includes(activeCategory));
@@ -372,6 +376,11 @@ const GamesHub = () => {
         );
       }
     }
+  }
+
+  // Show rules modal for ANY game on first play
+  if (gameId && showRules) {
+    return <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />;
   }
 
   // Offline games — wrapped in TVBroadcastProvider so they can

@@ -263,6 +263,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   if (phase === 'setup') {
     return (
       <GameSetup
+        gameId="thisorthat"
         modes={GAME_MODES}
         settings={SETUP_SETTINGS}
         onStart={handleStart}

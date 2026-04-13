@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { AnimatePresence, motion } from 'framer-motion';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { generateCategoryPrompt } from '../content/categories';
 import { getRandomQuestion, resetQuestions, type QuizQuestion } from '../content/questions';
 import BombSetupScreen from './BombSetupScreen';

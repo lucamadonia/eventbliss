@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameTimer } from '../engine/TimerSystem';
 import { getTabooCards, type TabooCard } from '../content/taboo-words';
 import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRight, MessageCircle, Ban } from 'lucide-react';

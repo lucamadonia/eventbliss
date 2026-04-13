@@ -281,6 +281,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   if (phase === 'setup') {
     return (
       <GameSetup
+        gameId="whoami"
         modes={GAME_MODES}
         settings={SETUP_SETTINGS}
         onStart={handleStart}

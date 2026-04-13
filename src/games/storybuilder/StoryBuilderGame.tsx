@@ -292,6 +292,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   if (phase === 'setup') {
     return (
       <GameSetup
+        gameId="storybuilder"
         modes={GAME_MODES}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
