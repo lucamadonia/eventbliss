@@ -183,7 +183,7 @@ export const DRAW_WORDS: DrawWord[] = [
   { word: 'Libelle', category: 'Tiere', difficulty: 3 },
   { word: 'Muecke', category: 'Tiere', difficulty: 3 },
   { word: 'Lama', category: 'Tiere', difficulty: 2 },
-  { word: 'Waschbaer', category: 'Tiere', difficulty: 2 },
+  { word: 'Waschbär', category: 'Tiere', difficulty: 2 },
   { word: 'Biber', category: 'Tiere', difficulty: 2 },
   { word: 'Chamäleon', category: 'Tiere', difficulty: 3 },
 
@@ -222,7 +222,7 @@ export const DRAW_WORDS: DrawWord[] = [
   { word: 'Karotte', category: 'Essen', difficulty: 1 },
   { word: 'Aubergine', category: 'Essen', difficulty: 2 },
   { word: 'Mais', category: 'Essen', difficulty: 1 },
-  { word: 'Gummibaerchen', category: 'Essen', difficulty: 2 },
+  { word: 'Gummibärchen', category: 'Essen', difficulty: 2 },
   { word: 'Zuckerwatte', category: 'Essen', difficulty: 2 },
   { word: 'Praline', category: 'Essen', difficulty: 3 },
   { word: 'Milchshake', category: 'Essen', difficulty: 2 },
