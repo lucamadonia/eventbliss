@@ -3536,5 +3536,23 @@
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
     }
+  },
+  "woIstWas": {
+    "modes": {
+      "memory": "Hafıza",
+      "memoryDesc": "Sahneyi ezberle ve soruları cevapla",
+      "speed": "Hız",
+      "speedDesc": "En hızlı kim bulacak?",
+      "differences": "Farklar",
+      "differencesDesc": "İki resimde 3 fark bul",
+      "map": "Harita",
+      "mapDesc": "Dünya haritasında şehir ve ülkeleri bul",
+      "streetview": "Street View",
+      "streetviewDesc": "Neredesin? Konumu tahmin et!"
+    },
+    "settings": {
+      "time": "Süre (sn.)",
+      "rounds": "Tur"
+    }
   }
 }

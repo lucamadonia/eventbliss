@@ -3690,5 +3690,23 @@
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
     }
+  },
+  "woIstWas": {
+    "modes": {
+      "memory": "Mémoire",
+      "memoryDesc": "Mémorisez la scène et répondez aux questions",
+      "speed": "Vitesse",
+      "speedDesc": "Qui trouve le plus vite ?",
+      "differences": "Différences",
+      "differencesDesc": "Trouvez 3 différences dans deux images",
+      "map": "Carte",
+      "mapDesc": "Trouvez villes et pays sur la carte du monde",
+      "streetview": "Street View",
+      "streetviewDesc": "Où êtes-vous ? Devinez !"
+    },
+    "settings": {
+      "time": "Temps (sec.)",
+      "rounds": "Manches"
+    }
   }
 }

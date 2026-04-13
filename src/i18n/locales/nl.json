@@ -3643,5 +3643,23 @@
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
     }
+  },
+  "woIstWas": {
+    "modes": {
+      "memory": "Geheugen",
+      "memoryDesc": "Onthoud de scène en beantwoord vragen",
+      "speed": "Snelheid",
+      "speedDesc": "Wie vindt het het snelst?",
+      "differences": "Verschillen",
+      "differencesDesc": "Vind 3 verschillen in twee afbeeldingen",
+      "map": "Kaart",
+      "mapDesc": "Vind steden en landen op de wereldkaart",
+      "streetview": "Street View",
+      "streetviewDesc": "Waar ben je? Raad de locatie!"
+    },
+    "settings": {
+      "time": "Tijd (sec.)",
+      "rounds": "Rondes"
+    }
   }
 }

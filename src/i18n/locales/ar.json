@@ -3316,5 +3316,23 @@
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
     }
+  },
+  "woIstWas": {
+    "modes": {
+      "memory": "ذاكرة",
+      "memoryDesc": "احفظ المشهد وأجب عن الأسئلة",
+      "speed": "سرعة",
+      "speedDesc": "من يجد الإجابة أسرع؟",
+      "differences": "اختلافات",
+      "differencesDesc": "اعثر على 3 اختلافات في صورتين",
+      "map": "خريطة",
+      "mapDesc": "اعثر على المدن والبلدان على خريطة العالم",
+      "streetview": "ستريت فيو",
+      "streetviewDesc": "أين أنت؟ خمّن الموقع!"
+    },
+    "settings": {
+      "time": "الوقت (ثا.)",
+      "rounds": "جولات"
+    }
   }
 }
