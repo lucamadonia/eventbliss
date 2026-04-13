@@ -29,6 +29,7 @@ import {
   Vote,
   FileEdit,
   ClipboardCheck,
+  Store,
   Loader2,
   AlertCircle,
   Activity,
@@ -36,6 +37,7 @@ import {
   Package,
   ChevronRight,
   XCircle,
+  Search,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -46,6 +48,7 @@ import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { useMarketplaceServices } from "@/hooks/useMarketplaceServices";
 import {
   useEventBookings,
   useCancelBooking,
@@ -135,7 +138,7 @@ function useEventActivities(eventId: string | undefined, t: (key: string, opts?:
 /*  Tab definitions                                                    */
 /* ------------------------------------------------------------------ */
 
-type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "dienstleister" | "formular" | "antworten" | "ki" | "einstellungen";
+type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "marketplace" | "dienstleister" | "formular" | "antworten" | "ki" | "einstellungen";
 
 interface TabDef {
   id: TabId;
@@ -148,6 +151,7 @@ const TABS: TabDef[] = [
   { id: "gaeste",        labelKey: "nativeDashboard.tabs.guests",       icon: Users },
   { id: "zeitplan",      labelKey: "nativeDashboard.tabs.schedule",     icon: Calendar },
   { id: "ausgaben",      labelKey: "nativeDashboard.tabs.expenses",     icon: Wallet },
+  { id: "marketplace",   labelKey: "nativeDashboard.tabs.marketplace",  icon: Store },
   { id: "dienstleister", labelKey: "nativeDashboard.tabs.services",     icon: ShoppingBag },
   { id: "formular",     labelKey: "nativeDashboard.tabs.form",         icon: FileEdit },
   { id: "antworten",    labelKey: "nativeDashboard.tabs.responses",    icon: ClipboardCheck },
@@ -234,10 +238,10 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
   const responseProgress = participantCount > 0 ? (yesCount + maybeCount) / participantCount : 0;
 
   const quickActions = useMemo(() => [
-    { label: t("nativeDashboard.quickActions.inviteGuests"),  icon: UserPlus, gradient: "from-violet-500 to-purple-600", tab: "gaeste" as TabId },
-    { label: t("nativeDashboard.quickActions.planActivity"),  icon: Calendar, gradient: "from-cyan-500 to-blue-600",     tab: "zeitplan" as TabId },
-    { label: t("nativeDashboard.quickActions.addExpense"),    icon: Receipt,  gradient: "from-emerald-500 to-green-600",  tab: "ausgaben" as TabId },
-    { label: t("nativeDashboard.quickActions.aiAssistant"),   icon: Sparkles, gradient: "from-amber-500 to-orange-600",   tab: "ki" as TabId },
+    { label: t("nativeDashboard.quickActions.inviteGuests"),    icon: UserPlus, gradient: "from-violet-500 to-purple-600", tab: "gaeste" as TabId },
+    { label: t("nativeDashboard.quickActions.planActivity"),    icon: Calendar, gradient: "from-cyan-500 to-blue-600",     tab: "zeitplan" as TabId },
+    { label: t("nativeDashboard.quickActions.addExpense"),      icon: Receipt,  gradient: "from-emerald-500 to-green-600",  tab: "ausgaben" as TabId },
+    { label: t("nativeDashboard.quickActions.browseMarketplace"), icon: Store, gradient: "from-fuchsia-500 to-pink-600",  tab: "marketplace" as TabId },
   ], [t]);
 
   return (
@@ -401,6 +405,135 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
           })}
         </div>
       </motion.div>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Marketplace Embed Tab                                              */
+/* ------------------------------------------------------------------ */
+
+function NativeMarketplaceEmbed({ eventId }: { eventId: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const haptics = useHaptics();
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const categories = [
+    { key: "all", filter: "all" },
+    { key: "workshop", filter: "workshop" },
+    { key: "entertainment", filter: "entertainment" },
+    { key: "catering", filter: "catering" },
+    { key: "music", filter: "music" },
+    { key: "photography", filter: "photography" },
+    { key: "venue", filter: "venue" },
+    { key: "wellness", filter: "wellness" },
+  ];
+
+  const filters = useMemo(() => ({
+    category: activeCategory !== "all" ? activeCategory : undefined,
+    search: search.trim() || undefined,
+  }), [activeCategory, search]);
+
+  const { data, isLoading } = useMarketplaceServices(filters, 1, 20);
+  const services = data?.services || [];
+
+  return (
+    <motion.div className="space-y-4" variants={stagger} initial="initial" animate="animate">
+      {/* Hero CTA */}
+      <motion.div variants={staggerItem}>
+        <div className="rounded-2xl bg-gradient-to-br from-violet-600/20 via-fuchsia-600/10 to-pink-600/5 border border-violet-500/20 p-5 text-center space-y-2">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+            <Store className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="font-display font-bold text-foreground">{t("nativeDashboard.tabs.marketplace")}</h3>
+          <p className="text-xs text-muted-foreground">{t("nativeDashboard.services.openMarketplaceSub")}</p>
+        </div>
+      </motion.div>
+
+      {/* Search */}
+      <motion.div variants={staggerItem}>
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl bg-foreground/[0.06] border border-border focus-within:border-primary/40 transition-colors">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("marketplace.searchPlaceholder")}
+            className="flex-1 bg-transparent text-foreground text-sm placeholder:text-muted-foreground/50 outline-none"
+          />
+        </div>
+      </motion.div>
+
+      {/* Category pills */}
+      <motion.div variants={staggerItem} className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
+        {categories.map((cat) => (
+          <button
+            key={cat.filter}
+            onClick={() => { setActiveCategory(cat.filter); haptics.select(); }}
+            className={cn(
+              "shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all border",
+              activeCategory === cat.filter
+                ? "bg-primary/20 text-primary border-primary/40"
+                : "bg-foreground/[0.06] text-muted-foreground border-transparent",
+            )}
+          >
+            {t(`marketplace.categories.${cat.key}`, cat.key)}
+          </button>
+        ))}
+      </motion.div>
+
+      {/* Service grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-2.5">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="rounded-2xl bg-foreground/[0.06] border border-border h-40 animate-pulse" />
+          ))}
+        </div>
+      ) : services.length > 0 ? (
+        <motion.div variants={staggerItem} className="grid grid-cols-2 gap-2.5">
+          {services.slice(0, 8).map((s) => (
+            <motion.button
+              key={s.id}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { haptics.light(); navigate(`/marketplace/service/${s.slug}?event_id=${eventId}`); }}
+              className="rounded-2xl bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border overflow-hidden text-left"
+            >
+              <div className="h-20 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 overflow-hidden">
+                {s.cover_image_url && (
+                  <img src={s.cover_image_url} alt={s.title} className="w-full h-full object-cover" loading="lazy" />
+                )}
+              </div>
+              <div className="p-2.5 space-y-1">
+                <p className="text-xs font-semibold text-foreground line-clamp-1">{s.title}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">{s.agency_name}</span>
+                  <span className="text-xs font-bold text-foreground">{(s.price_cents / 100).toFixed(0)} €</span>
+                </div>
+              </div>
+            </motion.button>
+          ))}
+        </motion.div>
+      ) : (
+        <div className="rounded-2xl bg-foreground/[0.06] border border-border p-8 text-center">
+          <p className="text-sm text-muted-foreground">{t("marketplace.noResults")}</p>
+        </div>
+      )}
+
+      {/* View all */}
+      {services.length > 0 && (
+        <motion.button
+          variants={staggerItem}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => { haptics.medium(); navigate(`/marketplace?event_id=${eventId}`); }}
+          className="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center justify-center gap-2"
+        >
+          <Store className="w-4 h-4" />
+          {t("nativeDashboard.services.openMarketplace")}
+          <ChevronRight className="w-4 h-4" />
+        </motion.button>
+      )}
     </motion.div>
   );
 }
@@ -629,6 +762,8 @@ export default function NativeEventDashboard() {
         return <NativeEventSchedule eventSlug={slug!} />;
       case "ausgaben":
         return <NativeEventExpenses eventSlug={slug!} />;
+      case "marketplace":
+        return event ? <NativeMarketplaceEmbed eventId={event.id} /> : null;
       case "dienstleister":
         return event ? <NativeServicesTab eventId={event.id} eventSlug={slug!} /> : null;
       case "formular":

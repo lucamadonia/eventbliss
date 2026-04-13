@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Star, MapPin, ShieldCheck, SlidersHorizontal,
-  X, ChevronDown, Store,
+  X, ChevronDown, Store, DollarSign,
 } from "lucide-react";
 import { useMarketplaceServices, type MarketplaceService } from "@/hooks/useMarketplaceServices";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -173,15 +173,30 @@ export default function NativeMarketplaceScreen() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [cityFilter, setCityFilter] = useState("");
+  const [priceIdx, setPriceIdx] = useState(0);
+  const [ratingFilter, setRatingFilter] = useState(false);
   const [page, setPage] = useState(1);
   const LIMIT = 12;
 
+  const PRICE_FILTERS = [
+    { key: "priceAll", min: 0, max: Infinity },
+    { key: "priceTo30", min: 0, max: 3000 },
+    { key: "price30to60", min: 3000, max: 6000 },
+    { key: "price60plus", min: 6000, max: Infinity },
+  ];
+
+  const pf = PRICE_FILTERS[priceIdx];
   const filters = useMemo(
     () => ({
       category: activeCategory !== "all" ? activeCategory : undefined,
       search: search.trim() || undefined,
+      city: cityFilter.trim() || undefined,
+      minPrice: pf.min > 0 ? pf.min : undefined,
+      maxPrice: pf.max < Infinity ? pf.max : undefined,
+      minRating: ratingFilter ? 4 : undefined,
     }),
-    [activeCategory, search],
+    [activeCategory, search, cityFilter, pf, ratingFilter],
   );
 
   const { data, isLoading, refetch } = useMarketplaceServices(filters, page, LIMIT);
@@ -306,6 +321,79 @@ export default function NativeMarketplaceScreen() {
           );
         })}
       </motion.div>
+
+      {/* Filter Panel */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden px-5"
+          >
+            <div className="space-y-3 pb-3">
+              {/* City */}
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  value={cityFilter}
+                  onChange={(e) => { setCityFilter(e.target.value); setPage(1); }}
+                  placeholder={t("marketplace.filters.cityPlaceholder", "z.B. Berlin")}
+                  className="flex-1 bg-foreground/[0.06] border border-border rounded-xl px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-primary/40 max-w-[180px]"
+                />
+              </div>
+
+              {/* Price */}
+              <div className="flex items-center gap-2">
+                <DollarSign size={14} className="text-muted-foreground shrink-0" />
+                <div className="flex gap-1.5">
+                  {PRICE_FILTERS.map((f, idx) => (
+                    <button
+                      key={f.key}
+                      onClick={() => { setPriceIdx(idx); setPage(1); haptics.light(); }}
+                      className={cn(
+                        "px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all border",
+                        priceIdx === idx
+                          ? "bg-primary/20 text-primary border-primary/30"
+                          : "bg-foreground/[0.06] text-muted-foreground border-transparent",
+                      )}
+                    >
+                      {t(`marketplace.filters.${f.key}`, f.key)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rating */}
+              <div className="flex items-center gap-2">
+                <Star size={14} className="text-muted-foreground shrink-0" />
+                <button
+                  onClick={() => { setRatingFilter((v) => !v); setPage(1); haptics.light(); }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all border",
+                    ratingFilter
+                      ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                      : "bg-foreground/[0.06] text-muted-foreground border-transparent",
+                  )}
+                >
+                  <Star size={11} className={ratingFilter ? "fill-amber-400 text-amber-400" : ""} />
+                  {t("marketplace.filters.rating4plus", "4+ Sterne")}
+                </button>
+
+                {(priceIdx !== 0 || cityFilter || ratingFilter) && (
+                  <button
+                    onClick={() => { setPriceIdx(0); setCityFilter(""); setRatingFilter(false); setPage(1); }}
+                    className="ml-auto text-[11px] text-muted-foreground underline"
+                  >
+                    {t("marketplace.filters.resetAll", "Alle zurücksetzen")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Results info */}
       <div className="px-5 pb-2">

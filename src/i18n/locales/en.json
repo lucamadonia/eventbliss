@@ -3217,7 +3217,7 @@
   },
   "nativeDashboard": {
     "eventTypes": { "bachelor": "Bachelor Party", "bachelorette": "Bachelorette Party", "birthday": "Birthday", "wedding": "Wedding", "other": "Event" },
-    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "services": "Services", "form": "Form", "responses": "Responses", "ai": "AI", "settings": "Settings" },
+    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "marketplace": "Marketplace", "services": "Services", "form": "Form", "responses": "Responses", "ai": "AI", "settings": "Settings" },
     "honoree": "Guest of Honor",
     "noDate": "No date set",
     "participants": "Participants",
@@ -3230,7 +3230,7 @@
     "back": "Back",
     "countdown": { "today": "Today!", "tomorrow": "Tomorrow!", "inDays": "In {{count}} days" },
     "confirmedOf": "{{yes}} of {{total}} confirmed",
-    "quickActions": { "inviteGuests": "Invite Guests", "planActivity": "Plan Activity", "addExpense": "Add Expense", "aiAssistant": "AI Assistant" },
+    "quickActions": { "inviteGuests": "Invite Guests", "planActivity": "Plan Activity", "addExpense": "Add Expense", "aiAssistant": "AI Assistant", "browseMarketplace": "Marketplace" },
     "recentActivity": "Recent Activity",
     "noActivity": "No activity yet",
     "activity": { "rsvpConfirmed": "{{name}} confirmed", "rsvpDeclined": "{{name}} declined", "surveyResponse": "{{name}} voted", "expenseCreated": "Expense: {{title}}", "budgetUpdated": "Budget updated", "guestInvited": "{{name}} invited", "scheduleUpdated": "Schedule updated" },
@@ -3264,7 +3264,7 @@
   },
   "nativeJoinRoom": { "title": "Join Room", "subtitle": "Enter the 6-digit code", "hint": "Ask the host for the 6-digit room code", "join": "Join", "invalidCode": "The code must be 6 characters long." },
   "nativeFab": { "createEvent": "Create Event", "joinEvent": "Join Event", "createRoom": "Create Room", "joinRoom": "Join Room", "quickGame": "Quick Game" },
-  "nativeTabs": { "home": "Home", "events": "Events", "play": "Play", "market": "Market", "profile": "Profile" },
+  "nativeTabs": { "home": "Home", "events": "Events", "play": "Play", "ideas": "Ideas", "market": "Market", "profile": "Profile" },
   "nativeDrinks": {
     "title": "Party Stats",
     "yourRank": "Your party rank tonight",

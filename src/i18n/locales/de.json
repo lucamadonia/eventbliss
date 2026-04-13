@@ -3512,6 +3512,7 @@
       "guests": "Gäste",
       "schedule": "Zeitplan",
       "expenses": "Ausgaben",
+      "marketplace": "Marketplace",
       "services": "Services",
       "form": "Formular",
       "responses": "Antworten",
@@ -3538,7 +3539,8 @@
       "inviteGuests": "Gäste einladen",
       "planActivity": "Aktivität planen",
       "addExpense": "Ausgabe erfassen",
-      "aiAssistant": "KI-Assistent"
+      "aiAssistant": "KI-Assistent",
+      "browseMarketplace": "Marketplace"
     },
     "recentActivity": "Letzte Aktivitäten",
     "noActivity": "Noch keine Aktivitäten",
@@ -3643,6 +3645,7 @@
     "home": "Home",
     "events": "Events",
     "play": "Spielen",
+    "ideas": "Ideen",
     "market": "Markt",
     "profile": "Profil"
   },

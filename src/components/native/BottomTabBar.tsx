@@ -5,7 +5,7 @@
 import { useMemo } from "react";
 import { useLocation, matchPath } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, CalendarHeart, Gamepad2, Store, User } from "lucide-react";
+import { Sparkles, CalendarHeart, Gamepad2, Lightbulb, User } from "lucide-react";
 import { spring } from "@/lib/motion";
 import { TabItem } from "./TabItem";
 
@@ -20,7 +20,7 @@ export const TABS: Tab[] = [
   { to: "/", labelKey: "nativeTabs.home", icon: Sparkles },
   { to: "/my-events", labelKey: "nativeTabs.events", icon: CalendarHeart, matchPrefix: "/my-events" },
   { to: "/games", labelKey: "nativeTabs.play", icon: Gamepad2, matchPrefix: "/games" },
-  { to: "/marketplace", labelKey: "nativeTabs.market", icon: Store, matchPrefix: "/marketplace" },
+  { to: "/ideas", labelKey: "nativeTabs.ideas", icon: Lightbulb, matchPrefix: "/ideas" },
   { to: "/profile", labelKey: "nativeTabs.profile", icon: User, matchPrefix: "/profile" },
 ];
 
