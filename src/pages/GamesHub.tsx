@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
 import { TVBroadcastProvider } from "@/contexts/TVBroadcastContext";
-import { GameRulesModal, useAutoShowRules } from "@/games/ui/GameRulesModal";
+import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "@/games/ui/GameRulesModal";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import {
@@ -319,6 +319,7 @@ const GamesHub = () => {
     };
 
     return (
+      <>{rulesOverlay}
       <TVBroadcastProvider roomCode={roomCode}>
         <Suspense fallback={GameFallback}>
           <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
@@ -326,6 +327,7 @@ const GamesHub = () => {
           </OnlineGameWrapper>
         </Suspense>
       </TVBroadcastProvider>
+      </>
     );
   }
 
@@ -378,30 +380,40 @@ const GamesHub = () => {
     }
   }
 
-  // Show rules modal for ANY game on first play
-  if (gameId && showRules) {
-    return <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />;
-  }
+  // Rules overlay for ALL games — auto-shows on first play + floating ? button to reopen
+  const [rulesOpen, setRulesOpen] = useState(showRules);
+  useEffect(() => { if (showRules) setRulesOpen(true); }, [showRules]);
+
+  const rulesOverlay = gameId ? (
+    <>
+      <GameRulesModal gameId={gameId} open={rulesOpen} onClose={() => { setRulesOpen(false); closeRules(); }} />
+      {!rulesOpen && (
+        <div className="fixed top-4 left-4 z-[55]">
+          <RulesHelpButton onClick={() => setRulesOpen(true)} />
+        </div>
+      )}
+    </>
+  ) : null;
 
   // Offline games — wrapped in TVBroadcastProvider so they can
   // optionally connect to a TV screen via the floating 📺 button
-  if (gameId === "category") return <TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "bomb") return <TVBroadcastProvider><Suspense fallback={GameFallback}><BombGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "headup") return <TVBroadcastProvider><Suspense fallback={GameFallback}><HeadUpGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "taboo") return <TVBroadcastProvider><Suspense fallback={GameFallback}><TabooGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "hochstapler") return <TVBroadcastProvider><Suspense fallback={GameFallback}><ImpostorGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "drueck-das-wort") return <TVBroadcastProvider><Suspense fallback={GameFallback}><WordPressGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "wo-ist-was") return <TVBroadcastProvider><Suspense fallback={GameFallback}><FindItGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "split-quiz") return <TVBroadcastProvider><Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense></TVBroadcastProvider>;
-  if (gameId === "geteilt-gequizzt") return <TVBroadcastProvider><Suspense fallback={GameFallback}><SharedQuizGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "schnellzeichner") return <TVBroadcastProvider><Suspense fallback={GameFallback}><QuickDrawGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "wahrheit-pflicht") return <TVBroadcastProvider><Suspense fallback={GameFallback}><TruthDareGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "this-or-that") return <TVBroadcastProvider><Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "wer-bin-ich") return <TVBroadcastProvider><Suspense fallback={GameFallback}><WhoAmIGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "emoji-raten") return <TVBroadcastProvider><Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "fake-or-fact") return <TVBroadcastProvider><Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "story-builder") return <TVBroadcastProvider><Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></TVBroadcastProvider>;
-  if (gameId === "flaschendrehen") return <TVBroadcastProvider><Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></TVBroadcastProvider>;
+  if (gameId === "category") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "bomb") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><BombGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "headup") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><HeadUpGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "taboo") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><TabooGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "hochstapler") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><ImpostorGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "drueck-das-wort") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><WordPressGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "wo-ist-was") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><FindItGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "split-quiz") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "geteilt-gequizzt") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><SharedQuizGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "schnellzeichner") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><QuickDrawGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "wahrheit-pflicht") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><TruthDareGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "this-or-that") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "wer-bin-ich") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><WhoAmIGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "emoji-raten") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "fake-or-fact") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "story-builder") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></TVBroadcastProvider></>;
+  if (gameId === "flaschendrehen") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></TVBroadcastProvider></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {
