@@ -3499,6 +3499,24 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "woIstWas": {
+    "modes": {
+      "memory": "Memory",
+      "memoryDesc": "Merke dir die Szene und beantworte Fragen",
+      "speed": "Speed",
+      "speedDesc": "Wer findet es am schnellsten?",
+      "differences": "Unterschiede",
+      "differencesDesc": "Finde 3 Unterschiede in zwei Bildern",
+      "map": "Karte",
+      "mapDesc": "Finde Städte und Länder auf der Weltkarte",
+      "streetview": "Street View",
+      "streetviewDesc": "Wo bist du? Rate den Standort!"
+    },
+    "settings": {
+      "time": "Zeit (Sek.)",
+      "rounds": "Runden"
+    }
+  },
   "nativeDashboard": {
     "eventTypes": {
       "bachelor": "Junggesellenabschied",
@@ -3805,11 +3823,13 @@
     },
     "wo-ist-was": {
       "title": "Wo ist was?",
-      "tagline": "Geografie-Challenge — finde den Ort auf der Karte! Je näher, desto besser!",
-      "step1": "Dir wird ein Ort oder eine Sehenswürdigkeit genannt",
-      "step2": "Tippe auf die Karte wo du den Ort vermutest",
-      "step3": "Je näher du am richtigen Ort bist, desto mehr Punkte",
-      "tip": "Europa ist kleiner als du denkst — und Australien größer!"
+      "tagline": "5 verschiedene Modi — von Memory über Speed bis Streetview! Geografie & Beobachtung pur!",
+      "step1": "Wähle einen der 5 Spielmodi: Memory, Speed, Unterschiede, Karte oder Street View",
+      "step2": "Memory: Merke dir die Emoji-Szene und beantworte danach Fragen dazu",
+      "step3": "Speed: Die Szene bleibt sichtbar — wer findet die Antwort am schnellsten?",
+      "step4": "Karte: Finde Städte und Länder auf der Weltkarte — je näher, desto mehr Punkte",
+      "step5": "Street View: Du siehst ein Foto — rate in welcher Stadt du bist!",
+      "tip": "Im Karte-Modus: Europa ist kleiner als du denkst — und Australien größer!"
     },
     "flaschendrehen": {
       "title": "Flaschendrehen",

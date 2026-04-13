@@ -3215,6 +3215,24 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "woIstWas": {
+    "modes": {
+      "memory": "Memory",
+      "memoryDesc": "Memorize the scene and answer questions",
+      "speed": "Speed",
+      "speedDesc": "Who finds it the fastest?",
+      "differences": "Differences",
+      "differencesDesc": "Find 3 differences in two pictures",
+      "map": "Map",
+      "mapDesc": "Find cities and countries on the world map",
+      "streetview": "Street View",
+      "streetviewDesc": "Where are you? Guess the location!"
+    },
+    "settings": {
+      "time": "Time (sec.)",
+      "rounds": "Rounds"
+    }
+  },
   "nativeDashboard": {
     "eventTypes": { "bachelor": "Bachelor Party", "bachelorette": "Bachelorette Party", "birthday": "Birthday", "wedding": "Wedding", "other": "Event" },
     "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "marketplace": "Marketplace", "services": "Services", "form": "Form", "responses": "Responses", "messages": "Messages", "ai": "AI", "settings": "Settings" },
@@ -3294,7 +3312,7 @@
     "quickdraw": { "title": "Quick Draw", "tagline": "Draw fast, guess faster — Picasso would be proud (or horrified)!", "step1": "You're shown a word to draw", "step2": "Draw as fast as possible — stick figures are fine!", "step3": "Others must guess your word", "step4": "Faster guesses = more points for everyone", "tip": "Forget art class — speed is everything here!" },
     "splitquiz": { "title": "Split Quiz", "tagline": "Split knowledge — everyone sees different answers, but only one is right!", "step1": "A question is shown", "step2": "Each player sees different answer options", "step3": "Discuss which answer could be correct", "step4": "Only the one with the right answer scores", "tip": "Trust your gut — or the nerd in your group!" },
     "hochstapler": { "title": "The Impostor", "tagline": "One person has no clue — find the impostor! Or be one yourself...", "step1": "All players get a secret word — ONE gets a different one", "step2": "Each player describes the word with a single term", "step3": "Everyone votes: Who is the impostor?", "step4": "Impostor caught? Others win. Impostor survives? They win!", "tip": "As the impostor: Be vague enough to blend in, but specific enough to not seem suspicious!" },
-    "wo-ist-was": { "title": "Where Is It?", "tagline": "Geography challenge — find the spot on the map! Closer = better!", "step1": "You're given a place or landmark", "step2": "Tap on the map where you think it is", "step3": "The closer you are, the more points you get", "tip": "Europe is smaller than you think — and Australia is bigger!" },
+    "wo-ist-was": { "title": "Where Is It?", "tagline": "5 different modes — from Memory to Speed to Street View! Geography & observation!", "step1": "Choose one of 5 modes: Memory, Speed, Differences, Map or Street View", "step2": "Memory: Memorize the emoji scene, then answer questions about it", "step3": "Speed: The scene stays visible — who finds the answer fastest?", "step4": "Map: Find cities and countries on the world map — closer = more points", "step5": "Street View: You see a photo — guess which city you're in!", "tip": "In Map mode: Europe is smaller than you think — and Australia is bigger!" },
     "flaschendrehen": { "title": "Spin the Bottle", "tagline": "The classic party game! Who will the bottle choose?", "step1": "The bottle spins in the middle", "step2": "Whoever it points to is up", "step3": "Answer the question or complete the dare", "tip": "Karma spins the bottle — be nice to your fellow players!" },
     "drueck-das-wort": { "title": "Press the Word", "tagline": "Find the right word under time pressure — one wrong tap and it gets tight!", "step1": "You're shown a target word", "step2": "Tap the correct word from the options — fast!", "step3": "Correct? Next word! Wrong? Points deducted!", "step4": "Most correct words at the end wins", "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!" }
   },

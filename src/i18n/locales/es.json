@@ -3774,11 +3774,13 @@
     },
     "wo-ist-was": {
       "title": "Where Is It?",
-      "tagline": "Geography challenge — find the spot on the map! Closer = better!",
-      "step1": "You're given a place or landmark",
-      "step2": "Tap on the map where you think it is",
-      "step3": "The closer you are, the more points you get",
-      "tip": "Europe is smaller than you think — and Australia is bigger!"
+      "tagline": "5 different modes — from Memory to Speed to Street View! Geography & observation!",
+      "step1": "Choose one of 5 modes: Memory, Speed, Differences, Map or Street View",
+      "step2": "Memory: Memorize the emoji scene, then answer questions about it",
+      "step3": "Speed: The scene stays visible — who finds the answer fastest?",
+      "step4": "Map: Find cities and countries on the world map — closer = more points",
+      "step5": "Street View: You see a photo — guess which city you are in!",
+      "tip": "In Map mode: Europe is smaller than you think — and Australia is bigger!"
     },
     "flaschendrehen": {
       "title": "Spin the Bottle",

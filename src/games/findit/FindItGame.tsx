@@ -5,6 +5,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { GEO_LOCATIONS, filterByRegion, type GeoLocation } from './geo-locations';
 import WorldFinderSetup from './WorldFinderSetup';
@@ -270,24 +271,29 @@ function getColor(i: number) { return PLAYER_COLORS[i % PLAYER_COLORS.length]; }
 // Game Modes Config
 // ---------------------------------------------------------------------------
 
-const GAME_MODES: GameMode[] = [
-  { id: 'memory', name: 'Memory', desc: 'Merke dir die Szene und beantworte Fragen', icon: <Eye className="w-6 h-6" /> },
-  { id: 'speed', name: 'Speed', desc: 'Wer findet es am schnellsten?', icon: <Zap className="w-6 h-6" /> },
-  { id: 'unterschiede', name: 'Unterschiede', desc: 'Finde 3 Unterschiede in zwei Bildern', icon: <GitCompare className="w-6 h-6" /> },
-  { id: 'karte', name: 'Karte', desc: 'Finde Staedte und Laender auf der Weltkarte', icon: <MapPin className="w-6 h-6" /> },
-  { id: 'streetview', name: 'Street View', desc: 'Wo bist du? Rate den Standort!', icon: <Camera className="w-6 h-6" /> },
-];
+function getGameModes(t: (key: string, fallback?: string) => string): GameMode[] {
+  return [
+    { id: 'memory', name: t('woIstWas.modes.memory', 'Memory'), desc: t('woIstWas.modes.memoryDesc', 'Merke dir die Szene und beantworte Fragen'), icon: <Eye className="w-6 h-6" /> },
+    { id: 'speed', name: t('woIstWas.modes.speed', 'Speed'), desc: t('woIstWas.modes.speedDesc', 'Wer findet es am schnellsten?'), icon: <Zap className="w-6 h-6" /> },
+    { id: 'unterschiede', name: t('woIstWas.modes.differences', 'Unterschiede'), desc: t('woIstWas.modes.differencesDesc', 'Finde 3 Unterschiede in zwei Bildern'), icon: <GitCompare className="w-6 h-6" /> },
+    { id: 'karte', name: t('woIstWas.modes.map', 'Karte'), desc: t('woIstWas.modes.mapDesc', 'Finde Städte und Länder auf der Weltkarte'), icon: <MapPin className="w-6 h-6" /> },
+    { id: 'streetview', name: t('woIstWas.modes.streetview', 'Street View'), desc: t('woIstWas.modes.streetviewDesc', 'Wo bist du? Rate den Standort!'), icon: <Camera className="w-6 h-6" /> },
+  ];
+}
 
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 5, max: 60, default: 10, step: 1, label: 'Zeit (Sek.)' },
-  rounds: { min: 3, max: 15, default: 8, step: 1, label: 'Runden' },
-};
+function getSetupSettings(t: (key: string, fallback?: string) => string): SettingsConfig {
+  return {
+    timer: { min: 5, max: 60, default: 10, step: 1, label: t('woIstWas.settings.time', 'Zeit (Sek.)') },
+    rounds: { min: 3, max: 15, default: 8, step: 1, label: t('woIstWas.settings.rounds', 'Runden') },
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
 
 export default function FindItGame({ online }: { online?: OnlineGameProps }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Core state
@@ -642,8 +648,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     return (
       <GameSetup
         gameId="wo-ist-was"
-        modes={GAME_MODES}
-        settings={SETUP_SETTINGS}
+        modes={getGameModes(t)}
+        settings={getSetupSettings(t)}
         onStart={handleSetupStart}
         title="Wo ist was?"
         minPlayers={1}
