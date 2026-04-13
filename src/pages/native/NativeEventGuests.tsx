@@ -4,6 +4,7 @@
  * and invite tools (share link, access code).
  */
 import { useMemo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -48,11 +49,11 @@ interface NativeEventGuestsProps {
 /*  Status config                                                      */
 /* ------------------------------------------------------------------ */
 
-const STATUS_CONFIG: Record<GuestStatus, { dot: string; bg: string; label: string }> = {
-  confirmed: { dot: "bg-emerald-500", bg: "from-emerald-500 to-emerald-600", label: "Zusage" },
-  maybe:     { dot: "bg-amber-500",   bg: "from-amber-500 to-amber-600",     label: "Vielleicht" },
-  declined:  { dot: "bg-red-500",     bg: "from-red-500 to-red-600",         label: "Absage" },
-  invited:   { dot: "bg-zinc-400",    bg: "from-zinc-400 to-zinc-500",       label: "Eingeladen" },
+const STATUS_CONFIG: Record<GuestStatus, { dot: string; bg: string; labelKey: string }> = {
+  confirmed: { dot: "bg-emerald-500", bg: "from-emerald-500 to-emerald-600", labelKey: "nativeGuests.status.confirmed" },
+  maybe:     { dot: "bg-amber-500",   bg: "from-amber-500 to-amber-600",     labelKey: "nativeGuests.status.maybe" },
+  declined:  { dot: "bg-red-500",     bg: "from-red-500 to-red-600",         labelKey: "nativeGuests.status.declined" },
+  invited:   { dot: "bg-zinc-400",    bg: "from-zinc-400 to-zinc-500",       labelKey: "nativeGuests.status.invited" },
 };
 
 const AVATAR_GRADIENTS: Record<GuestStatus, string> = {
@@ -67,6 +68,7 @@ const AVATAR_GRADIENTS: Record<GuestStatus, string> = {
 /* ------------------------------------------------------------------ */
 
 function GuestCard({ guest }: { guest: Guest }) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const x = useMotionValue(0);
   const actionOpacity = useTransform(x, [-120, -60, 0], [1, 0.6, 0]);
@@ -133,11 +135,11 @@ function GuestCard({ guest }: { guest: Guest }) {
         {guest.role === "organizer" ? (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/15 text-violet-400 border border-violet-500/20">
             <Shield className="w-2.5 h-2.5" />
-            Organisator
+            {t("nativeGuests.organizer")}
           </span>
         ) : (
           <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-foreground/5 text-muted-foreground border border-border">
-            Gast
+            {t("nativeGuests.guestRole")}
           </span>
         )}
 
@@ -158,6 +160,7 @@ function GuestCard({ guest }: { guest: Guest }) {
 /* ------------------------------------------------------------------ */
 
 export default function NativeEventGuests({ eventSlug, participants, accessCode, onRefetch }: NativeEventGuestsProps) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const [search, setSearch] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
@@ -232,7 +235,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
           >
             <span className="text-xs font-bold text-emerald-500">&#10003;</span>
             <span className="text-xs font-semibold text-emerald-400">
-              {stats.confirmed} Zusagen
+              {stats.confirmed} {t("nativeGuests.status.confirmed")}
             </span>
           </motion.div>
 
@@ -243,7 +246,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
           >
             <span className="text-xs font-bold text-amber-500">?</span>
             <span className="text-xs font-semibold text-amber-400">
-              {stats.maybe} Vielleicht
+              {stats.maybe} {t("nativeGuests.status.maybe")}
             </span>
           </motion.div>
 
@@ -254,7 +257,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
           >
             <span className="text-xs font-bold text-red-500">&#10007;</span>
             <span className="text-xs font-semibold text-red-400">
-              {stats.declined} Absage
+              {stats.declined} {t("nativeGuests.status.declined")}
             </span>
           </motion.div>
         </motion.div>
@@ -273,7 +276,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Gäste suchen..."
+            placeholder={t("nativeGuests.searchPlaceholder")}
             className={cn(
               "w-full h-10 pl-10 pr-4 rounded-xl text-sm",
               "bg-foreground/[0.06] backdrop-blur-lg border border-border",
@@ -382,7 +385,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
                 <Link2 className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-foreground">Einladungslink</p>
+                <p className="text-xs font-semibold text-foreground">{t("nativeGuests.inviteLink")}</p>
                 <p className="text-[11px] text-muted-foreground truncate">
                   event-bliss.com/e/{eventSlug}
                 </p>
@@ -411,7 +414,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
                 <Hash className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-foreground">Event-Code</p>
+                <p className="text-xs font-semibold text-foreground">{t("nativeGuests.eventCode")}</p>
                 <p className="text-sm font-mono font-bold tracking-widest text-foreground">
                   {accessCode || "—"}
                 </p>

@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Wifi } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 export default function JoinRoomScreen() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +29,7 @@ export default function JoinRoomScreen() {
     const normalized = code.toUpperCase().trim();
     if (normalized.length !== 6) {
       haptics.warning();
-      setError("Der Code muss 6 Zeichen lang sein.");
+      setError(t("nativeJoinRoom.invalidCode"));
       return;
     }
     haptics.medium();
@@ -57,8 +59,8 @@ export default function JoinRoomScreen() {
           <ArrowLeft className="w-5 h-5 text-foreground" />
         </motion.button>
         <div>
-          <h1 className="font-display text-xl font-bold text-foreground">Raum beitreten</h1>
-          <p className="text-xs text-muted-foreground">Gib den 6-stelligen Code ein</p>
+          <h1 className="font-display text-xl font-bold text-foreground">{t("nativeJoinRoom.title")}</h1>
+          <p className="text-xs text-muted-foreground">{t("nativeJoinRoom.subtitle")}</p>
         </div>
       </div>
 
@@ -81,7 +83,7 @@ export default function JoinRoomScreen() {
           transition={{ ...spring.soft, delay: 0.1 }}
           className="text-2xl font-display font-bold text-foreground text-center mb-2"
         >
-          Raum beitreten
+          {t("nativeJoinRoom.title")}
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -89,7 +91,7 @@ export default function JoinRoomScreen() {
           transition={{ ...spring.soft, delay: 0.15 }}
           className="text-muted-foreground text-center mb-8"
         >
-          Frag den Host nach dem 6-stelligen Raumcode
+          {t("nativeJoinRoom.hint")}
         </motion.p>
 
         {/* Code Input — native input, no overlay, no portal */}
@@ -171,7 +173,7 @@ export default function JoinRoomScreen() {
           )}
         >
           <ArrowRight className="w-5 h-5" />
-          Beitreten
+          {t("nativeJoinRoom.join")}
         </motion.button>
       </div>
     </div>

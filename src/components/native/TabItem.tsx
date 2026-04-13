@@ -2,6 +2,7 @@
  * TabItem — single bottom-nav button with active glow, bounce, haptic.
  */
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -15,6 +16,7 @@ interface Props {
 
 export function TabItem({ tab, active }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const Icon = tab.icon;
 
@@ -27,7 +29,7 @@ export function TabItem({ tab, active }: Props) {
     <button
       onClick={handleClick}
       className="relative flex-1 h-full flex items-center justify-center group"
-      aria-label={tab.label}
+      aria-label={t(tab.labelKey)}
     >
       {/* Active pill backdrop with shared layoutId for smooth morph between tabs */}
       {active && (
@@ -73,7 +75,7 @@ export function TabItem({ tab, active }: Props) {
           )}
           animate={{ opacity: active ? 1 : 0.7 }}
         >
-          {tab.label}
+          {t(tab.labelKey)}
         </motion.span>
       </motion.div>
     </button>

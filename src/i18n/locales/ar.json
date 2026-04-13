@@ -2193,6 +2193,56 @@
       "enterprise": "مؤسسي ✓"
     }
   },
+  "nativeResponses": {
+    "stats": {
+      "responses": "الردود",
+      "responseRate": "معدل الاستجابة",
+      "latestResponse": "آخر رد"
+    },
+    "attendanceOverview": "نظرة عامة على الحضور",
+    "attendance": {
+      "confirmed": "مؤكد",
+      "maybe": "ربما",
+      "declined": "مرفوض"
+    },
+    "categoryAnalysis": "تحليل حسب الفئة",
+    "categories": {
+      "attendance": "الحضور",
+      "budget": "الميزانية",
+      "destination": "الوجهة",
+      "duration_pref": "المدة",
+      "travel_pref": "السفر",
+      "fitness_level": "اللياقة",
+      "alcohol": "الكحول"
+    },
+    "activitiesAndPreferences": "الأنشطة والتفضيلات",
+    "preferences": "التفضيلات",
+    "availableDates": "التواريخ المتاحة",
+    "noAnswer": "غ/م",
+    "option": "{{count}} خيار",
+    "option_plural": "{{count}} خيارات",
+    "individualResponses": "الردود الفردية",
+    "searchParticipants": "البحث عن المشاركين...",
+    "noFilterResults": "لا توجد ردود لهذا الفلتر",
+    "filterAll": "الكل",
+    "filterYes": "مؤكد",
+    "filterMaybe": "ربما",
+    "filterNo": "مرفوض",
+    "sections": {
+      "suggestions": "اقتراحات ورغبات",
+      "restrictions": "القيود",
+      "partialAvailability": "التوفر الجزئي",
+      "entries": "{{count}} إدخال",
+      "entries_plural": "{{count}} إدخالات"
+    },
+    "timeAgo": {
+      "justNow": "الآن",
+      "minutesAgo": "قبل {{count}} د",
+      "hoursAgo": "قبل {{count}} س",
+      "yesterday": "أمس",
+      "daysAgo": "قبل {{count}} أيام"
+    }
+  },
   "marketplaceService": {
     "breadcrumb": "السوق",
     "description": "الوصف",

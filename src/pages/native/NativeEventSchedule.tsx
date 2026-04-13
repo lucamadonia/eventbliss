@@ -4,6 +4,7 @@
  * expand-on-tap activity cards, day selector, and Add Activity FAB.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Calendar,
@@ -72,15 +73,15 @@ const CATEGORY_META: Record<ActivityCategory, { icon: string; color: string }> =
   other:         { icon: "\uD83D\uDCCC", color: "from-gray-500 to-slate-400" },
 };
 
-const CATEGORY_OPTIONS: { value: ActivityCategory; label: string }[] = [
-  { value: "food", label: "Essen & Trinken" },
-  { value: "activity", label: "Aktivitaet" },
-  { value: "transport", label: "Transport" },
-  { value: "party", label: "Party" },
-  { value: "sightseeing", label: "Sightseeing" },
-  { value: "accommodation", label: "Unterkunft" },
-  { value: "relaxation", label: "Entspannung" },
-  { value: "other", label: "Sonstiges" },
+const CATEGORY_OPTIONS: { value: ActivityCategory; labelKey: string }[] = [
+  { value: "food", labelKey: "nativeSchedule.categories.food" },
+  { value: "activity", labelKey: "nativeSchedule.categories.activity" },
+  { value: "transport", labelKey: "nativeSchedule.categories.transport" },
+  { value: "party", labelKey: "nativeSchedule.categories.party" },
+  { value: "sightseeing", labelKey: "nativeSchedule.categories.sightseeing" },
+  { value: "accommodation", labelKey: "nativeSchedule.categories.accommodation" },
+  { value: "relaxation", labelKey: "nativeSchedule.categories.relaxation" },
+  { value: "other", labelKey: "nativeSchedule.categories.other" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -188,6 +189,7 @@ const formVariant = {
 /* ------------------------------------------------------------------ */
 
 export default function NativeEventSchedule({ eventSlug }: NativeEventScheduleProps) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const [selectedDay, setSelectedDay] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -385,14 +387,14 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
               <Calendar className="w-10 h-10 text-violet-400" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">Noch keine Aktivitaeten geplant</p>
+              <p className="text-lg font-semibold text-foreground">{t("nativeSchedule.noActivities")}</p>
               <p className="text-sm text-muted-foreground mt-1">Plane den perfekten Ablauf fuer euer Event</p>
             </div>
             <button
               onClick={() => { haptics.medium(); setShowForm(true); }}
               className="mt-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold shadow-lg shadow-violet-500/30 active:scale-95 transition-transform"
             >
-              Aktivitaet hinzufuegen
+              {t("nativeSchedule.addActivity")}
             </button>
           </motion.div>
         ) : (
@@ -603,7 +605,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
 
               {/* Header */}
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-foreground">Aktivitaet hinzufuegen</h3>
+                <h3 className="text-lg font-bold text-foreground">{t("nativeSchedule.addActivity")}</h3>
                 <button
                   onClick={() => setShowForm(false)}
                   className="p-1.5 rounded-full bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
@@ -617,7 +619,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                 {/* Title */}
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Titel
+                    {t("nativeSchedule.form.title")}
                   </label>
                   <input
                     type="text"
@@ -631,7 +633,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                 {/* Time */}
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Uhrzeit
+                    {t("nativeSchedule.form.time")}
                   </label>
                   <input
                     type="time"
@@ -644,7 +646,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                 {/* Category */}
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Kategorie
+                    {t("nativeSchedule.form.category")}
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {CATEGORY_OPTIONS.map((opt) => {
@@ -663,7 +665,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                           )}
                         >
                           <span>{meta.icon}</span>
-                          <span>{opt.label}</span>
+                          <span>{t(opt.labelKey)}</span>
                         </button>
                       );
                     })}
@@ -673,7 +675,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                 {/* Notes */}
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Notizen
+                    {t("nativeSchedule.form.notes")}
                   </label>
                   <textarea
                     value={formNotes}
@@ -695,7 +697,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                       : "bg-muted/50 text-muted-foreground cursor-not-allowed",
                   )}
                 >
-                  Hinzufuegen
+                  {t("nativeSchedule.form.add")}
                 </button>
               </div>
             </motion.div>

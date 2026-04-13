@@ -3215,6 +3215,85 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "nativeDashboard": {
+    "eventTypes": { "bachelor": "Bachelor Party", "bachelorette": "Bachelorette Party", "birthday": "Birthday", "wedding": "Wedding", "other": "Event" },
+    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "services": "Services", "form": "Form", "responses": "Responses", "ai": "AI", "settings": "Settings" },
+    "honoree": "Guest of Honor",
+    "noDate": "No date set",
+    "participants": "Participants",
+    "confirmed": "Confirmed",
+    "maybe": "Maybe",
+    "guest": "Guest",
+    "loading": "Loading dashboard...",
+    "notFound": "Event not found",
+    "notFoundDesc": "The event could not be loaded.",
+    "back": "Back",
+    "countdown": { "today": "Today!", "tomorrow": "Tomorrow!", "inDays": "In {{count}} days" },
+    "confirmedOf": "{{yes}} of {{total}} confirmed",
+    "quickActions": { "inviteGuests": "Invite Guests", "planActivity": "Plan Activity", "addExpense": "Add Expense", "aiAssistant": "AI Assistant" },
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity yet",
+    "activity": { "rsvpConfirmed": "{{name}} confirmed", "rsvpDeclined": "{{name}} declined", "surveyResponse": "{{name}} voted", "expenseCreated": "Expense: {{title}}", "budgetUpdated": "Budget updated", "guestInvited": "{{name}} invited", "scheduleUpdated": "Schedule updated" },
+    "timeAgo": { "justNow": "just now", "minutesAgo": "{{count}} min ago", "hoursAgo": "{{count}} hr ago", "yesterday": "yesterday", "daysAgo": "{{count}} days ago" },
+    "status": { "active": "Active", "planning": "Planning", "draft": "Draft" },
+    "services": { "openMarketplace": "Open Marketplace", "openMarketplaceSub": "Discover & book services for your event", "bookedServices": "Booked Services", "noBookings": "No services booked yet", "details": "Details", "cancel": "Cancel", "statusPending": "Pending", "statusConfirmed": "Confirmed", "statusCompleted": "Completed", "statusCancelled": "Cancelled" }
+  },
+  "nativeGuests": {
+    "status": { "confirmed": "Confirmed", "maybe": "Maybe", "declined": "Declined", "invited": "Invited" },
+    "organizer": "Organizer",
+    "guestRole": "Guest",
+    "searchPlaceholder": "Search guests...",
+    "noGuests": "No guests yet",
+    "noGuestsDesc": "Invite friends and family to plan the event together.",
+    "noResults": "No results",
+    "noResultsFor": "No guest matches \"{{query}}\"",
+    "inviteGuests": "Invite Guests",
+    "inviteLink": "Invite Link",
+    "eventCode": "Event Code",
+    "copied": "Copied!",
+    "copyLink": "Copy Link",
+    "host": "Host"
+  },
+  "nativeSchedule": {
+    "categories": { "food": "Food & Drinks", "activity": "Activity", "transport": "Transport", "party": "Party", "sightseeing": "Sightseeing", "accommodation": "Accommodation", "relaxation": "Relaxation", "other": "Other" },
+    "noActivities": "No activities planned yet",
+    "noActivitiesDesc": "Plan the perfect schedule for your event",
+    "addActivity": "Add Activity",
+    "day": "Day {{num}}",
+    "form": { "title": "Title", "time": "Time", "category": "Category", "notes": "Notes", "location": "Location", "duration": "Duration", "cost": "Cost", "responsible": "Responsible", "add": "Add", "titlePlaceholder": "e.g. Breakfast at hotel" }
+  },
+  "nativeJoinRoom": { "title": "Join Room", "subtitle": "Enter the 6-digit code", "hint": "Ask the host for the 6-digit room code", "join": "Join", "invalidCode": "The code must be 6 characters long." },
+  "nativeFab": { "createEvent": "Create Event", "joinEvent": "Join Event", "createRoom": "Create Room", "joinRoom": "Join Room", "quickGame": "Quick Game" },
+  "nativeTabs": { "home": "Home", "events": "Events", "play": "Play", "market": "Market", "profile": "Profile" },
+  "nativeDrinks": {
+    "title": "Party Stats",
+    "yourRank": "Your party rank tonight",
+    "nextRank": "Next Rank",
+    "waterReminder": "Don't forget water!",
+    "waterReminderDesc": "Drink at least one glass of water per drink — your body will thank you.",
+    "resetSession": "Reset Session",
+    "confirmReset": "Yes, reset",
+    "cancel": "Cancel",
+    "ranks": { "legend": "Legend", "champion": "Champion", "partyAnimal": "Party Animal", "pro": "Pro", "enthusiast": "Enthusiast", "beginner": "Beginner", "sober": "Sober" }
+  },
+  "nativeAdmin": {
+    "title": "Admin Panel",
+    "areas": "{{count}} Areas",
+    "cards": {
+      "stats": { "label": "Dashboard", "desc": "Users, Events, Revenue" },
+      "games": { "label": "Games Content", "desc": "Questions & Content" },
+      "users": { "label": "Users", "desc": "Roles & Passwords" },
+      "credits": { "label": "AI Credits", "desc": "Limits & Adjustments" },
+      "subscriptions": { "label": "Subscriptions", "desc": "Manage Plans" },
+      "vouchers": { "label": "Vouchers", "desc": "Codes & Discounts" },
+      "affiliates": { "label": "Affiliates", "desc": "Partner Program" },
+      "commissions": { "label": "Commissions", "desc": "Status & Payout" },
+      "payouts": { "label": "Payouts", "desc": "Pending & History" },
+      "analytics": { "label": "Agency Analytics", "desc": "Interactions" },
+      "agencies": { "label": "Agency Affiliates", "desc": "Multi-Agency" },
+      "settings": { "label": "Plan Settings", "desc": "Features & Pricing" }
+    }
+  },
   "nativeResponses": {
     "stats": {
       "responses": "Responses",

@@ -54,27 +54,112 @@
     "thankYou": "Dziękujemy za opinię!",
     "betaBadge": "Wersja Beta"
   },
-"landing": {
-    "nav": { "features": "Funkcje", "howItWorks": "Jak to działa", "ideas": "Pomysły", "solutions": "Rozwiązania", "faq": "FAQ", "login": "Zaloguj", "signUp": "Zarejestruj", "partner": "Partnerzy", "games": "Gry" },
-    "hero": { "badge": "Platforma #1 do planowania wydarzeń", "title": "Planuj Niezapomniane Wydarzenia", "subtitle": "Od wieczorów kawalerskich po urodziny, organizuj wydarzenia grupowe z łatwością. Inteligentny podział kosztów, sugestie AI i współpraca w czasie rzeczywistym.", "createEvent": "Utwórz Wydarzenie", "joinEvent": "Dołącz z Kodem", "trustedBy": "Ponad 10 000 organizatorów nam ufa" },
-    "features": { "title": "Wszystko, czego potrzebujesz", "subtitle": "Potężne narzędzia do idealnego wydarzenia", 
-      "multiEvent": { "title": "Zarządzanie Wieloma Wydarzeniami", "description": "Zarządzaj wieloma wydarzeniami jednocześnie" }, 
-      "costSplitting": { "title": "Inteligentny Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" }, 
-      "aiSuggestions": { "title": "Sugestie AI", "description": "Otrzymuj spersonalizowane rekomendacje" }, 
-      "messageTemplates": { "title": "Szablony Wiadomości", "description": "Gotowe wiadomości WhatsApp" }, 
-      "dateCoordination": { "title": "Koordynacja Terminów", "description": "Znajdź idealną datę dla wszystkich" }, 
-      "realtime": { "title": "Współpraca w Czasie Rzeczywistym", "description": "Pracuj z zespołem w czasie rzeczywistym" },
-      "agencyDirectory": { "title": "Katalog Agencji", "description": "Znajdź profesjonalne agencje wieczorów kawalerskich w pobliżu z interaktywną mapą" },
-      "formBuilder": { "title": "Kreator Formularzy", "description": "Twórz niestandardowe ankiety i głosowania dla swojego wydarzenia" },
+  "landing": {
+    "nav": {
+      "features": "Funkcje",
+      "howItWorks": "Jak to działa",
+      "ideas": "Pomysły",
+      "solutions": "Rozwiązania",
+      "faq": "FAQ",
+      "login": "Zaloguj",
+      "signUp": "Zarejestruj",
+      "partner": "Partnerzy",
+      "games": "Gry"
+    },
+    "hero": {
+      "badge": "Platforma #1 do planowania wydarzeń",
+      "title": "Planuj Niezapomniane Wydarzenia",
+      "subtitle": "Od wieczorów kawalerskich po urodziny, organizuj wydarzenia grupowe z łatwością. Inteligentny podział kosztów, sugestie AI i współpraca w czasie rzeczywistym.",
+      "createEvent": "Utwórz Wydarzenie",
+      "joinEvent": "Dołącz z Kodem",
+      "trustedBy": "Ponad 10 000 organizatorów nam ufa"
+    },
+    "features": {
+      "title": "Wszystko, czego potrzebujesz",
+      "subtitle": "Potężne narzędzia do idealnego wydarzenia",
+      "multiEvent": {
+        "title": "Zarządzanie Wieloma Wydarzeniami",
+        "description": "Zarządzaj wieloma wydarzeniami jednocześnie"
+      },
+      "costSplitting": {
+        "title": "Inteligentny Podział Kosztów",
+        "description": "Śledź wydatki i dziel je sprawiedliwie"
+      },
+      "aiSuggestions": {
+        "title": "Sugestie AI",
+        "description": "Otrzymuj spersonalizowane rekomendacje"
+      },
+      "messageTemplates": {
+        "title": "Szablony Wiadomości",
+        "description": "Gotowe wiadomości WhatsApp"
+      },
+      "dateCoordination": {
+        "title": "Koordynacja Terminów",
+        "description": "Znajdź idealną datę dla wszystkich"
+      },
+      "realtime": {
+        "title": "Współpraca w Czasie Rzeczywistym",
+        "description": "Pracuj z zespołem w czasie rzeczywistym"
+      },
+      "agencyDirectory": {
+        "title": "Katalog Agencji",
+        "description": "Znajdź profesjonalne agencje wieczorów kawalerskich w pobliżu z interaktywną mapą"
+      },
+      "formBuilder": {
+        "title": "Kreator Formularzy",
+        "description": "Twórz niestandardowe ankiety i głosowania dla swojego wydarzenia"
+      },
       "showcaseTitle": "Potężne funkcje, piękny design",
       "showcaseSubtitle": "Wszystko, czego potrzebujesz do idealnego wydarzenia grupowego"
     },
-    "howItWorks": { "title": "Jak to Działa", "subtitle": "Zaplanuj w 4 prostych krokach", "step1": { "title": "Utwórz Wydarzenie", "description": "Wybierz typ i ustaw szczegóły" }, "step2": { "title": "Zaproś Gości", "description": "Udostępnij link lub kod" }, "step3": { "title": "Zbierz Preferencje", "description": "Pozwól gościom głosować" }, "step4": { "title": "Planuj Razem", "description": "Użyj sugestii AI do finalizacji" } },
-    "eventTypes": { "title": "Idealne na Każde Wydarzenie", "subtitle": "Czy to dziki weekend czy kameralne spotkanie", "bachelor": "Wieczory Kawalerskie", "bachelorette": "Wieczory Panieńskie", "birthday": "Urodziny", "team": "Wydarzenia Firmowe", "trip": "Wycieczki Grupowe", "wedding": "Wesela" },
-    "testimonials": { "title": "Uwielbiane przez Organizatorów", "subtitle": "Co mówią nasi użytkownicy", 
-      "testimonial1": { "text": "EventBliss sprawił, że planowanie było takie proste!", "author": "Sarah M.", "role": "Organizatorka wieczorów" }, 
-      "testimonial2": { "text": "Podział kosztów to ratunek!", "author": "Michael K.", "role": "Planista wycieczek grupowych" }, 
-      "testimonial3": { "text": "Zorganizowałem 5 wydarzeń. Sugestie AI są niesamowite.", "author": "Anna L.", "role": "Gospodyni urodzin" } 
+    "howItWorks": {
+      "title": "Jak to Działa",
+      "subtitle": "Zaplanuj w 4 prostych krokach",
+      "step1": {
+        "title": "Utwórz Wydarzenie",
+        "description": "Wybierz typ i ustaw szczegóły"
+      },
+      "step2": {
+        "title": "Zaproś Gości",
+        "description": "Udostępnij link lub kod"
+      },
+      "step3": {
+        "title": "Zbierz Preferencje",
+        "description": "Pozwól gościom głosować"
+      },
+      "step4": {
+        "title": "Planuj Razem",
+        "description": "Użyj sugestii AI do finalizacji"
+      }
+    },
+    "eventTypes": {
+      "title": "Idealne na Każde Wydarzenie",
+      "subtitle": "Czy to dziki weekend czy kameralne spotkanie",
+      "bachelor": "Wieczory Kawalerskie",
+      "bachelorette": "Wieczory Panieńskie",
+      "birthday": "Urodziny",
+      "team": "Wydarzenia Firmowe",
+      "trip": "Wycieczki Grupowe",
+      "wedding": "Wesela"
+    },
+    "testimonials": {
+      "title": "Uwielbiane przez Organizatorów",
+      "subtitle": "Co mówią nasi użytkownicy",
+      "testimonial1": {
+        "text": "EventBliss sprawił, że planowanie było takie proste!",
+        "author": "Sarah M.",
+        "role": "Organizatorka wieczorów"
+      },
+      "testimonial2": {
+        "text": "Podział kosztów to ratunek!",
+        "author": "Michael K.",
+        "role": "Planista wycieczek grupowych"
+      },
+      "testimonial3": {
+        "text": "Zorganizowałem 5 wydarzeń. Sugestie AI są niesamowite.",
+        "author": "Anna L.",
+        "role": "Gospodyni urodzin"
+      }
     },
     "multiDevice": {
       "title": "Planuj wydarzenia wszędzie, w każdej chwili",
@@ -106,14 +191,22 @@
       },
       "cta": "Odkryj Premium"
     },
-    "faq": { "title": "Często Zadawane Pytania", 
-      "q1": "Czy EventBliss jest darmowy?", "a1": "Tak! Darmowy dla podstawowego planowania.", 
-      "q2": "Ilu gości mogę zaprosić?", "a2": "Nieograniczenie. Bez limitów.", 
-      "q3": "Czy mogę używać do wydarzeń firmowych?", "a3": "Absolutnie! Idealny na team building.", 
-      "q4": "Czy moje dane są bezpieczne?", "a4": "Tak, wszystkie dane są szyfrowane.",
-      "q5": "Czym jest EventBliss Premium?", "a5": "Premium odblokowuje zaawansowane funkcje: nieograniczone sugestie AI, niestandardowe pytania ankietowe, zaawansowane szablony wiadomości i priorytetowe wsparcie.",
-      "q6": "Czy jest opcja dożywotnia?", "a6": "Tak! Za jednorazową płatność 19,99€ otrzymujesz dożywotni dostęp do wszystkich funkcji premium.",
-      "q7": "Jak działa katalog agencji?", "a7": "Znajdź profesjonalne agencje wieczorów kawalerskich w ponad 50 miastach. Filtruj według kraju, miasta i przeglądaj szczegóły bezpośrednio na interaktywnej mapie."
+    "faq": {
+      "title": "Często Zadawane Pytania",
+      "q1": "Czy EventBliss jest darmowy?",
+      "a1": "Tak! Darmowy dla podstawowego planowania.",
+      "q2": "Ilu gości mogę zaprosić?",
+      "a2": "Nieograniczenie. Bez limitów.",
+      "q3": "Czy mogę używać do wydarzeń firmowych?",
+      "a3": "Absolutnie! Idealny na team building.",
+      "q4": "Czy moje dane są bezpieczne?",
+      "a4": "Tak, wszystkie dane są szyfrowane.",
+      "q5": "Czym jest EventBliss Premium?",
+      "a5": "Premium odblokowuje zaawansowane funkcje: nieograniczone sugestie AI, niestandardowe pytania ankietowe, zaawansowane szablony wiadomości i priorytetowe wsparcie.",
+      "q6": "Czy jest opcja dożywotnia?",
+      "a6": "Tak! Za jednorazową płatność 19,99€ otrzymujesz dożywotni dostęp do wszystkich funkcji premium.",
+      "q7": "Jak działa katalog agencji?",
+      "a7": "Znajdź profesjonalne agencje wieczorów kawalerskich w ponad 50 miastach. Filtruj według kraju, miasta i przeglądaj szczegóły bezpośrednio na interaktywnej mapie."
     },
     "demo": {
       "badge": "Interaktywne Demo",
@@ -123,12 +216,30 @@
       "play": "Wznów odtwarzanie",
       "cta": "Wypróbuj sam",
       "features": {
-        "dashboard": { "title": "Panel Wydarzenia", "description": "Wszystkie info w jednym miejscu: uczestnicy, daty, zadania" },
-        "expenses": { "title": "Podział Kosztów", "description": "Śledź wydatki i dziel je sprawiedliwie" },
-        "ai": { "title": "Asystent AI", "description": "Otrzymuj sugestie aktywności i wiadomości" },
-        "survey": { "title": "Ankiety", "description": "Zbieraj preferencje za pomocą niestandardowych ankiet" },
-        "agencies": { "title": "Katalog Agencji", "description": "Znajdź agencje eventowe w pobliżu" },
-        "planner": { "title": "Planer Aktywności", "description": "Planuj i organizuj wszystkie aktywności z osią czasu" }
+        "dashboard": {
+          "title": "Panel Wydarzenia",
+          "description": "Wszystkie info w jednym miejscu: uczestnicy, daty, zadania"
+        },
+        "expenses": {
+          "title": "Podział Kosztów",
+          "description": "Śledź wydatki i dziel je sprawiedliwie"
+        },
+        "ai": {
+          "title": "Asystent AI",
+          "description": "Otrzymuj sugestie aktywności i wiadomości"
+        },
+        "survey": {
+          "title": "Ankiety",
+          "description": "Zbieraj preferencje za pomocą niestandardowych ankiet"
+        },
+        "agencies": {
+          "title": "Katalog Agencji",
+          "description": "Znajdź agencje eventowe w pobliżu"
+        },
+        "planner": {
+          "title": "Planer Aktywności",
+          "description": "Planuj i organizuj wszystkie aktywności z osią czasu"
+        }
       },
       "planner": {
         "day1": "Dzień 1",
@@ -218,8 +329,34 @@
         }
       }
     },
-    "cta": { "title": "Gotowy na Następne Wydarzenie?", "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.", "button": "Utwórz Wydarzenie" },
-    "footer": { "tagline": "Planuj wydarzenia, które łączą ludzi", "product": "Produkt", "features": "Funkcje", "integrations": "Integracje", "enterprise": "Enterprise", "solutions": "Rozwiązania", "partner": "Partnerzy", "becomePartner": "Zostań partnerem", "becomeAgencyPartner": "Zostań partnerem agencji", "partnerPortal": "Portal partnerski", "agencyPortal": "Portal Agencji", "legal": "Prawne", "imprint": "Impressum", "disclaimer": "Zastrzeżenia", "privacy": "Prywatność", "terms": "Regulamin", "contact": "Kontakt", "address": "Gladstonos 12-14, 8042 Paphos, Cypr", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone." },
+    "cta": {
+      "title": "Gotowy na Następne Wydarzenie?",
+      "description": "Zacznij za darmo i twórz niezapomniane wspomnienia.",
+      "button": "Utwórz Wydarzenie"
+    },
+    "footer": {
+      "tagline": "Planuj wydarzenia, które łączą ludzi",
+      "product": "Produkt",
+      "features": "Funkcje",
+      "integrations": "Integracje",
+      "enterprise": "Enterprise",
+      "solutions": "Rozwiązania",
+      "partner": "Partnerzy",
+      "becomePartner": "Zostań partnerem",
+      "becomeAgencyPartner": "Zostań partnerem agencji",
+      "partnerPortal": "Portal partnerski",
+      "agencyPortal": "Portal Agencji",
+      "legal": "Prawne",
+      "imprint": "Impressum",
+      "disclaimer": "Zastrzeżenia",
+      "privacy": "Prywatność",
+      "terms": "Regulamin",
+      "contact": "Kontakt",
+      "address": "Gladstonos 12-14, 8042 Paphos, Cypr",
+      "phone": "+357 99 980 583",
+      "company": "MYFAMBLISS GROUP LTD",
+      "copyright": "© 2025 MYFAMBLISS GROUP. Wszelkie prawa zastrzeżone."
+    },
     "agencyPortal": {
       "title": "Portal Agencji",
       "welcome": "Witaj ponownie",
@@ -247,10 +384,22 @@
         "description": "Zarabiaj prowizje za każdego klienta, którego przyprowadzisz do EventBliss"
       },
       "benefits": {
-        "commission": { "title": "Atrakcyjne Prowizje", "description": "Do 20% za rezerwację" },
-        "tracking": { "title": "Śledzenie Referencji", "description": "Automatyczne przypisanie przez kod e-mail" },
-        "support": { "title": "Wsparcie Partnera", "description": "Dedykowana osoba kontaktowa" },
-        "exclusiveOffers": { "title": "Ekskluzywne Oferty", "description": "Specjalne vouchery dla Twoich klientów" }
+        "commission": {
+          "title": "Atrakcyjne Prowizje",
+          "description": "Do 20% za rezerwację"
+        },
+        "tracking": {
+          "title": "Śledzenie Referencji",
+          "description": "Automatyczne przypisanie przez kod e-mail"
+        },
+        "support": {
+          "title": "Wsparcie Partnera",
+          "description": "Dedykowana osoba kontaktowa"
+        },
+        "exclusiveOffers": {
+          "title": "Ekskluzywne Oferty",
+          "description": "Specjalne vouchery dla Twoich klientów"
+        }
       },
       "form": {
         "title": "Aplikuj Teraz",
@@ -280,39 +429,184 @@
     }
   },
   "legal": {
-    "imprint": { "title": "Impressum", "company": "Informacje o Firmie", "registeredCompany": "Firma zarejestrowana na Cyprze", "address": "Adres", "contact": "Kontakt", "responsibleContent": "Odpowiedzialny za Treść", "disputeResolution": "Rozstrzyganie Sporów UE", "disputeText": "Komisja Europejska udostępnia platformę do rozstrzygania sporów online." },
-    "privacy": { "title": "Polityka Prywatności", "lastUpdated": "Ostatnia aktualizacja", "intro": "Twoja prywatność jest dla nas ważna.", "dataCollection": { "title": "Zbieranie Danych", "content": "Zbieramy informacje, które podajesz." }, "dataUsage": { "title": "Wykorzystanie Danych", "content": "Dane są używane do świadczenia usług." }, "cookies": { "title": "Cookies", "content": "Używamy cookies." }, "dataSecurity": { "title": "Bezpieczeństwo", "content": "Stosujemy standardowe zabezpieczenia." }, "userRights": { "title": "Twoje Prawa", "content": "Masz prawo dostępu i usunięcia danych." }, "thirdParty": { "title": "Strony Trzecie", "content": "Możemy udostępniać dane zaufanym partnerom." }, "contact": { "title": "Kontakt", "content": "W sprawach prywatności:" } },
-    "terms": { "title": "Regulamin", "lastUpdated": "Ostatnia aktualizacja", "intro": "Używając EventBliss, akceptujesz regulamin.", "acceptance": { "title": "Akceptacja", "content": "Korzystając, akceptujesz warunki." }, "services": { "title": "Nasze Usługi", "content": "EventBliss dostarcza narzędzia do planowania." }, "payment": { "title": "Płatności", "content": "Podstawowe funkcje są darmowe." }, "prohibited": { "title": "Zabronione", "content": "Nie używaj do nielegalnych działań." }, "liability": { "title": "Ograniczenie Odpowiedzialności", "content": "Nie ponosimy odpowiedzialności za szkody." }, "changes": { "title": "Zmiany", "content": "Możemy aktualizować regulamin." }, "governingLaw": { "title": "Prawo Właściwe", "content": "Podlega prawu cypryjskiemu." } },
-    "disclaimer": { "title": "Zastrzeżenia", "lastUpdated": "Ostatnia aktualizacja", "intro": "Przeczytaj przed użyciem.", "general": { "title": "Ogólne", "content": "Informacje są tylko orientacyjne." }, "externalLinks": { "title": "Linki Zewnętrzne", "content": "Nie odpowiadamy za treści stron trzecich." }, "availability": { "title": "Dostępność", "content": "Dążymy do 99,9% dostępności." }, "limitation": { "title": "Ograniczenie", "content": "Nie odpowiadamy za szkody pośrednie." }, "contact": { "title": "Kontakt", "content": "Pytania? Skontaktuj się." } }
+    "imprint": {
+      "title": "Impressum",
+      "company": "Informacje o Firmie",
+      "registeredCompany": "Firma zarejestrowana na Cyprze",
+      "address": "Adres",
+      "contact": "Kontakt",
+      "responsibleContent": "Odpowiedzialny za Treść",
+      "disputeResolution": "Rozstrzyganie Sporów UE",
+      "disputeText": "Komisja Europejska udostępnia platformę do rozstrzygania sporów online."
+    },
+    "privacy": {
+      "title": "Polityka Prywatności",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "intro": "Twoja prywatność jest dla nas ważna.",
+      "dataCollection": {
+        "title": "Zbieranie Danych",
+        "content": "Zbieramy informacje, które podajesz."
+      },
+      "dataUsage": {
+        "title": "Wykorzystanie Danych",
+        "content": "Dane są używane do świadczenia usług."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "content": "Używamy cookies."
+      },
+      "dataSecurity": {
+        "title": "Bezpieczeństwo",
+        "content": "Stosujemy standardowe zabezpieczenia."
+      },
+      "userRights": {
+        "title": "Twoje Prawa",
+        "content": "Masz prawo dostępu i usunięcia danych."
+      },
+      "thirdParty": {
+        "title": "Strony Trzecie",
+        "content": "Możemy udostępniać dane zaufanym partnerom."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "content": "W sprawach prywatności:"
+      }
+    },
+    "terms": {
+      "title": "Regulamin",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "intro": "Używając EventBliss, akceptujesz regulamin.",
+      "acceptance": {
+        "title": "Akceptacja",
+        "content": "Korzystając, akceptujesz warunki."
+      },
+      "services": {
+        "title": "Nasze Usługi",
+        "content": "EventBliss dostarcza narzędzia do planowania."
+      },
+      "payment": {
+        "title": "Płatności",
+        "content": "Podstawowe funkcje są darmowe."
+      },
+      "prohibited": {
+        "title": "Zabronione",
+        "content": "Nie używaj do nielegalnych działań."
+      },
+      "liability": {
+        "title": "Ograniczenie Odpowiedzialności",
+        "content": "Nie ponosimy odpowiedzialności za szkody."
+      },
+      "changes": {
+        "title": "Zmiany",
+        "content": "Możemy aktualizować regulamin."
+      },
+      "governingLaw": {
+        "title": "Prawo Właściwe",
+        "content": "Podlega prawu cypryjskiemu."
+      }
+    },
+    "disclaimer": {
+      "title": "Zastrzeżenia",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "intro": "Przeczytaj przed użyciem.",
+      "general": {
+        "title": "Ogólne",
+        "content": "Informacje są tylko orientacyjne."
+      },
+      "externalLinks": {
+        "title": "Linki Zewnętrzne",
+        "content": "Nie odpowiadamy za treści stron trzecich."
+      },
+      "availability": {
+        "title": "Dostępność",
+        "content": "Dążymy do 99,9% dostępności."
+      },
+      "limitation": {
+        "title": "Ograniczenie",
+        "content": "Nie odpowiadamy za szkody pośrednie."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "content": "Pytania? Skontaktuj się."
+      }
+    }
   },
   "createEvent": {
     "title": "Utwórz Wydarzenie",
-    "step1": { "title": "Co planujesz?", "subtitle": "Wybierz typ wydarzenia, które chcesz zorganizować." },
-    "step2": { 
-      "title": "Szczegóły Wydarzenia", 
-      "subtitle": "Opowiedz nam o wydarzeniu i dla kogo jest.", 
-      "honoreeName": "Kto jest gościem honorowym?", 
-      "eventName": "Nazwa Wydarzenia", 
-      "eventDate": "Data Wydarzenia (opcjonalnie)", 
-      "organizerName": "Twoje Imię (Organizator)", 
-      "organizerNamePlaceholder": "np. Luca", 
-      "organizerEmail": "Twój Email (opcjonalnie)", 
+    "step1": {
+      "title": "Co planujesz?",
+      "subtitle": "Wybierz typ wydarzenia, które chcesz zorganizować."
+    },
+    "step2": {
+      "title": "Szczegóły Wydarzenia",
+      "subtitle": "Opowiedz nam o wydarzeniu i dla kogo jest.",
+      "honoreeName": "Kto jest gościem honorowym?",
+      "eventName": "Nazwa Wydarzenia",
+      "eventDate": "Data Wydarzenia (opcjonalnie)",
+      "organizerName": "Twoje Imię (Organizator)",
+      "organizerNamePlaceholder": "np. Luca",
+      "organizerEmail": "Twój Email (opcjonalnie)",
       "organizerEmailPlaceholder": "luca@example.com",
       "placeholders": {
-        "bachelor": { "honoreeName": "np. Max", "eventName": "np. Epicki Wieczór Kawalerski Maxa" },
-        "bachelorette": { "honoreeName": "np. Julia", "eventName": "np. Wymarzony Wieczór Panieński Julii" },
-        "birthday": { "honoreeName": "np. Lisa", "eventName": "np. 30. Urodziny Lisy" },
-        "trip": { "honoreeName": "np. Ekipa", "eventName": "np. Wyjazd Narciarski 2026" },
-        "other": { "honoreeName": "np. Zespół lub Osoba", "eventName": "np. Letni Festiwal 2026" }
+        "bachelor": {
+          "honoreeName": "np. Max",
+          "eventName": "np. Epicki Wieczór Kawalerski Maxa"
+        },
+        "bachelorette": {
+          "honoreeName": "np. Julia",
+          "eventName": "np. Wymarzony Wieczór Panieński Julii"
+        },
+        "birthday": {
+          "honoreeName": "np. Lisa",
+          "eventName": "np. 30. Urodziny Lisy"
+        },
+        "trip": {
+          "honoreeName": "np. Ekipa",
+          "eventName": "np. Wyjazd Narciarski 2026"
+        },
+        "other": {
+          "honoreeName": "np. Zespół lub Osoba",
+          "eventName": "np. Letni Festiwal 2026"
+        }
       }
     },
-    "step3": { "title": "Dodaj Uczestników", "subtitle": "Dodaj osoby, które chcesz zaprosić.", "namePlaceholder": "Wpisz imię...", "noParticipants": "Brak uczestników. Możesz pominąć ten krok." },
-    "step4": { "title": "Przejrzyj i Utwórz", "subtitle": "Wszystko dobrze? Utwórzmy Twoje wydarzenie!", "forHonoree": "dla {{name}}", "participantCount": "{{count}} uczestników (w tym Ty)", "organizedBy": "Organizowane przez {{name}}", "descriptionPlaceholder": "Dodaj opis (opcjonalnie)" },
-    "types": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "birthday": "Urodziny", "trip": "Wycieczka Grupowa", "other": "Inne Wydarzenie" },
+    "step3": {
+      "title": "Dodaj Uczestników",
+      "subtitle": "Dodaj osoby, które chcesz zaprosić.",
+      "namePlaceholder": "Wpisz imię...",
+      "noParticipants": "Brak uczestników. Możesz pominąć ten krok."
+    },
+    "step4": {
+      "title": "Przejrzyj i Utwórz",
+      "subtitle": "Wszystko dobrze? Utwórzmy Twoje wydarzenie!",
+      "forHonoree": "dla {{name}}",
+      "participantCount": "{{count}} uczestników (w tym Ty)",
+      "organizedBy": "Organizowane przez {{name}}",
+      "descriptionPlaceholder": "Dodaj opis (opcjonalnie)"
+    },
+    "types": {
+      "bachelor": "Wieczór Kawalerski",
+      "bachelorette": "Wieczór Panieński",
+      "birthday": "Urodziny",
+      "trip": "Wycieczka Grupowa",
+      "other": "Inne Wydarzenie"
+    },
     "submit": "Utwórz Wydarzenie",
     "creating": "Tworzenie wydarzenia...",
-    "success": { "title": "Wydarzenie Utworzone! 🎉", "description": "Podziel się kodem z przyjaciółmi.", "shareMessage": "Udostępnij link lub kod.", "accessCode": "Kod Dostępu", "shareLink": "Link do Udostępnienia", "linkCopied": "Link skopiowany.", "shareWhatsApp": "Udostępnij przez WhatsApp", "goToDashboard": "Przejdź do Dashboardu", "whatsappMessage": "🎉 Jesteś zaproszony!\n\nDołącz do \"{{name}}\" na imprezę {{honoree}}!\n\n👉 {{link}}\n📝 Kod: {{code}}" },
-    "error": { "failed": "Tworzenie nie powiodło się. Spróbuj ponownie." }
+    "success": {
+      "title": "Wydarzenie Utworzone! 🎉",
+      "description": "Podziel się kodem z przyjaciółmi.",
+      "shareMessage": "Udostępnij link lub kod.",
+      "accessCode": "Kod Dostępu",
+      "shareLink": "Link do Udostępnienia",
+      "linkCopied": "Link skopiowany.",
+      "shareWhatsApp": "Udostępnij przez WhatsApp",
+      "goToDashboard": "Przejdź do Dashboardu",
+      "whatsappMessage": "🎉 Jesteś zaproszony!\n\nDołącz do \"{{name}}\" na imprezę {{honoree}}!\n\n👉 {{link}}\n📝 Kod: {{code}}"
+    },
+    "error": {
+      "failed": "Tworzenie nie powiodło się. Spróbuj ponownie."
+    }
   },
   "joinEvent": {
     "title": "Dołącz do Wydarzenia",
@@ -534,34 +828,13 @@
       }
     },
     "team": {
-      "title": "Zarządzaj Dostępem do Panelu",
-      "description": "Włącz dostęp do panelu dla uczestników i udostępnij link z zaproszeniem.",
-      "addParticipant": "Dodaj Uczestnika",
-      "addParticipantDesc": "Dodaj nowego gościa do wydarzenia",
-      "participantName": "Imię",
-      "participantEmail": "Email (opcjonalnie)",
-      "participantRole": "Rola",
-      "namePlaceholder": "np. Jan Kowalski",
-      "emailPlaceholder": "jan@example.com",
-      "addButton": "Dodaj",
-      "nameRequired": "Imię jest wymagane",
-      "participantAdded": "{{name}} został dodany",
-      "addError": "Błąd podczas dodawania",
+      "title": "Zarządzaj Zespołem",
+      "invite": "Zaproś",
+      "permissions": "Uprawnienia",
+      "removeAccess": "Usuń Dostęp",
       "roles": {
-        "guest": "Gość",
-        "organizer": "Organizator"
-      },
-      "status": {
-        "activated": "Aktywowany",
-        "invited": "Zaproszony",
-        "ready": "Gotowy",
-        "noAccess": "Brak Dostępu"
-      },
-      "permissions": {
-        "viewResponses": "Przeglądaj odpowiedzi",
-        "addExpenses": "Dodaj wydatki",
-        "viewAllExpenses": "Przeglądaj wszystkie wydatki",
-        "editSettings": "Edytuj ustawienia"
+        "organizer": "Organizator",
+        "guest": "Gość"
       }
     },
     "overview": {
@@ -809,16 +1082,6 @@
         "title": "Strefa Niebezpieczna",
         "deleteEvent": "Usuń Wydarzenie",
         "deleteWarning": "Ta akcja nie może być cofnięta."
-      }
-    },
-    "team": {
-      "title": "Zarządzaj Zespołem",
-      "invite": "Zaproś",
-      "permissions": "Uprawnienia",
-      "removeAccess": "Usuń Dostęp",
-      "roles": {
-        "organizer": "Organizator",
-        "guest": "Gość"
       }
     },
     "ai": {
@@ -1298,57 +1561,22 @@
     }
   },
   "admin": {
-    "title": "Portal Admina",
-    "tabs": {
-      "stats": "Statystyki",
-      "users": "Użytkownicy",
-      "members": "Członkowie",
-      "subscriptions": "Subskrypcje",
-      "vouchers": "Vouchery"
-    },
-    "users": {
-      "title": "Zarządzanie Użytkownikami",
-      "create": "Utwórz Użytkownika",
-      "createTitle": "Utwórz Nowego Użytkownika",
-      "email": "Email",
-      "password": "Hasło",
-      "fullName": "Imię i Nazwisko",
-      "plan": "Plan",
-      "name": "Imię",
-      "status": "Status",
-      "createdAt": "Utworzono",
-      "search": "Szukaj użytkowników...",
-      "noUsers": "Nie znaleziono użytkowników",
-      "mustChangePassword": "Użytkownik musi zmienić hasło przy pierwszym logowaniu",
-      "mustChange": "Zmień hasło",
-      "active": "Aktywny",
-      "requiredFields": "Email i hasło są wymagane",
-      "passwordTooShort": "Hasło musi mieć co najmniej 8 znaków",
-      "createSuccess": "Użytkownik utworzony pomyślnie",
-      "createError": "Błąd podczas tworzenia"
-    },
-    "vouchers": {
-      "title": "Zarządzanie Voucherami",
-      "create": "Utwórz Voucher",
-      "code": "Kod",
-      "type": "Typ",
-      "value": "Wartość",
-      "uses": "Użycia",
-      "validFrom": "Ważny od",
-      "validUntil": "Ważny do",
-      "status": "Status",
-      "active": "Aktywny",
-      "inactive": "Nieaktywny",
-      "expired": "Wygasły",
-      "noVouchers": "Brak voucherów",
-      "percentage": "Procent",
-      "fixed": "Stała kwota",
-      "free_trial": "Bezpłatny okres próbny",
-      "unlimited": "Nieograniczone",
-      "createSuccess": "Voucher utworzony pomyślnie",
-      "createError": "Błąd podczas tworzenia",
-      "deleteSuccess": "Voucher usunięty",
-      "deleteError": "Błąd podczas usuwania"
+    "credits": {
+      "title": "Zarządzanie kredytami",
+      "description": "Ręczne korekty kredytów dla użytkowników",
+      "userSearch": "Szukaj użytkownika (email)",
+      "currentCredits": "Aktualne kredyty",
+      "adjustCredits": "Dostosuj kredyty",
+      "addCredits": "Dodaj kredyty",
+      "removeCredits": "Usuń kredyty",
+      "reason": "Powód",
+      "reasonPlaceholder": "np. Bonus partnerski, Uprzejmość, itp.",
+      "adjustmentSuccess": "Kredyty pomyślnie dostosowane",
+      "noUser": "Nie znaleziono użytkownika",
+      "adjustmentHistory": "Historia korekt",
+      "amount": "Kwota",
+      "adjustedBy": "Dostosowane przez",
+      "date": "Data"
     }
   },
   "templates": {
@@ -1404,25 +1632,234 @@
       "usesOneCredit": "Kosztuje 1 credit",
       "noCredits": "Brak dostępnych creditów"
     },
-    "jgaClassic": { "name": "Klasyczna Impreza", "description": "Akcja, impreza i niezapomniane chwile" },
-    "jgaAdventure": { "name": "Wyprawa Przygodowa", "description": "Outdoor i wyzwania zespołowe" },
-    "jgaChill": { "name": "Relaksujące Świętowanie", "description": "Wellness, dobre jedzenie i jakościowy czas" },
-    "bacheloretteGlam": { "name": "Glamour Weekend", "description": "Spa, sesja zdjęciowa i koktajle" },
-    "bacheloretteAdventure": { "name": "Aktywny Wypad", "description": "Wędrówki, joga i natura" },
-    "birthdayParty": { "name": "Przyjęcie Urodzinowe", "description": "Świętowanie z rodziną i przyjaciółmi" },
-    "birthdayExperience": { "name": "Urodzinowe Doświadczenie", "description": "Unikalne aktywności i przygody" },
-    "familyTrip": { "name": "Wycieczka Rodzinna", "description": "Zabawa dla wszystkich" },
-    "friendsTrip": { "name": "Wyprawa ze Znajomymi", "description": "Przygoda i podróże" },
-    "teamEvent": { "name": "Wydarzenie Firmowe", "description": "Teambuilding i wspólne doświadczenia" },
-    "flexible": { "name": "Elastyczny", "description": "Pełna elastyczność – Ty decydujesz" },
-    "tags": { "action": "Akcja", "party": "Impreza", "city": "Miasto", "outdoor": "Outdoor", "adventure": "Przygoda", "sports": "Sport", "relax": "Relaks", "wellness": "Wellness", "food": "Jedzenie", "glamour": "Glamour", "active": "Aktywny", "nature": "Natura", "celebration": "Świętowanie", "fun": "Zabawa", "experience": "Doświadczenie", "unique": "Unikalne", "memorable": "Niezapomniane", "family": "Rodzina", "kids": "Dzieci", "relaxed": "Spokojny", "friends": "Przyjaciele", "travel": "Podróż", "team": "Zespół", "corporate": "Firmowe", "teambuilding": "Teambuilding", "flexible": "Elastyczny", "custom": "Własny", "open": "Otwarty" },
-    "destinations": { "deCity": "Duże miasto w Niemczech", "prague": "Praga", "budapest": "Budapeszt", "barcelona": "Barcelona", "amsterdam": "Amsterdam", "mallorca": "Majorka", "lisbon": "Lizbona", "flexible": "Elastyczny", "alps": "Alpy", "seaCoast": "Wybrzeże", "forestNature": "Las i Natura", "lakeRegion": "Region Jezior", "spaHotel": "Hotel Spa", "local": "Lokalnie", "wineRegion": "Region Winiarski", "lakeResort": "Resort nad Jeziorem", "vineyard": "Winnica", "restaurant": "Restauracja", "eventLocation": "Lokalizacja Eventowa", "rooftopBar": "Rooftop Bar", "nearbyCity": "Pobliskie Miasto", "nature": "Natura", "themePark": "Park Rozrywki", "zoo": "Zoo", "beach": "Plaża", "mountains": "Góry", "farm": "Farma", "cityEurope": "Miasto w Europie", "beachEurope": "Plaża w Europie", "adventureEurope": "Przygoda w Europie", "roadTrip": "Road Trip", "conferenceHotel": "Hotel Konferencyjny", "outdoorLocation": "Lokalizacja Outdoor", "eventSpace": "Przestrzeń Eventowa", "office": "Biuro", "domestic": "Krajowy", "europe": "Europa", "worldwide": "Światowy" },
-    "activities": { "karting": "Karting", "escapeRoom": "Escape Room", "lasertag": "Laser Tag", "axeThrowing": "Rzucanie Toporami", "vrArena": "Arena VR", "bubbleSoccer": "Bubble Football", "paintball": "Paintball", "barTour": "Trasa po Barach", "casino": "Kasyno", "bbqParty": "Impreza BBQ", "rafting": "Rafting", "canyoning": "Canyoning", "climbing": "Wspinaczka", "hiking": "Wędrówka", "mountainBiking": "Kolarstwo Górskie", "survivalTraining": "Survival", "bungee": "Bungee", "paragliding": "Paralotniarstwo", "quadTour": "Quady", "cabinBbq": "BBQ w Chatce", "spaWellness": "Spa i Wellness", "wineTasting": "Degustacja Win", "gourmetDinner": "Kolacja Gourmet", "cookingClass": "Warsztaty Kulinarne", "golf": "Golf", "cigarWhiskey": "Cygaro i Whisky", "breweryTour": "Zwiedzanie Browaru", "boatTrip": "Rejs", "photoshoot": "Sesja Zdjęciowa", "cocktailClass": "Warsztaty Koktajlowe", "yogaRetreat": "Retreat Jogi", "danceClass": "Lekcja Tańca", "brunchParty": "Brunch", "beachClub": "Beach Club", "shoppingTour": "Zakupy", "karaoke": "Karaoke", "kayaking": "Kajakarstwo", "horsebackRiding": "Jazda Konna", "picnic": "Piknik", "sunsetBoat": "Rejs o Zachodzie", "outdoorCooking": "Gotowanie Outdoor", "dinnerParty": "Kolacja", "bowling": "Kręgle", "gamesNight": "Wieczór Gier", "cocktailParty": "Przyjęcie Koktajlowe", "dancing": "Taniec", "liveMusic": "Muzyka na Żywo", "spaDay": "Dzień Spa", "concert": "Koncert", "sportsEvent": "Wydarzenie Sportowe", "artClass": "Warsztaty Artystyczne", "adventurePark": "Park Przygód", "themePark": "Park Rozrywki", "zooAquarium": "Zoo i Akwarium", "beachFun": "Zabawa na Plaży", "hikingEasy": "Łatwa Wędrówka", "games": "Gry", "bikeTour": "Wycieczka Rowerowa", "swimming": "Pływanie", "sightseeing": "Zwiedzanie", "nightlife": "Życie Nocne", "foodTour": "Tour Kulinarny", "beach": "Plaża", "waterSports": "Sporty Wodne", "localExperiences": "Lokalne Doświadczenia", "concertsEvents": "Koncerty", "teambuildingGames": "Gry Zespołowe", "workshop": "Warsztaty", "outdoorChallenge": "Wyzwanie Outdoor", "sportsTournament": "Turniej Sportowy", "dinnerEvent": "Wydarzenie z Kolacją", "creativeWorkshop": "Warsztaty Kreatywne", "action": "Akcja", "chill": "Relaks", "outdoor": "Outdoor", "food": "Jedzenie", "culture": "Kultura", "party": "Impreza", "mixed": "Mieszane" },
-    "duration": { "dayTrip": "Wycieczka Jednodniowa", "weekend": "Weekend (2-3 dni)", "longWeekend": "Długi Weekend (3-4 dni)", "week": "Cały Tydzień", "twoWeeks": "Dwa Tygodnie", "halfDay": "Pół Dnia", "fullDay": "Cały Dzień", "evening": "Wieczór", "overnight": "Z Noclegiem", "flexible": "Elastyczny" },
-    "travel": { "daytrip": "Wycieczka jednodniowa", "oneNight": "Jedna noc", "twoNights": "Dwie noce", "flexible": "Elastyczny" },
-    "fitness": { "chill": "Spokojny", "normal": "Normalny", "sporty": "Sportowy" },
-    "alcohol": { "yes": "Tak, chętnie", "no": "Raczej nie", "flexible": "Elastyczny" },
-    "attendance": { "yes": "Jestem!", "maybe": "Może", "no": "Niestety nie" },
+    "jgaClassic": {
+      "name": "Klasyczna Impreza",
+      "description": "Akcja, impreza i niezapomniane chwile"
+    },
+    "jgaAdventure": {
+      "name": "Wyprawa Przygodowa",
+      "description": "Outdoor i wyzwania zespołowe"
+    },
+    "jgaChill": {
+      "name": "Relaksujące Świętowanie",
+      "description": "Wellness, dobre jedzenie i jakościowy czas"
+    },
+    "bacheloretteGlam": {
+      "name": "Glamour Weekend",
+      "description": "Spa, sesja zdjęciowa i koktajle"
+    },
+    "bacheloretteAdventure": {
+      "name": "Aktywny Wypad",
+      "description": "Wędrówki, joga i natura"
+    },
+    "birthdayParty": {
+      "name": "Przyjęcie Urodzinowe",
+      "description": "Świętowanie z rodziną i przyjaciółmi"
+    },
+    "birthdayExperience": {
+      "name": "Urodzinowe Doświadczenie",
+      "description": "Unikalne aktywności i przygody"
+    },
+    "familyTrip": {
+      "name": "Wycieczka Rodzinna",
+      "description": "Zabawa dla wszystkich"
+    },
+    "friendsTrip": {
+      "name": "Wyprawa ze Znajomymi",
+      "description": "Przygoda i podróże"
+    },
+    "teamEvent": {
+      "name": "Wydarzenie Firmowe",
+      "description": "Teambuilding i wspólne doświadczenia"
+    },
+    "flexible": {
+      "name": "Elastyczny",
+      "description": "Pełna elastyczność – Ty decydujesz"
+    },
+    "tags": {
+      "action": "Akcja",
+      "party": "Impreza",
+      "city": "Miasto",
+      "outdoor": "Outdoor",
+      "adventure": "Przygoda",
+      "sports": "Sport",
+      "relax": "Relaks",
+      "wellness": "Wellness",
+      "food": "Jedzenie",
+      "glamour": "Glamour",
+      "active": "Aktywny",
+      "nature": "Natura",
+      "celebration": "Świętowanie",
+      "fun": "Zabawa",
+      "experience": "Doświadczenie",
+      "unique": "Unikalne",
+      "memorable": "Niezapomniane",
+      "family": "Rodzina",
+      "kids": "Dzieci",
+      "relaxed": "Spokojny",
+      "friends": "Przyjaciele",
+      "travel": "Podróż",
+      "team": "Zespół",
+      "corporate": "Firmowe",
+      "teambuilding": "Teambuilding",
+      "flexible": "Elastyczny",
+      "custom": "Własny",
+      "open": "Otwarty"
+    },
+    "destinations": {
+      "deCity": "Duże miasto w Niemczech",
+      "prague": "Praga",
+      "budapest": "Budapeszt",
+      "barcelona": "Barcelona",
+      "amsterdam": "Amsterdam",
+      "mallorca": "Majorka",
+      "lisbon": "Lizbona",
+      "flexible": "Elastyczny",
+      "alps": "Alpy",
+      "seaCoast": "Wybrzeże",
+      "forestNature": "Las i Natura",
+      "lakeRegion": "Region Jezior",
+      "spaHotel": "Hotel Spa",
+      "local": "Lokalnie",
+      "wineRegion": "Region Winiarski",
+      "lakeResort": "Resort nad Jeziorem",
+      "vineyard": "Winnica",
+      "restaurant": "Restauracja",
+      "eventLocation": "Lokalizacja Eventowa",
+      "rooftopBar": "Rooftop Bar",
+      "nearbyCity": "Pobliskie Miasto",
+      "nature": "Natura",
+      "themePark": "Park Rozrywki",
+      "zoo": "Zoo",
+      "beach": "Plaża",
+      "mountains": "Góry",
+      "farm": "Farma",
+      "cityEurope": "Miasto w Europie",
+      "beachEurope": "Plaża w Europie",
+      "adventureEurope": "Przygoda w Europie",
+      "roadTrip": "Road Trip",
+      "conferenceHotel": "Hotel Konferencyjny",
+      "outdoorLocation": "Lokalizacja Outdoor",
+      "eventSpace": "Przestrzeń Eventowa",
+      "office": "Biuro",
+      "domestic": "Krajowy",
+      "europe": "Europa",
+      "worldwide": "Światowy"
+    },
+    "activities": {
+      "karting": "Karting",
+      "escapeRoom": "Escape Room",
+      "lasertag": "Laser Tag",
+      "axeThrowing": "Rzucanie Toporami",
+      "vrArena": "Arena VR",
+      "bubbleSoccer": "Bubble Football",
+      "paintball": "Paintball",
+      "barTour": "Trasa po Barach",
+      "casino": "Kasyno",
+      "bbqParty": "Impreza BBQ",
+      "rafting": "Rafting",
+      "canyoning": "Canyoning",
+      "climbing": "Wspinaczka",
+      "hiking": "Wędrówka",
+      "mountainBiking": "Kolarstwo Górskie",
+      "survivalTraining": "Survival",
+      "bungee": "Bungee",
+      "paragliding": "Paralotniarstwo",
+      "quadTour": "Quady",
+      "cabinBbq": "BBQ w Chatce",
+      "spaWellness": "Spa i Wellness",
+      "wineTasting": "Degustacja Win",
+      "gourmetDinner": "Kolacja Gourmet",
+      "cookingClass": "Warsztaty Kulinarne",
+      "golf": "Golf",
+      "cigarWhiskey": "Cygaro i Whisky",
+      "breweryTour": "Zwiedzanie Browaru",
+      "boatTrip": "Rejs",
+      "photoshoot": "Sesja Zdjęciowa",
+      "cocktailClass": "Warsztaty Koktajlowe",
+      "yogaRetreat": "Retreat Jogi",
+      "danceClass": "Lekcja Tańca",
+      "brunchParty": "Brunch",
+      "beachClub": "Beach Club",
+      "shoppingTour": "Zakupy",
+      "karaoke": "Karaoke",
+      "kayaking": "Kajakarstwo",
+      "horsebackRiding": "Jazda Konna",
+      "picnic": "Piknik",
+      "sunsetBoat": "Rejs o Zachodzie",
+      "outdoorCooking": "Gotowanie Outdoor",
+      "dinnerParty": "Kolacja",
+      "bowling": "Kręgle",
+      "gamesNight": "Wieczór Gier",
+      "cocktailParty": "Przyjęcie Koktajlowe",
+      "dancing": "Taniec",
+      "liveMusic": "Muzyka na Żywo",
+      "spaDay": "Dzień Spa",
+      "concert": "Koncert",
+      "sportsEvent": "Wydarzenie Sportowe",
+      "artClass": "Warsztaty Artystyczne",
+      "adventurePark": "Park Przygód",
+      "themePark": "Park Rozrywki",
+      "zooAquarium": "Zoo i Akwarium",
+      "beachFun": "Zabawa na Plaży",
+      "hikingEasy": "Łatwa Wędrówka",
+      "games": "Gry",
+      "bikeTour": "Wycieczka Rowerowa",
+      "swimming": "Pływanie",
+      "sightseeing": "Zwiedzanie",
+      "nightlife": "Życie Nocne",
+      "foodTour": "Tour Kulinarny",
+      "beach": "Plaża",
+      "waterSports": "Sporty Wodne",
+      "localExperiences": "Lokalne Doświadczenia",
+      "concertsEvents": "Koncerty",
+      "teambuildingGames": "Gry Zespołowe",
+      "workshop": "Warsztaty",
+      "outdoorChallenge": "Wyzwanie Outdoor",
+      "sportsTournament": "Turniej Sportowy",
+      "dinnerEvent": "Wydarzenie z Kolacją",
+      "creativeWorkshop": "Warsztaty Kreatywne",
+      "action": "Akcja",
+      "chill": "Relaks",
+      "outdoor": "Outdoor",
+      "food": "Jedzenie",
+      "culture": "Kultura",
+      "party": "Impreza",
+      "mixed": "Mieszane"
+    },
+    "duration": {
+      "dayTrip": "Wycieczka Jednodniowa",
+      "weekend": "Weekend (2-3 dni)",
+      "longWeekend": "Długi Weekend (3-4 dni)",
+      "week": "Cały Tydzień",
+      "twoWeeks": "Dwa Tygodnie",
+      "halfDay": "Pół Dnia",
+      "fullDay": "Cały Dzień",
+      "evening": "Wieczór",
+      "overnight": "Z Noclegiem",
+      "flexible": "Elastyczny"
+    },
+    "travel": {
+      "daytrip": "Wycieczka jednodniowa",
+      "oneNight": "Jedna noc",
+      "twoNights": "Dwie noce",
+      "flexible": "Elastyczny"
+    },
+    "fitness": {
+      "chill": "Spokojny",
+      "normal": "Normalny",
+      "sporty": "Sportowy"
+    },
+    "alcohol": {
+      "yes": "Tak, chętnie",
+      "no": "Raczej nie",
+      "flexible": "Elastyczny"
+    },
+    "attendance": {
+      "yes": "Jestem!",
+      "maybe": "Może",
+      "no": "Niestety nie"
+    },
     "designTemplates": "Szablony Designu",
     "surveyTemplates": "Szablony Ankiet",
     "selectDesign": "Wybierz Design",
@@ -1432,59 +1869,297 @@
     "recommended": "Polecane",
     "allTemplates": "Wszystkie Szablony",
     "design": {
-      "jga-classic": { "name": "JGA Klasyczny", "desc": "Świąteczny i gotowy na imprezę z gradientem fioletowo-cyjanowym" },
-      "wedding-elegant": { "name": "Ślub Elegancki", "desc": "Klasycznie elegancki z akcentami w kolorze różowego złota" },
-      "birthday-fun": { "name": "Urodziny Zabawa", "desc": "Kolorowy i wesoły na przyjęcia urodzinowe" },
-      "beach-vibes": { "name": "Klimat Plaży", "desc": "Relaksujący i letni na wycieczki na plażę" },
-      "night-out": { "name": "Nocna Zabawa", "desc": "Ciemny i glamourowy na imprezowe noce" },
-      "modern-minimal": { "name": "Nowoczesny Minimalizm", "desc": "Czysty i ponadczasowy na każdą okazję" },
-      "tropical-paradise": { "name": "Tropikalny Raj", "desc": "Egzotyczny i kolorowy na podróże przygodowe" },
-      "royal-purple": { "name": "Królewski Fiolet", "desc": "Królewski i luksusowy na specjalne okazje" },
-      "sunset-glow": { "name": "Blask Zachodu Słońca", "desc": "Ciepły i romantyczny jak zachód słońca" },
-      "ocean-breeze": { "name": "Bryza Oceanu", "desc": "Świeży i morski dla fanów sportów wodnych" },
-      "ladies-night": { "name": "Wieczór Panieński", "desc": "Różowy i glamourowy na wieczór panieński" },
-      "vegas-neon": { "name": "Vegas Neon", "desc": "Neony na niezapomniane imprezy" },
-      "oktoberfest": { "name": "Oktoberfest", "desc": "Bawarski i tradycyjny dla fanów festynów ludowych" },
-      "ski-snow": { "name": "Narty i Śnieg", "desc": "Zimowy i sportowy na wyjazdy narciarskie" },
-      "festival-vibes": { "name": "Klimat Festiwalu", "desc": "Dziki i kolorowy dla miłośników festiwali" },
-      "garden-party": { "name": "Przyjęcie w Ogrodzie", "desc": "Naturalny i romantyczny na przyjęcia ogrodowe" },
-      "road-trip": { "name": "Podróż Samochodem", "desc": "Przygodowy i wolny na podróże samochodem" },
-      "glamour-night": { "name": "Wieczór Glamour", "desc": "Szlachetny i glamourowy na wyjątkowe wieczory" },
-      "sporty-adventure": { "name": "Sportowa Przygoda", "desc": "Aktywny i energiczny dla sportowców" },
-      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostalgiczny i stylowy w stylu vintage" }
+      "jga-classic": {
+        "name": "JGA Klasyczny",
+        "desc": "Świąteczny i gotowy na imprezę z gradientem fioletowo-cyjanowym"
+      },
+      "wedding-elegant": {
+        "name": "Ślub Elegancki",
+        "desc": "Klasycznie elegancki z akcentami w kolorze różowego złota"
+      },
+      "birthday-fun": {
+        "name": "Urodziny Zabawa",
+        "desc": "Kolorowy i wesoły na przyjęcia urodzinowe"
+      },
+      "beach-vibes": {
+        "name": "Klimat Plaży",
+        "desc": "Relaksujący i letni na wycieczki na plażę"
+      },
+      "night-out": {
+        "name": "Nocna Zabawa",
+        "desc": "Ciemny i glamourowy na imprezowe noce"
+      },
+      "modern-minimal": {
+        "name": "Nowoczesny Minimalizm",
+        "desc": "Czysty i ponadczasowy na każdą okazję"
+      },
+      "tropical-paradise": {
+        "name": "Tropikalny Raj",
+        "desc": "Egzotyczny i kolorowy na podróże przygodowe"
+      },
+      "royal-purple": {
+        "name": "Królewski Fiolet",
+        "desc": "Królewski i luksusowy na specjalne okazje"
+      },
+      "sunset-glow": {
+        "name": "Blask Zachodu Słońca",
+        "desc": "Ciepły i romantyczny jak zachód słońca"
+      },
+      "ocean-breeze": {
+        "name": "Bryza Oceanu",
+        "desc": "Świeży i morski dla fanów sportów wodnych"
+      },
+      "ladies-night": {
+        "name": "Wieczór Panieński",
+        "desc": "Różowy i glamourowy na wieczór panieński"
+      },
+      "vegas-neon": {
+        "name": "Vegas Neon",
+        "desc": "Neony na niezapomniane imprezy"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "desc": "Bawarski i tradycyjny dla fanów festynów ludowych"
+      },
+      "ski-snow": {
+        "name": "Narty i Śnieg",
+        "desc": "Zimowy i sportowy na wyjazdy narciarskie"
+      },
+      "festival-vibes": {
+        "name": "Klimat Festiwalu",
+        "desc": "Dziki i kolorowy dla miłośników festiwali"
+      },
+      "garden-party": {
+        "name": "Przyjęcie w Ogrodzie",
+        "desc": "Naturalny i romantyczny na przyjęcia ogrodowe"
+      },
+      "road-trip": {
+        "name": "Podróż Samochodem",
+        "desc": "Przygodowy i wolny na podróże samochodem"
+      },
+      "glamour-night": {
+        "name": "Wieczór Glamour",
+        "desc": "Szlachetny i glamourowy na wyjątkowe wieczory"
+      },
+      "sporty-adventure": {
+        "name": "Sportowa Przygoda",
+        "desc": "Aktywny i energiczny dla sportowców"
+      },
+      "retro-vintage": {
+        "name": "Retro Vintage",
+        "desc": "Nostalgiczny i stylowy w stylu vintage"
+      }
     },
     "survey": {
-      "jga-classic": { "name": "JGA Klasyczny", "desc": "Klasyczny wieczór kawalerski z wycieczkami po mieście i przygodą" },
-      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Premiumowe doświadczenie kawalerskie z luksusowymi aktywnościami" },
-      "bachelorette": { "name": "Wieczór Panieński", "desc": "Spa, brunch, taniec i niezapomniane chwile" },
-      "birthday-bash": { "name": "Przyjęcie Urodzinowe", "desc": "Elastyczne i zabawne świętowanie urodzin" },
-      "adventure-trip": { "name": "Podróż Przygodowa", "desc": "Przygody na świeżym powietrzu, wędrówki i adrenalina" },
-      "city-break": { "name": "Wypad do Miasta", "desc": "Kultura, jedzenie i zwiedzanie" },
-      "wedding-rsvp": { "name": "RSVP Ślubne", "desc": "Elegancka odpowiedź ślubna z dietą i zakwaterowaniem" },
-      "corporate-retreat": { "name": "Wyjazd Firmowy", "desc": "Team building, warsztaty i networking" }
+      "jga-classic": {
+        "name": "JGA Klasyczny",
+        "desc": "Klasyczny wieczór kawalerski z wycieczkami po mieście i przygodą"
+      },
+      "jga-deluxe": {
+        "name": "JGA Deluxe",
+        "desc": "Premiumowe doświadczenie kawalerskie z luksusowymi aktywnościami"
+      },
+      "bachelorette": {
+        "name": "Wieczór Panieński",
+        "desc": "Spa, brunch, taniec i niezapomniane chwile"
+      },
+      "birthday-bash": {
+        "name": "Przyjęcie Urodzinowe",
+        "desc": "Elastyczne i zabawne świętowanie urodzin"
+      },
+      "adventure-trip": {
+        "name": "Podróż Przygodowa",
+        "desc": "Przygody na świeżym powietrzu, wędrówki i adrenalina"
+      },
+      "city-break": {
+        "name": "Wypad do Miasta",
+        "desc": "Kultura, jedzenie i zwiedzanie"
+      },
+      "wedding-rsvp": {
+        "name": "RSVP Ślubne",
+        "desc": "Elegancka odpowiedź ślubna z dietą i zakwaterowaniem"
+      },
+      "corporate-retreat": {
+        "name": "Wyjazd Firmowy",
+        "desc": "Team building, warsztaty i networking"
+      }
     }
   },
   "affiliate": {
     "portal": {
       "title": "Portal Partnerski",
       "welcome": "Witaj ponownie",
-      "tabs": { "dashboard": "Przegląd", "vouchers": "Kupony", "commissions": "Prowizje", "payouts": "Wypłaty", "settings": "Ustawienia" }
+      "tabs": {
+        "dashboard": "Przegląd",
+        "vouchers": "Kupony",
+        "commissions": "Prowizje",
+        "payouts": "Wypłaty",
+        "settings": "Ustawienia"
+      }
     },
-    "stats": { "totalEarnings": "Całkowite zarobki", "pendingBalance": "Saldo oczekujące", "paidOut": "Już wypłacone", "conversionRate": "Współczynnik konwersji", "thisMonth": "Ten miesiąc", "allTime": "Wszystko", "tier": "Status Tier" },
-    "vouchers": { "title": "Moje kody rabatowe", "copyCode": "Kopiuj kod", "share": "Udostępnij", "redemptions": "Wykorzystania", "generated": "Wygenerowano", "noVouchers": "Brak przypisanych kuponów", "copied": "Kod skopiowany!", "discount": "Rabat", "active": "Aktywny", "inactive": "Nieaktywny" },
-    "commissions": { "title": "Moje prowizje", "recent": "Ostatnie prowizje", "pending": "Oczekujące", "approved": "Zatwierdzone", "paid": "Wypłacone", "cancelled": "Anulowane", "orderAmount": "Wartość zamówienia", "commission": "Prowizja", "rate": "Stawka", "noCommissions": "Nie znaleziono prowizji", "noCommissionsYet": "Prowizje pojawią się tutaj.", "noResults": "Brak wyników dla tych filtrów", "searchPlaceholder": "Szukaj po kodzie lub emailu..." },
-    "payouts": { "title": "Wypłaty", "availableBalance": "Dostępne saldo", "requestPayout": "Zażądaj wypłaty", "minAmount": "Minimalna kwota: 50€", "readyForPayout": "Gotowe do wypłaty", "processing": "Przetwarzanie", "completed": "Zakończone", "failed": "Niepowodzenie", "pending": "Oczekujące", "reference": "Referencja", "history": "Historia wypłat", "noPayouts": "Brak wypłat", "noPayoutsDesc": "Twoja historia wypłat pojawi się tutaj.", "requested": "Wypłata pomyślnie zażądana!", "confirmTitle": "Potwierdź wypłatę", "confirmDesc": "Czy chcesz zażądać wypłaty na tę kwotę?", "willBeTransferred": "zostanie przelane na twoje konto", "processedAt": "Przetworzone" },
-    "settings": { "title": "Ustawienia", "profile": "Profil", "paymentMethod": "Metoda płatności", "paymentType": "Typ wypłaty", "bankTransfer": "Przelew bankowy", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "Email PayPal", "taxId": "NIP", "saved": "Ustawienia zapisane", "yourTier": "Twój Tier", "companyName": "Nazwa firmy", "companyNamePlaceholder": "Twoja Firma Sp. z o.o.", "contactName": "Imię i nazwisko", "contactNamePlaceholder": "Jan Kowalski", "phone": "Telefon", "website": "Strona www" },
-    "tiers": { "bronze": "Brąz", "silver": "Srebro", "gold": "Złoto", "platinum": "Platyna", "nextTier": "Następny tier", "conversionsNeeded": "{{needed}} więcej konwersji" },
-    "notAffiliate": { "title": "Zostań partnerem", "description": "Nie jesteś jeszcze partnerem. Czy chcesz dołączyć do naszego programu partnerskiego?", "cta": "Aplikuj teraz", "loginRequired": "Wymagane logowanie", "loginDesc": "Zaloguj się, aby uzyskać dostęp do Portalu Partnerskiego.", "benefits": { "commission": "Do 25% prowizji", "commissionDesc": "Zarabiaj na każdej rekomendacji", "tracking": "Śledzenie w czasie rzeczywistym", "trackingDesc": "Śledź wszystkie konwersje", "support": "Osobiste wsparcie", "supportDesc": "Bezpośredni kontakt z naszym zespołem" } }
+    "stats": {
+      "totalEarnings": "Całkowite zarobki",
+      "pendingBalance": "Saldo oczekujące",
+      "paidOut": "Już wypłacone",
+      "conversionRate": "Współczynnik konwersji",
+      "thisMonth": "Ten miesiąc",
+      "allTime": "Wszystko",
+      "tier": "Status Tier"
+    },
+    "vouchers": {
+      "title": "Moje kody rabatowe",
+      "copyCode": "Kopiuj kod",
+      "share": "Udostępnij",
+      "redemptions": "Wykorzystania",
+      "generated": "Wygenerowano",
+      "noVouchers": "Brak przypisanych kuponów",
+      "copied": "Kod skopiowany!",
+      "discount": "Rabat",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny"
+    },
+    "commissions": {
+      "title": "Moje prowizje",
+      "recent": "Ostatnie prowizje",
+      "pending": "Oczekujące",
+      "approved": "Zatwierdzone",
+      "paid": "Wypłacone",
+      "cancelled": "Anulowane",
+      "orderAmount": "Wartość zamówienia",
+      "commission": "Prowizja",
+      "rate": "Stawka",
+      "noCommissions": "Nie znaleziono prowizji",
+      "noCommissionsYet": "Prowizje pojawią się tutaj.",
+      "noResults": "Brak wyników dla tych filtrów",
+      "searchPlaceholder": "Szukaj po kodzie lub emailu..."
+    },
+    "payouts": {
+      "title": "Wypłaty",
+      "availableBalance": "Dostępne saldo",
+      "requestPayout": "Zażądaj wypłaty",
+      "minAmount": "Minimalna kwota: 50€",
+      "readyForPayout": "Gotowe do wypłaty",
+      "processing": "Przetwarzanie",
+      "completed": "Zakończone",
+      "failed": "Niepowodzenie",
+      "pending": "Oczekujące",
+      "reference": "Referencja",
+      "history": "Historia wypłat",
+      "noPayouts": "Brak wypłat",
+      "noPayoutsDesc": "Twoja historia wypłat pojawi się tutaj.",
+      "requested": "Wypłata pomyślnie zażądana!",
+      "confirmTitle": "Potwierdź wypłatę",
+      "confirmDesc": "Czy chcesz zażądać wypłaty na tę kwotę?",
+      "willBeTransferred": "zostanie przelane na twoje konto",
+      "processedAt": "Przetworzone"
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "profile": "Profil",
+      "paymentMethod": "Metoda płatności",
+      "paymentType": "Typ wypłaty",
+      "bankTransfer": "Przelew bankowy",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "Email PayPal",
+      "taxId": "NIP",
+      "saved": "Ustawienia zapisane",
+      "yourTier": "Twój Tier",
+      "companyName": "Nazwa firmy",
+      "companyNamePlaceholder": "Twoja Firma Sp. z o.o.",
+      "contactName": "Imię i nazwisko",
+      "contactNamePlaceholder": "Jan Kowalski",
+      "phone": "Telefon",
+      "website": "Strona www"
+    },
+    "tiers": {
+      "bronze": "Brąz",
+      "silver": "Srebro",
+      "gold": "Złoto",
+      "platinum": "Platyna",
+      "nextTier": "Następny tier",
+      "conversionsNeeded": "{{needed}} więcej konwersji"
+    },
+    "notAffiliate": {
+      "title": "Zostań partnerem",
+      "description": "Nie jesteś jeszcze partnerem. Czy chcesz dołączyć do naszego programu partnerskiego?",
+      "cta": "Aplikuj teraz",
+      "loginRequired": "Wymagane logowanie",
+      "loginDesc": "Zaloguj się, aby uzyskać dostęp do Portalu Partnerskiego.",
+      "benefits": {
+        "commission": "Do 25% prowizji",
+        "commissionDesc": "Zarabiaj na każdej rekomendacji",
+        "tracking": "Śledzenie w czasie rzeczywistym",
+        "trackingDesc": "Śledź wszystkie konwersje",
+        "support": "Osobiste wsparcie",
+        "supportDesc": "Bezpośredni kontakt z naszym zespołem"
+      }
+    }
   },
   "partnerApply": {
-    "hero": { "badge": "Program partnerski", "title": "Dołącz do naszego programu partnerskiego", "description": "Polecaj EventBliss i zarabiaj do 25% prowizji za każdą udaną rekomendację." },
-    "benefits": { "commission": { "title": "Atrakcyjne prowizje", "description": "Do 25% za każdy polecony zakup" }, "tracking": { "title": "Panel w czasie rzeczywistym", "description": "Śledź wszystkie swoje konwersje" }, "payouts": { "title": "Szybkie wypłaty", "description": "Miesięczna wypłata od 50€" }, "support": { "title": "Osobiste wsparcie", "description": "Pomagamy na każdym kroku" } },
-    "stats": { "partners": "Aktywni partnerzy", "commissionRate": "Do", "payouts": "Wypłacone" },
-    "form": { "title": "Aplikuj teraz", "companyName": "Nazwa firmy (opcjonalnie)", "companyNamePlaceholder": "Twoja Firma Sp. z o.o.", "contactName": "Imię i nazwisko", "contactNamePlaceholder": "Jan Kowalski", "email": "Adres e-mail", "emailPlaceholder": "partner@przyklad.pl", "phone": "Telefon (opcjonalnie)", "phonePlaceholder": "+48 123 456 789", "website": "Strona www (opcjonalnie)", "websitePlaceholder": "https://twoja-strona.pl", "taxId": "NIP (opcjonalnie)", "taxIdPlaceholder": "PL1234567890", "about": "O Tobie / Twojej firmie (opcjonalnie)", "aboutPlaceholder": "Opowiedz nam o sobie...", "promotion": "Jak planujesz promować EventBliss?", "promotionPlaceholder": "np. Blog, Media społecznościowe, Newsletter, Osobiste rekomendacje...", "privacy": "Akceptuję", "submit": "Wyślij aplikację", "submitting": "Wysyłanie..." },
-    "success": { "title": "Aplikacja otrzymana!", "description": "Dziękujemy za zainteresowanie naszym programem partnerskim.", "nextSteps": "Przejrzymy Twoją aplikację i skontaktujemy się w ciągu 2-3 dni roboczych.", "backToHome": "Wróć na stronę główną" },
-    "errors": { "required": "To pole jest wymagane", "invalidEmail": "Podaj prawidłowy adres e-mail", "privacyRequired": "Musisz zaakceptować politykę prywatności", "submitFailed": "Nie udało się wysłać aplikacji. Spróbuj ponownie." }
+    "hero": {
+      "badge": "Program partnerski",
+      "title": "Dołącz do naszego programu partnerskiego",
+      "description": "Polecaj EventBliss i zarabiaj do 25% prowizji za każdą udaną rekomendację."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Atrakcyjne prowizje",
+        "description": "Do 25% za każdy polecony zakup"
+      },
+      "tracking": {
+        "title": "Panel w czasie rzeczywistym",
+        "description": "Śledź wszystkie swoje konwersje"
+      },
+      "payouts": {
+        "title": "Szybkie wypłaty",
+        "description": "Miesięczna wypłata od 50€"
+      },
+      "support": {
+        "title": "Osobiste wsparcie",
+        "description": "Pomagamy na każdym kroku"
+      }
+    },
+    "stats": {
+      "partners": "Aktywni partnerzy",
+      "commissionRate": "Do",
+      "payouts": "Wypłacone"
+    },
+    "form": {
+      "title": "Aplikuj teraz",
+      "companyName": "Nazwa firmy (opcjonalnie)",
+      "companyNamePlaceholder": "Twoja Firma Sp. z o.o.",
+      "contactName": "Imię i nazwisko",
+      "contactNamePlaceholder": "Jan Kowalski",
+      "email": "Adres e-mail",
+      "emailPlaceholder": "partner@przyklad.pl",
+      "phone": "Telefon (opcjonalnie)",
+      "phonePlaceholder": "+48 123 456 789",
+      "website": "Strona www (opcjonalnie)",
+      "websitePlaceholder": "https://twoja-strona.pl",
+      "taxId": "NIP (opcjonalnie)",
+      "taxIdPlaceholder": "PL1234567890",
+      "about": "O Tobie / Twojej firmie (opcjonalnie)",
+      "aboutPlaceholder": "Opowiedz nam o sobie...",
+      "promotion": "Jak planujesz promować EventBliss?",
+      "promotionPlaceholder": "np. Blog, Media społecznościowe, Newsletter, Osobiste rekomendacje...",
+      "privacy": "Akceptuję",
+      "submit": "Wyślij aplikację",
+      "submitting": "Wysyłanie..."
+    },
+    "success": {
+      "title": "Aplikacja otrzymana!",
+      "description": "Dziękujemy za zainteresowanie naszym programem partnerskim.",
+      "nextSteps": "Przejrzymy Twoją aplikację i skontaktujemy się w ciągu 2-3 dni roboczych.",
+      "backToHome": "Wróć na stronę główną"
+    },
+    "errors": {
+      "required": "To pole jest wymagane",
+      "invalidEmail": "Podaj prawidłowy adres e-mail",
+      "privacyRequired": "Musisz zaakceptować politykę prywatności",
+      "submitFailed": "Nie udało się wysłać aplikacji. Spróbuj ponownie."
+    }
   },
   "aiCredits": {
     "title": "Kredyty AI",
@@ -1522,29 +2197,32 @@
     "noCreditsLeft": "Brak pozostałych kredytów",
     "creditUsed": "💎 {{remaining}} kredytów pozostało"
   },
-  "admin": {
-    "credits": {
-      "title": "Zarządzanie kredytami",
-      "description": "Ręczne korekty kredytów dla użytkowników",
-      "userSearch": "Szukaj użytkownika (email)",
-      "currentCredits": "Aktualne kredyty",
-      "adjustCredits": "Dostosuj kredyty",
-      "addCredits": "Dodaj kredyty",
-      "removeCredits": "Usuń kredyty",
-      "reason": "Powód",
-      "reasonPlaceholder": "np. Bonus partnerski, Uprzejmość, itp.",
-      "adjustmentSuccess": "Kredyty pomyślnie dostosowane",
-      "noUser": "Nie znaleziono użytkownika",
-      "adjustmentHistory": "Historia korekt",
-      "amount": "Kwota",
-      "adjustedBy": "Dostosowane przez",
-      "date": "Data"
-    }
-  },
   "gamesLibrary": {
-    "categories": { "jga_games": "Gry na Wieczór Kawalerski", "family_games": "Gry Rodzinne", "wedding_games": "Gry Weselne", "party_games": "Gry Imprezowe", "outdoor_games": "Gry na Zewnątrz", "team_games": "Team Building", "icebreaker": "Na Przełamanie Lodów", "kids_friendly": "Dla Dzieci" },
-    "filters": { "title": "Filtry", "all": "Wszystkie", "category": "Kategoria", "eventType": "Typ Wydarzenia", "difficulty": "Trudność", "kidsFriendly": "Dla dzieci", "alcoholFree": "Bez alkoholu", "clear": "Wyczyść filtry" },
-    "difficulty": { "easy": "Łatwy", "medium": "Średni", "hard": "Trudny" },
+    "categories": {
+      "jga_games": "Gry na Wieczór Kawalerski",
+      "family_games": "Gry Rodzinne",
+      "wedding_games": "Gry Weselne",
+      "party_games": "Gry Imprezowe",
+      "outdoor_games": "Gry na Zewnątrz",
+      "team_games": "Team Building",
+      "icebreaker": "Na Przełamanie Lodów",
+      "kids_friendly": "Dla Dzieci"
+    },
+    "filters": {
+      "title": "Filtry",
+      "all": "Wszystkie",
+      "category": "Kategoria",
+      "eventType": "Typ Wydarzenia",
+      "difficulty": "Trudność",
+      "kidsFriendly": "Dla dzieci",
+      "alcoholFree": "Bez alkoholu",
+      "clear": "Wyczyść filtry"
+    },
+    "difficulty": {
+      "easy": "Łatwy",
+      "medium": "Średni",
+      "hard": "Trudny"
+    },
     "searchPlaceholder": "Szukaj gier...",
     "resultsCount": "{{count}} gier znaleziono",
     "noResults": "Nie znaleziono gier. Spróbuj innych filtrów.",
@@ -1553,33 +2231,190 @@
     "materials": "Materiały",
     "addToPlanner": "Dodaj do planera",
     "games": {
-      "bingo_tasks": { "name": "Bingo Zadań", "description": "Każdy otrzymuje kartę bingo z zabawnymi zadaniami do wykonania w mieście.", "instructions": "Stwórz karty bingo z różnymi zadaniami. Grupa chodzi po mieście próbując je wykonać. Kto pierwszy uzupełni rząd, wygrywa!" },
-      "beer_pong": { "name": "Beer Pong", "description": "Klasyka - wrzuć piłkę do kubków przeciwnika.", "instructions": "Ustaw kubki w trójkąt. Drużyny rzucają na zmianę. Trafienie = przeciwnik pije. Drużyna bez kubków przegrywa." },
-      "truth_or_dare": { "name": "Prawda czy Wyzwanie", "description": "Klasyka dla odważnych wyznań i szalonych wyzwań.", "instructions": "Na zmianę każdy wybiera: Prawda lub Wyzwanie. Odmowa = kara!" },
-      "karaoke_battle": { "name": "Bitwa Karaoke", "description": "Śpiewaj by wygrać!", "instructions": "Drużyny lub pojedynczy gracze rywalizują. Grupa ocenia. Punkty za występ!" },
-      "shoe_game": { "name": "Gra Butów", "description": "Para młoda odpowiada na pytania butami.", "instructions": "Para siedzi tyłem do siebie, każdy z własnym butem i butem partnera. Na pytania unoszą but tego, kogo dotyczy odpowiedź." },
-      "scavenger_hunt": { "name": "Poszukiwanie Skarbów", "description": "Podążaj za wskazówkami i rozwiązuj zagadki.", "instructions": "Ukryj wskazówki prowadzące do następnego miejsca. Na końcu czeka skarb!" },
-      "charades": { "name": "Kalambury", "description": "Zgaduj słowa pokazywane gestami.", "instructions": "Gracz pokazuje pojęcie bez mówienia. Drużyna musi zgadnąć w czasie." }
+      "bingo_tasks": {
+        "name": "Bingo Zadań",
+        "description": "Każdy otrzymuje kartę bingo z zabawnymi zadaniami do wykonania w mieście.",
+        "instructions": "Stwórz karty bingo z różnymi zadaniami. Grupa chodzi po mieście próbując je wykonać. Kto pierwszy uzupełni rząd, wygrywa!"
+      },
+      "beer_pong": {
+        "name": "Beer Pong",
+        "description": "Klasyka - wrzuć piłkę do kubków przeciwnika.",
+        "instructions": "Ustaw kubki w trójkąt. Drużyny rzucają na zmianę. Trafienie = przeciwnik pije. Drużyna bez kubków przegrywa."
+      },
+      "truth_or_dare": {
+        "name": "Prawda czy Wyzwanie",
+        "description": "Klasyka dla odważnych wyznań i szalonych wyzwań.",
+        "instructions": "Na zmianę każdy wybiera: Prawda lub Wyzwanie. Odmowa = kara!"
+      },
+      "karaoke_battle": {
+        "name": "Bitwa Karaoke",
+        "description": "Śpiewaj by wygrać!",
+        "instructions": "Drużyny lub pojedynczy gracze rywalizują. Grupa ocenia. Punkty za występ!"
+      },
+      "shoe_game": {
+        "name": "Gra Butów",
+        "description": "Para młoda odpowiada na pytania butami.",
+        "instructions": "Para siedzi tyłem do siebie, każdy z własnym butem i butem partnera. Na pytania unoszą but tego, kogo dotyczy odpowiedź."
+      },
+      "scavenger_hunt": {
+        "name": "Poszukiwanie Skarbów",
+        "description": "Podążaj za wskazówkami i rozwiązuj zagadki.",
+        "instructions": "Ukryj wskazówki prowadzące do następnego miejsca. Na końcu czeka skarb!"
+      },
+      "charades": {
+        "name": "Kalambury",
+        "description": "Zgaduj słowa pokazywane gestami.",
+        "instructions": "Gracz pokazuje pojęcie bez mówienia. Drużyna musi zgadnąć w czasie."
+      }
     },
     "themes": {
-      "80s_retro": { "name": "Impreza Retro 80s", "description": "Neonowe kolory, muzyka synth i ramiona", "tips": "Neonowe światła, kule disco i hity lat 80!" },
-      "casino_royale": { "name": "Casino Royale", "description": "Elegancka atmosfera James Bonda", "tips": "Czerwony dywan, żetony pokerowe i eleganckie koktajle!" },
-      "oktoberfest": { "name": "Oktoberfest", "description": "Bawarska atmosfera", "tips": "Ławy piwne, precle, kiełbaski i muzyka!" }
+      "80s_retro": {
+        "name": "Impreza Retro 80s",
+        "description": "Neonowe kolory, muzyka synth i ramiona",
+        "tips": "Neonowe światła, kule disco i hity lat 80!"
+      },
+      "casino_royale": {
+        "name": "Casino Royale",
+        "description": "Elegancka atmosfera James Bonda",
+        "tips": "Czerwony dywan, żetony pokerowe i eleganckie koktajle!"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "description": "Bawarska atmosfera",
+        "tips": "Ławy piwne, precle, kiełbaski i muzyka!"
+      }
     }
   },
-  "ideasHub": { "title": "Gry i Pomysły", "description": "Odkryj ponad 200 gier i 50 tematów na swoje wydarzenie.", "tabs": { "games": "Gry", "themes": "Tematy" }, "stats": { "games": "Gry", "themes": "Tematy", "categories": "Kategorie", "languages": "Języki" }, "openGames": "Otwórz Wszystkie Gry" },
-  "eventTypes": { "bachelor": "Wieczór Kawalerski", "bachelorette": "Wieczór Panieński", "wedding": "Wesele", "birthday": "Urodziny", "family": "Rodzina", "team": "Zespół", "trip": "Wyjazd", "other": "Inne" },
+  "ideasHub": {
+    "title": "Gry i Pomysły",
+    "description": "Odkryj ponad 200 gier i 50 tematów na swoje wydarzenie.",
+    "tabs": {
+      "games": "Gry",
+      "themes": "Tematy"
+    },
+    "stats": {
+      "games": "Gry",
+      "themes": "Tematy",
+      "categories": "Kategorie",
+      "languages": "Języki"
+    },
+    "openGames": "Otwórz Wszystkie Gry"
+  },
+  "eventTypes": {
+    "bachelor": "Wieczór Kawalerski",
+    "bachelorette": "Wieczór Panieński",
+    "wedding": "Wesele",
+    "birthday": "Urodziny",
+    "family": "Rodzina",
+    "team": "Zespół",
+    "trip": "Wyjazd",
+    "other": "Inne"
+  },
   "agency": {
     "dashboard": "Panel Agencji",
     "overview": "Przegląd",
     "events": "Wydarzenia",
-    "contacts": "Kontakty",
-    "templates": "Szablony",
-    "team": "Zespół",
-    "files": "Pliki",
-    "reports": "Raporty",
+    "contacts": {
+      "searchContacts": "Szukaj kontaktów...",
+      "addContact": "Dodaj Kontakt",
+      "importCSV": "Importuj CSV",
+      "name": "Imię i Nazwisko",
+      "company": "Firma",
+      "phone": "Telefon",
+      "email": "Email",
+      "type": "Typ",
+      "rating": "Ocena",
+      "lastUsed": "Ostatnio Użyto",
+      "tags": "Tagi",
+      "notes": "Notatki",
+      "priceHistory": "Historia Cen",
+      "pastEvents": "Poprzednie Wydarzenia",
+      "availability": "Dostępność",
+      "topRated": "Najlepiej Oceniani",
+      "recentlyUsed": "Ostatnio Używani",
+      "available": "Dostępny",
+      "qualityScore": "Ocena Jakości",
+      "specialization": "Specjalizacja"
+    },
+    "templates": {
+      "useTemplate": "Użyj Szablonu",
+      "createFromEvent": "Utwórz z Wydarzenia",
+      "timesUsed": "razy użyto",
+      "lastUsed": "Ostatnio użyto",
+      "categories": {
+        "corporate": "Firmowe",
+        "wedding": "Wesele",
+        "jga": "Wieczór Kawalerski/Panieński",
+        "birthday": "Urodziny",
+        "conference": "Konferencja",
+        "festival": "Festiwal",
+        "other": "Inne"
+      }
+    },
+    "team": {
+      "inviteMember": "Zaproś Członka",
+      "inviteByEmail": "Zaproś przez Email",
+      "role": "Rola",
+      "activeEvents": "Aktywne Wydarzenia",
+      "lastActive": "Ostatnio Aktywny",
+      "workload": "Obciążenie Pracą",
+      "deactivate": "Dezaktywuj",
+      "activityLog": "Dziennik Aktywności"
+    },
+    "files": {
+      "uploadFiles": "Prześlij Pliki",
+      "dragAndDrop": "Przeciągnij i upuść pliki tutaj lub kliknij, aby przeglądać",
+      "storageUsed": "Wykorzystana Przestrzeń",
+      "categories": {
+        "contract": "Umowa",
+        "invoice": "Faktura",
+        "photo": "Zdjęcie",
+        "floorPlan": "Plan Piętra",
+        "briefing": "Briefing",
+        "other": "Inne"
+      },
+      "gridView": "Widok Siatki",
+      "listView": "Widok Listy"
+    },
+    "reports": {
+      "dateRange": "Zakres Dat",
+      "eventsPerMonth": "Wydarzenia na Miesiąc",
+      "revenueTrend": "Trend Przychodów",
+      "eventTypes": "Rozkład Typów Wydarzeń",
+      "budgetAccuracy": "Dokładność Budżetu",
+      "exportCSV": "Eksportuj CSV",
+      "avgBudgetPerEvent": "Śr. Budżet/Wydarzenie",
+      "clientRetention": "Retencja Klientów"
+    },
     "calendar": "Kalendarz",
-    "runOfShow": "Scenariusz Wydarzeń",
+    "runOfShow": {
+      "liveTimeline": "Oś Czasu na Żywo",
+      "currentPhase": "Bieżąca Faza",
+      "upcoming": "Nadchodzące",
+      "active": "Aktywne",
+      "completed": "Zakończone",
+      "delayed": "Opóźnione",
+      "skipped": "Pominięte",
+      "markActive": "Oznacz jako Aktywne",
+      "markComplete": "Oznacz jako Zakończone",
+      "skip": "Pomiń",
+      "countdown": "Odliczanie",
+      "responsible": "Odpowiedzialny",
+      "cueNotes": "Notatki Reżyserskie",
+      "delayMinutes": "Opóźnienie (minuty)",
+      "multiStage": "Wiele Scen",
+      "mainStage": "Scena Główna",
+      "breakoutRoom": "Sala Warsztatowa",
+      "emergency": "Protokół Awaryjny",
+      "incidentLog": "Rejestr Incydentów",
+      "reportIncident": "Zgłoś Incydent",
+      "roleView": "Widok Ról",
+      "allRoles": "Wszystkie Role",
+      "moderator": "Moderator",
+      "technician": "Technik",
+      "catering": "Catering",
+      "crew": "Ekipa"
+    },
     "budgetEngine": "Silnik Budżetowy",
     "notifications": "Powiadomienia",
     "stats": {
@@ -1631,28 +2466,6 @@
       "transport": "Transport",
       "security": "Ochrona"
     },
-    "contacts": {
-      "searchContacts": "Szukaj kontaktów...",
-      "addContact": "Dodaj Kontakt",
-      "importCSV": "Importuj CSV",
-      "name": "Imię i Nazwisko",
-      "company": "Firma",
-      "phone": "Telefon",
-      "email": "Email",
-      "type": "Typ",
-      "rating": "Ocena",
-      "lastUsed": "Ostatnio Użyto",
-      "tags": "Tagi",
-      "notes": "Notatki",
-      "priceHistory": "Historia Cen",
-      "pastEvents": "Poprzednie Wydarzenia",
-      "availability": "Dostępność",
-      "topRated": "Najlepiej Oceniani",
-      "recentlyUsed": "Ostatnio Używani",
-      "available": "Dostępny",
-      "qualityScore": "Ocena Jakości",
-      "specialization": "Specjalizacja"
-    },
     "planner": {
       "overview": "Przegląd",
       "timeline": "Oś Czasu",
@@ -1690,34 +2503,6 @@
       "approvalPending": "Oczekuje na Zatwierdzenie",
       "approved": "Zatwierdzony"
     },
-    "runOfShow": {
-      "liveTimeline": "Oś Czasu na Żywo",
-      "currentPhase": "Bieżąca Faza",
-      "upcoming": "Nadchodzące",
-      "active": "Aktywne",
-      "completed": "Zakończone",
-      "delayed": "Opóźnione",
-      "skipped": "Pominięte",
-      "markActive": "Oznacz jako Aktywne",
-      "markComplete": "Oznacz jako Zakończone",
-      "skip": "Pomiń",
-      "countdown": "Odliczanie",
-      "responsible": "Odpowiedzialny",
-      "cueNotes": "Notatki Reżyserskie",
-      "delayMinutes": "Opóźnienie (minuty)",
-      "multiStage": "Wiele Scen",
-      "mainStage": "Scena Główna",
-      "breakoutRoom": "Sala Warsztatowa",
-      "emergency": "Protokół Awaryjny",
-      "incidentLog": "Rejestr Incydentów",
-      "reportIncident": "Zgłoś Incydent",
-      "roleView": "Widok Ról",
-      "allRoles": "Wszystkie Role",
-      "moderator": "Moderator",
-      "technician": "Technik",
-      "catering": "Catering",
-      "crew": "Ekipa"
-    },
     "teamRoles": {
       "owner": "Właściciel",
       "coOrganizer": "Współorganizator",
@@ -1727,56 +2512,6 @@
       "agencyAdmin": "Admin Agencji",
       "eventManager": "Menedżer Wydarzeń",
       "assistant": "Asystent"
-    },
-    "team": {
-      "inviteMember": "Zaproś Członka",
-      "inviteByEmail": "Zaproś przez Email",
-      "role": "Rola",
-      "activeEvents": "Aktywne Wydarzenia",
-      "lastActive": "Ostatnio Aktywny",
-      "workload": "Obciążenie Pracą",
-      "deactivate": "Dezaktywuj",
-      "activityLog": "Dziennik Aktywności"
-    },
-    "templates": {
-      "useTemplate": "Użyj Szablonu",
-      "createFromEvent": "Utwórz z Wydarzenia",
-      "timesUsed": "razy użyto",
-      "lastUsed": "Ostatnio użyto",
-      "categories": {
-        "corporate": "Firmowe",
-        "wedding": "Wesele",
-        "jga": "Wieczór Kawalerski/Panieński",
-        "birthday": "Urodziny",
-        "conference": "Konferencja",
-        "festival": "Festiwal",
-        "other": "Inne"
-      }
-    },
-    "files": {
-      "uploadFiles": "Prześlij Pliki",
-      "dragAndDrop": "Przeciągnij i upuść pliki tutaj lub kliknij, aby przeglądać",
-      "storageUsed": "Wykorzystana Przestrzeń",
-      "categories": {
-        "contract": "Umowa",
-        "invoice": "Faktura",
-        "photo": "Zdjęcie",
-        "floorPlan": "Plan Piętra",
-        "briefing": "Briefing",
-        "other": "Inne"
-      },
-      "gridView": "Widok Siatki",
-      "listView": "Widok Listy"
-    },
-    "reports": {
-      "dateRange": "Zakres Dat",
-      "eventsPerMonth": "Wydarzenia na Miesiąc",
-      "revenueTrend": "Trend Przychodów",
-      "eventTypes": "Rozkład Typów Wydarzeń",
-      "budgetAccuracy": "Dokładność Budżetu",
-      "exportCSV": "Eksportuj CSV",
-      "avgBudgetPerEvent": "Śr. Budżet/Wydarzenie",
-      "clientRetention": "Retencja Klientów"
     },
     "search": {
       "placeholder": "Szukaj wydarzeń, kontaktów, dostawców...",
@@ -1904,119 +2639,119 @@
   },
   "native": {
     "home": {
-      "greeting": "Cze\u015b\u0107 {{name}} \ud83d\udc4b",
-      "heroTitle": "Zr\u00f3bmy to",
+      "greeting": "Cześć {{name}} 👋",
+      "heroTitle": "Zróbmy to",
       "heroHighlight": "epicko.",
       "newEvent": "Nowe Wydarzenie",
-      "planParty": "Zaplanuj imprez\u0119",
-      "joinEvent": "Do\u0142\u0105cz do Wydarzenia",
+      "planParty": "Zaplanuj imprezę",
+      "joinEvent": "Dołącz do Wydarzenia",
       "games": "Gry",
       "yourEvents": "Twoje Wydarzenia",
       "allEvents": "Wszystkie",
-      "noEventsYet": "Brak wydarze\u0144 \u2014 zaplanuj pierwsze!",
+      "noEventsYet": "Brak wydarzeń — zaplanuj pierwsze!",
       "participants": "Uczestnicy",
       "playNow": "Graj teraz",
       "partyGamesCount": "24+ Gry Imprezowe",
-      "partyGamesSubtitle": "Tabu, Bomba, Headup i wi\u0119cej",
-      "findInspiration": "Znajd\u017a inspiracj\u0119",
-      "findInspirationSub": "Motywy, gry i pomys\u0142y na Twoje wydarzenie"
+      "partyGamesSubtitle": "Tabu, Bomba, Headup i więcej",
+      "findInspiration": "Znajdź inspirację",
+      "findInspirationSub": "Motywy, gry i pomysły na Twoje wydarzenie"
     },
     "games": {
       "subtitle": "Gry Imprezowe",
-      "title": "Gotowi na zabaw\u0119?",
+      "title": "Gotowi na zabawę?",
       "unlockPremium": "Odblokuj Premium",
-      "unlockPremiumSub": "Graj we wszystkie 17 gier bez limit\u00f3w",
+      "unlockPremiumSub": "Graj we wszystkie 17 gier bez limitów",
       "isUp": "twoja kolej! 🎯",
       "categories": {
         "alle": "Wszystkie",
         "party": "Impreza",
         "social": "Towarzyskie",
         "quiz": "Quiz",
-        "wort": "S\u0142owo",
+        "wort": "Słowo",
         "karte": "Mapa",
         "reaktion": "Reakcja",
         "kreativ": "Kreatywne"
       }
     },
     "gameNames": {
-      "bomb": "Tykaj\u0105ca Bomba",
+      "bomb": "Tykająca Bomba",
       "headup": "Zgadnij na Czole",
-      "taboo": "Zakaz S\u0142\u00f3w",
+      "taboo": "Zakaz Słów",
       "category": "Kategoria na Czas",
       "thisOrThat": "This or That",
       "hochstapler": "Oszust",
       "wahrheitPflicht": "Prawda czy Wyzwanie",
       "werBinIch": "Kim jestem?",
-      "flaschendrehen": "Kr\u0119\u0107 Butelk\u0105",
+      "flaschendrehen": "Kręć Butelką",
       "emojiRaten": "Zgadnij Emoji",
       "fakeOrFact": "Fake or Fact",
       "schnellzeichner": "Szybki Rysownik",
       "splitQuiz": "Split Quiz",
-      "geteiltGequizzt": "Wsp\u00f3lny Quiz",
+      "geteiltGequizzt": "Wspólny Quiz",
       "storyBuilder": "Story Builder",
       "woIstWas": "Gdzie to jest?",
-      "drueckDasWort": "Wci\u015bnij S\u0142owo"
+      "drueckDasWort": "Wciśnij Słowo"
     },
     "gameDescs": {
       "bomb": "Komu wybuchnie?",
-      "headup": "Zgaduj z czo\u0142em",
-      "taboo": "Wyja\u015bnij bez zakazanych s\u0142\u00f3w",
-      "category": "Wy\u015bcig z zegarem",
-      "thisOrThat": "B\u0142yskawiczne decyzje",
+      "headup": "Zgaduj z czołem",
+      "taboo": "Wyjaśnij bez zakazanych słów",
+      "category": "Wyścig z zegarem",
+      "thisOrThat": "Błyskawiczne decyzje",
       "hochstapler": "Zdemaskuj oszusta",
-      "wahrheitPflicht": "Klasyk \u2014 rozszerzony",
-      "werBinIch": "Pytania tak/nie do zwyci\u0119stwa",
+      "wahrheitPflicht": "Klasyk — rozszerzony",
+      "werBinIch": "Pytania tak/nie do zwycięstwa",
       "flaschendrehen": "Butelka decyduje",
       "emojiRaten": "Filmy i piosenki z emoji",
-      "fakeOrFact": "Prawda czy k\u0142amstwo?",
-      "schnellzeichner": "Rysuj pod presj\u0105",
-      "splitQuiz": "Quiz dru\u017cynowy ze splitem",
+      "fakeOrFact": "Prawda czy kłamstwo?",
+      "schnellzeichner": "Rysuj pod presją",
+      "splitQuiz": "Quiz drużynowy ze splitem",
       "geteiltGequizzt": "Quiz kooperacyjny",
       "storyBuilder": "Szalone historie",
-      "woIstWas": "Znajd\u017a miejsce",
-      "drueckDasWort": "Pisz szybko, my\u015bl szybko"
+      "woIstWas": "Znajdź miejsce",
+      "drueckDasWort": "Pisz szybko, myśl szybko"
     },
     "events": {
       "title": "Wydarzenia",
-      "countSummary": "{{active}} aktywne \u00b7 {{archived}} zarchiwizowane",
-      "searchPlaceholder": "Szukaj wydarze\u0144...",
+      "countSummary": "{{active}} aktywne · {{archived}} zarchiwizowane",
+      "searchPlaceholder": "Szukaj wydarzeń...",
       "tabActive": "Aktywne",
       "tabArchived": "Zarchiwizowane",
-      "noEventsTitle": "Brak wydarze\u0144",
-      "noArchivedTitle": "Brak zarchiwizowanych wydarze\u0144",
-      "noEventsDesc": "Zaplanuj pierwsze wydarzenie i zapro\u015b znajomych.",
-      "noArchivedDesc": "Zarchiwizowane wydarzenia pojawi\u0105 si\u0119 tutaj.",
-      "createEvent": "Utw\u00f3rz Wydarzenie",
+      "noEventsTitle": "Brak wydarzeń",
+      "noArchivedTitle": "Brak zarchiwizowanych wydarzeń",
+      "noEventsDesc": "Zaplanuj pierwsze wydarzenie i zaproś znajomych.",
+      "noArchivedDesc": "Zarchiwizowane wydarzenia pojawią się tutaj.",
+      "createEvent": "Utwórz Wydarzenie",
       "forHonoree": "dla {{name}}"
     },
     "ideas": {
       "subtitle": "Inspiracja",
-      "title": "Pomys\u0142y, kt\u00f3re",
-      "titleHighlight": "inspiruj\u0105",
-      "stats": "147 Gier \u00b7 56 Motyw\u00f3w \u00b7 Na ka\u017cd\u0105 okazj\u0119",
+      "title": "Pomysły, które",
+      "titleHighlight": "inspirują",
+      "stats": "147 Gier · 56 Motywów · Na każdą okazję",
       "tabGames": "Gry ({{count}})",
       "tabThemes": "Motywy ({{count}})",
       "searchGames": "Szukaj gier...",
-      "searchThemes": "Szukaj motyw\u00f3w...",
-      "moreGames": "+{{count}} wi\u0119cej gier",
+      "searchThemes": "Szukaj motywów...",
+      "moreGames": "+{{count}} więcej gier",
       "noGames": "Nie znaleziono gier",
-      "noThemes": "Nie znaleziono motyw\u00f3w",
-      "readAloud": "Czytaj na g\u0142os",
-      "material": "Materia\u0142y",
+      "noThemes": "Nie znaleziono motywów",
+      "readAloud": "Czytaj na głos",
+      "material": "Materiały",
       "difficulty": {
-        "easy": "\u0141atwy",
-        "medium": "\u015aredni",
+        "easy": "Łatwy",
+        "medium": "Średni",
         "hard": "Trudny"
       },
       "categories": {
         "alle": "Wszystkie",
         "party": "Impreza",
-        "jga": "Wiecz\u00f3r panie\u0144ski/kawalerski",
-        "outdoor": "Na Zewn\u0105trz",
-        "team": "Dru\u017cyna",
-        "icebreaker": "Na Prze\u0142amanie Lod\u00f3w",
+        "jga": "Wieczór panieński/kawalerski",
+        "outdoor": "Na Zewnątrz",
+        "team": "Drużyna",
+        "icebreaker": "Na Przełamanie Lodów",
         "familie": "Rodzina",
-        "hochzeit": "\u015alub"
+        "hochzeit": "Ślub"
       },
       "themeCategories": {
         "alle": "Wszystkie",
@@ -2031,113 +2766,113 @@
     },
     "profile": {
       "settings": "Ustawienia",
-      "language": "J\u0119zyk",
-      "appearance": "Wygl\u0105d",
-      "privacy": "Prywatno\u015b\u0107",
+      "language": "Język",
+      "appearance": "Wygląd",
+      "privacy": "Prywatność",
       "helpSupport": "Pomoc i Wsparcie",
-      "logout": "Wyloguj si\u0119",
+      "logout": "Wyloguj się",
       "unlockPremium": "Odblokuj Premium",
-      "unlockPremiumSub": "Wszystkie Gry \u00b7 Bez Limit\u00f3w",
-      "version": "EventBliss \u00b7 Wersja 1.0.0",
-      "guest": "Go\u015b\u0107",
+      "unlockPremiumSub": "Wszystkie Gry · Bez Limitów",
+      "version": "EventBliss · Wersja 1.0.0",
+      "guest": "Gość",
       "themeDark": "Ciemny",
       "themeLight": "Jasny",
-      "themeRose": "Ros\u00e9",
-      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
-      "partyModeOn": "W\u0142\u0105czony",
-      "partyModeOff": "Wy\u0142\u0105czony",
-      "partyStats": "\ud83d\udcca Statystyki Imprezy",
+      "themeRose": "Rosé",
+      "partyMode": "🍺 Party-Modus (18+)",
+      "partyModeOn": "Włączony",
+      "partyModeOff": "Wyłączony",
+      "partyStats": "📊 Statystyki Imprezy",
       "partyStatsRounds": "{{count}} rund",
       "partyModeTitle": "Party-Modus (18+)",
-      "partyModeWarning": "Ten tryb jest przeznaczony dla os\u00f3b powy\u017cej 18 roku \u017cycia. Gry z alkoholem mog\u0105 stanowi\u0107 zagro\u017cenie dla zdrowia. Pij odpowiedzialnie i dbaj o siebie nawzajem.",
-      "partyModeCheckbox": "Mam co najmniej 18 lat i aktywuj\u0119 Party-Modus na w\u0142asn\u0105 odpowiedzialno\u015b\u0107.",
+      "partyModeWarning": "Ten tryb jest przeznaczony dla osób powyżej 18 roku życia. Gry z alkoholem mogą stanowić zagrożenie dla zdrowia. Pij odpowiedzialnie i dbaj o siebie nawzajem.",
+      "partyModeCheckbox": "Mam co najmniej 18 lat i aktywuję Party-Modus na własną odpowiedzialność.",
       "partyModeCancel": "Anuluj",
-      "partyModeActivate": "\ud83c\udf7b Aktywuj",
-      "partyModeDisclaimer": "EventBliss nie ponosi odpowiedzialno\u015bci za spo\u017cywanie napoj\u00f3w alkoholowych.",
+      "partyModeActivate": "🍻 Aktywuj",
+      "partyModeDisclaimer": "EventBliss nie ponosi odpowiedzialności za spożywanie napojów alkoholowych.",
       "partyModeActivated": "Party-Modus",
-      "partyModeActivatedSub": "aktywowany! \ud83d\udd25",
-      "partyModeActivatedDesc": "Od teraz pijesz zamiast otrzymywa\u0107 kar\u0119",
+      "partyModeActivatedSub": "aktywowany! 🔥",
+      "partyModeActivatedDesc": "Od teraz pijesz zamiast otrzymywać karę",
       "close": "Zamknij",
       "adminPanel": "Panel Admina",
       "adminDashboard": "Dashboard"
     },
     "create": {
-      "headerTitle": "Utw\u00f3rz Wydarzenie",
+      "headerTitle": "Utwórz Wydarzenie",
       "headerDone": "Gotowe!",
       "stepOf": "Krok {{step}} z {{total}}",
       "stepType": {
-        "title": "Co \u015bwi\u0119tujesz?",
+        "title": "Co świętujesz?",
         "subtitle": "Wybierz typ wydarzenia",
-        "bachelor": "Wiecz\u00f3r Kawalerski",
-        "bachelorette": "Wiecz\u00f3r Panie\u0144ski",
+        "bachelor": "Wieczór Kawalerski",
+        "bachelorette": "Wieczór Panieński",
         "birthday": "Urodziny",
         "trip": "Wycieczka Grupowa",
         "other": "Inne Wydarzenie"
       },
       "stepDetails": {
-        "title": "Szczeg\u00f3\u0142y",
+        "title": "Szczegóły",
         "subtitle": "Podstawy Twojego wydarzenia",
         "eventName": "Nazwa Wydarzenia *",
-        "eventNamePlaceholder": "np. Wiecz\u00f3r kawalerski Tima w Amsterdamie",
+        "eventNamePlaceholder": "np. Wieczór kawalerski Tima w Amsterdamie",
         "honoree": "Dla kogo? *",
         "honoreePlaceholder": "np. Tim",
         "date": "Data (opcjonalnie)",
-        "yourName": "Twoje Imi\u0119 *",
-        "yourNamePlaceholder": "Twoje imi\u0119"
+        "yourName": "Twoje Imię *",
+        "yourNamePlaceholder": "Twoje imię"
       },
       "stepGuests": {
-        "title": "Go\u015bcie",
-        "subtitle": "Kto przyjdzie? (opcjonalnie, mo\u017cesz doda\u0107 p\u00f3\u017aniej)",
-        "inputPlaceholder": "Wpisz imi\u0119...",
-        "guestCount_one": "{{count}} go\u015b\u0107",
-        "guestCount_other": "{{count}} go\u015bci",
-        "noGuests": "Jeszcze brak go\u015bci \u2014 mo\u017cesz ich zaprosi\u0107 p\u00f3\u017aniej."
+        "title": "Goście",
+        "subtitle": "Kto przyjdzie? (opcjonalnie, możesz dodać później)",
+        "inputPlaceholder": "Wpisz imię...",
+        "guestCount_one": "{{count}} gość",
+        "guestCount_other": "{{count}} gości",
+        "noGuests": "Jeszcze brak gości — możesz ich zaprosić później."
       },
       "stepReview": {
-        "title": "Wszystko si\u0119 zgadza?",
-        "subtitle": "Sprawd\u017a swoje wydarzenie",
+        "title": "Wszystko się zgadza?",
+        "subtitle": "Sprawdź swoje wydarzenie",
         "forLabel": "Dla",
         "dateLabel": "Data",
         "dateOpen": "Jeszcze nie ustawiono",
         "organizer": "Organizator",
-        "guestsLabel": "Go\u015bcie"
+        "guestsLabel": "Goście"
       },
       "stepSuccess": {
-        "title": "Wydarzenie utworzone! \ud83c\udf89",
-        "subtitle": "Udost\u0119pnij link znajomym",
-        "accessCode": "Kod Dost\u0119pu",
+        "title": "Wydarzenie utworzone! 🎉",
+        "subtitle": "Udostępnij link znajomym",
+        "accessCode": "Kod Dostępu",
         "link": "Link",
         "copyLink": "Kopiuj link",
         "copied": "Skopiowano!",
-        "shareWhatsApp": "Udost\u0119pnij na WhatsApp",
-        "toDashboard": "Przejd\u017a do Dashboard",
-        "whatsAppText": "\ud83c\udf89 Jeste\u015b zaproszony!\n\nDo\u0142\u0105cz do \"{{name}}\" dla {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Kod: {{code}}"
+        "shareWhatsApp": "Udostępnij na WhatsApp",
+        "toDashboard": "Przejdź do Dashboard",
+        "whatsAppText": "🎉 Jesteś zaproszony!\n\nDołącz do \"{{name}}\" dla {{honoree}}!\n\n👉 {{link}}\n📝 Kod: {{code}}"
       },
       "buttonNext": "Dalej",
-      "buttonCreate": "Utw\u00f3rz Wydarzenie"
+      "buttonCreate": "Utwórz Wydarzenie"
     },
     "join": {
-      "headerTitle": "Do\u0142\u0105cz do Wydarzenia",
+      "headerTitle": "Dołącz do Wydarzenia",
       "title": "Masz zaproszenie?",
-      "subtitle": "Wpisz kod dost\u0119pu, kt\u00f3ry otrzyma\u0142e\u015b",
+      "subtitle": "Wpisz kod dostępu, który otrzymałeś",
       "placeholder": "np. STAG2025",
-      "searchButton": "Znajd\u017a wydarzenie",
+      "searchButton": "Znajdź wydarzenie",
       "errorNotFound": "Nie znaleziono wydarzenia z tym kodem.",
-      "errorGeneric": "B\u0142\u0105d wyszukiwania. Sprawd\u017a kod.",
+      "errorGeneric": "Błąd wyszukiwania. Sprawdź kod.",
       "eventFound": "Wydarzenie znalezione",
       "forHonoree": "dla {{name}}",
-      "joinButton": "Do\u0142\u0105cz"
+      "joinButton": "Dołącz"
     },
     "onboarding": {
       "slide1Title": "Planuj epickie wydarzenia",
-      "slide1Subtitle": "Wieczory kawalerskie, urodziny, wycieczki grupowe \u2014 wszystko w jednym miejscu.",
+      "slide1Subtitle": "Wieczory kawalerskie, urodziny, wycieczki grupowe — wszystko w jednym miejscu.",
       "slide2Title": "Graj w 24+ gry imprezowe",
-      "slide2Subtitle": "Tabu, Bomba, Headup, Prawda czy Wyzwanie, Impostor i wi\u0119cej.",
+      "slide2Subtitle": "Tabu, Bomba, Headup, Prawda czy Wyzwanie, Impostor i więcej.",
       "slide3Title": "Podziel koszty",
-      "slide3Subtitle": "\u015aled\u017a wydatki i rozliczaj si\u0119 bez niezr\u0119cznych rozm\u00f3w.",
-      "slide4Title": "Zapro\u015b wszystkich",
-      "slide4Subtitle": "Udost\u0119pnij link, zbierz potwierdzenia i informuj wszystkich na bie\u017c\u0105co.",
-      "skip": "Pomi\u0144",
+      "slide3Subtitle": "Śledź wydatki i rozliczaj się bez niezręcznych rozmów.",
+      "slide4Title": "Zaproś wszystkich",
+      "slide4Subtitle": "Udostępnij link, zbierz potwierdzenia i informuj wszystkich na bieżąco.",
+      "skip": "Pomiń",
       "next": "Dalej",
       "getStarted": "Zaczynajmy"
     }
@@ -2318,8 +3053,29 @@
   "bookingCalendar": {
     "title": "Kalendarz rezerwacji",
     "today": "Dziś",
-    "dayNames": ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"],
-    "monthNames": ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"],
+    "dayNames": [
+      "Pn",
+      "Wt",
+      "Śr",
+      "Cz",
+      "Pt",
+      "So",
+      "Nd"
+    ],
+    "monthNames": [
+      "Styczeń",
+      "Luty",
+      "Marzec",
+      "Kwiecień",
+      "Maj",
+      "Czerwiec",
+      "Lipiec",
+      "Sierpień",
+      "Wrzesień",
+      "Październik",
+      "Listopad",
+      "Grudzień"
+    ],
     "bookingsTotal": "{{count}} rezerwacji łącznie",
     "noBookingsDay": "Brak rezerwacji w tym dniu",
     "exportICal": "Eksportuj jako iCal",
@@ -2366,7 +3122,15 @@
     "unblock": "Odblokuj",
     "editAfterSave": "Dostępność można skonfigurować po zapisaniu.",
     "editButton": "Edytuj dostępność",
-    "days": ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"]
+    "days": [
+      "Niedziela",
+      "Poniedziałek",
+      "Wtorek",
+      "Środa",
+      "Czwartek",
+      "Piątek",
+      "Sobota"
+    ]
   },
   "eventServices": {
     "bookedServices": "Zarezerwowane usługi",
@@ -2376,5 +3140,275 @@
     "browseHint": "Znajdź idealnego usługodawcę na swoje wydarzenie",
     "bookForEvent": "Zarezerwuj na wydarzenie",
     "openMarketplace": "Otwórz Marketplace"
+  },
+  "nativeDashboard": {
+    "eventTypes": {
+      "bachelor": "Despedida de soltero",
+      "bachelorette": "Despedida de soltera",
+      "birthday": "Cumpleaños",
+      "wedding": "Boda",
+      "other": "Evento"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "guests": "Invitados",
+      "schedule": "Horario",
+      "expenses": "Gastos",
+      "services": "Servicios",
+      "form": "Formulario",
+      "responses": "Respuestas",
+      "ai": "IA",
+      "settings": "Ajustes"
+    },
+    "honoree": "Homenajeado",
+    "noDate": "Sin fecha",
+    "participants": "Participantes",
+    "confirmed": "Confirmados",
+    "maybe": "Quizás",
+    "guest": "Invitado",
+    "loading": "Cargando...",
+    "notFound": "Evento no encontrado",
+    "notFoundDesc": "No se pudo cargar.",
+    "back": "Volver",
+    "countdown": {
+      "today": "¡Hoy!",
+      "tomorrow": "¡Mañana!",
+      "inDays": "En {{count}} días"
+    },
+    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "quickActions": {
+      "inviteGuests": "Invitar",
+      "planActivity": "Planificar",
+      "addExpense": "Añadir gasto",
+      "aiAssistant": "Asistente IA"
+    },
+    "recentActivity": "Actividad reciente",
+    "noActivity": "Sin actividad",
+    "activity": {
+      "rsvpConfirmed": "{{name}} confirmó",
+      "rsvpDeclined": "{{name}} declinó",
+      "surveyResponse": "{{name}} votó",
+      "expenseCreated": "Gasto: {{title}}",
+      "budgetUpdated": "Presupuesto actualizado",
+      "guestInvited": "{{name}} invitado",
+      "scheduleUpdated": "Horario actualizado"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    },
+    "status": {
+      "active": "Activo",
+      "planning": "Planificación",
+      "draft": "Borrador"
+    },
+    "services": {
+      "openMarketplace": "Abrir Marketplace",
+      "openMarketplaceSub": "Descubre y reserva servicios",
+      "bookedServices": "Servicios reservados",
+      "noBookings": "Sin servicios reservados",
+      "details": "Detalles",
+      "cancel": "Cancelar",
+      "statusPending": "Pendiente",
+      "statusConfirmed": "Confirmado",
+      "statusCompleted": "Completado",
+      "statusCancelled": "Cancelado"
+    }
+  },
+  "nativeGuests": {
+    "status": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado",
+      "invited": "Invitado"
+    },
+    "organizer": "Organizador",
+    "guestRole": "Invitado",
+    "searchPlaceholder": "Buscar invitados...",
+    "noGuests": "Sin invitados",
+    "noGuestsDesc": "Invita a amigos y familiares.",
+    "noResults": "Sin resultados",
+    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
+    "inviteGuests": "Invitar",
+    "inviteLink": "Enlace de invitación",
+    "eventCode": "Código del evento",
+    "copied": "¡Copiado!",
+    "copyLink": "Copiar enlace",
+    "host": "Anfitrión"
+  },
+  "nativeSchedule": {
+    "categories": {
+      "food": "Comida y bebida",
+      "activity": "Actividad",
+      "transport": "Transporte",
+      "party": "Fiesta",
+      "sightseeing": "Turismo",
+      "accommodation": "Alojamiento",
+      "relaxation": "Relajación",
+      "other": "Otro"
+    },
+    "noActivities": "Sin actividades",
+    "noActivitiesDesc": "Planifica el horario perfecto",
+    "addActivity": "Añadir actividad",
+    "day": "Día {{num}}",
+    "form": {
+      "title": "Título",
+      "time": "Hora",
+      "category": "Categoría",
+      "notes": "Notas",
+      "location": "Lugar",
+      "duration": "Duración",
+      "cost": "Coste",
+      "responsible": "Responsable",
+      "add": "Añadir",
+      "titlePlaceholder": "p.ej. Desayuno"
+    }
+  },
+  "nativeJoinRoom": {
+    "title": "Unirse a sala",
+    "subtitle": "Código de 6 dígitos",
+    "hint": "Pide el código al anfitrión",
+    "join": "Unirse",
+    "invalidCode": "El código debe tener 6 caracteres."
+  },
+  "nativeFab": {
+    "createEvent": "Crear evento",
+    "joinEvent": "Unirse",
+    "createRoom": "Crear sala",
+    "joinRoom": "Unirse a sala",
+    "quickGame": "Juego rápido"
+  },
+  "nativeTabs": {
+    "home": "Inicio",
+    "events": "Eventos",
+    "play": "Jugar",
+    "market": "Mercado",
+    "profile": "Perfil"
+  },
+  "nativeDrinks": {
+    "title": "Party Stats",
+    "yourRank": "Tu rango esta noche",
+    "nextRank": "Siguiente rango",
+    "waterReminder": "¡No olvides el agua!",
+    "waterReminderDesc": "Un vaso de agua por cada bebida.",
+    "resetSession": "Reiniciar",
+    "confirmReset": "Sí, reiniciar",
+    "cancel": "Cancelar",
+    "ranks": {
+      "legend": "Leyenda",
+      "champion": "Campeón",
+      "partyAnimal": "Fiestero",
+      "pro": "Pro",
+      "enthusiast": "Entusiasta",
+      "beginner": "Principiante",
+      "sober": "Sobrio"
+    }
+  },
+  "nativeAdmin": {
+    "title": "Panel Admin",
+    "areas": "{{count}} áreas",
+    "cards": {
+      "stats": {
+        "label": "Dashboard",
+        "desc": "Usuarios, Eventos"
+      },
+      "games": {
+        "label": "Contenido",
+        "desc": "Preguntas"
+      },
+      "users": {
+        "label": "Usuarios",
+        "desc": "Roles"
+      },
+      "credits": {
+        "label": "AI Credits",
+        "desc": "Límites"
+      },
+      "subscriptions": {
+        "label": "Suscripciones",
+        "desc": "Planes"
+      },
+      "vouchers": {
+        "label": "Cupones",
+        "desc": "Códigos"
+      },
+      "affiliates": {
+        "label": "Afiliados",
+        "desc": "Socios"
+      },
+      "commissions": {
+        "label": "Comisiones",
+        "desc": "Pagos"
+      },
+      "payouts": {
+        "label": "Pagos",
+        "desc": "Historial"
+      },
+      "analytics": {
+        "label": "Analíticas",
+        "desc": "Interacciones"
+      },
+      "agencies": {
+        "label": "Agencias",
+        "desc": "Multi-agencia"
+      },
+      "settings": {
+        "label": "Configuración",
+        "desc": "Precios"
+      }
+    }
+  },
+  "nativeResponses": {
+    "stats": {
+      "responses": "Respuestas",
+      "responseRate": "Tasa de respuesta",
+      "latestResponse": "Última respuesta"
+    },
+    "attendanceOverview": "Resumen de asistencia",
+    "attendance": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado"
+    },
+    "categoryAnalysis": "Análisis por categoría",
+    "categories": {
+      "attendance": "Asistencia",
+      "budget": "Presupuesto",
+      "destination": "Destino",
+      "duration_pref": "Duración",
+      "travel_pref": "Viaje",
+      "fitness_level": "Fitness",
+      "alcohol": "Alcohol"
+    },
+    "activitiesAndPreferences": "Actividades y preferencias",
+    "preferences": "Preferencias",
+    "availableDates": "Fechas disponibles",
+    "noAnswer": "N/D",
+    "option": "{{count}} opción",
+    "option_plural": "{{count}} opciones",
+    "individualResponses": "Respuestas individuales",
+    "searchParticipants": "Buscar...",
+    "noFilterResults": "Sin respuestas para este filtro",
+    "filterAll": "Todos",
+    "filterYes": "Confirmados",
+    "filterMaybe": "Quizás",
+    "filterNo": "Rechazados",
+    "sections": {
+      "suggestions": "Sugerencias y deseos",
+      "restrictions": "Restricciones",
+      "partialAvailability": "Disponibilidad parcial",
+      "entries": "{{count}} entrada",
+      "entries_plural": "{{count}} entradas"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    }
   }
 }

@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Plus, Calendar, Users, Gamepad2, Wifi, LogIn, X } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -20,6 +21,7 @@ interface Action {
 }
 
 export function FloatingActionButton() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [roomSheet, setRoomSheet] = useState<"create" | "join" | null>(null);
   const navigate = useNavigate();
@@ -50,11 +52,11 @@ export function FloatingActionButton() {
   const isGamesTab = location.pathname === "/games";
 
   const actions: Action[] = [
-    { icon: Calendar, label: "Event erstellen", path: "/create", color: "from-violet-500 to-fuchsia-500" },
-    { icon: Users, label: "Event beitreten", path: "/join", color: "from-cyan-500 to-teal-500" },
-    { icon: Wifi, label: "Raum erstellen", onClick: () => openRoom("create"), color: "from-emerald-500 to-green-500" },
-    { icon: LogIn, label: "Raum beitreten", path: "/join-room", color: "from-sky-500 to-blue-500" },
-    ...(isGamesTab ? [] : [{ icon: Gamepad2, label: "Quick Game", path: "/games", color: "from-amber-500 to-pink-500" } as Action]),
+    { icon: Calendar, label: t("nativeFab.createEvent"), path: "/create", color: "from-violet-500 to-fuchsia-500" },
+    { icon: Users, label: t("nativeFab.joinEvent"), path: "/join", color: "from-cyan-500 to-teal-500" },
+    { icon: Wifi, label: t("nativeFab.createRoom"), onClick: () => openRoom("create"), color: "from-emerald-500 to-green-500" },
+    { icon: LogIn, label: t("nativeFab.joinRoom"), path: "/join-room", color: "from-sky-500 to-blue-500" },
+    ...(isGamesTab ? [] : [{ icon: Gamepad2, label: t("nativeFab.quickGame"), path: "/games", color: "from-amber-500 to-pink-500" } as Action]),
   ];
 
   return (

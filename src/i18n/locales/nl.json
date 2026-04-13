@@ -54,33 +54,112 @@
     "thankYou": "Bedankt voor je feedback!",
     "betaBadge": "Bètaversie"
   },
-"landing": {
-    "nav": { "features": "Functies", "howItWorks": "Hoe het werkt", "ideas": "Ideeën", "solutions": "Oplossingen", "faq": "FAQ", "login": "Inloggen", "signUp": "Registreren", "partner": "Partners", "games": "Spellen" },
-    "hero": { "badge": "Het #1 evenementenplanningsplatform", "title": "Plan Onvergetelijke Evenementen", "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.", "createEvent": "Evenement Maken", "joinEvent": "Deelnemen met Code", "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons" },
+  "landing": {
+    "nav": {
+      "features": "Functies",
+      "howItWorks": "Hoe het werkt",
+      "ideas": "Ideeën",
+      "solutions": "Oplossingen",
+      "faq": "FAQ",
+      "login": "Inloggen",
+      "signUp": "Registreren",
+      "partner": "Partners",
+      "games": "Spellen"
+    },
+    "hero": {
+      "badge": "Het #1 evenementenplanningsplatform",
+      "title": "Plan Onvergetelijke Evenementen",
+      "subtitle": "Van vrijgezellenfeesten tot verjaardagen, organiseer groepsevenementen met gemak. Slimme kostenverdeling, AI-suggesties en realtime samenwerking.",
+      "createEvent": "Evenement Maken",
+      "joinEvent": "Deelnemen met Code",
+      "trustedBy": "Meer dan 10.000 organisatoren vertrouwen op ons"
+    },
     "features": {
-      "title": "Alles wat je nodig hebt", "subtitle": "Krachtige tools voor het perfecte evenement",
-      "multiEvent": { "title": "Multi-Event Beheer", "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard" },
-      "costSplitting": { "title": "Slimme Kostenverdeling", "description": "Houd uitgaven bij en verdeel ze eerlijk onder iedereen" },
-      "aiSuggestions": { "title": "AI-Suggesties", "description": "Krijg gepersonaliseerde aanbevelingen voor activiteiten en bestemmingen" },
-      "messageTemplates": { "title": "Berichtsjablonen", "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid" },
-      "dateCoordination": { "title": "Datumcoördinatie", "description": "Vind de perfecte datum die voor iedereen werkt" },
-      "realtime": { "title": "Realtime Samenwerking", "description": "Werk samen met je team in realtime" },
-      "agencyDirectory": { "title": "Bureau Directory", "description": "Vind professionele vrijgezellenfeest bureaus bij jou in de buurt met interactieve kaart" },
-      "formBuilder": { "title": "Formulier Bouwer", "description": "Maak aangepaste enquêtes en polls voor je evenement" },
+      "title": "Alles wat je nodig hebt",
+      "subtitle": "Krachtige tools voor het perfecte evenement",
+      "multiEvent": {
+        "title": "Multi-Event Beheer",
+        "description": "Beheer meerdere evenementen tegelijk met een overzichtelijk dashboard"
+      },
+      "costSplitting": {
+        "title": "Slimme Kostenverdeling",
+        "description": "Houd uitgaven bij en verdeel ze eerlijk onder iedereen"
+      },
+      "aiSuggestions": {
+        "title": "AI-Suggesties",
+        "description": "Krijg gepersonaliseerde aanbevelingen voor activiteiten en bestemmingen"
+      },
+      "messageTemplates": {
+        "title": "Berichtsjablonen",
+        "description": "Voorgeschreven WhatsApp-berichten voor elke gelegenheid"
+      },
+      "dateCoordination": {
+        "title": "Datumcoördinatie",
+        "description": "Vind de perfecte datum die voor iedereen werkt"
+      },
+      "realtime": {
+        "title": "Realtime Samenwerking",
+        "description": "Werk samen met je team in realtime"
+      },
+      "agencyDirectory": {
+        "title": "Bureau Directory",
+        "description": "Vind professionele vrijgezellenfeest bureaus bij jou in de buurt met interactieve kaart"
+      },
+      "formBuilder": {
+        "title": "Formulier Bouwer",
+        "description": "Maak aangepaste enquêtes en polls voor je evenement"
+      },
       "showcaseTitle": "Krachtige functies, prachtig design",
       "showcaseSubtitle": "Alles wat je nodig hebt voor het perfecte groepsevenement"
     },
-    "howItWorks": { "title": "Hoe het Werkt", "subtitle": "Plan je evenement in 4 eenvoudige stappen",
-      "step1": { "title": "Evenement Maken", "description": "Kies het type evenement en stel basisdetails in" },
-      "step2": { "title": "Gasten Uitnodigen", "description": "Deel een simpele link of code met je groep" },
-      "step3": { "title": "Voorkeuren Verzamelen", "description": "Laat gasten stemmen op datums, bestemmingen en activiteiten" },
-      "step4": { "title": "Samen Plannen", "description": "Gebruik AI-suggesties en samenwerkingstools om te finaliseren" }
+    "howItWorks": {
+      "title": "Hoe het Werkt",
+      "subtitle": "Plan je evenement in 4 eenvoudige stappen",
+      "step1": {
+        "title": "Evenement Maken",
+        "description": "Kies het type evenement en stel basisdetails in"
+      },
+      "step2": {
+        "title": "Gasten Uitnodigen",
+        "description": "Deel een simpele link of code met je groep"
+      },
+      "step3": {
+        "title": "Voorkeuren Verzamelen",
+        "description": "Laat gasten stemmen op datums, bestemmingen en activiteiten"
+      },
+      "step4": {
+        "title": "Samen Plannen",
+        "description": "Gebruik AI-suggesties en samenwerkingstools om te finaliseren"
+      }
     },
-    "eventTypes": { "title": "Perfect voor Elk Evenement", "subtitle": "Of het nu een wild weekend of een intieme bijeenkomst is", "bachelor": "Vrijgezellenfeesten", "bachelorette": "Vrijgezellenfeesten (Dames)", "birthday": "Verjaardagsfeesten", "team": "Team Evenementen", "trip": "Groepsreizen", "wedding": "Bruiloften" },
-    "testimonials": { "title": "Geliefd bij Organisatoren", "subtitle": "Wat onze gebruikers zeggen", 
-      "testimonial1": { "text": "EventBliss maakte het plannen van het vrijgezellenfeest van mijn vriend zo makkelijk! Iedereen kon stemmen.", "author": "Sarah M.", "role": "Vrijgezellenfeest Organisator" }, 
-      "testimonial2": { "text": "De kostenverdelingsfunctie is een levensredder. Geen ongemakkelijke geldgesprekken meer!", "author": "Michael K.", "role": "Groepsreis Planner" }, 
-      "testimonial3": { "text": "Ik heb 5 evenementen georganiseerd met EventBliss. De AI-suggesties zijn ongelooflijk behulpzaam.", "author": "Anna L.", "role": "Verjaardagsfeest Gastheer" } 
+    "eventTypes": {
+      "title": "Perfect voor Elk Evenement",
+      "subtitle": "Of het nu een wild weekend of een intieme bijeenkomst is",
+      "bachelor": "Vrijgezellenfeesten",
+      "bachelorette": "Vrijgezellenfeesten (Dames)",
+      "birthday": "Verjaardagsfeesten",
+      "team": "Team Evenementen",
+      "trip": "Groepsreizen",
+      "wedding": "Bruiloften"
+    },
+    "testimonials": {
+      "title": "Geliefd bij Organisatoren",
+      "subtitle": "Wat onze gebruikers zeggen",
+      "testimonial1": {
+        "text": "EventBliss maakte het plannen van het vrijgezellenfeest van mijn vriend zo makkelijk! Iedereen kon stemmen.",
+        "author": "Sarah M.",
+        "role": "Vrijgezellenfeest Organisator"
+      },
+      "testimonial2": {
+        "text": "De kostenverdelingsfunctie is een levensredder. Geen ongemakkelijke geldgesprekken meer!",
+        "author": "Michael K.",
+        "role": "Groepsreis Planner"
+      },
+      "testimonial3": {
+        "text": "Ik heb 5 evenementen georganiseerd met EventBliss. De AI-suggesties zijn ongelooflijk behulpzaam.",
+        "author": "Anna L.",
+        "role": "Verjaardagsfeest Gastheer"
+      }
     },
     "multiDevice": {
       "title": "Plan evenementen overal, altijd",
@@ -112,14 +191,22 @@
       },
       "cta": "Ontdek Premium"
     },
-    "faq": { "title": "Veelgestelde Vragen", 
-      "q1": "Is EventBliss gratis?", "a1": "Ja! EventBliss is gratis voor basisplanning. Premium functies beschikbaar voor power users.", 
-      "q2": "Hoeveel gasten kan ik uitnodigen?", "a2": "Je kunt onbeperkt gasten uitnodigen. Geen beperkingen.", 
-      "q3": "Kan ik EventBliss gebruiken voor zakelijke evenementen?", "a3": "Absoluut! EventBliss is perfect voor teambuilding en bedrijfsevenementen.", 
-      "q4": "Zijn mijn gegevens veilig?", "a4": "Ja, we nemen beveiliging serieus. Alle gegevens zijn versleuteld.",
-      "q5": "Wat is EventBliss Premium?", "a5": "Premium ontgrendelt geavanceerde functies: onbeperkte AI-suggesties, aangepaste enquêtevragen, geavanceerde berichtsjablonen en prioriteit ondersteuning.",
-      "q6": "Is er een levenslange optie?", "a6": "Ja! Voor een eenmalige betaling van €19,99 krijg je levenslange toegang tot alle premium functies.",
-      "q7": "Hoe werkt de bureau directory?", "a7": "Vind professionele vrijgezellenfeest bureaus in 50+ steden. Filter op land, stad en bekijk details direct op de interactieve kaart."
+    "faq": {
+      "title": "Veelgestelde Vragen",
+      "q1": "Is EventBliss gratis?",
+      "a1": "Ja! EventBliss is gratis voor basisplanning. Premium functies beschikbaar voor power users.",
+      "q2": "Hoeveel gasten kan ik uitnodigen?",
+      "a2": "Je kunt onbeperkt gasten uitnodigen. Geen beperkingen.",
+      "q3": "Kan ik EventBliss gebruiken voor zakelijke evenementen?",
+      "a3": "Absoluut! EventBliss is perfect voor teambuilding en bedrijfsevenementen.",
+      "q4": "Zijn mijn gegevens veilig?",
+      "a4": "Ja, we nemen beveiliging serieus. Alle gegevens zijn versleuteld.",
+      "q5": "Wat is EventBliss Premium?",
+      "a5": "Premium ontgrendelt geavanceerde functies: onbeperkte AI-suggesties, aangepaste enquêtevragen, geavanceerde berichtsjablonen en prioriteit ondersteuning.",
+      "q6": "Is er een levenslange optie?",
+      "a6": "Ja! Voor een eenmalige betaling van €19,99 krijg je levenslange toegang tot alle premium functies.",
+      "q7": "Hoe werkt de bureau directory?",
+      "a7": "Vind professionele vrijgezellenfeest bureaus in 50+ steden. Filter op land, stad en bekijk details direct op de interactieve kaart."
     },
     "demo": {
       "badge": "Interactieve Demo",
@@ -129,12 +216,30 @@
       "play": "Hervat afspelen",
       "cta": "Probeer het zelf",
       "features": {
-        "dashboard": { "title": "Evenement Dashboard", "description": "Alle info in één oogopslag: deelnemers, data, taken" },
-        "expenses": { "title": "Kostenverdeling", "description": "Volg uitgaven en verdeel ze eerlijk" },
-        "ai": { "title": "AI Assistent", "description": "Krijg suggesties voor activiteiten en berichten" },
-        "survey": { "title": "Enquêtes", "description": "Verzamel voorkeuren met aangepaste enquêtes" },
-        "agencies": { "title": "Bureau Directory", "description": "Vind evenementenbureaus bij jou in de buurt" },
-        "planner": { "title": "Activiteitenplanner", "description": "Plan en organiseer alle activiteiten met tijdlijn" }
+        "dashboard": {
+          "title": "Evenement Dashboard",
+          "description": "Alle info in één oogopslag: deelnemers, data, taken"
+        },
+        "expenses": {
+          "title": "Kostenverdeling",
+          "description": "Volg uitgaven en verdeel ze eerlijk"
+        },
+        "ai": {
+          "title": "AI Assistent",
+          "description": "Krijg suggesties voor activiteiten en berichten"
+        },
+        "survey": {
+          "title": "Enquêtes",
+          "description": "Verzamel voorkeuren met aangepaste enquêtes"
+        },
+        "agencies": {
+          "title": "Bureau Directory",
+          "description": "Vind evenementenbureaus bij jou in de buurt"
+        },
+        "planner": {
+          "title": "Activiteitenplanner",
+          "description": "Plan en organiseer alle activiteiten met tijdlijn"
+        }
       },
       "planner": {
         "day1": "Dag 1",
@@ -224,8 +329,34 @@
         }
       }
     },
-    "cta": { "title": "Klaar voor je Volgende Evenement?", "description": "Begin gratis en creëer onvergetelijke herinneringen.", "button": "Maak je Evenement" },
-    "footer": { "tagline": "Plan evenementen die mensen samenbrengen", "product": "Product", "features": "Functies", "integrations": "Integraties", "enterprise": "Enterprise", "solutions": "Oplossingen", "partner": "Partners", "becomePartner": "Word partner", "becomeAgencyPartner": "Word agenturpartner", "partnerPortal": "Partner portaal", "agencyPortal": "Agentschap Portaal", "legal": "Juridisch", "imprint": "Impressum", "disclaimer": "Disclaimer", "privacy": "Privacy", "terms": "Voorwaarden", "contact": "Contact", "address": "Gladstonos 12-14, 8042 Paphos, Cyprus", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden." },
+    "cta": {
+      "title": "Klaar voor je Volgende Evenement?",
+      "description": "Begin gratis en creëer onvergetelijke herinneringen.",
+      "button": "Maak je Evenement"
+    },
+    "footer": {
+      "tagline": "Plan evenementen die mensen samenbrengen",
+      "product": "Product",
+      "features": "Functies",
+      "integrations": "Integraties",
+      "enterprise": "Enterprise",
+      "solutions": "Oplossingen",
+      "partner": "Partners",
+      "becomePartner": "Word partner",
+      "becomeAgencyPartner": "Word agenturpartner",
+      "partnerPortal": "Partner portaal",
+      "agencyPortal": "Agentschap Portaal",
+      "legal": "Juridisch",
+      "imprint": "Impressum",
+      "disclaimer": "Disclaimer",
+      "privacy": "Privacy",
+      "terms": "Voorwaarden",
+      "contact": "Contact",
+      "address": "Gladstonos 12-14, 8042 Paphos, Cyprus",
+      "phone": "+357 99 980 583",
+      "company": "MYFAMBLISS GROUP LTD",
+      "copyright": "© 2025 MYFAMBLISS GROUP. Alle rechten voorbehouden."
+    },
     "agencyPortal": {
       "title": "Agentuurportaal",
       "welcome": "Welkom terug",
@@ -253,10 +384,22 @@
         "description": "Verdien commissies voor elke klant die je naar EventBliss brengt"
       },
       "benefits": {
-        "commission": { "title": "Aantrekkelijke Commissies", "description": "Tot 20% per boeking" },
-        "tracking": { "title": "Referentie Tracking", "description": "Automatische toewijzing via e-mailcode" },
-        "support": { "title": "Partner Ondersteuning", "description": "Toegewijde contactpersoon" },
-        "exclusiveOffers": { "title": "Exclusieve Aanbiedingen", "description": "Speciale vouchers voor je klanten" }
+        "commission": {
+          "title": "Aantrekkelijke Commissies",
+          "description": "Tot 20% per boeking"
+        },
+        "tracking": {
+          "title": "Referentie Tracking",
+          "description": "Automatische toewijzing via e-mailcode"
+        },
+        "support": {
+          "title": "Partner Ondersteuning",
+          "description": "Toegewijde contactpersoon"
+        },
+        "exclusiveOffers": {
+          "title": "Exclusieve Aanbiedingen",
+          "description": "Speciale vouchers voor je klanten"
+        }
       },
       "form": {
         "title": "Nu Solliciteren",
@@ -286,39 +429,184 @@
     }
   },
   "legal": {
-    "imprint": { "title": "Impressum", "company": "Bedrijfsinformatie", "registeredCompany": "Geregistreerd bedrijf in Cyprus", "address": "Adres", "contact": "Contact", "responsibleContent": "Verantwoordelijk voor Inhoud", "disputeResolution": "EU Geschillenbeslechting", "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting." },
-    "privacy": { "title": "Privacybeleid", "lastUpdated": "Laatst bijgewerkt", "intro": "Je privacy is belangrijk voor ons. Dit beleid legt uit hoe we je gegevens verzamelen en beschermen.", "dataCollection": { "title": "Gegevensverzameling", "content": "We verzamelen informatie die je direct verstrekt." }, "dataUsage": { "title": "Gegevensgebruik", "content": "Je gegevens worden gebruikt om onze diensten te leveren en te verbeteren." }, "cookies": { "title": "Cookies", "content": "We gebruiken cookies om je ervaring te verbeteren." }, "dataSecurity": { "title": "Gegevensbeveiliging", "content": "We implementeren industriestandaard beveiligingsmaatregelen." }, "userRights": { "title": "Jouw Rechten", "content": "Je hebt het recht om je gegevens in te zien, te corrigeren of te verwijderen." }, "thirdParty": { "title": "Derden", "content": "We kunnen gegevens delen met vertrouwde partners." }, "contact": { "title": "Contact", "content": "Voor privacyvragen, neem contact op via:" } },
-    "terms": { "title": "Servicevoorwaarden", "lastUpdated": "Laatst bijgewerkt", "intro": "Door EventBliss te gebruiken, ga je akkoord met deze voorwaarden.", "acceptance": { "title": "Acceptatie", "content": "Door toegang tot EventBliss ga je akkoord met deze voorwaarden." }, "services": { "title": "Onze Diensten", "content": "EventBliss biedt tools voor evenementenplanning." }, "payment": { "title": "Betalingsvoorwaarden", "content": "Basisfuncties zijn gratis. Premium kan betaling vereisen." }, "prohibited": { "title": "Verboden Activiteiten", "content": "Je mag onze diensten niet gebruiken voor illegale activiteiten." }, "liability": { "title": "Beperking van Aansprakelijkheid", "content": "EventBliss is niet aansprakelijk voor schade door gebruik." }, "changes": { "title": "Wijzigingen", "content": "We kunnen deze voorwaarden bijwerken." }, "governingLaw": { "title": "Toepasselijk Recht", "content": "Deze voorwaarden vallen onder de wetten van Cyprus." } },
-    "disclaimer": { "title": "Disclaimer", "lastUpdated": "Laatst bijgewerkt", "intro": "Lees deze disclaimer voordat je EventBliss gebruikt.", "general": { "title": "Algemene Disclaimer", "content": "Informatie op EventBliss is alleen voor algemene doeleinden." }, "externalLinks": { "title": "Externe Links", "content": "We zijn niet verantwoordelijk voor content van derden." }, "availability": { "title": "Beschikbaarheid", "content": "We streven naar 99,9% uptime maar kunnen geen ononderbroken service garanderen." }, "limitation": { "title": "Beperking", "content": "We zijn niet aansprakelijk voor indirecte schade." }, "contact": { "title": "Contact", "content": "Voor vragen over deze disclaimer, neem contact op." } }
+    "imprint": {
+      "title": "Impressum",
+      "company": "Bedrijfsinformatie",
+      "registeredCompany": "Geregistreerd bedrijf in Cyprus",
+      "address": "Adres",
+      "contact": "Contact",
+      "responsibleContent": "Verantwoordelijk voor Inhoud",
+      "disputeResolution": "EU Geschillenbeslechting",
+      "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting."
+    },
+    "privacy": {
+      "title": "Privacybeleid",
+      "lastUpdated": "Laatst bijgewerkt",
+      "intro": "Je privacy is belangrijk voor ons. Dit beleid legt uit hoe we je gegevens verzamelen en beschermen.",
+      "dataCollection": {
+        "title": "Gegevensverzameling",
+        "content": "We verzamelen informatie die je direct verstrekt."
+      },
+      "dataUsage": {
+        "title": "Gegevensgebruik",
+        "content": "Je gegevens worden gebruikt om onze diensten te leveren en te verbeteren."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "content": "We gebruiken cookies om je ervaring te verbeteren."
+      },
+      "dataSecurity": {
+        "title": "Gegevensbeveiliging",
+        "content": "We implementeren industriestandaard beveiligingsmaatregelen."
+      },
+      "userRights": {
+        "title": "Jouw Rechten",
+        "content": "Je hebt het recht om je gegevens in te zien, te corrigeren of te verwijderen."
+      },
+      "thirdParty": {
+        "title": "Derden",
+        "content": "We kunnen gegevens delen met vertrouwde partners."
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "Voor privacyvragen, neem contact op via:"
+      }
+    },
+    "terms": {
+      "title": "Servicevoorwaarden",
+      "lastUpdated": "Laatst bijgewerkt",
+      "intro": "Door EventBliss te gebruiken, ga je akkoord met deze voorwaarden.",
+      "acceptance": {
+        "title": "Acceptatie",
+        "content": "Door toegang tot EventBliss ga je akkoord met deze voorwaarden."
+      },
+      "services": {
+        "title": "Onze Diensten",
+        "content": "EventBliss biedt tools voor evenementenplanning."
+      },
+      "payment": {
+        "title": "Betalingsvoorwaarden",
+        "content": "Basisfuncties zijn gratis. Premium kan betaling vereisen."
+      },
+      "prohibited": {
+        "title": "Verboden Activiteiten",
+        "content": "Je mag onze diensten niet gebruiken voor illegale activiteiten."
+      },
+      "liability": {
+        "title": "Beperking van Aansprakelijkheid",
+        "content": "EventBliss is niet aansprakelijk voor schade door gebruik."
+      },
+      "changes": {
+        "title": "Wijzigingen",
+        "content": "We kunnen deze voorwaarden bijwerken."
+      },
+      "governingLaw": {
+        "title": "Toepasselijk Recht",
+        "content": "Deze voorwaarden vallen onder de wetten van Cyprus."
+      }
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "lastUpdated": "Laatst bijgewerkt",
+      "intro": "Lees deze disclaimer voordat je EventBliss gebruikt.",
+      "general": {
+        "title": "Algemene Disclaimer",
+        "content": "Informatie op EventBliss is alleen voor algemene doeleinden."
+      },
+      "externalLinks": {
+        "title": "Externe Links",
+        "content": "We zijn niet verantwoordelijk voor content van derden."
+      },
+      "availability": {
+        "title": "Beschikbaarheid",
+        "content": "We streven naar 99,9% uptime maar kunnen geen ononderbroken service garanderen."
+      },
+      "limitation": {
+        "title": "Beperking",
+        "content": "We zijn niet aansprakelijk voor indirecte schade."
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "Voor vragen over deze disclaimer, neem contact op."
+      }
+    }
   },
   "createEvent": {
     "title": "Evenement Maken",
-    "step1": { "title": "Wat plan je?", "subtitle": "Kies het type evenement dat je wilt organiseren." },
-    "step2": { 
-      "title": "Evenement Details", 
-      "subtitle": "Vertel ons over het evenement en voor wie het is.", 
-      "honoreeName": "Wie is de eregast?", 
-      "eventName": "Evenement Naam", 
-      "eventDate": "Evenement Datum (optioneel)", 
-      "organizerName": "Jouw Naam (Organisator)", 
-      "organizerNamePlaceholder": "bijv. Luca", 
-      "organizerEmail": "Jouw Email (optioneel)", 
+    "step1": {
+      "title": "Wat plan je?",
+      "subtitle": "Kies het type evenement dat je wilt organiseren."
+    },
+    "step2": {
+      "title": "Evenement Details",
+      "subtitle": "Vertel ons over het evenement en voor wie het is.",
+      "honoreeName": "Wie is de eregast?",
+      "eventName": "Evenement Naam",
+      "eventDate": "Evenement Datum (optioneel)",
+      "organizerName": "Jouw Naam (Organisator)",
+      "organizerNamePlaceholder": "bijv. Luca",
+      "organizerEmail": "Jouw Email (optioneel)",
       "organizerEmailPlaceholder": "luca@example.com",
       "placeholders": {
-        "bachelor": { "honoreeName": "bijv. Max", "eventName": "bijv. Max' Epische Vrijgezellenfeest" },
-        "bachelorette": { "honoreeName": "bijv. Julia", "eventName": "bijv. Julia's Droom Vrijgezellenfeest" },
-        "birthday": { "honoreeName": "bijv. Lisa", "eventName": "bijv. Lisa's 30e Verjaardag" },
-        "trip": { "honoreeName": "bijv. De Crew", "eventName": "bijv. Ski Trip Alpen 2026" },
-        "other": { "honoreeName": "bijv. Team of Persoon", "eventName": "bijv. Zomerfestival 2026" }
+        "bachelor": {
+          "honoreeName": "bijv. Max",
+          "eventName": "bijv. Max' Epische Vrijgezellenfeest"
+        },
+        "bachelorette": {
+          "honoreeName": "bijv. Julia",
+          "eventName": "bijv. Julia's Droom Vrijgezellenfeest"
+        },
+        "birthday": {
+          "honoreeName": "bijv. Lisa",
+          "eventName": "bijv. Lisa's 30e Verjaardag"
+        },
+        "trip": {
+          "honoreeName": "bijv. De Crew",
+          "eventName": "bijv. Ski Trip Alpen 2026"
+        },
+        "other": {
+          "honoreeName": "bijv. Team of Persoon",
+          "eventName": "bijv. Zomerfestival 2026"
+        }
       }
     },
-    "step3": { "title": "Deelnemers Toevoegen", "subtitle": "Voeg de mensen toe die je wilt uitnodigen.", "namePlaceholder": "Voer naam in...", "noParticipants": "Nog geen deelnemers toegevoegd. Je kunt deze stap overslaan." },
-    "step4": { "title": "Controleren & Maken", "subtitle": "Alles goed? Laten we je evenement maken!", "forHonoree": "voor {{name}}", "participantCount": "{{count}} deelnemers (inclusief jou)", "organizedBy": "Georganiseerd door {{name}}", "descriptionPlaceholder": "Voeg een beschrijving toe (optioneel)" },
-    "types": { "bachelor": "Vrijgezellenfeest", "bachelorette": "Vrijgezellenfeest (dames)", "birthday": "Verjaardag", "trip": "Groepsreis", "other": "Ander Evenement" },
+    "step3": {
+      "title": "Deelnemers Toevoegen",
+      "subtitle": "Voeg de mensen toe die je wilt uitnodigen.",
+      "namePlaceholder": "Voer naam in...",
+      "noParticipants": "Nog geen deelnemers toegevoegd. Je kunt deze stap overslaan."
+    },
+    "step4": {
+      "title": "Controleren & Maken",
+      "subtitle": "Alles goed? Laten we je evenement maken!",
+      "forHonoree": "voor {{name}}",
+      "participantCount": "{{count}} deelnemers (inclusief jou)",
+      "organizedBy": "Georganiseerd door {{name}}",
+      "descriptionPlaceholder": "Voeg een beschrijving toe (optioneel)"
+    },
+    "types": {
+      "bachelor": "Vrijgezellenfeest",
+      "bachelorette": "Vrijgezellenfeest (dames)",
+      "birthday": "Verjaardag",
+      "trip": "Groepsreis",
+      "other": "Ander Evenement"
+    },
     "submit": "Evenement Maken",
     "creating": "Evenement wordt aangemaakt...",
-    "success": { "title": "Evenement Gemaakt! 🎉", "description": "Deel de code met je vrienden.", "shareMessage": "Deel de link of code.", "accessCode": "Toegangscode", "shareLink": "Deel Link", "linkCopied": "Link gekopieerd.", "shareWhatsApp": "Delen via WhatsApp", "goToDashboard": "Naar Dashboard", "whatsappMessage": "🎉 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}'s feest!\n\n👉 {{link}}\n📝 Code: {{code}}" },
-    "error": { "failed": "Maken mislukt. Probeer opnieuw." }
+    "success": {
+      "title": "Evenement Gemaakt! 🎉",
+      "description": "Deel de code met je vrienden.",
+      "shareMessage": "Deel de link of code.",
+      "accessCode": "Toegangscode",
+      "shareLink": "Deel Link",
+      "linkCopied": "Link gekopieerd.",
+      "shareWhatsApp": "Delen via WhatsApp",
+      "goToDashboard": "Naar Dashboard",
+      "whatsappMessage": "🎉 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}'s feest!\n\n👉 {{link}}\n📝 Code: {{code}}"
+    },
+    "error": {
+      "failed": "Maken mislukt. Probeer opnieuw."
+    }
   },
   "joinEvent": {
     "title": "Deelnemen aan Evenement",
@@ -540,34 +828,13 @@
       }
     },
     "team": {
-      "title": "Dashboard Toegang Beheren",
-      "description": "Schakel dashboard toegang in voor deelnemers en deel de uitnodigingslink.",
-      "addParticipant": "Deelnemer Toevoegen",
-      "addParticipantDesc": "Voeg een nieuwe gast toe aan het evenement",
-      "participantName": "Naam",
-      "participantEmail": "Email (optioneel)",
-      "participantRole": "Rol",
-      "namePlaceholder": "bijv. Jan Jansen",
-      "emailPlaceholder": "jan@example.com",
-      "addButton": "Toevoegen",
-      "nameRequired": "Naam is verplicht",
-      "participantAdded": "{{name}} is toegevoegd",
-      "addError": "Fout bij toevoegen",
+      "title": "Team Beheren",
+      "invite": "Uitnodigen",
+      "permissions": "Machtigingen",
+      "removeAccess": "Toegang Verwijderen",
       "roles": {
-        "guest": "Gast",
-        "organizer": "Organisator"
-      },
-      "status": {
-        "activated": "Geactiveerd",
-        "invited": "Uitgenodigd",
-        "ready": "Klaar",
-        "noAccess": "Geen Toegang"
-      },
-      "permissions": {
-        "viewResponses": "Antwoorden bekijken",
-        "addExpenses": "Uitgaven toevoegen",
-        "viewAllExpenses": "Alle uitgaven bekijken",
-        "editSettings": "Instellingen bewerken"
+        "organizer": "Organisator",
+        "guest": "Gast"
       }
     },
     "overview": {
@@ -815,16 +1082,6 @@
         "title": "Gevarenzone",
         "deleteEvent": "Evenement Verwijderen",
         "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt."
-      }
-    },
-    "team": {
-      "title": "Team Beheren",
-      "invite": "Uitnodigen",
-      "permissions": "Machtigingen",
-      "removeAccess": "Toegang Verwijderen",
-      "roles": {
-        "organizer": "Organisator",
-        "guest": "Gast"
       }
     },
     "ai": {
@@ -1304,57 +1561,22 @@
     }
   },
   "admin": {
-    "title": "Admin Portaal",
-    "tabs": {
-      "stats": "Statistieken",
-      "users": "Gebruikers",
-      "members": "Leden",
-      "subscriptions": "Abonnementen",
-      "vouchers": "Vouchers"
-    },
-    "users": {
-      "title": "Gebruikersbeheer",
-      "create": "Gebruiker Aanmaken",
-      "createTitle": "Nieuwe Gebruiker Aanmaken",
-      "email": "E-mail",
-      "password": "Wachtwoord",
-      "fullName": "Volledige Naam",
-      "plan": "Abonnement",
-      "name": "Naam",
-      "status": "Status",
-      "createdAt": "Aangemaakt op",
-      "search": "Gebruikers zoeken...",
-      "noUsers": "Geen gebruikers gevonden",
-      "mustChangePassword": "Gebruiker moet wachtwoord wijzigen bij eerste inlog",
-      "mustChange": "Wachtwoord wijzigen",
-      "active": "Actief",
-      "requiredFields": "E-mail en wachtwoord zijn vereist",
-      "passwordTooShort": "Wachtwoord moet minimaal 8 tekens hebben",
-      "createSuccess": "Gebruiker succesvol aangemaakt",
-      "createError": "Fout bij aanmaken"
-    },
-    "vouchers": {
-      "title": "Voucherbeheer",
-      "create": "Voucher Aanmaken",
-      "code": "Code",
-      "type": "Type",
-      "value": "Waarde",
-      "uses": "Gebruik",
-      "validFrom": "Geldig vanaf",
-      "validUntil": "Geldig tot",
-      "status": "Status",
-      "active": "Actief",
-      "inactive": "Inactief",
-      "expired": "Verlopen",
-      "noVouchers": "Geen vouchers",
-      "percentage": "Percentage",
-      "fixed": "Vast bedrag",
-      "free_trial": "Gratis proefperiode",
-      "unlimited": "Onbeperkt",
-      "createSuccess": "Voucher succesvol aangemaakt",
-      "createError": "Fout bij aanmaken",
-      "deleteSuccess": "Voucher verwijderd",
-      "deleteError": "Fout bij verwijderen"
+    "credits": {
+      "title": "Credit beheer",
+      "description": "Handmatige credit-aanpassingen voor gebruikers",
+      "userSearch": "Zoek gebruiker (e-mail)",
+      "currentCredits": "Huidige credits",
+      "adjustCredits": "Credits aanpassen",
+      "addCredits": "Credits toevoegen",
+      "removeCredits": "Credits verwijderen",
+      "reason": "Reden",
+      "reasonPlaceholder": "bijv. Partner bonus, Coulance, etc.",
+      "adjustmentSuccess": "Credits succesvol aangepast",
+      "noUser": "Gebruiker niet gevonden",
+      "adjustmentHistory": "Aanpassingsgeschiedenis",
+      "amount": "Bedrag",
+      "adjustedBy": "Aangepast door",
+      "date": "Datum"
     }
   },
   "templates": {
@@ -1410,25 +1632,234 @@
       "usesOneCredit": "Kost 1 credit",
       "noCredits": "Geen credits beschikbaar"
     },
-    "jgaClassic": { "name": "Klassiek Feest", "description": "Actie, feest en onvergetelijke momenten" },
-    "jgaAdventure": { "name": "Avontuur Trip", "description": "Outdoor actie en teamuitdagingen" },
-    "jgaChill": { "name": "Relaxte Viering", "description": "Wellness, lekker eten en quality time" },
-    "bacheloretteGlam": { "name": "Glamour Weekend", "description": "Wellness, fotoshoot en cocktails" },
-    "bacheloretteAdventure": { "name": "Actief Uitje", "description": "Wandelen, yoga en natuur" },
-    "birthdayParty": { "name": "Verjaardagsfeest", "description": "Vieren met vrienden en familie" },
-    "birthdayExperience": { "name": "Verjaardag Beleving", "description": "Unieke activiteiten en avonturen" },
-    "familyTrip": { "name": "Familie Uitje", "description": "Plezier voor alle leeftijden" },
-    "friendsTrip": { "name": "Vriendentrip", "description": "Avontuur en reizen met vrienden" },
-    "teamEvent": { "name": "Team Event", "description": "Teambuilding en gedeelde ervaringen" },
-    "flexible": { "name": "Flexibel", "description": "Volledige flexibiliteit – jij beslist" },
-    "tags": { "action": "Actie", "party": "Feest", "city": "Stad", "outdoor": "Outdoor", "adventure": "Avontuur", "sports": "Sport", "relax": "Ontspanning", "wellness": "Wellness", "food": "Culinair", "glamour": "Glamour", "active": "Actief", "nature": "Natuur", "celebration": "Viering", "fun": "Fun", "experience": "Beleving", "unique": "Uniek", "memorable": "Onvergetelijk", "family": "Familie", "kids": "Kinderen", "relaxed": "Relaxed", "friends": "Vrienden", "travel": "Reizen", "team": "Team", "corporate": "Zakelijk", "teambuilding": "Teambuilding", "flexible": "Flexibel", "custom": "Aangepast", "open": "Open" },
-    "destinations": { "deCity": "Grote stad in Duitsland", "prague": "Praag", "budapest": "Boedapest", "barcelona": "Barcelona", "amsterdam": "Amsterdam", "mallorca": "Mallorca", "lisbon": "Lissabon", "flexible": "Flexibel", "alps": "Alpen", "seaCoast": "Kust", "forestNature": "Bos en Natuur", "lakeRegion": "Merengebied", "spaHotel": "Spa Hotel", "local": "Lokaal", "wineRegion": "Wijnstreek", "lakeResort": "Meer Resort", "vineyard": "Wijngaard", "restaurant": "Restaurant", "eventLocation": "Evenementlocatie", "rooftopBar": "Rooftop Bar", "nearbyCity": "Nabijgelegen Stad", "nature": "Natuur", "themePark": "Pretpark", "zoo": "Dierentuin", "beach": "Strand", "mountains": "Bergen", "farm": "Boerderij", "cityEurope": "Stad in Europa", "beachEurope": "Strand in Europa", "adventureEurope": "Avontuur in Europa", "roadTrip": "Roadtrip", "conferenceHotel": "Congreshotel", "outdoorLocation": "Outdoor Locatie", "eventSpace": "Evenementruimte", "office": "Kantoor", "domestic": "Binnenland", "europe": "Europa", "worldwide": "Wereldwijd" },
-    "activities": { "karting": "Karten", "escapeRoom": "Escape Room", "lasertag": "Lasergame", "axeThrowing": "Bijlwerpen", "vrArena": "VR Arena", "bubbleSoccer": "Bubble Voetbal", "paintball": "Paintball", "barTour": "Kroegentocht", "casino": "Casino", "bbqParty": "BBQ Feest", "rafting": "Raften", "canyoning": "Canyoning", "climbing": "Klimmen", "hiking": "Wandelen", "mountainBiking": "Mountainbiken", "survivalTraining": "Survival", "bungee": "Bungeejumpen", "paragliding": "Paragliden", "quadTour": "Quad Tour", "cabinBbq": "BBQ in Huisje", "spaWellness": "Spa en Wellness", "wineTasting": "Wijnproeverij", "gourmetDinner": "Gastronomisch Diner", "cookingClass": "Kookworkshop", "golf": "Golf", "cigarWhiskey": "Sigaar en Whisky", "breweryTour": "Brouwerijbezoek", "boatTrip": "Boottocht", "photoshoot": "Fotoshoot", "cocktailClass": "Cocktailworkshop", "yogaRetreat": "Yoga Retreat", "danceClass": "Dansles", "brunchParty": "Brunch", "beachClub": "Beachclub", "shoppingTour": "Shoptour", "karaoke": "Karaoke", "kayaking": "Kajakken", "horsebackRiding": "Paardrijden", "picnic": "Picknick", "sunsetBoat": "Zonsondergang Boot", "outdoorCooking": "Buiten Koken", "dinnerParty": "Diner", "bowling": "Bowlen", "gamesNight": "Spelavond", "cocktailParty": "Cocktailparty", "dancing": "Dansen", "liveMusic": "Live Muziek", "spaDay": "Spa Dag", "concert": "Concert", "sportsEvent": "Sportevenement", "artClass": "Kunstworkshop", "adventurePark": "Avonturenpark", "themePark": "Pretpark", "zooAquarium": "Dierentuin en Aquarium", "beachFun": "Strandplezier", "hikingEasy": "Makkelijke Wandeling", "games": "Spelletjes", "bikeTour": "Fietstocht", "swimming": "Zwemmen", "sightseeing": "Bezienswaardigheden", "nightlife": "Nachtleven", "foodTour": "Food Tour", "beach": "Strand", "waterSports": "Watersporten", "localExperiences": "Lokale Ervaringen", "concertsEvents": "Concerten", "teambuildingGames": "Teamspellen", "workshop": "Workshop", "outdoorChallenge": "Outdoor Uitdaging", "sportsTournament": "Sporttoernooi", "dinnerEvent": "Diner Event", "creativeWorkshop": "Creatieve Workshop", "action": "Actie", "chill": "Ontspanning", "outdoor": "Outdoor", "food": "Culinair", "culture": "Cultuur", "party": "Feest", "mixed": "Gemengd" },
-    "duration": { "dayTrip": "Dagtrip", "weekend": "Weekend (2-3 dagen)", "longWeekend": "Lang Weekend (3-4 dagen)", "week": "Hele Week", "twoWeeks": "Twee Weken", "halfDay": "Halve Dag", "fullDay": "Hele Dag", "evening": "Avond", "overnight": "Met Overnachting", "flexible": "Flexibel" },
-    "travel": { "daytrip": "Dagtrip", "oneNight": "Eén nacht", "twoNights": "Twee nachten", "flexible": "Flexibel" },
-    "fitness": { "chill": "Ontspannen", "normal": "Normaal", "sporty": "Sportief" },
-    "alcohol": { "yes": "Ja graag", "no": "Liever niet", "flexible": "Flexibel" },
-    "attendance": { "yes": "Ik doe mee!", "maybe": "Misschien", "no": "Helaas niet" },
+    "jgaClassic": {
+      "name": "Klassiek Feest",
+      "description": "Actie, feest en onvergetelijke momenten"
+    },
+    "jgaAdventure": {
+      "name": "Avontuur Trip",
+      "description": "Outdoor actie en teamuitdagingen"
+    },
+    "jgaChill": {
+      "name": "Relaxte Viering",
+      "description": "Wellness, lekker eten en quality time"
+    },
+    "bacheloretteGlam": {
+      "name": "Glamour Weekend",
+      "description": "Wellness, fotoshoot en cocktails"
+    },
+    "bacheloretteAdventure": {
+      "name": "Actief Uitje",
+      "description": "Wandelen, yoga en natuur"
+    },
+    "birthdayParty": {
+      "name": "Verjaardagsfeest",
+      "description": "Vieren met vrienden en familie"
+    },
+    "birthdayExperience": {
+      "name": "Verjaardag Beleving",
+      "description": "Unieke activiteiten en avonturen"
+    },
+    "familyTrip": {
+      "name": "Familie Uitje",
+      "description": "Plezier voor alle leeftijden"
+    },
+    "friendsTrip": {
+      "name": "Vriendentrip",
+      "description": "Avontuur en reizen met vrienden"
+    },
+    "teamEvent": {
+      "name": "Team Event",
+      "description": "Teambuilding en gedeelde ervaringen"
+    },
+    "flexible": {
+      "name": "Flexibel",
+      "description": "Volledige flexibiliteit – jij beslist"
+    },
+    "tags": {
+      "action": "Actie",
+      "party": "Feest",
+      "city": "Stad",
+      "outdoor": "Outdoor",
+      "adventure": "Avontuur",
+      "sports": "Sport",
+      "relax": "Ontspanning",
+      "wellness": "Wellness",
+      "food": "Culinair",
+      "glamour": "Glamour",
+      "active": "Actief",
+      "nature": "Natuur",
+      "celebration": "Viering",
+      "fun": "Fun",
+      "experience": "Beleving",
+      "unique": "Uniek",
+      "memorable": "Onvergetelijk",
+      "family": "Familie",
+      "kids": "Kinderen",
+      "relaxed": "Relaxed",
+      "friends": "Vrienden",
+      "travel": "Reizen",
+      "team": "Team",
+      "corporate": "Zakelijk",
+      "teambuilding": "Teambuilding",
+      "flexible": "Flexibel",
+      "custom": "Aangepast",
+      "open": "Open"
+    },
+    "destinations": {
+      "deCity": "Grote stad in Duitsland",
+      "prague": "Praag",
+      "budapest": "Boedapest",
+      "barcelona": "Barcelona",
+      "amsterdam": "Amsterdam",
+      "mallorca": "Mallorca",
+      "lisbon": "Lissabon",
+      "flexible": "Flexibel",
+      "alps": "Alpen",
+      "seaCoast": "Kust",
+      "forestNature": "Bos en Natuur",
+      "lakeRegion": "Merengebied",
+      "spaHotel": "Spa Hotel",
+      "local": "Lokaal",
+      "wineRegion": "Wijnstreek",
+      "lakeResort": "Meer Resort",
+      "vineyard": "Wijngaard",
+      "restaurant": "Restaurant",
+      "eventLocation": "Evenementlocatie",
+      "rooftopBar": "Rooftop Bar",
+      "nearbyCity": "Nabijgelegen Stad",
+      "nature": "Natuur",
+      "themePark": "Pretpark",
+      "zoo": "Dierentuin",
+      "beach": "Strand",
+      "mountains": "Bergen",
+      "farm": "Boerderij",
+      "cityEurope": "Stad in Europa",
+      "beachEurope": "Strand in Europa",
+      "adventureEurope": "Avontuur in Europa",
+      "roadTrip": "Roadtrip",
+      "conferenceHotel": "Congreshotel",
+      "outdoorLocation": "Outdoor Locatie",
+      "eventSpace": "Evenementruimte",
+      "office": "Kantoor",
+      "domestic": "Binnenland",
+      "europe": "Europa",
+      "worldwide": "Wereldwijd"
+    },
+    "activities": {
+      "karting": "Karten",
+      "escapeRoom": "Escape Room",
+      "lasertag": "Lasergame",
+      "axeThrowing": "Bijlwerpen",
+      "vrArena": "VR Arena",
+      "bubbleSoccer": "Bubble Voetbal",
+      "paintball": "Paintball",
+      "barTour": "Kroegentocht",
+      "casino": "Casino",
+      "bbqParty": "BBQ Feest",
+      "rafting": "Raften",
+      "canyoning": "Canyoning",
+      "climbing": "Klimmen",
+      "hiking": "Wandelen",
+      "mountainBiking": "Mountainbiken",
+      "survivalTraining": "Survival",
+      "bungee": "Bungeejumpen",
+      "paragliding": "Paragliden",
+      "quadTour": "Quad Tour",
+      "cabinBbq": "BBQ in Huisje",
+      "spaWellness": "Spa en Wellness",
+      "wineTasting": "Wijnproeverij",
+      "gourmetDinner": "Gastronomisch Diner",
+      "cookingClass": "Kookworkshop",
+      "golf": "Golf",
+      "cigarWhiskey": "Sigaar en Whisky",
+      "breweryTour": "Brouwerijbezoek",
+      "boatTrip": "Boottocht",
+      "photoshoot": "Fotoshoot",
+      "cocktailClass": "Cocktailworkshop",
+      "yogaRetreat": "Yoga Retreat",
+      "danceClass": "Dansles",
+      "brunchParty": "Brunch",
+      "beachClub": "Beachclub",
+      "shoppingTour": "Shoptour",
+      "karaoke": "Karaoke",
+      "kayaking": "Kajakken",
+      "horsebackRiding": "Paardrijden",
+      "picnic": "Picknick",
+      "sunsetBoat": "Zonsondergang Boot",
+      "outdoorCooking": "Buiten Koken",
+      "dinnerParty": "Diner",
+      "bowling": "Bowlen",
+      "gamesNight": "Spelavond",
+      "cocktailParty": "Cocktailparty",
+      "dancing": "Dansen",
+      "liveMusic": "Live Muziek",
+      "spaDay": "Spa Dag",
+      "concert": "Concert",
+      "sportsEvent": "Sportevenement",
+      "artClass": "Kunstworkshop",
+      "adventurePark": "Avonturenpark",
+      "themePark": "Pretpark",
+      "zooAquarium": "Dierentuin en Aquarium",
+      "beachFun": "Strandplezier",
+      "hikingEasy": "Makkelijke Wandeling",
+      "games": "Spelletjes",
+      "bikeTour": "Fietstocht",
+      "swimming": "Zwemmen",
+      "sightseeing": "Bezienswaardigheden",
+      "nightlife": "Nachtleven",
+      "foodTour": "Food Tour",
+      "beach": "Strand",
+      "waterSports": "Watersporten",
+      "localExperiences": "Lokale Ervaringen",
+      "concertsEvents": "Concerten",
+      "teambuildingGames": "Teamspellen",
+      "workshop": "Workshop",
+      "outdoorChallenge": "Outdoor Uitdaging",
+      "sportsTournament": "Sporttoernooi",
+      "dinnerEvent": "Diner Event",
+      "creativeWorkshop": "Creatieve Workshop",
+      "action": "Actie",
+      "chill": "Ontspanning",
+      "outdoor": "Outdoor",
+      "food": "Culinair",
+      "culture": "Cultuur",
+      "party": "Feest",
+      "mixed": "Gemengd"
+    },
+    "duration": {
+      "dayTrip": "Dagtrip",
+      "weekend": "Weekend (2-3 dagen)",
+      "longWeekend": "Lang Weekend (3-4 dagen)",
+      "week": "Hele Week",
+      "twoWeeks": "Twee Weken",
+      "halfDay": "Halve Dag",
+      "fullDay": "Hele Dag",
+      "evening": "Avond",
+      "overnight": "Met Overnachting",
+      "flexible": "Flexibel"
+    },
+    "travel": {
+      "daytrip": "Dagtrip",
+      "oneNight": "Eén nacht",
+      "twoNights": "Twee nachten",
+      "flexible": "Flexibel"
+    },
+    "fitness": {
+      "chill": "Ontspannen",
+      "normal": "Normaal",
+      "sporty": "Sportief"
+    },
+    "alcohol": {
+      "yes": "Ja graag",
+      "no": "Liever niet",
+      "flexible": "Flexibel"
+    },
+    "attendance": {
+      "yes": "Ik doe mee!",
+      "maybe": "Misschien",
+      "no": "Helaas niet"
+    },
     "designTemplates": "Designsjablonen",
     "surveyTemplates": "Enquêtesjablonen",
     "selectDesign": "Kies een Design",
@@ -1438,59 +1869,297 @@
     "recommended": "Aanbevolen",
     "allTemplates": "Alle Sjablonen",
     "design": {
-      "jga-classic": { "name": "JGA Klassiek", "desc": "Feestelijk en partyproof met paars-cyaan verloop" },
-      "wedding-elegant": { "name": "Bruiloft Elegant", "desc": "Klassiek-elegant met roségouden accenten" },
-      "birthday-fun": { "name": "Verjaardag Fun", "desc": "Kleurrijk en vrolijk voor verjaardagsfeesten" },
-      "beach-vibes": { "name": "Strandsfeer", "desc": "Ontspannen en zomers voor stranduitjes" },
-      "night-out": { "name": "Avondje Uit", "desc": "Donker en glamoureus voor feestnachten" },
-      "modern-minimal": { "name": "Modern Minimaal", "desc": "Strak en tijdloos voor alle gelegenheden" },
-      "tropical-paradise": { "name": "Tropisch Paradijs", "desc": "Exotisch en kleurrijk voor avontuurlijke reizen" },
-      "royal-purple": { "name": "Koninklijk Paars", "desc": "Koninklijk en luxueus voor bijzondere gelegenheden" },
-      "sunset-glow": { "name": "Zonsonderganggloed", "desc": "Warm en romantisch als een zonsondergang" },
-      "ocean-breeze": { "name": "Oceaanbries", "desc": "Fris en maritiem voor watersportfans" },
-      "ladies-night": { "name": "Meidenuitje", "desc": "Roze en glamoureus voor het vrijgezellenfeest van de bruid" },
-      "vegas-neon": { "name": "Vegas Neon", "desc": "Neonlichten voor onvergetelijke feesten" },
-      "oktoberfest": { "name": "Oktoberfest", "desc": "Beiers en traditioneel voor volksfeestfans" },
-      "ski-snow": { "name": "Ski & Sneeuw", "desc": "Winters en sportief voor skireizen" },
-      "festival-vibes": { "name": "Festivalsfeer", "desc": "Wild en kleurrijk voor festivalliefhebbers" },
-      "garden-party": { "name": "Tuinfeest", "desc": "Natuurlijk en romantisch voor tuinfeesten" },
-      "road-trip": { "name": "Road Trip", "desc": "Avontuurlijk en vrij voor roadtrips" },
-      "glamour-night": { "name": "Glamouravond", "desc": "Chic en glamoureus voor bijzondere avonden" },
-      "sporty-adventure": { "name": "Sportief Avontuur", "desc": "Actief en energiek voor sportievelingen" },
-      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostalgisch en stijlvol in vintage look" }
+      "jga-classic": {
+        "name": "JGA Klassiek",
+        "desc": "Feestelijk en partyproof met paars-cyaan verloop"
+      },
+      "wedding-elegant": {
+        "name": "Bruiloft Elegant",
+        "desc": "Klassiek-elegant met roségouden accenten"
+      },
+      "birthday-fun": {
+        "name": "Verjaardag Fun",
+        "desc": "Kleurrijk en vrolijk voor verjaardagsfeesten"
+      },
+      "beach-vibes": {
+        "name": "Strandsfeer",
+        "desc": "Ontspannen en zomers voor stranduitjes"
+      },
+      "night-out": {
+        "name": "Avondje Uit",
+        "desc": "Donker en glamoureus voor feestnachten"
+      },
+      "modern-minimal": {
+        "name": "Modern Minimaal",
+        "desc": "Strak en tijdloos voor alle gelegenheden"
+      },
+      "tropical-paradise": {
+        "name": "Tropisch Paradijs",
+        "desc": "Exotisch en kleurrijk voor avontuurlijke reizen"
+      },
+      "royal-purple": {
+        "name": "Koninklijk Paars",
+        "desc": "Koninklijk en luxueus voor bijzondere gelegenheden"
+      },
+      "sunset-glow": {
+        "name": "Zonsonderganggloed",
+        "desc": "Warm en romantisch als een zonsondergang"
+      },
+      "ocean-breeze": {
+        "name": "Oceaanbries",
+        "desc": "Fris en maritiem voor watersportfans"
+      },
+      "ladies-night": {
+        "name": "Meidenuitje",
+        "desc": "Roze en glamoureus voor het vrijgezellenfeest van de bruid"
+      },
+      "vegas-neon": {
+        "name": "Vegas Neon",
+        "desc": "Neonlichten voor onvergetelijke feesten"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "desc": "Beiers en traditioneel voor volksfeestfans"
+      },
+      "ski-snow": {
+        "name": "Ski & Sneeuw",
+        "desc": "Winters en sportief voor skireizen"
+      },
+      "festival-vibes": {
+        "name": "Festivalsfeer",
+        "desc": "Wild en kleurrijk voor festivalliefhebbers"
+      },
+      "garden-party": {
+        "name": "Tuinfeest",
+        "desc": "Natuurlijk en romantisch voor tuinfeesten"
+      },
+      "road-trip": {
+        "name": "Road Trip",
+        "desc": "Avontuurlijk en vrij voor roadtrips"
+      },
+      "glamour-night": {
+        "name": "Glamouravond",
+        "desc": "Chic en glamoureus voor bijzondere avonden"
+      },
+      "sporty-adventure": {
+        "name": "Sportief Avontuur",
+        "desc": "Actief en energiek voor sportievelingen"
+      },
+      "retro-vintage": {
+        "name": "Retro Vintage",
+        "desc": "Nostalgisch en stijlvol in vintage look"
+      }
     },
     "survey": {
-      "jga-classic": { "name": "JGA Klassiek", "desc": "Klassiek vrijgezellenfeest met citytrips en avontuur" },
-      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Premium vrijgezellenervaring met luxe activiteiten" },
-      "bachelorette": { "name": "Vrijgezellenfeest", "desc": "Spa, brunch, dansen en onvergetelijke momenten" },
-      "birthday-bash": { "name": "Verjaardagsfeest", "desc": "Flexibele en leuke verjaardagsviering" },
-      "adventure-trip": { "name": "Avontuurlijke Reis", "desc": "Outdoor avonturen, wandelen en adrenaline" },
-      "city-break": { "name": "Stedentrip", "desc": "Cultuur, eten en sightseeing" },
-      "wedding-rsvp": { "name": "Bruiloft RSVP", "desc": "Elegante bruiloftrespons met dieet en accommodatie" },
-      "corporate-retreat": { "name": "Bedrijfsretraite", "desc": "Teambuilding, workshops en netwerken" }
+      "jga-classic": {
+        "name": "JGA Klassiek",
+        "desc": "Klassiek vrijgezellenfeest met citytrips en avontuur"
+      },
+      "jga-deluxe": {
+        "name": "JGA Deluxe",
+        "desc": "Premium vrijgezellenervaring met luxe activiteiten"
+      },
+      "bachelorette": {
+        "name": "Vrijgezellenfeest",
+        "desc": "Spa, brunch, dansen en onvergetelijke momenten"
+      },
+      "birthday-bash": {
+        "name": "Verjaardagsfeest",
+        "desc": "Flexibele en leuke verjaardagsviering"
+      },
+      "adventure-trip": {
+        "name": "Avontuurlijke Reis",
+        "desc": "Outdoor avonturen, wandelen en adrenaline"
+      },
+      "city-break": {
+        "name": "Stedentrip",
+        "desc": "Cultuur, eten en sightseeing"
+      },
+      "wedding-rsvp": {
+        "name": "Bruiloft RSVP",
+        "desc": "Elegante bruiloftrespons met dieet en accommodatie"
+      },
+      "corporate-retreat": {
+        "name": "Bedrijfsretraite",
+        "desc": "Teambuilding, workshops en netwerken"
+      }
     }
   },
   "affiliate": {
     "portal": {
       "title": "Partnerportaal",
       "welcome": "Welkom terug",
-      "tabs": { "dashboard": "Overzicht", "vouchers": "Kortingscodes", "commissions": "Commissies", "payouts": "Uitbetalingen", "settings": "Instellingen" }
+      "tabs": {
+        "dashboard": "Overzicht",
+        "vouchers": "Kortingscodes",
+        "commissions": "Commissies",
+        "payouts": "Uitbetalingen",
+        "settings": "Instellingen"
+      }
     },
-    "stats": { "totalEarnings": "Totale inkomsten", "pendingBalance": "Openstaand saldo", "paidOut": "Al uitbetaald", "conversionRate": "Conversieratio", "thisMonth": "Deze maand", "allTime": "Altijd", "tier": "Tier status" },
-    "vouchers": { "title": "Mijn kortingscodes", "copyCode": "Code kopiëren", "share": "Delen", "redemptions": "Inwisselingen", "generated": "Gegenereerd", "noVouchers": "Nog geen kortingscodes toegewezen", "copied": "Code gekopieerd!", "discount": "Korting", "active": "Actief", "inactive": "Inactief" },
-    "commissions": { "title": "Mijn commissies", "recent": "Recente commissies", "pending": "In behandeling", "approved": "Goedgekeurd", "paid": "Betaald", "cancelled": "Geannuleerd", "orderAmount": "Orderbedrag", "commission": "Commissie", "rate": "Tarief", "noCommissions": "Geen commissies gevonden", "noCommissionsYet": "Commissies verschijnen hier.", "noResults": "Geen resultaten voor deze filters", "searchPlaceholder": "Zoek op code of email..." },
-    "payouts": { "title": "Uitbetalingen", "availableBalance": "Beschikbaar saldo", "requestPayout": "Uitbetaling aanvragen", "minAmount": "Minimumbedrag: €50", "readyForPayout": "Klaar voor uitbetaling", "processing": "In verwerking", "completed": "Voltooid", "failed": "Mislukt", "pending": "In behandeling", "reference": "Referentie", "history": "Uitbetalingsgeschiedenis", "noPayouts": "Nog geen uitbetalingen", "noPayoutsDesc": "Je uitbetalingsgeschiedenis verschijnt hier.", "requested": "Uitbetaling succesvol aangevraagd!", "confirmTitle": "Uitbetaling bevestigen", "confirmDesc": "Wil je een uitbetaling voor dit bedrag aanvragen?", "willBeTransferred": "wordt overgemaakt naar je geregistreerde rekening", "processedAt": "Verwerkt" },
-    "settings": { "title": "Instellingen", "profile": "Profiel", "paymentMethod": "Betaalmethode", "paymentType": "Uitbetalingstype", "bankTransfer": "Bankoverschrijving", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "PayPal Email", "taxId": "BTW-nummer", "saved": "Instellingen opgeslagen", "yourTier": "Jouw Tier", "companyName": "Bedrijfsnaam", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "phone": "Telefoon", "website": "Website" },
-    "tiers": { "bronze": "Brons", "silver": "Zilver", "gold": "Goud", "platinum": "Platina", "nextTier": "Volgende tier", "conversionsNeeded": "{{needed}} meer conversies" },
-    "notAffiliate": { "title": "Word partner", "description": "Je bent nog geen partner. Wil je deelnemen aan ons affiliateprogramma?", "cta": "Nu aanmelden", "loginRequired": "Inloggen vereist", "loginDesc": "Log in om toegang te krijgen tot het Partnerportaal.", "benefits": { "commission": "Tot 25% commissie", "commissionDesc": "Verdien bij elke aanbeveling", "tracking": "Realtime tracking", "trackingDesc": "Volg alle conversies", "support": "Persoonlijke ondersteuning", "supportDesc": "Direct contact met ons team" } }
+    "stats": {
+      "totalEarnings": "Totale inkomsten",
+      "pendingBalance": "Openstaand saldo",
+      "paidOut": "Al uitbetaald",
+      "conversionRate": "Conversieratio",
+      "thisMonth": "Deze maand",
+      "allTime": "Altijd",
+      "tier": "Tier status"
+    },
+    "vouchers": {
+      "title": "Mijn kortingscodes",
+      "copyCode": "Code kopiëren",
+      "share": "Delen",
+      "redemptions": "Inwisselingen",
+      "generated": "Gegenereerd",
+      "noVouchers": "Nog geen kortingscodes toegewezen",
+      "copied": "Code gekopieerd!",
+      "discount": "Korting",
+      "active": "Actief",
+      "inactive": "Inactief"
+    },
+    "commissions": {
+      "title": "Mijn commissies",
+      "recent": "Recente commissies",
+      "pending": "In behandeling",
+      "approved": "Goedgekeurd",
+      "paid": "Betaald",
+      "cancelled": "Geannuleerd",
+      "orderAmount": "Orderbedrag",
+      "commission": "Commissie",
+      "rate": "Tarief",
+      "noCommissions": "Geen commissies gevonden",
+      "noCommissionsYet": "Commissies verschijnen hier.",
+      "noResults": "Geen resultaten voor deze filters",
+      "searchPlaceholder": "Zoek op code of email..."
+    },
+    "payouts": {
+      "title": "Uitbetalingen",
+      "availableBalance": "Beschikbaar saldo",
+      "requestPayout": "Uitbetaling aanvragen",
+      "minAmount": "Minimumbedrag: €50",
+      "readyForPayout": "Klaar voor uitbetaling",
+      "processing": "In verwerking",
+      "completed": "Voltooid",
+      "failed": "Mislukt",
+      "pending": "In behandeling",
+      "reference": "Referentie",
+      "history": "Uitbetalingsgeschiedenis",
+      "noPayouts": "Nog geen uitbetalingen",
+      "noPayoutsDesc": "Je uitbetalingsgeschiedenis verschijnt hier.",
+      "requested": "Uitbetaling succesvol aangevraagd!",
+      "confirmTitle": "Uitbetaling bevestigen",
+      "confirmDesc": "Wil je een uitbetaling voor dit bedrag aanvragen?",
+      "willBeTransferred": "wordt overgemaakt naar je geregistreerde rekening",
+      "processedAt": "Verwerkt"
+    },
+    "settings": {
+      "title": "Instellingen",
+      "profile": "Profiel",
+      "paymentMethod": "Betaalmethode",
+      "paymentType": "Uitbetalingstype",
+      "bankTransfer": "Bankoverschrijving",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "PayPal Email",
+      "taxId": "BTW-nummer",
+      "saved": "Instellingen opgeslagen",
+      "yourTier": "Jouw Tier",
+      "companyName": "Bedrijfsnaam",
+      "companyNamePlaceholder": "Jouw Bedrijf BV",
+      "contactName": "Contactnaam",
+      "contactNamePlaceholder": "Jan Jansen",
+      "phone": "Telefoon",
+      "website": "Website"
+    },
+    "tiers": {
+      "bronze": "Brons",
+      "silver": "Zilver",
+      "gold": "Goud",
+      "platinum": "Platina",
+      "nextTier": "Volgende tier",
+      "conversionsNeeded": "{{needed}} meer conversies"
+    },
+    "notAffiliate": {
+      "title": "Word partner",
+      "description": "Je bent nog geen partner. Wil je deelnemen aan ons affiliateprogramma?",
+      "cta": "Nu aanmelden",
+      "loginRequired": "Inloggen vereist",
+      "loginDesc": "Log in om toegang te krijgen tot het Partnerportaal.",
+      "benefits": {
+        "commission": "Tot 25% commissie",
+        "commissionDesc": "Verdien bij elke aanbeveling",
+        "tracking": "Realtime tracking",
+        "trackingDesc": "Volg alle conversies",
+        "support": "Persoonlijke ondersteuning",
+        "supportDesc": "Direct contact met ons team"
+      }
+    }
   },
   "partnerApply": {
-    "hero": { "badge": "Affiliateprogramma", "title": "Word lid van ons partnerprogramma", "description": "Beveel EventBliss aan en verdien tot 25% commissie voor elke succesvolle verwijzing." },
-    "benefits": { "commission": { "title": "Aantrekkelijke commissies", "description": "Tot 25% op elke doorverwezen aankoop" }, "tracking": { "title": "Realtime dashboard", "description": "Volg al je conversies" }, "payouts": { "title": "Snelle uitbetalingen", "description": "Maandelijkse uitbetaling vanaf €50" }, "support": { "title": "Persoonlijke ondersteuning", "description": "We helpen je bij elke stap" } },
-    "stats": { "partners": "Actieve partners", "commissionRate": "Tot", "payouts": "Uitbetaald" },
-    "form": { "title": "Nu aanmelden", "companyName": "Bedrijfsnaam (optioneel)", "companyNamePlaceholder": "Jouw Bedrijf BV", "contactName": "Contactnaam", "contactNamePlaceholder": "Jan Jansen", "email": "E-mailadres", "emailPlaceholder": "partner@voorbeeld.nl", "phone": "Telefoon (optioneel)", "phonePlaceholder": "+31 6 12345678", "website": "Website (optioneel)", "websitePlaceholder": "https://jouw-website.nl", "taxId": "BTW-nummer (optioneel)", "taxIdPlaceholder": "NL123456789B01", "about": "Over jou / je bedrijf (optioneel)", "aboutPlaceholder": "Vertel ons iets over jezelf...", "promotion": "Hoe wil je EventBliss promoten?", "promotionPlaceholder": "bijv. Blog, Social Media, Nieuwsbrief, Persoonlijke aanbevelingen...", "privacy": "Ik accepteer de", "submit": "Aanmelding versturen", "submitting": "Versturen..." },
-    "success": { "title": "Aanmelding ontvangen!", "description": "Bedankt voor je interesse in ons partnerprogramma.", "nextSteps": "We beoordelen je aanmelding en nemen binnen 2-3 werkdagen contact met je op.", "backToHome": "Terug naar home" },
-    "errors": { "required": "Dit veld is verplicht", "invalidEmail": "Voer een geldig e-mailadres in", "privacyRequired": "Je moet het privacybeleid accepteren", "submitFailed": "Aanmelding kon niet worden verzonden. Probeer het opnieuw." }
+    "hero": {
+      "badge": "Affiliateprogramma",
+      "title": "Word lid van ons partnerprogramma",
+      "description": "Beveel EventBliss aan en verdien tot 25% commissie voor elke succesvolle verwijzing."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Aantrekkelijke commissies",
+        "description": "Tot 25% op elke doorverwezen aankoop"
+      },
+      "tracking": {
+        "title": "Realtime dashboard",
+        "description": "Volg al je conversies"
+      },
+      "payouts": {
+        "title": "Snelle uitbetalingen",
+        "description": "Maandelijkse uitbetaling vanaf €50"
+      },
+      "support": {
+        "title": "Persoonlijke ondersteuning",
+        "description": "We helpen je bij elke stap"
+      }
+    },
+    "stats": {
+      "partners": "Actieve partners",
+      "commissionRate": "Tot",
+      "payouts": "Uitbetaald"
+    },
+    "form": {
+      "title": "Nu aanmelden",
+      "companyName": "Bedrijfsnaam (optioneel)",
+      "companyNamePlaceholder": "Jouw Bedrijf BV",
+      "contactName": "Contactnaam",
+      "contactNamePlaceholder": "Jan Jansen",
+      "email": "E-mailadres",
+      "emailPlaceholder": "partner@voorbeeld.nl",
+      "phone": "Telefoon (optioneel)",
+      "phonePlaceholder": "+31 6 12345678",
+      "website": "Website (optioneel)",
+      "websitePlaceholder": "https://jouw-website.nl",
+      "taxId": "BTW-nummer (optioneel)",
+      "taxIdPlaceholder": "NL123456789B01",
+      "about": "Over jou / je bedrijf (optioneel)",
+      "aboutPlaceholder": "Vertel ons iets over jezelf...",
+      "promotion": "Hoe wil je EventBliss promoten?",
+      "promotionPlaceholder": "bijv. Blog, Social Media, Nieuwsbrief, Persoonlijke aanbevelingen...",
+      "privacy": "Ik accepteer de",
+      "submit": "Aanmelding versturen",
+      "submitting": "Versturen..."
+    },
+    "success": {
+      "title": "Aanmelding ontvangen!",
+      "description": "Bedankt voor je interesse in ons partnerprogramma.",
+      "nextSteps": "We beoordelen je aanmelding en nemen binnen 2-3 werkdagen contact met je op.",
+      "backToHome": "Terug naar home"
+    },
+    "errors": {
+      "required": "Dit veld is verplicht",
+      "invalidEmail": "Voer een geldig e-mailadres in",
+      "privacyRequired": "Je moet het privacybeleid accepteren",
+      "submitFailed": "Aanmelding kon niet worden verzonden. Probeer het opnieuw."
+    }
   },
   "aiCredits": {
     "title": "AI-credits",
@@ -1527,25 +2196,6 @@
     "costInfo": "Kost {{cost}} credit",
     "noCreditsLeft": "Geen credits meer",
     "creditUsed": "💎 {{remaining}} credits over"
-  },
-  "admin": {
-    "credits": {
-      "title": "Credit beheer",
-      "description": "Handmatige credit-aanpassingen voor gebruikers",
-      "userSearch": "Zoek gebruiker (e-mail)",
-      "currentCredits": "Huidige credits",
-      "adjustCredits": "Credits aanpassen",
-      "addCredits": "Credits toevoegen",
-      "removeCredits": "Credits verwijderen",
-      "reason": "Reden",
-      "reasonPlaceholder": "bijv. Partner bonus, Coulance, etc.",
-      "adjustmentSuccess": "Credits succesvol aangepast",
-      "noUser": "Gebruiker niet gevonden",
-      "adjustmentHistory": "Aanpassingsgeschiedenis",
-      "amount": "Bedrag",
-      "adjustedBy": "Aangepast door",
-      "date": "Datum"
-    }
   },
   "gamesLibrary": {
     "categories": {
@@ -1607,27 +2257,103 @@
     "decorationTips": "Decoratie-ideeën",
     "colorPalette": "Kleurenpalet",
     "games": {
-      "bingo_tasks": { "name": "Opdrachten Bingo", "description": "Iedereen krijgt een bingokaart met leuke opdrachten die in de stad moeten worden uitgevoerd.", "instructions": "**Voorbereiding:**\nMaak 5x5 bingokaarten met 25 verschillende opdrachten. Voorbeelden: 'Compliment aan een vreemde', 'Foto met politieagent', 'Liedje zingen'. Elke deelnemer krijgt een kaart en pen.\n\n**Speelwijze:**\nDe groep trekt door de stad. Iedereen probeert opdrachten van zijn kaart uit te voeren. Voltooide opdrachten worden afgevinkt.\n\n**Regels:**\n• Eerste rij (horizontaal, verticaal of diagonaal) = 'BINGO!'\n• Alle 25 vakjes = 'SUPER-BINGO!'\n• Elke opdracht moet met foto worden gedocumenteerd\n\n**Varianten:**\n• Team-Bingo: Twee teams tegen elkaar\n• Drink-Bingo: Bij elk afgevinkt vakje proosten\n\n**Tips:**\nMix makkelijke en moeilijke opdrachten voor de beste balans!" },
-      "drink_roulette": { "name": "Drink Roulette", "description": "Het rad van fortuin bepaalt wie drinkt.", "instructions": "**Voorbereiding:**\nSchaf een roulettewiel aan of maak er een met namen/nummers. Zet drankjes klaar. Elke speler krijgt een nummer toegewezen.\n\n**Speelwijze:**\nOm de beurt draait elke speler aan het wiel. Op wie de pijl wijst, moet drinken.\n\n**Regels:**\n• Twee keer achter elkaar aangewezen: Dubbele shot\n• Wiel valt op jezelf: Alle anderen drinken\n• 'Joker'-vakje: Speler kiest wie drinkt\n\n**Tips:**\nVoor meer spanning: schrijf speciale acties op sommige vakjes!" },
-      "who_am_i": { "name": "Wie Ben Ik?", "description": "Raad de beroemde persoon op je voorhoofd door ja/nee-vragen te stellen.", "instructions": "**Voorbereiding:**\nSchrijf namen van beroemde personen op plakbriefjes. Iedereen krijgt een briefje op het voorhoofd geplakt zonder het te zien.\n\n**Speelwijze:**\nOm de beurt stelt iedereen een ja/nee-vraag. Bij 'ja' mag je doorgaan, bij 'nee' is de volgende aan de beurt.\n\n**Regels:**\n• Alleen ja/nee-vragen toegestaan\n• Maximaal 20 vragen per ronde\n• Geen hints van anderen!\n\n**Tips:**\nEerst geslacht, dan beroep, dan tijdperk uitzoeken!" },
-      "beer_pong": { "name": "Beer Pong", "description": "De klassieker - gooi de bal in de bekers van de tegenstander.", "instructions": "**Voorbereiding:**\nZet 10 bekers per team in piramideformatie (4-3-2-1) aan beide kanten van een lange tafel. Vul elke beker voor een derde met bier.\n\n**Speelwijze:**\nTwee teams staan tegenover elkaar. Beurtelings gooit elke speler een pingpongbal. Raak = tegenstander drinkt en beker wordt verwijderd.\n\n**Regels:**\n• 'On Fire': 2+ treffers achter elkaar = doorgooien\n• 'Elleboog-regel': Elleboog achter tafelrand\n\n**Tips:**\nDe perfecte worp heeft een lichte boog. Voor alcoholvrije variant: water in bekers, shots ernaast!" },
-      "truth_or_dare": { "name": "Waarheid of Durven", "description": "De klassieker voor gedurfde bekentenissen en gekke opdrachten.", "instructions": "**Voorbereiding:**\nGeen speciale voorbereiding nodig. Een fles om te draaien is optioneel.\n\n**Speelwijze:**\nOm de beurt kiest iedereen: 'Waarheid' (eerlijk een vraag beantwoorden) of 'Durven' (een opdracht uitvoeren).\n\n**Regels:**\n• Weigeren = Straf (shot, gênante opdracht)\n• Eén keer per spel mag je wisselen\n• Waarheid moet eerlijk zijn\n\n**Tips:**\nBegin onschuldig en bouw langzaam op! De beste opdrachten zijn gênant maar veilig." },
-      "karaoke_battle": { "name": "Karaoke Battle", "description": "Zing om de overwinning - hoe vals ook!", "instructions": "**Voorbereiding:**\nRegelkaraoke-systeem of app. Bereid een songlijst voor.\n\n**Speelwijze:**\nTeams of individuen nemen het tegen elkaar op. De groep beoordeelt de beste performance.\n\n**Regels:**\n• Elk optreden heeft een tijdslimiet\n• Bonuspunten voor performance en lef" },
-      "shoe_game": { "name": "Schoenspel", "description": "Bruid en bruidegom beantwoorden vragen met schoenen.", "instructions": "**Voorbereiding:**\nHet paar zit rug aan rug op stoelen. Elk houdt een eigen schoen en een van de partner vast. Moderator heeft lijst met 20-30 vragen.\n\n**Speelwijze:**\nDe moderator stelt vragen ('Wie is de beste kok?'). Het paar houdt de schoen omhoog van degene op wie het antwoord van toepassing is - zonder overleg.\n\n**Regels:**\n• Geen overleg toegestaan!\n• Zelfde antwoord: Kus\n• Verschillend antwoord: Korte uitleg\n\n**Tips:**\nMix grappige met romantische vragen. Perfect voor bruiloften!" },
-      "wedding_bingo": { "name": "Bruiloft Bingo", "description": "Bingo met typische bruiloftmomenten.", "instructions": "**Voorbereiding:**\nMaak bingokaarten met typische scènes: 'Iemand huilt', 'Toespraak vader', 'Kind rent door het beeld'. Elke gast krijgt een kaart.\n\n**Speelwijze:**\nTijdens de bruiloft vinken gasten geobserveerde scènes af. Wie een rij vol heeft roept 'Bingo!' en wint een prijs.\n\n**Regels:**\n• Scènes moeten echt gebeuren\n• Opzettelijk uitlokken telt niet" },
-      "family_feud": { "name": "Familiefeud", "description": "Raad de populairste enquêteantwoorden.", "instructions": "**Voorbereiding:**\nBereid vragen voor met geënquêteerde antwoorden. Vorm twee teams.\n\n**Speelwijze:**\nEr wordt een vraag gesteld. Teams proberen de populairste antwoorden te raden.\n\n**Regels:**\n• 3 fouten en het andere team kan stelen\n• Punten naar populariteit van antwoord" },
-      "scavenger_hunt": { "name": "Speurtocht", "description": "Volg de aanwijzingen en los raadsels op.", "instructions": "**Voorbereiding:**\nPlan 8-15 stations met aanwijzingen. Elke aanwijzing leidt naar de volgende locatie. Aan het einde wacht een 'schat'.\n\n**Speelwijze:**\nTeams beginnen met de eerste aanwijzing. Elke aanwijzing is een raadsel dat opgelost moet worden.\n\n**Regels:**\n• Volgorde aanhouden\n• Geen hulp van buitenstaanders\n• Foto's bij elk station als bewijs" },
-      "charades": { "name": "Gebaren", "description": "Raad woorden door gebaren in teams.", "instructions": "**Voorbereiding:**\nSchrijf begrippen op briefjes (films, beroemdheden, acties). Vorm teams (3-6 personen). Bereid timer voor (60-90 seconden per ronde).\n\n**Speelwijze:**\nEen speler trekt een begrip en beeldt het uit - zonder woorden, geluiden of wijzen naar objecten. Het team raadt.\n\n**Regels:**\n• Niet praten, neuriën of geluiden maken\n• Niet naar objecten wijzen\n• Lettergrepen met vingers tonen is toegestaan" },
-      "pictionary": { "name": "Pictionary", "description": "Teken en raad begrippen tegen de klok.", "instructions": "**Voorbereiding:**\nBereid kaarten met begrippen voor. Vorm teams. Zorg voor papier en stiften.\n\n**Speelwijze:**\nEen speler tekent het begrip zonder letters of cijfers. Het team raadt.\n\n**Regels:**\n• Geen letters, cijfers of symbolen\n• Niet praten of gebaren" },
-      "two_truths_lie": { "name": "2 Waarheden en 1 Leugen", "description": "Raad de leugen onder drie beweringen.", "instructions": "**Voorbereiding:**\nElke speler bedenkt drie feiten over zichzelf: twee waar en één gelogen.\n\n**Speelwijze:**\nIedereen vertelt zijn drie feiten. De groep stemt welke ze denken dat de leugen is. De waarheid wordt onthuld.\n\n**Regels:**\n• Feiten moeten geloofwaardig zijn\n• De leugen mag niet te voor de hand liggen\n• Punten voor correct raden" }
+      "bingo_tasks": {
+        "name": "Opdrachten Bingo",
+        "description": "Iedereen krijgt een bingokaart met leuke opdrachten die in de stad moeten worden uitgevoerd.",
+        "instructions": "**Voorbereiding:**\nMaak 5x5 bingokaarten met 25 verschillende opdrachten. Voorbeelden: 'Compliment aan een vreemde', 'Foto met politieagent', 'Liedje zingen'. Elke deelnemer krijgt een kaart en pen.\n\n**Speelwijze:**\nDe groep trekt door de stad. Iedereen probeert opdrachten van zijn kaart uit te voeren. Voltooide opdrachten worden afgevinkt.\n\n**Regels:**\n• Eerste rij (horizontaal, verticaal of diagonaal) = 'BINGO!'\n• Alle 25 vakjes = 'SUPER-BINGO!'\n• Elke opdracht moet met foto worden gedocumenteerd\n\n**Varianten:**\n• Team-Bingo: Twee teams tegen elkaar\n• Drink-Bingo: Bij elk afgevinkt vakje proosten\n\n**Tips:**\nMix makkelijke en moeilijke opdrachten voor de beste balans!"
+      },
+      "drink_roulette": {
+        "name": "Drink Roulette",
+        "description": "Het rad van fortuin bepaalt wie drinkt.",
+        "instructions": "**Voorbereiding:**\nSchaf een roulettewiel aan of maak er een met namen/nummers. Zet drankjes klaar. Elke speler krijgt een nummer toegewezen.\n\n**Speelwijze:**\nOm de beurt draait elke speler aan het wiel. Op wie de pijl wijst, moet drinken.\n\n**Regels:**\n• Twee keer achter elkaar aangewezen: Dubbele shot\n• Wiel valt op jezelf: Alle anderen drinken\n• 'Joker'-vakje: Speler kiest wie drinkt\n\n**Tips:**\nVoor meer spanning: schrijf speciale acties op sommige vakjes!"
+      },
+      "who_am_i": {
+        "name": "Wie Ben Ik?",
+        "description": "Raad de beroemde persoon op je voorhoofd door ja/nee-vragen te stellen.",
+        "instructions": "**Voorbereiding:**\nSchrijf namen van beroemde personen op plakbriefjes. Iedereen krijgt een briefje op het voorhoofd geplakt zonder het te zien.\n\n**Speelwijze:**\nOm de beurt stelt iedereen een ja/nee-vraag. Bij 'ja' mag je doorgaan, bij 'nee' is de volgende aan de beurt.\n\n**Regels:**\n• Alleen ja/nee-vragen toegestaan\n• Maximaal 20 vragen per ronde\n• Geen hints van anderen!\n\n**Tips:**\nEerst geslacht, dan beroep, dan tijdperk uitzoeken!"
+      },
+      "beer_pong": {
+        "name": "Beer Pong",
+        "description": "De klassieker - gooi de bal in de bekers van de tegenstander.",
+        "instructions": "**Voorbereiding:**\nZet 10 bekers per team in piramideformatie (4-3-2-1) aan beide kanten van een lange tafel. Vul elke beker voor een derde met bier.\n\n**Speelwijze:**\nTwee teams staan tegenover elkaar. Beurtelings gooit elke speler een pingpongbal. Raak = tegenstander drinkt en beker wordt verwijderd.\n\n**Regels:**\n• 'On Fire': 2+ treffers achter elkaar = doorgooien\n• 'Elleboog-regel': Elleboog achter tafelrand\n\n**Tips:**\nDe perfecte worp heeft een lichte boog. Voor alcoholvrije variant: water in bekers, shots ernaast!"
+      },
+      "truth_or_dare": {
+        "name": "Waarheid of Durven",
+        "description": "De klassieker voor gedurfde bekentenissen en gekke opdrachten.",
+        "instructions": "**Voorbereiding:**\nGeen speciale voorbereiding nodig. Een fles om te draaien is optioneel.\n\n**Speelwijze:**\nOm de beurt kiest iedereen: 'Waarheid' (eerlijk een vraag beantwoorden) of 'Durven' (een opdracht uitvoeren).\n\n**Regels:**\n• Weigeren = Straf (shot, gênante opdracht)\n• Eén keer per spel mag je wisselen\n• Waarheid moet eerlijk zijn\n\n**Tips:**\nBegin onschuldig en bouw langzaam op! De beste opdrachten zijn gênant maar veilig."
+      },
+      "karaoke_battle": {
+        "name": "Karaoke Battle",
+        "description": "Zing om de overwinning - hoe vals ook!",
+        "instructions": "**Voorbereiding:**\nRegelkaraoke-systeem of app. Bereid een songlijst voor.\n\n**Speelwijze:**\nTeams of individuen nemen het tegen elkaar op. De groep beoordeelt de beste performance.\n\n**Regels:**\n• Elk optreden heeft een tijdslimiet\n• Bonuspunten voor performance en lef"
+      },
+      "shoe_game": {
+        "name": "Schoenspel",
+        "description": "Bruid en bruidegom beantwoorden vragen met schoenen.",
+        "instructions": "**Voorbereiding:**\nHet paar zit rug aan rug op stoelen. Elk houdt een eigen schoen en een van de partner vast. Moderator heeft lijst met 20-30 vragen.\n\n**Speelwijze:**\nDe moderator stelt vragen ('Wie is de beste kok?'). Het paar houdt de schoen omhoog van degene op wie het antwoord van toepassing is - zonder overleg.\n\n**Regels:**\n• Geen overleg toegestaan!\n• Zelfde antwoord: Kus\n• Verschillend antwoord: Korte uitleg\n\n**Tips:**\nMix grappige met romantische vragen. Perfect voor bruiloften!"
+      },
+      "wedding_bingo": {
+        "name": "Bruiloft Bingo",
+        "description": "Bingo met typische bruiloftmomenten.",
+        "instructions": "**Voorbereiding:**\nMaak bingokaarten met typische scènes: 'Iemand huilt', 'Toespraak vader', 'Kind rent door het beeld'. Elke gast krijgt een kaart.\n\n**Speelwijze:**\nTijdens de bruiloft vinken gasten geobserveerde scènes af. Wie een rij vol heeft roept 'Bingo!' en wint een prijs.\n\n**Regels:**\n• Scènes moeten echt gebeuren\n• Opzettelijk uitlokken telt niet"
+      },
+      "family_feud": {
+        "name": "Familiefeud",
+        "description": "Raad de populairste enquêteantwoorden.",
+        "instructions": "**Voorbereiding:**\nBereid vragen voor met geënquêteerde antwoorden. Vorm twee teams.\n\n**Speelwijze:**\nEr wordt een vraag gesteld. Teams proberen de populairste antwoorden te raden.\n\n**Regels:**\n• 3 fouten en het andere team kan stelen\n• Punten naar populariteit van antwoord"
+      },
+      "scavenger_hunt": {
+        "name": "Speurtocht",
+        "description": "Volg de aanwijzingen en los raadsels op.",
+        "instructions": "**Voorbereiding:**\nPlan 8-15 stations met aanwijzingen. Elke aanwijzing leidt naar de volgende locatie. Aan het einde wacht een 'schat'.\n\n**Speelwijze:**\nTeams beginnen met de eerste aanwijzing. Elke aanwijzing is een raadsel dat opgelost moet worden.\n\n**Regels:**\n• Volgorde aanhouden\n• Geen hulp van buitenstaanders\n• Foto's bij elk station als bewijs"
+      },
+      "charades": {
+        "name": "Gebaren",
+        "description": "Raad woorden door gebaren in teams.",
+        "instructions": "**Voorbereiding:**\nSchrijf begrippen op briefjes (films, beroemdheden, acties). Vorm teams (3-6 personen). Bereid timer voor (60-90 seconden per ronde).\n\n**Speelwijze:**\nEen speler trekt een begrip en beeldt het uit - zonder woorden, geluiden of wijzen naar objecten. Het team raadt.\n\n**Regels:**\n• Niet praten, neuriën of geluiden maken\n• Niet naar objecten wijzen\n• Lettergrepen met vingers tonen is toegestaan"
+      },
+      "pictionary": {
+        "name": "Pictionary",
+        "description": "Teken en raad begrippen tegen de klok.",
+        "instructions": "**Voorbereiding:**\nBereid kaarten met begrippen voor. Vorm teams. Zorg voor papier en stiften.\n\n**Speelwijze:**\nEen speler tekent het begrip zonder letters of cijfers. Het team raadt.\n\n**Regels:**\n• Geen letters, cijfers of symbolen\n• Niet praten of gebaren"
+      },
+      "two_truths_lie": {
+        "name": "2 Waarheden en 1 Leugen",
+        "description": "Raad de leugen onder drie beweringen.",
+        "instructions": "**Voorbereiding:**\nElke speler bedenkt drie feiten over zichzelf: twee waar en één gelogen.\n\n**Speelwijze:**\nIedereen vertelt zijn drie feiten. De groep stemt welke ze denken dat de leugen is. De waarheid wordt onthuld.\n\n**Regels:**\n• Feiten moeten geloofwaardig zijn\n• De leugen mag niet te voor de hand liggen\n• Punten voor correct raden"
+      }
     },
     "themes": {
-      "80s_retro": { "name": "80s Retro Feest", "description": "Neonkleuren, synthesizerkmuziek en schoudervullingen", "tips": "Denk aan neonlichten, discoballen en 80s hits van A-ha tot Madonna!" },
-      "casino_royale": { "name": "Casino Royale", "description": "Elegante James Bond-sfeer met speeltafels", "tips": "Rode loper, pokerfiches, speeltafels en elegante cocktails!" },
-      "tropical_beach": { "name": "Tropisch Strand", "description": "Caribische sfeer met palmen en cocktails", "tips": "Hawaii-hemden, tiki-fakkels, kokosdrinks en tropische muziek!" },
-      "oktoberfest": { "name": "Oktoberfest", "description": "Beierse gezelligheid", "tips": "Bierbanken, pretzels, braadworst, blaasmuziek en dirndls verplicht!" },
-      "disco_fever": { "name": "Disco Fever", "description": "Glitter, discobal en funk", "tips": "Discobal, glitter, Saturday Night Fever playlist!" },
-      "garden_party": { "name": "Tuinfeest", "description": "Elegant feest in het groen", "tips": "Bloemdecoratie, parasols, picknickmanden en lichte hapjes!" }
+      "80s_retro": {
+        "name": "80s Retro Feest",
+        "description": "Neonkleuren, synthesizerkmuziek en schoudervullingen",
+        "tips": "Denk aan neonlichten, discoballen en 80s hits van A-ha tot Madonna!"
+      },
+      "casino_royale": {
+        "name": "Casino Royale",
+        "description": "Elegante James Bond-sfeer met speeltafels",
+        "tips": "Rode loper, pokerfiches, speeltafels en elegante cocktails!"
+      },
+      "tropical_beach": {
+        "name": "Tropisch Strand",
+        "description": "Caribische sfeer met palmen en cocktails",
+        "tips": "Hawaii-hemden, tiki-fakkels, kokosdrinks en tropische muziek!"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "description": "Beierse gezelligheid",
+        "tips": "Bierbanken, pretzels, braadworst, blaasmuziek en dirndls verplicht!"
+      },
+      "disco_fever": {
+        "name": "Disco Fever",
+        "description": "Glitter, discobal en funk",
+        "tips": "Discobal, glitter, Saturday Night Fever playlist!"
+      },
+      "garden_party": {
+        "name": "Tuinfeest",
+        "description": "Elegant feest in het groen",
+        "tips": "Bloemdecoratie, parasols, picknickmanden en lichte hapjes!"
+      }
     }
   },
   "ideasHub": {
@@ -1659,13 +2385,107 @@
     "dashboard": "Bureau Dashboard",
     "overview": "Overzicht",
     "events": "Evenementen",
-    "contacts": "Contacten",
-    "templates": "Sjablonen",
-    "team": "Team",
-    "files": "Bestanden",
-    "reports": "Rapporten",
+    "contacts": {
+      "searchContacts": "Contacten zoeken...",
+      "addContact": "Contact Toevoegen",
+      "importCSV": "CSV Importeren",
+      "name": "Naam",
+      "company": "Bedrijf",
+      "phone": "Telefoon",
+      "email": "E-mail",
+      "type": "Type",
+      "rating": "Beoordeling",
+      "lastUsed": "Laatst Gebruikt",
+      "tags": "Tags",
+      "notes": "Notities",
+      "priceHistory": "Prijsgeschiedenis",
+      "pastEvents": "Eerdere Evenementen",
+      "availability": "Beschikbaarheid",
+      "topRated": "Best Beoordeeld",
+      "recentlyUsed": "Recent Gebruikt",
+      "available": "Beschikbaar",
+      "qualityScore": "Kwaliteitsscore",
+      "specialization": "Specialisatie"
+    },
+    "templates": {
+      "useTemplate": "Sjabloon Gebruiken",
+      "createFromEvent": "Aanmaken vanuit Evenement",
+      "timesUsed": "keer gebruikt",
+      "lastUsed": "Laatst gebruikt",
+      "categories": {
+        "corporate": "Zakelijk",
+        "wedding": "Bruiloft",
+        "jga": "Vrijgezellenfeest",
+        "birthday": "Verjaardag",
+        "conference": "Conferentie",
+        "festival": "Festival",
+        "other": "Overig"
+      }
+    },
+    "team": {
+      "inviteMember": "Lid Uitnodigen",
+      "inviteByEmail": "Uitnodigen per E-mail",
+      "role": "Rol",
+      "activeEvents": "Actieve Evenementen",
+      "lastActive": "Laatst Actief",
+      "workload": "Werkdruk",
+      "deactivate": "Deactiveren",
+      "activityLog": "Activiteitenlogboek"
+    },
+    "files": {
+      "uploadFiles": "Bestanden Uploaden",
+      "dragAndDrop": "Sleep bestanden hierheen of klik om te bladeren",
+      "storageUsed": "Opslag Gebruikt",
+      "categories": {
+        "contract": "Contract",
+        "invoice": "Factuur",
+        "photo": "Foto",
+        "floorPlan": "Plattegrond",
+        "briefing": "Briefing",
+        "other": "Overig"
+      },
+      "gridView": "Rasterweergave",
+      "listView": "Lijstweergave"
+    },
+    "reports": {
+      "dateRange": "Periode",
+      "eventsPerMonth": "Evenementen per Maand",
+      "revenueTrend": "Omzettrend",
+      "eventTypes": "Verdeling Evenementtypen",
+      "budgetAccuracy": "Budget Nauwkeurigheid",
+      "exportCSV": "CSV Exporteren",
+      "avgBudgetPerEvent": "Gem. Budget/Evenement",
+      "clientRetention": "Klantbehoud"
+    },
     "calendar": "Kalender",
-    "runOfShow": "Draaiboek",
+    "runOfShow": {
+      "liveTimeline": "Live Tijdlijn",
+      "currentPhase": "Huidige Fase",
+      "upcoming": "Aanstaand",
+      "active": "Actief",
+      "completed": "Afgerond",
+      "delayed": "Vertraagd",
+      "skipped": "Overgeslagen",
+      "markActive": "Markeer Actief",
+      "markComplete": "Markeer Afgerond",
+      "skip": "Overslaan",
+      "countdown": "Aftelling",
+      "responsible": "Verantwoordelijke",
+      "cueNotes": "Regieaanwijzingen",
+      "delayMinutes": "Vertraging (minuten)",
+      "multiStage": "Multi-Stage",
+      "mainStage": "Hoofdpodium",
+      "breakoutRoom": "Breakout Room",
+      "emergency": "Noodprotocol",
+      "incidentLog": "Incidentenlogboek",
+      "reportIncident": "Incident Melden",
+      "roleView": "Rolweergave",
+      "allRoles": "Alle Rollen",
+      "moderator": "Moderator",
+      "technician": "Technicus",
+      "catering": "Catering",
+      "crew": "Crew"
+    },
     "budgetEngine": "Budget Engine",
     "notifications": "Meldingen",
     "stats": {
@@ -1717,28 +2537,6 @@
       "transport": "Transport",
       "security": "Beveiliging"
     },
-    "contacts": {
-      "searchContacts": "Contacten zoeken...",
-      "addContact": "Contact Toevoegen",
-      "importCSV": "CSV Importeren",
-      "name": "Naam",
-      "company": "Bedrijf",
-      "phone": "Telefoon",
-      "email": "E-mail",
-      "type": "Type",
-      "rating": "Beoordeling",
-      "lastUsed": "Laatst Gebruikt",
-      "tags": "Tags",
-      "notes": "Notities",
-      "priceHistory": "Prijsgeschiedenis",
-      "pastEvents": "Eerdere Evenementen",
-      "availability": "Beschikbaarheid",
-      "topRated": "Best Beoordeeld",
-      "recentlyUsed": "Recent Gebruikt",
-      "available": "Beschikbaar",
-      "qualityScore": "Kwaliteitsscore",
-      "specialization": "Specialisatie"
-    },
     "planner": {
       "overview": "Overzicht",
       "timeline": "Tijdlijn",
@@ -1776,34 +2574,6 @@
       "approvalPending": "Goedkeuring in Afwachting",
       "approved": "Goedgekeurd"
     },
-    "runOfShow": {
-      "liveTimeline": "Live Tijdlijn",
-      "currentPhase": "Huidige Fase",
-      "upcoming": "Aanstaand",
-      "active": "Actief",
-      "completed": "Afgerond",
-      "delayed": "Vertraagd",
-      "skipped": "Overgeslagen",
-      "markActive": "Markeer Actief",
-      "markComplete": "Markeer Afgerond",
-      "skip": "Overslaan",
-      "countdown": "Aftelling",
-      "responsible": "Verantwoordelijke",
-      "cueNotes": "Regieaanwijzingen",
-      "delayMinutes": "Vertraging (minuten)",
-      "multiStage": "Multi-Stage",
-      "mainStage": "Hoofdpodium",
-      "breakoutRoom": "Breakout Room",
-      "emergency": "Noodprotocol",
-      "incidentLog": "Incidentenlogboek",
-      "reportIncident": "Incident Melden",
-      "roleView": "Rolweergave",
-      "allRoles": "Alle Rollen",
-      "moderator": "Moderator",
-      "technician": "Technicus",
-      "catering": "Catering",
-      "crew": "Crew"
-    },
     "teamRoles": {
       "owner": "Eigenaar",
       "coOrganizer": "Co-Organisator",
@@ -1813,56 +2583,6 @@
       "agencyAdmin": "Bureau-admin",
       "eventManager": "Evenementmanager",
       "assistant": "Assistent"
-    },
-    "team": {
-      "inviteMember": "Lid Uitnodigen",
-      "inviteByEmail": "Uitnodigen per E-mail",
-      "role": "Rol",
-      "activeEvents": "Actieve Evenementen",
-      "lastActive": "Laatst Actief",
-      "workload": "Werkdruk",
-      "deactivate": "Deactiveren",
-      "activityLog": "Activiteitenlogboek"
-    },
-    "templates": {
-      "useTemplate": "Sjabloon Gebruiken",
-      "createFromEvent": "Aanmaken vanuit Evenement",
-      "timesUsed": "keer gebruikt",
-      "lastUsed": "Laatst gebruikt",
-      "categories": {
-        "corporate": "Zakelijk",
-        "wedding": "Bruiloft",
-        "jga": "Vrijgezellenfeest",
-        "birthday": "Verjaardag",
-        "conference": "Conferentie",
-        "festival": "Festival",
-        "other": "Overig"
-      }
-    },
-    "files": {
-      "uploadFiles": "Bestanden Uploaden",
-      "dragAndDrop": "Sleep bestanden hierheen of klik om te bladeren",
-      "storageUsed": "Opslag Gebruikt",
-      "categories": {
-        "contract": "Contract",
-        "invoice": "Factuur",
-        "photo": "Foto",
-        "floorPlan": "Plattegrond",
-        "briefing": "Briefing",
-        "other": "Overig"
-      },
-      "gridView": "Rasterweergave",
-      "listView": "Lijstweergave"
-    },
-    "reports": {
-      "dateRange": "Periode",
-      "eventsPerMonth": "Evenementen per Maand",
-      "revenueTrend": "Omzettrend",
-      "eventTypes": "Verdeling Evenementtypen",
-      "budgetAccuracy": "Budget Nauwkeurigheid",
-      "exportCSV": "CSV Exporteren",
-      "avgBudgetPerEvent": "Gem. Budget/Evenement",
-      "clientRetention": "Klantbehoud"
     },
     "search": {
       "placeholder": "Zoek evenementen, contacten, leveranciers...",
@@ -1990,7 +2710,7 @@
   },
   "native": {
     "home": {
-      "greeting": "Hoi {{name}} \ud83d\udc4b",
+      "greeting": "Hoi {{name}} 👋",
       "heroTitle": "Maak het",
       "heroHighlight": "episch.",
       "newEvent": "Nieuw Evenement",
@@ -1999,13 +2719,13 @@
       "games": "Spellen",
       "yourEvents": "Jouw Evenementen",
       "allEvents": "Alle",
-      "noEventsYet": "Nog geen evenementen \u2014 plan je eerste!",
+      "noEventsYet": "Nog geen evenementen — plan je eerste!",
       "participants": "Deelnemers",
       "playNow": "Nu spelen",
       "partyGamesCount": "24+ Feestspellen",
       "partyGamesSubtitle": "Taboe, Bom, Headup en meer",
       "findInspiration": "Vind inspiratie",
-      "findInspirationSub": "Thema\u2019s, spellen en idee\u00ebn voor je evenement"
+      "findInspirationSub": "Thema’s, spellen en ideeën voor je evenement"
     },
     "games": {
       "subtitle": "Feestspellen",
@@ -2050,21 +2770,21 @@
       "category": "Tegen de klok",
       "thisOrThat": "Bliksemsnel kiezen",
       "hochstapler": "Ontmasker de nepperd",
-      "wahrheitPflicht": "De klassieker \u2014 uitgebreid",
+      "wahrheitPflicht": "De klassieker — uitgebreid",
       "werBinIch": "Ja/nee-vragen om te winnen",
       "flaschendrehen": "De fles beslist",
       "emojiRaten": "Films & liedjes uit emoji's",
       "fakeOrFact": "Waarheid of leugen?",
       "schnellzeichner": "Tekenen onder druk",
       "splitQuiz": "Teamquiz met split",
-      "geteiltGequizzt": "Co\u00f6peratieve quiz",
+      "geteiltGequizzt": "Coöperatieve quiz",
       "storyBuilder": "Gekke verhalen",
       "woIstWas": "Vind de plek",
       "drueckDasWort": "Typ snel, denk snel"
     },
     "events": {
       "title": "Evenementen",
-      "countSummary": "{{active}} actief \u00b7 {{archived}} gearchiveerd",
+      "countSummary": "{{active}} actief · {{archived}} gearchiveerd",
       "searchPlaceholder": "Evenementen zoeken...",
       "tabActive": "Actief",
       "tabArchived": "Gearchiveerd",
@@ -2077,16 +2797,16 @@
     },
     "ideas": {
       "subtitle": "Inspiratie",
-      "title": "Idee\u00ebn die",
+      "title": "Ideeën die",
       "titleHighlight": "inspireren",
-      "stats": "147 Spellen \u00b7 56 Thema\u2019s \u00b7 Voor elke gelegenheid",
+      "stats": "147 Spellen · 56 Thema’s · Voor elke gelegenheid",
       "tabGames": "Spellen ({{count}})",
-      "tabThemes": "Thema\u2019s ({{count}})",
+      "tabThemes": "Thema’s ({{count}})",
       "searchGames": "Spellen zoeken...",
-      "searchThemes": "Thema\u2019s zoeken...",
+      "searchThemes": "Thema’s zoeken...",
       "moreGames": "+{{count}} meer spellen",
       "noGames": "Geen spellen gevonden",
-      "noThemes": "Geen thema\u2019s gevonden",
+      "noThemes": "Geen thema’s gevonden",
       "readAloud": "Voorlezen",
       "material": "Materiaal",
       "difficulty": {
@@ -2123,25 +2843,25 @@
       "helpSupport": "Hulp & Ondersteuning",
       "logout": "Uitloggen",
       "unlockPremium": "Premium ontgrendelen",
-      "unlockPremiumSub": "Alle Spellen \u00b7 Onbeperkt",
-      "version": "EventBliss \u00b7 Versie 1.0.0",
+      "unlockPremiumSub": "Alle Spellen · Onbeperkt",
+      "version": "EventBliss · Versie 1.0.0",
       "guest": "Gast",
       "themeDark": "Donker",
       "themeLight": "Licht",
-      "themeRose": "Ros\u00e9",
-      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
+      "themeRose": "Rosé",
+      "partyMode": "🍺 Party-Modus (18+)",
       "partyModeOn": "Aan",
       "partyModeOff": "Uit",
-      "partyStats": "\ud83d\udcca Feeststatistieken",
+      "partyStats": "📊 Feeststatistieken",
       "partyStatsRounds": "{{count}} rondes",
       "partyModeTitle": "Party-Modus (18+)",
-      "partyModeWarning": "Deze modus is bedoeld voor personen van 18 jaar en ouder. Drinkspellen kunnen gezondheidsrisico\u2019s met zich meebrengen. Drink verantwoord en let op elkaar.",
+      "partyModeWarning": "Deze modus is bedoeld voor personen van 18 jaar en ouder. Drinkspellen kunnen gezondheidsrisico’s met zich meebrengen. Drink verantwoord en let op elkaar.",
       "partyModeCheckbox": "Ik ben minstens 18 jaar oud en activeer Party-Modus op eigen verantwoordelijkheid.",
       "partyModeCancel": "Annuleren",
-      "partyModeActivate": "\ud83c\udf7b Activeren",
+      "partyModeActivate": "🍻 Activeren",
       "partyModeDisclaimer": "EventBliss aanvaardt geen aansprakelijkheid voor het gebruik van alcoholische dranken.",
       "partyModeActivated": "Party-Modus",
-      "partyModeActivatedSub": "geactiveerd! \ud83d\udd25",
+      "partyModeActivatedSub": "geactiveerd! 🔥",
       "partyModeActivatedDesc": "Vanaf nu drink je in plaats van een straf te krijgen",
       "close": "Sluiten",
       "adminPanel": "Beheerderspaneel",
@@ -2177,7 +2897,7 @@
         "inputPlaceholder": "Voer een naam in...",
         "guestCount_one": "{{count}} gast",
         "guestCount_other": "{{count}} gasten",
-        "noGuests": "Nog geen gasten \u2014 je kunt ze later uitnodigen."
+        "noGuests": "Nog geen gasten — je kunt ze later uitnodigen."
       },
       "stepReview": {
         "title": "Alles klopt?",
@@ -2189,15 +2909,15 @@
         "guestsLabel": "Gasten"
       },
       "stepSuccess": {
-        "title": "Evenement aangemaakt! \ud83c\udf89",
+        "title": "Evenement aangemaakt! 🎉",
         "subtitle": "Deel de link met je vrienden",
         "accessCode": "Toegangscode",
         "link": "Link",
-        "copyLink": "Link kopi\u00ebren",
+        "copyLink": "Link kopiëren",
         "copied": "Gekopieerd!",
         "shareWhatsApp": "Delen via WhatsApp",
         "toDashboard": "Naar Dashboard",
-        "whatsAppText": "\ud83c\udf89 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Code: {{code}}"
+        "whatsAppText": "🎉 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}!\n\n👉 {{link}}\n📝 Code: {{code}}"
       },
       "buttonNext": "Volgende",
       "buttonCreate": "Evenement Maken"
@@ -2216,7 +2936,7 @@
     },
     "onboarding": {
       "slide1Title": "Plan epische evenementen",
-      "slide1Subtitle": "Vrijgezellenfeesten, verjaardagen, groepsreizen \u2014 alles op \u00e9\u00e9n plek.",
+      "slide1Subtitle": "Vrijgezellenfeesten, verjaardagen, groepsreizen — alles op één plek.",
       "slide2Title": "Speel 24+ feestspellen",
       "slide2Subtitle": "Taboe, Bom, Headup, Waarheid of Durven, Bedrieger en meer.",
       "slide3Title": "Deel de kosten",
@@ -2404,8 +3124,29 @@
   "bookingCalendar": {
     "title": "Boekingskalender",
     "today": "Vandaag",
-    "dayNames": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
-    "monthNames": ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"],
+    "dayNames": [
+      "Ma",
+      "Di",
+      "Wo",
+      "Do",
+      "Vr",
+      "Za",
+      "Zo"
+    ],
+    "monthNames": [
+      "Januari",
+      "Februari",
+      "Maart",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Augustus",
+      "September",
+      "Oktober",
+      "November",
+      "December"
+    ],
     "bookingsTotal": "{{count}} boeking(en) totaal",
     "noBookingsDay": "Geen boekingen op deze dag",
     "exportICal": "Exporteren als iCal",
@@ -2452,7 +3193,15 @@
     "unblock": "Deblokkeren",
     "editAfterSave": "Beschikbaarheid kan na het opslaan worden geconfigureerd.",
     "editButton": "Beschikbaarheid bewerken",
-    "days": ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"]
+    "days": [
+      "Zondag",
+      "Maandag",
+      "Dinsdag",
+      "Woensdag",
+      "Donderdag",
+      "Vrijdag",
+      "Zaterdag"
+    ]
   },
   "eventServices": {
     "bookedServices": "Geboekte diensten",
@@ -2462,5 +3211,275 @@
     "browseHint": "Vind de perfecte dienstverlener voor je evenement",
     "bookForEvent": "Boek voor evenement",
     "openMarketplace": "Marketplace openen"
+  },
+  "nativeDashboard": {
+    "eventTypes": {
+      "bachelor": "Despedida de soltero",
+      "bachelorette": "Despedida de soltera",
+      "birthday": "Cumpleaños",
+      "wedding": "Boda",
+      "other": "Evento"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "guests": "Invitados",
+      "schedule": "Horario",
+      "expenses": "Gastos",
+      "services": "Servicios",
+      "form": "Formulario",
+      "responses": "Respuestas",
+      "ai": "IA",
+      "settings": "Ajustes"
+    },
+    "honoree": "Homenajeado",
+    "noDate": "Sin fecha",
+    "participants": "Participantes",
+    "confirmed": "Confirmados",
+    "maybe": "Quizás",
+    "guest": "Invitado",
+    "loading": "Cargando...",
+    "notFound": "Evento no encontrado",
+    "notFoundDesc": "No se pudo cargar.",
+    "back": "Volver",
+    "countdown": {
+      "today": "¡Hoy!",
+      "tomorrow": "¡Mañana!",
+      "inDays": "En {{count}} días"
+    },
+    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "quickActions": {
+      "inviteGuests": "Invitar",
+      "planActivity": "Planificar",
+      "addExpense": "Añadir gasto",
+      "aiAssistant": "Asistente IA"
+    },
+    "recentActivity": "Actividad reciente",
+    "noActivity": "Sin actividad",
+    "activity": {
+      "rsvpConfirmed": "{{name}} confirmó",
+      "rsvpDeclined": "{{name}} declinó",
+      "surveyResponse": "{{name}} votó",
+      "expenseCreated": "Gasto: {{title}}",
+      "budgetUpdated": "Presupuesto actualizado",
+      "guestInvited": "{{name}} invitado",
+      "scheduleUpdated": "Horario actualizado"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    },
+    "status": {
+      "active": "Activo",
+      "planning": "Planificación",
+      "draft": "Borrador"
+    },
+    "services": {
+      "openMarketplace": "Abrir Marketplace",
+      "openMarketplaceSub": "Descubre y reserva servicios",
+      "bookedServices": "Servicios reservados",
+      "noBookings": "Sin servicios reservados",
+      "details": "Detalles",
+      "cancel": "Cancelar",
+      "statusPending": "Pendiente",
+      "statusConfirmed": "Confirmado",
+      "statusCompleted": "Completado",
+      "statusCancelled": "Cancelado"
+    }
+  },
+  "nativeGuests": {
+    "status": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado",
+      "invited": "Invitado"
+    },
+    "organizer": "Organizador",
+    "guestRole": "Invitado",
+    "searchPlaceholder": "Buscar invitados...",
+    "noGuests": "Sin invitados",
+    "noGuestsDesc": "Invita a amigos y familiares.",
+    "noResults": "Sin resultados",
+    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
+    "inviteGuests": "Invitar",
+    "inviteLink": "Enlace de invitación",
+    "eventCode": "Código del evento",
+    "copied": "¡Copiado!",
+    "copyLink": "Copiar enlace",
+    "host": "Anfitrión"
+  },
+  "nativeSchedule": {
+    "categories": {
+      "food": "Comida y bebida",
+      "activity": "Actividad",
+      "transport": "Transporte",
+      "party": "Fiesta",
+      "sightseeing": "Turismo",
+      "accommodation": "Alojamiento",
+      "relaxation": "Relajación",
+      "other": "Otro"
+    },
+    "noActivities": "Sin actividades",
+    "noActivitiesDesc": "Planifica el horario perfecto",
+    "addActivity": "Añadir actividad",
+    "day": "Día {{num}}",
+    "form": {
+      "title": "Título",
+      "time": "Hora",
+      "category": "Categoría",
+      "notes": "Notas",
+      "location": "Lugar",
+      "duration": "Duración",
+      "cost": "Coste",
+      "responsible": "Responsable",
+      "add": "Añadir",
+      "titlePlaceholder": "p.ej. Desayuno"
+    }
+  },
+  "nativeJoinRoom": {
+    "title": "Unirse a sala",
+    "subtitle": "Código de 6 dígitos",
+    "hint": "Pide el código al anfitrión",
+    "join": "Unirse",
+    "invalidCode": "El código debe tener 6 caracteres."
+  },
+  "nativeFab": {
+    "createEvent": "Crear evento",
+    "joinEvent": "Unirse",
+    "createRoom": "Crear sala",
+    "joinRoom": "Unirse a sala",
+    "quickGame": "Juego rápido"
+  },
+  "nativeTabs": {
+    "home": "Inicio",
+    "events": "Eventos",
+    "play": "Jugar",
+    "market": "Mercado",
+    "profile": "Perfil"
+  },
+  "nativeDrinks": {
+    "title": "Party Stats",
+    "yourRank": "Tu rango esta noche",
+    "nextRank": "Siguiente rango",
+    "waterReminder": "¡No olvides el agua!",
+    "waterReminderDesc": "Un vaso de agua por cada bebida.",
+    "resetSession": "Reiniciar",
+    "confirmReset": "Sí, reiniciar",
+    "cancel": "Cancelar",
+    "ranks": {
+      "legend": "Leyenda",
+      "champion": "Campeón",
+      "partyAnimal": "Fiestero",
+      "pro": "Pro",
+      "enthusiast": "Entusiasta",
+      "beginner": "Principiante",
+      "sober": "Sobrio"
+    }
+  },
+  "nativeAdmin": {
+    "title": "Panel Admin",
+    "areas": "{{count}} áreas",
+    "cards": {
+      "stats": {
+        "label": "Dashboard",
+        "desc": "Usuarios, Eventos"
+      },
+      "games": {
+        "label": "Contenido",
+        "desc": "Preguntas"
+      },
+      "users": {
+        "label": "Usuarios",
+        "desc": "Roles"
+      },
+      "credits": {
+        "label": "AI Credits",
+        "desc": "Límites"
+      },
+      "subscriptions": {
+        "label": "Suscripciones",
+        "desc": "Planes"
+      },
+      "vouchers": {
+        "label": "Cupones",
+        "desc": "Códigos"
+      },
+      "affiliates": {
+        "label": "Afiliados",
+        "desc": "Socios"
+      },
+      "commissions": {
+        "label": "Comisiones",
+        "desc": "Pagos"
+      },
+      "payouts": {
+        "label": "Pagos",
+        "desc": "Historial"
+      },
+      "analytics": {
+        "label": "Analíticas",
+        "desc": "Interacciones"
+      },
+      "agencies": {
+        "label": "Agencias",
+        "desc": "Multi-agencia"
+      },
+      "settings": {
+        "label": "Configuración",
+        "desc": "Precios"
+      }
+    }
+  },
+  "nativeResponses": {
+    "stats": {
+      "responses": "Respuestas",
+      "responseRate": "Tasa de respuesta",
+      "latestResponse": "Última respuesta"
+    },
+    "attendanceOverview": "Resumen de asistencia",
+    "attendance": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado"
+    },
+    "categoryAnalysis": "Análisis por categoría",
+    "categories": {
+      "attendance": "Asistencia",
+      "budget": "Presupuesto",
+      "destination": "Destino",
+      "duration_pref": "Duración",
+      "travel_pref": "Viaje",
+      "fitness_level": "Fitness",
+      "alcohol": "Alcohol"
+    },
+    "activitiesAndPreferences": "Actividades y preferencias",
+    "preferences": "Preferencias",
+    "availableDates": "Fechas disponibles",
+    "noAnswer": "N/D",
+    "option": "{{count}} opción",
+    "option_plural": "{{count}} opciones",
+    "individualResponses": "Respuestas individuales",
+    "searchParticipants": "Buscar...",
+    "noFilterResults": "Sin respuestas para este filtro",
+    "filterAll": "Todos",
+    "filterYes": "Confirmados",
+    "filterMaybe": "Quizás",
+    "filterNo": "Rechazados",
+    "sections": {
+      "suggestions": "Sugerencias y deseos",
+      "restrictions": "Restricciones",
+      "partialAvailability": "Disponibilidad parcial",
+      "entries": "{{count}} entrada",
+      "entries_plural": "{{count}} entradas"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    }
   }
 }

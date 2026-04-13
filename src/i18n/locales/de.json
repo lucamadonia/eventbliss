@@ -3499,6 +3499,190 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "nativeDashboard": {
+    "eventTypes": {
+      "bachelor": "Junggesellenabschied",
+      "bachelorette": "Junggesellinnenabschied",
+      "birthday": "Geburtstag",
+      "wedding": "Hochzeit",
+      "other": "Event"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "guests": "Gäste",
+      "schedule": "Zeitplan",
+      "expenses": "Ausgaben",
+      "services": "Services",
+      "form": "Formular",
+      "responses": "Antworten",
+      "ai": "KI",
+      "settings": "Einstellungen"
+    },
+    "honoree": "Ehrengast",
+    "noDate": "Kein Datum",
+    "participants": "Teilnehmer",
+    "confirmed": "Zusagen",
+    "maybe": "Vielleicht",
+    "guest": "Gast",
+    "loading": "Dashboard wird geladen...",
+    "notFound": "Event nicht gefunden",
+    "notFoundDesc": "Das Event konnte nicht geladen werden.",
+    "back": "Zurück",
+    "countdown": {
+      "today": "Heute!",
+      "tomorrow": "Morgen!",
+      "inDays": "In {{count}} Tagen"
+    },
+    "confirmedOf": "{{yes}} von {{total}} haben zugesagt",
+    "quickActions": {
+      "inviteGuests": "Gäste einladen",
+      "planActivity": "Aktivität planen",
+      "addExpense": "Ausgabe erfassen",
+      "aiAssistant": "KI-Assistent"
+    },
+    "recentActivity": "Letzte Aktivitäten",
+    "noActivity": "Noch keine Aktivitäten",
+    "activity": {
+      "rsvpConfirmed": "{{name}} hat zugesagt",
+      "rsvpDeclined": "{{name}} hat abgesagt",
+      "surveyResponse": "{{name}} hat abgestimmt",
+      "expenseCreated": "Ausgabe: {{title}}",
+      "budgetUpdated": "Budget aktualisiert",
+      "guestInvited": "{{name}} eingeladen",
+      "scheduleUpdated": "Zeitplan aktualisiert"
+    },
+    "timeAgo": {
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {{count}} Min.",
+      "hoursAgo": "vor {{count}} Std.",
+      "yesterday": "gestern",
+      "daysAgo": "vor {{count}} Tagen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "planning": "Planung",
+      "draft": "Entwurf"
+    },
+    "services": {
+      "openMarketplace": "Marketplace öffnen",
+      "openMarketplaceSub": "Services für dein Event entdecken & buchen",
+      "bookedServices": "Gebuchte Dienstleistungen",
+      "noBookings": "Noch keine Dienstleistungen gebucht",
+      "details": "Details",
+      "cancel": "Stornieren",
+      "statusPending": "Ausstehend",
+      "statusConfirmed": "Bestätigt",
+      "statusCompleted": "Abgeschlossen",
+      "statusCancelled": "Storniert"
+    }
+  },
+  "nativeGuests": {
+    "status": {
+      "confirmed": "Zusage",
+      "maybe": "Vielleicht",
+      "declined": "Absage",
+      "invited": "Eingeladen"
+    },
+    "organizer": "Organisator",
+    "guestRole": "Gast",
+    "searchPlaceholder": "Gäste suchen...",
+    "noGuests": "Noch keine Gäste",
+    "noGuestsDesc": "Lade Freunde und Familie ein, um das Event gemeinsam zu planen.",
+    "noResults": "Kein Ergebnis",
+    "noResultsFor": "Kein Gast passt zu \"{{query}}\"",
+    "inviteGuests": "Gäste einladen",
+    "inviteLink": "Einladungslink",
+    "eventCode": "Event-Code",
+    "copied": "Kopiert!",
+    "copyLink": "Link kopieren",
+    "host": "Host"
+  },
+  "nativeSchedule": {
+    "categories": {
+      "food": "Essen & Trinken",
+      "activity": "Aktivität",
+      "transport": "Transport",
+      "party": "Party",
+      "sightseeing": "Sightseeing",
+      "accommodation": "Unterkunft",
+      "relaxation": "Entspannung",
+      "other": "Sonstiges"
+    },
+    "noActivities": "Noch keine Aktivitäten geplant",
+    "noActivitiesDesc": "Plane den perfekten Ablauf für euer Event",
+    "addActivity": "Aktivität hinzufügen",
+    "day": "Tag {{num}}",
+    "form": {
+      "title": "Titel",
+      "time": "Uhrzeit",
+      "category": "Kategorie",
+      "notes": "Notizen",
+      "location": "Ort",
+      "duration": "Dauer",
+      "cost": "Kosten",
+      "responsible": "Zuständig",
+      "add": "Hinzufügen",
+      "titlePlaceholder": "z.B. Frühstück im Hotel"
+    }
+  },
+  "nativeJoinRoom": {
+    "title": "Raum beitreten",
+    "subtitle": "Gib den 6-stelligen Code ein",
+    "hint": "Frag den Host nach dem 6-stelligen Raumcode",
+    "join": "Beitreten",
+    "invalidCode": "Der Code muss 6 Zeichen lang sein."
+  },
+  "nativeFab": {
+    "createEvent": "Event erstellen",
+    "joinEvent": "Event beitreten",
+    "createRoom": "Raum erstellen",
+    "joinRoom": "Raum beitreten",
+    "quickGame": "Quick Game"
+  },
+  "nativeTabs": {
+    "home": "Home",
+    "events": "Events",
+    "play": "Spielen",
+    "market": "Markt",
+    "profile": "Profil"
+  },
+  "nativeDrinks": {
+    "title": "Party Stats",
+    "yourRank": "Dein Party-Rang heute Abend",
+    "nextRank": "Nächster Rang",
+    "waterReminder": "Wasser nicht vergessen!",
+    "waterReminderDesc": "Pro Drink mindestens ein Glas Wasser trinken — dein Körper wird es dir danken.",
+    "resetSession": "Session zurücksetzen",
+    "confirmReset": "Ja, zurücksetzen",
+    "cancel": "Abbrechen",
+    "ranks": {
+      "legend": "Legende",
+      "champion": "Champion",
+      "partyAnimal": "Party-Tier",
+      "pro": "Profi",
+      "enthusiast": "Enthusiast",
+      "beginner": "Einsteiger",
+      "sober": "Nüchtern"
+    }
+  },
+  "nativeAdmin": {
+    "title": "Admin Panel",
+    "areas": "{{count}} Bereiche",
+    "cards": {
+      "stats": { "label": "Dashboard", "desc": "Users, Events, Revenue" },
+      "games": { "label": "Games Content", "desc": "Fragen & Inhalte" },
+      "users": { "label": "Users", "desc": "Rollen & Passwörter" },
+      "credits": { "label": "AI Credits", "desc": "Limits & Adjustments" },
+      "subscriptions": { "label": "Subscriptions", "desc": "Pläne verwalten" },
+      "vouchers": { "label": "Gutscheine", "desc": "Codes & Rabatte" },
+      "affiliates": { "label": "Affiliates", "desc": "Partner-Programm" },
+      "commissions": { "label": "Provisionen", "desc": "Status & Auszahlung" },
+      "payouts": { "label": "Auszahlungen", "desc": "Pending & History" },
+      "analytics": { "label": "Agency Analytics", "desc": "Interaktionen" },
+      "agencies": { "label": "Agency Affiliates", "desc": "Multi-Agency" },
+      "settings": { "label": "Plan Settings", "desc": "Features & Preise" }
+    }
+  },
   "nativeResponses": {
     "stats": {
       "responses": "Antworten",

@@ -11,17 +11,17 @@ import { TabItem } from "./TabItem";
 
 export interface Tab {
   to: string;
-  label: string;
+  labelKey: string;
   icon: typeof Sparkles;
   matchPrefix?: string;
 }
 
 export const TABS: Tab[] = [
-  { to: "/", label: "Home", icon: Sparkles },
-  { to: "/my-events", label: "Events", icon: CalendarHeart, matchPrefix: "/my-events" },
-  { to: "/games", label: "Play", icon: Gamepad2, matchPrefix: "/games" },
-  { to: "/marketplace", label: "Market", icon: Store, matchPrefix: "/marketplace" },
-  { to: "/profile", label: "Profile", icon: User, matchPrefix: "/profile" },
+  { to: "/", labelKey: "nativeTabs.home", icon: Sparkles },
+  { to: "/my-events", labelKey: "nativeTabs.events", icon: CalendarHeart, matchPrefix: "/my-events" },
+  { to: "/games", labelKey: "nativeTabs.play", icon: Gamepad2, matchPrefix: "/games" },
+  { to: "/marketplace", labelKey: "nativeTabs.market", icon: Store, matchPrefix: "/marketplace" },
+  { to: "/profile", labelKey: "nativeTabs.profile", icon: User, matchPrefix: "/profile" },
 ];
 
 // Routes where the tab bar should be hidden (deep screens, modals, games).

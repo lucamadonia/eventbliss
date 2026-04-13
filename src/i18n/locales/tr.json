@@ -54,27 +54,112 @@
     "thankYou": "Geri bildiriminiz için teşekkürler!",
     "betaBadge": "Beta Sürümü"
   },
-"landing": {
-    "nav": { "features": "Özellikler", "howItWorks": "Nasıl Çalışır", "ideas": "Fikirler", "solutions": "Çözümler", "faq": "SSS", "login": "Giriş", "signUp": "Kayıt", "partner": "Ortaklar", "games": "Oyunlar" },
-    "hero": { "badge": "#1 Etkinlik Planlama Platformu", "title": "Unutulmaz Etkinlikler Planlayın", "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.", "createEvent": "Etkinlik Oluştur", "joinEvent": "Kod ile Katıl", "trustedBy": "10.000'den fazla organizatör bize güveniyor" },
-    "features": { "title": "İhtiyacınız olan her şey", "subtitle": "Mükemmel etkinlik için güçlü araçlar", 
-      "multiEvent": { "title": "Çoklu Etkinlik Yönetimi", "description": "Birden fazla etkinliği aynı anda yönetin" }, 
-      "costSplitting": { "title": "Akıllı Maliyet Bölüşümü", "description": "Harcamaları takip edin ve adil şekilde paylaştırın" }, 
-      "aiSuggestions": { "title": "AI Önerileri", "description": "Kişiselleştirilmiş öneriler alın" }, 
-      "messageTemplates": { "title": "Mesaj Şablonları", "description": "Hazır WhatsApp mesajları" }, 
-      "dateCoordination": { "title": "Tarih Koordinasyonu", "description": "Herkes için uygun tarihi bulun" }, 
-      "realtime": { "title": "Gerçek Zamanlı İşbirliği", "description": "Ekibinizle gerçek zamanlı çalışın" },
-      "agencyDirectory": { "title": "Ajans Rehberi", "description": "Yakınınızdaki profesyonel bekarlığa veda ajanslarını interaktif haritada bulun" },
-      "formBuilder": { "title": "Form Oluşturucu", "description": "Etkinliğiniz için özel anketler ve oylamalar oluşturun" },
+  "landing": {
+    "nav": {
+      "features": "Özellikler",
+      "howItWorks": "Nasıl Çalışır",
+      "ideas": "Fikirler",
+      "solutions": "Çözümler",
+      "faq": "SSS",
+      "login": "Giriş",
+      "signUp": "Kayıt",
+      "partner": "Ortaklar",
+      "games": "Oyunlar"
+    },
+    "hero": {
+      "badge": "#1 Etkinlik Planlama Platformu",
+      "title": "Unutulmaz Etkinlikler Planlayın",
+      "subtitle": "Bekarlığa veda partilerinden doğum günlerine, grup etkinliklerini kolayca organize edin. Akıllı maliyet bölüşümü, AI önerileri ve gerçek zamanlı işbirliği.",
+      "createEvent": "Etkinlik Oluştur",
+      "joinEvent": "Kod ile Katıl",
+      "trustedBy": "10.000'den fazla organizatör bize güveniyor"
+    },
+    "features": {
+      "title": "İhtiyacınız olan her şey",
+      "subtitle": "Mükemmel etkinlik için güçlü araçlar",
+      "multiEvent": {
+        "title": "Çoklu Etkinlik Yönetimi",
+        "description": "Birden fazla etkinliği aynı anda yönetin"
+      },
+      "costSplitting": {
+        "title": "Akıllı Maliyet Bölüşümü",
+        "description": "Harcamaları takip edin ve adil şekilde paylaştırın"
+      },
+      "aiSuggestions": {
+        "title": "AI Önerileri",
+        "description": "Kişiselleştirilmiş öneriler alın"
+      },
+      "messageTemplates": {
+        "title": "Mesaj Şablonları",
+        "description": "Hazır WhatsApp mesajları"
+      },
+      "dateCoordination": {
+        "title": "Tarih Koordinasyonu",
+        "description": "Herkes için uygun tarihi bulun"
+      },
+      "realtime": {
+        "title": "Gerçek Zamanlı İşbirliği",
+        "description": "Ekibinizle gerçek zamanlı çalışın"
+      },
+      "agencyDirectory": {
+        "title": "Ajans Rehberi",
+        "description": "Yakınınızdaki profesyonel bekarlığa veda ajanslarını interaktif haritada bulun"
+      },
+      "formBuilder": {
+        "title": "Form Oluşturucu",
+        "description": "Etkinliğiniz için özel anketler ve oylamalar oluşturun"
+      },
       "showcaseTitle": "Güçlü özellikler, şık tasarım",
       "showcaseSubtitle": "Mükemmel grup etkinliği için ihtiyacınız olan her şey"
     },
-    "howItWorks": { "title": "Nasıl Çalışır", "subtitle": "4 basit adımda planlayın", "step1": { "title": "Etkinlik Oluştur", "description": "Türü seçin ve detayları belirleyin" }, "step2": { "title": "Davet Et", "description": "Link veya kod paylaşın" }, "step3": { "title": "Tercihleri Toplayın", "description": "Misafirlerin oy vermesini sağlayın" }, "step4": { "title": "Birlikte Planlayın", "description": "AI önerilerini kullanarak sonuçlandırın" } },
-    "eventTypes": { "title": "Her Etkinlik için Mükemmel", "subtitle": "Vahşi bir hafta sonu veya samimi bir buluşma olsun", "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü Partileri", "team": "Takım Etkinlikleri", "trip": "Grup Gezileri", "wedding": "Düğünler" },
-    "testimonials": { "title": "Organizatörler Tarafından Seviliyor", "subtitle": "Kullanıcılarımız ne diyor", 
-      "testimonial1": { "text": "EventBliss planlamayı çok kolaylaştırdı!", "author": "Sarah M.", "role": "Bekarlığa veda organizatörü" }, 
-      "testimonial2": { "text": "Maliyet bölüşümü hayat kurtarıcı!", "author": "Michael K.", "role": "Grup gezisi planlayıcısı" }, 
-      "testimonial3": { "text": "5 etkinlik organize ettim. AI önerileri harika.", "author": "Anna L.", "role": "Doğum günü ev sahibi" } 
+    "howItWorks": {
+      "title": "Nasıl Çalışır",
+      "subtitle": "4 basit adımda planlayın",
+      "step1": {
+        "title": "Etkinlik Oluştur",
+        "description": "Türü seçin ve detayları belirleyin"
+      },
+      "step2": {
+        "title": "Davet Et",
+        "description": "Link veya kod paylaşın"
+      },
+      "step3": {
+        "title": "Tercihleri Toplayın",
+        "description": "Misafirlerin oy vermesini sağlayın"
+      },
+      "step4": {
+        "title": "Birlikte Planlayın",
+        "description": "AI önerilerini kullanarak sonuçlandırın"
+      }
+    },
+    "eventTypes": {
+      "title": "Her Etkinlik için Mükemmel",
+      "subtitle": "Vahşi bir hafta sonu veya samimi bir buluşma olsun",
+      "bachelor": "Bekarlığa Veda",
+      "bachelorette": "Kına Gecesi",
+      "birthday": "Doğum Günü Partileri",
+      "team": "Takım Etkinlikleri",
+      "trip": "Grup Gezileri",
+      "wedding": "Düğünler"
+    },
+    "testimonials": {
+      "title": "Organizatörler Tarafından Seviliyor",
+      "subtitle": "Kullanıcılarımız ne diyor",
+      "testimonial1": {
+        "text": "EventBliss planlamayı çok kolaylaştırdı!",
+        "author": "Sarah M.",
+        "role": "Bekarlığa veda organizatörü"
+      },
+      "testimonial2": {
+        "text": "Maliyet bölüşümü hayat kurtarıcı!",
+        "author": "Michael K.",
+        "role": "Grup gezisi planlayıcısı"
+      },
+      "testimonial3": {
+        "text": "5 etkinlik organize ettim. AI önerileri harika.",
+        "author": "Anna L.",
+        "role": "Doğum günü ev sahibi"
+      }
     },
     "multiDevice": {
       "title": "Etkinlikleri her yerde, her zaman planlayın",
@@ -106,14 +191,22 @@
       },
       "cta": "Premium'u Keşfet"
     },
-    "faq": { "title": "Sık Sorulan Sorular", 
-      "q1": "EventBliss ücretsiz mi?", "a1": "Evet! Temel planlama için ücretsiz.", 
-      "q2": "Kaç misafir davet edebilirim?", "a2": "Sınırsız. Kısıtlama yok.", 
-      "q3": "Kurumsal etkinlikler için kullanabilir miyim?", "a3": "Kesinlikle! Takım etkinlikleri için mükemmel.", 
-      "q4": "Verilerim güvende mi?", "a4": "Evet, tüm veriler şifrelenmiştir.",
-      "q5": "EventBliss Premium nedir?", "a5": "Premium gelişmiş özellikleri açar: sınırsız AI önerileri, özel anket soruları, gelişmiş mesaj şablonları ve öncelikli destek.",
-      "q6": "Ömür boyu seçeneği var mı?", "a6": "Evet! Tek seferlik 19,99€ ödeme ile tüm premium özelliklere ömür boyu erişim elde edersiniz.",
-      "q7": "Ajans rehberi nasıl çalışır?", "a7": "50'den fazla şehirde profesyonel bekarlığa veda ajansları bulun. Ülke, şehir bazında filtreleyin ve detayları doğrudan interaktif haritada görüntüleyin."
+    "faq": {
+      "title": "Sık Sorulan Sorular",
+      "q1": "EventBliss ücretsiz mi?",
+      "a1": "Evet! Temel planlama için ücretsiz.",
+      "q2": "Kaç misafir davet edebilirim?",
+      "a2": "Sınırsız. Kısıtlama yok.",
+      "q3": "Kurumsal etkinlikler için kullanabilir miyim?",
+      "a3": "Kesinlikle! Takım etkinlikleri için mükemmel.",
+      "q4": "Verilerim güvende mi?",
+      "a4": "Evet, tüm veriler şifrelenmiştir.",
+      "q5": "EventBliss Premium nedir?",
+      "a5": "Premium gelişmiş özellikleri açar: sınırsız AI önerileri, özel anket soruları, gelişmiş mesaj şablonları ve öncelikli destek.",
+      "q6": "Ömür boyu seçeneği var mı?",
+      "a6": "Evet! Tek seferlik 19,99€ ödeme ile tüm premium özelliklere ömür boyu erişim elde edersiniz.",
+      "q7": "Ajans rehberi nasıl çalışır?",
+      "a7": "50'den fazla şehirde profesyonel bekarlığa veda ajansları bulun. Ülke, şehir bazında filtreleyin ve detayları doğrudan interaktif haritada görüntüleyin."
     },
     "demo": {
       "badge": "İnteraktif Demo",
@@ -123,12 +216,30 @@
       "play": "Otomatik oynatmayı devam ettir",
       "cta": "Kendin dene",
       "features": {
-        "dashboard": { "title": "Etkinlik Paneli", "description": "Bir bakışta tüm bilgiler: katılımcılar, tarihler, görevler" },
-        "expenses": { "title": "Maliyet Bölüşümü", "description": "Harcamaları takip et ve adil şekilde paylaştır" },
-        "ai": { "title": "AI Asistan", "description": "Aktivite ve mesaj önerileri al" },
-        "survey": { "title": "Anketler", "description": "Özel anketlerle tercihleri topla" },
-        "agencies": { "title": "Ajans Rehberi", "description": "Yakınındaki etkinlik ajanslarını bul" },
-        "planner": { "title": "Aktivite Planlayıcı", "description": "Tüm aktiviteleri zaman çizelgesiyle planla ve organize et" }
+        "dashboard": {
+          "title": "Etkinlik Paneli",
+          "description": "Bir bakışta tüm bilgiler: katılımcılar, tarihler, görevler"
+        },
+        "expenses": {
+          "title": "Maliyet Bölüşümü",
+          "description": "Harcamaları takip et ve adil şekilde paylaştır"
+        },
+        "ai": {
+          "title": "AI Asistan",
+          "description": "Aktivite ve mesaj önerileri al"
+        },
+        "survey": {
+          "title": "Anketler",
+          "description": "Özel anketlerle tercihleri topla"
+        },
+        "agencies": {
+          "title": "Ajans Rehberi",
+          "description": "Yakınındaki etkinlik ajanslarını bul"
+        },
+        "planner": {
+          "title": "Aktivite Planlayıcı",
+          "description": "Tüm aktiviteleri zaman çizelgesiyle planla ve organize et"
+        }
       },
       "planner": {
         "day1": "1. Gün",
@@ -218,8 +329,34 @@
         }
       }
     },
-    "cta": { "title": "Bir Sonraki Etkinliğinize Hazır mısınız?", "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.", "button": "Etkinliğinizi Oluşturun" },
-    "footer": { "tagline": "İnsanları bir araya getiren etkinlikler planlayın", "product": "Ürün", "features": "Özellikler", "integrations": "Entegrasyonlar", "enterprise": "Kurumsal", "solutions": "Çözümler", "partner": "Ortaklar", "becomePartner": "Ortak olun", "becomeAgencyPartner": "Ajans ortağı olun", "partnerPortal": "Ortak Portalı", "agencyPortal": "Ajans Portalı", "legal": "Yasal", "imprint": "Künye", "disclaimer": "Sorumluluk Reddi", "privacy": "Gizlilik", "terms": "Şartlar", "contact": "İletişim", "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır." },
+    "cta": {
+      "title": "Bir Sonraki Etkinliğinize Hazır mısınız?",
+      "description": "Ücretsiz başlayın ve unutulmaz anılar yaratın.",
+      "button": "Etkinliğinizi Oluşturun"
+    },
+    "footer": {
+      "tagline": "İnsanları bir araya getiren etkinlikler planlayın",
+      "product": "Ürün",
+      "features": "Özellikler",
+      "integrations": "Entegrasyonlar",
+      "enterprise": "Kurumsal",
+      "solutions": "Çözümler",
+      "partner": "Ortaklar",
+      "becomePartner": "Ortak olun",
+      "becomeAgencyPartner": "Ajans ortağı olun",
+      "partnerPortal": "Ortak Portalı",
+      "agencyPortal": "Ajans Portalı",
+      "legal": "Yasal",
+      "imprint": "Künye",
+      "disclaimer": "Sorumluluk Reddi",
+      "privacy": "Gizlilik",
+      "terms": "Şartlar",
+      "contact": "İletişim",
+      "address": "Gladstonos 12-14, 8042 Paphos, Kıbrıs",
+      "phone": "+357 99 980 583",
+      "company": "MYFAMBLISS GROUP LTD",
+      "copyright": "© 2025 MYFAMBLISS GROUP. Tüm hakları saklıdır."
+    },
     "agencyPortal": {
       "title": "Ajans Portalı",
       "welcome": "Tekrar hoş geldiniz",
@@ -247,10 +384,22 @@
         "description": "EventBliss'e getirdiğiniz her müşteri için komisyon kazanın"
       },
       "benefits": {
-        "commission": { "title": "Çekici Komisyonlar", "description": "Rezervasyon başına %20'ye kadar" },
-        "tracking": { "title": "Referans Takibi", "description": "E-posta kodu ile otomatik atama" },
-        "support": { "title": "Ortak Desteği", "description": "Özel iletişim kişisi" },
-        "exclusiveOffers": { "title": "Özel Teklifler", "description": "Müşterileriniz için özel kuponlar" }
+        "commission": {
+          "title": "Çekici Komisyonlar",
+          "description": "Rezervasyon başına %20'ye kadar"
+        },
+        "tracking": {
+          "title": "Referans Takibi",
+          "description": "E-posta kodu ile otomatik atama"
+        },
+        "support": {
+          "title": "Ortak Desteği",
+          "description": "Özel iletişim kişisi"
+        },
+        "exclusiveOffers": {
+          "title": "Özel Teklifler",
+          "description": "Müşterileriniz için özel kuponlar"
+        }
       },
       "form": {
         "title": "Şimdi Başvur",
@@ -280,39 +429,184 @@
     }
   },
   "legal": {
-    "imprint": { "title": "Künye", "company": "Şirket Bilgileri", "registeredCompany": "Kıbrıs'ta kayıtlı şirket", "address": "Adres", "contact": "İletişim", "responsibleContent": "İçerik Sorumlusu", "disputeResolution": "AB Uyuşmazlık Çözümü", "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar." },
-    "privacy": { "title": "Gizlilik Politikası", "lastUpdated": "Son güncelleme", "intro": "Gizliliğiniz bizim için önemlidir.", "dataCollection": { "title": "Veri Toplama", "content": "Doğrudan sağladığınız bilgileri topluyoruz." }, "dataUsage": { "title": "Veri Kullanımı", "content": "Verileriniz hizmet sunmak için kullanılır." }, "cookies": { "title": "Çerezler", "content": "Deneyiminizi geliştirmek için çerez kullanıyoruz." }, "dataSecurity": { "title": "Güvenlik", "content": "Standart güvenlik önlemleri uyguluyoruz." }, "userRights": { "title": "Haklarınız", "content": "Verilerinize erişme ve silme hakkınız var." }, "thirdParty": { "title": "Üçüncü Taraflar", "content": "Güvenilir ortaklarla veri paylaşabiliriz." }, "contact": { "title": "İletişim", "content": "Gizlilik soruları için:" } },
-    "terms": { "title": "Hizmet Şartları", "lastUpdated": "Son güncelleme", "intro": "EventBliss'i kullanarak bu şartları kabul ediyorsunuz.", "acceptance": { "title": "Kabul", "content": "Erişerek bu şartları kabul ediyorsunuz." }, "services": { "title": "Hizmetlerimiz", "content": "EventBliss etkinlik planlama araçları sunar." }, "payment": { "title": "Ödeme", "content": "Temel özellikler ücretsizdir." }, "prohibited": { "title": "Yasaklanan", "content": "Yasadışı faaliyetler için kullanamazsınız." }, "liability": { "title": "Sorumluluk Sınırlaması", "content": "Hasarlardan sorumlu değiliz." }, "changes": { "title": "Değişiklikler", "content": "Bu şartları güncelleyebiliriz." }, "governingLaw": { "title": "Geçerli Hukuk", "content": "Kıbrıs yasalarına tabidir." } },
-    "disclaimer": { "title": "Sorumluluk Reddi", "lastUpdated": "Son güncelleme", "intro": "Kullanmadan önce okuyun.", "general": { "title": "Genel", "content": "Bilgiler yalnızca genel amaçlıdır." }, "externalLinks": { "title": "Harici Linkler", "content": "Üçüncü taraf içeriklerinden sorumlu değiliz." }, "availability": { "title": "Kullanılabilirlik", "content": "%99,9 çalışma süresi hedefliyoruz." }, "limitation": { "title": "Sınırlama", "content": "Dolaylı zararlardan sorumlu değiliz." }, "contact": { "title": "İletişim", "content": "Sorular için bize ulaşın." } }
+    "imprint": {
+      "title": "Künye",
+      "company": "Şirket Bilgileri",
+      "registeredCompany": "Kıbrıs'ta kayıtlı şirket",
+      "address": "Adres",
+      "contact": "İletişim",
+      "responsibleContent": "İçerik Sorumlusu",
+      "disputeResolution": "AB Uyuşmazlık Çözümü",
+      "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar."
+    },
+    "privacy": {
+      "title": "Gizlilik Politikası",
+      "lastUpdated": "Son güncelleme",
+      "intro": "Gizliliğiniz bizim için önemlidir.",
+      "dataCollection": {
+        "title": "Veri Toplama",
+        "content": "Doğrudan sağladığınız bilgileri topluyoruz."
+      },
+      "dataUsage": {
+        "title": "Veri Kullanımı",
+        "content": "Verileriniz hizmet sunmak için kullanılır."
+      },
+      "cookies": {
+        "title": "Çerezler",
+        "content": "Deneyiminizi geliştirmek için çerez kullanıyoruz."
+      },
+      "dataSecurity": {
+        "title": "Güvenlik",
+        "content": "Standart güvenlik önlemleri uyguluyoruz."
+      },
+      "userRights": {
+        "title": "Haklarınız",
+        "content": "Verilerinize erişme ve silme hakkınız var."
+      },
+      "thirdParty": {
+        "title": "Üçüncü Taraflar",
+        "content": "Güvenilir ortaklarla veri paylaşabiliriz."
+      },
+      "contact": {
+        "title": "İletişim",
+        "content": "Gizlilik soruları için:"
+      }
+    },
+    "terms": {
+      "title": "Hizmet Şartları",
+      "lastUpdated": "Son güncelleme",
+      "intro": "EventBliss'i kullanarak bu şartları kabul ediyorsunuz.",
+      "acceptance": {
+        "title": "Kabul",
+        "content": "Erişerek bu şartları kabul ediyorsunuz."
+      },
+      "services": {
+        "title": "Hizmetlerimiz",
+        "content": "EventBliss etkinlik planlama araçları sunar."
+      },
+      "payment": {
+        "title": "Ödeme",
+        "content": "Temel özellikler ücretsizdir."
+      },
+      "prohibited": {
+        "title": "Yasaklanan",
+        "content": "Yasadışı faaliyetler için kullanamazsınız."
+      },
+      "liability": {
+        "title": "Sorumluluk Sınırlaması",
+        "content": "Hasarlardan sorumlu değiliz."
+      },
+      "changes": {
+        "title": "Değişiklikler",
+        "content": "Bu şartları güncelleyebiliriz."
+      },
+      "governingLaw": {
+        "title": "Geçerli Hukuk",
+        "content": "Kıbrıs yasalarına tabidir."
+      }
+    },
+    "disclaimer": {
+      "title": "Sorumluluk Reddi",
+      "lastUpdated": "Son güncelleme",
+      "intro": "Kullanmadan önce okuyun.",
+      "general": {
+        "title": "Genel",
+        "content": "Bilgiler yalnızca genel amaçlıdır."
+      },
+      "externalLinks": {
+        "title": "Harici Linkler",
+        "content": "Üçüncü taraf içeriklerinden sorumlu değiliz."
+      },
+      "availability": {
+        "title": "Kullanılabilirlik",
+        "content": "%99,9 çalışma süresi hedefliyoruz."
+      },
+      "limitation": {
+        "title": "Sınırlama",
+        "content": "Dolaylı zararlardan sorumlu değiliz."
+      },
+      "contact": {
+        "title": "İletişim",
+        "content": "Sorular için bize ulaşın."
+      }
+    }
   },
   "createEvent": {
     "title": "Etkinlik Oluştur",
-    "step1": { "title": "Ne planlıyorsunuz?", "subtitle": "Düzenlemek istediğiniz etkinlik türünü seçin." },
-    "step2": { 
-      "title": "Etkinlik Detayları", 
-      "subtitle": "Etkinlik ve kimin için olduğu hakkında bilgi verin.", 
-      "honoreeName": "Onur konuğu kim?", 
-      "eventName": "Etkinlik Adı", 
-      "eventDate": "Etkinlik Tarihi (isteğe bağlı)", 
-      "organizerName": "Adınız (Organizatör)", 
-      "organizerNamePlaceholder": "örn. Luca", 
-      "organizerEmail": "E-postanız (isteğe bağlı)", 
+    "step1": {
+      "title": "Ne planlıyorsunuz?",
+      "subtitle": "Düzenlemek istediğiniz etkinlik türünü seçin."
+    },
+    "step2": {
+      "title": "Etkinlik Detayları",
+      "subtitle": "Etkinlik ve kimin için olduğu hakkında bilgi verin.",
+      "honoreeName": "Onur konuğu kim?",
+      "eventName": "Etkinlik Adı",
+      "eventDate": "Etkinlik Tarihi (isteğe bağlı)",
+      "organizerName": "Adınız (Organizatör)",
+      "organizerNamePlaceholder": "örn. Luca",
+      "organizerEmail": "E-postanız (isteğe bağlı)",
       "organizerEmailPlaceholder": "luca@example.com",
       "placeholders": {
-        "bachelor": { "honoreeName": "örn. Max", "eventName": "örn. Max'in Efsanevi Bekarlığa Veda" },
-        "bachelorette": { "honoreeName": "örn. Julia", "eventName": "örn. Julia'nın Rüya Kına Gecesi" },
-        "birthday": { "honoreeName": "örn. Lisa", "eventName": "örn. Lisa'nın 30. Yaş Günü" },
-        "trip": { "honoreeName": "örn. Ekip", "eventName": "örn. Kayak Turu 2026" },
-        "other": { "honoreeName": "örn. Takım veya Kişi", "eventName": "örn. Yaz Festivali 2026" }
+        "bachelor": {
+          "honoreeName": "örn. Max",
+          "eventName": "örn. Max'in Efsanevi Bekarlığa Veda"
+        },
+        "bachelorette": {
+          "honoreeName": "örn. Julia",
+          "eventName": "örn. Julia'nın Rüya Kına Gecesi"
+        },
+        "birthday": {
+          "honoreeName": "örn. Lisa",
+          "eventName": "örn. Lisa'nın 30. Yaş Günü"
+        },
+        "trip": {
+          "honoreeName": "örn. Ekip",
+          "eventName": "örn. Kayak Turu 2026"
+        },
+        "other": {
+          "honoreeName": "örn. Takım veya Kişi",
+          "eventName": "örn. Yaz Festivali 2026"
+        }
       }
     },
-    "step3": { "title": "Katılımcı Ekle", "subtitle": "Davet etmek istediğiniz kişileri ekleyin.", "namePlaceholder": "İsim girin...", "noParticipants": "Henüz katılımcı eklenmedi. Bu adımı atlayabilirsiniz." },
-    "step4": { "title": "İncele ve Oluştur", "subtitle": "Her şey tamam mı? Etkinliğinizi oluşturalım!", "forHonoree": "{{name}} için", "participantCount": "{{count}} katılımcı (siz dahil)", "organizedBy": "{{name}} tarafından organize ediliyor", "descriptionPlaceholder": "Bir açıklama ekleyin (isteğe bağlı)" },
-    "types": { "bachelor": "Bekarlığa Veda", "bachelorette": "Kına Gecesi", "birthday": "Doğum Günü", "trip": "Grup Gezisi", "other": "Diğer Etkinlik" },
+    "step3": {
+      "title": "Katılımcı Ekle",
+      "subtitle": "Davet etmek istediğiniz kişileri ekleyin.",
+      "namePlaceholder": "İsim girin...",
+      "noParticipants": "Henüz katılımcı eklenmedi. Bu adımı atlayabilirsiniz."
+    },
+    "step4": {
+      "title": "İncele ve Oluştur",
+      "subtitle": "Her şey tamam mı? Etkinliğinizi oluşturalım!",
+      "forHonoree": "{{name}} için",
+      "participantCount": "{{count}} katılımcı (siz dahil)",
+      "organizedBy": "{{name}} tarafından organize ediliyor",
+      "descriptionPlaceholder": "Bir açıklama ekleyin (isteğe bağlı)"
+    },
+    "types": {
+      "bachelor": "Bekarlığa Veda",
+      "bachelorette": "Kına Gecesi",
+      "birthday": "Doğum Günü",
+      "trip": "Grup Gezisi",
+      "other": "Diğer Etkinlik"
+    },
     "submit": "Etkinlik Oluştur",
     "creating": "Etkinlik oluşturuluyor...",
-    "success": { "title": "Etkinlik Oluşturuldu! 🎉", "description": "Kodu arkadaşlarınızla paylaşın.", "shareMessage": "Linki veya kodu paylaşın.", "accessCode": "Erişim Kodu", "shareLink": "Paylaşım Linki", "linkCopied": "Link kopyalandı.", "shareWhatsApp": "WhatsApp ile Paylaş", "goToDashboard": "Panele Git", "whatsappMessage": "🎉 Davetlisiniz!\n\n\"{{name}}\" etkinliğine {{honoree}} için katılın!\n\n👉 {{link}}\n📝 Kod: {{code}}" },
-    "error": { "failed": "Oluşturma başarısız. Tekrar deneyin." }
+    "success": {
+      "title": "Etkinlik Oluşturuldu! 🎉",
+      "description": "Kodu arkadaşlarınızla paylaşın.",
+      "shareMessage": "Linki veya kodu paylaşın.",
+      "accessCode": "Erişim Kodu",
+      "shareLink": "Paylaşım Linki",
+      "linkCopied": "Link kopyalandı.",
+      "shareWhatsApp": "WhatsApp ile Paylaş",
+      "goToDashboard": "Panele Git",
+      "whatsappMessage": "🎉 Davetlisiniz!\n\n\"{{name}}\" etkinliğine {{honoree}} için katılın!\n\n👉 {{link}}\n📝 Kod: {{code}}"
+    },
+    "error": {
+      "failed": "Oluşturma başarısız. Tekrar deneyin."
+    }
   },
   "joinEvent": {
     "title": "Etkinliğe Katıl",
@@ -534,34 +828,13 @@
       }
     },
     "team": {
-      "title": "Panel Erişimini Yönet",
-      "description": "Katılımcılar için panel erişimini etkinleştirin ve davet bağlantısını paylaşın.",
-      "addParticipant": "Katılımcı Ekle",
-      "addParticipantDesc": "Etkinliğe yeni bir misafir ekle",
-      "participantName": "İsim",
-      "participantEmail": "Email (isteğe bağlı)",
-      "participantRole": "Rol",
-      "namePlaceholder": "örn. Ahmet Yılmaz",
-      "emailPlaceholder": "ahmet@example.com",
-      "addButton": "Ekle",
-      "nameRequired": "İsim gerekli",
-      "participantAdded": "{{name}} eklendi",
-      "addError": "Ekleme hatası",
+      "title": "Takımı Yönet",
+      "invite": "Davet Et",
+      "permissions": "İzinler",
+      "removeAccess": "Erişimi Kaldır",
       "roles": {
-        "guest": "Misafir",
-        "organizer": "Organizatör"
-      },
-      "status": {
-        "activated": "Aktif",
-        "invited": "Davet Edildi",
-        "ready": "Hazır",
-        "noAccess": "Erişim Yok"
-      },
-      "permissions": {
-        "viewResponses": "Cevapları görüntüle",
-        "addExpenses": "Harcama ekle",
-        "viewAllExpenses": "Tüm harcamaları görüntüle",
-        "editSettings": "Ayarları düzenle"
+        "organizer": "Organizatör",
+        "guest": "Misafir"
       }
     },
     "overview": {
@@ -809,16 +1082,6 @@
         "title": "Tehlike Bölgesi",
         "deleteEvent": "Etkinliği Sil",
         "deleteWarning": "Bu işlem geri alınamaz."
-      }
-    },
-    "team": {
-      "title": "Takımı Yönet",
-      "invite": "Davet Et",
-      "permissions": "İzinler",
-      "removeAccess": "Erişimi Kaldır",
-      "roles": {
-        "organizer": "Organizatör",
-        "guest": "Misafir"
       }
     },
     "ai": {
@@ -1298,57 +1561,22 @@
     }
   },
   "admin": {
-    "title": "Admin Portalı",
-    "tabs": {
-      "stats": "İstatistikler",
-      "users": "Kullanıcılar",
-      "members": "Üyeler",
-      "subscriptions": "Abonelikler",
-      "vouchers": "Kuponlar"
-    },
-    "users": {
-      "title": "Kullanıcı Yönetimi",
-      "create": "Kullanıcı Oluştur",
-      "createTitle": "Yeni Kullanıcı Oluştur",
-      "email": "E-posta",
-      "password": "Şifre",
-      "fullName": "Tam İsim",
-      "plan": "Plan",
-      "name": "İsim",
-      "status": "Durum",
-      "createdAt": "Oluşturulma",
-      "search": "Kullanıcı ara...",
-      "noUsers": "Kullanıcı bulunamadı",
-      "mustChangePassword": "Kullanıcı ilk girişte şifre değiştirmeli",
-      "mustChange": "Şifre değiştir",
-      "active": "Aktif",
-      "requiredFields": "E-posta ve şifre gerekli",
-      "passwordTooShort": "Şifre en az 8 karakter olmalı",
-      "createSuccess": "Kullanıcı başarıyla oluşturuldu",
-      "createError": "Oluşturma hatası"
-    },
-    "vouchers": {
-      "title": "Kupon Yönetimi",
-      "create": "Kupon Oluştur",
-      "code": "Kod",
-      "type": "Tür",
-      "value": "Değer",
-      "uses": "Kullanımlar",
-      "validFrom": "Başlangıç",
-      "validUntil": "Bitiş",
-      "status": "Durum",
-      "active": "Aktif",
-      "inactive": "Pasif",
-      "expired": "Süresi Dolmuş",
-      "noVouchers": "Kupon yok",
-      "percentage": "Yüzde",
-      "fixed": "Sabit tutar",
-      "free_trial": "Ücretsiz deneme",
-      "unlimited": "Sınırsız",
-      "createSuccess": "Kupon başarıyla oluşturuldu",
-      "createError": "Oluşturma hatası",
-      "deleteSuccess": "Kupon silindi",
-      "deleteError": "Silme hatası"
+    "credits": {
+      "title": "Kredi Yönetimi",
+      "description": "Kullanıcılar için manuel kredi ayarlamaları",
+      "userSearch": "Kullanıcı ara (e-posta)",
+      "currentCredits": "Mevcut krediler",
+      "adjustCredits": "Kredileri ayarla",
+      "addCredits": "Kredi ekle",
+      "removeCredits": "Kredi kaldır",
+      "reason": "Sebep",
+      "reasonPlaceholder": "örn. Partner bonusu, İyi niyet, vb.",
+      "adjustmentSuccess": "Krediler başarıyla ayarlandı",
+      "noUser": "Kullanıcı bulunamadı",
+      "adjustmentHistory": "Ayarlama geçmişi",
+      "amount": "Miktar",
+      "adjustedBy": "Ayarlayan",
+      "date": "Tarih"
     }
   },
   "templates": {
@@ -1404,25 +1632,234 @@
       "usesOneCredit": "1 kredi kullanır",
       "noCredits": "Kredi mevcut değil"
     },
-    "jgaClassic": { "name": "Klasik Parti", "description": "Aksiyon, parti ve unutulmaz anlar" },
-    "jgaAdventure": { "name": "Macera Gezisi", "description": "Outdoor aksiyon ve takım meydan okumaları" },
-    "jgaChill": { "name": "Rahat Kutlama", "description": "Wellness, güzel yemek ve kaliteli zaman" },
-    "bacheloretteGlam": { "name": "Glamour Hafta Sonu", "description": "Spa, fotoğraf çekimi ve kokteyller" },
-    "bacheloretteAdventure": { "name": "Aktif Kaçamak", "description": "Yürüyüş, yoga ve doğa" },
-    "birthdayParty": { "name": "Doğum Günü Partisi", "description": "Arkadaşlar ve aileyle kutlama" },
-    "birthdayExperience": { "name": "Doğum Günü Deneyimi", "description": "Benzersiz aktiviteler ve maceralar" },
-    "familyTrip": { "name": "Aile Gezisi", "description": "Her yaş için eğlence" },
-    "friendsTrip": { "name": "Arkadaş Gezisi", "description": "Arkadaşlarla macera ve seyahat" },
-    "teamEvent": { "name": "Takım Etkinliği", "description": "Takım oluşturma ve ortak deneyimler" },
-    "flexible": { "name": "Esnek", "description": "Tam esneklik – sen karar ver" },
-    "tags": { "action": "Aksiyon", "party": "Parti", "city": "Şehir", "outdoor": "Outdoor", "adventure": "Macera", "sports": "Spor", "relax": "Rahatlama", "wellness": "Wellness", "food": "Yemek", "glamour": "Glamour", "active": "Aktif", "nature": "Doğa", "celebration": "Kutlama", "fun": "Eğlence", "experience": "Deneyim", "unique": "Benzersiz", "memorable": "Unutulmaz", "family": "Aile", "kids": "Çocuklar", "relaxed": "Rahat", "friends": "Arkadaşlar", "travel": "Seyahat", "team": "Takım", "corporate": "Kurumsal", "teambuilding": "Takım Oluşturma", "flexible": "Esnek", "custom": "Özel", "open": "Açık" },
-    "destinations": { "deCity": "Almanya'da büyük şehir", "prague": "Prag", "budapest": "Budapeşte", "barcelona": "Barselona", "amsterdam": "Amsterdam", "mallorca": "Mayorka", "lisbon": "Lizbon", "flexible": "Esnek", "alps": "Alpler", "seaCoast": "Sahil", "forestNature": "Orman ve Doğa", "lakeRegion": "Göl Bölgesi", "spaHotel": "Spa Oteli", "local": "Yerel", "wineRegion": "Şarap Bölgesi", "lakeResort": "Göl Tatil Köyü", "vineyard": "Bağ", "restaurant": "Restoran", "eventLocation": "Etkinlik Mekanı", "rooftopBar": "Çatı Barı", "nearbyCity": "Yakın Şehir", "nature": "Doğa", "themePark": "Tema Parkı", "zoo": "Hayvanat Bahçesi", "beach": "Plaj", "mountains": "Dağlar", "farm": "Çiftlik", "cityEurope": "Avrupa'da Şehir", "beachEurope": "Avrupa'da Plaj", "adventureEurope": "Avrupa'da Macera", "roadTrip": "Yol Gezisi", "conferenceHotel": "Konferans Oteli", "outdoorLocation": "Outdoor Mekan", "eventSpace": "Etkinlik Alanı", "office": "Ofis", "domestic": "Yurtiçi", "europe": "Avrupa", "worldwide": "Dünya Geneli" },
-    "activities": { "karting": "Karting", "escapeRoom": "Kaçış Odası", "lasertag": "Lazer Tag", "axeThrowing": "Balta Atma", "vrArena": "VR Arena", "bubbleSoccer": "Balon Futbolu", "paintball": "Paintball", "barTour": "Bar Turu", "casino": "Kumarhane", "bbqParty": "BBQ Partisi", "rafting": "Rafting", "canyoning": "Kanyoning", "climbing": "Tırmanış", "hiking": "Yürüyüş", "mountainBiking": "Dağ Bisikleti", "survivalTraining": "Hayatta Kalma", "bungee": "Bungee Jumping", "paragliding": "Yamaç Paraşütü", "quadTour": "ATV Turu", "cabinBbq": "Kulübe BBQ", "spaWellness": "Spa ve Wellness", "wineTasting": "Şarap Tadımı", "gourmetDinner": "Gurme Akşam Yemeği", "cookingClass": "Yemek Kursu", "golf": "Golf", "cigarWhiskey": "Puro ve Viski", "breweryTour": "Bira Fabrikası Turu", "boatTrip": "Tekne Gezisi", "photoshoot": "Fotoğraf Çekimi", "cocktailClass": "Kokteyl Kursu", "yogaRetreat": "Yoga Retreatı", "danceClass": "Dans Dersi", "brunchParty": "Brunch", "beachClub": "Beach Club", "shoppingTour": "Alışveriş Turu", "karaoke": "Karaoke", "kayaking": "Kano", "horsebackRiding": "At Binme", "picnic": "Piknik", "sunsetBoat": "Gün Batımı Gezisi", "outdoorCooking": "Açık Hava Yemek Pişirme", "dinnerParty": "Akşam Yemeği", "bowling": "Bowling", "gamesNight": "Oyun Gecesi", "cocktailParty": "Kokteyl Partisi", "dancing": "Dans", "liveMusic": "Canlı Müzik", "spaDay": "Spa Günü", "concert": "Konser", "sportsEvent": "Spor Etkinliği", "artClass": "Sanat Dersi", "adventurePark": "Macera Parkı", "themePark": "Tema Parkı", "zooAquarium": "Hayvanat Bahçesi ve Akvaryum", "beachFun": "Plaj Eğlencesi", "hikingEasy": "Kolay Yürüyüş", "games": "Oyunlar", "bikeTour": "Bisiklet Turu", "swimming": "Yüzme", "sightseeing": "Gezilecek Yerler", "nightlife": "Gece Hayatı", "foodTour": "Yemek Turu", "beach": "Plaj", "waterSports": "Su Sporları", "localExperiences": "Yerel Deneyimler", "concertsEvents": "Konserler", "teambuildingGames": "Takım Oyunları", "workshop": "Atölye", "outdoorChallenge": "Outdoor Meydan Okuma", "sportsTournament": "Spor Turnuvası", "dinnerEvent": "Yemekli Etkinlik", "creativeWorkshop": "Yaratıcı Atölye", "action": "Aksiyon", "chill": "Rahatlama", "outdoor": "Outdoor", "food": "Yemek", "culture": "Kültür", "party": "Parti", "mixed": "Karışık" },
-    "duration": { "dayTrip": "Günübirlik Gezi", "weekend": "Hafta Sonu (2-3 gün)", "longWeekend": "Uzun Hafta Sonu (3-4 gün)", "week": "Tam Hafta", "twoWeeks": "İki Hafta", "halfDay": "Yarım Gün", "fullDay": "Tam Gün", "evening": "Akşam", "overnight": "Gecelik", "flexible": "Esnek" },
-    "travel": { "daytrip": "Günübirlik gezi", "oneNight": "Bir gece", "twoNights": "İki gece", "flexible": "Esnek" },
-    "fitness": { "chill": "Rahat", "normal": "Normal", "sporty": "Sportif" },
-    "alcohol": { "yes": "Evet, lütfen", "no": "Tercih etmem", "flexible": "Esnek" },
-    "attendance": { "yes": "Katılıyorum!", "maybe": "Belki", "no": "Maalesef hayır" },
+    "jgaClassic": {
+      "name": "Klasik Parti",
+      "description": "Aksiyon, parti ve unutulmaz anlar"
+    },
+    "jgaAdventure": {
+      "name": "Macera Gezisi",
+      "description": "Outdoor aksiyon ve takım meydan okumaları"
+    },
+    "jgaChill": {
+      "name": "Rahat Kutlama",
+      "description": "Wellness, güzel yemek ve kaliteli zaman"
+    },
+    "bacheloretteGlam": {
+      "name": "Glamour Hafta Sonu",
+      "description": "Spa, fotoğraf çekimi ve kokteyller"
+    },
+    "bacheloretteAdventure": {
+      "name": "Aktif Kaçamak",
+      "description": "Yürüyüş, yoga ve doğa"
+    },
+    "birthdayParty": {
+      "name": "Doğum Günü Partisi",
+      "description": "Arkadaşlar ve aileyle kutlama"
+    },
+    "birthdayExperience": {
+      "name": "Doğum Günü Deneyimi",
+      "description": "Benzersiz aktiviteler ve maceralar"
+    },
+    "familyTrip": {
+      "name": "Aile Gezisi",
+      "description": "Her yaş için eğlence"
+    },
+    "friendsTrip": {
+      "name": "Arkadaş Gezisi",
+      "description": "Arkadaşlarla macera ve seyahat"
+    },
+    "teamEvent": {
+      "name": "Takım Etkinliği",
+      "description": "Takım oluşturma ve ortak deneyimler"
+    },
+    "flexible": {
+      "name": "Esnek",
+      "description": "Tam esneklik – sen karar ver"
+    },
+    "tags": {
+      "action": "Aksiyon",
+      "party": "Parti",
+      "city": "Şehir",
+      "outdoor": "Outdoor",
+      "adventure": "Macera",
+      "sports": "Spor",
+      "relax": "Rahatlama",
+      "wellness": "Wellness",
+      "food": "Yemek",
+      "glamour": "Glamour",
+      "active": "Aktif",
+      "nature": "Doğa",
+      "celebration": "Kutlama",
+      "fun": "Eğlence",
+      "experience": "Deneyim",
+      "unique": "Benzersiz",
+      "memorable": "Unutulmaz",
+      "family": "Aile",
+      "kids": "Çocuklar",
+      "relaxed": "Rahat",
+      "friends": "Arkadaşlar",
+      "travel": "Seyahat",
+      "team": "Takım",
+      "corporate": "Kurumsal",
+      "teambuilding": "Takım Oluşturma",
+      "flexible": "Esnek",
+      "custom": "Özel",
+      "open": "Açık"
+    },
+    "destinations": {
+      "deCity": "Almanya'da büyük şehir",
+      "prague": "Prag",
+      "budapest": "Budapeşte",
+      "barcelona": "Barselona",
+      "amsterdam": "Amsterdam",
+      "mallorca": "Mayorka",
+      "lisbon": "Lizbon",
+      "flexible": "Esnek",
+      "alps": "Alpler",
+      "seaCoast": "Sahil",
+      "forestNature": "Orman ve Doğa",
+      "lakeRegion": "Göl Bölgesi",
+      "spaHotel": "Spa Oteli",
+      "local": "Yerel",
+      "wineRegion": "Şarap Bölgesi",
+      "lakeResort": "Göl Tatil Köyü",
+      "vineyard": "Bağ",
+      "restaurant": "Restoran",
+      "eventLocation": "Etkinlik Mekanı",
+      "rooftopBar": "Çatı Barı",
+      "nearbyCity": "Yakın Şehir",
+      "nature": "Doğa",
+      "themePark": "Tema Parkı",
+      "zoo": "Hayvanat Bahçesi",
+      "beach": "Plaj",
+      "mountains": "Dağlar",
+      "farm": "Çiftlik",
+      "cityEurope": "Avrupa'da Şehir",
+      "beachEurope": "Avrupa'da Plaj",
+      "adventureEurope": "Avrupa'da Macera",
+      "roadTrip": "Yol Gezisi",
+      "conferenceHotel": "Konferans Oteli",
+      "outdoorLocation": "Outdoor Mekan",
+      "eventSpace": "Etkinlik Alanı",
+      "office": "Ofis",
+      "domestic": "Yurtiçi",
+      "europe": "Avrupa",
+      "worldwide": "Dünya Geneli"
+    },
+    "activities": {
+      "karting": "Karting",
+      "escapeRoom": "Kaçış Odası",
+      "lasertag": "Lazer Tag",
+      "axeThrowing": "Balta Atma",
+      "vrArena": "VR Arena",
+      "bubbleSoccer": "Balon Futbolu",
+      "paintball": "Paintball",
+      "barTour": "Bar Turu",
+      "casino": "Kumarhane",
+      "bbqParty": "BBQ Partisi",
+      "rafting": "Rafting",
+      "canyoning": "Kanyoning",
+      "climbing": "Tırmanış",
+      "hiking": "Yürüyüş",
+      "mountainBiking": "Dağ Bisikleti",
+      "survivalTraining": "Hayatta Kalma",
+      "bungee": "Bungee Jumping",
+      "paragliding": "Yamaç Paraşütü",
+      "quadTour": "ATV Turu",
+      "cabinBbq": "Kulübe BBQ",
+      "spaWellness": "Spa ve Wellness",
+      "wineTasting": "Şarap Tadımı",
+      "gourmetDinner": "Gurme Akşam Yemeği",
+      "cookingClass": "Yemek Kursu",
+      "golf": "Golf",
+      "cigarWhiskey": "Puro ve Viski",
+      "breweryTour": "Bira Fabrikası Turu",
+      "boatTrip": "Tekne Gezisi",
+      "photoshoot": "Fotoğraf Çekimi",
+      "cocktailClass": "Kokteyl Kursu",
+      "yogaRetreat": "Yoga Retreatı",
+      "danceClass": "Dans Dersi",
+      "brunchParty": "Brunch",
+      "beachClub": "Beach Club",
+      "shoppingTour": "Alışveriş Turu",
+      "karaoke": "Karaoke",
+      "kayaking": "Kano",
+      "horsebackRiding": "At Binme",
+      "picnic": "Piknik",
+      "sunsetBoat": "Gün Batımı Gezisi",
+      "outdoorCooking": "Açık Hava Yemek Pişirme",
+      "dinnerParty": "Akşam Yemeği",
+      "bowling": "Bowling",
+      "gamesNight": "Oyun Gecesi",
+      "cocktailParty": "Kokteyl Partisi",
+      "dancing": "Dans",
+      "liveMusic": "Canlı Müzik",
+      "spaDay": "Spa Günü",
+      "concert": "Konser",
+      "sportsEvent": "Spor Etkinliği",
+      "artClass": "Sanat Dersi",
+      "adventurePark": "Macera Parkı",
+      "themePark": "Tema Parkı",
+      "zooAquarium": "Hayvanat Bahçesi ve Akvaryum",
+      "beachFun": "Plaj Eğlencesi",
+      "hikingEasy": "Kolay Yürüyüş",
+      "games": "Oyunlar",
+      "bikeTour": "Bisiklet Turu",
+      "swimming": "Yüzme",
+      "sightseeing": "Gezilecek Yerler",
+      "nightlife": "Gece Hayatı",
+      "foodTour": "Yemek Turu",
+      "beach": "Plaj",
+      "waterSports": "Su Sporları",
+      "localExperiences": "Yerel Deneyimler",
+      "concertsEvents": "Konserler",
+      "teambuildingGames": "Takım Oyunları",
+      "workshop": "Atölye",
+      "outdoorChallenge": "Outdoor Meydan Okuma",
+      "sportsTournament": "Spor Turnuvası",
+      "dinnerEvent": "Yemekli Etkinlik",
+      "creativeWorkshop": "Yaratıcı Atölye",
+      "action": "Aksiyon",
+      "chill": "Rahatlama",
+      "outdoor": "Outdoor",
+      "food": "Yemek",
+      "culture": "Kültür",
+      "party": "Parti",
+      "mixed": "Karışık"
+    },
+    "duration": {
+      "dayTrip": "Günübirlik Gezi",
+      "weekend": "Hafta Sonu (2-3 gün)",
+      "longWeekend": "Uzun Hafta Sonu (3-4 gün)",
+      "week": "Tam Hafta",
+      "twoWeeks": "İki Hafta",
+      "halfDay": "Yarım Gün",
+      "fullDay": "Tam Gün",
+      "evening": "Akşam",
+      "overnight": "Gecelik",
+      "flexible": "Esnek"
+    },
+    "travel": {
+      "daytrip": "Günübirlik gezi",
+      "oneNight": "Bir gece",
+      "twoNights": "İki gece",
+      "flexible": "Esnek"
+    },
+    "fitness": {
+      "chill": "Rahat",
+      "normal": "Normal",
+      "sporty": "Sportif"
+    },
+    "alcohol": {
+      "yes": "Evet, lütfen",
+      "no": "Tercih etmem",
+      "flexible": "Esnek"
+    },
+    "attendance": {
+      "yes": "Katılıyorum!",
+      "maybe": "Belki",
+      "no": "Maalesef hayır"
+    },
     "designTemplates": "Tasarım Şablonları",
     "surveyTemplates": "Anket Şablonları",
     "selectDesign": "Bir Tasarım Seçin",
@@ -1432,59 +1869,297 @@
     "recommended": "Önerilen",
     "allTemplates": "Tüm Şablonlar",
     "design": {
-      "jga-classic": { "name": "JGA Klasik", "desc": "Mor-camgöbeği geçişli şenlikli ve parti havasında" },
-      "wedding-elegant": { "name": "Düğün Elegant", "desc": "Roze altın vurgularıyla klasik-zarif" },
-      "birthday-fun": { "name": "Doğum Günü Eğlence", "desc": "Doğum günü partileri için renkli ve neşeli" },
-      "beach-vibes": { "name": "Sahil Havası", "desc": "Sahil gezileri için rahat ve yazlık" },
-      "night-out": { "name": "Gece Dışarı", "desc": "Parti geceleri için karanlık ve göz alıcı" },
-      "modern-minimal": { "name": "Modern Minimal", "desc": "Her durum için temiz ve zamansız" },
-      "tropical-paradise": { "name": "Tropikal Cennet", "desc": "Macera gezileri için egzotik ve renkli" },
-      "royal-purple": { "name": "Kraliyet Moru", "desc": "Özel günler için asil ve lüks" },
-      "sunset-glow": { "name": "Gün Batımı Işıltısı", "desc": "Gün batımı gibi sıcak ve romantik" },
-      "ocean-breeze": { "name": "Okyanus Esintisi", "desc": "Su sporları tutkunları için taze ve denizci" },
-      "ladies-night": { "name": "Kız Gecesi", "desc": "Gelinin bekarlığa veda partisi için pembe ve göz alıcı" },
-      "vegas-neon": { "name": "Vegas Neon", "desc": "Unutulmaz partiler için neon ışıklar" },
-      "oktoberfest": { "name": "Oktoberfest", "desc": "Halk festivali tutkunları için Bavyera tarzı ve geleneksel" },
-      "ski-snow": { "name": "Kayak ve Kar", "desc": "Kayak gezileri için kışlık ve sportif" },
-      "festival-vibes": { "name": "Festival Havası", "desc": "Festival severler için vahşi ve renkli" },
-      "garden-party": { "name": "Bahçe Partisi", "desc": "Bahçe partileri için doğal ve romantik" },
-      "road-trip": { "name": "Yol Gezisi", "desc": "Yol gezileri için maceraperest ve özgür" },
-      "glamour-night": { "name": "Glamour Gecesi", "desc": "Özel akşamlar için asil ve göz alıcı" },
-      "sporty-adventure": { "name": "Sportif Macera", "desc": "Sporcular için aktif ve enerjik" },
-      "retro-vintage": { "name": "Retro Vintage", "desc": "Vintage görünümde nostaljik ve şık" }
+      "jga-classic": {
+        "name": "JGA Klasik",
+        "desc": "Mor-camgöbeği geçişli şenlikli ve parti havasında"
+      },
+      "wedding-elegant": {
+        "name": "Düğün Elegant",
+        "desc": "Roze altın vurgularıyla klasik-zarif"
+      },
+      "birthday-fun": {
+        "name": "Doğum Günü Eğlence",
+        "desc": "Doğum günü partileri için renkli ve neşeli"
+      },
+      "beach-vibes": {
+        "name": "Sahil Havası",
+        "desc": "Sahil gezileri için rahat ve yazlık"
+      },
+      "night-out": {
+        "name": "Gece Dışarı",
+        "desc": "Parti geceleri için karanlık ve göz alıcı"
+      },
+      "modern-minimal": {
+        "name": "Modern Minimal",
+        "desc": "Her durum için temiz ve zamansız"
+      },
+      "tropical-paradise": {
+        "name": "Tropikal Cennet",
+        "desc": "Macera gezileri için egzotik ve renkli"
+      },
+      "royal-purple": {
+        "name": "Kraliyet Moru",
+        "desc": "Özel günler için asil ve lüks"
+      },
+      "sunset-glow": {
+        "name": "Gün Batımı Işıltısı",
+        "desc": "Gün batımı gibi sıcak ve romantik"
+      },
+      "ocean-breeze": {
+        "name": "Okyanus Esintisi",
+        "desc": "Su sporları tutkunları için taze ve denizci"
+      },
+      "ladies-night": {
+        "name": "Kız Gecesi",
+        "desc": "Gelinin bekarlığa veda partisi için pembe ve göz alıcı"
+      },
+      "vegas-neon": {
+        "name": "Vegas Neon",
+        "desc": "Unutulmaz partiler için neon ışıklar"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "desc": "Halk festivali tutkunları için Bavyera tarzı ve geleneksel"
+      },
+      "ski-snow": {
+        "name": "Kayak ve Kar",
+        "desc": "Kayak gezileri için kışlık ve sportif"
+      },
+      "festival-vibes": {
+        "name": "Festival Havası",
+        "desc": "Festival severler için vahşi ve renkli"
+      },
+      "garden-party": {
+        "name": "Bahçe Partisi",
+        "desc": "Bahçe partileri için doğal ve romantik"
+      },
+      "road-trip": {
+        "name": "Yol Gezisi",
+        "desc": "Yol gezileri için maceraperest ve özgür"
+      },
+      "glamour-night": {
+        "name": "Glamour Gecesi",
+        "desc": "Özel akşamlar için asil ve göz alıcı"
+      },
+      "sporty-adventure": {
+        "name": "Sportif Macera",
+        "desc": "Sporcular için aktif ve enerjik"
+      },
+      "retro-vintage": {
+        "name": "Retro Vintage",
+        "desc": "Vintage görünümde nostaljik ve şık"
+      }
     },
     "survey": {
-      "jga-classic": { "name": "JGA Klasik", "desc": "Şehir gezileri ve macera ile klasik bekarlığa veda" },
-      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Lüks aktivitelerle premium bekarlığa veda deneyimi" },
-      "bachelorette": { "name": "Kına Gecesi", "desc": "Spa, brunch, dans ve unutulmaz anlar" },
-      "birthday-bash": { "name": "Doğum Günü Partisi", "desc": "Esnek ve eğlenceli doğum günü kutlaması" },
-      "adventure-trip": { "name": "Macera Gezisi", "desc": "Açık hava maceraları, yürüyüş ve adrenalin" },
-      "city-break": { "name": "Şehir Kaçamağı", "desc": "Kültür, yemek ve gezi" },
-      "wedding-rsvp": { "name": "Düğün RSVP", "desc": "Diyet ve konaklama ile zarif düğün yanıtı" },
-      "corporate-retreat": { "name": "Şirket Kampı", "desc": "Takım çalışması, atölyeler ve ağ oluşturma" }
+      "jga-classic": {
+        "name": "JGA Klasik",
+        "desc": "Şehir gezileri ve macera ile klasik bekarlığa veda"
+      },
+      "jga-deluxe": {
+        "name": "JGA Deluxe",
+        "desc": "Lüks aktivitelerle premium bekarlığa veda deneyimi"
+      },
+      "bachelorette": {
+        "name": "Kına Gecesi",
+        "desc": "Spa, brunch, dans ve unutulmaz anlar"
+      },
+      "birthday-bash": {
+        "name": "Doğum Günü Partisi",
+        "desc": "Esnek ve eğlenceli doğum günü kutlaması"
+      },
+      "adventure-trip": {
+        "name": "Macera Gezisi",
+        "desc": "Açık hava maceraları, yürüyüş ve adrenalin"
+      },
+      "city-break": {
+        "name": "Şehir Kaçamağı",
+        "desc": "Kültür, yemek ve gezi"
+      },
+      "wedding-rsvp": {
+        "name": "Düğün RSVP",
+        "desc": "Diyet ve konaklama ile zarif düğün yanıtı"
+      },
+      "corporate-retreat": {
+        "name": "Şirket Kampı",
+        "desc": "Takım çalışması, atölyeler ve ağ oluşturma"
+      }
     }
   },
   "affiliate": {
     "portal": {
       "title": "Partner Portalı",
       "welcome": "Tekrar hoş geldiniz",
-      "tabs": { "dashboard": "Genel Bakış", "vouchers": "Kuponlar", "commissions": "Komisyonlar", "payouts": "Ödemeler", "settings": "Ayarlar" }
+      "tabs": {
+        "dashboard": "Genel Bakış",
+        "vouchers": "Kuponlar",
+        "commissions": "Komisyonlar",
+        "payouts": "Ödemeler",
+        "settings": "Ayarlar"
+      }
     },
-    "stats": { "totalEarnings": "Toplam Kazanç", "pendingBalance": "Bekleyen Bakiye", "paidOut": "Ödenmiş", "conversionRate": "Dönüşüm Oranı", "thisMonth": "Bu Ay", "allTime": "Tüm Zamanlar", "tier": "Tier Durumu" },
-    "vouchers": { "title": "Kupon Kodlarım", "copyCode": "Kodu Kopyala", "share": "Paylaş", "redemptions": "Kullanımlar", "generated": "Oluşturuldu", "noVouchers": "Henüz kupon atanmadı", "copied": "Kod kopyalandı!", "discount": "İndirim", "active": "Aktif", "inactive": "Pasif" },
-    "commissions": { "title": "Komisyonlarım", "recent": "Son Komisyonlar", "pending": "Beklemede", "approved": "Onaylandı", "paid": "Ödendi", "cancelled": "İptal Edildi", "orderAmount": "Sipariş Tutarı", "commission": "Komisyon", "rate": "Oran", "noCommissions": "Komisyon bulunamadı", "noCommissionsYet": "Komisyonlar burada görünecek.", "noResults": "Bu filtreler için sonuç yok", "searchPlaceholder": "Kupon veya e-posta ile ara..." },
-    "payouts": { "title": "Ödemeler", "availableBalance": "Mevcut Bakiye", "requestPayout": "Ödeme Talep Et", "minAmount": "Minimum tutar: 50€", "readyForPayout": "Ödeme için hazır", "processing": "İşleniyor", "completed": "Tamamlandı", "failed": "Başarısız", "pending": "Beklemede", "reference": "Referans", "history": "Ödeme Geçmişi", "noPayouts": "Henüz ödeme yok", "noPayoutsDesc": "Ödeme geçmişiniz burada görünecek.", "requested": "Ödeme başarıyla talep edildi!", "confirmTitle": "Ödemeyi Onayla", "confirmDesc": "Bu tutar için ödeme talep etmek istiyor musunuz?", "willBeTransferred": "kayıtlı hesabınıza aktarılacak", "processedAt": "İşlendi" },
-    "settings": { "title": "Ayarlar", "profile": "Profil", "paymentMethod": "Ödeme Yöntemi", "paymentType": "Ödeme Türü", "bankTransfer": "Banka Havalesi", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "PayPal E-posta", "taxId": "Vergi Numarası", "saved": "Ayarlar kaydedildi", "yourTier": "Tier'iniz", "companyName": "Şirket Adı", "companyNamePlaceholder": "Şirketiniz Ltd", "contactName": "İletişim Adı", "contactNamePlaceholder": "Ahmet Yılmaz", "phone": "Telefon", "website": "Web Sitesi" },
-    "tiers": { "bronze": "Bronz", "silver": "Gümüş", "gold": "Altın", "platinum": "Platin", "nextTier": "Sonraki tier", "conversionsNeeded": "{{needed}} daha fazla dönüşüm" },
-    "notAffiliate": { "title": "Partner Olun", "description": "Henüz partner değilsiniz. Ortaklık programımıza katılmak ister misiniz?", "cta": "Şimdi Başvur", "loginRequired": "Giriş Gerekli", "loginDesc": "Partner Portalı'na erişmek için lütfen giriş yapın.", "benefits": { "commission": "%25'e kadar komisyon", "commissionDesc": "Her yönlendirmede kazanın", "tracking": "Gerçek zamanlı takip", "trackingDesc": "Tüm dönüşümleri takip edin", "support": "Kişisel destek", "supportDesc": "Ekibimizle doğrudan iletişim" } }
+    "stats": {
+      "totalEarnings": "Toplam Kazanç",
+      "pendingBalance": "Bekleyen Bakiye",
+      "paidOut": "Ödenmiş",
+      "conversionRate": "Dönüşüm Oranı",
+      "thisMonth": "Bu Ay",
+      "allTime": "Tüm Zamanlar",
+      "tier": "Tier Durumu"
+    },
+    "vouchers": {
+      "title": "Kupon Kodlarım",
+      "copyCode": "Kodu Kopyala",
+      "share": "Paylaş",
+      "redemptions": "Kullanımlar",
+      "generated": "Oluşturuldu",
+      "noVouchers": "Henüz kupon atanmadı",
+      "copied": "Kod kopyalandı!",
+      "discount": "İndirim",
+      "active": "Aktif",
+      "inactive": "Pasif"
+    },
+    "commissions": {
+      "title": "Komisyonlarım",
+      "recent": "Son Komisyonlar",
+      "pending": "Beklemede",
+      "approved": "Onaylandı",
+      "paid": "Ödendi",
+      "cancelled": "İptal Edildi",
+      "orderAmount": "Sipariş Tutarı",
+      "commission": "Komisyon",
+      "rate": "Oran",
+      "noCommissions": "Komisyon bulunamadı",
+      "noCommissionsYet": "Komisyonlar burada görünecek.",
+      "noResults": "Bu filtreler için sonuç yok",
+      "searchPlaceholder": "Kupon veya e-posta ile ara..."
+    },
+    "payouts": {
+      "title": "Ödemeler",
+      "availableBalance": "Mevcut Bakiye",
+      "requestPayout": "Ödeme Talep Et",
+      "minAmount": "Minimum tutar: 50€",
+      "readyForPayout": "Ödeme için hazır",
+      "processing": "İşleniyor",
+      "completed": "Tamamlandı",
+      "failed": "Başarısız",
+      "pending": "Beklemede",
+      "reference": "Referans",
+      "history": "Ödeme Geçmişi",
+      "noPayouts": "Henüz ödeme yok",
+      "noPayoutsDesc": "Ödeme geçmişiniz burada görünecek.",
+      "requested": "Ödeme başarıyla talep edildi!",
+      "confirmTitle": "Ödemeyi Onayla",
+      "confirmDesc": "Bu tutar için ödeme talep etmek istiyor musunuz?",
+      "willBeTransferred": "kayıtlı hesabınıza aktarılacak",
+      "processedAt": "İşlendi"
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "profile": "Profil",
+      "paymentMethod": "Ödeme Yöntemi",
+      "paymentType": "Ödeme Türü",
+      "bankTransfer": "Banka Havalesi",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "PayPal E-posta",
+      "taxId": "Vergi Numarası",
+      "saved": "Ayarlar kaydedildi",
+      "yourTier": "Tier'iniz",
+      "companyName": "Şirket Adı",
+      "companyNamePlaceholder": "Şirketiniz Ltd",
+      "contactName": "İletişim Adı",
+      "contactNamePlaceholder": "Ahmet Yılmaz",
+      "phone": "Telefon",
+      "website": "Web Sitesi"
+    },
+    "tiers": {
+      "bronze": "Bronz",
+      "silver": "Gümüş",
+      "gold": "Altın",
+      "platinum": "Platin",
+      "nextTier": "Sonraki tier",
+      "conversionsNeeded": "{{needed}} daha fazla dönüşüm"
+    },
+    "notAffiliate": {
+      "title": "Partner Olun",
+      "description": "Henüz partner değilsiniz. Ortaklık programımıza katılmak ister misiniz?",
+      "cta": "Şimdi Başvur",
+      "loginRequired": "Giriş Gerekli",
+      "loginDesc": "Partner Portalı'na erişmek için lütfen giriş yapın.",
+      "benefits": {
+        "commission": "%25'e kadar komisyon",
+        "commissionDesc": "Her yönlendirmede kazanın",
+        "tracking": "Gerçek zamanlı takip",
+        "trackingDesc": "Tüm dönüşümleri takip edin",
+        "support": "Kişisel destek",
+        "supportDesc": "Ekibimizle doğrudan iletişim"
+      }
+    }
   },
   "partnerApply": {
-    "hero": { "badge": "Ortaklık Programı", "title": "Ortak programımıza katılın", "description": "EventBliss'i önerin ve her başarılı yönlendirme için %25'e kadar komisyon kazanın." },
-    "benefits": { "commission": { "title": "Cazip komisyonlar", "description": "Her yönlendirilen satın almada %25'e kadar" }, "tracking": { "title": "Gerçek zamanlı panel", "description": "Tüm dönüşümlerinizi takip edin" }, "payouts": { "title": "Hızlı ödemeler", "description": "50€'dan itibaren aylık ödeme" }, "support": { "title": "Kişisel destek", "description": "Her adımda size yardımcı oluyoruz" } },
-    "stats": { "partners": "Aktif ortaklar", "commissionRate": "Kadar", "payouts": "Ödenen" },
-    "form": { "title": "Şimdi başvurun", "companyName": "Şirket adı (isteğe bağlı)", "companyNamePlaceholder": "Şirketiniz Ltd", "contactName": "İletişim adı", "contactNamePlaceholder": "Ahmet Yılmaz", "email": "E-posta adresi", "emailPlaceholder": "ortak@ornek.com.tr", "phone": "Telefon (isteğe bağlı)", "phonePlaceholder": "+90 532 123 4567", "website": "Web sitesi (isteğe bağlı)", "websitePlaceholder": "https://siteniz.com.tr", "taxId": "Vergi numarası (isteğe bağlı)", "taxIdPlaceholder": "1234567890", "about": "Hakkınızda / şirketiniz (isteğe bağlı)", "aboutPlaceholder": "Kendinizden bahsedin...", "promotion": "EventBliss'i nasıl tanıtmayı planlıyorsunuz?", "promotionPlaceholder": "örn. Blog, Sosyal medya, Bülten, Kişisel öneriler...", "privacy": "Kabul ediyorum", "submit": "Başvuruyu gönder", "submitting": "Gönderiliyor..." },
-    "success": { "title": "Başvuru alındı!", "description": "Ortak programımıza gösterdiğiniz ilgi için teşekkürler.", "nextSteps": "Başvurunuzu inceleyeceğiz ve 2-3 iş günü içinde size geri döneceğiz.", "backToHome": "Ana sayfaya dön" },
-    "errors": { "required": "Bu alan gereklidir", "invalidEmail": "Lütfen geçerli bir e-posta adresi girin", "privacyRequired": "Gizlilik politikasını kabul etmelisiniz", "submitFailed": "Başvuru gönderilemedi. Lütfen tekrar deneyin." }
+    "hero": {
+      "badge": "Ortaklık Programı",
+      "title": "Ortak programımıza katılın",
+      "description": "EventBliss'i önerin ve her başarılı yönlendirme için %25'e kadar komisyon kazanın."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Cazip komisyonlar",
+        "description": "Her yönlendirilen satın almada %25'e kadar"
+      },
+      "tracking": {
+        "title": "Gerçek zamanlı panel",
+        "description": "Tüm dönüşümlerinizi takip edin"
+      },
+      "payouts": {
+        "title": "Hızlı ödemeler",
+        "description": "50€'dan itibaren aylık ödeme"
+      },
+      "support": {
+        "title": "Kişisel destek",
+        "description": "Her adımda size yardımcı oluyoruz"
+      }
+    },
+    "stats": {
+      "partners": "Aktif ortaklar",
+      "commissionRate": "Kadar",
+      "payouts": "Ödenen"
+    },
+    "form": {
+      "title": "Şimdi başvurun",
+      "companyName": "Şirket adı (isteğe bağlı)",
+      "companyNamePlaceholder": "Şirketiniz Ltd",
+      "contactName": "İletişim adı",
+      "contactNamePlaceholder": "Ahmet Yılmaz",
+      "email": "E-posta adresi",
+      "emailPlaceholder": "ortak@ornek.com.tr",
+      "phone": "Telefon (isteğe bağlı)",
+      "phonePlaceholder": "+90 532 123 4567",
+      "website": "Web sitesi (isteğe bağlı)",
+      "websitePlaceholder": "https://siteniz.com.tr",
+      "taxId": "Vergi numarası (isteğe bağlı)",
+      "taxIdPlaceholder": "1234567890",
+      "about": "Hakkınızda / şirketiniz (isteğe bağlı)",
+      "aboutPlaceholder": "Kendinizden bahsedin...",
+      "promotion": "EventBliss'i nasıl tanıtmayı planlıyorsunuz?",
+      "promotionPlaceholder": "örn. Blog, Sosyal medya, Bülten, Kişisel öneriler...",
+      "privacy": "Kabul ediyorum",
+      "submit": "Başvuruyu gönder",
+      "submitting": "Gönderiliyor..."
+    },
+    "success": {
+      "title": "Başvuru alındı!",
+      "description": "Ortak programımıza gösterdiğiniz ilgi için teşekkürler.",
+      "nextSteps": "Başvurunuzu inceleyeceğiz ve 2-3 iş günü içinde size geri döneceğiz.",
+      "backToHome": "Ana sayfaya dön"
+    },
+    "errors": {
+      "required": "Bu alan gereklidir",
+      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+      "privacyRequired": "Gizlilik politikasını kabul etmelisiniz",
+      "submitFailed": "Başvuru gönderilemedi. Lütfen tekrar deneyin."
+    }
   },
   "aiCredits": {
     "title": "AI Kredileri",
@@ -1522,29 +2197,32 @@
     "noCreditsLeft": "Kredi kalmadı",
     "creditUsed": "💎 {{remaining}} kredi kaldı"
   },
-  "admin": {
-    "credits": {
-      "title": "Kredi Yönetimi",
-      "description": "Kullanıcılar için manuel kredi ayarlamaları",
-      "userSearch": "Kullanıcı ara (e-posta)",
-      "currentCredits": "Mevcut krediler",
-      "adjustCredits": "Kredileri ayarla",
-      "addCredits": "Kredi ekle",
-      "removeCredits": "Kredi kaldır",
-      "reason": "Sebep",
-      "reasonPlaceholder": "örn. Partner bonusu, İyi niyet, vb.",
-      "adjustmentSuccess": "Krediler başarıyla ayarlandı",
-      "noUser": "Kullanıcı bulunamadı",
-      "adjustmentHistory": "Ayarlama geçmişi",
-      "amount": "Miktar",
-      "adjustedBy": "Ayarlayan",
-      "date": "Tarih"
-    }
-  },
   "gamesLibrary": {
-    "categories": { "jga_games": "Bekarlığa Veda Oyunları", "family_games": "Aile Oyunları", "wedding_games": "Düğün Oyunları", "party_games": "Parti Oyunları", "outdoor_games": "Açık Hava Oyunları", "team_games": "Takım Kurma", "icebreaker": "Buz Kırıcılar", "kids_friendly": "Çocuklara Uygun" },
-    "filters": { "title": "Filtreler", "all": "Tümü", "category": "Kategori", "eventType": "Etkinlik Türü", "difficulty": "Zorluk", "kidsFriendly": "Çocuklara uygun", "alcoholFree": "Alkolsüz", "clear": "Filtreleri temizle" },
-    "difficulty": { "easy": "Kolay", "medium": "Orta", "hard": "Zor" },
+    "categories": {
+      "jga_games": "Bekarlığa Veda Oyunları",
+      "family_games": "Aile Oyunları",
+      "wedding_games": "Düğün Oyunları",
+      "party_games": "Parti Oyunları",
+      "outdoor_games": "Açık Hava Oyunları",
+      "team_games": "Takım Kurma",
+      "icebreaker": "Buz Kırıcılar",
+      "kids_friendly": "Çocuklara Uygun"
+    },
+    "filters": {
+      "title": "Filtreler",
+      "all": "Tümü",
+      "category": "Kategori",
+      "eventType": "Etkinlik Türü",
+      "difficulty": "Zorluk",
+      "kidsFriendly": "Çocuklara uygun",
+      "alcoholFree": "Alkolsüz",
+      "clear": "Filtreleri temizle"
+    },
+    "difficulty": {
+      "easy": "Kolay",
+      "medium": "Orta",
+      "hard": "Zor"
+    },
     "searchPlaceholder": "Oyun ara...",
     "resultsCount": "{{count}} oyun bulundu",
     "noResults": "Oyun bulunamadı. Başka filtreler deneyin.",
@@ -1553,32 +2231,185 @@
     "materials": "Malzemeler",
     "addToPlanner": "Planlayıcıya ekle",
     "games": {
-      "bingo_tasks": { "name": "Görev Bingo", "description": "Herkes şehirde tamamlanacak eğlenceli görevlerle bingo kartı alır.", "instructions": "Farklı görevlerle bingo kartları oluşturun. Grup şehirde dolaşarak hepsini tamamlamaya çalışır. İlk sırayı dolduran kazanır!" },
-      "beer_pong": { "name": "Beer Pong", "description": "Klasik - topu rakibin bardaklarına at.", "instructions": "Bardakları üçgen şeklinde dizin. Takımlar sırayla atar. İsabet = rakip içer. Bardaksız takım kaybeder." },
-      "truth_or_dare": { "name": "Doğruluk mu Cesaret mi", "description": "Cesur itiraflar ve çılgın görevler için klasik.", "instructions": "Sırayla herkes seçer: Doğruluk veya Cesaret. Reddetmek = ceza!" },
-      "karaoke_battle": { "name": "Karaoke Savaşı", "description": "Kazanmak için şarkı söyle!", "instructions": "Takımlar veya bireyler yarışır. Grup değerlendirir. Performans için puan!" },
-      "shoe_game": { "name": "Ayakkabı Oyunu", "description": "Çift ayakkabılarla soruları cevaplar.", "instructions": "Çift sırt sırta oturur, her biri kendi ayakkabısı ve partnerinkiyle. Sorularda cevabın geçerli olduğu kişinin ayakkabısını kaldırırlar." },
-      "scavenger_hunt": { "name": "Hazine Avı", "description": "İpuçlarını takip et ve bulmacaları çöz.", "instructions": "Bir sonraki yere götüren ipuçları gizleyin. Sonunda hazine bekliyor!" }
+      "bingo_tasks": {
+        "name": "Görev Bingo",
+        "description": "Herkes şehirde tamamlanacak eğlenceli görevlerle bingo kartı alır.",
+        "instructions": "Farklı görevlerle bingo kartları oluşturun. Grup şehirde dolaşarak hepsini tamamlamaya çalışır. İlk sırayı dolduran kazanır!"
+      },
+      "beer_pong": {
+        "name": "Beer Pong",
+        "description": "Klasik - topu rakibin bardaklarına at.",
+        "instructions": "Bardakları üçgen şeklinde dizin. Takımlar sırayla atar. İsabet = rakip içer. Bardaksız takım kaybeder."
+      },
+      "truth_or_dare": {
+        "name": "Doğruluk mu Cesaret mi",
+        "description": "Cesur itiraflar ve çılgın görevler için klasik.",
+        "instructions": "Sırayla herkes seçer: Doğruluk veya Cesaret. Reddetmek = ceza!"
+      },
+      "karaoke_battle": {
+        "name": "Karaoke Savaşı",
+        "description": "Kazanmak için şarkı söyle!",
+        "instructions": "Takımlar veya bireyler yarışır. Grup değerlendirir. Performans için puan!"
+      },
+      "shoe_game": {
+        "name": "Ayakkabı Oyunu",
+        "description": "Çift ayakkabılarla soruları cevaplar.",
+        "instructions": "Çift sırt sırta oturur, her biri kendi ayakkabısı ve partnerinkiyle. Sorularda cevabın geçerli olduğu kişinin ayakkabısını kaldırırlar."
+      },
+      "scavenger_hunt": {
+        "name": "Hazine Avı",
+        "description": "İpuçlarını takip et ve bulmacaları çöz.",
+        "instructions": "Bir sonraki yere götüren ipuçları gizleyin. Sonunda hazine bekliyor!"
+      }
     },
     "themes": {
-      "80s_retro": { "name": "80ler Retro Parti", "description": "Neon renkler, synth müzik ve omuz vatkaları", "tips": "Neon ışıklar, disko topları ve 80lerin hitleri!" },
-      "casino_royale": { "name": "Casino Royale", "description": "Zarif James Bond atmosferi", "tips": "Kırmızı halı, poker fişleri ve zarif kokteyller!" },
-      "oktoberfest": { "name": "Oktoberfest", "description": "Bavyera atmosferi", "tips": "Bira masaları, simit, sosis ve müzik!" }
+      "80s_retro": {
+        "name": "80ler Retro Parti",
+        "description": "Neon renkler, synth müzik ve omuz vatkaları",
+        "tips": "Neon ışıklar, disko topları ve 80lerin hitleri!"
+      },
+      "casino_royale": {
+        "name": "Casino Royale",
+        "description": "Zarif James Bond atmosferi",
+        "tips": "Kırmızı halı, poker fişleri ve zarif kokteyller!"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "description": "Bavyera atmosferi",
+        "tips": "Bira masaları, simit, sosis ve müzik!"
+      }
     }
   },
-  "ideasHub": { "title": "Oyunlar ve Fikirler", "description": "Etkinliğiniz için 200'den fazla oyun ve 50 tema keşfedin.", "tabs": { "games": "Oyunlar", "themes": "Temalar" }, "stats": { "games": "Oyunlar", "themes": "Temalar", "categories": "Kategoriler", "languages": "Diller" }, "openGames": "Tüm Oyunları Aç" },
-  "eventTypes": { "bachelor": "Bekarlığa Veda (O)", "bachelorette": "Kına Gecesi", "wedding": "Düğün", "birthday": "Doğum Günü", "family": "Aile", "team": "Takım", "trip": "Gezi", "other": "Diğer" },
+  "ideasHub": {
+    "title": "Oyunlar ve Fikirler",
+    "description": "Etkinliğiniz için 200'den fazla oyun ve 50 tema keşfedin.",
+    "tabs": {
+      "games": "Oyunlar",
+      "themes": "Temalar"
+    },
+    "stats": {
+      "games": "Oyunlar",
+      "themes": "Temalar",
+      "categories": "Kategoriler",
+      "languages": "Diller"
+    },
+    "openGames": "Tüm Oyunları Aç"
+  },
+  "eventTypes": {
+    "bachelor": "Bekarlığa Veda (O)",
+    "bachelorette": "Kına Gecesi",
+    "wedding": "Düğün",
+    "birthday": "Doğum Günü",
+    "family": "Aile",
+    "team": "Takım",
+    "trip": "Gezi",
+    "other": "Diğer"
+  },
   "agency": {
     "dashboard": "Ajans Paneli",
     "overview": "Genel Bakış",
     "events": "Etkinlikler",
-    "contacts": "Kişiler",
-    "templates": "Şablonlar",
-    "team": "Ekip",
-    "files": "Dosyalar",
-    "reports": "Raporlar",
+    "contacts": {
+      "searchContacts": "Kişi ara...",
+      "addContact": "Kişi Ekle",
+      "importCSV": "CSV İçe Aktar",
+      "name": "Ad",
+      "company": "Şirket",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "type": "Tür",
+      "rating": "Değerlendirme",
+      "lastUsed": "Son Kullanım",
+      "tags": "Etiketler",
+      "notes": "Notlar",
+      "priceHistory": "Fiyat Geçmişi",
+      "pastEvents": "Geçmiş Etkinlikler",
+      "availability": "Müsaitlik",
+      "topRated": "En Yüksek Puanlı",
+      "recentlyUsed": "Son Kullanılan",
+      "available": "Müsait",
+      "qualityScore": "Kalite Puanı",
+      "specialization": "Uzmanlık"
+    },
+    "templates": {
+      "useTemplate": "Şablonu Kullan",
+      "createFromEvent": "Etkinlikten Oluştur",
+      "timesUsed": "kez kullanıldı",
+      "lastUsed": "Son kullanım",
+      "categories": {
+        "corporate": "Kurumsal",
+        "wedding": "Düğün",
+        "jga": "Bekarlığa Veda",
+        "birthday": "Doğum Günü",
+        "conference": "Konferans",
+        "festival": "Festival",
+        "other": "Diğer"
+      }
+    },
+    "team": {
+      "inviteMember": "Üye Davet Et",
+      "inviteByEmail": "E-posta ile Davet Et",
+      "role": "Rol",
+      "activeEvents": "Aktif Etkinlikler",
+      "lastActive": "Son Aktivite",
+      "workload": "İş Yükü",
+      "deactivate": "Devre Dışı Bırak",
+      "activityLog": "Aktivite Günlüğü"
+    },
+    "files": {
+      "uploadFiles": "Dosya Yükle",
+      "dragAndDrop": "Dosyaları buraya sürükleyin veya göz atmak için tıklayın",
+      "storageUsed": "Kullanılan Depolama",
+      "categories": {
+        "contract": "Sözleşme",
+        "invoice": "Fatura",
+        "photo": "Fotoğraf",
+        "floorPlan": "Kat Planı",
+        "briefing": "Brifing",
+        "other": "Diğer"
+      },
+      "gridView": "Izgara Görünümü",
+      "listView": "Liste Görünümü"
+    },
+    "reports": {
+      "dateRange": "Tarih Aralığı",
+      "eventsPerMonth": "Aylık Etkinlikler",
+      "revenueTrend": "Gelir Trendi",
+      "eventTypes": "Etkinlik Türleri Dağılımı",
+      "budgetAccuracy": "Bütçe Doğruluğu",
+      "exportCSV": "CSV Dışa Aktar",
+      "avgBudgetPerEvent": "Ort. Bütçe/Etkinlik",
+      "clientRetention": "Müşteri Sadakati"
+    },
     "calendar": "Takvim",
-    "runOfShow": "Etkinlik Akışı",
+    "runOfShow": {
+      "liveTimeline": "Canlı Zaman Çizelgesi",
+      "currentPhase": "Mevcut Aşama",
+      "upcoming": "Yaklaşan",
+      "active": "Aktif",
+      "completed": "Tamamlandı",
+      "delayed": "Gecikmiş",
+      "skipped": "Atlandı",
+      "markActive": "Aktif Olarak İşaretle",
+      "markComplete": "Tamamlandı Olarak İşaretle",
+      "skip": "Atla",
+      "countdown": "Geri Sayım",
+      "responsible": "Sorumlu",
+      "cueNotes": "Yönetmen Notları",
+      "delayMinutes": "Gecikme (dakika)",
+      "multiStage": "Çoklu Sahne",
+      "mainStage": "Ana Sahne",
+      "breakoutRoom": "Çalışma Odası",
+      "emergency": "Acil Durum Protokolü",
+      "incidentLog": "Olay Kaydı",
+      "reportIncident": "Olay Bildir",
+      "roleView": "Rol Görünümü",
+      "allRoles": "Tüm Roller",
+      "moderator": "Moderatör",
+      "technician": "Teknisyen",
+      "catering": "Yemek Hizmeti",
+      "crew": "Ekip"
+    },
     "budgetEngine": "Bütçe Motoru",
     "notifications": "Bildirimler",
     "stats": {
@@ -1630,28 +2461,6 @@
       "transport": "Ulaşım",
       "security": "Güvenlik"
     },
-    "contacts": {
-      "searchContacts": "Kişi ara...",
-      "addContact": "Kişi Ekle",
-      "importCSV": "CSV İçe Aktar",
-      "name": "Ad",
-      "company": "Şirket",
-      "phone": "Telefon",
-      "email": "E-posta",
-      "type": "Tür",
-      "rating": "Değerlendirme",
-      "lastUsed": "Son Kullanım",
-      "tags": "Etiketler",
-      "notes": "Notlar",
-      "priceHistory": "Fiyat Geçmişi",
-      "pastEvents": "Geçmiş Etkinlikler",
-      "availability": "Müsaitlik",
-      "topRated": "En Yüksek Puanlı",
-      "recentlyUsed": "Son Kullanılan",
-      "available": "Müsait",
-      "qualityScore": "Kalite Puanı",
-      "specialization": "Uzmanlık"
-    },
     "planner": {
       "overview": "Genel Bakış",
       "timeline": "Zaman Çizelgesi",
@@ -1689,34 +2498,6 @@
       "approvalPending": "Onay Bekliyor",
       "approved": "Onaylandı"
     },
-    "runOfShow": {
-      "liveTimeline": "Canlı Zaman Çizelgesi",
-      "currentPhase": "Mevcut Aşama",
-      "upcoming": "Yaklaşan",
-      "active": "Aktif",
-      "completed": "Tamamlandı",
-      "delayed": "Gecikmiş",
-      "skipped": "Atlandı",
-      "markActive": "Aktif Olarak İşaretle",
-      "markComplete": "Tamamlandı Olarak İşaretle",
-      "skip": "Atla",
-      "countdown": "Geri Sayım",
-      "responsible": "Sorumlu",
-      "cueNotes": "Yönetmen Notları",
-      "delayMinutes": "Gecikme (dakika)",
-      "multiStage": "Çoklu Sahne",
-      "mainStage": "Ana Sahne",
-      "breakoutRoom": "Çalışma Odası",
-      "emergency": "Acil Durum Protokolü",
-      "incidentLog": "Olay Kaydı",
-      "reportIncident": "Olay Bildir",
-      "roleView": "Rol Görünümü",
-      "allRoles": "Tüm Roller",
-      "moderator": "Moderatör",
-      "technician": "Teknisyen",
-      "catering": "Yemek Hizmeti",
-      "crew": "Ekip"
-    },
     "teamRoles": {
       "owner": "Sahip",
       "coOrganizer": "Yardımcı Organizatör",
@@ -1726,56 +2507,6 @@
       "agencyAdmin": "Ajans Yöneticisi",
       "eventManager": "Etkinlik Yöneticisi",
       "assistant": "Asistan"
-    },
-    "team": {
-      "inviteMember": "Üye Davet Et",
-      "inviteByEmail": "E-posta ile Davet Et",
-      "role": "Rol",
-      "activeEvents": "Aktif Etkinlikler",
-      "lastActive": "Son Aktivite",
-      "workload": "İş Yükü",
-      "deactivate": "Devre Dışı Bırak",
-      "activityLog": "Aktivite Günlüğü"
-    },
-    "templates": {
-      "useTemplate": "Şablonu Kullan",
-      "createFromEvent": "Etkinlikten Oluştur",
-      "timesUsed": "kez kullanıldı",
-      "lastUsed": "Son kullanım",
-      "categories": {
-        "corporate": "Kurumsal",
-        "wedding": "Düğün",
-        "jga": "Bekarlığa Veda",
-        "birthday": "Doğum Günü",
-        "conference": "Konferans",
-        "festival": "Festival",
-        "other": "Diğer"
-      }
-    },
-    "files": {
-      "uploadFiles": "Dosya Yükle",
-      "dragAndDrop": "Dosyaları buraya sürükleyin veya göz atmak için tıklayın",
-      "storageUsed": "Kullanılan Depolama",
-      "categories": {
-        "contract": "Sözleşme",
-        "invoice": "Fatura",
-        "photo": "Fotoğraf",
-        "floorPlan": "Kat Planı",
-        "briefing": "Brifing",
-        "other": "Diğer"
-      },
-      "gridView": "Izgara Görünümü",
-      "listView": "Liste Görünümü"
-    },
-    "reports": {
-      "dateRange": "Tarih Aralığı",
-      "eventsPerMonth": "Aylık Etkinlikler",
-      "revenueTrend": "Gelir Trendi",
-      "eventTypes": "Etkinlik Türleri Dağılımı",
-      "budgetAccuracy": "Bütçe Doğruluğu",
-      "exportCSV": "CSV Dışa Aktar",
-      "avgBudgetPerEvent": "Ort. Bütçe/Etkinlik",
-      "clientRetention": "Müşteri Sadakati"
     },
     "search": {
       "placeholder": "Etkinlik, kişi, tedarikçi ara...",
@@ -1903,103 +2634,103 @@
   },
   "native": {
     "home": {
-      "greeting": "Merhaba {{name}} \ud83d\udc4b",
+      "greeting": "Merhaba {{name}} 👋",
       "heroTitle": "Bunu",
-      "heroHighlight": "epik yapal\u0131m.",
+      "heroHighlight": "epik yapalım.",
       "newEvent": "Yeni Etkinlik",
       "planParty": "Parti planla",
-      "joinEvent": "Etkinli\u011fe Kat\u0131l",
+      "joinEvent": "Etkinliğe Katıl",
       "games": "Oyunlar",
       "yourEvents": "Etkinliklerin",
-      "allEvents": "T\u00fcm\u00fc",
-      "noEventsYet": "Hen\u00fcz etkinlik yok \u2014 ilkini planla!",
-      "participants": "Kat\u0131l\u0131mc\u0131lar",
-      "playNow": "\u015eimdi oyna",
+      "allEvents": "Tümü",
+      "noEventsYet": "Henüz etkinlik yok — ilkini planla!",
+      "participants": "Katılımcılar",
+      "playNow": "Şimdi oyna",
       "partyGamesCount": "24+ Parti Oyunu",
-      "partyGamesSubtitle": "Tabu, Bomba, Headup ve daha fazlas\u0131",
-      "findInspiration": "\u0130lham bul",
-      "findInspirationSub": "Etkinli\u011fin i\u00e7in temalar, oyunlar ve fikirler"
+      "partyGamesSubtitle": "Tabu, Bomba, Headup ve daha fazlası",
+      "findInspiration": "İlham bul",
+      "findInspirationSub": "Etkinliğin için temalar, oyunlar ve fikirler"
     },
     "games": {
-      "subtitle": "Parti Oyunlar\u0131",
-      "title": "E\u011flenmeye haz\u0131r m\u0131s\u0131n\u0131z?",
-      "unlockPremium": "Premium A\u00e7",
-      "unlockPremiumSub": "17 oyunu s\u0131n\u0131rs\u0131z oyna",
+      "subtitle": "Parti Oyunları",
+      "title": "Eğlenmeye hazır mısınız?",
+      "unlockPremium": "Premium Aç",
+      "unlockPremiumSub": "17 oyunu sınırsız oyna",
       "isUp": "sıra sende! 🎯",
       "categories": {
-        "alle": "T\u00fcm\u00fc",
+        "alle": "Tümü",
         "party": "Parti",
         "social": "Sosyal",
         "quiz": "Bilgi",
         "wort": "Kelime",
         "karte": "Harita",
         "reaktion": "Reaksiyon",
-        "kreativ": "Yarat\u0131c\u0131"
+        "kreativ": "Yaratıcı"
       }
     },
     "gameNames": {
       "bomb": "Saatli Bomba",
-      "headup": "Al\u0131nda Tahmin",
+      "headup": "Alında Tahmin",
       "taboo": "Yasak Kelime",
-      "category": "Zamanl\u0131 Kategori",
+      "category": "Zamanlı Kategori",
       "thisOrThat": "This or That",
-      "hochstapler": "Sahtek\u00e2r",
-      "wahrheitPflicht": "Do\u011fruluk mu Cesaret mi",
+      "hochstapler": "Sahtekâr",
+      "wahrheitPflicht": "Doğruluk mu Cesaret mi",
       "werBinIch": "Ben Kimim?",
-      "flaschendrehen": "\u015ei\u015feyi \u00c7evir",
+      "flaschendrehen": "Şişeyi Çevir",
       "emojiRaten": "Emoji Tahmin",
       "fakeOrFact": "Fake or Fact",
-      "schnellzeichner": "H\u0131zl\u0131 \u00c7izer",
+      "schnellzeichner": "Hızlı Çizer",
       "splitQuiz": "Split Quiz",
-      "geteiltGequizzt": "Payla\u015f & Bil",
+      "geteiltGequizzt": "Paylaş & Bil",
       "storyBuilder": "Story Builder",
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas"
     },
     "gameDescs": {
       "bomb": "Kimde patlar?",
-      "headup": "Al\u0131nla tahmin et",
+      "headup": "Alınla tahmin et",
       "taboo": "Yasak kelimesiz anlat",
-      "category": "Saate kar\u015f\u0131",
-      "thisOrThat": "An\u0131nda kararlar",
-      "hochstapler": "Sahtek\u00e2r\u0131 bul",
-      "wahrheitPflicht": "Klasik \u2014 geni\u015fletilmi\u015f",
-      "werBinIch": "Evet/hay\u0131r ile kazan",
-      "flaschendrehen": "\u015ei\u015fe karar verir",
-      "emojiRaten": "Emojilerden film ve \u015fark\u0131",
-      "fakeOrFact": "Ger\u00e7ek mi yalan m\u0131?",
-      "schnellzeichner": "Bask\u0131 alt\u0131nda \u00e7iz",
-      "splitQuiz": "Tak\u0131m quiz'i split ile",
-      "geteiltGequizzt": "\u0130\u015f birlikli quiz",
-      "storyBuilder": "\u00c7\u0131lg\u0131n hikayeler",
+      "category": "Saate karşı",
+      "thisOrThat": "Anında kararlar",
+      "hochstapler": "Sahtekârı bul",
+      "wahrheitPflicht": "Klasik — genişletilmiş",
+      "werBinIch": "Evet/hayır ile kazan",
+      "flaschendrehen": "Şişe karar verir",
+      "emojiRaten": "Emojilerden film ve şarkı",
+      "fakeOrFact": "Gerçek mi yalan mı?",
+      "schnellzeichner": "Baskı altında çiz",
+      "splitQuiz": "Takım quiz'i split ile",
+      "geteiltGequizzt": "İş birlikli quiz",
+      "storyBuilder": "Çılgın hikayeler",
       "woIstWas": "Yeri bul",
-      "drueckDasWort": "H\u0131zl\u0131 yaz, h\u0131zl\u0131 d\u00fc\u015f\u00fcn"
+      "drueckDasWort": "Hızlı yaz, hızlı düşün"
     },
     "events": {
       "title": "Etkinlikler",
-      "countSummary": "{{active}} aktif \u00b7 {{archived}} ar\u015fivlenmi\u015f",
+      "countSummary": "{{active}} aktif · {{archived}} arşivlenmiş",
       "searchPlaceholder": "Etkinlik ara...",
       "tabActive": "Aktif",
-      "tabArchived": "Ar\u015fivlenmi\u015f",
-      "noEventsTitle": "Hen\u00fcz etkinlik yok",
-      "noArchivedTitle": "Ar\u015fivlenmi\u015f etkinlik yok",
-      "noEventsDesc": "\u0130lk etkinli\u011fini planla ve arkada\u015flar\u0131n\u0131 davet et.",
-      "noArchivedDesc": "Ar\u015fivlenmi\u015f etkinlikler burada g\u00f6r\u00fcnecek.",
-      "createEvent": "Etkinlik Olu\u015ftur",
-      "forHonoree": "{{name}} i\u00e7in"
+      "tabArchived": "Arşivlenmiş",
+      "noEventsTitle": "Henüz etkinlik yok",
+      "noArchivedTitle": "Arşivlenmiş etkinlik yok",
+      "noEventsDesc": "İlk etkinliğini planla ve arkadaşlarını davet et.",
+      "noArchivedDesc": "Arşivlenmiş etkinlikler burada görünecek.",
+      "createEvent": "Etkinlik Oluştur",
+      "forHonoree": "{{name}} için"
     },
     "ideas": {
-      "subtitle": "\u0130lham",
-      "title": "\u0130lham veren",
+      "subtitle": "İlham",
+      "title": "İlham veren",
       "titleHighlight": "fikirler",
-      "stats": "147 Oyun \u00b7 56 Tema \u00b7 Her durum i\u00e7in",
+      "stats": "147 Oyun · 56 Tema · Her durum için",
       "tabGames": "Oyunlar ({{count}})",
       "tabThemes": "Temalar ({{count}})",
       "searchGames": "Oyun ara...",
       "searchThemes": "Tema ara...",
       "moreGames": "+{{count}} daha fazla oyun",
-      "noGames": "Oyun bulunamad\u0131",
-      "noThemes": "Tema bulunamad\u0131",
+      "noGames": "Oyun bulunamadı",
+      "noThemes": "Tema bulunamadı",
       "readAloud": "Sesli oku",
       "material": "Malzeme",
       "difficulty": {
@@ -2008,137 +2739,137 @@
         "hard": "Zor"
       },
       "categories": {
-        "alle": "T\u00fcm\u00fc",
+        "alle": "Tümü",
         "party": "Parti",
-        "jga": "BekArl\u0131k/K\u0131na",
-        "outdoor": "A\u00e7\u0131k Hava",
-        "team": "Tak\u0131m",
-        "icebreaker": "Buz K\u0131r\u0131c\u0131",
+        "jga": "BekArlık/Kına",
+        "outdoor": "Açık Hava",
+        "team": "Takım",
+        "icebreaker": "Buz Kırıcı",
         "familie": "Aile",
-        "hochzeit": "D\u00fc\u011f\u00fcn"
+        "hochzeit": "Düğün"
       },
       "themeCategories": {
-        "alle": "T\u00fcm\u00fc",
+        "alle": "Tümü",
         "retro": "Retro",
-        "elegant": "\u015e\u0131k",
+        "elegant": "Şık",
         "casual": "Rahat",
         "abenteuer": "Macera",
         "saison": "Mevsimlik",
-        "kostuem": "Kost\u00fcm",
+        "kostuem": "Kostüm",
         "wellness": "Wellness"
       }
     },
     "profile": {
       "settings": "Ayarlar",
       "language": "Dil",
-      "appearance": "G\u00f6r\u00fcn\u00fcm",
+      "appearance": "Görünüm",
       "privacy": "Gizlilik",
-      "helpSupport": "Yard\u0131m ve Destek",
-      "logout": "\u00c7\u0131k\u0131\u015f yap",
-      "unlockPremium": "Premium A\u00e7",
-      "unlockPremiumSub": "T\u00fcm Oyunlar \u00b7 S\u0131n\u0131rs\u0131z",
-      "version": "EventBliss \u00b7 S\u00fcr\u00fcm 1.0.0",
+      "helpSupport": "Yardım ve Destek",
+      "logout": "Çıkış yap",
+      "unlockPremium": "Premium Aç",
+      "unlockPremiumSub": "Tüm Oyunlar · Sınırsız",
+      "version": "EventBliss · Sürüm 1.0.0",
       "guest": "Misafir",
       "themeDark": "Koyu",
-      "themeLight": "A\u00e7\u0131k",
-      "themeRose": "Ros\u00e9",
-      "partyMode": "\ud83c\udf7a Party-Modus (18+)",
-      "partyModeOn": "A\u00e7\u0131k",
-      "partyModeOff": "Kapal\u0131",
-      "partyStats": "\ud83d\udcca Parti \u0130statistikleri",
+      "themeLight": "Açık",
+      "themeRose": "Rosé",
+      "partyMode": "🍺 Party-Modus (18+)",
+      "partyModeOn": "Açık",
+      "partyModeOff": "Kapalı",
+      "partyStats": "📊 Parti İstatistikleri",
       "partyStatsRounds": "{{count}} tur",
       "partyModeTitle": "Party-Modus (18+)",
-      "partyModeWarning": "Bu mod 18 ya\u015f ve \u00fczeri i\u00e7indir. \u0130\u00e7ki oyunlar\u0131 sa\u011fl\u0131k riskleri ta\u015f\u0131yabilir. Sorumlu i\u00e7in ve birbirinize dikkat edin.",
-      "partyModeCheckbox": "En az 18 ya\u015f\u0131nday\u0131m ve Party-Modus'u kendi sorumlulu\u011fumda etkinle\u015ftiriyorum.",
-      "partyModeCancel": "\u0130ptal",
-      "partyModeActivate": "\ud83c\udf7b Etkinle\u015ftir",
-      "partyModeDisclaimer": "EventBliss alkoll\u00fc i\u00e7ecek t\u00fcketiminden sorumluluk kabul etmez.",
+      "partyModeWarning": "Bu mod 18 yaş ve üzeri içindir. İçki oyunları sağlık riskleri taşıyabilir. Sorumlu için ve birbirinize dikkat edin.",
+      "partyModeCheckbox": "En az 18 yaşındayım ve Party-Modus'u kendi sorumluluğumda etkinleştiriyorum.",
+      "partyModeCancel": "İptal",
+      "partyModeActivate": "🍻 Etkinleştir",
+      "partyModeDisclaimer": "EventBliss alkollü içecek tüketiminden sorumluluk kabul etmez.",
       "partyModeActivated": "Party-Modus",
-      "partyModeActivatedSub": "etkinle\u015ftirildi! \ud83d\udd25",
-      "partyModeActivatedDesc": "Art\u0131k ceza almak yerine i\u00e7iyorsun",
+      "partyModeActivatedSub": "etkinleştirildi! 🔥",
+      "partyModeActivatedDesc": "Artık ceza almak yerine içiyorsun",
       "close": "Kapat",
-      "adminPanel": "Y\u00f6netici Paneli",
+      "adminPanel": "Yönetici Paneli",
       "adminDashboard": "Dashboard"
     },
     "create": {
-      "headerTitle": "Etkinlik Olu\u015ftur",
+      "headerTitle": "Etkinlik Oluştur",
       "headerDone": "Tamam!",
-      "stepOf": "Ad\u0131m {{step}} / {{total}}",
+      "stepOf": "Adım {{step}} / {{total}}",
       "stepType": {
         "title": "Ne kutluyorsun?",
-        "subtitle": "Etkinlik t\u00fcr\u00fcn\u00fc se\u00e7",
-        "bachelor": "BekArl\u0131\u011fa Veda",
-        "bachelorette": "K\u0131na Gecesi",
-        "birthday": "Do\u011fum G\u00fcn\u00fc",
+        "subtitle": "Etkinlik türünü seç",
+        "bachelor": "BekArlığa Veda",
+        "bachelorette": "Kına Gecesi",
+        "birthday": "Doğum Günü",
         "trip": "Grup Gezisi",
-        "other": "Di\u011fer Etkinlik"
+        "other": "Diğer Etkinlik"
       },
       "stepDetails": {
         "title": "Detaylar",
-        "subtitle": "Etkinli\u011finin temelleri",
-        "eventName": "Etkinlik Ad\u0131 *",
-        "eventNamePlaceholder": "\u00f6rn. Tim\u2019in Bekarlara Veda Amsterdam",
-        "honoree": "Kimin i\u00e7in? *",
-        "honoreePlaceholder": "\u00f6rn. Tim",
-        "date": "Tarih (iste\u011fe ba\u011fl\u0131)",
-        "yourName": "Senin Ad\u0131n *",
-        "yourNamePlaceholder": "Ad\u0131n"
+        "subtitle": "Etkinliğinin temelleri",
+        "eventName": "Etkinlik Adı *",
+        "eventNamePlaceholder": "örn. Tim’in Bekarlara Veda Amsterdam",
+        "honoree": "Kimin için? *",
+        "honoreePlaceholder": "örn. Tim",
+        "date": "Tarih (isteğe bağlı)",
+        "yourName": "Senin Adın *",
+        "yourNamePlaceholder": "Adın"
       },
       "stepGuests": {
         "title": "Misafirler",
-        "subtitle": "Kim geliyor? (iste\u011fe ba\u011fl\u0131, sonra ekleyebilirsin)",
-        "inputPlaceholder": "\u0130sim gir...",
+        "subtitle": "Kim geliyor? (isteğe bağlı, sonra ekleyebilirsin)",
+        "inputPlaceholder": "İsim gir...",
         "guestCount_one": "{{count}} misafir",
         "guestCount_other": "{{count}} misafir",
-        "noGuests": "Hen\u00fcz misafir yok \u2014 sonra davet edebilirsin."
+        "noGuests": "Henüz misafir yok — sonra davet edebilirsin."
       },
       "stepReview": {
-        "title": "Her \u015fey do\u011fru mu?",
-        "subtitle": "Etkinli\u011fini kontrol et",
-        "forLabel": "\u0130\u00e7in",
+        "title": "Her şey doğru mu?",
+        "subtitle": "Etkinliğini kontrol et",
+        "forLabel": "İçin",
         "dateLabel": "Tarih",
-        "dateOpen": "Hen\u00fcz belirlenmedi",
-        "organizer": "Organizat\u00f6r",
+        "dateOpen": "Henüz belirlenmedi",
+        "organizer": "Organizatör",
         "guestsLabel": "Misafirler"
       },
       "stepSuccess": {
-        "title": "Etkinlik olu\u015fturuldu! \ud83c\udf89",
-        "subtitle": "Linki arkada\u015flar\u0131nla payla\u015f",
-        "accessCode": "Eri\u015fim Kodu",
+        "title": "Etkinlik oluşturuldu! 🎉",
+        "subtitle": "Linki arkadaşlarınla paylaş",
+        "accessCode": "Erişim Kodu",
         "link": "Link",
         "copyLink": "Linki kopyala",
-        "copied": "Kopyaland\u0131!",
-        "shareWhatsApp": "WhatsApp\u2019ta Payla\u015f",
-        "toDashboard": "Dashboard\u2019a Git",
-        "whatsAppText": "\ud83c\udf89 Davetlisin!\n\n\"{{name}}\" etkinli\u011fine {{honoree}} i\u00e7in kat\u0131l!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Kod: {{code}}"
+        "copied": "Kopyalandı!",
+        "shareWhatsApp": "WhatsApp’ta Paylaş",
+        "toDashboard": "Dashboard’a Git",
+        "whatsAppText": "🎉 Davetlisin!\n\n\"{{name}}\" etkinliğine {{honoree}} için katıl!\n\n👉 {{link}}\n📝 Kod: {{code}}"
       },
-      "buttonNext": "\u0130leri",
-      "buttonCreate": "Etkinlik Olu\u015ftur"
+      "buttonNext": "İleri",
+      "buttonCreate": "Etkinlik Oluştur"
     },
     "join": {
-      "headerTitle": "Etkinli\u011fe Kat\u0131l",
-      "title": "Davetin var m\u0131?",
-      "subtitle": "Ald\u0131\u011f\u0131n eri\u015fim kodunu gir",
-      "placeholder": "\u00f6rn. STAG2025",
+      "headerTitle": "Etkinliğe Katıl",
+      "title": "Davetin var mı?",
+      "subtitle": "Aldığın erişim kodunu gir",
+      "placeholder": "örn. STAG2025",
       "searchButton": "Etkinlik bul",
-      "errorNotFound": "Bu kodla etkinlik bulunamad\u0131.",
-      "errorGeneric": "Arama hatas\u0131. L\u00fctfen kodu kontrol et.",
+      "errorNotFound": "Bu kodla etkinlik bulunamadı.",
+      "errorGeneric": "Arama hatası. Lütfen kodu kontrol et.",
       "eventFound": "Etkinlik bulundu",
-      "forHonoree": "{{name}} i\u00e7in",
-      "joinButton": "Kat\u0131l"
+      "forHonoree": "{{name}} için",
+      "joinButton": "Katıl"
     },
     "onboarding": {
       "slide1Title": "Epik etkinlikler planla",
-      "slide1Subtitle": "Bekarlara veda, do\u011fum g\u00fcnleri, grup gezileri \u2014 hepsi tek yerden.",
+      "slide1Subtitle": "Bekarlara veda, doğum günleri, grup gezileri — hepsi tek yerden.",
       "slide2Title": "24+ parti oyunu oyna",
-      "slide2Subtitle": "Tabu, Bomba, Headup, Do\u011fruluk mu Cesaret mi, Casuslar ve daha fazlas\u0131.",
-      "slide3Title": "Masraflar\u0131 payla\u015f",
-      "slide3Subtitle": "Harcamalar\u0131 takip et ve garip konu\u015fmalar olmadan hesapla\u015f.",
+      "slide2Subtitle": "Tabu, Bomba, Headup, Doğruluk mu Cesaret mi, Casuslar ve daha fazlası.",
+      "slide3Title": "Masrafları paylaş",
+      "slide3Subtitle": "Harcamaları takip et ve garip konuşmalar olmadan hesaplaş.",
       "slide4Title": "Herkesi davet et",
-      "slide4Subtitle": "Link payla\u015f, kat\u0131l\u0131m topla ve herkesi bilgilendir.",
+      "slide4Subtitle": "Link paylaş, katılım topla ve herkesi bilgilendir.",
       "skip": "Atla",
-      "next": "\u0130leri",
-      "getStarted": "Hadi ba\u015flayal\u0131m"
+      "next": "İleri",
+      "getStarted": "Hadi başlayalım"
     }
   },
   "marketplace": {
@@ -2296,8 +3027,29 @@
   "bookingCalendar": {
     "title": "Rezervasyon Takvimi",
     "today": "Bugün",
-    "dayNames": ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"],
-    "monthNames": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+    "dayNames": [
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt",
+      "Paz"
+    ],
+    "monthNames": [
+      "Ocak",
+      "Şubat",
+      "Mart",
+      "Nisan",
+      "Mayıs",
+      "Haziran",
+      "Temmuz",
+      "Ağustos",
+      "Eylül",
+      "Ekim",
+      "Kasım",
+      "Aralık"
+    ],
     "bookingsTotal": "Toplam {{count}} rezervasyon",
     "noBookingsDay": "Bu gün için rezervasyon yok",
     "exportICal": "iCal olarak dışa aktar",
@@ -2334,7 +3086,15 @@
     "unblock": "Engeli kaldır",
     "editAfterSave": "Müsaitlik kaydettikten sonra yapılandırılabilir.",
     "editButton": "Müsaitliği düzenle",
-    "days": ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"]
+    "days": [
+      "Pazar",
+      "Pazartesi",
+      "Salı",
+      "Çarşamba",
+      "Perşembe",
+      "Cuma",
+      "Cumartesi"
+    ]
   },
   "eventServices": {
     "bookedServices": "Rezerve Edilen Hizmetler",
@@ -2344,5 +3104,275 @@
     "browseHint": "Etkinliğiniz için mükemmel hizmet sağlayıcıyı bulun",
     "bookForEvent": "Etkinlik için rezerve et",
     "openMarketplace": "Marketplace'i aç"
+  },
+  "nativeDashboard": {
+    "eventTypes": {
+      "bachelor": "Despedida de soltero",
+      "bachelorette": "Despedida de soltera",
+      "birthday": "Cumpleaños",
+      "wedding": "Boda",
+      "other": "Evento"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "guests": "Invitados",
+      "schedule": "Horario",
+      "expenses": "Gastos",
+      "services": "Servicios",
+      "form": "Formulario",
+      "responses": "Respuestas",
+      "ai": "IA",
+      "settings": "Ajustes"
+    },
+    "honoree": "Homenajeado",
+    "noDate": "Sin fecha",
+    "participants": "Participantes",
+    "confirmed": "Confirmados",
+    "maybe": "Quizás",
+    "guest": "Invitado",
+    "loading": "Cargando...",
+    "notFound": "Evento no encontrado",
+    "notFoundDesc": "No se pudo cargar.",
+    "back": "Volver",
+    "countdown": {
+      "today": "¡Hoy!",
+      "tomorrow": "¡Mañana!",
+      "inDays": "En {{count}} días"
+    },
+    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "quickActions": {
+      "inviteGuests": "Invitar",
+      "planActivity": "Planificar",
+      "addExpense": "Añadir gasto",
+      "aiAssistant": "Asistente IA"
+    },
+    "recentActivity": "Actividad reciente",
+    "noActivity": "Sin actividad",
+    "activity": {
+      "rsvpConfirmed": "{{name}} confirmó",
+      "rsvpDeclined": "{{name}} declinó",
+      "surveyResponse": "{{name}} votó",
+      "expenseCreated": "Gasto: {{title}}",
+      "budgetUpdated": "Presupuesto actualizado",
+      "guestInvited": "{{name}} invitado",
+      "scheduleUpdated": "Horario actualizado"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    },
+    "status": {
+      "active": "Activo",
+      "planning": "Planificación",
+      "draft": "Borrador"
+    },
+    "services": {
+      "openMarketplace": "Abrir Marketplace",
+      "openMarketplaceSub": "Descubre y reserva servicios",
+      "bookedServices": "Servicios reservados",
+      "noBookings": "Sin servicios reservados",
+      "details": "Detalles",
+      "cancel": "Cancelar",
+      "statusPending": "Pendiente",
+      "statusConfirmed": "Confirmado",
+      "statusCompleted": "Completado",
+      "statusCancelled": "Cancelado"
+    }
+  },
+  "nativeGuests": {
+    "status": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado",
+      "invited": "Invitado"
+    },
+    "organizer": "Organizador",
+    "guestRole": "Invitado",
+    "searchPlaceholder": "Buscar invitados...",
+    "noGuests": "Sin invitados",
+    "noGuestsDesc": "Invita a amigos y familiares.",
+    "noResults": "Sin resultados",
+    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
+    "inviteGuests": "Invitar",
+    "inviteLink": "Enlace de invitación",
+    "eventCode": "Código del evento",
+    "copied": "¡Copiado!",
+    "copyLink": "Copiar enlace",
+    "host": "Anfitrión"
+  },
+  "nativeSchedule": {
+    "categories": {
+      "food": "Comida y bebida",
+      "activity": "Actividad",
+      "transport": "Transporte",
+      "party": "Fiesta",
+      "sightseeing": "Turismo",
+      "accommodation": "Alojamiento",
+      "relaxation": "Relajación",
+      "other": "Otro"
+    },
+    "noActivities": "Sin actividades",
+    "noActivitiesDesc": "Planifica el horario perfecto",
+    "addActivity": "Añadir actividad",
+    "day": "Día {{num}}",
+    "form": {
+      "title": "Título",
+      "time": "Hora",
+      "category": "Categoría",
+      "notes": "Notas",
+      "location": "Lugar",
+      "duration": "Duración",
+      "cost": "Coste",
+      "responsible": "Responsable",
+      "add": "Añadir",
+      "titlePlaceholder": "p.ej. Desayuno"
+    }
+  },
+  "nativeJoinRoom": {
+    "title": "Unirse a sala",
+    "subtitle": "Código de 6 dígitos",
+    "hint": "Pide el código al anfitrión",
+    "join": "Unirse",
+    "invalidCode": "El código debe tener 6 caracteres."
+  },
+  "nativeFab": {
+    "createEvent": "Crear evento",
+    "joinEvent": "Unirse",
+    "createRoom": "Crear sala",
+    "joinRoom": "Unirse a sala",
+    "quickGame": "Juego rápido"
+  },
+  "nativeTabs": {
+    "home": "Inicio",
+    "events": "Eventos",
+    "play": "Jugar",
+    "market": "Mercado",
+    "profile": "Perfil"
+  },
+  "nativeDrinks": {
+    "title": "Party Stats",
+    "yourRank": "Tu rango esta noche",
+    "nextRank": "Siguiente rango",
+    "waterReminder": "¡No olvides el agua!",
+    "waterReminderDesc": "Un vaso de agua por cada bebida.",
+    "resetSession": "Reiniciar",
+    "confirmReset": "Sí, reiniciar",
+    "cancel": "Cancelar",
+    "ranks": {
+      "legend": "Leyenda",
+      "champion": "Campeón",
+      "partyAnimal": "Fiestero",
+      "pro": "Pro",
+      "enthusiast": "Entusiasta",
+      "beginner": "Principiante",
+      "sober": "Sobrio"
+    }
+  },
+  "nativeAdmin": {
+    "title": "Panel Admin",
+    "areas": "{{count}} áreas",
+    "cards": {
+      "stats": {
+        "label": "Dashboard",
+        "desc": "Usuarios, Eventos"
+      },
+      "games": {
+        "label": "Contenido",
+        "desc": "Preguntas"
+      },
+      "users": {
+        "label": "Usuarios",
+        "desc": "Roles"
+      },
+      "credits": {
+        "label": "AI Credits",
+        "desc": "Límites"
+      },
+      "subscriptions": {
+        "label": "Suscripciones",
+        "desc": "Planes"
+      },
+      "vouchers": {
+        "label": "Cupones",
+        "desc": "Códigos"
+      },
+      "affiliates": {
+        "label": "Afiliados",
+        "desc": "Socios"
+      },
+      "commissions": {
+        "label": "Comisiones",
+        "desc": "Pagos"
+      },
+      "payouts": {
+        "label": "Pagos",
+        "desc": "Historial"
+      },
+      "analytics": {
+        "label": "Analíticas",
+        "desc": "Interacciones"
+      },
+      "agencies": {
+        "label": "Agencias",
+        "desc": "Multi-agencia"
+      },
+      "settings": {
+        "label": "Configuración",
+        "desc": "Precios"
+      }
+    }
+  },
+  "nativeResponses": {
+    "stats": {
+      "responses": "Respuestas",
+      "responseRate": "Tasa de respuesta",
+      "latestResponse": "Última respuesta"
+    },
+    "attendanceOverview": "Resumen de asistencia",
+    "attendance": {
+      "confirmed": "Confirmado",
+      "maybe": "Quizás",
+      "declined": "Rechazado"
+    },
+    "categoryAnalysis": "Análisis por categoría",
+    "categories": {
+      "attendance": "Asistencia",
+      "budget": "Presupuesto",
+      "destination": "Destino",
+      "duration_pref": "Duración",
+      "travel_pref": "Viaje",
+      "fitness_level": "Fitness",
+      "alcohol": "Alcohol"
+    },
+    "activitiesAndPreferences": "Actividades y preferencias",
+    "preferences": "Preferencias",
+    "availableDates": "Fechas disponibles",
+    "noAnswer": "N/D",
+    "option": "{{count}} opción",
+    "option_plural": "{{count}} opciones",
+    "individualResponses": "Respuestas individuales",
+    "searchParticipants": "Buscar...",
+    "noFilterResults": "Sin respuestas para este filtro",
+    "filterAll": "Todos",
+    "filterYes": "Confirmados",
+    "filterMaybe": "Quizás",
+    "filterNo": "Rechazados",
+    "sections": {
+      "suggestions": "Sugerencias y deseos",
+      "restrictions": "Restricciones",
+      "partialAvailability": "Disponibilidad parcial",
+      "entries": "{{count}} entrada",
+      "entries_plural": "{{count}} entradas"
+    },
+    "timeAgo": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "yesterday": "ayer",
+      "daysAgo": "hace {{count}} días"
+    }
   }
 }
