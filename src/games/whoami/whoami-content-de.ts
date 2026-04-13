@@ -65,7 +65,7 @@ export const WHOAMI_CHARACTERS: WhoAmICharacter[] = [
   { name: 'Papagei', category: 'Tiere' },
   { name: 'Krokodil', category: 'Tiere' },
   { name: 'Wolf', category: 'Tiere' },
-  { name: 'Baer', category: 'Tiere' },
+  { name: 'Bär', category: 'Tiere' },
   { name: 'Schlange', category: 'Tiere' },
   { name: 'Ameise', category: 'Tiere' },
   { name: 'Kolibri', category: 'Tiere' },
@@ -115,7 +115,7 @@ export const WHOAMI_CHARACTERS: WhoAmICharacter[] = [
   { name: 'Fotograf', category: 'Berufe' },
   { name: 'Programmierer', category: 'Berufe' },
   { name: 'Richter', category: 'Berufe' },
-  { name: 'Kapitaen', category: 'Berufe' },
+  { name: 'Kapitän', category: 'Berufe' },
   { name: 'Taucher', category: 'Berufe' },
   { name: 'Zauberer', category: 'Berufe' },
   { name: 'Apotheker', category: 'Berufe' },
@@ -132,7 +132,7 @@ export const WHOAMI_CHARACTERS: WhoAmICharacter[] = [
   { name: 'Kellner', category: 'Berufe' },
   { name: 'Friseur', category: 'Berufe' },
   { name: 'Tischler', category: 'Berufe' },
-  { name: 'Rettungssanitaeter', category: 'Berufe' },
+  { name: 'Rettungssanitäter', category: 'Berufe' },
   { name: 'DJ', category: 'Berufe' },
 
   // Filme (40)
