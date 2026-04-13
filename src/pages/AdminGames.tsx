@@ -1,9 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Search, Trash2, Edit3, Check, X, Globe, Database, Gamepad2, Filter } from 'lucide-react';
+import {
+  ArrowLeft, Plus, Search, Trash2, Edit3, Check, X, Globe, Database,
+  Gamepad2, Filter, Download, Upload, BarChart3, Languages, Layers,
+  ChevronRight, Zap, Copy, AlertTriangle, Star,
+} from 'lucide-react';
 import { useGameContent, type GameContent } from '@/hooks/useGameContent';
 import { useAuth } from '@/hooks/useAuth';
+import { clearGameContentCache } from '@/hooks/useGameContentCached';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+// ─── Config ──────────────────────────────────────────────────────
 
 const LANGS = [
   { code: 'de', flag: '🇩🇪', name: 'Deutsch' },
@@ -18,53 +27,66 @@ const LANGS = [
   { code: 'ar', flag: '🇸🇦', name: 'العربية' },
 ];
 
-const GAMES = [
-  { id: 'bomb', name: 'Tickende Bombe', icon: '💣', types: ['question', 'category'] },
-  { id: 'taboo', name: 'Wortverbot', icon: '🚫', types: ['taboo_card'] },
-  { id: 'headup', name: 'Stirnraten', icon: '🧠', types: ['headup_word'] },
-  { id: 'category', name: 'Zeit-Kategorie', icon: '⏱️', types: ['category'] },
-  { id: 'emojiguess', name: 'Emoji-Raten', icon: '😀', types: ['emoji_puzzle'] },
-  { id: 'fakeorfact', name: 'Fake or Fact', icon: '🎲', types: ['fact'] },
-  { id: 'truthdare', name: 'Wahrheit/Pflicht', icon: '❤️', types: ['truth', 'dare'] },
-  { id: 'thisorthat', name: 'This or That', icon: '↔️', types: ['pair'] },
-  { id: 'whoami', name: 'Wer bin ich?', icon: '❓', types: ['character'] },
-  { id: 'bottlespin', name: 'Flaschendrehen', icon: '🍾', types: ['bottle_card'] },
-  { id: 'storybuilder', name: 'Story Builder', icon: '📖', types: ['prompt', 'starter'] },
-  { id: 'sharedquiz', name: 'Geteilt & Gequizzt', icon: '🔗', types: ['shared_question'] },
-  { id: 'quickdraw', name: 'Schnellzeichner', icon: '🎨', types: ['draw_word'] },
-  { id: 'splitquiz', name: 'Split Quiz', icon: '🧩', types: ['question'] },
-  { id: 'hochstapler', name: 'Hochstapler', icon: '🎭', types: ['word_set'] },
-  { id: 'wo-ist-was', name: 'Wo ist was?', icon: '🗺️', types: ['location'] },
-  { id: 'flaschendrehen', name: 'Flaschendrehen', icon: '🍾', types: ['bottle_card'] },
+interface GameDef {
+  id: string;
+  name: string;
+  icon: string;
+  types: string[];
+  color: string;
+}
+
+const GAMES: GameDef[] = [
+  { id: 'bomb', name: 'Tickende Bombe', icon: '💣', types: ['question', 'category'], color: 'from-red-500 to-orange-500' },
+  { id: 'taboo', name: 'Wortverbot', icon: '🚫', types: ['taboo_card'], color: 'from-violet-500 to-purple-500' },
+  { id: 'headup', name: 'Stirnraten', icon: '🧠', types: ['headup_word'], color: 'from-cyan-500 to-blue-500' },
+  { id: 'category', name: 'Zeit-Kategorie', icon: '⏱️', types: ['category'], color: 'from-amber-500 to-yellow-500' },
+  { id: 'emojiguess', name: 'Emoji-Raten', icon: '😀', types: ['emoji_puzzle'], color: 'from-emerald-500 to-teal-500' },
+  { id: 'fakeorfact', name: 'Fake or Fact', icon: '🎲', types: ['fact'], color: 'from-blue-500 to-indigo-500' },
+  { id: 'truthdare', name: 'Wahrheit/Pflicht', icon: '❤️', types: ['truth', 'dare'], color: 'from-pink-500 to-rose-500' },
+  { id: 'thisorthat', name: 'This or That', icon: '↔️', types: ['pair'], color: 'from-sky-500 to-cyan-500' },
+  { id: 'whoami', name: 'Wer bin ich?', icon: '❓', types: ['character'], color: 'from-fuchsia-500 to-pink-500' },
+  { id: 'bottlespin', name: 'Flaschendrehen', icon: '🍾', types: ['bottle_card'], color: 'from-green-500 to-emerald-500' },
+  { id: 'storybuilder', name: 'Story Builder', icon: '📖', types: ['prompt', 'starter'], color: 'from-indigo-500 to-violet-500' },
+  { id: 'sharedquiz', name: 'Geteilt & Gequizzt', icon: '🔗', types: ['shared_question'], color: 'from-teal-500 to-green-500' },
+  { id: 'quickdraw', name: 'Schnellzeichner', icon: '🎨', types: ['draw_word'], color: 'from-orange-500 to-red-500' },
+  { id: 'splitquiz', name: 'Split Quiz', icon: '🧩', types: ['question'], color: 'from-purple-500 to-indigo-500' },
+  { id: 'hochstapler', name: 'Hochstapler', icon: '🎭', types: ['word_set'], color: 'from-slate-500 to-zinc-500' },
+  { id: 'wo-ist-was', name: 'Wo ist was?', icon: '🗺️', types: ['location'], color: 'from-lime-500 to-green-500' },
 ];
 
-const FIELD_CONFIGS: Record<string, { label: string; fields: string[] }> = {
-  question: { label: 'Quiz-Frage', fields: ['question', 'answer1', 'answer2', 'answer3', 'answer4', 'correctIndex'] },
-  category: { label: 'Kategorie', fields: ['name', 'terms'] },
-  taboo_card: { label: 'Tabu-Karte', fields: ['term', 'forbidden1', 'forbidden2', 'forbidden3', 'forbidden4', 'forbidden5'] },
-  headup_word: { label: 'Stirnraten-Wort', fields: ['word', 'category'] },
-  emoji_puzzle: { label: 'Emoji-Rätsel', fields: ['emojis', 'answer'] },
-  fact: { label: 'Fakt', fields: ['statement', 'isTrue', 'explanation'] },
-  truth: { label: 'Wahrheit', fields: ['text', 'intensity'] },
-  dare: { label: 'Pflicht', fields: ['text', 'intensity'] },
-  pair: { label: 'This or That', fields: ['optionA', 'optionB'] },
-  character: { label: 'Charakter', fields: ['name'] },
-  bottle_card: { label: 'Flaschen-Karte', fields: ['text', 'type'] },
-  prompt: { label: 'Story-Prompt', fields: ['text'] },
-  starter: { label: 'Story-Starter', fields: ['text'] },
-  shared_question: { label: 'Geteilte Frage', fields: ['question', 'answer1', 'answer2', 'answer3', 'answer4', 'correctIndex', 'hint'] },
-  draw_word: { label: 'Zeichenwort', fields: ['word'] },
-  word_set: { label: 'Wort-Set', fields: ['word', 'category'] },
-  location: { label: 'Ort', fields: ['name', 'lat', 'lng', 'type'] },
+const FIELD_CONFIGS: Record<string, { label: string; fields: { key: string; label: string; type: 'text' | 'textarea' | 'select' | 'number'; options?: string[] }[] }> = {
+  question:        { label: 'Quiz-Frage',        fields: [{ key: 'question', label: 'Frage', type: 'text' }, { key: 'answer1', label: 'Antwort 1', type: 'text' }, { key: 'answer2', label: 'Antwort 2', type: 'text' }, { key: 'answer3', label: 'Antwort 3', type: 'text' }, { key: 'answer4', label: 'Antwort 4', type: 'text' }, { key: 'correctIndex', label: 'Richtige Antwort', type: 'select', options: ['Antwort 1', 'Antwort 2', 'Antwort 3', 'Antwort 4'] }] },
+  category:        { label: 'Kategorie',          fields: [{ key: 'name', label: 'Name', type: 'text' }, { key: 'terms', label: 'Begriffe (kommagetrennt)', type: 'textarea' }] },
+  taboo_card:      { label: 'Tabu-Karte',         fields: [{ key: 'term', label: 'Begriff', type: 'text' }, { key: 'forbidden1', label: 'Tabu 1', type: 'text' }, { key: 'forbidden2', label: 'Tabu 2', type: 'text' }, { key: 'forbidden3', label: 'Tabu 3', type: 'text' }, { key: 'forbidden4', label: 'Tabu 4', type: 'text' }, { key: 'forbidden5', label: 'Tabu 5', type: 'text' }] },
+  headup_word:     { label: 'Stirnraten-Wort',    fields: [{ key: 'word', label: 'Wort', type: 'text' }, { key: 'category', label: 'Kategorie', type: 'text' }] },
+  emoji_puzzle:    { label: 'Emoji-Rätsel',        fields: [{ key: 'emojis', label: 'Emojis', type: 'text' }, { key: 'answer', label: 'Lösung', type: 'text' }] },
+  fact:            { label: 'Fakt',                fields: [{ key: 'statement', label: 'Aussage', type: 'textarea' }, { key: 'isTrue', label: 'Wahr oder Falsch', type: 'select', options: ['Wahr', 'Falsch'] }, { key: 'explanation', label: 'Erklärung', type: 'textarea' }] },
+  truth:           { label: 'Wahrheit',            fields: [{ key: 'text', label: 'Frage', type: 'textarea' }, { key: 'intensity', label: 'Intensität', type: 'select', options: ['Leicht', 'Mittel', 'Scharf'] }] },
+  dare:            { label: 'Pflicht',             fields: [{ key: 'text', label: 'Aufgabe', type: 'textarea' }, { key: 'intensity', label: 'Intensität', type: 'select', options: ['Leicht', 'Mittel', 'Scharf'] }] },
+  pair:            { label: 'This or That',        fields: [{ key: 'optionA', label: 'Option A', type: 'text' }, { key: 'optionB', label: 'Option B', type: 'text' }] },
+  character:       { label: 'Charakter',           fields: [{ key: 'name', label: 'Name', type: 'text' }] },
+  bottle_card:     { label: 'Flaschen-Karte',      fields: [{ key: 'text', label: 'Text', type: 'textarea' }, { key: 'type', label: 'Typ', type: 'select', options: ['Wahrheit', 'Pflicht', 'Trinkspiel', 'Lustig'] }] },
+  prompt:          { label: 'Story-Prompt',        fields: [{ key: 'text', label: 'Prompt', type: 'textarea' }] },
+  starter:         { label: 'Story-Starter',       fields: [{ key: 'text', label: 'Starter', type: 'textarea' }] },
+  shared_question: { label: 'Geteilte Frage',     fields: [{ key: 'question', label: 'Frage', type: 'text' }, { key: 'answer1', label: 'Antwort 1', type: 'text' }, { key: 'answer2', label: 'Antwort 2', type: 'text' }, { key: 'answer3', label: 'Antwort 3', type: 'text' }, { key: 'answer4', label: 'Antwort 4', type: 'text' }, { key: 'correctIndex', label: 'Richtig', type: 'select', options: ['1', '2', '3', '4'] }, { key: 'hint', label: 'Hinweis', type: 'text' }] },
+  draw_word:       { label: 'Zeichenwort',         fields: [{ key: 'word', label: 'Wort', type: 'text' }] },
+  word_set:        { label: 'Wort-Set',            fields: [{ key: 'word', label: 'Wort', type: 'text' }, { key: 'category', label: 'Kategorie', type: 'text' }] },
+  location:        { label: 'Ort',                 fields: [{ key: 'name', label: 'Name', type: 'text' }, { key: 'lat', label: 'Breitengrad', type: 'number' }, { key: 'lng', label: 'Längengrad', type: 'number' }, { key: 'type', label: 'Typ', type: 'text' }] },
 };
 
-const EP = { bg: '#0a0e14', s1: '#151a21', s2: '#1b2028', s3: '#20262f', purple: '#df8eff', pink: '#ff6b98', cyan: '#8ff5ff', text: '#f1f3fc', muted: '#a8abb3' };
+const DIFFICULTIES = [
+  { value: 'easy', label: 'Leicht', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' },
+  { value: 'medium', label: 'Mittel', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' },
+  { value: 'hard', label: 'Schwer', color: 'text-red-400 bg-red-500/15 border-red-500/30' },
+];
+
+// ─── Main Component ──────────────────────────────────────────────
 
 export default function AdminGames() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { items, loading, total, fetchItems, addItem, updateItem, deleteItem } = useGameContent();
-  const [selectedGame, setSelectedGame] = useState(GAMES[0]);
+  const gc = useGameContent();
+  const [selectedGame, setSelectedGame] = useState<GameDef>(GAMES[0]);
   const [selectedType, setSelectedType] = useState(GAMES[0].types[0]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
@@ -74,9 +96,32 @@ export default function AdminGames() {
   const [formContent, setFormContent] = useState<Record<string, Record<string, string>>>({});
   const [formDifficulty, setFormDifficulty] = useState('medium');
   const [formCategory, setFormCategory] = useState('general');
+  const [gameStats, setGameStats] = useState<Record<string, number>>({});
+  const [seeding, setSeeding] = useState(false);
+  const [view, setView] = useState<'grid' | 'list'>('grid');
 
-  useEffect(() => { fetchItems(selectedGame.id, selectedType, search, page); }, [selectedGame.id, selectedType, search, page, fetchItems]);
+  // Fetch items when selection changes
+  useEffect(() => {
+    gc.fetchItems(selectedGame.id, selectedType, search, page);
+  }, [selectedGame.id, selectedType, search, page, gc.fetchItems]);
 
+  // Fetch per-game stats
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase.from as any)('game_content')
+        .select('game_id')
+        .eq('is_active', true);
+      if (data) {
+        const counts: Record<string, number> = {};
+        data.forEach((r: any) => { counts[r.game_id] = (counts[r.game_id] || 0) + 1; });
+        setGameStats(counts);
+      }
+    })();
+  }, [gc.total]);
+
+  const totalItems = useMemo(() => Object.values(gameStats).reduce((a, b) => a + b, 0), [gameStats]);
+
+  // Form handlers
   const openAdd = () => {
     setEditItem(null);
     const empty: Record<string, Record<string, string>> = {};
@@ -100,107 +145,353 @@ export default function AdminGames() {
   };
 
   const handleSave = async () => {
-    const payload = { game_id: selectedGame.id, content_type: selectedType, content: formContent, difficulty: formDifficulty, category: formCategory, tags: [], is_active: true };
-    if (editItem) { await updateItem(editItem.id, payload); }
-    else { await addItem(payload); }
+    const payload = {
+      game_id: selectedGame.id,
+      content_type: selectedType,
+      content: formContent,
+      difficulty: formDifficulty,
+      category: formCategory,
+      tags: [],
+      is_active: true,
+    };
+    if (editItem) await gc.updateItem(editItem.id, payload);
+    else await gc.addItem(payload);
     setShowModal(false);
-    fetchItems(selectedGame.id, selectedType, search, page);
+    gc.fetchItems(selectedGame.id, selectedType, search, page);
+    toast.success(editItem ? 'Gespeichert!' : 'Erstellt!');
+  };
+
+  const handleDuplicate = async (item: GameContent) => {
+    await gc.addItem({
+      game_id: item.game_id,
+      content_type: item.content_type,
+      content: item.content,
+      difficulty: item.difficulty,
+      category: item.category,
+      tags: item.tags,
+      is_active: true,
+    });
+    gc.fetchItems(selectedGame.id, selectedType, search, page);
+    toast.success('Dupliziert!');
   };
 
   const updateField = (field: string, value: string) => {
     setFormContent(prev => ({ ...prev, [activeLang]: { ...prev[activeLang], [field]: value } }));
   };
 
-  const fields = FIELD_CONFIGS[selectedType]?.fields || ['text'];
+  // Seed from static files
+  const handleSeed = async () => {
+    if (!confirm('Statische Inhalte in die Datenbank importieren? Bestehende Einträge bleiben erhalten.')) return;
+    setSeeding(true);
+    try {
+      // Dynamic import of static content
+      const [questionsMod, tabooMod, headupMod] = await Promise.all([
+        import('@/games/content/questions-de'),
+        import('@/games/content/taboo-words-de'),
+        import('@/games/content/headup-words-de'),
+      ]);
+
+      const items: any[] = [];
+
+      // Questions
+      for (const q of questionsMod.QUIZ_QUESTIONS_DE) {
+        items.push({
+          game_id: 'bomb',
+          content_type: 'question',
+          content: { de: { question: q.question, answer1: q.answers[0], answer2: q.answers[1], answer3: q.answers[2], answer4: q.answers[3], correctIndex: String(q.correctIndex) } },
+          difficulty: q.difficulty,
+          category: q.category,
+          tags: [],
+          is_active: true,
+        });
+      }
+
+      // Taboo
+      for (const c of tabooMod.TABOO_CARDS_DE) {
+        items.push({
+          game_id: 'taboo',
+          content_type: 'taboo_card',
+          content: { de: { term: c.term, forbidden1: c.forbidden[0], forbidden2: c.forbidden[1], forbidden3: c.forbidden[2], forbidden4: c.forbidden[3], forbidden5: c.forbidden[4] } },
+          difficulty: c.difficulty,
+          category: c.category,
+          tags: [],
+          is_active: true,
+        });
+      }
+
+      // HeadUp
+      for (const cat of headupMod.HEADUP_CATEGORIES_DE) {
+        items.push({
+          game_id: 'headup',
+          content_type: 'headup_word',
+          content: { de: { word: cat.name, category: cat.name, words: cat.words.join(', ') } },
+          difficulty: 'medium',
+          category: cat.name,
+          tags: [],
+          is_active: true,
+        });
+      }
+
+      // Insert in batches
+      const BATCH = 50;
+      let ok = 0;
+      for (let i = 0; i < items.length; i += BATCH) {
+        const batch = items.slice(i, i + BATCH);
+        const { error } = await (supabase.from as any)('game_content').insert(batch);
+        if (!error) ok += batch.length;
+      }
+
+      clearGameContentCache();
+      gc.fetchItems(selectedGame.id, selectedType, search, page);
+      toast.success(`${ok} Einträge importiert!`);
+    } catch (e: any) {
+      toast.error(`Import fehlgeschlagen: ${e.message}`);
+    }
+    setSeeding(false);
+  };
+
+  const fields = FIELD_CONFIGS[selectedType]?.fields || [{ key: 'text', label: 'Text', type: 'text' as const }];
   const preview = (item: GameContent) => {
     const de = item.content.de || item.content.en || {};
-    return de[fields[0]] || de.text || de.question || de.name || de.word || de.term || JSON.stringify(de).slice(0, 60);
+    return de[fields[0].key] || de.text || de.question || de.name || de.word || de.term || JSON.stringify(de).slice(0, 60);
   };
-  const langCount = (item: GameContent) => LANGS.filter(l => item.content[l.code] && Object.keys(item.content[l.code]).length > 0).length;
+  const langCount = (item: GameContent) => LANGS.filter(l => item.content[l.code] && Object.values(item.content[l.code]).some(v => v && String(v).length > 0)).length;
 
   return (
-    <div className="min-h-screen" style={{ background: EP.bg, color: EP.text, fontFamily: "'Plus Jakarta Sans', system-ui" }}>
-      {/* Header */}
-      <div className="border-b border-white/5 px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate('/admin')} className="p-2 rounded-lg hover:bg-white/5"><ArrowLeft className="w-5 h-5" style={{ color: EP.muted }} /></button>
-        <div className="flex-1">
-          <h1 className="text-xl font-extrabold" style={{ color: EP.purple }}>Games Content Manager</h1>
-          <p className="text-xs" style={{ color: EP.muted }}>{total} Eintraege | {GAMES.length} Spiele | {LANGS.length} Sprachen</p>
+    <div className="min-h-screen bg-[#0a0e14] text-[#f1f3fc] font-['Plus_Jakarta_Sans']">
+      {/* ── Header ── */}
+      <div className="border-b border-white/5 px-6 py-4">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/admin')} className="p-2 rounded-xl hover:bg-white/5 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-[#a8abb3]" />
+          </button>
+          <div className="flex-1">
+            <h1 className="text-xl font-extrabold bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#8ff5ff] bg-clip-text text-transparent">
+              Games Content Manager
+            </h1>
+            <p className="text-xs text-[#a8abb3] mt-0.5">{totalItems} Einträge · {GAMES.length} Spiele · {LANGS.length} Sprachen</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <motion.button whileTap={{ scale: 0.95 }} onClick={handleSeed} disabled={seeding}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#8ff5ff] hover:border-[#8ff5ff]/30 transition-all disabled:opacity-50">
+              {seeding ? <div className="w-3.5 h-3.5 border-2 border-[#8ff5ff] border-t-transparent rounded-full animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              {seeding ? 'Importiere...' : 'Statische importieren'}
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={openAdd}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-[#df8eff] to-[#ff6b98] text-white shadow-[0_0_15px_rgba(223,142,255,0.3)]">
+              <Plus className="w-4 h-4" /> Hinzufügen
+            </motion.button>
+          </div>
         </div>
-        <motion.button whileTap={{ scale: 0.95 }} onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
-          style={{ background: `linear-gradient(135deg, ${EP.purple}, ${EP.pink})`, color: '#fff' }}>
-          <Plus className="w-4 h-4" /> Hinzufuegen
-        </motion.button>
+
+        {/* Stats bar */}
+        <div className="flex items-center gap-4 mt-3 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#151a21] border border-white/5">
+            <Database className="w-3.5 h-3.5 text-[#df8eff]" />
+            <span className="text-xs font-bold text-[#df8eff]">{totalItems}</span>
+            <span className="text-[10px] text-[#a8abb3]">Einträge</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#151a21] border border-white/5">
+            <Gamepad2 className="w-3.5 h-3.5 text-[#8ff5ff]" />
+            <span className="text-xs font-bold text-[#8ff5ff]">{Object.keys(gameStats).length}/{GAMES.length}</span>
+            <span className="text-[10px] text-[#a8abb3]">aktive Spiele</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#151a21] border border-white/5">
+            <Languages className="w-3.5 h-3.5 text-[#ff6b98]" />
+            <span className="text-xs font-bold text-[#ff6b98]">{LANGS.length}</span>
+            <span className="text-[10px] text-[#a8abb3]">Sprachen</span>
+          </div>
+        </div>
       </div>
 
       <div className="flex">
-        {/* Sidebar — Game selector */}
-        <div className="w-64 border-r border-white/5 p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-80px)]" style={{ background: EP.s1 }}>
-          {GAMES.map(g => (
-            <button key={g.id} onClick={() => { setSelectedGame(g); setSelectedType(g.types[0]); setPage(0); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm ${selectedGame.id === g.id ? 'font-bold' : ''}`}
-              style={{ background: selectedGame.id === g.id ? `${EP.purple}15` : 'transparent', color: selectedGame.id === g.id ? EP.purple : EP.muted, border: selectedGame.id === g.id ? `1px solid ${EP.purple}30` : '1px solid transparent' }}>
-              <span className="text-lg">{g.icon}</span>
-              <span className="truncate">{g.name}</span>
-            </button>
-          ))}
+        {/* ── Sidebar — Game selector ── */}
+        <div className="w-72 border-r border-white/5 p-3 space-y-1.5 overflow-y-auto max-h-[calc(100vh-130px)] bg-[#151a21]">
+          {GAMES.map(g => {
+            const count = gameStats[g.id] || 0;
+            const isActive = selectedGame.id === g.id;
+            return (
+              <motion.button
+                key={g.id}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setSelectedGame(g); setSelectedType(g.types[0]); setPage(0); }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-sm group ${isActive ? 'font-bold' : ''}`}
+                style={{
+                  background: isActive ? 'rgba(223,142,255,0.1)' : 'transparent',
+                  border: isActive ? '1px solid rgba(223,142,255,0.2)' : '1px solid transparent',
+                }}
+              >
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${g.color} flex items-center justify-center text-lg shadow-sm`}>
+                  {g.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm truncate ${isActive ? 'text-[#df8eff]' : 'text-[#a8abb3] group-hover:text-white'} transition-colors`}>
+                    {g.name}
+                  </p>
+                  <p className="text-[10px] text-[#a8abb3]/60">
+                    {count > 0 ? `${count} Einträge` : 'Leer'} · {g.types.length} Typ{g.types.length > 1 ? 'en' : ''}
+                  </p>
+                </div>
+                {count > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#df8eff]/10 text-[#df8eff]">
+                    {count}
+                  </span>
+                )}
+              </motion.button>
+            );
+          })}
         </div>
 
-        {/* Main content */}
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[calc(100vh-80px)]">
-          {/* Type tabs + Search */}
+        {/* ── Main content ── */}
+        <div className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[calc(100vh-130px)]">
+          {/* Game header */}
+          <div className="flex items-center gap-4 mb-2">
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${selectedGame.color} flex items-center justify-center text-2xl shadow-lg`}>
+              {selectedGame.icon}
+            </div>
+            <div>
+              <h2 className="text-lg font-extrabold text-white">{selectedGame.name}</h2>
+              <p className="text-xs text-[#a8abb3]">
+                {gameStats[selectedGame.id] || 0} Einträge · {selectedGame.types.map(t => FIELD_CONFIGS[t]?.label || t).join(', ')}
+              </p>
+            </div>
+          </div>
+
+          {/* Type tabs + Search + Filters */}
           <div className="flex items-center gap-3 flex-wrap">
-            {selectedGame.types.map(t => (
-              <button key={t} onClick={() => { setSelectedType(t); setPage(0); }}
-                className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                style={{ background: selectedType === t ? `${EP.cyan}20` : EP.s2, color: selectedType === t ? EP.cyan : EP.muted, border: `1px solid ${selectedType === t ? `${EP.cyan}40` : 'transparent'}` }}>
-                {FIELD_CONFIGS[t]?.label || t}
-              </button>
-            ))}
+            {selectedGame.types.map(t => {
+              const cfg = FIELD_CONFIGS[t];
+              return (
+                <button key={t} onClick={() => { setSelectedType(t); setPage(0); }}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
+                    selectedType === t
+                      ? 'bg-[#8ff5ff]/15 text-[#8ff5ff] border-[#8ff5ff]/30'
+                      : 'bg-[#1b2028] text-[#a8abb3] border-transparent hover:border-white/10'
+                  }`}>
+                  {cfg?.label || t}
+                </button>
+              );
+            })}
             <div className="flex-1" />
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: EP.muted }} />
-              <input value={search} onChange={e => { setSearch(e.target.value); setPage(0); }} placeholder="Suchen..."
-                className="pl-9 pr-4 py-2 rounded-xl text-sm border focus:outline-none focus:ring-1"
-                style={{ background: EP.s2, borderColor: `${EP.purple}20`, color: EP.text, width: 200 }} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a8abb3]" />
+              <input
+                value={search}
+                onChange={e => { setSearch(e.target.value); setPage(0); }}
+                placeholder="Suchen..."
+                className="pl-9 pr-4 py-2 rounded-xl text-sm border bg-[#1b2028] border-[#df8eff]/10 text-white focus:outline-none focus:border-[#df8eff]/40 w-52 transition-colors"
+              />
             </div>
           </div>
 
           {/* Content list */}
-          {loading ? (
-            <div className="flex justify-center py-12"><div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: `${EP.purple} transparent ${EP.purple} ${EP.purple}` }} /></div>
-          ) : items.length === 0 ? (
-            <div className="text-center py-16">
-              <Database className="w-12 h-12 mx-auto mb-4" style={{ color: EP.muted }} />
-              <p className="text-lg font-bold" style={{ color: EP.muted }}>Keine Eintraege</p>
-              <p className="text-sm" style={{ color: `${EP.muted}80` }}>Klicke "Hinzufuegen" um Content zu erstellen</p>
+          {gc.loading ? (
+            <div className="flex justify-center py-16">
+              <div className="w-10 h-10 border-2 border-[#df8eff] border-t-transparent rounded-full animate-spin" />
             </div>
+          ) : gc.items.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-20 space-y-4"
+            >
+              <div className={`w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br ${selectedGame.color} flex items-center justify-center text-4xl shadow-lg opacity-50`}>
+                {selectedGame.icon}
+              </div>
+              <div>
+                <p className="text-lg font-bold text-[#a8abb3]">Keine Einträge</p>
+                <p className="text-sm text-[#a8abb3]/60 max-w-xs mx-auto mt-1">
+                  Klicke "Hinzufügen" um Content zu erstellen, oder importiere die statischen Inhalte.
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={openAdd}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-[#df8eff] to-[#ff6b98] text-white">
+                  <Plus className="w-4 h-4 inline mr-1.5" />Manuell erstellen
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={handleSeed} disabled={seeding}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-[#1b2028] border border-[#8ff5ff]/20 text-[#8ff5ff]">
+                  <Download className="w-4 h-4 inline mr-1.5" />Statische importieren
+                </motion.button>
+              </div>
+            </motion.div>
           ) : (
             <div className="space-y-2">
-              {items.map(item => (
-                <motion.div key={item.id} layout className="flex items-center gap-4 px-4 py-3 rounded-xl border" style={{ background: EP.s2, borderColor: 'rgba(255,255,255,0.03)' }}>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: EP.text }}>{preview(item)}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: `${EP.cyan}15`, color: EP.cyan }}>{item.difficulty}</span>
-                      <span className="text-[10px]" style={{ color: EP.muted }}>{item.category}</span>
+              {gc.items.map((item, idx) => {
+                const langs = langCount(item);
+                const diffCfg = DIFFICULTIES.find(d => d.value === item.difficulty) || DIFFICULTIES[1];
+                return (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.02 }}
+                    className="group flex items-center gap-4 px-4 py-3 rounded-xl bg-[#1b2028] border border-white/[0.03] hover:border-[#df8eff]/15 transition-all"
+                  >
+                    {/* Index */}
+                    <span className="text-xs font-bold text-[#a8abb3]/30 w-6 text-right tabular-nums">
+                      {page * 20 + idx + 1}
+                    </span>
+
+                    {/* Content preview */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{preview(item)}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${diffCfg.color}`}>
+                          {diffCfg.label}
+                        </span>
+                        <span className="text-[10px] text-[#a8abb3]">{item.category}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Globe className="w-3 h-3" style={{ color: EP.muted }} />
-                    <span className="text-xs font-bold" style={{ color: langCount(item) >= 5 ? EP.cyan : EP.pink }}>{langCount(item)}/{LANGS.length}</span>
-                  </div>
-                  <button onClick={() => openEdit(item)} className="p-2 rounded-lg hover:bg-white/5"><Edit3 className="w-4 h-4" style={{ color: EP.purple }} /></button>
-                  <button onClick={() => { if (confirm('Wirklich loeschen?')) deleteItem(item.id); }} className="p-2 rounded-lg hover:bg-white/5"><Trash2 className="w-4 h-4" style={{ color: EP.pink }} /></button>
-                </motion.div>
-              ))}
+
+                    {/* Language coverage */}
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex gap-0.5">
+                        {LANGS.slice(0, 5).map(l => {
+                          const filled = item.content[l.code] && Object.values(item.content[l.code]).some(v => v && String(v).length > 0);
+                          return (
+                            <span key={l.code} className={`text-[11px] ${filled ? '' : 'opacity-15'}`} title={l.name}>
+                              {l.flag}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <span className={`text-xs font-bold ${langs >= 8 ? 'text-emerald-400' : langs >= 5 ? 'text-[#8ff5ff]' : langs >= 2 ? 'text-amber-400' : 'text-[#ff6b98]'}`}>
+                        {langs}/{LANGS.length}
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => handleDuplicate(item)} className="p-1.5 rounded-lg hover:bg-white/5" title="Duplizieren">
+                        <Copy className="w-3.5 h-3.5 text-[#8ff5ff]" />
+                      </button>
+                      <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg hover:bg-white/5" title="Bearbeiten">
+                        <Edit3 className="w-3.5 h-3.5 text-[#df8eff]" />
+                      </button>
+                      <button onClick={() => { if (confirm('Wirklich löschen?')) gc.deleteItem(item.id); }} className="p-1.5 rounded-lg hover:bg-white/5" title="Löschen">
+                        <Trash2 className="w-3.5 h-3.5 text-[#ff6b98]" />
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+
               {/* Pagination */}
-              {total > 20 && (
-                <div className="flex items-center justify-center gap-2 pt-4">
-                  <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="px-3 py-1 rounded-lg text-sm disabled:opacity-30" style={{ background: EP.s3, color: EP.muted }}>Zurueck</button>
-                  <span className="text-xs" style={{ color: EP.muted }}>Seite {page + 1} / {Math.ceil(total / 20)}</span>
-                  <button disabled={(page + 1) * 20 >= total} onClick={() => setPage(p => p + 1)} className="px-3 py-1 rounded-lg text-sm disabled:opacity-30" style={{ background: EP.s3, color: EP.muted }}>Weiter</button>
+              {gc.total > 20 && (
+                <div className="flex items-center justify-center gap-3 pt-4">
+                  <button disabled={page === 0} onClick={() => setPage(p => p - 1)}
+                    className="px-4 py-2 rounded-xl text-sm font-bold bg-[#1b2028] text-[#a8abb3] disabled:opacity-30 border border-white/5">
+                    Zurück
+                  </button>
+                  <span className="text-xs text-[#a8abb3] tabular-nums">
+                    Seite {page + 1} / {Math.ceil(gc.total / 20)}
+                  </span>
+                  <button disabled={(page + 1) * 20 >= gc.total} onClick={() => setPage(p => p + 1)}
+                    className="px-4 py-2 rounded-xl text-sm font-bold bg-[#1b2028] text-[#a8abb3] disabled:opacity-30 border border-white/5">
+                    Weiter
+                  </button>
                 </div>
               )}
             </div>
@@ -208,61 +499,88 @@ export default function AdminGames() {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* ── Add/Edit Modal ── */}
       <AnimatePresence>
         {showModal && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-            <motion.div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border" style={{ background: EP.s1, borderColor: `${EP.purple}20` }}
-              initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }}>
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setShowModal(false)} />
+            <motion.div
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-[#151a21] border border-[#df8eff]/15 shadow-[0_0_60px_rgba(223,142,255,0.1)]"
+              initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }}
+            >
               {/* Modal header */}
-              <div className="sticky top-0 z-10 px-6 py-4 border-b border-white/5 flex items-center justify-between" style={{ background: EP.s1 }}>
-                <h2 className="text-lg font-bold" style={{ color: EP.purple }}>{editItem ? 'Bearbeiten' : 'Neu hinzufuegen'}: {FIELD_CONFIGS[selectedType]?.label}</h2>
-                <button onClick={() => setShowModal(false)} className="p-2 rounded-lg hover:bg-white/5"><X className="w-5 h-5" style={{ color: EP.muted }} /></button>
+              <div className="sticky top-0 z-10 px-6 py-4 border-b border-white/5 bg-[#151a21]/95 backdrop-blur-xl flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${selectedGame.color} flex items-center justify-center text-base`}>
+                    {selectedGame.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-[#df8eff]">
+                      {editItem ? 'Bearbeiten' : 'Neu erstellen'}
+                    </h2>
+                    <p className="text-[10px] text-[#a8abb3]">{selectedGame.name} · {FIELD_CONFIGS[selectedType]?.label}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowModal(false)} className="p-2 rounded-xl hover:bg-white/5">
+                  <X className="w-5 h-5 text-[#a8abb3]" />
+                </button>
               </div>
 
               <div className="p-6 space-y-5">
                 {/* Language tabs */}
-                <div className="flex flex-wrap gap-1.5">
-                  {LANGS.map(l => (
-                    <button key={l.code} onClick={() => setActiveLang(l.code)}
-                      className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                      style={{
-                        background: activeLang === l.code ? `${EP.purple}20` : EP.s3,
-                        color: activeLang === l.code ? EP.purple : EP.muted,
-                        border: `1px solid ${activeLang === l.code ? `${EP.purple}40` : 'transparent'}`,
-                      }}>
-                      {l.flag} {l.code.toUpperCase()}
-                    </button>
-                  ))}
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider font-bold text-[#a8abb3] mb-2">Sprache wählen</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {LANGS.map(l => {
+                      const filled = formContent[l.code] && Object.values(formContent[l.code]).some(v => v && v.length > 0);
+                      return (
+                        <button key={l.code} onClick={() => setActiveLang(l.code)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                            activeLang === l.code
+                              ? 'bg-[#df8eff]/15 text-[#df8eff] border-[#df8eff]/30'
+                              : filled
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                : 'bg-[#20262f] text-[#a8abb3] border-transparent'
+                          }`}>
+                          {l.flag} {l.code.toUpperCase()}
+                          {filled && activeLang !== l.code && <Check className="w-3 h-3 inline ml-1" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Content fields */}
                 <div className="space-y-3">
                   {fields.map(field => (
-                    <div key={field}>
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: EP.muted }}>{field}</label>
-                      {field === 'terms' || field === 'explanation' ? (
-                        <textarea value={formContent[activeLang]?.[field] || ''} onChange={e => updateField(field, e.target.value)} rows={3}
-                          className="w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-1"
-                          style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }} placeholder={`${field} (${activeLang.toUpperCase()})`} />
-                      ) : field === 'isTrue' ? (
-                        <select value={formContent[activeLang]?.[field] || 'true'} onChange={e => updateField(field, e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl text-sm border" style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }}>
-                          <option value="true">Wahr</option>
-                          <option value="false">Falsch</option>
-                        </select>
-                      ) : field === 'correctIndex' || field === 'intensity' ? (
-                        <select value={formContent[activeLang]?.[field] || '0'} onChange={e => updateField(field, e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl text-sm border" style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }}>
-                          {field === 'correctIndex' ? [0,1,2,3].map(i => <option key={i} value={String(i)}>Antwort {i+1}</option>) :
-                            [1,2,3].map(i => <option key={i} value={String(i)}>Stufe {i}</option>)}
+                    <div key={field.key}>
+                      <label className="block text-xs font-bold text-[#a8abb3] mb-1.5">{field.label}</label>
+                      {field.type === 'textarea' ? (
+                        <textarea
+                          value={formContent[activeLang]?.[field.key] || ''}
+                          onChange={e => updateField(field.key, e.target.value)}
+                          rows={3}
+                          className="w-full px-4 py-2.5 rounded-xl text-sm bg-[#20262f] border border-[#df8eff]/10 text-white focus:outline-none focus:border-[#df8eff]/40 transition-colors resize-none"
+                          placeholder={`${field.label} (${activeLang.toUpperCase()})`}
+                        />
+                      ) : field.type === 'select' ? (
+                        <select
+                          value={formContent[activeLang]?.[field.key] || '0'}
+                          onChange={e => updateField(field.key, e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl text-sm bg-[#20262f] border border-[#df8eff]/10 text-white focus:outline-none appearance-none"
+                        >
+                          {(field.options || []).map((opt, i) => (
+                            <option key={i} value={String(i)}>{opt}</option>
+                          ))}
                         </select>
                       ) : (
-                        <input type={field === 'lat' || field === 'lng' ? 'number' : 'text'}
-                          value={formContent[activeLang]?.[field] || ''} onChange={e => updateField(field, e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-1"
-                          style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }} placeholder={`${field} (${activeLang.toUpperCase()})`} />
+                        <input
+                          type={field.type === 'number' ? 'number' : 'text'}
+                          value={formContent[activeLang]?.[field.key] || ''}
+                          onChange={e => updateField(field.key, e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl text-sm bg-[#20262f] border border-[#df8eff]/10 text-white focus:outline-none focus:border-[#df8eff]/40 transition-colors"
+                          placeholder={`${field.label} (${activeLang.toUpperCase()})`}
+                        />
                       )}
                     </div>
                   ))}
@@ -271,39 +589,53 @@ export default function AdminGames() {
                 {/* Difficulty + Category */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: EP.muted }}>Schwierigkeit</label>
-                    <select value={formDifficulty} onChange={e => setFormDifficulty(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl text-sm border" style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }}>
-                      <option value="easy">Leicht</option>
-                      <option value="medium">Mittel</option>
-                      <option value="hard">Schwer</option>
-                    </select>
+                    <label className="block text-xs font-bold text-[#a8abb3] mb-1.5">Schwierigkeit</label>
+                    <div className="flex gap-2">
+                      {DIFFICULTIES.map(d => (
+                        <button key={d.value} onClick={() => setFormDifficulty(d.value)}
+                          className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all border ${
+                            formDifficulty === d.value ? d.color : 'bg-[#20262f] text-[#a8abb3] border-transparent'
+                          }`}>
+                          {d.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: EP.muted }}>Kategorie</label>
-                    <input value={formCategory} onChange={e => setFormCategory(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none" placeholder="z.B. Sport, Natur..."
-                      style={{ background: EP.s3, borderColor: `${EP.purple}15`, color: EP.text }} />
+                    <label className="block text-xs font-bold text-[#a8abb3] mb-1.5">Kategorie</label>
+                    <input
+                      value={formCategory}
+                      onChange={e => setFormCategory(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl text-sm bg-[#20262f] border border-[#df8eff]/10 text-white focus:outline-none"
+                      placeholder="z.B. Sport, Geografie..."
+                    />
                   </div>
                 </div>
 
-                {/* Filled languages indicator */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs" style={{ color: EP.muted }}>Ausgefuellt:</span>
-                  {LANGS.map(l => {
-                    const filled = formContent[l.code] && Object.values(formContent[l.code]).some(v => v && v.length > 0);
-                    return <span key={l.code} className={`text-sm ${filled ? '' : 'opacity-20'}`}>{l.flag}</span>;
-                  })}
+                {/* Language coverage indicator */}
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#0a0e14] border border-white/5">
+                  <Globe className="w-4 h-4 text-[#a8abb3]" />
+                  <span className="text-xs text-[#a8abb3]">Ausgefüllt:</span>
+                  <div className="flex gap-1">
+                    {LANGS.map(l => {
+                      const filled = formContent[l.code] && Object.values(formContent[l.code]).some(v => v && v.length > 0);
+                      return (
+                        <span key={l.code} className={`text-sm transition-opacity ${filled ? '' : 'opacity-15'}`} title={l.name}>
+                          {l.flag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <span className="text-xs font-bold text-[#8ff5ff] ml-auto">
+                    {LANGS.filter(l => formContent[l.code] && Object.values(formContent[l.code]).some(v => v && v.length > 0)).length}/{LANGS.length}
+                  </span>
                 </div>
 
                 {/* Save button */}
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleSave}
-                  className="w-full py-3 rounded-xl text-sm font-bold"
-                  style={{ background: `linear-gradient(135deg, ${EP.purple}, ${EP.pink})`, color: '#fff' }}>
-                  <span className="flex items-center justify-center gap-2">
-                    <Check className="w-4 h-4" />
-                    {editItem ? 'Speichern' : 'Erstellen'}
-                  </span>
+                  className="w-full py-3.5 rounded-xl text-sm font-bold bg-gradient-to-r from-[#df8eff] to-[#ff6b98] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2">
+                  <Check className="w-4 h-4" />
+                  {editItem ? 'Änderungen speichern' : 'Erstellen'}
                 </motion.button>
               </div>
             </motion.div>
