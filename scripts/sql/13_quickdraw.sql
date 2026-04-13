@@ -1,5 +1,5 @@
 -- 13_quickdraw.sql — 230 entries
--- Generated: 2026-04-13T11:11:02.013Z
+-- Generated: 2026-04-13T11:25:02.383Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'quickdraw' AND content_type = 'draw_word';

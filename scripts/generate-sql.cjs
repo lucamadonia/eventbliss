@@ -331,7 +331,7 @@ generateSimpleGame('10', 'bottlespin', 'bottle_card', 'bottlespin', 'bottlespin-
     const fp = path.join(__dirname, '..', 'src', 'games', 'storybuilder', `story-prompts-${lang}.ts`);
     if (!fs.existsSync(fp)) { langFiles[lang] = []; continue; }
     const content = fs.readFileSync(fp, 'utf8');
-    const match = content.match(/STORY_STARTERS\s*(?::\s*string\[\])?\s*=\s*(\[[\s\S]*?\]);/);
+    const match = content.match(/STORY_STARTERS(?:_\w+)?\s*(?::\s*string\[\])?\s*=\s*(\[[\s\S]*?\]);/);
     if (match) {
       const strs = [];
       const strRegex = /(?:'([^'\\]*(?:\\.[^'\\]*)*)'|"([^"\\]*(?:\\.[^"\\]*)*)")/g;

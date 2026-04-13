@@ -1,5 +1,5 @@
 -- 05_emojiguess.sql — 142 entries
--- Generated: 2026-04-13T11:11:01.821Z
+-- Generated: 2026-04-13T11:25:02.210Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'emojiguess' AND content_type = 'emoji_puzzle';

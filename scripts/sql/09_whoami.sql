@@ -1,5 +1,5 @@
 -- 09_whoami.sql — 363 entries
--- Generated: 2026-04-13T11:11:01.897Z
+-- Generated: 2026-04-13T11:25:02.272Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'whoami' AND content_type = 'character';

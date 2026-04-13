@@ -1,5 +1,5 @@
 -- 04_category.sql — 70 entries
--- Generated: 2026-04-13T11:11:01.797Z
+-- Generated: 2026-04-13T11:25:02.193Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'category' AND content_type = 'category';

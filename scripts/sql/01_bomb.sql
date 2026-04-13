@@ -1,5 +1,5 @@
 -- 01_bomb.sql — 300 entries
--- Generated: 2026-04-13T11:11:01.701Z
+-- Generated: 2026-04-13T11:25:02.116Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'bomb' AND content_type = 'question';

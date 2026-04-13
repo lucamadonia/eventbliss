@@ -1,5 +1,5 @@
 -- 06_fakeorfact.sql — 101 entries
--- Generated: 2026-04-13T11:11:01.829Z
+-- Generated: 2026-04-13T11:25:02.217Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'fakeorfact' AND content_type = 'fact';

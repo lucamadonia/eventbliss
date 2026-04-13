@@ -1,5 +1,5 @@
 -- 10_bottlespin.sql — 305 entries
--- Generated: 2026-04-13T11:11:01.936Z
+-- Generated: 2026-04-13T11:25:02.307Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'bottlespin' AND content_type = 'bottle_card';

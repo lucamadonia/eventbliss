@@ -1,5 +1,5 @@
 -- 03_headup.sql — 14 entries
--- Generated: 2026-04-13T11:11:01.775Z
+-- Generated: 2026-04-13T11:25:02.173Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'headup' AND content_type = 'headup_word';

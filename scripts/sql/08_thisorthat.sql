@@ -1,5 +1,5 @@
 -- 08_thisorthat.sql — 185 entries
--- Generated: 2026-04-13T11:11:01.870Z
+-- Generated: 2026-04-13T11:25:02.250Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'thisorthat' AND content_type = 'pair';
