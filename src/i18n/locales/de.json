@@ -3222,7 +3222,9 @@
       "partyGamesCount": "24+ Party Games",
       "partyGamesSubtitle": "Taboo, Bomb, Headup & more",
       "findInspiration": "Inspirationen finden",
-      "findInspirationSub": "Themen, Games & Ideen f\u00fcr dein Event"
+      "findInspirationSub": "Themen, Games & Ideen f\u00fcr dein Event",
+      "marketplace": "Marketplace",
+      "marketplaceSub": "Services & Erlebnisse"
     },
     "games": {
       "subtitle": "Party Games",

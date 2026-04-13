@@ -13,6 +13,7 @@ import {
   ArrowRight,
   PartyPopper,
   Lightbulb,
+  Store,
   ChevronRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -291,6 +292,35 @@ export default function HomeScreen() {
               </p>
               <p className="text-lg font-display font-bold text-foreground">
                 {t('native.home.partyGamesSubtitle')}
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground" />
+          </div>
+        </motion.button>
+      </motion.div>
+
+      {/* Marketplace shortcut */}
+      <motion.div
+        className="px-5 mb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.55, ...spring.soft }}
+      >
+        <motion.button
+          onClick={() => go("/marketplace")}
+          whileTap={{ scale: 0.98 }}
+          className="w-full relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-violet-600/25 via-fuchsia-600/15 to-pink-600/10 border border-border text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+              <Store className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs uppercase tracking-wider text-violet-300/80 font-semibold">
+                {t('native.home.marketplace', 'Marketplace')}
+              </p>
+              <p className="text-lg font-display font-bold text-foreground">
+                {t('native.home.marketplaceSub', 'Services & Erlebnisse')}
               </p>
             </div>
             <ArrowRight className="w-5 h-5 text-muted-foreground" />

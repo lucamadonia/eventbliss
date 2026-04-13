@@ -5,7 +5,7 @@
 import { useMemo } from "react";
 import { useLocation, matchPath } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, CalendarHeart, Gamepad2, Lightbulb, User } from "lucide-react";
+import { Sparkles, CalendarHeart, Gamepad2, Store, User } from "lucide-react";
 import { spring } from "@/lib/motion";
 import { TabItem } from "./TabItem";
 
@@ -20,7 +20,7 @@ export const TABS: Tab[] = [
   { to: "/", label: "Home", icon: Sparkles },
   { to: "/my-events", label: "Events", icon: CalendarHeart, matchPrefix: "/my-events" },
   { to: "/games", label: "Play", icon: Gamepad2, matchPrefix: "/games" },
-  { to: "/ideas", label: "Ideas", icon: Lightbulb, matchPrefix: "/ideas" },
+  { to: "/marketplace", label: "Market", icon: Store, matchPrefix: "/marketplace" },
   { to: "/profile", label: "Profile", icon: User, matchPrefix: "/profile" },
 ];
 
@@ -46,6 +46,8 @@ const HIDDEN_PATTERNS = [
   "/agency",
   "/agency-portal",
   "/agency-apply",
+  "/marketplace/service/:slug",
+  "/marketplace/agency/:slug",
 ];
 
 export function useTabBarVisible(): boolean {

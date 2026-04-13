@@ -36,6 +36,8 @@ const DrinkTrackerScreen = lazy(() => import("@/pages/native/DrinkTrackerScreen"
 const PartyLobbyScreen = lazy(() => import("@/pages/native/PartyLobbyScreen"));
 const NativeEventDashboard = lazy(() => import("@/pages/native/NativeEventDashboard"));
 const JoinRoomScreen = lazy(() => import("@/pages/native/JoinRoomScreen"));
+const NativeMarketplaceScreen = lazy(() => import("@/pages/native/NativeMarketplaceScreen"));
+const NativeServiceDetailScreen = lazy(() => import("@/pages/native/NativeServiceDetailScreen"));
 
 // Existing desktop pages — wrapped in NativeStackPage at route level
 import Auth from "@/pages/Auth";
@@ -54,6 +56,7 @@ const ClaimInvite = lazy(() => import("@/pages/ClaimInvite"));
 const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
 const GameProfilePage = lazy(() => import("@/games/social/GameProfilePage"));
 const TVScreen = lazy(() => import("@/games/tv/TVScreen"));
+const MarketplaceAgency = lazy(() => import("@/pages/MarketplaceAgency"));
 
 function wrap(node: JSX.Element, title?: string, opts?: { fullscreen?: boolean; showBack?: boolean }) {
   return (
@@ -85,6 +88,21 @@ export function NativeApp() {
               <Route
                 path="/ideas"
                 element={<ProtectedRoute><IdeasScreen /></ProtectedRoute>}
+              />
+              <Route
+                path="/marketplace"
+                element={<Suspense fallback={<PageLoader />}><NativeMarketplaceScreen /></Suspense>}
+              />
+              <Route
+                path="/marketplace/service/:slug"
+                element={<Suspense fallback={<PageLoader />}><NativeServiceDetailScreen /></Suspense>}
+              />
+              <Route
+                path="/marketplace/agency/:slug"
+                element={wrap(
+                  <Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense>,
+                  "Agentur"
+                )}
               />
               <Route
                 path="/profile"
