@@ -179,60 +179,196 @@ export default function AdminGames() {
     setFormContent(prev => ({ ...prev, [activeLang]: { ...prev[activeLang], [field]: value } }));
   };
 
-  // Seed from static files
+  // Seed from ALL static files (10 languages)
   const handleSeed = async () => {
-    if (!confirm('Statische Inhalte in die Datenbank importieren? Bestehende Einträge bleiben erhalten.')) return;
+    if (!confirm('Statische Inhalte (alle 10 Sprachen) in die Datenbank importieren?')) return;
     setSeeding(true);
     try {
-      // Dynamic import of static content
-      const [questionsMod, tabooMod, headupMod] = await Promise.all([
-        import('@/games/content/questions-de'),
-        import('@/games/content/taboo-words-de'),
-        import('@/games/content/headup-words-de'),
-      ]);
+      const langCodes = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'tr', 'ar'];
+
+      // Load all question files
+      const questionMods = await Promise.all(langCodes.map(l =>
+        import(`../games/content/questions-${l}.ts`).catch(() => null)
+      ));
+      const tabooMods = await Promise.all(langCodes.map(l =>
+        import(`../games/content/taboo-words-${l}.ts`).catch(() => null)
+      ));
+      const headupMods = await Promise.all(langCodes.map(l =>
+        import(`../games/content/headup-words-${l}.ts`).catch(() => null)
+      ));
+
+      // Helper: get array from module
+      const getArr = (mod: any, prefix: string) => {
+        if (!mod) return [];
+        const key = Object.keys(mod).find(k => k.startsWith(prefix));
+        return key ? mod[key] : [];
+      };
 
       const items: any[] = [];
 
-      // Questions
-      for (const q of questionsMod.QUIZ_QUESTIONS_DE) {
+      // Questions — index-based merge across languages
+      const deQuestions = getArr(questionMods[0], 'QUIZ_QUESTIONS_');
+      for (let idx = 0; idx < deQuestions.length; idx++) {
+        const content: Record<string, any> = {};
+        for (let li = 0; li < langCodes.length; li++) {
+          const qs = getArr(questionMods[li], 'QUIZ_QUESTIONS_');
+          const q = qs[idx];
+          if (q) {
+            content[langCodes[li]] = {
+              question: q.question,
+              answer1: q.answers[0], answer2: q.answers[1],
+              answer3: q.answers[2], answer4: q.answers[3],
+              correctIndex: String(q.correctIndex),
+            };
+          }
+        }
         items.push({
-          game_id: 'bomb',
-          content_type: 'question',
-          content: { de: { question: q.question, answer1: q.answers[0], answer2: q.answers[1], answer3: q.answers[2], answer4: q.answers[3], correctIndex: String(q.correctIndex) } },
-          difficulty: q.difficulty,
-          category: q.category,
-          tags: [],
-          is_active: true,
+          game_id: 'bomb', content_type: 'question', content,
+          difficulty: deQuestions[idx].difficulty, category: deQuestions[idx].category,
+          tags: [], is_active: true,
         });
       }
 
-      // Taboo
-      for (const c of tabooMod.TABOO_CARDS_DE) {
+      // Taboo — index-based merge
+      const deTaboo = getArr(tabooMods[0], 'TABOO_CARDS_');
+      for (let idx = 0; idx < deTaboo.length; idx++) {
+        const content: Record<string, any> = {};
+        for (let li = 0; li < langCodes.length; li++) {
+          const cards = getArr(tabooMods[li], 'TABOO_CARDS_');
+          const c = cards[idx];
+          if (c) {
+            content[langCodes[li]] = {
+              term: c.term,
+              forbidden1: c.forbidden[0], forbidden2: c.forbidden[1],
+              forbidden3: c.forbidden[2], forbidden4: c.forbidden[3],
+              forbidden5: c.forbidden[4],
+            };
+          }
+        }
         items.push({
-          game_id: 'taboo',
-          content_type: 'taboo_card',
-          content: { de: { term: c.term, forbidden1: c.forbidden[0], forbidden2: c.forbidden[1], forbidden3: c.forbidden[2], forbidden4: c.forbidden[3], forbidden5: c.forbidden[4] } },
-          difficulty: c.difficulty,
-          category: c.category,
-          tags: [],
-          is_active: true,
+          game_id: 'taboo', content_type: 'taboo_card', content,
+          difficulty: deTaboo[idx].difficulty, category: deTaboo[idx].category,
+          tags: [], is_active: true,
         });
       }
 
-      // HeadUp
-      for (const cat of headupMod.HEADUP_CATEGORIES_DE) {
+      // HeadUp — index-based merge
+      const deHeadup = getArr(headupMods[0], 'HEADUP_CATEGORIES_');
+      for (let idx = 0; idx < deHeadup.length; idx++) {
+        const content: Record<string, any> = {};
+        for (let li = 0; li < langCodes.length; li++) {
+          const cats = getArr(headupMods[li], 'HEADUP_CATEGORIES_');
+          const cat = cats[idx];
+          if (cat) {
+            content[langCodes[li]] = {
+              word: cat.name, category: cat.name,
+              words: cat.words.join(', '),
+            };
+          }
+        }
         items.push({
-          game_id: 'headup',
-          content_type: 'headup_word',
-          content: { de: { word: cat.name, category: cat.name, words: cat.words.join(', ') } },
-          difficulty: 'medium',
-          category: cat.name,
-          tags: [],
-          is_active: true,
+          game_id: 'headup', content_type: 'headup_word', content,
+          difficulty: 'medium', category: deHeadup[idx].name,
+          tags: [], is_active: true,
         });
       }
+
+      toast.info(`${items.length} Einträge werden importiert...`);
 
       // Insert in batches
+      const BATCH = 50;
+      let ok = 0;
+      for (let i = 0; i < items.length; i += BATCH) {
+        const batch = items.slice(i, i + BATCH);
+        const { error } = await (supabase.from as any)('game_content').insert(batch);
+        if (!error) ok += batch.length;
+        else console.warn('Batch error:', error.message);
+      }
+
+      clearGameContentCache();
+      gc.fetchItems(selectedGame.id, selectedType, search, page);
+      toast.success(`${ok} Einträge mit ${langCodes.length} Sprachen importiert!`);
+    } catch (e: any) {
+      toast.error(`Import fehlgeschlagen: ${e.message}`);
+    }
+    setSeeding(false);
+  };
+
+  // File import (CSV, JSON, TXT, XLSX)
+  const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = ''; // reset input
+
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const text = await file.text();
+    let rows: Record<string, string>[] = [];
+
+    try {
+      if (ext === 'json') {
+        const parsed = JSON.parse(text);
+        rows = Array.isArray(parsed) ? parsed : [parsed];
+      } else if (ext === 'csv' || ext === 'txt') {
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length < 2) { toast.error('CSV muss mindestens Header + 1 Zeile haben.'); return; }
+        const headers = lines[0].split(/[,;\t]/).map(h => h.replace(/^["']|["']$/g, '').trim());
+        for (let i = 1; i < lines.length; i++) {
+          const vals = lines[i].split(/[,;\t]/).map(v => v.replace(/^["']|["']$/g, '').trim());
+          const row: Record<string, string> = {};
+          headers.forEach((h, idx) => { if (vals[idx]) row[h] = vals[idx]; });
+          if (Object.keys(row).length > 0) rows.push(row);
+        }
+      } else if (ext === 'xlsx') {
+        toast.error('XLSX wird bald unterstützt. Bitte als CSV exportieren.');
+        return;
+      } else {
+        toast.error(`Format .${ext} nicht unterstützt. Nutze CSV, JSON oder TXT.`);
+        return;
+      }
+
+      if (rows.length === 0) { toast.error('Keine Daten in der Datei gefunden.'); return; }
+
+      // Detect language from field names or default to DE
+      const fieldNames = FIELD_CONFIGS[selectedType]?.fields.map(f => f.key) || ['text'];
+      const items: any[] = [];
+
+      for (const row of rows) {
+        // Build multi-lang content: check if row has lang keys (de, en, etc.) or flat fields
+        const content: Record<string, Record<string, string>> = {};
+        const hasLangKeys = LANGS.some(l => row[l.code]);
+
+        if (hasLangKeys) {
+          // Row format: { de: "text", en: "text", ... } — single-field import
+          for (const l of LANGS) {
+            if (row[l.code]) content[l.code] = { [fieldNames[0]]: row[l.code] };
+          }
+        } else {
+          // Row format: { question: "...", answer1: "...", ... } — single-language
+          const lang = row.lang || row.language || 'de';
+          const fieldData: Record<string, string> = {};
+          for (const fn of fieldNames) {
+            if (row[fn]) fieldData[fn] = row[fn];
+          }
+          if (Object.keys(fieldData).length > 0) content[lang] = fieldData;
+        }
+
+        if (Object.keys(content).length > 0) {
+          items.push({
+            game_id: selectedGame.id,
+            content_type: selectedType,
+            content,
+            difficulty: row.difficulty || 'medium',
+            category: row.category || 'general',
+            tags: row.tags ? row.tags.split(',').map((t: string) => t.trim()) : [],
+            is_active: true,
+          });
+        }
+      }
+
+      if (items.length === 0) { toast.error('Keine gültigen Einträge gefunden.'); return; }
+
+      toast.info(`${items.length} Einträge werden importiert...`);
+
       const BATCH = 50;
       let ok = 0;
       for (let i = 0; i < items.length; i += BATCH) {
@@ -243,11 +379,10 @@ export default function AdminGames() {
 
       clearGameContentCache();
       gc.fetchItems(selectedGame.id, selectedType, search, page);
-      toast.success(`${ok} Einträge importiert!`);
-    } catch (e: any) {
-      toast.error(`Import fehlgeschlagen: ${e.message}`);
+      toast.success(`${ok} Einträge aus ${file.name} importiert!`);
+    } catch (err: any) {
+      toast.error(`Import fehlgeschlagen: ${err.message}`);
     }
-    setSeeding(false);
   };
 
   const fields = FIELD_CONFIGS[selectedType]?.fields || [{ key: 'text', label: 'Text', type: 'text' as const }];
@@ -272,11 +407,18 @@ export default function AdminGames() {
             <p className="text-xs text-[#a8abb3] mt-0.5">{totalItems} Einträge · {GAMES.length} Spiele · {LANGS.length} Sprachen</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* File import */}
+            <label className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#ff6b98] hover:border-[#ff6b98]/30 transition-all cursor-pointer">
+              <Upload className="w-3.5 h-3.5" /> CSV / JSON
+              <input type="file" accept=".csv,.json,.txt,.xlsx" onChange={handleFileImport} className="hidden" />
+            </label>
+            {/* Static seed */}
             <motion.button whileTap={{ scale: 0.95 }} onClick={handleSeed} disabled={seeding}
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#8ff5ff] hover:border-[#8ff5ff]/30 transition-all disabled:opacity-50">
               {seeding ? <div className="w-3.5 h-3.5 border-2 border-[#8ff5ff] border-t-transparent rounded-full animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-              {seeding ? 'Importiere...' : 'Statische importieren'}
+              {seeding ? 'Importiere...' : 'Alle Sprachen importieren'}
             </motion.button>
+            {/* Manual add */}
             <motion.button whileTap={{ scale: 0.95 }} onClick={openAdd}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-[#df8eff] to-[#ff6b98] text-white shadow-[0_0_15px_rgba(223,142,255,0.3)]">
               <Plus className="w-4 h-4" /> Hinzufügen
