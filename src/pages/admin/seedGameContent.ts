@@ -345,6 +345,33 @@ export async function seedAllGameContent(
     }
   } catch { /* no fakeorfact */ }
 
+  // ── 14. Wo ist was? (Geo + StreetView Locations) ────────────────
+  onProgress('Lade Wo ist was?...');
+  try {
+    const geoMod = await import('../../games/findit/geo-locations');
+    const svMod = await import('../../games/findit/streetview-locations');
+
+    // Geo locations
+    for (const loc of (geoMod.GEO_LOCATIONS || [])) {
+      items.push({
+        game_id: 'wo-ist-was', content_type: 'location',
+        content: { de: { name: loc.name, lat: String(loc.lat), lng: String(loc.lng), type: loc.type } },
+        difficulty: 'medium', category: loc.type === 'city' ? 'Städte' : 'Länder',
+        tags: [], is_active: true,
+      });
+    }
+
+    // StreetView locations
+    for (const loc of (svMod.STREETVIEW_LOCATIONS || [])) {
+      items.push({
+        game_id: 'wo-ist-was', content_type: 'location',
+        content: { de: { name: `${loc.city}, ${loc.country}`, lat: String(loc.lat), lng: String(loc.lng), type: 'streetview' } },
+        difficulty: 'medium', category: 'Sehenswürdigkeiten',
+        tags: loc.hint ? [loc.hint] : [], is_active: true,
+      });
+    }
+  } catch { /* no findit content */ }
+
   onProgress(`${items.length} Einträge werden gespeichert...`);
 
   // Insert in batches

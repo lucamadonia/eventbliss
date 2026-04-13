@@ -14,9 +14,9 @@ export const STREETVIEW_LOCATIONS: StreetViewLocation[] = [
   { lat: 52.5200, lng: 13.4050, city: 'Berlin', country: 'Deutschland' },
   { lat: 51.5074, lng: -0.1278, city: 'London', country: 'England' },
   { lat: 40.4168, lng: -3.7038, city: 'Madrid', country: 'Spanien' },
-  { lat: 48.2082, lng: 16.3738, city: 'Wien', country: 'Oesterreich' },
+  { lat: 48.2082, lng: 16.3738, city: 'Wien', country: 'Österreich' },
   { lat: 59.3293, lng: 18.0686, city: 'Stockholm', country: 'Schweden' },
-  { lat: 55.6761, lng: 12.5683, city: 'Kopenhagen', country: 'Daenemark' },
+  { lat: 55.6761, lng: 12.5683, city: 'Kopenhagen', country: 'Dänemark' },
   { lat: 50.0755, lng: 14.4378, city: 'Prag', country: 'Tschechien' },
   { lat: 47.4979, lng: 19.0402, city: 'Budapest', country: 'Ungarn' },
   { lat: 38.7223, lng: -9.1393, city: 'Lissabon', country: 'Portugal' },
@@ -25,14 +25,14 @@ export const STREETVIEW_LOCATIONS: StreetViewLocation[] = [
   { lat: 41.3874, lng: 2.1686, city: 'Barcelona', country: 'Spanien' },
   { lat: 45.4642, lng: 9.1900, city: 'Mailand', country: 'Italien' },
   { lat: 52.3676, lng: 4.9041, city: 'Amsterdam', country: 'Niederlande' },
-  { lat: 50.8503, lng: 4.3517, city: 'Bruessel', country: 'Belgien' },
-  { lat: 47.3769, lng: 8.5417, city: 'Zuerich', country: 'Schweiz' },
+  { lat: 50.8503, lng: 4.3517, city: 'Brüssel', country: 'Belgien' },
+  { lat: 47.3769, lng: 8.5417, city: 'Zürich', country: 'Schweiz' },
   { lat: 60.1699, lng: 24.9384, city: 'Helsinki', country: 'Finnland' },
   { lat: 59.9139, lng: 10.7522, city: 'Oslo', country: 'Norwegen' },
 
   // Asien
   { lat: 35.6762, lng: 139.6503, city: 'Tokio', country: 'Japan' },
-  { lat: 37.5665, lng: 126.9780, city: 'Seoul', country: 'Suedkorea' },
+  { lat: 37.5665, lng: 126.9780, city: 'Seoul', country: 'Südkorea' },
   { lat: 13.7563, lng: 100.5018, city: 'Bangkok', country: 'Thailand' },
   { lat: 1.3521, lng: 103.8198, city: 'Singapur', country: 'Singapur' },
   { lat: 22.3193, lng: 114.1694, city: 'Hongkong', country: 'China' },
@@ -64,7 +64,7 @@ export const STREETVIEW_LOCATIONS: StreetViewLocation[] = [
 
   // Afrika
   { lat: 30.0444, lng: 31.2357, city: 'Kairo', country: 'Aegypten' },
-  { lat: -33.9249, lng: 18.4241, city: 'Kapstadt', country: 'Suedafrika' },
+  { lat: -33.9249, lng: 18.4241, city: 'Kapstadt', country: 'Südafrika' },
   { lat: 31.6295, lng: -7.9811, city: 'Marrakesch', country: 'Marokko' },
   { lat: -1.2921, lng: 36.8219, city: 'Nairobi', country: 'Kenia' },
 
