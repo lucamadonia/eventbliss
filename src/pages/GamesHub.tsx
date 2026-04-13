@@ -385,7 +385,7 @@ const GamesHub = () => {
     <>
       <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
       {!showRules && (
-        <div className="fixed top-4 left-4 z-[55]">
+        <div className="fixed top-4 right-16 z-[55]">
           <RulesHelpButton onClick={openRules} />
         </div>
       )}

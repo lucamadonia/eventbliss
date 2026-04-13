@@ -3818,6 +3818,15 @@
       "step2": "Auf wen sie zeigt, ist dran",
       "step3": "Beantworte die Frage oder mache die Aufgabe",
       "tip": "Karma dreht die Flasche — sei nett zu deinen Mitspielern!"
+    },
+    "drueck-das-wort": {
+      "title": "Drück das Wort",
+      "tagline": "Finde das richtige Wort unter Zeitdruck — ein falscher Klick und es wird eng!",
+      "step1": "Dir wird ein gesuchter Begriff angezeigt",
+      "step2": "Tippe auf das richtige Wort aus den Optionen — schnell!",
+      "step3": "Richtig? Nächstes Wort! Falsch? Punktabzug!",
+      "step4": "Wer am Ende die meisten richtigen Wörter hat, gewinnt",
+      "tip": "Nicht hektisch tippen — ein falscher Klick kostet mehr als eine Sekunde Nachdenken!"
     }
   },
   "nativeAdmin": {

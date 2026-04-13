@@ -3678,6 +3678,15 @@
       "step2": "Whoever it points to is up",
       "step3": "Answer the question or complete the dare",
       "tip": "Karma spins the bottle — be nice to your fellow players!"
+    },
+    "drueck-das-wort": {
+      "title": "Press the Word",
+      "tagline": "Find the right word under time pressure — one wrong tap and it gets tight!",
+      "step1": "You are shown a target word",
+      "step2": "Tap the correct word from the options — fast!",
+      "step3": "Correct? Next word! Wrong? Points deducted!",
+      "step4": "Most correct words at the end wins",
+      "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
     }
   }
 }
