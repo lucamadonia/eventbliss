@@ -252,12 +252,20 @@ export async function seedAllGameContent(
   wMods.pt = await import('../../games/whoami/whoami-content-pt').catch(() => null);
   wMods.tr = await import('../../games/whoami/whoami-content-tr').catch(() => null);
   wMods.ar = await import('../../games/whoami/whoami-content-ar').catch(() => null);
-  // Character names are often the same across languages — use name as key
-  items.push(...mergeByKey(wMods, 'WHOAMI_',
-    (c) => c.name,
-    (c) => ({ name: c.name }),
-    (c) => ({ game_id: 'whoami', content_type: 'character', difficulty: 'medium', category: c.category || 'general' }),
-  ));
+  // Index-based merge — characters correspond by position across languages
+  const deWhoAmI = getExport(wMods.de, 'WHOAMI_');
+  for (let idx = 0; idx < deWhoAmI.length; idx++) {
+    const content: Record<string, Record<string, string>> = {};
+    for (const [lang, mod] of Object.entries(wMods)) {
+      const arr = getExport(mod, 'WHOAMI_');
+      if (arr[idx]) content[lang] = { name: arr[idx].name, category: arr[idx].category };
+    }
+    items.push({
+      game_id: 'whoami', content_type: 'character', content,
+      difficulty: 'medium', category: deWhoAmI[idx].category || 'general',
+      tags: [], is_active: true,
+    });
+  }
 
   // ── 10. Quick Draw ─────────────────────────────────────────────
   onProgress('Lade Schnellzeichner...');
