@@ -385,6 +385,30 @@ export default function AdminGames() {
     }
   };
 
+  // Download CSV template for current game + content type
+  const handleDownloadTemplate = () => {
+    const cfg = FIELD_CONFIGS[selectedType];
+    if (!cfg) return;
+    const fieldKeys = cfg.fields.map(f => f.key);
+    const headers = [...fieldKeys, 'difficulty', 'category'].join(';');
+    const example = fieldKeys.map(f => {
+      if (f === 'correctIndex') return '0';
+      if (f === 'isTrue') return 'true';
+      if (f === 'intensity') return '1';
+      if (f === 'lat' || f === 'lng') return '48.1351';
+      return `Beispiel ${f}`;
+    }).join(';') + ';medium;general';
+    const csv = `${headers}\n${example}\n`;
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedGame.id}_${selectedType}_template.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Vorlage für ${cfg.label} heruntergeladen!`);
+  };
+
   const fields = FIELD_CONFIGS[selectedType]?.fields || [{ key: 'text', label: 'Text', type: 'text' as const }];
   const preview = (item: GameContent) => {
     const de = item.content.de || item.content.en || {};
@@ -407,9 +431,16 @@ export default function AdminGames() {
             <p className="text-xs text-[#a8abb3] mt-0.5">{totalItems} Einträge · {GAMES.length} Spiele · {LANGS.length} Sprachen</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Template download */}
+            <motion.button whileTap={{ scale: 0.95 }} onClick={handleDownloadTemplate}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#a8abb3] hover:border-white/10 transition-all"
+              title="CSV-Vorlage herunterladen">
+              <Layers className="w-3.5 h-3.5" /> Vorlage
+            </motion.button>
             {/* File import */}
-            <label className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#ff6b98] hover:border-[#ff6b98]/30 transition-all cursor-pointer">
-              <Upload className="w-3.5 h-3.5" /> CSV / JSON
+            <label className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#1b2028] border border-white/5 text-[#ff6b98] hover:border-[#ff6b98]/30 transition-all cursor-pointer"
+              title="CSV, JSON oder TXT importieren">
+              <Upload className="w-3.5 h-3.5" /> Importieren
               <input type="file" accept=".csv,.json,.txt,.xlsx" onChange={handleFileImport} className="hidden" />
             </label>
             {/* Static seed */}
@@ -553,8 +584,21 @@ export default function AdminGames() {
                 </motion.button>
                 <motion.button whileTap={{ scale: 0.95 }} onClick={handleSeed} disabled={seeding}
                   className="px-4 py-2 rounded-xl text-sm font-bold bg-[#1b2028] border border-[#8ff5ff]/20 text-[#8ff5ff]">
-                  <Download className="w-4 h-4 inline mr-1.5" />Statische importieren
+                  <Download className="w-4 h-4 inline mr-1.5" />Alle Sprachen importieren
                 </motion.button>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={handleDownloadTemplate}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-[#1b2028] border border-white/10 text-[#a8abb3]">
+                  <Layers className="w-4 h-4 inline mr-1.5" />CSV-Vorlage
+                </motion.button>
+              </div>
+              {/* Import-Hinweis */}
+              <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-xl bg-[#151a21] border border-white/5 text-left">
+                <p className="text-[10px] font-bold text-[#8ff5ff] uppercase tracking-wider mb-1.5">Import-Format für {FIELD_CONFIGS[selectedType]?.label || selectedType}</p>
+                <p className="text-[11px] text-[#a8abb3] leading-relaxed">
+                  CSV mit Semikolon-Trennung. Spalten: <span className="text-white font-mono">
+                  {(FIELD_CONFIGS[selectedType]?.fields || []).map(f => f.key).join('; ')}; difficulty; category</span>
+                </p>
+                <p className="text-[10px] text-[#a8abb3]/50 mt-1">Oder JSON-Array: [{'{'}...{'}'}]</p>
               </div>
             </motion.div>
           ) : (
