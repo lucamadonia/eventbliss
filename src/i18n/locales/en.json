@@ -3215,6 +3215,56 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "nativeResponses": {
+    "stats": {
+      "responses": "Responses",
+      "responseRate": "Response Rate",
+      "latestResponse": "Latest Response"
+    },
+    "attendanceOverview": "Attendance Overview",
+    "attendance": {
+      "confirmed": "Confirmed",
+      "maybe": "Maybe",
+      "declined": "Declined"
+    },
+    "categoryAnalysis": "Analysis by Category",
+    "categories": {
+      "attendance": "Attendance",
+      "budget": "Budget",
+      "destination": "Destination",
+      "duration_pref": "Duration",
+      "travel_pref": "Travel",
+      "fitness_level": "Fitness",
+      "alcohol": "Alcohol"
+    },
+    "activitiesAndPreferences": "Activities & Preferences",
+    "preferences": "Preferences",
+    "availableDates": "Available Dates",
+    "noAnswer": "N/A",
+    "option": "{{count}} option",
+    "option_plural": "{{count}} options",
+    "individualResponses": "Individual Responses",
+    "searchParticipants": "Search participants...",
+    "noFilterResults": "No responses for this filter",
+    "filterAll": "All",
+    "filterYes": "Confirmed",
+    "filterMaybe": "Maybe",
+    "filterNo": "Declined",
+    "sections": {
+      "suggestions": "Suggestions & Wishes",
+      "restrictions": "Restrictions",
+      "partialAvailability": "Partial Availability",
+      "entries": "{{count}} entry",
+      "entries_plural": "{{count}} entries"
+    },
+    "timeAgo": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} hr ago",
+      "yesterday": "yesterday",
+      "daysAgo": "{{count}} days ago"
+    }
+  },
   "marketplaceService": {
     "breadcrumb": "Marketplace",
     "description": "Description",

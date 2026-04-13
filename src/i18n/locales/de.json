@@ -3499,6 +3499,56 @@
       "enterprise": "Enterprise ✓"
     }
   },
+  "nativeResponses": {
+    "stats": {
+      "responses": "Antworten",
+      "responseRate": "Rücklaufquote",
+      "latestResponse": "Letzte Antwort"
+    },
+    "attendanceOverview": "Teilnahme-Übersicht",
+    "attendance": {
+      "confirmed": "Zusage",
+      "maybe": "Vielleicht",
+      "declined": "Absage"
+    },
+    "categoryAnalysis": "Auswertung nach Kategorie",
+    "categories": {
+      "attendance": "Teilnahme",
+      "budget": "Budget",
+      "destination": "Reiseziel",
+      "duration_pref": "Dauer",
+      "travel_pref": "Anreise",
+      "fitness_level": "Fitness",
+      "alcohol": "Alkohol"
+    },
+    "activitiesAndPreferences": "Aktivitäten & Präferenzen",
+    "preferences": "Präferenzen",
+    "availableDates": "Verfügbare Termine",
+    "noAnswer": "k.A.",
+    "option": "{{count}} Option",
+    "option_plural": "{{count}} Optionen",
+    "individualResponses": "Einzelne Antworten",
+    "searchParticipants": "Teilnehmer suchen...",
+    "noFilterResults": "Keine Antworten für diesen Filter",
+    "filterAll": "Alle",
+    "filterYes": "Zusagen",
+    "filterMaybe": "Vielleicht",
+    "filterNo": "Absagen",
+    "sections": {
+      "suggestions": "Vorschläge & Wünsche",
+      "restrictions": "Einschränkungen",
+      "partialAvailability": "Teilweise Verfügbarkeit",
+      "entries": "{{count}} Eintrag",
+      "entries_plural": "{{count}} Einträge"
+    },
+    "timeAgo": {
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {{count}} Min.",
+      "hoursAgo": "vor {{count}} Std.",
+      "yesterday": "gestern",
+      "daysAgo": "vor {{count}} Tagen"
+    }
+  },
   "marketplaceService": {
     "breadcrumb": "Marketplace",
     "description": "Beschreibung",

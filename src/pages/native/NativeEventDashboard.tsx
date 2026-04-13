@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import NativeEventGuests from "./NativeEventGuests";
 import NativeEventSchedule from "./NativeEventSchedule";
 import NativeEventExpenses from "./NativeEventExpenses";
-import NativeResponsesTab from "@/components/native/NativeResponsesTab";
+import NativeResponsesTab from "@/components/native/responses";
 import {
   ArrowLeft,
   LayoutDashboard,
