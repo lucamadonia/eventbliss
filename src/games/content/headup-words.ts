@@ -10,6 +10,7 @@ import * as pl from './headup-words-pl';
 import * as pt from './headup-words-pt';
 import * as tr from './headup-words-tr';
 import * as ar from './headup-words-ar';
+import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
 
 export type { HeadUpCategory };
 
@@ -26,7 +27,21 @@ const categoriesByLang: Record<string, HeadUpCategory[]> = {
   ar: ar.HEADUP_CATEGORIES_AR,
 };
 
+let _dbCategories: HeadUpCategory[] | null = null;
+let _dbLoaded = false;
+
+/** Pre-load DB headup categories. Call once at game start. */
+export async function preloadHeadUpCategories(): Promise<void> {
+  if (_dbLoaded) return;
+  _dbLoaded = true;
+  const cached = loadFromCacheSync<HeadUpCategory>('headup', 'headup_word');
+  if (cached && cached.length > 0) { _dbCategories = cached; return; }
+  const db = await loadFromDB<HeadUpCategory>('headup', 'headup_word');
+  if (db && db.length > 0) _dbCategories = db;
+}
+
 export function getHeadUpCategories(): HeadUpCategory[] {
+  if (_dbCategories && _dbCategories.length > 0) return _dbCategories;
   const lang = i18n.language?.split('-')[0] || 'de';
   return categoriesByLang[lang] || categoriesByLang.de;
 }

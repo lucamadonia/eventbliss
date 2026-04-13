@@ -10,6 +10,7 @@ import * as pl from './taboo-words-pl';
 import * as pt from './taboo-words-pt';
 import * as tr from './taboo-words-tr';
 import * as ar from './taboo-words-ar';
+import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
 
 export type { TabooCard };
 
@@ -26,7 +27,21 @@ const cardsByLang: Record<string, TabooCard[]> = {
   ar: ar.TABOO_CARDS_AR,
 };
 
+let _dbCards: TabooCard[] | null = null;
+let _dbLoaded = false;
+
+/** Pre-load DB taboo cards. Call once at game start. */
+export async function preloadTabooCards(): Promise<void> {
+  if (_dbLoaded) return;
+  _dbLoaded = true;
+  const cached = loadFromCacheSync<TabooCard>('taboo', 'taboo_card');
+  if (cached && cached.length > 0) { _dbCards = cached; return; }
+  const db = await loadFromDB<TabooCard>('taboo', 'taboo_card');
+  if (db && db.length > 0) _dbCards = db;
+}
+
 export function getTabooCards(): TabooCard[] {
+  if (_dbCards && _dbCards.length > 0) return _dbCards;
   const lang = i18n.language?.split('-')[0] || 'de';
   return cardsByLang[lang] || cardsByLang.de;
 }

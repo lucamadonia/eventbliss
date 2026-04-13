@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { clearGameContentCache } from './useGameContentCached';
 
 export interface GameContent {
   id: string;
@@ -42,6 +43,7 @@ export function useGameContent() {
       const { data, error } = await db.from('game_content').insert({ ...item, created_by: user?.id }).select().single();
       if (error) throw error;
       setItems(prev => [data as GameContent, ...prev]);
+      clearGameContentCache();
       return data as GameContent;
     } catch (e) { console.error('Failed to add:', e); return null; }
   }, []);
@@ -51,6 +53,7 @@ export function useGameContent() {
       const { data, error } = await db.from('game_content').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
       if (error) throw error;
       setItems(prev => prev.map(i => i.id === id ? (data as GameContent) : i));
+      clearGameContentCache();
       return data as GameContent;
     } catch (e) { console.error('Failed to update:', e); return null; }
   }, []);
@@ -59,6 +62,7 @@ export function useGameContent() {
     try {
       await db.from('game_content').delete().eq('id', id);
       setItems(prev => prev.filter(i => i.id !== id));
+      clearGameContentCache();
     } catch (e) { console.error('Failed to delete:', e); }
   }, []);
 
