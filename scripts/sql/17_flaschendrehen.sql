@@ -1,0 +1,3 @@
+-- 17_flaschendrehen.sql
+-- Flaschendrehen uses the same content as Bottlespin (10_bottlespin.sql)
+-- If you want separate entries, copy 10_bottlespin.sql and change game_id to 'flaschendrehen'

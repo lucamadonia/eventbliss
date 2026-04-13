@@ -1,0 +1,4 @@
+-- 14_splitquiz.sql
+-- Split Quiz uses the same questions as Bomb (01_bomb.sql)
+-- No separate content needed — the game reads from content_type = 'question'
+-- If you want separate entries, copy 01_bomb.sql and change game_id to 'splitquiz'
