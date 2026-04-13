@@ -2140,5 +2140,209 @@
       "next": "\u0130leri",
       "getStarted": "Hadi ba\u015flayal\u0131m"
     }
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "subtitle": "Bir sonraki etkinliğiniz için deneyimler, hizmet sağlayıcılar ve paketler keşfedin",
+    "searchPlaceholder": "Hizmetler, atölyeler, deneyimler ara...",
+    "results": "{{count}} sonuç",
+    "results_plural": "{{count}} sonuç",
+    "loading": "Yükleniyor...",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsHint": "Farklı filtreler veya başka bir arama terimi deneyin",
+    "resetFilters": "Filtreleri sıfırla",
+    "loadMore": "Daha fazla yükle",
+    "perPerson": "/Kişi",
+    "flatRate": "Sabit fiyat",
+    "perHour": "/Saat",
+    "bookNow": "Şimdi rezerve et",
+    "inquireNow": "Şimdi sorgula",
+    "directBook": "Doğrudan rezerve et",
+    "verifiedAgency": "Doğrulanmış ajans",
+    "timesBooked": "{{count}}x rezerve edildi",
+    "featured": "Öne çıkan",
+    "categories": {
+      "all": "Tümü",
+      "workshop": "Atölye",
+      "entertainment": "Eğlence",
+      "catering": "Yemek",
+      "music": "Müzik",
+      "photography": "Fotoğraf",
+      "venue": "Mekan",
+      "wellness": "Sağlık",
+      "sport": "Spor",
+      "deko": "Dekorasyon",
+      "transport": "Ulaşım"
+    },
+    "filters": {
+      "title": "Filtre",
+      "city": "Şehir",
+      "cityPlaceholder": "örn. İstanbul",
+      "price": "Fiyat",
+      "priceAll": "Tümü",
+      "priceTo30": "30 €'ye kadar",
+      "price30to60": "30–60 €",
+      "price60plus": "60 €+",
+      "rating": "Değerlendirme",
+      "rating4plus": "4+ yıldız",
+      "resetAll": "Tümünü sıfırla"
+    },
+    "tiers": {
+      "starter": "Başlangıç",
+      "professional": "Pro ✓",
+      "enterprise": "Kurumsal ✓"
+    }
+  },
+  "marketplaceService": {
+    "breadcrumb": "Marketplace",
+    "description": "Açıklama",
+    "includes": "Dahil olanlar",
+    "reviews": "Değerlendirmeler",
+    "agency": "Ajans",
+    "hints": "Bilgilendirmeler",
+    "selectDate": "Tarih seç",
+    "selectTime": "Saat",
+    "selectTimePlaceholder": "Saat seç...",
+    "participants": "Katılımcılar",
+    "person": "Kişi",
+    "persons": "Kişi",
+    "total": "Toplam",
+    "cancellation": "İptal",
+    "cancellationFlexible": "Esnek",
+    "cancellationModerate": "Orta",
+    "cancellationStrict": "Katı",
+    "enterprisePartner": "Kurumsal İş Ortağı",
+    "viewProfile": "Profili görüntüle",
+    "allServicesFromAgency": "Bu ajansın tüm hizmetleri",
+    "share": "Paylaş",
+    "save": "Kaydet",
+    "saved": "Kaydedildi",
+    "book": "Rezerve et",
+    "booking": "Şimdi rezerve et",
+    "selectDateAndTime": "Lütfen bir tarih ve saat seçin.",
+    "notFound": "Hizmet bulunamadı",
+    "notFoundHint": "Bu hizmet mevcut değil veya kaldırılmış."
+  },
+  "myBookings": {
+    "title": "Rezervasyonlarım",
+    "totalBookings": "Toplam {{count}} rezervasyon",
+    "loading": "Rezervasyonlar yükleniyor...",
+    "discoverMarketplace": "Marketplace'i keşfet",
+    "noBookings": "Henüz rezervasyon yok",
+    "noBookingsHint": "Marketplace'te harika hizmetler keşfedin ve bir sonraki etkinliğiniz için hizmet sağlayıcı rezerve edin.",
+    "details": "Detaylar",
+    "cancel": "İptal et",
+    "cancelConfirm": "Rezervasyonu gerçekten iptal etmek istiyor musunuz?",
+    "writeReview": "Değerlendirme yaz",
+    "filters": {
+      "all": "Tümü",
+      "upcoming": "Yaklaşan",
+      "completed": "Tamamlanan",
+      "cancelled": "İptal edilen"
+    },
+    "status": {
+      "pending": "Beklemede",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
+    },
+    "participants": "Katılımcılar"
+  },
+  "agencyDashboard": {
+    "nav": {
+      "dashboard": "Genel Bakış",
+      "events": "Etkinlikler",
+      "contacts": "İletişim",
+      "templates": "Şablonlar",
+      "team": "Ekip",
+      "runofshow": "Akış Planı",
+      "budgetengine": "Bütçe Motoru",
+      "files": "Dosyalar",
+      "reports": "Raporlar",
+      "marketplace": "Marketplace",
+      "bookings": "Rezervasyonlar",
+      "guides": "Rehberler",
+      "bookingCalendar": "Rezervasyon Takvimi",
+      "calendarSync": "Takvim Senkronizasyonu",
+      "stripe": "Ödemeler",
+      "marketplaceSettings": "Paketler ve Ayarlar",
+      "calendar": "Takvim",
+      "settings": "Ayarlar"
+    }
+  },
+  "bookingsManager": {
+    "title": "Rezervasyon Yöneticisi",
+    "newRequests": "Yeni Talepler",
+    "confirmedBookings": "Onaylanan Rezervasyonlar",
+    "monthlyRevenue": "Aylık Gelir",
+    "confirm": "Onayla",
+    "complete": "Tamamla",
+    "cancelBooking": "İptal et",
+    "noBookings": "Henüz rezervasyon yok",
+    "status": {
+      "new": "Yeni",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
+    },
+    "filters": {
+      "all": "Tümü",
+      "new": "Yeni",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
+    }
+  },
+  "bookingCalendar": {
+    "title": "Rezervasyon Takvimi",
+    "today": "Bugün",
+    "dayNames": ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"],
+    "monthNames": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+    "bookingsTotal": "Toplam {{count}} rezervasyon",
+    "noBookingsDay": "Bu gün için rezervasyon yok",
+    "exportICal": "iCal olarak dışa aktar",
+    "allServices": "Tüm Hizmetler",
+    "status": {
+      "pending": "Beklemede",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
+    }
+  },
+  "calendarSync": {
+    "title": "Takvim Aboneliği",
+    "description": "Rezervasyon takviminizi Outlook, Google Takvim veya Apple Takvim'de abone olun.",
+    "agencyCalendar": "Ajans Takvimi",
+    "guideCalendar": "Rehber Takvimi",
+    "scope": {
+      "all": "Tüm rezervasyonlar",
+      "confirmed": "Sadece onaylananlar",
+      "guide": "Rehbere özel"
+    },
+    "copy": "Kopyala"
+  },
+  "availabilityEditor": {
+    "title": "Müsaitlik Düzenle",
+    "weeklySlots": "Haftalık Zaman Dilimleri",
+    "blockedDates": "Bloke Edilen Tarihler",
+    "copyAllDays": "Tüm günlere kopyala",
+    "copySuccess": "Pazartesi dilimleri tüm günlere kopyalandı",
+    "copyEmpty": "Pazartesi için kopyalanacak zaman dilimi yok",
+    "maxBookings": "Maks. Rezervasyon",
+    "addSlot": "Dilim ekle",
+    "blockReason": "Sebep (isteğe bağlı)",
+    "unblock": "Engeli kaldır",
+    "editAfterSave": "Müsaitlik kaydettikten sonra yapılandırılabilir.",
+    "editButton": "Müsaitliği düzenle",
+    "days": ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"]
+  },
+  "eventServices": {
+    "bookedServices": "Rezerve Edilen Hizmetler",
+    "noBookedServices": "Bu etkinlik için henüz hizmet rezerve edilmedi",
+    "recommended": "Önerilen Hizmetler",
+    "browse": "Hizmetleri keşfet",
+    "browseHint": "Etkinliğiniz için mükemmel hizmet sağlayıcıyı bulun",
+    "bookForEvent": "Etkinlik için rezerve et",
+    "openMarketplace": "Marketplace'i aç"
   }
 }

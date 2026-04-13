@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   MapPin, Star, ShieldCheck, Calendar, Users, TrendingUp,
   Mail, Phone, Globe, ChevronRight, ExternalLink,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Design tokens
 const C = {
@@ -15,39 +17,6 @@ const C = {
   tertiary: "#ff7350",
   border: "border-[#484750]/10",
 } as const;
-
-const MOCK_AGENCY = {
-  name: "Berlin Events GmbH",
-  slug: "berlin-events",
-  city: "Berlin",
-  tier: "professional",
-  verified: true,
-  description:
-    "Seit 2020 organisieren wir unvergessliche Events in Berlin. Von Cocktail Workshops bis hin zu kompletten Eventpaketen — wir machen euren Anlass zu etwas Besonderem.",
-  email: "info@berlin-events.de",
-  phone: "+49 30 123456",
-  website: "www.berlin-events.de",
-  serviceCount: 12,
-  totalBookings: 523,
-  avgRating: 4.8,
-  since: 2020,
-};
-
-const MOCK_SERVICES = [
-  { slug: "cocktail-workshop-berlin", title: "Cocktail Workshop Berlin", category: "Workshop", price: 3900, priceType: "pro Person", rating: 4.8, reviews: 47 },
-  { slug: "gin-tasting-berlin", title: "Gin Tasting Berlin", category: "Workshop", price: 4500, priceType: "pro Person", rating: 4.7, reviews: 32 },
-  { slug: "barkeeper-show", title: "Barkeeper Show", category: "Entertainment", price: 29900, priceType: "Pauschal", rating: 4.9, reviews: 18 },
-  { slug: "event-catering-basic", title: "Event Catering Basic", category: "Catering", price: 2500, priceType: "pro Person", rating: 4.6, reviews: 55 },
-  { slug: "cocktail-kurs-premium", title: "Cocktail Kurs Premium", category: "Workshop", price: 5900, priceType: "pro Person", rating: 4.9, reviews: 21 },
-  { slug: "team-event-paket", title: "Team-Event Paket", category: "Workshop", price: 49900, priceType: "Pauschal", rating: 4.7, reviews: 14 },
-];
-
-const MOCK_REVIEWS = [
-  { name: "Sarah M.", service: "Cocktail Workshop Berlin", rating: 5, date: "2026-03-15", comment: "Absolut genial! Der Barkeeper war super unterhaltsam und die Cocktails haben fantastisch geschmeckt." },
-  { name: "Markus R.", service: "Gin Tasting Berlin", rating: 5, date: "2026-03-10", comment: "Sehr informativ und unterhaltsam. Top Organisation!" },
-  { name: "Tom K.", service: "Cocktail Workshop Berlin", rating: 5, date: "2026-03-02", comment: "Perfekt fuer unseren JGA! Alle hatten mega Spass." },
-  { name: "Anna B.", service: "Barkeeper Show", rating: 5, date: "2026-02-25", comment: "Die Show war das Highlight unserer Firmenfeier. Absolute Empfehlung!" },
-];
 
 const TIER_BADGES: Record<string, { label: string; color: string; partnerLabel: string }> = {
   starter: { label: "Starter", color: "text-gray-400 bg-gray-400/10", partnerLabel: "Standard" },
@@ -70,6 +39,13 @@ const TIER_BENEFITS: Record<string, string[]> = {
     "Auto-Featured",
     "Premium Support",
   ],
+};
+
+const PRICE_TYPE_LABELS: Record<string, string> = {
+  per_person: "pro Person",
+  flat_rate: "Pauschal",
+  per_hour: "pro Stunde",
+  custom: "Individuell",
 };
 
 function formatPrice(cents: number) {
@@ -107,20 +83,180 @@ function StatCard({
   );
 }
 
+function SkeletonBlock({ className }: { className?: string }) {
+  return <div className={`animate-pulse bg-white/5 rounded-2xl ${className ?? ""}`} />;
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className={`min-h-screen ${C.surface} text-white`}>
+      <div className="relative h-48 w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#cf96ff]/20 via-[#1f1f29] to-[#00e3fd]/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d15] via-transparent to-transparent" />
+      </div>
+      <div className="max-w-5xl mx-auto px-4 md:px-8 -mt-16 relative z-10">
+        <div className="flex items-end gap-5">
+          <SkeletonBlock className="w-20 h-20 rounded-full shrink-0" />
+          <div className="flex-1 pb-1 space-y-2">
+            <SkeletonBlock className="h-8 w-64" />
+            <SkeletonBlock className="h-4 w-32" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-8">
+          {[...Array(5)].map((_, i) => (
+            <SkeletonBlock key={i} className="h-24" />
+          ))}
+        </div>
+        <div className="mt-10 space-y-3">
+          <SkeletonBlock className="h-6 w-40" />
+          <SkeletonBlock className="h-16 w-full max-w-3xl" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonBlock key={i} className="h-56" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Data hooks
+// ---------------------------------------------------------------------------
+
+function useAgencyBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: ["agency-profile", slug],
+    enabled: !!slug,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from as any)("agencies")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+      if (error) throw error;
+      return data as {
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+        website: string | null;
+        email: string | null;
+        phone: string | null;
+        city: string | null;
+        country: string;
+        marketplace_tier: string;
+        is_active: boolean;
+        created_at: string;
+      };
+    },
+    staleTime: 60_000,
+  });
+}
+
+function useAgencyApprovedServices(agencyId: string | undefined) {
+  return useQuery({
+    queryKey: ["agency-approved-services", agencyId],
+    enabled: !!agencyId,
+    queryFn: async () => {
+      const { data: services, error } = await (supabase.from as any)("marketplace_services")
+        .select("*")
+        .eq("agency_id", agencyId)
+        .eq("status", "approved")
+        .order("is_featured", { ascending: false })
+        .order("avg_rating", { ascending: false });
+
+      if (error) throw error;
+      if (!services || services.length === 0) return [];
+
+      // Fetch translations (prefer DE)
+      const ids = services.map((s: any) => s.id);
+      const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
+        .select("*")
+        .in("service_id", ids)
+        .in("locale", ["de", "en"]);
+
+      const txMap = new Map<string, any>();
+      for (const tx of translations || []) {
+        const existing = txMap.get(tx.service_id);
+        if (!existing || tx.locale === "de") txMap.set(tx.service_id, tx);
+      }
+
+      return services.map((s: any) => {
+        const tx = txMap.get(s.id);
+        return {
+          id: s.id,
+          slug: s.slug,
+          category: s.category,
+          price_cents: s.price_cents,
+          price_type: s.price_type,
+          avg_rating: s.avg_rating ?? 0,
+          review_count: s.review_count ?? 0,
+          booking_count: s.booking_count ?? 0,
+          cover_image_url: s.cover_image_url,
+          title: tx?.title || "Ohne Titel",
+          short_description: tx?.short_description || null,
+        };
+      });
+    },
+    staleTime: 30_000,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
 export default function MarketplaceAgency() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const a = MOCK_AGENCY;
-  const tierBadge = TIER_BADGES[a.tier] ?? TIER_BADGES.starter;
+
+  const { data: agency, isLoading: agencyLoading, error: agencyError } = useAgencyBySlug(slug);
+  const { data: services = [], isLoading: servicesLoading } = useAgencyApprovedServices(agency?.id);
+
+  // Reviews: empty for now (no reviews table yet)
+  const reviews: any[] = [];
+
+  if (agencyLoading) return <LoadingSkeleton />;
+
+  if (agencyError || !agency) {
+    return (
+      <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-black font-['Plus_Jakarta_Sans']">Agentur nicht gefunden</h1>
+          <p className="text-gray-400 font-['Be_Vietnam_Pro']">
+            Die Agentur mit dem Slug "{slug}" existiert nicht oder ist nicht mehr aktiv.
+          </p>
+          <button
+            onClick={() => navigate("/marketplace")}
+            className="mt-4 px-6 py-2.5 rounded-full bg-[#cf96ff] text-black font-bold font-['Plus_Jakarta_Sans'] text-sm hover:bg-[#b87ae6] transition-colors"
+          >
+            Zum Marketplace
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const tier = agency.marketplace_tier || "starter";
+  const tierBadge = TIER_BADGES[tier] ?? TIER_BADGES.starter;
+  const createdYear = new Date(agency.created_at).getFullYear();
+
+  // Compute aggregate stats from services
+  const totalBookings = services.reduce((sum: number, s: any) => sum + (s.booking_count || 0), 0);
+  const avgRating =
+    services.length > 0
+      ? services.reduce((sum: number, s: any) => sum + (s.avg_rating || 0), 0) / services.length
+      : 0;
 
   return (
     <div className={`min-h-screen ${C.surface} text-white`}>
       {/* Header Banner */}
       <div className="relative h-48 w-full overflow-hidden">
         <div className={`absolute inset-0 ${
-          a.tier === "enterprise"
+          tier === "enterprise"
             ? "bg-gradient-to-br from-amber-400/30 via-[#1f1f29] to-amber-600/15"
-            : a.tier === "professional"
+            : tier === "professional"
             ? "bg-gradient-to-br from-[#cf96ff]/30 via-[#1f1f29] to-[#cf96ff]/10"
             : "bg-gradient-to-br from-[#cf96ff]/25 via-[#1f1f29] to-[#00e3fd]/15"
         }`} />
@@ -136,35 +272,45 @@ export default function MarketplaceAgency() {
           transition={{ duration: 0.4 }}
         >
           {/* Logo */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-3xl font-black font-['Plus_Jakarta_Sans'] shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]">
-            {a.name.charAt(0)}
-          </div>
+          {agency.logo_url ? (
+            <img
+              src={agency.logo_url}
+              alt={agency.name}
+              className="w-20 h-20 rounded-full object-cover shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-3xl font-black font-['Plus_Jakarta_Sans'] shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]">
+              {agency.name.charAt(0)}
+            </div>
+          )}
           <div className="flex-1 pb-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans']">{a.name}</h1>
-              {(a.tier === "professional" || a.tier === "enterprise") && (
+              <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans']">{agency.name}</h1>
+              {(tier === "professional" || tier === "enterprise") && (
                 <ShieldCheck size={22} className="text-[#00e3fd]" />
               )}
-              {a.tier === "professional" && (
+              {tier === "professional" && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold font-['Be_Vietnam_Pro'] bg-[#cf96ff]/15 text-[#cf96ff] border border-[#cf96ff]/20">
                   Pro Partner &#10003;
                 </span>
               )}
-              {a.tier === "enterprise" && (
+              {tier === "enterprise" && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold font-['Be_Vietnam_Pro'] bg-amber-400/15 text-amber-400 border border-amber-400/20">
                   Enterprise Partner &#10003;
                 </span>
               )}
-              {a.tier === "starter" && (
+              {tier === "starter" && (
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] ${tierBadge.color}`}>
                   {tierBadge.label}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5 mt-1.5 text-sm text-gray-400 font-['Be_Vietnam_Pro']">
-              <MapPin size={14} className="text-gray-500" />
-              {a.city}
-            </div>
+            {agency.city && (
+              <div className="flex items-center gap-1.5 mt-1.5 text-sm text-gray-400 font-['Be_Vietnam_Pro']">
+                <MapPin size={14} className="text-gray-500" />
+                {agency.city}
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -174,25 +320,25 @@ export default function MarketplaceAgency() {
             Marketplace
           </button>
           <ChevronRight size={14} />
-          <span className="text-white/70">{a.name}</span>
+          <span className="text-white/70">{agency.name}</span>
         </nav>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-8">
-          <StatCard icon={TrendingUp} value={String(a.serviceCount)} label="Services" delay={0.1} />
-          <StatCard icon={Users} value={`${a.totalBookings}+`} label="Buchungen" delay={0.15} />
-          <StatCard icon={Star} value={`${a.avgRating}\u2605`} label="Bewertung" delay={0.2} />
-          <StatCard icon={Calendar} value={`Seit ${a.since}`} label="Aktiv seit" delay={0.25} />
+          <StatCard icon={TrendingUp} value={String(services.length)} label="Services" delay={0.1} />
+          <StatCard icon={Users} value={totalBookings > 0 ? `${totalBookings}+` : "0"} label="Buchungen" delay={0.15} />
+          <StatCard icon={Star} value={avgRating > 0 ? `${avgRating.toFixed(1)}\u2605` : "\u2014"} label="Bewertung" delay={0.2} />
+          <StatCard icon={Calendar} value={`Seit ${createdYear}`} label="Aktiv seit" delay={0.25} />
           <StatCard
             icon={ShieldCheck}
-            value={(a.tier === "professional" || a.tier === "enterprise") ? "\u2713" : "\u2014"}
-            label={(a.tier === "professional" || a.tier === "enterprise") ? "Verifiziert" : "Standard"}
+            value={(tier === "professional" || tier === "enterprise") ? "\u2713" : "\u2014"}
+            label={(tier === "professional" || tier === "enterprise") ? "Verifiziert" : "Standard"}
             delay={0.3}
           />
         </div>
 
         {/* Tier-Vorteile */}
-        {(a.tier === "professional" || a.tier === "enterprise") && TIER_BENEFITS[a.tier] && (
+        {(tier === "professional" || tier === "enterprise") && TIER_BENEFITS[tier] && (
           <motion.section
             className="mt-8"
             initial={{ opacity: 0, y: 15 }}
@@ -201,11 +347,11 @@ export default function MarketplaceAgency() {
           >
             <h2 className="text-lg font-black font-['Plus_Jakarta_Sans'] mb-3">Tier-Vorteile</h2>
             <div className="flex flex-wrap gap-2">
-              {TIER_BENEFITS[a.tier]!.map((benefit) => (
+              {TIER_BENEFITS[tier]!.map((benefit) => (
                 <span
                   key={benefit}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] border ${
-                    a.tier === "enterprise"
+                    tier === "enterprise"
                       ? "bg-amber-400/10 text-amber-400 border-amber-400/20"
                       : "bg-[#cf96ff]/10 text-[#cf96ff] border-[#cf96ff]/20"
                   }`}
@@ -218,15 +364,17 @@ export default function MarketplaceAgency() {
           </motion.section>
         )}
 
-        {/* Ueber uns */}
+        {/* Über uns */}
         <motion.section
           className="mt-10"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-3">Ueber uns</h2>
-          <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm max-w-3xl">{a.description}</p>
+          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-3">Über uns</h2>
+          <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm max-w-3xl">
+            {agency.name} ist seit {createdYear} aktiv{agency.city ? ` in ${agency.city}` : ""}.
+          </p>
         </motion.section>
 
         {/* Services */}
@@ -237,44 +385,68 @@ export default function MarketplaceAgency() {
           transition={{ delay: 0.25 }}
         >
           <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Services</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {MOCK_SERVICES.map((svc, i) => (
-              <motion.button
-                key={svc.slug}
-                onClick={() => navigate(`/marketplace/service/${svc.slug}`)}
-                className={`text-left p-4 rounded-2xl ${C.high} border ${C.border} hover:border-[#cf96ff]/20 transition-all group`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.04 }}
-                whileHover={{ y: -2 }}
-              >
-                {/* Image Placeholder */}
-                <div className="w-full h-32 rounded-xl bg-gradient-to-br from-[#cf96ff]/10 via-[#1f1f29] to-[#00e3fd]/10 mb-3 overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs font-['Be_Vietnam_Pro']">
-                    {svc.category}
+          {servicesLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => (
+                <SkeletonBlock key={i} className="h-56" />
+              ))}
+            </div>
+          ) : services.length === 0 ? (
+            <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
+              <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
+                Diese Agentur hat noch keine Services im Marketplace.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {services.map((svc: any, i: number) => (
+                <motion.button
+                  key={svc.slug}
+                  onClick={() => navigate(`/marketplace/service/${svc.slug}`)}
+                  className={`text-left p-4 rounded-2xl ${C.high} border ${C.border} hover:border-[#cf96ff]/20 transition-all group`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.04 }}
+                  whileHover={{ y: -2 }}
+                >
+                  {/* Image / Placeholder */}
+                  <div className="w-full h-32 rounded-xl bg-gradient-to-br from-[#cf96ff]/10 via-[#1f1f29] to-[#00e3fd]/10 mb-3 overflow-hidden">
+                    {svc.cover_image_url ? (
+                      <img
+                        src={svc.cover_image_url}
+                        alt={svc.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs font-['Be_Vietnam_Pro']">
+                        {svc.category}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#cf96ff]/10 text-[#cf96ff] font-semibold font-['Be_Vietnam_Pro']">
-                    {svc.category}
-                  </span>
-                </div>
-                <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-sm group-hover:text-[#cf96ff] transition-colors">
-                  {svc.title}
-                </h3>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-1.5">
-                    <StarRating rating={svc.rating} size={12} />
-                    <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">({svc.reviews})</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#cf96ff]/10 text-[#cf96ff] font-semibold font-['Be_Vietnam_Pro']">
+                      {svc.category}
+                    </span>
                   </div>
-                  <div className="text-right">
-                    <span className="text-sm font-black font-['Plus_Jakarta_Sans']">{formatPrice(svc.price)} €</span>
-                    <span className="text-[10px] text-gray-500 font-['Be_Vietnam_Pro'] ml-1">{svc.priceType}</span>
+                  <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-sm group-hover:text-[#cf96ff] transition-colors">
+                    {svc.title}
+                  </h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-1.5">
+                      <StarRating rating={svc.avg_rating} size={12} />
+                      <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">({svc.review_count})</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-black font-['Plus_Jakarta_Sans']">{formatPrice(svc.price_cents)} €</span>
+                      <span className="text-[10px] text-gray-500 font-['Be_Vietnam_Pro'] ml-1">
+                        {PRICE_TYPE_LABELS[svc.price_type] || svc.price_type}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </motion.button>
-            ))}
-          </div>
+                </motion.button>
+              ))}
+            </div>
+          )}
         </motion.section>
 
         {/* Bewertungen */}
@@ -285,36 +457,45 @@ export default function MarketplaceAgency() {
           transition={{ delay: 0.35 }}
         >
           <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Bewertungen</h2>
-          <div className="space-y-4">
-            {MOCK_REVIEWS.map((review, i) => (
-              <motion.div
-                key={i}
-                className={`p-4 rounded-2xl ${C.high} border ${C.border}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 + i * 0.06 }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-['Plus_Jakarta_Sans']">
-                    {review.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm font-['Plus_Jakarta_Sans']">{review.name}</span>
-                      <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">
-                        {new Date(review.date).toLocaleDateString("de-DE")}
-                      </span>
+          {reviews.length === 0 ? (
+            <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
+              <Star size={32} className="text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
+                Noch keine Bewertungen für diese Agentur.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((review: any, i: number) => (
+                <motion.div
+                  key={i}
+                  className={`p-4 rounded-2xl ${C.high} border ${C.border}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 + i * 0.06 }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-['Plus_Jakarta_Sans']">
+                      {review.name?.charAt(0) || "?"}
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <StarRating rating={review.rating} size={12} />
-                      <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">{review.service}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm font-['Plus_Jakarta_Sans']">{review.name}</span>
+                        <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">
+                          {new Date(review.date).toLocaleDateString("de-DE")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <StarRating rating={review.rating} size={12} />
+                        <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">{review.service}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p className="mt-3 text-sm text-gray-300 font-['Be_Vietnam_Pro'] leading-relaxed">{review.comment}</p>
-              </motion.div>
-            ))}
-          </div>
+                  <p className="mt-3 text-sm text-gray-300 font-['Be_Vietnam_Pro'] leading-relaxed">{review.comment}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.section>
 
         {/* Kontakt */}
@@ -326,36 +507,47 @@ export default function MarketplaceAgency() {
         >
           <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Kontakt</h2>
           <div className={`p-5 rounded-2xl ${C.high} border ${C.border} space-y-3 max-w-md`}>
-            <a
-              href={`mailto:${a.email}`}
-              className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#cf96ff] transition-colors"
-            >
-              <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                <Mail size={16} className="text-[#cf96ff]" />
-              </div>
-              {a.email}
-            </a>
-            <a
-              href={`tel:${a.phone}`}
-              className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#00e3fd] transition-colors"
-            >
-              <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                <Phone size={16} className="text-[#00e3fd]" />
-              </div>
-              {a.phone}
-            </a>
-            <a
-              href={`https://${a.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#ff7350] transition-colors"
-            >
-              <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                <Globe size={16} className="text-[#ff7350]" />
-              </div>
-              {a.website}
-              <ExternalLink size={12} className="text-gray-500 ml-auto" />
-            </a>
+            {agency.email && (
+              <a
+                href={`mailto:${agency.email}`}
+                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#cf96ff] transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
+                  <Mail size={16} className="text-[#cf96ff]" />
+                </div>
+                {agency.email}
+              </a>
+            )}
+            {agency.phone && (
+              <a
+                href={`tel:${agency.phone}`}
+                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#00e3fd] transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
+                  <Phone size={16} className="text-[#00e3fd]" />
+                </div>
+                {agency.phone}
+              </a>
+            )}
+            {agency.website && (
+              <a
+                href={agency.website.startsWith("http") ? agency.website : `https://${agency.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#ff7350] transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
+                  <Globe size={16} className="text-[#ff7350]" />
+                </div>
+                {agency.website}
+                <ExternalLink size={12} className="text-gray-500 ml-auto" />
+              </a>
+            )}
+            {!agency.email && !agency.phone && !agency.website && (
+              <p className="text-gray-500 font-['Be_Vietnam_Pro'] text-sm">
+                Keine Kontaktdaten hinterlegt.
+              </p>
+            )}
           </div>
         </motion.section>
       </div>

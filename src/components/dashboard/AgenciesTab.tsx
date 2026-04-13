@@ -17,6 +17,14 @@ import {
   Star,
   ShoppingBag,
   Crown,
+  Calendar,
+  Clock,
+  Users,
+  XCircle,
+  Package,
+  Loader2,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -50,6 +58,15 @@ import { cn } from "@/lib/utils";
 import { AgenciesMapView } from "./AgenciesMapView";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  useEventBookings,
+  useCancelBooking,
+  type MarketplaceBooking,
+} from "@/hooks/useMarketplaceBookings";
+import {
+  useMarketplaceServices,
+  type MarketplaceService,
+} from "@/hooks/useMarketplaceServices";
 
 interface Event {
   id: string;
@@ -90,6 +107,501 @@ function getAgencyTier(agencyName: string): "starter" | "professional" | "enterp
   if (!services?.length) return "starter";
   return services[0].tier as "starter" | "professional" | "enterprise";
 }
+
+// ---------------------------------------------------------------------------
+// Marketplace: Constants & Helpers
+// ---------------------------------------------------------------------------
+
+const SERVICE_CATEGORIES = [
+  { label: "Alle", filter: "", emoji: "\u2728" },
+  { label: "Workshop", filter: "workshop", emoji: "\uD83C\uDFA8" },
+  { label: "Entertainment", filter: "entertainment", emoji: "\uD83C\uDFAD" },
+  { label: "Catering", filter: "catering", emoji: "\uD83C\uDF77" },
+  { label: "Musik", filter: "music", emoji: "\uD83C\uDFB5" },
+  { label: "Foto", filter: "photography", emoji: "\uD83D\uDCF8" },
+  { label: "Venue", filter: "venue", emoji: "\uD83C\uDFDB\uFE0F" },
+  { label: "Wellness", filter: "wellness", emoji: "\uD83D\uDC86" },
+  { label: "Sport", filter: "sport", emoji: "\u26BD" },
+  { label: "Deko", filter: "deko", emoji: "\uD83C\uDF80" },
+];
+
+const CATEGORY_COVER_GRADIENTS: Record<string, string> = {
+  workshop: "from-violet-500/40 to-fuchsia-500/20",
+  entertainment: "from-cyan-500/40 to-blue-500/20",
+  catering: "from-amber-500/40 to-orange-500/20",
+  music: "from-pink-500/40 to-rose-500/20",
+  photography: "from-indigo-500/40 to-violet-500/20",
+  venue: "from-emerald-500/40 to-green-500/20",
+  wellness: "from-teal-400/40 to-cyan-500/20",
+  sport: "from-red-500/40 to-orange-500/20",
+  deko: "from-rose-400/40 to-pink-500/20",
+  transport: "from-slate-500/40 to-zinc-600/20",
+};
+
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  pending_payment: { label: "Zahlung ausstehend", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+  confirmed: { label: "Best\u00e4tigt", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+  completed: { label: "Abgeschlossen", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+  cancelled_by_customer: { label: "Storniert", color: "bg-red-500/20 text-red-400 border-red-500/30" },
+  cancelled_by_agency: { label: "Storniert (Agentur)", color: "bg-red-500/20 text-red-400 border-red-500/30" },
+};
+
+const CANCELLABLE_STATUSES = new Set(["pending_payment", "confirmed"]);
+
+const EVENT_TYPE_RECOMMENDATIONS: Record<string, string[]> = {
+  bachelor: ["sport", "entertainment", "workshop"],
+  bachelorette: ["sport", "entertainment", "workshop"],
+  wedding: ["catering", "photography", "music", "venue"],
+  birthday: ["entertainment", "workshop", "catering"],
+};
+
+function formatPriceCents(cents: number): string {
+  return (cents / 100).toFixed(2).replace(".", ",");
+}
+
+function formatBookingDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("de-DE", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Booked Services Section
+// ---------------------------------------------------------------------------
+
+function BookedServicesSection({
+  eventId,
+  bookings,
+  isLoading,
+}: {
+  eventId: string;
+  bookings: MarketplaceBooking[];
+  isLoading: boolean;
+}) {
+  const navigate = useNavigate();
+  const cancelBooking = useCancelBooking();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <GlassCard className="p-0 overflow-hidden">
+        {/* Section header with gradient accent */}
+        <div className="relative px-6 pt-5 pb-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#cf96ff]/5 via-transparent to-[#00e3fd]/5" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center shadow-lg shadow-[#cf96ff]/20">
+                <Package className="w-4.5 h-4.5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-lg">Gebuchte Dienstleistungen</h3>
+                <p className="text-xs text-muted-foreground">
+                  {bookings.length > 0
+                    ? `${bookings.length} Service${bookings.length !== 1 ? "s" : ""} gebucht`
+                    : "Noch keine Buchungen"}
+                </p>
+              </div>
+            </div>
+            {bookings.length > 0 && (
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-[#cf96ff]/20 to-[#00e3fd]/20 text-[#cf96ff] border border-[#cf96ff]/20">
+                {bookings.length}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="px-6 pb-5">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-[#cf96ff]" />
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="flex flex-col items-center py-8">
+              <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4">
+                <ShoppingBag className="w-8 h-8 text-muted-foreground/30" />
+              </div>
+              <p className="font-display font-semibold text-foreground/80">Noch keine Dienstleistungen</p>
+              <p className="text-sm text-muted-foreground mt-1">Entdecke passende Services weiter unten</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {bookings.map((booking, i) => {
+                const statusInfo = STATUS_STYLES[booking.status] || { label: booking.status, color: "bg-foreground/10 text-muted-foreground border-border" };
+                const canCancel = CANCELLABLE_STATUSES.has(booking.status);
+
+                return (
+                  <motion.div
+                    key={booking.id}
+                    initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.35, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="relative flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-foreground/[0.03] backdrop-blur border border-white/[0.06] hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-200"
+                  >
+                    {/* Timeline dot */}
+                    <div className="absolute -left-[1px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] hidden sm:block" />
+
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-display font-bold text-sm">
+                          {booking.service_title || "Service"}
+                        </h4>
+                        <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-semibold border", statusInfo.color)}>
+                          {statusInfo.label}
+                        </span>
+                      </div>
+                      {booking.agency_name && (
+                        <p className="text-xs text-muted-foreground">von {booking.agency_name}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-[#cf96ff]" />
+                          {formatBookingDate(booking.booking_date)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-[#00e3fd]" />
+                          {booking.booking_time} Uhr
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3 text-[#ff7350]" />
+                          {booking.participant_count} Pers.
+                        </span>
+                      </div>
+                      <p className="font-mono text-[10px] text-muted-foreground/60">
+                        #{booking.booking_number}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-lg font-display font-black">
+                        {formatPriceCents(booking.total_price_cents)} <span className="text-xs font-normal text-muted-foreground">EUR</span>
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {booking.service_slug && (
+                          <button
+                            onClick={() => navigate(`/marketplace/service/${booking.service_slug}`)}
+                            className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-foreground/5 border border-white/[0.06] hover:border-[#cf96ff]/30 transition-colors"
+                          >
+                            Details
+                          </button>
+                        )}
+                        {canCancel && (
+                          <button
+                            disabled={cancelBooking.isPending}
+                            onClick={() => cancelBooking.mutate({ bookingId: booking.id, asAgency: false })}
+                            className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                          >
+                            <XCircle className="w-3 h-3 inline mr-1" />
+                            Stornieren
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </GlassCard>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Browse Marketplace Services Section
+// ---------------------------------------------------------------------------
+
+function MarketplaceServiceCard({
+  service,
+  eventId,
+  index = 0,
+}: {
+  service: MarketplaceService;
+  eventId: string;
+  index?: number;
+}) {
+  const navigate = useNavigate();
+  const coverGradient = CATEGORY_COVER_GRADIENTS[service.category] || "from-violet-500/30 to-fuchsia-500/15";
+  const tierStyle = service.agency_tier === "enterprise"
+    ? "ring-1 ring-amber-400/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]"
+    : service.agency_tier === "professional"
+      ? "ring-1 ring-[#cf96ff]/20"
+      : "";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.35, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+      whileHover={{ y: -4 }}
+      className={cn(
+        "rounded-2xl bg-foreground/[0.03] backdrop-blur-xl border border-white/[0.06] overflow-hidden",
+        "hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-200 group",
+        tierStyle,
+      )}
+    >
+      <div className={cn("relative h-32 bg-gradient-to-br overflow-hidden", coverGradient)}>
+        {service.cover_image_url ? (
+          <img
+            src={service.cover_image_url}
+            alt={service.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <ShoppingBag className="w-8 h-8 text-white/20" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Category badge */}
+        <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-black/30 backdrop-blur-sm text-white/90 border border-white/10">
+          {service.category}
+        </span>
+        {/* Agency tier badge */}
+        {service.agency_tier === "enterprise" && (
+          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-400/20 text-amber-400 border border-amber-400/30 backdrop-blur-sm">
+            Enterprise
+          </span>
+        )}
+        {service.agency_tier === "professional" && (
+          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#cf96ff]/20 text-[#cf96ff] border border-[#cf96ff]/30 backdrop-blur-sm">
+            Pro
+          </span>
+        )}
+        {/* Price overlay */}
+        <div className="absolute bottom-2.5 left-2.5">
+          <span className="text-xl font-display font-black text-white drop-shadow-lg">
+            {formatPriceCents(service.price_cents)} <span className="text-xs font-normal opacity-70">EUR</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-2.5">
+        <h4 className="font-display font-bold text-sm truncate">{service.title}</h4>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {service.agency_name && <span className="truncate">{service.agency_name}</span>}
+          {service.avg_rating > 0 && (
+            <span className="flex items-center gap-0.5 shrink-0">
+              <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+              {service.avg_rating.toFixed(1)}
+            </span>
+          )}
+          {service.location_city && (
+            <span className="flex items-center gap-0.5 shrink-0">
+              <MapPin className="w-3 h-3" />
+              {service.location_city}
+            </span>
+          )}
+        </div>
+
+        <button
+          onClick={() => navigate(`/marketplace/service/${service.slug}?event_id=${eventId}`)}
+          className="w-full py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 hover:shadow-[#cf96ff]/30 transition-shadow flex items-center justify-center gap-1.5"
+        >
+          F\u00fcr Event buchen
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function BrowseServicesSection({ eventId }: { eventId: string }) {
+  const [category, setCategory] = useState("");
+  const [search, setSearch] = useState("");
+
+  const filters = useMemo(
+    () => ({ category: category || undefined, search: search || undefined }),
+    [category, search],
+  );
+
+  const { data, isLoading } = useMarketplaceServices(filters, 1, 12);
+  const services = data?.services || [];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.15 }}
+    >
+      <GlassCard className="p-0 overflow-hidden">
+        {/* Section header */}
+        <div className="relative px-6 pt-5 pb-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#00e3fd]/5 via-transparent to-[#cf96ff]/5" />
+          <div className="relative flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00e3fd] to-[#cf96ff] flex items-center justify-center shadow-lg shadow-[#00e3fd]/20">
+              <ShoppingBag className="w-4.5 h-4.5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-lg">Dienstleistungen entdecken</h3>
+              <p className="text-xs text-muted-foreground">Services direkt f\u00fcr dein Event buchen</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 pb-5 space-y-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Service suchen..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 bg-foreground/5 border-white/[0.06] focus:border-[#cf96ff]/40"
+            />
+          </div>
+
+          {/* Category pills */}
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {SERVICE_CATEGORIES.map((cat) => (
+              <button
+                key={cat.filter}
+                onClick={() => setCategory(cat.filter)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all duration-200",
+                  category === cat.filter
+                    ? "bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] border-transparent shadow-lg shadow-[#cf96ff]/20"
+                    : "bg-foreground/5 border-white/[0.06] text-muted-foreground hover:border-[#cf96ff]/20 hover:text-foreground",
+                )}
+              >
+                {cat.emoji} {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Service grid */}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-[#cf96ff]" />
+            </div>
+          ) : services.length === 0 ? (
+            <div className="flex flex-col items-center py-10">
+              <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4">
+                <Search className="w-8 h-8 text-muted-foreground/30" />
+              </div>
+              <p className="font-display font-semibold text-foreground/80">Keine Services gefunden</p>
+              <p className="text-sm text-muted-foreground mt-1">Versuche eine andere Kategorie oder Suche</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {services.map((service, i) => (
+                <MarketplaceServiceCard key={service.id} service={service} eventId={eventId} index={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      </GlassCard>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Recommended Services Section
+// ---------------------------------------------------------------------------
+
+function RecommendedServicesSection({
+  eventId,
+  eventType,
+  bookingCount,
+}: {
+  eventId: string;
+  eventType?: string;
+  bookingCount: number;
+}) {
+  const navigate = useNavigate();
+
+  const recommendedCategories = useMemo(() => {
+    if (!eventType) return ["entertainment", "workshop", "catering"];
+    return EVENT_TYPE_RECOMMENDATIONS[eventType] || ["entertainment", "workshop", "catering"];
+  }, [eventType]);
+
+  const shouldShow = bookingCount < 3;
+
+  const { data, isLoading } = useMarketplaceServices(
+    { category: recommendedCategories[0] },
+    1,
+    4,
+  );
+
+  if (!shouldShow) return null;
+
+  const services = data?.services?.slice(0, 4) || [];
+  if (isLoading || services.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 }}
+    >
+      <GlassCard className="p-0 overflow-hidden">
+        <div className="relative px-6 pt-5 pb-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-[#ff7350]/5" />
+          <div className="relative flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+              <Sparkles className="w-4.5 h-4.5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-lg">Empfohlene Services</h3>
+              <p className="text-xs text-muted-foreground">Passend zu deinem Event-Typ</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 pb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {services.map((service, i) => {
+              const coverGradient = CATEGORY_COVER_GRADIENTS[service.category] || "from-violet-500/30 to-fuchsia-500/15";
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  whileHover={{ y: -2 }}
+                  onClick={() => navigate(`/marketplace/service/${service.slug}?event_id=${eventId}`)}
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-foreground/[0.03] border border-white/[0.06] hover:border-amber-500/20 hover:shadow-[0_0_20px_rgba(245,158,11,0.06)] transition-all duration-200 cursor-pointer group"
+                >
+                  <div className={cn("w-14 h-14 rounded-xl bg-gradient-to-br overflow-hidden shrink-0", coverGradient)}>
+                    {service.cover_image_url ? (
+                      <img src={service.cover_image_url} alt={service.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ShoppingBag className="w-5 h-5 text-white/30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-display font-bold text-sm truncate">{service.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {formatPriceCents(service.price_cents)} EUR
+                      {service.agency_name && ` \u00B7 ${service.agency_name}`}
+                    </p>
+                    {service.avg_rating > 0 && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                        <span className="text-[10px] text-muted-foreground">{service.avg_rating.toFixed(1)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-[#cf96ff] transition-colors shrink-0" />
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </GlassCard>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main AgenciesTab
+// ---------------------------------------------------------------------------
 
 export const AgenciesTab = ({ event, participants = [] }: AgenciesTabProps) => {
   const { t } = useTranslation();
@@ -411,8 +923,33 @@ ${t('agencies.email.generatedBy', 'Diese Anfrage wurde über EventBliss generier
     filtered: filteredAgencies.length,
   };
 
+  // Marketplace: Event bookings
+  const { data: eventBookings, isLoading: bookingsLoading } = useEventBookings(event?.id);
+  const bookingList = eventBookings || [];
+
   return (
     <div className="space-y-6">
+      {/* Marketplace: Booked services for this event */}
+      {event?.id && (
+        <BookedServicesSection
+          eventId={event.id}
+          bookings={bookingList}
+          isLoading={bookingsLoading}
+        />
+      )}
+
+      {/* Marketplace: Recommended services */}
+      {event?.id && (
+        <RecommendedServicesSection
+          eventId={event.id}
+          eventType={event.event_type}
+          bookingCount={bookingList.length}
+        />
+      )}
+
+      {/* Marketplace: Browse services */}
+      {event?.id && <BrowseServicesSection eventId={event.id} />}
+
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>

@@ -79,8 +79,8 @@ function getMilestones(eventDate: string | null) {
 
   return [
     { label: "Konzept finalisiert", date: fmt(sub(90)), done: true, phase: "planning" },
-    { label: "Vendor-Vertraege abgeschlossen", date: fmt(sub(60)), done: true, phase: "planning" },
-    { label: "Gaesteliste bestaetigt", date: fmt(sub(30)), done: false, phase: "pre_production" },
+    { label: "Vendor-Verträge abgeschlossen", date: fmt(sub(60)), done: true, phase: "planning" },
+    { label: "Gästeliste bestätigt", date: fmt(sub(30)), done: false, phase: "pre_production" },
     { label: "Run-of-Show freigegeben", date: fmt(sub(14)), done: false, phase: "pre_production" },
     { label: "Event-Tag", date: fmt(base), done: false, phase: "live" },
     { label: "Nachbereitung & Abrechnung", date: fmt(new Date(base.getTime() + 14 * 86400000)), done: false, phase: "complete" },

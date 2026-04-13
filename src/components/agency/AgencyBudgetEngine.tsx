@@ -101,7 +101,7 @@ export function AgencyBudgetEngine() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
         <Select value={selectedEventId || ""} onValueChange={setSelectedEventId}>
           <SelectTrigger className="w-full max-w-xs bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder={eventsLoading ? "Loading..." : "Event waehlen..."} />
+            <SelectValue placeholder={eventsLoading ? "Loading..." : "Event wählen..."} />
           </SelectTrigger>
           <SelectContent>
             {events.map((e) => (<SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>))}
@@ -110,7 +110,7 @@ export function AgencyBudgetEngine() {
       </motion.div>
 
       {!selectedEventId ? (
-        <div className="text-center py-12 text-white/40">Bitte waehle ein Event aus.</div>
+        <div className="text-center py-12 text-white/40">Bitte wähle ein Event aus.</div>
       ) : (
         <>
           {/* Summary Bar */}
@@ -141,7 +141,7 @@ export function AgencyBudgetEngine() {
                     <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white gap-1.5"><Plus className="w-3.5 h-3.5" /> Position</Button>
                   </DialogTrigger>
                   <DialogContent className="bg-[#1a1625] border-white/10 text-white max-w-md">
-                    <DialogHeader><DialogTitle>Budget-Position hinzufuegen</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>Budget-Position hinzufügen</DialogTitle></DialogHeader>
                     <div className="space-y-3 mt-2">
                       <div><Label className="text-white/60 text-xs">Kategorie</Label>
                         <Select value={newItem.category} onValueChange={(v) => setNewItem((p) => ({ ...p, category: v }))}>
@@ -160,7 +160,7 @@ export function AgencyBudgetEngine() {
                         <div><Label className="text-white/60 text-xs">Bezahlt</Label><Input type="number" value={newItem.actual_amount} onChange={(e) => setNewItem((p) => ({ ...p, actual_amount: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
                       </div>
                       <div><Label className="text-white/60 text-xs">Notizen</Label><Textarea value={newItem.notes} onChange={(e) => setNewItem((p) => ({ ...p, notes: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={2} /></div>
-                      <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateItem}>Hinzufuegen</Button>
+                      <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateItem}>Hinzufügen</Button>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -184,7 +184,7 @@ export function AgencyBudgetEngine() {
               <h4 className="text-sm font-medium text-violet-300 mb-3 flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" /> Szenarioplanung</h4>
               <div className="flex items-center gap-6">
                 <div className="flex-1">
-                  <p className="text-xs text-white/40 mb-2">Gaestezahl anpassen: <span className="text-white font-medium">{guestCount[0]} Gaeste</span></p>
+                  <p className="text-xs text-white/40 mb-2">Gästezahl anpassen: <span className="text-white font-medium">{guestCount[0]} Gäste</span></p>
                   <Slider value={guestCount} onValueChange={setGuestCount} min={50} max={500} step={10} className="w-full" />
                   <div className="flex justify-between text-[10px] text-white/30 mt-1">
                     <span>50</span><span>200 (aktuell)</span><span>500</span>

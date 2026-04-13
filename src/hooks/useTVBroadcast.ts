@@ -27,10 +27,25 @@ export function useTVBroadcast(): TVBroadcastAPI {
   const [tvCode] = useState(() => generateCode());
   const [isActive, setIsActive] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  /** Stores the last broadcast state so we can re-send it when a TV connects late */
+  const lastStateRef = useRef<Record<string, unknown> | null>(null);
 
   const activate = useCallback(() => {
     if (channelRef.current) return;
     const ch = supabase.channel(`tv-room:${tvCode}`);
+
+    // Listen for tv-ready from the TV screen — re-send current game state
+    // so a late-connecting TV doesn't get stuck on the waiting screen.
+    ch.on("broadcast", { event: "tv-ready" }, () => {
+      if (lastStateRef.current && channelRef.current) {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "tv-state-sync",
+          payload: lastStateRef.current,
+        });
+      }
+    });
+
     ch.subscribe();
     channelRef.current = ch;
     setIsActive(true);
@@ -41,11 +56,16 @@ export function useTVBroadcast(): TVBroadcastAPI {
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
+    lastStateRef.current = null;
     setIsActive(false);
   }, []);
 
   const broadcastTV = useCallback((event: string, data: Record<string, unknown>) => {
     channelRef.current?.send({ type: "broadcast", event, payload: data });
+    // Track the latest state so we can re-send it on tv-ready
+    if (event === "tv-state" || event === "game-start") {
+      lastStateRef.current = data;
+    }
   }, []);
 
   // Cleanup on unmount

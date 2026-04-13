@@ -152,7 +152,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
     // For recommend_services, use a pre-built message
     const aiMessage = type === "recommend_services"
-      ? "Empfehle mir passende buchbare Aktivitaeten und Services fuer unser Event. Beruecksichtige dabei die Vorlieben der Teilnehmer und schlage konkrete Kategorien vor wie Workshops, Catering, Entertainment oder Wellness."
+      ? "Empfehle mir passende buchbare Aktivitäten und Services für unser Event. Berücksichtige dabei die Vorlieben der Teilnehmer und schlage konkrete Kategorien vor wie Workshops, Catering, Entertainment oder Wellness."
       : message;
 
     try {

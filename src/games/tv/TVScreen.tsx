@@ -42,7 +42,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
             {game.toUpperCase()}
           </motion.h1>
-          <p className="text-2xl text-[#a8abb3]">Spiel laeuft auf den Handys...</p>
+          <p className="text-2xl text-[#a8abb3]">Spiel läuft auf den Handys...</p>
           <motion.div className="mt-8 w-4 h-4 rounded-full bg-[#8ff5ff]" animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }} />
         </div>
       )}

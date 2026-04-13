@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Image, Send, Save } from "lucide-react";
+import { X, Upload, Image, Send, Save, Loader2, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useCreateService, useUpdateService, useSubmitForReview } from "@/hooks/useAgencyServices";
+import { AgencyAvailabilityEditor } from "./AgencyAvailabilityEditor";
 
 /* ─── Types ──────────────────────────────────────────── */
 interface ServiceFormData {
@@ -23,17 +25,34 @@ interface ServiceFormData {
   leadTimeDays: string;
   cancellationPolicy: string;
   autoConfirm: boolean;
+  bookingMode: "internal" | "external_redirect" | "external_api";
+  externalBookingUrl: string;
 }
 
 interface ServiceEditorProps {
   open: boolean;
   onClose: () => void;
+  agencyId: string;
   service?: {
     id: string;
     title: string;
     category: string;
     price: number;
     priceType: string;
+    shortDescription?: string;
+    description?: string;
+    includes?: string[];
+    requirements?: string[];
+    minParticipants?: number;
+    maxParticipants?: number;
+    locationType?: string;
+    locationAddress?: string;
+    locationCity?: string;
+    leadTimeDays?: number;
+    cancellationPolicy?: string;
+    autoConfirm?: boolean;
+    bookingMode?: string;
+    externalBookingUrl?: string;
   } | null;
 }
 
@@ -89,7 +108,31 @@ const emptyForm: ServiceFormData = {
   leadTimeDays: "7",
   cancellationPolicy: "moderate",
   autoConfirm: false,
+  bookingMode: "internal",
+  externalBookingUrl: "",
 };
+
+const bookingModes = [
+  {
+    value: "internal" as const,
+    label: "Intern",
+    description: "EventBliss Buchungssystem mit eigenem Kalender",
+    icon: "📅",
+  },
+  {
+    value: "external_redirect" as const,
+    label: "Externer Link",
+    description: "Weiterleitung zu deinem eigenen Buchungssystem",
+    icon: "🔗",
+  },
+  {
+    value: "external_api" as const,
+    label: "API-Integration",
+    description: "Verbindung mit Calendly, cal.com oder eigenem System",
+    icon: "⚡",
+    comingSoon: true,
+  },
+];
 
 /* ─── Select Component ───────────────────────────────── */
 function FormSelect({
@@ -148,18 +191,36 @@ const textareaClass =
   "w-full bg-white/[0.04] border border-white/[0.08] text-slate-100 text-sm placeholder:text-slate-600 rounded-xl px-3 py-2.5 outline-none resize-none focus:border-violet-500/40 focus:shadow-[0_0_12px_rgba(139,92,246,0.1)] transition-all";
 
 /* ─── Main Component ─────────────────────────────────── */
-export function AgencyServiceEditor({ open, onClose, service }: ServiceEditorProps) {
+export function AgencyServiceEditor({ open, onClose, agencyId, service }: ServiceEditorProps) {
   const [form, setForm] = useState<ServiceFormData>(emptyForm);
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const isEditing = !!service;
+  const createService = useCreateService();
+  const updateService = useUpdateService();
+  const submitForReview = useSubmitForReview();
 
   useEffect(() => {
     if (service) {
       setForm({
         ...emptyForm,
-        title: service.title,
-        category: categories.find((c) => c.label === service.category)?.value || "workshop",
-        price: String(service.price),
-        priceType: service.priceType === "Pauschal" ? "flat" : service.priceType === "pro Stunde" ? "per_hour" : "per_person",
+        title: service.title || "",
+        shortDescription: service.shortDescription || "",
+        description: service.description || "",
+        category: categories.find((c) => c.value === service.category || c.label === service.category)?.value || "workshop",
+        price: String(service.price || 0),
+        priceType: service.priceType === "Pauschal" ? "flat" : service.priceType === "pro Stunde" ? "per_hour" : service.priceType || "per_person",
+        minParticipants: service.minParticipants ? String(service.minParticipants) : "",
+        maxParticipants: service.maxParticipants ? String(service.maxParticipants) : "",
+        locationType: service.locationType || "flexible",
+        address: service.locationAddress || "",
+        city: service.locationCity || "",
+        included: (service.includes || []).join("\n"),
+        requirements: (service.requirements || []).join("\n"),
+        leadTimeDays: service.leadTimeDays ? String(service.leadTimeDays) : "7",
+        cancellationPolicy: service.cancellationPolicy || "moderate",
+        autoConfirm: service.autoConfirm || false,
+        bookingMode: (service.bookingMode as any) || "internal",
+        externalBookingUrl: service.externalBookingUrl || "",
       });
     } else {
       setForm(emptyForm);
@@ -169,17 +230,57 @@ export function AgencyServiceEditor({ open, onClose, service }: ServiceEditorPro
   const update = <K extends keyof ServiceFormData>(key: K, value: ServiceFormData[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const isSaving = createService.isPending || updateService.isPending || submitForReview.isPending;
+
+  const buildInput = () => ({
+    agency_id: agencyId,
+    title: form.title,
+    short_description: form.shortDescription || undefined,
+    description: form.description || undefined,
+    category: form.category,
+    price_cents: Math.round(parseFloat(form.price || "0") * 100),
+    price_type: form.priceType,
+    min_participants: form.minParticipants ? parseInt(form.minParticipants) : undefined,
+    max_participants: form.maxParticipants ? parseInt(form.maxParticipants) : undefined,
+    location_type: form.locationType || "flexible",
+    location_address: form.address || undefined,
+    location_city: form.city || undefined,
+    advance_booking_days: form.leadTimeDays ? parseInt(form.leadTimeDays) : 2,
+    cancellation_policy: form.cancellationPolicy || "moderate",
+    auto_confirm: form.autoConfirm,
+    includes: form.included ? form.included.split("\n").filter(Boolean) : [],
+    requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
+    booking_mode: form.bookingMode,
+    external_booking_url: form.bookingMode === "external_redirect" ? form.externalBookingUrl || undefined : undefined,
+  });
+
   const handleSaveDraft = () => {
-    // Mock: would save to backend
-    onClose();
+    if (!form.title || !form.price) return;
+    const input = buildInput();
+    if (isEditing && service) {
+      const { agency_id, ...fields } = input;
+      updateService.mutate({ id: service.id, agencyId: agency_id, ...fields }, { onSuccess: () => onClose() });
+    } else {
+      createService.mutate(input, { onSuccess: () => { setForm(emptyForm); onClose(); } });
+    }
   };
 
   const handleSubmitForReview = () => {
-    // Mock: would submit for review
-    onClose();
+    if (!form.title || !form.price) return;
+    const input = buildInput();
+    if (isEditing && service) {
+      submitForReview.mutate({ id: service.id, agencyId: agencyId }, { onSuccess: () => onClose() });
+    } else {
+      createService.mutate(input, {
+        onSuccess: (data) => {
+          submitForReview.mutate({ id: data.id, agencyId }, { onSuccess: () => { setForm(emptyForm); onClose(); } });
+        },
+      });
+    }
   };
 
   return (
+    <>
     <AnimatePresence>
       {open && (
         <>
@@ -358,6 +459,116 @@ export function AgencyServiceEditor({ open, onClose, service }: ServiceEditorPro
                 </FormField>
               </FormSection>
 
+              {/* Verfügbarkeit */}
+              <FormSection title="Verfügbarkeit">
+                {isEditing && service ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setAvailabilityOpen(true)}
+                    className="w-full border-white/[0.1] text-slate-300 hover:bg-white/[0.04] cursor-pointer"
+                  >
+                    <CalendarClock className="w-4 h-4 mr-2" />
+                    Verfügbarkeit bearbeiten
+                  </Button>
+                ) : (
+                  <p className="text-xs text-slate-500 italic">
+                    Verfügbarkeit kann nach dem Speichern konfiguriert werden.
+                  </p>
+                )}
+              </FormSection>
+
+              {/* Buchungsmodus */}
+              <FormSection title="Buchungsmodus">
+                <div className="space-y-2">
+                  {bookingModes.map((mode) => (
+                    <button
+                      key={mode.value}
+                      type="button"
+                      disabled={mode.comingSoon}
+                      onClick={() => !mode.comingSoon && update("bookingMode", mode.value)}
+                      className={cn(
+                        "w-full text-left p-3 rounded-xl border transition-all duration-200 relative",
+                        mode.comingSoon
+                          ? "opacity-50 cursor-not-allowed border-white/[0.04] bg-white/[0.01]"
+                          : "cursor-pointer",
+                        !mode.comingSoon && form.bookingMode === mode.value
+                          ? "border-violet-500/40 bg-violet-500/10"
+                          : !mode.comingSoon
+                            ? "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
+                            : ""
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.04] text-sm shrink-0 mt-0.5">
+                          {mode.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className={cn(
+                              "text-xs font-medium",
+                              form.bookingMode === mode.value && !mode.comingSoon ? "text-violet-300" : "text-slate-300"
+                            )}>
+                              {mode.label}
+                            </p>
+                            {mode.comingSoon && (
+                              <span className="text-[8px] font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded-full">
+                                Demnächst
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-600 mt-0.5">{mode.description}</p>
+                        </div>
+                        {!mode.comingSoon && (
+                          <div className={cn(
+                            "w-4 h-4 rounded-full border-2 shrink-0 mt-1 flex items-center justify-center transition-colors",
+                            form.bookingMode === mode.value
+                              ? "border-violet-500 bg-violet-500"
+                              : "border-white/[0.15]"
+                          )}>
+                            {form.bookingMode === mode.value && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* External URL field (shown for external_redirect) */}
+                {form.bookingMode === "external_redirect" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <FormField label="Buchungs-URL">
+                      <Input
+                        type="url"
+                        value={form.externalBookingUrl}
+                        onChange={(e) => update("externalBookingUrl", e.target.value)}
+                        placeholder="https://dein-buchungssystem.de/buchen"
+                        className={inputClass}
+                      />
+                      <p className="text-[10px] text-slate-600 mt-1">
+                        Kunden werden zu dieser URL weitergeleitet, um eine Buchung abzuschließen.
+                      </p>
+                    </FormField>
+                  </motion.div>
+                )}
+
+                {/* Coming soon message for API mode */}
+                {form.bookingMode === "external_api" && (
+                  <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
+                    <p className="text-[10px] text-amber-300/70">
+                      API-Integrationen mit Calendly, cal.com und weiteren Anbietern sind in Kürze verfügbar.
+                    </p>
+                  </div>
+                )}
+              </FormSection>
+
               {/* Buchungseinstellungen */}
               <FormSection title="Buchungseinstellungen">
                 <FormField label="Vorlaufzeit (Tage)">
@@ -403,23 +614,35 @@ export function AgencyServiceEditor({ open, onClose, service }: ServiceEditorPro
             <div className="flex items-center gap-3 px-6 py-4 border-t border-white/[0.06] shrink-0">
               <Button
                 onClick={handleSaveDraft}
+                disabled={isSaving || !form.title || !form.price}
                 variant="outline"
                 className="flex-1 border-white/[0.1] text-slate-300 hover:bg-white/[0.04] cursor-pointer"
               >
-                <Save className="w-4 h-4 mr-2" />
-                Speichern
+                {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {isSaving ? "Speichern..." : "Speichern"}
               </Button>
               <Button
                 onClick={handleSubmitForReview}
+                disabled={isSaving || !form.title || !form.price}
                 className="flex-1 bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white cursor-pointer"
               >
-                <Send className="w-4 h-4 mr-2" />
-                Zur Pruefung einreichen
+                {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                {isSaving ? "Wird eingereicht..." : "Zur Prüfung einreichen"}
               </Button>
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
+
+    {/* Availability Editor */}
+    {isEditing && service && (
+      <AgencyAvailabilityEditor
+        serviceId={service.id}
+        open={availabilityOpen}
+        onClose={() => setAvailabilityOpen(false)}
+      />
+    )}
+    </>
   );
 }

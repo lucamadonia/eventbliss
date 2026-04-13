@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +37,9 @@ import {
   Ban,
   MessageSquareWarning,
   Users,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 type BookingStatus =
   | "pending_confirmation"
@@ -45,6 +49,7 @@ type BookingStatus =
   | "disputed";
 
 interface Booking {
+  id: string;
   nr: string;
   service: string;
   agency: string;
@@ -57,17 +62,6 @@ interface Booking {
   participants: number;
 }
 
-const MOCK_BOOKINGS: Booking[] = [
-  { nr: "EB-2026-00142", service: "Cocktail Workshop", agency: "Berlin Events GmbH", customer: "Sarah Mueller", email: "sarah@mail.de", date: "2026-04-18", total: 15600, fee: 1560, status: "confirmed", participants: 4 },
-  { nr: "EB-2026-00141", service: "Wine Tasting Premium", agency: "Gourmet Events", customer: "Max Hoffmann", email: "max@mail.de", date: "2026-04-15", total: 24500, fee: 2450, status: "completed", participants: 5 },
-  { nr: "EB-2026-00140", service: "Escape Room", agency: "Fun Factory", customer: "Lisa Weber", email: "lisa@mail.de", date: "2026-04-20", total: 10000, fee: 1000, status: "pending_confirmation", participants: 4 },
-  { nr: "EB-2026-00139", service: "DJ Party Paket", agency: "Berlin Events GmbH", customer: "Tom Schmidt", email: "tom@mail.de", date: "2026-04-12", total: 59900, fee: 5990, status: "completed", participants: 1 },
-  { nr: "EB-2026-00138", service: "Private Chef Dinner", agency: "Gourmet Events", customer: "Anna Klein", email: "anna@mail.de", date: "2026-04-25", total: 44500, fee: 4450, status: "confirmed", participants: 5 },
-  { nr: "EB-2026-00137", service: "Go-Kart Racing", agency: "Speed Events", customer: "Felix Braun", email: "felix@mail.de", date: "2026-04-08", total: 19200, fee: 1920, status: "cancelled_by_customer", participants: 6 },
-  { nr: "EB-2026-00136", service: "Yoga Retreat", agency: "Zen Space", customer: "Julia Fischer", email: "julia@mail.de", date: "2026-04-22", total: 14500, fee: 1450, status: "disputed", participants: 5 },
-  { nr: "EB-2026-00135", service: "Graffiti Workshop", agency: "Urban Arts", customer: "Lukas Meyer", email: "lukas@mail.de", date: "2026-04-05", total: 14000, fee: 1400, status: "completed", participants: 4 },
-];
-
 const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bgColor: string; icon: typeof Clock }> = {
   pending_confirmation: {
     label: "Ausstehend",
@@ -76,7 +70,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bgCol
     icon: Clock,
   },
   confirmed: {
-    label: "Bestaetigt",
+    label: "Bestätigt",
     color: "text-blue-700 dark:text-blue-400",
     bgColor: "bg-blue-100 dark:bg-blue-900/30",
     icon: CheckCircle2,
@@ -104,7 +98,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bgCol
 const FILTER_TABS: { label: string; value: BookingStatus | "all" }[] = [
   { label: "Alle", value: "all" },
   { label: "Ausstehend", value: "pending_confirmation" },
-  { label: "Bestaetigt", value: "confirmed" },
+  { label: "Bestätigt", value: "confirmed" },
   { label: "Abgeschlossen", value: "completed" },
   { label: "Storniert", value: "cancelled_by_customer" },
   { label: "Disputed", value: "disputed" },
@@ -119,26 +113,102 @@ const formatDate = (iso: string) => {
 };
 
 const TIMELINE_STEPS: Record<BookingStatus, string[]> = {
-  pending_confirmation: ["Buchung erstellt", "Warte auf Bestaetigung"],
-  confirmed: ["Buchung erstellt", "Bestaetigt durch Agentur"],
-  completed: ["Buchung erstellt", "Bestaetigt durch Agentur", "Service durchgefuehrt", "Abgeschlossen"],
+  pending_confirmation: ["Buchung erstellt", "Warte auf Bestätigung"],
+  confirmed: ["Buchung erstellt", "Bestätigt durch Agentur"],
+  completed: ["Buchung erstellt", "Bestätigt durch Agentur", "Service durchgeführt", "Abgeschlossen"],
   cancelled_by_customer: ["Buchung erstellt", "Vom Kunden storniert"],
-  disputed: ["Buchung erstellt", "Bestaetigt durch Agentur", "Dispute eroeffnet"],
+  disputed: ["Buchung erstellt", "Bestätigt durch Agentur", "Dispute eröffnet"],
 };
 
+async function fetchBookings(): Promise<Booking[]> {
+  const { data: bookings, error } = await (supabase.from as any)("marketplace_bookings")
+    .select("*, marketplace_services(slug), agencies(name)")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  const serviceIds = [...new Set((bookings || []).map((b: any) => b.service_id).filter(Boolean))];
+
+  let titleMap: Record<string, string> = {};
+  if (serviceIds.length > 0) {
+    const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
+      .select("service_id, locale, title")
+      .in("service_id", serviceIds)
+      .in("locale", ["de", "en"]);
+
+    if (translations) {
+      for (const t of translations) {
+        if (!titleMap[t.service_id] || t.locale === "de") {
+          titleMap[t.service_id] = t.title;
+        }
+      }
+    }
+  }
+
+  return (bookings || []).map((b: any) => ({
+    id: b.id,
+    nr: b.booking_number || b.id.slice(0, 14).toUpperCase(),
+    service: titleMap[b.service_id] || b.marketplace_services?.slug || "Unbekannt",
+    agency: b.agencies?.name || "Unbekannt",
+    customer: b.customer_name || "Unbekannt",
+    email: b.customer_email || "",
+    date: b.event_date || b.created_at?.split("T")[0] || "",
+    total: b.total_price_cents || 0,
+    fee: b.platform_fee_cents || 0,
+    status: (b.status as BookingStatus) || "pending_confirmation",
+    participants: b.participants || 1,
+  }));
+}
+
 export default function MarketplaceBookingsTab() {
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<BookingStatus | "all">("all");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
+  const { data: bookings = [], isLoading } = useQuery({
+    queryKey: ["admin-marketplace-bookings"],
+    queryFn: fetchBookings,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      const { error } = await (supabase.from as any)("marketplace_bookings")
+        .update({ status: "cancelled_by_customer" })
+        .eq("id", bookingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-marketplace-bookings"] });
+      toast.success("Buchung storniert");
+      setSelectedBooking(null);
+    },
+    onError: () => toast.error("Fehler beim Stornieren"),
+  });
+
+  const refundMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      const { error } = await (supabase.from as any)("marketplace_bookings")
+        .update({ status: "cancelled_by_customer", refunded: true })
+        .eq("id", bookingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-marketplace-bookings"] });
+      toast.success("Erstattung eingeleitet");
+      setSelectedBooking(null);
+    },
+    onError: () => toast.error("Fehler bei der Erstattung"),
+  });
+
   const filtered =
     filter === "all"
-      ? MOCK_BOOKINGS
-      : MOCK_BOOKINGS.filter((b) => b.status === filter);
+      ? bookings
+      : bookings.filter((b) => b.status === filter);
 
-  const totalBookings = 267;
-  const totalRevenue = 4835000;
-  const platformFees = 483500;
-  const openDisputes = 2;
+  const totalBookings = bookings.length;
+  const totalRevenue = bookings.reduce((sum, b) => sum + b.total, 0);
+  const platformFees = bookings.reduce((sum, b) => sum + b.fee, 0);
+  const openDisputes = bookings.filter((b) => b.status === "disputed").length;
 
   const statsCards = [
     {
@@ -156,7 +226,7 @@ export default function MarketplaceBookingsTab() {
       bg: "bg-gray-50 dark:bg-gray-900/20",
     },
     {
-      label: "Platform-Gebuehren",
+      label: "Platform-Gebühren",
       value: formatCurrency(platformFees),
       icon: Wallet,
       iconColor: "text-green-600",
@@ -172,6 +242,14 @@ export default function MarketplaceBookingsTab() {
       valueColor: "text-red-600 dark:text-red-400",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -209,7 +287,7 @@ export default function MarketplaceBookingsTab() {
               {tab.label}
               {tab.value !== "all" && (
                 <span className="ml-1.5 text-xs opacity-60">
-                  {MOCK_BOOKINGS.filter((b) =>
+                  {bookings.filter((b) =>
                     tab.value === "all" ? true : b.status === tab.value
                   ).length}
                 </span>
@@ -225,7 +303,7 @@ export default function MarketplaceBookingsTab() {
           <CardTitle className="flex items-center justify-between">
             <span>Buchungen ({filtered.length})</span>
             <span className="text-sm font-normal text-muted-foreground">
-              Gesamt: {MOCK_BOOKINGS.length} von {totalBookings}
+              Gesamt: {totalBookings}
             </span>
           </CardTitle>
         </CardHeader>
@@ -250,7 +328,7 @@ export default function MarketplaceBookingsTab() {
                   const StatusIcon = statusCfg.icon;
                   return (
                     <TableRow
-                      key={booking.nr}
+                      key={booking.id}
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => setSelectedBooking(booking)}
                     >
@@ -308,13 +386,19 @@ export default function MarketplaceBookingsTab() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelMutation.mutate(booking.id);
+                              }}
                             >
                               <XCircle className="h-4 w-4 mr-2" />
                               Stornieren
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                refundMutation.mutate(booking.id);
+                              }}
                             >
                               <RotateCcw className="h-4 w-4 mr-2" />
                               Erstatten
@@ -446,11 +530,16 @@ export default function MarketplaceBookingsTab() {
               {/* Dialog Actions */}
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={() => setSelectedBooking(null)}>
-                  Schliessen
+                  Schließen
                 </Button>
                 {selectedBooking.status !== "cancelled_by_customer" &&
                   selectedBooking.status !== "completed" && (
-                    <Button variant="destructive" size="sm">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => cancelMutation.mutate(selectedBooking.id)}
+                      disabled={cancelMutation.isPending}
+                    >
                       <XCircle className="h-4 w-4 mr-1" />
                       Stornieren
                     </Button>

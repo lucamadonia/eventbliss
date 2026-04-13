@@ -1,0 +1,69 @@
+import { lazy, Suspense } from "react";
+import { SubscriptionsTab } from "@/components/admin/SubscriptionsTab";
+import { VouchersTab } from "@/components/admin/VouchersTab";
+import { StatsOverview } from "@/components/admin/StatsOverview";
+import { UsersTab } from "@/components/admin/UsersTab";
+import { AffiliatesTab } from "@/components/admin/AffiliatesTab";
+import { CommissionsTab } from "@/components/admin/CommissionsTab";
+import { PayoutsTab } from "@/components/admin/PayoutsTab";
+import { AgencyAnalyticsTab } from "@/components/admin/AgencyAnalyticsTab";
+import { AgencyAffiliateManager } from "@/components/admin/AgencyAffiliateManager";
+import { CreditsTab } from "@/components/admin/CreditsTab";
+import { PlanSettingsTab } from "@/components/admin/PlanSettingsTab";
+
+const MarketplaceListingsTab = lazy(() => import("@/components/admin/MarketplaceListingsTab"));
+const MarketplaceBookingsTab = lazy(() => import("@/components/admin/MarketplaceBookingsTab"));
+const MarketplaceStatsTab = lazy(() => import("@/components/admin/MarketplaceStatsTab"));
+const AdminAgencyManager = lazy(() => import("@/components/admin/AdminAgencyManager"));
+const AdminPackageManager = lazy(() => import("@/components/admin/AdminPackageManager"));
+
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    </div>
+  );
+}
+
+interface AdminContentProps {
+  activeTab: string;
+}
+
+export function AdminContent({ activeTab }: AdminContentProps) {
+  switch (activeTab) {
+    case "stats":
+      return <StatsOverview />;
+    case "credits":
+      return <CreditsTab />;
+    case "users":
+      return <UsersTab />;
+    case "subscriptions":
+      return <SubscriptionsTab />;
+    case "vouchers":
+      return <VouchersTab />;
+    case "affiliates":
+      return <AffiliatesTab />;
+    case "commissions":
+      return <CommissionsTab />;
+    case "payouts":
+      return <PayoutsTab />;
+    case "agency-analytics":
+      return <AgencyAnalyticsTab />;
+    case "agency-affiliates":
+      return <AgencyAffiliateManager />;
+    case "settings":
+      return <PlanSettingsTab />;
+    case "marketplace-listings":
+      return <Suspense fallback={<LoadingSpinner />}><MarketplaceListingsTab /></Suspense>;
+    case "marketplace-bookings":
+      return <Suspense fallback={<LoadingSpinner />}><MarketplaceBookingsTab /></Suspense>;
+    case "marketplace-stats":
+      return <Suspense fallback={<LoadingSpinner />}><MarketplaceStatsTab /></Suspense>;
+    case "agencies":
+      return <Suspense fallback={<LoadingSpinner />}><AdminAgencyManager /></Suspense>;
+    case "packages":
+      return <Suspense fallback={<LoadingSpinner />}><AdminPackageManager /></Suspense>;
+    default:
+      return <StatsOverview />;
+  }
+}

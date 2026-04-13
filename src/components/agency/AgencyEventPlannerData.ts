@@ -11,11 +11,11 @@ export const mockEvent = {
 };
 
 export const mockTimeline = [
-  { id: "1", time: "14:00", endTime: "15:00", title: "Gaeste-Empfang", responsible: "Lisa M.", status: "done", notes: "Sektempfang im Garten", workstream: "Logistik", isMilestone: false, isCritical: false, dependsOn: null as string | null },
+  { id: "1", time: "14:00", endTime: "15:00", title: "Gäste-Empfang", responsible: "Lisa M.", status: "done", notes: "Sektempfang im Garten", workstream: "Logistik", isMilestone: false, isCritical: false, dependsOn: null as string | null },
   { id: "2", time: "15:00", endTime: "16:00", title: "Trauung", responsible: "Pastor Schmidt", status: "done", notes: "Kapelle im Schloss", workstream: "Content", isMilestone: true, isCritical: true, dependsOn: "1" },
   { id: "3", time: "16:00", endTime: "17:00", title: "Gruppenfotos", responsible: "Hans Schulz", status: "in-progress", notes: "Im Schlossgarten", workstream: "Content", isMilestone: false, isCritical: true, dependsOn: "2" },
   { id: "4", time: "17:30", endTime: "20:00", title: "Dinner", responsible: "Catering Weber", status: "pending", notes: "3-Gang-Menue", workstream: "Catering", isMilestone: false, isCritical: true, dependsOn: "3" },
-  { id: "5", time: "20:00", endTime: "20:30", title: "Eroeffnungstanz", responsible: "DJ Beat Master", status: "pending", notes: "Walzer", workstream: "Content", isMilestone: true, isCritical: false, dependsOn: "4" },
+  { id: "5", time: "20:00", endTime: "20:30", title: "Eröffnungstanz", responsible: "DJ Beat Master", status: "pending", notes: "Walzer", workstream: "Content", isMilestone: true, isCritical: false, dependsOn: "4" },
   { id: "6", time: "20:30", endTime: "23:00", title: "Party & Tanz", responsible: "DJ Beat Master", status: "pending", notes: "", workstream: "Content", isMilestone: false, isCritical: false, dependsOn: "5" },
   { id: "7", time: "23:00", endTime: "00:00", title: "Mitternachtssnack", responsible: "Catering Weber", status: "pending", notes: "Burger-Station", workstream: "Catering", isMilestone: false, isCritical: false, dependsOn: null },
 ];
@@ -24,7 +24,7 @@ export const mockTasks = {
   todo: [
     { id: "t1", title: "Tischplan finalisieren", assignee: "Lisa M.", due: "01. Apr", priority: "high" },
     { id: "t2", title: "Menuekarten drucken", assignee: "Anna S.", due: "05. Apr", priority: "medium" },
-    { id: "t3", title: "Blumenschmuck bestaetigen", assignee: "Lisa M.", due: "10. Apr", priority: "medium" },
+    { id: "t3", title: "Blumenschmuck bestätigen", assignee: "Lisa M.", due: "10. Apr", priority: "medium" },
   ],
   inProgress: [
     { id: "t4", title: "Sitzordnung abstimmen", assignee: "Lisa M.", due: "28. Maer", priority: "high" },
@@ -49,7 +49,7 @@ export const mockBudgetCategories = [
 
 export const mockTeam = [
   { name: "Lisa Mueller", role: "owner", email: "lisa@agentur.de", events: 3, active: true, workload: 85, recentAction: "Budget aktualisiert vor 5 Min." },
-  { name: "Tom Krause", role: "co-organizer", email: "tom@agentur.de", events: 2, active: true, workload: 60, recentAction: "Vendor hinzugefuegt vor 23 Min." },
+  { name: "Tom Krause", role: "co-organizer", email: "tom@agentur.de", events: 2, active: true, workload: 60, recentAction: "Vendor hinzugefügt vor 23 Min." },
   { name: "Anna Schmidt", role: "planner", email: "anna@agentur.de", events: 1, active: true, workload: 40, recentAction: "Aufgabe erledigt vor 1 Std." },
   { name: "Max Bauer", role: "viewer", email: "max@kunde.de", events: 0, active: false, workload: 0, recentAction: "Hat Dashboard angesehen vor 2 Std." },
 ];
@@ -62,11 +62,11 @@ export const roleConfig: Record<string, { label: string; color: string; icon: ty
 };
 
 export const teamActivityLog = [
-  { user: "Lisa M.", action: "Budget fuer Catering aktualisiert", time: "vor 5 Min." },
+  { user: "Lisa M.", action: "Budget für Catering aktualisiert", time: "vor 5 Min." },
   { user: "Tom K.", action: "Vendor 'Rossi Blumen' Vertrag hochgeladen", time: "vor 23 Min." },
   { user: "Anna S.", action: "Aufgabe 'Menuekarten' erstellt", time: "vor 1 Std." },
   { user: "Lisa M.", action: "Timeline-Eintrag verschoben", time: "vor 2 Std." },
-  { user: "Tom K.", action: "DJ-Absprache Notiz hinzugefuegt", time: "vor 3 Std." },
+  { user: "Tom K.", action: "DJ-Absprache Notiz hinzugefügt", time: "vor 3 Std." },
 ];
 
 export const mockVendors = [

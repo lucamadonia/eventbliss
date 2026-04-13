@@ -43,7 +43,7 @@ const FIELD_CONFIGS: Record<string, { label: string; fields: string[] }> = {
   category: { label: 'Kategorie', fields: ['name', 'terms'] },
   taboo_card: { label: 'Tabu-Karte', fields: ['term', 'forbidden1', 'forbidden2', 'forbidden3', 'forbidden4', 'forbidden5'] },
   headup_word: { label: 'Stirnraten-Wort', fields: ['word', 'category'] },
-  emoji_puzzle: { label: 'Emoji-Raetsel', fields: ['emojis', 'answer'] },
+  emoji_puzzle: { label: 'Emoji-Rätsel', fields: ['emojis', 'answer'] },
   fact: { label: 'Fakt', fields: ['statement', 'isTrue', 'explanation'] },
   truth: { label: 'Wahrheit', fields: ['text', 'intensity'] },
   dare: { label: 'Pflicht', fields: ['text', 'intensity'] },

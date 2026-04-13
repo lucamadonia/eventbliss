@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -150,5 +151,170 @@ export function useMarketplaceServices(
       return { services: result, total: count || result.length };
     },
     staleTime: 30_000,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Hook: Single service by slug
+// ---------------------------------------------------------------------------
+
+export function useMarketplaceServiceBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: ["marketplace-service", slug],
+    enabled: !!slug,
+    queryFn: async () => {
+      // 1. Fetch the service with agency join
+      const { data: service, error } = await (supabase.from as any)("marketplace_services")
+        .select("*, agencies!inner(name, slug, logo_url, marketplace_tier, city)")
+        .eq("slug", slug)
+        .eq("status", "approved")
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!service) return null;
+
+      // 2. Fetch translation (prefer DE, fallback EN)
+      const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
+        .select("*")
+        .eq("service_id", service.id)
+        .in("locale", ["de", "en"]);
+
+      let tx: any = null;
+      for (const t of translations || []) {
+        if (!tx || t.locale === "de") tx = t;
+      }
+
+      // 3. Map to MarketplaceService (extended with agency_city)
+      const mapped: MarketplaceService & { agency_city: string | null } = {
+        id: service.id,
+        slug: service.slug,
+        category: service.category,
+        subcategory: service.subcategory,
+        price_cents: service.price_cents,
+        price_type: service.price_type,
+        min_participants: service.min_participants,
+        max_participants: service.max_participants,
+        duration_minutes: service.duration_minutes,
+        location_type: service.location_type,
+        location_city: service.location_city,
+        location_country: service.location_country,
+        cover_image_url: service.cover_image_url,
+        gallery_urls: service.gallery_urls || [],
+        is_featured: service.is_featured,
+        avg_rating: service.avg_rating,
+        review_count: service.review_count,
+        booking_count: service.booking_count,
+        cancellation_policy: service.cancellation_policy,
+        auto_confirm: service.auto_confirm,
+        created_at: service.created_at,
+        title: tx?.title || "Untitled",
+        short_description: tx?.short_description || null,
+        description: tx?.description || null,
+        includes: tx?.includes || [],
+        requirements: tx?.requirements || [],
+        agency_id: service.agency_id,
+        agency_name: service.agencies?.name || "",
+        agency_slug: service.agencies?.slug || "",
+        agency_logo: service.agencies?.logo_url || null,
+        agency_tier: service.agencies?.marketplace_tier || "starter",
+        agency_city: service.agencies?.city || service.location_city || null,
+      };
+
+      return mapped;
+    },
+    staleTime: 60_000,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Mutation: Create a booking from the service detail page
+// ---------------------------------------------------------------------------
+
+export interface CreateBookingInput {
+  serviceId: string;
+  agencyId: string;
+  bookingDate: string;
+  bookingTime: string;
+  participantCount: number;
+  unitPriceCents: number;
+  totalPriceCents: number;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  customerNotes?: string;
+  eventId?: string;
+  autoConfirm?: boolean;
+}
+
+export function useCreateBooking() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: CreateBookingInput) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Du musst eingeloggt sein, um zu buchen.");
+
+      const platformFeeCents = Math.round(input.totalPriceCents * 0.10);
+      const agencyPayoutCents = input.totalPriceCents - platformFeeCents;
+
+      // Create booking — use auto_confirm to set status directly,
+      // or "pending_confirmation" if agency needs to confirm manually.
+      // Stripe Checkout is optional and only used when Edge Functions are deployed.
+      const status = input.autoConfirm ? "confirmed" : "pending_confirmation";
+
+      const { data, error } = await (supabase.from as any)("marketplace_bookings")
+        .insert({
+          service_id: input.serviceId,
+          agency_id: input.agencyId,
+          customer_id: user.id,
+          event_id: input.eventId || null,
+          status,
+          booking_date: input.bookingDate,
+          booking_time: input.bookingTime,
+          participant_count: input.participantCount,
+          unit_price_cents: input.unitPriceCents,
+          total_price_cents: input.totalPriceCents,
+          platform_fee_cents: platformFeeCents,
+          agency_payout_cents: agencyPayoutCents,
+          currency: "EUR",
+          customer_name: input.customerName,
+          customer_email: input.customerEmail,
+          customer_phone: input.customerPhone || null,
+          customer_notes: input.customerNotes || null,
+          confirmed_at: input.autoConfirm ? new Date().toISOString() : null,
+        })
+        .select("id, booking_number")
+        .single();
+
+      if (error) throw error;
+
+      const booking = data as { id: string; booking_number: string };
+
+      // Try Stripe Checkout if Edge Function is deployed (optional)
+      let checkoutUrl: string | undefined;
+      try {
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+          "marketplace-checkout",
+          { body: { booking_id: booking.id } },
+        );
+        if (!checkoutError && checkoutData?.url) {
+          checkoutUrl = checkoutData.url as string;
+        }
+      } catch {
+        // Stripe not configured — booking works without payment for now
+      }
+
+      return {
+        id: booking.id,
+        booking_number: booking.booking_number,
+        checkoutUrl,
+      };
+    },
+    onSuccess: (data) => {
+      toast.success(`Buchung erstellt! Nr. ${data.booking_number}`);
+      qc.invalidateQueries({ queryKey: ["my-bookings"] });
+      qc.invalidateQueries({ queryKey: ["event-bookings"] });
+      qc.invalidateQueries({ queryKey: ["service-availability"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 }

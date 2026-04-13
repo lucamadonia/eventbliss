@@ -22,6 +22,7 @@ import {
   Store,
   CreditCard,
   CalendarCheck,
+  CalendarSync,
   PanelLeftClose,
   PanelLeft,
   CalendarDays,
@@ -57,6 +58,9 @@ import AgencyMarketplace from "@/components/agency/AgencyMarketplace";
 import AgencyBookingsManager from "@/components/agency/AgencyBookingsManager";
 import AgencyStripeConnect from "@/components/agency/AgencyStripeConnect";
 import AgencyMarketplaceSettings from "@/components/agency/AgencyMarketplaceSettings";
+import AgencyGuideManager from "@/components/agency/AgencyGuideManager";
+import AgencyCalendarSync from "@/components/agency/AgencyCalendarSync";
+import { AgencyBookingCalendar } from "@/components/agency/AgencyBookingCalendar";
 
 type Section =
   | "dashboard"
@@ -69,10 +73,13 @@ type Section =
   | "runofshow"
   | "budgetengine"
   | "calendar"
+  | "booking-calendar"
   | "marketplace"
   | "bookings"
+  | "guides"
   | "stripe"
   | "marketplace-settings"
+  | "calendar-sync"
   | "settings";
 
 interface NavItem {
@@ -83,9 +90,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: "dashboard", label: "Uebersicht", icon: LayoutDashboard },
+  { id: "dashboard", label: "Übersicht", icon: LayoutDashboard },
   { id: "events", label: "Events", icon: Calendar, badge: "12" },
   { id: "calendar", label: "Kalender", icon: CalendarDays },
+  { id: "booking-calendar", label: "Buchungskalender", icon: CalendarCheck },
   { id: "contacts", label: "Kontakte", icon: Contact },
   { id: "templates", label: "Vorlagen", icon: FileText },
   { id: "team", label: "Team", icon: Users, badge: "6" },
@@ -95,15 +103,18 @@ const navItems: NavItem[] = [
   { id: "reports", label: "Berichte", icon: BarChart3 },
   { id: "marketplace", label: "Marketplace", icon: Store },
   { id: "bookings", label: "Buchungen", icon: CalendarCheck },
+  { id: "guides", label: "Guides", icon: Users },
   { id: "stripe", label: "Zahlungen", icon: CreditCard },
   { id: "marketplace-settings", label: "Pakete & Einstellungen", icon: Settings2 },
+  { id: "calendar-sync", label: "Kalender-Sync", icon: CalendarSync },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
 
 const sectionLabels: Record<Section, string> = {
-  dashboard: "Uebersicht",
+  dashboard: "Übersicht",
   events: "Events",
   calendar: "Kalender",
+  "booking-calendar": "Buchungskalender",
   contacts: "Kontakte",
   templates: "Vorlagen",
   team: "Team",
@@ -113,8 +124,10 @@ const sectionLabels: Record<Section, string> = {
   reports: "Berichte",
   marketplace: "Marketplace",
   bookings: "Buchungen",
+  guides: "Guides",
   stripe: "Zahlungen",
   "marketplace-settings": "Pakete & Einstellungen",
+  "calendar-sync": "Kalender-Sync",
   settings: "Einstellungen",
 };
 
@@ -181,7 +194,7 @@ function EventsSection({ onSelectEvent }: { onSelectEvent: (id: string) => void 
             </div>
             <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
               <span>{event.type}</span>
-              <span>{event.guests} Gaeste</span>
+              <span>{event.guests} Gäste</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
@@ -388,6 +401,8 @@ export default function AgencyDashboard() {
         return <EventsSection onSelectEvent={(id) => setSelectedEventId(id)} />;
       case "calendar":
         return <AgencyCalendarView />;
+      case "booking-calendar":
+        return <AgencyBookingCalendar agencyId={agency?.id || ""} />;
       case "contacts":
         return <AgencyContacts />;
       case "templates":
@@ -403,13 +418,17 @@ export default function AgencyDashboard() {
       case "reports":
         return <AgencyReports />;
       case "marketplace":
-        return <AgencyMarketplace />;
+        return <AgencyMarketplace agencyId={agency?.id || ""} />;
       case "bookings":
-        return <AgencyBookingsManager />;
+        return <AgencyBookingsManager agencyId={agency?.id || ""} />;
+      case "guides":
+        return <AgencyGuideManager agencyId={agency?.id || ""} />;
       case "stripe":
-        return <AgencyStripeConnect />;
+        return <AgencyStripeConnect agencyId={agency?.id || ""} />;
       case "marketplace-settings":
         return <AgencyMarketplaceSettings />;
+      case "calendar-sync":
+        return <AgencyCalendarSync />;
       case "settings":
         return <AgencySettings />;
       default:

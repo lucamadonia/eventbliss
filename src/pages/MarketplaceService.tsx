@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Star, Clock, MapPin, Share2, Heart, ShieldCheck,
   ChevronRight, Check, AlertTriangle, Minus, Plus, Calendar,
+  Loader2,
 } from "lucide-react";
+import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
+import { useServiceAvailability } from "@/hooks/useServiceAvailability";
+import { supabase } from "@/integrations/supabase/client";
 
 // Design tokens
 const C = {
@@ -16,39 +20,6 @@ const C = {
   tertiary: "#ff7350",
   border: "border-[#484750]/10",
 } as const;
-
-const MOCK = {
-  title: "Cocktail Workshop Berlin",
-  category: "workshop",
-  price: 3900,
-  priceType: "per_person" as const,
-  city: "Berlin",
-  rating: 4.8,
-  reviews: 47,
-  bookings: 182,
-  duration: 120,
-  description:
-    "Erlebt einen unvergesslichen Abend und lernt die Kunst des Cocktail-Mixens! Unser professioneller Barkeeper fuehrt euch durch die Welt der Spirituosen und zeigt euch, wie ihr klassische und kreative Cocktails perfekt zubereitet. Ideal fuer JGA, Geburtstage oder Teamevents.",
-  includes: [
-    "3 Cocktails pro Person",
-    "Alle Zutaten & Equipment",
-    "Professioneller Barkeeper",
-    "Rezeptkarten zum Mitnehmen",
-    "Snacks & Wasser",
-  ],
-  requirements: ["Mindestalter 18 Jahre", "Bequeme Kleidung empfohlen"],
-  cancellationPolicy: "moderate" as const,
-  agencyName: "Berlin Events GmbH",
-  agencySlug: "berlin-events",
-  agencyTier: "professional",
-  agencyCity: "Berlin",
-  mockReviews: [
-    { name: "Sarah M.", rating: 5, date: "2026-03-15", comment: "Absolut genial! Der Barkeeper war super unterhaltsam und die Cocktails haben fantastisch geschmeckt." },
-    { name: "Tom K.", rating: 5, date: "2026-03-02", comment: "Perfekt fuer unseren JGA! Alle hatten mega Spass." },
-    { name: "Lisa W.", rating: 4, date: "2026-02-18", comment: "Tolle Location und netter Barkeeper. Ein Cocktail mehr waere super gewesen." },
-    { name: "Max P.", rating: 5, date: "2026-02-01", comment: "Haben es fuer ein Teamevent gebucht — kam super an bei allen!" },
-  ],
-};
 
 const PRICE_TYPE_LABELS: Record<string, string> = {
   per_person: "pro Person",
@@ -70,7 +41,7 @@ const CANCELLATION: Record<string, { label: string; color: string }> = {
   strict: { label: "Strikt", color: "text-red-400 bg-red-400/10" },
 };
 
-const TIME_SLOTS = [
+const TIME_SLOTS_FALLBACK = [
   "10:00", "11:00", "12:00", "13:00", "14:00",
   "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
 ];
@@ -120,7 +91,71 @@ function RatingBar({ stars, count, total }: { stars: number; count: number; tota
   );
 }
 
-export default function MarketplaceService() {
+// ---------------------------------------------------------------------------
+// Skeleton Loader
+// ---------------------------------------------------------------------------
+
+function ServiceSkeleton() {
+  return (
+    <div className={`min-h-screen ${C.surface} text-white`}>
+      {/* Hero skeleton */}
+      <div className="relative h-64 md:h-80 w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#cf96ff]/10 via-[#1f1f29] to-[#00e3fd]/10 animate-pulse" />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col lg:flex-row gap-8">
+        {/* Left */}
+        <div className="flex-1 space-y-4">
+          <div className="h-10 w-3/4 rounded-xl bg-[#1f1f29] animate-pulse" />
+          <div className="h-5 w-1/2 rounded-lg bg-[#1f1f29] animate-pulse" />
+          <div className="h-8 w-40 rounded-lg bg-[#1f1f29] animate-pulse" />
+          <div className="flex gap-2 mt-4">
+            <div className="h-8 w-24 rounded-full bg-[#1f1f29] animate-pulse" />
+            <div className="h-8 w-24 rounded-full bg-[#1f1f29] animate-pulse" />
+          </div>
+          <div className="mt-8 space-y-3">
+            <div className="h-4 w-full rounded bg-[#1f1f29] animate-pulse" />
+            <div className="h-4 w-5/6 rounded bg-[#1f1f29] animate-pulse" />
+            <div className="h-4 w-4/6 rounded bg-[#1f1f29] animate-pulse" />
+          </div>
+        </div>
+        {/* Right */}
+        <div className="hidden lg:block w-[380px] shrink-0">
+          <div className="h-[480px] rounded-2xl bg-[#1f1f29] animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Not Found
+// ---------------------------------------------------------------------------
+
+function ServiceNotFound() {
+  const navigate = useNavigate();
+  return (
+    <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans']">Service nicht gefunden</h1>
+        <p className="text-gray-400 font-['Be_Vietnam_Pro']">
+          Dieser Service existiert nicht oder ist nicht mehr verfügbar.
+        </p>
+        <button
+          onClick={() => navigate("/marketplace")}
+          className="mt-4 px-6 py-3 rounded-xl font-semibold font-['Be_Vietnam_Pro'] bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15]"
+        >
+          Zurück zum Marketplace
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main Component
+// ---------------------------------------------------------------------------
+
+export default function MarketplaceServicePage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("beschreibung");
@@ -128,26 +163,109 @@ export default function MarketplaceService() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [liked, setLiked] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
 
-  const s = MOCK;
+  const { data: s, isLoading, isError } = useMarketplaceServiceBySlug(slug);
+  const createBooking = useCreateBooking();
+
+  // Availability: derive year/month from selectedDate or current month
+  const now = new Date();
+  const availYear = selectedDate ? parseInt(selectedDate.slice(0, 4), 10) : now.getFullYear();
+  const availMonth = selectedDate ? parseInt(selectedDate.slice(5, 7), 10) - 1 : now.getMonth();
+  const { data: availabilityMap } = useServiceAvailability(s?.id, availYear, availMonth);
+
+  // Compute time slots from availability data or fallback
+  const timeSlots = useMemo(() => {
+    if (!selectedDate || !availabilityMap) return TIME_SLOTS_FALLBACK;
+    const daySlots = availabilityMap.get(selectedDate);
+    if (!daySlots?.length) return TIME_SLOTS_FALLBACK;
+    return daySlots.filter((t: any) => t.available).map((t: any) => t.start);
+  }, [selectedDate, availabilityMap]);
 
   const ratingBreakdown = useMemo(() => {
+    // No live reviews yet - show empty breakdown based on avg_rating
+    if (!s) return [0, 0, 0, 0, 0];
     const counts = [0, 0, 0, 0, 0];
-    s.mockReviews.forEach((r) => { counts[r.rating - 1]++; });
+    // Approximate distribution from avg rating and review count
+    if (s.review_count > 0) {
+      const avg = Math.round(s.avg_rating);
+      counts[avg - 1] = s.review_count;
+    }
     return counts;
-  }, [s.mockReviews]);
+  }, [s]);
 
   const totalPrice = useMemo(() => {
-    if (s.priceType === "per_person") return s.price * participants;
-    return s.price;
-  }, [s.price, s.priceType, participants]);
+    if (!s) return 0;
+    if (s.price_type === "per_person") return s.price_cents * participants;
+    return s.price_cents;
+  }, [s, participants]);
 
-  const cancellation = CANCELLATION[s.cancellationPolicy] ?? CANCELLATION.moderate;
+  // Read event_id from URL search params (when booking from event dashboard)
+  const searchParams = new URLSearchParams(window.location.search);
+  const eventId = searchParams.get("event_id");
+
+  // Handle booking
+  const handleBook = async () => {
+    if (!s) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth?redirect=" + encodeURIComponent(window.location.pathname + window.location.search));
+      return;
+    }
+
+    if (!selectedDate || !selectedTime) {
+      const { toast } = await import("sonner");
+      toast.error("Bitte wähle ein Datum und eine Uhrzeit.");
+      return;
+    }
+
+    setIsBooking(true);
+    try {
+      const result = await createBooking.mutateAsync({
+        serviceId: s.id,
+        agencyId: s.agency_id,
+        bookingDate: selectedDate,
+        bookingTime: selectedTime,
+        participantCount: participants,
+        unitPriceCents: s.price_cents,
+        totalPriceCents: totalPrice,
+        customerName: user.user_metadata?.full_name || user.email || "",
+        customerEmail: user.email || "",
+        autoConfirm: s.auto_confirm,
+        eventId: eventId || undefined,
+      });
+
+      // Redirect to Stripe Checkout if URL is available
+      if (result?.checkoutUrl) {
+        window.location.href = result.checkoutUrl;
+      } else if (eventId) {
+        navigate(`/event/${eventId}`);
+      } else {
+        navigate("/marketplace/bookings");
+      }
+    } finally {
+      setIsBooking(false);
+    }
+  };
+
+  if (isLoading) return <ServiceSkeleton />;
+  if (isError || !s) return <ServiceNotFound />;
+
+  const cancellation = CANCELLATION[s.cancellation_policy] ?? CANCELLATION.moderate;
+  const agencyCity = (s as any).agency_city || s.location_city || "";
 
   return (
     <div className={`min-h-screen ${C.surface} text-white`}>
       {/* Hero */}
       <div className="relative h-64 md:h-80 w-full overflow-hidden">
+        {s.cover_image_url ? (
+          <img
+            src={s.cover_image_url}
+            alt={s.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-br from-[#cf96ff]/30 via-[#1f1f29] to-[#00e3fd]/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d15] via-transparent to-transparent" />
         <motion.div
@@ -186,32 +304,34 @@ export default function MarketplaceService() {
 
           <div className="flex flex-wrap items-center gap-4 mt-3">
             <div className="flex items-center gap-1.5">
-              <StarRating rating={s.rating} />
+              <StarRating rating={s.avg_rating} />
               <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">
-                {s.rating} ({s.reviews} Bewertungen)
+                {s.avg_rating} ({s.review_count} Bewertungen)
               </span>
             </div>
-            <span className="text-sm text-gray-500 font-['Be_Vietnam_Pro']">{s.bookings} Buchungen</span>
+            <span className="text-sm text-gray-500 font-['Be_Vietnam_Pro']">{s.booking_count} Buchungen</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <span className="text-2xl font-black font-['Plus_Jakarta_Sans'] text-white">
-              {formatPrice(s.price)} €
+              {formatPrice(s.price_cents)} €
             </span>
             <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">
-              {PRICE_TYPE_LABELS[s.priceType] ?? s.priceType}
+              {PRICE_TYPE_LABELS[s.price_type] ?? s.price_type}
             </span>
           </div>
 
           <div className="flex flex-wrap gap-2 mt-4">
-            {s.duration > 0 && (
+            {(s.duration_minutes ?? 0) > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-['Be_Vietnam_Pro'] bg-[#1f1f29] border border-[#484750]/10">
-                <Clock size={14} className="text-[#00e3fd]" /> {s.duration} Min
+                <Clock size={14} className="text-[#00e3fd]" /> {s.duration_minutes} Min
               </span>
             )}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-['Be_Vietnam_Pro'] bg-[#1f1f29] border border-[#484750]/10">
-              <MapPin size={14} className="text-[#ff7350]" /> {s.city}
-            </span>
+            {(s.location_city || agencyCity) && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-['Be_Vietnam_Pro'] bg-[#1f1f29] border border-[#484750]/10">
+                <MapPin size={14} className="text-[#ff7350]" /> {s.location_city || agencyCity}
+              </span>
+            )}
           </div>
 
           {/* Tabs */}
@@ -247,7 +367,9 @@ export default function MarketplaceService() {
             >
               {activeTab === "beschreibung" && (
                 <div className="space-y-6">
-                  <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm">{s.description}</p>
+                  <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm">
+                    {s.description || s.short_description || "Keine Beschreibung verfügbar."}
+                  </p>
                   {s.requirements.length > 0 && (
                     <div>
                       <h3 className="text-lg font-bold font-['Plus_Jakarta_Sans'] mb-3">Hinweise</h3>
@@ -266,6 +388,9 @@ export default function MarketplaceService() {
 
               {activeTab === "inklusive" && (
                 <ul className="space-y-3">
+                  {s.includes.length === 0 && (
+                    <p className="text-gray-500 font-['Be_Vietnam_Pro'] text-sm">Keine Details verfügbar.</p>
+                  )}
                   {s.includes.map((item, i) => (
                     <motion.li
                       key={i}
@@ -285,45 +410,24 @@ export default function MarketplaceService() {
 
               {activeTab === "bewertungen" && (
                 <div className="space-y-6">
-                  <div className="space-y-2">
-                    {[5, 4, 3, 2, 1].map((stars) => (
-                      <RatingBar key={stars} stars={stars} count={ratingBreakdown[stars - 1]} total={s.mockReviews.length} />
-                    ))}
-                  </div>
-                  <div className="space-y-4 pt-2">
-                    {s.mockReviews.map((review, i) => (
-                      <motion.div
-                        key={i}
-                        className={`p-4 rounded-2xl ${C.high} ${C.border} border`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-['Plus_Jakarta_Sans']">
-                            {review.name.charAt(0)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-['Plus_Jakarta_Sans']">{review.name}</span>
-                              <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">
-                                {new Date(review.date).toLocaleDateString("de-DE")}
-                              </span>
-                            </div>
-                            <StarRating rating={review.rating} size={12} />
-                          </div>
-                        </div>
-                        <p className="mt-3 text-sm text-gray-300 font-['Be_Vietnam_Pro'] leading-relaxed">{review.comment}</p>
-                      </motion.div>
-                    ))}
-                  </div>
+                  {s.review_count > 0 ? (
+                    <div className="space-y-2">
+                      {[5, 4, 3, 2, 1].map((stars) => (
+                        <RatingBar key={stars} stars={stars} count={ratingBreakdown[stars - 1]} total={s.review_count} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 font-['Be_Vietnam_Pro'] text-sm">
+                      Noch keine Bewertungen für diesen Service.
+                    </p>
+                  )}
                 </div>
               )}
 
               {activeTab === "agentur" && (
                 <motion.div
                   className={`p-5 rounded-2xl ${C.high} border ${
-                    s.agencyTier === "enterprise"
+                    s.agency_tier === "enterprise"
                       ? "border-amber-400/40 shadow-lg shadow-amber-400/10"
                       : C.border
                   }`}
@@ -331,25 +435,33 @@ export default function MarketplaceService() {
                   animate={{ opacity: 1, scale: 1 }}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-xl font-bold font-['Plus_Jakarta_Sans']">
-                      {s.agencyName.charAt(0)}
-                    </div>
+                    {s.agency_logo ? (
+                      <img
+                        src={s.agency_logo}
+                        alt={s.agency_name}
+                        className="w-14 h-14 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-xl font-bold font-['Plus_Jakarta_Sans']">
+                        {s.agency_name.charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-lg">{s.agencyName}</h3>
-                        {(s.agencyTier === "professional" || s.agencyTier === "enterprise") && (
+                        <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-lg">{s.agency_name}</h3>
+                        {(s.agency_tier === "professional" || s.agency_tier === "enterprise") && (
                           <ShieldCheck size={18} className="text-[#00e3fd]" />
                         )}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <MapPin size={14} className="text-gray-500" />
-                        <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">{s.agencyCity}</span>
-                        {s.agencyTier === "professional" && (
+                        <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">{agencyCity}</span>
+                        {s.agency_tier === "professional" && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold font-['Be_Vietnam_Pro'] bg-[#cf96ff]/15 text-[#cf96ff]">
                             Pro &#10003;
                           </span>
                         )}
-                        {s.agencyTier === "enterprise" && (
+                        {s.agency_tier === "enterprise" && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold font-['Be_Vietnam_Pro'] bg-amber-400/15 text-amber-400">
                             Enterprise &#10003;
                           </span>
@@ -358,13 +470,13 @@ export default function MarketplaceService() {
                     </div>
                   </div>
                   <button
-                    onClick={() => navigate(`/marketplace/agency/${s.agencySlug}`)}
+                    onClick={() => navigate(`/marketplace/agency/${s.agency_slug}`)}
                     className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold font-['Be_Vietnam_Pro'] bg-[#13131b] border border-[#484750]/10 hover:border-[#cf96ff]/30 transition-colors"
                   >
                     Profil ansehen
                   </button>
                   <button
-                    onClick={() => navigate(`/marketplace/agency/${s.agencySlug}`)}
+                    onClick={() => navigate(`/marketplace/agency/${s.agency_slug}`)}
                     className="mt-2 w-full py-2 rounded-xl text-xs font-['Be_Vietnam_Pro'] text-[#cf96ff] hover:text-white transition-colors"
                   >
                     Alle Services dieser Agentur &rarr;
@@ -375,7 +487,7 @@ export default function MarketplaceService() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Right Column — Booking Card (Desktop) */}
+        {/* Right Column - Booking Card (Desktop) */}
         <motion.aside
           className="hidden lg:block w-[380px] shrink-0"
           initial={{ opacity: 0, x: 20 }}
@@ -384,21 +496,21 @@ export default function MarketplaceService() {
         >
           <div className="sticky top-24 bg-[#1f1f29]/80 backdrop-blur-xl border border-[#484750]/10 rounded-2xl p-6 space-y-5">
             <div>
-              <span className="text-3xl font-black font-['Plus_Jakarta_Sans']">{formatPrice(s.price)} €</span>
+              <span className="text-3xl font-black font-['Plus_Jakarta_Sans']">{formatPrice(s.price_cents)} €</span>
               <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro'] ml-2">
-                {PRICE_TYPE_LABELS[s.priceType]}
+                {PRICE_TYPE_LABELS[s.price_type]}
               </span>
             </div>
 
             {/* Date */}
             <div>
-              <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Datum waehlen</label>
+              <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Datum wählen</label>
               <div className="relative">
                 <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                 <input
                   type="date"
                   value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/10 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:dark]"
                 />
               </div>
@@ -412,37 +524,39 @@ export default function MarketplaceService() {
                 onChange={(e) => setSelectedTime(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/10 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors appearance-none"
               >
-                <option value="">Zeit waehlen...</option>
-                {TIME_SLOTS.map((t) => (
+                <option value="">Zeit wählen...</option>
+                {timeSlots.map((t: string) => (
                   <option key={t} value={t}>{t} Uhr</option>
                 ))}
               </select>
             </div>
 
             {/* Participants */}
-            <div>
-              <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Teilnehmer</label>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setParticipants((p) => Math.max(1, p - 1))}
-                  className="w-10 h-10 rounded-xl bg-[#13131b] border border-[#484750]/10 flex items-center justify-center hover:border-[#cf96ff]/30 transition-colors"
-                >
-                  <Minus size={16} />
-                </button>
-                <div className="flex-1 text-center">
-                  <span className="text-xl font-bold font-['Plus_Jakarta_Sans']">{participants}</span>
-                  <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] ml-1.5">
-                    {participants === 1 ? "Person" : "Personen"}
-                  </span>
+            {s.price_type === "per_person" && (
+              <div>
+                <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Teilnehmer</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setParticipants((p) => Math.max(s.min_participants || 1, p - 1))}
+                    className="w-10 h-10 rounded-xl bg-[#13131b] border border-[#484750]/10 flex items-center justify-center hover:border-[#cf96ff]/30 transition-colors"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <div className="flex-1 text-center">
+                    <span className="text-xl font-bold font-['Plus_Jakarta_Sans']">{participants}</span>
+                    <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] ml-1.5">
+                      {participants === 1 ? "Person" : "Personen"}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setParticipants((p) => Math.min(s.max_participants || 50, p + 1))}
+                    className="w-10 h-10 rounded-xl bg-[#13131b] border border-[#484750]/10 flex items-center justify-center hover:border-[#cf96ff]/30 transition-colors"
+                  >
+                    <Plus size={16} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => setParticipants((p) => Math.min(50, p + 1))}
-                  className="w-10 h-10 rounded-xl bg-[#13131b] border border-[#484750]/10 flex items-center justify-center hover:border-[#cf96ff]/30 transition-colors"
-                >
-                  <Plus size={16} />
-                </button>
               </div>
-            </div>
+            )}
 
             {/* Total */}
             <div className="flex items-center justify-between pt-3 border-t border-[#484750]/10">
@@ -456,7 +570,7 @@ export default function MarketplaceService() {
             </div>
 
             {/* Verified Agency Badge */}
-            {(s.agencyTier === "professional" || s.agencyTier === "enterprise") && (
+            {(s.agency_tier === "professional" || s.agency_tier === "enterprise") && (
               <div className="flex items-center gap-1.5 text-xs font-['Be_Vietnam_Pro'] text-[#00e3fd]">
                 <ShieldCheck size={14} />
                 <span>Verifizierte Agentur</span>
@@ -464,7 +578,7 @@ export default function MarketplaceService() {
             )}
 
             {/* Enterprise Partner Badge */}
-            {s.agencyTier === "enterprise" && (
+            {s.agency_tier === "enterprise" && (
               <div className="px-3 py-2 rounded-xl text-center text-xs font-semibold font-['Be_Vietnam_Pro'] bg-amber-400/10 text-amber-400 border border-amber-400/20">
                 Enterprise Partner
               </div>
@@ -474,8 +588,11 @@ export default function MarketplaceService() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20"
+              onClick={handleBook}
+              disabled={isBooking}
+              className="w-full py-3.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-60 flex items-center justify-center gap-2"
             >
+              {isBooking && <Loader2 size={16} className="animate-spin" />}
               Jetzt buchen
             </motion.button>
 
@@ -505,7 +622,7 @@ export default function MarketplaceService() {
         <div className="flex-1 min-w-0">
           <span className="text-lg font-black font-['Plus_Jakarta_Sans']">{formatPrice(totalPrice)} €</span>
           <span className="text-xs text-gray-400 font-['Be_Vietnam_Pro'] ml-1.5">
-            {s.priceType === "per_person" ? `${participants} Pers.` : PRICE_TYPE_LABELS[s.priceType]}
+            {s.price_type === "per_person" ? `${participants} Pers.` : PRICE_TYPE_LABELS[s.price_type]}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -519,8 +636,11 @@ export default function MarketplaceService() {
           </button>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15]"
+            onClick={handleBook}
+            disabled={isBooking}
+            className="px-6 py-2.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] disabled:opacity-60 flex items-center gap-2"
           >
+            {isBooking && <Loader2 size={14} className="animate-spin" />}
             Buchen
           </motion.button>
         </div>

@@ -239,7 +239,7 @@ export const HEADUP_CATEGORIES_DE: HeadUpCategory[] = [
     gradient: 'from-yellow-400 to-orange-500',
     words: [
       'Lachendes Gesicht', 'Traenen lachen', 'Herz Augen', 'Zwinkern', 'Kuss senden',
-      'Nachdenklich', 'Trauriges Gesicht', 'Wuetend', 'Ueberrascht', 'Schlafend',
+      'Nachdenklich', 'Trauriges Gesicht', 'Wütend', 'Überrascht', 'Schlafend',
       'Party Gesicht', 'Sonnenbrille', 'Verruecktes Gesicht', 'Geist', 'Clown',
       'Roboter', 'Affe Augen zu', 'Daumen hoch', 'Klatschen', 'Muskeln',
       'Friedenszeichen', 'Herz', 'Gebrochenes Herz', 'Feuer', 'Regenbogen',

@@ -451,7 +451,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     style={{ backgroundColor: "rgba(223,142,255,0.06)", border: `1px solid ${EP.border}` }}>
                     <Crown className="h-5 w-5 flex-shrink-0" style={{ color: EP.neonPurple }} />
                     <p className="text-[11px] text-white/40 font-['Be_Vietnam_Pro']">
-                      Tipp: Mit einem Premium-Account spielen alle Gaeste kostenlos mit!
+                      Tipp: Mit einem Premium-Account spielen alle Gäste kostenlos mit!
                     </p>
                   </motion.div>
                 )}

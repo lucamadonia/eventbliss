@@ -5,6 +5,9 @@ export interface TimeSlot {
   start: string;
   end: string;
   available: boolean;
+  maxBookings: number;
+  currentBookings: number;
+  availableCount: number;
 }
 
 /**
@@ -40,7 +43,13 @@ export function useServiceAvailability(
 
       // Build lookup sets
       const blockedSet = new Set((blocked || []).map((b: any) => b.blocked_date));
-      const bookedSet = new Set((bookings || []).map((b: any) => `${b.booking_date}|${b.booking_time}`));
+
+      // Count bookings per date|time combination
+      const bookingCounts = new Map<string, number>();
+      for (const b of bookings || []) {
+        const key = `${b.booking_date}|${b.booking_time}`;
+        bookingCounts.set(key, (bookingCounts.get(key) || 0) + 1);
+      }
 
       // Build a map of day_of_week -> slots
       const weeklySlots = new Map<number, any[]>();
@@ -70,16 +79,21 @@ export function useServiceAvailability(
 
         const timeSlots: TimeSlot[] = daySlots.map((s: any) => {
           const key = `${dateStr}|${s.start_time}`;
-          const booked = bookedSet.has(key);
+          const maxBookings = s.max_bookings ?? 1;
+          const currentBookings = bookingCounts.get(key) || 0;
+          const availableCount = Math.max(0, maxBookings - currentBookings);
           return {
             start: s.start_time.slice(0, 5),
             end: s.end_time.slice(0, 5),
-            available: !booked,
+            available: availableCount > 0,
+            maxBookings,
+            currentBookings,
+            availableCount,
           };
         });
 
-        // Only add if at least one slot is available
-        if (timeSlots.some((t) => t.available)) {
+        // Only add if at least one slot has availability
+        if (timeSlots.some((t) => t.availableCount > 0)) {
           availableDates.set(dateStr, timeSlots);
         }
       }

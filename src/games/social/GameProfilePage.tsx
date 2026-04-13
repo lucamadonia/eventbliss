@@ -66,7 +66,7 @@ export function GameProfilePage() {
   };
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'overview', label: 'Uebersicht' },
+    { id: 'overview', label: 'Übersicht' },
     { id: 'achievements', label: 'Achievements' },
     { id: 'leaderboard', label: 'Bestenliste' },
   ];

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +28,7 @@ import {
   ShieldCheck,
   ShieldX,
   ShieldOff,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -43,19 +46,8 @@ interface Listing {
   description?: string;
 }
 
-const MOCK_LISTINGS: Listing[] = [
-  { id: "1", title: "Cocktail Workshop Berlin", category: "workshop", agency: "Berlin Events GmbH", agencyTier: "professional", price: 3900, status: "pending_review", date: "2026-04-10", description: "Ein interaktiver Cocktail-Workshop fuer Gruppen von 10-30 Personen. Professionelle Barkeeper fuehren durch die Kunst der Cocktailzubereitung." },
-  { id: "2", title: "Escape Room Adventure", category: "entertainment", agency: "Fun Factory", agencyTier: "starter", price: 2500, status: "pending_review", date: "2026-04-09", description: "Spannendes Escape Room Erlebnis mit mehreren Raeumen und Schwierigkeitsgraden." },
-  { id: "3", title: "Wine Tasting Premium", category: "catering", agency: "Gourmet Events", agencyTier: "enterprise", price: 4900, status: "approved", date: "2026-04-05", description: "Premium Weinverkostung mit Sommelier und exklusiven Weinen aus europaeischen Anbaugebieten." },
-  { id: "4", title: "DJ Party Paket", category: "music", agency: "Berlin Events GmbH", agencyTier: "professional", price: 59900, status: "approved", date: "2026-04-01", description: "Komplettes DJ-Paket mit professioneller Sound- und Lichtanlage fuer Events bis 500 Gaeste." },
-  { id: "5", title: "Graffiti Workshop", category: "workshop", agency: "Urban Arts", agencyTier: "professional", price: 3500, status: "rejected", date: "2026-03-28", description: "Kreativer Graffiti-Workshop unter Anleitung professioneller Street-Art-Kuenstler." },
-  { id: "6", title: "Yoga Retreat", category: "wellness", agency: "Zen Space", agencyTier: "starter", price: 2900, status: "pending_review", date: "2026-04-11", description: "Entspannendes Yoga-Retreat mit Meditation und gesundem Catering." },
-  { id: "7", title: "Go-Kart Racing", category: "sport", agency: "Speed Events", agencyTier: "professional", price: 3200, status: "suspended", date: "2026-03-15", description: "Indoor Go-Kart Rennen auf professioneller Rennstrecke mit Zeitmessung." },
-  { id: "8", title: "Private Chef Dinner", category: "catering", agency: "Gourmet Events", agencyTier: "enterprise", price: 8900, status: "approved", date: "2026-03-20", description: "Exklusives Dinner mit privatem Koch, 5-Gaenge-Menue und Weinbegleitung." },
-];
-
 const STATUS_CONFIG: Record<ListingStatus, { label: string; color: string; bgColor: string }> = {
-  pending_review: { label: "Zur Pruefung", color: "text-yellow-700 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30" },
+  pending_review: { label: "Zur Prüfung", color: "text-yellow-700 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30" },
   approved: { label: "Aktiv", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30" },
   rejected: { label: "Abgelehnt", color: "text-red-700 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30" },
   suspended: { label: "Gesperrt", color: "text-orange-700 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30" },
@@ -88,13 +80,81 @@ const categoryGradients: Record<string, string> = {
   sport: "from-red-500 to-rose-600",
 };
 
+async function fetchListings(): Promise<Listing[]> {
+  const { data: services, error } = await (supabase.from as any)("marketplace_services")
+    .select("*, agencies(name, marketplace_tier)")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  const serviceIds = (services || []).map((s: any) => s.id);
+
+  let translationsMap: Record<string, { title: string; description: string }> = {};
+  if (serviceIds.length > 0) {
+    const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
+      .select("service_id, locale, title, description")
+      .in("service_id", serviceIds)
+      .in("locale", ["de", "en"]);
+
+    if (translations) {
+      for (const t of translations) {
+        const existing = translationsMap[t.service_id];
+        if (!existing || t.locale === "de") {
+          translationsMap[t.service_id] = { title: t.title, description: t.description };
+        }
+      }
+    }
+  }
+
+  return (services || []).map((s: any) => ({
+    id: s.id,
+    title: translationsMap[s.id]?.title || s.slug || "Unbenannt",
+    category: s.category || "other",
+    agency: s.agencies?.name || "Unbekannt",
+    agencyTier: s.agencies?.marketplace_tier || "starter",
+    price: s.price_cents || 0,
+    status: s.status as ListingStatus,
+    date: s.created_at ? new Date(s.created_at).toISOString().split("T")[0] : "",
+    description: translationsMap[s.id]?.description || "",
+  }));
+}
+
 export default function MarketplaceListingsTab() {
-  const [listings, setListings] = useState<Listing[]>(MOCK_LISTINGS);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<ListingStatus | "all">("all");
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+
+  const { data: listings = [], isLoading } = useQuery({
+    queryKey: ["admin-marketplace-listings"],
+    queryFn: fetchListings,
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, newStatus, reason }: { id: string; newStatus: ListingStatus; reason?: string }) => {
+      const updatePayload: any = { status: newStatus };
+      if (reason) updatePayload.admin_rejection_reason = reason;
+      const { error } = await (supabase.from as any)("marketplace_services")
+        .update(updatePayload)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-marketplace-listings"] });
+      const statusLabel = STATUS_CONFIG[variables.newStatus].label;
+      toast.success(`Listing ${statusLabel.toLowerCase()} gesetzt`);
+      if (variables.reason) {
+        toast.info(`Grund: ${variables.reason}`);
+      }
+      setRejectId(null);
+      setRejectReason("");
+    },
+    onError: () => {
+      toast.error("Fehler beim Aktualisieren des Status");
+    },
+  });
 
   const counts = {
     pending_review: listings.filter((l) => l.status === "pending_review").length,
@@ -105,30 +165,17 @@ export default function MarketplaceListingsTab() {
 
   const filtered = filter === "all" ? listings : listings.filter((l) => l.status === filter);
 
-  const updateStatus = (id: string, newStatus: ListingStatus, reason?: string) => {
-    setListings((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
-    );
-    const statusLabel = STATUS_CONFIG[newStatus].label;
-    toast.success(`Listing ${statusLabel.toLowerCase()} gesetzt`);
-    if (reason) {
-      toast.info(`Grund: ${reason}`);
-    }
-    setRejectId(null);
-    setRejectReason("");
-  };
-
-  const handleApprove = (id: string) => updateStatus(id, "approved");
+  const handleApprove = (id: string) => statusMutation.mutate({ id, newStatus: "approved" });
 
   const handleReject = (id: string) => {
     if (!rejectReason.trim()) {
       toast.error("Bitte geben Sie einen Ablehnungsgrund an");
       return;
     }
-    updateStatus(id, "rejected", rejectReason);
+    statusMutation.mutate({ id, newStatus: "rejected", reason: rejectReason });
   };
 
-  const handleSuspend = (id: string) => updateStatus(id, "suspended");
+  const handleSuspend = (id: string) => statusMutation.mutate({ id, newStatus: "suspended" });
 
   const openDetail = (listing: Listing) => {
     setSelectedListing(listing);
@@ -136,19 +183,27 @@ export default function MarketplaceListingsTab() {
   };
 
   const statsCards = [
-    { label: "Zur Pruefung", count: counts.pending_review, icon: Clock, color: "text-yellow-600", bg: "bg-yellow-50 dark:bg-yellow-900/20" },
+    { label: "Zur Prüfung", count: counts.pending_review, icon: Clock, color: "text-yellow-600", bg: "bg-yellow-50 dark:bg-yellow-900/20" },
     { label: "Aktiv", count: counts.approved, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 dark:bg-green-900/20" },
     { label: "Abgelehnt", count: counts.rejected, icon: XCircle, color: "text-red-600", bg: "bg-red-50 dark:bg-red-900/20" },
     { label: "Gesperrt", count: counts.suspended, icon: Ban, color: "text-orange-600", bg: "bg-orange-50 dark:bg-orange-900/20" },
   ];
 
   const filterButtons: { label: string; value: ListingStatus | "all" }[] = [
-    { label: "Zur Pruefung", value: "pending_review" },
+    { label: "Zur Prüfung", value: "pending_review" },
     { label: "Aktiv", value: "approved" },
     { label: "Abgelehnt", value: "rejected" },
     { label: "Gesperrt", value: "suspended" },
     { label: "Alle", value: "all" },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -284,6 +339,13 @@ export default function MarketplaceListingsTab() {
                     </TableRow>
                   );
                 })}
+                {filtered.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      Keine Listings mit diesem Status gefunden.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
@@ -405,7 +467,7 @@ export default function MarketplaceListingsTab() {
                     </Button>
                   )}
                   <Button variant="ghost" onClick={() => setDetailOpen(false)} className="ml-auto">
-                    Schliessen
+                    Schließen
                   </Button>
                 </div>
               </div>

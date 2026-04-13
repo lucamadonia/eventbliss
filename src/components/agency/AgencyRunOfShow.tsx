@@ -31,10 +31,10 @@ interface IncidentEntry {
 }
 
 const emergencyProtocols = [
-  { title: "Feueralarm", steps: "Alle Ausgaenge oeffnen, Teilnehmer zum Sammelplatz leiten, Feuerwehr rufen" },
-  { title: "Medizinischer Notfall", steps: "Ersthelfer informieren, Notruf 112, Bereich raeumen" },
+  { title: "Feueralarm", steps: "Alle Ausgänge öffnen, Teilnehmer zum Sammelplatz leiten, Feuerwehr rufen" },
+  { title: "Medizinischer Notfall", steps: "Ersthelfer informieren, Notruf 112, Bereich räumen" },
   { title: "Stromausfall", steps: "Ruhe bewahren, Notbeleuchtung aktivieren, Techniker kontaktieren" },
-  { title: "Sprecher faellt aus", steps: "Backup-Programm starten, Pause einlegen, Moderator informieren" },
+  { title: "Sprecher fällt aus", steps: "Backup-Programm starten, Pause einlegen, Moderator informieren" },
 ];
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -42,8 +42,8 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   upcoming: { label: "Anstehend", color: "text-blue-300", bgColor: "bg-blue-500/20 border-blue-500/30" },
   active: { label: "Aktiv", color: "text-emerald-300", bgColor: "bg-emerald-500/20 border-emerald-500/30" },
   completed: { label: "Erledigt", color: "text-white/40", bgColor: "bg-white/10 border-white/20" },
-  delayed: { label: "Verspaetet", color: "text-amber-300", bgColor: "bg-amber-500/20 border-amber-500/30" },
-  skipped: { label: "Uebersprungen", color: "text-red-300", bgColor: "bg-red-500/20 border-red-500/30" },
+  delayed: { label: "Verspätet", color: "text-amber-300", bgColor: "bg-amber-500/20 border-amber-500/30" },
+  skipped: { label: "Übersprungen", color: "text-red-300", bgColor: "bg-red-500/20 border-red-500/30" },
 };
 
 const roleIcons: Record<RoleFilter, typeof Users> = {
@@ -140,7 +140,7 @@ export function AgencyRunOfShow() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
         <Select value={selectedEventId || ""} onValueChange={setSelectedEventId}>
           <SelectTrigger className="w-full max-w-xs bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder={eventsLoading ? "Loading..." : "Event waehlen..."} />
+            <SelectValue placeholder={eventsLoading ? "Loading..." : "Event wählen..."} />
           </SelectTrigger>
           <SelectContent>
             {events.map((e) => (<SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>))}

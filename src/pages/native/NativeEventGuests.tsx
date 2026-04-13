@@ -273,7 +273,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Gaeste suchen..."
+            placeholder="Gäste suchen..."
             className={cn(
               "w-full h-10 pl-10 pr-4 rounded-xl text-sm",
               "bg-foreground/[0.06] backdrop-blur-lg border border-border",
@@ -297,10 +297,10 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
               <UserPlus className="w-7 h-7 text-violet-400" />
             </div>
             <p className="text-base font-display font-semibold text-foreground mb-1">
-              Noch keine Gaeste
+              Noch keine Gäste
             </p>
             <p className="text-sm text-muted-foreground max-w-[240px]">
-              Lade Freunde und Familie ein, damit sie zusagen koennen.
+              Lade Freunde und Familie ein, damit sie zusagen können.
             </p>
           </motion.div>
         ) : isEmpty ? (
@@ -364,7 +364,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
               )}
             >
               <UserPlus className="w-4.5 h-4.5" />
-              Gaeste einladen
+              Gäste einladen
             </motion.button>
 
             {/* Share Link Card */}

@@ -18,7 +18,7 @@ interface ShareClientLinkDialogProps {
 
 const permissionOptions = [
   { key: "view_timeline", label: "Zeitplan ansehen" },
-  { key: "view_budget_summary", label: "Budget-Uebersicht ansehen" },
+  { key: "view_budget_summary", label: "Budget-Übersicht ansehen" },
   { key: "view_files", label: "Dateien ansehen" },
   { key: "approve_milestones", label: "Meilensteine freigeben" },
 ] as const;
@@ -130,7 +130,7 @@ export function ShareClientLinkDialog({ eventId, agencyId, trigger }: ShareClien
               className="w-full border-white/10 text-white/60"
               onClick={() => handleClose(false)}
             >
-              Schliessen
+              Schließen
             </Button>
           </div>
         ) : (

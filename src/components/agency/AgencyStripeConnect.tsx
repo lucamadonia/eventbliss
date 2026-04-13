@@ -1,21 +1,49 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   CreditCard, CheckCircle2, Shield, Banknote, BarChart3,
-  ExternalLink, Zap,
+  ExternalLink, Zap, Loader2, AlertCircle, XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { useStripeConnect, useInitiateOnboarding } from "@/hooks/useStripeConnect";
 
-/* ─── Component ──────────────────────────────────────── */
-export default function AgencyStripeConnect() {
-  const [connected, setConnected] = useState(false);
+interface AgencyStripeConnectProps {
+  agencyId: string;
+}
+
+export default function AgencyStripeConnect({ agencyId }: AgencyStripeConnectProps) {
+  const {
+    stripeAccount,
+    isOnboarded,
+    chargesEnabled,
+    payoutsEnabled,
+    isLoading,
+    isError,
+  } = useStripeConnect(agencyId || undefined);
+
+  const initiateOnboarding = useInitiateOnboarding();
 
   const benefits = [
     { icon: Banknote, label: "Direkte Auszahlungen", desc: "Erhalte Zahlungen direkt auf dein Bankkonto" },
     { icon: Shield, label: "Sichere Zahlungen", desc: "PCI-konforme Zahlungsabwicklung durch Stripe" },
-    { icon: BarChart3, label: "Einfaches Dashboard", desc: "Umsaetze und Auszahlungen im Blick behalten" },
+    { icon: BarChart3, label: "Einfaches Dashboard", desc: "Umsätze und Auszahlungen im Blick behalten" },
   ];
+
+  const connected = isOnboarded && chargesEnabled;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-50">Zahlungen</h3>
+          <p className="text-sm text-slate-500">Stripe Connect für Marketplace-Auszahlungen</p>
+        </div>
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -25,11 +53,18 @@ export default function AgencyStripeConnect() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h3 className="text-lg font-semibold text-slate-50">Zahlungen</h3>
-        <p className="text-sm text-slate-500">Stripe Connect fuer Marketplace-Auszahlungen</p>
+        <p className="text-sm text-slate-500">Stripe Connect für Marketplace-Auszahlungen</p>
       </motion.div>
 
+      {isError && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          Fehler beim Laden der Stripe-Daten. Bitte versuche es erneut.
+        </div>
+      )}
+
       {!connected ? (
-        /* ─── Not Connected State ────────────────────── */
+        /* Not Connected / Onboarding Incomplete */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -45,9 +80,17 @@ export default function AgencyStripeConnect() {
             <div>
               <h4 className="text-xl font-bold text-slate-50">Stripe verbinden</h4>
               <p className="text-sm text-slate-400 mt-2">
-                Verbinde dein Stripe-Konto, um Zahlungen fuer deine Marketplace-Services zu empfangen und automatische Auszahlungen zu erhalten.
+                Verbinde dein Stripe-Konto, um Zahlungen für deine Marketplace-Services zu empfangen und automatische Auszahlungen zu erhalten.
               </p>
             </div>
+
+            {/* Show partial status if account exists but not fully onboarded */}
+            {stripeAccount && !isOnboarded && (
+              <div className="flex items-center gap-2 justify-center text-amber-400 text-sm">
+                <AlertCircle className="w-4 h-4" />
+                Onboarding nicht abgeschlossen — bitte erneut verbinden
+              </div>
+            )}
 
             {/* Benefits */}
             <div className="space-y-4 text-left">
@@ -72,11 +115,16 @@ export default function AgencyStripeConnect() {
 
             {/* CTA */}
             <Button
-              onClick={() => setConnected(true)}
-              className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white cursor-pointer shadow-lg shadow-violet-500/20 h-11 px-8 text-sm"
+              onClick={() => initiateOnboarding.mutate(agencyId)}
+              disabled={initiateOnboarding.isPending || !agencyId}
+              className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white cursor-pointer shadow-lg shadow-violet-500/20 h-11 px-8 text-sm disabled:opacity-60"
             >
-              <Zap className="w-4 h-4 mr-2" />
-              Jetzt verbinden
+              {initiateOnboarding.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Zap className="w-4 h-4 mr-2" />
+              )}
+              Mit Stripe verbinden
             </Button>
 
             <p className="text-[10px] text-slate-600">
@@ -85,7 +133,7 @@ export default function AgencyStripeConnect() {
           </div>
         </motion.div>
       ) : (
-        /* ─── Connected State ────────────────────────── */
+        /* Connected State */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,7 +148,7 @@ export default function AgencyStripeConnect() {
               </div>
               <div>
                 <h4 className="text-lg font-bold text-slate-50">Stripe verbunden</h4>
-                <p className="text-sm text-slate-400">Dein Konto ist bereit fuer Zahlungen</p>
+                <p className="text-sm text-slate-400">Dein Konto ist bereit für Zahlungen</p>
               </div>
             </div>
 
@@ -108,19 +156,31 @@ export default function AgencyStripeConnect() {
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-500">Konto-ID</span>
-                <span className="text-xs font-mono text-slate-300">acct_****7x9K</span>
+                <span className="text-xs font-mono text-slate-300">
+                  {stripeAccount?.stripe_account_id
+                    ? `${stripeAccount.stripe_account_id.slice(0, 8)}...${stripeAccount.stripe_account_id.slice(-4)}`
+                    : "—"}
+                </span>
               </div>
 
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  {chargesEnabled ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
                   <span className="text-sm text-slate-200">Zahlungen aktiviert</span>
                   <Badge className="ml-auto text-[10px] px-1.5 py-0 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20">
                     charges_enabled
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  {payoutsEnabled ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
                   <span className="text-sm text-slate-200">Auszahlungen aktiviert</span>
                   <Badge className="ml-auto text-[10px] px-1.5 py-0 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20">
                     payouts_enabled
@@ -134,16 +194,15 @@ export default function AgencyStripeConnect() {
               <Button
                 variant="outline"
                 className="border-white/[0.1] text-slate-300 hover:bg-white/[0.04] cursor-pointer"
+                onClick={() =>
+                  window.open(
+                    `https://dashboard.stripe.com/${stripeAccount?.stripe_account_id}`,
+                    "_blank",
+                  )
+                }
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Stripe Dashboard oeffnen
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setConnected(false)}
-                className="text-slate-500 hover:text-red-400 cursor-pointer text-xs"
-              >
-                Trennen
+                Stripe Dashboard öffnen
               </Button>
             </div>
           </div>

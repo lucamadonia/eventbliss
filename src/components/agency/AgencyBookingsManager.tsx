@@ -1,147 +1,130 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarCheck, Clock, Users, DollarSign, Check, X as XIcon,
-  ChevronRight, AlertCircle, CheckCircle2, XCircle, Ban,
+  ChevronRight, AlertCircle, CheckCircle2, XCircle, Ban, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { StatCard } from "./ui/StatCard";
+import {
+  useAgencyBookings,
+  useConfirmBooking,
+  useCancelBooking,
+  useCompleteBooking,
+  type MarketplaceBooking,
+} from "@/hooks/useMarketplaceBookings";
 
 /* ─── Types ──────────────────────────────────────────── */
-type BookingStatus = "new" | "confirmed" | "completed" | "cancelled";
+type UIStatus = "new" | "confirmed" | "completed" | "cancelled";
 
-interface Booking {
-  id: string;
-  bookingNumber: string;
-  serviceName: string;
-  customerName: string;
-  date: string;
-  time: string;
-  participants: number;
-  totalPrice: number;
-  status: BookingStatus;
-  createdAt: string;
+interface Props {
+  agencyId: string;
 }
 
-/* ─── Mock Data ──────────────────────────────────────── */
-const mockBookings: Booking[] = [
-  {
-    id: "b1",
-    bookingNumber: "EB-2026-48291",
-    serviceName: "Premium Cocktail Workshop",
-    customerName: "Lena Mueller",
-    date: "18. Apr 2026",
-    time: "18:00",
-    participants: 12,
-    totalPrice: 588,
-    status: "new",
-    createdAt: "vor 2 Stunden",
-  },
-  {
-    id: "b2",
-    bookingNumber: "EB-2026-48287",
-    serviceName: "Live-Band: Jazz Ensemble",
-    customerName: "Thomas Becker",
-    date: "22. Apr 2026",
-    time: "20:00",
-    participants: 1,
-    totalPrice: 1200,
-    status: "confirmed",
-    createdAt: "vor 1 Tag",
-  },
-  {
-    id: "b3",
-    bookingNumber: "EB-2026-48265",
-    serviceName: "Premium Cocktail Workshop",
-    customerName: "Sarah Fischer",
-    date: "25. Apr 2026",
-    time: "19:00",
-    participants: 8,
-    totalPrice: 392,
-    status: "new",
-    createdAt: "vor 3 Stunden",
-  },
-  {
-    id: "b4",
-    bookingNumber: "EB-2026-48201",
-    serviceName: "Live-Band: Jazz Ensemble",
-    customerName: "Michael Hoffmann",
-    date: "10. Apr 2026",
-    time: "19:30",
-    participants: 1,
-    totalPrice: 1200,
-    status: "completed",
-    createdAt: "vor 5 Tagen",
-  },
-  {
-    id: "b5",
-    bookingNumber: "EB-2026-48190",
-    serviceName: "Premium Cocktail Workshop",
-    customerName: "Julia Wagner",
-    date: "08. Apr 2026",
-    time: "17:00",
-    participants: 15,
-    totalPrice: 735,
-    status: "completed",
-    createdAt: "vor 7 Tagen",
-  },
-  {
-    id: "b6",
-    bookingNumber: "EB-2026-48150",
-    serviceName: "Premium Cocktail Workshop",
-    customerName: "Andreas Schneider",
-    date: "12. Apr 2026",
-    time: "18:00",
-    participants: 10,
-    totalPrice: 490,
-    status: "cancelled",
-    createdAt: "vor 4 Tagen",
-  },
-];
+/* ─── Status mapping ────────────────────────────────── */
+function mapDBStatus(dbStatus: string): UIStatus {
+  switch (dbStatus) {
+    case "pending_confirmation":
+      return "new";
+    case "confirmed":
+      return "confirmed";
+    case "completed":
+      return "completed";
+    case "cancelled_by_customer":
+    case "cancelled_by_agency":
+      return "cancelled";
+    default:
+      return "new";
+  }
+}
 
-const statusConfig: Record<BookingStatus, { label: string; className: string; icon: typeof Clock }> = {
-  new: { label: "Neu", className: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30", icon: AlertCircle },
-  confirmed: { label: "Bestaetigt", className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
-  completed: { label: "Abgeschlossen", className: "bg-white/10 text-white/50 border-white/20", icon: Check },
-  cancelled: { label: "Storniert", className: "bg-red-500/20 text-red-300 border-red-500/30", icon: XCircle },
+const statusConfig: Record<UIStatus, { key: string; className: string; icon: typeof Clock }> = {
+  new: { key: "new", className: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30", icon: AlertCircle },
+  confirmed: { key: "confirmed", className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
+  completed: { key: "completed", className: "bg-white/10 text-white/50 border-white/20", icon: Check },
+  cancelled: { key: "cancelled", className: "bg-red-500/20 text-red-300 border-red-500/30", icon: XCircle },
 };
 
-type FilterTab = "all" | BookingStatus;
+type FilterTab = "all" | UIStatus;
 
-const filterTabs: { id: FilterTab; label: string }[] = [
-  { id: "all", label: "Alle" },
-  { id: "new", label: "Neu" },
-  { id: "confirmed", label: "Bestaetigt" },
-  { id: "completed", label: "Abgeschlossen" },
-  { id: "cancelled", label: "Storniert" },
+const filterTabs: { id: FilterTab; key: string }[] = [
+  { id: "all", key: "all" },
+  { id: "new", key: "new" },
+  { id: "confirmed", key: "confirmed" },
+  { id: "completed", key: "completed" },
+  { id: "cancelled", key: "cancelled" },
 ];
 
-function formatEUR(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value);
+function formatEUR(cents: number): string {
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(cents / 100);
+}
+
+function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const created = new Date(dateStr);
+  const diffMs = now.getTime() - created.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return `vor ${diffMin} Minuten`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `vor ${diffHours} Stunden`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `vor ${diffDays} Tagen`;
 }
 
 /* ─── Component ──────────────────────────────────────── */
-export default function AgencyBookingsManager() {
+export default function AgencyBookingsManager({ agencyId }: Props) {
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<FilterTab>("all");
 
-  const filtered = mockBookings.filter((b) => {
+  const { data: bookings = [], isLoading } = useAgencyBookings(agencyId);
+  const confirmBooking = useConfirmBooking();
+  const cancelBooking = useCancelBooking();
+  const completeBooking = useCompleteBooking();
+
+  const mappedBookings = bookings.map((b) => ({
+    ...b,
+    uiStatus: mapDBStatus(b.status),
+  }));
+
+  const filtered = mappedBookings.filter((b) => {
     if (activeFilter === "all") return true;
-    return b.status === activeFilter;
+    return b.uiStatus === activeFilter;
   });
 
-  const newCount = mockBookings.filter((b) => b.status === "new").length;
-  const todayCount = mockBookings.filter((b) => b.status === "confirmed").length;
-  const monthlyRevenue = mockBookings
-    .filter((b) => b.status === "completed" || b.status === "confirmed")
-    .reduce((sum, b) => sum + b.totalPrice, 0);
+  const newCount = mappedBookings.filter((b) => b.uiStatus === "new").length;
+  const confirmedCount = mappedBookings.filter((b) => b.uiStatus === "confirmed").length;
+  const monthlyRevenue = mappedBookings
+    .filter((b) => b.uiStatus === "completed" || b.uiStatus === "confirmed")
+    .reduce((sum, b) => sum + b.total_price_cents, 0);
 
   const kpis = [
-    { label: "Neue Anfragen", value: newCount, icon: AlertCircle, variant: "cyan" as const, trend: 0, sparkData: [1, 2, 1, newCount] },
-    { label: "Heutige Buchungen", value: todayCount, icon: CalendarCheck, variant: "purple" as const, trend: 0, sparkData: [0, 1, 1, todayCount] },
-    { label: "Umsatz (Monat)", value: monthlyRevenue, prefix: "\u20AC", icon: DollarSign, variant: "green" as const, trend: 0, sparkData: [800, 1500, 2200, monthlyRevenue] },
+    { label: t("bookingsManager.newRequests", "Neue Anfragen"), value: newCount, icon: AlertCircle, variant: "cyan" as const, trend: 0, sparkData: [1, 2, 1, newCount] },
+    { label: t("bookingsManager.confirmedBookings", "Bestätigte Buchungen"), value: confirmedCount, icon: CalendarCheck, variant: "purple" as const, trend: 0, sparkData: [0, 1, 1, confirmedCount] },
+    { label: t("bookingsManager.monthlyRevenue", "Umsatz (Monat)"), value: Math.round(monthlyRevenue / 100), prefix: "€", icon: DollarSign, variant: "green" as const, trend: 0, sparkData: [800, 1500, 2200, Math.round(monthlyRevenue / 100)] },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -181,7 +164,7 @@ export default function AgencyBookingsManager() {
                 : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.04] border border-transparent"
             )}
           >
-            {tab.label}
+            {t(`bookingsManager.filters.${tab.key}`, tab.key)}
             {tab.id === "new" && newCount > 0 && (
               <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold bg-cyan-500 text-white rounded-full">
                 {newCount}
@@ -203,11 +186,11 @@ export default function AgencyBookingsManager() {
               className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-12 text-center"
             >
               <CalendarCheck className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400 text-sm">Keine Buchungen in dieser Kategorie</p>
+              <p className="text-slate-400 text-sm">{t("bookingsManager.noBookings", "Noch keine Buchungen")}</p>
             </motion.div>
           ) : (
             filtered.map((booking, i) => {
-              const StatusIcon = statusConfig[booking.status].icon;
+              const StatusIcon = statusConfig[booking.uiStatus].icon;
               return (
                 <motion.div
                   key={booking.id}
@@ -222,28 +205,30 @@ export default function AgencyBookingsManager() {
                     {/* Left: Info */}
                     <div className="flex-1 min-w-0 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-mono text-slate-600">{booking.bookingNumber}</span>
+                        <span className="text-[10px] font-mono text-slate-600">{booking.booking_number}</span>
                         <Badge
                           variant="outline"
-                          className={cn("text-[10px] px-2 py-0.5", statusConfig[booking.status].className)}
+                          className={cn("text-[10px] px-2 py-0.5", statusConfig[booking.uiStatus].className)}
                         >
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {statusConfig[booking.status].label}
+                          {t(`bookingsManager.status.${statusConfig[booking.uiStatus].key}`, statusConfig[booking.uiStatus].key)}
                         </Badge>
                       </div>
-                      <h4 className="text-sm font-semibold text-slate-50">{booking.serviceName}</h4>
+                      <h4 className="text-sm font-semibold text-slate-50">
+                        {booking.service_title || "Service"}
+                      </h4>
                       <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          {booking.customerName}
+                          {booking.customer_name}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {booking.date}, {booking.time}
+                          {formatDate(booking.booking_date)}, {booking.booking_time}
                         </span>
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          {booking.participants} Teilnehmer
+                          {booking.participant_count} {t("myBookings.participants", "Teilnehmer")}
                         </span>
                       </div>
                     </div>
@@ -251,38 +236,51 @@ export default function AgencyBookingsManager() {
                     {/* Right: Price + Actions */}
                     <div className="flex items-center gap-4 shrink-0">
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-slate-100">{formatEUR(booking.totalPrice)}</p>
-                        <p className="text-[10px] text-slate-600">{booking.createdAt}</p>
+                        <p className="text-sm font-semibold text-slate-100">
+                          {formatEUR(booking.total_price_cents)}
+                        </p>
+                        <p className="text-[10px] text-slate-600">{timeAgo(booking.created_at)}</p>
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-1.5">
-                        {booking.status === "new" && (
+                        {booking.uiStatus === "new" && (
                           <Button
                             size="sm"
+                            disabled={confirmBooking.isPending}
+                            onClick={() => confirmBooking.mutate(booking.id)}
                             className="h-8 bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 border border-emerald-500/30 cursor-pointer text-xs"
                           >
                             <Check className="w-3.5 h-3.5 mr-1" />
-                            Bestaetigen
+                            {t("bookingsManager.confirm", "Bestätigen")}
                           </Button>
                         )}
-                        {booking.status === "confirmed" && (
+                        {booking.uiStatus === "confirmed" && (
                           <Button
                             size="sm"
+                            disabled={completeBooking.isPending}
+                            onClick={() => completeBooking.mutate(booking.id)}
                             className="h-8 bg-violet-600/20 text-violet-300 hover:bg-violet-600/30 border border-violet-500/30 cursor-pointer text-xs"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                            Abschliessen
+                            {t("bookingsManager.complete", "Abschließen")}
                           </Button>
                         )}
-                        {(booking.status === "new" || booking.status === "confirmed") && (
+                        {(booking.uiStatus === "new" || booking.uiStatus === "confirmed") && (
                           <Button
                             size="sm"
                             variant="ghost"
+                            disabled={cancelBooking.isPending}
+                            onClick={() =>
+                              cancelBooking.mutate({
+                                bookingId: booking.id,
+                                asAgency: true,
+                              })
+                            }
                             className="h-8 text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs"
                           >
                             <Ban className="w-3.5 h-3.5 mr-1" />
-                            Stornieren
+                            {t("bookingsManager.cancelBooking", "Stornieren")}
                           </Button>
                         )}
                       </div>

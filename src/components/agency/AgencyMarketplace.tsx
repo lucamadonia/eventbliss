@@ -94,7 +94,7 @@ const mockServices: MarketplaceService[] = [
 
 const statusConfig: Record<ServiceStatus, { label: string; className: string }> = {
   draft: { label: "Entwurf", className: "bg-slate-500/20 text-slate-300 border-slate-500/30" },
-  pending_review: { label: "In Pruefung", className: "bg-amber-500/20 text-amber-300 border-amber-500/30" },
+  pending_review: { label: "In Prüfung", className: "bg-amber-500/20 text-amber-300 border-amber-500/30" },
   approved: { label: "Aktiv", className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
   rejected: { label: "Abgelehnt", className: "bg-red-500/20 text-red-300 border-red-500/30" },
   suspended: { label: "Gesperrt", className: "bg-orange-500/20 text-orange-300 border-orange-500/30" },
@@ -106,7 +106,7 @@ const filterTabs: { id: FilterTab; label: string }[] = [
   { id: "all", label: "Alle" },
   { id: "approved", label: "Aktiv" },
   { id: "draft", label: "Entwurf" },
-  { id: "pending_review", label: "In Pruefung" },
+  { id: "pending_review", label: "In Prüfung" },
   { id: "rejected", label: "Abgelehnt" },
 ];
 
@@ -115,7 +115,7 @@ function formatEUR(value: number): string {
 }
 
 /* ─── Component ──────────────────────────────────────── */
-export default function AgencyMarketplace() {
+export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string }) {
   const [activeFilter, setActiveFilter] = useState<FilterTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
@@ -333,6 +333,7 @@ export default function AgencyMarketplace() {
       <AgencyServiceEditor
         open={editorOpen}
         onClose={() => { setEditorOpen(false); setEditingService(null); }}
+        agencyId={agencyId}
         service={editingService}
       />
     </div>

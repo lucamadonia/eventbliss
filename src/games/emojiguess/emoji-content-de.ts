@@ -7,7 +7,7 @@ export interface EmojiPuzzle {
 
 export const EMOJI_PUZZLES: EmojiPuzzle[] = [
   // Filme (20)
-  { emojis: '🦁👑', answer: 'Koenig der Loewen', category: 'Filme', difficulty: 1 },
+  { emojis: '🦁👑', answer: 'König der Löwen', category: 'Filme', difficulty: 1 },
   { emojis: '🧊🚢💔', answer: 'Titanic', category: 'Filme', difficulty: 1 },
   { emojis: '🕷️🧑', answer: 'Spiderman', category: 'Filme', difficulty: 1 },
   { emojis: '⭐🔫🌌', answer: 'Star Wars', category: 'Filme', difficulty: 1 },
@@ -48,25 +48,25 @@ export const EMOJI_PUZZLES: EmojiPuzzle[] = [
   { emojis: '👩‍🚀🚀🌟', answer: 'Rocket Man', category: 'Songs', difficulty: 2 },
   { emojis: '💛🌻🎵', answer: 'Sunflower', category: 'Songs', difficulty: 2 },
 
-  // Sprichwoerter (18)
-  { emojis: '🍎🌳🔽', answer: 'Der Apfel faellt nicht weit vom Stamm', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🐦🖐️🕊️🏠', answer: 'Besser ein Spatz in der Hand', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '⏰💰', answer: 'Zeit ist Geld', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🗣️🥈🤫🥇', answer: 'Reden ist Silber Schweigen ist Gold', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '👁️👁️🍽️', answer: 'Das Auge isst mit', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🔚👍🔚', answer: 'Ende gut alles gut', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '❤️💧👁️', answer: 'Aus den Augen aus dem Sinn', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🐱🏠🐭💃', answer: 'Wenn die Katze aus dem Haus ist tanzen die Maeuse', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🌹🔧⚙️', answer: 'Keine Rose ohne Dornen', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🌧️☀️🌈', answer: 'Nach Regen kommt Sonnenschein', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🐕🐕🐕🦴', answer: 'Viele Hunde sind des Hasen Tod', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🔑🗝️🔓', answer: 'Probieren geht ueber Studieren', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🐔🥚❓', answer: 'Was war zuerst da das Huhn oder das Ei', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🪨💧🕰️', answer: 'Steter Tropfen hoehlt den Stein', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🙈🙉🙊', answer: 'Nichts sehen nichts hoeren nichts sagen', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🐴🎁🦷', answer: 'Einem geschenkten Gaul schaut man nicht ins Maul', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🧹✨🆕', answer: 'Neue Besen kehren gut', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '💪🧠📚', answer: 'Wissen ist Macht', category: 'Sprichwoerter', difficulty: 1 },
+  // Sprichwörter (18)
+  { emojis: '🍎🌳🔽', answer: 'Der Apfel faellt nicht weit vom Stamm', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🐦🖐️🕊️🏠', answer: 'Besser ein Spatz in der Hand', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '⏰💰', answer: 'Zeit ist Geld', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🗣️🥈🤫🥇', answer: 'Reden ist Silber Schweigen ist Gold', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '👁️👁️🍽️', answer: 'Das Auge isst mit', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🔚👍🔚', answer: 'Ende gut alles gut', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '❤️💧👁️', answer: 'Aus den Augen aus dem Sinn', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🐱🏠🐭💃', answer: 'Wenn die Katze aus dem Haus ist tanzen die Maeuse', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🌹🔧⚙️', answer: 'Keine Rose ohne Dornen', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🌧️☀️🌈', answer: 'Nach Regen kommt Sonnenschein', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🐕🐕🐕🦴', answer: 'Viele Hunde sind des Hasen Tod', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🔑🗝️🔓', answer: 'Probieren geht über Studieren', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🐔🥚❓', answer: 'Was war zuerst da das Huhn oder das Ei', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🪨💧🕰️', answer: 'Steter Tropfen hoehlt den Stein', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🙈🙉🙊', answer: 'Nichts sehen nichts hoeren nichts sagen', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🐴🎁🦷', answer: 'Einem geschenkten Gaul schaut man nicht ins Maul', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🧹✨🆕', answer: 'Neue Besen kehren gut', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '💪🧠📚', answer: 'Wissen ist Macht', category: 'Sprichwörter', difficulty: 1 },
 
   // Marken (16)
   { emojis: '🍎📱💻', answer: 'Apple', category: 'Marken', difficulty: 1 },
@@ -144,17 +144,17 @@ export const EMOJI_PUZZLES: EmojiPuzzle[] = [
   { emojis: '🚗💨🎵🛣️', answer: 'Drive', category: 'Songs', difficulty: 3 },
   { emojis: '🧡📞🎵', answer: 'Call Me Maybe', category: 'Songs', difficulty: 2 },
 
-  // Neue Sprichwoerter (10)
-  { emojis: '🐦🌅🪱', answer: 'Der fruehere Vogel faengt den Wurm', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🏠🔑❤️', answer: 'Zuhause ist wo das Herz ist', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🍒🍒👫', answer: 'Gleich und gleich gesellt sich gern', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🐕🌳🔔', answer: 'Da liegt der Hund begraben', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🧹🏠✨', answer: 'Ordnung ist das halbe Leben', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '💰🗣️❌', answer: 'Ueber Geld spricht man nicht', category: 'Sprichwoerter', difficulty: 2 },
-  { emojis: '🪵👀🌲', answer: 'Den Wald vor lauter Baeumen nicht sehen', category: 'Sprichwoerter', difficulty: 3 },
-  { emojis: '🎯🔨💪', answer: 'Uebung macht den Meister', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '🍏🌳⬇️', answer: 'Der Apfel faellt nicht weit vom Stamm', category: 'Sprichwoerter', difficulty: 1 },
-  { emojis: '👀🍲👩‍🍳', answer: 'Viele Koeche verderben den Brei', category: 'Sprichwoerter', difficulty: 2 },
+  // Neue Sprichwörter (10)
+  { emojis: '🐦🌅🪱', answer: 'Der fruehere Vogel faengt den Wurm', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🏠🔑❤️', answer: 'Zuhause ist wo das Herz ist', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🍒🍒👫', answer: 'Gleich und gleich gesellt sich gern', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🐕🌳🔔', answer: 'Da liegt der Hund begraben', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🧹🏠✨', answer: 'Ordnung ist das halbe Leben', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '💰🗣️❌', answer: 'Über Geld spricht man nicht', category: 'Sprichwörter', difficulty: 2 },
+  { emojis: '🪵👀🌲', answer: 'Den Wald vor lauter Baeumen nicht sehen', category: 'Sprichwörter', difficulty: 3 },
+  { emojis: '🎯🔨💪', answer: 'Uebung macht den Meister', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '🍏🌳⬇️', answer: 'Der Apfel faellt nicht weit vom Stamm', category: 'Sprichwörter', difficulty: 1 },
+  { emojis: '👀🍲👩‍🍳', answer: 'Viele Koeche verderben den Brei', category: 'Sprichwörter', difficulty: 2 },
 
   // Neue Marken (10)
   { emojis: '🎬🍿❤️', answer: 'Netflix', category: 'Marken', difficulty: 1 },

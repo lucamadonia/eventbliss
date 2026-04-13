@@ -136,7 +136,7 @@ export const mockContacts: Contact[] = [
   {
     id: "6", name: "Eva Becker", type: "kontaktperson", company: "Schloss Rosenstein",
     phone: "+49 175 6789012", email: "e.becker@schloss-rosenstein.de", rating: 5, lastUsed: "25. Maer 2026",
-    tags: ["Location", "Hochzeit", "Premium"], notes: "Ansprechpartnerin fuer alle Buchungen im Schloss.",
+    tags: ["Location", "Hochzeit", "Premium"], notes: "Ansprechpartnerin für alle Buchungen im Schloss.",
     city: "Stuttgart", pastEvents: 10,
     specializations: ["Location"], qualityScore: 98,
     priceHistory: [

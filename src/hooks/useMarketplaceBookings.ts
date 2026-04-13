@@ -110,7 +110,7 @@ export function useConfirmBooking() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Buchung bestaetigt");
+      toast.success("Buchung bestätigt");
       qc.invalidateQueries({ queryKey: ["agency-bookings"] });
       qc.invalidateQueries({ queryKey: ["my-bookings"] });
     },
@@ -135,8 +135,43 @@ export function useCancelBooking() {
       toast.success("Buchung storniert");
       qc.invalidateQueries({ queryKey: ["agency-bookings"] });
       qc.invalidateQueries({ queryKey: ["my-bookings"] });
+      qc.invalidateQueries({ queryKey: ["event-bookings"] });
     },
     onError: (e: Error) => toast.error(`Fehler: ${e.message}`),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Event bookings — all bookings linked to a specific event
+// ---------------------------------------------------------------------------
+
+export function useEventBookings(eventId: string | undefined) {
+  return useQuery({
+    queryKey: ["event-bookings", eventId],
+    enabled: !!eventId,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from as any)("marketplace_bookings")
+        .select("*, marketplace_services(slug), agencies(name)")
+        .eq("event_id", eventId)
+        .order("booking_date", { ascending: true });
+      if (error) throw error;
+
+      if (!data?.length) return [];
+
+      // Fetch service titles
+      const serviceIds = [...new Set(data.map((b: any) => b.service_id))];
+      const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
+        .select("service_id, title").in("service_id", serviceIds).eq("locale", "de");
+      const titleMap = new Map<string, string>();
+      for (const t of translations || []) titleMap.set(t.service_id, t.title);
+
+      return data.map((b: any): MarketplaceBooking => ({
+        ...b,
+        service_title: titleMap.get(b.service_id) || "Service",
+        service_slug: b.marketplace_services?.slug,
+        agency_name: b.agencies?.name,
+      }));
+    },
   });
 }
 

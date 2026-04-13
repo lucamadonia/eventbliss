@@ -2140,5 +2140,209 @@
       "next": "\u0627\u0644\u062a\u0627\u0644\u064a",
       "getStarted": "\u0647\u064a\u0627 \u0646\u0628\u062f\u0623"
     }
+  },
+  "marketplace": {
+    "title": "السوق",
+    "subtitle": "اكتشف التجارب ومقدمي الخدمات والباقات لحدثك القادم",
+    "searchPlaceholder": "ابحث عن خدمات، ورش عمل، تجارب...",
+    "results": "{{count}} نتيجة",
+    "results_plural": "{{count}} نتائج",
+    "loading": "جارٍ التحميل...",
+    "noResults": "لا توجد نتائج",
+    "noResultsHint": "جرّب فلاتر مختلفة أو مصطلح بحث آخر",
+    "resetFilters": "إعادة تعيين الفلاتر",
+    "loadMore": "تحميل المزيد",
+    "perPerson": "/شخص",
+    "flatRate": "سعر ثابت",
+    "perHour": "/ساعة",
+    "bookNow": "احجز الآن",
+    "inquireNow": "استفسر الآن",
+    "directBook": "حجز مباشر",
+    "verifiedAgency": "وكالة موثّقة",
+    "timesBooked": "تم الحجز {{count}} مرة",
+    "featured": "مميّز",
+    "categories": {
+      "all": "الكل",
+      "workshop": "ورشة عمل",
+      "entertainment": "ترفيه",
+      "catering": "تقديم الطعام",
+      "music": "موسيقى",
+      "photography": "تصوير",
+      "venue": "مكان",
+      "wellness": "صحة",
+      "sport": "رياضة",
+      "deko": "ديكور",
+      "transport": "نقل"
+    },
+    "filters": {
+      "title": "فلتر",
+      "city": "المدينة",
+      "cityPlaceholder": "مثلاً القاهرة",
+      "price": "السعر",
+      "priceAll": "الكل",
+      "priceTo30": "حتى 30 €",
+      "price30to60": "30–60 €",
+      "price60plus": "+60 €",
+      "rating": "التقييم",
+      "rating4plus": "+4 نجوم",
+      "resetAll": "إعادة تعيين الكل"
+    },
+    "tiers": {
+      "starter": "أساسي",
+      "professional": "احترافي ✓",
+      "enterprise": "مؤسسي ✓"
+    }
+  },
+  "marketplaceService": {
+    "breadcrumb": "السوق",
+    "description": "الوصف",
+    "includes": "يشمل",
+    "reviews": "التقييمات",
+    "agency": "الوكالة",
+    "hints": "ملاحظات",
+    "selectDate": "اختر التاريخ",
+    "selectTime": "الوقت",
+    "selectTimePlaceholder": "اختر الوقت...",
+    "participants": "المشاركون",
+    "person": "شخص",
+    "persons": "أشخاص",
+    "total": "الإجمالي",
+    "cancellation": "الإلغاء",
+    "cancellationFlexible": "مرن",
+    "cancellationModerate": "معتدل",
+    "cancellationStrict": "صارم",
+    "enterprisePartner": "شريك مؤسسي",
+    "viewProfile": "عرض الملف الشخصي",
+    "allServicesFromAgency": "جميع خدمات هذه الوكالة",
+    "share": "مشاركة",
+    "save": "حفظ",
+    "saved": "تم الحفظ",
+    "book": "احجز",
+    "booking": "احجز الآن",
+    "selectDateAndTime": "يرجى اختيار التاريخ والوقت.",
+    "notFound": "الخدمة غير موجودة",
+    "notFoundHint": "هذه الخدمة غير متوفرة أو تم إزالتها."
+  },
+  "myBookings": {
+    "title": "حجوزاتي",
+    "totalBookings": "{{count}} حجز إجمالاً",
+    "loading": "جارٍ تحميل الحجوزات...",
+    "discoverMarketplace": "اكتشف السوق",
+    "noBookings": "لا توجد حجوزات بعد",
+    "noBookingsHint": "اكتشف خدمات رائعة في السوق واحجز مقدم خدمات لحدثك القادم.",
+    "details": "التفاصيل",
+    "cancel": "إلغاء",
+    "cancelConfirm": "هل تريد حقاً إلغاء هذا الحجز؟",
+    "writeReview": "كتابة تقييم",
+    "filters": {
+      "all": "الكل",
+      "upcoming": "قادم",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "participants": "المشاركون"
+  },
+  "agencyDashboard": {
+    "nav": {
+      "dashboard": "نظرة عامة",
+      "events": "الأحداث",
+      "contacts": "جهات الاتصال",
+      "templates": "القوالب",
+      "team": "الفريق",
+      "runofshow": "خطة السير",
+      "budgetengine": "محرك الميزانية",
+      "files": "الملفات",
+      "reports": "التقارير",
+      "marketplace": "السوق",
+      "bookings": "الحجوزات",
+      "guides": "المرشدون",
+      "bookingCalendar": "تقويم الحجوزات",
+      "calendarSync": "مزامنة التقويم",
+      "stripe": "المدفوعات",
+      "marketplaceSettings": "الباقات والإعدادات",
+      "calendar": "التقويم",
+      "settings": "الإعدادات"
+    }
+  },
+  "bookingsManager": {
+    "title": "مدير الحجوزات",
+    "newRequests": "طلبات جديدة",
+    "confirmedBookings": "حجوزات مؤكدة",
+    "monthlyRevenue": "الإيرادات الشهرية",
+    "confirm": "تأكيد",
+    "complete": "إتمام",
+    "cancelBooking": "إلغاء",
+    "noBookings": "لا توجد حجوزات بعد",
+    "status": {
+      "new": "جديد",
+      "confirmed": "مؤكد",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "filters": {
+      "all": "الكل",
+      "new": "جديد",
+      "confirmed": "مؤكد",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    }
+  },
+  "bookingCalendar": {
+    "title": "تقويم الحجوزات",
+    "today": "اليوم",
+    "dayNames": ["الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"],
+    "monthNames": ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    "bookingsTotal": "{{count}} حجز إجمالاً",
+    "noBookingsDay": "لا توجد حجوزات في هذا اليوم",
+    "exportICal": "تصدير كـ iCal",
+    "allServices": "جميع الخدمات",
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    }
+  },
+  "calendarSync": {
+    "title": "اشتراك التقويم",
+    "description": "اشترك في تقويم الحجوزات عبر Outlook أو Google Calendar أو Apple Calendar.",
+    "agencyCalendar": "تقويم الوكالة",
+    "guideCalendar": "تقويم المرشد",
+    "scope": {
+      "all": "جميع الحجوزات",
+      "confirmed": "المؤكدة فقط",
+      "guide": "خاص بالمرشد"
+    },
+    "copy": "نسخ"
+  },
+  "availabilityEditor": {
+    "title": "تعديل التوفر",
+    "weeklySlots": "الفترات الزمنية الأسبوعية",
+    "blockedDates": "التواريخ المحظورة",
+    "copyAllDays": "نسخ لجميع الأيام",
+    "copySuccess": "تم نسخ فترات الإثنين لجميع الأيام",
+    "copyEmpty": "لا توجد فترات زمنية للإثنين للنسخ",
+    "maxBookings": "الحد الأقصى للحجوزات",
+    "addSlot": "إضافة فترة",
+    "blockReason": "السبب (اختياري)",
+    "unblock": "إلغاء الحظر",
+    "editAfterSave": "يمكن تعديل التوفر بعد الحفظ.",
+    "editButton": "تعديل التوفر",
+    "days": ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
+  },
+  "eventServices": {
+    "bookedServices": "الخدمات المحجوزة",
+    "noBookedServices": "لم يتم حجز خدمات لهذا الحدث بعد",
+    "recommended": "خدمات موصى بها",
+    "browse": "تصفّح الخدمات",
+    "browseHint": "اعثر على مقدم الخدمة المثالي لحدثك",
+    "bookForEvent": "احجز للحدث",
+    "openMarketplace": "افتح السوق"
   }
 }

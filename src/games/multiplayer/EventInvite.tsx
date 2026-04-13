@@ -149,7 +149,7 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4" style={{ color: EP.neonCyan }} />
           <span className="text-xs font-semibold text-white/70 font-['Be_Vietnam_Pro']">
-            Event-Gaeste einladen
+            Event-Gäste einladen
           </span>
         </div>
         {isOpen ? (

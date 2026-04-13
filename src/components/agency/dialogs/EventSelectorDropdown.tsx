@@ -55,7 +55,7 @@ export function EventSelectorDropdown({ selectedEventId, onSelect }: EventSelect
   return (
     <Select value={selectedEventId || ""} onValueChange={onSelect}>
       <SelectTrigger className="bg-white/5 border-white/10 text-white">
-        <SelectValue placeholder={loading ? "Laden..." : "Event auswaehlen..."} />
+        <SelectValue placeholder={loading ? "Laden..." : "Event auswählen..."} />
       </SelectTrigger>
       <SelectContent>
         {grouped.active.length > 0 && (

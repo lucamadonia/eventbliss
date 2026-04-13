@@ -79,7 +79,7 @@ export function ActivityFeed({ items, maxItems = 6, onViewAll }: ActivityFeedPro
           onClick={onViewAll}
           className="w-full text-center text-xs text-violet-400 hover:text-violet-300 py-2 transition-colors cursor-pointer"
         >
-          Alle {items.length} Aktivitaeten anzeigen
+          Alle {items.length} Aktivitäten anzeigen
         </button>
       )}
     </div>

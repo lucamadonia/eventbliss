@@ -136,7 +136,7 @@ export function AgencyContacts() {
           <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
             <DialogTrigger asChild><Button className="bg-violet-600 hover:bg-violet-700 text-white"><Plus className="w-4 h-4 mr-2" /> Kontakt</Button></DialogTrigger>
             <DialogContent className="bg-[#1a1625] border-white/10 text-white max-w-md">
-              <DialogHeader><DialogTitle>Neuen Kontakt hinzufuegen</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>Neuen Kontakt hinzufügen</DialogTitle></DialogHeader>
               <div className="space-y-4 mt-2">
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label className="text-white/60 text-xs">Name</Label><Input value={newContact.name} onChange={(e) => setNewContact((p) => ({ ...p, name: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Vor- und Nachname" /></div>
@@ -144,7 +144,7 @@ export function AgencyContacts() {
                 </div>
                 <div><Label className="text-white/60 text-xs">Typ</Label>
                   <Select value={newContact.type} onValueChange={(v) => setNewContact((p) => ({ ...p, type: v }))}>
-                    <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue placeholder="Typ waehlen" /></SelectTrigger>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue placeholder="Typ wählen" /></SelectTrigger>
                     <SelectContent><SelectItem value="veranstalter">Veranstalter</SelectItem><SelectItem value="dienstleister">Dienstleister</SelectItem><SelectItem value="crew">Crew/Helfer</SelectItem><SelectItem value="kontaktperson">Kontaktperson</SelectItem></SelectContent>
                   </Select>
                 </div>

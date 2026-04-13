@@ -186,7 +186,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
             <div className="flex items-center gap-3 mb-2">
               <Select value={selectedEventId || ""} onValueChange={setSelectedEventId}>
                 <SelectTrigger className="w-full max-w-xs bg-white/5 border-white/10 text-white">
-                  <SelectValue placeholder={eventsLoading ? "Loading events..." : "Event waehlen..."} />
+                  <SelectValue placeholder={eventsLoading ? "Loading events..." : "Event wählen..."} />
                 </SelectTrigger>
                 <SelectContent>
                   {events.map((e) => (

@@ -249,7 +249,7 @@ const ACHIEVEMENT_TRANSLATIONS: Record<string, LangMap> = {
     ar: { name: 'البرق', description: 'اربح لعبة سرعة' },
   },
   'bomb-survivor': {
-    de: { name: 'Bomben-Ueberlebender', description: 'Ueberlebe 5 Bombenrunden' },
+    de: { name: 'Bomben-Überlebender', description: 'Überlebe 5 Bombenrunden' },
     en: { name: 'Bomb Survivor', description: 'Survive 5 bomb rounds' },
     es: { name: 'Superviviente', description: 'Sobrevive 5 rondas de bomba' },
     fr: { name: 'Survivant', description: 'Survie à 5 tours de bombe' },
@@ -465,7 +465,7 @@ const ACHIEVEMENT_TRANSLATIONS: Record<string, LangMap> = {
     ar: { name: 'أسطورة الاختبار', description: 'احصل على 3000 نقطة اختبار' },
   },
   'artist': {
-    de: { name: 'Kuenstler', description: 'Spiele 5 Schnellzeichner-Runden' },
+    de: { name: 'Künstler', description: 'Spiele 5 Schnellzeichner-Runden' },
     en: { name: 'Artist', description: 'Play 5 quick-draw rounds' },
     es: { name: 'Artista', description: 'Juega 5 rondas de dibujo rápido' },
     fr: { name: 'Artiste', description: 'Joue 5 tours de dessin rapide' },
