@@ -68,6 +68,22 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   'wo-ist-was': ['Städte', 'Natur', 'Sehenswürdigkeiten'],
 };
 
+// Categories and difficulties that are considered 18+ / adult content
+const ADULT_CATEGORIES = new Set(['erwachsene', 'Erwachsene', 'tabu', 'Tabu', '18+', 'ab18', 'adult', 'Adults']);
+const ADULT_DIFFICULTIES = new Set(['3']); // intensity 3 in truthdare = pikant/scharf
+
+function isAdultContent(item: GameContent): boolean {
+  if (ADULT_CATEGORIES.has(item.category)) return true;
+  if (ADULT_DIFFICULTIES.has(item.difficulty) && (item.game_id === 'truthdare' || item.game_id === 'bottlespin')) return true;
+  // Check content for adult category markers
+  const de = item.content?.de;
+  if (de && typeof de === 'object') {
+    const cat = (de as Record<string, string>).category;
+    if (cat && ADULT_CATEGORIES.has(cat)) return true;
+  }
+  return false;
+}
+
 const FIELD_CONFIGS: Record<string, { label: string; fields: { key: string; label: string; desc: string; type: 'text' | 'textarea' | 'select' | 'number'; options?: string[] }[] }> = {
   question:        { label: 'Quiz-Frage', fields: [
     { key: 'question', label: 'Frage', desc: 'Die Frage die dem Spieler angezeigt wird', type: 'text' },
@@ -162,6 +178,7 @@ export default function AdminGames() {
   const [filterDiff, setFilterDiff] = useState('');
   const [filterCat, setFilterCat] = useState('');
   const [filterLang, setFilterLang] = useState('');
+  const [filterAdult, setFilterAdult] = useState<'' | 'only' | 'exclude'>('');
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState<GameContent | null>(null);
@@ -199,8 +216,10 @@ export default function AdminGames() {
       const has = i.content[filterLang] && Object.values(i.content[filterLang]).some(v => v && String(v).length > 0);
       return filterLang.startsWith('!') ? !has : has;
     });
+    if (filterAdult === 'only') items = items.filter(i => isAdultContent(i));
+    if (filterAdult === 'exclude') items = items.filter(i => !isAdultContent(i));
     return items;
-  }, [gc.items, filterDiff, filterCat, filterLang]);
+  }, [gc.items, filterDiff, filterCat, filterLang, filterAdult]);
 
   const openAdd = () => {
     setEditItem(null);
@@ -406,7 +425,7 @@ export default function AdminGames() {
             <button onClick={() => setShowFilters(f => !f)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${showFilters ? 'bg-[#df8eff]/15 text-[#df8eff] border-[#df8eff]/30' : 'bg-[#1b2028] text-[#a8abb3] border-transparent'}`}>
               <FilterIcon className="w-3.5 h-3.5" /> Filter
-              {(filterDiff || filterCat || filterLang) && <span className="w-4 h-4 rounded-full bg-[#df8eff] text-[10px] text-white flex items-center justify-center">!</span>}
+              {(filterDiff || filterCat || filterLang || filterAdult) && <span className="w-4 h-4 rounded-full bg-[#df8eff] text-[10px] text-white flex items-center justify-center">!</span>}
             </button>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a8abb3]" />
@@ -458,8 +477,25 @@ export default function AdminGames() {
                     </select>
                   </div>
 
-                  {(filterDiff || filterCat || filterLang) && (
-                    <button onClick={() => { setFilterDiff(''); setFilterCat(''); setFilterLang(''); }}
+                  <div className="w-px h-5 bg-white/10" />
+
+                  {/* Ab18 Filter */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-[#a8abb3] font-bold uppercase">Ab 18:</span>
+                    <button onClick={() => setFilterAdult('')}
+                      className={`px-2 py-1 rounded-lg text-[10px] font-bold ${!filterAdult ? 'bg-white/10 text-white' : 'text-[#a8abb3]'}`}>Alle</button>
+                    <button onClick={() => setFilterAdult(filterAdult === 'only' ? '' : 'only')}
+                      className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${filterAdult === 'only' ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'text-[#a8abb3] border-transparent'}`}>
+                      🔞 Nur Ab18
+                    </button>
+                    <button onClick={() => setFilterAdult(filterAdult === 'exclude' ? '' : 'exclude')}
+                      className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${filterAdult === 'exclude' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'text-[#a8abb3] border-transparent'}`}>
+                      ✅ Ohne Ab18
+                    </button>
+                  </div>
+
+                  {(filterDiff || filterCat || filterLang || filterAdult) && (
+                    <button onClick={() => { setFilterDiff(''); setFilterCat(''); setFilterLang(''); setFilterAdult(''); }}
                       className="ml-auto text-[10px] text-[#ff6b98] underline">Zurücksetzen</button>
                   )}
                 </div>
@@ -483,7 +519,7 @@ export default function AdminGames() {
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-[10px] text-[#a8abb3]">{filteredItems.length} von {gc.total} Einträgen{filterDiff || filterCat || filterLang ? ' (gefiltert)' : ''}</p>
+              <p className="text-[10px] text-[#a8abb3]">{filteredItems.length} von {gc.total} Einträgen{filterDiff || filterCat || filterLang || filterAdult ? ' (gefiltert)' : ''}</p>
               {filteredItems.map((item, idx) => {
                 const langs = langCount(item);
                 const diffCfg = DIFFICULTIES.find(d => d.value === item.difficulty) || DIFFICULTIES[1];
@@ -496,6 +532,9 @@ export default function AdminGames() {
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${diffCfg.color}`}>{diffCfg.label}</span>
                         <span className="text-[10px] text-[#a8abb3]">{item.category}</span>
+                        {isAdultContent(item) && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-red-500/20 text-red-400 border border-red-500/30">🔞 Ab 18</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-0.5">{LANGS.map(l => {
