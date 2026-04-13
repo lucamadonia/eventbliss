@@ -93,9 +93,9 @@ const BORDER_LEFT: Record<CategoryKey, string> = {
 const CATEGORY_LABELS: Record<CategoryKey, { label: string; emoji: string }> = {
   transport:     { label: "Transport",    emoji: "\uD83D\uDE97" },
   accommodation: { label: "Unterkunft",   emoji: "\uD83C\uDFE8" },
-  activities:    { label: "Aktivit\u00E4ten", emoji: "\uD83C\uDFAF" },
+  activities:    { label: "Aktivitäten", emoji: "\uD83C\uDFAF" },
   food:          { label: "Essen",        emoji: "\uD83C\uDF7D\uFE0F" },
-  drinks:        { label: "Getr\u00E4nke", emoji: "\uD83C\uDF7A" },
+  drinks:        { label: "Getränke", emoji: "\uD83C\uDF7A" },
   gifts:         { label: "Geschenke",    emoji: "\uD83C\uDF81" },
   other:         { label: "Sonstiges",    emoji: "\uD83D\uDCCC" },
 };
@@ -671,7 +671,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
           className="pointer-events-auto flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white font-semibold text-sm shadow-xl shadow-violet-500/30"
         >
           <Plus className="w-5 h-5" />
-          Ausgabe hinzuf\u00FCgen
+          Ausgabe hinzufügen
         </motion.button>
       </div>
 
@@ -714,9 +714,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
   const categoryOptions: { key: CategoryKey; emoji: string; label: string }[] = [
     { key: "transport",     emoji: "\uD83D\uDE97", label: "Transport" },
     { key: "accommodation", emoji: "\uD83C\uDFE8", label: "Unterkunft" },
-    { key: "activities",    emoji: "\uD83C\uDFAF", label: "Aktivit\u00E4ten" },
+    { key: "activities",    emoji: "\uD83C\uDFAF", label: "Aktivitäten" },
     { key: "food",          emoji: "\uD83C\uDF7D\uFE0F", label: "Essen" },
-    { key: "drinks",        emoji: "\uD83C\uDF7A", label: "Getr\u00E4nke" },
+    { key: "drinks",        emoji: "\uD83C\uDF7A", label: "Getränke" },
     { key: "gifts",         emoji: "\uD83C\uDF81", label: "Geschenke" },
     { key: "other",         emoji: "\uD83D\uDCCC", label: "Sonstiges" },
   ];
@@ -898,7 +898,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
                       : "bg-muted/50 text-muted-foreground"
                   )}
                 >
-                  {mode === "equal" ? "Gleichm\u00E4\u00DFig" : "Individuell"}
+                  {mode === "equal" ? "Gleichmäßig" : "Individuell"}
                 </button>
               ))}
             </div>
