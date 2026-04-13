@@ -59,33 +59,42 @@ export function GameSetup({
   maxPlayers = 20,
   onlinePlayers,
 }: GameSetupProps) {
-  // Auto-detect players: online room → party session → manual
+  // Auto-detect players: only use online/party players when explicitly provided
+  // onlinePlayers prop means we are inside an OnlineGameWrapper — show Globe icon
+  // getOnlineRoomPlayers() can have stale data from previous rooms — only trust the prop
   const autoOnlinePlayers = useMemo(() => {
     if (onlinePlayers && onlinePlayers.length > 0) return onlinePlayers;
+    return undefined;
+  }, [onlinePlayers]);
+
+  // Party session fallback — separate from online (no Globe icon for party players)
+  const partyPlayers = useMemo(() => {
+    if (autoOnlinePlayers) return undefined;
     const roomPlayers = getOnlineRoomPlayers();
     if (roomPlayers.length >= 2) {
       return roomPlayers.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
     }
-    // Fallback: party session players (Party Night mode)
     const party = getActivePartySession();
     if (party?.players && party.players.length >= 2) {
       return party.players.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
     }
     return undefined;
-  }, [onlinePlayers]);
-  const hasOnline = autoOnlinePlayers && autoOnlinePlayers.length > 0;
+  }, [autoOnlinePlayers]);
+
+  const hasOnline = (autoOnlinePlayers && autoOnlinePlayers.length > 0) || (partyPlayers && partyPlayers.length > 0);
+  const allAutoPlayers = autoOnlinePlayers || partyPlayers;
 
   const [players, setPlayers] = useState<SetupPlayer[]>(() => [
     createPlayer("Spieler 1"),
     createPlayer("Spieler 2"),
   ]);
 
-  // Auto-populate players from online room
+  // Auto-populate players from online room or party
   useEffect(() => {
-    if (hasOnline && autoOnlinePlayers && autoOnlinePlayers.length >= 2) {
-      setPlayers(autoOnlinePlayers.map(p => ({ id: p.id, name: p.name })));
+    if (hasOnline && allAutoPlayers && allAutoPlayers.length >= 2) {
+      setPlayers(allAutoPlayers.map(p => ({ id: p.id, name: p.name })));
     }
-  }, [hasOnline, autoOnlinePlayers?.length]);
+  }, [hasOnline, allAutoPlayers?.length]);
   const [selectedMode, setSelectedMode] = useState(modes[0]?.id ?? "");
   const [timer, setTimer] = useState(settings.timer.default);
   const [rounds, setRounds] = useState(settings.rounds.default);
@@ -168,10 +177,10 @@ export function GameSetup({
                   onChange={(e) => updateName(player.id, e.target.value)}
                   placeholder={`Spieler ${i + 1}`}
                   maxLength={20}
-                  readOnly={!!autoOnlinePlayers?.find(op => op.id === player.id)}
+                  readOnly={!!allAutoPlayers?.find(op => op.id === player.id)}
                   className={cn(
                     "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm",
-                    autoOnlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
+                    allAutoPlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
                   )}
                 />
                 {autoOnlinePlayers?.find(op => op.id === player.id) && (
@@ -179,7 +188,7 @@ export function GameSetup({
                     <Globe className="w-4 h-4 text-[#df8eff]" />
                   </div>
                 )}
-                {players.length > minPlayers && !autoOnlinePlayers?.find(op => op.id === player.id) && (
+                {players.length > minPlayers && !allAutoPlayers?.find(op => op.id === player.id) && (
                   <button
                     onClick={() => removePlayer(player.id)}
                     className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"

@@ -8,8 +8,8 @@ import { TVConnectButton } from "@/games/ui/TVConnectButton";
 
 const TVCtx = createContext<TVBroadcastAPI | null>(null);
 
-export function TVBroadcastProvider({ children }: { children: ReactNode }) {
-  const tv = useTVBroadcast();
+export function TVBroadcastProvider({ children, roomCode }: { children: ReactNode; roomCode?: string }) {
+  const tv = useTVBroadcast(roomCode);
 
   return (
     <TVCtx.Provider value={tv}>

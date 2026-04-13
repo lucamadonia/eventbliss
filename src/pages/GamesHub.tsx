@@ -315,11 +315,13 @@ const GamesHub = () => {
     };
 
     return (
-      <Suspense fallback={GameFallback}>
-        <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
-          {(onlineProps) => renderOnlineGame(onlineProps)}
-        </OnlineGameWrapper>
-      </Suspense>
+      <TVBroadcastProvider roomCode={roomCode}>
+        <Suspense fallback={GameFallback}>
+          <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
+            {(onlineProps) => renderOnlineGame(onlineProps)}
+          </OnlineGameWrapper>
+        </Suspense>
+      </TVBroadcastProvider>
     );
   }
 

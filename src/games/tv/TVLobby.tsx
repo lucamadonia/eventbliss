@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Maximize, Wifi, Gamepad2 } from 'lucide-react';
+import { getBaseUrl } from '@/lib/platform';
 import type { TVPlayer } from './useTVConnection';
 
 const springBouncy = { type: 'spring' as const, stiffness: 400, damping: 15 };
@@ -65,7 +66,7 @@ function WaitingDots() {
 }
 
 export default function TVLobby({ roomCode, players, isConnected, error }: { roomCode: string; players: TVPlayer[]; isConnected: boolean; error?: string | null }) {
-  const joinUrl = `event-bliss.com/games?room=${roomCode}`;
+  const joinUrl = `${getBaseUrl().replace(/^https?:\/\//, '')}/tv/${roomCode}`;
 
   return (
     <motion.div
