@@ -3498,5 +3498,156 @@
       "yesterday": "ayer",
       "daysAgo": "hace {{count}} días"
     }
+  },
+  "gameRules": {
+    "howToPlay": "Come si gioca",
+    "understood": "Capito — andiamo!",
+    "bomb": {
+      "title": "Ticking Bomb",
+      "tagline": "Answer questions before the bomb explodes — pure adrenaline!",
+      "step1": "The bomb ticks and gets passed to a player",
+      "step2": "Answer the question correctly before time runs out",
+      "step3": "Wrong answer or too slow? BOOM — you're out!",
+      "step4": "Last player standing wins the round",
+      "tip": "Don't overthink it — the bomb waits for no one!"
+    },
+    "taboo": {
+      "title": "Taboo",
+      "tagline": "Describe words — but watch out, certain words are absolutely TABOO!",
+      "step1": "You see a word and 5 forbidden words",
+      "step2": "Describe the word to your team — WITHOUT using the taboo words",
+      "step3": "Your team must guess before time runs out",
+      "step4": "Each correct guess earns a point",
+      "tip": "Creativity beats logic — think outside the box!"
+    },
+    "headup": {
+      "title": "Heads Up",
+      "tagline": "Phone on forehead, friends describe, you guess — sounds easy? Think again!",
+      "step1": "Hold your phone to your forehead — you can't see the word",
+      "step2": "Your friends describe the word to you",
+      "step3": "Guessed right? Tilt phone forward! Wrong? Tilt back!",
+      "step4": "Get as many words as possible before time's up",
+      "tip": "Don't drop your phone — happens more often than you'd think!"
+    },
+    "category": {
+      "title": "Speed Category",
+      "tagline": "Name things in a category — hesitate and you're out! Speed counts!",
+      "step1": "A category is shown (e.g., \"Animals starting with A\")",
+      "step2": "Each player takes turns naming a matching item",
+      "step3": "Can't think of one or too slow? You get a point",
+      "step4": "Fewest points wins",
+      "tip": "Rare answers impress — \"Axolotl\" beats \"Ant\"!"
+    },
+    "emojiguess": {
+      "title": "Emoji Guess",
+      "tagline": "Decode emojis, guess the answer — looks easy but it's not!",
+      "step1": "You're shown emojis that represent something",
+      "step2": "Guess which movie, song, or celeb the emojis show",
+      "step3": "The faster you guess, the more points you get",
+      "tip": "Think blockbusters — the obvious answer is often right!"
+    },
+    "fakeorfact": {
+      "title": "Fake or Fact",
+      "tagline": "Is that really true? Spot the fake facts — trust nothing!",
+      "step1": "A statement is shown to you",
+      "step2": "Decide: Is it TRUE or FAKE?",
+      "step3": "After your answer, you'll see the explanation",
+      "step4": "Most correct answers wins",
+      "tip": "The craziest facts are usually true!"
+    },
+    "truthdare": {
+      "title": "Truth or Dare",
+      "tagline": "The party classic — answer honestly or do an embarrassing dare? Your choice!",
+      "step1": "Choose: Truth or Dare?",
+      "step2": "Truth: Answer the question honestly (no matter how embarrassing!)",
+      "step3": "Dare: Complete the challenge (no excuses!)",
+      "step4": "Then it's the next player's turn",
+      "tip": "Dares get bolder with every drink — we didn't say that!"
+    },
+    "thisorthat": {
+      "title": "This or That",
+      "tagline": "Pizza or Pasta? Netflix or Cinema? Tough choices ahead!",
+      "step1": "Two options are shown",
+      "step2": "Each player picks one option",
+      "step3": "Compare answers — who's in the majority?",
+      "tip": "There are no wrong answers — just heated debates!"
+    },
+    "whoami": {
+      "title": "Who Am I?",
+      "tagline": "Ask yes/no questions and figure out who you are — Sherlock would be proud!",
+      "step1": "Each player gets a secret person/character assigned",
+      "step2": "Ask yes/no questions: \"Am I real?\" \"Am I famous?\"",
+      "step3": "Combine the clues and guess who you are",
+      "step4": "First to guess correctly wins",
+      "tip": "Start broad — \"Am I a woman?\" eliminates 50%!"
+    },
+    "bottlespin": {
+      "title": "Spin the Bottle",
+      "tagline": "The bottle spins... who will it point to? Fun and suspense guaranteed!",
+      "step1": "The bottle is spun",
+      "step2": "Whoever it points to must answer a question or do a task",
+      "step3": "Then the next player spins",
+      "tip": "Luck decides — no tactics can help you here!"
+    },
+    "storybuilder": {
+      "title": "Story Builder",
+      "tagline": "Write the craziest story together — creativity without limits!",
+      "step1": "A story starter sets the scene",
+      "step2": "Each player adds one sentence in turns",
+      "step3": "At the end, the complete story is read aloud",
+      "tip": "The more absurd your twist, the funnier the story!"
+    },
+    "sharedquiz": {
+      "title": "Shared Quiz",
+      "tagline": "Team quiz battle — who knows more? Show what you've got!",
+      "step1": "A question is shown to all players at once",
+      "step2": "Everyone picks their answer — no conferring!",
+      "step3": "The correct answer is revealed",
+      "step4": "Most correct answers wins",
+      "tip": "Sometimes the most unlikely answer is the right one!"
+    },
+    "quickdraw": {
+      "title": "Quick Draw",
+      "tagline": "Draw fast, guess faster — Picasso would be proud (or horrified)!",
+      "step1": "You're shown a word to draw",
+      "step2": "Draw as fast as possible — stick figures are fine!",
+      "step3": "Others must guess your word",
+      "step4": "Faster guesses = more points for everyone",
+      "tip": "Forget art class — speed is everything here!"
+    },
+    "splitquiz": {
+      "title": "Split Quiz",
+      "tagline": "Split knowledge — everyone sees different answers, but only one is right!",
+      "step1": "A question is shown",
+      "step2": "Each player sees different answer options",
+      "step3": "Discuss which answer could be correct",
+      "step4": "Only the one with the right answer scores",
+      "tip": "Trust your gut — or the nerd in your group!"
+    },
+    "hochstapler": {
+      "title": "The Impostor",
+      "tagline": "One person has no clue — find the impostor! Or be one yourself...",
+      "step1": "All players get a secret word — ONE gets a different one",
+      "step2": "Each player describes the word with a single term",
+      "step3": "Everyone votes: Who is the impostor?",
+      "step4": "Impostor caught? Others win. Impostor survives? They win!",
+      "tip": "As the impostor: Be vague enough to blend in, but specific enough to not seem suspicious!"
+    },
+    "wo-ist-was": {
+      "title": "Where Is It?",
+      "tagline": "Geography challenge — find the spot on the map! Closer = better!",
+      "step1": "You're given a place or landmark",
+      "step2": "Tap on the map where you think it is",
+      "step3": "The closer you are, the more points you get",
+      "tip": "Europe is smaller than you think — and Australia is bigger!"
+    },
+    "flaschendrehen": {
+      "title": "Spin the Bottle",
+      "tagline": "The classic party game! Who will the bottle choose?",
+      "step1": "The bottle spins in the middle",
+      "step2": "Whoever it points to is up",
+      "step3": "Answer the question or complete the dare",
+      "tip": "Karma spins the bottle — be nice to your fellow players!"
+    }
   }
 }

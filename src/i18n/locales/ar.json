@@ -54,27 +54,112 @@
     "thankYou": "شكراً على ملاحظاتك!",
     "betaBadge": "نسخة تجريبية"
   },
-"landing": {
-    "nav": { "features": "المميزات", "howItWorks": "كيف يعمل", "ideas": "أفكار", "solutions": "الحلول", "faq": "الأسئلة الشائعة", "login": "تسجيل الدخول", "signUp": "التسجيل", "partner": "الشركاء", "games": "ألعاب" },
-    "hero": { "badge": "منصة #1 لتخطيط الفعاليات", "title": "خطط لفعاليات لا تُنسى", "subtitle": "من حفلات توديع العزوبية إلى أعياد الميلاد، نظم فعاليات جماعية بسهولة. تقسيم ذكي للتكاليف واقتراحات AI وتعاون في الوقت الفعلي.", "createEvent": "إنشاء فعالية", "joinEvent": "الانضمام بكود", "trustedBy": "يثق بنا أكثر من 10,000 منظم" },
-    "features": { "title": "كل ما تحتاجه", "subtitle": "أدوات قوية للفعالية المثالية", 
-      "multiEvent": { "title": "إدارة فعاليات متعددة", "description": "أدر عدة فعاليات في وقت واحد" }, 
-      "costSplitting": { "title": "تقسيم ذكي للتكاليف", "description": "تتبع النفقات وقسمها بالتساوي" }, 
-      "aiSuggestions": { "title": "اقتراحات AI", "description": "احصل على توصيات مخصصة" }, 
-      "messageTemplates": { "title": "قوالب الرسائل", "description": "رسائل واتساب جاهزة" }, 
-      "dateCoordination": { "title": "تنسيق التواريخ", "description": "اعثر على الموعد المثالي للجميع" }, 
-      "realtime": { "title": "تعاون فوري", "description": "اعمل مع فريقك في الوقت الفعلي" },
-      "agencyDirectory": { "title": "دليل الوكالات", "description": "اعثر على وكالات حفلات توديع العزوبية المحترفة بالقرب منك مع خريطة تفاعلية" },
-      "formBuilder": { "title": "منشئ النماذج", "description": "أنشئ استبيانات وتصويتات مخصصة لفعاليتك" },
+  "landing": {
+    "nav": {
+      "features": "المميزات",
+      "howItWorks": "كيف يعمل",
+      "ideas": "أفكار",
+      "solutions": "الحلول",
+      "faq": "الأسئلة الشائعة",
+      "login": "تسجيل الدخول",
+      "signUp": "التسجيل",
+      "partner": "الشركاء",
+      "games": "ألعاب"
+    },
+    "hero": {
+      "badge": "منصة #1 لتخطيط الفعاليات",
+      "title": "خطط لفعاليات لا تُنسى",
+      "subtitle": "من حفلات توديع العزوبية إلى أعياد الميلاد، نظم فعاليات جماعية بسهولة. تقسيم ذكي للتكاليف واقتراحات AI وتعاون في الوقت الفعلي.",
+      "createEvent": "إنشاء فعالية",
+      "joinEvent": "الانضمام بكود",
+      "trustedBy": "يثق بنا أكثر من 10,000 منظم"
+    },
+    "features": {
+      "title": "كل ما تحتاجه",
+      "subtitle": "أدوات قوية للفعالية المثالية",
+      "multiEvent": {
+        "title": "إدارة فعاليات متعددة",
+        "description": "أدر عدة فعاليات في وقت واحد"
+      },
+      "costSplitting": {
+        "title": "تقسيم ذكي للتكاليف",
+        "description": "تتبع النفقات وقسمها بالتساوي"
+      },
+      "aiSuggestions": {
+        "title": "اقتراحات AI",
+        "description": "احصل على توصيات مخصصة"
+      },
+      "messageTemplates": {
+        "title": "قوالب الرسائل",
+        "description": "رسائل واتساب جاهزة"
+      },
+      "dateCoordination": {
+        "title": "تنسيق التواريخ",
+        "description": "اعثر على الموعد المثالي للجميع"
+      },
+      "realtime": {
+        "title": "تعاون فوري",
+        "description": "اعمل مع فريقك في الوقت الفعلي"
+      },
+      "agencyDirectory": {
+        "title": "دليل الوكالات",
+        "description": "اعثر على وكالات حفلات توديع العزوبية المحترفة بالقرب منك مع خريطة تفاعلية"
+      },
+      "formBuilder": {
+        "title": "منشئ النماذج",
+        "description": "أنشئ استبيانات وتصويتات مخصصة لفعاليتك"
+      },
       "showcaseTitle": "ميزات قوية، تصميم جميل",
       "showcaseSubtitle": "كل ما تحتاجه لفعالية المجموعة المثالية"
     },
-    "howItWorks": { "title": "كيف يعمل", "subtitle": "خطط في 4 خطوات بسيطة", "step1": { "title": "إنشاء الفعالية", "description": "اختر النوع وحدد التفاصيل" }, "step2": { "title": "دعوة الضيوف", "description": "شارك رابطاً أو كوداً" }, "step3": { "title": "جمع التفضيلات", "description": "دع الضيوف يصوتون" }, "step4": { "title": "التخطيط معاً", "description": "استخدم اقتراحات AI للإنهاء" } },
-    "eventTypes": { "title": "مثالي لأي فعالية", "subtitle": "سواء كانت عطلة نهاية أسبوع مجنونة أو لقاء حميم", "bachelor": "حفلات توديع العزوبية", "bachelorette": "حفلات العروس", "birthday": "حفلات أعياد الميلاد", "team": "فعاليات الفريق", "trip": "رحلات جماعية", "wedding": "حفلات الزفاف" },
-    "testimonials": { "title": "محبوب من المنظمين", "subtitle": "ما يقوله مستخدمونا", 
-      "testimonial1": { "text": "جعل EventBliss التخطيط سهلاً جداً!", "author": "سارة م.", "role": "منظمة حفلات توديع" }, 
-      "testimonial2": { "text": "تقسيم التكاليف منقذ للحياة!", "author": "مايكل ك.", "role": "مخطط رحلات جماعية" }, 
-      "testimonial3": { "text": "نظمت 5 فعاليات. اقتراحات AI مذهلة.", "author": "آنا ل.", "role": "مضيفة أعياد الميلاد" } 
+    "howItWorks": {
+      "title": "كيف يعمل",
+      "subtitle": "خطط في 4 خطوات بسيطة",
+      "step1": {
+        "title": "إنشاء الفعالية",
+        "description": "اختر النوع وحدد التفاصيل"
+      },
+      "step2": {
+        "title": "دعوة الضيوف",
+        "description": "شارك رابطاً أو كوداً"
+      },
+      "step3": {
+        "title": "جمع التفضيلات",
+        "description": "دع الضيوف يصوتون"
+      },
+      "step4": {
+        "title": "التخطيط معاً",
+        "description": "استخدم اقتراحات AI للإنهاء"
+      }
+    },
+    "eventTypes": {
+      "title": "مثالي لأي فعالية",
+      "subtitle": "سواء كانت عطلة نهاية أسبوع مجنونة أو لقاء حميم",
+      "bachelor": "حفلات توديع العزوبية",
+      "bachelorette": "حفلات العروس",
+      "birthday": "حفلات أعياد الميلاد",
+      "team": "فعاليات الفريق",
+      "trip": "رحلات جماعية",
+      "wedding": "حفلات الزفاف"
+    },
+    "testimonials": {
+      "title": "محبوب من المنظمين",
+      "subtitle": "ما يقوله مستخدمونا",
+      "testimonial1": {
+        "text": "جعل EventBliss التخطيط سهلاً جداً!",
+        "author": "سارة م.",
+        "role": "منظمة حفلات توديع"
+      },
+      "testimonial2": {
+        "text": "تقسيم التكاليف منقذ للحياة!",
+        "author": "مايكل ك.",
+        "role": "مخطط رحلات جماعية"
+      },
+      "testimonial3": {
+        "text": "نظمت 5 فعاليات. اقتراحات AI مذهلة.",
+        "author": "آنا ل.",
+        "role": "مضيفة أعياد الميلاد"
+      }
     },
     "multiDevice": {
       "title": "خطط للفعاليات في أي مكان وفي أي وقت",
@@ -106,14 +191,22 @@
       },
       "cta": "اكتشف Premium"
     },
-    "faq": { "title": "الأسئلة الشائعة", 
-      "q1": "هل EventBliss مجاني؟", "a1": "نعم! مجاني للتخطيط الأساسي.", 
-      "q2": "كم عدد الضيوف يمكنني دعوتهم؟", "a2": "غير محدود. لا قيود.", 
-      "q3": "هل يمكنني استخدامه للفعاليات التجارية؟", "a3": "بالتأكيد! مثالي لبناء الفريق.", 
-      "q4": "هل بياناتي آمنة؟", "a4": "نعم، جميع البيانات مشفرة.",
-      "q5": "ما هو EventBliss Premium؟", "a5": "Premium يفتح ميزات متقدمة: اقتراحات AI غير محدودة، أسئلة استبيان مخصصة، قوالب رسائل متقدمة ودعم أولوية.",
-      "q6": "هل هناك خيار مدى الحياة؟", "a6": "نعم! مقابل دفعة واحدة بقيمة 19.99€ تحصل على وصول مدى الحياة لجميع ميزات premium.",
-      "q7": "كيف يعمل دليل الوكالات؟", "a7": "اعثر على وكالات حفلات توديع العزوبية المحترفة في أكثر من 50 مدينة. فلتر حسب البلد والمدينة واطلع على التفاصيل مباشرة على الخريطة التفاعلية."
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "q1": "هل EventBliss مجاني؟",
+      "a1": "نعم! مجاني للتخطيط الأساسي.",
+      "q2": "كم عدد الضيوف يمكنني دعوتهم؟",
+      "a2": "غير محدود. لا قيود.",
+      "q3": "هل يمكنني استخدامه للفعاليات التجارية؟",
+      "a3": "بالتأكيد! مثالي لبناء الفريق.",
+      "q4": "هل بياناتي آمنة؟",
+      "a4": "نعم، جميع البيانات مشفرة.",
+      "q5": "ما هو EventBliss Premium؟",
+      "a5": "Premium يفتح ميزات متقدمة: اقتراحات AI غير محدودة، أسئلة استبيان مخصصة، قوالب رسائل متقدمة ودعم أولوية.",
+      "q6": "هل هناك خيار مدى الحياة؟",
+      "a6": "نعم! مقابل دفعة واحدة بقيمة 19.99€ تحصل على وصول مدى الحياة لجميع ميزات premium.",
+      "q7": "كيف يعمل دليل الوكالات؟",
+      "a7": "اعثر على وكالات حفلات توديع العزوبية المحترفة في أكثر من 50 مدينة. فلتر حسب البلد والمدينة واطلع على التفاصيل مباشرة على الخريطة التفاعلية."
     },
     "demo": {
       "badge": "عرض تفاعلي",
@@ -123,12 +216,30 @@
       "play": "استئناف التشغيل التلقائي",
       "cta": "جربه بنفسك",
       "features": {
-        "dashboard": { "title": "لوحة الفعالية", "description": "جميع المعلومات في لمحة: المشاركون، التواريخ، المهام" },
-        "expenses": { "title": "تقسيم التكاليف", "description": "تتبع النفقات وقسمها بالتساوي" },
-        "ai": { "title": "مساعد AI", "description": "احصل على اقتراحات للأنشطة والرسائل" },
-        "survey": { "title": "الاستبيانات", "description": "اجمع التفضيلات باستبيانات مخصصة" },
-        "agencies": { "title": "دليل الوكالات", "description": "اعثر على وكالات الفعاليات بالقرب منك" },
-        "planner": { "title": "مخطط الأنشطة", "description": "خطط ونظم جميع الأنشطة مع الجدول الزمني" }
+        "dashboard": {
+          "title": "لوحة الفعالية",
+          "description": "جميع المعلومات في لمحة: المشاركون، التواريخ، المهام"
+        },
+        "expenses": {
+          "title": "تقسيم التكاليف",
+          "description": "تتبع النفقات وقسمها بالتساوي"
+        },
+        "ai": {
+          "title": "مساعد AI",
+          "description": "احصل على اقتراحات للأنشطة والرسائل"
+        },
+        "survey": {
+          "title": "الاستبيانات",
+          "description": "اجمع التفضيلات باستبيانات مخصصة"
+        },
+        "agencies": {
+          "title": "دليل الوكالات",
+          "description": "اعثر على وكالات الفعاليات بالقرب منك"
+        },
+        "planner": {
+          "title": "مخطط الأنشطة",
+          "description": "خطط ونظم جميع الأنشطة مع الجدول الزمني"
+        }
       },
       "planner": {
         "day1": "اليوم 1",
@@ -218,8 +329,34 @@
         }
       }
     },
-    "cta": { "title": "مستعد لفعاليتك القادمة؟", "description": "ابدأ مجاناً واصنع ذكريات لا تُنسى.", "button": "أنشئ فعاليتك" },
-    "footer": { "tagline": "خطط لفعاليات تجمع الناس", "product": "المنتج", "features": "المميزات", "integrations": "التكاملات", "enterprise": "للشركات", "solutions": "الحلول", "partner": "الشركاء", "becomePartner": "كن شريكاً", "becomeAgencyPartner": "كن شريك وكالة", "partnerPortal": "بوابة الشركاء", "agencyPortal": "بوابة الوكالة", "legal": "قانوني", "imprint": "البصمة", "disclaimer": "إخلاء المسؤولية", "privacy": "الخصوصية", "terms": "الشروط", "contact": "اتصل بنا", "address": "غلادستونوس 12-14، 8042 بافوس، قبرص", "phone": "+357 99 980 583", "company": "MYFAMBLISS GROUP LTD", "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة." },
+    "cta": {
+      "title": "مستعد لفعاليتك القادمة؟",
+      "description": "ابدأ مجاناً واصنع ذكريات لا تُنسى.",
+      "button": "أنشئ فعاليتك"
+    },
+    "footer": {
+      "tagline": "خطط لفعاليات تجمع الناس",
+      "product": "المنتج",
+      "features": "المميزات",
+      "integrations": "التكاملات",
+      "enterprise": "للشركات",
+      "solutions": "الحلول",
+      "partner": "الشركاء",
+      "becomePartner": "كن شريكاً",
+      "becomeAgencyPartner": "كن شريك وكالة",
+      "partnerPortal": "بوابة الشركاء",
+      "agencyPortal": "بوابة الوكالة",
+      "legal": "قانوني",
+      "imprint": "البصمة",
+      "disclaimer": "إخلاء المسؤولية",
+      "privacy": "الخصوصية",
+      "terms": "الشروط",
+      "contact": "اتصل بنا",
+      "address": "غلادستونوس 12-14، 8042 بافوس، قبرص",
+      "phone": "+357 99 980 583",
+      "company": "MYFAMBLISS GROUP LTD",
+      "copyright": "© 2025 MYFAMBLISS GROUP. جميع الحقوق محفوظة."
+    },
     "agencyPortal": {
       "title": "بوابة الوكالة",
       "welcome": "مرحباً بعودتك",
@@ -247,10 +384,22 @@
         "description": "اكسب عمولات عن كل عميل تجلبه إلى EventBliss"
       },
       "benefits": {
-        "commission": { "title": "عمولات جذابة", "description": "حتى 20% لكل حجز" },
-        "tracking": { "title": "تتبع الإحالات", "description": "تعيين تلقائي عبر رمز البريد الإلكتروني" },
-        "support": { "title": "دعم الشركاء", "description": "شخص اتصال مخصص" },
-        "exclusiveOffers": { "title": "عروض حصرية", "description": "قسائم خاصة لعملائك" }
+        "commission": {
+          "title": "عمولات جذابة",
+          "description": "حتى 20% لكل حجز"
+        },
+        "tracking": {
+          "title": "تتبع الإحالات",
+          "description": "تعيين تلقائي عبر رمز البريد الإلكتروني"
+        },
+        "support": {
+          "title": "دعم الشركاء",
+          "description": "شخص اتصال مخصص"
+        },
+        "exclusiveOffers": {
+          "title": "عروض حصرية",
+          "description": "قسائم خاصة لعملائك"
+        }
       },
       "form": {
         "title": "تقدم الآن",
@@ -280,39 +429,184 @@
     }
   },
   "legal": {
-    "imprint": { "title": "البصمة", "company": "معلومات الشركة", "registeredCompany": "شركة مسجلة في قبرص", "address": "العنوان", "contact": "اتصل", "responsibleContent": "المسؤول عن المحتوى", "disputeResolution": "حل النزاعات الأوروبي", "disputeText": "تقدم المفوضية الأوروبية منصة لحل النزاعات عبر الإنترنت." },
-    "privacy": { "title": "سياسة الخصوصية", "lastUpdated": "آخر تحديث", "intro": "خصوصيتك مهمة لنا.", "dataCollection": { "title": "جمع البيانات", "content": "نجمع المعلومات التي تقدمها." }, "dataUsage": { "title": "استخدام البيانات", "content": "تُستخدم بياناتك لتقديم خدماتنا." }, "cookies": { "title": "ملفات تعريف الارتباط", "content": "نستخدم الكوكيز لتحسين تجربتك." }, "dataSecurity": { "title": "الأمان", "content": "نطبق إجراءات أمان معيارية." }, "userRights": { "title": "حقوقك", "content": "لديك الحق في الوصول أو حذف بياناتك." }, "thirdParty": { "title": "أطراف ثالثة", "content": "قد نشارك البيانات مع شركاء موثوقين." }, "contact": { "title": "اتصل", "content": "لاستفسارات الخصوصية:" } },
-    "terms": { "title": "شروط الخدمة", "lastUpdated": "آخر تحديث", "intro": "باستخدام EventBliss، توافق على هذه الشروط.", "acceptance": { "title": "القبول", "content": "بالوصول، توافق على الشروط." }, "services": { "title": "خدماتنا", "content": "يوفر EventBliss أدوات تخطيط الفعاليات." }, "payment": { "title": "الدفع", "content": "الميزات الأساسية مجانية." }, "prohibited": { "title": "المحظورات", "content": "لا تستخدم للأنشطة غير القانونية." }, "liability": { "title": "تحديد المسؤولية", "content": "لسنا مسؤولين عن الأضرار." }, "changes": { "title": "التغييرات", "content": "قد نحدث هذه الشروط." }, "governingLaw": { "title": "القانون الحاكم", "content": "تخضع لقوانين قبرص." } },
-    "disclaimer": { "title": "إخلاء المسؤولية", "lastUpdated": "آخر تحديث", "intro": "اقرأ قبل الاستخدام.", "general": { "title": "عام", "content": "المعلومات لأغراض عامة فقط." }, "externalLinks": { "title": "روابط خارجية", "content": "لسنا مسؤولين عن محتوى الأطراف الثالثة." }, "availability": { "title": "التوفر", "content": "نستهدف 99.9% وقت التشغيل." }, "limitation": { "title": "التحديد", "content": "لسنا مسؤولين عن الأضرار غير المباشرة." }, "contact": { "title": "اتصل", "content": "للأسئلة، تواصل معنا." } }
+    "imprint": {
+      "title": "البصمة",
+      "company": "معلومات الشركة",
+      "registeredCompany": "شركة مسجلة في قبرص",
+      "address": "العنوان",
+      "contact": "اتصل",
+      "responsibleContent": "المسؤول عن المحتوى",
+      "disputeResolution": "حل النزاعات الأوروبي",
+      "disputeText": "تقدم المفوضية الأوروبية منصة لحل النزاعات عبر الإنترنت."
+    },
+    "privacy": {
+      "title": "سياسة الخصوصية",
+      "lastUpdated": "آخر تحديث",
+      "intro": "خصوصيتك مهمة لنا.",
+      "dataCollection": {
+        "title": "جمع البيانات",
+        "content": "نجمع المعلومات التي تقدمها."
+      },
+      "dataUsage": {
+        "title": "استخدام البيانات",
+        "content": "تُستخدم بياناتك لتقديم خدماتنا."
+      },
+      "cookies": {
+        "title": "ملفات تعريف الارتباط",
+        "content": "نستخدم الكوكيز لتحسين تجربتك."
+      },
+      "dataSecurity": {
+        "title": "الأمان",
+        "content": "نطبق إجراءات أمان معيارية."
+      },
+      "userRights": {
+        "title": "حقوقك",
+        "content": "لديك الحق في الوصول أو حذف بياناتك."
+      },
+      "thirdParty": {
+        "title": "أطراف ثالثة",
+        "content": "قد نشارك البيانات مع شركاء موثوقين."
+      },
+      "contact": {
+        "title": "اتصل",
+        "content": "لاستفسارات الخصوصية:"
+      }
+    },
+    "terms": {
+      "title": "شروط الخدمة",
+      "lastUpdated": "آخر تحديث",
+      "intro": "باستخدام EventBliss، توافق على هذه الشروط.",
+      "acceptance": {
+        "title": "القبول",
+        "content": "بالوصول، توافق على الشروط."
+      },
+      "services": {
+        "title": "خدماتنا",
+        "content": "يوفر EventBliss أدوات تخطيط الفعاليات."
+      },
+      "payment": {
+        "title": "الدفع",
+        "content": "الميزات الأساسية مجانية."
+      },
+      "prohibited": {
+        "title": "المحظورات",
+        "content": "لا تستخدم للأنشطة غير القانونية."
+      },
+      "liability": {
+        "title": "تحديد المسؤولية",
+        "content": "لسنا مسؤولين عن الأضرار."
+      },
+      "changes": {
+        "title": "التغييرات",
+        "content": "قد نحدث هذه الشروط."
+      },
+      "governingLaw": {
+        "title": "القانون الحاكم",
+        "content": "تخضع لقوانين قبرص."
+      }
+    },
+    "disclaimer": {
+      "title": "إخلاء المسؤولية",
+      "lastUpdated": "آخر تحديث",
+      "intro": "اقرأ قبل الاستخدام.",
+      "general": {
+        "title": "عام",
+        "content": "المعلومات لأغراض عامة فقط."
+      },
+      "externalLinks": {
+        "title": "روابط خارجية",
+        "content": "لسنا مسؤولين عن محتوى الأطراف الثالثة."
+      },
+      "availability": {
+        "title": "التوفر",
+        "content": "نستهدف 99.9% وقت التشغيل."
+      },
+      "limitation": {
+        "title": "التحديد",
+        "content": "لسنا مسؤولين عن الأضرار غير المباشرة."
+      },
+      "contact": {
+        "title": "اتصل",
+        "content": "للأسئلة، تواصل معنا."
+      }
+    }
   },
   "createEvent": {
     "title": "إنشاء فعالية",
-    "step1": { "title": "ماذا تخطط؟", "subtitle": "اختر نوع الفعالية التي تريد تنظيمها." },
-    "step2": { 
-      "title": "تفاصيل الفعالية", 
-      "subtitle": "أخبرنا عن الفعالية ولمن هي.", 
-      "honoreeName": "من هو ضيف الشرف؟", 
-      "eventName": "اسم الفعالية", 
-      "eventDate": "تاريخ الفعالية (اختياري)", 
-      "organizerName": "اسمك (المنظم)", 
-      "organizerNamePlaceholder": "مثال: لوكا", 
-      "organizerEmail": "بريدك الإلكتروني (اختياري)", 
+    "step1": {
+      "title": "ماذا تخطط؟",
+      "subtitle": "اختر نوع الفعالية التي تريد تنظيمها."
+    },
+    "step2": {
+      "title": "تفاصيل الفعالية",
+      "subtitle": "أخبرنا عن الفعالية ولمن هي.",
+      "honoreeName": "من هو ضيف الشرف؟",
+      "eventName": "اسم الفعالية",
+      "eventDate": "تاريخ الفعالية (اختياري)",
+      "organizerName": "اسمك (المنظم)",
+      "organizerNamePlaceholder": "مثال: لوكا",
+      "organizerEmail": "بريدك الإلكتروني (اختياري)",
       "organizerEmailPlaceholder": "luca@example.com",
       "placeholders": {
-        "bachelor": { "honoreeName": "مثال: ماكس", "eventName": "مثال: حفلة توديع العزوبية لماكس" },
-        "bachelorette": { "honoreeName": "مثال: جوليا", "eventName": "مثال: حفلة العروس لجوليا" },
-        "birthday": { "honoreeName": "مثال: ليزا", "eventName": "مثال: عيد ميلاد ليزا الثلاثين" },
-        "trip": { "honoreeName": "مثال: الفريق", "eventName": "مثال: رحلة تزلج 2026" },
-        "other": { "honoreeName": "مثال: فريق أو شخص", "eventName": "مثال: مهرجان صيفي 2026" }
+        "bachelor": {
+          "honoreeName": "مثال: ماكس",
+          "eventName": "مثال: حفلة توديع العزوبية لماكس"
+        },
+        "bachelorette": {
+          "honoreeName": "مثال: جوليا",
+          "eventName": "مثال: حفلة العروس لجوليا"
+        },
+        "birthday": {
+          "honoreeName": "مثال: ليزا",
+          "eventName": "مثال: عيد ميلاد ليزا الثلاثين"
+        },
+        "trip": {
+          "honoreeName": "مثال: الفريق",
+          "eventName": "مثال: رحلة تزلج 2026"
+        },
+        "other": {
+          "honoreeName": "مثال: فريق أو شخص",
+          "eventName": "مثال: مهرجان صيفي 2026"
+        }
       }
     },
-    "step3": { "title": "إضافة مشاركين", "subtitle": "أضف الأشخاص الذين تريد دعوتهم.", "namePlaceholder": "أدخل الاسم...", "noParticipants": "لم تتم إضافة مشاركين بعد. يمكنك تخطي هذه الخطوة." },
-    "step4": { "title": "مراجعة وإنشاء", "subtitle": "كل شيء جيد؟ لننشئ فعاليتك!", "forHonoree": "لـ {{name}}", "participantCount": "{{count}} مشاركين (بما فيهم أنت)", "organizedBy": "منظم بواسطة {{name}}", "descriptionPlaceholder": "أضف وصفاً (اختياري)" },
-    "types": { "bachelor": "حفلة وداع العزوبية", "bachelorette": "حفلة العروس", "birthday": "عيد ميلاد", "trip": "رحلة جماعية", "other": "فعالية أخرى" },
+    "step3": {
+      "title": "إضافة مشاركين",
+      "subtitle": "أضف الأشخاص الذين تريد دعوتهم.",
+      "namePlaceholder": "أدخل الاسم...",
+      "noParticipants": "لم تتم إضافة مشاركين بعد. يمكنك تخطي هذه الخطوة."
+    },
+    "step4": {
+      "title": "مراجعة وإنشاء",
+      "subtitle": "كل شيء جيد؟ لننشئ فعاليتك!",
+      "forHonoree": "لـ {{name}}",
+      "participantCount": "{{count}} مشاركين (بما فيهم أنت)",
+      "organizedBy": "منظم بواسطة {{name}}",
+      "descriptionPlaceholder": "أضف وصفاً (اختياري)"
+    },
+    "types": {
+      "bachelor": "حفلة وداع العزوبية",
+      "bachelorette": "حفلة العروس",
+      "birthday": "عيد ميلاد",
+      "trip": "رحلة جماعية",
+      "other": "فعالية أخرى"
+    },
     "submit": "إنشاء الفعالية",
     "creating": "جار إنشاء الفعالية...",
-    "success": { "title": "تم إنشاء الفعالية! 🎉", "description": "شارك الكود مع أصدقائك.", "shareMessage": "شارك الرابط أو الكود.", "accessCode": "كود الوصول", "shareLink": "رابط المشاركة", "linkCopied": "تم نسخ الرابط.", "shareWhatsApp": "مشاركة عبر واتساب", "goToDashboard": "الذهاب للوحة التحكم", "whatsappMessage": "🎉 أنت مدعو!\n\nانضم إلى \"{{name}}\" لحفلة {{honoree}}!\n\n👉 {{link}}\n📝 الكود: {{code}}" },
-    "error": { "failed": "فشل الإنشاء. حاول مرة أخرى." }
+    "success": {
+      "title": "تم إنشاء الفعالية! 🎉",
+      "description": "شارك الكود مع أصدقائك.",
+      "shareMessage": "شارك الرابط أو الكود.",
+      "accessCode": "كود الوصول",
+      "shareLink": "رابط المشاركة",
+      "linkCopied": "تم نسخ الرابط.",
+      "shareWhatsApp": "مشاركة عبر واتساب",
+      "goToDashboard": "الذهاب للوحة التحكم",
+      "whatsappMessage": "🎉 أنت مدعو!\n\nانضم إلى \"{{name}}\" لحفلة {{honoree}}!\n\n👉 {{link}}\n📝 الكود: {{code}}"
+    },
+    "error": {
+      "failed": "فشل الإنشاء. حاول مرة أخرى."
+    }
   },
   "joinEvent": {
     "title": "الانضمام للفعالية",
@@ -534,34 +828,13 @@
       }
     },
     "team": {
-      "title": "إدارة الوصول للوحة التحكم",
-      "description": "قم بتمكين الوصول للوحة التحكم للمشاركين وشارك رابط الدعوة.",
-      "addParticipant": "إضافة مشارك",
-      "addParticipantDesc": "أضف ضيفًا جديدًا للفعالية",
-      "participantName": "الاسم",
-      "participantEmail": "البريد الإلكتروني (اختياري)",
-      "participantRole": "الدور",
-      "namePlaceholder": "مثال: أحمد محمد",
-      "emailPlaceholder": "ahmed@example.com",
-      "addButton": "إضافة",
-      "nameRequired": "الاسم مطلوب",
-      "participantAdded": "تم إضافة {{name}}",
-      "addError": "خطأ في الإضافة",
+      "title": "إدارة الفريق",
+      "invite": "دعوة",
+      "permissions": "الصلاحيات",
+      "removeAccess": "إزالة الوصول",
       "roles": {
-        "guest": "ضيف",
-        "organizer": "منظم"
-      },
-      "status": {
-        "activated": "مفعل",
-        "invited": "مدعو",
-        "ready": "جاهز",
-        "noAccess": "لا وصول"
-      },
-      "permissions": {
-        "viewResponses": "عرض الردود",
-        "addExpenses": "إضافة النفقات",
-        "viewAllExpenses": "عرض جميع النفقات",
-        "editSettings": "تعديل الإعدادات"
+        "organizer": "منظم",
+        "guest": "ضيف"
       }
     },
     "overview": {
@@ -809,16 +1082,6 @@
         "title": "منطقة الخطر",
         "deleteEvent": "حذف الفعالية",
         "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
-      }
-    },
-    "team": {
-      "title": "إدارة الفريق",
-      "invite": "دعوة",
-      "permissions": "الصلاحيات",
-      "removeAccess": "إزالة الوصول",
-      "roles": {
-        "organizer": "منظم",
-        "guest": "ضيف"
       }
     },
     "ai": {
@@ -1298,57 +1561,22 @@
     }
   },
   "admin": {
-    "title": "بوابة المدير",
-    "tabs": {
-      "stats": "الإحصائيات",
-      "users": "المستخدمون",
-      "members": "الأعضاء",
-      "subscriptions": "الاشتراكات",
-      "vouchers": "القسائم"
-    },
-    "users": {
-      "title": "إدارة المستخدمين",
-      "create": "إنشاء مستخدم",
-      "createTitle": "إنشاء مستخدم جديد",
-      "email": "البريد الإلكتروني",
-      "password": "كلمة المرور",
-      "fullName": "الاسم الكامل",
-      "plan": "الخطة",
-      "name": "الاسم",
-      "status": "الحالة",
-      "createdAt": "تاريخ الإنشاء",
-      "search": "البحث عن مستخدمين...",
-      "noUsers": "لم يتم العثور على مستخدمين",
-      "mustChangePassword": "يجب على المستخدم تغيير كلمة المرور عند أول تسجيل دخول",
-      "mustChange": "تغيير كلمة المرور",
-      "active": "نشط",
-      "requiredFields": "البريد الإلكتروني وكلمة المرور مطلوبان",
-      "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
-      "createSuccess": "تم إنشاء المستخدم بنجاح",
-      "createError": "خطأ في الإنشاء"
-    },
-    "vouchers": {
-      "title": "إدارة القسائم",
-      "create": "إنشاء قسيمة",
-      "code": "الكود",
-      "type": "النوع",
-      "value": "القيمة",
-      "uses": "الاستخدامات",
-      "validFrom": "صالح من",
-      "validUntil": "صالح حتى",
-      "status": "الحالة",
-      "active": "نشط",
-      "inactive": "غير نشط",
-      "expired": "منتهي الصلاحية",
-      "noVouchers": "لا توجد قسائم",
-      "percentage": "نسبة مئوية",
-      "fixed": "مبلغ ثابت",
-      "free_trial": "فترة تجريبية مجانية",
-      "unlimited": "غير محدود",
-      "createSuccess": "تم إنشاء القسيمة بنجاح",
-      "createError": "خطأ في الإنشاء",
-      "deleteSuccess": "تم حذف القسيمة",
-      "deleteError": "خطأ في الحذف"
+    "credits": {
+      "title": "إدارة الرصيد",
+      "description": "تعديلات الرصيد اليدوية للمستخدمين",
+      "userSearch": "البحث عن مستخدم (البريد الإلكتروني)",
+      "currentCredits": "الرصيد الحالي",
+      "adjustCredits": "تعديل الرصيد",
+      "addCredits": "إضافة رصيد",
+      "removeCredits": "إزالة رصيد",
+      "reason": "السبب",
+      "reasonPlaceholder": "مثل: مكافأة الشريك، حسن النية، إلخ.",
+      "adjustmentSuccess": "تم تعديل الرصيد بنجاح",
+      "noUser": "المستخدم غير موجود",
+      "adjustmentHistory": "سجل التعديلات",
+      "amount": "المبلغ",
+      "adjustedBy": "تم التعديل بواسطة",
+      "date": "التاريخ"
     }
   },
   "templates": {
@@ -1404,25 +1632,234 @@
       "usesOneCredit": "يستخدم 1 رصيد",
       "noCredits": "لا توجد أرصدة متاحة"
     },
-    "jgaClassic": { "name": "حفلة كلاسيكية", "description": "أكشن وحفلات ولحظات لا تُنسى" },
-    "jgaAdventure": { "name": "رحلة مغامرات", "description": "مغامرات في الهواء الطلق وتحديات الفريق" },
-    "jgaChill": { "name": "احتفال مريح", "description": "استجمام وطعام جيد ووقت ممتع" },
-    "bacheloretteGlam": { "name": "عطلة نهاية أسبوع فاخرة", "description": "سبا وجلسة تصوير وكوكتيلات" },
-    "bacheloretteAdventure": { "name": "نزهة نشطة", "description": "المشي لمسافات طويلة واليوغا والطبيعة" },
-    "birthdayParty": { "name": "حفلة عيد ميلاد", "description": "احتفال مع الأصدقاء والعائلة" },
-    "birthdayExperience": { "name": "تجربة عيد الميلاد", "description": "أنشطة فريدة ومغامرات" },
-    "familyTrip": { "name": "نزهة عائلية", "description": "متعة لجميع الأعمار" },
-    "friendsTrip": { "name": "رحلة مع الأصدقاء", "description": "مغامرة وسفر مع الأصدقاء" },
-    "teamEvent": { "name": "فعالية الفريق", "description": "بناء الفريق والتجارب المشتركة" },
-    "flexible": { "name": "مرن", "description": "مرونة كاملة - أنت تقرر" },
-    "tags": { "action": "أكشن", "party": "حفلة", "city": "مدينة", "outdoor": "في الهواء الطلق", "adventure": "مغامرة", "sports": "رياضة", "relax": "استرخاء", "wellness": "صحة", "food": "طعام", "glamour": "فخامة", "active": "نشط", "nature": "طبيعة", "celebration": "احتفال", "fun": "متعة", "experience": "تجربة", "unique": "فريد", "memorable": "لا يُنسى", "family": "عائلة", "kids": "أطفال", "relaxed": "مريح", "friends": "أصدقاء", "travel": "سفر", "team": "فريق", "corporate": "شركات", "teambuilding": "بناء الفريق", "flexible": "مرن", "custom": "مخصص", "open": "مفتوح" },
-    "destinations": { "deCity": "مدينة كبيرة في ألمانيا", "prague": "براغ", "budapest": "بودابست", "barcelona": "برشلونة", "amsterdam": "أمستردام", "mallorca": "مايوركا", "lisbon": "لشبونة", "flexible": "مرن", "alps": "جبال الألب", "seaCoast": "الساحل", "forestNature": "الغابة والطبيعة", "lakeRegion": "منطقة البحيرات", "spaHotel": "فندق سبا", "local": "محلي", "wineRegion": "منطقة النبيذ", "lakeResort": "منتجع البحيرة", "vineyard": "كرم", "restaurant": "مطعم", "eventLocation": "موقع الحدث", "rooftopBar": "بار على السطح", "nearbyCity": "مدينة قريبة", "nature": "طبيعة", "themePark": "مدينة ملاهي", "zoo": "حديقة حيوان", "beach": "شاطئ", "mountains": "جبال", "farm": "مزرعة", "cityEurope": "مدينة في أوروبا", "beachEurope": "شاطئ في أوروبا", "adventureEurope": "مغامرة في أوروبا", "roadTrip": "رحلة برية", "conferenceHotel": "فندق مؤتمرات", "outdoorLocation": "موقع خارجي", "eventSpace": "مساحة الحدث", "office": "مكتب", "domestic": "محلي", "europe": "أوروبا", "worldwide": "عالمي" },
-    "activities": { "karting": "سباق السيارات", "escapeRoom": "غرفة الهروب", "lasertag": "ليزر تاغ", "axeThrowing": "رمي الفأس", "vrArena": "ساحة الواقع الافتراضي", "bubbleSoccer": "كرة الفقاعة", "paintball": "بينتبول", "barTour": "جولة الحانات", "casino": "كازينو", "bbqParty": "حفلة شواء", "rafting": "التجديف", "canyoning": "التسلق", "climbing": "التسلق", "hiking": "المشي لمسافات طويلة", "mountainBiking": "ركوب الدراجات الجبلية", "survivalTraining": "تدريب البقاء", "bungee": "القفز بالحبال", "paragliding": "الطيران الشراعي", "quadTour": "جولة رباعية", "cabinBbq": "شواء الكوخ", "spaWellness": "سبا وصحة", "wineTasting": "تذوق النبيذ", "gourmetDinner": "عشاء فاخر", "cookingClass": "دروس الطبخ", "golf": "جولف", "cigarWhiskey": "سيجار وويسكي", "breweryTour": "جولة مصنع الجعة", "boatTrip": "رحلة بالقارب", "photoshoot": "جلسة تصوير", "cocktailClass": "دروس الكوكتيل", "yogaRetreat": "معتكف اليوغا", "danceClass": "دروس الرقص", "brunchParty": "حفلة برانش", "beachClub": "نادي الشاطئ", "shoppingTour": "جولة تسوق", "karaoke": "كاريوكي", "kayaking": "التجديف بالكاياك", "horsebackRiding": "ركوب الخيل", "picnic": "نزهة", "sunsetBoat": "قارب غروب الشمس", "outdoorCooking": "الطبخ في الهواء الطلق", "dinnerParty": "حفلة عشاء", "bowling": "بولينج", "gamesNight": "ليلة الألعاب", "cocktailParty": "حفلة كوكتيل", "dancing": "رقص", "liveMusic": "موسيقى حية", "spaDay": "يوم سبا", "concert": "حفلة موسيقية", "sportsEvent": "حدث رياضي", "artClass": "دروس الفن", "adventurePark": "حديقة المغامرات", "themePark": "مدينة ملاهي", "zooAquarium": "حديقة حيوان ومتحف مائي", "beachFun": "متعة الشاطئ", "hikingEasy": "المشي السهل", "games": "ألعاب", "bikeTour": "جولة بالدراجة", "swimming": "سباحة", "sightseeing": "مشاهدة المعالم", "nightlife": "الحياة الليلية", "foodTour": "جولة طعام", "beach": "شاطئ", "waterSports": "الرياضات المائية", "localExperiences": "تجارب محلية", "concertsEvents": "حفلات", "teambuildingGames": "ألعاب الفريق", "workshop": "ورشة عمل", "outdoorChallenge": "تحدي خارجي", "sportsTournament": "بطولة رياضية", "dinnerEvent": "حدث عشاء", "creativeWorkshop": "ورشة إبداعية", "action": "أكشن", "chill": "استرخاء", "outdoor": "في الهواء الطلق", "food": "طعام", "culture": "ثقافة", "party": "حفلة", "mixed": "مختلط" },
-    "duration": { "dayTrip": "رحلة يوم واحد", "weekend": "عطلة نهاية الأسبوع (2-3 أيام)", "longWeekend": "عطلة نهاية أسبوع طويلة (3-4 أيام)", "week": "أسبوع كامل", "twoWeeks": "أسبوعان", "halfDay": "نصف يوم", "fullDay": "يوم كامل", "evening": "مساء", "overnight": "ليلة واحدة", "flexible": "مرن" },
-    "travel": { "daytrip": "رحلة يوم واحد", "oneNight": "ليلة واحدة", "twoNights": "ليلتان", "flexible": "مرن" },
-    "fitness": { "chill": "مريح", "normal": "عادي", "sporty": "رياضي" },
-    "alcohol": { "yes": "نعم من فضلك", "no": "لا أفضل", "flexible": "مرن" },
-    "attendance": { "yes": "أنا موجود!", "maybe": "ربما", "no": "للأسف لا" },
+    "jgaClassic": {
+      "name": "حفلة كلاسيكية",
+      "description": "أكشن وحفلات ولحظات لا تُنسى"
+    },
+    "jgaAdventure": {
+      "name": "رحلة مغامرات",
+      "description": "مغامرات في الهواء الطلق وتحديات الفريق"
+    },
+    "jgaChill": {
+      "name": "احتفال مريح",
+      "description": "استجمام وطعام جيد ووقت ممتع"
+    },
+    "bacheloretteGlam": {
+      "name": "عطلة نهاية أسبوع فاخرة",
+      "description": "سبا وجلسة تصوير وكوكتيلات"
+    },
+    "bacheloretteAdventure": {
+      "name": "نزهة نشطة",
+      "description": "المشي لمسافات طويلة واليوغا والطبيعة"
+    },
+    "birthdayParty": {
+      "name": "حفلة عيد ميلاد",
+      "description": "احتفال مع الأصدقاء والعائلة"
+    },
+    "birthdayExperience": {
+      "name": "تجربة عيد الميلاد",
+      "description": "أنشطة فريدة ومغامرات"
+    },
+    "familyTrip": {
+      "name": "نزهة عائلية",
+      "description": "متعة لجميع الأعمار"
+    },
+    "friendsTrip": {
+      "name": "رحلة مع الأصدقاء",
+      "description": "مغامرة وسفر مع الأصدقاء"
+    },
+    "teamEvent": {
+      "name": "فعالية الفريق",
+      "description": "بناء الفريق والتجارب المشتركة"
+    },
+    "flexible": {
+      "name": "مرن",
+      "description": "مرونة كاملة - أنت تقرر"
+    },
+    "tags": {
+      "action": "أكشن",
+      "party": "حفلة",
+      "city": "مدينة",
+      "outdoor": "في الهواء الطلق",
+      "adventure": "مغامرة",
+      "sports": "رياضة",
+      "relax": "استرخاء",
+      "wellness": "صحة",
+      "food": "طعام",
+      "glamour": "فخامة",
+      "active": "نشط",
+      "nature": "طبيعة",
+      "celebration": "احتفال",
+      "fun": "متعة",
+      "experience": "تجربة",
+      "unique": "فريد",
+      "memorable": "لا يُنسى",
+      "family": "عائلة",
+      "kids": "أطفال",
+      "relaxed": "مريح",
+      "friends": "أصدقاء",
+      "travel": "سفر",
+      "team": "فريق",
+      "corporate": "شركات",
+      "teambuilding": "بناء الفريق",
+      "flexible": "مرن",
+      "custom": "مخصص",
+      "open": "مفتوح"
+    },
+    "destinations": {
+      "deCity": "مدينة كبيرة في ألمانيا",
+      "prague": "براغ",
+      "budapest": "بودابست",
+      "barcelona": "برشلونة",
+      "amsterdam": "أمستردام",
+      "mallorca": "مايوركا",
+      "lisbon": "لشبونة",
+      "flexible": "مرن",
+      "alps": "جبال الألب",
+      "seaCoast": "الساحل",
+      "forestNature": "الغابة والطبيعة",
+      "lakeRegion": "منطقة البحيرات",
+      "spaHotel": "فندق سبا",
+      "local": "محلي",
+      "wineRegion": "منطقة النبيذ",
+      "lakeResort": "منتجع البحيرة",
+      "vineyard": "كرم",
+      "restaurant": "مطعم",
+      "eventLocation": "موقع الحدث",
+      "rooftopBar": "بار على السطح",
+      "nearbyCity": "مدينة قريبة",
+      "nature": "طبيعة",
+      "themePark": "مدينة ملاهي",
+      "zoo": "حديقة حيوان",
+      "beach": "شاطئ",
+      "mountains": "جبال",
+      "farm": "مزرعة",
+      "cityEurope": "مدينة في أوروبا",
+      "beachEurope": "شاطئ في أوروبا",
+      "adventureEurope": "مغامرة في أوروبا",
+      "roadTrip": "رحلة برية",
+      "conferenceHotel": "فندق مؤتمرات",
+      "outdoorLocation": "موقع خارجي",
+      "eventSpace": "مساحة الحدث",
+      "office": "مكتب",
+      "domestic": "محلي",
+      "europe": "أوروبا",
+      "worldwide": "عالمي"
+    },
+    "activities": {
+      "karting": "سباق السيارات",
+      "escapeRoom": "غرفة الهروب",
+      "lasertag": "ليزر تاغ",
+      "axeThrowing": "رمي الفأس",
+      "vrArena": "ساحة الواقع الافتراضي",
+      "bubbleSoccer": "كرة الفقاعة",
+      "paintball": "بينتبول",
+      "barTour": "جولة الحانات",
+      "casino": "كازينو",
+      "bbqParty": "حفلة شواء",
+      "rafting": "التجديف",
+      "canyoning": "التسلق",
+      "climbing": "التسلق",
+      "hiking": "المشي لمسافات طويلة",
+      "mountainBiking": "ركوب الدراجات الجبلية",
+      "survivalTraining": "تدريب البقاء",
+      "bungee": "القفز بالحبال",
+      "paragliding": "الطيران الشراعي",
+      "quadTour": "جولة رباعية",
+      "cabinBbq": "شواء الكوخ",
+      "spaWellness": "سبا وصحة",
+      "wineTasting": "تذوق النبيذ",
+      "gourmetDinner": "عشاء فاخر",
+      "cookingClass": "دروس الطبخ",
+      "golf": "جولف",
+      "cigarWhiskey": "سيجار وويسكي",
+      "breweryTour": "جولة مصنع الجعة",
+      "boatTrip": "رحلة بالقارب",
+      "photoshoot": "جلسة تصوير",
+      "cocktailClass": "دروس الكوكتيل",
+      "yogaRetreat": "معتكف اليوغا",
+      "danceClass": "دروس الرقص",
+      "brunchParty": "حفلة برانش",
+      "beachClub": "نادي الشاطئ",
+      "shoppingTour": "جولة تسوق",
+      "karaoke": "كاريوكي",
+      "kayaking": "التجديف بالكاياك",
+      "horsebackRiding": "ركوب الخيل",
+      "picnic": "نزهة",
+      "sunsetBoat": "قارب غروب الشمس",
+      "outdoorCooking": "الطبخ في الهواء الطلق",
+      "dinnerParty": "حفلة عشاء",
+      "bowling": "بولينج",
+      "gamesNight": "ليلة الألعاب",
+      "cocktailParty": "حفلة كوكتيل",
+      "dancing": "رقص",
+      "liveMusic": "موسيقى حية",
+      "spaDay": "يوم سبا",
+      "concert": "حفلة موسيقية",
+      "sportsEvent": "حدث رياضي",
+      "artClass": "دروس الفن",
+      "adventurePark": "حديقة المغامرات",
+      "themePark": "مدينة ملاهي",
+      "zooAquarium": "حديقة حيوان ومتحف مائي",
+      "beachFun": "متعة الشاطئ",
+      "hikingEasy": "المشي السهل",
+      "games": "ألعاب",
+      "bikeTour": "جولة بالدراجة",
+      "swimming": "سباحة",
+      "sightseeing": "مشاهدة المعالم",
+      "nightlife": "الحياة الليلية",
+      "foodTour": "جولة طعام",
+      "beach": "شاطئ",
+      "waterSports": "الرياضات المائية",
+      "localExperiences": "تجارب محلية",
+      "concertsEvents": "حفلات",
+      "teambuildingGames": "ألعاب الفريق",
+      "workshop": "ورشة عمل",
+      "outdoorChallenge": "تحدي خارجي",
+      "sportsTournament": "بطولة رياضية",
+      "dinnerEvent": "حدث عشاء",
+      "creativeWorkshop": "ورشة إبداعية",
+      "action": "أكشن",
+      "chill": "استرخاء",
+      "outdoor": "في الهواء الطلق",
+      "food": "طعام",
+      "culture": "ثقافة",
+      "party": "حفلة",
+      "mixed": "مختلط"
+    },
+    "duration": {
+      "dayTrip": "رحلة يوم واحد",
+      "weekend": "عطلة نهاية الأسبوع (2-3 أيام)",
+      "longWeekend": "عطلة نهاية أسبوع طويلة (3-4 أيام)",
+      "week": "أسبوع كامل",
+      "twoWeeks": "أسبوعان",
+      "halfDay": "نصف يوم",
+      "fullDay": "يوم كامل",
+      "evening": "مساء",
+      "overnight": "ليلة واحدة",
+      "flexible": "مرن"
+    },
+    "travel": {
+      "daytrip": "رحلة يوم واحد",
+      "oneNight": "ليلة واحدة",
+      "twoNights": "ليلتان",
+      "flexible": "مرن"
+    },
+    "fitness": {
+      "chill": "مريح",
+      "normal": "عادي",
+      "sporty": "رياضي"
+    },
+    "alcohol": {
+      "yes": "نعم من فضلك",
+      "no": "لا أفضل",
+      "flexible": "مرن"
+    },
+    "attendance": {
+      "yes": "أنا موجود!",
+      "maybe": "ربما",
+      "no": "للأسف لا"
+    },
     "designTemplates": "قوالب التصميم",
     "surveyTemplates": "قوالب الاستبيان",
     "selectDesign": "اختر تصميمًا",
@@ -1432,59 +1869,297 @@
     "recommended": "موصى به",
     "allTemplates": "جميع القوالب",
     "design": {
-      "jga-classic": { "name": "JGA كلاسيكي", "desc": "احتفالي وجاهز للحفلات بتدرج بنفسجي-سماوي" },
-      "wedding-elegant": { "name": "زفاف أنيق", "desc": "كلاسيكي أنيق بلمسات الذهب الوردي" },
-      "birthday-fun": { "name": "عيد ميلاد مرح", "desc": "ملون ومبهج لحفلات أعياد الميلاد" },
-      "beach-vibes": { "name": "أجواء الشاطئ", "desc": "مريح وصيفي لرحلات الشاطئ" },
-      "night-out": { "name": "سهرة خارجية", "desc": "داكن وأنيق لليالي الحفلات" },
-      "modern-minimal": { "name": "حديث بسيط", "desc": "نظيف وخالد لجميع المناسبات" },
-      "tropical-paradise": { "name": "جنة استوائية", "desc": "غريب وملون لرحلات المغامرة" },
-      "royal-purple": { "name": "بنفسجي ملكي", "desc": "ملكي وفاخر للمناسبات الخاصة" },
-      "sunset-glow": { "name": "توهج الغروب", "desc": "دافئ ورومانسي كغروب الشمس" },
-      "ocean-breeze": { "name": "نسيم المحيط", "desc": "منعش وبحري لعشاق الرياضات المائية" },
-      "ladies-night": { "name": "ليلة البنات", "desc": "وردي وأنيق لحفلة وداع العزوبية" },
-      "vegas-neon": { "name": "فيغاس نيون", "desc": "أضواء نيون لحفلات لا تُنسى" },
-      "oktoberfest": { "name": "أوكتوبرفست", "desc": "بافاري وتقليدي لعشاق المهرجانات الشعبية" },
-      "ski-snow": { "name": "تزلج وثلج", "desc": "شتوي ورياضي لرحلات التزلج" },
-      "festival-vibes": { "name": "أجواء المهرجان", "desc": "جامح وملون لعشاق المهرجانات" },
-      "garden-party": { "name": "حفلة حديقة", "desc": "طبيعي ورومانسي لحفلات الحدائق" },
-      "road-trip": { "name": "رحلة برية", "desc": "مغامر وحر لرحلات الطريق" },
-      "glamour-night": { "name": "ليلة ساحرة", "desc": "راقٍ وأنيق للأمسيات الخاصة" },
-      "sporty-adventure": { "name": "مغامرة رياضية", "desc": "نشط وحيوي للرياضيين" },
-      "retro-vintage": { "name": "ريترو فينتاج", "desc": "حنين وأنيق بطابع عتيق" }
+      "jga-classic": {
+        "name": "JGA كلاسيكي",
+        "desc": "احتفالي وجاهز للحفلات بتدرج بنفسجي-سماوي"
+      },
+      "wedding-elegant": {
+        "name": "زفاف أنيق",
+        "desc": "كلاسيكي أنيق بلمسات الذهب الوردي"
+      },
+      "birthday-fun": {
+        "name": "عيد ميلاد مرح",
+        "desc": "ملون ومبهج لحفلات أعياد الميلاد"
+      },
+      "beach-vibes": {
+        "name": "أجواء الشاطئ",
+        "desc": "مريح وصيفي لرحلات الشاطئ"
+      },
+      "night-out": {
+        "name": "سهرة خارجية",
+        "desc": "داكن وأنيق لليالي الحفلات"
+      },
+      "modern-minimal": {
+        "name": "حديث بسيط",
+        "desc": "نظيف وخالد لجميع المناسبات"
+      },
+      "tropical-paradise": {
+        "name": "جنة استوائية",
+        "desc": "غريب وملون لرحلات المغامرة"
+      },
+      "royal-purple": {
+        "name": "بنفسجي ملكي",
+        "desc": "ملكي وفاخر للمناسبات الخاصة"
+      },
+      "sunset-glow": {
+        "name": "توهج الغروب",
+        "desc": "دافئ ورومانسي كغروب الشمس"
+      },
+      "ocean-breeze": {
+        "name": "نسيم المحيط",
+        "desc": "منعش وبحري لعشاق الرياضات المائية"
+      },
+      "ladies-night": {
+        "name": "ليلة البنات",
+        "desc": "وردي وأنيق لحفلة وداع العزوبية"
+      },
+      "vegas-neon": {
+        "name": "فيغاس نيون",
+        "desc": "أضواء نيون لحفلات لا تُنسى"
+      },
+      "oktoberfest": {
+        "name": "أوكتوبرفست",
+        "desc": "بافاري وتقليدي لعشاق المهرجانات الشعبية"
+      },
+      "ski-snow": {
+        "name": "تزلج وثلج",
+        "desc": "شتوي ورياضي لرحلات التزلج"
+      },
+      "festival-vibes": {
+        "name": "أجواء المهرجان",
+        "desc": "جامح وملون لعشاق المهرجانات"
+      },
+      "garden-party": {
+        "name": "حفلة حديقة",
+        "desc": "طبيعي ورومانسي لحفلات الحدائق"
+      },
+      "road-trip": {
+        "name": "رحلة برية",
+        "desc": "مغامر وحر لرحلات الطريق"
+      },
+      "glamour-night": {
+        "name": "ليلة ساحرة",
+        "desc": "راقٍ وأنيق للأمسيات الخاصة"
+      },
+      "sporty-adventure": {
+        "name": "مغامرة رياضية",
+        "desc": "نشط وحيوي للرياضيين"
+      },
+      "retro-vintage": {
+        "name": "ريترو فينتاج",
+        "desc": "حنين وأنيق بطابع عتيق"
+      }
     },
     "survey": {
-      "jga-classic": { "name": "JGA كلاسيكي", "desc": "حفلة توديع عزوبية كلاسيكية مع رحلات مدن ومغامرة" },
-      "jga-deluxe": { "name": "JGA ديلوكس", "desc": "تجربة توديع عزوبية فاخرة مع أنشطة راقية" },
-      "bachelorette": { "name": "حفلة وداع العزوبية", "desc": "سبا وبرانش ورقص ولحظات لا تُنسى" },
-      "birthday-bash": { "name": "حفلة عيد ميلاد", "desc": "احتفال عيد ميلاد مرن وممتع" },
-      "adventure-trip": { "name": "رحلة مغامرة", "desc": "مغامرات في الهواء الطلق ومشي وأدرينالين" },
-      "city-break": { "name": "استراحة مدينة", "desc": "ثقافة وطعام ومعالم سياحية" },
-      "wedding-rsvp": { "name": "تأكيد حضور الزفاف", "desc": "رد أنيق على دعوة الزفاف مع النظام الغذائي والإقامة" },
-      "corporate-retreat": { "name": "خلوة شركة", "desc": "بناء فريق وورش عمل وتواصل مهني" }
+      "jga-classic": {
+        "name": "JGA كلاسيكي",
+        "desc": "حفلة توديع عزوبية كلاسيكية مع رحلات مدن ومغامرة"
+      },
+      "jga-deluxe": {
+        "name": "JGA ديلوكس",
+        "desc": "تجربة توديع عزوبية فاخرة مع أنشطة راقية"
+      },
+      "bachelorette": {
+        "name": "حفلة وداع العزوبية",
+        "desc": "سبا وبرانش ورقص ولحظات لا تُنسى"
+      },
+      "birthday-bash": {
+        "name": "حفلة عيد ميلاد",
+        "desc": "احتفال عيد ميلاد مرن وممتع"
+      },
+      "adventure-trip": {
+        "name": "رحلة مغامرة",
+        "desc": "مغامرات في الهواء الطلق ومشي وأدرينالين"
+      },
+      "city-break": {
+        "name": "استراحة مدينة",
+        "desc": "ثقافة وطعام ومعالم سياحية"
+      },
+      "wedding-rsvp": {
+        "name": "تأكيد حضور الزفاف",
+        "desc": "رد أنيق على دعوة الزفاف مع النظام الغذائي والإقامة"
+      },
+      "corporate-retreat": {
+        "name": "خلوة شركة",
+        "desc": "بناء فريق وورش عمل وتواصل مهني"
+      }
     }
   },
   "affiliate": {
     "portal": {
       "title": "بوابة الشركاء",
       "welcome": "مرحباً بعودتك",
-      "tabs": { "dashboard": "لوحة التحكم", "vouchers": "القسائم", "commissions": "العمولات", "payouts": "المدفوعات", "settings": "الإعدادات" }
+      "tabs": {
+        "dashboard": "لوحة التحكم",
+        "vouchers": "القسائم",
+        "commissions": "العمولات",
+        "payouts": "المدفوعات",
+        "settings": "الإعدادات"
+      }
     },
-    "stats": { "totalEarnings": "إجمالي الأرباح", "pendingBalance": "الرصيد المعلق", "paidOut": "تم الدفع", "conversionRate": "معدل التحويل", "thisMonth": "هذا الشهر", "allTime": "كل الوقت", "tier": "حالة المستوى" },
-    "vouchers": { "title": "رموز القسائم الخاصة بي", "copyCode": "نسخ الرمز", "share": "مشاركة", "redemptions": "الاستردادات", "generated": "تم الإنشاء", "noVouchers": "لا توجد قسائم معينة", "copied": "تم نسخ الرمز!", "discount": "خصم", "active": "نشط", "inactive": "غير نشط" },
-    "commissions": { "title": "عمولاتي", "recent": "العمولات الأخيرة", "pending": "قيد الانتظار", "approved": "تمت الموافقة", "paid": "مدفوع", "cancelled": "ملغي", "orderAmount": "مبلغ الطلب", "commission": "العمولة", "rate": "المعدل", "noCommissions": "لم يتم العثور على عمولات", "noCommissionsYet": "ستظهر العمولات هنا.", "noResults": "لا توجد نتائج لهذه الفلاتر", "searchPlaceholder": "البحث بالقسيمة أو البريد الإلكتروني..." },
-    "payouts": { "title": "المدفوعات", "availableBalance": "الرصيد المتاح", "requestPayout": "طلب الدفع", "minAmount": "الحد الأدنى: 50€", "readyForPayout": "جاهز للدفع", "processing": "قيد المعالجة", "completed": "مكتمل", "failed": "فشل", "pending": "قيد الانتظار", "reference": "المرجع", "history": "سجل المدفوعات", "noPayouts": "لا توجد مدفوعات", "noPayoutsDesc": "سيظهر سجل المدفوعات هنا.", "requested": "تم طلب الدفع بنجاح!", "confirmTitle": "تأكيد الدفع", "confirmDesc": "هل تريد طلب دفع لهذا المبلغ؟", "willBeTransferred": "سيتم تحويله إلى حسابك المسجل", "processedAt": "تمت المعالجة" },
-    "settings": { "title": "الإعدادات", "profile": "الملف الشخصي", "paymentMethod": "طريقة الدفع", "paymentType": "نوع الدفع", "bankTransfer": "تحويل بنكي", "paypal": "PayPal", "iban": "IBAN", "bic": "BIC", "paypalEmail": "بريد PayPal", "taxId": "الرقم الضريبي", "saved": "تم حفظ الإعدادات", "yourTier": "مستواك", "companyName": "اسم الشركة", "companyNamePlaceholder": "شركتك ش.م.م", "contactName": "اسم جهة الاتصال", "contactNamePlaceholder": "أحمد محمد", "phone": "الهاتف", "website": "الموقع الإلكتروني" },
-    "tiers": { "bronze": "برونزي", "silver": "فضي", "gold": "ذهبي", "platinum": "بلاتيني", "nextTier": "المستوى التالي", "conversionsNeeded": "{{needed}} تحويلات إضافية" },
-    "notAffiliate": { "title": "كن شريكاً", "description": "أنت لست شريكاً بعد. هل ترغب في الانضمام إلى برنامج الشراكة الخاص بنا؟", "cta": "قدم الآن", "loginRequired": "تسجيل الدخول مطلوب", "loginDesc": "يرجى تسجيل الدخول للوصول إلى بوابة الشركاء.", "benefits": { "commission": "عمولة تصل إلى 25%", "commissionDesc": "اكسب على كل إحالة ناجحة", "tracking": "تتبع في الوقت الفعلي", "trackingDesc": "تتبع جميع التحويلات", "support": "دعم شخصي", "supportDesc": "اتصال مباشر مع فريقنا" } }
+    "stats": {
+      "totalEarnings": "إجمالي الأرباح",
+      "pendingBalance": "الرصيد المعلق",
+      "paidOut": "تم الدفع",
+      "conversionRate": "معدل التحويل",
+      "thisMonth": "هذا الشهر",
+      "allTime": "كل الوقت",
+      "tier": "حالة المستوى"
+    },
+    "vouchers": {
+      "title": "رموز القسائم الخاصة بي",
+      "copyCode": "نسخ الرمز",
+      "share": "مشاركة",
+      "redemptions": "الاستردادات",
+      "generated": "تم الإنشاء",
+      "noVouchers": "لا توجد قسائم معينة",
+      "copied": "تم نسخ الرمز!",
+      "discount": "خصم",
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "commissions": {
+      "title": "عمولاتي",
+      "recent": "العمولات الأخيرة",
+      "pending": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "paid": "مدفوع",
+      "cancelled": "ملغي",
+      "orderAmount": "مبلغ الطلب",
+      "commission": "العمولة",
+      "rate": "المعدل",
+      "noCommissions": "لم يتم العثور على عمولات",
+      "noCommissionsYet": "ستظهر العمولات هنا.",
+      "noResults": "لا توجد نتائج لهذه الفلاتر",
+      "searchPlaceholder": "البحث بالقسيمة أو البريد الإلكتروني..."
+    },
+    "payouts": {
+      "title": "المدفوعات",
+      "availableBalance": "الرصيد المتاح",
+      "requestPayout": "طلب الدفع",
+      "minAmount": "الحد الأدنى: 50€",
+      "readyForPayout": "جاهز للدفع",
+      "processing": "قيد المعالجة",
+      "completed": "مكتمل",
+      "failed": "فشل",
+      "pending": "قيد الانتظار",
+      "reference": "المرجع",
+      "history": "سجل المدفوعات",
+      "noPayouts": "لا توجد مدفوعات",
+      "noPayoutsDesc": "سيظهر سجل المدفوعات هنا.",
+      "requested": "تم طلب الدفع بنجاح!",
+      "confirmTitle": "تأكيد الدفع",
+      "confirmDesc": "هل تريد طلب دفع لهذا المبلغ؟",
+      "willBeTransferred": "سيتم تحويله إلى حسابك المسجل",
+      "processedAt": "تمت المعالجة"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "profile": "الملف الشخصي",
+      "paymentMethod": "طريقة الدفع",
+      "paymentType": "نوع الدفع",
+      "bankTransfer": "تحويل بنكي",
+      "paypal": "PayPal",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paypalEmail": "بريد PayPal",
+      "taxId": "الرقم الضريبي",
+      "saved": "تم حفظ الإعدادات",
+      "yourTier": "مستواك",
+      "companyName": "اسم الشركة",
+      "companyNamePlaceholder": "شركتك ش.م.م",
+      "contactName": "اسم جهة الاتصال",
+      "contactNamePlaceholder": "أحمد محمد",
+      "phone": "الهاتف",
+      "website": "الموقع الإلكتروني"
+    },
+    "tiers": {
+      "bronze": "برونزي",
+      "silver": "فضي",
+      "gold": "ذهبي",
+      "platinum": "بلاتيني",
+      "nextTier": "المستوى التالي",
+      "conversionsNeeded": "{{needed}} تحويلات إضافية"
+    },
+    "notAffiliate": {
+      "title": "كن شريكاً",
+      "description": "أنت لست شريكاً بعد. هل ترغب في الانضمام إلى برنامج الشراكة الخاص بنا؟",
+      "cta": "قدم الآن",
+      "loginRequired": "تسجيل الدخول مطلوب",
+      "loginDesc": "يرجى تسجيل الدخول للوصول إلى بوابة الشركاء.",
+      "benefits": {
+        "commission": "عمولة تصل إلى 25%",
+        "commissionDesc": "اكسب على كل إحالة ناجحة",
+        "tracking": "تتبع في الوقت الفعلي",
+        "trackingDesc": "تتبع جميع التحويلات",
+        "support": "دعم شخصي",
+        "supportDesc": "اتصال مباشر مع فريقنا"
+      }
+    }
   },
   "partnerApply": {
-    "hero": { "badge": "برنامج الشراكة", "title": "انضم إلى برنامج الشراكة الخاص بنا", "description": "أوصِ بـ EventBliss واكسب ما يصل إلى 25% عمولة عن كل إحالة ناجحة." },
-    "benefits": { "commission": { "title": "عمولات جذابة", "description": "ما يصل إلى 25% على كل عملية شراء محالة" }, "tracking": { "title": "لوحة تحكم فورية", "description": "تتبع جميع تحويلاتك" }, "payouts": { "title": "دفعات سريعة", "description": "دفع شهري من 50€" }, "support": { "title": "دعم مخصص", "description": "نساعدك في كل خطوة" } },
-    "stats": { "partners": "شركاء نشطون", "commissionRate": "حتى", "payouts": "مدفوع" },
-    "form": { "title": "قدم الآن", "companyName": "اسم الشركة (اختياري)", "companyNamePlaceholder": "شركتك ش.م.م", "contactName": "اسم جهة الاتصال", "contactNamePlaceholder": "أحمد محمد", "email": "البريد الإلكتروني", "emailPlaceholder": "شريك@مثال.com", "phone": "الهاتف (اختياري)", "phonePlaceholder": "+966 50 123 4567", "website": "الموقع الإلكتروني (اختياري)", "websitePlaceholder": "https://موقعك.com", "taxId": "الرقم الضريبي (اختياري)", "taxIdPlaceholder": "123456789012345", "about": "عنك / عن شركتك (اختياري)", "aboutPlaceholder": "أخبرنا عن نفسك...", "promotion": "كيف تخطط للترويج لـ EventBliss؟", "promotionPlaceholder": "مثل: مدونة، وسائل التواصل الاجتماعي، النشرة الإخبارية، التوصيات الشخصية...", "privacy": "أوافق على", "submit": "إرسال الطلب", "submitting": "جارٍ الإرسال..." },
-    "success": { "title": "تم استلام الطلب!", "description": "شكراً لاهتمامك ببرنامج الشراكة الخاص بنا.", "nextSteps": "سنراجع طلبك ونتواصل معك خلال 2-3 أيام عمل.", "backToHome": "العودة للصفحة الرئيسية" },
-    "errors": { "required": "هذا الحقل مطلوب", "invalidEmail": "يرجى إدخال بريد إلكتروني صالح", "privacyRequired": "يجب قبول سياسة الخصوصية", "submitFailed": "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى." }
+    "hero": {
+      "badge": "برنامج الشراكة",
+      "title": "انضم إلى برنامج الشراكة الخاص بنا",
+      "description": "أوصِ بـ EventBliss واكسب ما يصل إلى 25% عمولة عن كل إحالة ناجحة."
+    },
+    "benefits": {
+      "commission": {
+        "title": "عمولات جذابة",
+        "description": "ما يصل إلى 25% على كل عملية شراء محالة"
+      },
+      "tracking": {
+        "title": "لوحة تحكم فورية",
+        "description": "تتبع جميع تحويلاتك"
+      },
+      "payouts": {
+        "title": "دفعات سريعة",
+        "description": "دفع شهري من 50€"
+      },
+      "support": {
+        "title": "دعم مخصص",
+        "description": "نساعدك في كل خطوة"
+      }
+    },
+    "stats": {
+      "partners": "شركاء نشطون",
+      "commissionRate": "حتى",
+      "payouts": "مدفوع"
+    },
+    "form": {
+      "title": "قدم الآن",
+      "companyName": "اسم الشركة (اختياري)",
+      "companyNamePlaceholder": "شركتك ش.م.م",
+      "contactName": "اسم جهة الاتصال",
+      "contactNamePlaceholder": "أحمد محمد",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "شريك@مثال.com",
+      "phone": "الهاتف (اختياري)",
+      "phonePlaceholder": "+966 50 123 4567",
+      "website": "الموقع الإلكتروني (اختياري)",
+      "websitePlaceholder": "https://موقعك.com",
+      "taxId": "الرقم الضريبي (اختياري)",
+      "taxIdPlaceholder": "123456789012345",
+      "about": "عنك / عن شركتك (اختياري)",
+      "aboutPlaceholder": "أخبرنا عن نفسك...",
+      "promotion": "كيف تخطط للترويج لـ EventBliss؟",
+      "promotionPlaceholder": "مثل: مدونة، وسائل التواصل الاجتماعي، النشرة الإخبارية، التوصيات الشخصية...",
+      "privacy": "أوافق على",
+      "submit": "إرسال الطلب",
+      "submitting": "جارٍ الإرسال..."
+    },
+    "success": {
+      "title": "تم استلام الطلب!",
+      "description": "شكراً لاهتمامك ببرنامج الشراكة الخاص بنا.",
+      "nextSteps": "سنراجع طلبك ونتواصل معك خلال 2-3 أيام عمل.",
+      "backToHome": "العودة للصفحة الرئيسية"
+    },
+    "errors": {
+      "required": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
+      "privacyRequired": "يجب قبول سياسة الخصوصية",
+      "submitFailed": "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
+    }
   },
   "aiCredits": {
     "title": "رصيد الذكاء الاصطناعي",
@@ -1522,29 +2197,32 @@
     "noCreditsLeft": "لا يوجد رصيد متبقي",
     "creditUsed": "💎 {{remaining}} رصيد متبقي"
   },
-  "admin": {
-    "credits": {
-      "title": "إدارة الرصيد",
-      "description": "تعديلات الرصيد اليدوية للمستخدمين",
-      "userSearch": "البحث عن مستخدم (البريد الإلكتروني)",
-      "currentCredits": "الرصيد الحالي",
-      "adjustCredits": "تعديل الرصيد",
-      "addCredits": "إضافة رصيد",
-      "removeCredits": "إزالة رصيد",
-      "reason": "السبب",
-      "reasonPlaceholder": "مثل: مكافأة الشريك، حسن النية، إلخ.",
-      "adjustmentSuccess": "تم تعديل الرصيد بنجاح",
-      "noUser": "المستخدم غير موجود",
-      "adjustmentHistory": "سجل التعديلات",
-      "amount": "المبلغ",
-      "adjustedBy": "تم التعديل بواسطة",
-      "date": "التاريخ"
-    }
-  },
   "gamesLibrary": {
-    "categories": { "jga_games": "ألعاب حفلة الوداع", "family_games": "ألعاب عائلية", "wedding_games": "ألعاب الزفاف", "party_games": "ألعاب الحفلات", "outdoor_games": "ألعاب خارجية", "team_games": "بناء الفريق", "icebreaker": "كسر الجليد", "kids_friendly": "مناسب للأطفال" },
-    "filters": { "title": "الفلاتر", "all": "الكل", "category": "الفئة", "eventType": "نوع الفعالية", "difficulty": "الصعوبة", "kidsFriendly": "مناسب للأطفال", "alcoholFree": "بدون كحول", "clear": "مسح الفلاتر" },
-    "difficulty": { "easy": "سهل", "medium": "متوسط", "hard": "صعب" },
+    "categories": {
+      "jga_games": "ألعاب حفلة الوداع",
+      "family_games": "ألعاب عائلية",
+      "wedding_games": "ألعاب الزفاف",
+      "party_games": "ألعاب الحفلات",
+      "outdoor_games": "ألعاب خارجية",
+      "team_games": "بناء الفريق",
+      "icebreaker": "كسر الجليد",
+      "kids_friendly": "مناسب للأطفال"
+    },
+    "filters": {
+      "title": "الفلاتر",
+      "all": "الكل",
+      "category": "الفئة",
+      "eventType": "نوع الفعالية",
+      "difficulty": "الصعوبة",
+      "kidsFriendly": "مناسب للأطفال",
+      "alcoholFree": "بدون كحول",
+      "clear": "مسح الفلاتر"
+    },
+    "difficulty": {
+      "easy": "سهل",
+      "medium": "متوسط",
+      "hard": "صعب"
+    },
     "searchPlaceholder": "البحث عن الألعاب...",
     "resultsCount": "تم العثور على {{count}} لعبة",
     "noResults": "لم يتم العثور على ألعاب. جرب فلاتر أخرى.",
@@ -1553,32 +2231,185 @@
     "materials": "المواد",
     "addToPlanner": "إضافة للمخطط",
     "games": {
-      "bingo_tasks": { "name": "بينغو المهام", "description": "يحصل كل شخص على بطاقة بينغو بمهام ممتعة لإكمالها في المدينة.", "instructions": "أنشئ بطاقات بينغو بمهام مختلفة. المجموعة تتجول في المدينة محاولة إكمالها جميعاً. من يكمل صفاً أولاً يفوز!" },
-      "beer_pong": { "name": "بير بونغ", "description": "الكلاسيكي - ارمِ الكرة في أكواب الخصم.", "instructions": "رتب الأكواب في شكل مثلث. الفرق ترمي بالتناوب. إصابة = الخصم يشرب. الفريق بدون أكواب يخسر." },
-      "truth_or_dare": { "name": "صراحة أم جرأة", "description": "الكلاسيكي للاعترافات الجريئة والتحديات المجنونة.", "instructions": "بالتناوب يختار كل شخص: صراحة أو جرأة. الرفض = عقوبة!" },
-      "karaoke_battle": { "name": "معركة الكاريوكي", "description": "غنِّ لتفوز!", "instructions": "الفرق أو الأفراد يتنافسون. المجموعة تصوت. نقاط للأداء!" },
-      "shoe_game": { "name": "لعبة الحذاء", "description": "العروسان يجيبان على الأسئلة بالأحذية.", "instructions": "الزوجان يجلسان ظهراً لظهر، كل منهما بحذائه وحذاء شريكه. عند الأسئلة يرفعان حذاء من ينطبق عليه الجواب." },
-      "scavenger_hunt": { "name": "صيد الكنز", "description": "اتبع الأدلة وحل الألغاز.", "instructions": "أخفِ أدلة تؤدي للمكان التالي. في النهاية ينتظر كنز!" }
+      "bingo_tasks": {
+        "name": "بينغو المهام",
+        "description": "يحصل كل شخص على بطاقة بينغو بمهام ممتعة لإكمالها في المدينة.",
+        "instructions": "أنشئ بطاقات بينغو بمهام مختلفة. المجموعة تتجول في المدينة محاولة إكمالها جميعاً. من يكمل صفاً أولاً يفوز!"
+      },
+      "beer_pong": {
+        "name": "بير بونغ",
+        "description": "الكلاسيكي - ارمِ الكرة في أكواب الخصم.",
+        "instructions": "رتب الأكواب في شكل مثلث. الفرق ترمي بالتناوب. إصابة = الخصم يشرب. الفريق بدون أكواب يخسر."
+      },
+      "truth_or_dare": {
+        "name": "صراحة أم جرأة",
+        "description": "الكلاسيكي للاعترافات الجريئة والتحديات المجنونة.",
+        "instructions": "بالتناوب يختار كل شخص: صراحة أو جرأة. الرفض = عقوبة!"
+      },
+      "karaoke_battle": {
+        "name": "معركة الكاريوكي",
+        "description": "غنِّ لتفوز!",
+        "instructions": "الفرق أو الأفراد يتنافسون. المجموعة تصوت. نقاط للأداء!"
+      },
+      "shoe_game": {
+        "name": "لعبة الحذاء",
+        "description": "العروسان يجيبان على الأسئلة بالأحذية.",
+        "instructions": "الزوجان يجلسان ظهراً لظهر، كل منهما بحذائه وحذاء شريكه. عند الأسئلة يرفعان حذاء من ينطبق عليه الجواب."
+      },
+      "scavenger_hunt": {
+        "name": "صيد الكنز",
+        "description": "اتبع الأدلة وحل الألغاز.",
+        "instructions": "أخفِ أدلة تؤدي للمكان التالي. في النهاية ينتظر كنز!"
+      }
     },
     "themes": {
-      "80s_retro": { "name": "حفلة ريترو الثمانينات", "description": "ألوان نيون وموسيقى سينث وأكتاف عريضة", "tips": "أضواء نيون وكرات ديسكو وأغاني الثمانينات!" },
-      "casino_royale": { "name": "كازينو رويال", "description": "أجواء جيمس بوند الأنيقة", "tips": "سجادة حمراء ورقائق بوكر وكوكتيلات أنيقة!" },
-      "oktoberfest": { "name": "أوكتوبرفست", "description": "أجواء بافارية", "tips": "طاولات بيرة وبريتزل وسجق وموسيقى!" }
+      "80s_retro": {
+        "name": "حفلة ريترو الثمانينات",
+        "description": "ألوان نيون وموسيقى سينث وأكتاف عريضة",
+        "tips": "أضواء نيون وكرات ديسكو وأغاني الثمانينات!"
+      },
+      "casino_royale": {
+        "name": "كازينو رويال",
+        "description": "أجواء جيمس بوند الأنيقة",
+        "tips": "سجادة حمراء ورقائق بوكر وكوكتيلات أنيقة!"
+      },
+      "oktoberfest": {
+        "name": "أوكتوبرفست",
+        "description": "أجواء بافارية",
+        "tips": "طاولات بيرة وبريتزل وسجق وموسيقى!"
+      }
     }
   },
-  "ideasHub": { "title": "الألعاب والأفكار", "description": "اكتشف أكثر من 200 لعبة و50 موضوع لفعاليتك.", "tabs": { "games": "الألعاب", "themes": "المواضيع" }, "stats": { "games": "الألعاب", "themes": "المواضيع", "categories": "الفئات", "languages": "اللغات" }, "openGames": "فتح جميع الألعاب" },
-  "eventTypes": { "bachelor": "حفلة وداع (هو)", "bachelorette": "حفلة وداع (هي)", "wedding": "زفاف", "birthday": "عيد ميلاد", "family": "عائلة", "team": "فريق", "trip": "رحلة", "other": "أخرى" },
+  "ideasHub": {
+    "title": "الألعاب والأفكار",
+    "description": "اكتشف أكثر من 200 لعبة و50 موضوع لفعاليتك.",
+    "tabs": {
+      "games": "الألعاب",
+      "themes": "المواضيع"
+    },
+    "stats": {
+      "games": "الألعاب",
+      "themes": "المواضيع",
+      "categories": "الفئات",
+      "languages": "اللغات"
+    },
+    "openGames": "فتح جميع الألعاب"
+  },
+  "eventTypes": {
+    "bachelor": "حفلة وداع (هو)",
+    "bachelorette": "حفلة وداع (هي)",
+    "wedding": "زفاف",
+    "birthday": "عيد ميلاد",
+    "family": "عائلة",
+    "team": "فريق",
+    "trip": "رحلة",
+    "other": "أخرى"
+  },
   "agency": {
     "dashboard": "لوحة تحكم الوكالة",
     "overview": "نظرة عامة",
     "events": "الفعاليات",
-    "contacts": "جهات الاتصال",
-    "templates": "القوالب",
-    "team": "الفريق",
-    "files": "الملفات",
-    "reports": "التقارير",
+    "contacts": {
+      "searchContacts": "البحث في جهات الاتصال...",
+      "addContact": "إضافة جهة اتصال",
+      "importCSV": "استيراد CSV",
+      "name": "الاسم",
+      "company": "الشركة",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "type": "النوع",
+      "rating": "التقييم",
+      "lastUsed": "آخر استخدام",
+      "tags": "العلامات",
+      "notes": "الملاحظات",
+      "priceHistory": "سجل الأسعار",
+      "pastEvents": "الفعاليات السابقة",
+      "availability": "التوفر",
+      "topRated": "الأعلى تقييماً",
+      "recentlyUsed": "المستخدم مؤخراً",
+      "available": "متوفر",
+      "qualityScore": "درجة الجودة",
+      "specialization": "التخصص"
+    },
+    "templates": {
+      "useTemplate": "استخدام القالب",
+      "createFromEvent": "إنشاء من فعالية",
+      "timesUsed": "مرة استخدام",
+      "lastUsed": "آخر استخدام",
+      "categories": {
+        "corporate": "شركات",
+        "wedding": "زفاف",
+        "jga": "حفلة وداع العزوبية",
+        "birthday": "عيد ميلاد",
+        "conference": "مؤتمر",
+        "festival": "مهرجان",
+        "other": "أخرى"
+      }
+    },
+    "team": {
+      "inviteMember": "دعوة عضو",
+      "inviteByEmail": "الدعوة بالبريد الإلكتروني",
+      "role": "الدور",
+      "activeEvents": "الفعاليات النشطة",
+      "lastActive": "آخر نشاط",
+      "workload": "حجم العمل",
+      "deactivate": "إلغاء التفعيل",
+      "activityLog": "سجل النشاط"
+    },
+    "files": {
+      "uploadFiles": "رفع الملفات",
+      "dragAndDrop": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
+      "storageUsed": "المساحة المستخدمة",
+      "categories": {
+        "contract": "عقد",
+        "invoice": "فاتورة",
+        "photo": "صورة",
+        "floorPlan": "مخطط الطابق",
+        "briefing": "إحاطة",
+        "other": "أخرى"
+      },
+      "gridView": "عرض شبكي",
+      "listView": "عرض قائمة"
+    },
+    "reports": {
+      "dateRange": "نطاق التاريخ",
+      "eventsPerMonth": "الفعاليات شهرياً",
+      "revenueTrend": "اتجاه الإيرادات",
+      "eventTypes": "توزيع أنواع الفعاليات",
+      "budgetAccuracy": "دقة الميزانية",
+      "exportCSV": "تصدير CSV",
+      "avgBudgetPerEvent": "متوسط الميزانية/فعالية",
+      "clientRetention": "الاحتفاظ بالعملاء"
+    },
     "calendar": "التقويم",
-    "runOfShow": "جدول سير الحدث",
+    "runOfShow": {
+      "liveTimeline": "الجدول الزمني المباشر",
+      "currentPhase": "المرحلة الحالية",
+      "upcoming": "قادم",
+      "active": "نشط",
+      "completed": "مكتمل",
+      "delayed": "متأخر",
+      "skipped": "تم تخطيه",
+      "markActive": "تحديد كنشط",
+      "markComplete": "تحديد كمكتمل",
+      "skip": "تخطي",
+      "countdown": "العد التنازلي",
+      "responsible": "المسؤول",
+      "cueNotes": "ملاحظات الإشارة",
+      "delayMinutes": "التأخير (دقائق)",
+      "multiStage": "متعدد المراحل",
+      "mainStage": "المسرح الرئيسي",
+      "breakoutRoom": "غرفة العمل",
+      "emergency": "بروتوكول الطوارئ",
+      "incidentLog": "سجل الحوادث",
+      "reportIncident": "الإبلاغ عن حادثة",
+      "roleView": "عرض الأدوار",
+      "allRoles": "جميع الأدوار",
+      "moderator": "مشرف",
+      "technician": "فني",
+      "catering": "تقديم الطعام",
+      "crew": "طاقم"
+    },
     "budgetEngine": "محرك الميزانية",
     "notifications": "الإشعارات",
     "stats": {
@@ -1630,28 +2461,6 @@
       "transport": "نقل",
       "security": "أمن"
     },
-    "contacts": {
-      "searchContacts": "البحث في جهات الاتصال...",
-      "addContact": "إضافة جهة اتصال",
-      "importCSV": "استيراد CSV",
-      "name": "الاسم",
-      "company": "الشركة",
-      "phone": "الهاتف",
-      "email": "البريد الإلكتروني",
-      "type": "النوع",
-      "rating": "التقييم",
-      "lastUsed": "آخر استخدام",
-      "tags": "العلامات",
-      "notes": "الملاحظات",
-      "priceHistory": "سجل الأسعار",
-      "pastEvents": "الفعاليات السابقة",
-      "availability": "التوفر",
-      "topRated": "الأعلى تقييماً",
-      "recentlyUsed": "المستخدم مؤخراً",
-      "available": "متوفر",
-      "qualityScore": "درجة الجودة",
-      "specialization": "التخصص"
-    },
     "planner": {
       "overview": "نظرة عامة",
       "timeline": "الجدول الزمني",
@@ -1689,34 +2498,6 @@
       "approvalPending": "بانتظار الموافقة",
       "approved": "تمت الموافقة"
     },
-    "runOfShow": {
-      "liveTimeline": "الجدول الزمني المباشر",
-      "currentPhase": "المرحلة الحالية",
-      "upcoming": "قادم",
-      "active": "نشط",
-      "completed": "مكتمل",
-      "delayed": "متأخر",
-      "skipped": "تم تخطيه",
-      "markActive": "تحديد كنشط",
-      "markComplete": "تحديد كمكتمل",
-      "skip": "تخطي",
-      "countdown": "العد التنازلي",
-      "responsible": "المسؤول",
-      "cueNotes": "ملاحظات الإشارة",
-      "delayMinutes": "التأخير (دقائق)",
-      "multiStage": "متعدد المراحل",
-      "mainStage": "المسرح الرئيسي",
-      "breakoutRoom": "غرفة العمل",
-      "emergency": "بروتوكول الطوارئ",
-      "incidentLog": "سجل الحوادث",
-      "reportIncident": "الإبلاغ عن حادثة",
-      "roleView": "عرض الأدوار",
-      "allRoles": "جميع الأدوار",
-      "moderator": "مشرف",
-      "technician": "فني",
-      "catering": "تقديم الطعام",
-      "crew": "طاقم"
-    },
     "teamRoles": {
       "owner": "المالك",
       "coOrganizer": "منظم مشارك",
@@ -1726,56 +2507,6 @@
       "agencyAdmin": "مدير الوكالة",
       "eventManager": "مدير الفعاليات",
       "assistant": "مساعد"
-    },
-    "team": {
-      "inviteMember": "دعوة عضو",
-      "inviteByEmail": "الدعوة بالبريد الإلكتروني",
-      "role": "الدور",
-      "activeEvents": "الفعاليات النشطة",
-      "lastActive": "آخر نشاط",
-      "workload": "حجم العمل",
-      "deactivate": "إلغاء التفعيل",
-      "activityLog": "سجل النشاط"
-    },
-    "templates": {
-      "useTemplate": "استخدام القالب",
-      "createFromEvent": "إنشاء من فعالية",
-      "timesUsed": "مرة استخدام",
-      "lastUsed": "آخر استخدام",
-      "categories": {
-        "corporate": "شركات",
-        "wedding": "زفاف",
-        "jga": "حفلة وداع العزوبية",
-        "birthday": "عيد ميلاد",
-        "conference": "مؤتمر",
-        "festival": "مهرجان",
-        "other": "أخرى"
-      }
-    },
-    "files": {
-      "uploadFiles": "رفع الملفات",
-      "dragAndDrop": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
-      "storageUsed": "المساحة المستخدمة",
-      "categories": {
-        "contract": "عقد",
-        "invoice": "فاتورة",
-        "photo": "صورة",
-        "floorPlan": "مخطط الطابق",
-        "briefing": "إحاطة",
-        "other": "أخرى"
-      },
-      "gridView": "عرض شبكي",
-      "listView": "عرض قائمة"
-    },
-    "reports": {
-      "dateRange": "نطاق التاريخ",
-      "eventsPerMonth": "الفعاليات شهرياً",
-      "revenueTrend": "اتجاه الإيرادات",
-      "eventTypes": "توزيع أنواع الفعاليات",
-      "budgetAccuracy": "دقة الميزانية",
-      "exportCSV": "تصدير CSV",
-      "avgBudgetPerEvent": "متوسط الميزانية/فعالية",
-      "clientRetention": "الاحتفاظ بالعملاء"
     },
     "search": {
       "placeholder": "البحث في الفعاليات، جهات الاتصال، الموردين...",
@@ -1903,242 +2634,242 @@
   },
   "native": {
     "home": {
-      "greeting": "\u0623\u0647\u0644\u0627\u064b {{name}} \ud83d\udc4b",
-      "heroTitle": "\u062e\u0644\u0651\u0650\u0647\u0627",
-      "heroHighlight": "\u0623\u0633\u0637\u0648\u0631\u064a\u0629.",
-      "newEvent": "\u062d\u062f\u062b \u062c\u062f\u064a\u062f",
-      "planParty": "\u062e\u0637\u0651\u0637 \u062d\u0641\u0644\u0629",
-      "joinEvent": "\u0627\u0646\u0636\u0645 \u0625\u0644\u0649 \u062d\u062f\u062b",
-      "games": "\u0623\u0644\u0639\u0627\u0628",
-      "yourEvents": "\u0623\u062d\u062f\u0627\u062b\u0643",
-      "allEvents": "\u0627\u0644\u0643\u0644",
-      "noEventsYet": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0623\u062d\u062f\u0627\u062b \u0628\u0639\u062f \u2014 \u062e\u0637\u0651\u0637 \u0627\u0644\u0623\u0648\u0644!",
-      "participants": "\u0627\u0644\u0645\u0634\u0627\u0631\u0643\u0648\u0646",
-      "playNow": "\u0627\u0644\u0639\u0628 \u0627\u0644\u0622\u0646",
-      "partyGamesCount": "+24 \u0644\u0639\u0628\u0629 \u062d\u0641\u0644\u0627\u062a",
-      "partyGamesSubtitle": "\u062a\u0627\u0628\u0648\u060c \u0628\u0648\u0645\u0628\u060c Headup \u0648\u0627\u0644\u0645\u0632\u064a\u062f",
-      "findInspiration": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0625\u0644\u0647\u0627\u0645",
-      "findInspirationSub": "\u0645\u0648\u0627\u0636\u064a\u0639 \u0648\u0623\u0644\u0639\u0627\u0628 \u0648\u0623\u0641\u0643\u0627\u0631 \u0644\u062d\u062f\u062b\u0643"
+      "greeting": "أهلاً {{name}} 👋",
+      "heroTitle": "خلِّها",
+      "heroHighlight": "أسطورية.",
+      "newEvent": "حدث جديد",
+      "planParty": "خطّط حفلة",
+      "joinEvent": "انضم إلى حدث",
+      "games": "ألعاب",
+      "yourEvents": "أحداثك",
+      "allEvents": "الكل",
+      "noEventsYet": "لا توجد أحداث بعد — خطّط الأول!",
+      "participants": "المشاركون",
+      "playNow": "العب الآن",
+      "partyGamesCount": "+24 لعبة حفلات",
+      "partyGamesSubtitle": "تابو، بومب، Headup والمزيد",
+      "findInspiration": "ابحث عن إلهام",
+      "findInspirationSub": "مواضيع وألعاب وأفكار لحدثك"
     },
     "games": {
-      "subtitle": "\u0623\u0644\u0639\u0627\u0628 \u0627\u0644\u062d\u0641\u0644\u0627\u062a",
-      "title": "\u0645\u0633\u062a\u0639\u062f\u0648\u0646 \u0644\u0644\u0645\u0631\u062d\u061f",
-      "unlockPremium": "\u0641\u062a\u062d \u0628\u0631\u064a\u0645\u064a\u0648\u0645",
-      "unlockPremiumSub": "\u0627\u0644\u0639\u0628 \u062c\u0645\u064a\u0639 \u0627\u0644\u0640 17 \u0644\u0639\u0628\u0629 \u0628\u0644\u0627 \u062d\u062f\u0648\u062f",
+      "subtitle": "ألعاب الحفلات",
+      "title": "مستعدون للمرح؟",
+      "unlockPremium": "فتح بريميوم",
+      "unlockPremiumSub": "العب جميع الـ 17 لعبة بلا حدود",
       "isUp": "دورك! 🎯",
       "categories": {
-        "alle": "\u0627\u0644\u0643\u0644",
-        "party": "\u062d\u0641\u0644\u0629",
-        "social": "\u0627\u062c\u062a\u0645\u0627\u0639\u064a",
-        "quiz": "\u0645\u0633\u0627\u0628\u0642\u0629",
-        "wort": "\u0643\u0644\u0645\u0629",
-        "karte": "\u062e\u0631\u064a\u0637\u0629",
-        "reaktion": "\u0631\u062f \u0641\u0639\u0644",
-        "kreativ": "\u0625\u0628\u062f\u0627\u0639\u064a"
+        "alle": "الكل",
+        "party": "حفلة",
+        "social": "اجتماعي",
+        "quiz": "مسابقة",
+        "wort": "كلمة",
+        "karte": "خريطة",
+        "reaktion": "رد فعل",
+        "kreativ": "إبداعي"
       }
     },
     "gameNames": {
-      "bomb": "\u0627\u0644\u0642\u0646\u0628\u0644\u0629 \u0627\u0644\u0645\u0648\u0642\u0648\u062a\u0629",
-      "headup": "\u062e\u0645\u0651\u0646 \u0639\u0644\u0649 \u0627\u0644\u062c\u0628\u064a\u0646",
-      "taboo": "\u0627\u0644\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u062d\u0638\u0648\u0631\u0629",
-      "category": "\u0641\u0626\u0629 \u0628\u0627\u0644\u0648\u0642\u062a",
+      "bomb": "القنبلة الموقوتة",
+      "headup": "خمّن على الجبين",
+      "taboo": "الكلمة المحظورة",
+      "category": "فئة بالوقت",
       "thisOrThat": "This or That",
-      "hochstapler": "\u0627\u0644\u0645\u062d\u062a\u0627\u0644",
-      "wahrheitPflicht": "\u0635\u0631\u0627\u062d\u0629 \u0623\u0645 \u062a\u062d\u062f\u0651\u064a",
-      "werBinIch": "\u0645\u0646 \u0623\u0646\u0627\u061f",
-      "flaschendrehen": "\u0623\u062f\u0631 \u0627\u0644\u0632\u062c\u0627\u062c\u0629",
-      "emojiRaten": "\u062e\u0645\u0651\u0646 \u0627\u0644\u0625\u064a\u0645\u0648\u062c\u064a",
+      "hochstapler": "المحتال",
+      "wahrheitPflicht": "صراحة أم تحدّي",
+      "werBinIch": "من أنا؟",
+      "flaschendrehen": "أدر الزجاجة",
+      "emojiRaten": "خمّن الإيموجي",
       "fakeOrFact": "Fake or Fact",
-      "schnellzeichner": "\u0627\u0644\u0631\u0633\u0651\u0627\u0645 \u0627\u0644\u0633\u0631\u064a\u0639",
+      "schnellzeichner": "الرسّام السريع",
       "splitQuiz": "Split Quiz",
-      "geteiltGequizzt": "\u0645\u0633\u0627\u0628\u0642\u0629 \u0645\u0634\u062a\u0631\u0643\u0629",
+      "geteiltGequizzt": "مسابقة مشتركة",
       "storyBuilder": "Story Builder",
-      "woIstWas": "\u0623\u064a\u0646 \u0647\u0630\u0627\u061f",
-      "drueckDasWort": "\u0627\u0636\u063a\u0637 \u0627\u0644\u0643\u0644\u0645\u0629"
+      "woIstWas": "أين هذا؟",
+      "drueckDasWort": "اضغط الكلمة"
     },
     "gameDescs": {
-      "bomb": "\u0639\u0646\u062f \u0645\u0646 \u062a\u0646\u0641\u062c\u0631\u061f",
-      "headup": "\u062e\u0645\u0651\u0646 \u0628\u0627\u0644\u062c\u0628\u064a\u0646",
-      "taboo": "\u0627\u0634\u0631\u062d \u0628\u062f\u0648\u0646 \u0643\u0644\u0645\u0627\u062a \u0645\u062d\u0638\u0648\u0631\u0629",
-      "category": "\u0633\u0628\u0627\u0642 \u0645\u0639 \u0627\u0644\u0633\u0627\u0639\u0629",
-      "thisOrThat": "\u0642\u0631\u0627\u0631\u0627\u062a \u062e\u0627\u0637\u0641\u0629",
-      "hochstapler": "\u0627\u0643\u0634\u0641 \u0627\u0644\u0645\u062d\u062a\u0627\u0644",
-      "wahrheitPflicht": "\u0627\u0644\u0643\u0644\u0627\u0633\u064a\u0643\u064a \u2014 \u0645\u0648\u0633\u0651\u0639",
-      "werBinIch": "\u0623\u0633\u0626\u0644\u0629 \u0646\u0639\u0645/\u0644\u0627 \u0644\u0644\u0641\u0648\u0632",
-      "flaschendrehen": "\u0627\u0644\u0632\u062c\u0627\u062c\u0629 \u062a\u0642\u0631\u0651\u0631",
-      "emojiRaten": "\u0623\u0641\u0644\u0627\u0645 \u0648\u0623\u063a\u0627\u0646\u064a \u0645\u0646 \u0625\u064a\u0645\u0648\u062c\u064a",
-      "fakeOrFact": "\u062d\u0642\u064a\u0642\u0629 \u0623\u0645 \u0643\u0630\u0628\u061f",
-      "schnellzeichner": "\u0627\u0631\u0633\u0645 \u062a\u062d\u062a \u0627\u0644\u0636\u063a\u0637",
-      "splitQuiz": "\u0645\u0633\u0627\u0628\u0642\u0629 \u0641\u0631\u064a\u0642 \u0645\u0639 \u062a\u0642\u0633\u064a\u0645",
-      "geteiltGequizzt": "\u0645\u0633\u0627\u0628\u0642\u0629 \u062a\u0639\u0627\u0648\u0646\u064a\u0629",
-      "storyBuilder": "\u0642\u0635\u0635 \u0645\u062c\u0646\u0648\u0646\u0629",
-      "woIstWas": "\u0627\u0639\u062b\u0631 \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0646",
-      "drueckDasWort": "\u0627\u0643\u062a\u0628 \u0628\u0633\u0631\u0639\u0629\u060c \u0641\u0643\u0651\u0631 \u0628\u0633\u0631\u0639\u0629"
+      "bomb": "عند من تنفجر؟",
+      "headup": "خمّن بالجبين",
+      "taboo": "اشرح بدون كلمات محظورة",
+      "category": "سباق مع الساعة",
+      "thisOrThat": "قرارات خاطفة",
+      "hochstapler": "اكشف المحتال",
+      "wahrheitPflicht": "الكلاسيكي — موسّع",
+      "werBinIch": "أسئلة نعم/لا للفوز",
+      "flaschendrehen": "الزجاجة تقرّر",
+      "emojiRaten": "أفلام وأغاني من إيموجي",
+      "fakeOrFact": "حقيقة أم كذب؟",
+      "schnellzeichner": "ارسم تحت الضغط",
+      "splitQuiz": "مسابقة فريق مع تقسيم",
+      "geteiltGequizzt": "مسابقة تعاونية",
+      "storyBuilder": "قصص مجنونة",
+      "woIstWas": "اعثر على المكان",
+      "drueckDasWort": "اكتب بسرعة، فكّر بسرعة"
     },
     "events": {
-      "title": "\u0627\u0644\u0623\u062d\u062f\u0627\u062b",
-      "countSummary": "{{active}} \u0646\u0634\u0637 \u00b7 {{archived}} \u0645\u0624\u0631\u0634\u0641",
-      "searchPlaceholder": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0623\u062d\u062f\u0627\u062b...",
-      "tabActive": "\u0646\u0634\u0637",
-      "tabArchived": "\u0645\u0624\u0631\u0634\u0641",
-      "noEventsTitle": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0623\u062d\u062f\u0627\u062b \u0628\u0639\u062f",
-      "noArchivedTitle": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0623\u062d\u062f\u0627\u062b \u0645\u0624\u0631\u0634\u0641\u0629",
-      "noEventsDesc": "\u062e\u0637\u0651\u0637 \u062d\u062f\u062b\u0643 \u0627\u0644\u0623\u0648\u0644 \u0648\u0627\u062f\u0639\u064f \u0623\u0635\u062f\u0642\u0627\u0621\u0643.",
-      "noArchivedDesc": "\u0633\u062a\u0638\u0647\u0631 \u0627\u0644\u0623\u062d\u062f\u0627\u062b \u0627\u0644\u0645\u0624\u0631\u0634\u0641\u0629 \u0647\u0646\u0627.",
-      "createEvent": "\u0625\u0646\u0634\u0627\u0621 \u062d\u062f\u062b",
-      "forHonoree": "\u0644\u0640 {{name}}"
+      "title": "الأحداث",
+      "countSummary": "{{active}} نشط · {{archived}} مؤرشف",
+      "searchPlaceholder": "ابحث عن أحداث...",
+      "tabActive": "نشط",
+      "tabArchived": "مؤرشف",
+      "noEventsTitle": "لا توجد أحداث بعد",
+      "noArchivedTitle": "لا توجد أحداث مؤرشفة",
+      "noEventsDesc": "خطّط حدثك الأول وادعُ أصدقاءك.",
+      "noArchivedDesc": "ستظهر الأحداث المؤرشفة هنا.",
+      "createEvent": "إنشاء حدث",
+      "forHonoree": "لـ {{name}}"
     },
     "ideas": {
-      "subtitle": "\u0625\u0644\u0647\u0627\u0645",
-      "title": "\u0623\u0641\u0643\u0627\u0631",
-      "titleHighlight": "\u0645\u064f\u0644\u0647\u0650\u0645\u0629",
-      "stats": "147 \u0644\u0639\u0628\u0629 \u00b7 56 \u0645\u0648\u0636\u0648\u0639 \u00b7 \u0644\u0643\u0644 \u0645\u0646\u0627\u0633\u0628\u0629",
-      "tabGames": "\u0623\u0644\u0639\u0627\u0628 ({{count}})",
-      "tabThemes": "\u0645\u0648\u0627\u0636\u064a\u0639 ({{count}})",
-      "searchGames": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0623\u0644\u0639\u0627\u0628...",
-      "searchThemes": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u0648\u0627\u0636\u064a\u0639...",
-      "moreGames": "+{{count}} \u0623\u0644\u0639\u0627\u0628 \u0623\u062e\u0631\u0649",
-      "noGames": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0623\u0644\u0639\u0627\u0628",
-      "noThemes": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u0648\u0627\u0636\u064a\u0639",
-      "readAloud": "\u0627\u0642\u0631\u0623 \u0628\u0635\u0648\u062a \u0639\u0627\u0644\u064d",
-      "material": "\u0627\u0644\u0645\u0648\u0627\u062f",
+      "subtitle": "إلهام",
+      "title": "أفكار",
+      "titleHighlight": "مُلهِمة",
+      "stats": "147 لعبة · 56 موضوع · لكل مناسبة",
+      "tabGames": "ألعاب ({{count}})",
+      "tabThemes": "مواضيع ({{count}})",
+      "searchGames": "ابحث عن ألعاب...",
+      "searchThemes": "ابحث عن مواضيع...",
+      "moreGames": "+{{count}} ألعاب أخرى",
+      "noGames": "لم يتم العثور على ألعاب",
+      "noThemes": "لم يتم العثور على مواضيع",
+      "readAloud": "اقرأ بصوت عالٍ",
+      "material": "المواد",
       "difficulty": {
-        "easy": "\u0633\u0647\u0644",
-        "medium": "\u0645\u062a\u0648\u0633\u0637",
-        "hard": "\u0635\u0639\u0628"
+        "easy": "سهل",
+        "medium": "متوسط",
+        "hard": "صعب"
       },
       "categories": {
-        "alle": "\u0627\u0644\u0643\u0644",
-        "party": "\u062d\u0641\u0644\u0629",
-        "jga": "\u062d\u0641\u0644\u0629 \u0648\u062f\u0627\u0639 \u0627\u0644\u0639\u0632\u0648\u0628\u064a\u0629",
-        "outdoor": "\u0641\u064a \u0627\u0644\u0647\u0648\u0627\u0621 \u0627\u0644\u0637\u0644\u0642",
-        "team": "\u0641\u0631\u064a\u0642",
-        "icebreaker": "\u0643\u0633\u0631 \u0627\u0644\u062c\u0644\u064a\u062f",
-        "familie": "\u0639\u0627\u0626\u0644\u0629",
-        "hochzeit": "\u0632\u0641\u0627\u0641"
+        "alle": "الكل",
+        "party": "حفلة",
+        "jga": "حفلة وداع العزوبية",
+        "outdoor": "في الهواء الطلق",
+        "team": "فريق",
+        "icebreaker": "كسر الجليد",
+        "familie": "عائلة",
+        "hochzeit": "زفاف"
       },
       "themeCategories": {
-        "alle": "\u0627\u0644\u0643\u0644",
-        "retro": "\u0631\u064a\u062a\u0631\u0648",
-        "elegant": "\u0623\u0646\u064a\u0642",
-        "casual": "\u0639\u0641\u0648\u064a",
-        "abenteuer": "\u0645\u063a\u0627\u0645\u0631\u0629",
-        "saison": "\u0645\u0648\u0633\u0645\u064a",
-        "kostuem": "\u062a\u0646\u0643\u0631\u064a",
-        "wellness": "\u0639\u0627\u0641\u064a\u0629"
+        "alle": "الكل",
+        "retro": "ريترو",
+        "elegant": "أنيق",
+        "casual": "عفوي",
+        "abenteuer": "مغامرة",
+        "saison": "موسمي",
+        "kostuem": "تنكري",
+        "wellness": "عافية"
       }
     },
     "profile": {
-      "settings": "\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a",
-      "language": "\u0627\u0644\u0644\u063a\u0629",
-      "appearance": "\u0627\u0644\u0645\u0638\u0647\u0631",
-      "privacy": "\u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629",
-      "helpSupport": "\u0627\u0644\u0645\u0633\u0627\u0639\u062f\u0629 \u0648\u0627\u0644\u062f\u0639\u0645",
-      "logout": "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c",
-      "unlockPremium": "\u0641\u062a\u062d \u0628\u0631\u064a\u0645\u064a\u0648\u0645",
-      "unlockPremiumSub": "\u062c\u0645\u064a\u0639 \u0627\u0644\u0623\u0644\u0639\u0627\u0628 \u00b7 \u0628\u0644\u0627 \u062d\u062f\u0648\u062f",
-      "version": "EventBliss \u00b7 \u0627\u0644\u0625\u0635\u062f\u0627\u0631 1.0.0",
-      "guest": "\u0636\u064a\u0641",
-      "themeDark": "\u062f\u0627\u0643\u0646",
-      "themeLight": "\u0641\u0627\u062a\u062d",
-      "themeRose": "Ros\u00e9",
-      "partyMode": "\ud83c\udf7a Party-Modus (+18)",
-      "partyModeOn": "\u0645\u064f\u0641\u0639\u0651\u0644",
-      "partyModeOff": "\u0645\u064f\u0639\u0637\u0651\u0644",
-      "partyStats": "\ud83d\udcca \u0625\u062d\u0635\u0627\u0626\u064a\u0627\u062a \u0627\u0644\u062d\u0641\u0644\u0629",
-      "partyStatsRounds": "{{count}} \u062c\u0648\u0644\u0627\u062a",
+      "settings": "الإعدادات",
+      "language": "اللغة",
+      "appearance": "المظهر",
+      "privacy": "الخصوصية",
+      "helpSupport": "المساعدة والدعم",
+      "logout": "تسجيل الخروج",
+      "unlockPremium": "فتح بريميوم",
+      "unlockPremiumSub": "جميع الألعاب · بلا حدود",
+      "version": "EventBliss · الإصدار 1.0.0",
+      "guest": "ضيف",
+      "themeDark": "داكن",
+      "themeLight": "فاتح",
+      "themeRose": "Rosé",
+      "partyMode": "🍺 Party-Modus (+18)",
+      "partyModeOn": "مُفعّل",
+      "partyModeOff": "مُعطّل",
+      "partyStats": "📊 إحصائيات الحفلة",
+      "partyStatsRounds": "{{count}} جولات",
       "partyModeTitle": "Party-Modus (+18)",
-      "partyModeWarning": "\u0647\u0630\u0627 \u0627\u0644\u0648\u0636\u0639 \u0645\u062e\u0635\u0635 \u0644\u0645\u0646 \u0647\u0645 \u0641\u064a 18 \u0639\u0627\u0645\u064b\u0627 \u0641\u0645\u0627 \u0641\u0648\u0642. \u0623\u0644\u0639\u0627\u0628 \u0627\u0644\u0634\u0631\u0628 \u0642\u062f \u062a\u0634\u0643\u0644 \u0645\u062e\u0627\u0637\u0631 \u0635\u062d\u064a\u0629. \u0627\u0634\u0631\u0628 \u0628\u0645\u0633\u0624\u0648\u0644\u064a\u0629 \u0648\u0627\u0639\u062a\u0646\u0650 \u0628\u0628\u0639\u0636\u0643\u0645 \u0627\u0644\u0628\u0639\u0636.",
-      "partyModeCheckbox": "\u0639\u0645\u0631\u064a 18 \u0639\u0627\u0645\u064b\u0627 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644 \u0648\u0623\u064f\u0641\u0639\u0651\u0644 Party-Modus \u0639\u0644\u0649 \u0645\u0633\u0624\u0648\u0644\u064a\u062a\u064a \u0627\u0644\u062e\u0627\u0635\u0629.",
-      "partyModeCancel": "\u0625\u0644\u063a\u0627\u0621",
-      "partyModeActivate": "\ud83c\udf7b \u062a\u0641\u0639\u064a\u0644",
-      "partyModeDisclaimer": "EventBliss \u0644\u0627 \u064a\u062a\u062d\u0645\u0644 \u0623\u064a \u0645\u0633\u0624\u0648\u0644\u064a\u0629 \u0639\u0646 \u0627\u0633\u062a\u0647\u0644\u0627\u0643 \u0627\u0644\u0645\u0634\u0631\u0648\u0628\u0627\u062a \u0627\u0644\u0643\u062d\u0648\u0644\u064a\u0629.",
+      "partyModeWarning": "هذا الوضع مخصص لمن هم في 18 عامًا فما فوق. ألعاب الشرب قد تشكل مخاطر صحية. اشرب بمسؤولية واعتنِ ببعضكم البعض.",
+      "partyModeCheckbox": "عمري 18 عامًا على الأقل وأُفعّل Party-Modus على مسؤوليتي الخاصة.",
+      "partyModeCancel": "إلغاء",
+      "partyModeActivate": "🍻 تفعيل",
+      "partyModeDisclaimer": "EventBliss لا يتحمل أي مسؤولية عن استهلاك المشروبات الكحولية.",
       "partyModeActivated": "Party-Modus",
-      "partyModeActivatedSub": "\u0645\u064f\u0641\u0639\u0651\u0644! \ud83d\udd25",
-      "partyModeActivatedDesc": "\u0645\u0646 \u0627\u0644\u0622\u0646 \u062a\u0634\u0631\u0628 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u062a\u0644\u0642\u0651\u064a \u0639\u0642\u0648\u0628\u0629",
-      "close": "\u0625\u063a\u0644\u0627\u0642",
-      "adminPanel": "\u0644\u0648\u062d\u0629 \u0627\u0644\u0625\u062f\u0627\u0631\u0629",
+      "partyModeActivatedSub": "مُفعّل! 🔥",
+      "partyModeActivatedDesc": "من الآن تشرب بدلاً من تلقّي عقوبة",
+      "close": "إغلاق",
+      "adminPanel": "لوحة الإدارة",
       "adminDashboard": "Dashboard"
     },
     "create": {
-      "headerTitle": "\u0625\u0646\u0634\u0627\u0621 \u062d\u062f\u062b",
-      "headerDone": "\u062a\u0645!",
-      "stepOf": "\u0627\u0644\u062e\u0637\u0648\u0629 {{step}} \u0645\u0646 {{total}}",
+      "headerTitle": "إنشاء حدث",
+      "headerDone": "تم!",
+      "stepOf": "الخطوة {{step}} من {{total}}",
       "stepType": {
-        "title": "\u0645\u0627\u0630\u0627 \u062a\u062d\u062a\u0641\u0644\u061f",
-        "subtitle": "\u0627\u062e\u062a\u0631 \u0646\u0648\u0639 \u0627\u0644\u062d\u062f\u062b",
-        "bachelor": "\u062d\u0641\u0644\u0629 \u0648\u062f\u0627\u0639 \u0627\u0644\u0639\u0632\u0648\u0628\u064a\u0629",
-        "bachelorette": "\u062d\u0641\u0644\u0629 \u0648\u062f\u0627\u0639 \u0627\u0644\u0639\u0632\u0648\u0628\u064a\u0629",
-        "birthday": "\u0639\u064a\u062f \u0645\u064a\u0644\u0627\u062f",
-        "trip": "\u0631\u062d\u0644\u0629 \u062c\u0645\u0627\u0639\u064a\u0629",
-        "other": "\u062d\u062f\u062b \u0622\u062e\u0631"
+        "title": "ماذا تحتفل؟",
+        "subtitle": "اختر نوع الحدث",
+        "bachelor": "حفلة وداع العزوبية",
+        "bachelorette": "حفلة وداع العزوبية",
+        "birthday": "عيد ميلاد",
+        "trip": "رحلة جماعية",
+        "other": "حدث آخر"
       },
       "stepDetails": {
-        "title": "\u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644",
-        "subtitle": "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0623\u0633\u0627\u0633\u064a\u0629 \u0644\u062d\u062f\u062b\u0643",
-        "eventName": "\u0627\u0633\u0645 \u0627\u0644\u062d\u062f\u062b *",
-        "eventNamePlaceholder": "\u0645\u062b\u0644\u0627\u064b: \u062d\u0641\u0644\u0629 \u062a\u064a\u0645 \u0641\u064a \u0623\u0645\u0633\u062a\u0631\u062f\u0627\u0645",
-        "honoree": "\u0644\u0645\u0646\u061f *",
-        "honoreePlaceholder": "\u0645\u062b\u0644\u0627\u064b: \u062a\u064a\u0645",
-        "date": "\u0627\u0644\u062a\u0627\u0631\u064a\u062e (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)",
-        "yourName": "\u0627\u0633\u0645\u0643 *",
-        "yourNamePlaceholder": "\u0627\u0633\u0645\u0643 \u0627\u0644\u0623\u0648\u0644"
+        "title": "التفاصيل",
+        "subtitle": "المعلومات الأساسية لحدثك",
+        "eventName": "اسم الحدث *",
+        "eventNamePlaceholder": "مثلاً: حفلة تيم في أمستردام",
+        "honoree": "لمن؟ *",
+        "honoreePlaceholder": "مثلاً: تيم",
+        "date": "التاريخ (اختياري)",
+        "yourName": "اسمك *",
+        "yourNamePlaceholder": "اسمك الأول"
       },
       "stepGuests": {
-        "title": "\u0627\u0644\u0636\u064a\u0648\u0641",
-        "subtitle": "\u0645\u0646 \u0633\u064a\u0623\u062a\u064a\u061f (\u0627\u062e\u062a\u064a\u0627\u0631\u064a\u060c \u064a\u0645\u0643\u0646\u0643 \u0627\u0644\u0625\u0636\u0627\u0641\u0629 \u0644\u0627\u062d\u0642\u064b\u0627)",
-        "inputPlaceholder": "\u0623\u062f\u062e\u0644 \u0627\u0633\u0645\u064b\u0627...",
-        "guestCount_one": "\u0636\u064a\u0641 {{count}}",
-        "guestCount_other": "{{count}} \u0636\u064a\u0648\u0641",
-        "noGuests": "\u0644\u0627 \u0636\u064a\u0648\u0641 \u0628\u0639\u062f \u2014 \u064a\u0645\u0643\u0646\u0643 \u062f\u0639\u0648\u062a\u0647\u0645 \u0644\u0627\u062d\u0642\u064b\u0627."
+        "title": "الضيوف",
+        "subtitle": "من سيأتي؟ (اختياري، يمكنك الإضافة لاحقًا)",
+        "inputPlaceholder": "أدخل اسمًا...",
+        "guestCount_one": "ضيف {{count}}",
+        "guestCount_other": "{{count}} ضيوف",
+        "noGuests": "لا ضيوف بعد — يمكنك دعوتهم لاحقًا."
       },
       "stepReview": {
-        "title": "\u0643\u0644 \u0634\u064a\u0621 \u0635\u062d\u064a\u062d\u061f",
-        "subtitle": "\u0631\u0627\u062c\u0639 \u062d\u062f\u062b\u0643",
-        "forLabel": "\u0644\u0640",
-        "dateLabel": "\u0627\u0644\u062a\u0627\u0631\u064a\u062e",
-        "dateOpen": "\u0644\u0645 \u064a\u064f\u062d\u062f\u062f \u0628\u0639\u062f",
-        "organizer": "\u0627\u0644\u0645\u0646\u0638\u0651\u0645",
-        "guestsLabel": "\u0627\u0644\u0636\u064a\u0648\u0641"
+        "title": "كل شيء صحيح؟",
+        "subtitle": "راجع حدثك",
+        "forLabel": "لـ",
+        "dateLabel": "التاريخ",
+        "dateOpen": "لم يُحدد بعد",
+        "organizer": "المنظّم",
+        "guestsLabel": "الضيوف"
       },
       "stepSuccess": {
-        "title": "\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u062d\u062f\u062b! \ud83c\udf89",
-        "subtitle": "\u0634\u0627\u0631\u0643 \u0627\u0644\u0631\u0627\u0628\u0637 \u0645\u0639 \u0623\u0635\u062f\u0642\u0627\u0626\u0643",
-        "accessCode": "\u0631\u0645\u0632 \u0627\u0644\u062f\u062e\u0648\u0644",
-        "link": "\u0631\u0627\u0628\u0637",
-        "copyLink": "\u0646\u0633\u062e \u0627\u0644\u0631\u0627\u0628\u0637",
-        "copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e!",
-        "shareWhatsApp": "\u0645\u0634\u0627\u0631\u0643\u0629 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628",
-        "toDashboard": "\u0627\u0630\u0647\u0628 \u0625\u0644\u0649 \u0627\u0644\u0644\u0648\u062d\u0629",
-        "whatsAppText": "\ud83c\udf89 \u0623\u0646\u062a \u0645\u062f\u0639\u0648!\n\n\u0627\u0646\u0636\u0645 \u0625\u0644\u0649 \"{{name}}\" \u0644\u0640 {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd \u0627\u0644\u0631\u0645\u0632: {{code}}"
+        "title": "تم إنشاء الحدث! 🎉",
+        "subtitle": "شارك الرابط مع أصدقائك",
+        "accessCode": "رمز الدخول",
+        "link": "رابط",
+        "copyLink": "نسخ الرابط",
+        "copied": "تم النسخ!",
+        "shareWhatsApp": "مشاركة عبر واتساب",
+        "toDashboard": "اذهب إلى اللوحة",
+        "whatsAppText": "🎉 أنت مدعو!\n\nانضم إلى \"{{name}}\" لـ {{honoree}}!\n\n👉 {{link}}\n📝 الرمز: {{code}}"
       },
-      "buttonNext": "\u0627\u0644\u062a\u0627\u0644\u064a",
-      "buttonCreate": "\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u062d\u062f\u062b"
+      "buttonNext": "التالي",
+      "buttonCreate": "إنشاء الحدث"
     },
     "join": {
-      "headerTitle": "\u0627\u0646\u0636\u0645 \u0625\u0644\u0649 \u062d\u062f\u062b",
-      "title": "\u0647\u0644 \u0644\u062f\u064a\u0643 \u062f\u0639\u0648\u0629\u061f",
-      "subtitle": "\u0623\u062f\u062e\u0644 \u0631\u0645\u0632 \u0627\u0644\u062f\u062e\u0648\u0644 \u0627\u0644\u0630\u064a \u0648\u0635\u0644\u0643",
-      "placeholder": "\u0645\u062b\u0644\u0627\u064b STAG2025",
-      "searchButton": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0627\u0644\u062d\u062f\u062b",
-      "errorNotFound": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u062d\u062f\u062b \u0628\u0647\u0630\u0627 \u0627\u0644\u0631\u0645\u0632.",
-      "errorGeneric": "\u062e\u0637\u0623 \u0641\u064a \u0627\u0644\u0628\u062d\u062b. \u064a\u0631\u062c\u0649 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0631\u0645\u0632.",
-      "eventFound": "\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0627\u0644\u062d\u062f\u062b",
-      "forHonoree": "\u0644\u0640 {{name}}",
-      "joinButton": "\u0627\u0646\u0636\u0645"
+      "headerTitle": "انضم إلى حدث",
+      "title": "هل لديك دعوة؟",
+      "subtitle": "أدخل رمز الدخول الذي وصلك",
+      "placeholder": "مثلاً STAG2025",
+      "searchButton": "ابحث عن الحدث",
+      "errorNotFound": "لم يتم العثور على حدث بهذا الرمز.",
+      "errorGeneric": "خطأ في البحث. يرجى التحقق من الرمز.",
+      "eventFound": "تم العثور على الحدث",
+      "forHonoree": "لـ {{name}}",
+      "joinButton": "انضم"
     },
     "onboarding": {
-      "slide1Title": "\u062e\u0637\u0651\u0637 \u0623\u062d\u062f\u0627\u062b\u064b\u0627 \u0623\u0633\u0637\u0648\u0631\u064a\u0629",
-      "slide1Subtitle": "\u062d\u0641\u0644\u0627\u062a \u0648\u062f\u0627\u0639 \u0627\u0644\u0639\u0632\u0648\u0628\u064a\u0629\u060c \u0623\u0639\u064a\u0627\u062f \u0645\u064a\u0644\u0627\u062f\u060c \u0631\u062d\u0644\u0627\u062a \u062c\u0645\u0627\u0639\u064a\u0629 \u2014 \u0643\u0644\u0647\u0627 \u0641\u064a \u0645\u0643\u0627\u0646 \u0648\u0627\u062d\u062f.",
-      "slide2Title": "\u0627\u0644\u0639\u0628 +24 \u0644\u0639\u0628\u0629 \u062d\u0641\u0644\u0627\u062a",
-      "slide2Subtitle": "\u062a\u0627\u0628\u0648\u060c \u0628\u0648\u0645\u0628\u060c Headup\u060c \u0635\u0631\u0627\u062d\u0629 \u0623\u0648 \u062a\u062d\u062f\u064a\u060c \u0627\u0644\u0645\u062e\u0627\u062f\u0639 \u0648\u0627\u0644\u0645\u0632\u064a\u062f.",
-      "slide3Title": "\u0642\u0633\u0651\u0645 \u0627\u0644\u062a\u0643\u0627\u0644\u064a\u0641",
-      "slide3Subtitle": "\u062a\u0627\u0628\u0639 \u0627\u0644\u0645\u0635\u0627\u0631\u064a\u0641 \u0648\u0633\u0648\u0651\u0650 \u0627\u0644\u062d\u0633\u0627\u0628\u0627\u062a \u0628\u062f\u0648\u0646 \u0645\u062d\u0627\u062f\u062b\u0627\u062a \u0645\u062d\u0631\u062c\u0629.",
-      "slide4Title": "\u0627\u062f\u0639\u064f \u0627\u0644\u062c\u0645\u064a\u0639",
-      "slide4Subtitle": "\u0634\u0627\u0631\u0643 \u0631\u0627\u0628\u0637\u064b\u0627\u060c \u0627\u062c\u0645\u0639 \u0627\u0644\u062a\u0623\u0643\u064a\u062f\u0627\u062a \u0648\u0623\u0628\u0642\u0650 \u0627\u0644\u062c\u0645\u064a\u0639 \u0639\u0644\u0649 \u0627\u0637\u0644\u0627\u0639.",
-      "skip": "\u062a\u062e\u0637\u0651\u064a",
-      "next": "\u0627\u0644\u062a\u0627\u0644\u064a",
-      "getStarted": "\u0647\u064a\u0627 \u0646\u0628\u062f\u0623"
+      "slide1Title": "خطّط أحداثًا أسطورية",
+      "slide1Subtitle": "حفلات وداع العزوبية، أعياد ميلاد، رحلات جماعية — كلها في مكان واحد.",
+      "slide2Title": "العب +24 لعبة حفلات",
+      "slide2Subtitle": "تابو، بومب، Headup، صراحة أو تحدي، المخادع والمزيد.",
+      "slide3Title": "قسّم التكاليف",
+      "slide3Subtitle": "تابع المصاريف وسوِّ الحسابات بدون محادثات محرجة.",
+      "slide4Title": "ادعُ الجميع",
+      "slide4Subtitle": "شارك رابطًا، اجمع التأكيدات وأبقِ الجميع على اطلاع.",
+      "skip": "تخطّي",
+      "next": "التالي",
+      "getStarted": "هيا نبدأ"
     }
   },
   "marketplace": {
@@ -2346,8 +3077,29 @@
   "bookingCalendar": {
     "title": "تقويم الحجوزات",
     "today": "اليوم",
-    "dayNames": ["الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"],
-    "monthNames": ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    "dayNames": [
+      "الإثنين",
+      "الثلاثاء",
+      "الأربعاء",
+      "الخميس",
+      "الجمعة",
+      "السبت",
+      "الأحد"
+    ],
+    "monthNames": [
+      "يناير",
+      "فبراير",
+      "مارس",
+      "أبريل",
+      "مايو",
+      "يونيو",
+      "يوليو",
+      "أغسطس",
+      "سبتمبر",
+      "أكتوبر",
+      "نوفمبر",
+      "ديسمبر"
+    ],
     "bookingsTotal": "{{count}} حجز إجمالاً",
     "noBookingsDay": "لا توجد حجوزات في هذا اليوم",
     "exportICal": "تصدير كـ iCal",
@@ -2384,7 +3136,15 @@
     "unblock": "إلغاء الحظر",
     "editAfterSave": "يمكن تعديل التوفر بعد الحفظ.",
     "editButton": "تعديل التوفر",
-    "days": ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
+    "days": [
+      "الأحد",
+      "الإثنين",
+      "الثلاثاء",
+      "الأربعاء",
+      "الخميس",
+      "الجمعة",
+      "السبت"
+    ]
   },
   "eventServices": {
     "bookedServices": "الخدمات المحجوزة",
@@ -2394,5 +3154,156 @@
     "browseHint": "اعثر على مقدم الخدمة المثالي لحدثك",
     "bookForEvent": "احجز للحدث",
     "openMarketplace": "افتح السوق"
+  },
+  "gameRules": {
+    "howToPlay": "كيف تلعب",
+    "understood": "فهمت — هيا نبدأ!",
+    "bomb": {
+      "title": "Ticking Bomb",
+      "tagline": "Answer questions before the bomb explodes — pure adrenaline!",
+      "step1": "The bomb ticks and gets passed to a player",
+      "step2": "Answer the question correctly before time runs out",
+      "step3": "Wrong answer or too slow? BOOM — you're out!",
+      "step4": "Last player standing wins the round",
+      "tip": "Don't overthink it — the bomb waits for no one!"
+    },
+    "taboo": {
+      "title": "Taboo",
+      "tagline": "Describe words — but watch out, certain words are absolutely TABOO!",
+      "step1": "You see a word and 5 forbidden words",
+      "step2": "Describe the word to your team — WITHOUT using the taboo words",
+      "step3": "Your team must guess before time runs out",
+      "step4": "Each correct guess earns a point",
+      "tip": "Creativity beats logic — think outside the box!"
+    },
+    "headup": {
+      "title": "Heads Up",
+      "tagline": "Phone on forehead, friends describe, you guess — sounds easy? Think again!",
+      "step1": "Hold your phone to your forehead — you can't see the word",
+      "step2": "Your friends describe the word to you",
+      "step3": "Guessed right? Tilt phone forward! Wrong? Tilt back!",
+      "step4": "Get as many words as possible before time's up",
+      "tip": "Don't drop your phone — happens more often than you'd think!"
+    },
+    "category": {
+      "title": "Speed Category",
+      "tagline": "Name things in a category — hesitate and you're out! Speed counts!",
+      "step1": "A category is shown (e.g., \"Animals starting with A\")",
+      "step2": "Each player takes turns naming a matching item",
+      "step3": "Can't think of one or too slow? You get a point",
+      "step4": "Fewest points wins",
+      "tip": "Rare answers impress — \"Axolotl\" beats \"Ant\"!"
+    },
+    "emojiguess": {
+      "title": "Emoji Guess",
+      "tagline": "Decode emojis, guess the answer — looks easy but it's not!",
+      "step1": "You're shown emojis that represent something",
+      "step2": "Guess which movie, song, or celeb the emojis show",
+      "step3": "The faster you guess, the more points you get",
+      "tip": "Think blockbusters — the obvious answer is often right!"
+    },
+    "fakeorfact": {
+      "title": "Fake or Fact",
+      "tagline": "Is that really true? Spot the fake facts — trust nothing!",
+      "step1": "A statement is shown to you",
+      "step2": "Decide: Is it TRUE or FAKE?",
+      "step3": "After your answer, you'll see the explanation",
+      "step4": "Most correct answers wins",
+      "tip": "The craziest facts are usually true!"
+    },
+    "truthdare": {
+      "title": "Truth or Dare",
+      "tagline": "The party classic — answer honestly or do an embarrassing dare? Your choice!",
+      "step1": "Choose: Truth or Dare?",
+      "step2": "Truth: Answer the question honestly (no matter how embarrassing!)",
+      "step3": "Dare: Complete the challenge (no excuses!)",
+      "step4": "Then it's the next player's turn",
+      "tip": "Dares get bolder with every drink — we didn't say that!"
+    },
+    "thisorthat": {
+      "title": "This or That",
+      "tagline": "Pizza or Pasta? Netflix or Cinema? Tough choices ahead!",
+      "step1": "Two options are shown",
+      "step2": "Each player picks one option",
+      "step3": "Compare answers — who's in the majority?",
+      "tip": "There are no wrong answers — just heated debates!"
+    },
+    "whoami": {
+      "title": "Who Am I?",
+      "tagline": "Ask yes/no questions and figure out who you are — Sherlock would be proud!",
+      "step1": "Each player gets a secret person/character assigned",
+      "step2": "Ask yes/no questions: \"Am I real?\" \"Am I famous?\"",
+      "step3": "Combine the clues and guess who you are",
+      "step4": "First to guess correctly wins",
+      "tip": "Start broad — \"Am I a woman?\" eliminates 50%!"
+    },
+    "bottlespin": {
+      "title": "Spin the Bottle",
+      "tagline": "The bottle spins... who will it point to? Fun and suspense guaranteed!",
+      "step1": "The bottle is spun",
+      "step2": "Whoever it points to must answer a question or do a task",
+      "step3": "Then the next player spins",
+      "tip": "Luck decides — no tactics can help you here!"
+    },
+    "storybuilder": {
+      "title": "Story Builder",
+      "tagline": "Write the craziest story together — creativity without limits!",
+      "step1": "A story starter sets the scene",
+      "step2": "Each player adds one sentence in turns",
+      "step3": "At the end, the complete story is read aloud",
+      "tip": "The more absurd your twist, the funnier the story!"
+    },
+    "sharedquiz": {
+      "title": "Shared Quiz",
+      "tagline": "Team quiz battle — who knows more? Show what you've got!",
+      "step1": "A question is shown to all players at once",
+      "step2": "Everyone picks their answer — no conferring!",
+      "step3": "The correct answer is revealed",
+      "step4": "Most correct answers wins",
+      "tip": "Sometimes the most unlikely answer is the right one!"
+    },
+    "quickdraw": {
+      "title": "Quick Draw",
+      "tagline": "Draw fast, guess faster — Picasso would be proud (or horrified)!",
+      "step1": "You're shown a word to draw",
+      "step2": "Draw as fast as possible — stick figures are fine!",
+      "step3": "Others must guess your word",
+      "step4": "Faster guesses = more points for everyone",
+      "tip": "Forget art class — speed is everything here!"
+    },
+    "splitquiz": {
+      "title": "Split Quiz",
+      "tagline": "Split knowledge — everyone sees different answers, but only one is right!",
+      "step1": "A question is shown",
+      "step2": "Each player sees different answer options",
+      "step3": "Discuss which answer could be correct",
+      "step4": "Only the one with the right answer scores",
+      "tip": "Trust your gut — or the nerd in your group!"
+    },
+    "hochstapler": {
+      "title": "The Impostor",
+      "tagline": "One person has no clue — find the impostor! Or be one yourself...",
+      "step1": "All players get a secret word — ONE gets a different one",
+      "step2": "Each player describes the word with a single term",
+      "step3": "Everyone votes: Who is the impostor?",
+      "step4": "Impostor caught? Others win. Impostor survives? They win!",
+      "tip": "As the impostor: Be vague enough to blend in, but specific enough to not seem suspicious!"
+    },
+    "wo-ist-was": {
+      "title": "Where Is It?",
+      "tagline": "Geography challenge — find the spot on the map! Closer = better!",
+      "step1": "You're given a place or landmark",
+      "step2": "Tap on the map where you think it is",
+      "step3": "The closer you are, the more points you get",
+      "tip": "Europe is smaller than you think — and Australia is bigger!"
+    },
+    "flaschendrehen": {
+      "title": "Spin the Bottle",
+      "tagline": "The classic party game! Who will the bottle choose?",
+      "step1": "The bottle spins in the middle",
+      "step2": "Whoever it points to is up",
+      "step3": "Answer the question or complete the dare",
+      "tip": "Karma spins the bottle — be nice to your fellow players!"
+    }
   }
 }
