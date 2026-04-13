@@ -3686,6 +3686,36 @@
       "settings": { "label": "Plan Settings", "desc": "Features & Preise" }
     }
   },
+  "responseValues": {
+    "destination": {
+      "deCity": "Deutsche Stadt",
+      "barcelona": "Barcelona",
+      "lisbon": "Lissabon",
+      "prague": "Prag",
+      "budapest": "Budapest",
+      "london": "London",
+      "rome": "Rom",
+      "scotland": "Schottland",
+      "naples": "Neapel"
+    },
+    "duration": {
+      "day": "Tagesausflug",
+      "weekend": "Wochenende"
+    },
+    "travel": {
+      "daytrip": "Tagesausflug",
+      "oneNight": "1 Übernachtung",
+      "twoNights": "2 Übernachtungen"
+    },
+    "fitness": {
+      "chill": "Entspannt",
+      "normal": "Normal",
+      "sporty": "Sportlich"
+    },
+    "either": "Egal",
+    "yes": "Ja",
+    "no": "Nein"
+  },
   "nativeResponses": {
     "stats": {
       "responses": "Antworten",

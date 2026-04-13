@@ -15,7 +15,7 @@ import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
   type ResponseRow, type CategoryDef,
-  ATTENDANCE_CONFIG, timeAgo, getInitials, getAvatarColor, countValues,
+  ATTENDANCE_CONFIG, timeAgo, getInitials, getAvatarColor, countValues, translateValue,
 } from "./responseHelpers";
 
 // ─── AnimatedCounter ─────────────────────────────────────────────
@@ -185,11 +185,11 @@ export function ResponseCard({ response, index }: { response: ResponseRow; index
             <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
               <div className="grid grid-cols-2 gap-2.5">
                 <DetailPill label={t("dashboard.responses.columns.budget")} value={response.budget} icon={DollarSign} />
-                <DetailPill label={t("dashboard.responses.columns.destination")} value={response.destination} icon={MapPin} />
-                <DetailPill label={t("dashboard.responses.columns.duration")} value={response.duration_pref} icon={CalendarDays} />
-                <DetailPill label={t("dashboard.responses.columns.travel")} value={response.travel_pref} icon={Car} />
-                <DetailPill label={t("dashboard.responses.columns.fitness")} value={response.fitness_level} icon={Dumbbell} />
-                <DetailPill label={t("dashboard.responses.columns.alcohol")} value={response.alcohol || t("nativeResponses.noAnswer")} icon={Wine} />
+                <DetailPill label={t("dashboard.responses.columns.destination")} value={translateValue(response.destination, "destination", t)} icon={MapPin} />
+                <DetailPill label={t("dashboard.responses.columns.duration")} value={translateValue(response.duration_pref, "duration_pref", t)} icon={CalendarDays} />
+                <DetailPill label={t("dashboard.responses.columns.travel")} value={translateValue(response.travel_pref, "travel_pref", t)} icon={Car} />
+                <DetailPill label={t("dashboard.responses.columns.fitness")} value={translateValue(response.fitness_level, "fitness_level", t)} icon={Dumbbell} />
+                <DetailPill label={t("dashboard.responses.columns.alcohol")} value={translateValue(response.alcohol || "", "alcohol", t) || t("nativeResponses.noAnswer")} icon={Wine} />
               </div>
 
               {response.preferences?.length > 0 && (
@@ -268,7 +268,7 @@ export function CategoryCard({ category, responses }: { category: CategoryDef; r
 
   const values = responses.map((r) => {
     const val = r[category.key];
-    return typeof val === "string" ? val : null;
+    return typeof val === "string" ? translateValue(val, category.key, t) : null;
   }).filter(Boolean) as string[];
 
   const counts = countValues(values);

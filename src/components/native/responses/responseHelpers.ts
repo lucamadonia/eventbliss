@@ -106,6 +106,57 @@ export function timeAgo(dateStr: string, t: TFunction): string {
   return new Date(dateStr).toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
+/**
+ * Translate raw DB enum values (de_city, either, day, etc.) to localized labels.
+ * Falls back to the raw value if no translation key exists.
+ */
+export function translateValue(val: string, field: string, t: TFunction): string {
+  // Field-specific translation maps
+  const keyMap: Record<string, Record<string, string>> = {
+    destination: {
+      de_city: "responseValues.destination.deCity",
+      barcelona: "responseValues.destination.barcelona",
+      lisbon: "responseValues.destination.lisbon",
+      prague: "responseValues.destination.prague",
+      budapest: "responseValues.destination.budapest",
+      either: "responseValues.either",
+    },
+    duration_pref: {
+      day: "responseValues.duration.day",
+      weekend: "responseValues.duration.weekend",
+      either: "responseValues.either",
+    },
+    travel_pref: {
+      daytrip: "responseValues.travel.daytrip",
+      one_night: "responseValues.travel.oneNight",
+      two_nights: "responseValues.travel.twoNights",
+      either: "responseValues.either",
+    },
+    fitness_level: {
+      chill: "responseValues.fitness.chill",
+      normal: "responseValues.fitness.normal",
+      sporty: "responseValues.fitness.sporty",
+    },
+    alcohol: {
+      yes: "responseValues.yes",
+      no: "responseValues.no",
+      either: "responseValues.either",
+    },
+    attendance: {
+      yes: "nativeResponses.attendance.confirmed",
+      maybe: "nativeResponses.attendance.maybe",
+      no: "nativeResponses.attendance.declined",
+    },
+  };
+
+  const fieldMap = keyMap[field];
+  if (!fieldMap) return val;
+  const key = fieldMap[val.toLowerCase()];
+  if (!key) return val; // unknown value — show raw
+  const translated = t(key);
+  return translated === key ? val : translated; // fallback if key not found in locale
+}
+
 export function getInitials(name: string): string {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 }

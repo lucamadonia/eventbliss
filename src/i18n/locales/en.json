@@ -3294,6 +3294,15 @@
       "settings": { "label": "Plan Settings", "desc": "Features & Pricing" }
     }
   },
+  "responseValues": {
+    "destination": { "deCity": "German City", "barcelona": "Barcelona", "lisbon": "Lisbon", "prague": "Prague", "budapest": "Budapest", "london": "London", "rome": "Rome", "scotland": "Scotland", "naples": "Naples" },
+    "duration": { "day": "Day Trip", "weekend": "Weekend" },
+    "travel": { "daytrip": "Day Trip", "oneNight": "1 Night", "twoNights": "2 Nights" },
+    "fitness": { "chill": "Relaxed", "normal": "Normal", "sporty": "Sporty" },
+    "either": "Either",
+    "yes": "Yes",
+    "no": "No"
+  },
   "nativeResponses": {
     "stats": {
       "responses": "Responses",
