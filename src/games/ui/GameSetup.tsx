@@ -143,11 +143,13 @@ export function GameSetup({
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 px-4 py-8">
+    <div className="min-h-screen bg-[#0a0e14] px-4 py-8 font-['Plus_Jakarta_Sans']">
       <div className="mx-auto max-w-md space-y-6">
-        <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl font-bold text-white text-center">{title}</h1>
-          {gameId && <RulesHelpButton onClick={openRules} />}
+        {/* Header with rules button */}
+        <div className="flex items-center justify-between">
+          <div className="w-10" /> {/* spacer */}
+          <h1 className="text-2xl font-extrabold text-white text-center font-['Plus_Jakarta_Sans'] tracking-tight">{title}</h1>
+          {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
         </div>
 
         {/* Player list */}
@@ -275,13 +277,13 @@ export function GameSetup({
           onClick={handleStart}
           disabled={!canStart}
           className={cn(
-            "w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all",
+            "w-full py-4 rounded-2xl font-extrabold text-lg font-['Plus_Jakarta_Sans'] flex items-center justify-center gap-2 transition-all",
             canStart
-              ? "bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)]"
-              : "bg-gray-800 text-gray-500 cursor-not-allowed"
+              ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#ff8a50] text-white shadow-[0_0_30px_rgba(223,142,255,0.4)]"
+              : "bg-[#1b2028] text-[#484750] cursor-not-allowed"
           )}
           whileHover={canStart ? { scale: 1.02 } : {}}
-          whileTap={canStart ? { scale: 0.98 } : {}}
+          whileTap={canStart ? { scale: 0.97 } : {}}
         >
           <Play className="w-5 h-5" />
           Spiel starten!

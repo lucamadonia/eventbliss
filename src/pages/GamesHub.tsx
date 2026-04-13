@@ -382,14 +382,7 @@ const GamesHub = () => {
 
   // Rules overlay for ALL games — auto-shows on first play + floating ? button to reopen
   const rulesOverlay = gameId ? (
-    <>
-      <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
-      {!showRules && (
-        <div className="fixed top-4 right-16 z-[55]">
-          <RulesHelpButton onClick={openRules} />
-        </div>
-      )}
-    </>
+    <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
   ) : null;
 
   // Offline games — wrapped in TVBroadcastProvider so they can

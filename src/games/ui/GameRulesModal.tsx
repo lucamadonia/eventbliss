@@ -234,18 +234,17 @@ export function useAutoShowRules(gameId: string) {
 }
 
 /**
- * Floating help button to open rules — prominent, always visible.
+ * Compact help button for game headers — shows rules on tap.
  */
 export function RulesHelpButton({ onClick }: { onClick: () => void }) {
   return (
     <motion.button
       whileTap={{ scale: 0.85 }}
-      whileHover={{ scale: 1.1 }}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.2)] backdrop-blur-md hover:from-violet-500/30 hover:to-fuchsia-500/30 transition-all"
-      title="Spielregeln anzeigen"
+      className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors"
+      title="Spielregeln"
     >
-      <HelpCircle className="w-5 h-5 text-violet-300" />
+      <HelpCircle className="w-[18px] h-[18px] text-white/40" />
     </motion.button>
   );
 }
