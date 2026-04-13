@@ -372,6 +372,48 @@ export async function seedAllGameContent(
     }
   } catch { /* no findit content */ }
 
+  // ── 15. Hochstapler (hardcoded word sets) ────────────────────────
+  onProgress('Lade Hochstapler...');
+  const hochstaplerWords = [
+    { category: 'Tiere', word: 'Elefant' }, { category: 'Tiere', word: 'Pinguin' },
+    { category: 'Tiere', word: 'Delfin' }, { category: 'Tiere', word: 'Flamingo' },
+    { category: 'Tiere', word: 'Känguru' }, { category: 'Tiere', word: 'Chamäleon' },
+    { category: 'Essen', word: 'Pizza' }, { category: 'Essen', word: 'Sushi' },
+    { category: 'Essen', word: 'Schnitzel' }, { category: 'Essen', word: 'Döner' },
+    { category: 'Essen', word: 'Tiramisu' }, { category: 'Essen', word: 'Currywurst' },
+    { category: 'Länder', word: 'Japan' }, { category: 'Länder', word: 'Brasilien' },
+    { category: 'Länder', word: 'Ägypten' }, { category: 'Länder', word: 'Neuseeland' },
+    { category: 'Berufe', word: 'Feuerwehrmann' }, { category: 'Berufe', word: 'Astronaut' },
+    { category: 'Berufe', word: 'Detektiv' }, { category: 'Berufe', word: 'Pilot' },
+    { category: 'Filme', word: 'Titanic' }, { category: 'Filme', word: 'Matrix' },
+    { category: 'Filme', word: 'König der Löwen' }, { category: 'Filme', word: 'Star Wars' },
+    { category: 'Sport', word: 'Fußball' }, { category: 'Sport', word: 'Surfen' },
+    { category: 'Sport', word: 'Klettern' }, { category: 'Sport', word: 'Eishockey' },
+    { category: 'Orte', word: 'Strand' }, { category: 'Orte', word: 'Bibliothek' },
+    { category: 'Orte', word: 'Freizeitpark' }, { category: 'Orte', word: 'Berggipfel' },
+    { category: 'Musik', word: 'Klavier' }, { category: 'Musik', word: 'Schlagzeug' },
+    { category: 'Musik', word: 'Gitarre' }, { category: 'Musik', word: 'Saxophon' },
+    { category: 'Fahrzeuge', word: 'U-Boot' }, { category: 'Fahrzeuge', word: 'Heißluftballon' },
+    { category: 'Fahrzeuge', word: 'Skateboard' }, { category: 'Fahrzeuge', word: 'Segelboot' },
+    { category: 'Natur', word: 'Vulkan' }, { category: 'Natur', word: 'Regenbogen' },
+    { category: 'Natur', word: 'Gletscher' }, { category: 'Natur', word: 'Korallenriff' },
+    { category: 'Feiertage', word: 'Silvester' }, { category: 'Feiertage', word: 'Weihnachten' },
+    { category: 'Feiertage', word: 'Halloween' }, { category: 'Feiertage', word: 'Karneval' },
+    { category: 'Getränke', word: 'Cappuccino' }, { category: 'Getränke', word: 'Smoothie' },
+    { category: 'Spiele', word: 'Schach' }, { category: 'Spiele', word: 'Monopoly' },
+    { category: 'Spiele', word: 'Tetris' }, { category: 'Spiele', word: 'Jenga' },
+    { category: 'Technik', word: 'Roboter' }, { category: 'Technik', word: 'Drohne' },
+    { category: 'Superhelden', word: 'Batman' }, { category: 'Superhelden', word: 'Spider-Man' },
+    { category: 'Märchen', word: 'Rotkäppchen' }, { category: 'Märchen', word: 'Aschenputtel' },
+  ];
+  for (const w of hochstaplerWords) {
+    items.push({
+      game_id: 'hochstapler', content_type: 'word_set',
+      content: { de: { word: w.word, category: w.category } },
+      difficulty: 'medium', category: w.category, tags: [], is_active: true,
+    });
+  }
+
   onProgress(`${items.length} Einträge werden gespeichert...`);
 
   // Insert in batches

@@ -234,9 +234,15 @@ export default function AdminGames() {
   };
 
   const handleSeed = async () => {
-    if (!confirm('ALLE statischen Inhalte (11 Spiele × 10 Sprachen) importieren? Das kann einen Moment dauern.')) return;
+    const deleteFirst = confirm('Bestehende Einträge VORHER löschen?\n\n→ OK = Löschen & neu importieren (empfohlen)\n→ Abbrechen = Nur hinzufügen (Duplikate möglich)');
+
     setSeeding(true);
     try {
+      if (deleteFirst) {
+        setSeedProgress('Lösche alte Einträge...');
+        await (supabase.from as any)('game_content').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        toast.info('Alte Einträge gelöscht.');
+      }
       const ok = await seedAllGameContent((msg) => setSeedProgress(msg));
       gc.fetchItems(selectedGame.id, selectedType, search, page);
       toast.success(`${ok} Einträge importiert!`);
