@@ -159,11 +159,11 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
       {/* Content */}
       <div className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-['Plus_Jakarta_Sans'] font-semibold text-white text-[15px] leading-tight line-clamp-1 group-hover:text-[#cf96ff] transition-colors">
+          <h3 className="font-game font-semibold text-white text-[15px] leading-tight line-clamp-1 group-hover:text-[#cf96ff] transition-colors">
             {service.title}
           </h3>
           <div className="shrink-0 text-right">
-            <span className="text-white font-['Plus_Jakarta_Sans'] font-bold text-[15px]">
+            <span className="text-white font-game font-bold text-[15px]">
               {formatPrice(service.price, service.priceType)}
             </span>
             <span className="block text-[11px] text-white/40 font-['Be_Vietnam_Pro']">
@@ -214,7 +214,7 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
           <div className="pt-2">
             <button
               onClick={(e) => { e.stopPropagation(); onClick(); }}
-              className={`w-full py-2 rounded-xl text-xs font-bold font-['Plus_Jakarta_Sans'] transition-all ${
+              className={`w-full py-2 rounded-xl text-xs font-bold font-game transition-all ${
                 service.agencyTier === "enterprise"
                   ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]"
                   : "bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-black"
@@ -332,7 +332,7 @@ export default function Marketplace() {
           transition={{ duration: 0.5 }}
           className="pt-4 pb-8 text-center"
         >
-          <h1 className="font-['Plus_Jakarta_Sans'] text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-[#cf96ff] via-[#00e3fd] to-[#ff7350] bg-clip-text text-transparent pb-2">
+          <h1 className="font-game text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-[#cf96ff] via-[#00e3fd] to-[#ff7350] bg-clip-text text-transparent pb-2">
             {t("marketplace.title", "Marketplace")}
           </h1>
           <p className="text-white/50 font-['Be_Vietnam_Pro'] text-sm sm:text-base max-w-md mx-auto">
@@ -512,7 +512,7 @@ export default function Marketplace() {
             <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
               <Search size={32} className="text-white/20" />
             </div>
-            <h3 className="font-['Plus_Jakarta_Sans'] text-lg font-semibold text-white/60 mb-1">
+            <h3 className="font-game text-lg font-semibold text-white/60 mb-1">
               {t("marketplace.noResults", "Keine Ergebnisse")}
             </h3>
             <p className="text-white/30 text-sm font-['Be_Vietnam_Pro'] max-w-xs">

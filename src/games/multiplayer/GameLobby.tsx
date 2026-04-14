@@ -86,7 +86,7 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
         style={{ backgroundColor: player.color }}>{player.avatar}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-semibold text-white font-['Plus_Jakarta_Sans']">{player.name}</span>
+          <span className="truncate text-sm font-semibold text-white font-game">{player.name}</span>
           {player.isHost && (
             <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
               style={{ backgroundColor: "rgba(223,142,255,0.15)", color: EP.neonPurple }}>
@@ -225,7 +225,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
             <ArrowLeft className="h-5 w-5 text-white/60" />
           </motion.button>
           <div>
-            <h1 className="text-lg font-extrabold font-['Plus_Jakarta_Sans']" style={{ color: EP.neonPurple }}>Online Multiplayer</h1>
+            <h1 className="text-lg font-extrabold font-game" style={{ color: EP.neonPurple }}>Online Multiplayer</h1>
             <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">{gameName}</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
@@ -253,7 +253,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Wifi className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold font-['Plus_Jakarta_Sans']" style={{ color: EP.neonCyan }}>Aktiver Raum: {savedRoom.roomCode}</p>
+                    <p className="text-sm font-bold font-game" style={{ color: EP.neonCyan }}>Aktiver Raum: {savedRoom.roomCode}</p>
                     <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Tippe um wieder beizutreten</p>
                   </div>
                 </motion.button>
@@ -292,7 +292,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Plus className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white font-['Plus_Jakarta_Sans']">Raum erstellen</p>
+                    <p className="text-sm font-bold text-white font-game">Raum erstellen</p>
                     <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Erstelle einen Raum und lade Freunde ein</p>
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white font-['Plus_Jakarta_Sans']">Raum beitreten</p>
+                    <p className="text-sm font-bold text-white font-game">Raum beitreten</p>
                     <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Gib einen 6-stelligen Raumcode ein</p>
                   </div>
                 </div>
@@ -404,7 +404,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 <div className="pointer-events-none absolute inset-0 rounded-2xl"
                   style={{ background: `radial-gradient(ellipse at center, ${EP.neonPurple}08, transparent 70%)` }} />
                 <p className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro'] mb-2">Raumcode</p>
-                <p className="text-4xl font-extrabold tracking-[0.25em] font-['Plus_Jakarta_Sans']" style={{ color: EP.neonPurple }}>
+                <p className="text-4xl font-extrabold tracking-[0.25em] font-game" style={{ color: EP.neonPurple }}>
                   {room.roomCode}
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-2">

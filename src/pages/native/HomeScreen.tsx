@@ -91,15 +91,15 @@ export default function HomeScreen() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...spring.soft, delay: 0.1 }}
       >
-        <p className="text-sm text-muted-foreground font-medium h-5">
+        <p className="text-xl text-muted-foreground font-semibold h-7">
           {typedGreeting}
           <motion.span
-            className="inline-block w-0.5 h-4 bg-primary ml-0.5 align-middle"
+            className="inline-block w-0.5 h-5 bg-primary ml-0.5 align-middle"
             animate={{ opacity: [1, 0] }}
             transition={{ duration: 0.6, repeat: Infinity, repeatType: "reverse" }}
           />
         </p>
-        <h1 className="text-3xl font-display font-bold text-foreground mt-1 tracking-tight leading-tight">
+        <h1 className="text-3xl font-display font-bold text-foreground mt-1.5 tracking-tight leading-tight">
           {t('native.home.heroTitle')} <br />
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">
             {t('native.home.heroHighlight')}

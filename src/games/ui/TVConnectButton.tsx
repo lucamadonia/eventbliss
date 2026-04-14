@@ -1,11 +1,11 @@
 /**
- * TVConnectButton — floating pill that shows TV connection code.
- * Collapsed: small 📺 icon. Expanded: shows code + instructions.
+ * TVConnectButton — floating TV connection UI.
+ * Inactive: small 📺 icon button. Active: persistent mini-pill with code.
+ * Expanded: full panel with code + instructions + copy link.
  */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tv, Copy, Check, X } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { haptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { getBaseUrl } from "@/lib/platform";
@@ -17,7 +17,6 @@ interface Props {
 }
 
 export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
-  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -83,7 +82,32 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
               {copied ? "Kopiert!" : "Link kopieren"}
             </motion.button>
           </motion.div>
+        ) : isActive ? (
+          /* Active: persistent mini-pill showing TV code */
+          <motion.button
+            key="active-pill"
+            onClick={handleTap}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            whileTap={{ scale: 0.95 }}
+            transition={spring.snappy}
+            className="flex items-center gap-2 px-3 py-2 rounded-full bg-[#151a21]/90 backdrop-blur-xl border border-[#10b981]/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+          >
+            <div className="relative">
+              <Tv className="w-4 h-4 text-[#10b981]" />
+              <motion.div
+                className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#10b981]"
+                animate={{ scale: [1, 1.4, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            </div>
+            <span className="text-xs font-bold text-[#10b981] tracking-wider font-game">
+              TV: {tvCode}
+            </span>
+          </motion.button>
         ) : (
+          /* Inactive: simple icon button */
           <motion.button
             key="collapsed"
             onClick={handleTap}
@@ -95,13 +119,6 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
             className="w-12 h-12 rounded-full bg-[#151a21]/90 backdrop-blur-xl border border-[#df8eff]/30 flex items-center justify-center shadow-[0_0_20px_rgba(223,142,255,0.15)]"
           >
             <Tv className="w-5 h-5 text-[#df8eff]" />
-            {isActive && (
-              <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#10b981]"
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            )}
           </motion.button>
         )}
       </AnimatePresence>

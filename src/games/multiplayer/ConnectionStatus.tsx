@@ -82,7 +82,7 @@ export default function ConnectionStatus({
         {/* Room code */}
         {connected && (
           <span
-            className="rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-widest font-['Plus_Jakarta_Sans']"
+            className="rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-widest font-game"
             style={{
               backgroundColor: "rgba(223,142,255,0.12)",
               color: EP.neonPurple,

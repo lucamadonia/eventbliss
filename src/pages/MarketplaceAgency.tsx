@@ -77,7 +77,7 @@ function StatCard({
       transition={{ duration: 0.3, delay }}
     >
       <Icon size={20} className="text-[#cf96ff] mb-2" />
-      <div className="text-xl font-black font-['Plus_Jakarta_Sans']">{value}</div>
+      <div className="text-xl font-black font-game">{value}</div>
       <div className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] mt-0.5">{label}</div>
     </motion.div>
   );
@@ -223,13 +223,13 @@ export default function MarketplaceAgency() {
     return (
       <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-black font-['Plus_Jakarta_Sans']">Agentur nicht gefunden</h1>
+          <h1 className="text-2xl font-black font-game">Agentur nicht gefunden</h1>
           <p className="text-gray-400 font-['Be_Vietnam_Pro']">
             Die Agentur mit dem Slug "{slug}" existiert nicht oder ist nicht mehr aktiv.
           </p>
           <button
             onClick={() => navigate("/marketplace")}
-            className="mt-4 px-6 py-2.5 rounded-full bg-[#cf96ff] text-black font-bold font-['Plus_Jakarta_Sans'] text-sm hover:bg-[#b87ae6] transition-colors"
+            className="mt-4 px-6 py-2.5 rounded-full bg-[#cf96ff] text-black font-bold font-game text-sm hover:bg-[#b87ae6] transition-colors"
           >
             Zum Marketplace
           </button>
@@ -279,13 +279,13 @@ export default function MarketplaceAgency() {
               className="w-20 h-20 rounded-full object-cover shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]"
             />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-3xl font-black font-['Plus_Jakarta_Sans'] shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-3xl font-black font-game shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]">
               {agency.name.charAt(0)}
             </div>
           )}
           <div className="flex-1 pb-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans']">{agency.name}</h1>
+              <h1 className="text-3xl font-black font-game">{agency.name}</h1>
               {(tier === "professional" || tier === "enterprise") && (
                 <ShieldCheck size={22} className="text-[#00e3fd]" />
               )}
@@ -345,7 +345,7 @@ export default function MarketplaceAgency() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
           >
-            <h2 className="text-lg font-black font-['Plus_Jakarta_Sans'] mb-3">Tier-Vorteile</h2>
+            <h2 className="text-lg font-black font-game mb-3">Tier-Vorteile</h2>
             <div className="flex flex-wrap gap-2">
               {TIER_BENEFITS[tier]!.map((benefit) => (
                 <span
@@ -371,7 +371,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-3">Über uns</h2>
+          <h2 className="text-xl font-black font-game mb-3">Über uns</h2>
           <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm max-w-3xl">
             {agency.name} ist seit {createdYear} aktiv{agency.city ? ` in ${agency.city}` : ""}.
           </p>
@@ -384,7 +384,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Services</h2>
+          <h2 className="text-xl font-black font-game mb-4">Services</h2>
           {servicesLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(3)].map((_, i) => (
@@ -428,7 +428,7 @@ export default function MarketplaceAgency() {
                       {svc.category}
                     </span>
                   </div>
-                  <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-sm group-hover:text-[#cf96ff] transition-colors">
+                  <h3 className="font-bold font-game text-sm group-hover:text-[#cf96ff] transition-colors">
                     {svc.title}
                   </h3>
                   <div className="flex items-center justify-between mt-2">
@@ -437,7 +437,7 @@ export default function MarketplaceAgency() {
                       <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">({svc.review_count})</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-sm font-black font-['Plus_Jakarta_Sans']">{formatPrice(svc.price_cents)} €</span>
+                      <span className="text-sm font-black font-game">{formatPrice(svc.price_cents)} €</span>
                       <span className="text-[10px] text-gray-500 font-['Be_Vietnam_Pro'] ml-1">
                         {PRICE_TYPE_LABELS[svc.price_type] || svc.price_type}
                       </span>
@@ -456,7 +456,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Bewertungen</h2>
+          <h2 className="text-xl font-black font-game mb-4">Bewertungen</h2>
           {reviews.length === 0 ? (
             <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
               <Star size={32} className="text-gray-600 mx-auto mb-3" />
@@ -475,12 +475,12 @@ export default function MarketplaceAgency() {
                   transition={{ delay: 0.35 + i * 0.06 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-['Plus_Jakarta_Sans']">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-game">
                       {review.name?.charAt(0) || "?"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm font-['Plus_Jakarta_Sans']">{review.name}</span>
+                        <span className="font-semibold text-sm font-game">{review.name}</span>
                         <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">
                           {new Date(review.date).toLocaleDateString("de-DE")}
                         </span>
@@ -505,7 +505,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
         >
-          <h2 className="text-xl font-black font-['Plus_Jakarta_Sans'] mb-4">Kontakt</h2>
+          <h2 className="text-xl font-black font-game mb-4">Kontakt</h2>
           <div className={`p-5 rounded-2xl ${C.high} border ${C.border} space-y-3 max-w-md`}>
             {agency.email && (
               <a

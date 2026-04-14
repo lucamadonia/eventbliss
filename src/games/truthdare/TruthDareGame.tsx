@@ -99,7 +99,11 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
 
-  useTVGameBridge('truthdare', { phase, currentRound, activeIdx, players }, [phase, currentRound, activeIdx]);
+  useTVGameBridge('truthdare', {
+    phase, currentRound, activeIdx, players,
+    choiceType,
+    task: currentItem ? ('question' in currentItem ? currentItem.question : currentItem.challenge) : '',
+  }, [phase, currentRound, activeIdx, choiceType]);
 
   const truthDeck = useMemo(() => shuffle(TRUTH_QUESTIONS), []);
   const dareDeck = useMemo(() => shuffle(DARE_CHALLENGES), []);
@@ -303,7 +307,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
       {/* Ambient glow orbs */}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />

@@ -297,7 +297,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />

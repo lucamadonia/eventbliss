@@ -230,7 +230,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans'] overflow-hidden">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
       <style>{neonStyles}</style>
 
       {/* Background aura blobs */}

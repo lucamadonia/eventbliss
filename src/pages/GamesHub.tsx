@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
-import { TVBroadcastProvider } from "@/contexts/TVBroadcastContext";
+import { TVBroadcastProvider, useTVContext } from "@/contexts/TVBroadcastContext";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "@/games/ui/GameRulesModal";
+import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import {
@@ -166,7 +167,7 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
           <PremiumBadge isLocked={premiumInfo.isLocked} freePlaysLeft={premiumInfo.freePlaysLeft} isPremium={premiumInfo.isPremium} />
         )}
         {game.badge && (
-          <span className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider font-['Plus_Jakarta_Sans'] ${
+          <span className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider font-game ${
             game.badge === "Hot" ? "bg-[#ff7350] text-white" : "bg-[#00e3fd] text-[#0d0d15]"
           }`}>
             {game.badge}
@@ -176,7 +177,7 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
 
       {/* Content */}
       <div className="p-3 space-y-2">
-        <h3 className="text-sm font-extrabold text-white font-['Plus_Jakarta_Sans'] truncate">{game.name}</h3>
+        <h3 className="text-sm font-extrabold text-white font-game truncate">{game.name}</h3>
         <p className="text-[11px] text-white/50 font-['Be_Vietnam_Pro'] line-clamp-2 leading-relaxed">{game.desc}</p>
 
         {/* Badges */}
@@ -193,7 +194,7 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
 
         {/* Spielen + Online buttons */}
         <div className="pt-1 flex gap-1.5">
-          <div className="flex-1 rounded-lg bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-1.5 text-center text-[11px] font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] transition-shadow group-hover:shadow-[0_0_12px_rgba(207,150,255,0.4)]">
+          <div className="flex-1 rounded-lg bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-1.5 text-center text-[11px] font-bold text-[#0d0d15] font-game transition-shadow group-hover:shadow-[0_0_12px_rgba(207,150,255,0.4)]">
             Spielen
           </div>
           {onOnline && (
@@ -220,7 +221,7 @@ function getFreePlaysForGame(gameId: string): number {
   }
 }
 
-const GamesHub = () => {
+const GamesHubInner = () => {
   const navigate = useNavigate();
   const { gameId } = useParams();
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
@@ -228,6 +229,37 @@ const GamesHub = () => {
   const [onlineGameId, setOnlineGameId] = useState<string | null>(lobbyParam);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
   const [activeCategory, setActiveCategory] = useState("alle");
+
+  // Access TV broadcast context (provided by outer GamesHub wrapper)
+  const tv = useTVContext();
+
+  // Sync online room code to TV broadcast for online games
+  useEffect(() => { tv?.setOnlineRoom(roomCode || null); }, [roomCode, tv]);
+
+  // Broadcast lobby state between games so TV shows leaderboard
+  useEffect(() => {
+    if (!gameId && tv?.isActive) {
+      try {
+        const raw = localStorage.getItem("eventbliss_party_session");
+        const session = raw ? JSON.parse(raw) : null;
+        const players = session?.isActive ? session.players : [];
+        const sorted = [...players].sort((a: any, b: any) => (b.totalScore || 0) - (a.totalScore || 0));
+        tv.broadcastTV('tv-state', {
+          game: 'lobby',
+          phase: 'idle',
+          players: sorted.map((p: any) => ({ name: p.name, score: p.totalScore || 0, color: p.color, avatar: p.avatar })),
+          gameHistory: session?.gameHistory || [],
+        });
+      } catch { /* no session */ }
+    }
+  }, [gameId, tv]);
+
+  // Clean up stale ?room= param when no game is active
+  useEffect(() => {
+    if (!gameId && roomCode) {
+      navigate('/games', { replace: true });
+    }
+  }, [gameId, roomCode, navigate]);
 
   // Auto-show game rules on first play
   const { showRules, openRules, closeRules } = useAutoShowRules(gameId || '');
@@ -320,13 +352,11 @@ const GamesHub = () => {
 
     return (
       <>{rulesOverlay}
-      <TVBroadcastProvider roomCode={roomCode}>
         <Suspense fallback={GameFallback}>
           <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
             {(onlineProps) => renderOnlineGame(onlineProps)}
           </OnlineGameWrapper>
         </Suspense>
-      </TVBroadcastProvider>
       </>
     );
   }
@@ -380,30 +410,32 @@ const GamesHub = () => {
     }
   }
 
-  // Rules overlay for ALL games — auto-shows on first play + floating ? button to reopen
+  // Rules overlay + unified title bar for ALL games
   const rulesOverlay = gameId ? (
-    <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
+    <>
+      <GameTitleBar gameId={gameId} onHelpClick={openRules} />
+      <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
+    </>
   ) : null;
 
-  // Offline games — wrapped in TVBroadcastProvider so they can
-  // optionally connect to a TV screen via the floating 📺 button
-  if (gameId === "category") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><CategoryGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "bomb") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><BombGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "headup") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><HeadUpGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "taboo") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><TabooGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "hochstapler") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><ImpostorGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "drueck-das-wort") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><WordPressGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "wo-ist-was") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><FindItGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "split-quiz") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "geteilt-gequizzt") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><SharedQuizGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "schnellzeichner") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><QuickDrawGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "wahrheit-pflicht") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><TruthDareGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "this-or-that") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "wer-bin-ich") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><WhoAmIGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "emoji-raten") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "fake-or-fact") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "story-builder") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></TVBroadcastProvider></>;
-  if (gameId === "flaschendrehen") return <>{rulesOverlay}<TVBroadcastProvider><Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></TVBroadcastProvider></>;
+  // Offline games — TV broadcast is handled by the outer TVBroadcastProvider
+  if (gameId === "category") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CategoryGame /></Suspense></>;
+  if (gameId === "bomb") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BombGame /></Suspense></>;
+  if (gameId === "headup") return <>{rulesOverlay}<Suspense fallback={GameFallback}><HeadUpGame /></Suspense></>;
+  if (gameId === "taboo") return <>{rulesOverlay}<Suspense fallback={GameFallback}><TabooGame /></Suspense></>;
+  if (gameId === "hochstapler") return <>{rulesOverlay}<Suspense fallback={GameFallback}><ImpostorGame /></Suspense></>;
+  if (gameId === "drueck-das-wort") return <>{rulesOverlay}<Suspense fallback={GameFallback}><WordPressGame /></Suspense></>;
+  if (gameId === "wo-ist-was") return <>{rulesOverlay}<Suspense fallback={GameFallback}><FindItGame /></Suspense></>;
+  if (gameId === "split-quiz") return <>{rulesOverlay}<Suspense fallback={GameFallback}><SplitQuizGame onClose={() => navigate("/games")} /></Suspense></>;
+  if (gameId === "geteilt-gequizzt") return <>{rulesOverlay}<Suspense fallback={GameFallback}><SharedQuizGame /></Suspense></>;
+  if (gameId === "schnellzeichner") return <>{rulesOverlay}<Suspense fallback={GameFallback}><QuickDrawGame /></Suspense></>;
+  if (gameId === "wahrheit-pflicht") return <>{rulesOverlay}<Suspense fallback={GameFallback}><TruthDareGame /></Suspense></>;
+  if (gameId === "this-or-that") return <>{rulesOverlay}<Suspense fallback={GameFallback}><ThisOrThatGame /></Suspense></>;
+  if (gameId === "wer-bin-ich") return <>{rulesOverlay}<Suspense fallback={GameFallback}><WhoAmIGame /></Suspense></>;
+  if (gameId === "emoji-raten") return <>{rulesOverlay}<Suspense fallback={GameFallback}><EmojiGuessGame /></Suspense></>;
+  if (gameId === "fake-or-fact") return <>{rulesOverlay}<Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></>;
+  if (gameId === "story-builder") return <>{rulesOverlay}<Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></>;
+  if (gameId === "flaschendrehen") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {
@@ -423,7 +455,7 @@ const GamesHub = () => {
                 <Icon className="h-12 w-12 text-white" />
               </div>
             )}
-            <h1 className="text-2xl font-extrabold text-white mb-2 font-['Plus_Jakarta_Sans']">{game?.name ?? "Spiel nicht gefunden"}</h1>
+            <h1 className="text-2xl font-extrabold text-white mb-2 font-game">{game?.name ?? "Spiel nicht gefunden"}</h1>
             <p className="text-white/50 mb-4 font-['Be_Vietnam_Pro']">{game?.desc ?? ""}</p>
             <p className="text-sm text-white/30 font-['Be_Vietnam_Pro']">Spiellogik wird in Kürze freigeschaltet.</p>
           </motion.div>
@@ -437,7 +469,7 @@ const GamesHub = () => {
     <div className={`min-h-screen ${C.surface} pb-24`}>
       {/* Fixed Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between px-5 py-4 bg-[#0d0d15]/90 backdrop-blur-xl border-b border-[#484750]/10">
-        <h1 className="text-xl font-extrabold font-['Plus_Jakarta_Sans'] text-[#cf96ff] drop-shadow-[0_0_8px_rgba(207,150,255,0.4)]">
+        <h1 className="text-xl font-extrabold font-game text-[#cf96ff] drop-shadow-[0_0_8px_rgba(207,150,255,0.4)]">
           Eventbliss Games
         </h1>
         <button className="relative p-2 rounded-full bg-[#1f1f29]">
@@ -456,13 +488,13 @@ const GamesHub = () => {
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
             <div className="flex-1">
-              <h2 className="text-4xl md:text-5xl font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-2">Schnellstart</h2>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white font-game mb-2">Schnellstart</h2>
               <p className="text-white/50 font-['Be_Vietnam_Pro'] text-sm mb-5">
                 Kein Plan? Kein Problem. Lass den Zufall entscheiden und starte sofort ein zufälliges Partyspiel!
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={handleQuickStart}
-                  className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] px-6 py-3 text-sm font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]">
+                  className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] px-6 py-3 text-sm font-bold text-[#0d0d15] font-game shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]">
                   <Dices className="h-5 w-5" />
                   Random Game
                 </motion.button>
@@ -471,13 +503,13 @@ const GamesHub = () => {
                     const random = allGames[Math.floor(Math.random() * allGames.length)];
                     setOnlineGameId(random.id);
                   }}
-                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-6 py-3 text-sm font-bold text-[#df8eff] font-['Plus_Jakarta_Sans'] transition-all hover:bg-[#df8eff]/20 hover:shadow-[0_0_20px_rgba(223,142,255,0.2)]">
+                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-6 py-3 text-sm font-bold text-[#df8eff] font-game transition-all hover:bg-[#df8eff]/20 hover:shadow-[0_0_20px_rgba(223,142,255,0.2)]">
                   <Globe className="h-5 w-5" />
                   Online spielen
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() => navigate('/tv')}
-                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 px-6 py-3 text-sm font-bold text-[#8ff5ff] font-['Plus_Jakarta_Sans'] transition-all hover:bg-[#8ff5ff]/20 hover:shadow-[0_0_20px_rgba(143,245,255,0.2)]">
+                  className="inline-flex items-center gap-2.5 rounded-xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 px-6 py-3 text-sm font-bold text-[#8ff5ff] font-game transition-all hover:bg-[#8ff5ff]/20 hover:shadow-[0_0_20px_rgba(143,245,255,0.2)]">
                   <span className="text-lg">📺</span>
                   TV Screen
                 </motion.button>
@@ -494,7 +526,7 @@ const GamesHub = () => {
 
         {/* Kategorien */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mt-8">
-          <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-3">Kategorien</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-3">Kategorien</h2>
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             {categories.map((cat) => {
               const CatIcon = cat.icon;
@@ -516,7 +548,7 @@ const GamesHub = () => {
 
         {/* Zuletzt gespielt */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8">
-          <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-3">Zuletzt gespielt</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-3">Zuletzt gespielt</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             {recentGames.map((rg) => {
               const RIcon = rg.icon;
@@ -526,7 +558,7 @@ const GamesHub = () => {
                     <RIcon className="h-5 w-5 text-[#cf96ff]" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white font-['Plus_Jakarta_Sans'] truncate">{rg.name}</p>
+                    <p className="text-xs font-bold text-white font-game truncate">{rg.name}</p>
                     <p className="text-[10px] text-white/40 font-['Be_Vietnam_Pro']">{rg.time}</p>
                   </div>
                 </div>
@@ -537,7 +569,7 @@ const GamesHub = () => {
 
         {/* Alle Spiele */}
         <motion.section className="mt-8" initial="hidden" animate="visible" variants={stagger}>
-          <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-4">Alle Spiele</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-4">Alle Spiele</h2>
           <div className="grid grid-cols-2 gap-3">
             <AnimatePresence>
               {filteredGames.map((game) => (
@@ -610,5 +642,24 @@ const GamesHub = () => {
     </div>
   );
 };
+
+/** Outer wrapper — single TVBroadcastProvider persists across game switches */
+function GamesHub() {
+  // Use PartySession TV code if a party is active, otherwise auto-generate
+  const partyTvCode = (() => {
+    try {
+      const raw = localStorage.getItem("eventbliss_party_session");
+      if (!raw) return undefined;
+      const s = JSON.parse(raw);
+      return s?.isActive && s?.tvCode ? s.tvCode : undefined;
+    } catch { return undefined; }
+  })();
+
+  return (
+    <TVBroadcastProvider sessionCode={partyTvCode}>
+      <GamesHubInner />
+    </TVBroadcastProvider>
+  );
+}
 
 export default GamesHub;

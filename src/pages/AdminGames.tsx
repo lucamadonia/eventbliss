@@ -339,7 +339,7 @@ export default function AdminGames() {
   const langCount = (item: GameContent) => LANGS.filter(l => item.content[l.code] && Object.values(item.content[l.code]).some(v => v && String(v).length > 0)).length;
 
   return (
-    <div className="min-h-screen bg-[#0a0e14] text-[#f1f3fc] font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen bg-[#0a0e14] text-[#f1f3fc] font-game">
       {/* Header */}
       <div className="border-b border-white/5 px-6 py-4">
         <div className="flex items-center gap-4">

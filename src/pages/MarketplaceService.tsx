@@ -136,7 +136,7 @@ function ServiceNotFound() {
   return (
     <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans']">Service nicht gefunden</h1>
+        <h1 className="text-3xl font-black font-game">Service nicht gefunden</h1>
         <p className="text-gray-400 font-['Be_Vietnam_Pro']">
           Dieser Service existiert nicht oder ist nicht mehr verfügbar.
         </p>
@@ -300,7 +300,7 @@ export default function MarketplaceServicePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-3xl font-black font-['Plus_Jakarta_Sans'] leading-tight">{s.title}</h1>
+          <h1 className="text-3xl font-black font-game leading-tight">{s.title}</h1>
 
           <div className="flex flex-wrap items-center gap-4 mt-3">
             <div className="flex items-center gap-1.5">
@@ -313,7 +313,7 @@ export default function MarketplaceServicePage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 mt-4">
-            <span className="text-2xl font-black font-['Plus_Jakarta_Sans'] text-white">
+            <span className="text-2xl font-black font-game text-white">
               {formatPrice(s.price_cents)} €
             </span>
             <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">
@@ -372,7 +372,7 @@ export default function MarketplaceServicePage() {
                   </p>
                   {s.requirements.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-bold font-['Plus_Jakarta_Sans'] mb-3">Hinweise</h3>
+                      <h3 className="text-lg font-bold font-game mb-3">Hinweise</h3>
                       <ul className="space-y-2">
                         {s.requirements.map((r, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-gray-400 font-['Be_Vietnam_Pro']">
@@ -442,13 +442,13 @@ export default function MarketplaceServicePage() {
                         className="w-14 h-14 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-xl font-bold font-['Plus_Jakarta_Sans']">
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-xl font-bold font-game">
                         {s.agency_name.charAt(0)}
                       </div>
                     )}
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold font-['Plus_Jakarta_Sans'] text-lg">{s.agency_name}</h3>
+                        <h3 className="font-bold font-game text-lg">{s.agency_name}</h3>
                         {(s.agency_tier === "professional" || s.agency_tier === "enterprise") && (
                           <ShieldCheck size={18} className="text-[#00e3fd]" />
                         )}
@@ -496,7 +496,7 @@ export default function MarketplaceServicePage() {
         >
           <div className="sticky top-24 bg-[#1f1f29]/80 backdrop-blur-xl border border-[#484750]/10 rounded-2xl p-6 space-y-5">
             <div>
-              <span className="text-3xl font-black font-['Plus_Jakarta_Sans']">{formatPrice(s.price_cents)} €</span>
+              <span className="text-3xl font-black font-game">{formatPrice(s.price_cents)} €</span>
               <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro'] ml-2">
                 {PRICE_TYPE_LABELS[s.price_type]}
               </span>
@@ -543,7 +543,7 @@ export default function MarketplaceServicePage() {
                     <Minus size={16} />
                   </button>
                   <div className="flex-1 text-center">
-                    <span className="text-xl font-bold font-['Plus_Jakarta_Sans']">{participants}</span>
+                    <span className="text-xl font-bold font-game">{participants}</span>
                     <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] ml-1.5">
                       {participants === 1 ? "Person" : "Personen"}
                     </span>
@@ -561,7 +561,7 @@ export default function MarketplaceServicePage() {
             {/* Total */}
             <div className="flex items-center justify-between pt-3 border-t border-[#484750]/10">
               <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">Gesamt</span>
-              <span className="text-2xl font-black font-['Plus_Jakarta_Sans']">{formatPrice(totalPrice)} €</span>
+              <span className="text-2xl font-black font-game">{formatPrice(totalPrice)} €</span>
             </div>
 
             {/* Cancellation */}
@@ -590,7 +590,7 @@ export default function MarketplaceServicePage() {
               whileTap={{ scale: 0.98 }}
               onClick={handleBook}
               disabled={isBooking}
-              className="w-full py-3.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {isBooking && <Loader2 size={16} className="animate-spin" />}
               Jetzt buchen
@@ -620,7 +620,7 @@ export default function MarketplaceServicePage() {
       {/* Mobile Fixed Booking Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1f1f29]/95 backdrop-blur-xl border-t border-[#484750]/10 px-4 py-3 flex items-center gap-4">
         <div className="flex-1 min-w-0">
-          <span className="text-lg font-black font-['Plus_Jakarta_Sans']">{formatPrice(totalPrice)} €</span>
+          <span className="text-lg font-black font-game">{formatPrice(totalPrice)} €</span>
           <span className="text-xs text-gray-400 font-['Be_Vietnam_Pro'] ml-1.5">
             {s.price_type === "per_person" ? `${participants} Pers.` : PRICE_TYPE_LABELS[s.price_type]}
           </span>
@@ -638,7 +638,7 @@ export default function MarketplaceServicePage() {
             whileTap={{ scale: 0.95 }}
             onClick={handleBook}
             disabled={isBooking}
-            className="px-6 py-2.5 rounded-xl font-bold font-['Plus_Jakarta_Sans'] text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] disabled:opacity-60 flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] disabled:opacity-60 flex items-center gap-2"
           >
             {isBooking && <Loader2 size={14} className="animate-spin" />}
             Buchen

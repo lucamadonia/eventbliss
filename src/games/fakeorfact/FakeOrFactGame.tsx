@@ -142,7 +142,11 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
   // Game logic
   // ---------------------------------------------------------------------------
 
-  useTVGameBridge('fakeorfact', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
+  useTVGameBridge('fakeorfact', {
+    phase, currentRound, currentPlayerIdx, players,
+    statement: currentFact?.statement || currentThree?.statements?.join(' / ') || '',
+    totalRounds,
+  }, [phase, currentRound, currentPlayerIdx]);
 
   const currentPlayer = players[currentPlayerIdx] ?? null;
 

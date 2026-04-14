@@ -6,7 +6,7 @@ const TILE_SHAPES = ['\u25B2', '\u25C6', '\u25CF', '\u25A0'];
 const TILE_LABELS = ['A', 'B', 'C', 'D'];
 
 export default function TVQuizView({ gameState }: { gameState: any }) {
-  const question = gameState?.question || gameState?.currentTask || '';
+  const question = gameState?.question || gameState?.currentTask || gameState?.statement || '';
   const answers = gameState?.answers || [];
   const category = gameState?.category || '';
   const timeLeft = gameState?.timeLeft ?? '';

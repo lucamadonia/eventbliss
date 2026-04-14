@@ -132,7 +132,7 @@ export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
                 >
                   {icon}
                 </motion.div>
-                <h2 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+                <h2 className="text-2xl font-extrabold text-white font-game tracking-tight">
                   {title}
                 </h2>
                 {tagline && (

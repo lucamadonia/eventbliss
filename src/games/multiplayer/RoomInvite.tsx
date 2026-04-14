@@ -123,7 +123,7 @@ export default function RoomInvite({ gameId, roomCode, gameName }: RoomInvitePro
           Raumcode
         </p>
         <p
-          className="text-4xl font-extrabold tracking-[0.25em] font-['Plus_Jakarta_Sans']"
+          className="text-4xl font-extrabold tracking-[0.25em] font-game"
           style={{ color: EP.neonPurple }}
         >
           {roomCode}

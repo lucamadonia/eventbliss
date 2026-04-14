@@ -188,7 +188,13 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- Round tracking for MVP ---- */
   const playerCorrectMap = useRef<Record<string, number>>({});
 
-  useTVGameBridge('splitquiz', { phase, currentRound, players: playerNames, teamA, teamB }, [phase, currentRound, activeTeamIdx]);
+  useTVGameBridge('splitquiz', {
+    phase, currentRound, players: playerNames, teamA, teamB, totalRounds,
+    question: currentQuestion?.question || '',
+    answers: currentQuestion?.answers || [],
+    category: currentQuestion?.category || '',
+    correctAnswer: phase === 'reveal' ? currentQuestion?.correctIndex ?? -1 : -1,
+  }, [phase, currentRound, activeTeamIdx]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   useEffect(() => {

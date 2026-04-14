@@ -279,7 +279,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-['Plus_Jakarta_Sans']">
+    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
       {/* Ambient glow orbs */}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />

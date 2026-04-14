@@ -742,7 +742,10 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
-  useTVGameBridge('wordpress', { phase, round, currentPlayerIndex, players }, [phase, round, currentPlayerIndex]);
+  useTVGameBridge('wordpress', {
+    phase, round, currentPlayerIndex, players, totalRounds,
+    currentWord: currentWord?.text || '',
+  }, [phase, round, currentPlayerIndex]);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     setPlayers(ps);

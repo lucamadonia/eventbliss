@@ -138,7 +138,7 @@ function DisconnectedOverlay({ onRetry }: { onRetry: () => void }) {
           className="mx-auto mb-4 h-10 w-10"
           style={{ color: EP.neonPink }}
         />
-        <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-2">
+        <h2 className="text-lg font-extrabold text-white font-game mb-2">
           Verbindung verloren
         </h2>
         <p className="text-sm text-white/40 font-['Be_Vietnam_Pro'] mb-4">
@@ -177,7 +177,7 @@ function ConnectingOverlay({ roomCode }: { roomCode: string }) {
           className="mx-auto mb-4 h-10 w-10 animate-spin"
           style={{ color: EP.neonPurple }}
         />
-        <h2 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] mb-1">
+        <h2 className="text-lg font-extrabold text-white font-game mb-1">
           Verbinde...
         </h2>
         <p className="text-sm text-white/40 font-['Be_Vietnam_Pro']">

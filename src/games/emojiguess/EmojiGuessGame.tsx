@@ -93,7 +93,12 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useTVGameBridge('emojiguess', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
+  useTVGameBridge('emojiguess', {
+    phase, currentRound, currentPlayerIdx, players, totalRounds,
+    emojis: currentPuzzle?.emojis || '',
+    category: currentPuzzle?.category || '',
+    answer: showAnswer ? (currentPuzzle?.answer || '') : '',
+  }, [phase, currentRound, currentPlayerIdx, showAnswer]);
 
   // Timer
   const handleTimerExpire = useCallback(() => {

@@ -143,12 +143,12 @@ export function GameSetup({
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e14] px-4 py-8 font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen bg-[#0a0e14] px-4 py-8 font-game">
       <div className="mx-auto max-w-md space-y-6">
         {/* Header with rules button */}
         <div className="flex items-center justify-between">
           <div className="w-10" /> {/* spacer */}
-          <h1 className="text-2xl font-extrabold text-white text-center font-['Plus_Jakarta_Sans'] tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-extrabold text-white text-center font-game tracking-tight">{title}</h1>
           {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
         </div>
 
@@ -277,7 +277,7 @@ export function GameSetup({
           onClick={handleStart}
           disabled={!canStart}
           className={cn(
-            "w-full py-4 rounded-2xl font-extrabold text-lg font-['Plus_Jakarta_Sans'] flex items-center justify-center gap-2 transition-all",
+            "w-full py-4 rounded-2xl font-extrabold text-lg font-game flex items-center justify-center gap-2 transition-all",
             canStart
               ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#ff8a50] text-white shadow-[0_0_30px_rgba(223,142,255,0.4)]"
               : "bg-[#1b2028] text-[#484750] cursor-not-allowed"

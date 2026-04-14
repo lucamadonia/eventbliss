@@ -81,7 +81,7 @@ export default function PremiumPaywall({
                 <Crown className="h-8 w-8 text-white drop-shadow-lg" />
               </div>
 
-              <h2 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_0_12px_rgba(207,150,255,0.3)]">
+              <h2 className="text-2xl font-extrabold text-white font-game drop-shadow-[0_0_12px_rgba(207,150,255,0.3)]">
                 EventBliss Premium
               </h2>
               <p className="mt-2 text-sm text-white/50 font-['Be_Vietnam_Pro']">
@@ -111,7 +111,7 @@ export default function PremiumPaywall({
             <div className="px-6 pb-4">
               <div className="flex items-center justify-center gap-3 text-center">
                 <div className="rounded-xl border border-[#cf96ff]/20 bg-[#cf96ff]/5 px-4 py-2.5">
-                  <p className="text-lg font-extrabold text-[#cf96ff] font-['Plus_Jakarta_Sans']">
+                  <p className="text-lg font-extrabold text-[#cf96ff] font-game">
                     3,99&euro;
                   </p>
                   <p className="text-[10px] text-white/40 font-['Be_Vietnam_Pro']">
@@ -122,7 +122,7 @@ export default function PremiumPaywall({
                   oder
                 </span>
                 <div className="rounded-xl border border-[#00e3fd]/20 bg-[#00e3fd]/5 px-4 py-2.5">
-                  <p className="text-lg font-extrabold text-[#00e3fd] font-['Plus_Jakarta_Sans']">
+                  <p className="text-lg font-extrabold text-[#00e3fd] font-game">
                     29,99&euro;
                   </p>
                   <p className="text-[10px] text-white/40 font-['Be_Vietnam_Pro']">
@@ -138,7 +138,7 @@ export default function PremiumPaywall({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleUpgrade}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-3.5 text-sm font-bold text-[#0d0d15] font-['Plus_Jakarta_Sans'] shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-3.5 text-sm font-bold text-[#0d0d15] font-game shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]"
               >
                 <Sparkles className="h-4 w-4" />
                 Jetzt Premium werden
@@ -151,7 +151,7 @@ export default function PremiumPaywall({
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleUpgrade}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/5 py-3 text-sm font-bold text-amber-400 font-['Plus_Jakarta_Sans'] transition-colors hover:bg-amber-400/10"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/5 py-3 text-sm font-bold text-amber-400 font-game transition-colors hover:bg-amber-400/10"
               >
                 <Zap className="h-4 w-4" />
                 Party Pack &mdash; einmalig 59,99&euro;
