@@ -320,6 +320,14 @@ const GamesHubInner = () => {
     setOnlineGameId(null);
   };
 
+  // Rules overlay + unified title bar for ALL games (must be defined before early returns)
+  const rulesOverlay = gameId ? (
+    <>
+      <GameTitleBar gameId={gameId} onHelpClick={openRules} />
+      <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
+    </>
+  ) : null;
+
   // Game component routing
   const GameFallback = (
     <div className="min-h-screen bg-[#0d0d15] flex items-center justify-center">
@@ -409,14 +417,6 @@ const GamesHubInner = () => {
       }
     }
   }
-
-  // Rules overlay + unified title bar for ALL games
-  const rulesOverlay = gameId ? (
-    <>
-      <GameTitleBar gameId={gameId} onHelpClick={openRules} />
-      <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
-    </>
-  ) : null;
 
   // Offline games — TV broadcast is handled by the outer TVBroadcastProvider
   if (gameId === "category") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CategoryGame /></Suspense></>;
