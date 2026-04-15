@@ -613,6 +613,28 @@ html.capacitor-native [contenteditable="true"] {
   user-select: text;
 }
 
+/* Prevent iOS auto-zoom on input focus — iOS zooms when font-size < 16px */
+html.capacitor-native input[type="text"],
+html.capacitor-native input[type="search"],
+html.capacitor-native input[type="email"],
+html.capacitor-native input[type="url"],
+html.capacitor-native input[type="tel"],
+html.capacitor-native input[type="number"],
+html.capacitor-native input[type="password"],
+html.capacitor-native input:not([type]),
+html.capacitor-native textarea,
+html.capacitor-native select {
+  font-size: 16px !important;
+}
+
+/* Reset zoom if stuck — double-tap or pinch-zoom escape hatch */
+@supports (-webkit-touch-callout: none) {
+  html.capacitor-native {
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
 /* Hide scrollbars in native mode (touch-friendly) */
 html.capacitor-native ::-webkit-scrollbar {
   width: 0;

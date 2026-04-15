@@ -303,7 +303,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                       <div className="w-7 h-7 rounded-full bg-[#df8eff] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">{i + 1}</div>
                       <input type="text" value={name} maxLength={15}
                         onChange={(e) => { const n = [...playerNames]; n[i] = e.target.value; setPlayerNames(n); }}
-                        className="flex-1 bg-[#151a21] border border-[#20262f] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#a8abb3]/40 focus:outline-none focus:border-[#df8eff]/40" />
+                        className="flex-1 bg-[#151a21] border border-[#20262f] rounded-lg px-3 py-1.5 text-base text-white placeholder:text-[#a8abb3]/40 focus:outline-none focus:border-[#df8eff]/40" />
                       {playerNames.length > 2 && (
                         <button onClick={() => setPlayerNames(playerNames.filter((_, j) => j !== i))}
                           className="w-7 h-7 rounded-full bg-[#ff6e84]/10 flex items-center justify-center text-[#ff6e84] text-xs">✕</button>
@@ -316,7 +316,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                     <input type="text" value={newPlayerName} maxLength={15} placeholder="Name hinzufuegen..."
                       onChange={(e) => setNewPlayerName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter' && newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
-                      className="flex-1 bg-[#151a21] border border-dashed border-[#df8eff]/20 rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-[#a8abb3]/30 focus:outline-none focus:border-[#df8eff]/40" />
+                      className="flex-1 bg-[#151a21] border border-dashed border-[#df8eff]/20 rounded-lg px-3 py-1.5 text-base text-white placeholder:text-[#a8abb3]/30 focus:outline-none focus:border-[#df8eff]/40" />
                     <button onClick={() => { if (newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
                       className="px-3 py-1.5 rounded-lg bg-[#df8eff]/10 text-[#df8eff] text-xs font-bold">+</button>
                   </div>

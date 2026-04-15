@@ -189,7 +189,7 @@ export function GameSetup({
                   maxLength={20}
                   readOnly={!!allAutoPlayers?.find(op => op.id === player.id)}
                   className={cn(
-                    "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm",
+                    "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base",
                     allAutoPlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
                   )}
                 />

@@ -176,7 +176,7 @@ function SetupScreen({
                 value={name}
                 onChange={(e) => updateName(i, e.target.value)}
                 placeholder={`Spieler ${i + 1}`}
-                className="flex-1 min-w-0 rounded-[0.75rem] border border-[#44484f]/20 bg-[#151a21] px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-[#df8eff]/30 transition-colors"
+                className="flex-1 min-w-0 rounded-[0.75rem] border border-[#44484f]/20 bg-[#151a21] px-3 py-2.5 text-base text-white placeholder:text-white/20 outline-none focus:border-[#df8eff]/30 transition-colors"
               />
               {names.length > 2 && (
                 <button onClick={() => removePlayer(i)} className="text-white/20 hover:text-red-400 transition-colors text-lg px-0.5 flex-shrink-0">

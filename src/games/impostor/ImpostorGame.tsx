@@ -479,7 +479,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     onChange={(e) => updateName(player.id, e.target.value)}
                     placeholder={`Spieler ${i + 1}`}
                     maxLength={20}
-                    className="flex-1 bg-[#151a21]/60 border border-[#44484f] rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50 text-sm"
+                    className="flex-1 bg-[#151a21]/60 border border-[#44484f] rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50 text-base"
                   />
                   {players.length > 4 && (
                     <button

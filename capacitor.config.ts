@@ -8,6 +8,11 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     iosScheme: 'https',
   },
+  ios: {
+    // Prevent iOS WebView from auto-scrolling/zooming on input focus
+    scrollEnabled: false,
+    allowsLinkPreview: false,
+  },
   plugins: {
     SplashScreen: {
       // Manual hide — SplashExperience handles the fade-out for a

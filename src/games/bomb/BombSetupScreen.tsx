@@ -233,7 +233,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
                       value={p.name}
                       onChange={(e) => setName(i, e.target.value)}
                       placeholder={`Spieler ${i + 1}`}
-                      className="bg-[#13131b] border-0 text-white text-center text-xs placeholder:text-white/30 h-8 rounded-lg"
+                      className="bg-[#13131b] border-0 text-white text-center text-base placeholder:text-white/30 h-8 rounded-lg"
                       maxLength={12}
                     />
                   </div>
