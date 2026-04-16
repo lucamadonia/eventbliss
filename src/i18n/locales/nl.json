@@ -3839,5 +3839,232 @@
         "desc": "Words get faster and faster!"
       }
     }
+  },
+  "agencyPricing": {
+    "hero": {
+      "badge": "🔥 LAUNCH-AANBIEDING: 50% VOOR ALTIJD BESPAREN",
+      "titleLine1": "Bereik",
+      "titleHighlight": "100.000+ eventplanners",
+      "titleLine2": "zonder marketingbudget.",
+      "subtitle": "EventBliss trekt dagelijks nieuwe gebruikers aan via games, enquêtes en TV-schermen. Als partner-agency ben je precies waar zij aan het plannen zijn – klaar om te boeken.",
+      "trustNoFee": "Geen opstartkosten",
+      "trustCancel": "Altijd opzegbaar",
+      "trustInstant": "Direct live"
+    },
+    "stats": {
+      "games": "Live Party Games",
+      "ideas": "Event-ideeën & thema's",
+      "agencies": "Partner-agencies",
+      "languages": "Talen wereldwijd"
+    },
+    "loops": {
+      "badge": "VIRAL GROWTH ENGINE",
+      "titleLine1": "3 virale loops leveren je",
+      "titleHighlight": "klanten op de automatische piloot",
+      "subtitle": "Terwijl jij werkt, groeit EventBliss voor jou.",
+      "game": {
+        "title": "Game Loop",
+        "factor": "K-factor 1,5-3,0",
+        "desc": "1 host speelt → 5-30 gasten scannen QR → 2-5 downloaden de app"
+      },
+      "survey": {
+        "title": "Survey Loop",
+        "factor": "K-factor 5-20",
+        "desc": "1 enquêtelink → 20-100 deelnemers → 5-15 ontdekken EventBliss"
+      },
+      "tv": {
+        "title": "TV Loop",
+        "factor": "K-factor 10-50",
+        "desc": "1 TV-scherm op het feest → 50-200 zien het merk → 10-30 scannen QR"
+      }
+    },
+    "spotlight": {
+      "badge": "VLAGGENSCHIP-FEATURES",
+      "titleLine1": "De tools die jouw agency",
+      "titleHighlight": "onweerstaanbaar",
+      "titleLine2": "maken",
+      "subtitle": "Twee features die normaal alleen in enterprise-SaaS voor 500+€/maand zitten – hier vanaf 49€.",
+      "inclusiveLabel": "Inbegrepen vanaf",
+      "ai": {
+        "headline": "Je eigen AI-verkoper",
+        "tagline": "24/7 voor je aan het werk",
+        "desc": "De EventBliss AI Planner raadt je diensten proactief aan passende events aan – op basis van budget, eventtype, aantal gasten en locatie. Je aanbiedingen belanden waar ze nodig zijn, zonder dat jij iets hoeft te doen.",
+        "b1": "Slimme matches uit 7 AI-assistenttypes",
+        "b2": "Aanbevelingen direct in het event-dashboard van gebruikers",
+        "b3": "Zelflerend: meer boekingen = betere suggesties",
+        "b4": "In alle 10 talen – zelfde kwaliteit wereldwijd",
+        "tier": "Enterprise"
+      },
+      "portal": {
+        "headline": "Overzichtelijk boekingsportaal",
+        "tagline": "Alles op één plek",
+        "desc": "Een centraal dashboard voor alle aanvragen, bevestigingen, betalingen en communicatie. Geen verloren mails, geen dubbele boekingen, geen papierwerk meer.",
+        "b1": "Kalender met beschikbaarheidsbeheer",
+        "b2": "Automatische Stripe-afrekening voor elke boeking",
+        "b3": "Chat direct met klanten – geen externe tools nodig",
+        "b4": "Statustracking: Aanvraag → Offerte → Geboekt → Betaald",
+        "tier": "Professional"
+      }
+    },
+    "pricing": {
+      "badge": "50% LAUNCH-KORTING",
+      "titleLine1": "Kies je",
+      "titleHighlight": "groeiplan",
+      "subtitle": "Elk plan kan altijd worden geüpgraded of opgezegd.",
+      "mostChosen": "MEEST GEKOZEN",
+      "commissionLabel": "Commissie",
+      "perBooking": "per boeking",
+      "loading": "Laden…",
+      "fineprint": "Alle prijzen excl. btw · Directe activering · Altijd opzegbaar · Geen verborgen kosten",
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Perfect om kennis te maken",
+          "billing": "altijd gratis",
+          "cta": "Gratis beginnen",
+          "f1": "Tot 3 diensten vermelden",
+          "f2": "Basisvermelding in de marketplace",
+          "f3": "Boekingsbeheer",
+          "f4": "Standaard zoekplaatsing",
+          "f5": "25% commissie per boeking"
+        },
+        "professional": {
+          "name": "Professional",
+          "tagline": "Voor groeiende agencies",
+          "billing": "per maand",
+          "cta": "Professional starten",
+          "f1": "Tot 20 diensten vermelden",
+          "f2": "Eigen agency-profielpagina",
+          "f3": "Featured listings in de marketplace",
+          "f4": "Voorrangsranking in zoekresultaten",
+          "f5": "Pro Badge voor vertrouwen",
+          "f6": "Gedetailleerde analytics & inzichten",
+          "f7": "Slechts 10% commissie – 15% minder dan Starter"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "Voor marktleiders",
+          "billing": "per maand",
+          "cta": "Enterprise starten",
+          "f1": "Onbeperkt diensten",
+          "f2": "Eigen agency-profielpagina",
+          "f3": "Automatisch featured listings",
+          "f4": "Hoogste zoekprioriteit – altijd Top 3",
+          "f5": "Enterprise Badge – maximaal vertrouwen",
+          "f6": "AI-boekingsintegratie",
+          "f7": "Volledige analytics + API-toegang",
+          "f8": "10% commissie"
+        }
+      }
+    },
+    "usps": {
+      "badge": "WAAROM AGENCIES ONS GEWELDIG VINDEN",
+      "titleLine1": "6 redenen waarom EventBliss jouw",
+      "titleHighlight": "omzethendel",
+      "titleLine2": "wordt",
+      "u1": {
+        "title": "Geen koude acquisitie meer",
+        "desc": "Gebruikers komen naar jou omdat ze al in planningsmodus zijn. Event-intentie = hoogste koopbereidheid."
+      },
+      "u2": {
+        "title": "Ingebouwde traffic-boost",
+        "desc": "Elk gespeeld spel, elke enquête, elk TV-scherm pusht nieuwe gebruikers de app in – jij profiteert passief."
+      },
+      "u3": {
+        "title": "10 talen, 9 landen",
+        "desc": "Je diensten worden automatisch internationaal zichtbaar – zonder vertaalkosten."
+      },
+      "u4": {
+        "title": "Vertrouwensraamwerk",
+        "desc": "Profielpagina, reviews, badges en verificatie – gebruikers boeken jou, niet een black box."
+      },
+      "u5": {
+        "title": "Jouw business, transparant",
+        "desc": "Dashboard met boekingen, omzet, conversieratio en top-diensten – altijd in beeld."
+      },
+      "u6": {
+        "title": "Instellen en vergeten",
+        "desc": "Diensten eenmaal inrichten, boekingen lopen automatisch. Meer tijd voor je klanten, minder admin."
+      }
+    },
+    "cta": {
+      "badge": "⚡ Start in 60 seconden",
+      "titleLine1": "Klaar om je boekingen op",
+      "titleHighlight": "automatische piloot",
+      "titleLine2": "te zetten?",
+      "subtitle": "Begin gratis met Starter of pak nu de 50% launch-korting op Professional. Hoe eerder, hoe langer je profiteert.",
+      "primary": "Professional voor 49€/mnd zeker stellen",
+      "secondary": "Eerst gratis starten"
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "q1": "Wat gebeurt er als ik de 50%-kortingsactie mis?",
+      "a1": "Je bent verzekerd van de prijs van 49€ (Professional) of 149€ (Enterprise) voor altijd – ook als wij hem later verhogen naar 98€/298€. Je tarief wordt vastgelegd bij aanmelding.",
+      "q2": "Kan ik altijd tussen tiers wisselen?",
+      "a2": "Ja. Upgrade is direct, downgrade aan het einde van de factureringsperiode. Geen opzegtermijnen, geen annuleringskosten.",
+      "q3": "Hoeveel gebruikers bereik ik echt?",
+      "a3": "EventBliss groeit via 3 virale loops (games, enquêtes, TV). Met Professional zit je in de priority-zoek – bruidsparen, party-hosts en bedrijven vinden jou waar zij plannen.",
+      "q4": "Hoe werkt de commissie?",
+      "a4": "Commissie wordt alleen berekend over daadwerkelijk geboekte diensten, automatisch via Stripe verrekend. Starter betaalt 25%, Professional en Enterprise slechts 10% – dat haal je snel terug op de maandfee.",
+      "q5": "Heb ik voorkennis of setup-hulp nodig?",
+      "a5": "Nee. Profiel + eerste dienst online in minder dan 10 minuten. Enterprise-klanten krijgen daarnaast een dedicated onboarding-call."
+    },
+    "errors": {
+      "checkoutFailed": "Fout",
+      "noCheckoutUrl": "Geen checkout-URL ontvangen"
+    },
+    "enterpriseModules": {
+      "badge": "ENTERPRISE COMMAND CENTER",
+      "titleLine1": "Jouw complete",
+      "titleHighlight": "agency-besturingssysteem",
+      "titleLine2": "– vanaf €149/maand.",
+      "subtitle": "Geen extra tools meer betalen. Alles wat je nodig hebt om een moderne event-agency te runnen – in één platform. Eén login. Eén dashboard. Eén prijs.",
+      "valueBadge": "Inbegrepen in Enterprise",
+      "m1": {
+        "title": "CRM & Contacten",
+        "desc": "Alle klanten, leads en leveranciers op één plek met historie en tags."
+      },
+      "m2": {
+        "title": "Event Planner",
+        "desc": "Beheer meerdere events parallel met voortgang en deadlines."
+      },
+      "m3": {
+        "title": "Budget Engine",
+        "desc": "Forecasts, plan-vs-werkelijk, automatische rendementsberekening per event."
+      },
+      "m4": {
+        "title": "Run of Show",
+        "desc": "Minuut-accurate draaiboek met live updates voor team en klanten."
+      },
+      "m5": {
+        "title": "Templatebibliotheek",
+        "desc": "Dupliceer terugkerende events, offertes en checklists in seconden."
+      },
+      "m6": {
+        "title": "Teambeheer",
+        "desc": "Rollen, rechten en taakverdeling per event."
+      },
+      "m7": {
+        "title": "Kalender-sync",
+        "desc": "Tweewegssynchronisatie met Google Calendar, Outlook en iCal."
+      },
+      "m8": {
+        "title": "Client Portal",
+        "desc": "Gebrande klantportalen per event met token-toegang."
+      },
+      "m9": {
+        "title": "Rapporten & Analytics",
+        "desc": "Omzet-, boekings- en teamperformance-rapporten op aanvraag."
+      },
+      "m10": {
+        "title": "Bestandsbeheer",
+        "desc": "Contracten, facturen en assets centraal gearchiveerd en gedeeld."
+      },
+      "m11": {
+        "title": "Boekingskalender",
+        "desc": "Beschikbaarheid, tijdslots en aanvragen visueel in de kalender."
+      },
+      "comparison": "Vergelijkbare all-in-one agency SaaS kost €299-799 per maand."
+    }
   }
 }

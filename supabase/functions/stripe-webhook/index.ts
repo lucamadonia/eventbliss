@@ -234,6 +234,35 @@ serve(async (req) => {
         const planType = session.metadata?.plan_type || "monthly";
         let userId = session.metadata?.user_id;
 
+        // B2B Agency tier subscription: route to agency_marketplace_subscriptions
+        if (planType.startsWith("agency_") && session.subscription) {
+          const tier = session.metadata?.tier as "professional" | "enterprise";
+          const agencyId = session.metadata?.agency_id;
+          const subscriptionId = session.subscription as string;
+          if (!agencyId || (tier !== "professional" && tier !== "enterprise")) {
+            logStep("Agency checkout missing agency_id or invalid tier", { agencyId, tier });
+            break;
+          }
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          await supabaseClient
+            .from("agency_marketplace_subscriptions")
+            .upsert({
+              agency_id: agencyId,
+              tier,
+              stripe_subscription_id: subscriptionId,
+              stripe_customer_id: customerId,
+              started_at: new Date(subscription.start_date * 1000).toISOString(),
+              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+              is_active: true,
+            }, { onConflict: "agency_id" });
+          await supabaseClient
+            .from("agencies")
+            .update({ marketplace_tier: tier })
+            .eq("id", agencyId);
+          logStep("Agency tier subscription created", { agencyId, tier, subscriptionId });
+          break;
+        }
+
         // Fallback: Find user by email if user_id is missing from metadata
         if (!userId && customerEmail) {
           logStep("No user_id in metadata, searching by email", { email: customerEmail });
@@ -301,6 +330,32 @@ serve(async (req) => {
         const subscription = event.data.object as Stripe.Subscription;
         logStep("Subscription updated", { subscriptionId: subscription.id, status: subscription.status });
 
+        // Check if this is an agency tier subscription first
+        const { data: agencySub } = await supabaseClient
+          .from("agency_marketplace_subscriptions")
+          .select("agency_id, tier")
+          .eq("stripe_subscription_id", subscription.id)
+          .maybeSingle();
+
+        if (agencySub) {
+          const isActive = subscription.status === "active" || subscription.status === "trialing";
+          await supabaseClient
+            .from("agency_marketplace_subscriptions")
+            .update({
+              is_active: isActive,
+              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+            })
+            .eq("stripe_subscription_id", subscription.id);
+          if (!isActive) {
+            await supabaseClient
+              .from("agencies")
+              .update({ marketplace_tier: "starter" })
+              .eq("id", agencySub.agency_id);
+          }
+          logStep("Agency subscription updated", { agencyId: agencySub.agency_id, isActive });
+          break;
+        }
+
         // Find user by stripe_subscription_id
         const { data: existingSub } = await supabaseClient
           .from("subscriptions")
@@ -337,6 +392,26 @@ serve(async (req) => {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         logStep("Subscription deleted", { subscriptionId: subscription.id });
+
+        // Handle agency tier cancellation first
+        const { data: agencySub } = await supabaseClient
+          .from("agency_marketplace_subscriptions")
+          .select("agency_id")
+          .eq("stripe_subscription_id", subscription.id)
+          .maybeSingle();
+
+        if (agencySub) {
+          await supabaseClient
+            .from("agency_marketplace_subscriptions")
+            .update({ tier: "starter", is_active: false, expires_at: new Date().toISOString() })
+            .eq("stripe_subscription_id", subscription.id);
+          await supabaseClient
+            .from("agencies")
+            .update({ marketplace_tier: "starter" })
+            .eq("id", agencySub.agency_id);
+          logStep("Agency tier downgraded to starter", { agencyId: agencySub.agency_id });
+          break;
+        }
 
         await supabaseClient
           .from("subscriptions")

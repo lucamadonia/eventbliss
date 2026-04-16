@@ -80,3 +80,6 @@ verify_jwt = false
 
 [functions.send-email-hook]
 verify_jwt = false
+
+[functions.agency-subscribe]
+verify_jwt = false

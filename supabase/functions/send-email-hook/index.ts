@@ -85,8 +85,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL") ?? payload.email_data.site_url ?? "";
     const base = rawBase.replace(/\/auth\/v1\/?$/, "").replace(/\/$/, "");
     const confirmationUrl = `${base}/auth/v1/verify?token=${
-      payload.email_data.token_hash
-    }&type=${payload.email_data.email_action_type}&redirect_to=${
+      encodeURIComponent(payload.email_data.token_hash)
+    }&type=${encodeURIComponent(payload.email_data.email_action_type)}&redirect_to=${
       encodeURIComponent(payload.email_data.redirect_to ?? "")
     }`;
 

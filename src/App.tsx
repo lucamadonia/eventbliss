@@ -31,6 +31,7 @@ const PartnerApply = lazy(() => import("./pages/PartnerApply"));
 const AgencyApply = lazy(() => import("./pages/AgencyApply"));
 const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
+const AgencyPricing = lazy(() => import("./pages/AgencyPricing"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const GamesHub = lazy(() => import("./pages/GamesHub"));
@@ -131,6 +132,7 @@ const AppContent = () => {
           <Route path="/agency-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyDashboard /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/agency/pricing" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyPricing /></Suspense></ErrorBoundary>} />
           <Route path="/admin/*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense></ErrorBoundary>} />
           <Route path="/ideas" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><IdeasHub /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/my-bookings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyBookings /></ProtectedRoute></Suspense></ErrorBoundary>} />

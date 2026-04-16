@@ -3768,5 +3768,232 @@
         "desc": "Words get faster and faster!"
       }
     }
+  },
+  "agencyPricing": {
+    "hero": {
+      "badge": "🔥 OFERTA DE LANÇAMENTO: POUPA 50% PARA SEMPRE",
+      "titleLine1": "Alcança",
+      "titleHighlight": "mais de 100 000 organizadores",
+      "titleLine2": "sem orçamento de marketing.",
+      "subtitle": "O EventBliss atrai novos utilizadores todos os dias via jogos, questionários e ecrãs de TV. Como agência parceira, estás exatamente onde eles estão a planear – prontos a reservar.",
+      "trustNoFee": "Sem taxa de ativação",
+      "trustCancel": "Cancela quando quiseres",
+      "trustInstant": "Live num instante"
+    },
+    "stats": {
+      "games": "Party Games ao vivo",
+      "ideas": "Ideias e temas de eventos",
+      "agencies": "Agências parceiras",
+      "languages": "Idiomas no mundo"
+    },
+    "loops": {
+      "badge": "MOTOR DE CRESCIMENTO VIRAL",
+      "titleLine1": "3 loops virais trazem-te",
+      "titleHighlight": "clientes em piloto automático",
+      "subtitle": "Enquanto trabalhas, o EventBliss cresce por ti.",
+      "game": {
+        "title": "Game Loop",
+        "factor": "Fator K 1,5-3,0",
+        "desc": "1 anfitrião joga → 5-30 convidados fazem scan QR → 2-5 descarregam a app"
+      },
+      "survey": {
+        "title": "Survey Loop",
+        "factor": "Fator K 5-20",
+        "desc": "1 link de questionário → 20-100 participantes → 5-15 descobrem o EventBliss"
+      },
+      "tv": {
+        "title": "TV Loop",
+        "factor": "Fator K 10-50",
+        "desc": "1 ecrã TV na festa → 50-200 veem a marca → 10-30 fazem scan QR"
+      }
+    },
+    "spotlight": {
+      "badge": "FUNCIONALIDADES DE TOPO",
+      "titleLine1": "As ferramentas que tornam a tua agência",
+      "titleHighlight": "irresistível",
+      "titleLine2": "",
+      "subtitle": "Duas funcionalidades que normalmente só existem em SaaS enterprise a 500+€/mês – aqui a partir de 49€.",
+      "inclusiveLabel": "Incluído desde",
+      "ai": {
+        "headline": "O teu próprio vendedor IA",
+        "tagline": "Ao serviço 24/7",
+        "desc": "O Planeador IA do EventBliss recomenda proativamente os teus serviços a eventos adequados – com base em orçamento, tipo de evento, número de convidados e localização. As tuas ofertas aparecem onde são precisas, sem que mexas um dedo.",
+        "b1": "Correspondências inteligentes de 7 tipos de assistentes IA",
+        "b2": "Recomendações diretamente no dashboard de eventos dos utilizadores",
+        "b3": "Autoaprendizagem: mais reservas = melhores sugestões",
+        "b4": "Em todos os 10 idiomas – mesma qualidade em todo o mundo",
+        "tier": "Enterprise"
+      },
+      "portal": {
+        "headline": "Portal de reservas claro",
+        "tagline": "Tudo num só lugar",
+        "desc": "Um dashboard central para todos os pedidos, confirmações, pagamentos e comunicação. Sem emails perdidos, sem reservas duplicadas, sem burocracia.",
+        "b1": "Calendário com gestão de disponibilidade",
+        "b2": "Faturação automática Stripe em cada reserva",
+        "b3": "Chat direto com clientes – sem ferramentas externas",
+        "b4": "Tracking de estado: Pedido → Orçamento → Reservado → Pago",
+        "tier": "Professional"
+      }
+    },
+    "pricing": {
+      "badge": "50% DE DESCONTO DE LANÇAMENTO",
+      "titleLine1": "Escolhe o teu",
+      "titleHighlight": "plano de crescimento",
+      "subtitle": "Qualquer plano pode ser atualizado ou cancelado a qualquer momento.",
+      "mostChosen": "MAIS ESCOLHIDO",
+      "commissionLabel": "Comissão",
+      "perBooking": "por reserva",
+      "loading": "A carregar…",
+      "fineprint": "Todos os preços sem IVA · Ativação imediata · Cancelável a qualquer momento · Sem custos escondidos",
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Perfeito para começar",
+          "billing": "sempre grátis",
+          "cta": "Começar grátis",
+          "f1": "Até 3 serviços listados",
+          "f2": "Visibilidade base no marketplace",
+          "f3": "Gestão de reservas",
+          "f4": "Posicionamento padrão na pesquisa",
+          "f5": "25% de comissão por reserva"
+        },
+        "professional": {
+          "name": "Professional",
+          "tagline": "Para agências em crescimento",
+          "billing": "por mês",
+          "cta": "Ativar Professional",
+          "f1": "Até 20 serviços listados",
+          "f2": "Página de perfil de agência própria",
+          "f3": "Anúncios em destaque no marketplace",
+          "f4": "Ranking prioritário na pesquisa",
+          "f5": "Pro Badge para mais confiança",
+          "f6": "Analytics e insights detalhados",
+          "f7": "Só 10% de comissão – 15% menos do que Starter"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "Para líderes de mercado",
+          "billing": "por mês",
+          "cta": "Ativar Enterprise",
+          "f1": "Serviços ilimitados",
+          "f2": "Página de perfil de agência própria",
+          "f3": "Anúncios auto-destacados",
+          "f4": "Prioridade máxima na pesquisa – sempre Top 3",
+          "f5": "Enterprise Badge – confiança máxima",
+          "f6": "Integração IA de reservas",
+          "f7": "Analytics completos + acesso API",
+          "f8": "10% de comissão"
+        }
+      }
+    },
+    "usps": {
+      "badge": "PORQUE AS AGÊNCIAS NOS ADORAM",
+      "titleLine1": "6 razões pelas quais o EventBliss se torna a tua",
+      "titleHighlight": "alavanca de receitas",
+      "titleLine2": "",
+      "u1": {
+        "title": "Fim das chamadas frias",
+        "desc": "Os utilizadores vêm até ti porque já estão em modo planeamento. Intenção de evento = disposição máxima para comprar."
+      },
+      "u2": {
+        "title": "Boost de tráfego integrado",
+        "desc": "Cada jogo jogado, cada questionário, cada ecrã TV atrai novos utilizadores – beneficias passivamente."
+      },
+      "u3": {
+        "title": "10 idiomas, 9 países",
+        "desc": "Os teus serviços tornam-se automaticamente visíveis a nível internacional – sem custos de tradução."
+      },
+      "u4": {
+        "title": "Framework de confiança",
+        "desc": "Página de perfil, reviews, badges e verificação – os utilizadores reservam-te a ti, não a uma caixa negra."
+      },
+      "u5": {
+        "title": "O teu negócio, transparente",
+        "desc": "Dashboard com reservas, faturação, taxa de conversão e serviços top – sempre à vista."
+      },
+      "u6": {
+        "title": "Configura e esquece",
+        "desc": "Configura os serviços uma vez, as reservas correm automaticamente. Mais tempo para os clientes, menos admin."
+      }
+    },
+    "cta": {
+      "badge": "⚡ Começa em 60 segundos",
+      "titleLine1": "Pronto para pôr as reservas em",
+      "titleHighlight": "piloto automático",
+      "titleLine2": "?",
+      "subtitle": "Começa grátis com Starter ou garante já o desconto de lançamento de 50% em Professional. Quanto mais cedo, mais tempo aproveitas.",
+      "primary": "Garantir Professional por 49€/mês",
+      "secondary": "Começar grátis primeiro"
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "q1": "O que acontece se perder a promoção de 50%?",
+      "a1": "Garantes o preço de 49€ (Professional) ou 149€ (Enterprise) para sempre – mesmo se mais tarde o subirmos para 98€/298€. A tua tarifa fica 'locked' na ativação.",
+      "q2": "Posso mudar de plano a qualquer momento?",
+      "a2": "Sim. Upgrade imediato, downgrade no fim do período de faturação. Sem prazos de aviso, sem taxas de cancelamento.",
+      "q3": "Quantos utilizadores alcanço de facto?",
+      "a3": "O EventBliss cresce via 3 loops virais (jogos, questionários, TV). Com Professional estás na pesquisa prioritária – noivos, anfitriões e empresas encontram-te onde planeiam.",
+      "q4": "Como funciona a comissão?",
+      "a4": "A comissão só se aplica a serviços efetivamente reservados, liquidada automaticamente via Stripe. Starter paga 25%, Professional e Enterprise apenas 10% – rapidamente amortiza a taxa mensal.",
+      "q5": "Preciso de experiência ou ajuda de setup?",
+      "a5": "Não. Perfil + primeiro serviço online em menos de 10 minutos. Clientes Enterprise têm ainda uma chamada de onboarding dedicada."
+    },
+    "errors": {
+      "checkoutFailed": "Erro",
+      "noCheckoutUrl": "URL de pagamento não recebido"
+    },
+    "enterpriseModules": {
+      "badge": "CENTRO DE COMANDO ENTERPRISE",
+      "titleLine1": "O teu",
+      "titleHighlight": "sistema operativo de agência completo",
+      "titleLine2": "– a partir de 149€/mês.",
+      "subtitle": "Acabou pagar por ferramentas extra. Tudo o que precisas para gerir uma agência de eventos moderna – numa plataforma. Um login. Um dashboard. Um preço.",
+      "valueBadge": "Incluído em Enterprise",
+      "m1": {
+        "title": "CRM e Contactos",
+        "desc": "Todos os clientes, leads e fornecedores num só lugar com histórico e tags."
+      },
+      "m2": {
+        "title": "Event Planner",
+        "desc": "Gere vários eventos em paralelo com tracking e prazos."
+      },
+      "m3": {
+        "title": "Budget Engine",
+        "desc": "Forecasts, comparação plano-vs-real, cálculo automático de rentabilidade por evento."
+      },
+      "m4": {
+        "title": "Run of Show",
+        "desc": "Cronograma ao minuto com atualizações em tempo real para equipa e clientes."
+      },
+      "m5": {
+        "title": "Biblioteca de modelos",
+        "desc": "Duplica eventos recorrentes, propostas e checklists em segundos."
+      },
+      "m6": {
+        "title": "Gestão de equipa",
+        "desc": "Papéis, permissões e atribuição de tarefas por evento."
+      },
+      "m7": {
+        "title": "Sincronização de calendário",
+        "desc": "Sincronização bidirecional com Google Calendar, Outlook e iCal."
+      },
+      "m8": {
+        "title": "Portal do cliente",
+        "desc": "Portais de cliente com marca própria por evento com acesso por token."
+      },
+      "m9": {
+        "title": "Relatórios e Analytics",
+        "desc": "Relatórios de receita, reservas e desempenho da equipa a pedido."
+      },
+      "m10": {
+        "title": "Gestão de ficheiros",
+        "desc": "Contratos, faturas e assets arquivados e partilhados centralmente."
+      },
+      "m11": {
+        "title": "Calendário de reservas",
+        "desc": "Disponibilidade de serviços, slots e pedidos visualizados no calendário."
+      },
+      "comparison": "SaaS all-in-one comparáveis custam 299-799€ por mês."
+    }
   }
 }

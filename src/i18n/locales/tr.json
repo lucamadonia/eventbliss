@@ -3732,5 +3732,232 @@
         "desc": "Words get faster and faster!"
       }
     }
+  },
+  "agencyPricing": {
+    "hero": {
+      "badge": "🔥 LANSMAN FIRSATI: SONSUZA DEK %50 İNDİRİM",
+      "titleLine1": "Ulaş",
+      "titleHighlight": "100.000+ etkinlik planlayıcısına",
+      "titleLine2": "pazarlama bütçesi olmadan.",
+      "subtitle": "EventBliss her gün oyunlar, anketler ve TV ekranları üzerinden yeni kullanıcılar çekiyor. Partner ajans olarak tam olarak onların plan yaptığı yerdesin – rezervasyona hazır.",
+      "trustNoFee": "Kurulum ücreti yok",
+      "trustCancel": "İstediğin zaman iptal",
+      "trustInstant": "Anında yayında"
+    },
+    "stats": {
+      "games": "Canlı Parti Oyunları",
+      "ideas": "Etkinlik fikirleri ve temalar",
+      "agencies": "Partner ajanslar",
+      "languages": "Dünya çapında dil"
+    },
+    "loops": {
+      "badge": "VİRAL BÜYÜME MOTORU",
+      "titleLine1": "3 viral döngü sana",
+      "titleHighlight": "otomatik müşteri",
+      "subtitle": "Sen çalışırken EventBliss senin için büyüyor.",
+      "game": {
+        "title": "Game Loop",
+        "factor": "K-faktör 1,5-3,0",
+        "desc": "1 host oynar → 5-30 misafir QR tarar → 2-5 uygulamayı indirir"
+      },
+      "survey": {
+        "title": "Survey Loop",
+        "factor": "K-faktör 5-20",
+        "desc": "1 anket linki → 20-100 katılımcı → 5-15 EventBliss'i keşfeder"
+      },
+      "tv": {
+        "title": "TV Loop",
+        "factor": "K-faktör 10-50",
+        "desc": "Partide 1 TV ekranı → 50-200 markayı görür → 10-30 QR tarar"
+      }
+    },
+    "spotlight": {
+      "badge": "BAYRAK GEMİ ÖZELLİKLER",
+      "titleLine1": "Ajansını",
+      "titleHighlight": "karşı konulmaz",
+      "titleLine2": "yapan araçlar",
+      "subtitle": "Normalde sadece enterprise SaaS'larda ayda 500+€'ya bulunan iki özellik – burada 49€'dan başlıyor.",
+      "inclusiveLabel": "Şuradan dahil",
+      "ai": {
+        "headline": "Kendi AI satıcın",
+        "tagline": "Senin için 24/7 görevde",
+        "desc": "EventBliss AI Planlayıcısı, hizmetlerini uygun etkinliklere proaktif olarak önerir – bütçe, etkinlik tipi, misafir sayısı ve konum bazlı. Teklifin tek parmağını kıpırdatmadan gereken yere düşer.",
+        "b1": "7 AI asistan tipinden akıllı eşleşmeler",
+        "b2": "Kullanıcıların etkinlik panosunda doğrudan öneriler",
+        "b3": "Kendi kendine öğrenen: daha çok rezervasyon = daha iyi öneriler",
+        "b4": "Tüm 10 dilde – dünya çapında aynı kalite",
+        "tier": "Enterprise"
+      },
+      "portal": {
+        "headline": "Temiz rezervasyon portalı",
+        "tagline": "Her şey tek yerde",
+        "desc": "Tüm talepler, onaylar, ödemeler ve iletişim için merkezi bir pano. Kayıp e-postalar yok, çift rezervasyonlar yok, evrak işi artık yok.",
+        "b1": "Uygunluk yönetimiyle takvim",
+        "b2": "Her rezervasyon için otomatik Stripe faturalandırma",
+        "b3": "Müşterilerle doğrudan sohbet – harici araç yok",
+        "b4": "Durum takibi: Talep → Teklif → Rezerve edildi → Ödendi",
+        "tier": "Professional"
+      }
+    },
+    "pricing": {
+      "badge": "%50 LANSMAN İNDİRİMİ",
+      "titleLine1": "Seç",
+      "titleHighlight": "büyüme planını",
+      "subtitle": "Her plan istediğin zaman yükseltilebilir veya iptal edilebilir.",
+      "mostChosen": "EN ÇOK TERCİH EDİLEN",
+      "commissionLabel": "Komisyon",
+      "perBooking": "rezervasyon başına",
+      "loading": "Yükleniyor…",
+      "fineprint": "Tüm fiyatlar KDV hariç · Anında aktivasyon · İstediğin zaman iptal · Gizli ücret yok",
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Başlamak için mükemmel",
+          "billing": "her zaman ücretsiz",
+          "cta": "Ücretsiz başla",
+          "f1": "3 servise kadar listeleme",
+          "f2": "Marketplace'te temel görünürlük",
+          "f3": "Rezervasyon yönetimi",
+          "f4": "Standart arama yerleşimi",
+          "f5": "Rezervasyon başına %25 komisyon"
+        },
+        "professional": {
+          "name": "Professional",
+          "tagline": "Büyüyen ajanslar için",
+          "billing": "aylık",
+          "cta": "Professional'a başla",
+          "f1": "20 servise kadar listeleme",
+          "f2": "Özel ajans profil sayfası",
+          "f3": "Marketplace'te öne çıkan listelemeler",
+          "f4": "Arama sonuçlarında öncelikli sıralama",
+          "f5": "Güven için Pro Rozeti",
+          "f6": "Detaylı analitik ve içgörüler",
+          "f7": "Sadece %10 komisyon – Starter'dan %15 daha az"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "Pazar liderleri için",
+          "billing": "aylık",
+          "cta": "Enterprise'a başla",
+          "f1": "Sınırsız servis",
+          "f2": "Özel ajans profil sayfası",
+          "f3": "Otomatik öne çıkan listelemeler",
+          "f4": "En yüksek arama önceliği – her zaman ilk 3",
+          "f5": "Enterprise Rozeti – maksimum güven",
+          "f6": "AI rezervasyon entegrasyonu",
+          "f7": "Tam analitik + API erişimi",
+          "f8": "%10 komisyon"
+        }
+      }
+    },
+    "usps": {
+      "badge": "AJANSLAR NEDEN BİZİ SEVİYOR",
+      "titleLine1": "EventBliss'in senin",
+      "titleHighlight": "gelir kaldıracın",
+      "titleLine2": "olmasının 6 nedeni",
+      "u1": {
+        "title": "Soğuk aramalara son",
+        "desc": "Kullanıcılar sana geliyor çünkü zaten planlama modundalar. Etkinlik niyeti = en yüksek satın alma isteği."
+      },
+      "u2": {
+        "title": "Yerleşik trafik artışı",
+        "desc": "Oynanan her oyun, her anket, her TV ekranı uygulamaya yeni kullanıcılar sokuyor – pasif olarak kazanıyorsun."
+      },
+      "u3": {
+        "title": "10 dil, 9 ülke",
+        "desc": "Hizmetlerin otomatik olarak uluslararası görünür hale gelir – çeviri maliyeti yok."
+      },
+      "u4": {
+        "title": "Güven çerçevesi",
+        "desc": "Profil sayfası, yorumlar, rozetler ve doğrulama – kullanıcılar kara kutuyu değil seni rezerve ediyor."
+      },
+      "u5": {
+        "title": "İşin şeffaf",
+        "desc": "Rezervasyonlar, gelir, dönüşüm oranı ve top servisler panoda – her zaman görünür."
+      },
+      "u6": {
+        "title": "Kur ve unut",
+        "desc": "Hizmetleri bir kez ayarla, rezervasyonlar otomatik akar. Müşterilere daha çok zaman, yönetime daha az."
+      }
+    },
+    "cta": {
+      "badge": "⚡ 60 saniyede başla",
+      "titleLine1": "Rezervasyonları",
+      "titleHighlight": "otomatik pilota",
+      "titleLine2": "koymaya hazır mısın?",
+      "subtitle": "Starter ile ücretsiz başla veya %50 lansman indirimini Professional'da şimdi sabitle. Ne kadar erken, o kadar uzun faydalanırsın.",
+      "primary": "Professional'ı aylık 49€'ya al",
+      "secondary": "Önce ücretsiz başla"
+    },
+    "faq": {
+      "title": "Sıkça sorulan sorular",
+      "q1": "%50 indirim kampanyasını kaçırırsam ne olur?",
+      "a1": "49€ (Professional) veya 149€ (Enterprise) fiyatını sonsuza kadar sabitlersin – sonradan 98€/298€'ya çıkarsak bile. Tarifen kayıt anında 'kilitlenir'.",
+      "q2": "Paketler arasında her zaman geçiş yapabilir miyim?",
+      "a2": "Evet. Yükseltme anında olur, düşürme fatura dönemi sonunda. Fesih süresi yok, iptal ücreti yok.",
+      "q3": "Aslında kaç kullanıcıya ulaşırım?",
+      "a3": "EventBliss 3 viral döngüyle büyür (oyunlar, anketler, TV). Professional ile öncelikli aramadasın – evlenecek çiftler, parti sahipleri ve şirketler seni planladıkları yerde buluyor.",
+      "q4": "Komisyon nasıl çalışır?",
+      "a4": "Komisyon sadece gerçekten rezerve edilen servisler için geçerlidir, otomatik olarak Stripe üzerinden kesilir. Starter %25, Professional ve Enterprise sadece %10 öder – aylık ücret hızla karşılanır.",
+      "q5": "Ön bilgi veya kurulum yardımı gerekiyor mu?",
+      "a5": "Hayır. Profil + ilk servis 10 dakikadan kısa sürede yayında. Enterprise müşterileri ayrıca özel bir onboarding araması alır."
+    },
+    "errors": {
+      "checkoutFailed": "Hata",
+      "noCheckoutUrl": "Ödeme bağlantısı alınamadı"
+    },
+    "enterpriseModules": {
+      "badge": "ENTERPRISE KOMUTA MERKEZİ",
+      "titleLine1": "Senin eksiksiz",
+      "titleHighlight": "ajans işletim sistemin",
+      "titleLine2": "– aylık 149€'dan.",
+      "subtitle": "Artık ekstra araçlara para ödeme. Modern bir etkinlik ajansını yürütmek için ihtiyacın olan her şey – tek platformda. Tek giriş. Tek pano. Tek fiyat.",
+      "valueBadge": "Enterprise'a dahil",
+      "m1": {
+        "title": "CRM ve Kişiler",
+        "desc": "Tüm müşteriler, potansiyel müşteriler ve tedarikçiler tek yerde, geçmiş ve etiketlerle."
+      },
+      "m2": {
+        "title": "Etkinlik Planlayıcı",
+        "desc": "Birden fazla etkinliği paralel yönet, ilerleme ve son teslim tarihleriyle."
+      },
+      "m3": {
+        "title": "Budget Engine",
+        "desc": "Tahminler, plan vs gerçek karşılaştırması, etkinlik başına otomatik kârlılık."
+      },
+      "m4": {
+        "title": "Run of Show",
+        "desc": "Dakikalık kesinlikte zaman çizelgesi, ekip ve müşteri için canlı güncellemeler."
+      },
+      "m5": {
+        "title": "Şablon Kütüphanesi",
+        "desc": "Tekrarlayan etkinlikler, teklifler ve kontrol listelerini saniyeler içinde çoğalt."
+      },
+      "m6": {
+        "title": "Ekip Yönetimi",
+        "desc": "Personel rolleri, yetkiler, etkinlik başına görev ataması."
+      },
+      "m7": {
+        "title": "Takvim Senkronizasyonu",
+        "desc": "Google Calendar, Outlook ve iCal ile iki yönlü senkronizasyon."
+      },
+      "m8": {
+        "title": "Müşteri Portalı",
+        "desc": "Etkinlik başına markalı müşteri portalları, token tabanlı erişim."
+      },
+      "m9": {
+        "title": "Raporlar ve Analitik",
+        "desc": "Gelir, rezervasyon ve ekip performansı raporları talep üzerine."
+      },
+      "m10": {
+        "title": "Dosya Yönetimi",
+        "desc": "Sözleşmeler, faturalar ve varlıklar merkezi olarak arşivlenir ve paylaşılır."
+      },
+      "m11": {
+        "title": "Rezervasyon Takvimi",
+        "desc": "Hizmet uygunluğu, zaman dilimleri ve talepler takvimde görsel."
+      },
+      "comparison": "Karşılaştırılabilir hepsi-bir-arada ajans SaaS ürünleri aylık 299-799€ tutar."
+    }
   }
 }

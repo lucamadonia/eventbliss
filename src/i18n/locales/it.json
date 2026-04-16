@@ -3856,5 +3856,232 @@
         "desc": "Words get faster and faster!"
       }
     }
+  },
+  "agencyPricing": {
+    "hero": {
+      "badge": "🔥 OFFERTA LANCIO: RISPARMIA IL 50% PER SEMPRE",
+      "titleLine1": "Raggiungi",
+      "titleHighlight": "oltre 100.000 organizzatori",
+      "titleLine2": "senza budget marketing.",
+      "subtitle": "EventBliss attira ogni giorno nuovi utenti tramite giochi, sondaggi e schermi TV. Come agenzia partner, sei esattamente dove stanno pianificando – pronti a prenotare.",
+      "trustNoFee": "Nessun costo di attivazione",
+      "trustCancel": "Cancella quando vuoi",
+      "trustInstant": "Subito online"
+    },
+    "stats": {
+      "games": "Party Games in diretta",
+      "ideas": "Idee e temi evento",
+      "agencies": "Agenzie partner",
+      "languages": "Lingue nel mondo"
+    },
+    "loops": {
+      "badge": "MOTORE DI CRESCITA VIRALE",
+      "titleLine1": "3 loop virali ti portano",
+      "titleHighlight": "clienti in automatico",
+      "subtitle": "Mentre lavori, EventBliss cresce per te.",
+      "game": {
+        "title": "Game Loop",
+        "factor": "Fattore K 1,5-3,0",
+        "desc": "1 host gioca → 5-30 ospiti scansionano il QR → 2-5 scaricano l'app"
+      },
+      "survey": {
+        "title": "Survey Loop",
+        "factor": "Fattore K 5-20",
+        "desc": "1 link sondaggio → 20-100 partecipanti → 5-15 scoprono EventBliss"
+      },
+      "tv": {
+        "title": "TV Loop",
+        "factor": "Fattore K 10-50",
+        "desc": "1 schermo TV alla festa → 50-200 vedono il brand → 10-30 scansionano il QR"
+      }
+    },
+    "spotlight": {
+      "badge": "FUNZIONALITÀ DI PUNTA",
+      "titleLine1": "Gli strumenti che rendono la tua agenzia",
+      "titleHighlight": "irresistibile",
+      "titleLine2": "",
+      "subtitle": "Due funzionalità che di solito offrono solo i SaaS enterprise a 500+€/mese – qui da 49€.",
+      "inclusiveLabel": "Incluso da",
+      "ai": {
+        "headline": "Il tuo venditore AI personale",
+        "tagline": "In servizio 24/7",
+        "desc": "Il Planner AI di EventBliss raccomanda proattivamente i tuoi servizi agli eventi giusti – in base a budget, tipo di evento, numero di ospiti e location. Le tue offerte arrivano dove servono, senza che tu muova un dito.",
+        "b1": "Match intelligenti da 7 tipi di assistenti AI",
+        "b2": "Raccomandazioni direttamente nella dashboard evento dell'utente",
+        "b3": "Auto-apprendimento: più prenotazioni, migliori suggerimenti",
+        "b4": "In tutte le 10 lingue – stessa qualità ovunque",
+        "tier": "Enterprise"
+      },
+      "portal": {
+        "headline": "Portale prenotazioni chiaro",
+        "tagline": "Tutto in un unico posto",
+        "desc": "Una dashboard centrale per tutte le richieste, conferme, pagamenti e comunicazioni. Niente più email perse, prenotazioni doppie o scartoffie.",
+        "b1": "Calendario con gestione disponibilità",
+        "b2": "Fatturazione Stripe automatica per ogni prenotazione",
+        "b3": "Chat diretta con i clienti – nessuno strumento esterno necessario",
+        "b4": "Tracciamento stato: Richiesta → Preventivo → Prenotato → Pagato",
+        "tier": "Professional"
+      }
+    },
+    "pricing": {
+      "badge": "SCONTO LANCIO DEL 50%",
+      "titleLine1": "Scegli il tuo",
+      "titleHighlight": "piano di crescita",
+      "subtitle": "Ogni piano può essere aggiornato o cancellato in qualsiasi momento.",
+      "mostChosen": "PIÙ POPOLARE",
+      "commissionLabel": "Commissione",
+      "perBooking": "per prenotazione",
+      "loading": "Caricamento…",
+      "fineprint": "Tutti i prezzi IVA esclusa · Attivazione immediata · Cancellabile in qualsiasi momento · Nessun costo nascosto",
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Perfetto per iniziare",
+          "billing": "sempre gratis",
+          "cta": "Inizia gratis",
+          "f1": "Fino a 3 servizi in elenco",
+          "f2": "Visibilità base nel marketplace",
+          "f3": "Gestione prenotazioni",
+          "f4": "Posizionamento standard nelle ricerche",
+          "f5": "25% di commissione per prenotazione"
+        },
+        "professional": {
+          "name": "Professional",
+          "tagline": "Per agenzie in crescita",
+          "billing": "al mese",
+          "cta": "Passa a Professional",
+          "f1": "Fino a 20 servizi in elenco",
+          "f2": "Pagina profilo agenzia dedicata",
+          "f3": "Listing in evidenza nel marketplace",
+          "f4": "Ranking prioritario nei risultati",
+          "f5": "Badge Pro per la fiducia",
+          "f6": "Analytics e insight dettagliati",
+          "f7": "Solo 10% di commissione – 15% in meno di Starter"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "Per i leader di mercato",
+          "billing": "al mese",
+          "cta": "Passa a Enterprise",
+          "f1": "Servizi illimitati",
+          "f2": "Pagina profilo agenzia dedicata",
+          "f3": "Listing automaticamente in evidenza",
+          "f4": "Massima priorità di ricerca – sempre Top 3",
+          "f5": "Badge Enterprise – fiducia massima",
+          "f6": "Integrazione AI delle prenotazioni",
+          "f7": "Analytics completi + accesso API",
+          "f8": "10% di commissione"
+        }
+      }
+    },
+    "usps": {
+      "badge": "PERCHÉ LE AGENZIE CI ADORANO",
+      "titleLine1": "6 motivi per cui EventBliss diventa la tua",
+      "titleHighlight": "leva di fatturato",
+      "titleLine2": "",
+      "u1": {
+        "title": "Basta chiamate a freddo",
+        "desc": "Gli utenti vengono da te perché sono già in modalità pianificazione. Intenzione evento = massima propensione all'acquisto."
+      },
+      "u2": {
+        "title": "Boost di traffico integrato",
+        "desc": "Ogni gioco giocato, ogni sondaggio, ogni schermo TV porta nuovi utenti nell'app – ne beneficerai passivamente."
+      },
+      "u3": {
+        "title": "10 lingue, 9 paesi",
+        "desc": "I tuoi servizi diventano automaticamente visibili a livello internazionale – senza costi di traduzione."
+      },
+      "u4": {
+        "title": "Framework di fiducia",
+        "desc": "Pagina profilo, recensioni, badge e verifica – gli utenti prenotano te, non una scatola nera."
+      },
+      "u5": {
+        "title": "Il tuo business, trasparente",
+        "desc": "Dashboard con prenotazioni, fatturato, tasso di conversione e top service – sempre sotto controllo."
+      },
+      "u6": {
+        "title": "Imposta e dimentica",
+        "desc": "Configura i servizi una volta, le prenotazioni vanno in automatico. Più tempo per i clienti, meno admin."
+      }
+    },
+    "cta": {
+      "badge": "⚡ Inizia in 60 secondi",
+      "titleLine1": "Pronto a mettere le prenotazioni in",
+      "titleHighlight": "pilota automatico",
+      "titleLine2": "?",
+      "subtitle": "Inizia gratis con Starter o assicurati subito lo sconto lancio del 50% su Professional. Prima ti muovi, più a lungo approfitti dello sconto.",
+      "primary": "Assicurati Professional a 49€/mese",
+      "secondary": "Inizia prima gratis"
+    },
+    "faq": {
+      "title": "Domande frequenti",
+      "q1": "Cosa succede se perdo la promozione del 50%?",
+      "a1": "Ti assicuri per sempre il prezzo di 49€ (Professional) o 149€ (Enterprise) – anche se poi lo alziamo a 98€/298€. La tariffa viene bloccata all'attivazione.",
+      "q2": "Posso cambiare piano in qualsiasi momento?",
+      "a2": "Sì. Upgrade immediato, downgrade alla fine del periodo di fatturazione. Nessun preavviso, nessuna penale.",
+      "q3": "Quanti utenti raggiungo davvero?",
+      "a3": "EventBliss cresce tramite 3 loop virali (giochi, sondaggi, TV). Con Professional sei nella ricerca prioritaria – coppie sposi, host di feste e aziende ti trovano lì dove pianificano.",
+      "q4": "Come funziona la commissione?",
+      "a4": "La commissione si applica solo ai servizi effettivamente prenotati, gestita automaticamente tramite Stripe. Starter paga il 25%, Professional ed Enterprise solo il 10% – ripaga subito la fee mensile.",
+      "q5": "Servono conoscenze o aiuto per il setup?",
+      "a5": "No. Profilo + primo servizio online in meno di 10 minuti. I clienti Enterprise ricevono anche una call di onboarding dedicata."
+    },
+    "errors": {
+      "checkoutFailed": "Errore",
+      "noCheckoutUrl": "Nessun URL di checkout ricevuto"
+    },
+    "enterpriseModules": {
+      "badge": "CENTRO DI COMANDO ENTERPRISE",
+      "titleLine1": "Il tuo",
+      "titleHighlight": "sistema operativo agenzia completo",
+      "titleLine2": "– da 149€/mese.",
+      "subtitle": "Basta pagare tool extra. Tutto ciò che serve per gestire una moderna agenzia di eventi – in un'unica piattaforma. Un login. Un dashboard. Un prezzo.",
+      "valueBadge": "Incluso in Enterprise",
+      "m1": {
+        "title": "CRM e Contatti",
+        "desc": "Tutti i clienti, lead e fornitori in un posto con storico e tag."
+      },
+      "m2": {
+        "title": "Event Planner",
+        "desc": "Gestisci più eventi in parallelo con tracking e scadenze."
+      },
+      "m3": {
+        "title": "Budget Engine",
+        "desc": "Forecast, confronto preventivo/consuntivo, calcolo automatico della redditività per evento."
+      },
+      "m4": {
+        "title": "Run of Show",
+        "desc": "Timeline al minuto con aggiornamenti live per team e clienti."
+      },
+      "m5": {
+        "title": "Libreria Template",
+        "desc": "Duplica eventi ricorrenti, offerte e checklist in pochi secondi."
+      },
+      "m6": {
+        "title": "Team Management",
+        "desc": "Ruoli staff, permessi e assegnazione compiti per evento."
+      },
+      "m7": {
+        "title": "Sync Calendario",
+        "desc": "Sincronizzazione bidirezionale con Google Calendar, Outlook e iCal."
+      },
+      "m8": {
+        "title": "Portale Cliente",
+        "desc": "Portali cliente brandizzati per evento con accesso tramite token."
+      },
+      "m9": {
+        "title": "Report e Analytics",
+        "desc": "Report fatturato, prenotazioni e performance team su richiesta."
+      },
+      "m10": {
+        "title": "Gestione File",
+        "desc": "Contratti, fatture e asset archiviati e condivisi centralmente."
+      },
+      "m11": {
+        "title": "Calendario Prenotazioni",
+        "desc": "Disponibilità servizi, slot e richieste visualizzati."
+      },
+      "comparison": "SaaS all-in-one comparabili per agenzie costano 299-799€ al mese."
+    }
   }
 }

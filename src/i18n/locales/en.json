@@ -1,7 +1,291 @@
 {
   "gamesLibrary": {
-    "loadMore": "Load more (+{{count}})",
-    "showing": "{{count}} shown"
+    "categories": {
+      "jga_games": "Bachelor Party Games",
+      "family_games": "Family Games",
+      "wedding_games": "Wedding Games",
+      "party_games": "Party Games",
+      "outdoor_games": "Outdoor Games",
+      "team_games": "Team Building",
+      "icebreaker": "Icebreakers",
+      "kids_friendly": "Kids Games"
+    },
+    "themeCategories": {
+      "retro": "Retro",
+      "elegant": "Elegant",
+      "casual": "Casual",
+      "adventure": "Adventure",
+      "cultural": "Cultural",
+      "seasonal": "Seasonal",
+      "costume": "Costume",
+      "relaxation": "Relaxation"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Filter results by your preferences",
+      "all": "All",
+      "category": "Category",
+      "eventType": "Event Type",
+      "difficulty": "Difficulty",
+      "kidsFriendly": "Kids Friendly",
+      "alcoholFree": "Alcohol Free",
+      "classic": "Classic",
+      "drinking": "Drinking Game",
+      "clear": "Clear filters"
+    },
+    "difficulty": {
+      "label": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "searchPlaceholder": "Search games...",
+    "searchThemesPlaceholder": "Search themes...",
+    "random": "Random",
+    "randomTheme": "Random Theme",
+    "randomPick": "Random Pick",
+    "randomThemePick": "Random Theme",
+    "resultsCount": "games found",
+    "themesCount": "themes found",
+    "noResults": "No games found. Try different filters.",
+    "noThemesFound": "No themes found.",
+    "showInstructions": "Instructions",
+    "hideInstructions": "Hide",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
+    "materials": "Materials",
+    "addToPlanner": "Add to Planner",
+    "dressCode": "Dress Code",
+    "music": "Music",
+    "decorationTips": "Decoration Tips",
+    "colorPalette": "Color Palette",
+    "copied": "copied!",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites",
+    "back": "Back",
+    "timer": {
+      "title": "Game Timer",
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "finished": "Time's up!",
+      "timeUp": "The timer has finished. Game over!",
+      "custom": "Min",
+      "sound": "Sound",
+      "notification": "Notification",
+      "fullscreen": "Fullscreen"
+    },
+    "tts": {
+      "title": "Read Instructions",
+      "start": "Read",
+      "pause": "Pause",
+      "stop": "Stop",
+      "nextSection": "Next Section",
+      "notSupported": "Text-to-Speech is not supported by your browser",
+      "error": "Error reading aloud",
+      "selectVoice": "Select voice",
+      "downloadRequired": "Model download required (~50MB)",
+      "download": "Download",
+      "downloading": "Downloading...",
+      "loadingVoice": "Loading voice model...",
+      "firstTimeDownload": "First time: Loading high-quality voice (~50MB)",
+      "modelReady": "Voice model ready!",
+      "downloadError": "Error downloading model"
+    },
+    "games": {
+      "bingo_tasks": {
+        "name": "Task Bingo",
+        "description": "Everyone gets a bingo card with fun tasks to complete.",
+        "instructions": "**Preparation:**\nCreate 5x5 bingo cards with 25 different tasks. Examples: 'Give a stranger a compliment', 'Photo with a police officer', 'Sing a song'. Each participant gets a card and a pen.\n\n**Gameplay:**\nThe group goes through the city. Everyone tries to complete tasks from their card. Completed squares are checked off. Fellow players can serve as witnesses.\n\n**Rules:**\n• First row (horizontal, vertical, or diagonal) = 'BINGO!'\n• All 25 squares = 'Super-BINGO!'\n• Each task must be documented with a photo\n• No task can be skipped\n\n**Variants:**\n• Team Bingo: Two teams compete against each other\n• Drinking Bingo: Toast for each completed square\n• Speed Bingo: 2-hour time limit\n\n**Tips:**\nMix easy and difficult tasks. The best cards have a good balance between embarrassing and doable tasks!"
+      },
+      "drink_roulette": {
+        "name": "Drink Roulette",
+        "description": "The wheel of fortune decides who drinks.",
+        "instructions": "**Preparation:**\nGet a roulette wheel or create one with names/numbers. Set up drinks (shots, beer, or non-alcoholic). Each player gets a number or position assigned.\n\n**Gameplay:**\nTaking turns, each player spins the wheel. Whoever the pointer lands on must drink. The spinner can also assign an additional task.\n\n**Rules:**\n• Hit twice in a row: Double shot\n• Pointer lands on yourself: Everyone else drinks\n• 'Joker' field: Player chooses who drinks\n\n**Variants:**\n• Task Roulette: Tasks instead of drinking\n• Challenge Roulette: Fields with different challenges\n• Truth Roulette: Whoever gets hit must answer a question honestly\n\n**Tips:**\nFor more excitement: Write special actions on some fields like 'Everyone drinks' or 'Waterfall'!"
+      },
+      "who_am_i": {
+        "name": "Who Am I?",
+        "description": "Guess the famous person on your forehead through yes/no questions.",
+        "instructions": "**Preparation:**\nWrite names of famous people on sticky notes - for bachelor parties, ideally celebrity couples or theme-related names. Everyone gets a note stuck to their forehead without seeing it.\n\n**Gameplay:**\nTaking turns, everyone asks a yes/no question ('Am I female?', 'Am I an actor?'). If 'yes', you can keep asking. If 'no', it's the next person's turn.\n\n**Rules:**\n• Only yes/no questions allowed\n• Correct guess: New note or you're out\n• Maximum 20 questions per round\n• No hints from others!\n\n**Variants:**\n• Couples Edition: Guess famous couples\n• Movie Edition: Only movie characters\n• Bachelor Party Special: Exes of the groom/bride\n\n**Tips:**\nWith large groups, play in teams. Question tips: First clarify gender, then profession, then era!"
+      },
+      "flunkyball": {
+        "name": "Flunkyball",
+        "description": "The ultimate outdoor drinking game with ball and bottle.",
+        "instructions": "**Preparation:**\nTwo teams line up about 10 meters apart. Everyone has a drink. In the middle stands a bottle partially filled with water. A soft ball (tennis/softball) is needed.\n\n**Gameplay:**\nTeam A throws the ball at the bottle. If hit: Team A drinks quickly. Team B must set up the bottle, retrieve the ball, and line up. Then Team A is stopped.\n\n**Rules:**\n• Ball must be thrown while sitting\n• Only put down drink when all team members are standing\n• Bottle must stand upright (not leaning)\n• Whoever finishes drinking places bottle upside down\n• First team completely finished wins\n\n**Variants:**\n• Relay: Only one person per team throws\n• Hardcore: Every hit = open a new drink\n• Softcore: Water instead of alcohol\n\n**Tips:**\nPerfect for parks or gardens! The bottle shouldn't tip over too easily. Sunshine makes the game even better!"
+      },
+      "beer_pong": {
+        "name": "Beer Pong",
+        "description": "The classic - throw the ball into your opponent's cups.",
+        "instructions": "**Preparation:**\nSet up 10 cups per team in pyramid formation (4-3-2-1) on both sides of a long table. Fill each cup one-third with beer. Prepare water cups for cleaning the balls.\n\n**Gameplay:**\nTwo teams face each other. Taking turns, each player throws a ping pong ball. If it lands in a cup, the opposing team drinks and removes the cup.\n\n**Rules:**\n• 'On Fire': 2+ hits in a row = keep throwing\n• 'Elbow Rule': Elbow behind table edge\n• 'Re-Rack': 1-2 reformations allowed (at 4 or 2 cups)\n• Both players hit = balls back\n• Opponent may block 'Bounce'\n\n**Variants:**\n• Death Cup: Hit into cup still being drunk = instant win\n• Bounce Shot: Bounced ball counts double, but can be blocked\n• Redemption: Loser can keep throwing until they miss\n\n**Tips:**\nThe perfect throw has a slight arc. For non-alcoholic version: Water in cups, shots on the side!"
+      },
+      "groom_bride_quiz": {
+        "name": "Groom/Bride Quiz",
+        "description": "How well does the group know the guest of honor?",
+        "instructions": "**Preparation:**\nBefore the party, collect 20-30 questions about the guest of honor: Favorite things, embarrassing stories, relationship details. The partner can be secretly interviewed. Note the answers!\n\n**Gameplay:**\nThe moderator asks questions. The group (or the guest of honor) must answer. Wrong answers result in penalties for the guest of honor or the group.\n\n**Rules:**\n• Wrong answer = Shot/task for guest of honor\n• Correct answer = Shot/task for the group\n• Joker: Partner can be called once\n• Intimate questions: Guest of honor may refuse (= penalty)\n\n**Variants:**\n• Team Quiz: Group vs. guest of honor\n• Speed Quiz: 10 seconds per answer\n• Photo Quiz: Show pictures from the past\n\n**Tips:**\nMix funny, embarrassing, and romantic questions. The best questions often come from the partner! Document everything for the wedding newspaper!"
+      },
+      "truth_or_dare": {
+        "name": "Truth or Dare",
+        "description": "The classic for brave confessions and crazy tasks.",
+        "instructions": "**Preparation:**\nNo special preparation needed, but prepared questions/tasks make it easier. A spinning bottle is optional. Drinks for refusers should be ready.\n\n**Gameplay:**\nTaking turns, everyone chooses: 'Truth' (answer a question honestly) or 'Dare' (complete a task). The previous player or the group asks the question/task.\n\n**Rules:**\n• Refusal = Penalty (shot, embarrassing task)\n• Can switch once per game\n• Truth must be honest (group judges)\n• Tasks must not endanger anyone\n\n**Variants:**\n• Bachelor Party Edition: All questions/tasks about relationships\n• Hardcore: Only dare, no truth\n• Dice Version: Even = truth, Odd = dare\n\n**Tips:**\nStart harmless and escalate slowly. The best dares are embarrassing but safe. Respect boundaries!"
+      },
+      "city_rally": {
+        "name": "City Rally",
+        "description": "A scavenger hunt through the city with tasks and puzzles.",
+        "instructions": "**Preparation:**\nPlan a route through the city with 8-12 stations. Create clues leading to the next station. Prepare tasks for each station. Form teams (2-4 people).\n\n**Gameplay:**\nTeams start staggered. At each station: Read clue, complete task, take photo, find next clue. The fastest team with all tasks wins.\n\n**Rules:**\n• All tasks must be photographed\n• Time limit: 2-3 hours\n• GPS tracking or calls to game master allowed\n• Points for speed + creativity\n\n**Variants:**\n• Pub Rally: Stations are bars/pubs\n• Photo Rally: Creative photos instead of tasks\n• QR Code Rally: Clues via QR code\n\n**Tips:**\nUse landmarks as stations. The best rally has a mix of knowledge, action, and fun. End at a bar for the awards ceremony!"
+      },
+      "never_have_i_ever": {
+        "name": "Never Have I Ever",
+        "description": "Confessions and secrets are revealed.",
+        "instructions": "**Preparation:**\nAll players sit in a circle. Everyone has a drink or 10 fingers/chips. Optional: Prepared statements for the start.\n\n**Gameplay:**\nTaking turns, everyone says 'Never have I ever...' and adds a statement. Anyone who has done it drinks a sip or loses a finger/chip.\n\n**Rules:**\n• Honesty is mandatory!\n• At 0 fingers: Must skip a round or take a special shot\n• Follow-up questions allowed: 'Really? Tell us!'\n• Caught lying: Penalty drink\n\n**Variants:**\n• Bachelor Party Edition: Only relationship/dating topics\n• Speed Round: 5 seconds per statement\n• Story Mode: Whoever drinks must tell the story\n\n**Tips:**\nStart harmless and escalate. The best statements are specific enough to be interesting but not too personal. Respect boundaries!"
+      },
+      "toilet_paper_dress": {
+        "name": "Toilet Paper Wedding Dress",
+        "description": "Create a wedding dress using only toilet paper.",
+        "instructions": "**Preparation:**\nDivide the group into teams of 3-4 people. Each team gets 2-3 rolls of toilet paper. Optional: Tape, scissors (makes it easier).\n\n**Gameplay:**\nEach team chooses a 'model'. In 10-15 minutes, a wedding dress must be created from toilet paper. The model presents the result on a 'runway'.\n\n**Rules:**\n• Strict time limit\n• Only provided materials\n• Model may not help\n• Dress must survive a 'catwalk'\n\n**Variants:**\n• With Veil: Bonus for accessories\n• Fashion Show: With music and commentator\n• Jury Rating: Guest of honor rates\n\n**Tips:**\nWrap the dress around the body rather than just hanging! The best dresses have structure (draping, folds). Don't forget photos!"
+      },
+      "shoe_game": {
+        "name": "Shoe Game",
+        "description": "Bride and groom answer questions with shoes.",
+        "instructions": "**Preparation:**\nThe couple sits back to back on chairs. Each holds one of their own shoes and one of their partner's shoes. Moderator has a list of 20-30 questions.\n\n**Gameplay:**\nThe moderator asks questions ('Who's the better cook?'). The couple raises the shoe of the person the answer applies to - without coordinating.\n\n**Rules:**\n• No coordination allowed!\n• Same answer: Kiss\n• Different answer: Brief explanation\n• 3 wrong questions: Penalty task\n\n**Variants:**\n• Guest Voting: Audience guesses along\n• Drinking Version: Different answer = both drink\n• Story Version: Tell a story with each answer\n\n**Tips:**\nMix funny ('Who snores louder?') with romantic questions ('Who said I love you first?'). Perfect for weddings!"
+      },
+      "mr_mrs_quiz": {
+        "name": "Mr & Mrs Quiz",
+        "description": "Who knows their partner better?",
+        "instructions": "**Preparation:**\nCreate 15-20 questions about the couple. Both partners get signs with 'Him' and 'Her' (or names). Questions pre-agreed with one partner secretly.\n\n**Gameplay:**\nThe couple sits next to each other. For each question, both hold up the sign for whom the answer applies. The 'correct' answer was predetermined.\n\n**Rules:**\n• Show simultaneously (no cheating!)\n• Correct answer = Point\n• Wrong answer = Penalty task or shot\n• Most points wins\n\n**Variants:**\n• Guest Edition: Guests guess along\n• Relationship Timeline: Questions chronological\n• Video Version: Answers were pre-recorded\n\n**Tips:**\nMix embarrassing to romantic questions. The best questions reveal sweet or funny stories. Moderator should follow up!"
+      },
+      "newspaper_dance": {
+        "name": "Newspaper Dance",
+        "description": "The dance floor gets smaller and smaller!",
+        "instructions": "**Preparation:**\nEach couple gets an unfolded newspaper as their dance floor. Prepare music. Clear space for dancing.\n\n**Gameplay:**\nAll couples dance on their newspaper. After each round, the newspaper is folded (halved). Whoever steps off the newspaper or falls is eliminated.\n\n**Rules:**\n• Both partners must stay on the newspaper\n• Lifting partner is allowed!\n• Newspaper may not be torn\n• Music stops = Fold\n\n**Variants:**\n• Freeze Dance: Freeze when music stops\n• Balloon Dance: Additionally balloon between bodies\n• Speed Version: Fold newspaper every 30 seconds\n\n**Tips:**\nThe secret: Put partner on your feet or balance on one leg! Perfect for weddings and parties."
+      },
+      "wedding_bingo": {
+        "name": "Wedding Bingo",
+        "description": "Bingo with wedding moments.",
+        "instructions": "**Preparation:**\nCreate bingo cards with typical wedding scenes: 'Someone cries', 'Father of bride speech', 'Child runs through frame', 'Grandma dances'. Each guest gets a card.\n\n**Gameplay:**\nDuring the wedding, guests cross off observed scenes. Whoever completes a row calls 'Wedding Bingo!' and wins a prize.\n\n**Rules:**\n• Scenes must actually happen\n• Intentional triggering doesn't count\n• Row: horizontal, vertical, or diagonal\n• Multiple winners possible\n\n**Variants:**\n• Full House: All squares for main prize\n• Team Bingo: Tables play against each other\n• Photo Bingo: Scenes must be photographed\n\n**Tips:**\nCards should be different! Mix inevitable ('Cutting the cake') with rare moments ('Someone spills wine')."
+      },
+      "polaroid_guestbook": {
+        "name": "Polaroid Guestbook",
+        "description": "Instant photos as memories.",
+        "instructions": "**Preparation:**\nProvide Polaroid camera with enough film. Guestbook/album with blank pages. Pens, glue, and decorations. Props for fun photos.\n\n**Gameplay:**\nGuests take Polaroid photos (individuals, couples, groups). Photos are glued into the guestbook and accompanied by personal greetings.\n\n**Rules:**\n• Max. 2 photos per guest (film is expensive!)\n• At least one greeting per photo\n• Use props box\n• Let photos dry before gluing\n\n**Variants:**\n• Photo Booth: Fixed station with background\n• Task Photos: Recreate specific poses\n• Video Guestbook: Additionally short videos\n\n**Tips:**\nA 'guestbook attendant' helps immensely! Instax cameras are cheaper than real Polaroids. Washi tape instead of glue for nicer decoration!"
+      },
+      "ring_warming": {
+        "name": "Ring Warming",
+        "description": "All guests bless the rings.",
+        "instructions": "**Preparation:**\nThe wedding rings are placed on a ribbon or in a small pouch. During the ceremony or reception, it's passed through all guests.\n\n**Gameplay:**\nEach guest briefly holds the rings in their hand and silently gives them good wishes, blessings, or positive energy. Then they're passed on.\n\n**Rules:**\n• Silent wishes (don't speak aloud)\n• Only briefly each (10-30 seconds)\n• Don't open/try on the ring\n• At ceremony: Rings back to best man\n\n**Variants:**\n• Wish Cards: Additionally written wishes\n• Blessing Round: Everyone speaks a wish aloud\n• Photo Moment: Everyone photographed with ring\n\n**Tips:**\nFor large weddings, start in multiple rows simultaneously. A helper keeps track. Very emotional moment!"
+      },
+      "anniversary_dance": {
+        "name": "Anniversary Dance",
+        "description": "Married couples on the dance floor by years.",
+        "instructions": "**Preparation:**\nDJ or moderator prepares a slow song. All married couples are invited to the dance floor.\n\n**Gameplay:**\nAll couples begin dancing. The moderator asks couples to sit down: 'Those married less than 1 year...' then 5 years, 10, 20, etc. The longest-married couple remains and gives advice.\n\n**Rules:**\n• Honest answers!\n• Only legally married couples\n• The last couple gets a prize\n• Often: Short speech or advice for the newlyweds\n\n**Variants:**\n• Relationship Dance: All couples, not just married\n• Countdown: From long marriage to short\n• Interview: Winning couple is interviewed\n\n**Tips:**\nVery emotional moment! Often grandparents are the winners. Have tissues ready. Perfect moment for photos!"
+      },
+      "kiss_marathon": {
+        "name": "Kiss Marathon",
+        "description": "The longest kiss of the evening!",
+        "instructions": "**Preparation:**\nPrepare stopwatch. Guests gather. Optional: Music and cheering. The couple stands in the center.\n\n**Gameplay:**\nOn command, the couple begins kissing. Guests count the seconds or a moderator times it. Goal: Kiss as long as possible!\n\n**Rules:**\n• Lips may not separate\n• Breathing through nose is allowed\n• No breaking due to laughter\n• Guests may cheer\n\n**Variants:**\n• Couple Challenge: Multiple couples compete\n• Surprise Kiss: Guests call 'Kiss!' when glasses clink\n• Break Record: Beat previous record\n\n**Tips:**\nCheering makes it harder (laughing!). World record is over 58 hours - that's not necessary! 1-2 minutes is impressive."
+      },
+      "bride_stealing": {
+        "name": "Bride Stealing",
+        "description": "The bride is 'kidnapped' and must be ransomed.",
+        "instructions": "**Preparation:**\nA group of guests secretly plans the 'kidnapping'. Target location (nearby bar) is scouted. Ransom tasks are prepared.\n\n**Gameplay:**\nThe bride is 'kidnapped' during the celebration and taken to a bar. The groom must find her and ransom her through tasks or 'payment'.\n\n**Rules:**\n• Bride must be informed or consent\n• Kidnapping not too early (after dinner)\n• Ransom: Tasks, not just money\n• Duration: Max. 1-2 hours\n\n**Variants:**\n• Bar Rally: Multiple bars as stations\n• Task Ransom: Each task = one step closer\n• Team Rescue: Groom + groomsmen\n\n**Tips:**\nAll guests should know what's happening. The bride should really consent! Best coordinated with restaurant/DJ."
+      },
+      "charades": {
+        "name": "Charades",
+        "description": "Pantomime guessing in teams.",
+        "instructions": "**Preparation:**\nWrite terms on slips (movies, celebrities, actions). Form teams (3-6 people). Prepare timer (60-90 seconds per round).\n\n**Gameplay:**\nOne player draws a term and acts it out - no words, sounds, or pointing at objects. The team guesses. On hit: Next term.\n\n**Rules:**\n• No speaking, humming, or sounds\n• Don't point at objects\n• Showing syllables with fingers allowed\n• Time per round: 60-90 seconds\n• Points per guessed term\n\n**Variants:**\n• Themed Charades: Only movies, only professions\n• Speed Charades: 30 seconds per term\n• Reverse: Everyone mimes, one guesses\n\n**Tips:**\nLearn common gestures: 'Movie' (crank camera), 'Book' (open hands), 'Song' (mime singing). The crazier the performance, the funnier!"
+      },
+      "activity": {
+        "name": "Activity",
+        "description": "Explain, draw, or act out - versatile party game.",
+        "instructions": "**Preparation:**\nTerms on cards (or buy Activity game). Form teams. Provide drawing materials. Timer (30-60 seconds).\n\n**Gameplay:**\nDepending on the card, the term must be explained (without related words), drawn, or acted out. The team guesses within time.\n\n**Rules:**\n• Explaining: Don't say the word\n• Drawing: No letters or numbers\n• Pantomime: No sounds\n• Per hit: 1 point\n• Wrong method: 0 points\n\n**Variants:**\n• Speed Mode: All methods in one round\n• Bachelor Party Edition: Only relationship terms\n• Drinking Activity: Wrong guess = Drink\n\n**Tips:**\nMix easy and difficult terms. The funniest moments come from difficult pantomimes. Use a large drawing surface!"
+      },
+      "taboo": {
+        "name": "Taboo",
+        "description": "Explain the term without using the forbidden words.",
+        "instructions": "**Preparation:**\nPrepare Taboo cards: Each card has a term and 5 forbidden words below. Form teams. Prepare timer.\n\n**Gameplay:**\nOne player explains the term without using the taboo words or their word stems. An opponent monitors. The team guesses.\n\n**Rules:**\n• Taboo word said = Term lost\n• No 'Rhymes with...' or spelling\n• Opponent can call 'Taboo!'\n• 60 seconds per round\n• Points per guessed term\n\n**Variants:**\n• Expert Mode: 7 taboo words\n• Speed Taboo: 30 seconds\n• Themed Rounds: Only movies, only sports\n\n**Tips:**\nCircumlocutions and stories work well. 'Imagine...' is a great opener. The taboo words are the obvious ones - be creative!"
+      },
+      "cards_against": {
+        "name": "Cards Against Humanity",
+        "description": "The card game for horrible people.",
+        "instructions": "**Preparation:**\nGet card deck (or print online). Each player receives 10 white cards. Black cards as a pile in the middle.\n\n**Gameplay:**\nA 'Card Czar' draws a black card and reads it aloud. Everyone else plays a white card that fits best. The Czar chooses the winner.\n\n**Rules:**\n• The Czar changes each round\n• White cards played anonymously\n• Winner keeps the black card\n• For __ & __, play two white cards\n• Czar's decision is final!\n\n**Variants:**\n• Drinking Version: Everyone except winner drinks\n• Democracy: Everyone votes\n• Haiku: Three cards into a story\n\n**Tips:**\nThe Czar determines the humor! Some like clever, others love shocking. Play with people who understand dark humor."
+      },
+      "scavenger_hunt": {
+        "name": "Scavenger Hunt",
+        "description": "Follow clues and solve puzzles.",
+        "instructions": "**Preparation:**\nPlan 8-15 stations with clues. Each clue leads to the next location. At the end, a 'treasure' awaits. Form teams or play together.\n\n**Gameplay:**\nTeams start with the first clue. Each clue is a puzzle that must be solved to find the next location. Until the goal!\n\n**Rules:**\n• Follow the order\n• No help from outsiders\n• All team members must be present\n• Photos at each station as proof\n• First team at goal wins\n\n**Variants:**\n• Photo Hunt: Photo tasks instead of locations\n• QR Code Hunt: Digital clues\n• Night Hunt: With flashlights\n\n**Tips:**\nClues should be tricky but solvable. A mix of knowledge, searching, and creativity. The 'treasure' can be snacks, drinks, or a surprise!"
+      },
+      "murder_mystery": {
+        "name": "Murder Mystery Dinner",
+        "description": "Solve the murder case while you dine.",
+        "instructions": "**Preparation:**\nBuy Murder Mystery set or create your own. Distribute roles to guests (in advance!). Decoration matching the theme. Plan dinner.\n\n**Gameplay:**\nDuring a multi-course dinner, everyone plays their role. Clues are revealed, suspects questioned. At the end, the murderer must be unmasked.\n\n**Rules:**\n• Everyone stays in character\n• Murderer may lie, others may not\n• Clues given at specific times\n• Discussion and questioning allowed\n• At the end: Vote\n\n**Variants:**\n• 1920s Gatsby Murder\n• Crime Dinner at restaurant\n• Outdoor: Murder at the castle\n\n**Tips:**\nDistribute roles in advance so guests can prepare. Costumes make it more authentic. Plan 3-4 hours!"
+      },
+      "kubb": {
+        "name": "Viking Chess",
+        "description": "The Scandinavian throwing game for all ages.",
+        "instructions": "**Preparation:**\nMark playing field (5x8 meters). Set up five Kubbs per side. King in the middle. Distribute throwing sticks (6 pieces per team).\n\n**Gameplay:**\nTeams take turns throwing at the opponent's Kubbs. Knocked-over Kubbs are thrown into the opponent's field and set up there. Goal: Hit all Kubbs, then the King.\n\n**Rules:**\n• Throw sticks underhand (helicopter forbidden)\n• First hit all field Kubbs, then base Kubbs\n• King hit too early = lost!\n• Throwing stick must land upright\n\n**Variants:**\n• Speed Kubb: Time limit per round\n• Drinking Kubb: Hit Kubb = Opponent drinks\n• Team Tournament: Multiple teams\n\n**Tips:**\nStrategy is important: Throw Kubbs close together for chain reaction. Be careful with the King - many games were lost this way!"
+      },
+      "sack_race": {
+        "name": "Sack Race",
+        "description": "The classic for every family celebration.",
+        "instructions": "**Preparation:**\nPotato sacks or large trash bags for each participant. Mark start and finish lines (10-20 meters). Obstacles optional.\n\n**Gameplay:**\nAll participants get into the sacks and hold them with both hands. On command, hop to the finish. First to arrive wins.\n\n**Rules:**\n• Hands must stay on the sack\n• Fall = Get up and continue\n• Sack may not be torn\n• No pushing\n• Crossing finish line counts\n\n**Variants:**\n• Relay Sack Race: Teams with handover\n• Obstacle Course: With slalom\n• Pair Sack Race: Two people, one sack\n\n**Tips:**\nSmaller hops for balance rather than big jumps. Play on soft ground (grass). Start children and adults separately for fairness!"
+      },
+      "egg_and_spoon": {
+        "name": "Egg and Spoon Race",
+        "description": "Balance the egg on the spoon to the finish.",
+        "instructions": "**Preparation:**\nFor each participant: A spoon and a raw egg (or hard-boiled/plastic). Mark start and finish lines (15-20 meters).\n\n**Gameplay:**\nThe egg sits on the spoon, held by one hand at the handle. On command, everyone runs to the finish. If the egg drops: Back to start.\n\n**Rules:**\n• Only one hand on the spoon\n• Other hand behind the back\n• Stabilizing egg with hand = Disqualification\n• Dropped egg: Back to start\n• First intact egg at finish wins\n\n**Variants:**\n• Relay: Teams with handover\n• Obstacle Course: With curves and hurdles\n• Water Egg: Spoon with water instead of egg\n\n**Tips:**\nSlow and steady is better than fast! Don't stare at the egg - look ahead. Hard-boiled eggs for less chaos!"
+      },
+      "musical_chairs": {
+        "name": "Musical Chairs",
+        "description": "When the music stops, sit down fast!",
+        "instructions": "**Preparation:**\nSet up chairs in a row or circle - always one fewer than players. Prepare music (with pause option).\n\n**Gameplay:**\nEveryone walks around the chairs while music plays. When music stops: Sit down quickly! Whoever doesn't get a chair is out. One chair is removed.\n\n**Rules:**\n• Don't touch or reserve before music stops\n• Sit immediately when music stops\n• No pushing\n• Must sit on chair (not just touch)\n• Last player with chair wins\n\n**Variants:**\n• Music Freeze: Freeze when stopped, don't sit\n• Team Version: Pairs play together\n• Dance-Off: Eliminated players keep dancing\n\n**Tips:**\nMusic controller shouldn't watch! Unpredictable pauses make it more exciting. Set up chairs stably!"
+      },
+      "kiss_challenge": {
+        "name": "Kiss Challenge",
+        "description": "Collect kisses from strangers - the more the better!",
+        "instructions": "**Preparation:**\nGet white t-shirt for the guest of honor. Provide various colored lipsticks. Don't forget disinfecting wipes!\n\n**Gameplay:**\nThe guest of honor must collect kisses (lipstick prints) from strangers on the t-shirt. The group accompanies and documents everything.\n\n**Rules:**\n• Only voluntary kisses count!\n• Respectful asking is mandatory\n• Different colors = Bonus\n• No harassment!\n• Time limit: 1-2 hours\n\n**Variants:**\n• Photo Kiss: Selfie with each person\n• Signatures: Additionally collect names\n• Challenge Escalation: Find specific 'types'\n\n**Tips:**\nAlways ask friendly and respectfully. Accept 'no'! Bars and clubs work best. The t-shirt is a great souvenir!"
+      },
+      "pictionary": {
+        "name": "Pictionary",
+        "description": "Draw and guess terms against the clock.",
+        "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!"
+      },
+      "family_feud": {
+        "name": "Family Feud",
+        "description": "Guess the most popular survey answers.",
+        "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!"
+      },
+      "two_truths_lie": {
+        "name": "Two Truths and a Lie",
+        "description": "Guess the lie among three statements.",
+        "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!"
+      }
+    },
+    "themes": {
+      "80s_retro": {
+        "name": "80s Retro Party",
+        "description": "Neon colors, synth music and shoulder pads",
+        "tips": "Think neon lights, disco balls and 80s hits from A-ha to Madonna!"
+      },
+      "casino_royale": {
+        "name": "Casino Royale",
+        "description": "Elegant James Bond atmosphere with gaming tables",
+        "tips": "Red carpet, poker chips, gaming tables and elegant cocktails!"
+      },
+      "tropical_beach": {
+        "name": "Tropical Beach",
+        "description": "Caribbean flair with palm trees and cocktails",
+        "tips": "Hawaiian shirts, tiki torches, coconut drinks and tropical music!"
+      },
+      "gatsby_20s": {
+        "name": "Gatsby / 1920s",
+        "description": "The roaring twenties with flappers and jazz",
+        "tips": "Art deco decor, champagne, feather boas, swing music and Charleston!"
+      },
+      "mexican_fiesta": {
+        "name": "Mexican Fiesta",
+        "description": "Colorful, tacos and mariachi",
+        "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!"
+      }
+    }
   },
   "theme": {
     "title": "Appearance",
@@ -61,7 +345,7 @@
     "thankYou": "Thanks for your feedback!",
     "betaBadge": "Beta Version"
   },
-"landing": {
+  "landing": {
     "nav": {
       "features": "Features",
       "howItWorks": "How It Works",
@@ -84,25 +368,64 @@
     "features": {
       "title": "Everything You Need",
       "subtitle": "Powerful tools to plan the perfect event",
-      "multiEvent": { "title": "Multi-Event Management", "description": "Manage multiple events simultaneously with a clear dashboard" },
-      "costSplitting": { "title": "Smart Cost Splitting", "description": "Track expenses and split them fairly among all participants" },
-      "aiSuggestions": { "title": "AI-Powered Suggestions", "description": "Get personalized activity and destination recommendations" },
-      "messageTemplates": { "title": "Message Templates", "description": "Pre-written WhatsApp messages for every occasion" },
-      "planner": { "title": "Activity Planner", "description": "Plan and organize all activities with calendar view, time slots and automatic iCal/PDF export" },
-      "dateCoordination": { "title": "Date Coordination", "description": "Find the perfect date that works for everyone" },
-      "realtime": { "title": "Real-time Collaboration", "description": "Work together with your team in real-time" },
-      "agencyDirectory": { "title": "Agency Directory", "description": "Find professional bachelor party agencies near you with interactive map" },
-      "formBuilder": { "title": "Form Builder", "description": "Create custom surveys and polls for your event" },
+      "multiEvent": {
+        "title": "Multi-Event Management",
+        "description": "Manage multiple events simultaneously with a clear dashboard"
+      },
+      "costSplitting": {
+        "title": "Smart Cost Splitting",
+        "description": "Track expenses and split them fairly among all participants"
+      },
+      "aiSuggestions": {
+        "title": "AI-Powered Suggestions",
+        "description": "Get personalized activity and destination recommendations"
+      },
+      "messageTemplates": {
+        "title": "Message Templates",
+        "description": "Pre-written WhatsApp messages for every occasion"
+      },
+      "planner": {
+        "title": "Activity Planner",
+        "description": "Plan and organize all activities with calendar view, time slots and automatic iCal/PDF export"
+      },
+      "dateCoordination": {
+        "title": "Date Coordination",
+        "description": "Find the perfect date that works for everyone"
+      },
+      "realtime": {
+        "title": "Real-time Collaboration",
+        "description": "Work together with your team in real-time"
+      },
+      "agencyDirectory": {
+        "title": "Agency Directory",
+        "description": "Find professional bachelor party agencies near you with interactive map"
+      },
+      "formBuilder": {
+        "title": "Form Builder",
+        "description": "Create custom surveys and polls for your event"
+      },
       "showcaseTitle": "Powerful Features, Beautiful Design",
       "showcaseSubtitle": "Everything you need to plan the perfect group event"
     },
     "howItWorks": {
       "title": "How It Works",
       "subtitle": "Plan your event in 4 simple steps",
-      "step1": { "title": "Create Event", "description": "Choose your event type and set basic details" },
-      "step2": { "title": "Invite Guests", "description": "Share a simple link or code with your group" },
-      "step3": { "title": "Collect Preferences", "description": "Let guests vote on dates, destinations, and activities" },
-      "step4": { "title": "Plan Together", "description": "Use AI suggestions and collaboration tools to finalize plans" }
+      "step1": {
+        "title": "Create Event",
+        "description": "Choose your event type and set basic details"
+      },
+      "step2": {
+        "title": "Invite Guests",
+        "description": "Share a simple link or code with your group"
+      },
+      "step3": {
+        "title": "Collect Preferences",
+        "description": "Let guests vote on dates, destinations, and activities"
+      },
+      "step4": {
+        "title": "Plan Together",
+        "description": "Use AI suggestions and collaboration tools to finalize plans"
+      }
     },
     "eventTypes": {
       "title": "Perfect for Any Event",
@@ -117,9 +440,21 @@
     "testimonials": {
       "title": "Loved by Event Planners",
       "subtitle": "See what our users have to say",
-      "testimonial1": { "text": "EventBliss made planning my friend's bachelor party so easy! Everyone could vote and we found the perfect date.", "author": "Sarah M.", "role": "Bachelor Party Organizer" },
-      "testimonial2": { "text": "The cost splitting feature is a lifesaver. No more awkward money conversations!", "author": "Michael K.", "role": "Group Trip Planner" },
-      "testimonial3": { "text": "I've organized 5 events with EventBliss. The AI suggestions are incredibly helpful.", "author": "Anna L.", "role": "Birthday Party Host" }
+      "testimonial1": {
+        "text": "EventBliss made planning my friend's bachelor party so easy! Everyone could vote and we found the perfect date.",
+        "author": "Sarah M.",
+        "role": "Bachelor Party Organizer"
+      },
+      "testimonial2": {
+        "text": "The cost splitting feature is a lifesaver. No more awkward money conversations!",
+        "author": "Michael K.",
+        "role": "Group Trip Planner"
+      },
+      "testimonial3": {
+        "text": "I've organized 5 events with EventBliss. The AI suggestions are incredibly helpful.",
+        "author": "Anna L.",
+        "role": "Birthday Party Host"
+      }
     },
     "multiDevice": {
       "title": "Plan Events Anywhere, Anytime",
@@ -333,35 +668,92 @@
       "title": "Privacy Policy",
       "lastUpdated": "Last Updated",
       "intro": "Your privacy is important to us. This policy explains how we collect, use, and protect your data.",
-      "dataCollection": { "title": "Data Collection", "content": "We collect information you provide directly, such as name, email, and event preferences." },
-      "dataUsage": { "title": "Data Usage", "content": "Your data is used to provide and improve our services, facilitate event planning, and communicate with you." },
-      "cookies": { "title": "Cookies", "content": "We use cookies to enhance your experience and analyze site usage." },
-      "dataSecurity": { "title": "Data Security", "content": "We implement industry-standard security measures to protect your data." },
-      "userRights": { "title": "Your Rights", "content": "You have the right to access, correct, or delete your personal data at any time." },
-      "thirdParty": { "title": "Third-Party Services", "content": "We may share data with trusted partners to provide our services." },
-      "contact": { "title": "Contact Us", "content": "For privacy-related inquiries, please contact us at:" }
+      "dataCollection": {
+        "title": "Data Collection",
+        "content": "We collect information you provide directly, such as name, email, and event preferences."
+      },
+      "dataUsage": {
+        "title": "Data Usage",
+        "content": "Your data is used to provide and improve our services, facilitate event planning, and communicate with you."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "content": "We use cookies to enhance your experience and analyze site usage."
+      },
+      "dataSecurity": {
+        "title": "Data Security",
+        "content": "We implement industry-standard security measures to protect your data."
+      },
+      "userRights": {
+        "title": "Your Rights",
+        "content": "You have the right to access, correct, or delete your personal data at any time."
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "content": "We may share data with trusted partners to provide our services."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "For privacy-related inquiries, please contact us at:"
+      }
     },
     "terms": {
       "title": "Terms of Service",
       "lastUpdated": "Last Updated",
       "intro": "By using EventBliss, you agree to these terms. Please read them carefully.",
-      "acceptance": { "title": "Acceptance of Terms", "content": "By accessing or using EventBliss, you agree to be bound by these Terms of Service." },
-      "services": { "title": "Our Services", "content": "EventBliss provides event planning and coordination tools for groups." },
-      "payment": { "title": "Payment Terms", "content": "Basic features are free. Premium features may require payment." },
-      "prohibited": { "title": "Prohibited Activities", "content": "You may not use our services for illegal activities or to harm others." },
-      "liability": { "title": "Limitation of Liability", "content": "EventBliss is not liable for damages arising from use of our services." },
-      "changes": { "title": "Changes to Terms", "content": "We may update these terms. Continued use constitutes acceptance." },
-      "governingLaw": { "title": "Governing Law", "content": "These terms are governed by the laws of Cyprus." }
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By accessing or using EventBliss, you agree to be bound by these Terms of Service."
+      },
+      "services": {
+        "title": "Our Services",
+        "content": "EventBliss provides event planning and coordination tools for groups."
+      },
+      "payment": {
+        "title": "Payment Terms",
+        "content": "Basic features are free. Premium features may require payment."
+      },
+      "prohibited": {
+        "title": "Prohibited Activities",
+        "content": "You may not use our services for illegal activities or to harm others."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "content": "EventBliss is not liable for damages arising from use of our services."
+      },
+      "changes": {
+        "title": "Changes to Terms",
+        "content": "We may update these terms. Continued use constitutes acceptance."
+      },
+      "governingLaw": {
+        "title": "Governing Law",
+        "content": "These terms are governed by the laws of Cyprus."
+      }
     },
     "disclaimer": {
       "title": "Disclaimer",
       "lastUpdated": "Last Updated",
       "intro": "Please read this disclaimer carefully before using EventBliss.",
-      "general": { "title": "General Disclaimer", "content": "Information provided on EventBliss is for general purposes only." },
-      "externalLinks": { "title": "External Links", "content": "We are not responsible for content on third-party websites." },
-      "availability": { "title": "Service Availability", "content": "We strive for 99.9% uptime but cannot guarantee uninterrupted service." },
-      "limitation": { "title": "Limitation of Liability", "content": "We are not liable for any indirect or consequential damages." },
-      "contact": { "title": "Contact", "content": "For questions about this disclaimer, please contact us." }
+      "general": {
+        "title": "General Disclaimer",
+        "content": "Information provided on EventBliss is for general purposes only."
+      },
+      "externalLinks": {
+        "title": "External Links",
+        "content": "We are not responsible for content on third-party websites."
+      },
+      "availability": {
+        "title": "Service Availability",
+        "content": "We strive for 99.9% uptime but cannot guarantee uninterrupted service."
+      },
+      "limitation": {
+        "title": "Limitation of Liability",
+        "content": "We are not liable for any indirect or consequential damages."
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "For questions about this disclaimer, please contact us."
+      }
     }
   },
   "createEvent": {
@@ -759,7 +1151,59 @@
       "save": "Save",
       "successMessage": "Form configuration saved!",
       "coreQuestions": "Core Questions",
-      "customQuestions": "Custom Questions",
+      "customQuestions": {
+        "quickAdd": "Quick add:",
+        "presets": {
+          "dietary": "Dietary",
+          "songWish": "Song Wish",
+          "tshirtSize": "T-Shirt Size",
+          "driversLicense": "Driver's License",
+          "specialWishes": "Special Wishes"
+        },
+        "presetQuestions": {
+          "dietary": {
+            "label": "Any dietary restrictions?",
+            "placeholder": "e.g. vegetarian, vegan, allergies..."
+          },
+          "songWish": {
+            "label": "Your song request for the playlist?",
+            "placeholder": "Artist - Song title"
+          },
+          "tshirtSize": {
+            "label": "What T-shirt size do you wear?"
+          },
+          "driversLicense": {
+            "label": "Do you have a driver's license and can drive?"
+          },
+          "specialWishes": {
+            "label": "Is there anything else you'd like to share?",
+            "placeholder": "Special wishes, ideas, notes..."
+          }
+        },
+        "types": {
+          "text": "Short Text",
+          "textarea": "Long Text",
+          "select": "Dropdown",
+          "radio": "Single Choice",
+          "checkbox": "Multiple Choice",
+          "toggle": "Yes/No"
+        },
+        "questionPlaceholder": "Enter question...",
+        "placeholderPlaceholder": "Placeholder text (optional)",
+        "options": "Options:",
+        "addOption": "Add option",
+        "requiredField": "Required field",
+        "noQuestions": "No custom questions added yet.",
+        "noQuestionsHint": "Use the quick buttons above or add a new question.",
+        "addNew": "Add new question",
+        "questionsConfigured": "custom question(s) configured",
+        "noPreview": "Add questions to see preview",
+        "previewTitle": "Form Preview",
+        "previewDescription": "This is how your custom questions will appear in the survey",
+        "previewReadOnly": "Read-only preview",
+        "untitledQuestion": "Untitled Question",
+        "selectPlaceholder": "Select an option..."
+      },
       "questionEnabled": "Question enabled",
       "questionDisabled": "Question disabled",
       "singleSelect": "Single select",
@@ -874,46 +1318,6 @@
         "removeWarning": "Remove warning",
         "defaultWarning": "Possible restrictions",
         "hintInput": "Enter note..."
-      },
-      "customQuestions": {
-        "quickAdd": "Quick add:",
-        "presets": {
-          "dietary": "Dietary",
-          "songWish": "Song Wish",
-          "tshirtSize": "T-Shirt Size",
-          "driversLicense": "Driver's License",
-          "specialWishes": "Special Wishes"
-        },
-        "presetQuestions": {
-          "dietary": { "label": "Any dietary restrictions?", "placeholder": "e.g. vegetarian, vegan, allergies..." },
-          "songWish": { "label": "Your song request for the playlist?", "placeholder": "Artist - Song title" },
-          "tshirtSize": { "label": "What T-shirt size do you wear?" },
-          "driversLicense": { "label": "Do you have a driver's license and can drive?" },
-          "specialWishes": { "label": "Is there anything else you'd like to share?", "placeholder": "Special wishes, ideas, notes..." }
-        },
-        "types": {
-          "text": "Short Text",
-          "textarea": "Long Text",
-          "select": "Dropdown",
-          "radio": "Single Choice",
-          "checkbox": "Multiple Choice",
-          "toggle": "Yes/No"
-        },
-        "questionPlaceholder": "Enter question...",
-        "placeholderPlaceholder": "Placeholder text (optional)",
-        "options": "Options:",
-        "addOption": "Add option",
-        "requiredField": "Required field",
-        "noQuestions": "No custom questions added yet.",
-        "noQuestionsHint": "Use the quick buttons above or add a new question.",
-        "addNew": "Add new question",
-        "questionsConfigured": "custom question(s) configured",
-        "noPreview": "Add questions to see preview",
-        "previewTitle": "Form Preview",
-        "previewDescription": "This is how your custom questions will appear in the survey",
-        "previewReadOnly": "Read-only preview",
-        "untitledQuestion": "Untitled Question",
-        "selectPlaceholder": "Select an option..."
       },
       "activitySelector": {
         "searchPlaceholder": "Search activities...",
@@ -1494,9 +1898,18 @@
   "cookie": {
     "title": "We value your privacy",
     "description": "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies.",
-    "necessary": { "title": "Necessary Cookies", "description": "Required for the website to function properly" },
-    "analytics": { "title": "Analytics Cookies", "description": "Help us understand how visitors interact with our website" },
-    "marketing": { "title": "Marketing Cookies", "description": "Used to deliver personalized advertisements" },
+    "necessary": {
+      "title": "Necessary Cookies",
+      "description": "Required for the website to function properly"
+    },
+    "analytics": {
+      "title": "Analytics Cookies",
+      "description": "Help us understand how visitors interact with our website"
+    },
+    "marketing": {
+      "title": "Marketing Cookies",
+      "description": "Used to deliver personalized advertisements"
+    },
     "acceptAll": "Accept All",
     "rejectAll": "Reject All",
     "acceptSelected": "Accept Selected",
@@ -1643,57 +2056,22 @@
     "subscribe": "Upgrade Now"
   },
   "admin": {
-    "title": "Admin Portal",
-    "tabs": {
-      "stats": "Statistics",
-      "users": "Users",
-      "members": "Members",
-      "subscriptions": "Subscriptions",
-      "vouchers": "Vouchers"
-    },
-    "users": {
-      "title": "User Management",
-      "create": "Create User",
-      "createTitle": "Create New User",
-      "email": "Email",
-      "password": "Password",
-      "fullName": "Full Name",
-      "plan": "Subscription Plan",
-      "name": "Name",
-      "status": "Status",
-      "createdAt": "Created At",
-      "search": "Search users...",
-      "noUsers": "No users found",
-      "mustChangePassword": "User must change password after first login",
-      "mustChange": "Change Password",
-      "active": "Active",
-      "requiredFields": "Email and password are required",
-      "passwordTooShort": "Password must be at least 8 characters",
-      "createSuccess": "User created successfully",
-      "createError": "Error creating user"
-    },
-    "vouchers": {
-      "title": "Voucher Management",
-      "create": "Create Voucher",
-      "code": "Code",
-      "type": "Type",
-      "value": "Value",
-      "uses": "Uses",
-      "validFrom": "Valid From",
-      "validUntil": "Valid Until",
-      "status": "Status",
-      "active": "Active",
-      "inactive": "Inactive",
-      "expired": "Expired",
-      "noVouchers": "No vouchers found",
-      "percentage": "Percentage",
-      "fixed": "Fixed Amount",
-      "free_trial": "Free Trial",
-      "unlimited": "Unlimited",
-      "createSuccess": "Voucher created successfully",
-      "createError": "Error creating voucher",
-      "deleteSuccess": "Voucher deleted",
-      "deleteError": "Error deleting voucher"
+    "credits": {
+      "title": "Credit Management",
+      "description": "Manual credit adjustments for users",
+      "userSearch": "Search user (email)",
+      "currentCredits": "Current credits",
+      "adjustCredits": "Adjust credits",
+      "addCredits": "Add credits",
+      "removeCredits": "Remove credits",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g., Partner bonus, Goodwill, etc.",
+      "adjustmentSuccess": "Credits adjusted successfully",
+      "noUser": "User not found",
+      "adjustmentHistory": "Adjustment history",
+      "amount": "Amount",
+      "adjustedBy": "Adjusted by",
+      "date": "Date"
     }
   },
   "templates": {
@@ -1986,36 +2364,120 @@
     "recommended": "Recommended",
     "allTemplates": "All Templates",
     "design": {
-      "jga-classic": { "name": "JGA Classic", "desc": "Festive & party-ready with purple-cyan gradient" },
-      "wedding-elegant": { "name": "Wedding Elegant", "desc": "Classic-elegant with rose gold accents" },
-      "birthday-fun": { "name": "Birthday Fun", "desc": "Colorful & cheerful for birthday parties" },
-      "beach-vibes": { "name": "Beach Vibes", "desc": "Relaxed & summery for beach trips" },
-      "night-out": { "name": "Night Out", "desc": "Dark & glamorous for party nights" },
-      "modern-minimal": { "name": "Modern Minimal", "desc": "Clean & timeless for all occasions" },
-      "tropical-paradise": { "name": "Tropical Paradise", "desc": "Exotic & colorful for adventure trips" },
-      "royal-purple": { "name": "Royal Purple", "desc": "Royal & luxurious for special occasions" },
-      "sunset-glow": { "name": "Sunset Glow", "desc": "Warm & romantic like a sunset" },
-      "ocean-breeze": { "name": "Ocean Breeze", "desc": "Fresh & maritime for water sports fans" },
-      "ladies-night": { "name": "Ladies Night", "desc": "Pink & glamorous for the bride's JGA" },
-      "vegas-neon": { "name": "Vegas Neon", "desc": "Neon lights for unforgettable parties" },
-      "oktoberfest": { "name": "Oktoberfest", "desc": "Bavarian & traditional for folk fest fans" },
-      "ski-snow": { "name": "Ski & Snow", "desc": "Wintry & sporty for ski trips" },
-      "festival-vibes": { "name": "Festival Vibes", "desc": "Wild & colorful for festival lovers" },
-      "garden-party": { "name": "Garden Party", "desc": "Natural & romantic for garden parties" },
-      "road-trip": { "name": "Road Trip", "desc": "Adventurous & free for road trips" },
-      "glamour-night": { "name": "Glamour Night", "desc": "Noble & glamorous for special evenings" },
-      "sporty-adventure": { "name": "Sporty Adventure", "desc": "Active & energetic for athletes" },
-      "retro-vintage": { "name": "Retro Vintage", "desc": "Nostalgic & stylish in vintage look" }
+      "jga-classic": {
+        "name": "JGA Classic",
+        "desc": "Festive & party-ready with purple-cyan gradient"
+      },
+      "wedding-elegant": {
+        "name": "Wedding Elegant",
+        "desc": "Classic-elegant with rose gold accents"
+      },
+      "birthday-fun": {
+        "name": "Birthday Fun",
+        "desc": "Colorful & cheerful for birthday parties"
+      },
+      "beach-vibes": {
+        "name": "Beach Vibes",
+        "desc": "Relaxed & summery for beach trips"
+      },
+      "night-out": {
+        "name": "Night Out",
+        "desc": "Dark & glamorous for party nights"
+      },
+      "modern-minimal": {
+        "name": "Modern Minimal",
+        "desc": "Clean & timeless for all occasions"
+      },
+      "tropical-paradise": {
+        "name": "Tropical Paradise",
+        "desc": "Exotic & colorful for adventure trips"
+      },
+      "royal-purple": {
+        "name": "Royal Purple",
+        "desc": "Royal & luxurious for special occasions"
+      },
+      "sunset-glow": {
+        "name": "Sunset Glow",
+        "desc": "Warm & romantic like a sunset"
+      },
+      "ocean-breeze": {
+        "name": "Ocean Breeze",
+        "desc": "Fresh & maritime for water sports fans"
+      },
+      "ladies-night": {
+        "name": "Ladies Night",
+        "desc": "Pink & glamorous for the bride's JGA"
+      },
+      "vegas-neon": {
+        "name": "Vegas Neon",
+        "desc": "Neon lights for unforgettable parties"
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "desc": "Bavarian & traditional for folk fest fans"
+      },
+      "ski-snow": {
+        "name": "Ski & Snow",
+        "desc": "Wintry & sporty for ski trips"
+      },
+      "festival-vibes": {
+        "name": "Festival Vibes",
+        "desc": "Wild & colorful for festival lovers"
+      },
+      "garden-party": {
+        "name": "Garden Party",
+        "desc": "Natural & romantic for garden parties"
+      },
+      "road-trip": {
+        "name": "Road Trip",
+        "desc": "Adventurous & free for road trips"
+      },
+      "glamour-night": {
+        "name": "Glamour Night",
+        "desc": "Noble & glamorous for special evenings"
+      },
+      "sporty-adventure": {
+        "name": "Sporty Adventure",
+        "desc": "Active & energetic for athletes"
+      },
+      "retro-vintage": {
+        "name": "Retro Vintage",
+        "desc": "Nostalgic & stylish in vintage look"
+      }
     },
     "survey": {
-      "jga-classic": { "name": "JGA Classic", "desc": "Classic bachelor party with city trips and adventure" },
-      "jga-deluxe": { "name": "JGA Deluxe", "desc": "Premium bachelor experience with luxury activities" },
-      "bachelorette": { "name": "Bachelorette Party", "desc": "Spa, brunch, dancing, and unforgettable moments" },
-      "birthday-bash": { "name": "Birthday Bash", "desc": "Flexible and fun birthday celebration" },
-      "adventure-trip": { "name": "Adventure Trip", "desc": "Outdoor adventures, hiking, and adrenaline" },
-      "city-break": { "name": "City Break", "desc": "Culture, food, and sightseeing" },
-      "wedding-rsvp": { "name": "Wedding RSVP", "desc": "Elegant wedding response with dietary and accommodation" },
-      "corporate-retreat": { "name": "Corporate Retreat", "desc": "Team building, workshops, and networking" }
+      "jga-classic": {
+        "name": "JGA Classic",
+        "desc": "Classic bachelor party with city trips and adventure"
+      },
+      "jga-deluxe": {
+        "name": "JGA Deluxe",
+        "desc": "Premium bachelor experience with luxury activities"
+      },
+      "bachelorette": {
+        "name": "Bachelorette Party",
+        "desc": "Spa, brunch, dancing, and unforgettable moments"
+      },
+      "birthday-bash": {
+        "name": "Birthday Bash",
+        "desc": "Flexible and fun birthday celebration"
+      },
+      "adventure-trip": {
+        "name": "Adventure Trip",
+        "desc": "Outdoor adventures, hiking, and adrenaline"
+      },
+      "city-break": {
+        "name": "City Break",
+        "desc": "Culture, food, and sightseeing"
+      },
+      "wedding-rsvp": {
+        "name": "Wedding RSVP",
+        "desc": "Elegant wedding response with dietary and accommodation"
+      },
+      "corporate-retreat": {
+        "name": "Corporate Retreat",
+        "desc": "Team building, workshops, and networking"
+      }
     }
   },
   "affiliate": {
@@ -2195,23 +2657,105 @@
     }
   },
   "agencyApply": {
-    "hero": { "badge": "Agency Partnership", "title": "Become an EventBliss Partner", "description": "Earn commissions for every customer you bring to EventBliss. Exclusive benefits for event agencies." },
-    "benefits": { "commission": { "title": "Attractive Commissions", "description": "Up to 20% per booking through your referral" }, "tracking": { "title": "Reference Tracking", "description": "Automatic attribution via unique code" }, "vouchers": { "title": "Exclusive Vouchers", "description": "Special discount codes for your customers" }, "support": { "title": "Partner Support", "description": "Dedicated contact for all questions" } },
-    "stats": { "agencies": "Partner Agencies", "commissionRate": "Max. Commission", "payouts": "Paid Out" },
-    "form": { "title": "Apply Now", "agencyMode": "Agency Type", "existingAgency": "Select agency from directory", "newAgency": "Register new agency", "searchAgency": "Search agency...", "noAgenciesFound": "No agencies found", "agencyName": "Agency Name", "city": "City", "country": "Country", "contactEmail": "Contact Email", "phone": "Phone", "website": "Website", "motivation": "Why do you want to become a partner?", "motivationPlaceholder": "Tell us about your agency and why a partnership would be beneficial for both sides...", "expectedReferrals": "Expected monthly referrals", "selectOption": "Please select", "payoutMethod": "Preferred Payout", "bankTransfer": "Bank Transfer", "privacy": "I accept the", "submit": "Submit Application", "submitting": "Submitting..." },
-    "success": { "title": "Application Submitted!", "description": "Thank you for your interest in a partnership.", "nextSteps": "We will review your application and get back to you within 48 hours.", "backToHome": "Back to Home" },
-    "errors": { "submitFailed": "Error submitting the application" }
+    "hero": {
+      "badge": "Agency Partnership",
+      "title": "Become an EventBliss Partner",
+      "description": "Earn commissions for every customer you bring to EventBliss. Exclusive benefits for event agencies."
+    },
+    "benefits": {
+      "commission": {
+        "title": "Attractive Commissions",
+        "description": "Up to 20% per booking through your referral"
+      },
+      "tracking": {
+        "title": "Reference Tracking",
+        "description": "Automatic attribution via unique code"
+      },
+      "vouchers": {
+        "title": "Exclusive Vouchers",
+        "description": "Special discount codes for your customers"
+      },
+      "support": {
+        "title": "Partner Support",
+        "description": "Dedicated contact for all questions"
+      }
+    },
+    "stats": {
+      "agencies": "Partner Agencies",
+      "commissionRate": "Max. Commission",
+      "payouts": "Paid Out"
+    },
+    "form": {
+      "title": "Apply Now",
+      "agencyMode": "Agency Type",
+      "existingAgency": "Select agency from directory",
+      "newAgency": "Register new agency",
+      "searchAgency": "Search agency...",
+      "noAgenciesFound": "No agencies found",
+      "agencyName": "Agency Name",
+      "city": "City",
+      "country": "Country",
+      "contactEmail": "Contact Email",
+      "phone": "Phone",
+      "website": "Website",
+      "motivation": "Why do you want to become a partner?",
+      "motivationPlaceholder": "Tell us about your agency and why a partnership would be beneficial for both sides...",
+      "expectedReferrals": "Expected monthly referrals",
+      "selectOption": "Please select",
+      "payoutMethod": "Preferred Payout",
+      "bankTransfer": "Bank Transfer",
+      "privacy": "I accept the",
+      "submit": "Submit Application",
+      "submitting": "Submitting..."
+    },
+    "success": {
+      "title": "Application Submitted!",
+      "description": "Thank you for your interest in a partnership.",
+      "nextSteps": "We will review your application and get back to you within 48 hours.",
+      "backToHome": "Back to Home"
+    },
+    "errors": {
+      "submitFailed": "Error submitting the application"
+    }
   },
   "agencyPortal": {
     "title": "Agency Portal",
     "loginRequired": "Login Required",
     "loginDesc": "Please log in to access the agency portal.",
     "activePartner": "Active Partner",
-    "pending": { "title": "Application Pending", "description": "Your agency partner application is being reviewed.", "notice": "We will get back to you within 48 hours." },
-    "notAgency": { "title": "Become an Agency Partner", "description": "You are not yet an agency partner. Register your agency and earn commissions.", "cta": "Apply Now" },
-    "tabs": { "dashboard": "Dashboard", "vouchers": "Vouchers", "commissions": "Commissions", "payouts": "Payouts", "settings": "Settings" },
-    "stats": { "referrals": "Referrals", "bookings": "Bookings", "commission": "Commissions" },
-    "dashboard": { "welcome": "Welcome back!", "subtitle": "Here's an overview of your partner activities.", "agencyInfo": "Agency Info", "name": "Name", "location": "Location", "commissionRate": "Commission Rate", "performance": "Performance", "conversionRate": "Conversion Rate", "avgCommission": "Avg. Commission" }
+    "pending": {
+      "title": "Application Pending",
+      "description": "Your agency partner application is being reviewed.",
+      "notice": "We will get back to you within 48 hours."
+    },
+    "notAgency": {
+      "title": "Become an Agency Partner",
+      "description": "You are not yet an agency partner. Register your agency and earn commissions.",
+      "cta": "Apply Now"
+    },
+    "tabs": {
+      "dashboard": "Dashboard",
+      "vouchers": "Vouchers",
+      "commissions": "Commissions",
+      "payouts": "Payouts",
+      "settings": "Settings"
+    },
+    "stats": {
+      "referrals": "Referrals",
+      "bookings": "Bookings",
+      "commission": "Commissions"
+    },
+    "dashboard": {
+      "welcome": "Welcome back!",
+      "subtitle": "Here's an overview of your partner activities.",
+      "agencyInfo": "Agency Info",
+      "name": "Name",
+      "location": "Location",
+      "commissionRate": "Commission Rate",
+      "performance": "Performance",
+      "conversionRate": "Conversion Rate",
+      "avgCommission": "Avg. Commission"
+    }
   },
   "aiCredits": {
     "title": "AI Credits",
@@ -2248,281 +2792,6 @@
     "costInfo": "Costs {{cost}} credit",
     "noCreditsLeft": "No credits left",
     "creditUsed": "💎 {{remaining}} credits remaining"
-  },
-  "admin": {
-    "credits": {
-      "title": "Credit Management",
-      "description": "Manual credit adjustments for users",
-      "userSearch": "Search user (email)",
-      "currentCredits": "Current credits",
-      "adjustCredits": "Adjust credits",
-      "addCredits": "Add credits",
-      "removeCredits": "Remove credits",
-      "reason": "Reason",
-      "reasonPlaceholder": "e.g., Partner bonus, Goodwill, etc.",
-      "adjustmentSuccess": "Credits adjusted successfully",
-      "noUser": "User not found",
-      "adjustmentHistory": "Adjustment history",
-      "amount": "Amount",
-      "adjustedBy": "Adjusted by",
-      "date": "Date"
-    }
-  },
-  "gamesLibrary": {
-    "categories": {
-      "jga_games": "Bachelor Party Games",
-      "family_games": "Family Games",
-      "wedding_games": "Wedding Games",
-      "party_games": "Party Games",
-      "outdoor_games": "Outdoor Games",
-      "team_games": "Team Building",
-      "icebreaker": "Icebreakers",
-      "kids_friendly": "Kids Games"
-    },
-    "themeCategories": {
-      "retro": "Retro",
-      "elegant": "Elegant",
-      "casual": "Casual",
-      "adventure": "Adventure",
-      "cultural": "Cultural",
-      "seasonal": "Seasonal",
-      "costume": "Costume",
-      "relaxation": "Relaxation"
-    },
-    "filters": {
-      "title": "Filters",
-      "description": "Filter results by your preferences",
-      "all": "All",
-      "category": "Category",
-      "eventType": "Event Type",
-      "difficulty": "Difficulty",
-      "kidsFriendly": "Kids Friendly",
-      "alcoholFree": "Alcohol Free",
-      "classic": "Classic",
-      "drinking": "Drinking Game",
-      "clear": "Clear filters"
-    },
-    "difficulty": {
-      "label": "Difficulty",
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
-    "searchPlaceholder": "Search games...",
-    "searchThemesPlaceholder": "Search themes...",
-    "random": "Random",
-    "randomTheme": "Random Theme",
-    "randomPick": "Random Pick",
-    "randomThemePick": "Random Theme",
-    "resultsCount": "games found",
-    "themesCount": "themes found",
-    "noResults": "No games found. Try different filters.",
-    "noThemesFound": "No themes found.",
-    "showInstructions": "Instructions",
-    "hideInstructions": "Hide",
-    "showDetails": "Show details",
-    "hideDetails": "Hide details",
-    "materials": "Materials",
-    "addToPlanner": "Add to Planner",
-    "dressCode": "Dress Code",
-    "music": "Music",
-    "decorationTips": "Decoration Tips",
-    "colorPalette": "Color Palette",
-    "copied": "copied!",
-    "addedToFavorites": "Added to favorites",
-    "removedFromFavorites": "Removed from favorites",
-    "back": "Back",
-    "timer": {
-      "title": "Game Timer",
-      "start": "Start",
-      "pause": "Pause",
-      "reset": "Reset",
-      "finished": "Time's up!",
-      "timeUp": "The timer has finished. Game over!",
-      "custom": "Min",
-      "sound": "Sound",
-      "notification": "Notification",
-      "fullscreen": "Fullscreen"
-    },
-    "tts": {
-      "title": "Read Instructions",
-      "start": "Read",
-      "pause": "Pause",
-      "stop": "Stop",
-      "nextSection": "Next Section",
-      "notSupported": "Text-to-Speech is not supported by your browser",
-      "error": "Error reading aloud",
-      "selectVoice": "Select voice",
-      "downloadRequired": "Model download required (~50MB)",
-      "download": "Download",
-      "downloading": "Downloading...",
-      "loadingVoice": "Loading voice model...",
-      "firstTimeDownload": "First time: Loading high-quality voice (~50MB)",
-      "modelReady": "Voice model ready!",
-      "downloadError": "Error downloading model"
-    },
-    "games": {
-      "bingo_tasks": { 
-        "name": "Task Bingo", 
-        "description": "Everyone gets a bingo card with fun tasks to complete.", 
-        "instructions": "**Preparation:**\nCreate 5x5 bingo cards with 25 different tasks. Examples: 'Give a stranger a compliment', 'Photo with a police officer', 'Sing a song'. Each participant gets a card and a pen.\n\n**Gameplay:**\nThe group goes through the city. Everyone tries to complete tasks from their card. Completed squares are checked off. Fellow players can serve as witnesses.\n\n**Rules:**\n• First row (horizontal, vertical, or diagonal) = 'BINGO!'\n• All 25 squares = 'Super-BINGO!'\n• Each task must be documented with a photo\n• No task can be skipped\n\n**Variants:**\n• Team Bingo: Two teams compete against each other\n• Drinking Bingo: Toast for each completed square\n• Speed Bingo: 2-hour time limit\n\n**Tips:**\nMix easy and difficult tasks. The best cards have a good balance between embarrassing and doable tasks!"
-      },
-      "drink_roulette": { 
-        "name": "Drink Roulette", 
-        "description": "The wheel of fortune decides who drinks.", 
-        "instructions": "**Preparation:**\nGet a roulette wheel or create one with names/numbers. Set up drinks (shots, beer, or non-alcoholic). Each player gets a number or position assigned.\n\n**Gameplay:**\nTaking turns, each player spins the wheel. Whoever the pointer lands on must drink. The spinner can also assign an additional task.\n\n**Rules:**\n• Hit twice in a row: Double shot\n• Pointer lands on yourself: Everyone else drinks\n• 'Joker' field: Player chooses who drinks\n\n**Variants:**\n• Task Roulette: Tasks instead of drinking\n• Challenge Roulette: Fields with different challenges\n• Truth Roulette: Whoever gets hit must answer a question honestly\n\n**Tips:**\nFor more excitement: Write special actions on some fields like 'Everyone drinks' or 'Waterfall'!"
-      },
-      "who_am_i": { 
-        "name": "Who Am I?", 
-        "description": "Guess the famous person on your forehead through yes/no questions.", 
-        "instructions": "**Preparation:**\nWrite names of famous people on sticky notes - for bachelor parties, ideally celebrity couples or theme-related names. Everyone gets a note stuck to their forehead without seeing it.\n\n**Gameplay:**\nTaking turns, everyone asks a yes/no question ('Am I female?', 'Am I an actor?'). If 'yes', you can keep asking. If 'no', it's the next person's turn.\n\n**Rules:**\n• Only yes/no questions allowed\n• Correct guess: New note or you're out\n• Maximum 20 questions per round\n• No hints from others!\n\n**Variants:**\n• Couples Edition: Guess famous couples\n• Movie Edition: Only movie characters\n• Bachelor Party Special: Exes of the groom/bride\n\n**Tips:**\nWith large groups, play in teams. Question tips: First clarify gender, then profession, then era!"
-      },
-      "flunkyball": { 
-        "name": "Flunkyball", 
-        "description": "The ultimate outdoor drinking game with ball and bottle.", 
-        "instructions": "**Preparation:**\nTwo teams line up about 10 meters apart. Everyone has a drink. In the middle stands a bottle partially filled with water. A soft ball (tennis/softball) is needed.\n\n**Gameplay:**\nTeam A throws the ball at the bottle. If hit: Team A drinks quickly. Team B must set up the bottle, retrieve the ball, and line up. Then Team A is stopped.\n\n**Rules:**\n• Ball must be thrown while sitting\n• Only put down drink when all team members are standing\n• Bottle must stand upright (not leaning)\n• Whoever finishes drinking places bottle upside down\n• First team completely finished wins\n\n**Variants:**\n• Relay: Only one person per team throws\n• Hardcore: Every hit = open a new drink\n• Softcore: Water instead of alcohol\n\n**Tips:**\nPerfect for parks or gardens! The bottle shouldn't tip over too easily. Sunshine makes the game even better!"
-      },
-      "beer_pong": { 
-        "name": "Beer Pong", 
-        "description": "The classic - throw the ball into your opponent's cups.", 
-        "instructions": "**Preparation:**\nSet up 10 cups per team in pyramid formation (4-3-2-1) on both sides of a long table. Fill each cup one-third with beer. Prepare water cups for cleaning the balls.\n\n**Gameplay:**\nTwo teams face each other. Taking turns, each player throws a ping pong ball. If it lands in a cup, the opposing team drinks and removes the cup.\n\n**Rules:**\n• 'On Fire': 2+ hits in a row = keep throwing\n• 'Elbow Rule': Elbow behind table edge\n• 'Re-Rack': 1-2 reformations allowed (at 4 or 2 cups)\n• Both players hit = balls back\n• Opponent may block 'Bounce'\n\n**Variants:**\n• Death Cup: Hit into cup still being drunk = instant win\n• Bounce Shot: Bounced ball counts double, but can be blocked\n• Redemption: Loser can keep throwing until they miss\n\n**Tips:**\nThe perfect throw has a slight arc. For non-alcoholic version: Water in cups, shots on the side!"
-      },
-      "groom_bride_quiz": { 
-        "name": "Groom/Bride Quiz", 
-        "description": "How well does the group know the guest of honor?", 
-        "instructions": "**Preparation:**\nBefore the party, collect 20-30 questions about the guest of honor: Favorite things, embarrassing stories, relationship details. The partner can be secretly interviewed. Note the answers!\n\n**Gameplay:**\nThe moderator asks questions. The group (or the guest of honor) must answer. Wrong answers result in penalties for the guest of honor or the group.\n\n**Rules:**\n• Wrong answer = Shot/task for guest of honor\n• Correct answer = Shot/task for the group\n• Joker: Partner can be called once\n• Intimate questions: Guest of honor may refuse (= penalty)\n\n**Variants:**\n• Team Quiz: Group vs. guest of honor\n• Speed Quiz: 10 seconds per answer\n• Photo Quiz: Show pictures from the past\n\n**Tips:**\nMix funny, embarrassing, and romantic questions. The best questions often come from the partner! Document everything for the wedding newspaper!"
-      },
-      "truth_or_dare": { 
-        "name": "Truth or Dare", 
-        "description": "The classic for brave confessions and crazy tasks.", 
-        "instructions": "**Preparation:**\nNo special preparation needed, but prepared questions/tasks make it easier. A spinning bottle is optional. Drinks for refusers should be ready.\n\n**Gameplay:**\nTaking turns, everyone chooses: 'Truth' (answer a question honestly) or 'Dare' (complete a task). The previous player or the group asks the question/task.\n\n**Rules:**\n• Refusal = Penalty (shot, embarrassing task)\n• Can switch once per game\n• Truth must be honest (group judges)\n• Tasks must not endanger anyone\n\n**Variants:**\n• Bachelor Party Edition: All questions/tasks about relationships\n• Hardcore: Only dare, no truth\n• Dice Version: Even = truth, Odd = dare\n\n**Tips:**\nStart harmless and escalate slowly. The best dares are embarrassing but safe. Respect boundaries!"
-      },
-      "city_rally": { 
-        "name": "City Rally", 
-        "description": "A scavenger hunt through the city with tasks and puzzles.", 
-        "instructions": "**Preparation:**\nPlan a route through the city with 8-12 stations. Create clues leading to the next station. Prepare tasks for each station. Form teams (2-4 people).\n\n**Gameplay:**\nTeams start staggered. At each station: Read clue, complete task, take photo, find next clue. The fastest team with all tasks wins.\n\n**Rules:**\n• All tasks must be photographed\n• Time limit: 2-3 hours\n• GPS tracking or calls to game master allowed\n• Points for speed + creativity\n\n**Variants:**\n• Pub Rally: Stations are bars/pubs\n• Photo Rally: Creative photos instead of tasks\n• QR Code Rally: Clues via QR code\n\n**Tips:**\nUse landmarks as stations. The best rally has a mix of knowledge, action, and fun. End at a bar for the awards ceremony!"
-      },
-      "never_have_i_ever": { 
-        "name": "Never Have I Ever", 
-        "description": "Confessions and secrets are revealed.", 
-        "instructions": "**Preparation:**\nAll players sit in a circle. Everyone has a drink or 10 fingers/chips. Optional: Prepared statements for the start.\n\n**Gameplay:**\nTaking turns, everyone says 'Never have I ever...' and adds a statement. Anyone who has done it drinks a sip or loses a finger/chip.\n\n**Rules:**\n• Honesty is mandatory!\n• At 0 fingers: Must skip a round or take a special shot\n• Follow-up questions allowed: 'Really? Tell us!'\n• Caught lying: Penalty drink\n\n**Variants:**\n• Bachelor Party Edition: Only relationship/dating topics\n• Speed Round: 5 seconds per statement\n• Story Mode: Whoever drinks must tell the story\n\n**Tips:**\nStart harmless and escalate. The best statements are specific enough to be interesting but not too personal. Respect boundaries!"
-      },
-      "toilet_paper_dress": { 
-        "name": "Toilet Paper Wedding Dress", 
-        "description": "Create a wedding dress using only toilet paper.", 
-        "instructions": "**Preparation:**\nDivide the group into teams of 3-4 people. Each team gets 2-3 rolls of toilet paper. Optional: Tape, scissors (makes it easier).\n\n**Gameplay:**\nEach team chooses a 'model'. In 10-15 minutes, a wedding dress must be created from toilet paper. The model presents the result on a 'runway'.\n\n**Rules:**\n• Strict time limit\n• Only provided materials\n• Model may not help\n• Dress must survive a 'catwalk'\n\n**Variants:**\n• With Veil: Bonus for accessories\n• Fashion Show: With music and commentator\n• Jury Rating: Guest of honor rates\n\n**Tips:**\nWrap the dress around the body rather than just hanging! The best dresses have structure (draping, folds). Don't forget photos!"
-      },
-      "shoe_game": { 
-        "name": "Shoe Game", 
-        "description": "Bride and groom answer questions with shoes.", 
-        "instructions": "**Preparation:**\nThe couple sits back to back on chairs. Each holds one of their own shoes and one of their partner's shoes. Moderator has a list of 20-30 questions.\n\n**Gameplay:**\nThe moderator asks questions ('Who's the better cook?'). The couple raises the shoe of the person the answer applies to - without coordinating.\n\n**Rules:**\n• No coordination allowed!\n• Same answer: Kiss\n• Different answer: Brief explanation\n• 3 wrong questions: Penalty task\n\n**Variants:**\n• Guest Voting: Audience guesses along\n• Drinking Version: Different answer = both drink\n• Story Version: Tell a story with each answer\n\n**Tips:**\nMix funny ('Who snores louder?') with romantic questions ('Who said I love you first?'). Perfect for weddings!"
-      },
-      "mr_mrs_quiz": { 
-        "name": "Mr & Mrs Quiz", 
-        "description": "Who knows their partner better?", 
-        "instructions": "**Preparation:**\nCreate 15-20 questions about the couple. Both partners get signs with 'Him' and 'Her' (or names). Questions pre-agreed with one partner secretly.\n\n**Gameplay:**\nThe couple sits next to each other. For each question, both hold up the sign for whom the answer applies. The 'correct' answer was predetermined.\n\n**Rules:**\n• Show simultaneously (no cheating!)\n• Correct answer = Point\n• Wrong answer = Penalty task or shot\n• Most points wins\n\n**Variants:**\n• Guest Edition: Guests guess along\n• Relationship Timeline: Questions chronological\n• Video Version: Answers were pre-recorded\n\n**Tips:**\nMix embarrassing to romantic questions. The best questions reveal sweet or funny stories. Moderator should follow up!"
-      },
-      "newspaper_dance": { 
-        "name": "Newspaper Dance", 
-        "description": "The dance floor gets smaller and smaller!", 
-        "instructions": "**Preparation:**\nEach couple gets an unfolded newspaper as their dance floor. Prepare music. Clear space for dancing.\n\n**Gameplay:**\nAll couples dance on their newspaper. After each round, the newspaper is folded (halved). Whoever steps off the newspaper or falls is eliminated.\n\n**Rules:**\n• Both partners must stay on the newspaper\n• Lifting partner is allowed!\n• Newspaper may not be torn\n• Music stops = Fold\n\n**Variants:**\n• Freeze Dance: Freeze when music stops\n• Balloon Dance: Additionally balloon between bodies\n• Speed Version: Fold newspaper every 30 seconds\n\n**Tips:**\nThe secret: Put partner on your feet or balance on one leg! Perfect for weddings and parties."
-      },
-      "wedding_bingo": { 
-        "name": "Wedding Bingo", 
-        "description": "Bingo with wedding moments.", 
-        "instructions": "**Preparation:**\nCreate bingo cards with typical wedding scenes: 'Someone cries', 'Father of bride speech', 'Child runs through frame', 'Grandma dances'. Each guest gets a card.\n\n**Gameplay:**\nDuring the wedding, guests cross off observed scenes. Whoever completes a row calls 'Wedding Bingo!' and wins a prize.\n\n**Rules:**\n• Scenes must actually happen\n• Intentional triggering doesn't count\n• Row: horizontal, vertical, or diagonal\n• Multiple winners possible\n\n**Variants:**\n• Full House: All squares for main prize\n• Team Bingo: Tables play against each other\n• Photo Bingo: Scenes must be photographed\n\n**Tips:**\nCards should be different! Mix inevitable ('Cutting the cake') with rare moments ('Someone spills wine')."
-      },
-      "polaroid_guestbook": { 
-        "name": "Polaroid Guestbook", 
-        "description": "Instant photos as memories.", 
-        "instructions": "**Preparation:**\nProvide Polaroid camera with enough film. Guestbook/album with blank pages. Pens, glue, and decorations. Props for fun photos.\n\n**Gameplay:**\nGuests take Polaroid photos (individuals, couples, groups). Photos are glued into the guestbook and accompanied by personal greetings.\n\n**Rules:**\n• Max. 2 photos per guest (film is expensive!)\n• At least one greeting per photo\n• Use props box\n• Let photos dry before gluing\n\n**Variants:**\n• Photo Booth: Fixed station with background\n• Task Photos: Recreate specific poses\n• Video Guestbook: Additionally short videos\n\n**Tips:**\nA 'guestbook attendant' helps immensely! Instax cameras are cheaper than real Polaroids. Washi tape instead of glue for nicer decoration!"
-      },
-      "ring_warming": { 
-        "name": "Ring Warming", 
-        "description": "All guests bless the rings.", 
-        "instructions": "**Preparation:**\nThe wedding rings are placed on a ribbon or in a small pouch. During the ceremony or reception, it's passed through all guests.\n\n**Gameplay:**\nEach guest briefly holds the rings in their hand and silently gives them good wishes, blessings, or positive energy. Then they're passed on.\n\n**Rules:**\n• Silent wishes (don't speak aloud)\n• Only briefly each (10-30 seconds)\n• Don't open/try on the ring\n• At ceremony: Rings back to best man\n\n**Variants:**\n• Wish Cards: Additionally written wishes\n• Blessing Round: Everyone speaks a wish aloud\n• Photo Moment: Everyone photographed with ring\n\n**Tips:**\nFor large weddings, start in multiple rows simultaneously. A helper keeps track. Very emotional moment!"
-      },
-      "anniversary_dance": { 
-        "name": "Anniversary Dance", 
-        "description": "Married couples on the dance floor by years.", 
-        "instructions": "**Preparation:**\nDJ or moderator prepares a slow song. All married couples are invited to the dance floor.\n\n**Gameplay:**\nAll couples begin dancing. The moderator asks couples to sit down: 'Those married less than 1 year...' then 5 years, 10, 20, etc. The longest-married couple remains and gives advice.\n\n**Rules:**\n• Honest answers!\n• Only legally married couples\n• The last couple gets a prize\n• Often: Short speech or advice for the newlyweds\n\n**Variants:**\n• Relationship Dance: All couples, not just married\n• Countdown: From long marriage to short\n• Interview: Winning couple is interviewed\n\n**Tips:**\nVery emotional moment! Often grandparents are the winners. Have tissues ready. Perfect moment for photos!"
-      },
-      "kiss_marathon": { 
-        "name": "Kiss Marathon", 
-        "description": "The longest kiss of the evening!", 
-        "instructions": "**Preparation:**\nPrepare stopwatch. Guests gather. Optional: Music and cheering. The couple stands in the center.\n\n**Gameplay:**\nOn command, the couple begins kissing. Guests count the seconds or a moderator times it. Goal: Kiss as long as possible!\n\n**Rules:**\n• Lips may not separate\n• Breathing through nose is allowed\n• No breaking due to laughter\n• Guests may cheer\n\n**Variants:**\n• Couple Challenge: Multiple couples compete\n• Surprise Kiss: Guests call 'Kiss!' when glasses clink\n• Break Record: Beat previous record\n\n**Tips:**\nCheering makes it harder (laughing!). World record is over 58 hours - that's not necessary! 1-2 minutes is impressive."
-      },
-      "bride_stealing": { 
-        "name": "Bride Stealing", 
-        "description": "The bride is 'kidnapped' and must be ransomed.", 
-        "instructions": "**Preparation:**\nA group of guests secretly plans the 'kidnapping'. Target location (nearby bar) is scouted. Ransom tasks are prepared.\n\n**Gameplay:**\nThe bride is 'kidnapped' during the celebration and taken to a bar. The groom must find her and ransom her through tasks or 'payment'.\n\n**Rules:**\n• Bride must be informed or consent\n• Kidnapping not too early (after dinner)\n• Ransom: Tasks, not just money\n• Duration: Max. 1-2 hours\n\n**Variants:**\n• Bar Rally: Multiple bars as stations\n• Task Ransom: Each task = one step closer\n• Team Rescue: Groom + groomsmen\n\n**Tips:**\nAll guests should know what's happening. The bride should really consent! Best coordinated with restaurant/DJ."
-      },
-      "charades": { 
-        "name": "Charades", 
-        "description": "Pantomime guessing in teams.", 
-        "instructions": "**Preparation:**\nWrite terms on slips (movies, celebrities, actions). Form teams (3-6 people). Prepare timer (60-90 seconds per round).\n\n**Gameplay:**\nOne player draws a term and acts it out - no words, sounds, or pointing at objects. The team guesses. On hit: Next term.\n\n**Rules:**\n• No speaking, humming, or sounds\n• Don't point at objects\n• Showing syllables with fingers allowed\n• Time per round: 60-90 seconds\n• Points per guessed term\n\n**Variants:**\n• Themed Charades: Only movies, only professions\n• Speed Charades: 30 seconds per term\n• Reverse: Everyone mimes, one guesses\n\n**Tips:**\nLearn common gestures: 'Movie' (crank camera), 'Book' (open hands), 'Song' (mime singing). The crazier the performance, the funnier!"
-      },
-      "activity": { 
-        "name": "Activity", 
-        "description": "Explain, draw, or act out - versatile party game.", 
-        "instructions": "**Preparation:**\nTerms on cards (or buy Activity game). Form teams. Provide drawing materials. Timer (30-60 seconds).\n\n**Gameplay:**\nDepending on the card, the term must be explained (without related words), drawn, or acted out. The team guesses within time.\n\n**Rules:**\n• Explaining: Don't say the word\n• Drawing: No letters or numbers\n• Pantomime: No sounds\n• Per hit: 1 point\n• Wrong method: 0 points\n\n**Variants:**\n• Speed Mode: All methods in one round\n• Bachelor Party Edition: Only relationship terms\n• Drinking Activity: Wrong guess = Drink\n\n**Tips:**\nMix easy and difficult terms. The funniest moments come from difficult pantomimes. Use a large drawing surface!"
-      },
-      "taboo": { 
-        "name": "Taboo", 
-        "description": "Explain the term without using the forbidden words.", 
-        "instructions": "**Preparation:**\nPrepare Taboo cards: Each card has a term and 5 forbidden words below. Form teams. Prepare timer.\n\n**Gameplay:**\nOne player explains the term without using the taboo words or their word stems. An opponent monitors. The team guesses.\n\n**Rules:**\n• Taboo word said = Term lost\n• No 'Rhymes with...' or spelling\n• Opponent can call 'Taboo!'\n• 60 seconds per round\n• Points per guessed term\n\n**Variants:**\n• Expert Mode: 7 taboo words\n• Speed Taboo: 30 seconds\n• Themed Rounds: Only movies, only sports\n\n**Tips:**\nCircumlocutions and stories work well. 'Imagine...' is a great opener. The taboo words are the obvious ones - be creative!"
-      },
-      "cards_against": { 
-        "name": "Cards Against Humanity", 
-        "description": "The card game for horrible people.", 
-        "instructions": "**Preparation:**\nGet card deck (or print online). Each player receives 10 white cards. Black cards as a pile in the middle.\n\n**Gameplay:**\nA 'Card Czar' draws a black card and reads it aloud. Everyone else plays a white card that fits best. The Czar chooses the winner.\n\n**Rules:**\n• The Czar changes each round\n• White cards played anonymously\n• Winner keeps the black card\n• For __ & __, play two white cards\n• Czar's decision is final!\n\n**Variants:**\n• Drinking Version: Everyone except winner drinks\n• Democracy: Everyone votes\n• Haiku: Three cards into a story\n\n**Tips:**\nThe Czar determines the humor! Some like clever, others love shocking. Play with people who understand dark humor."
-      },
-      "scavenger_hunt": { 
-        "name": "Scavenger Hunt", 
-        "description": "Follow clues and solve puzzles.", 
-        "instructions": "**Preparation:**\nPlan 8-15 stations with clues. Each clue leads to the next location. At the end, a 'treasure' awaits. Form teams or play together.\n\n**Gameplay:**\nTeams start with the first clue. Each clue is a puzzle that must be solved to find the next location. Until the goal!\n\n**Rules:**\n• Follow the order\n• No help from outsiders\n• All team members must be present\n• Photos at each station as proof\n• First team at goal wins\n\n**Variants:**\n• Photo Hunt: Photo tasks instead of locations\n• QR Code Hunt: Digital clues\n• Night Hunt: With flashlights\n\n**Tips:**\nClues should be tricky but solvable. A mix of knowledge, searching, and creativity. The 'treasure' can be snacks, drinks, or a surprise!"
-      },
-      "murder_mystery": { 
-        "name": "Murder Mystery Dinner", 
-        "description": "Solve the murder case while you dine.", 
-        "instructions": "**Preparation:**\nBuy Murder Mystery set or create your own. Distribute roles to guests (in advance!). Decoration matching the theme. Plan dinner.\n\n**Gameplay:**\nDuring a multi-course dinner, everyone plays their role. Clues are revealed, suspects questioned. At the end, the murderer must be unmasked.\n\n**Rules:**\n• Everyone stays in character\n• Murderer may lie, others may not\n• Clues given at specific times\n• Discussion and questioning allowed\n• At the end: Vote\n\n**Variants:**\n• 1920s Gatsby Murder\n• Crime Dinner at restaurant\n• Outdoor: Murder at the castle\n\n**Tips:**\nDistribute roles in advance so guests can prepare. Costumes make it more authentic. Plan 3-4 hours!"
-      },
-      "kubb": { 
-        "name": "Viking Chess", 
-        "description": "The Scandinavian throwing game for all ages.", 
-        "instructions": "**Preparation:**\nMark playing field (5x8 meters). Set up five Kubbs per side. King in the middle. Distribute throwing sticks (6 pieces per team).\n\n**Gameplay:**\nTeams take turns throwing at the opponent's Kubbs. Knocked-over Kubbs are thrown into the opponent's field and set up there. Goal: Hit all Kubbs, then the King.\n\n**Rules:**\n• Throw sticks underhand (helicopter forbidden)\n• First hit all field Kubbs, then base Kubbs\n• King hit too early = lost!\n• Throwing stick must land upright\n\n**Variants:**\n• Speed Kubb: Time limit per round\n• Drinking Kubb: Hit Kubb = Opponent drinks\n• Team Tournament: Multiple teams\n\n**Tips:**\nStrategy is important: Throw Kubbs close together for chain reaction. Be careful with the King - many games were lost this way!"
-      },
-      "sack_race": { 
-        "name": "Sack Race", 
-        "description": "The classic for every family celebration.", 
-        "instructions": "**Preparation:**\nPotato sacks or large trash bags for each participant. Mark start and finish lines (10-20 meters). Obstacles optional.\n\n**Gameplay:**\nAll participants get into the sacks and hold them with both hands. On command, hop to the finish. First to arrive wins.\n\n**Rules:**\n• Hands must stay on the sack\n• Fall = Get up and continue\n• Sack may not be torn\n• No pushing\n• Crossing finish line counts\n\n**Variants:**\n• Relay Sack Race: Teams with handover\n• Obstacle Course: With slalom\n• Pair Sack Race: Two people, one sack\n\n**Tips:**\nSmaller hops for balance rather than big jumps. Play on soft ground (grass). Start children and adults separately for fairness!"
-      },
-      "egg_and_spoon": { 
-        "name": "Egg and Spoon Race", 
-        "description": "Balance the egg on the spoon to the finish.", 
-        "instructions": "**Preparation:**\nFor each participant: A spoon and a raw egg (or hard-boiled/plastic). Mark start and finish lines (15-20 meters).\n\n**Gameplay:**\nThe egg sits on the spoon, held by one hand at the handle. On command, everyone runs to the finish. If the egg drops: Back to start.\n\n**Rules:**\n• Only one hand on the spoon\n• Other hand behind the back\n• Stabilizing egg with hand = Disqualification\n• Dropped egg: Back to start\n• First intact egg at finish wins\n\n**Variants:**\n• Relay: Teams with handover\n• Obstacle Course: With curves and hurdles\n• Water Egg: Spoon with water instead of egg\n\n**Tips:**\nSlow and steady is better than fast! Don't stare at the egg - look ahead. Hard-boiled eggs for less chaos!"
-      },
-      "musical_chairs": { 
-        "name": "Musical Chairs", 
-        "description": "When the music stops, sit down fast!", 
-        "instructions": "**Preparation:**\nSet up chairs in a row or circle - always one fewer than players. Prepare music (with pause option).\n\n**Gameplay:**\nEveryone walks around the chairs while music plays. When music stops: Sit down quickly! Whoever doesn't get a chair is out. One chair is removed.\n\n**Rules:**\n• Don't touch or reserve before music stops\n• Sit immediately when music stops\n• No pushing\n• Must sit on chair (not just touch)\n• Last player with chair wins\n\n**Variants:**\n• Music Freeze: Freeze when stopped, don't sit\n• Team Version: Pairs play together\n• Dance-Off: Eliminated players keep dancing\n\n**Tips:**\nMusic controller shouldn't watch! Unpredictable pauses make it more exciting. Set up chairs stably!"
-      },
-      "kiss_challenge": { 
-        "name": "Kiss Challenge", 
-        "description": "Collect kisses from strangers - the more the better!", 
-        "instructions": "**Preparation:**\nGet white t-shirt for the guest of honor. Provide various colored lipsticks. Don't forget disinfecting wipes!\n\n**Gameplay:**\nThe guest of honor must collect kisses (lipstick prints) from strangers on the t-shirt. The group accompanies and documents everything.\n\n**Rules:**\n• Only voluntary kisses count!\n• Respectful asking is mandatory\n• Different colors = Bonus\n• No harassment!\n• Time limit: 1-2 hours\n\n**Variants:**\n• Photo Kiss: Selfie with each person\n• Signatures: Additionally collect names\n• Challenge Escalation: Find specific 'types'\n\n**Tips:**\nAlways ask friendly and respectfully. Accept 'no'! Bars and clubs work best. The t-shirt is a great souvenir!"
-      },
-      "pictionary": { "name": "Pictionary", "description": "Draw and guess terms against the clock.", "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!" },
-      "family_feud": { "name": "Family Feud", "description": "Guess the most popular survey answers.", "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!" },
-      "two_truths_lie": { "name": "Two Truths and a Lie", "description": "Guess the lie among three statements.", "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!" }
-    },
-    "themes": {
-      "80s_retro": { "name": "80s Retro Party", "description": "Neon colors, synth music and shoulder pads", "tips": "Think neon lights, disco balls and 80s hits from A-ha to Madonna!" },
-      "casino_royale": { "name": "Casino Royale", "description": "Elegant James Bond atmosphere with gaming tables", "tips": "Red carpet, poker chips, gaming tables and elegant cocktails!" },
-      "tropical_beach": { "name": "Tropical Beach", "description": "Caribbean flair with palm trees and cocktails", "tips": "Hawaiian shirts, tiki torches, coconut drinks and tropical music!" },
-      "gatsby_20s": { "name": "Gatsby / 1920s", "description": "The roaring twenties with flappers and jazz", "tips": "Art deco decor, champagne, feather boas, swing music and Charleston!" },
-      "mexican_fiesta": { "name": "Mexican Fiesta", "description": "Colorful, tacos and mariachi", "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!" }
-    }
   },
   "ideasHub": {
     "title": "Games & Ideas",
@@ -2592,13 +2861,107 @@
     "dashboard": "Agency Dashboard",
     "overview": "Overview",
     "events": "Events",
-    "contacts": "Contacts",
-    "templates": "Templates",
-    "team": "Team",
-    "files": "Files",
-    "reports": "Reports",
+    "contacts": {
+      "searchContacts": "Search contacts...",
+      "addContact": "Add Contact",
+      "importCSV": "Import CSV",
+      "name": "Name",
+      "company": "Company",
+      "phone": "Phone",
+      "email": "Email",
+      "type": "Type",
+      "rating": "Rating",
+      "lastUsed": "Last Used",
+      "tags": "Tags",
+      "notes": "Notes",
+      "priceHistory": "Price History",
+      "pastEvents": "Past Events",
+      "availability": "Availability",
+      "topRated": "Top Rated",
+      "recentlyUsed": "Recently Used",
+      "available": "Available",
+      "qualityScore": "Quality Score",
+      "specialization": "Specialization"
+    },
+    "templates": {
+      "useTemplate": "Use Template",
+      "createFromEvent": "Create from Event",
+      "timesUsed": "times used",
+      "lastUsed": "Last used",
+      "categories": {
+        "corporate": "Corporate",
+        "wedding": "Wedding",
+        "jga": "JGA / Bachelor",
+        "birthday": "Birthday",
+        "conference": "Conference",
+        "festival": "Festival",
+        "other": "Other"
+      }
+    },
+    "team": {
+      "inviteMember": "Invite Member",
+      "inviteByEmail": "Invite by Email",
+      "role": "Role",
+      "activeEvents": "Active Events",
+      "lastActive": "Last Active",
+      "workload": "Workload",
+      "deactivate": "Deactivate",
+      "activityLog": "Activity Log"
+    },
+    "files": {
+      "uploadFiles": "Upload Files",
+      "dragAndDrop": "Drag & drop files here or click to browse",
+      "storageUsed": "Storage Used",
+      "categories": {
+        "contract": "Contract",
+        "invoice": "Invoice",
+        "photo": "Photo",
+        "floorPlan": "Floor Plan",
+        "briefing": "Briefing",
+        "other": "Other"
+      },
+      "gridView": "Grid View",
+      "listView": "List View"
+    },
+    "reports": {
+      "dateRange": "Date Range",
+      "eventsPerMonth": "Events per Month",
+      "revenueTrend": "Revenue Trend",
+      "eventTypes": "Event Types Distribution",
+      "budgetAccuracy": "Budget Accuracy",
+      "exportCSV": "Export CSV",
+      "avgBudgetPerEvent": "Avg Budget/Event",
+      "clientRetention": "Client Retention"
+    },
     "calendar": "Calendar",
-    "runOfShow": "Run of Show",
+    "runOfShow": {
+      "liveTimeline": "Live Timeline",
+      "currentPhase": "Current Phase",
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "completed": "Completed",
+      "delayed": "Delayed",
+      "skipped": "Skipped",
+      "markActive": "Mark Active",
+      "markComplete": "Mark Complete",
+      "skip": "Skip",
+      "countdown": "Countdown",
+      "responsible": "Responsible",
+      "cueNotes": "Cue Notes",
+      "delayMinutes": "Delay (minutes)",
+      "multiStage": "Multi-Stage",
+      "mainStage": "Main Stage",
+      "breakoutRoom": "Breakout Room",
+      "emergency": "Emergency Protocol",
+      "incidentLog": "Incident Log",
+      "reportIncident": "Report Incident",
+      "roleView": "Role View",
+      "allRoles": "All Roles",
+      "moderator": "Moderator",
+      "technician": "Technician",
+      "catering": "Catering",
+      "crew": "Crew"
+    },
     "budgetEngine": "Budget Engine",
     "notifications": "Notifications",
     "stats": {
@@ -2650,28 +3013,6 @@
       "transport": "Transport",
       "security": "Security"
     },
-    "contacts": {
-      "searchContacts": "Search contacts...",
-      "addContact": "Add Contact",
-      "importCSV": "Import CSV",
-      "name": "Name",
-      "company": "Company",
-      "phone": "Phone",
-      "email": "Email",
-      "type": "Type",
-      "rating": "Rating",
-      "lastUsed": "Last Used",
-      "tags": "Tags",
-      "notes": "Notes",
-      "priceHistory": "Price History",
-      "pastEvents": "Past Events",
-      "availability": "Availability",
-      "topRated": "Top Rated",
-      "recentlyUsed": "Recently Used",
-      "available": "Available",
-      "qualityScore": "Quality Score",
-      "specialization": "Specialization"
-    },
     "planner": {
       "overview": "Overview",
       "timeline": "Timeline",
@@ -2709,34 +3050,6 @@
       "approvalPending": "Approval Pending",
       "approved": "Approved"
     },
-    "runOfShow": {
-      "liveTimeline": "Live Timeline",
-      "currentPhase": "Current Phase",
-      "upcoming": "Upcoming",
-      "active": "Active",
-      "completed": "Completed",
-      "delayed": "Delayed",
-      "skipped": "Skipped",
-      "markActive": "Mark Active",
-      "markComplete": "Mark Complete",
-      "skip": "Skip",
-      "countdown": "Countdown",
-      "responsible": "Responsible",
-      "cueNotes": "Cue Notes",
-      "delayMinutes": "Delay (minutes)",
-      "multiStage": "Multi-Stage",
-      "mainStage": "Main Stage",
-      "breakoutRoom": "Breakout Room",
-      "emergency": "Emergency Protocol",
-      "incidentLog": "Incident Log",
-      "reportIncident": "Report Incident",
-      "roleView": "Role View",
-      "allRoles": "All Roles",
-      "moderator": "Moderator",
-      "technician": "Technician",
-      "catering": "Catering",
-      "crew": "Crew"
-    },
     "teamRoles": {
       "owner": "Owner",
       "coOrganizer": "Co-Organizer",
@@ -2746,56 +3059,6 @@
       "agencyAdmin": "Agency Admin",
       "eventManager": "Event Manager",
       "assistant": "Assistant"
-    },
-    "team": {
-      "inviteMember": "Invite Member",
-      "inviteByEmail": "Invite by Email",
-      "role": "Role",
-      "activeEvents": "Active Events",
-      "lastActive": "Last Active",
-      "workload": "Workload",
-      "deactivate": "Deactivate",
-      "activityLog": "Activity Log"
-    },
-    "templates": {
-      "useTemplate": "Use Template",
-      "createFromEvent": "Create from Event",
-      "timesUsed": "times used",
-      "lastUsed": "Last used",
-      "categories": {
-        "corporate": "Corporate",
-        "wedding": "Wedding",
-        "jga": "JGA / Bachelor",
-        "birthday": "Birthday",
-        "conference": "Conference",
-        "festival": "Festival",
-        "other": "Other"
-      }
-    },
-    "files": {
-      "uploadFiles": "Upload Files",
-      "dragAndDrop": "Drag & drop files here or click to browse",
-      "storageUsed": "Storage Used",
-      "categories": {
-        "contract": "Contract",
-        "invoice": "Invoice",
-        "photo": "Photo",
-        "floorPlan": "Floor Plan",
-        "briefing": "Briefing",
-        "other": "Other"
-      },
-      "gridView": "Grid View",
-      "listView": "List View"
-    },
-    "reports": {
-      "dateRange": "Date Range",
-      "eventsPerMonth": "Events per Month",
-      "revenueTrend": "Revenue Trend",
-      "eventTypes": "Event Types Distribution",
-      "budgetAccuracy": "Budget Accuracy",
-      "exportCSV": "Export CSV",
-      "avgBudgetPerEvent": "Avg Budget/Event",
-      "clientRetention": "Client Retention"
     },
     "search": {
       "placeholder": "Search events, contacts, vendors...",
@@ -2923,7 +3186,7 @@
   },
   "native": {
     "home": {
-      "greeting": "Hi {{name}} \ud83d\udc4b",
+      "greeting": "Hi {{name}} 👋",
       "heroTitle": "Let's make it",
       "heroHighlight": "epic.",
       "newEvent": "New Event",
@@ -2932,7 +3195,7 @@
       "games": "Games",
       "yourEvents": "Your Events",
       "allEvents": "All",
-      "noEventsYet": "No events yet \u2014 plan your first!",
+      "noEventsYet": "No events yet — plan your first!",
       "participants": "Participants",
       "playNow": "Play now",
       "partyGamesCount": "24+ Party Games",
@@ -2999,7 +3262,7 @@
     },
     "events": {
       "title": "Events",
-      "countSummary": "{{active}} active \u00b7 {{archived}} archived",
+      "countSummary": "{{active}} active · {{archived}} archived",
       "searchPlaceholder": "Search events...",
       "tabActive": "Active",
       "tabArchived": "Archived",
@@ -3014,7 +3277,7 @@
       "subtitle": "Inspiration",
       "title": "Ideas that",
       "titleHighlight": "inspire",
-      "stats": "147 Games \u00b7 56 Themes \u00b7 For every occasion",
+      "stats": "147 Games · 56 Themes · For every occasion",
       "tabGames": "Games ({{count}})",
       "tabThemes": "Themes ({{count}})",
       "searchGames": "Search games...",
@@ -3058,25 +3321,25 @@
       "helpSupport": "Help & Support",
       "logout": "Log out",
       "unlockPremium": "Unlock Premium",
-      "unlockPremiumSub": "All Games \u00b7 Unlimited",
-      "version": "EventBliss \u00b7 Version 1.0.0",
+      "unlockPremiumSub": "All Games · Unlimited",
+      "version": "EventBliss · Version 1.0.0",
       "guest": "Guest",
       "themeDark": "Dark",
       "themeLight": "Light",
-      "themeRose": "Ros\u00e9",
-      "partyMode": "\ud83c\udf7a Party Mode (18+)",
+      "themeRose": "Rosé",
+      "partyMode": "🍺 Party Mode (18+)",
       "partyModeOn": "On",
       "partyModeOff": "Off",
-      "partyStats": "\ud83d\udcca Party Stats",
+      "partyStats": "📊 Party Stats",
       "partyStatsRounds": "{{count}} rounds",
       "partyModeTitle": "Party Mode (18+)",
       "partyModeWarning": "This mode is intended for people aged 18 and over. Drinking games can pose health risks. Please drink responsibly and look out for each other.",
       "partyModeCheckbox": "I am at least 18 years old and activate Party Mode at my own responsibility.",
       "partyModeCancel": "Cancel",
-      "partyModeActivate": "\ud83c\udf7b Activate",
+      "partyModeActivate": "🍻 Activate",
       "partyModeDisclaimer": "EventBliss assumes no liability for the consumption of alcoholic beverages.",
       "partyModeActivated": "Party Mode",
-      "partyModeActivatedSub": "activated! \ud83d\udd25",
+      "partyModeActivatedSub": "activated! 🔥",
       "partyModeActivatedDesc": "From now on you drink instead of getting punished",
       "close": "Close",
       "adminPanel": "Admin Panel",
@@ -3112,7 +3375,7 @@
         "inputPlaceholder": "Enter name...",
         "guestCount_one": "{{count}} guest",
         "guestCount_other": "{{count}} guests",
-        "noGuests": "No guests yet \u2014 you can invite them later."
+        "noGuests": "No guests yet — you can invite them later."
       },
       "stepReview": {
         "title": "All correct?",
@@ -3124,7 +3387,7 @@
         "guestsLabel": "Guests"
       },
       "stepSuccess": {
-        "title": "Event created! \ud83c\udf89",
+        "title": "Event created! 🎉",
         "subtitle": "Share the link with your friends",
         "accessCode": "Access Code",
         "link": "Link",
@@ -3132,7 +3395,7 @@
         "copied": "Copied!",
         "shareWhatsApp": "Share on WhatsApp",
         "toDashboard": "Go to Dashboard",
-        "whatsAppText": "\ud83c\udf89 You're invited!\n\nJoin \"{{name}}\" for {{honoree}}!\n\n\ud83d\udc49 {{link}}\n\ud83d\udcdd Code: {{code}}"
+        "whatsAppText": "🎉 You're invited!\n\nJoin \"{{name}}\" for {{honoree}}!\n\n👉 {{link}}\n📝 Code: {{code}}"
       },
       "buttonNext": "Next",
       "buttonCreate": "Create Event"
@@ -3151,7 +3414,7 @@
     },
     "onboarding": {
       "slide1Title": "Plan epic events",
-      "slide1Subtitle": "Bachelor parties, birthdays, group trips \u2014 all from one place.",
+      "slide1Subtitle": "Bachelor parties, birthdays, group trips — all from one place.",
       "slide2Title": "Play 24+ party games",
       "slide2Subtitle": "Taboo, Bomb, Headup, Truth or Dare, Impostor and more.",
       "slide3Title": "Split the costs",
@@ -3217,66 +3480,180 @@
   },
   "gameModes": {
     "bomb": {
-      "kategorie": { "name": "Category", "desc": "Name items in a category starting with a specific letter" },
-      "quiz": { "name": "Quiz", "desc": "Answer trivia questions under time pressure" },
-      "speed": { "name": "Speed", "desc": "Fastest answer wins — no time to think!" },
-      "alle": { "name": "All Modes", "desc": "Random mix of all categories and quiz" }
+      "kategorie": {
+        "name": "Category",
+        "desc": "Name items in a category starting with a specific letter"
+      },
+      "quiz": {
+        "name": "Quiz",
+        "desc": "Answer trivia questions under time pressure"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "Fastest answer wins — no time to think!"
+      },
+      "alle": {
+        "name": "All Modes",
+        "desc": "Random mix of all categories and quiz"
+      }
     },
     "category": {
-      "classic": { "name": "Classic", "desc": "Take turns naming items — hesitate and you lose" },
-      "rapid": { "name": "Rapid", "desc": "Quick round — only 5 seconds per answer!" },
-      "letter": { "name": "Letter", "desc": "All items must start with the same letter" }
+      "classic": {
+        "name": "Classic",
+        "desc": "Take turns naming items — hesitate and you lose"
+      },
+      "rapid": {
+        "name": "Rapid",
+        "desc": "Quick round — only 5 seconds per answer!"
+      },
+      "letter": {
+        "name": "Letter",
+        "desc": "All items must start with the same letter"
+      }
     },
     "emojiguess": {
-      "classic": { "name": "Classic", "desc": "30 seconds per round" },
-      "speed": { "name": "Speed", "desc": "10 seconds per round" },
-      "team": { "name": "Team", "desc": "Teams take turns" }
+      "classic": {
+        "name": "Classic",
+        "desc": "30 seconds per round"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "10 seconds per round"
+      },
+      "team": {
+        "name": "Team",
+        "desc": "Teams take turns"
+      }
     },
     "fakeorfact": {
-      "classic": { "name": "Classic", "desc": "True or False — one statement, you decide" },
-      "three": { "name": "Two Lies", "desc": "Three statements — find the truth!" }
+      "classic": {
+        "name": "Classic",
+        "desc": "True or False — one statement, you decide"
+      },
+      "three": {
+        "name": "Two Lies",
+        "desc": "Three statements — find the truth!"
+      }
     },
     "truthdare": {
-      "classic": { "name": "Classic", "desc": "All categories mixed" },
-      "eskalation": { "name": "Escalation", "desc": "Gets wilder every round!" },
-      "nur-wahrheit": { "name": "Truth Only", "desc": "Only questions, no dares" },
-      "nur-pflicht": { "name": "Dare Only", "desc": "Only challenges, no questions" }
+      "classic": {
+        "name": "Classic",
+        "desc": "All categories mixed"
+      },
+      "eskalation": {
+        "name": "Escalation",
+        "desc": "Gets wilder every round!"
+      },
+      "nur-wahrheit": {
+        "name": "Truth Only",
+        "desc": "Only questions, no dares"
+      },
+      "nur-pflicht": {
+        "name": "Dare Only",
+        "desc": "Only challenges, no questions"
+      }
     },
     "thisorthat": {
-      "classic": { "name": "Classic", "desc": "No time pressure, everyone votes" },
-      "speed": { "name": "Speed", "desc": "5 seconds per player!" },
-      "debatte": { "name": "Debate", "desc": "After results: 30s discussion" }
+      "classic": {
+        "name": "Classic",
+        "desc": "No time pressure, everyone votes"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "5 seconds per player!"
+      },
+      "debatte": {
+        "name": "Debate",
+        "desc": "After results: 30s discussion"
+      }
     },
     "whoami": {
-      "prominente": { "name": "Celebrities", "desc": "Famous personalities" },
-      "tiere": { "name": "Animals", "desc": "Guess the animal!" },
-      "berufe": { "name": "Jobs", "desc": "What job are you?" },
-      "filme": { "name": "Movies", "desc": "Guess film characters" }
+      "prominente": {
+        "name": "Celebrities",
+        "desc": "Famous personalities"
+      },
+      "tiere": {
+        "name": "Animals",
+        "desc": "Guess the animal!"
+      },
+      "berufe": {
+        "name": "Jobs",
+        "desc": "What job are you?"
+      },
+      "filme": {
+        "name": "Movies",
+        "desc": "Guess film characters"
+      }
     },
     "bottlespin": {
-      "fragen": { "name": "With Questions", "desc": "Bottle + questions & challenges" },
-      "nur-flasche": { "name": "Bottle Only", "desc": "Pure spin the bottle" }
+      "fragen": {
+        "name": "With Questions",
+        "desc": "Bottle + questions & challenges"
+      },
+      "nur-flasche": {
+        "name": "Bottle Only",
+        "desc": "Pure spin the bottle"
+      }
     },
     "storybuilder": {
-      "classic": { "name": "Classic", "desc": "Free text — write whatever you want" },
-      "vorgabe": { "name": "Prompt", "desc": "With sentence starters as help" },
-      "reimzeit": { "name": "Rhyme Time", "desc": "Sentences must rhyme!" }
+      "classic": {
+        "name": "Classic",
+        "desc": "Free text — write whatever you want"
+      },
+      "vorgabe": {
+        "name": "Prompt",
+        "desc": "With sentence starters as help"
+      },
+      "reimzeit": {
+        "name": "Rhyme Time",
+        "desc": "Sentences must rhyme!"
+      }
     },
     "sharedquiz": {
-      "trio": { "name": "Trio Challenge", "desc": "Question, answers & hint distributed" },
-      "chain": { "name": "Chain Quiz", "desc": "Hint chain from player to player" },
-      "allornothing": { "name": "All or Nothing", "desc": "Points only if everyone is right" }
+      "trio": {
+        "name": "Trio Challenge",
+        "desc": "Question, answers & hint distributed"
+      },
+      "chain": {
+        "name": "Chain Quiz",
+        "desc": "Hint chain from player to player"
+      },
+      "allornothing": {
+        "name": "All or Nothing",
+        "desc": "Points only if everyone is right"
+      }
     },
     "quickdraw": {
-      "classic": { "name": "Classic", "desc": "60 seconds to draw" },
-      "speed": { "name": "Speed", "desc": "Only 30 seconds!" },
-      "blind": { "name": "Blind", "desc": "Drawing becomes invisible after 5s" }
+      "classic": {
+        "name": "Classic",
+        "desc": "60 seconds to draw"
+      },
+      "speed": {
+        "name": "Speed",
+        "desc": "Only 30 seconds!"
+      },
+      "blind": {
+        "name": "Blind",
+        "desc": "Drawing becomes invisible after 5s"
+      }
     },
     "wordpress": {
-      "kategorie": { "name": "Category Filter", "desc": "Only tap words from one category!" },
-      "stroop": { "name": "Color Word Chaos", "desc": "Color must match the word" },
-      "verboten": { "name": "Forbidden Word", "desc": "Tap everything EXCEPT the forbidden word" },
-      "speed-rush": { "name": "Speed Rush", "desc": "Words get faster and faster!" }
+      "kategorie": {
+        "name": "Category Filter",
+        "desc": "Only tap words from one category!"
+      },
+      "stroop": {
+        "name": "Color Word Chaos",
+        "desc": "Color must match the word"
+      },
+      "verboten": {
+        "name": "Forbidden Word",
+        "desc": "Tap everything EXCEPT the forbidden word"
+      },
+      "speed-rush": {
+        "name": "Speed Rush",
+        "desc": "Words get faster and faster!"
+      }
     }
   },
   "woIstWas": {
@@ -3298,8 +3675,26 @@
     }
   },
   "nativeDashboard": {
-    "eventTypes": { "bachelor": "Bachelor Party", "bachelorette": "Bachelorette Party", "birthday": "Birthday", "wedding": "Wedding", "other": "Event" },
-    "tabs": { "overview": "Overview", "guests": "Guests", "schedule": "Schedule", "expenses": "Expenses", "marketplace": "Marketplace", "services": "Services", "form": "Form", "responses": "Responses", "messages": "Messages", "ai": "AI", "settings": "Settings" },
+    "eventTypes": {
+      "bachelor": "Bachelor Party",
+      "bachelorette": "Bachelorette Party",
+      "birthday": "Birthday",
+      "wedding": "Wedding",
+      "other": "Event"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "guests": "Guests",
+      "schedule": "Schedule",
+      "expenses": "Expenses",
+      "marketplace": "Marketplace",
+      "services": "Services",
+      "form": "Form",
+      "responses": "Responses",
+      "messages": "Messages",
+      "ai": "AI",
+      "settings": "Settings"
+    },
     "honoree": "Guest of Honor",
     "noDate": "No date set",
     "participants": "Participants",
@@ -3310,18 +3705,62 @@
     "notFound": "Event not found",
     "notFoundDesc": "The event could not be loaded.",
     "back": "Back",
-    "countdown": { "today": "Today!", "tomorrow": "Tomorrow!", "inDays": "In {{count}} days" },
+    "countdown": {
+      "today": "Today!",
+      "tomorrow": "Tomorrow!",
+      "inDays": "In {{count}} days"
+    },
     "confirmedOf": "{{yes}} of {{total}} confirmed",
-    "quickActions": { "inviteGuests": "Invite Guests", "planActivity": "Plan Activity", "addExpense": "Add Expense", "aiAssistant": "AI Assistant", "browseMarketplace": "Marketplace" },
+    "quickActions": {
+      "inviteGuests": "Invite Guests",
+      "planActivity": "Plan Activity",
+      "addExpense": "Add Expense",
+      "aiAssistant": "AI Assistant",
+      "browseMarketplace": "Marketplace"
+    },
     "recentActivity": "Recent Activity",
     "noActivity": "No activity yet",
-    "activity": { "rsvpConfirmed": "{{name}} confirmed", "rsvpDeclined": "{{name}} declined", "surveyResponse": "{{name}} voted", "expenseCreated": "Expense: {{title}}", "budgetUpdated": "Budget updated", "guestInvited": "{{name}} invited", "scheduleUpdated": "Schedule updated" },
-    "timeAgo": { "justNow": "just now", "minutesAgo": "{{count}} min ago", "hoursAgo": "{{count}} hr ago", "yesterday": "yesterday", "daysAgo": "{{count}} days ago" },
-    "status": { "active": "Active", "planning": "Planning", "draft": "Draft" },
-    "services": { "openMarketplace": "Open Marketplace", "openMarketplaceSub": "Discover & book services for your event", "bookedServices": "Booked Services", "noBookings": "No services booked yet", "details": "Details", "cancel": "Cancel", "statusPending": "Pending", "statusConfirmed": "Confirmed", "statusCompleted": "Completed", "statusCancelled": "Cancelled" }
+    "activity": {
+      "rsvpConfirmed": "{{name}} confirmed",
+      "rsvpDeclined": "{{name}} declined",
+      "surveyResponse": "{{name}} voted",
+      "expenseCreated": "Expense: {{title}}",
+      "budgetUpdated": "Budget updated",
+      "guestInvited": "{{name}} invited",
+      "scheduleUpdated": "Schedule updated"
+    },
+    "timeAgo": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} hr ago",
+      "yesterday": "yesterday",
+      "daysAgo": "{{count}} days ago"
+    },
+    "status": {
+      "active": "Active",
+      "planning": "Planning",
+      "draft": "Draft"
+    },
+    "services": {
+      "openMarketplace": "Open Marketplace",
+      "openMarketplaceSub": "Discover & book services for your event",
+      "bookedServices": "Booked Services",
+      "noBookings": "No services booked yet",
+      "details": "Details",
+      "cancel": "Cancel",
+      "statusPending": "Pending",
+      "statusConfirmed": "Confirmed",
+      "statusCompleted": "Completed",
+      "statusCancelled": "Cancelled"
+    }
   },
   "nativeGuests": {
-    "status": { "confirmed": "Confirmed", "maybe": "Maybe", "declined": "Declined", "invited": "Invited" },
+    "status": {
+      "confirmed": "Confirmed",
+      "maybe": "Maybe",
+      "declined": "Declined",
+      "invited": "Invited"
+    },
     "organizer": "Organizer",
     "guestRole": "Guest",
     "searchPlaceholder": "Search guests...",
@@ -3337,16 +3776,55 @@
     "host": "Host"
   },
   "nativeSchedule": {
-    "categories": { "food": "Food & Drinks", "activity": "Activity", "transport": "Transport", "party": "Party", "sightseeing": "Sightseeing", "accommodation": "Accommodation", "relaxation": "Relaxation", "other": "Other" },
+    "categories": {
+      "food": "Food & Drinks",
+      "activity": "Activity",
+      "transport": "Transport",
+      "party": "Party",
+      "sightseeing": "Sightseeing",
+      "accommodation": "Accommodation",
+      "relaxation": "Relaxation",
+      "other": "Other"
+    },
     "noActivities": "No activities planned yet",
     "noActivitiesDesc": "Plan the perfect schedule for your event",
     "addActivity": "Add Activity",
     "day": "Day {{num}}",
-    "form": { "title": "Title", "time": "Time", "category": "Category", "notes": "Notes", "location": "Location", "duration": "Duration", "cost": "Cost", "responsible": "Responsible", "add": "Add", "titlePlaceholder": "e.g. Breakfast at hotel" }
+    "form": {
+      "title": "Title",
+      "time": "Time",
+      "category": "Category",
+      "notes": "Notes",
+      "location": "Location",
+      "duration": "Duration",
+      "cost": "Cost",
+      "responsible": "Responsible",
+      "add": "Add",
+      "titlePlaceholder": "e.g. Breakfast at hotel"
+    }
   },
-  "nativeJoinRoom": { "title": "Join Room", "subtitle": "Enter the 6-digit code", "hint": "Ask the host for the 6-digit room code", "join": "Join", "invalidCode": "The code must be 6 characters long." },
-  "nativeFab": { "createEvent": "Create Event", "joinEvent": "Join Event", "createRoom": "Create Room", "joinRoom": "Join Room", "quickGame": "Quick Game" },
-  "nativeTabs": { "home": "Home", "events": "Events", "play": "Play", "ideas": "Ideas", "market": "Market", "profile": "Profile" },
+  "nativeJoinRoom": {
+    "title": "Join Room",
+    "subtitle": "Enter the 6-digit code",
+    "hint": "Ask the host for the 6-digit room code",
+    "join": "Join",
+    "invalidCode": "The code must be 6 characters long."
+  },
+  "nativeFab": {
+    "createEvent": "Create Event",
+    "joinEvent": "Join Event",
+    "createRoom": "Create Room",
+    "joinRoom": "Join Room",
+    "quickGame": "Quick Game"
+  },
+  "nativeTabs": {
+    "home": "Home",
+    "events": "Events",
+    "play": "Play",
+    "ideas": "Ideas",
+    "market": "Market",
+    "profile": "Profile"
+  },
   "nativeDrinks": {
     "title": "Party Stats",
     "yourRank": "Your party rank tonight",
@@ -3356,53 +3834,258 @@
     "resetSession": "Reset Session",
     "confirmReset": "Yes, reset",
     "cancel": "Cancel",
-    "ranks": { "legend": "Legend", "champion": "Champion", "partyAnimal": "Party Animal", "pro": "Pro", "enthusiast": "Enthusiast", "beginner": "Beginner", "sober": "Sober" }
+    "ranks": {
+      "legend": "Legend",
+      "champion": "Champion",
+      "partyAnimal": "Party Animal",
+      "pro": "Pro",
+      "enthusiast": "Enthusiast",
+      "beginner": "Beginner",
+      "sober": "Sober"
+    }
   },
   "gameRules": {
     "howToPlay": "How to Play",
     "understood": "Got it — let's go!",
-    "bomb": { "title": "Ticking Bomb", "tagline": "Answer questions before the bomb explodes — pure adrenaline!", "step1": "The bomb ticks and gets passed to a player", "step2": "Answer the question correctly before time runs out", "step3": "Wrong answer or too slow? BOOM — you're out!", "step4": "Last player standing wins the round", "tip": "Don't overthink it — the bomb waits for no one!" },
-    "taboo": { "title": "Taboo", "tagline": "Describe words — but watch out, certain words are absolutely TABOO!", "step1": "You see a word and 5 forbidden words", "step2": "Describe the word to your team — WITHOUT using the taboo words", "step3": "Your team must guess before time runs out", "step4": "Each correct guess earns a point", "tip": "Creativity beats logic — think outside the box!" },
-    "headup": { "title": "Heads Up", "tagline": "Phone on forehead, friends describe, you guess — sounds easy? Think again!", "step1": "Hold your phone to your forehead — you can't see the word", "step2": "Your friends describe the word to you", "step3": "Guessed right? Tilt phone forward! Wrong? Tilt back!", "step4": "Get as many words as possible before time's up", "tip": "Don't drop your phone — happens more often than you'd think!" },
-    "category": { "title": "Speed Category", "tagline": "Name things in a category — hesitate and you're out! Speed counts!", "step1": "A category is shown (e.g., \"Animals starting with A\")", "step2": "Each player takes turns naming a matching item", "step3": "Can't think of one or too slow? You get a point", "step4": "Fewest points wins", "tip": "Rare answers impress — \"Axolotl\" beats \"Ant\"!" },
-    "emojiguess": { "title": "Emoji Guess", "tagline": "Decode emojis, guess the answer — looks easy but it's not!", "step1": "You're shown emojis that represent something", "step2": "Guess which movie, song, or celeb the emojis show", "step3": "The faster you guess, the more points you get", "tip": "Think blockbusters — the obvious answer is often right!" },
-    "fakeorfact": { "title": "Fake or Fact", "tagline": "Is that really true? Spot the fake facts — trust nothing!", "step1": "A statement is shown to you", "step2": "Decide: Is it TRUE or FAKE?", "step3": "After your answer, you'll see the explanation", "step4": "Most correct answers wins", "tip": "The craziest facts are usually true!" },
-    "truthdare": { "title": "Truth or Dare", "tagline": "The party classic — answer honestly or do an embarrassing dare? Your choice!", "step1": "Choose: Truth or Dare?", "step2": "Truth: Answer the question honestly (no matter how embarrassing!)", "step3": "Dare: Complete the challenge (no excuses!)", "step4": "Then it's the next player's turn", "tip": "Dares get bolder with every drink — we didn't say that!" },
-    "thisorthat": { "title": "This or That", "tagline": "Pizza or Pasta? Netflix or Cinema? Tough choices ahead!", "step1": "Two options are shown", "step2": "Each player picks one option", "step3": "Compare answers — who's in the majority?", "tip": "There are no wrong answers — just heated debates!" },
-    "whoami": { "title": "Who Am I?", "tagline": "Ask yes/no questions and figure out who you are — Sherlock would be proud!", "step1": "Each player gets a secret person/character assigned", "step2": "Ask yes/no questions: \"Am I real?\" \"Am I famous?\"", "step3": "Combine the clues and guess who you are", "step4": "First to guess correctly wins", "tip": "Start broad — \"Am I a woman?\" eliminates 50%!" },
-    "bottlespin": { "title": "Spin the Bottle", "tagline": "The bottle spins... who will it point to? Fun and suspense guaranteed!", "step1": "The bottle is spun", "step2": "Whoever it points to must answer a question or do a task", "step3": "Then the next player spins", "tip": "Luck decides — no tactics can help you here!" },
-    "storybuilder": { "title": "Story Builder", "tagline": "Write the craziest story together — creativity without limits!", "step1": "A story starter sets the scene", "step2": "Each player adds one sentence in turns", "step3": "At the end, the complete story is read aloud", "tip": "The more absurd your twist, the funnier the story!" },
-    "sharedquiz": { "title": "Shared Quiz", "tagline": "Team quiz battle — who knows more? Show what you've got!", "step1": "A question is shown to all players at once", "step2": "Everyone picks their answer — no conferring!", "step3": "The correct answer is revealed", "step4": "Most correct answers wins", "tip": "Sometimes the most unlikely answer is the right one!" },
-    "quickdraw": { "title": "Quick Draw", "tagline": "Draw fast, guess faster — Picasso would be proud (or horrified)!", "step1": "You're shown a word to draw", "step2": "Draw as fast as possible — stick figures are fine!", "step3": "Others must guess your word", "step4": "Faster guesses = more points for everyone", "tip": "Forget art class — speed is everything here!" },
-    "splitquiz": { "title": "Split Quiz", "tagline": "Split knowledge — everyone sees different answers, but only one is right!", "step1": "A question is shown", "step2": "Each player sees different answer options", "step3": "Discuss which answer could be correct", "step4": "Only the one with the right answer scores", "tip": "Trust your gut — or the nerd in your group!" },
-    "hochstapler": { "title": "The Impostor", "tagline": "One person has no clue — find the impostor! Or be one yourself...", "step1": "All players get a secret word — ONE gets a different one", "step2": "Each player describes the word with a single term", "step3": "Everyone votes: Who is the impostor?", "step4": "Impostor caught? Others win. Impostor survives? They win!", "tip": "As the impostor: Be vague enough to blend in, but specific enough to not seem suspicious!" },
-    "wo-ist-was": { "title": "Where Is It?", "tagline": "5 different modes — from Memory to Speed to Street View! Geography & observation!", "step1": "Choose one of 5 modes: Memory, Speed, Differences, Map or Street View", "step2": "Memory: Memorize the emoji scene, then answer questions about it", "step3": "Speed: The scene stays visible — who finds the answer fastest?", "step4": "Map: Find cities and countries on the world map — closer = more points", "step5": "Street View: You see a photo — guess which city you're in!", "tip": "In Map mode: Europe is smaller than you think — and Australia is bigger!" },
-    "flaschendrehen": { "title": "Spin the Bottle", "tagline": "The classic party game! Who will the bottle choose?", "step1": "The bottle spins in the middle", "step2": "Whoever it points to is up", "step3": "Answer the question or complete the dare", "tip": "Karma spins the bottle — be nice to your fellow players!" },
-    "drueck-das-wort": { "title": "Press the Word", "tagline": "Find the right word under time pressure — one wrong tap and it gets tight!", "step1": "You're shown a target word", "step2": "Tap the correct word from the options — fast!", "step3": "Correct? Next word! Wrong? Points deducted!", "step4": "Most correct words at the end wins", "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!" }
+    "bomb": {
+      "title": "Ticking Bomb",
+      "tagline": "Answer questions before the bomb explodes — pure adrenaline!",
+      "step1": "The bomb ticks and gets passed to a player",
+      "step2": "Answer the question correctly before time runs out",
+      "step3": "Wrong answer or too slow? BOOM — you're out!",
+      "step4": "Last player standing wins the round",
+      "tip": "Don't overthink it — the bomb waits for no one!"
+    },
+    "taboo": {
+      "title": "Taboo",
+      "tagline": "Describe words — but watch out, certain words are absolutely TABOO!",
+      "step1": "You see a word and 5 forbidden words",
+      "step2": "Describe the word to your team — WITHOUT using the taboo words",
+      "step3": "Your team must guess before time runs out",
+      "step4": "Each correct guess earns a point",
+      "tip": "Creativity beats logic — think outside the box!"
+    },
+    "headup": {
+      "title": "Heads Up",
+      "tagline": "Phone on forehead, friends describe, you guess — sounds easy? Think again!",
+      "step1": "Hold your phone to your forehead — you can't see the word",
+      "step2": "Your friends describe the word to you",
+      "step3": "Guessed right? Tilt phone forward! Wrong? Tilt back!",
+      "step4": "Get as many words as possible before time's up",
+      "tip": "Don't drop your phone — happens more often than you'd think!"
+    },
+    "category": {
+      "title": "Speed Category",
+      "tagline": "Name things in a category — hesitate and you're out! Speed counts!",
+      "step1": "A category is shown (e.g., \"Animals starting with A\")",
+      "step2": "Each player takes turns naming a matching item",
+      "step3": "Can't think of one or too slow? You get a point",
+      "step4": "Fewest points wins",
+      "tip": "Rare answers impress — \"Axolotl\" beats \"Ant\"!"
+    },
+    "emojiguess": {
+      "title": "Emoji Guess",
+      "tagline": "Decode emojis, guess the answer — looks easy but it's not!",
+      "step1": "You're shown emojis that represent something",
+      "step2": "Guess which movie, song, or celeb the emojis show",
+      "step3": "The faster you guess, the more points you get",
+      "tip": "Think blockbusters — the obvious answer is often right!"
+    },
+    "fakeorfact": {
+      "title": "Fake or Fact",
+      "tagline": "Is that really true? Spot the fake facts — trust nothing!",
+      "step1": "A statement is shown to you",
+      "step2": "Decide: Is it TRUE or FAKE?",
+      "step3": "After your answer, you'll see the explanation",
+      "step4": "Most correct answers wins",
+      "tip": "The craziest facts are usually true!"
+    },
+    "truthdare": {
+      "title": "Truth or Dare",
+      "tagline": "The party classic — answer honestly or do an embarrassing dare? Your choice!",
+      "step1": "Choose: Truth or Dare?",
+      "step2": "Truth: Answer the question honestly (no matter how embarrassing!)",
+      "step3": "Dare: Complete the challenge (no excuses!)",
+      "step4": "Then it's the next player's turn",
+      "tip": "Dares get bolder with every drink — we didn't say that!"
+    },
+    "thisorthat": {
+      "title": "This or That",
+      "tagline": "Pizza or Pasta? Netflix or Cinema? Tough choices ahead!",
+      "step1": "Two options are shown",
+      "step2": "Each player picks one option",
+      "step3": "Compare answers — who's in the majority?",
+      "tip": "There are no wrong answers — just heated debates!"
+    },
+    "whoami": {
+      "title": "Who Am I?",
+      "tagline": "Ask yes/no questions and figure out who you are — Sherlock would be proud!",
+      "step1": "Each player gets a secret person/character assigned",
+      "step2": "Ask yes/no questions: \"Am I real?\" \"Am I famous?\"",
+      "step3": "Combine the clues and guess who you are",
+      "step4": "First to guess correctly wins",
+      "tip": "Start broad — \"Am I a woman?\" eliminates 50%!"
+    },
+    "bottlespin": {
+      "title": "Spin the Bottle",
+      "tagline": "The bottle spins... who will it point to? Fun and suspense guaranteed!",
+      "step1": "The bottle is spun",
+      "step2": "Whoever it points to must answer a question or do a task",
+      "step3": "Then the next player spins",
+      "tip": "Luck decides — no tactics can help you here!"
+    },
+    "storybuilder": {
+      "title": "Story Builder",
+      "tagline": "Write the craziest story together — creativity without limits!",
+      "step1": "A story starter sets the scene",
+      "step2": "Each player adds one sentence in turns",
+      "step3": "At the end, the complete story is read aloud",
+      "tip": "The more absurd your twist, the funnier the story!"
+    },
+    "sharedquiz": {
+      "title": "Shared Quiz",
+      "tagline": "Team quiz battle — who knows more? Show what you've got!",
+      "step1": "A question is shown to all players at once",
+      "step2": "Everyone picks their answer — no conferring!",
+      "step3": "The correct answer is revealed",
+      "step4": "Most correct answers wins",
+      "tip": "Sometimes the most unlikely answer is the right one!"
+    },
+    "quickdraw": {
+      "title": "Quick Draw",
+      "tagline": "Draw fast, guess faster — Picasso would be proud (or horrified)!",
+      "step1": "You're shown a word to draw",
+      "step2": "Draw as fast as possible — stick figures are fine!",
+      "step3": "Others must guess your word",
+      "step4": "Faster guesses = more points for everyone",
+      "tip": "Forget art class — speed is everything here!"
+    },
+    "splitquiz": {
+      "title": "Split Quiz",
+      "tagline": "Split knowledge — everyone sees different answers, but only one is right!",
+      "step1": "A question is shown",
+      "step2": "Each player sees different answer options",
+      "step3": "Discuss which answer could be correct",
+      "step4": "Only the one with the right answer scores",
+      "tip": "Trust your gut — or the nerd in your group!"
+    },
+    "hochstapler": {
+      "title": "The Impostor",
+      "tagline": "One person has no clue — find the impostor! Or be one yourself...",
+      "step1": "All players get a secret word — ONE gets a different one",
+      "step2": "Each player describes the word with a single term",
+      "step3": "Everyone votes: Who is the impostor?",
+      "step4": "Impostor caught? Others win. Impostor survives? They win!",
+      "tip": "As the impostor: Be vague enough to blend in, but specific enough to not seem suspicious!"
+    },
+    "wo-ist-was": {
+      "title": "Where Is It?",
+      "tagline": "5 different modes — from Memory to Speed to Street View! Geography & observation!",
+      "step1": "Choose one of 5 modes: Memory, Speed, Differences, Map or Street View",
+      "step2": "Memory: Memorize the emoji scene, then answer questions about it",
+      "step3": "Speed: The scene stays visible — who finds the answer fastest?",
+      "step4": "Map: Find cities and countries on the world map — closer = more points",
+      "step5": "Street View: You see a photo — guess which city you're in!",
+      "tip": "In Map mode: Europe is smaller than you think — and Australia is bigger!"
+    },
+    "flaschendrehen": {
+      "title": "Spin the Bottle",
+      "tagline": "The classic party game! Who will the bottle choose?",
+      "step1": "The bottle spins in the middle",
+      "step2": "Whoever it points to is up",
+      "step3": "Answer the question or complete the dare",
+      "tip": "Karma spins the bottle — be nice to your fellow players!"
+    },
+    "drueck-das-wort": {
+      "title": "Press the Word",
+      "tagline": "Find the right word under time pressure — one wrong tap and it gets tight!",
+      "step1": "You're shown a target word",
+      "step2": "Tap the correct word from the options — fast!",
+      "step3": "Correct? Next word! Wrong? Points deducted!",
+      "step4": "Most correct words at the end wins",
+      "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    }
   },
   "nativeAdmin": {
     "title": "Admin Panel",
     "areas": "{{count}} Areas",
     "cards": {
-      "stats": { "label": "Dashboard", "desc": "Users, Events, Revenue" },
-      "games": { "label": "Games Content", "desc": "Questions & Content" },
-      "users": { "label": "Users", "desc": "Roles & Passwords" },
-      "credits": { "label": "AI Credits", "desc": "Limits & Adjustments" },
-      "subscriptions": { "label": "Subscriptions", "desc": "Manage Plans" },
-      "vouchers": { "label": "Vouchers", "desc": "Codes & Discounts" },
-      "affiliates": { "label": "Affiliates", "desc": "Partner Program" },
-      "commissions": { "label": "Commissions", "desc": "Status & Payout" },
-      "payouts": { "label": "Payouts", "desc": "Pending & History" },
-      "analytics": { "label": "Agency Analytics", "desc": "Interactions" },
-      "agencies": { "label": "Agency Affiliates", "desc": "Multi-Agency" },
-      "settings": { "label": "Plan Settings", "desc": "Features & Pricing" }
+      "stats": {
+        "label": "Dashboard",
+        "desc": "Users, Events, Revenue"
+      },
+      "games": {
+        "label": "Games Content",
+        "desc": "Questions & Content"
+      },
+      "users": {
+        "label": "Users",
+        "desc": "Roles & Passwords"
+      },
+      "credits": {
+        "label": "AI Credits",
+        "desc": "Limits & Adjustments"
+      },
+      "subscriptions": {
+        "label": "Subscriptions",
+        "desc": "Manage Plans"
+      },
+      "vouchers": {
+        "label": "Vouchers",
+        "desc": "Codes & Discounts"
+      },
+      "affiliates": {
+        "label": "Affiliates",
+        "desc": "Partner Program"
+      },
+      "commissions": {
+        "label": "Commissions",
+        "desc": "Status & Payout"
+      },
+      "payouts": {
+        "label": "Payouts",
+        "desc": "Pending & History"
+      },
+      "analytics": {
+        "label": "Agency Analytics",
+        "desc": "Interactions"
+      },
+      "agencies": {
+        "label": "Agency Affiliates",
+        "desc": "Multi-Agency"
+      },
+      "settings": {
+        "label": "Plan Settings",
+        "desc": "Features & Pricing"
+      }
     }
   },
   "responseValues": {
-    "destination": { "deCity": "German City", "barcelona": "Barcelona", "lisbon": "Lisbon", "prague": "Prague", "budapest": "Budapest", "london": "London", "rome": "Rome", "scotland": "Scotland", "naples": "Naples" },
-    "duration": { "day": "Day Trip", "weekend": "Weekend" },
-    "travel": { "daytrip": "Day Trip", "oneNight": "1 Night", "twoNights": "2 Nights" },
-    "fitness": { "chill": "Relaxed", "normal": "Normal", "sporty": "Sporty" },
+    "destination": {
+      "deCity": "German City",
+      "barcelona": "Barcelona",
+      "lisbon": "Lisbon",
+      "prague": "Prague",
+      "budapest": "Budapest",
+      "london": "London",
+      "rome": "Rome",
+      "scotland": "Scotland",
+      "naples": "Naples"
+    },
+    "duration": {
+      "day": "Day Trip",
+      "weekend": "Weekend"
+    },
+    "travel": {
+      "daytrip": "Day Trip",
+      "oneNight": "1 Night",
+      "twoNights": "2 Nights"
+    },
+    "fitness": {
+      "chill": "Relaxed",
+      "normal": "Normal",
+      "sporty": "Sporty"
+    },
     "either": "Either",
     "yes": "Yes",
     "no": "No"
@@ -3499,17 +4182,40 @@
     "cancel": "Cancel",
     "cancelConfirm": "Really cancel this booking?",
     "writeReview": "Write review",
-    "filters": { "all": "All", "upcoming": "Upcoming", "completed": "Completed", "cancelled": "Cancelled" },
-    "status": { "pending": "Pending", "confirmed": "Confirmed", "completed": "Completed", "cancelled": "Cancelled" },
+    "filters": {
+      "all": "All",
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
     "participants": "Participants"
   },
   "agencyDashboard": {
     "nav": {
-      "dashboard": "Overview", "events": "Events", "contacts": "Contacts", "templates": "Templates",
-      "team": "Team", "runofshow": "Run of Show", "budgetengine": "Budget Engine", "files": "Files",
-      "reports": "Reports", "marketplace": "Marketplace", "bookings": "Bookings", "guides": "Guides",
-      "bookingCalendar": "Booking Calendar", "calendarSync": "Calendar Sync", "stripe": "Payments",
-      "marketplaceSettings": "Packages & Settings", "calendar": "Calendar", "settings": "Settings"
+      "dashboard": "Overview",
+      "events": "Events",
+      "contacts": "Contacts",
+      "templates": "Templates",
+      "team": "Team",
+      "runofshow": "Run of Show",
+      "budgetengine": "Budget Engine",
+      "files": "Files",
+      "reports": "Reports",
+      "marketplace": "Marketplace",
+      "bookings": "Bookings",
+      "guides": "Guides",
+      "bookingCalendar": "Booking Calendar",
+      "calendarSync": "Calendar Sync",
+      "stripe": "Payments",
+      "marketplaceSettings": "Packages & Settings",
+      "calendar": "Calendar",
+      "settings": "Settings"
     }
   },
   "bookingsManager": {
@@ -3521,8 +4227,19 @@
     "complete": "Complete",
     "cancelBooking": "Cancel",
     "noBookings": "No bookings yet",
-    "status": { "new": "New", "confirmed": "Confirmed", "completed": "Completed", "cancelled": "Cancelled" },
-    "filters": { "all": "All", "new": "New", "confirmed": "Confirmed", "completed": "Completed", "cancelled": "Cancelled" }
+    "status": {
+      "new": "New",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "filters": {
+      "all": "All",
+      "new": "New",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   },
   "guideManager": {
     "title": "Guide Manager",
@@ -3533,33 +4250,74 @@
     "editGuide": "Edit Guide",
     "deleteGuide": "Delete Guide",
     "deleteConfirm": "Really delete guide \"{{name}}\"?",
-    "name": "Name", "email": "Email", "phone": "Phone",
-    "specialties": "Specialties", "maxDaily": "Max. Bookings/Day",
-    "color": "Color", "notes": "Notes",
-    "active": "Active", "inactive": "Inactive",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "specialties": "Specialties",
+    "maxDaily": "Max. Bookings/Day",
+    "color": "Color",
+    "notes": "Notes",
+    "active": "Active",
+    "inactive": "Inactive",
     "noGuides": "No guides created yet"
   },
   "bookingCalendar": {
     "title": "Booking Calendar",
     "today": "Today",
-    "dayNames": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    "monthNames": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "dayNames": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "monthNames": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
     "bookingsTotal": "{{count}} booking(s) total",
     "noBookingsDay": "No bookings on this day",
     "exportICal": "Export as iCal",
     "allServices": "All Services",
-    "status": { "pending": "Pending", "confirmed": "Confirmed", "completed": "Completed", "cancelled": "Cancelled" }
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   },
   "calendarSync": {
     "title": "Subscribe to Calendar",
     "description": "Subscribe to your booking calendar in Outlook, Google Calendar or Apple Calendar.",
-    "agencyCalendar": "Agency Calendar", "guideCalendar": "Guide Calendar",
-    "scope": { "all": "All Bookings", "confirmed": "Confirmed only", "guide": "Guide-specific" },
-    "copy": "Copy", "copied": "Copied!",
-    "openOutlook": "Open in Outlook", "openGoogle": "Google Calendar", "openApple": "Apple Calendar",
-    "regenerate": "Regenerate Token", "regenerateConfirm": "Invalidate old token and create new one?",
+    "agencyCalendar": "Agency Calendar",
+    "guideCalendar": "Guide Calendar",
+    "scope": {
+      "all": "All Bookings",
+      "confirmed": "Confirmed only",
+      "guide": "Guide-specific"
+    },
+    "copy": "Copy",
+    "copied": "Copied!",
+    "openOutlook": "Open in Outlook",
+    "openGoogle": "Google Calendar",
+    "openApple": "Apple Calendar",
+    "regenerate": "Regenerate Token",
+    "regenerateConfirm": "Invalidate old token and create new one?",
     "createToken": "Create new token",
-    "lastSync": "Last synchronization", "never": "Never",
+    "lastSync": "Last synchronization",
+    "never": "Never",
     "noTokens": "No calendar tokens created yet"
   },
   "availabilityEditor": {
@@ -3575,7 +4333,15 @@
     "unblock": "Unblock",
     "editAfterSave": "Availability can be configured after saving.",
     "editButton": "Edit Availability",
-    "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    "days": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
   },
   "eventServices": {
     "bookedServices": "Booked Services",
@@ -3585,5 +4351,232 @@
     "browseHint": "Find the perfect service provider for your event",
     "bookForEvent": "Book for event",
     "openMarketplace": "Open Marketplace"
+  },
+  "agencyPricing": {
+    "hero": {
+      "badge": "🔥 LAUNCH OFFER: SAVE 50% FOREVER",
+      "titleLine1": "Reach",
+      "titleHighlight": "100,000+ event planners",
+      "titleLine2": "with zero marketing budget.",
+      "subtitle": "EventBliss attracts new users every day through games, surveys and TV screens. As a partner agency, you're right where they are planning – ready to book.",
+      "trustNoFee": "No setup fee",
+      "trustCancel": "Cancel anytime",
+      "trustInstant": "Live instantly"
+    },
+    "stats": {
+      "games": "Live Party Games",
+      "ideas": "Event Ideas & Themes",
+      "agencies": "Partner Agencies",
+      "languages": "Languages worldwide"
+    },
+    "loops": {
+      "badge": "VIRAL GROWTH ENGINE",
+      "titleLine1": "3 viral loops bring you",
+      "titleHighlight": "customers on autopilot",
+      "subtitle": "While you work, EventBliss grows for you.",
+      "game": {
+        "title": "Game Loop",
+        "factor": "K-factor 1.5-3.0",
+        "desc": "1 host plays → 5-30 guests scan QR → 2-5 download the app"
+      },
+      "survey": {
+        "title": "Survey Loop",
+        "factor": "K-factor 5-20",
+        "desc": "1 survey link → 20-100 participants → 5-15 discover EventBliss"
+      },
+      "tv": {
+        "title": "TV Loop",
+        "factor": "K-factor 10-50",
+        "desc": "1 TV screen at the party → 50-200 see brand → 10-30 scan QR"
+      }
+    },
+    "spotlight": {
+      "badge": "FLAGSHIP FEATURES",
+      "titleLine1": "The tools that make your agency",
+      "titleHighlight": "irresistible",
+      "titleLine2": "",
+      "subtitle": "Two features usually only found in enterprise SaaS for €500+/month – here from €49.",
+      "inclusiveLabel": "Included from",
+      "ai": {
+        "headline": "Your own AI sales agent",
+        "tagline": "On duty 24/7",
+        "desc": "The EventBliss AI Planner proactively recommends your services to matching events – based on budget, event type, guest count and location. Your offers land where they're needed, without you lifting a finger.",
+        "b1": "Smart matches across 7 AI assistant types",
+        "b2": "Recommendations directly in users' event dashboards",
+        "b3": "Self-learning: the more bookings, the better the suggestions",
+        "b4": "In all 10 languages – same quality worldwide",
+        "tier": "Enterprise"
+      },
+      "portal": {
+        "headline": "Streamlined booking portal",
+        "tagline": "Everything in one place",
+        "desc": "A central dashboard for all inquiries, confirmations, payments and communication. No lost emails, no double bookings, no more paperwork.",
+        "b1": "Calendar with availability management",
+        "b2": "Automatic Stripe billing for every booking",
+        "b3": "Chat directly with customers – no external tools needed",
+        "b4": "Status tracking: Request → Quote → Booked → Paid",
+        "tier": "Professional"
+      }
+    },
+    "pricing": {
+      "badge": "50% LAUNCH DISCOUNT",
+      "titleLine1": "Choose your",
+      "titleHighlight": "growth plan",
+      "subtitle": "Every plan can be upgraded or cancelled anytime.",
+      "mostChosen": "MOST POPULAR",
+      "commissionLabel": "Commission",
+      "perBooking": "per booking",
+      "loading": "Loading…",
+      "fineprint": "All prices excl. VAT · Instant activation · Cancel anytime · No hidden fees",
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Perfect to get started",
+          "billing": "free forever",
+          "cta": "Start free",
+          "f1": "Up to 3 services listed",
+          "f2": "Basic marketplace visibility",
+          "f3": "Booking management",
+          "f4": "Standard search placement",
+          "f5": "25% commission per booking"
+        },
+        "professional": {
+          "name": "Professional",
+          "tagline": "For growing agencies",
+          "billing": "per month",
+          "cta": "Start Professional",
+          "f1": "Up to 20 services listed",
+          "f2": "Dedicated agency profile page",
+          "f3": "Featured listings in marketplace",
+          "f4": "Priority ranking in search",
+          "f5": "Pro badge for trust",
+          "f6": "Detailed analytics & insights",
+          "f7": "Only 10% commission – 15% less than Starter"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "tagline": "For market leaders",
+          "billing": "per month",
+          "cta": "Start Enterprise",
+          "f1": "Unlimited services",
+          "f2": "Dedicated agency profile page",
+          "f3": "Auto-featured listings",
+          "f4": "Highest search priority – always Top 3",
+          "f5": "Enterprise badge – maximum trust",
+          "f6": "AI booking integration",
+          "f7": "Full analytics + API access",
+          "f8": "10% commission"
+        }
+      }
+    },
+    "usps": {
+      "badge": "WHY AGENCIES LOVE US",
+      "titleLine1": "6 reasons EventBliss becomes your",
+      "titleHighlight": "revenue lever",
+      "titleLine2": "",
+      "u1": {
+        "title": "No more cold outreach",
+        "desc": "Users come to you because they're already in planning mode. Event intent = highest buying willingness."
+      },
+      "u2": {
+        "title": "Built-in traffic boost",
+        "desc": "Every game played, every survey, every TV screen pushes new users into the app – you profit passively."
+      },
+      "u3": {
+        "title": "10 languages, 9 countries",
+        "desc": "Your services become internationally visible automatically – without translation costs."
+      },
+      "u4": {
+        "title": "Trust framework",
+        "desc": "Profile page, reviews, badges and verification – users book you, not a black box."
+      },
+      "u5": {
+        "title": "Your business, transparent",
+        "desc": "Dashboard with bookings, revenue, conversion rate and top services – always in view."
+      },
+      "u6": {
+        "title": "Set and forget",
+        "desc": "Set up services once, bookings run automatically. More time for your clients, less admin."
+      }
+    },
+    "cta": {
+      "badge": "⚡ Start in 60 seconds",
+      "titleLine1": "Ready to put bookings on",
+      "titleHighlight": "autopilot",
+      "titleLine2": "?",
+      "subtitle": "Start free with Starter or lock in the 50% launch discount on Professional now. The earlier, the longer you benefit.",
+      "primary": "Secure Professional for €49/mo",
+      "secondary": "Start free first"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "q1": "What happens if I miss the 50% discount offer?",
+      "a1": "You'll keep the price of €49 (Professional) or €149 (Enterprise) forever – even if we later raise it to €98/€298. Your rate gets locked at booking.",
+      "q2": "Can I switch tiers anytime?",
+      "a2": "Yes. Upgrade is instant, downgrade at the end of the billing period. No notice periods, no cancellation fees.",
+      "q3": "How many users will I actually reach?",
+      "a3": "EventBliss grows via 3 viral loops (games, surveys, TV). With Professional you're in priority search – wedding couples, party hosts and companies find you where they plan.",
+      "q4": "How does the commission work?",
+      "a4": "Commission only applies to actually booked services, settled automatically via Stripe. Starter pays 25%, Professional & Enterprise only 10% – quickly offsets the monthly fee.",
+      "q5": "Do I need experience or setup help?",
+      "a5": "No. Profile + first service listing are live in under 10 minutes. Enterprise customers also get a dedicated onboarding call."
+    },
+    "errors": {
+      "checkoutFailed": "Error",
+      "noCheckoutUrl": "No checkout URL received"
+    },
+    "enterpriseModules": {
+      "badge": "ENTERPRISE COMMAND CENTER",
+      "titleLine1": "Your complete",
+      "titleHighlight": "agency operating system",
+      "titleLine2": "– from €149/month.",
+      "subtitle": "No more paying for extra tools. Everything you need to run a modern event agency – in one platform. One login. One dashboard. One price.",
+      "valueBadge": "Included in Enterprise",
+      "m1": {
+        "title": "CRM & Contacts",
+        "desc": "All customers, leads and vendors in one place with history and tags."
+      },
+      "m2": {
+        "title": "Event Planner",
+        "desc": "Manage multiple events in parallel with progress tracking and deadlines."
+      },
+      "m3": {
+        "title": "Budget Engine",
+        "desc": "Forecasts, plan-vs-actual, automatic profitability calculation per event."
+      },
+      "m4": {
+        "title": "Run of Show",
+        "desc": "Minute-accurate timeline with live updates for team and clients."
+      },
+      "m5": {
+        "title": "Template Library",
+        "desc": "Duplicate recurring events, offers and checklists in seconds."
+      },
+      "m6": {
+        "title": "Team Management",
+        "desc": "Staff roles, permissions, task assignment per event."
+      },
+      "m7": {
+        "title": "Calendar Sync",
+        "desc": "Two-way sync with Google Calendar, Outlook and iCal."
+      },
+      "m8": {
+        "title": "Client Portal",
+        "desc": "Branded customer portals per event with token-based access."
+      },
+      "m9": {
+        "title": "Reports & Analytics",
+        "desc": "Revenue, booking and team performance reports on demand."
+      },
+      "m10": {
+        "title": "File Management",
+        "desc": "Contracts, invoices and assets centrally archived and shared."
+      },
+      "m11": {
+        "title": "Booking Calendar",
+        "desc": "Service availability, time slots and inquiries visualised."
+      },
+      "comparison": "Comparable all-in-one agency SaaS products cost €299-799/month."
+    }
   }
 }
