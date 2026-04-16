@@ -17,6 +17,16 @@ import {
   Plus,
 } from "lucide-react";
 import { CreateBookingDialog } from "./CreateBookingDialog";
+import { CalendarToolbar, type ViewMode } from "./calendar/CalendarToolbar";
+import { CalendarFilters, type CalendarFilterState } from "./calendar/CalendarFilters";
+import { MonthView } from "./calendar/MonthView";
+import { WeekView } from "./calendar/WeekView";
+import { DayView } from "./calendar/DayView";
+import { ResourceView } from "./calendar/ResourceView";
+import { PrintSchedule } from "./calendar/PrintSchedule";
+import { useBookingConflicts } from "@/hooks/useBookingConflicts";
+import { useAgencyGuidesList } from "@/hooks/useAgencyEarnings";
+import { useAgencyServices } from "@/hooks/useManualBooking";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -436,16 +446,22 @@ function DayDetailPanel({
 export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
   const { t } = useTranslation();
   const today = new Date();
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const [anchorDate, setAnchorDate] = useState<Date>(today);
+  const [view, setView] = useState<ViewMode>("month");
+  const [resourceGroupMode, setResourceGroupMode] = useState<"guide" | "service">("guide");
+  const [filters, setFilters] = useState<CalendarFilterState>({ service: "all", guide: "all", status: "all" });
   const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [serviceFilter, setServiceFilter] = useState("all");
   const [selectedBooking, setSelectedBooking] = useState<MarketplaceBooking | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [createPreset, setCreatePreset] = useState<{ date?: string; time?: string }>({});
 
+  const year = anchorDate.getFullYear();
+  const month = anchorDate.getMonth();
+
   const { data: bookings = [], isLoading } = useAgencyBookings(agencyId);
+  const { data: guides = [] } = useAgencyGuidesList(agencyId);
+  const { data: agencyServices = [] } = useAgencyServices(agencyId);
+  const conflicts = useBookingConflicts(agencyId, bookings);
 
   const openCreateDialog = (presetDay?: number) => {
     if (presetDay) {
@@ -467,14 +483,22 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
     return Array.from(map, ([id, title]) => ({ value: id, label: title }));
   }, [bookings]);
 
-  // Filtered bookings
+  // Filtered bookings (service + guide + status)
   const filtered = useMemo(() => {
     return bookings.filter((b) => {
-      if (statusFilter !== "all" && b.status !== statusFilter) return false;
-      if (serviceFilter !== "all" && b.service_id !== serviceFilter) return false;
+      if (filters.status !== "all" && b.status !== filters.status) return false;
+      if (filters.service !== "all" && b.service_id !== filters.service) return false;
+      if (filters.guide !== "all") {
+        const gid = (b as unknown as { assigned_guide_id?: string | null }).assigned_guide_id;
+        if (filters.guide === "unassigned") {
+          if (gid) return false;
+        } else if (gid !== filters.guide) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [bookings, statusFilter, serviceFilter]);
+  }, [bookings, filters]);
 
   // Group by date
   const bookingsByDate = useMemo(() => {
@@ -501,42 +525,105 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
   const selectedDateStr = selectedDay ? formatDate(year, month, selectedDay) : null;
   const selectedBookings = selectedDateStr ? bookingsByDate[selectedDateStr] || [] : [];
 
-  const prevMonth = useCallback(() => {
-    if (month === 0) { setMonth(11); setYear(year - 1); }
-    else setMonth(month - 1);
-    setSelectedDay(null);
-  }, [month, year]);
+  // Navigation — adapts to current view
+  const navDelta = (delta: number) => {
+    const d = new Date(anchorDate);
+    if (view === "month") {
+      d.setMonth(d.getMonth() + delta);
+    } else if (view === "week" || view === "resource") {
+      d.setDate(d.getDate() + delta * 7);
+    } else {
+      d.setDate(d.getDate() + delta);
+    }
+    setAnchorDate(d);
+    setSelectedDay(view === "month" ? null : d.getDate());
+  };
+  const goToday = () => setAnchorDate(new Date());
 
-  const nextMonth = useCallback(() => {
-    if (month === 11) { setMonth(0); setYear(year + 1); }
-    else setMonth(month + 1);
-    setSelectedDay(null);
-  }, [month, year]);
+  const toolbarTitle = useMemo(() => {
+    if (view === "month") return `${MONTHS[month]} ${year}`;
+    if (view === "week" || view === "resource") {
+      const ws = new Date(anchorDate); const off = (ws.getDay() + 6) % 7;
+      ws.setDate(ws.getDate() - off);
+      const we = new Date(ws); we.setDate(we.getDate() + 6);
+      return `${ws.getDate()}.${ws.getMonth() + 1} – ${we.getDate()}.${we.getMonth() + 1}. ${we.getFullYear()}`;
+    }
+    return anchorDate.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
+  }, [view, anchorDate, month, year]);
 
-  // iCal export
+  // iCal export (current view)
   const handleExportICal = useCallback(() => {
-    const monthBookings = filtered.filter((b) => {
-      const d = new Date(b.booking_date);
-      return d.getFullYear() === year && d.getMonth() === month;
-    });
-    if (monthBookings.length === 0) return;
-
+    if (filtered.length === 0) return;
     const ical = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
       "PRODID:-//EventBliss//Buchungskalender//DE",
-      ...monthBookings.map(generateICalEvent),
+      ...filtered.map(generateICalEvent),
       "END:VCALENDAR",
     ].join("\r\n");
-
     const blob = new Blob([ical], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `buchungen-${MONTHS[month]}-${year}.ics`;
+    a.download = `buchungen-${new Date().toISOString().slice(0, 10)}.ics`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [filtered, year, month]);
+  }, [filtered]);
+
+  // CSV export
+  const handleExportCSV = useCallback(() => {
+    if (filtered.length === 0) return;
+    const rows = [
+      ["booking_number", "date", "time", "service", "customer", "email", "phone", "participants", "status", "guide", "total_eur"].join(","),
+      ...filtered.map((b) => {
+        const guide = (b as unknown as { assigned_guide_name?: string | null }).assigned_guide_name ?? "";
+        return [
+          b.booking_number, b.booking_date, b.booking_time?.slice(0, 5) ?? "",
+          JSON.stringify(b.service_title ?? ""),
+          JSON.stringify(b.customer_name ?? ""),
+          b.customer_email ?? "", b.customer_phone ?? "",
+          b.participant_count, b.status,
+          JSON.stringify(guide),
+          (b.total_price_cents / 100).toFixed(2),
+        ].join(",");
+      }),
+    ].join("\n");
+    const blob = new Blob(["\ufeff" + rows], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `buchungen-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [filtered]);
+
+  const handlePrint = useCallback(() => {
+    window.setTimeout(() => window.print(), 50);
+  }, []);
+
+  const openCreateDialogAt = (dateIso: string, time?: string) => {
+    setCreatePreset({ date: dateIso, time: time ?? "10:00" });
+    setCreateDialogOpen(true);
+  };
+
+  // Services duration lookup (for Week/Day view block heights)
+  const durationLookup = useMemo(() => {
+    const m = new Map<string, number>();
+    agencyServices.forEach((s) => {
+      // AgencyServiceOption has no duration_minutes — fallback to 60 if missing
+      // Actual durations come from marketplace_services table via conflict hook
+    });
+    bookings.forEach((b) => {
+      if (!m.has(b.service_id as string)) m.set(b.service_id as string, 60);
+    });
+    return m;
+  }, [agencyServices, bookings]);
+
+  // Current day's bookings for DayView
+  const dayViewBookings = useMemo(() => {
+    const key = formatDate(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate());
+    return bookingsByDate[key] ?? [];
+  }, [bookingsByDate, anchorDate]);
 
   if (isLoading) {
     return (
@@ -546,197 +633,96 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
     );
   }
 
+  const filterSummaryParts: string[] = [];
+  if (filters.service !== "all") {
+    const s = serviceOptions.find((x) => x.value === filters.service);
+    if (s) filterSummaryParts.push(`Service: ${s.label}`);
+  }
+  if (filters.guide !== "all") {
+    const g = guides.find((x) => x.id === filters.guide);
+    filterSummaryParts.push(`Guide: ${g?.name ?? filters.guide}`);
+  }
+  if (filters.status !== "all") filterSummaryParts.push(`Status: ${filters.status}`);
+  const filterSummary = filterSummaryParts.join(" · ") || "—";
+
   return (
-    <div className="space-y-6">
-      {/* Header with filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-      >
-        <div>
-          <h3 className="text-lg font-semibold text-slate-50">Buchungskalender</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {filtered.length} {filtered.length === 1 ? "Buchung" : "Buchungen"} insgesamt
-          </p>
-        </div>
+    <div className="space-y-5">
+      <CalendarToolbar
+        view={view}
+        onViewChange={setView}
+        title={toolbarTitle}
+        onPrev={() => navDelta(-1)}
+        onNext={() => navDelta(1)}
+        onToday={goToday}
+        onExportICal={handleExportICal}
+        onExportCSV={handleExportCSV}
+        onPrint={handlePrint}
+        onNewBooking={() => openCreateDialogAt(formatDate(year, month, selectedDay ?? today.getDate()), undefined)}
+        bookingCount={filtered.length}
+      />
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Service filter */}
-          <div className="relative">
-            <Filter className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600 pointer-events-none" />
-            <select
-              value={serviceFilter}
-              onChange={(e) => setServiceFilter(e.target.value)}
-              className="h-8 pl-8 pr-3 text-xs bg-white/[0.04] border border-white/[0.08] text-slate-300 rounded-lg outline-none focus:border-violet-500/40 transition-all appearance-none cursor-pointer"
-            >
-              <option value="all" className="bg-[#1a1625]">Alle Services</option>
-              {serviceOptions.map((s) => (
-                <option key={s.value} value={s.value} className="bg-[#1a1625]">{s.label}</option>
-              ))}
-            </select>
-          </div>
+      <CalendarFilters
+        filters={filters}
+        onChange={setFilters}
+        services={serviceOptions.map((s) => ({ id: s.value, title: s.label }))}
+        guides={guides}
+      />
 
-          {/* Status filter */}
-          <div className="flex items-center gap-0.5 bg-white/[0.03] border border-white/[0.08] rounded-lg p-0.5">
-            {statusFilterOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setStatusFilter(opt.value)}
-                className={cn(
-                  "px-2.5 py-1 text-[10px] font-medium rounded-md transition-all cursor-pointer",
-                  statusFilter === opt.value
-                    ? "bg-violet-500/20 text-violet-300"
-                    : "text-slate-500 hover:text-slate-300"
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Export */}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleExportICal}
-            className="h-8 text-xs border-white/[0.1] text-slate-400 hover:bg-white/[0.04] gap-1.5 cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            iCal
-          </Button>
-
-          {/* New booking (manual) */}
-          <Button
-            size="sm"
-            onClick={() => openCreateDialog(selectedDay ?? undefined)}
-            className="h-8 text-xs bg-gradient-to-r from-violet-600 to-pink-600 hover:opacity-90 text-white gap-1.5 cursor-pointer shadow-lg shadow-pink-500/20"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            {t("bookingCalendar.newAppointment", "Neuer Termin")}
-          </Button>
-        </div>
-      </motion.div>
-
-      {/* Calendar + Day panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-        {/* Month grid */}
-        <GlassCard className="p-5" hoverGlow>
-          <div className="flex items-center justify-between mb-5">
-            <button
-              onClick={prevMonth}
-              className="p-1.5 rounded-lg hover:bg-white/[0.06] text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <h3 className="text-lg font-semibold text-slate-50">
-              {MONTHS[month]} {year}
-            </h3>
-            <button
-              onClick={nextMonth}
-              className="p-1.5 rounded-lg hover:bg-white/[0.06] text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Day headers */}
-          <div className="grid grid-cols-7 mb-2">
-            {DAYS.map((d) => (
-              <div key={d} className="text-center text-xs font-medium text-slate-500 py-1">{d}</div>
-            ))}
-          </div>
-
-          {/* Day cells */}
-          <div className="grid grid-cols-7 gap-px">
-            {cells.map((day, idx) => {
-              if (day === null) return <div key={`empty-${idx}`} className="aspect-square" />;
-              const dateStr = formatDate(year, month, day);
-              const isToday = dateStr === todayStr;
-              const isSelected = day === selectedDay;
-              const dayBookings = bookingsByDate[dateStr] || [];
-              const isPast = new Date(year, month, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-              // Unique categories for colored dots
-              const uniqueCategories = [...new Set(dayBookings.map((b) => (b as any).category || "other"))];
-
-              return (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className={cn(
-                    "aspect-square p-1 rounded-xl text-left flex flex-col transition-all duration-200 cursor-pointer relative",
-                    isSelected
-                      ? "bg-violet-500/20 border border-violet-500/40"
-                      : "hover:bg-white/[0.04] border border-transparent",
-                    isPast && !isSelected && "opacity-50"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mx-auto",
-                      isToday && "bg-violet-500 text-white",
-                      !isToday && isSelected && "text-violet-300",
-                      !isToday && !isSelected && "text-slate-300"
-                    )}
-                  >
-                    {day}
-                  </span>
-
-                  {dayBookings.length > 0 && (
-                    <>
-                      {/* Booking count badge */}
-                      <div className="absolute top-0.5 right-1">
-                        <span className="text-[8px] font-medium text-violet-400 bg-violet-500/15 rounded-full w-4 h-4 flex items-center justify-center">
-                          {dayBookings.length}
-                        </span>
-                      </div>
-
-                      {/* Category dots */}
-                      <div className="flex flex-wrap gap-0.5 mt-auto justify-center">
-                        {uniqueCategories.slice(0, 4).map((cat, i) => (
-                          <div
-                            key={`${cat}-${i}`}
-                            className={cn("w-1.5 h-1.5 rounded-full", categoryDotColors[cat] || categoryDotColors.other)}
-                          />
-                        ))}
-                        {uniqueCategories.length > 4 && (
-                          <span className="text-[7px] text-slate-500">+{uniqueCategories.length - 4}</span>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Category legend */}
-          <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-white/[0.06]">
-            {Object.entries(categoryDotColors).slice(0, 6).map(([cat, color]) => (
-              <div key={cat} className="flex items-center gap-1.5">
-                <div className={cn("w-2 h-2 rounded-full", color)} />
-                <span className="text-[10px] text-slate-600 capitalize">{cat}</span>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-
-        {/* Day detail panel */}
-        <div className="space-y-4">
-          <AnimatePresence mode="wait">
-            {selectedDay && (
-              <DayDetailPanel
-                day={selectedDay}
-                month={month}
-                year={year}
-                bookings={selectedBookings}
-                onSelectBooking={setSelectedBooking}
-              />
-            )}
-          </AnimatePresence>
-        </div>
+      {/* View content */}
+      <div className="no-print">
+        {view === "month" && (
+          <MonthView
+            year={year}
+            month={month}
+            selectedDay={selectedDay}
+            onSelectDay={setSelectedDay}
+            bookingsByDate={bookingsByDate}
+            conflicts={conflicts}
+            onSelectBooking={setSelectedBooking}
+            onCreateBooking={(dateIso) => openCreateDialogAt(dateIso)}
+          />
+        )}
+        {view === "week" && (
+          <WeekView
+            anchorDate={anchorDate}
+            bookingsByDate={bookingsByDate}
+            conflicts={conflicts}
+            onSelectBooking={setSelectedBooking}
+            onCreateBooking={openCreateDialogAt}
+            durationLookup={durationLookup}
+          />
+        )}
+        {view === "day" && (
+          <DayView
+            date={anchorDate}
+            bookings={dayViewBookings}
+            conflicts={conflicts}
+            onSelectBooking={setSelectedBooking}
+            onCreateBooking={openCreateDialogAt}
+            durationLookup={durationLookup}
+          />
+        )}
+        {view === "resource" && (
+          <ResourceView
+            anchorDate={anchorDate}
+            bookings={filtered}
+            conflicts={conflicts}
+            guides={guides}
+            services={serviceOptions.map((s) => ({ id: s.value, title: s.label }))}
+            onSelectBooking={setSelectedBooking}
+            groupMode={resourceGroupMode}
+            onGroupModeChange={setResourceGroupMode}
+          />
+        )}
       </div>
+
+      <PrintSchedule
+        title={`Buchungskalender — ${toolbarTitle}`}
+        subtitle={view === "resource" && resourceGroupMode === "guide" ? "Nach Guide gruppiert" : undefined}
+        filterSummary={filterSummary}
+        bookings={filtered}
+        groupBy={view === "resource" && resourceGroupMode === "guide" ? "guide" : "day"}
+      />
 
       {/* Booking detail dialog */}
       <AnimatePresence>
