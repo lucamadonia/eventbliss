@@ -137,17 +137,17 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const [selectedGame, setSelectedGame] = useState(gameId);
   const [showGamePicker, setShowGamePicker] = useState(false);
 
+  const { isPremium } = usePremium();
+  const { user } = useAuth();
+  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
+  const openRooms = useOpenRooms();
+
   // Sync selectedGame with room's gameId (host may switch game in lobby)
   useEffect(() => {
     if (room?.gameId && room.gameId !== selectedGame && !isHost) {
       setSelectedGame(room.gameId);
     }
-  }, [room?.gameId, isHost]);
-
-  const { isPremium } = usePremium();
-  const { user } = useAuth();
-  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
-  const openRooms = useOpenRooms();
+  }, [room?.gameId, isHost, selectedGame]);
 
   const savedRoom = getSavedRoom();
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
