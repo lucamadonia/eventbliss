@@ -54,8 +54,8 @@ serve(async (req) => {
 
     const { data: agency, error: agencyError } = await supabaseClient
       .from("agencies")
-      .select("id, name, slug, owner_user_id")
-      .eq("owner_user_id", user.id)
+      .select("id, name, slug, owner_id")
+      .eq("owner_id", user.id)
       .maybeSingle();
 
     if (agencyError) throw new Error(`Agency lookup failed: ${agencyError.message}`);
