@@ -1,6 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
+
+function resolvePreferredLocale(lang: string | undefined): string {
+  const code = (lang || "de").slice(0, 2).toLowerCase();
+  return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : "de";
+}
+
+interface TranslationRow {
+  service_id: string;
+  locale: string;
+  title?: string | null;
+  description?: string | null;
+  short_description?: string | null;
+  includes?: string[] | null;
+  requirements?: string[] | null;
+}
+
+function pickTranslation(
+  rows: TranslationRow[],
+  preferred: string,
+): Map<string, TranslationRow> {
+  const priority = (loc: string): number => {
+    if (loc === preferred) return 3;
+    if (loc === "de") return 2;
+    if (loc === "en") return 1;
+    return 0;
+  };
+  const map = new Map<string, TranslationRow>();
+  for (const row of rows) {
+    const existing = map.get(row.service_id);
+    if (!existing || priority(row.locale) > priority(existing.locale)) {
+      map.set(row.service_id, row);
+    }
+  }
+  return map;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -72,8 +110,10 @@ export function useMarketplaceServices(
   page = 1,
   limit = 12,
 ) {
+  const { i18n } = useTranslation();
+  const preferredLocale = resolvePreferredLocale(i18n.language);
   return useQuery({
-    queryKey: ["marketplace-services", filters, page, limit],
+    queryKey: ["marketplace-services", filters, page, limit, preferredLocale],
     queryFn: async () => {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
@@ -126,19 +166,15 @@ export function useMarketplaceServices(
       if (error) throw error;
       if (!services || services.length === 0) return { services: [], total: 0 };
 
-      // Fetch translations for all returned services (prefer DE, fallback EN)
+      // Fetch translations — preferred locale + de + en as fallback chain
       const ids = services.map((s: any) => s.id);
+      const localeSet = Array.from(new Set([preferredLocale, "de", "en"]));
       const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
         .select("*")
         .in("service_id", ids)
-        .in("locale", ["de", "en"]);
+        .in("locale", localeSet);
 
-      // Build translation map (prefer DE)
-      const txMap = new Map<string, any>();
-      for (const tx of translations || []) {
-        const existing = txMap.get(tx.service_id);
-        if (!existing || tx.locale === "de") txMap.set(tx.service_id, tx);
-      }
+      const txMap = pickTranslation((translations as TranslationRow[]) ?? [], preferredLocale);
 
       // Map to MarketplaceService
       const mapped: MarketplaceService[] = services.map((s: any) => {
@@ -201,8 +237,10 @@ export function useMarketplaceServices(
 // ---------------------------------------------------------------------------
 
 export function useMarketplaceServiceBySlug(slug: string | undefined) {
+  const { i18n } = useTranslation();
+  const preferredLocale = resolvePreferredLocale(i18n.language);
   return useQuery({
-    queryKey: ["marketplace-service", slug],
+    queryKey: ["marketplace-service", slug, preferredLocale],
     enabled: !!slug,
     queryFn: async () => {
       // 1. Fetch the service with agency join
@@ -215,16 +253,15 @@ export function useMarketplaceServiceBySlug(slug: string | undefined) {
       if (error) throw error;
       if (!service) return null;
 
-      // 2. Fetch translation (prefer DE, fallback EN)
+      // 2. Fetch translation (preferred locale + de + en fallback)
+      const localeSet = Array.from(new Set([preferredLocale, "de", "en"]));
       const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
         .select("*")
         .eq("service_id", service.id)
-        .in("locale", ["de", "en"]);
+        .in("locale", localeSet);
 
-      let tx: any = null;
-      for (const t of translations || []) {
-        if (!tx || t.locale === "de") tx = t;
-      }
+      const txMap = pickTranslation((translations as TranslationRow[]) ?? [], preferredLocale);
+      const tx = txMap.get(service.id) ?? null;
 
       // 3. Map to MarketplaceService (extended with agency_city)
       const mapped: MarketplaceService & { agency_city: string | null } = {

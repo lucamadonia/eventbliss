@@ -1,6 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+
+const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
+function resolveLocale(lang: string | undefined): string {
+  const code = (lang || "de").slice(0, 2).toLowerCase();
+  return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : "de";
+}
 import {
   MapPin, Star, ShieldCheck, Calendar, Users, TrendingUp,
   Mail, Phone, Globe, ChevronRight, ExternalLink,
@@ -155,8 +162,10 @@ function useAgencyBySlug(slug: string | undefined) {
 }
 
 function useAgencyApprovedServices(agencyId: string | undefined) {
+  const { i18n } = useTranslation();
+  const preferredLocale = resolveLocale(i18n.language);
   return useQuery({
-    queryKey: ["agency-approved-services", agencyId],
+    queryKey: ["agency-approved-services", agencyId, preferredLocale],
     enabled: !!agencyId,
     queryFn: async () => {
       const { data: services, error } = await (supabase.from as any)("marketplace_services")
@@ -169,17 +178,27 @@ function useAgencyApprovedServices(agencyId: string | undefined) {
       if (error) throw error;
       if (!services || services.length === 0) return [];
 
-      // Fetch translations (prefer DE)
+      // Fetch translations: preferred locale + de + en fallback chain
       const ids = services.map((s: any) => s.id);
+      const localeSet = Array.from(new Set([preferredLocale, "de", "en"]));
       const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
         .select("*")
         .in("service_id", ids)
-        .in("locale", ["de", "en"]);
+        .in("locale", localeSet);
 
+      // Priority: preferred > de > en > any
+      const priority = (loc: string): number => {
+        if (loc === preferredLocale) return 3;
+        if (loc === "de") return 2;
+        if (loc === "en") return 1;
+        return 0;
+      };
       const txMap = new Map<string, any>();
       for (const tx of translations || []) {
         const existing = txMap.get(tx.service_id);
-        if (!existing || tx.locale === "de") txMap.set(tx.service_id, tx);
+        if (!existing || priority(tx.locale) > priority(existing.locale)) {
+          txMap.set(tx.service_id, tx);
+        }
       }
 
       return services.map((s: any) => {
