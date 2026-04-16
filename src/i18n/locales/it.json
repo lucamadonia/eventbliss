@@ -2616,6 +2616,91 @@
       "depositPaid": "Acconto Pagato",
       "depositPending": "Acconto in Attesa",
       "viewHistory": "Vedi Storico"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Passa a {{tier}}",
+        "founderQuote": "“L'abbiamo costruito perché il caos di Excel faceva impazzire anche noi.” — Luca, Fondatore",
+        "savingsLabel": "LANCIO",
+        "perMonth": "/ mese"
+      },
+      "contacts": {
+        "title": "CRM e Contatti",
+        "hook": "Smetti di tracciare lead e clienti in tre tool diversi.",
+        "b0": "Tutti i contatti con storico, tag e rating in un unico posto",
+        "b1": "Rating 5 dimensioni: qualità, puntualità, prezzo, comunicazione, flex",
+        "b2": "Segmentazione per tipo evento e specializzazione"
+      },
+      "templates": {
+        "title": "Libreria Template",
+        "hook": "Costruire ogni evento da zero? Non più.",
+        "b0": "Duplica eventi ricorrenti e offerte in secondi",
+        "b1": "Raccomandazioni AI per tipo evento",
+        "b2": "Checklist e template offerta brandizzati"
+      },
+      "calendar": {
+        "title": "Calendario",
+        "hook": "Un posto per tutti gli eventi, scadenze e milestone.",
+        "b0": "Vista mensile e settimanale con color-coding",
+        "b1": "Drag-and-drop per riprogrammazione",
+        "b2": "Filtri per tipo, stato e membro del team"
+      },
+      "bookingCalendar": {
+        "title": "Calendario Prenotazioni",
+        "hook": "Mai più doppie prenotazioni, mai più slot vuoti.",
+        "b0": "Disponibilità servizio visuale per team o location",
+        "b1": "Gestione slot e rilevamento automatico dei vuoti",
+        "b2": "Connesso direttamente alle prenotazioni Marketplace"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Sai se il tuo ultimo evento era profittevole?",
+        "b0": "Forecast e pianificato-vs-effettivo per evento, live e automatizzato",
+        "b1": "10 categorie di costo: venue, catering, crew, marketing",
+        "b2": "Score di redditività per evento e workflow approvazione"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 aperitivo — il tuo team lo sa prima che tu chieda.",
+        "b0": "Timeline al minuto con stato live e responsabili",
+        "b1": "Mobile-ottimizzato: clienti, fotografi, catering",
+        "b2": "Aggiornamenti live durante l'evento in tempo reale"
+      },
+      "team": {
+        "title": "Gestione Team",
+        "hook": "3 dipendenti, 1 calendario, zero doppie prenotazioni.",
+        "b0": "Più account con 4 ruoli (Owner, Admin, Manager, Assistant)",
+        "b1": "Permessi granulari per modulo ed evento",
+        "b2": "Inviti via email e tracking stato"
+      },
+      "files": {
+        "title": "Gestione File",
+        "hook": "Contratti, fatture, piani — finalmente tutto trovabile.",
+        "b0": "Cartelle per evento con condivisione client e audit log",
+        "b1": "Contratti, foto, piani, fatture archiviati centralmente",
+        "b2": "Versioning e permessi per file"
+      },
+      "reports": {
+        "title": "Report e Analytics",
+        "hook": "Quale tipo di evento paga il tuo affitto? Il report lo sa.",
+        "b0": "Grafici fatturato, prenotazioni e performance team",
+        "b1": "Export PDF/CSV per il commercialista in 2 click",
+        "b2": "Dashboard KPI con trend trimestrali"
+      },
+      "guides": {
+        "title": "Gestione Guide",
+        "hook": "Il tuo team di guide sotto controllo — senza foglio di calcolo.",
+        "b0": "Gestisci le tour guide e assegna per evento",
+        "b1": "Disponibilità, specializzazioni e lingue",
+        "b2": "Tracking performance e valutazioni"
+      },
+      "calendarSync": {
+        "title": "Sync Calendario",
+        "hook": "Un appuntamento. Google, Outlook, iCal — sincronizzato automaticamente.",
+        "b0": "Sync bidirezionale con Google Calendar, Outlook e iCal",
+        "b1": "Avvisi automatici per conflitti",
+        "b2": "Config per utente per membri del team"
+      }
     }
   },
   "games": {

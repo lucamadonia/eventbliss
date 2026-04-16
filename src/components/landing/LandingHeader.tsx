@@ -36,6 +36,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
     { label: t("landing.nav.games"), href: "games", isRoute: true },
     { label: t("landing.nav.faq"), href: "faq" },
     { label: t("landing.nav.partner"), href: "partner-apply", isRoute: true },
+    { label: t("landing.nav.forAgencies", "Für Agenturen"), href: "agency/pricing", isRoute: true },
   ];
 
   const handleNavClick = (href: string) => {

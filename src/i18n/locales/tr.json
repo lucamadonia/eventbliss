@@ -2523,6 +2523,91 @@
       "depositPaid": "Depozito Ödendi",
       "depositPending": "Depozito Bekliyor",
       "viewHistory": "Geçmişi Görüntüle"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "{{tier}}'a yükselt",
+        "founderQuote": "“Bunu inşa ettik çünkü Excel kaosu bizi de çıldırttı.” — Luca, Kurucu",
+        "savingsLabel": "LANSMAN",
+        "perMonth": "/ ay"
+      },
+      "contacts": {
+        "title": "CRM ve Kontaklar",
+        "hook": "Lead'leri ve müşterileri üç ayrı araçta takip etmeyi bırak.",
+        "b0": "Tüm kontaklar, geçmiş, etiketler ve değerlendirmeler tek yerde",
+        "b1": "5 boyutlu puanlama: kalite, dakiklik, fiyat, iletişim, esneklik",
+        "b2": "Etkinlik türüne ve uzmanlığa göre segmentasyon"
+      },
+      "templates": {
+        "title": "Şablon Kütüphanesi",
+        "hook": "Her etkinliği sıfırdan kurmak? Artık değil.",
+        "b0": "Tekrarlayan etkinlikleri ve teklifleri saniyeler içinde çoğalt",
+        "b1": "Etkinlik türüne göre AI önerileri",
+        "b2": "Markalı kontrol listeleri ve teklif şablonları"
+      },
+      "calendar": {
+        "title": "Takvim",
+        "hook": "Tüm etkinlikler, son tarihler ve kilometre taşları için tek yer.",
+        "b0": "Aylık ve haftalık görünüm, renk kodlu",
+        "b1": "Sürükle-bırak ile yeniden planlama",
+        "b2": "Tür, durum ve ekip üyesine göre filtreler"
+      },
+      "bookingCalendar": {
+        "title": "Rezervasyon Takvimi",
+        "hook": "Bir daha asla çifte rezervasyon, asla boş slot yok.",
+        "b0": "Ekip veya konuma göre görsel servis uygunluğu",
+        "b1": "Slot yönetimi ve boşluk otomatik tespiti",
+        "b2": "Marketplace rezervasyonlarıyla doğrudan bağlı"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Son etkinliğin kârlı mıydı?",
+        "b0": "Her etkinlik için tahmin ve plan-vs-gerçek, canlı ve otomatik",
+        "b1": "10 maliyet kategorisi: venue, catering, ekip, pazarlama",
+        "b2": "Etkinlik başına kârlılık skoru ve onay akışı"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 kokteyl — ekibin sen sormadan biliyor.",
+        "b0": "Dakikalık hassas program, canlı durum ve sorumlular",
+        "b1": "Müşteri, fotoğrafçı, catering için mobil optimize",
+        "b2": "Etkinlik sırasında gerçek zamanlı canlı güncellemeler"
+      },
+      "team": {
+        "title": "Ekip Yönetimi",
+        "hook": "3 çalışan, 1 takvim, sıfır çifte rezervasyon.",
+        "b0": "4 rol ile birden fazla hesap (Owner, Admin, Manager, Assistant)",
+        "b1": "Modül ve etkinlik başına detaylı izinler",
+        "b2": "E-posta davetleri ve üye başına durum takibi"
+      },
+      "files": {
+        "title": "Dosya Yönetimi",
+        "hook": "Sözleşmeler, faturalar, planlar — nihayet hepsi bulunabilir.",
+        "b0": "Etkinlik başına klasörler, müşteri paylaşımı ve audit log",
+        "b1": "Sözleşmeler, fotoğraflar, planlar, faturalar merkezi arşiv",
+        "b2": "Dosya başına versiyonlama ve izinler"
+      },
+      "reports": {
+        "title": "Raporlar ve Analitik",
+        "hook": "Hangi etkinlik türü kiranı ödüyor? Rapor biliyor.",
+        "b0": "Gelir, rezervasyon ve ekip performans grafikleri",
+        "b1": "Mali müşavir için 2 tıklamada PDF/CSV dışa aktarma",
+        "b2": "Çeyrek trendleriyle KPI panosu"
+      },
+      "guides": {
+        "title": "Guide Yönetimi",
+        "hook": "Guide ekibin kontrol altında — elektronik tablo yok.",
+        "b0": "Tur rehberlerini yönet ve etkinlik başına ata",
+        "b1": "Uygunluklar, uzmanlıklar ve diller",
+        "b2": "Performans takibi ve değerlendirmeler"
+      },
+      "calendarSync": {
+        "title": "Takvim Senkronizasyonu",
+        "hook": "Tek randevu. Google, Outlook, iCal — otomatik senkronize.",
+        "b0": "Google Calendar, Outlook ve iCal ile iki yönlü sync",
+        "b1": "Çatışmalar için otomatik uyarılar",
+        "b2": "Ekip üyeleri için kullanıcı bazında yapılandırma"
+      }
     }
   },
   "games": {

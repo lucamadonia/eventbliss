@@ -3912,6 +3912,91 @@
       "depositPaid": "Anzahlung bezahlt",
       "depositPending": "Anzahlung ausstehend",
       "viewHistory": "Verlauf anzeigen"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Auf {{tier}} upgraden",
+        "founderQuote": "„Wir haben das gebaut, weil uns Excel-Chaos selbst wahnsinnig gemacht hat.“ — Luca, Gründer",
+        "savingsLabel": "LAUNCH",
+        "perMonth": "/ Monat"
+      },
+      "contacts": {
+        "title": "CRM & Kontakte",
+        "hook": "Hör auf, Leads und Kunden in drei Tools gleichzeitig zu tracken.",
+        "b0": "Alle Kontakte mit Historie, Tags und Bewertungen an einem Ort",
+        "b1": "5-Dimensions-Rating: Qualität, Pünktlichkeit, Preis, Kommunikation, Flex",
+        "b2": "Segmentierung nach Event-Typ und Spezialisierung"
+      },
+      "templates": {
+        "title": "Vorlagen-Bibliothek",
+        "hook": "Jedes Event von Null aufbauen? Nicht mehr.",
+        "b0": "Wiederkehrende Events und Angebote in Sekunden duplizieren",
+        "b1": "KI-Empfehlungen für passende Templates pro Event-Typ",
+        "b2": "Branded Checklisten und Offer-Vorlagen"
+      },
+      "calendar": {
+        "title": "Kalender",
+        "hook": "Ein Ort für alle Events, Deadlines und Meilensteine.",
+        "b0": "Monats- und Wochenansicht mit Color-Coding",
+        "b1": "Drag-and-drop Event-Verschiebung",
+        "b2": "Filter nach Event-Typ, Status und Team-Member"
+      },
+      "bookingCalendar": {
+        "title": "Buchungskalender",
+        "hook": "Nie wieder Doppelbuchungen, nie wieder Lücken.",
+        "b0": "Service-Verfügbarkeit visuell pro Team oder Location",
+        "b1": "Time-Slot-Management und automatische Lücken-Erkennung",
+        "b2": "Direkt gekoppelt an Marketplace-Buchungen"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Weißt du, ob dein letztes Event profitabel war?",
+        "b0": "Forecast und Plan-vs-Ist pro Event, live und automatisiert",
+        "b1": "10 Kostenkategorien inkl. Venue, Catering, Crew, Marketing",
+        "b2": "Rentabilitäts-Score pro Event und Genehmigungsworkflow"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 Sektempfang — dein Team weiß es, bevor du fragst.",
+        "b0": "Minutengenauer Ablaufplan mit Live-Status und Zuständigkeiten",
+        "b1": "Mobile-optimiert für Kunde, Fotograf, Catering",
+        "b2": "Live-Updates während des Events in Echtzeit"
+      },
+      "team": {
+        "title": "Team-Management",
+        "hook": "3 Mitarbeiter, 1 Kalender, null Doppelbuchungen.",
+        "b0": "Mehrere Accounts mit 4 Rollen (Owner, Admin, Manager, Assistant)",
+        "b1": "Granulare Berechtigungen pro Modul und Event",
+        "b2": "Einladungen per E-Mail, Status-Tracking pro Mitglied"
+      },
+      "files": {
+        "title": "Datei-Management",
+        "hook": "Verträge, Rechnungen, Pläne — endlich alles gefunden.",
+        "b0": "Per-Event-Ordner mit Client-Sharing und Audit-Log",
+        "b1": "Verträge, Fotos, Pläne, Rechnungen zentral archiviert",
+        "b2": "Versionierung und Berechtigungen pro Datei"
+      },
+      "reports": {
+        "title": "Berichte & Analytics",
+        "hook": "Welcher Event-Typ zahlt deine Miete? Der Bericht sagt's.",
+        "b0": "Revenue-, Booking- und Team-Performance-Charts",
+        "b1": "PDF/CSV-Exporte für Steuerberater in 2 Klicks",
+        "b2": "KPI-Dashboard mit Quartals-Trends"
+      },
+      "guides": {
+        "title": "Guides-Management",
+        "hook": "Dein Guide-Team im Griff — ohne Spreadsheet.",
+        "b0": "Tour-Guides verwalten und pro Event zuweisen",
+        "b1": "Verfügbarkeiten, Spezialisierungen und Sprachen",
+        "b2": "Performance-Tracking und Bewertungen"
+      },
+      "calendarSync": {
+        "title": "Kalender-Sync",
+        "hook": "Ein Termin. Google, Outlook, iCal — automatisch synchron.",
+        "b0": "Zwei-Wege-Sync mit Google Calendar, Outlook und iCal",
+        "b1": "Automatische Konflikt-Warnung bei Überschneidungen",
+        "b2": "Per-User-Konfiguration für Team-Mitglieder"
+      }
     }
   },
   "games": {

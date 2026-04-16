@@ -61,6 +61,8 @@ import AgencyMarketplaceSettings from "@/components/agency/AgencyMarketplaceSett
 import AgencyGuideManager from "@/components/agency/AgencyGuideManager";
 import AgencyCalendarSync from "@/components/agency/AgencyCalendarSync";
 import { AgencyBookingCalendar } from "@/components/agency/AgencyBookingCalendar";
+import { LockedModuleUpsell } from "@/components/agency/LockedModuleUpsell";
+import { supabase } from "@/integrations/supabase/client";
 
 type Section =
   | "dashboard"
@@ -82,31 +84,35 @@ type Section =
   | "calendar-sync"
   | "settings";
 
+type Tier = "starter" | "professional" | "enterprise";
+const TIER_RANK: Record<Tier, number> = { starter: 0, professional: 1, enterprise: 2 };
+
 interface NavItem {
   id: Section;
   label: string;
   icon: typeof LayoutDashboard;
   badge?: string;
+  requiredTier?: Tier;
 }
 
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Übersicht", icon: LayoutDashboard },
   { id: "events", label: "Events", icon: Calendar, badge: "12" },
-  { id: "calendar", label: "Kalender", icon: CalendarDays },
-  { id: "booking-calendar", label: "Buchungskalender", icon: CalendarCheck },
-  { id: "contacts", label: "Kontakte", icon: Contact },
-  { id: "templates", label: "Vorlagen", icon: FileText },
-  { id: "team", label: "Team", icon: Users, badge: "6" },
-  { id: "runofshow", label: "Run of Show", icon: Radio, badge: "Live" },
-  { id: "budgetengine", label: "Budget Engine", icon: Wallet },
-  { id: "files", label: "Dateien", icon: FolderOpen },
-  { id: "reports", label: "Berichte", icon: BarChart3 },
-  { id: "marketplace", label: "Marketplace", icon: Store },
   { id: "bookings", label: "Buchungen", icon: CalendarCheck },
-  { id: "guides", label: "Guides", icon: Users },
+  { id: "marketplace", label: "Marketplace", icon: Store },
   { id: "stripe", label: "Zahlungen", icon: CreditCard },
-  { id: "marketplace-settings", label: "Pakete & Einstellungen", icon: Settings2 },
-  { id: "calendar-sync", label: "Kalender-Sync", icon: CalendarSync },
+  { id: "contacts", label: "Kontakte", icon: Contact, requiredTier: "professional" },
+  { id: "calendar", label: "Kalender", icon: CalendarDays, requiredTier: "professional" },
+  { id: "booking-calendar", label: "Buchungskalender", icon: CalendarCheck, requiredTier: "professional" },
+  { id: "templates", label: "Vorlagen", icon: FileText, requiredTier: "professional" },
+  { id: "budgetengine", label: "Budget Engine", icon: Wallet, requiredTier: "professional" },
+  { id: "runofshow", label: "Run of Show", icon: Radio, requiredTier: "professional" },
+  { id: "team", label: "Team", icon: Users, requiredTier: "enterprise" },
+  { id: "files", label: "Dateien", icon: FolderOpen, requiredTier: "enterprise" },
+  { id: "reports", label: "Berichte", icon: BarChart3, requiredTier: "enterprise" },
+  { id: "guides", label: "Guides", icon: Users, requiredTier: "enterprise" },
+  { id: "calendar-sync", label: "Kalender-Sync", icon: CalendarSync, requiredTier: "enterprise" },
+  { id: "marketplace-settings", label: "Pakete & Abo", icon: Settings2 },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
 
@@ -326,6 +332,24 @@ export default function AgencyDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [currentTier, setCurrentTier] = useState<Tier>("starter");
+
+  useEffect(() => {
+    if (!agency?.id) return;
+    supabase
+      .from("agency_marketplace_subscriptions")
+      .select("tier, is_active")
+      .eq("agency_id", agency.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.is_active && data.tier) setCurrentTier(data.tier as Tier);
+      });
+  }, [agency?.id]);
+
+  const isLocked = useCallback(
+    (item: NavItem) => TIER_RANK[item.requiredTier ?? "starter"] > TIER_RANK[currentTier],
+    [currentTier],
+  );
 
   // Loading state
   if (authLoading) {
@@ -394,6 +418,16 @@ export default function AgencyDashboard() {
   };
 
   const renderContent = () => {
+    const currentItem = navItems.find((i) => i.id === activeSection);
+    if (currentItem && isLocked(currentItem)) {
+      return (
+        <LockedModuleUpsell
+          sectionId={activeSection}
+          requiredTier={currentItem.requiredTier ?? "professional"}
+          onUpgrade={() => navigate("/agency/pricing")}
+        />
+      );
+    }
     switch (activeSection) {
       case "dashboard":
         return <AgencyOverview onNavigate={(s) => handleNavigate(s as Section)} />;
@@ -507,6 +541,11 @@ export default function AgencyDashboard() {
         <nav className={cn("flex-1 space-y-0.5 overflow-y-auto scrollbar-thin scrollbar-thumb-white/5", sidebarCollapsed ? "p-2" : "p-3")}>
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
+            const locked = isLocked(item);
+            const tierLabel = item.requiredTier === "enterprise" ? "ENT" : item.requiredTier === "professional" ? "PRO" : null;
+            const tierPillClass = item.requiredTier === "enterprise"
+              ? "bg-gradient-to-r from-amber-500/80 to-orange-600/80 text-white border-0"
+              : "bg-gradient-to-r from-violet-500/80 to-pink-500/80 text-white border-0";
             return (
               <button
                 key={item.id}
@@ -520,7 +559,6 @@ export default function AgencyDashboard() {
                     : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]"
                 )}
               >
-                {/* Active left border accent */}
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active"
@@ -532,7 +570,14 @@ export default function AgencyDashboard() {
                 {!sidebarCollapsed && (
                   <>
                     <span className="flex-1 text-left">{item.label}</span>
-                    {item.badge && (
+                    {locked && tierLabel ? (
+                      <span className={cn(
+                        "text-[9px] font-black px-1.5 py-[2px] rounded-full tracking-wider",
+                        tierPillClass,
+                      )}>
+                        {tierLabel}
+                      </span>
+                    ) : item.badge ? (
                       <Badge
                         variant="outline"
                         className={cn(
@@ -544,7 +589,7 @@ export default function AgencyDashboard() {
                       >
                         {item.badge}
                       </Badge>
-                    )}
+                    ) : null}
                   </>
                 )}
               </button>

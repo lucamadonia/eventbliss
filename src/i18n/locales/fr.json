@@ -2646,6 +2646,91 @@
       "depositPaid": "Acompte Payé",
       "depositPending": "Acompte en Attente",
       "viewHistory": "Voir l'Historique"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Passer à {{tier}}",
+        "founderQuote": "« Nous l'avons construit parce que le chaos d'Excel nous rendait nous-mêmes fous. » — Luca, Fondateur",
+        "savingsLabel": "LANCEMENT",
+        "perMonth": "/ mois"
+      },
+      "contacts": {
+        "title": "CRM et Contacts",
+        "hook": "Arrête de suivre leads et clients dans trois outils différents.",
+        "b0": "Tous les contacts avec historique, tags et notes au même endroit",
+        "b1": "Notation 5 dimensions : qualité, ponctualité, prix, communication, flex",
+        "b2": "Segmentation par type d'événement et spécialisation"
+      },
+      "templates": {
+        "title": "Bibliothèque de Modèles",
+        "hook": "Construire chaque événement depuis zéro ? Fini.",
+        "b0": "Duplique les événements récurrents et offres en secondes",
+        "b1": "Recommandations IA selon le type d'événement",
+        "b2": "Checklists et modèles d'offre brandés"
+      },
+      "calendar": {
+        "title": "Calendrier",
+        "hook": "Un endroit pour tous les événements, deadlines et jalons.",
+        "b0": "Vue mensuelle et hebdomadaire avec code couleur",
+        "b1": "Re-planning par drag-and-drop",
+        "b2": "Filtres par type, statut et membre d'équipe"
+      },
+      "bookingCalendar": {
+        "title": "Calendrier de Réservation",
+        "hook": "Plus jamais de doubles réservations, plus jamais de créneaux vides.",
+        "b0": "Disponibilité de service visuelle par équipe ou lieu",
+        "b1": "Gestion des créneaux et détection automatique des vides",
+        "b2": "Connecté directement aux réservations du Marketplace"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Sais-tu si ton dernier événement était rentable ?",
+        "b0": "Forecast et prévu-vs-réel par événement, live et automatisé",
+        "b1": "10 catégories de coût : venue, catering, crew, marketing",
+        "b2": "Score de rentabilité par événement et workflow d'approbation"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 cocktail — ton équipe le sait avant que tu demandes.",
+        "b0": "Timeline à la minute avec statut live et responsables",
+        "b1": "Optimisé mobile : clients, photographes, catering",
+        "b2": "Mises à jour live pendant l'événement en temps réel"
+      },
+      "team": {
+        "title": "Gestion d'Équipe",
+        "hook": "3 employés, 1 calendrier, zéro double-réservation.",
+        "b0": "Plusieurs comptes avec 4 rôles (Owner, Admin, Manager, Assistant)",
+        "b1": "Permissions granulaires par module et événement",
+        "b2": "Invitations par email et suivi de statut"
+      },
+      "files": {
+        "title": "Gestion de Fichiers",
+        "hook": "Contrats, factures, plans — enfin tout trouvable.",
+        "b0": "Dossiers par événement avec partage client et audit log",
+        "b1": "Contrats, photos, plans, factures archivés centralement",
+        "b2": "Versioning et permissions par fichier"
+      },
+      "reports": {
+        "title": "Rapports et Analytics",
+        "hook": "Quel type d'événement paie ton loyer ? Le rapport le sait.",
+        "b0": "Graphiques de CA, réservations et performance équipe",
+        "b1": "Exports PDF/CSV pour comptable en 2 clics",
+        "b2": "Dashboard KPI avec tendances trimestrielles"
+      },
+      "guides": {
+        "title": "Gestion des Guides",
+        "hook": "Ton équipe de guides maîtrisée — sans tableur.",
+        "b0": "Gère les guides et assigne par événement",
+        "b1": "Disponibilités, spécialisations et langues",
+        "b2": "Suivi de performance et évaluations"
+      },
+      "calendarSync": {
+        "title": "Sync Calendrier",
+        "hook": "Un rendez-vous. Google, Outlook, iCal — synchronisé automatiquement.",
+        "b0": "Sync bidirectionnel avec Google Calendar, Outlook et iCal",
+        "b1": "Avertissements automatiques de conflits",
+        "b2": "Configuration par utilisateur pour l'équipe"
+      }
     }
   },
   "games": {

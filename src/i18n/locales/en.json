@@ -3075,6 +3075,91 @@
       "depositPaid": "Deposit Paid",
       "depositPending": "Deposit Pending",
       "viewHistory": "View History"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Upgrade to {{tier}}",
+        "founderQuote": "“We built this because Excel-chaos drove us crazy ourselves.” — Luca, Founder",
+        "savingsLabel": "LAUNCH",
+        "perMonth": "/ month"
+      },
+      "contacts": {
+        "title": "CRM & Contacts",
+        "hook": "Stop tracking leads and clients across three tools.",
+        "b0": "All contacts with history, tags and ratings in one place",
+        "b1": "5-dimension rating: quality, punctuality, price, communication, flex",
+        "b2": "Segmentation by event type and specialization"
+      },
+      "templates": {
+        "title": "Template Library",
+        "hook": "Building every event from scratch? Not anymore.",
+        "b0": "Duplicate recurring events and offers in seconds",
+        "b1": "AI recommendations for the right template per event type",
+        "b2": "Branded checklists and offer templates"
+      },
+      "calendar": {
+        "title": "Calendar",
+        "hook": "One place for all events, deadlines and milestones.",
+        "b0": "Monthly and weekly view with color-coding",
+        "b1": "Drag-and-drop event rescheduling",
+        "b2": "Filters by event type, status and team member"
+      },
+      "bookingCalendar": {
+        "title": "Booking Calendar",
+        "hook": "Never double-book, never miss an opening again.",
+        "b0": "Service availability visualised per team or location",
+        "b1": "Time-slot management and auto-detection of gaps",
+        "b2": "Wired directly to Marketplace bookings"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Do you know if your last event was profitable?",
+        "b0": "Forecast and plan-vs-actual per event, live and automated",
+        "b1": "10 cost categories inc. venue, catering, crew, marketing",
+        "b2": "Profitability score per event and approval workflow"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 champagne reception — your team knows before you ask.",
+        "b0": "Minute-accurate schedule with live status and owners",
+        "b1": "Mobile-optimized for clients, photographers, catering",
+        "b2": "Live updates during the event in real time"
+      },
+      "team": {
+        "title": "Team Management",
+        "hook": "3 employees, 1 calendar, zero double-bookings.",
+        "b0": "Multiple accounts with 4 roles (Owner, Admin, Manager, Assistant)",
+        "b1": "Granular permissions per module and event",
+        "b2": "Email invites, status tracking per member"
+      },
+      "files": {
+        "title": "File Management",
+        "hook": "Contracts, invoices, plans — finally all findable.",
+        "b0": "Per-event folders with client-sharing and audit log",
+        "b1": "Contracts, photos, plans, invoices centrally archived",
+        "b2": "Versioning and permissions per file"
+      },
+      "reports": {
+        "title": "Reports & Analytics",
+        "hook": "Which event type pays your rent? The report knows.",
+        "b0": "Revenue, booking and team-performance charts",
+        "b1": "PDF/CSV exports for accountants in 2 clicks",
+        "b2": "KPI dashboard with quarterly trends"
+      },
+      "guides": {
+        "title": "Guides Management",
+        "hook": "Your guide team under control — no spreadsheet.",
+        "b0": "Manage tour guides and assign per event",
+        "b1": "Availabilities, specializations and languages",
+        "b2": "Performance tracking and ratings"
+      },
+      "calendarSync": {
+        "title": "Calendar Sync",
+        "hook": "One appointment. Google, Outlook, iCal — automatically synced.",
+        "b0": "Two-way sync with Google Calendar, Outlook and iCal",
+        "b1": "Automatic conflict warnings for overlaps",
+        "b2": "Per-user config for team members"
+      }
     }
   },
   "games": {

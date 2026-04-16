@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Settings, LogOut, Calendar, Crown, ShieldCheck, CreditCard, Loader2 } from "lucide-react";
+import { Settings, LogOut, Calendar, Crown, ShieldCheck, CreditCard, Loader2, Building2 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
@@ -126,8 +126,15 @@ export function UserProfileMenu() {
             {t("premium.manageSubscription")}
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem
+          onClick={() => navigate("/agency/pricing")}
+          className="cursor-pointer"
+        >
+          <Building2 className="mr-2 h-4 w-4" />
+          {t("profile.becomeAgency", "Für Agenturen")}
+        </DropdownMenuItem>
         {isAdmin && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => navigate("/admin")}
             className="cursor-pointer"
           >

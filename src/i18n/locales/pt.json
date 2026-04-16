@@ -2528,6 +2528,91 @@
       "depositPaid": "Sinal Pago",
       "depositPending": "Sinal Pendente",
       "viewHistory": "Ver Histórico"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Fazer upgrade para {{tier}}",
+        "founderQuote": "“Construímos isto porque o caos do Excel deixava-nos malucos a nós próprios.” — Luca, Fundador",
+        "savingsLabel": "LANÇAMENTO",
+        "perMonth": "/ mês"
+      },
+      "contacts": {
+        "title": "CRM e Contactos",
+        "hook": "Pára de fazer tracking de leads e clientes em três ferramentas.",
+        "b0": "Todos os contactos com histórico, tags e ratings num só lugar",
+        "b1": "Rating 5 dimensões: qualidade, pontualidade, preço, comunicação, flex",
+        "b2": "Segmentação por tipo de evento e especialização"
+      },
+      "templates": {
+        "title": "Biblioteca de Modelos",
+        "hook": "Construir cada evento do zero? Acabou.",
+        "b0": "Duplica eventos recorrentes e ofertas em segundos",
+        "b1": "Recomendações IA por tipo de evento",
+        "b2": "Checklists e modelos de oferta com a tua marca"
+      },
+      "calendar": {
+        "title": "Calendário",
+        "hook": "Um lugar para todos os eventos, prazos e marcos.",
+        "b0": "Vista mensal e semanal com color-coding",
+        "b1": "Reagendamento drag-and-drop",
+        "b2": "Filtros por tipo, estado e membro da equipa"
+      },
+      "bookingCalendar": {
+        "title": "Calendário de Reservas",
+        "hook": "Nunca mais reservas duplicadas, nunca mais slots vazios.",
+        "b0": "Disponibilidade de serviço visual por equipa ou localização",
+        "b1": "Gestão de slots e auto-detecção de gaps",
+        "b2": "Ligado diretamente às reservas do Marketplace"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Sabes se o teu último evento foi rentável?",
+        "b0": "Forecast e planeado-vs-real por evento, live e automatizado",
+        "b1": "10 categorias de custo: venue, catering, crew, marketing",
+        "b2": "Score de rentabilidade por evento e workflow de aprovação"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 cocktail — a tua equipa sabe antes de perguntares.",
+        "b0": "Cronograma ao minuto com estado live e responsáveis",
+        "b1": "Mobile-otimizado para clientes, fotógrafos, catering",
+        "b2": "Atualizações live durante o evento em tempo real"
+      },
+      "team": {
+        "title": "Gestão de Equipa",
+        "hook": "3 colaboradores, 1 calendário, zero reservas duplicadas.",
+        "b0": "Múltiplas contas com 4 papéis (Owner, Admin, Manager, Assistant)",
+        "b1": "Permissões granulares por módulo e evento",
+        "b2": "Convites por email e tracking de estado"
+      },
+      "files": {
+        "title": "Gestão de Ficheiros",
+        "hook": "Contratos, faturas, plantas — finalmente tudo encontrável.",
+        "b0": "Pastas por evento com partilha client e audit log",
+        "b1": "Contratos, fotos, plantas, faturas centralizados",
+        "b2": "Versionamento e permissões por ficheiro"
+      },
+      "reports": {
+        "title": "Relatórios e Analytics",
+        "hook": "Que tipo de evento paga a tua renda? O relatório sabe.",
+        "b0": "Gráficos de receita, reservas e desempenho de equipa",
+        "b1": "Exports PDF/CSV para contabilista em 2 clicks",
+        "b2": "Dashboard KPI com tendências trimestrais"
+      },
+      "guides": {
+        "title": "Gestão de Guias",
+        "hook": "A tua equipa de guias sob controlo — sem folha de cálculo.",
+        "b0": "Gere tour-guides e atribui por evento",
+        "b1": "Disponibilidades, especializações e idiomas",
+        "b2": "Tracking de desempenho e avaliações"
+      },
+      "calendarSync": {
+        "title": "Sincronização de Calendário",
+        "hook": "Um compromisso. Google, Outlook, iCal — sincronizado automaticamente.",
+        "b0": "Sync bidirecional com Google Calendar, Outlook e iCal",
+        "b1": "Avisos automáticos de conflitos",
+        "b2": "Config por utilizador para membros da equipa"
+      }
     }
   },
   "games": {

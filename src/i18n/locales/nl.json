@@ -2599,6 +2599,91 @@
       "depositPaid": "Aanbetaling Voldaan",
       "depositPending": "Aanbetaling in Afwachting",
       "viewHistory": "Geschiedenis Bekijken"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Upgrade naar {{tier}}",
+        "founderQuote": "„We hebben dit gebouwd omdat Excel-chaos ons zelf gek maakte.” — Luca, Oprichter",
+        "savingsLabel": "LAUNCH",
+        "perMonth": "/ maand"
+      },
+      "contacts": {
+        "title": "CRM & Contacten",
+        "hook": "Stop met leads en klanten in drie tools tegelijk te tracken.",
+        "b0": "Alle contacten met historie, tags en ratings op één plek",
+        "b1": "5-dimensies rating: kwaliteit, punctualiteit, prijs, communicatie, flex",
+        "b2": "Segmentatie per evenement-type en specialisatie"
+      },
+      "templates": {
+        "title": "Templatebibliotheek",
+        "hook": "Elk event vanaf nul opbouwen? Niet meer.",
+        "b0": "Dupliceer terugkerende events en offertes in seconden",
+        "b1": "AI-aanbevelingen per event-type",
+        "b2": "Branded checklists en offerte-templates"
+      },
+      "calendar": {
+        "title": "Kalender",
+        "hook": "Één plek voor alle events, deadlines en mijlpalen.",
+        "b0": "Maand- en weekweergave met color-coding",
+        "b1": "Drag-and-drop herplanning",
+        "b2": "Filters op type, status en teamlid"
+      },
+      "bookingCalendar": {
+        "title": "Boekingskalender",
+        "hook": "Nooit meer dubbele boekingen, nooit meer lege slots.",
+        "b0": "Service-beschikbaarheid visueel per team of locatie",
+        "b1": "Slot-management en automatische gat-detectie",
+        "b2": "Direct gekoppeld aan Marketplace-boekingen"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Weet je of je laatste event winstgevend was?",
+        "b0": "Forecast en plan-vs-werkelijk per event, live en geautomatiseerd",
+        "b1": "10 kostencategorieën: venue, catering, crew, marketing",
+        "b2": "Rentabiliteits-score per event en goedkeuringsflow"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 receptie — je team weet het voor je vraagt.",
+        "b0": "Minuut-nauwkeurig draaiboek met live status en verantwoordelijken",
+        "b1": "Mobile-optimized voor klanten, fotografen, catering",
+        "b2": "Live updates tijdens het event in real-time"
+      },
+      "team": {
+        "title": "Team-beheer",
+        "hook": "3 medewerkers, 1 kalender, nul dubbele boekingen.",
+        "b0": "Meerdere accounts met 4 rollen (Owner, Admin, Manager, Assistant)",
+        "b1": "Granulaire rechten per module en event",
+        "b2": "E-mail uitnodigingen, status tracking per lid"
+      },
+      "files": {
+        "title": "Bestandsbeheer",
+        "hook": "Contracten, facturen, plannen — eindelijk alles vindbaar.",
+        "b0": "Per-event mappen met client-delen en audit log",
+        "b1": "Contracten, foto's, plannen, facturen centraal gearchiveerd",
+        "b2": "Versionering en rechten per bestand"
+      },
+      "reports": {
+        "title": "Rapporten & Analytics",
+        "hook": "Welk event-type betaalt je huur? Het rapport weet het.",
+        "b0": "Omzet-, boekings- en teamprestatie-grafieken",
+        "b1": "PDF/CSV exports voor accountant in 2 clicks",
+        "b2": "KPI-dashboard met kwartaal-trends"
+      },
+      "guides": {
+        "title": "Guides-beheer",
+        "hook": "Je guide-team onder controle — zonder spreadsheet.",
+        "b0": "Beheer tour-guides en wijs toe per event",
+        "b1": "Beschikbaarheid, specialisaties en talen",
+        "b2": "Prestatie-tracking en beoordelingen"
+      },
+      "calendarSync": {
+        "title": "Kalender-sync",
+        "hook": "Één afspraak. Google, Outlook, iCal — automatisch gesynct.",
+        "b0": "Two-way sync met Google Calendar, Outlook en iCal",
+        "b1": "Automatische conflict-waarschuwingen",
+        "b2": "Per-gebruiker config voor teamleden"
+      }
     }
   },
   "games": {

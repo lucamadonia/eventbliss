@@ -2746,6 +2746,91 @@
       "depositPaid": "Depósito Pagado",
       "depositPending": "Depósito Pendiente",
       "viewHistory": "Ver Historial"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Actualiza a {{tier}}",
+        "founderQuote": "“Lo construimos porque el caos de Excel nos volvía locos a nosotros mismos.” — Luca, Fundador",
+        "savingsLabel": "LANZAMIENTO",
+        "perMonth": "/ mes"
+      },
+      "contacts": {
+        "title": "CRM y Contactos",
+        "hook": "Deja de rastrear leads y clientes en tres herramientas distintas.",
+        "b0": "Todos los contactos con historial, etiquetas y valoraciones en un solo lugar",
+        "b1": "Rating de 5 dimensiones: calidad, puntualidad, precio, comunicación, flex",
+        "b2": "Segmentación por tipo de evento y especialización"
+      },
+      "templates": {
+        "title": "Biblioteca de Plantillas",
+        "hook": "¿Construir cada evento desde cero? Se acabó.",
+        "b0": "Duplica eventos recurrentes y ofertas en segundos",
+        "b1": "Recomendaciones IA por tipo de evento",
+        "b2": "Checklists y plantillas de oferta con tu marca"
+      },
+      "calendar": {
+        "title": "Calendario",
+        "hook": "Un lugar para todos los eventos, deadlines e hitos.",
+        "b0": "Vista mensual y semanal con código de colores",
+        "b1": "Reprogramación por drag-and-drop",
+        "b2": "Filtros por tipo, estado y miembro del equipo"
+      },
+      "bookingCalendar": {
+        "title": "Calendario de Reservas",
+        "hook": "Nunca más reservas duplicadas, nunca más huecos.",
+        "b0": "Disponibilidad de servicio visual por equipo o localización",
+        "b1": "Gestión de slots y detección automática de huecos",
+        "b2": "Conectado directamente a las reservas del Marketplace"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "¿Sabes si tu último evento fue rentable?",
+        "b0": "Forecast y plan-vs-real por evento, en vivo y automatizado",
+        "b1": "10 categorías de coste: venue, catering, crew, marketing",
+        "b2": "Score de rentabilidad por evento y flujo de aprobación"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 cóctel — tu equipo lo sabe antes de que preguntes.",
+        "b0": "Cronograma al minuto con estado live y responsables",
+        "b1": "Optimizado para móvil: clientes, fotógrafos, catering",
+        "b2": "Actualizaciones en vivo durante el evento en tiempo real"
+      },
+      "team": {
+        "title": "Gestión de Equipo",
+        "hook": "3 empleados, 1 calendario, cero dobles reservas.",
+        "b0": "Múltiples cuentas con 4 roles (Owner, Admin, Manager, Assistant)",
+        "b1": "Permisos granulares por módulo y evento",
+        "b2": "Invitaciones por email y seguimiento de estado"
+      },
+      "files": {
+        "title": "Gestión de Archivos",
+        "hook": "Contratos, facturas, planos — por fin todo encontrable.",
+        "b0": "Carpetas por evento con compartir y audit log",
+        "b1": "Contratos, fotos, planos, facturas archivados centralmente",
+        "b2": "Versionado y permisos por archivo"
+      },
+      "reports": {
+        "title": "Informes y Analytics",
+        "hook": "¿Qué tipo de evento paga tu alquiler? El informe lo sabe.",
+        "b0": "Gráficos de ingresos, reservas y rendimiento de equipo",
+        "b1": "Exportar PDF/CSV para tu gestor en 2 clicks",
+        "b2": "Dashboard KPI con tendencias trimestrales"
+      },
+      "guides": {
+        "title": "Gestión de Guides",
+        "hook": "Tu equipo de guides bajo control — sin hoja de cálculo.",
+        "b0": "Gestiona tour-guides y asígnalos por evento",
+        "b1": "Disponibilidades, especializaciones e idiomas",
+        "b2": "Seguimiento de rendimiento y valoraciones"
+      },
+      "calendarSync": {
+        "title": "Sincronización de Calendario",
+        "hook": "Una cita. Google, Outlook, iCal — sincronizado automáticamente.",
+        "b0": "Sync bidireccional con Google Calendar, Outlook e iCal",
+        "b1": "Advertencias automáticas de conflictos",
+        "b2": "Configuración por usuario para miembros del equipo"
+      }
     }
   },
   "games": {

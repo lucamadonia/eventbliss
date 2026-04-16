@@ -2528,6 +2528,91 @@
       "depositPaid": "Zaliczka Opłacona",
       "depositPending": "Zaliczka Oczekująca",
       "viewHistory": "Zobacz Historię"
+    },
+    "locked": {
+      "shared": {
+        "unlock": "Przejdź na {{tier}}",
+        "founderQuote": "„Sami zbudowaliśmy to, bo chaos w Excelu doprowadzał nas do szału.” — Luca, Założyciel",
+        "savingsLabel": "START",
+        "perMonth": "/ miesiąc"
+      },
+      "contacts": {
+        "title": "CRM i Kontakty",
+        "hook": "Przestań śledzić leady i klientów w trzech narzędziach naraz.",
+        "b0": "Wszystkie kontakty z historią, tagami i ocenami w jednym miejscu",
+        "b1": "Rating 5 wymiarów: jakość, punktualność, cena, komunikacja, flex",
+        "b2": "Segmentacja wg typu eventu i specjalizacji"
+      },
+      "templates": {
+        "title": "Biblioteka Szablonów",
+        "hook": "Budować każdy event od zera? Już nie.",
+        "b0": "Duplikuj powtarzające się eventy i oferty w sekundy",
+        "b1": "Rekomendacje AI per typ eventu",
+        "b2": "Brandowane checklisty i szablony ofert"
+      },
+      "calendar": {
+        "title": "Kalendarz",
+        "hook": "Jedno miejsce dla wszystkich eventów, deadlineów i kamieni milowych.",
+        "b0": "Widok miesięczny i tygodniowy z kolorami",
+        "b1": "Drag-and-drop do przekładania",
+        "b2": "Filtry wg typu, statusu i członka zespołu"
+      },
+      "bookingCalendar": {
+        "title": "Kalendarz rezerwacji",
+        "hook": "Koniec z podwójnymi rezerwacjami, koniec z pustkami.",
+        "b0": "Dostępność serwisu wizualnie per zespół lub lokalizacja",
+        "b1": "Zarządzanie slotami i auto-wykrywanie luk",
+        "b2": "Bezpośrednio połączone z rezerwacjami Marketplace"
+      },
+      "budgetengine": {
+        "title": "Budget Engine",
+        "hook": "Wiesz, czy ostatni event był rentowny?",
+        "b0": "Prognoza i plan-vs-wykonanie per event, na żywo i automatycznie",
+        "b1": "10 kategorii kosztów: venue, catering, crew, marketing",
+        "b2": "Score rentowności per event i workflow zatwierdzania"
+      },
+      "runofshow": {
+        "title": "Run of Show",
+        "hook": "18:42 koktajl — zespół wie, zanim zapytasz.",
+        "b0": "Plan co do minuty z live-statusem i odpowiedzialnymi",
+        "b1": "Mobile-zoptymalizowany dla klientów, fotografów, cateringu",
+        "b2": "Aktualizacje live podczas eventu w czasie rzeczywistym"
+      },
+      "team": {
+        "title": "Zarządzanie zespołem",
+        "hook": "3 pracowników, 1 kalendarz, zero podwójnych rezerwacji.",
+        "b0": "Wiele kont z 4 rolami (Owner, Admin, Manager, Assistant)",
+        "b1": "Szczegółowe uprawnienia per moduł i event",
+        "b2": "Zaproszenia mailowe i tracking statusu"
+      },
+      "files": {
+        "title": "Zarządzanie plikami",
+        "hook": "Umowy, faktury, plany — nareszcie wszystko do znalezienia.",
+        "b0": "Foldery per event z udostępnianiem klientowi i audit log",
+        "b1": "Umowy, zdjęcia, plany, faktury centralnie zarchiwizowane",
+        "b2": "Wersjonowanie i uprawnienia per plik"
+      },
+      "reports": {
+        "title": "Raporty i Analityka",
+        "hook": "Który typ eventu płaci Twoją czynsz? Raport wie.",
+        "b0": "Wykresy przychodów, rezerwacji i wydajności zespołu",
+        "b1": "Eksporty PDF/CSV dla księgowego w 2 klikach",
+        "b2": "Dashboard KPI z trendami kwartalnymi"
+      },
+      "guides": {
+        "title": "Zarządzanie przewodnikami",
+        "hook": "Twój zespół przewodników pod kontrolą — bez arkusza.",
+        "b0": "Zarządzaj tour-guide'ami i przydzielaj per event",
+        "b1": "Dostępności, specjalizacje i języki",
+        "b2": "Tracking wydajności i oceny"
+      },
+      "calendarSync": {
+        "title": "Synchronizacja kalendarza",
+        "hook": "Jeden termin. Google, Outlook, iCal — zsynchronizowane automatycznie.",
+        "b0": "Dwukierunkowa sync z Google Calendar, Outlook i iCal",
+        "b1": "Automatyczne ostrzeżenia o konfliktach",
+        "b2": "Konfiguracja per użytkownik dla członków zespołu"
+      }
     }
   },
   "games": {

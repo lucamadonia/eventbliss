@@ -255,8 +255,8 @@ export default function AgencyApply() {
                 <p className="text-sm text-muted-foreground mb-8">
                   {t("agencyApply.success.nextSteps", "Wir prüfen deine Bewerbung und melden uns innerhalb von 48 Stunden.")}
                 </p>
-                <Button onClick={() => navigate("/")} size="lg">
-                  {t("agencyApply.success.backToHome", "Zurück zur Startseite")}
+                <Button onClick={() => navigate("/agency?welcome=1")} size="lg">
+                  {t("agencyApply.success.goToDashboard", "Zum Agency Dashboard")}
                 </Button>
               </GlassCard>
             </motion.div>
