@@ -98,7 +98,7 @@ export default function AgencyPricing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0118] via-[#1a0a2e] to-[#0a0118] text-white">
+    <div className="dark min-h-screen bg-gradient-to-b from-[#0a0118] via-[#1a0a2e] to-[#0a0118] text-white">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(124,58,237,0.3),transparent_50%),radial-gradient(circle_at_80%_100%,rgba(236,72,153,0.3),transparent_50%)]" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28">
