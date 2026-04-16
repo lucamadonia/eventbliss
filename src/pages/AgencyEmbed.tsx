@@ -14,31 +14,35 @@ export default function AgencyEmbed() {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
   const theme = params.get("theme") === "light" ? "light" : "dark";
+  const showAppHeader = params.get("header") === "1";
 
   useEffect(() => {
-    const prev = document.body.className;
-    document.documentElement.classList.add("embed-mode");
-    document.body.classList.add("embed-mode");
-    if (theme === "light") {
-      document.body.classList.add("embed-light");
-    }
+    const html = document.documentElement;
+    const body = document.body;
+    // Always tag as embed (used for theme + minor tweaks)
+    html.classList.add("embed-mode");
+    body.classList.add("embed-mode");
+    if (!showAppHeader) body.classList.add("embed-hide-chrome");
+    if (theme === "light") body.classList.add("embed-light");
     return () => {
-      document.documentElement.classList.remove("embed-mode");
-      document.body.className = prev;
+      html.classList.remove("embed-mode");
+      body.classList.remove("embed-mode", "embed-hide-chrome", "embed-light");
     };
-  }, [theme]);
+  }, [theme, showAppHeader]);
 
   return (
     <>
       <style>{`
-        /* Hide global app chrome in embed mode */
-        .embed-mode .landing-header,
-        .embed-mode .landing-footer,
-        .embed-mode .mobile-bottom-nav,
-        .embed-mode footer[role="contentinfo"],
-        .embed-mode header[role="banner"] {
+        /* Hide global app chrome only when embed-hide-chrome flag is set */
+        .embed-hide-chrome .landing-header,
+        .embed-hide-chrome .landing-footer,
+        .embed-hide-chrome .mobile-bottom-nav,
+        .embed-hide-chrome footer[role="contentinfo"],
+        .embed-hide-chrome header[role="banner"] {
           display: none !important;
         }
+        /* Always collapse top padding so embed content starts at the top */
+        .embed-mode main, .embed-mode > #root > div > main { padding-top: 0 !important; }
         .embed-mode { min-height: 100vh; }
         .embed-light { background: #fff !important; color: #111 !important; }
       `}</style>
