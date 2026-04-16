@@ -388,6 +388,21 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     }
   }, [phase, round, currentPlayerIdx, selectedAnswer, currentGeo, svRound]);
 
+  // Initial-state handshake: late joiners request current state, host replies.
+  useEffect(() => {
+    if (!online || !online.isHost) return;
+    return online.onBroadcast('request-state', () => {
+      if (phase !== 'setup') broadcastFindItState();
+    });
+  }, [online, phase, broadcastFindItState]);
+
+  const requestedStateRef = useRef(false);
+  useEffect(() => {
+    if (!online || online.isHost || requestedStateRef.current) return;
+    requestedStateRef.current = true;
+    online.broadcast('request-state', {});
+  }, [online]);
+
   // ------- Setup handler -------
   const handleSetupStart = useCallback((
     setupPlayers: { id: string; name: string; color: string; avatar: string }[],

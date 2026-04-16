@@ -151,13 +151,27 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   // ---------------------------------------------------------------------------
 
   const castVote = (choice: 'A' | 'B') => {
+    // Online mode: everyone votes simultaneously on their own device
+    if (online) {
+      const myId = online.myPlayerId;
+      if (!myId || roundVotes[myId]) return; // already voted
+      if (online.isHost) {
+        applyVoteLocally(myId, choice);
+      } else {
+        // Non-host broadcasts to host and optimistically shows own vote
+        online.broadcast('player-action', { type: 'vote', playerId: myId, choice });
+        setRoundVotes(prev => prev[myId] ? prev : { ...prev, [myId]: choice });
+      }
+      return;
+    }
+
+    // Offline pass-and-play (unchanged)
     const voter = players[voterIdx];
     if (!voter) return;
     const newVotes = { ...roundVotes, [voter.id]: choice };
     setRoundVotes(newVotes);
 
     if (voterIdx + 1 >= players.length) {
-      // All voted
       if (mode === 'speed') speedTimerHook.pause();
       if (mode === 'debatte') {
         debateTimer.reset(30);
@@ -231,8 +245,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const winner = useMemo(() =>
     [...players].sort((a, b) => b.score - a.score)[0], [players]);
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
+  /* ---- Online: host broadcast helper ---- */
+  const broadcastGameState = useCallback(() => {
     if (!online?.isHost) return;
     online.broadcast('game-state', {
       phase, currentRound, totalRounds,
@@ -240,9 +254,51 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       roundVotes,
       players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
     });
-  }, [phase, currentRound, currentPair, roundVotes, players, online]);
+  }, [online, phase, currentRound, totalRounds, currentPair, roundVotes, players]);
 
-  /* ---- Online: non-host syncs and broadcasts own vote ---- */
+  /* ---- Online: host broadcasts on state change ---- */
+  useEffect(() => {
+    broadcastGameState();
+  }, [broadcastGameState]);
+
+  /* ---- Online: handshake — host replies to late joiners with full state ---- */
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('request-state', () => broadcastGameState());
+  }, [online, broadcastGameState]);
+
+  /* ---- Online: host merges votes coming from non-hosts ---- */
+  const applyVoteLocally = useCallback((playerId: string, choice: 'A' | 'B') => {
+    setRoundVotes(prev => {
+      if (prev[playerId]) return prev;
+      const next = { ...prev, [playerId]: choice };
+      if (online?.isHost && Object.keys(next).length >= players.length) {
+        // All players voted → transition phase
+        queueMicrotask(() => {
+          if (mode === 'speed') speedTimerHook.pause();
+          if (mode === 'debatte') {
+            debateTimer.reset(30);
+            debateTimer.start();
+            setPhase('debate');
+          } else {
+            setPhase('reveal');
+          }
+        });
+      }
+      return next;
+    });
+  }, [online, players.length, mode, speedTimerHook, debateTimer]);
+
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('player-action', (data) => {
+      if (data.type === 'vote' && typeof data.playerId === 'string' && (data.choice === 'A' || data.choice === 'B')) {
+        applyVoteLocally(data.playerId, data.choice);
+      }
+    });
+  }, [online, applyVoteLocally]);
+
+  /* ---- Online: non-host syncs game-state ---- */
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('game-state', (data) => {
@@ -257,6 +313,14 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
         })));
       }
     });
+  }, [online]);
+
+  /* ---- Online: non-host requests current state once on mount ---- */
+  const requestedStateRef = useRef(false);
+  useEffect(() => {
+    if (!online || online.isHost || requestedStateRef.current) return;
+    requestedStateRef.current = true;
+    online.broadcast('request-state', {});
   }, [online]);
 
   // ---------------------------------------------------------------------------
@@ -299,17 +363,29 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
 
       <AnimatePresence mode="wait">
         {/* VOTING */}
-        {phase === 'voting' && currentPair && (
+        {phase === 'voting' && currentPair && (() => {
+          const myId = online?.myPlayerId;
+          const iAlreadyVoted = !!(online && myId && roundVotes[myId]);
+          const votedCount = Object.keys(roundVotes).length;
+          return (
           <motion.div key="voting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-6">
             {/* Voter info */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                style={{ backgroundColor: players[voterIdx]?.color }}>
-                {players[voterIdx]?.avatar}
-              </div>
-              <span className="text-white/60 text-sm">{players[voterIdx]?.name} waehlt</span>
-              {mode === 'speed' && (
+              {online ? (
+                <span className="text-white/60 text-sm">
+                  {iAlreadyVoted ? `Warte auf andere… (${votedCount}/${players.length})` : 'Deine Wahl'}
+                </span>
+              ) : (
+                <>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    style={{ backgroundColor: players[voterIdx]?.color }}>
+                    {players[voterIdx]?.avatar}
+                  </div>
+                  <span className="text-white/60 text-sm">{players[voterIdx]?.name} waehlt</span>
+                </>
+              )}
+              {mode === 'speed' && !online && (
                 <span className={cn("ml-2 font-mono font-bold", speedTimerHook.timeLeft <= 2 ? 'text-red-400 animate-pulse' : 'text-[#ff6b98]')}>
                   {speedTimerHook.timeLeft}s
                 </span>
@@ -319,23 +395,33 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
             <div className="flex gap-1">
               {players.map((_, i) => (
                 <div key={i} className={cn("w-2 h-2 rounded-full",
-                  i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
+                  online
+                    ? (i < votedCount ? 'bg-[#df8eff]' : 'bg-white/10')
+                    : (i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10'))} />
               ))}
             </div>
             {/* Two cards */}
             <div className="flex gap-4 w-full max-w-md mt-4">
-              <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                onClick={() => castVote('A')}
-                className="flex-1 rounded-2xl bg-gradient-to-br from-[#df8eff]/20 to-[#8b5cf6]/20 border-2 border-[#df8eff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#df8eff]/60 hover:shadow-[0_0_30px_rgba(207,150,255,0.2)]">
+              <motion.button whileHover={{ scale: iAlreadyVoted ? 1 : 1.03 }} whileTap={{ scale: iAlreadyVoted ? 1 : 0.97 }}
+                onClick={() => !iAlreadyVoted && castVote('A')}
+                disabled={iAlreadyVoted}
+                className={cn(
+                  "flex-1 rounded-2xl bg-gradient-to-br from-[#df8eff]/20 to-[#8b5cf6]/20 border-2 border-[#df8eff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all",
+                  iAlreadyVoted ? 'opacity-40 cursor-default' : 'hover:border-[#df8eff]/60 hover:shadow-[0_0_30px_rgba(207,150,255,0.2)]',
+                )}>
                 <div className="w-12 h-12 rounded-full bg-[#df8eff]/20 flex items-center justify-center">
                   <span className="text-[#df8eff] font-black text-lg">A</span>
                 </div>
                 <span className="text-xl font-extrabold text-white text-center leading-tight">{currentPair.optionA}</span>
               </motion.button>
 
-              <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                onClick={() => castVote('B')}
-                className="flex-1 rounded-2xl bg-gradient-to-br from-[#8ff5ff]/20 to-[#0ea5e9]/20 border-2 border-[#8ff5ff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all hover:border-[#8ff5ff]/60 hover:shadow-[0_0_30px_rgba(0,227,253,0.2)]">
+              <motion.button whileHover={{ scale: iAlreadyVoted ? 1 : 1.03 }} whileTap={{ scale: iAlreadyVoted ? 1 : 0.97 }}
+                onClick={() => !iAlreadyVoted && castVote('B')}
+                disabled={iAlreadyVoted}
+                className={cn(
+                  "flex-1 rounded-2xl bg-gradient-to-br from-[#8ff5ff]/20 to-[#0ea5e9]/20 border-2 border-[#8ff5ff]/30 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px] transition-all",
+                  iAlreadyVoted ? 'opacity-40 cursor-default' : 'hover:border-[#8ff5ff]/60 hover:shadow-[0_0_30px_rgba(0,227,253,0.2)]',
+                )}>
                 <div className="w-12 h-12 rounded-full bg-[#8ff5ff]/20 flex items-center justify-center">
                   <span className="text-[#8ff5ff] font-black text-lg">B</span>
                 </div>
@@ -343,7 +429,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               </motion.button>
             </div>
           </motion.div>
-        )}
+          );
+        })()}
 
         {/* DEBATE */}
         {phase === 'debate' && currentPair && (
