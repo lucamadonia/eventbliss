@@ -8,11 +8,23 @@ import { toast } from "sonner";
 
 export interface MarketplaceFilters {
   category?: string;
+  subcategory?: string;
   city?: string;
+  country?: string;
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
   search?: string;
+  minParticipants?: number;
+  maxParticipants?: number;
+  maxDurationMinutes?: number;
+  minDurationMinutes?: number;
+  locationType?: string;              // 'on_site' | 'at_agency' | 'online' | 'flexible'
+  priceType?: string;                 // 'per_person' | 'flat_rate' | 'per_hour' | 'custom'
+  agencyTier?: string;                // 'professional' | 'enterprise' — tier preference
+  featuredOnly?: boolean;
+  autoConfirmOnly?: boolean;
+  sortBy?: "popularity" | "rating" | "price_asc" | "price_desc" | "newest";
 }
 
 export interface MarketplaceService {
@@ -69,16 +81,46 @@ export function useMarketplaceServices(
       // Build base query on approved services
       let query = (supabase.from as any)("marketplace_services")
         .select("*, agencies!inner(name, slug, logo_url, marketplace_tier)", { count: "exact" })
-        .eq("status", "approved")
-        .order("is_featured", { ascending: false })
-        .order("avg_rating", { ascending: false })
-        .range(from, to);
+        .eq("status", "approved");
+
+      // Apply sort
+      switch (filters.sortBy) {
+        case "rating":
+          query = query.order("avg_rating", { ascending: false });
+          break;
+        case "price_asc":
+          query = query.order("price_cents", { ascending: true });
+          break;
+        case "price_desc":
+          query = query.order("price_cents", { ascending: false });
+          break;
+        case "newest":
+          query = query.order("created_at", { ascending: false });
+          break;
+        case "popularity":
+        default:
+          query = query.order("is_featured", { ascending: false })
+            .order("booking_count", { ascending: false })
+            .order("avg_rating", { ascending: false });
+          break;
+      }
+      query = query.range(from, to);
 
       if (filters.category) query = query.eq("category", filters.category);
+      if (filters.subcategory) query = query.ilike("subcategory", `%${filters.subcategory}%`);
       if (filters.city) query = query.ilike("location_city", `%${filters.city}%`);
+      if (filters.country) query = query.eq("location_country", filters.country);
       if (filters.minPrice != null) query = query.gte("price_cents", filters.minPrice);
       if (filters.maxPrice != null) query = query.lte("price_cents", filters.maxPrice);
       if (filters.minRating != null) query = query.gte("avg_rating", filters.minRating);
+      if (filters.minParticipants != null) query = query.gte("max_participants", filters.minParticipants);
+      if (filters.maxParticipants != null) query = query.lte("min_participants", filters.maxParticipants);
+      if (filters.minDurationMinutes != null) query = query.gte("duration_minutes", filters.minDurationMinutes);
+      if (filters.maxDurationMinutes != null) query = query.lte("duration_minutes", filters.maxDurationMinutes);
+      if (filters.locationType) query = query.eq("location_type", filters.locationType);
+      if (filters.priceType) query = query.eq("price_type", filters.priceType);
+      if (filters.featuredOnly) query = query.eq("is_featured", true);
+      if (filters.autoConfirmOnly) query = query.eq("auto_confirm", true);
 
       const { data: services, count, error } = await query;
       if (error) throw error;

@@ -256,23 +256,45 @@ export default function Marketplace() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activePriceIdx, setActivePriceIdx] = useState(0);
   const [cityFilter, setCityFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState<string>("all");
   const [ratingFilter, setRatingFilter] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
+  // Advanced
+  const [participantsFilter, setParticipantsFilter] = useState<number | "">("");
+  const [durationMaxFilter, setDurationMaxFilter] = useState<"all" | "60" | "120" | "240" | "480">("all");
+  const [locationTypeFilter, setLocationTypeFilter] = useState<string>("all");
+  const [priceTypeFilter, setPriceTypeFilter] = useState<string>("all");
+  const [tierFilter, setTierFilter] = useState<string>("all");
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [autoConfirmOnly, setAutoConfirmOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<"popularity" | "rating" | "price_asc" | "price_desc" | "newest">("popularity");
   const LIMIT = 12;
 
   // Build filters for the hook
   const hookFilters = useMemo(() => {
     const pf = PRICE_FILTERS[activePriceIdx];
+    const durMaxMap: Record<typeof durationMaxFilter, number | undefined> = {
+      all: undefined, "60": 60, "120": 120, "240": 240, "480": 480,
+    };
     return {
       category: activeCategory !== "all" ? activeCategory : undefined,
       city: cityFilter.trim() || undefined,
+      country: countryFilter !== "all" ? countryFilter : undefined,
       minPrice: pf.min > 0 ? pf.min : undefined,
       maxPrice: pf.max < Infinity ? pf.max : undefined,
       minRating: ratingFilter ? 4 : undefined,
       search: search.trim() || undefined,
+      minParticipants: typeof participantsFilter === "number" && participantsFilter > 0 ? participantsFilter : undefined,
+      maxDurationMinutes: durMaxMap[durationMaxFilter],
+      locationType: locationTypeFilter !== "all" ? locationTypeFilter : undefined,
+      priceType: priceTypeFilter !== "all" ? priceTypeFilter : undefined,
+      agencyTier: tierFilter !== "all" ? tierFilter : undefined,
+      featuredOnly: featuredOnly || undefined,
+      autoConfirmOnly: autoConfirmOnly || undefined,
+      sortBy,
     };
-  }, [activeCategory, activePriceIdx, cityFilter, ratingFilter, search]);
+  }, [activeCategory, activePriceIdx, cityFilter, countryFilter, ratingFilter, search, participantsFilter, durationMaxFilter, locationTypeFilter, priceTypeFilter, tierFilter, featuredOnly, autoConfirmOnly, sortBy]);
 
   const { data, isLoading } = useMarketplaceServices(hookFilters, page, LIMIT);
 
@@ -299,14 +321,31 @@ export default function Marketplace() {
     setActiveCategory("all");
     setActivePriceIdx(0);
     setCityFilter("");
+    setCountryFilter("all");
     setRatingFilter(false);
+    setParticipantsFilter("");
+    setDurationMaxFilter("all");
+    setLocationTypeFilter("all");
+    setPriceTypeFilter("all");
+    setTierFilter("all");
+    setFeaturedOnly(false);
+    setAutoConfirmOnly(false);
+    setSortBy("popularity");
   }, []);
 
   const activeFilterCount = [
     activeCategory !== "all",
     activePriceIdx !== 0,
     cityFilter.trim() !== "",
+    countryFilter !== "all",
     ratingFilter,
+    typeof participantsFilter === "number" && participantsFilter > 0,
+    durationMaxFilter !== "all",
+    locationTypeFilter !== "all",
+    priceTypeFilter !== "all",
+    tierFilter !== "all",
+    featuredOnly,
+    autoConfirmOnly,
   ].filter(Boolean).length;
 
   return (
@@ -410,60 +449,192 @@ export default function Marketplace() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="space-y-3 overflow-hidden"
+              className="space-y-3 overflow-hidden bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4"
             >
-              {/* City */}
-              <div className="flex items-center gap-2">
-                <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] w-16 shrink-0">{t("marketplace.filters.city", "Stadt")}</span>
-                <input
-                  type="text"
-                  value={cityFilter}
-                  onChange={e => setCityFilter(e.target.value)}
-                  placeholder={t("marketplace.filters.cityPlaceholder", "z.B. Berlin")}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/20 outline-none focus:border-[#cf96ff]/40 max-w-[200px]"
-                />
-              </div>
-
-              {/* Price */}
-              <div className="flex items-center gap-2">
-                <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] w-16 shrink-0">{t("marketplace.filters.price", "Preis")}</span>
-                <div className="flex gap-1.5">
-                  {PRICE_FILTERS.map((pf, idx) => (
-                    <button
-                      key={pf.label}
-                      onClick={() => setActivePriceIdx(idx)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium font-['Be_Vietnam_Pro'] transition-all ${
-                        activePriceIdx === idx
-                          ? "bg-[#cf96ff]/20 text-[#cf96ff] border border-[#cf96ff]/30"
-                          : "bg-white/5 text-white/40 border border-transparent hover:bg-white/10"
-                      }`}
-                    >
-                      {t(`marketplace.filters.${pf.key}`, pf.key)}
-                    </button>
-                  ))}
+              {/* Row 1: Location */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.country", "Land")}
+                  </label>
+                  <select
+                    value={countryFilter}
+                    onChange={(e) => setCountryFilter(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                  >
+                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.countryAll", "Alle Länder")}</option>
+                    {["DE", "AT", "CH", "FR", "ES", "IT", "NL", "PT", "BE", "PL", "TR", "AR"].map((c) => (
+                      <option key={c} value={c} className="bg-[#1a1625]">{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.city", "Stadt")}
+                  </label>
+                  <input
+                    type="text"
+                    value={cityFilter}
+                    onChange={(e) => setCityFilter(e.target.value)}
+                    placeholder={t("marketplace.filters.cityPlaceholder", "z.B. Berlin")}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/20 outline-none focus:border-[#cf96ff]/40"
+                  />
                 </div>
               </div>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2">
-                <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] w-16 shrink-0">{t("marketplace.filters.rating", "Bewertung")}</span>
+              {/* Row 2: Price range + sort */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.price", "Preis")}
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PRICE_FILTERS.map((pf, idx) => (
+                      <button
+                        key={pf.label}
+                        onClick={() => setActivePriceIdx(idx)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
+                          activePriceIdx === idx
+                            ? "bg-[#cf96ff]/20 text-[#cf96ff] border border-[#cf96ff]/30"
+                            : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                        }`}
+                      >
+                        {t(`marketplace.filters.${pf.key}`, pf.key)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.sort", "Sortierung")}
+                  </label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                  >
+                    <option value="popularity" className="bg-[#1a1625]">{t("marketplace.filters.sortPopularity", "Beliebt")}</option>
+                    <option value="rating" className="bg-[#1a1625]">{t("marketplace.filters.sortRating", "Beste Bewertung")}</option>
+                    <option value="price_asc" className="bg-[#1a1625]">{t("marketplace.filters.sortPriceAsc", "Preis aufsteigend")}</option>
+                    <option value="price_desc" className="bg-[#1a1625]">{t("marketplace.filters.sortPriceDesc", "Preis absteigend")}</option>
+                    <option value="newest" className="bg-[#1a1625]">{t("marketplace.filters.sortNewest", "Neueste zuerst")}</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 3: Participants + Duration */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.participants", "Für mind. X Personen")}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={500}
+                    value={participantsFilter}
+                    onChange={(e) => setParticipantsFilter(e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value, 10) || 1))}
+                    placeholder={t("marketplace.filters.participantsPlaceholder", "z.B. 10")}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/20 outline-none focus:border-[#cf96ff]/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.duration", "Max. Dauer")}
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { v: "all", l: t("marketplace.filters.durationAll", "Alle") },
+                      { v: "60", l: "≤ 1h" },
+                      { v: "120", l: "≤ 2h" },
+                      { v: "240", l: "≤ 4h" },
+                      { v: "480", l: "≤ 8h" },
+                    ].map(({ v, l }) => (
+                      <button
+                        key={v}
+                        onClick={() => setDurationMaxFilter(v as typeof durationMaxFilter)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
+                          durationMaxFilter === v
+                            ? "bg-[#00e3fd]/20 text-[#00e3fd] border border-[#00e3fd]/30"
+                            : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 4: Location-type + Price-type */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.locationType", "Art des Service")}
+                  </label>
+                  <select
+                    value={locationTypeFilter}
+                    onChange={(e) => setLocationTypeFilter(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                  >
+                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.anyLocation", "Egal")}</option>
+                    <option value="on_site" className="bg-[#1a1625]">{t("marketplace.filters.onSite", "Vor Ort (beim Kunden)")}</option>
+                    <option value="at_agency" className="bg-[#1a1625]">{t("marketplace.filters.atAgency", "Bei der Agentur")}</option>
+                    <option value="online" className="bg-[#1a1625]">{t("marketplace.filters.online", "Online")}</option>
+                    <option value="flexible" className="bg-[#1a1625]">{t("marketplace.filters.flexible", "Flexibel")}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                    {t("marketplace.filters.priceType", "Preismodell")}
+                  </label>
+                  <select
+                    value={priceTypeFilter}
+                    onChange={(e) => setPriceTypeFilter(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                  >
+                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.priceAny", "Alle")}</option>
+                    <option value="per_person" className="bg-[#1a1625]">{t("marketplace.filters.perPerson", "Pro Person")}</option>
+                    <option value="flat_rate" className="bg-[#1a1625]">{t("marketplace.filters.flatRate", "Pauschal")}</option>
+                    <option value="per_hour" className="bg-[#1a1625]">{t("marketplace.filters.perHour", "Pro Stunde")}</option>
+                    <option value="custom" className="bg-[#1a1625]">{t("marketplace.filters.custom", "Individuell")}</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 5: Quality toggles */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.06]">
                 <button
-                  onClick={() => setRatingFilter(v => !v)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium font-['Be_Vietnam_Pro'] transition-all ${
-                    ratingFilter
-                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                      : "bg-white/5 text-white/40 border border-transparent hover:bg-white/10"
+                  onClick={() => setRatingFilter((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    ratingFilter ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
                   }`}
                 >
                   <Star size={12} className={ratingFilter ? "fill-amber-400 text-amber-400" : ""} />
                   {t("marketplace.filters.rating4plus", "4+ Sterne")}
                 </button>
+                <button
+                  onClick={() => setFeaturedOnly((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    featuredOnly ? "bg-pink-500/20 text-pink-400 border border-pink-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                  }`}
+                >
+                  ✨ {t("marketplace.filters.featuredOnly", "Nur Featured")}
+                </button>
+                <button
+                  onClick={() => setAutoConfirmOnly((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    autoConfirmOnly ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                  }`}
+                >
+                  ⚡ {t("marketplace.filters.instantBook", "Sofort buchbar")}
+                </button>
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearFilters}
-                    className="ml-auto text-xs text-white/30 hover:text-white/60 font-['Be_Vietnam_Pro'] underline transition-colors"
+                    className="ml-auto text-xs text-white/40 hover:text-white/70 font-['Be_Vietnam_Pro'] underline transition-colors"
                   >
-                    {t("marketplace.filters.resetAll", "Alle zurücksetzen")}
+                    {t("marketplace.filters.resetAll", "Alle zurücksetzen")} ({activeFilterCount})
                   </button>
                 )}
               </div>
