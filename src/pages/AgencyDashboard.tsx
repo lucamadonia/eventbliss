@@ -426,7 +426,7 @@ export default function AgencyDashboard() {
       case "stripe":
         return <AgencyStripeConnect agencyId={agency?.id || ""} />;
       case "marketplace-settings":
-        return <AgencyMarketplaceSettings />;
+        return <AgencyMarketplaceSettings agencyId={agency?.id} />;
       case "calendar-sync":
         return <AgencyCalendarSync />;
       case "settings":
