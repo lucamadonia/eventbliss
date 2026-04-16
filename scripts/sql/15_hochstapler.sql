@@ -1,5 +1,5 @@
 -- 15_hochstapler.sql — 108 entries
--- Generated: 2026-04-13T11:25:02.393Z
+-- Generated: 2026-04-13T11:45:55.413Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'hochstapler' AND content_type = 'word_set';

@@ -1,5 +1,5 @@
 -- 16_wo-ist-was.sql — 135 entries
--- Generated: 2026-04-13T11:25:02.399Z
+-- Generated: 2026-04-13T11:45:55.416Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'wo-ist-was' AND content_type = 'location';

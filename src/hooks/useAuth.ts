@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { Capacitor } from "@capacitor/core";
+import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { getBaseUrl } from "@/lib/platform";
 
@@ -65,6 +66,9 @@ export function useAuth() {
       password,
       options: {
         emailRedirectTo: redirectUrl,
+        data: {
+          language: (i18n.language || "en").slice(0, 2),
+        },
       },
     });
     return { error };

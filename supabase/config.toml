@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.get-planner-data]
 verify_jwt = false
+
+[functions.send-email-hook]
+verify_jwt = false

@@ -1,5 +1,5 @@
 -- 02_taboo.sql — 294 entries
--- Generated: 2026-04-13T11:25:02.155Z
+-- Generated: 2026-04-13T11:45:55.247Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'taboo' AND content_type = 'taboo_card';

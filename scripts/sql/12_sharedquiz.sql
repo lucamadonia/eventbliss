@@ -1,5 +1,5 @@
 -- 12_sharedquiz.sql — 102 entries
--- Generated: 2026-04-13T11:25:02.356Z
+-- Generated: 2026-04-13T11:45:55.394Z
 -- Languages: de, en, es, fr, it, nl, pl, pt, tr, ar
 
 DELETE FROM game_content WHERE game_id = 'sharedquiz' AND content_type = 'shared_question';
