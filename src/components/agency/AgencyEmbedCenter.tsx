@@ -167,7 +167,9 @@ export default function AgencyEmbedCenter() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="dark">{t("agency.embed.themeDark", "Dark (empfohlen)")}</SelectItem>
-                  <SelectItem value="light">{t("agency.embed.themeLight", "Light")}</SelectItem>
+                  <SelectItem value="light" disabled>
+                    {t("agency.embed.themeLight", "Light")} · {t("agency.embed.comingSoon", "bald verfügbar")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

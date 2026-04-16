@@ -598,7 +598,27 @@ export default function MarketplaceServicePage() {
 
             {/* Share / Favorite */}
             <div className="flex gap-2">
-              <button className="flex-1 py-2.5 rounded-xl text-sm font-['Be_Vietnam_Pro'] bg-[#13131b] border border-[#484750]/10 hover:border-[#cf96ff]/30 transition-colors flex items-center justify-center gap-2">
+              <button
+                onClick={async () => {
+                  const url = typeof window !== "undefined" ? window.location.href : "";
+                  const title = service?.title ?? "EventBliss Service";
+                  const text = service?.short_description ?? service?.description ?? title;
+                  if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: (data: ShareData) => Promise<void> }).share) {
+                    try {
+                      await (navigator as Navigator & { share: (data: ShareData) => Promise<void> }).share({ title, text, url });
+                      return;
+                    } catch { /* user cancelled or unsupported */ }
+                  }
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    const { toast } = await import("sonner");
+                    toast.success("Link kopiert — jetzt teilen!");
+                  } catch {
+                    window.prompt("Link zum Teilen:", url);
+                  }
+                }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-['Be_Vietnam_Pro'] bg-[#13131b] border border-[#484750]/10 hover:border-[#cf96ff]/30 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
                 <Share2 size={16} /> Teilen
               </button>
               <button

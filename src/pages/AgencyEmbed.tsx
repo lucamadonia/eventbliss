@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import MarketplaceAgency from "./MarketplaceAgency";
+
+const SUPPORTED_LANGS = new Set(["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"]);
 
 /**
  * Iframe-friendly public agency page.
@@ -13,13 +16,21 @@ import MarketplaceAgency from "./MarketplaceAgency";
 export default function AgencyEmbed() {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
+  const { i18n } = useTranslation();
   const theme = params.get("theme") === "light" ? "light" : "dark";
   const showAppHeader = params.get("header") === "1";
+  const lang = params.get("lang");
+
+  // Apply language change if valid lang param is passed
+  useEffect(() => {
+    if (lang && SUPPORTED_LANGS.has(lang) && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
 
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
-    // Always tag as embed (used for theme + minor tweaks)
     html.classList.add("embed-mode");
     body.classList.add("embed-mode");
     if (!showAppHeader) body.classList.add("embed-hide-chrome");
