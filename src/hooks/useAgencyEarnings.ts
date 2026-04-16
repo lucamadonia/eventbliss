@@ -100,6 +100,7 @@ export interface AgencyGuide {
   name: string;
   email: string | null;
   is_active: boolean;
+  max_daily_bookings?: number | null;
 }
 
 export function useAgencyGuidesList(agencyId: string | null | undefined) {
@@ -110,7 +111,7 @@ export function useAgencyGuidesList(agencyId: string | null | undefined) {
       if (!agencyId) return [];
       const { data, error } = await supabase
         .from("agency_guides")
-        .select("id, name, email, is_active")
+        .select("id, name, email, is_active, max_daily_bookings")
         .eq("agency_id", agencyId)
         .eq("is_active", true)
         .order("name", { ascending: true });

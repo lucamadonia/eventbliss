@@ -12,10 +12,11 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { CalendarPlus, Loader2, Users, Euro, AlertCircle } from "lucide-react";
+import { CalendarPlus, Loader2, Users, Euro, AlertCircle, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAgencyServices, useAgencyTeamMembers, useCreateManualBooking } from "@/hooks/useManualBooking";
 import { useAgencyGuidesList } from "@/hooks/useAgencyEarnings";
+import { useAgencyBookings } from "@/hooks/useMarketplaceBookings";
 
 const UNASSIGNED = "__unassigned__";
 
@@ -40,6 +41,7 @@ export function CreateBookingDialog({ open, onOpenChange, agencyId, presetDate, 
   const { data: services = [], isLoading: loadingServices } = useAgencyServices(agencyId);
   const { data: guides = [] } = useAgencyGuidesList(agencyId);
   const { data: teamMembers = [] } = useAgencyTeamMembers(agencyId);
+  const { data: existingBookings = [] } = useAgencyBookings(agencyId);
   const createBooking = useCreateManualBooking();
 
   const [serviceId, setServiceId] = useState<string>("");
@@ -102,6 +104,76 @@ export function CreateBookingDialog({ open, onOpenChange, agencyId, presetDate, 
   const canSubmit = Boolean(
     serviceId && bookingDate && bookingTime && customerName && emailValid && participantsValid
   );
+
+  // Live conflict detection for the draft booking
+  const draftConflicts = useMemo(() => {
+    const conflicts: Array<{ severity: "warning" | "error"; message: string }> = [];
+    if (!bookingDate || !bookingTime || !serviceId) return conflicts;
+
+    const draftStart = new Date(`${bookingDate}T${bookingTime}`);
+    if (Number.isNaN(draftStart.getTime())) return conflicts;
+    const draftDurationMin = 60; // fallback; real duration_minutes not in AgencyServiceOption
+    const draftEnd = new Date(draftStart.getTime() + draftDurationMin * 60_000);
+
+    const ACTIVE = new Set(["pending_confirmation", "confirmed", "completed"]);
+    const activeGuideId = assignedGuideId !== UNASSIGNED ? assignedGuideId : null;
+
+    existingBookings.forEach((b) => {
+      if (!ACTIVE.has(b.status)) return;
+      const bStart = new Date(`${b.booking_date}T${b.booking_time}`);
+      if (Number.isNaN(bStart.getTime())) return;
+      const bEnd = new Date(bStart.getTime() + 60 * 60_000);
+      const overlap = draftStart < bEnd && bStart < draftEnd;
+
+      // Guide overlap
+      const bGuideId = (b as unknown as { assigned_guide_id?: string | null }).assigned_guide_id;
+      if (activeGuideId && bGuideId === activeGuideId && overlap) {
+        conflicts.push({
+          severity: "error",
+          message: `Guide ist zeitgleich bei "${b.service_title}" (${b.booking_time?.slice(0, 5)} · ${b.customer_name}) gebucht`,
+        });
+      }
+
+      // Same service same slot
+      if (b.service_id === serviceId && b.booking_date === bookingDate && b.booking_time?.slice(0, 5) === bookingTime) {
+        conflicts.push({
+          severity: "error",
+          message: `Dieser Service ist um ${bookingTime} bereits gebucht (Kunde: ${b.customer_name})`,
+        });
+      }
+    });
+
+    // Guide daily limit
+    if (activeGuideId) {
+      const guide = guides.find((g) => g.id === activeGuideId);
+      const limit = guide?.max_daily_bookings ?? null;
+      if (limit !== null && limit > 0) {
+        const count = existingBookings.filter((b) =>
+          ACTIVE.has(b.status) &&
+          (b as unknown as { assigned_guide_id?: string | null }).assigned_guide_id === activeGuideId &&
+          b.booking_date === bookingDate
+        ).length;
+        if (count >= limit) {
+          conflicts.push({
+            severity: "warning",
+            message: `Guide hat heute schon ${count} Buchung${count > 1 ? "en" : ""} — Tageslimit: ${limit}`,
+          });
+        }
+      }
+    }
+
+    // Capacity warning — participants vs max
+    if (selectedService?.max_participants && participants > selectedService.max_participants) {
+      conflicts.push({
+        severity: "error",
+        message: `Teilnehmer (${participants}) überschreitet Service-Limit (${selectedService.max_participants})`,
+      });
+    }
+
+    return conflicts;
+  }, [bookingDate, bookingTime, serviceId, assignedGuideId, existingBookings, guides, selectedService, participants]);
+
+  const hasBlockingConflict = draftConflicts.some((c) => c.severity === "error");
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -304,11 +376,50 @@ export function CreateBookingDialog({ open, onOpenChange, agencyId, presetDate, 
           </div>
         </div>
 
+        {draftConflicts.length > 0 && (
+          <div className={cn(
+            "mt-1 rounded-lg border p-3 space-y-1.5",
+            hasBlockingConflict
+              ? "border-red-500/40 bg-red-500/10"
+              : "border-amber-500/40 bg-amber-500/10",
+          )}>
+            <div className={cn(
+              "flex items-center gap-2 text-sm font-semibold",
+              hasBlockingConflict ? "text-red-400" : "text-amber-400",
+            )}>
+              <AlertTriangle className="w-4 h-4" />
+              {hasBlockingConflict
+                ? t("bookingCalendar.conflictBlocking", "Konflikte erkannt")
+                : t("bookingCalendar.conflictWarning", "Achtung — mögliche Überschneidungen")}
+            </div>
+            <ul className="space-y-1 pl-6 list-disc marker:text-current">
+              {draftConflicts.map((c, i) => (
+                <li
+                  key={i}
+                  className={cn("text-xs leading-snug", c.severity === "error" ? "text-red-300" : "text-amber-300")}
+                >
+                  {c.message}
+                </li>
+              ))}
+            </ul>
+            {!hasBlockingConflict && (
+              <p className="text-[10px] italic text-amber-400/70 pl-6">
+                {t("bookingCalendar.conflictContinueHint", "Du kannst trotzdem anlegen — bitte prüfe vorher.")}
+              </p>
+            )}
+          </div>
+        )}
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("common.cancel", "Abbrechen")}
           </Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || createBooking.isPending}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit || createBooking.isPending || hasBlockingConflict}
+            className={hasBlockingConflict ? "opacity-50 cursor-not-allowed" : ""}
+            title={hasBlockingConflict ? t("bookingCalendar.conflictBlockedTooltip", "Bitte Konflikte auflösen bevor du anlegst") : undefined}
+          >
             {createBooking.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             <CalendarPlus className="w-4 h-4 mr-2" />
             {t("bookingCalendar.createSubmit", "Termin anlegen")}

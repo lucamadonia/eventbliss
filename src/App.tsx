@@ -39,6 +39,7 @@ const MyBookings = lazy(() => import("@/pages/MyBookings"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const MarketplaceService = lazy(() => import("@/pages/MarketplaceService"));
 const MarketplaceAgency = lazy(() => import("@/pages/MarketplaceAgency"));
+const AgencyEmbed = lazy(() => import("@/pages/AgencyEmbed"));
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -122,6 +123,7 @@ const AppContent = () => {
           <Route path="/marketplace" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Marketplace /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/service/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceService /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense></ErrorBoundary>} />
+          <Route path="/embed/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyEmbed /></Suspense></ErrorBoundary>} />
           <Route path="/danke" element={<Danke />} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />

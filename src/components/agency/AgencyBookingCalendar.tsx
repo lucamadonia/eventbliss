@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { CreateBookingDialog } from "./CreateBookingDialog";
 import { CalendarToolbar, type ViewMode } from "./calendar/CalendarToolbar";
-import { CalendarFilters, type CalendarFilterState } from "./calendar/CalendarFilters";
+import { CalendarFilters, type CalendarFilterState, DEFAULT_FILTERS } from "./calendar/CalendarFilters";
 import { MonthView } from "./calendar/MonthView";
 import { WeekView } from "./calendar/WeekView";
 import { DayView } from "./calendar/DayView";
@@ -449,7 +449,7 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
   const [anchorDate, setAnchorDate] = useState<Date>(today);
   const [view, setView] = useState<ViewMode>("month");
   const [resourceGroupMode, setResourceGroupMode] = useState<"guide" | "service">("guide");
-  const [filters, setFilters] = useState<CalendarFilterState>({ service: "all", guide: "all", status: "all" });
+  const [filters, setFilters] = useState<CalendarFilterState>(DEFAULT_FILTERS);
   const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
   const [selectedBooking, setSelectedBooking] = useState<MarketplaceBooking | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -483,8 +483,18 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
     return Array.from(map, ([id, title]) => ({ value: id, label: title }));
   }, [bookings]);
 
-  // Filtered bookings (service + guide + status)
+  // Filtered bookings — all filter predicates applied
   const filtered = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const search = filters.customerSearch.trim().toLowerCase();
+
     return bookings.filter((b) => {
       if (filters.status !== "all" && b.status !== filters.status) return false;
       if (filters.service !== "all" && b.service_id !== filters.service) return false;
@@ -496,9 +506,40 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
           return false;
         }
       }
+      if (filters.source !== "all") {
+        const source = (b as unknown as { source?: string | null }).source ?? "marketplace";
+        if (source !== filters.source) return false;
+      }
+      if (filters.onlyConflicts && (conflicts.get(b.id)?.length ?? 0) === 0) return false;
+      if (search) {
+        const hay = `${b.customer_name ?? ""} ${b.customer_email ?? ""} ${b.booking_number ?? ""}`.toLowerCase();
+        if (!hay.includes(search)) return false;
+      }
+      if (filters.dateRange !== "all") {
+        const d = new Date(b.booking_date);
+        if (Number.isNaN(d.getTime())) return false;
+        d.setHours(0, 0, 0, 0);
+        switch (filters.dateRange) {
+          case "today":
+            if (d.getTime() !== now.getTime()) return false;
+            break;
+          case "this-week":
+            if (d < startOfWeek || d >= endOfWeek) return false;
+            break;
+          case "this-month":
+            if (d < startOfMonth || d >= endOfMonth) return false;
+            break;
+          case "upcoming":
+            if (d < now) return false;
+            break;
+          case "past":
+            if (d >= now) return false;
+            break;
+        }
+      }
       return true;
     });
-  }, [bookings, filters]);
+  }, [bookings, filters, conflicts]);
 
   // Group by date
   const bookingsByDate = useMemo(() => {

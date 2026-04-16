@@ -65,6 +65,7 @@ import { LockedModuleUpsell } from "@/components/agency/LockedModuleUpsell";
 import { AgencyWelcomeBanner } from "@/components/agency/AgencyWelcomeBanner";
 import { SidebarUpgradeCard } from "@/components/agency/SidebarUpgradeCard";
 import { TierUpgradeCelebration } from "@/components/agency/TierUpgradeCelebration";
+import AgencyEmbedCenter from "@/components/agency/AgencyEmbedCenter";
 import { supabase } from "@/integrations/supabase/client";
 
 type Section =
@@ -85,6 +86,7 @@ type Section =
   | "stripe"
   | "marketplace-settings"
   | "calendar-sync"
+  | "embed"
   | "settings";
 
 type Tier = "starter" | "professional" | "enterprise";
@@ -115,6 +117,7 @@ const navItems: NavItem[] = [
   { id: "reports", label: "Berichte", icon: BarChart3, requiredTier: "enterprise" },
   { id: "guides", label: "Guides", icon: Users, requiredTier: "enterprise" },
   { id: "calendar-sync", label: "Kalender-Sync", icon: CalendarSync, requiredTier: "enterprise" },
+  { id: "embed", label: "Einbettung & Website", icon: Store, requiredTier: "enterprise" },
   { id: "marketplace-settings", label: "Pakete & Abo", icon: Settings2 },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
@@ -466,6 +469,8 @@ export default function AgencyDashboard() {
         return <AgencyMarketplaceSettings agencyId={agency?.id} />;
       case "calendar-sync":
         return <AgencyCalendarSync />;
+      case "embed":
+        return <AgencyEmbedCenter />;
       case "settings":
         return <AgencySettings />;
       default:
