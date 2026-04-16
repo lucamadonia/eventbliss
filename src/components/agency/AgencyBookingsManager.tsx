@@ -5,6 +5,7 @@ import {
   CalendarCheck, Clock, Users, DollarSign, Check, X as XIcon,
   ChevronRight, AlertCircle, CheckCircle2, XCircle, Ban, Loader2,
 } from "lucide-react";
+import { BookingGuideAssign } from "./BookingGuideAssign";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -231,6 +232,17 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
                           {booking.participant_count} {t("myBookings.participants", "Teilnehmer")}
                         </span>
                       </div>
+                      {/* Guide assignment — only for active bookings */}
+                      {(booking.uiStatus === "new" || booking.uiStatus === "confirmed") && (
+                        <div className="pt-1">
+                          <BookingGuideAssign
+                            bookingId={booking.id}
+                            agencyId={agencyId}
+                            currentGuideId={(booking as unknown as { assigned_guide_id?: string | null }).assigned_guide_id ?? null}
+                            compact
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Right: Price + Actions */}

@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { useAgency } from "@/hooks/useAgency";
 import { GlassCard } from "./ui/GlassCard";
 import { StatCard } from "./ui/StatCard";
 import { ActivityFeed } from "./ui/ActivityFeed";
 import { ProgressRing } from "./ui/ProgressRing";
+import { EarningsOverviewCards } from "./EarningsOverviewCards";
 
 interface AgencyOverviewProps {
   onNavigate: (section: string) => void;
@@ -194,8 +196,13 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
     })();
   }, [user]);
 
+  const { agency } = useAgency();
+
   return (
     <div className="space-y-6">
+      {/* Marketplace Earnings + Bookings overview */}
+      {agency?.id && <EarningsOverviewCards agencyId={agency.id} />}
+
       {/* KPI Cards */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
