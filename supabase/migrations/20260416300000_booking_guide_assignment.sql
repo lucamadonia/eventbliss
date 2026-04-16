@@ -42,14 +42,16 @@ CREATE OR REPLACE VIEW public.agency_top_services AS
 SELECT
   b.agency_id,
   b.service_id,
-  s.title AS service_title,
+  COALESCE(st.title, s.slug) AS service_title,
   COUNT(*) AS booking_count,
   COALESCE(SUM(b.agency_payout_cents), 0) AS revenue_cents,
   COALESCE(SUM(b.participant_count), 0) AS participants_total
 FROM public.marketplace_bookings b
 LEFT JOIN public.marketplace_services s ON s.id = b.service_id
+LEFT JOIN public.marketplace_service_translations st
+  ON st.service_id = b.service_id AND st.locale = 'de'
 WHERE b.status IN ('confirmed', 'completed')
-GROUP BY b.agency_id, b.service_id, s.title;
+GROUP BY b.agency_id, b.service_id, st.title, s.slug;
 
 GRANT SELECT ON public.agency_top_services TO authenticated;
 

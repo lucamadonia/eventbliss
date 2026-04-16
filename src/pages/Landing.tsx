@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles, Users, Wallet, MessageSquare, Calendar, Zap, Bot, PartyPopper, Cake, Plane, Heart, Briefcase, ChevronDown, Check, Crown, Building2, FileEdit, Download, Globe, LayoutDashboard, ClipboardList, Play, Pause, MessageSquareHeart, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";

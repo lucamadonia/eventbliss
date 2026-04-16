@@ -39,6 +39,16 @@ export interface AgencyServiceOption {
   category: string | null;
 }
 
+interface ServiceRow {
+  id: string;
+  slug: string;
+  price_cents: number;
+  min_participants: number | null;
+  max_participants: number | null;
+  category: string | null;
+  marketplace_service_translations?: Array<{ title: string | null; locale: string }> | null;
+}
+
 export function useAgencyServices(agencyId: string | null | undefined) {
   return useQuery({
     queryKey: ["agency-services", agencyId],
@@ -47,15 +57,32 @@ export function useAgencyServices(agencyId: string | null | undefined) {
       if (!agencyId) return [];
       const { data, error } = await supabase
         .from("marketplace_services")
-        .select("id, title, price_cents, min_participants, max_participants, category")
+        .select(
+          "id, slug, price_cents, min_participants, max_participants, category, " +
+          "marketplace_service_translations(title, locale)"
+        )
         .eq("agency_id", agencyId)
-        .eq("status", "approved")
-        .order("title", { ascending: true });
+        .eq("status", "approved");
       if (error) {
         console.error("[useAgencyServices]", error);
         return [];
       }
-      return (data as AgencyServiceOption[]) ?? [];
+      const rows = (data as unknown as ServiceRow[]) ?? [];
+      return rows
+        .map((r) => {
+          const translations = r.marketplace_service_translations ?? [];
+          const de = translations.find((t) => t.locale === "de");
+          const fallback = translations.find((t) => t.title);
+          return {
+            id: r.id,
+            title: de?.title ?? fallback?.title ?? r.slug,
+            price_cents: r.price_cents,
+            min_participants: r.min_participants,
+            max_participants: r.max_participants,
+            category: r.category,
+          } satisfies AgencyServiceOption;
+        })
+        .sort((a, b) => a.title.localeCompare(b.title));
     },
   });
 }

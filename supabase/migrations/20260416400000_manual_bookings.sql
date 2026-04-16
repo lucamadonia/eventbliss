@@ -40,7 +40,7 @@ SELECT
   b.id,
   b.agency_id,
   b.service_id,
-  s.title AS service_title,
+  COALESCE(st.title, s.slug) AS service_title,
   s.category AS service_category,
   b.booking_number,
   b.booking_date,
@@ -64,6 +64,8 @@ SELECT
   b.created_at
 FROM public.marketplace_bookings b
 LEFT JOIN public.marketplace_services s ON s.id = b.service_id
+LEFT JOIN public.marketplace_service_translations st
+  ON st.service_id = b.service_id AND st.locale = 'de'
 LEFT JOIN public.agency_guides g ON g.id = b.assigned_guide_id
 LEFT JOIN public.agency_members m ON m.id = b.assigned_team_member_id;
 
