@@ -434,6 +434,7 @@ function DayDetailPanel({
 /* ─── Main Component ────────────────────────────────────── */
 
 export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
+  const { t } = useTranslation();
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
