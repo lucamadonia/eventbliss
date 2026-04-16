@@ -2,7 +2,7 @@ import {
   BarChart3, Sparkles, Users, CreditCard, Ticket,
   Handshake, Coins, Banknote, TrendingUp, Building2,
   Settings, Store, ShoppingCart, PieChart, Package,
-  Gamepad2, Landmark,
+  Gamepad2, Landmark, Flag, Scroll, ServerCog,
   type LucideIcon,
 } from "lucide-react";
 
@@ -70,7 +70,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     groupLabelKey: "admin.nav.system",
     defaultGroupLabel: "System",
     items: [
-      { key: "settings", labelKey: "admin.tabs.settings", defaultLabel: "Einstellungen", icon: Settings },
+      { key: "settings", labelKey: "admin.tabs.settings", defaultLabel: "Pakete & Pläne", icon: Settings },
+      { key: "system-settings", labelKey: "admin.tabs.systemSettings", defaultLabel: "System-Config", icon: ServerCog },
+      { key: "feature-flags", labelKey: "admin.tabs.featureFlags", defaultLabel: "Feature Flags", icon: Flag },
+      { key: "audit-log", labelKey: "admin.tabs.auditLog", defaultLabel: "Audit Log", icon: Scroll },
       { key: "games", labelKey: "admin.tabs.games", defaultLabel: "Games Content", icon: Gamepad2, href: "/admin/games" },
     ],
   },
