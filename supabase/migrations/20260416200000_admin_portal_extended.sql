@@ -23,10 +23,12 @@ CREATE INDEX IF NOT EXISTS idx_admin_audit_log_created_at ON public.admin_audit_
 
 ALTER TABLE public.admin_audit_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can view audit log" ON public.admin_audit_log;
 CREATE POLICY "Admins can view audit log"
   ON public.admin_audit_log FOR SELECT
   USING (public.has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins can insert audit entries" ON public.admin_audit_log;
 CREATE POLICY "Admins can insert audit entries"
   ON public.admin_audit_log FOR INSERT
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
@@ -51,15 +53,18 @@ CREATE INDEX IF NOT EXISTS idx_feature_flags_enabled ON public.feature_flags(is_
 ALTER TABLE public.feature_flags ENABLE ROW LEVEL SECURITY;
 
 -- Everyone can READ enabled flags (needed for client-side feature gating)
+DROP POLICY IF EXISTS "Public read of feature flags" ON public.feature_flags;
 CREATE POLICY "Public read of feature flags"
   ON public.feature_flags FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admins manage feature flags" ON public.feature_flags;
 CREATE POLICY "Admins manage feature flags"
   ON public.feature_flags FOR ALL
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+DROP TRIGGER IF EXISTS update_feature_flags_updated_at ON public.feature_flags;
 CREATE TRIGGER update_feature_flags_updated_at
 BEFORE UPDATE ON public.feature_flags
 FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -90,6 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_system_settings_category ON public.system_setting
 
 ALTER TABLE public.system_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins manage system settings" ON public.system_settings;
 CREATE POLICY "Admins manage system settings"
   ON public.system_settings FOR ALL
   USING (public.has_role(auth.uid(), 'admin'))
