@@ -14,7 +14,9 @@ import {
   CheckCircle2,
   AlertCircle,
   XCircle,
+  Plus,
 } from "lucide-react";
+import { CreateBookingDialog } from "./CreateBookingDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -439,8 +441,21 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [selectedBooking, setSelectedBooking] = useState<MarketplaceBooking | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createPreset, setCreatePreset] = useState<{ date?: string; time?: string }>({});
 
   const { data: bookings = [], isLoading } = useAgencyBookings(agencyId);
+
+  const openCreateDialog = (presetDay?: number) => {
+    if (presetDay) {
+      const mm = String(month + 1).padStart(2, "0");
+      const dd = String(presetDay).padStart(2, "0");
+      setCreatePreset({ date: `${year}-${mm}-${dd}`, time: "10:00" });
+    } else {
+      setCreatePreset({});
+    }
+    setCreateDialogOpen(true);
+  };
 
   // Unique services for filter dropdown
   const serviceOptions = useMemo(() => {
@@ -589,6 +604,16 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
             <Download className="w-3.5 h-3.5" />
             iCal
           </Button>
+
+          {/* New booking (manual) */}
+          <Button
+            size="sm"
+            onClick={() => openCreateDialog(selectedDay ?? undefined)}
+            className="h-8 text-xs bg-gradient-to-r from-violet-600 to-pink-600 hover:opacity-90 text-white gap-1.5 cursor-pointer shadow-lg shadow-pink-500/20"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {t("bookingCalendar.newAppointment", "Neuer Termin")}
+          </Button>
         </div>
       </motion.div>
 
@@ -721,6 +746,15 @@ export function AgencyBookingCalendar({ agencyId }: { agencyId: string }) {
           />
         )}
       </AnimatePresence>
+
+      {/* Create manual booking dialog */}
+      <CreateBookingDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        agencyId={agencyId}
+        presetDate={createPreset.date}
+        presetTime={createPreset.time}
+      />
     </div>
   );
 }
