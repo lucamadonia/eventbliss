@@ -623,7 +623,7 @@ const Landing = () => {
                   <img
                     alt="Bill Splitting Feature"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    src="/lovable-uploads/4cd5cddc-cab8-4de8-9431-6f0d99baaeff.png"
+                    src="/brand-uploads/4cd5cddc-cab8-4de8-9431-6f0d99baaeff.png"
                   />
                 </div>
                 <h3 className="font-display text-lg font-semibold text-center">
