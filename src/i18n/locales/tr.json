@@ -2608,6 +2608,36 @@
         "b1": "Çatışmalar için otomatik uyarılar",
         "b2": "Ekip üyeleri için kullanıcı bazında yapılandırma"
       }
+    },
+    "welcome": {
+      "title": "Hoş geldin!",
+      "subtitle": "Starter planın aktif. Tüm modülleri yan menüde keşfet — kilitli modüller istediğin zaman upgrade ile açılabilir.",
+      "ctaPricing": "Upgrade seçeneklerini gör",
+      "dismiss": "Sonra"
+    },
+    "sidebar": {
+      "upgradePill": "Upgrade",
+      "upgradeToPro": "Professional’a",
+      "upgradeToEnt": "Enterprise’a",
+      "starterTagline": "6 modül daha aç",
+      "proTagline": "Liderler için komuta merkezi"
+    },
+    "celebration": {
+      "title": "{{tier}}’a hoş geldin!",
+      "subtitle": "{{count}} yeni modül artık açık.",
+      "cta": "Hadi başlayalım",
+      "invoice": "Bir sonraki faturan Stripe Customer Portal’da."
+    },
+    "landingSection": {
+      "badge": "AJANSLAR İÇİN",
+      "title1": "Etkinlik ajansı mı yönetiyorsun?",
+      "title2": "Partner ol ve",
+      "highlight": "100.000+ planlayıcıya ulaş",
+      "subtitle": "Sıfır pazarlama bütçesi. Biz müşterileri getiriyoruz — sen büyülü deneyimi sunuyorsun.",
+      "b0": "Lead’ler doğrudan Marketplace’den — soğuk arama yok",
+      "b1": "CRM, Budget Engine ve Run of Show ile kendi Agency Dashboard’u",
+      "b2": "Otomatik faturalama için Stripe entegrasyonu",
+      "cta": "Ajans planlarını gör"
     }
   },
   "games": {

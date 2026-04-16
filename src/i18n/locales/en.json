@@ -3160,6 +3160,36 @@
         "b1": "Automatic conflict warnings for overlaps",
         "b2": "Per-user config for team members"
       }
+    },
+    "welcome": {
+      "title": "Welcome aboard!",
+      "subtitle": "Your Starter plan is active. Explore all modules in the sidebar — locked modules can be unlocked anytime via upgrade.",
+      "ctaPricing": "See upgrade options",
+      "dismiss": "Later"
+    },
+    "sidebar": {
+      "upgradePill": "Upgrade",
+      "upgradeToPro": "Go Professional",
+      "upgradeToEnt": "Go Enterprise",
+      "starterTagline": "Unlock 6 more modules",
+      "proTagline": "Command center for market leaders"
+    },
+    "celebration": {
+      "title": "Welcome to {{tier}}!",
+      "subtitle": "{{count}} new modules are now unlocked.",
+      "cta": "Let’s go",
+      "invoice": "Your next invoice is available in the Stripe Customer Portal."
+    },
+    "landingSection": {
+      "badge": "FOR AGENCIES",
+      "title1": "Run an event agency?",
+      "title2": "Become a partner and",
+      "highlight": "reach 100,000+ planners",
+      "subtitle": "Zero marketing budget needed. We bring the clients — you deliver the magical event experience.",
+      "b0": "Leads straight from the marketplace — no cold outreach",
+      "b1": "Own Agency Dashboard with CRM, Budget Engine and Run of Show",
+      "b2": "Stripe integration for automated billing",
+      "cta": "See agency plans"
     }
   },
   "games": {

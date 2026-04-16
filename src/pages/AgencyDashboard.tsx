@@ -62,6 +62,9 @@ import AgencyGuideManager from "@/components/agency/AgencyGuideManager";
 import AgencyCalendarSync from "@/components/agency/AgencyCalendarSync";
 import { AgencyBookingCalendar } from "@/components/agency/AgencyBookingCalendar";
 import { LockedModuleUpsell } from "@/components/agency/LockedModuleUpsell";
+import { AgencyWelcomeBanner } from "@/components/agency/AgencyWelcomeBanner";
+import { SidebarUpgradeCard } from "@/components/agency/SidebarUpgradeCard";
+import { TierUpgradeCelebration } from "@/components/agency/TierUpgradeCelebration";
 import { supabase } from "@/integrations/supabase/client";
 
 type Section =
@@ -597,6 +600,9 @@ export default function AgencyDashboard() {
           })}
         </nav>
 
+        {/* Upgrade card — only for starter/professional */}
+        <SidebarUpgradeCard tier={currentTier} collapsed={sidebarCollapsed} />
+
         {/* Collapse Button */}
         <div className="hidden lg:block px-3 py-2 border-t border-white/[0.05]">
           <button
@@ -686,6 +692,8 @@ export default function AgencyDashboard() {
 
         {/* Page Content */}
         <div className="p-4 sm:p-6 lg:p-8">
+          <AgencyWelcomeBanner />
+
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
@@ -702,6 +710,9 @@ export default function AgencyDashboard() {
 
       {/* Quick Create FAB */}
       <QuickCreateFAB onNavigate={handleNavigate} />
+
+      {/* Tier upgrade celebration modal (shows when ?tier_upgraded=... in URL) */}
+      <TierUpgradeCelebration />
     </div>
   );
 }

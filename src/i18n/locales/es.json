@@ -2831,6 +2831,36 @@
         "b1": "Advertencias automáticas de conflictos",
         "b2": "Configuración por usuario para miembros del equipo"
       }
+    },
+    "welcome": {
+      "title": "¡Bienvenido!",
+      "subtitle": "Tu plan Starter está activo. Explora todos los módulos en la barra lateral — los módulos bloqueados se pueden desbloquear con un upgrade.",
+      "ctaPricing": "Ver opciones de upgrade",
+      "dismiss": "Más tarde"
+    },
+    "sidebar": {
+      "upgradePill": "Upgrade",
+      "upgradeToPro": "A Professional",
+      "upgradeToEnt": "A Enterprise",
+      "starterTagline": "Desbloquea 6 módulos más",
+      "proTagline": "Centro de mando para líderes"
+    },
+    "celebration": {
+      "title": "¡Bienvenido a {{tier}}!",
+      "subtitle": "{{count}} nuevos módulos están desbloqueados.",
+      "cta": "Vamos",
+      "invoice": "Tu próxima factura está en el Stripe Customer Portal."
+    },
+    "landingSection": {
+      "badge": "PARA AGENCIAS",
+      "title1": "¿Tienes una agencia de eventos?",
+      "title2": "Házte partner y",
+      "highlight": "llega a 100.000+ planificadores",
+      "subtitle": "Sin necesidad de presupuesto de marketing. Nosotros traemos los clientes — tú creas la experiencia mágica.",
+      "b0": "Leads directos del Marketplace — sin llamadas en frío",
+      "b1": "Dashboard de agencia con CRM, Budget Engine y Run of Show",
+      "b2": "Integración Stripe para facturación automática",
+      "cta": "Ver planes de agencia"
     }
   },
   "games": {

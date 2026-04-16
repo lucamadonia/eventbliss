@@ -2608,6 +2608,36 @@
         "b1": "تحذيرات تلقائية للتعارضات",
         "b2": "إعداد لكل مستخدم لأعضاء الفريق"
       }
+    },
+    "welcome": {
+      "title": "أهلاً بك!",
+      "subtitle": "خطة Starter نشطة. استكشف جميع الوحدات — يمكن فتح الوحدات المغلقة في أي وقت عبر الترقية.",
+      "ctaPricing": "عرض خيارات الترقية",
+      "dismiss": "لاحقاً"
+    },
+    "sidebar": {
+      "upgradePill": "ترقية",
+      "upgradeToPro": "إلى Professional",
+      "upgradeToEnt": "إلى Enterprise",
+      "starterTagline": "افتح 6 وحدات إضافية",
+      "proTagline": "مركز قيادة للقادة"
+    },
+    "celebration": {
+      "title": "مرحباً في {{tier}}!",
+      "subtitle": "{{count}} وحدات جديدة مفتوحة الآن.",
+      "cta": "هيا بنا",
+      "invoice": "فاتورتك التالية في Stripe Customer Portal."
+    },
+    "landingSection": {
+      "badge": "للوكالات",
+      "title1": "تدير وكالة فعاليات؟",
+      "title2": "صر شريكاً و",
+      "highlight": "اصل إلى 100،000+ مخطّط",
+      "subtitle": "لا حاجة لميزانية تسويقية. نحن نجلب العملاء — وأنت تقدم التجربة السحرية.",
+      "b0": "عملاء محتملون مباشرة من Marketplace — بدون تواصل بارد",
+      "b1": "لوحة وكالة خاصة مع CRM، Budget Engine و Run of Show",
+      "b2": "تكامل Stripe للفوترة التلقائية",
+      "cta": "عرض خطط الوكالات"
     }
   },
   "games": {

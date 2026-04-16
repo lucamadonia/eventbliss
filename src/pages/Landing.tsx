@@ -831,6 +831,86 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* For Agencies Section */}
+      <section id="for-agencies" className="relative py-24 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/40 via-pink-950/30 to-amber-900/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(236,72,153,0.15),transparent_60%)] pointer-events-none" />
+        <div className="container max-w-5xl mx-auto relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <GlassCard className="p-8 md:p-14 relative overflow-hidden">
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-pink-500/20 to-transparent blur-3xl rounded-full" />
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gradient-to-br from-violet-500/20 to-transparent blur-3xl rounded-full" />
+              <div className="relative grid md:grid-cols-2 gap-10 md:gap-14 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/20 to-pink-500/20 border border-violet-500/30 mb-5">
+                    <Building2 className="w-3.5 h-3.5 text-pink-300" />
+                    <span className="text-xs font-black tracking-widest text-pink-200">
+                      {t("agency.landingSection.badge", "FÜR AGENTUREN")}
+                    </span>
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-black leading-[1.1] mb-5">
+                    {t("agency.landingSection.title1", "Du bist Event-Agentur?")}
+                    <br />
+                    <span className="text-foreground">{t("agency.landingSection.title2", "Werde Partner und")}</span>{" "}
+                    <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+                      {t("agency.landingSection.highlight", "erreiche 100.000+ Planer")}
+                    </span>
+                  </h2>
+                  <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
+                    {t("agency.landingSection.subtitle", "Kein Marketing-Budget nötig. Wir bringen dir die Kunden — du lieferst die magische Event-Experience.")}
+                  </p>
+                  <ul className="space-y-3 mb-8">
+                    {[0, 1, 2].map((i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center shadow-md">
+                          <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                        </div>
+                        <span className="text-sm md:text-base text-foreground/85">
+                          {t(`agency.landingSection.b${i}`, "")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/agency/pricing">
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-violet-600 via-pink-600 to-amber-500 hover:shadow-[0_16px_48px_rgba(236,72,153,0.5)] hover:scale-[1.03] text-white border-0 font-bold h-13 px-8 rounded-xl transition-all"
+                    >
+                      {t("agency.landingSection.cta", "Agentur-Pläne ansehen")}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-pink-600/20 to-amber-500/20 blur-2xl rounded-full" />
+                  <div className="relative aspect-square max-w-sm mx-auto rounded-3xl bg-gradient-to-br from-violet-900/40 to-pink-900/40 border border-white/10 p-8 flex flex-col items-center justify-center gap-6">
+                    <div className="text-6xl md:text-7xl font-black bg-gradient-to-br from-violet-300 via-pink-300 to-amber-300 bg-clip-text text-transparent">
+                      170+
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-white/60">{t("landing.stats.agencies", "Partner-Agenturen")}</div>
+                      <div className="text-xs text-white/40 mt-1">9 {t("landing.stats.countries", "Länder")} · 10 {t("landing.stats.languages", "Sprachen")}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      {[Building2, Sparkles, Crown].map((Icon, i) => (
+                        <div key={i} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                          <Icon className="w-4 h-4 text-pink-300" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+      </section>
+
       {/* How it Works Section */}
       <section id="how-it-works" className="relative py-24 px-4 bg-muted/30">
         <div className="container max-w-6xl mx-auto">

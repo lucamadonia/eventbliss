@@ -2684,6 +2684,36 @@
         "b1": "Automatische conflict-waarschuwingen",
         "b2": "Per-gebruiker config voor teamleden"
       }
+    },
+    "welcome": {
+      "title": "Welkom!",
+      "subtitle": "Je Starter-pakket is actief. Verken alle modules in de sidebar — vergrendelde modules kun je via upgrade ontgrendelen.",
+      "ctaPricing": "Bekijk upgrade-opties",
+      "dismiss": "Later"
+    },
+    "sidebar": {
+      "upgradePill": "Upgrade",
+      "upgradeToPro": "Naar Professional",
+      "upgradeToEnt": "Naar Enterprise",
+      "starterTagline": "Ontgrendel 6 extra modules",
+      "proTagline": "Commandocentrum voor marktleiders"
+    },
+    "celebration": {
+      "title": "Welkom bij {{tier}}!",
+      "subtitle": "{{count}} nieuwe modules zijn nu ontgrendeld.",
+      "cta": "Laten we beginnen",
+      "invoice": "Je volgende factuur staat in de Stripe Customer Portal."
+    },
+    "landingSection": {
+      "badge": "VOOR AGENCIES",
+      "title1": "Run je een event-agency?",
+      "title2": "Word partner en",
+      "highlight": "bereik 100.000+ planners",
+      "subtitle": "Geen marketingbudget nodig. Wij brengen de klanten — jij levert de magische ervaring.",
+      "b0": "Leads direct vanuit de Marketplace — geen koude acquisitie",
+      "b1": "Eigen Agency Dashboard met CRM, Budget Engine en Run of Show",
+      "b2": "Stripe-integratie voor geautomatiseerde facturering",
+      "cta": "Bekijk agency-plannen"
     }
   },
   "games": {
