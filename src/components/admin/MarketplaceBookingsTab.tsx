@@ -324,7 +324,9 @@ export default function MarketplaceBookingsTab() {
               </TableHeader>
               <TableBody>
                 {filtered.map((booking) => {
-                  const statusCfg = STATUS_CONFIG[booking.status];
+                  const statusCfg =
+                    STATUS_CONFIG[booking.status] ??
+                    STATUS_CONFIG["pending_confirmation"];
                   const StatusIcon = statusCfg.icon;
                   return (
                     <TableRow
