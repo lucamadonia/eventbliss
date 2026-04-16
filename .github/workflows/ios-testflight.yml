@@ -1,13 +1,17 @@
 name: iOS — Build & TestFlight
 
 on:
+  # Auto-upload only on explicit release tags: git tag v1.2.3 && git push --tags
   push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - 'public/legal/**'
-      - '**.md'
+    tags:
+      - 'v*'
+  # Manual trigger from GitHub Actions UI (Run workflow button)
   workflow_dispatch:
+    inputs:
+      skip_upload:
+        description: 'Build only, skip TestFlight upload (useful for testing the pipeline)'
+        type: boolean
+        default: false
 
 concurrency:
   group: ios-testflight
@@ -168,6 +172,7 @@ jobs:
           find build/ios/ipa -name "*.ipa" -exec ls -la {} \;
 
       - name: Upload to TestFlight
+        if: ${{ inputs.skip_upload != true }}
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
