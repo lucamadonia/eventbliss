@@ -172,7 +172,7 @@ export function AddRunSheetItemDialog({ open, onOpenChange, onSave, editingItem 
             </div>
           </div>
           <div>
-            <Label className="text-white/60 text-xs">Buehne / Bereich</Label>
+            <Label className="text-white/60 text-xs">Bühne / Bereich</Label>
             <Select value={form.stage} onValueChange={(v) => setForm({ ...form, stage: v as StageType })}>
               <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1">
                 <SelectValue />

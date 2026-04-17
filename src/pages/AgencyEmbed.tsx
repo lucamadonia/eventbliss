@@ -2,22 +2,23 @@ import { useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import MarketplaceAgency from "./MarketplaceAgency";
+import { MarketplaceThemeProvider, resolveTheme } from "@/lib/marketplaceThemes";
 
 const SUPPORTED_LANGS = new Set(["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"]);
 
 /**
  * Iframe-friendly public agency page.
- * Route: /embed/agency/:slug?theme=light|dark
+ * Route: /embed/agency/:slug?theme=dark|light|classic|epic|party|adventure
  *
  * Renders the existing MarketplaceAgency component but hides the global
  * app chrome (nav/footer) via a root class so host websites can embed it
- * cleanly. Theme param adjusts body background.
+ * cleanly. Theme param selects a MarketplaceTheme that propagates via context.
  */
 export default function AgencyEmbed() {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
   const { i18n } = useTranslation();
-  const theme = params.get("theme") === "light" ? "light" : "dark";
+  const themeId = params.get("theme") ?? "dark";
   const showAppHeader = params.get("header") === "1";
   const lang = params.get("lang");
 
@@ -34,12 +35,14 @@ export default function AgencyEmbed() {
     html.classList.add("embed-mode");
     body.classList.add("embed-mode");
     if (!showAppHeader) body.classList.add("embed-hide-chrome");
-    if (theme === "light") body.classList.add("embed-light");
+    const previousBg = body.style.backgroundColor;
+    body.style.backgroundColor = resolveTheme(themeId).colors.bg;
     return () => {
       html.classList.remove("embed-mode");
-      body.classList.remove("embed-mode", "embed-hide-chrome", "embed-light");
+      body.classList.remove("embed-mode", "embed-hide-chrome");
+      body.style.backgroundColor = previousBg;
     };
-  }, [theme, showAppHeader]);
+  }, [themeId, showAppHeader]);
 
   return (
     <>
@@ -55,11 +58,12 @@ export default function AgencyEmbed() {
         /* Always collapse top padding so embed content starts at the top */
         .embed-mode main, .embed-mode > #root > div > main { padding-top: 0 !important; }
         .embed-mode { min-height: 100vh; }
-        .embed-light { background: #fff !important; color: #111 !important; }
       `}</style>
-      <div data-agency-slug={slug} data-embed-mode="true">
-        <MarketplaceAgency />
-      </div>
+      <MarketplaceThemeProvider themeId={themeId}>
+        <div data-agency-slug={slug} data-embed-mode="true" data-theme={themeId}>
+          <MarketplaceAgency />
+        </div>
+      </MarketplaceThemeProvider>
     </>
   );
 }

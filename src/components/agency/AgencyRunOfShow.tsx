@@ -172,11 +172,11 @@ export function AgencyRunOfShow() {
                   </Select>
                 </div>
               </div>
-              <div><Label className="text-white/60 text-xs">Buehne</Label>
+              <div><Label className="text-white/60 text-xs">Bühne</Label>
                 <Select value={newCue.stage} onValueChange={(v) => setNewCue((p) => ({ ...p, stage: v }))}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="main">Hauptbuehne</SelectItem>
+                    <SelectItem value="main">Hauptbühne</SelectItem>
                     <SelectItem value="breakout1">Breakout 1</SelectItem>
                     <SelectItem value="breakout2">Breakout 2</SelectItem>
                   </SelectContent>
@@ -190,7 +190,7 @@ export function AgencyRunOfShow() {
       </motion.div>
 
       {!selectedEventId ? (
-        <div className="text-center py-12 text-white/40">Bitte waehle ein Event aus.</div>
+        <div className="text-center py-12 text-white/40">Bitte wähle ein Event aus.</div>
       ) : (
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar with countdown */}
@@ -207,7 +207,7 @@ export function AgencyRunOfShow() {
             </div>
             {activeCue && activeCue.delay_minutes > 0 && (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-center mb-3">
-                <p className="text-xs text-amber-300">+{activeCue.delay_minutes} Min. Verspaetung</p>
+                <p className="text-xs text-amber-300">+{activeCue.delay_minutes} Min. Verspätung</p>
               </div>
             )}
             <Button variant="destructive" size="sm" className="w-full bg-red-600/80 hover:bg-red-600 gap-2" onClick={() => setShowEmergency(!showEmergency)}>
@@ -220,7 +220,7 @@ export function AgencyRunOfShow() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="flex flex-wrap gap-3 items-center">
               <Tabs value={activeStage} onValueChange={(v) => setActiveStage(v as Stage)}>
                 <TabsList className="bg-white/5 border border-white/10 p-1">
-                  <TabsTrigger value="main" className="text-xs data-[state=active]:bg-violet-600 data-[state=active]:text-white">Hauptbuehne</TabsTrigger>
+                  <TabsTrigger value="main" className="text-xs data-[state=active]:bg-violet-600 data-[state=active]:text-white">Hauptbühne</TabsTrigger>
                   <TabsTrigger value="breakout1" className="text-xs data-[state=active]:bg-violet-600 data-[state=active]:text-white">Breakout 1</TabsTrigger>
                   <TabsTrigger value="breakout2" className="text-xs data-[state=active]:bg-violet-600 data-[state=active]:text-white">Breakout 2</TabsTrigger>
                 </TabsList>

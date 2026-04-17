@@ -92,7 +92,7 @@ export function AddTaskDialog({ open, onOpenChange, onSave, editingTask }: AddTa
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-white/60 text-xs">Prioritaet</Label>
+              <Label className="text-white/60 text-xs">Priorität</Label>
               <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v as TaskFormData["priority"] })}>
                 <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1">
                   <SelectValue />
@@ -113,12 +113,12 @@ export function AddTaskDialog({ open, onOpenChange, onSave, editingTask }: AddTa
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-white/60 text-xs">Zustaendig</Label>
+              <Label className="text-white/60 text-xs">Zuständig</Label>
               <Input className="bg-white/5 border-white/10 text-white mt-1" placeholder="Name"
                 value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
             </div>
             <div>
-              <Label className="text-white/60 text-xs">Faelligkeitsdatum</Label>
+              <Label className="text-white/60 text-xs">Fälligkeitsdatum</Label>
               <Input type="date" className="bg-white/5 border-white/10 text-white mt-1"
                 value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
             </div>

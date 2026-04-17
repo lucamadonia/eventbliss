@@ -162,10 +162,10 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                     <Palette className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-xl font-bold text-slate-50">Anpassen</h2>
-                  <p className="text-sm text-slate-500 mt-1">Waehle deine Markenfarben</p>
+                  <p className="text-sm text-slate-500 mt-1">Wähle deine Markenfarben</p>
                 </motion.div>
                 <motion.div variants={fadeUp} className="space-y-2">
-                  <label className="text-xs font-medium text-slate-400">Primaerfarbe</label>
+                  <label className="text-xs font-medium text-slate-400">Primärfarbe</label>
                   <div className="flex items-center gap-2 flex-wrap">
                     {PRIMARY_PRESETS.map((c) => (
                       <button
@@ -210,7 +210,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                     onClick={() => setStep(1)}
                     className="flex-1 text-slate-400 hover:text-slate-200 h-11 rounded-xl cursor-pointer"
                   >
-                    Zurueck
+                    Zurück
                   </Button>
                   <Button
                     onClick={() => setStep(3)}
@@ -274,7 +274,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                     onClick={() => setStep(2)}
                     className="flex-1 text-slate-400 hover:text-slate-200 h-11 rounded-xl cursor-pointer"
                   >
-                    Zurueck
+                    Zurück
                   </Button>
                   <Button
                     onClick={handleCreate}

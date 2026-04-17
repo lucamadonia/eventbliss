@@ -174,7 +174,7 @@ export function AgencyReports() {
       >
         <div>
           <h3 className="text-lg font-semibold text-white">Berichte & Analysen</h3>
-          <p className="text-sm text-white/40">Leistungsuebersicht deiner Agentur</p>
+          <p className="text-sm text-white/40">Leistungsübersicht deiner Agentur</p>
         </div>
         <div className="flex gap-2">
           <Select value={dateRange} onValueChange={(v) => setDateRange(v as DateRange)}>

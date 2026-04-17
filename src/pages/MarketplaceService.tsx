@@ -236,13 +236,15 @@ export default function MarketplaceServicePage() {
         eventId: eventId || undefined,
       });
 
-      // Redirect to Stripe Checkout if URL is available
+      // Redirect to Stripe Checkout if URL is available, otherwise
+      // go straight to the celebration page (e.g. when no Stripe is
+      // connected yet for the agency).
       if (result?.checkoutUrl) {
         window.location.href = result.checkoutUrl;
-      } else if (eventId) {
-        navigate(`/event/${eventId}`);
+      } else if (result?.id) {
+        navigate(`/booking-success?booking=${result.id}`);
       } else {
-        navigate("/marketplace/bookings");
+        navigate("/my-bookings");
       }
     } finally {
       setIsBooking(false);

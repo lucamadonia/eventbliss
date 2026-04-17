@@ -166,10 +166,10 @@ export default function NativeServiceDetailScreen() {
 
       if (result?.checkoutUrl) {
         window.location.href = result.checkoutUrl;
-      } else if (eventId) {
-        navigate(`/event/${eventId}`);
+      } else if (result?.id) {
+        navigate(`/booking-success?booking=${result.id}`);
       } else {
-        navigate("/marketplace");
+        navigate("/my-bookings");
       }
     } finally {
       setIsBooking(false);

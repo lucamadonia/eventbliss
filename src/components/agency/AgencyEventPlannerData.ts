@@ -104,9 +104,9 @@ export const contractStatusConfig: Record<string, { label: string; color: string
 };
 
 export const availabilityConfig: Record<string, { label: string; color: string }> = {
-  available: { label: "Verfuegbar", color: "text-emerald-400" },
+  available: { label: "Verfügbar", color: "text-emerald-400" },
   tentative: { label: "Vorbehaltlich", color: "text-amber-400" },
-  unavailable: { label: "Nicht verfuegbar", color: "text-red-400" },
+  unavailable: { label: "Nicht verfügbar", color: "text-red-400" },
 };
 
 export const priorityColors = {
@@ -123,9 +123,9 @@ export const workstreamColors: Record<string, string> = {
 };
 
 export const ratingLabels: Record<string, string> = {
-  quality: "Qualitaet",
-  punctuality: "Puenktlichkeit",
+  quality: "Qualität",
+  punctuality: "Pünktlichkeit",
   pricePerformance: "Preis-Leistung",
   communication: "Kommunikation",
-  flexibility: "Flexibilitaet",
+  flexibility: "Flexibilität",
 };

@@ -63,7 +63,7 @@ const tiers: TierConfig[] = [
     icon: Crown,
     features: [
       "Unbegrenzte Services", "KI-Empfehlung", "Auto-Featured",
-      "Hoechste Prioritaet", "Enterprise Badge", "API-Zugang",
+      "Höchste Priorität", "Enterprise Badge", "API-Zugang",
     ],
     color: "from-amber-500 to-yellow-400",
     borderClass: "border-amber-500/30",
@@ -291,7 +291,7 @@ export default function AgencyMarketplaceSettings({ agencyId }: Props) {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
         <h4 className="text-base font-semibold text-slate-50 mb-1">Standard-Einstellungen</h4>
-        <p className="text-sm text-slate-500 mb-5">Standardwerte fuer neue Services und Buchungen</p>
+        <p className="text-sm text-slate-500 mb-5">Standardwerte für neue Services und Buchungen</p>
 
         <div className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl divide-y divide-white/[0.06]">
           <div className="flex items-center justify-between p-5">
@@ -300,8 +300,8 @@ export default function AgencyMarketplaceSettings({ agencyId }: Props) {
                 <ToggleLeft className="w-4 h-4 text-violet-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-200">Auto-Bestaetigung</p>
-                <p className="text-xs text-slate-500 mt-0.5">Neue Buchungen automatisch bestaetigen</p>
+                <p className="text-sm font-medium text-slate-200">Auto-Bestätigung</p>
+                <p className="text-xs text-slate-500 mt-0.5">Neue Buchungen automatisch bestätigen</p>
               </div>
             </div>
             <Switch checked={autoConfirm} onCheckedChange={setAutoConfirm} className="cursor-pointer" />
@@ -314,7 +314,7 @@ export default function AgencyMarketplaceSettings({ agencyId }: Props) {
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-200">Standard-Stornierungspolitik</p>
-                <p className="text-xs text-slate-500 mt-0.5">Gilt fuer alle neuen Services</p>
+                <p className="text-xs text-slate-500 mt-0.5">Gilt für alle neuen Services</p>
               </div>
             </div>
             <Select value={cancelPolicy} onValueChange={setCancelPolicy}>

@@ -258,7 +258,7 @@ export function AgencyCalendarView() {
                               className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 cursor-pointer"
                             >
                               <ExternalLink className="w-3 h-3" />
-                              Event oeffnen
+                              Event öffnen
                             </button>
                           </div>
                         )}

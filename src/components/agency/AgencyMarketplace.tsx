@@ -317,7 +317,7 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
                       variant="ghost"
                       size="icon"
                       className="w-8 h-8 text-slate-500 hover:text-red-400 cursor-pointer"
-                      title="Loeschen"
+                      title="Löschen"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>

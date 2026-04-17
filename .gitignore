@@ -35,3 +35,7 @@ android/.gradle/
 android/build/
 android/app/build/
 .vercel
+
+# Claude Flow / Swarm tool artifacts (local only)
+.claude-flow/
+.swarm/

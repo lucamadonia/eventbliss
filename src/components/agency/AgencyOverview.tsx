@@ -265,7 +265,7 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
             <Plus className="w-5 h-5 text-violet-400" /><span className="text-xs text-slate-300">Event erstellen</span>
           </Button>
           <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 bg-white/[0.03] border-white/[0.08] hover:bg-cyan-500/20 hover:border-cyan-500/30 transition-all duration-200 cursor-pointer" onClick={() => onNavigate("contacts")}>
-            <Contact className="w-5 h-5 text-cyan-400" /><span className="text-xs text-slate-300">Kontakt hinzufuegen</span>
+            <Contact className="w-5 h-5 text-cyan-400" /><span className="text-xs text-slate-300">Kontakt hinzufügen</span>
           </Button>
           <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 bg-white/[0.03] border-white/[0.08] hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-all duration-200 cursor-pointer" onClick={() => onNavigate("runofshow")}>
             <Calendar className="w-5 h-5 text-emerald-400" /><span className="text-xs text-slate-300">Run of Show</span>
@@ -321,7 +321,7 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
 
         {/* Recent Activity */}
         <GlassCard className="p-5" delay={0.35} hoverGlow>
-          <h3 className="font-semibold text-slate-50 mb-4">Letzte Aktivitaeten</h3>
+          <h3 className="font-semibold text-slate-50 mb-4">Letzte Aktivitäten</h3>
           <ActivityFeed items={activityItems} onViewAll={() => {}} />
         </GlassCard>
       </div>
@@ -340,18 +340,18 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
           <>
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
               <ProgressRing value={budgetPct} size={80} strokeWidth={6} color="#8B5CF6" label="gesamt" />
-              <div className="flex items-center gap-8">
+              <div className="grid grid-cols-3 gap-4 sm:gap-8 w-full md:w-auto md:flex md:items-center">
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5">Geplant</p>
-                  <p className="text-lg font-bold text-slate-50">{"\u20AC"}{totalPlannedBudget.toLocaleString("de-DE")}</p>
+                  <p className="text-base sm:text-lg font-bold text-slate-50 break-words">{"\u20AC"}{totalPlannedBudget.toLocaleString("de-DE")}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5">Ausgegeben</p>
-                  <p className="text-lg font-bold text-emerald-400">{"\u20AC"}{totalActualBudget.toLocaleString("de-DE")}</p>
+                  <p className="text-base sm:text-lg font-bold text-emerald-400 break-words">{"\u20AC"}{totalActualBudget.toLocaleString("de-DE")}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5">Verbleibend</p>
-                  <p className="text-lg font-bold text-cyan-400">{"\u20AC"}{(totalPlannedBudget - totalActualBudget).toLocaleString("de-DE")}</p>
+                  <p className="text-base sm:text-lg font-bold text-cyan-400 break-words">{"\u20AC"}{(totalPlannedBudget - totalActualBudget).toLocaleString("de-DE")}</p>
                 </div>
               </div>
             </div>
@@ -360,13 +360,13 @@ export function AgencyOverview({ onNavigate }: AgencyOverviewProps) {
               {budgetHealthEvents.map((evt, i) => {
                 const healthColor = evt.pct <= 60 ? "#10B981" : evt.pct <= 85 ? "#F59E0B" : "#EF4444";
                 return (
-                  <motion.div key={evt.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 + i * 0.05 }} className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 w-36 truncate">{evt.name}</span>
-                    <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                  <motion.div key={evt.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 + i * 0.05 }} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="text-xs text-slate-400 w-full sm:w-36 truncate">{evt.name}</span>
+                    <div className="flex-1 min-w-[100px] h-2 bg-white/[0.06] rounded-full overflow-hidden">
                       <motion.div initial={{ width: 0 }} animate={{ width: `${evt.pct}%` }} transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }} className="h-full rounded-full" style={{ backgroundColor: healthColor }} />
                     </div>
-                    <span className="text-[10px] text-slate-500 w-10 text-right">{evt.pct}%</span>
-                    <span className="text-[10px] text-slate-600 w-28 text-right">
+                    <span className="text-[10px] text-slate-500 w-10 text-right shrink-0">{evt.pct}%</span>
+                    <span className="text-[10px] text-slate-600 w-full sm:w-28 text-right">
                       {"\u20AC"}{evt.actual.toLocaleString("de-DE")} / {"\u20AC"}{evt.planned.toLocaleString("de-DE")}
                     </span>
                   </motion.div>

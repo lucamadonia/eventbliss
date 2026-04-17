@@ -89,6 +89,7 @@ type Section =
   | "marketplace-settings"
   | "calendar-sync"
   | "embed"
+  | "ai-performance"
   | "settings";
 
 type Tier = "starter" | "professional" | "enterprise";
@@ -143,12 +144,14 @@ const sectionLabels: Record<Section, string> = {
   stripe: "Zahlungen",
   "marketplace-settings": "Pakete & Einstellungen",
   "calendar-sync": "Kalender-Sync",
+  embed: "Einbettung & Website",
+  "ai-performance": "KI-Performance",
   settings: "Einstellungen",
 };
 
 // Mock events list for the events section
 const mockEvents = [
-  { id: "1", name: "Hochzeit Mueller", date: "15. Jun 2026", type: "Hochzeit", status: "active", guests: 120, progress: 65 },
+  { id: "1", name: "Hochzeit Müller", date: "15. Jun 2026", type: "Hochzeit", status: "active", guests: 120, progress: 65 },
   { id: "2", name: "Firmenfeier SAP", date: "22. Apr 2026", type: "Corporate", status: "active", guests: 200, progress: 40 },
   { id: "3", name: "JGA Hamburg", date: "05. Mai 2026", type: "JGA", status: "active", guests: 12, progress: 80 },
   { id: "4", name: "Geburtstag 50er", date: "10. Jul 2026", type: "Geburtstag", status: "planning", guests: 60, progress: 20 },
@@ -647,7 +650,7 @@ export default function AgencyDashboard() {
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-200 truncate">{userName}</p>
-                <p className="text-[10px] text-slate-600">Zurueck zur Startseite</p>
+                <p className="text-[10px] text-slate-600">Zurück zur Startseite</p>
               </div>
             )}
             {!sidebarCollapsed && <ArrowLeft className="w-3.5 h-3.5 text-slate-600 shrink-0" />}

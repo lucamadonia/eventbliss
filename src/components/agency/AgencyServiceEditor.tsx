@@ -425,7 +425,7 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                 <FormField label="Galerie">
                   <div className="border-2 border-dashed border-white/[0.08] rounded-xl p-6 text-center hover:border-violet-500/30 transition-colors cursor-pointer">
                     <Image className="w-6 h-6 text-slate-600 mx-auto mb-1.5" />
-                    <p className="text-xs text-slate-500">Weitere Bilder hinzufuegen</p>
+                    <p className="text-xs text-slate-500">Weitere Bilder hinzufügen</p>
                   </div>
                 </FormField>
               </FormSection>
@@ -436,7 +436,7 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                   <textarea
                     value={form.description}
                     onChange={(e) => update("description", e.target.value)}
-                    placeholder="Ausfuehrliche Beschreibung deines Service..."
+                    placeholder="Ausführliche Beschreibung deines Service..."
                     rows={6}
                     className={textareaClass}
                   />
@@ -588,9 +588,9 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                 />
                 <div className="flex items-center justify-between py-2">
                   <div>
-                    <p className="text-xs font-medium text-slate-300">Auto-Bestaetigung</p>
+                    <p className="text-xs font-medium text-slate-300">Auto-Bestätigung</p>
                     <p className="text-[10px] text-slate-600 mt-0.5">
-                      Buchungen automatisch bestaetigen
+                      Buchungen automatisch bestätigen
                     </p>
                   </div>
                   <button

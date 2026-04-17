@@ -19,13 +19,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { MARKETPLACE_THEMES, type ThemeId } from "@/lib/marketplaceThemes";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://event-bliss.com";
+
+const THEME_ORDER: ThemeId[] = ["dark", "light", "classic", "epic", "party", "adventure"];
 
 export default function AgencyEmbedCenter() {
   const { t } = useTranslation();
   const { agency } = useAgency();
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<ThemeId>("dark");
   const [locale, setLocale] = useState("de");
   const [hideHeader, setHideHeader] = useState(true);
   const [height, setHeight] = useState(1200);
@@ -157,22 +160,74 @@ export default function AgencyEmbedCenter() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          {/* Config */}
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">{t("agency.embed.theme", "Theme")}</Label>
-              <Select value={theme} onValueChange={(v) => setTheme(v as "dark" | "light")}>
-                <SelectTrigger className="h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dark">{t("agency.embed.themeDark", "Dark (empfohlen)")}</SelectItem>
-                  <SelectItem value="light" disabled>
-                    {t("agency.embed.themeLight", "Light")} · {t("agency.embed.comingSoon", "bald verfügbar")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Theme picker */}
+          <div>
+            <div className="mb-2">
+              <Label className="text-xs font-semibold">
+                {t("agency.embed.themePickerTitle", "Theme wählen")}
+              </Label>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {t(
+                  "agency.embed.themePickerHint",
+                  "Dein Kunde sieht die Agentur-Seite in diesem Stil.",
+                )}
+              </p>
             </div>
+            <div
+              role="radiogroup"
+              aria-label={t("agency.embed.themePickerTitle", "Theme wählen")}
+              className="grid grid-cols-2 sm:grid-cols-3 gap-2.5"
+            >
+              {THEME_ORDER.map((id) => {
+                const tTheme = MARKETPLACE_THEMES[id];
+                const selected = theme === id;
+                const label = t(
+                  `agency.embed.themes.${id}.label`,
+                  tTheme.label,
+                );
+                const tagline = t(
+                  `agency.embed.themes.${id}.tagline`,
+                  tTheme.tagline,
+                );
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setTheme(id)}
+                    className={cn(
+                      "group relative text-left rounded-lg border overflow-hidden transition-all",
+                      "bg-background/40 hover:border-violet-400/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+                      selected
+                        ? "border-transparent ring-2 ring-violet-500 scale-[1.02] shadow-lg shadow-violet-500/10"
+                        : "border-border/60",
+                    )}
+                  >
+                    <div
+                      className="h-14 sm:h-16 w-full"
+                      style={{ background: tTheme.preview }}
+                      aria-hidden
+                    />
+                    <div className="p-2.5">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="text-xs font-bold truncate">{label}</span>
+                        {selected && (
+                          <Check className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">
+                        {tagline}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Secondary controls */}
+          <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-xs">{t("agency.embed.language", "Sprache")}</Label>
               <Select value={locale} onValueChange={setLocale}>
@@ -198,7 +253,7 @@ export default function AgencyEmbedCenter() {
                 className="h-8"
               />
             </div>
-            <div className="flex items-end gap-3">
+            <div className="flex items-end gap-3 sm:col-span-2">
               <div className="flex-1">
                 <Label className="text-xs flex items-center gap-1.5">
                   <MonitorSmartphone className="w-3.5 h-3.5" />

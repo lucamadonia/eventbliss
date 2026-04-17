@@ -202,18 +202,34 @@ export function AgencyContacts() {
                 <th className="text-left text-xs font-medium text-white/40 p-4 hidden lg:table-cell">Unternehmen</th>
                 <th className="text-left text-xs font-medium text-white/40 p-4 hidden lg:table-cell">Stadt</th>
                 <th className="text-left text-xs font-medium text-white/40 p-4 hidden sm:table-cell">Bewertung</th>
-                <th className="text-left text-xs font-medium text-white/40 p-4">Tags</th>
+                <th className="text-left text-xs font-medium text-white/40 p-4 hidden sm:table-cell">Tags</th>
               </tr></thead>
               <tbody>{filtered.length === 0 ? (
                 <tr><td colSpan={6} className="p-8 text-center text-white/30">Keine Kontakte gefunden. Erstelle deinen ersten Kontakt.</td></tr>
               ) : filtered.map((contact) => (
                 <tr key={contact.id} className="border-b border-white/5 hover:bg-white/[0.03] cursor-pointer transition-colors" onClick={() => setSelectedContact(contact)}>
-                  <td className="p-4"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-xs font-medium text-violet-300">{contact.name.split(" ").map(n => n[0]).join("")}</div><div><p className="text-sm font-medium text-white">{contact.name}</p><p className="text-xs text-white/40 md:hidden">{contact.company}</p></div></div></td>
+                  <td className="p-3 sm:p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-xs font-medium text-violet-300 shrink-0">{contact.name.split(" ").map(n => n[0]).join("")}</div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white truncate">{contact.name}</p>
+                        {/* Mobile-only meta line: type badge + company + city + rating */}
+                        <div className="md:hidden mt-1 flex flex-wrap items-center gap-1.5">
+                          <Badge variant="outline" className={`text-[10px] ${typeColors[contact.type || ""] || "border-white/10 text-white/50"}`}>{typeLabels[contact.type || ""] || contact.type || "-"}</Badge>
+                          {contact.city && <span className="text-[10px] text-white/40">{contact.city}</span>}
+                          {(contact.rating || 0) > 0 && (
+                            <span className="text-[10px] text-amber-300">★ {contact.rating}</span>
+                          )}
+                        </div>
+                        {contact.company && <p className="text-xs text-white/40 md:hidden mt-0.5 truncate">{contact.company}</p>}
+                      </div>
+                    </div>
+                  </td>
                   <td className="p-4 hidden md:table-cell"><Badge variant="outline" className={`text-xs ${typeColors[contact.type || ""] || "border-white/10 text-white/50"}`}>{typeLabels[contact.type || ""] || contact.type || "-"}</Badge></td>
                   <td className="p-4 text-sm text-white/60 hidden lg:table-cell">{contact.company || "-"}</td>
                   <td className="p-4 text-sm text-white/60 hidden lg:table-cell">{contact.city || "-"}</td>
                   <td className="p-4 hidden sm:table-cell"><StarRating rating={contact.rating || 0} /></td>
-                  <td className="p-4"><div className="flex gap-1 flex-wrap">
+                  <td className="p-4 hidden sm:table-cell"><div className="flex gap-1 flex-wrap">
                     {(contact.tags || []).slice(0, 2).map((tag) => (<Badge key={tag} variant="outline" className="text-[10px] border-white/10 text-white/50">{tag}</Badge>))}
                     {(contact.tags || []).length > 2 && (<Badge variant="outline" className="text-[10px] border-white/10 text-white/30">+{(contact.tags || []).length - 2}</Badge>)}
                   </div></td>
@@ -232,7 +248,7 @@ export function AgencyContacts() {
             <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-violet-500/30 transition-colors cursor-pointer">
               <Upload className="w-8 h-8 text-white/30 mx-auto mb-3" />
               <p className="text-sm text-white/60 mb-1">CSV-Datei hierher ziehen</p>
-              <p className="text-xs text-white/30">oder klicken zum Auswaehlen</p>
+              <p className="text-xs text-white/30">oder klicken zum Auswählen</p>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
               <p className="text-xs text-white/40 mb-1">Erwartete Spalten:</p>
@@ -274,7 +290,7 @@ export function AgencyContacts() {
                     const val = (selectedContact[ratingKey] as number) || 0;
                     return (
                       <div key={key} className="flex items-center gap-2">
-                        <span className="text-[10px] text-white/40 w-24 capitalize">{key === "price" ? "Preis-Leistung" : key === "quality" ? "Qualitaet" : key === "punctuality" ? "Puenktlichkeit" : key === "communication" ? "Kommunikation" : "Flexibilitaet"}</span>
+                        <span className="text-[10px] text-white/40 w-24 capitalize">{key === "price" ? "Preis-Leistung" : key === "quality" ? "Qualität" : key === "punctuality" ? "Pünktlichkeit" : key === "communication" ? "Kommunikation" : "Flexibilität"}</span>
                         <StarRating rating={val} interactive onChange={(v) => {
                           const ratings: VendorRatings = {
                             quality: (selectedContact.rating_quality || 0),
@@ -300,7 +316,7 @@ export function AgencyContacts() {
                 <div><p className="text-xs text-white/40 mb-2">Notizen</p><p className="text-sm text-white/70 bg-white/5 rounded-lg p-3">{selectedContact.notes}</p></div>
               )}
               <Button variant="destructive" size="sm" className="w-full" onClick={() => { deleteVendor(selectedContact.id); setSelectedContact(null); }}>
-                <Trash2 className="w-4 h-4 mr-2" /> Kontakt loeschen
+                <Trash2 className="w-4 h-4 mr-2" /> Kontakt löschen
               </Button>
             </div>
           )}

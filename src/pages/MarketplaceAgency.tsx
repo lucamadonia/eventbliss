@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useMarketplaceTheme } from "@/lib/marketplaceThemes";
 
 const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
 function resolveLocale(lang: string | undefined): string {
@@ -22,17 +23,6 @@ import {
   Mail, Phone, Globe, ChevronRight, ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-
-// Design tokens
-const C = {
-  surface: "bg-[#0d0d15]",
-  high: "bg-[#1f1f29]",
-  low: "bg-[#13131b]",
-  primary: "#cf96ff",
-  secondary: "#00e3fd",
-  tertiary: "#ff7350",
-  border: "border-[#484750]/10",
-} as const;
 
 const TIER_BADGES: Record<string, { label: string; color: string; partnerLabel: string }> = {
   starter: { label: "Starter", color: "text-gray-400 bg-gray-400/10", partnerLabel: "Standard" },
@@ -85,16 +75,32 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
 function StatCard({
   icon: Icon, value, label, delay,
 }: { icon: React.ElementType; value: string; label: string; delay: number }) {
+  const theme = useMarketplaceTheme();
   return (
     <motion.div
-      className={`flex-1 min-w-[120px] p-4 rounded-2xl ${C.high} border ${C.border}`}
+      className="flex-1 min-w-[120px] p-4 border"
+      style={{
+        backgroundColor: theme.colors.surfaceHigh,
+        borderColor: theme.colors.border,
+        borderRadius: theme.effects.cardRadius,
+      }}
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
     >
-      <Icon size={20} className="text-[#cf96ff] mb-2" />
-      <div className="text-xl font-black font-game">{value}</div>
-      <div className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] mt-0.5">{label}</div>
+      <Icon size={20} className="mb-2" style={{ color: theme.colors.primary }} />
+      <div
+        className="text-xl font-black"
+        style={{
+          fontFamily: theme.typography.heading,
+          fontWeight: theme.typography.weightHeading,
+          letterSpacing: theme.typography.letterSpacingHeading,
+          color: theme.colors.text,
+        }}
+      >
+        {value}
+      </div>
+      <div className="text-xs mt-0.5" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>{label}</div>
     </motion.div>
   );
 }
@@ -104,11 +110,19 @@ function SkeletonBlock({ className }: { className?: string }) {
 }
 
 function LoadingSkeleton() {
+  const theme = useMarketplaceTheme();
   return (
-    <div className={`min-h-screen ${C.surface} text-white`}>
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundColor: theme.colors.bg,
+        color: theme.colors.text,
+        fontFamily: theme.typography.body,
+      }}
+    >
       <div className="relative h-48 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#cf96ff]/20 via-[#1f1f29] to-[#00e3fd]/10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d15] via-transparent to-transparent" />
+        <div className="absolute inset-0" style={{ background: theme.hero.gradient }} />
+        <div className="absolute inset-0" style={{ background: theme.hero.overlay }} />
       </div>
       <div className="max-w-5xl mx-auto px-4 md:px-8 -mt-16 relative z-10">
         <div className="flex items-end gap-5">
@@ -239,6 +253,14 @@ export default function MarketplaceAgency() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const theme = useMarketplaceTheme();
+
+  const headingStyle = {
+    fontFamily: theme.typography.heading,
+    fontWeight: theme.typography.weightHeading,
+    letterSpacing: theme.typography.letterSpacingHeading,
+    color: theme.colors.text,
+  } as const;
 
   const { data: agency, isLoading: agencyLoading, error: agencyError } = useAgencyBySlug(slug);
   const { data: services = [], isLoading: servicesLoading } = useAgencyApprovedServices(agency?.id);
@@ -250,17 +272,30 @@ export default function MarketplaceAgency() {
 
   if (agencyError || !agency) {
     return (
-      <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          backgroundColor: theme.colors.bg,
+          color: theme.colors.text,
+          fontFamily: theme.typography.body,
+        }}
+      >
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-black font-game">
+          <h1 className="text-2xl font-black" style={headingStyle}>
             {t("marketplaceAgency.notFoundTitle", "Agentur nicht gefunden")}
           </h1>
-          <p className="text-gray-400 font-['Be_Vietnam_Pro']">
+          <p style={{ color: theme.colors.textMuted }}>
             {t("marketplaceAgency.notFoundBody", "Die Agentur mit dem Slug \"{{slug}}\" existiert nicht oder ist nicht mehr aktiv.", { slug })}
           </p>
           <button
             onClick={() => navigate("/marketplace")}
-            className="mt-4 px-6 py-2.5 rounded-full bg-[#cf96ff] text-black font-bold font-game text-sm hover:bg-[#b87ae6] transition-colors"
+            className="mt-4 px-6 py-2.5 rounded-full text-black font-bold text-sm transition-opacity hover:opacity-90"
+            style={{
+              backgroundColor: theme.colors.primary,
+              fontFamily: theme.typography.heading,
+              fontWeight: theme.typography.weightHeading,
+              letterSpacing: theme.typography.letterSpacingHeading,
+            }}
           >
             {t("marketplaceAgency.toMarketplace", "Zum Marketplace")}
           </button>
@@ -281,17 +316,18 @@ export default function MarketplaceAgency() {
       : 0;
 
   return (
-    <div className={`min-h-screen ${C.surface} text-white`}>
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundColor: theme.colors.bg,
+        color: theme.colors.text,
+        fontFamily: theme.typography.body,
+      }}
+    >
       {/* Header Banner */}
       <div className="relative h-48 w-full overflow-hidden">
-        <div className={`absolute inset-0 ${
-          tier === "enterprise"
-            ? "bg-gradient-to-br from-amber-400/30 via-[#1f1f29] to-amber-600/15"
-            : tier === "professional"
-            ? "bg-gradient-to-br from-[#cf96ff]/30 via-[#1f1f29] to-[#cf96ff]/10"
-            : "bg-gradient-to-br from-[#cf96ff]/25 via-[#1f1f29] to-[#00e3fd]/15"
-        }`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d15] via-transparent to-transparent" />
+        <div className="absolute inset-0" style={{ background: theme.hero.gradient }} />
+        <div className="absolute inset-0" style={{ background: theme.hero.overlay }} />
       </div>
 
       {/* Agency Info Overlay */}
@@ -307,38 +343,53 @@ export default function MarketplaceAgency() {
             <img
               src={agency.logo_url}
               alt={agency.name}
-              className="w-20 h-20 rounded-full object-cover shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]"
+              className="w-20 h-20 rounded-full object-cover border-4"
+              style={{
+                borderColor: theme.colors.bg,
+                boxShadow: `0 10px 30px ${theme.effects.shadowColor}`,
+              }}
             />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-3xl font-black font-game shadow-xl shadow-[#cf96ff]/20 border-4 border-[#0d0d15]">
+            <div
+              className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black border-4"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})`,
+                borderColor: theme.colors.bg,
+                boxShadow: `0 10px 30px ${theme.effects.shadowColor}`,
+                fontFamily: theme.typography.heading,
+                fontWeight: theme.typography.weightHeading,
+                letterSpacing: theme.typography.letterSpacingHeading,
+                color: theme.colors.text,
+              }}
+            >
               {agency.name.charAt(0)}
             </div>
           )}
           <div className="flex-1 pb-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black font-game">{agency.name}</h1>
+              <h1 className="text-3xl font-black" style={headingStyle}>{agency.name}</h1>
               {(tier === "professional" || tier === "enterprise") && (
-                <ShieldCheck size={22} className="text-[#00e3fd]" />
+                <ShieldCheck size={22} style={{ color: theme.colors.secondary }} />
               )}
               {tier === "professional" && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold font-['Be_Vietnam_Pro'] bg-[#cf96ff]/15 text-[#cf96ff] border border-[#cf96ff]/20">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-[#cf96ff]/15 text-[#cf96ff] border border-[#cf96ff]/20">
                   Pro Partner &#10003;
                 </span>
               )}
               {tier === "enterprise" && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold font-['Be_Vietnam_Pro'] bg-amber-400/15 text-amber-400 border border-amber-400/20">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-400 border border-amber-400/20">
                   Enterprise Partner &#10003;
                 </span>
               )}
               {tier === "starter" && (
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] ${tierBadge.color}`}>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${tierBadge.color}`}>
                   {tierBadge.label}
                 </span>
               )}
             </div>
             {agency.city && (
-              <div className="flex items-center gap-1.5 mt-1.5 text-sm text-gray-400 font-['Be_Vietnam_Pro']">
-                <MapPin size={14} className="text-gray-500" />
+              <div className="flex items-center gap-1.5 mt-1.5 text-sm" style={{ color: theme.colors.textMuted }}>
+                <MapPin size={14} style={{ color: theme.colors.textMuted, opacity: 0.7 }} />
                 {agency.city}
               </div>
             )}
@@ -346,12 +397,16 @@ export default function MarketplaceAgency() {
         </motion.div>
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 font-['Be_Vietnam_Pro'] mt-6">
-          <button onClick={() => navigate("/marketplace")} className="hover:text-[#cf96ff] transition-colors">
+        <nav className="flex items-center gap-2 text-sm mt-6" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>
+          <button
+            onClick={() => navigate("/marketplace")}
+            className="transition-opacity hover:opacity-80"
+            style={{ color: theme.colors.primary }}
+          >
             {t("marketplaceAgency.breadcrumb", "Marketplace")}
           </button>
           <ChevronRight size={14} />
-          <span className="text-white/70">{agency.name}</span>
+          <span style={{ color: theme.colors.text, opacity: 0.7 }}>{agency.name}</span>
         </nav>
 
         {/* Stats Row */}
@@ -378,12 +433,12 @@ export default function MarketplaceAgency() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
           >
-            <h2 className="text-lg font-black font-game mb-3">{t("marketplaceAgency.tierBenefitsTitle", "Tier-Vorteile")}</h2>
+            <h2 className="text-lg font-black mb-3" style={headingStyle}>{t("marketplaceAgency.tierBenefitsTitle", "Tier-Vorteile")}</h2>
             <div className="flex flex-wrap gap-2">
               {TIER_BENEFITS[tier]!.map((benefit) => (
                 <span
                   key={benefit}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] border ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${
                     tier === "enterprise"
                       ? "bg-amber-400/10 text-amber-400 border-amber-400/20"
                       : "bg-[#cf96ff]/10 text-[#cf96ff] border-[#cf96ff]/20"
@@ -404,8 +459,8 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <h2 className="text-xl font-black font-game mb-3">{t("marketplaceAgency.aboutTitle", "Über uns")}</h2>
-          <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm max-w-3xl">
+          <h2 className="text-xl font-black mb-3" style={headingStyle}>{t("marketplaceAgency.aboutTitle", "Über uns")}</h2>
+          <p className="leading-relaxed text-sm max-w-3xl" style={{ color: theme.colors.textMuted }}>
             {agency.city
               ? t("marketplaceAgency.aboutWithCity", "{{name}} ist seit {{year}} aktiv in {{city}}.", { name: agency.name, year: createdYear, city: agency.city })
               : t("marketplaceAgency.aboutNoCity", "{{name}} ist seit {{year}} aktiv.", { name: agency.name, year: createdYear })}
@@ -419,7 +474,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-xl font-black font-game mb-4">{t("marketplaceAgency.servicesTitle", "Services")}</h2>
+          <h2 className="text-xl font-black mb-4" style={headingStyle}>{t("marketplaceAgency.servicesTitle", "Services")}</h2>
           {servicesLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(3)].map((_, i) => (
@@ -427,8 +482,15 @@ export default function MarketplaceAgency() {
               ))}
             </div>
           ) : services.length === 0 ? (
-            <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
-              <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
+            <div
+              className="p-8 border text-center"
+              style={{
+                backgroundColor: theme.colors.surfaceHigh,
+                borderColor: theme.colors.border,
+                borderRadius: theme.effects.cardRadius,
+              }}
+            >
+              <p className="text-sm" style={{ color: theme.colors.textMuted }}>
                 {t("marketplaceAgency.noServices", "Diese Agentur hat noch keine Services im Marketplace.")}
               </p>
             </div>
@@ -438,14 +500,24 @@ export default function MarketplaceAgency() {
                 <motion.button
                   key={svc.slug}
                   onClick={() => navigate(`/marketplace/service/${svc.slug}`)}
-                  className={`text-left p-4 rounded-2xl ${C.high} border ${C.border} hover:border-[#cf96ff]/20 transition-all group`}
+                  className="text-left p-4 border transition-all group"
+                  style={{
+                    backgroundColor: theme.colors.surfaceHigh,
+                    borderColor: theme.colors.border,
+                    borderRadius: theme.effects.cardRadius,
+                  }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.04 }}
                   whileHover={{ y: -2 }}
                 >
                   {/* Image / Placeholder */}
-                  <div className="w-full h-32 rounded-xl bg-gradient-to-br from-[#cf96ff]/10 via-[#1f1f29] to-[#00e3fd]/10 mb-3 overflow-hidden">
+                  <div
+                    className="w-full h-32 rounded-xl mb-3 overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, ${theme.colors.primary}1a, ${theme.colors.surfaceHigh}, ${theme.colors.secondary}1a)`,
+                    }}
+                  >
                     {svc.cover_image_url ? (
                       <img
                         src={svc.cover_image_url}
@@ -453,27 +525,36 @@ export default function MarketplaceAgency() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs font-['Be_Vietnam_Pro']">
+                      <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: theme.colors.textMuted, opacity: 0.6 }}>
                         {svc.category}
                       </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#cf96ff]/10 text-[#cf96ff] font-semibold font-['Be_Vietnam_Pro']">
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                      style={{
+                        backgroundColor: `${theme.colors.primary}1a`,
+                        color: theme.colors.primary,
+                      }}
+                    >
                       {svc.category}
                     </span>
                   </div>
-                  <h3 className="font-bold font-game text-sm group-hover:text-[#cf96ff] transition-colors">
+                  <h3
+                    className="font-bold text-sm transition-colors"
+                    style={headingStyle}
+                  >
                     {svc.title}
                   </h3>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-1.5">
                       <StarRating rating={svc.avg_rating} size={12} />
-                      <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">({svc.review_count})</span>
+                      <span className="text-xs" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>({svc.review_count})</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-sm font-black font-game">{formatPrice(svc.price_cents)} €</span>
-                      <span className="text-[10px] text-gray-500 font-['Be_Vietnam_Pro'] ml-1">
+                      <span className="text-sm font-black" style={headingStyle}>{formatPrice(svc.price_cents)} €</span>
+                      <span className="text-[10px] ml-1" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>
                         {PRICE_TYPE_LABELS[svc.price_type] || svc.price_type}
                       </span>
                     </div>
@@ -491,11 +572,18 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <h2 className="text-xl font-black font-game mb-4">{t("marketplaceAgency.reviewsTitle", "Bewertungen")}</h2>
+          <h2 className="text-xl font-black mb-4" style={headingStyle}>{t("marketplaceAgency.reviewsTitle", "Bewertungen")}</h2>
           {reviews.length === 0 ? (
-            <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
-              <Star size={32} className="text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
+            <div
+              className="p-8 border text-center"
+              style={{
+                backgroundColor: theme.colors.surfaceHigh,
+                borderColor: theme.colors.border,
+                borderRadius: theme.effects.cardRadius,
+              }}
+            >
+              <Star size={32} className="mx-auto mb-3" style={{ color: theme.colors.textMuted, opacity: 0.6 }} />
+              <p className="text-sm" style={{ color: theme.colors.textMuted }}>
                 {t("marketplaceAgency.noReviews", "Noch keine Bewertungen für diese Agentur.")}
               </p>
             </div>
@@ -504,29 +592,43 @@ export default function MarketplaceAgency() {
               {reviews.map((review: any, i: number) => (
                 <motion.div
                   key={i}
-                  className={`p-4 rounded-2xl ${C.high} border ${C.border}`}
+                  className="p-4 border"
+                  style={{
+                    backgroundColor: theme.colors.surfaceHigh,
+                    borderColor: theme.colors.border,
+                    borderRadius: theme.effects.cardRadius,
+                  }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35 + i * 0.06 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#cf96ff] to-[#00e3fd] flex items-center justify-center text-sm font-bold font-game">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                      style={{
+                        background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})`,
+                        fontFamily: theme.typography.heading,
+                        fontWeight: theme.typography.weightHeading,
+                        letterSpacing: theme.typography.letterSpacingHeading,
+                        color: theme.colors.text,
+                      }}
+                    >
                       {review.name?.charAt(0) || "?"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm font-game">{review.name}</span>
-                        <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">
+                        <span className="font-semibold text-sm" style={headingStyle}>{review.name}</span>
+                        <span className="text-xs" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>
                           {new Date(review.date).toLocaleDateString("de-DE")}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
                         <StarRating rating={review.rating} size={12} />
-                        <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro']">{review.service}</span>
+                        <span className="text-xs" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>{review.service}</span>
                       </div>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm text-gray-300 font-['Be_Vietnam_Pro'] leading-relaxed">{review.comment}</p>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: theme.colors.textMuted }}>{review.comment}</p>
                 </motion.div>
               ))}
             </div>
@@ -540,15 +642,26 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
         >
-          <h2 className="text-xl font-black font-game mb-4">Kontakt</h2>
-          <div className={`p-5 rounded-2xl ${C.high} border ${C.border} space-y-3 max-w-md`}>
+          <h2 className="text-xl font-black mb-4" style={headingStyle}>Kontakt</h2>
+          <div
+            className="p-5 border space-y-3 max-w-md"
+            style={{
+              backgroundColor: theme.colors.surfaceHigh,
+              borderColor: theme.colors.border,
+              borderRadius: theme.effects.cardRadius,
+            }}
+          >
             {agency.email && (
               <a
                 href={`mailto:${agency.email}`}
-                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#cf96ff] transition-colors"
+                className="flex items-center gap-3 text-sm transition-opacity hover:opacity-80"
+                style={{ color: theme.colors.textMuted }}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                  <Mail size={16} className="text-[#cf96ff]" />
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: theme.colors.surfaceLow }}
+                >
+                  <Mail size={16} style={{ color: theme.colors.primary }} />
                 </div>
                 {agency.email}
               </a>
@@ -556,10 +669,14 @@ export default function MarketplaceAgency() {
             {agency.phone && (
               <a
                 href={`tel:${agency.phone}`}
-                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#00e3fd] transition-colors"
+                className="flex items-center gap-3 text-sm transition-opacity hover:opacity-80"
+                style={{ color: theme.colors.textMuted }}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                  <Phone size={16} className="text-[#00e3fd]" />
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: theme.colors.surfaceLow }}
+                >
+                  <Phone size={16} style={{ color: theme.colors.secondary }} />
                 </div>
                 {agency.phone}
               </a>
@@ -569,17 +686,21 @@ export default function MarketplaceAgency() {
                 href={agency.website.startsWith("http") ? agency.website : `https://${agency.website}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm font-['Be_Vietnam_Pro'] text-gray-300 hover:text-[#ff7350] transition-colors"
+                className="flex items-center gap-3 text-sm transition-opacity hover:opacity-80"
+                style={{ color: theme.colors.textMuted }}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#13131b] flex items-center justify-center shrink-0">
-                  <Globe size={16} className="text-[#ff7350]" />
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: theme.colors.surfaceLow }}
+                >
+                  <Globe size={16} style={{ color: theme.colors.tertiary }} />
                 </div>
                 {agency.website}
-                <ExternalLink size={12} className="text-gray-500 ml-auto" />
+                <ExternalLink size={12} className="ml-auto" style={{ color: theme.colors.textMuted, opacity: 0.7 }} />
               </a>
             )}
             {!agency.email && !agency.phone && !agency.website && (
-              <p className="text-gray-500 font-['Be_Vietnam_Pro'] text-sm">
+              <p className="text-sm" style={{ color: theme.colors.textMuted, opacity: 0.7 }}>
                 Keine Kontaktdaten hinterlegt.
               </p>
             )}

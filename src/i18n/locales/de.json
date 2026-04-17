@@ -4200,6 +4200,18 @@
       "upsellHeadline": "KI-Performance freischalten",
       "upsellBody": "Upgrade auf Enterprise um zu sehen wie oft deine Services empfohlen, geklickt und gebucht werden.",
       "upsellCta": "Enterprise freischalten"
+    },
+    "embed": {
+      "themePickerTitle": "Theme wählen",
+      "themePickerHint": "Dein Kunde sieht die Agentur-Seite in diesem Stil.",
+      "themes": {
+        "dark": { "label": "Dark · Gaming", "tagline": "Neon-Gaming-Look mit Violett & Cyan" },
+        "light": { "label": "Modern · Hell", "tagline": "Clean, minimalistisch, corporate-ready" },
+        "classic": { "label": "Klassisch · Elegant", "tagline": "Zeitlos mit Serifen und Champagner-Tönen" },
+        "epic": { "label": "Episch · Kinoreif", "tagline": "Dramatische Gold- und Purpurtöne für Galaabende" },
+        "party": { "label": "Party · Neon", "tagline": "Vibrant Neon für Nightlife und Feiern" },
+        "adventure": { "label": "Adventure · Outdoor", "tagline": "Erdige Outdoor-Vibes für Festivals & Naturevents" }
+      }
     }
   },
   "games": {

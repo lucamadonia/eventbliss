@@ -99,53 +99,70 @@ serve(async (req) => {
       serviceTitle = deTx?.title || translations[0]?.title || serviceTitle;
     }
 
-    // Fetch the agency's Stripe account
-    const { data: stripeAccount, error: stripeError } = await supabaseAdmin
-      .from("agency_stripe_accounts")
-      .select("stripe_account_id, charges_enabled")
-      .eq("agency_id", booking.agency_id)
+    // Fetch agency display info (optional, used for receipt description)
+    const { data: agency } = await supabaseAdmin
+      .from("agencies")
+      .select("name, slug")
+      .eq("id", booking.agency_id)
       .single();
 
-    if (stripeError || !stripeAccount?.stripe_account_id) {
-      logStep("ERROR", { message: "Agency has no Stripe account", agency_id: booking.agency_id });
-      return new Response(
-        JSON.stringify({ error: "Die Agentur hat noch kein Stripe-Konto verbunden" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
+    const agencyName = agency?.name ?? "EventBliss Partner";
 
-    if (!stripeAccount.charges_enabled) {
-      logStep("ERROR", { message: "Agency Stripe account charges not enabled" });
-      return new Response(
-        JSON.stringify({ error: "Das Stripe-Konto der Agentur ist noch nicht aktiviert" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-
-    // Calculate amounts
+    // Calculate amount (charged in full to our Stripe account)
     const total = booking.total_price_cents;
-    const platformFee = booking.platform_fee_cents;
 
-    logStep("Creating checkout session", {
+    logStep("Creating checkout session (platform account)", {
       total,
-      platformFee,
-      destination: stripeAccount.stripe_account_id,
+      platformFee: booking.platform_fee_cents,
+      agencyPayout: booking.agency_payout_cents,
+      agencyId: booking.agency_id,
     });
 
     // Determine origin for redirect URLs
     const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, "") || "https://event-bliss.com";
 
-    // Create Stripe Checkout Session
+    // Build rich metadata so the payment is traceable end-to-end to
+    // booking / agency / customer without needing Stripe Connect.
+    // NOTE: all metadata values must be strings <= 500 chars.
+    const metadata: Record<string, string> = {
+      booking_id: String(booking.id),
+      booking_number: String(booking.booking_number ?? ""),
+      agency_id: String(booking.agency_id),
+      agency_name: String(agencyName).slice(0, 500),
+      agency_slug: String(agency?.slug ?? ""),
+      service_id: String(booking.service_id),
+      customer_id: String(user.id),
+      customer_email: String(booking.customer_email ?? user.email ?? ""),
+      customer_name: String(booking.customer_name ?? "").slice(0, 500),
+      booking_date: String(booking.booking_date ?? ""),
+      booking_time: String(booking.booking_time ?? ""),
+      participant_count: String(booking.participant_count ?? ""),
+      total_price_cents: String(booking.total_price_cents ?? ""),
+      platform_fee_cents: String(booking.platform_fee_cents ?? ""),
+      agency_payout_cents: String(booking.agency_payout_cents ?? ""),
+      source: "marketplace",
+    };
+
+    // Create Stripe Checkout Session on the platform account.
+    // No transfer_data / destination → funds settle on our account.
+    // Agency payout is handled off-Stripe (manual or later batch transfer)
+    // and is tracked via marketplace_bookings.agency_payout_cents.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      customer_email: booking.customer_email ?? user.email ?? undefined,
+      client_reference_id: String(booking.id),
       line_items: [
         {
           price_data: {
             currency: "eur",
             product_data: {
               name: serviceTitle,
-              description: `Buchung ${booking.booking_number}`,
+              description: `Buchung ${booking.booking_number} · ${agencyName}`,
+              metadata: {
+                booking_id: String(booking.id),
+                agency_id: String(booking.agency_id),
+              },
             },
             unit_amount: total,
           },
@@ -153,17 +170,12 @@ serve(async (req) => {
         },
       ],
       payment_intent_data: {
-        application_fee_amount: platformFee,
-        transfer_data: {
-          destination: stripeAccount.stripe_account_id,
-        },
+        description: `EventBliss Buchung ${booking.booking_number} (${agencyName})`,
+        metadata,
       },
-      success_url: `${origin}/my-bookings?success=true&booking=${booking_id}`,
-      cancel_url: `${origin}/my-bookings?cancelled=true`,
-      metadata: {
-        booking_id,
-        agency_id: booking.agency_id,
-      },
+      success_url: `${origin}/booking-success?booking=${booking_id}`,
+      cancel_url: `${origin}/my-bookings?cancelled=true&booking=${booking_id}`,
+      metadata,
     });
 
     logStep("Checkout session created", { sessionId: session.id });

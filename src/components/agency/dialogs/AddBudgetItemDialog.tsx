@@ -142,7 +142,7 @@ export function AddBudgetItemDialog({ open, onOpenChange, onSave, editingItem }:
           <div>
             <Label className="text-white/60 text-xs">Notizen</Label>
             <Textarea className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={3}
-              placeholder="Zusaetzliche Informationen..." value={form.notes}
+              placeholder="Zusätzliche Informationen..." value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
         </div>

@@ -260,7 +260,7 @@ export function AgencySettings() {
             </div>
           </div>
 
-          <ColorPicker label="Primaerfarbe" value={primaryColor} onChange={setPrimaryColor} />
+          <ColorPicker label="Primärfarbe" value={primaryColor} onChange={setPrimaryColor} />
           <ColorPicker label="Akzentfarbe" value={accentColor} onChange={setAccentColor} />
 
           {/* Preview Card */}
@@ -277,7 +277,7 @@ export function AgencySettings() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <div className="h-7 rounded-lg px-3 flex items-center text-xs text-white font-medium" style={{ backgroundColor: primaryColor }}>Primaer</div>
+                <div className="h-7 rounded-lg px-3 flex items-center text-xs text-white font-medium" style={{ backgroundColor: primaryColor }}>Primär</div>
                 <div className="h-7 rounded-lg px-3 flex items-center text-xs text-white font-medium" style={{ backgroundColor: accentColor }}>Akzent</div>
               </div>
             </div>
@@ -388,23 +388,23 @@ export function AgencySettings() {
           <h3 className="text-base font-semibold text-slate-50">Gefahrenzone</h3>
         </div>
         <p className="text-xs text-slate-500 mb-4">
-          Die Agentur und alle zugehoerigen Daten werden unwiderruflich geloescht.
+          Die Agentur und alle zugehörigen Daten werden unwiderruflich gelöscht.
         </p>
         <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10 cursor-pointer gap-2">
               <Trash2 className="w-4 h-4" />
-              Agentur loeschen
+              Agentur löschen
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-[#1a1625] border-white/[0.08]">
             <DialogHeader>
               <DialogTitle className="text-slate-50 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-red-400" />
-                Agentur loeschen?
+                Agentur löschen?
               </DialogTitle>
               <DialogDescription className="text-slate-400 text-sm">
-                Diese Aktion kann nicht rueckgaengig gemacht werden. Alle Events, Kontakte und Dateien werden geloescht.
+                Diese Aktion kann nicht rückgängig gemacht werden. Alle Events, Kontakte und Dateien werden gelöscht.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2">
@@ -413,7 +413,7 @@ export function AgencySettings() {
               </Button>
               <Button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white cursor-pointer gap-2">
                 <Trash2 className="w-4 h-4" />
-                Endgueltig loeschen
+                Endgültig löschen
               </Button>
             </DialogFooter>
           </DialogContent>

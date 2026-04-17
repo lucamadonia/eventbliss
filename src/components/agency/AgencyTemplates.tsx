@@ -77,7 +77,7 @@ export function AgencyTemplates() {
       >
         <div>
           <h3 className="text-lg font-semibold text-white">Event-Vorlagen</h3>
-          <p className="text-sm text-white/40">{templates.length} Vorlagen verfuegbar</p>
+          <p className="text-sm text-white/40">{templates.length} Vorlagen verfügbar</p>
         </div>
         <Button
           className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white cursor-pointer"

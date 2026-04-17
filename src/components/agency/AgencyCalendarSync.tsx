@@ -224,7 +224,7 @@ function TokenRow({
                   className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[#0078D4]/10 border border-[#0078D4]/20 text-[#4BA3E3] hover:bg-[#0078D4]/15 transition-colors text-xs font-medium cursor-pointer"
                 >
                   <OutlookIcon className="w-4 h-4" />
-                  In Outlook oeffnen
+                  In Outlook öffnen
                   <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
                 </a>
                 <a

@@ -454,7 +454,7 @@ function FileListView({
                 Kategorie
               </th>
               <th className="text-left text-xs font-medium text-white/40 p-4 hidden sm:table-cell">
-                Groesse
+                Größe
               </th>
               <th className="text-left text-xs font-medium text-white/40 p-4 w-20">
                 Aktion

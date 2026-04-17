@@ -55,7 +55,7 @@ interface TaskColumnProps {
 
 function TaskColumn({ title, tasks, color, onMove, onDelete, targetStatuses }: TaskColumnProps) {
   return (
-    <div className="flex-1 min-w-[250px]">
+    <div className="flex-1 min-w-0 sm:min-w-[250px] w-full">
       <div className="flex items-center gap-2 mb-3">
         <div className={`w-2 h-2 rounded-full ${color}`} />
         <h4 className="text-sm font-medium text-white">{title}</h4>
@@ -210,7 +210,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
       </motion.div>
 
       {!selectedEventId ? (
-        <div className="text-center py-12 text-white/40">Bitte waehle ein Event aus.</div>
+        <div className="text-center py-12 text-white/40">Bitte wähle ein Event aus.</div>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
@@ -240,7 +240,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                     <div><Label className="text-white/60 text-xs">Titel</Label><Input value={newTask.title} onChange={(e) => setNewTask((p) => ({ ...p, title: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Aufgabe..." /></div>
                     <div><Label className="text-white/60 text-xs">Beschreibung</Label><Textarea value={newTask.description} onChange={(e) => setNewTask((p) => ({ ...p, description: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={2} /></div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label className="text-white/60 text-xs">Prioritaet</Label>
+                      <div><Label className="text-white/60 text-xs">Priorität</Label>
                         <Select value={newTask.priority} onValueChange={(v) => setNewTask((p) => ({ ...p, priority: v as EventTask["priority"] }))}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -251,9 +251,9 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div><Label className="text-white/60 text-xs">Zustaendig</Label><Input value={newTask.assignee_name} onChange={(e) => setNewTask((p) => ({ ...p, assignee_name: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Name" /></div>
+                      <div><Label className="text-white/60 text-xs">Zuständig</Label><Input value={newTask.assignee_name} onChange={(e) => setNewTask((p) => ({ ...p, assignee_name: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Name" /></div>
                     </div>
-                    <div><Label className="text-white/60 text-xs">Faellig am</Label><Input type="date" value={newTask.due_date} onChange={(e) => setNewTask((p) => ({ ...p, due_date: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
+                    <div><Label className="text-white/60 text-xs">Fällig am</Label><Input type="date" value={newTask.due_date} onChange={(e) => setNewTask((p) => ({ ...p, due_date: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
                     <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateTask}>Erstellen</Button>
                   </div>
                 </DialogContent>
@@ -262,10 +262,10 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
             {tasksLoading ? (
               <div className="flex gap-4"><Skeleton className="flex-1 h-48 bg-white/5" /><Skeleton className="flex-1 h-48 bg-white/5" /><Skeleton className="flex-1 h-48 bg-white/5" /></div>
             ) : (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex gap-4 overflow-x-auto pb-4">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:overflow-x-auto gap-4 pb-4">
                 <TaskColumn title="Zu erledigen" tasks={tasks.todo} color="bg-white/40" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Start", value: "in_progress" }, { label: "Fertig", value: "done" }]} />
-                <TaskColumn title="In Bearbeitung" tasks={tasks.in_progress} color="bg-amber-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurueck", value: "todo" }, { label: "Fertig", value: "done" }]} />
-                <TaskColumn title="Erledigt" tasks={tasks.done} color="bg-emerald-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurueck", value: "todo" }]} />
+                <TaskColumn title="In Bearbeitung" tasks={tasks.in_progress} color="bg-amber-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurück", value: "todo" }, { label: "Fertig", value: "done" }]} />
+                <TaskColumn title="Erledigt" tasks={tasks.done} color="bg-emerald-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurück", value: "todo" }]} />
               </motion.div>
             )}
           </TabsContent>
@@ -284,7 +284,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                     <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white"><Plus className="w-3.5 h-3.5 mr-1" /> Position</Button>
                   </DialogTrigger>
                   <DialogContent className="bg-[#1a1625] border-white/10 text-white max-w-md">
-                    <DialogHeader><DialogTitle>Budget-Position hinzufuegen</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>Budget-Position hinzufügen</DialogTitle></DialogHeader>
                     <div className="space-y-3 mt-2">
                       <div><Label className="text-white/60 text-xs">Kategorie</Label>
                         <Select value={newBudget.category} onValueChange={(v) => setNewBudget((p) => ({ ...p, category: v }))}>
@@ -303,7 +303,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                         <div><Label className="text-white/60 text-xs">Bezahlt</Label><Input type="number" value={newBudget.actual_amount} onChange={(e) => setNewBudget((p) => ({ ...p, actual_amount: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
                       </div>
                       <div><Label className="text-white/60 text-xs">Notizen</Label><Textarea value={newBudget.notes} onChange={(e) => setNewBudget((p) => ({ ...p, notes: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={2} /></div>
-                      <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateBudget}>Hinzufuegen</Button>
+                      <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateBudget}>Hinzufügen</Button>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -387,7 +387,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                   <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white"><Plus className="w-3.5 h-3.5 mr-1" /> Vendor</Button>
                 </DialogTrigger>
                 <DialogContent className="bg-[#1a1625] border-white/10 text-white max-w-md">
-                  <DialogHeader><DialogTitle>Vendor hinzufuegen</DialogTitle></DialogHeader>
+                  <DialogHeader><DialogTitle>Vendor hinzufügen</DialogTitle></DialogHeader>
                   <div className="space-y-3 mt-2">
                     <div><Label className="text-white/60 text-xs">Vendor ID (aus Kontakte)</Label><Input value={newVendor.vendor_id} onChange={(e) => setNewVendor((p) => ({ ...p, vendor_id: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="ID oder leer lassen" /></div>
                     <div><Label className="text-white/60 text-xs">Dienstleistung</Label><Input value={newVendor.service_description} onChange={(e) => setNewVendor((p) => ({ ...p, service_description: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="z.B. Catering, DJ..." /></div>
@@ -405,7 +405,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
                       });
                       setNewVendor({ vendor_id: "", service_description: "", agreed_price: "", deposit_amount: "" });
                       setAddVendorOpen(false);
-                    }}>Hinzufuegen</Button>
+                    }}>Hinzufügen</Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -413,7 +413,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
             {vendorsLoading ? (
               <div className="space-y-3"><Skeleton className="h-20 bg-white/5" /><Skeleton className="h-20 bg-white/5" /></div>
             ) : eventVendors.length === 0 ? (
-              <div className="text-center py-12 text-white/40">Keine Vendors zugewiesen. Fuege einen Vendor hinzu.</div>
+              <div className="text-center py-12 text-white/40">Keine Vendors zugewiesen. Füge einen Vendor hinzu.</div>
             ) : (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
                 {eventVendors.map((v) => {

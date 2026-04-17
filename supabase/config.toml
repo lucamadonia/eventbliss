@@ -83,3 +83,21 @@ verify_jwt = false
 
 [functions.agency-subscribe]
 verify_jwt = false
+
+[functions.marketplace-checkout]
+verify_jwt = false
+
+[functions.marketplace-webhook]
+verify_jwt = false
+
+[functions.booking-notify]
+verify_jwt = false
+
+[functions.booking-webhook]
+verify_jwt = false
+
+[functions.stripe-connect-onboard]
+verify_jwt = false
+
+[functions.agency-outreach]
+verify_jwt = false

@@ -137,7 +137,7 @@ export default function ClientPortal() {
           .single() as any);
 
         if (tokenErr || !tokenData) {
-          setError("Ungueltiger oder abgelaufener Zugangs-Link.");
+          setError("Ungültiger oder abgelaufener Zugangs-Link.");
           setLoading(false);
           return;
         }
@@ -221,7 +221,7 @@ export default function ClientPortal() {
           }
         }
       } catch {
-        setError("Ein Fehler ist aufgetreten. Bitte versuche es spaeter erneut.");
+        setError("Ein Fehler ist aufgetreten. Bitte versuche es später erneut.");
       } finally {
         setLoading(false);
       }
@@ -286,7 +286,7 @@ export default function ClientPortal() {
           <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
             <AlertTriangle className="w-7 h-7 text-red-500" />
           </div>
-          <h1 className="text-xl font-semibold text-slate-900 mb-2">Zugang nicht moeglich</h1>
+          <h1 className="text-xl font-semibold text-slate-900 mb-2">Zugang nicht möglich</h1>
           <p className="text-slate-500 text-sm">{error}</p>
           <Link to="/" className="inline-block mt-6 text-sm font-medium text-violet-600 hover:underline">
             Zur Startseite
@@ -529,7 +529,7 @@ export default function ClientPortal() {
           >
             <h2 className="text-lg font-semibold text-slate-900 mb-1">Freigabe</h2>
             <p className="text-xs text-slate-400 mb-5">
-              Bitte pruefen und genehmigen Sie den aktuellen Planungsstand.
+              Bitte prüfen und genehmigen Sie den aktuellen Planungsstand.
             </p>
 
             {(tokenRecord?.permissions as any)?.last_approval ? (
