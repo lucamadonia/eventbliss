@@ -2308,7 +2308,35 @@
       "pickDate": "Datum auswählen",
       "activityAdded": "Aktivität zum Planer hinzugefügt",
       "addedFromAI": "Hinzugefügt von KI-Assistent",
-      "costPerPerson": "Kosten pro Person"
+      "costPerPerson": "Kosten pro Person",
+      "recommendServices": "Services empfehlen",
+      "recommendServicesDesc": "Passende Anbieter vorschlagen",
+      "yourEvent": "Dein Event-Plan",
+      "sections": "Abschnitte",
+      "readyToBook": "Bereit zum Buchen",
+      "matchedPartners": "Diese Partner-Agenturen passen zu deinem Plan",
+      "exploreMore": "Alle Services entdecken",
+      "budgetByDay": "Budget pro Tag",
+      "bookableIn": "Direkt buchbar in {{city}}",
+      "bookableHere": "Direkt buchbar",
+      "realPartnersBadge": "Echte Partner-Agenturen",
+      "suggestedFor": "Vorgeschlagen für deinen Plan",
+      "totalEstimate": "Geschätzte Gesamtkosten",
+      "perDay": "pro Tag",
+      "perPerson": "pro Person",
+      "sparkleCta": "Magie entfesseln",
+      "creditsFuel": "Credits treiben deinen Planer an",
+      "freshPlan": "Frischer Plan geladen",
+      "batchAddSuccess": "Alle Aktivitäten wurden deinem Event-Planer hinzugefügt",
+      "thinking": "Claude plant deinen Tag …",
+      "quickPrompts": {
+        "label": "Quick-Ideen",
+        "weekend": "Plane mir ein episches Wochenende",
+        "budget": "Budgetfreundlich für 8 Personen",
+        "outdoor": "Action & Outdoor-Abenteuer",
+        "culinary": "Kulinarische Highlights",
+        "luxury": "Luxuriös mit Wow-Effekt"
+      }
     },
     "settings": {
       "title": "Einstellungen",
@@ -2909,6 +2937,131 @@
       "amount": "Betrag",
       "adjustedBy": "Angepasst von",
       "date": "Datum"
+    },
+    "aiAds": {
+      "navLabel": "KI-Werbung",
+      "hero": {
+        "badge": "Letzte 30 Tage",
+        "title": "KI-Werbung Performance",
+        "subtitle": "Wie viele AI-gestützte Service-Empfehlungen werden ausgespielt, geklickt und in Buchungen konvertiert."
+      },
+      "kpi": {
+        "impressions": "Impressions",
+        "clicks": "Clicks",
+        "ctr": "CTR",
+        "revenue": "Attribuierter Umsatz",
+        "bookings": "{{count}} Buchungen"
+      },
+      "sections": {
+        "timeline": "Verlauf 30 Tage",
+        "topServices": "Top 10 Services",
+        "topAgencies": "Top 10 Agenturen",
+        "requestBreakdown": "Nach Request-Typ",
+        "tierCtr": "CTR nach Agentur-Tier",
+        "recentEvents": "Jüngste Ereignisse"
+      },
+      "noData": "Noch keine Daten — sobald AI-Empfehlungen angezeigt werden, füllt sich diese Ansicht."
+    },
+    "akquise": {
+      "navLabel": "Akquise",
+      "heroTitle": "Agentur-Akquise",
+      "heroSubtitle": "Kontaktiere Agenturen automatisch, überzeuge sie vom Mehrwert und gewinne neue Partner.",
+      "tabs": {
+        "dashboard": "Dashboard",
+        "pipeline": "Pipeline",
+        "campaigns": "Kampagnen",
+        "table": "Agenturen"
+      },
+      "kpi": {
+        "total": "Pipeline gesamt",
+        "contacted": "Kontaktiert",
+        "responded": "Antworten",
+        "interested": "Interessiert",
+        "onboarded": "Onboarded",
+        "declined": "Abgelehnt"
+      },
+      "pipeline": {
+        "new": "Neu",
+        "contacted": "Kontaktiert",
+        "followup1": "Follow-Up 1",
+        "followup2": "Follow-Up 2",
+        "responded": "Geantwortet",
+        "interested": "Interessiert",
+        "onboarded": "Onboarded",
+        "declined": "Abgelehnt",
+        "moveToStatus": "Verschieben nach",
+        "lastAction": "Letzte Aktion",
+        "noAgencies": "Keine Agenturen in dieser Stufe"
+      },
+      "campaigns": {
+        "title": "Kampagnen",
+        "newCampaign": "Neue Kampagne",
+        "name": "Kampagnenname",
+        "sender": "Absender",
+        "senderName": "Absendername",
+        "dripRate": "Mails pro Tag",
+        "stage1": "Erste Kontaktaufnahme",
+        "stage2": "Follow-Up 1 (Tag +3)",
+        "stage3": "Follow-Up 2 (Tag +7)",
+        "subject": "Betreff",
+        "body": "Inhalt (HTML)",
+        "create": "Kampagne erstellen",
+        "update": "Speichern",
+        "pause": "Pausieren",
+        "resume": "Fortsetzen",
+        "delete": "Löschen",
+        "progress": "Fortschritt",
+        "noCampaigns": "Noch keine Kampagnen erstellt",
+        "templateVars": "Platzhalter: {{agency_name}}, {{city}}, {{contact_name}}, {{signup_url}}, {{sender_name}}",
+        "defaultSubject": "{{agency_name}} — kostenlos an 100.000+ Event-Planer empfohlen werden? 🚀"
+      },
+      "detail": {
+        "contactPerson": "Ansprechperson",
+        "contactRole": "Rolle",
+        "phone": "Telefon",
+        "website": "Website",
+        "size": "Unternehmensgröße",
+        "budget": "Geschätztes Budget",
+        "goals": "Ziele",
+        "tags": "Tags",
+        "campaign": "Kampagne",
+        "inviteToken": "Invite-Token",
+        "copyLink": "Link kopieren",
+        "addNote": "Notiz hinzufügen",
+        "logResponse": "Antwort loggen",
+        "logCall": "Anruf loggen",
+        "aiPersonalize": "KI personalisieren",
+        "sentiment": "Stimmung",
+        "positive": "Positiv",
+        "neutral": "Neutral",
+        "negative": "Negativ",
+        "activityTitle": "Aktivitäten",
+        "noActivity": "Noch keine Aktivitäten",
+        "nextSteps": "Nächste Schritte",
+        "save": "Speichern"
+      },
+      "table": {
+        "search": "Name, Stadt oder E-Mail suchen...",
+        "selectAll": "Alle auswählen",
+        "bulkStatus": "Status ändern",
+        "bulkPriority": "Priorität setzen",
+        "bulkCampaign": "Zur Kampagne",
+        "bulkDelete": "Löschen",
+        "csvImport": "CSV Import",
+        "csvExport": "CSV Export",
+        "loadMore": "Mehr laden",
+        "selected": "{{count}} ausgewählt"
+      },
+      "activity": {
+        "email_sent": "E-Mail gesendet",
+        "note_added": "Notiz hinzugefügt",
+        "status_changed": "Status geändert",
+        "call_logged": "Anruf geloggt",
+        "response_received": "Antwort erhalten",
+        "link_clicked": "Invite-Link geklickt"
+      },
+      "emptyState": "Noch keine Agenturen im System. Importiere eine CSV-Datei oder warte auf den Autopilot.",
+      "freeSlotsCounter": "{{count}} von 150 Gratis-Plätzen verfügbar"
     }
   },
   "templates": {
@@ -4027,6 +4180,26 @@
       "b1": "Eigenes Agency Dashboard mit CRM, Budget Engine und Run of Show",
       "b2": "Stripe-Integration für automatische Abrechnung",
       "cta": "Agentur-Pläne ansehen"
+    },
+    "aiPerformance": {
+      "navLabel": "KI-Performance",
+      "heroTitle": "KI-Performance",
+      "heroSubtitle": "Hier siehst du wie deine Services über die KI empfohlen und gebucht werden.",
+      "kpi": {
+        "impressions": "Impressions",
+        "clicks": "Clicks",
+        "ctr": "Click-Through-Rate",
+        "revenue": "Attribuierter Umsatz",
+        "bookings": "{{count}} zugeordnete Buchungen"
+      },
+      "perServiceTitle": "Performance pro Service",
+      "recentFeedTitle": "Letzte Empfehlungen",
+      "recentFeedItem": "Dein Service wurde am {{date}} in einem {{eventType}}-Event{{city}} empfohlen (via {{requestType}})",
+      "topKeywordsTitle": "Top Keywords",
+      "noData": "Noch keine Daten — sobald deine Services über die KI empfohlen werden, erscheinen hier deine Stats.",
+      "upsellHeadline": "KI-Performance freischalten",
+      "upsellBody": "Upgrade auf Enterprise um zu sehen wie oft deine Services empfohlen, geklickt und gebucht werden.",
+      "upsellCta": "Enterprise freischalten"
     }
   },
   "games": {

@@ -32,6 +32,7 @@ import {
   ChevronDown,
   Settings,
   Settings2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +67,7 @@ import { AgencyWelcomeBanner } from "@/components/agency/AgencyWelcomeBanner";
 import { SidebarUpgradeCard } from "@/components/agency/SidebarUpgradeCard";
 import { TierUpgradeCelebration } from "@/components/agency/TierUpgradeCelebration";
 import AgencyEmbedCenter from "@/components/agency/AgencyEmbedCenter";
+import AgencyAIPerformance from "@/components/agency/AgencyAIPerformance";
 import { supabase } from "@/integrations/supabase/client";
 
 type Section =
@@ -118,6 +120,7 @@ const navItems: NavItem[] = [
   { id: "guides", label: "Guides", icon: Users, requiredTier: "enterprise" },
   { id: "calendar-sync", label: "Kalender-Sync", icon: CalendarSync, requiredTier: "enterprise" },
   { id: "embed", label: "Einbettung & Website", icon: Store, requiredTier: "enterprise" },
+  { id: "ai-performance", label: "KI-Performance", icon: Sparkles, requiredTier: "enterprise" },
   { id: "marketplace-settings", label: "Pakete & Abo", icon: Settings2 },
   { id: "settings", label: "Einstellungen", icon: Settings },
 ];
@@ -471,6 +474,8 @@ export default function AgencyDashboard() {
         return <AgencyCalendarSync />;
       case "embed":
         return <AgencyEmbedCenter />;
+      case "ai-performance":
+        return <AgencyAIPerformance />;
       case "settings":
         return <AgencySettings />;
       default:

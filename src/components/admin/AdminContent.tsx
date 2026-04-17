@@ -19,6 +19,8 @@ const AdminPackageManager = lazy(() => import("@/components/admin/AdminPackageMa
 const FeatureFlagsTab = lazy(() => import("@/components/admin/FeatureFlagsTab"));
 const AuditLogTab = lazy(() => import("@/components/admin/AuditLogTab"));
 const SystemSettingsTab = lazy(() => import("@/components/admin/SystemSettingsTab"));
+const AdminAIAdvertisingTab = lazy(() => import("@/components/admin/AdminAIAdvertisingTab"));
+const AdminAkquiseTab = lazy(() => import("@/components/admin/AdminAkquiseTab"));
 
 function LoadingSpinner() {
   return (
@@ -72,6 +74,10 @@ export function AdminContent({ activeTab }: AdminContentProps) {
       return <Suspense fallback={<LoadingSpinner />}><AuditLogTab /></Suspense>;
     case "system-settings":
       return <Suspense fallback={<LoadingSpinner />}><SystemSettingsTab /></Suspense>;
+    case "marketplace-ai-ads":
+      return <Suspense fallback={<LoadingSpinner />}><AdminAIAdvertisingTab /></Suspense>;
+    case "agency-akquise":
+      return <Suspense fallback={<LoadingSpinner />}><AdminAkquiseTab /></Suspense>;
     default:
       return <StatsOverview />;
   }

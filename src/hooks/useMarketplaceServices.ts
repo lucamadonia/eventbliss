@@ -6,6 +6,16 @@ import { toast } from "sonner";
 const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
 
 function resolvePreferredLocale(lang: string | undefined): string {
+  // Embed URL ?lang= wins over i18n.language (initial render before changeLanguage settles)
+  if (typeof window !== "undefined") {
+    try {
+      const urlLang = new URLSearchParams(window.location.search).get("lang");
+      if (urlLang) {
+        const code = urlLang.slice(0, 2).toLowerCase();
+        if ((SUPPORTED_LOCALES as readonly string[]).includes(code)) return code;
+      }
+    } catch { /* ignore */ }
+  }
   const code = (lang || "de").slice(0, 2).toLowerCase();
   return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : "de";
 }
@@ -380,6 +390,20 @@ export function useCreateBooking() {
         }
       } catch {
         // Stripe not configured — booking works without payment for now
+      }
+
+      // Fire booking confirmation email (fire-and-forget, never blocks checkout)
+      const locale = typeof navigator !== "undefined" ? (navigator.language || "de").slice(0, 2) : "de";
+      try {
+        await supabase.functions.invoke("booking-notify", {
+          body: {
+            type: "confirmation",
+            booking_id: booking.id,
+            locale,
+          },
+        });
+      } catch {
+        // Email failure must never block the booking flow
       }
 
       return {

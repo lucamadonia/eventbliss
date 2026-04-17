@@ -1655,12 +1655,12 @@ serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    // Skip LOVABLE_API_KEY check for TTS requests — they only need MISTRAL_API_KEY
+    const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+    // Skip OPENROUTER_API_KEY check for TTS requests — they only need MISTRAL_API_KEY
     const bodyForTypeCheck = await req.clone().json().catch(() => ({}));
     const requestType = typeof bodyForTypeCheck?.type === 'string' ? bodyForTypeCheck.type : '';
-    if (!LOVABLE_API_KEY && requestType !== "voxtral_tts") {
-      console.error("AI service configuration error");
+    if (!OPENROUTER_API_KEY && requestType !== "voxtral_tts") {
+      console.error("OPENROUTER_API_KEY is not set on Supabase");
       return new Response(
         JSON.stringify({ success: false, error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -1927,9 +1927,36 @@ serve(async (req) => {
     }
 
     // Get localized prompts
-    const systemPrompt = getSystemPrompt(language, eventType);
+    const baseSystemPrompt = getSystemPrompt(language, eventType);
     const promptTemplate = getPromptTemplate(language);
     const contextInfo = buildContextInfo(context, language);
+
+    // Hard formatting contract appended to every system prompt so downstream
+    // renderers (EpicNarrativeResponse, BudgetVisualizer) can reliably parse.
+    const FORMAT_CONTRACT: Record<string, string> = {
+      de: `\n\n## Formatierungsregeln (STRIKT einhalten)
+
+1. Verwende \`### <Emoji> <Titel>\` für jeden Hauptabschnitt. Jedes Emoji + Titel auf einer Zeile.
+2. Bei mehrtägigen Plänen: genau eine Section pro Tag: \`### 📅 Tag N: <Überschrift>\`
+3. Füge am Ende immer: \`### 💰 Budget\` (mit Tageskostenzeilen wie \`- **Tag 1:** Brewery (€25) + Dinner (€90) = €115\`) UND \`### 💡 Tipps\` (Bulletliste).
+4. Listen IMMER als separate Zeilen mit \`-\` oder \`- **Label:** Text\`. NIE Listenelemente in einen Fließtext quetschen.
+5. Keine unbalancierten \`**\`-Paare. Kein \`Pro-Tip:**\`-Rest. Kein Leerzeichen vor oder nach \`**\`.
+6. Zwischen Sections genau eine Leerzeile.
+7. Intro (max. 2 Sätze) kommt VOR dem ersten \`###\`, keine Überschrift davor.
+8. Antworte immer in dieser Sprache: Deutsch.`,
+      en: `\n\n## Formatting rules (STRICT)
+
+1. Use \`### <emoji> <Title>\` for every main section. Emoji + title on one line.
+2. For multi-day plans: exactly one section per day: \`### 📅 Day N: <Heading>\`
+3. Always end with: \`### 💰 Budget\` (day lines like \`- **Day 1:** Brewery (€25) + Dinner (€90) = €115\`) AND \`### 💡 Tips\` (bullet list).
+4. Lists ALWAYS as separate lines with \`-\` or \`- **Label:** text\`. NEVER cram list items inside a paragraph.
+5. No unbalanced \`**\` pairs. No \`Pro-Tip:**\` orphans. No space before/after \`**\`.
+6. Exactly one blank line between sections.
+7. Intro (max 2 sentences) comes BEFORE the first \`###\`, no heading above it.
+8. Always reply in this language: English.`,
+    };
+    const formatContract = FORMAT_CONTRACT[language] || FORMAT_CONTRACT.en;
+    const systemPrompt = baseSystemPrompt + formatContract;
 
     let userPrompt = "";
 
@@ -1979,16 +2006,24 @@ Return ONLY the improved message without additional explanations. Keep placehold
         userPrompt = message || promptTemplate.prompts.chat.replace('{message}', 'How can I help with event planning?');
     }
 
-    console.log("Calling Lovable AI with language:", language);
+    // Model routing — heavy creative tasks go primary, light tasks go fast-lane.
+    const PRIMARY_MODEL = Deno.env.get("OPENROUTER_MODEL_PRIMARY") ?? "anthropic/claude-haiku-4.5";
+    const FAST_MODEL    = Deno.env.get("OPENROUTER_MODEL_FAST")    ?? "anthropic/claude-haiku-4.5";
+    const LIGHT_TYPES = new Set(["budget_estimate", "chat", "message_enhance"]);
+    const model = LIGHT_TYPES.has(type) ? FAST_MODEL : PRIMARY_MODEL;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    console.log(`Calling OpenRouter AI — model: ${model}, lang: ${language}, type: ${type}`);
+
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://event-bliss.com",
+        "X-Title": "EventBliss",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },

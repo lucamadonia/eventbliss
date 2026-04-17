@@ -34,15 +34,19 @@ import {
 import { DayPlanCard } from "./DayPlanCard";
 import { ActivitiesCard } from "./ActivitiesCard";
 import { TripIdeasCard } from "./TripIdeasCard";
+import { EpicNarrativeResponse } from "./EpicNarrativeResponse";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 interface AIResponseCardProps {
   response: string;
   eventName?: string;
+  eventId?: string;
   participantCount?: number;
   budget?: string;
-  requestType?: 'trip_ideas' | 'activities' | 'day_plan' | 'budget_estimate' | 'chat';
+  city?: string;
+  eventType?: string;
+  requestType?: 'trip_ideas' | 'activities' | 'day_plan' | 'budget_estimate' | 'chat' | 'recommend_services';
   onAddToPlanner?: (activity: ParsedActivity | ParsedActivityExtended) => void;
   onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
   onAddDay?: (day: ParsedDay) => void;
@@ -56,8 +60,11 @@ interface AIResponseCardProps {
 export const AIResponseCard = ({
   response,
   eventName,
+  eventId,
   participantCount,
   budget,
+  city,
+  eventType,
   requestType,
   onAddToPlanner,
   onAddTimeBlock,
@@ -121,66 +128,62 @@ export const AIResponseCard = ({
     }
   };
 
-  // If day plan detected, render DayPlanCard
-  if (hasDayPlan && dayPlan) {
+  // ──────────────────────────────────────────────────────────────────────────
+  // Unified epic routing — Claude Haiku + format contract produces clean
+  // H3-headed section markdown for every request type, so we always use the
+  // EpicNarrativeResponse renderer (budget visualizer, inline services,
+  // mouse spotlights, confetti). The legacy ActivitiesCard / TripIdeasCard /
+  // DayPlanCard paths are kept for back-compat but only fire when the parser
+  // REALLY finds structured data — the Epic renderer is the default.
+  // ──────────────────────────────────────────────────────────────────────────
+  const EPIC_TYPES = ['trip_ideas', 'activities', 'day_plan', 'budget_estimate', 'recommend_services'] as const;
+  if (requestType && (EPIC_TYPES as readonly string[]).includes(requestType)) {
+    // Force epic renderer for EVERY AI request type — consistent spectacle,
+    // budget visualizer, inline services, mouse-spotlights, confetti. The
+    // legacy DayPlanCard / TripIdeasCard / ActivitiesCard are retired.
     return (
-      <DayPlanCard
-        dayPlan={dayPlan}
+      <EpicNarrativeResponse
+        response={response}
         eventName={eventName}
+        eventId={eventId}
+        requestType={requestType}
         participantCount={participantCount}
-        onAddTimeBlock={onAddTimeBlock}
-        onAddDay={onAddDay}
-        onRegenerate={onRegenerate}
-        onExpand={onExpand}
-        isLoading={isLoading}
-        remainingCredits={remainingCredits}
+        budget={budget}
+        city={city}
+        eventType={eventType}
       />
     );
   }
 
-  // If trip ideas request type, render TripIdeasCard
-  if (requestType === 'trip_ideas') {
-    const tripIdeasData = parseTripIdeas(response);
-    if (tripIdeasData.ideas.length > 0) {
-      return (
-        <TripIdeasCard
-          tripIdeasData={tripIdeasData}
-          eventName={eventName}
-          participantCount={participantCount}
-          onSetDestination={onSetDestination}
-        />
-      );
-    }
-  }
-
-  // If activities request type, ALWAYS try parseActivitiesExtended first (more robust for multilingual)
-  if (requestType === 'activities') {
-    const activitiesData = parseActivitiesExtended(response);
-    if (activitiesData.activities.length > 0) {
-      return (
-        <ActivitiesCard
-          activitiesData={activitiesData}
-          eventName={eventName}
-          participantCount={participantCount}
-          budget={budget}
-          onAddToPlanner={onAddToPlanner}
-        />
-      );
-    }
-  }
-
-  // Pre-process markdown to fix common issues
+  // Pre-process markdown to fix common AI-output quirks
   const preprocessMarkdown = (text: string): string => {
     return text
-      // Fix double asterisks that aren't properly closed
-      .replace(/\*\*([^*]+)$/gm, '**$1**')
+      // Normalize CR/LF
+      .replace(/\r\n/g, '\n')
+      // AI often inlines list items mid-sentence: " * **Item:** text" → break into a proper bullet
+      .replace(/\s+\*\s+\*\*/g, '\n\n- **')
+      // Line that starts with "* **" → make it a proper bullet
+      .replace(/^\*\s+\*\*/gm, '- **')
+      // Line that starts with "* " (plain bullet) → dash bullet
+      .replace(/^\*\s+(?!\*)/gm, '- ')
+      // Fix unclosed bold at end of line
+      .replace(/\*\*([^*\n]+)$/gm, '**$1**')
       // Normalize whitespace around bold markers
       .replace(/\*\*\s+/g, '**')
-      .replace(/\s+\*\*/g, '**');
+      .replace(/\s+\*\*/g, '**')
+      // Collapse excessive blank lines
+      .replace(/\n{3,}/g, '\n\n')
+      // Strip stray leading/trailing asterisks on whole lines
+      .replace(/^\*+$/gm, '')
+      .trim();
   };
 
+  // For narrative/itinerary trip_ideas without structured parseable ideas,
+  // render as rich markdown instead of fake activity cards.
+  const forceMarkdown = requestType === 'trip_ideas';
+
   // If no structured activities found, render as markdown
-  if (!hasStructuredActivities) {
+  if (!hasStructuredActivities || forceMarkdown) {
     const processedResponse = preprocessMarkdown(response);
     
     return (

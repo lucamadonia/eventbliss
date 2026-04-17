@@ -2,7 +2,7 @@ import {
   BarChart3, Sparkles, Users, CreditCard, Ticket,
   Handshake, Coins, Banknote, TrendingUp, Building2,
   Settings, Store, ShoppingCart, PieChart, Package,
-  Gamepad2, Landmark, Flag, Scroll, ServerCog,
+  Gamepad2, Landmark, Flag, Scroll, ServerCog, Megaphone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +54,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { key: "agencies", labelKey: "admin.tabs.agencies", defaultLabel: "Agenturen", icon: Landmark },
       { key: "agency-affiliates", labelKey: "admin.tabs.agencyAffiliates", defaultLabel: "Agentur-Partner", icon: Building2 },
       { key: "agency-analytics", labelKey: "admin.tabs.agencyAnalytics", defaultLabel: "Agentur-Stats", icon: TrendingUp },
+      { key: "agency-akquise", labelKey: "admin.akquise.navLabel", defaultLabel: "Akquise", icon: Megaphone },
     ],
   },
   {
@@ -63,6 +64,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { key: "marketplace-listings", labelKey: "admin.tabs.marketplace", defaultLabel: "Listings", icon: Store },
       { key: "marketplace-bookings", labelKey: "admin.tabs.bookings", defaultLabel: "Buchungen", icon: ShoppingCart },
       { key: "marketplace-stats", labelKey: "admin.tabs.mktStats", defaultLabel: "Statistiken", icon: PieChart },
+      { key: "marketplace-ai-ads", labelKey: "admin.aiAds.navLabel", defaultLabel: "KI-Werbung", icon: Megaphone },
       { key: "packages", labelKey: "admin.tabs.packages", defaultLabel: "Pakete", icon: Package },
     ],
   },

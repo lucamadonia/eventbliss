@@ -5,6 +5,15 @@ import { motion } from "framer-motion";
 
 const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
 function resolveLocale(lang: string | undefined): string {
+  if (typeof window !== "undefined") {
+    try {
+      const urlLang = new URLSearchParams(window.location.search).get("lang");
+      if (urlLang) {
+        const code = urlLang.slice(0, 2).toLowerCase();
+        if ((SUPPORTED_LOCALES as readonly string[]).includes(code)) return code;
+      }
+    } catch { /* ignore */ }
+  }
   const code = (lang || "de").slice(0, 2).toLowerCase();
   return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : "de";
 }
@@ -213,7 +222,7 @@ function useAgencyApprovedServices(agencyId: string | undefined) {
           review_count: s.review_count ?? 0,
           booking_count: s.booking_count ?? 0,
           cover_image_url: s.cover_image_url,
-          title: tx?.title || "Ohne Titel",
+          title: tx?.title || "",
           short_description: tx?.short_description || null,
         };
       });
@@ -229,6 +238,7 @@ function useAgencyApprovedServices(agencyId: string | undefined) {
 export default function MarketplaceAgency() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { data: agency, isLoading: agencyLoading, error: agencyError } = useAgencyBySlug(slug);
   const { data: services = [], isLoading: servicesLoading } = useAgencyApprovedServices(agency?.id);
@@ -242,15 +252,17 @@ export default function MarketplaceAgency() {
     return (
       <div className={`min-h-screen ${C.surface} text-white flex items-center justify-center`}>
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-black font-game">Agentur nicht gefunden</h1>
+          <h1 className="text-2xl font-black font-game">
+            {t("marketplaceAgency.notFoundTitle", "Agentur nicht gefunden")}
+          </h1>
           <p className="text-gray-400 font-['Be_Vietnam_Pro']">
-            Die Agentur mit dem Slug "{slug}" existiert nicht oder ist nicht mehr aktiv.
+            {t("marketplaceAgency.notFoundBody", "Die Agentur mit dem Slug \"{{slug}}\" existiert nicht oder ist nicht mehr aktiv.", { slug })}
           </p>
           <button
             onClick={() => navigate("/marketplace")}
             className="mt-4 px-6 py-2.5 rounded-full bg-[#cf96ff] text-black font-bold font-game text-sm hover:bg-[#b87ae6] transition-colors"
           >
-            Zum Marketplace
+            {t("marketplaceAgency.toMarketplace", "Zum Marketplace")}
           </button>
         </div>
       </div>
@@ -336,7 +348,7 @@ export default function MarketplaceAgency() {
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-500 font-['Be_Vietnam_Pro'] mt-6">
           <button onClick={() => navigate("/marketplace")} className="hover:text-[#cf96ff] transition-colors">
-            Marketplace
+            {t("marketplaceAgency.breadcrumb", "Marketplace")}
           </button>
           <ChevronRight size={14} />
           <span className="text-white/70">{agency.name}</span>
@@ -344,14 +356,16 @@ export default function MarketplaceAgency() {
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-8">
-          <StatCard icon={TrendingUp} value={String(services.length)} label="Services" delay={0.1} />
-          <StatCard icon={Users} value={totalBookings > 0 ? `${totalBookings}+` : "0"} label="Buchungen" delay={0.15} />
-          <StatCard icon={Star} value={avgRating > 0 ? `${avgRating.toFixed(1)}\u2605` : "\u2014"} label="Bewertung" delay={0.2} />
-          <StatCard icon={Calendar} value={`Seit ${createdYear}`} label="Aktiv seit" delay={0.25} />
+          <StatCard icon={TrendingUp} value={String(services.length)} label={t("marketplaceAgency.stats.services", "Services")} delay={0.1} />
+          <StatCard icon={Users} value={totalBookings > 0 ? `${totalBookings}+` : "0"} label={t("marketplaceAgency.stats.bookings", "Buchungen")} delay={0.15} />
+          <StatCard icon={Star} value={avgRating > 0 ? `${avgRating.toFixed(1)}\u2605` : "\u2014"} label={t("marketplaceAgency.stats.rating", "Bewertung")} delay={0.2} />
+          <StatCard icon={Calendar} value={t("marketplaceAgency.stats.since", "Seit {{year}}", { year: createdYear })} label={t("marketplaceAgency.stats.activeSince", "Aktiv seit")} delay={0.25} />
           <StatCard
             icon={ShieldCheck}
             value={(tier === "professional" || tier === "enterprise") ? "\u2713" : "\u2014"}
-            label={(tier === "professional" || tier === "enterprise") ? "Verifiziert" : "Standard"}
+            label={(tier === "professional" || tier === "enterprise")
+              ? t("marketplaceAgency.stats.verified", "Verifiziert")
+              : t("marketplaceAgency.stats.standard", "Standard")}
             delay={0.3}
           />
         </div>
@@ -364,7 +378,7 @@ export default function MarketplaceAgency() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
           >
-            <h2 className="text-lg font-black font-game mb-3">Tier-Vorteile</h2>
+            <h2 className="text-lg font-black font-game mb-3">{t("marketplaceAgency.tierBenefitsTitle", "Tier-Vorteile")}</h2>
             <div className="flex flex-wrap gap-2">
               {TIER_BENEFITS[tier]!.map((benefit) => (
                 <span
@@ -390,9 +404,11 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <h2 className="text-xl font-black font-game mb-3">Über uns</h2>
+          <h2 className="text-xl font-black font-game mb-3">{t("marketplaceAgency.aboutTitle", "Über uns")}</h2>
           <p className="text-gray-300 leading-relaxed font-['Be_Vietnam_Pro'] text-sm max-w-3xl">
-            {agency.name} ist seit {createdYear} aktiv{agency.city ? ` in ${agency.city}` : ""}.
+            {agency.city
+              ? t("marketplaceAgency.aboutWithCity", "{{name}} ist seit {{year}} aktiv in {{city}}.", { name: agency.name, year: createdYear, city: agency.city })
+              : t("marketplaceAgency.aboutNoCity", "{{name}} ist seit {{year}} aktiv.", { name: agency.name, year: createdYear })}
           </p>
         </motion.section>
 
@@ -403,7 +419,7 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-xl font-black font-game mb-4">Services</h2>
+          <h2 className="text-xl font-black font-game mb-4">{t("marketplaceAgency.servicesTitle", "Services")}</h2>
           {servicesLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(3)].map((_, i) => (
@@ -413,7 +429,7 @@ export default function MarketplaceAgency() {
           ) : services.length === 0 ? (
             <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
               <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
-                Diese Agentur hat noch keine Services im Marketplace.
+                {t("marketplaceAgency.noServices", "Diese Agentur hat noch keine Services im Marketplace.")}
               </p>
             </div>
           ) : (
@@ -475,12 +491,12 @@ export default function MarketplaceAgency() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <h2 className="text-xl font-black font-game mb-4">Bewertungen</h2>
+          <h2 className="text-xl font-black font-game mb-4">{t("marketplaceAgency.reviewsTitle", "Bewertungen")}</h2>
           {reviews.length === 0 ? (
             <div className={`p-8 rounded-2xl ${C.high} border ${C.border} text-center`}>
               <Star size={32} className="text-gray-600 mx-auto mb-3" />
               <p className="text-gray-400 font-['Be_Vietnam_Pro'] text-sm">
-                Noch keine Bewertungen für diese Agentur.
+                {t("marketplaceAgency.noReviews", "Noch keine Bewertungen für diese Agentur.")}
               </p>
             </div>
           ) : (

@@ -82,7 +82,7 @@ serve(async (req) => {
       logStep("Found existing customer", { customerId });
     }
 
-    const origin = returnOrigin || req.headers.get("origin") || "https://lovable.dev";
+    const origin = returnOrigin || req.headers.get("origin") || "https://event-bliss.com";
     const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS] || PRICE_IDS.monthly;
     const mode = planType === "lifetime" ? "payment" : "subscription";
     

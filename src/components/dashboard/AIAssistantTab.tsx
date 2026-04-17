@@ -1,22 +1,21 @@
 import { useState } from "react";
-import { Sparkles, Loader2, MapPin, Calendar, DollarSign, Lightbulb, MessageCircle, RefreshCw, AlertTriangle, Store } from "lucide-react";
+import { MapPin, Calendar, DollarSign, Lightbulb, RefreshCw, AlertTriangle, Store, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { GradientButton } from "@/components/ui/GradientButton";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { usePremium } from "@/hooks/usePremium";
 import { useAICredits } from "@/hooks/useAICredits";
 import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
-import { AIActivitiesSkeleton } from "@/components/dashboard/AIActivitiesSkeleton";
 import { MarketplaceRecommendationCard } from "@/components/dashboard/MarketplaceRecommendationCard";
-import { DayPlanSkeleton } from "@/components/dashboard/DayPlanSkeleton";
-import { CreditIndicator } from "@/components/ai/CreditIndicator";
 import { DayPlanDurationSelector } from "@/components/ai/DayPlanDurationSelector";
+import AIHeroHeader from "@/components/dashboard/AIHeroHeader";
+import { AIRequestCard } from "@/components/dashboard/AIRequestCard";
+import AIChatInput from "@/components/dashboard/AIChatInput";
+import AISpectacleSkeleton from "@/components/dashboard/AISpectacleSkeleton";
+import { cn } from "@/lib/utils";
 import type { EventData } from "@/hooks/useEvent";
 import type { ParsedActivity, ParsedTimeBlock, ParsedDay } from "@/lib/ai-response-parser";
 
@@ -38,6 +37,11 @@ interface AIRequest {
   icon: React.ElementType;
   labelKey: string;
   descriptionKey: string;
+  /** Tailwind gradient classes — "from-… via-… to-…" */
+  gradient: string;
+  /** "r,g,b" tuple for mouse-tracking spotlight rgba */
+  accent: string;
+  badge?: string;
 }
 
 const AI_REQUESTS: AIRequest[] = [
@@ -46,30 +50,41 @@ const AI_REQUESTS: AIRequest[] = [
     icon: MapPin,
     labelKey: "dashboard.ai.tripIdeas",
     descriptionKey: "dashboard.ai.tripIdeasDesc",
+    gradient: "from-purple-600 via-pink-600 to-amber-500",
+    accent: "236,72,153",
   },
   {
     type: "activities",
     icon: Lightbulb,
     labelKey: "dashboard.ai.activities",
     descriptionKey: "dashboard.ai.activitiesDesc",
+    gradient: "from-cyan-500 via-blue-500 to-indigo-600",
+    accent: "59,130,246",
   },
   {
     type: "day_plan",
     icon: Calendar,
     labelKey: "dashboard.ai.dayPlan",
     descriptionKey: "dashboard.ai.dayPlanDesc",
+    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
+    accent: "20,184,166",
   },
   {
     type: "budget_estimate",
     icon: DollarSign,
     labelKey: "dashboard.ai.budgetEstimate",
     descriptionKey: "dashboard.ai.budgetEstimateDesc",
+    gradient: "from-amber-500 via-orange-500 to-red-500",
+    accent: "245,158,11",
   },
   {
     type: "recommend_services" as RequestType,
     icon: Store,
     labelKey: "dashboard.ai.recommendServices",
     descriptionKey: "dashboard.ai.recommendServicesDesc",
+    gradient: "from-fuchsia-500 via-rose-500 to-amber-400",
+    accent: "232,121,249",
+    badge: "NEU",
   },
 ];
 
@@ -282,95 +297,71 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Credits Exhausted Warning */}
+      {/* Credits Exhausted Warning — gradient pulse */}
       {creditsExhausted && (
-        <GlassCard className="p-4 border-amber-500/30 bg-amber-500/10">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
-            <div>
-              <p className="font-bold text-amber-600">{t('aiCredits.exhausted')}</p>
-              <p className="text-sm text-muted-foreground">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl border border-amber-500/40"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20" />
+          <div className="absolute inset-0 opacity-60 ai-pulse-ring bg-[radial-gradient(ellipse_at_left,rgba(245,158,11,0.35),transparent_60%)]" />
+          <div className="relative p-4 flex items-center gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-red-500 flex items-center justify-center shadow-lg shadow-amber-500/40">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-black text-amber-200">{t('aiCredits.exhausted', 'Credits aufgebraucht')}</p>
+              <p className="text-sm text-amber-100/80">
                 {t('aiCredits.creditsReset', { date: resetDate.toLocaleDateString() })}
               </p>
             </div>
           </div>
-        </GlassCard>
+        </motion.div>
       )}
 
-      {/* Header with Credit Indicator */}
-      <GlassCard className="p-6 bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent">
-        <div className="flex flex-col md:flex-row md:items-start gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="p-3 rounded-xl bg-gradient-primary">
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h3 className="font-display text-2xl font-bold">{t('dashboard.ai.title')}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t('dashboard.ai.subtitle')}
-              </p>
-            </div>
-          </div>
-          
-          {/* Credit Indicator */}
-          {!creditsLoading && limit > 0 && (
-            <CreditIndicator
-              used={used}
-              limit={limit}
-              remaining={remaining}
-              resetDate={resetDate}
-              variant="compact"
-              showAnimation={creditAnimation}
-            />
-          )}
-        </div>
-        
-        <p className="text-muted-foreground mt-4">
-          {t('dashboard.ai.basedOn', {
-            count: (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0),
-            name: event.honoree_name
-          })}
-        </p>
-      </GlassCard>
+      {/* Hero Header — mesh gradient + drifting particles + pulse-ring credits */}
+      <AIHeroHeader
+        eventName={event.name}
+        eventType={event.event_type}
+        honoreeName={event.honoree_name}
+        city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
+        participantCount={(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)}
+        surveyResponses={(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)}
+        credits={{
+          used,
+          limit,
+          remaining,
+          resetDate,
+          loading: creditsLoading,
+        }}
+        creditsAnimating={creditAnimation}
+      />
 
-      {/* Quick Actions Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {AI_REQUESTS.map((req) => {
-          const Icon = req.icon;
+      {/* Spectacle action cards: 5 cards with per-kind gradient, spotlight, icon bounce */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+        {AI_REQUESTS.map((req, i) => {
           const isActive = currentType === req.type && isLoading;
           const isDayPlan = req.type === "day_plan";
-          
           return (
-            <GlassCard
+            <AIRequestCard
               key={req.type}
-              className={`p-4 cursor-pointer transition-all hover:scale-[1.02] ${
-                isActive ? "ring-2 ring-primary" : ""
-              }`}
+              label={t(req.labelKey)}
+              description={t(req.descriptionKey)}
+              icon={req.icon}
+              gradient={req.gradient}
+              accentColor={req.accent}
+              isLoading={isActive}
+              disabled={creditsExhausted}
+              lockedLabel={creditsExhausted ? t("aiCredits.exhausted", "Leer") : undefined}
+              badge={req.badge}
+              index={i}
               onClick={() => {
                 if (isLoading || creditsExhausted) return;
-                if (isDayPlan) {
-                  handleDayPlanClick();
-                } else {
-                  handleRequest(req.type);
-                }
+                if (isDayPlan) handleDayPlanClick();
+                else handleRequest(req.type);
               }}
-            >
-              <div className={`flex flex-col items-center text-center gap-2 ${creditsExhausted ? 'opacity-50' : ''}`}>
-                <div className={`p-3 rounded-xl ${
-                  isActive ? "bg-primary/30" : "bg-muted/50"
-                }`}>
-                  {isActive ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  ) : (
-                    <Icon className="w-6 h-6" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-bold text-sm">{t(req.labelKey)}</p>
-                  <p className="text-xs text-muted-foreground">{t(req.descriptionKey)}</p>
-                </div>
-              </div>
-            </GlassCard>
+            />
           );
         })}
       </div>
@@ -385,35 +376,20 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         />
       )}
 
-      {/* Chat Input */}
-      <GlassCard className="p-4">
-        <div className="flex gap-3">
-          <Textarea
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-            placeholder={t('dashboard.ai.chatPlaceholder')}
-            className="resize-none bg-background/50"
-            rows={2}
-          />
-          <GradientButton
-            onClick={handleChat}
-            disabled={isLoading || !chatMessage.trim() || creditsExhausted}
-            icon={isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
-          >
-            {t('dashboard.ai.ask')}
-          </GradientButton>
-        </div>
-      </GlassCard>
+      {/* Epic Chat Input with quick-prompt chips */}
+      <AIChatInput
+        value={chatMessage}
+        onChange={setChatMessage}
+        onSubmit={handleChat}
+        isLoading={isLoading && currentType === 'chat'}
+        disabled={creditsExhausted}
+      />
 
-      {/* Loading Skeleton - Different for day_plan */}
+      {/* Loading Skeleton — spectacle variant */}
       {isLoading && !response && (
-        currentType === 'day_plan' ? (
-          <DayPlanSkeleton />
-        ) : (
-          <AIActivitiesSkeleton 
-            count={currentType === 'activities' ? 5 : 4} 
-          />
-        )
+        <AISpectacleSkeleton
+          variant={currentType === 'budget_estimate' ? 'quick' : 'narrative'}
+        />
       )}
 
       {/* Response */}
@@ -422,23 +398,33 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
           {/* Regenerate button for non-day-plan types */}
           {currentType !== 'day_plan' && (
             <div className="flex items-center justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
+              <motion.button
+                type="button"
                 onClick={() => currentType && handleRequest(currentType)}
                 disabled={isLoading || creditsExhausted}
+                whileHover={isLoading || creditsExhausted ? undefined : { scale: 1.03 }}
+                whileTap={isLoading || creditsExhausted ? undefined : { scale: 0.97 }}
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
+                  "bg-white/[0.05] border border-white/15 text-white/80",
+                  "hover:bg-white/10 hover:border-white/30 hover:text-white",
+                  "disabled:opacity-40 disabled:cursor-not-allowed",
+                )}
               >
-                <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-                {t('aiCredits.regenerate')}
-              </Button>
+                <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
+                {t('aiCredits.regenerate', 'Neu generieren')}
+              </motion.button>
             </div>
           )}
           
           <AIResponseCard
             response={response}
             eventName={event.name}
+            eventId={event.id}
+            eventType={event.event_type}
             participantCount={participantCount || undefined}
             budget={topBudget}
+            city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
             requestType={currentType || undefined}
             onAddToPlanner={handleAddToPlanner}
             onAddTimeBlock={handleAddTimeBlock}
@@ -449,12 +435,16 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             remainingCredits={remaining}
           />
 
-          {/* Marketplace Recommendations based on AI suggestions */}
-          {response && suggestedCategories.length > 0 && (
+          {/* Marketplace Recommendations — hidden for trip_ideas since the
+              Epic narrative renderer already embeds contextual services inline. */}
+          {response && suggestedCategories.length > 0 && currentType !== 'trip_ideas' && (
             <MarketplaceRecommendationCard
               suggestedCategories={suggestedCategories}
+              responseText={response}
               city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
               eventType={event.event_type}
+              requestType={currentType || undefined}
+              eventId={event.id}
             />
           )}
         </div>
@@ -471,19 +461,26 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         }}
       />
 
-      {/* No Stats Warning */}
+      {/* No Stats Warning — gradient glass */}
       {!stats && (
-        <GlassCard className="p-6 border-warning/30">
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-warning mt-0.5" />
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl border border-white/10"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10" />
+          <div className="relative p-5 flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
             <div>
-              <h4 className="font-bold text-warning">{t('dashboard.ai.noData')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {t('dashboard.ai.noDataDesc')}
+              <h4 className="font-black text-foreground mb-0.5">{t('dashboard.ai.noData', 'Noch keine Umfragedaten')}</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {t('dashboard.ai.noDataDesc', 'Teile deine Umfrage — sobald Antworten reinkommen, personalisiert die KI ihre Vorschläge.')}
               </p>
             </div>
           </div>
-        </GlassCard>
+        </motion.div>
       )}
     </div>
   );

@@ -116,6 +116,28 @@ export default function AgencyApply() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Check for invite token from outreach email → pre-fill from agency_directory
+  const [inviteData, setInviteData] = useState<{
+    name: string; email: string; city: string; country: string; website: string; directoryId: number;
+  } | null>(null);
+  useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("invite");
+    if (!token) return;
+    (async () => {
+      const { data } = await (supabase.from as any)("agency_directory")
+        .select("id, name, email, city, country, website")
+        .eq("invite_token", token)
+        .maybeSingle();
+      if (data) {
+        setInviteData({
+          name: data.name, email: data.email, city: data.city,
+          country: data.country, website: data.website || "", directoryId: data.id,
+        });
+      }
+    })();
+  });
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -133,6 +155,18 @@ export default function AgencyApply() {
       privacy_accepted: false,
     },
   });
+
+  // Pre-fill form when invite data loads
+  const hasAppliedInvite = useState(false);
+  if (inviteData && !hasAppliedInvite[0]) {
+    hasAppliedInvite[1](true);
+    form.setValue("agency_mode", "new");
+    form.setValue("new_agency_name", inviteData.name);
+    form.setValue("new_agency_city", inviteData.city);
+    form.setValue("new_agency_country", inviteData.country);
+    form.setValue("contact_email", inviteData.email);
+    form.setValue("website", inviteData.website);
+  }
 
   const agencyMode = form.watch("agency_mode");
   const selectedAgencyId = form.watch("existing_agency_id");
@@ -188,6 +222,19 @@ export default function AgencyApply() {
       } as never);
 
       if (error) throw error;
+
+      // If this came from an outreach invite, mark the directory entry as onboarded
+      if (inviteData?.directoryId) {
+        await (supabase.from as any)("agency_directory")
+          .update({ outreach_status: "onboarded" })
+          .eq("id", inviteData.directoryId);
+        await (supabase.from as any)("agency_outreach_activity").insert({
+          directory_id: inviteData.directoryId,
+          action: "link_clicked",
+          details: { source: "agency_apply_form" },
+        });
+      }
+
       setIsSubmitted(true);
     } catch (error: unknown) {
       console.error("Error submitting application:", error);

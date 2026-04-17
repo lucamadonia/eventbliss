@@ -116,35 +116,20 @@ export const AgenciesMapView = ({
     return agencies.filter(a => a.city === openCity);
   }, [openCity, agencies]);
 
-  // Load token from edge function or localStorage
+  // Load token: VITE env var → localStorage fallback → manual input
   useEffect(() => {
-    const loadToken = async () => {
-      setIsLoadingToken(true);
-      
-      // Check localStorage first
-      const storedToken = localStorage.getItem('mapbox_public_token');
-      if (storedToken) {
-        setMapToken(storedToken);
-        setIsLoadingToken(false);
-        return;
-      }
-
-      // Try to get from edge function
-      try {
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        
-        if (data?.success && data?.token) {
-          setMapToken(data.token);
-          localStorage.setItem('mapbox_public_token', data.token);
-        }
-      } catch (err) {
-        console.log('Token fetch failed, falling back to manual input');
-      }
-      
+    setIsLoadingToken(true);
+    const envToken = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
+    if (envToken) {
+      setMapToken(envToken);
       setIsLoadingToken(false);
-    };
-
-    loadToken();
+      return;
+    }
+    const storedToken = localStorage.getItem('mapbox_public_token');
+    if (storedToken) {
+      setMapToken(storedToken);
+    }
+    setIsLoadingToken(false);
   }, []);
 
   // Group agencies by city
