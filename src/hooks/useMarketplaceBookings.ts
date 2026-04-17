@@ -31,12 +31,23 @@ export interface MarketplaceBooking {
   completed_at: string | null;
   cancelled_at: string | null;
   cancellation_reason: string | null;
+  payment_method?: string | null;
+  stripe_payment_intent_id?: string | null;
   created_at: string;
   // Joined
   service_title?: string;
   service_slug?: string;
   agency_name?: string;
 }
+
+export type CancellationReasonCode =
+  | "agency_unavailable"
+  | "agency_staff_shortage"
+  | "agency_weather"
+  | "customer_no_show"
+  | "customer_unreachable"
+  | "agency_other"
+  | "customer_other";
 
 // ---------------------------------------------------------------------------
 // Customer bookings
@@ -118,18 +129,55 @@ export function useConfirmBooking() {
   });
 }
 
+export interface CancelBookingInput {
+  bookingId: string;
+  reason?: string;
+  reasonCode?: CancellationReasonCode;
+  reasonText?: string;
+  asAgency?: boolean;
+}
+
 export function useCancelBooking() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ bookingId, reason, asAgency }: { bookingId: string; reason?: string; asAgency?: boolean }) => {
+    mutationFn: async ({ bookingId, reason, reasonCode, reasonText, asAgency }: CancelBookingInput) => {
+      // Combine reason code + free text into a single string for the legacy
+      // cancellation_reason column. The dedicated audit-log table is kept in
+      // sync via an additional insert so § 7 (Agentur-Vertrag) is enforceable.
+      const combinedReason =
+        reasonCode || reasonText
+          ? [reasonCode, reasonText].filter(Boolean).join(" — ")
+          : reason || null;
+
+      const newStatus = asAgency ? "cancelled_by_agency" : "cancelled_by_customer";
+
       const { error } = await (supabase.from as any)("marketplace_bookings")
         .update({
-          status: asAgency ? "cancelled_by_agency" : "cancelled_by_customer",
+          status: newStatus,
           cancelled_at: new Date().toISOString(),
-          cancellation_reason: reason || null,
+          cancellation_reason: combinedReason,
         })
         .eq("id", bookingId);
       if (error) throw error;
+
+      // Best-effort audit log entry. If the table isn't there yet (migration
+      // lagging) or an RLS policy rejects, we swallow the error to avoid
+      // undoing the cancellation — the trigger from Agent 3's migration
+      // should cover most cases once deployed.
+      if (reasonCode) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          await (supabase.from as any)("marketplace_booking_cancellations").insert({
+            booking_id: bookingId,
+            cancelled_by: asAgency ? "agency" : "customer",
+            cancelled_by_user_id: user?.id ?? null,
+            reason_code: reasonCode,
+            reason_text: reasonText || null,
+          });
+        } catch {
+          // Swallow — trigger or RLS handles persistence.
+        }
+      }
     },
     onSuccess: () => {
       toast.success("Buchung storniert");

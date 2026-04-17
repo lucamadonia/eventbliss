@@ -647,10 +647,10 @@
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "contact": "Contact",
-      "address": "Gladstonos 12-14, 8042 Paphos, Cyprus",
+      "address": "Gladstonos 12-14, 8046 Paphos, Cyprus",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP. All rights reserved."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. All rights reserved."
     }
   },
   "legal": {
@@ -700,34 +700,51 @@
     "terms": {
       "title": "Terms of Service",
       "lastUpdated": "Last Updated",
-      "intro": "By using EventBliss, you agree to these terms. Please read them carefully.",
+      "lastUpdatedDate": "April 2026",
+      "intro": "By using EventBliss, you agree to these terms. Please read them carefully. These Terms apply to customers (consumers under § 13 of the German Civil Code) who book event services from independent agencies via the EventBliss marketplace.",
       "acceptance": {
         "title": "Acceptance of Terms",
-        "content": "By accessing or using EventBliss, you agree to be bound by these Terms of Service."
+        "content": "By accessing or using EventBliss, you agree to be bound by these Terms of Service. Each booking confirms that you have read and accepted these Terms."
       },
       "services": {
-        "title": "Our Services",
-        "content": "EventBliss provides event planning and coordination tools for groups."
+        "title": "Our Role as a Platform",
+        "content": "EventBliss operates an online marketplace where independent event agencies offer their services (e.g. DJs, photographers, catering, decoration, venues).\n\nImportant: EventBliss acts as an intermediary and is NOT the contractual provider of the booked service. The service contract is concluded exclusively between you (the customer) and the respective agency. EventBliss provides the technical infrastructure, payment processing, communication, support and dispute resolution."
+      },
+      "booking_process": {
+        "title": "Booking Process & Contract Formation",
+        "content": "1. Request: You choose an agency/service and submit a booking request with date, details and your contact information.\n\n2. Confirmation: The contract with the agency is formed either (a) when the online payment via Stripe is successfully completed (automatic confirmation) or (b) when the agency manually confirms your request (for on-site payment bookings).\n\n3. Performance: The agency delivers the service on the agreed date. EventBliss is not involved in the delivery itself but coordinates communication via the platform.\n\nRight of withdrawal for distance contracts (§§ 312g, 355 BGB): As a consumer you generally have a 14-day right of withdrawal. Exception: for date-bound leisure services (§ 312g (2) No. 9 BGB) – which applies to virtually all event services with a fixed date – the statutory right of withdrawal does not apply. The service-specific cancellation policy (see Cancellation) applies additionally and is more customer-friendly.\n\nAll communication with the agency runs through the platform chat. Please keep communication there so it is documented in case of dispute."
+      },
+      "payment_methods": {
+        "title": "Payment Methods",
+        "content": "EventBliss supports two payment methods. Availability is decided by each agency per service:\n\n• Online payment (Stripe): Credit card (Visa, Mastercard, Amex), Apple Pay, Google Pay, SEPA direct debit and other country-specific methods. Payment is instant and secured by Stripe as a PCI-DSS-compliant payment service provider. You receive an automatic booking confirmation and receipt by email after successful payment.\n\n• On-site payment (on_site): You pay the price directly to the agency on the event day (or as agreed) in cash or via an agreed method. The listed price is binding – the agency may not demand more than stated in the booking. The booking is confirmed by manual agency confirmation via the platform.\n\nTotal price & platform fee: All prices on EventBliss are final prices including applicable VAT (where the agency is VAT-registered) and the 10 % platform fee. This fee is settled internally between the agency and EventBliss; you only pay the displayed total price.\n\nPayment issues: For problems with online payments (e.g. failed charges, chargebacks) or on-site payments (e.g. price deviations) contact support@event-bliss.com. EventBliss mediates in either case – including for on-site bookings."
       },
       "payment": {
-        "title": "Payment Terms",
-        "content": "Basic features are free. Premium features may require payment."
+        "title": "Payment Terms & Settlement",
+        "content": "For online payments, the total amount is charged immediately upon booking. Release to the agency occurs after service delivery according to the payout schedule (typically 24–72 hours after the event) to allow refunds in case of disputes.\n\nFor on-site payments, no amount is charged in advance. Payment is made directly to the agency.\n\nReceipts & invoices: For online payments you automatically receive a Stripe payment confirmation and – if provided by the agency – an invoice in your booking area. For on-site payments, the agency is required to issue a receipt/invoice.\n\nDefault interest and further costs for late payment follow the statutory rules (§§ 286, 288 BGB)."
+      },
+      "cancellation_refund": {
+        "title": "Cancellation & Refunds",
+        "content": "Each agency sets a cancellation policy per service. It is transparently shown before you complete a booking. Three tiers exist:\n\n• flexible: Full refund up to 7 days before the event, 50 % thereafter.\n• moderate: Full refund up to 14 days before the event, 50 % until 7 days, none thereafter.\n• strict: 50 % refund up to 30 days before the event, none thereafter.\n\nRefund method: For online payments, refunds are automatically returned to your original payment method. Depending on your bank or card issuer, the credit appears within 5 to 14 days.\n\nOn-site bookings: Since no money has flowed through EventBliss, cancellations are settled directly with the agency. The agreed cancellation policy still applies. In case of disagreement EventBliss mediates; contact support@event-bliss.com with your booking number.\n\nForce majeure & special cases: If the agency is unable to perform (e.g. illness, official restrictions), the full amount is refunded regardless of the cancellation tier.\n\nAgency-caused non-performance: If the agency fails to show up or delivers grossly defective service, EventBliss buyer protection applies. Report the incident within 48 hours of the scheduled date with evidence to support@event-bliss.com – if substantiated, you receive a full refund."
+      },
+      "off_platform_bypass": {
+        "title": "Platform Bypass Protection",
+        "content": "Agencies on EventBliss are contractually obliged to process ALL bookings that originated on the platform through the platform. This protects you as a customer and ensures you receive all buyer protection benefits.\n\nWhat is NOT allowed: An agency may NOT contact you – particularly after a cancellation, but also during initial contact – to arrange a booking off-platform (e.g. via WhatsApp, phone, email, cash payment, direct bank transfer) to avoid the platform fee. Such attempts are a breach of contract by the agency toward EventBliss.\n\nWhy you should refuse such offers: By going off-platform you lose all EventBliss protections:\n\n• No buyer protection: No refund in case of non-performance, damage or fraud.\n• No support: EventBliss cannot help you because no contract runs through the platform.\n• No documented communication: No traceable evidence in case of dispute.\n• No review & identity verification: The platform can no longer vouch for reliability.\n• Tax concerns: Cash payment without a proper invoice can cause trouble for both sides.\n\nReporting bypass attempts: If an agency contacts you directly and offers you an off-platform booking (e.g. \"Pay me 200 € in cash and we'll save the fee\"), please report it immediately to compliance@event-bliss.com. Helpful items: screenshot of the message, booking/service ID, time of contact.\n\nThank-you credit: As a token of appreciation, after verification we will credit you with 20 % off your next EventBliss booking (max. 200 € value, redeemable within 12 months).\n\nConfidentiality: Your report is treated confidentially. The reported agency will not learn who submitted the report."
       },
       "prohibited": {
         "title": "Prohibited Activities",
-        "content": "You may not use our services for illegal activities or to harm others."
+        "content": "You agree not to use the platform for illegal, fraudulent or harmful purposes. In particular, the following is prohibited:\n\n• Misuse of payment methods (e.g. unjustified chargebacks after the service was rendered online, refusal to pay for on-site bookings).\n• Abusive, discriminatory or threatening behavior toward agencies or staff.\n• Review manipulation (e.g. fake reviews, blackmailing with negative reviews).\n• Providing false information in bookings (e.g. false identity, fraudulent payment methods).\n• Using the platform to broker illegal content, services or products.\n• Bypassing the platform yourself after initial contact via EventBliss (see \"Platform Bypass Protection\")."
       },
       "liability": {
         "title": "Limitation of Liability",
-        "content": "EventBliss is not liable for damages arising from use of our services."
+        "content": "As a platform operator, EventBliss is liable only for damages resulting from intent or gross negligence, as well as for injury to life, body and health according to statutory provisions.\n\nThe quality, timeliness and contractual conformity of the booked service are the sole responsibility of the respective agency – EventBliss is not the service provider.\n\nHowever, EventBliss voluntarily grants buyer protection on online payments (see Cancellation & Refunds) and mediates in case of disputes, also for on-site bookings."
       },
       "changes": {
         "title": "Changes to Terms",
-        "content": "We may update these terms. Continued use constitutes acceptance."
+        "content": "We may update these Terms to reflect legal changes or new features. Material changes will be announced to you by email at least 30 days before they take effect. Continued use after they take effect constitutes acceptance."
       },
       "governingLaw": {
-        "title": "Governing Law",
-        "content": "These terms are governed by the laws of Cyprus."
+        "title": "Governing Law & Jurisdiction",
+        "content": "\"EventBliss\" is a brand and product of MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. These Terms are governed by the law of the Republic of Cyprus, excluding the UN Convention on Contracts for the International Sale of Goods. For consumers habitually resident in the European Union, this choice of law applies only to the extent it does not deprive the consumer of the protection of mandatory consumer-protection provisions of the state of their habitual residence (Article 6(2) Rome I Regulation). Mandatory consumer rights — in particular the right of withdrawal under § 312g German Civil Code for consumers resident in Germany — remain unaffected.\n\nJurisdiction: For consumers, the statutory rules on jurisdiction apply, in particular the consumer's place of residence. Against entrepreneurs, exclusive jurisdiction lies at the registered seat of MYFAMBLISS GROUP LTD in the Republic of Cyprus.\n\nOut-of-court dispute resolution: The EU Commission provides an online dispute resolution platform: https://ec.europa.eu/consumers/odr. We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board, but strive for direct resolution via support@event-bliss.com."
       }
     },
     "disclaimer": {
@@ -753,6 +770,101 @@
       "contact": {
         "title": "Contact",
         "content": "For questions about this disclaimer, please contact us."
+      }
+    },
+    "agency_agreement": {
+      "title": "Agency Agreement (EventBliss Partner Agreement)",
+      "lastUpdated": "Last Updated",
+      "rightsReserved": "All rights reserved.",
+      "intro": "\"EventBliss\" is a brand and product of MYFAMBLISS GROUP LTD, a company incorporated under the laws of the Republic of Cyprus, registered in the Cyprus Companies Register, with registered office at Gladstonos 12-14, 8046 Paphos, Cyprus. This Agency Agreement governs the legal relationship between MYFAMBLISS GROUP LTD as operator of the EventBliss platform and the agencies offering event services through EventBliss. The binding version of this agreement is the German version; this English translation is provided for convenience only.",
+      "parties": "Parties: MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus, registered in the Cyprus Companies Register (the \"Company\"; the platform operated under the brand \"EventBliss\" is hereinafter referred to as \"EventBliss\" or the \"Platform\"), and the registered event services agency (the \"Agency\"). A \"Customer\" is any natural or legal person booking through the Platform.",
+      "preamble": {
+        "title": "Preamble and Scope",
+        "content": "EventBliss operates an online marketplace matching customers with event service providers. This agreement applies to all legal relationships between EventBliss and the Agency using the Platform. Definitions for Platform, Agency, Customer, Booking, and Referred Customer apply as set out in the German version."
+      },
+      "platformServices": {
+        "title": "Platform Services",
+        "content": "EventBliss provides public listings, a digital booking workflow, payment processing via Stripe for online bookings, support services, and marketing. EventBliss acts solely as an intermediary and is not a party to the service contract between Agency and Customer."
+      },
+      "agencyDuties": {
+        "title": "Agency Obligations",
+        "content": "The Agency must provide services with proper quality, comply with all legal and tax obligations, keep profile data and calendar accurate, respond to inquiries within 24 hours on business days, and display legally binding prices including VAT."
+      },
+      "platformFee": {
+        "title": "Platform Fee",
+        "content": "EventBliss charges a 10% platform fee on all bookings, regardless of payment method. For online bookings, the fee is deducted automatically before payout. For on-site payments, the Agency must remit the fee within 14 days after service delivery. Each completed on-site booking must be marked as delivered within 48 hours."
+      },
+      "paymentModes": {
+        "title": "Payment Modes and Equal Treatment",
+        "content": "Both online (Stripe) and on-site payments are recognized as Platform bookings. The choice of payment method does not exempt the Agency from the platform fee. Encouraging customers to pay outside the Platform is prohibited and constitutes a breach of Section 6."
+      },
+      "exclusivity": {
+        "title": "EXCLUSIVITY AND ANTI-CIRCUMVENTION",
+        "leadIn": "Breach of this Section 6 entitles EventBliss to immediate termination, contractual penalties, and suspension of the Agency profile.",
+        "period": {
+          "title": "Exclusivity Period",
+          "content": "Any customer referred via the Platform is exclusive to EventBliss for 18 months from first contact, including follow-up bookings and related derivative business."
+        },
+        "prohibition": {
+          "title": "Prohibition of Circumvention",
+          "content": "After cancellation, the Agency may not offer a comparable service off-platform. The Agency may not encourage cash payment on site when the listing is set to online payment, share customer contacts with third parties, run parallel bookings via own channels, or induce customers to cancel platform bookings in favor of off-platform arrangements."
+        },
+        "dataPurpose": {
+          "title": "Purpose Limitation of Customer Data",
+          "content": "Customer contact data received from the Platform is subject to strict purpose limitation per GDPR Art. 5(1)(b). Use is limited to fulfilling the specific booking; building own customer lists, marketing, newsletters, and upselling beyond the booking are prohibited."
+        },
+        "penalty": {
+          "title": "Contractual Penalty",
+          "content": "For each proven violation of Sections 6.1 to 6.3, the Agency owes a contractual penalty equal to 2× the total booking value (minimum EUR 500) plus a lump sum of EUR 10,000 per incident, payable without further notice. Additional damages remain reserved."
+        },
+        "audit": {
+          "title": "Audit Right on Reasonable Suspicion",
+          "content": "Upon reasonable suspicion, EventBliss may request communications logs, payment records, and booking calendar extracts within 14 days. Refusal or late delivery raises a rebuttable presumption of breach."
+        }
+      },
+      "cancellationRates": {
+        "title": "Cancellation Rate Rules",
+        "leadIn": "Excessive agency-initiated cancellations harm the Platform. EventBliss continuously monitors cancellation rates.",
+        "window": {
+          "title": "Reference Window",
+          "content": "The rate is calculated on a rolling 30-day window, counting only agency-initiated cancellations relative to confirmed bookings."
+        },
+        "warning": {
+          "title": "Early Warning at 15%",
+          "content": "Above 15%, the Agency is warned automatically and must attend a mandatory partner management call within 14 days."
+        },
+        "suspension": {
+          "title": "Suspension and Delisting at 20%",
+          "content": "Above 20%, EventBliss may — after 7 days' written notice — pause listings, pause the entire profile, or remove the Agency from the Platform. Measures lift once the rate falls below 15%."
+        },
+        "exceptions": {
+          "title": "Exceptions with Evidence",
+          "content": "Force majeure, customer misinformation, customer payment default, and legitimate safety or hygiene concerns are excluded from the calculation if timely documented and supported by evidence."
+        }
+      },
+      "qualityCriteria": {
+        "title": "Listing and Quality Criteria",
+        "content": "Response time under 24 hours on business days, minimum average rating of 4.0/5.0 over the last 20 bookings, complete profiles, legally binding prices per PAngV, and valid usage rights for all imagery."
+      },
+      "liability": {
+        "title": "Liability and Warranty",
+        "content": "The Agency is solely liable for service delivery and incidents at the venue. EventBliss is liable only for platform availability within market standards. The Agency indemnifies EventBliss against third-party claims arising from defective service delivery and must maintain business liability insurance of at least EUR 1,000,000 (personal injury) and EUR 500,000 (property damage)."
+      },
+      "dataProtection": {
+        "title": "Data Protection and Processing",
+        "content": "Each party acts as an independent controller for its own processing purposes. Where EventBliss processes data on behalf of the Agency, the separate Data Processing Agreement under GDPR Art. 28 applies. Data breaches involving platform customers must be reported to EventBliss within 24 hours of discovery."
+      },
+      "termTermination": {
+        "title": "Term and Termination",
+        "content": "The agreement runs indefinitely. Either party may terminate for convenience with 30 days' written notice to month's end. EventBliss may terminate immediately for breaches of Section 6, repeated cancellation rate violations, substantial payment default, or insolvency. The 18-month exclusivity in Section 6.1 survives termination."
+      },
+      "finalProvisions": {
+        "title": "Final Provisions",
+        "content": "Governing law: This agreement is governed exclusively by the laws of the Republic of Cyprus, excluding the UN Convention on Contracts for the International Sale of Goods (CISG) and any conflict-of-laws rules that would lead to the application of another jurisdiction. Mandatory consumer-protection rules of the customer's habitual residence remain unaffected between Agency and Customer.\n\nExclusive jurisdiction: For all disputes arising out of or in connection with this agreement, the competent courts at the seat of MYFAMBLISS GROUP LTD in the Republic of Cyprus have exclusive jurisdiction, to the extent permitted by law. EventBliss reserves the right to sue the Agency at its general place of business.\n\nAlternative dispute resolution: Before initiating legal proceedings, the parties shall attempt an amicable resolution. Upon request, a structured mediation procedure shall be conducted under the rules of a recognised Cyprus-based institution.\n\nSeverability, form requirements, amendment rights, and assignment restrictions apply as set out in the German version. The binding version is the German original."
+      },
+      "compliance": {
+        "title": "Report Suspected Circumvention",
+        "content": "Customers, agencies, and third parties may report suspected violations confidentially. Whistleblower identity is protected on request."
       }
     }
   },

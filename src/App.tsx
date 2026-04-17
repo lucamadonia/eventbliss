@@ -20,6 +20,7 @@ const Imprint = lazy(() => import("./pages/legal/Imprint"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
+const AgencyAgreement = lazy(() => import("./pages/legal/AgencyAgreement"));
 
 // User Pages (lazy loaded)
 const MyEvents = lazy(() => import("./pages/MyEvents"));
@@ -147,6 +148,7 @@ const AppContent = () => {
           <Route path="/legal/privacy" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Privacy /></Suspense></ErrorBoundary>} />
           <Route path="/legal/terms" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Terms /></Suspense></ErrorBoundary>} />
           <Route path="/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
+          <Route path="/legal/agency-agreement" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyAgreement /></Suspense></ErrorBoundary>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -32,6 +32,7 @@ export interface AgencyService {
   requires_deposit: boolean;
   deposit_percent: number;
   auto_confirm: boolean;
+  payment_method: "online" | "on_site";
   admin_rejection_reason: string | null;
   created_at: string;
   updated_at: string;
@@ -60,6 +61,7 @@ export interface CreateServiceInput {
   advance_booking_days?: number;
   cancellation_policy?: string;
   auto_confirm?: boolean;
+  payment_method?: "online" | "on_site";
   // Booking mode
   booking_mode?: string;
   external_booking_url?: string;
@@ -123,7 +125,7 @@ export function useCreateService() {
     mutationFn: async (input: CreateServiceInput) => {
       const slug = slugify(input.title);
       const { data, error } = await (supabase.from as any)("marketplace_services")
-        .insert({ agency_id: input.agency_id, slug, status: "draft", category: input.category, subcategory: input.subcategory, price_cents: input.price_cents, price_type: input.price_type, min_participants: input.min_participants, max_participants: input.max_participants, duration_minutes: input.duration_minutes, location_type: input.location_type || "flexible", location_address: input.location_address, location_city: input.location_city, cover_image_url: input.cover_image_url, gallery_urls: input.gallery_urls || [], advance_booking_days: input.advance_booking_days || 2, cancellation_policy: input.cancellation_policy || "moderate", auto_confirm: input.auto_confirm || false, booking_mode: input.booking_mode || "internal", external_booking_url: input.external_booking_url, external_provider: input.external_provider, external_provider_config: input.external_provider_config || {} })
+        .insert({ agency_id: input.agency_id, slug, status: "draft", category: input.category, subcategory: input.subcategory, price_cents: input.price_cents, price_type: input.price_type, min_participants: input.min_participants, max_participants: input.max_participants, duration_minutes: input.duration_minutes, location_type: input.location_type || "flexible", location_address: input.location_address, location_city: input.location_city, cover_image_url: input.cover_image_url, gallery_urls: input.gallery_urls || [], advance_booking_days: input.advance_booking_days || 2, cancellation_policy: input.cancellation_policy || "moderate", auto_confirm: input.auto_confirm || false, payment_method: input.payment_method || "online", booking_mode: input.booking_mode || "internal", external_booking_url: input.external_booking_url, external_provider: input.external_provider, external_provider_config: input.external_provider_config || {} })
         .select("id").single();
       if (error) throw error;
 

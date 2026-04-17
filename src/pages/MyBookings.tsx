@@ -1,21 +1,22 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarCheck, Clock, Users, ChevronRight, Star,
   ShoppingBag, ArrowRight, MapPin, Euro, Hash,
-  Filter, Search, Loader2, XCircle,
+  Filter, Search, Loader2, XCircle, AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useMyBookings, useCancelBooking, type MarketplaceBooking } from "@/hooks/useMarketplaceBookings";
 import { toast } from "sonner";
+import { derivePaymentState, usePayBookingNow } from "@/lib/bookingPayment";
 
 /* ─── Types ─────────────────────────────────────────────── */
-type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
-type FilterTab = "alle" | "anstehend" | "abgeschlossen" | "storniert";
+type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled" | "unpaid" | "on_site";
+type FilterTab = "alle" | "unbezahlt" | "anstehend" | "abgeschlossen" | "storniert";
 
 interface Booking {
   id: string;
@@ -28,16 +29,33 @@ interface Booking {
   participants: number;
   totalPrice: number;
   status: BookingStatus;
+  paymentMethod?: string | null;
 }
 
 function mapBooking(b: MarketplaceBooking): Booking {
   const statusMap: Record<string, BookingStatus> = {
     pending: "pending",
+    pending_confirmation: "pending",
     confirmed: "confirmed",
     completed: "completed",
     cancelled_by_customer: "cancelled",
     cancelled_by_agency: "cancelled",
   };
+
+  const paymentState = derivePaymentState(b as any);
+
+  let status: BookingStatus;
+  if (paymentState === "unpaid") {
+    status = "unpaid";
+  } else if (
+    paymentState === "on_site" &&
+    ["pending_confirmation", "confirmed", "completed"].includes(b.status)
+  ) {
+    status = "on_site";
+  } else {
+    status = statusMap[b.status] || "pending";
+  }
+
   return {
     id: b.id,
     bookingNumber: b.booking_number,
@@ -48,7 +66,8 @@ function mapBooking(b: MarketplaceBooking): Booking {
     time: b.booking_time || "",
     participants: b.participant_count,
     totalPrice: b.total_price_cents / 100,
-    status: statusMap[b.status] || "pending",
+    status,
+    paymentMethod: (b as any).payment_method ?? null,
   };
 }
 
@@ -57,6 +76,14 @@ const statusConfig: Record<BookingStatus, { key: string; className: string }> = 
   pending: {
     key: "pending",
     className: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+  },
+  unpaid: {
+    key: "unpaid",
+    className: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  },
+  on_site: {
+    key: "onSite",
+    className: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
   },
   confirmed: {
     key: "confirmed",
@@ -74,6 +101,7 @@ const statusConfig: Record<BookingStatus, { key: string; className: string }> = 
 
 const filterTabs: { id: FilterTab; key: string }[] = [
   { id: "alle", key: "all" },
+  { id: "unbezahlt", key: "unpaid" },
   { id: "anstehend", key: "upcoming" },
   { id: "abgeschlossen", key: "completed" },
   { id: "storniert", key: "cancelled" },
@@ -81,7 +109,8 @@ const filterTabs: { id: FilterTab; key: string }[] = [
 
 const filterMap: Record<FilterTab, BookingStatus[] | null> = {
   alle: null,
-  anstehend: ["pending", "confirmed"],
+  unbezahlt: ["unpaid"],
+  anstehend: ["pending", "confirmed", "on_site"],
   abgeschlossen: ["completed"],
   storniert: ["cancelled"],
 };
@@ -90,9 +119,31 @@ const filterMap: Record<FilterTab, BookingStatus[] | null> = {
 export default function MyBookings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<FilterTab>("alle");
   const { data: rawBookings, isLoading } = useMyBookings();
   const cancelBooking = useCancelBooking();
+  const payNow = usePayBookingNow();
+
+  // Handle ?cancelled=true when user returns from aborted Stripe checkout
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("cancelled") === "true") {
+      toast.info(
+        t(
+          "myBookings.paymentCancelled",
+          "Zahlung abgebrochen — du kannst sie jederzeit fortsetzen.",
+        ),
+      );
+      params.delete("cancelled");
+      const remaining = params.toString();
+      navigate(
+        { pathname: location.pathname, search: remaining ? `?${remaining}` : "" },
+        { replace: true },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const bookings = (rawBookings || []).map(mapBooking);
 
@@ -208,19 +259,34 @@ export default function MyBookings() {
                   className="bg-[#1f1f29] border border-white/[0.06] rounded-2xl p-5 sm:p-6 hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.06)] transition-all duration-300 group"
                 >
                   {/* Top Row: Booking Number + Status */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 gap-2">
                     <div className="flex items-center gap-2">
                       <Hash className="w-3.5 h-3.5 text-slate-600" />
                       <span className="text-xs font-mono text-slate-400">
                         {booking.bookingNumber}
                       </span>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={cn("text-[10px] px-2", statusConfig[booking.status].className)}
-                    >
-                      {t(`myBookings.status.${statusConfig[booking.status].key}`, statusConfig[booking.status].key)}
-                    </Badge>
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {booking.status === "on_site" && (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-2 bg-cyan-500/10 text-cyan-300 border-cyan-500/20"
+                          aria-label={t("myBookings.onSiteBadge", "Zahlung vor Ort")}
+                        >
+                          <span aria-hidden className="mr-1">💶</span>
+                          {t("myBookings.onSiteBadge", "Zahlung vor Ort")}
+                        </Badge>
+                      )}
+                      <Badge
+                        variant="outline"
+                        className={cn("text-[10px] px-2", statusConfig[booking.status].className)}
+                      >
+                        {booking.status === "unpaid" && (
+                          <AlertCircle className="w-3 h-3 mr-1 inline" aria-hidden />
+                        )}
+                        {t(`myBookings.status.${statusConfig[booking.status].key}`, statusConfig[booking.status].key)}
+                      </Badge>
+                    </div>
                   </div>
 
                   {/* Service + Agency */}
@@ -250,7 +316,20 @@ export default function MyBookings() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {booking.status === "unpaid" && (
+                      <Button
+                        size="sm"
+                        onClick={() => payNow.mutate(booking.id)}
+                        disabled={payNow.isPending}
+                        className="bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold cursor-pointer text-xs h-9 min-h-[44px] sm:min-h-0 px-4"
+                      >
+                        <AlertCircle className="w-3.5 h-3.5 mr-1.5" />
+                        {payNow.isPending
+                          ? t("myBookings.payingPreparing", "Wird vorbereitet…")
+                          : t("myBookings.payNow", "Jetzt bezahlen")}
+                      </Button>
+                    )}
                     {booking.serviceSlug && (
                       <Button
                         variant="outline"
@@ -262,7 +341,7 @@ export default function MyBookings() {
                         <ChevronRight className="w-3.5 h-3.5 ml-1" />
                       </Button>
                     )}
-                    {(booking.status === "pending" || booking.status === "confirmed") && (
+                    {(booking.status === "pending" || booking.status === "confirmed" || booking.status === "unpaid" || booking.status === "on_site") && (
                       <Button
                         variant="outline"
                         size="sm"

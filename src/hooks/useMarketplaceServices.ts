@@ -96,6 +96,7 @@ export interface MarketplaceService {
   booking_count: number;
   cancellation_policy: string;
   auto_confirm: boolean;
+  payment_method: "online" | "on_site";
   created_at: string;
   // Joined translation
   title: string;
@@ -210,6 +211,7 @@ export function useMarketplaceServices(
           booking_count: s.booking_count,
           cancellation_policy: s.cancellation_policy,
           auto_confirm: s.auto_confirm,
+          payment_method: (s.payment_method as "online" | "on_site") ?? "online",
           created_at: s.created_at,
           title: tx?.title || "Untitled",
           short_description: tx?.short_description || null,
@@ -295,6 +297,7 @@ export function useMarketplaceServiceBySlug(slug: string | undefined) {
         booking_count: service.booking_count,
         cancellation_policy: service.cancellation_policy,
         auto_confirm: service.auto_confirm,
+        payment_method: (service.payment_method as "online" | "on_site") ?? "online",
         created_at: service.created_at,
         title: tx?.title || "Untitled",
         short_description: tx?.short_description || null,
@@ -333,6 +336,7 @@ export interface CreateBookingInput {
   customerNotes?: string;
   eventId?: string;
   autoConfirm?: boolean;
+  paymentMethod?: "online" | "on_site";
 }
 
 export function useCreateBooking() {
@@ -345,10 +349,17 @@ export function useCreateBooking() {
       const platformFeeCents = Math.round(input.totalPriceCents * 0.10);
       const agencyPayoutCents = input.totalPriceCents - platformFeeCents;
 
-      // Create booking — use auto_confirm to set status directly,
-      // or "pending_confirmation" if agency needs to confirm manually.
-      // Stripe Checkout is optional and only used when Edge Functions are deployed.
-      const status = input.autoConfirm ? "confirmed" : "pending_confirmation";
+      const paymentMethod: "online" | "on_site" = input.paymentMethod ?? "online";
+
+      // Initial status depends on payment method:
+      //  - on_site: confirmed (if auto) or pending_confirmation — no Stripe needed
+      //  - online : pending_payment — webhook advances to confirmed/pending_confirmation
+      const status: "confirmed" | "pending_confirmation" | "pending_payment" =
+        paymentMethod === "on_site"
+          ? (input.autoConfirm ? "confirmed" : "pending_confirmation")
+          : "pending_payment";
+
+      const isInitiallyConfirmed = status === "confirmed";
 
       const { data, error } = await (supabase.from as any)("marketplace_bookings")
         .insert({
@@ -369,7 +380,8 @@ export function useCreateBooking() {
           customer_email: input.customerEmail,
           customer_phone: input.customerPhone || null,
           customer_notes: input.customerNotes || null,
-          confirmed_at: input.autoConfirm ? new Date().toISOString() : null,
+          payment_method: paymentMethod,
+          confirmed_at: isInitiallyConfirmed ? new Date().toISOString() : null,
         })
         .select("id, booking_number")
         .single();
@@ -378,18 +390,20 @@ export function useCreateBooking() {
 
       const booking = data as { id: string; booking_number: string };
 
-      // Try Stripe Checkout if Edge Function is deployed (optional)
+      // Stripe Checkout only for online payments — on_site skips entirely.
       let checkoutUrl: string | undefined;
-      try {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          "marketplace-checkout",
-          { body: { booking_id: booking.id } },
-        );
-        if (!checkoutError && checkoutData?.url) {
-          checkoutUrl = checkoutData.url as string;
+      if (paymentMethod === "online") {
+        try {
+          const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+            "marketplace-checkout",
+            { body: { booking_id: booking.id } },
+          );
+          if (!checkoutError && checkoutData?.url) {
+            checkoutUrl = checkoutData.url as string;
+          }
+        } catch {
+          // Stripe not configured — booking works without payment for now
         }
-      } catch {
-        // Stripe not configured — booking works without payment for now
       }
 
       // Fire booking confirmation email (fire-and-forget, never blocks checkout)
@@ -410,10 +424,15 @@ export function useCreateBooking() {
         id: booking.id,
         booking_number: booking.booking_number,
         checkoutUrl,
+        paymentMethod,
       };
     },
     onSuccess: (data) => {
-      toast.success(`Buchung erstellt! Nr. ${data.booking_number}`);
+      if (data.paymentMethod === "on_site") {
+        toast.success(`Buchung erstellt — Zahlung erfolgt vor Ort. Nr. ${data.booking_number}`);
+      } else {
+        toast.success(`Buchung erstellt! Nr. ${data.booking_number}`);
+      }
       qc.invalidateQueries({ queryKey: ["my-bookings"] });
       qc.invalidateQueries({ queryKey: ["event-bookings"] });
       qc.invalidateQueries({ queryKey: ["service-availability"] });

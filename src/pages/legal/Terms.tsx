@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowLeft, FileText, CheckCircle2, XCircle, CreditCard, Scale, Bell } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle2, XCircle, CreditCard, Scale, Bell, Calendar, Wallet, RotateCcw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
@@ -10,7 +10,11 @@ const Terms = () => {
   const sections = [
     { icon: CheckCircle2, key: "acceptance" },
     { icon: FileText, key: "services" },
+    { icon: Calendar, key: "booking_process" },
+    { icon: Wallet, key: "payment_methods" },
     { icon: CreditCard, key: "payment" },
+    { icon: RotateCcw, key: "cancellation_refund" },
+    { icon: ShieldAlert, key: "off_platform_bypass" },
     { icon: XCircle, key: "prohibited" },
     { icon: Scale, key: "liability" },
     { icon: Bell, key: "changes" },
@@ -45,7 +49,7 @@ const Terms = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
               {t("legal.terms.title")}
             </h1>
-            <p className="text-muted-foreground">{t("legal.terms.lastUpdated")}: January 2025</p>
+            <p className="text-muted-foreground">{t("legal.terms.lastUpdated")}: {t("legal.terms.lastUpdatedDate")}</p>
           </div>
         </div>
 
@@ -88,7 +92,7 @@ const Terms = () => {
       {/* Footer */}
       <footer className="border-t border-border/40 bg-card/30 py-8 mt-16">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 MYFAMBLISS GROUP. All rights reserved.</p>
+          <p>© 2025 MYFAMBLISS GROUP LTD. All rights reserved.</p>
         </div>
       </footer>
     </div>
