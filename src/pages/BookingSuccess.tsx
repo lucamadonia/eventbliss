@@ -702,11 +702,39 @@ function buildIcsFile(b: BookingDetails): string {
 // Page
 // -------------------------------------------------------------------
 
+// Demo fixture — activated via ?demo=1. Lets team preview the page without
+// a real booking + without authentication. Never returned from the DB.
+const DEMO_BOOKING: BookingDetails = {
+  id: "demo-00000000-0000-0000-0000-000000000000",
+  booking_number: "EB-2026-00042",
+  status: "confirmed",
+  booking_date: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
+  booking_time: "14:30",
+  participant_count: 8,
+  total_price_cents: 34500,
+  customer_name: "Rebecca Musterfrau",
+  customer_email: "rebecca@fambliss.de",
+  currency: "EUR",
+  service_id: "demo-service",
+  agency_id: "demo-agency",
+  service_title: "Wildwasser-Rafting Schwarzwald",
+  service_slug: "wildwasser-rafting-schwarzwald",
+  service_cover: null,
+  service_category: "sport",
+  agency_name: "FAMBLISS",
+  agency_city: "Freiburg",
+  agency_slug: "fambliss",
+};
+
 export default function BookingSuccess() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const bookingId = params.get("booking");
-  const { data: booking, isLoading, error } = useBookingDetails(bookingId);
+  const isDemo = params.get("demo") === "1";
+  const live = useBookingDetails(isDemo ? null : bookingId);
+  const booking: BookingDetails | null = isDemo ? DEMO_BOOKING : (live.data ?? null);
+  const isLoading = isDemo ? false : live.isLoading;
+  const error = isDemo ? null : live.error;
   const reduced = !!useReducedMotion();
   const [showConfetti, setShowConfetti] = useState(true);
   const [showSecondBurst, setShowSecondBurst] = useState(false);
