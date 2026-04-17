@@ -475,7 +475,7 @@
     "terms": {
       "title": "Hizmet Şartları",
       "lastUpdated": "Son güncelleme",
-      "intro": "EventBliss'i kullanarak bu şartları kabul ediyorsunuz.",
+      "intro": "EventBliss'e hoş geldiniz. Bu Koşullar, platformu işleten MYFAMBLISS GROUP LTD (Gladstonos 12-14, 8046 Baf, Kıbrıs) tarafından sunulan platformun kullanımını düzenler. Bağlayıcı sürüm Almancadır.",
       "acceptance": {
         "title": "Kabul",
         "content": "Erişerek bu şartları kabul ediyorsunuz."
@@ -502,7 +502,24 @@
       },
       "governingLaw": {
         "title": "Geçerli Hukuk",
-        "content": "Kıbrıs yasalarına tabidir."
+        "content": "Uygulanacak hukuk: Platform, Kıbrıs Cumhuriyeti'nde kayıtlı MYFAMBLISS GROUP LTD tarafından işletilir. CISG hariç Kıbrıs hukuku uygulanır. Mutad mesken devletinin emredici tüketici koruma hükümleri (örn. Almanya'da § 312g BGB) saklıdır (Roma I md. 6(2)). AB çevrimiçi uyuşmazlık çözüm platformu: https://ec.europa.eu/consumers/odr"
+      },
+      "lastUpdatedDate": "Nisan 2026",
+      "booking_process": {
+        "title": "Rezervasyon süreci",
+        "content": "Hizmet sözleşmesi EventBliss ile değil, ajans ile kurulur. EventBliss aracı olarak hareket eder. Çevrimiçi ödemede, onay Stripe ödemesinin başarılı olmasının ardından verilir. Yerinde ödemede ajans manuel olarak onaylar. Tüketicilerin § 312g BGB uyarınca 14 günlük cayma hakkı vardır; sabit tarihli hizmetler için istisnalar geçerlidir."
+      },
+      "payment_methods": {
+        "title": "Ödeme yöntemleri",
+        "content": "İki seçenek: (1) Stripe üzerinden çevrimiçi ödeme — kart, Apple/Google Pay, SEPA. (2) Yerinde ödeme — hizmet sırasında doğrudan ajansa. Her iki durumda da görüntülenen fiyat nihaidir ve %10 platform komisyonunu içerir."
+      },
+      "cancellation_refund": {
+        "title": "İptal ve iade",
+        "content": "İptal politikası (esnek / orta / katı) her hizmet için gösterilir. İadeler 14 gün içinde orijinal ödeme yöntemine yapılır. Yerinde ödemeli rezervasyonlarda iptaller doğrudan ajans ile yürütülür; uyuşmazlık halinde EventBliss arabulucu olur."
+      },
+      "off_platform_bypass": {
+        "title": "Atlatma karşıtı koruma",
+        "content": "Ajanslar tüm rezervasyonları platform üzerinden yürütmekle sözleşmesel olarak yükümlüdür. İptalden sonra ajanslar sizinle doğrudan iletişime geçerek platform dışında nakit ödemeli rezervasyon sunamazlar — bu sözleşme ihlalidir. Bu tür teklifleri kabul etmeyin: EventBliss korumasını kaybedersiniz (destek, iade garantisi). Girişimleri compliance@event-bliss.com adresine bildirin — bir sonraki rezervasyonunuzda %20 kredi alırsınız (maks. 200 €, 12 ay)."
       }
     },
     "disclaimer": {
@@ -528,6 +545,101 @@
       "contact": {
         "title": "İletişim",
         "content": "Sorular için bize ulaşın."
+      }
+    },
+    "agency_agreement": {
+      "title": "Ajans Sözleşmesi (EventBliss Partner Agreement)",
+      "lastUpdated": "Son güncelleme",
+      "rightsReserved": "Tüm hakları saklıdır.",
+      "intro": "\"EventBliss\", Kıbrıs Cumhuriyeti hukukuna göre kurulmuş ve Gladstonos 12-14, 8046 Baf, Kıbrıs adresinde bulunan MYFAMBLISS GROUP LTD'nin bir markası ve ürünüdür. Bu sözleşmenin bağlayıcı sürümü Almancadır; bu çeviri yalnızca bilgilendirme amaçlıdır.",
+      "parties": "Taraflar: MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Baf, Kıbrıs (\"EventBliss\" veya \"Platform\") ve kayıtlı etkinlik hizmetleri ajansı (\"Ajans\"). \"Müşteri\", platform üzerinden rezervasyon yapan her gerçek veya tüzel kişidir.",
+      "preamble": {
+        "title": "Giriş ve kapsam",
+        "content": "EventBliss, etkinlik hizmetleri için çevrimiçi bir pazar yeri işletir. Tanımlar (Platform, Ajans, Müşteri, Rezervasyon, Yönlendirilmiş Müşteri) Almanca sürüme göre geçerlidir."
+      },
+      "platformServices": {
+        "title": "Platform hizmetleri",
+        "content": "EventBliss, kamuya açık listelemeler, dijital rezervasyon akışı, çevrimiçi rezervasyonlar için Stripe üzerinden ödeme işleme, destek ve pazarlama sağlar. EventBliss yalnızca aracı olarak hareket eder."
+      },
+      "agencyDuties": {
+        "title": "Ajans yükümlülükleri",
+        "content": "Uygun kalitede hizmet sunumu, tüm yasal ve vergi yükümlülüklerine uyum, profil ve takvim verilerini güncel tutma, iş günlerinde 24 saat içinde yanıt, KDV dahil bağlayıcı fiyatlar."
+      },
+      "platformFee": {
+        "title": "Platform komisyonu",
+        "content": "EventBliss, ödeme yönteminden bağımsız olarak tüm rezervasyonlarda %10 komisyon alır. Çevrimiçi ödemede ödemeden önce otomatik kesinti. Yerinde ödemede Ajansın hizmetin verilmesinden sonraki 14 gün içinde komisyonu ödemesi gerekir."
+      },
+      "paymentModes": {
+        "title": "Ödeme yöntemleri ve eşit muamele",
+        "content": "Hem çevrimiçi (Stripe) hem de yerinde ödemeler platform rezervasyonu olarak kabul edilir. Ödeme yöntemi seçimi Ajansı komisyon ödeme yükümlülüğünden muaf tutmaz. Müşterileri platform dışında ödemeye teşvik etmek yasaktır ve madde 6'nın ihlalini oluşturur."
+      },
+      "exclusivity": {
+        "title": "MÜNHASIRLIK VE ATLATMA KARŞITI KORUMA",
+        "leadIn": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun.",
+        "period": {
+          "title": "Münhasırlık süresi",
+          "content": "18 ay — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "prohibition": {
+          "title": "Atlatma yasağı",
+          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "dataPurpose": {
+          "title": "Veri amaç sınırlaması",
+          "content": "Art. 5 GDPR — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "penalty": {
+          "title": "Cezai şart",
+          "content": "Cezai şart: rezervasyon değerinin 2 katı (min. 500 €) + ihlal başına 10.000 €. Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "audit": {
+          "title": "Denetim hakkı",
+          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        }
+      },
+      "cancellationRates": {
+        "title": "İptal oranı",
+        "leadIn": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun.",
+        "window": {
+          "title": "Referans dönemi",
+          "content": "30 gün — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "warning": {
+          "title": "Erken uyarı (%15)",
+          "content": "> 15% — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "suspension": {
+          "title": "Askıya alma (%20)",
+          "content": "> 20% — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        },
+        "exceptions": {
+          "title": "İstisnalar",
+          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        }
+      },
+      "qualityCriteria": {
+        "title": "Kalite ve listeleme",
+        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+      },
+      "liability": {
+        "title": "Sorumluluk",
+        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+      },
+      "dataProtection": {
+        "title": "Veri koruma",
+        "content": "GDPR Art. 28 — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+      },
+      "termTermination": {
+        "title": "Süre ve fesih",
+        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+      },
+      "finalProvisions": {
+        "title": "Son hükümler",
+        "content": "Cyprus law + Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+      },
+      "compliance": {
+        "title": "Uyum iletişimi",
+        "content": "compliance@event-bliss.com"
       }
     }
   },

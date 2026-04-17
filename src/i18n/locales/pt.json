@@ -475,7 +475,7 @@
     "terms": {
       "title": "Termos de Serviço",
       "lastUpdated": "Última atualização",
-      "intro": "Ao usar EventBliss, aceitas estes termos.",
+      "intro": "Bem-vindo/a à EventBliss. Estas Condições regem o uso da plataforma, operada pela MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Chipre. A versão vinculativa é a alemã.",
       "acceptance": {
         "title": "Aceitação",
         "content": "Ao aceder, aceitas estes termos."
@@ -502,7 +502,24 @@
       },
       "governingLaw": {
         "title": "Lei Aplicável",
-        "content": "Regido pelas leis de Chipre."
+        "content": "Lei aplicável: A plataforma é operada pela MYFAMBLISS GROUP LTD com sede na República de Chipre. Aplica-se a lei cipriota com exclusão da CISG. Os direitos imperativos de proteção do consumidor da residência habitual (p. ex. § 312g BGB na Alemanha) permanecem inalterados (Art. 6(2) Roma I). Plataforma de resolução de litígios da UE: https://ec.europa.eu/consumers/odr"
+      },
+      "lastUpdatedDate": "Abril de 2026",
+      "booking_process": {
+        "title": "Processo de reserva",
+        "content": "O contrato de serviço é celebrado com a agência, não com a EventBliss. A EventBliss atua como intermediária. Para pagamento online, a confirmação ocorre após pagamento Stripe bem-sucedido. Para pagamento no local, a agência confirma manualmente. Os consumidores têm direito de retratação nos termos do § 312g BGB (14 dias), com exceções para serviços em data fixa."
+      },
+      "payment_methods": {
+        "title": "Formas de pagamento",
+        "content": "Duas opções: (1) Pagamento online via Stripe — cartão, Apple/Google Pay, SEPA. (2) Pagamento no local — diretamente à agência no momento do serviço. Em ambos os casos, o preço exibido é final e inclui a taxa de plataforma de 10%."
+      },
+      "cancellation_refund": {
+        "title": "Cancelamento e reembolso",
+        "content": "A política de cancelamento (flexível / moderada / rigorosa) é indicada por serviço. Os reembolsos são processados para a forma de pagamento original no prazo de 14 dias. Para reservas com pagamento no local, os cancelamentos são tratados diretamente com a agência; a EventBliss medeia em caso de litígio."
+      },
+      "off_platform_bypass": {
+        "title": "Proteção contra contorno",
+        "content": "As agências estão contratualmente obrigadas a processar todas as reservas através da plataforma. Após um cancelamento, as agências NÃO podem contactá-lo/a diretamente para oferecer uma reserva fora da plataforma com pagamento em dinheiro — isto constitui incumprimento contratual. Não aceite tais ofertas: perderia a proteção da EventBliss (suporte, garantia de reembolso). Denuncie tentativas a compliance@event-bliss.com — receberá um crédito de 20% na próxima reserva (máx. 200 €, 12 meses)."
       }
     },
     "disclaimer": {
@@ -528,6 +545,101 @@
       "contact": {
         "title": "Contacto",
         "content": "Para questões, contacta-nos."
+      }
+    },
+    "agency_agreement": {
+      "title": "Contrato de Agência (EventBliss Partner Agreement)",
+      "lastUpdated": "Última atualização",
+      "rightsReserved": "Todos os direitos reservados.",
+      "intro": "\"EventBliss\" é uma marca e produto da MYFAMBLISS GROUP LTD, sociedade constituída ao abrigo do direito da República de Chipre, com sede em Gladstonos 12-14, 8046 Paphos, Chipre. A versão vinculativa deste contrato é a alemã; esta tradução é fornecida apenas para fins informativos.",
+      "parties": "Partes: MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Chipre (\"EventBliss\" ou \"Plataforma\"), e a agência de serviços de eventos registada (\"Agência\"). \"Cliente\" é qualquer pessoa singular ou coletiva que faça uma reserva através da plataforma.",
+      "preamble": {
+        "title": "Preâmbulo e âmbito",
+        "content": "A EventBliss explora um marketplace online para serviços de eventos. As definições (Plataforma, Agência, Cliente, Reserva, Cliente indicado) aplicam-se conforme a versão alemã."
+      },
+      "platformServices": {
+        "title": "Serviços da plataforma",
+        "content": "A EventBliss fornece listagens públicas, um fluxo de reserva digital, processamento de pagamentos via Stripe para reservas online, suporte e marketing. A EventBliss atua apenas como intermediária."
+      },
+      "agencyDuties": {
+        "title": "Obrigações da Agência",
+        "content": "Prestação de serviços com qualidade adequada, cumprimento de obrigações legais e fiscais, atualização dos dados de perfil e calendário, resposta a consultas em 24 h em dias úteis, preços vinculativos com IVA."
+      },
+      "platformFee": {
+        "title": "Taxa de plataforma",
+        "content": "A EventBliss cobra uma taxa de 10% sobre todas as reservas, independentemente do método de pagamento. Para pagamentos online, dedução automática antes da transferência. Para pagamentos no local, a Agência deve pagar a taxa no prazo de 14 dias após a prestação do serviço."
+      },
+      "paymentModes": {
+        "title": "Formas de pagamento e igualdade de tratamento",
+        "content": "Tanto os pagamentos online (Stripe) quanto no local são reconhecidos como reservas da plataforma. A escolha do método de pagamento não isenta a Agência do pagamento da taxa. Incentivar clientes a pagar fora da plataforma é proibido e constitui violação da cláusula 6."
+      },
+      "exclusivity": {
+        "title": "EXCLUSIVIDADE E PROTEÇÃO ANTI-CONTORNO",
+        "leadIn": "Consulte a versão alemã para o texto vinculativo completo.",
+        "period": {
+          "title": "Período de exclusividade",
+          "content": "18 meses — Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "prohibition": {
+          "title": "Proibição de contorno",
+          "content": "Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "dataPurpose": {
+          "title": "Limitação de finalidade dos dados",
+          "content": "Art. 5 GDPR — Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "penalty": {
+          "title": "Cláusula penal",
+          "content": "Sanção contratual: 2× valor da reserva (mín. 500 €) + 10.000 € por infração. Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "audit": {
+          "title": "Direito de auditoria",
+          "content": "Consulte a versão alemã para o texto vinculativo completo."
+        }
+      },
+      "cancellationRates": {
+        "title": "Taxa de cancelamento",
+        "leadIn": "Consulte a versão alemã para o texto vinculativo completo.",
+        "window": {
+          "title": "Período de referência",
+          "content": "30 dias — Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "warning": {
+          "title": "Aviso prévio (15%)",
+          "content": "> 15% — Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "suspension": {
+          "title": "Suspensão (20%)",
+          "content": "> 20% — Consulte a versão alemã para o texto vinculativo completo."
+        },
+        "exceptions": {
+          "title": "Exceções",
+          "content": "Consulte a versão alemã para o texto vinculativo completo."
+        }
+      },
+      "qualityCriteria": {
+        "title": "Qualidade e listagem",
+        "content": "Consulte a versão alemã para o texto vinculativo completo."
+      },
+      "liability": {
+        "title": "Responsabilidade",
+        "content": "Consulte a versão alemã para o texto vinculativo completo."
+      },
+      "dataProtection": {
+        "title": "Proteção de dados",
+        "content": "GDPR Art. 28 — Consulte a versão alemã para o texto vinculativo completo."
+      },
+      "termTermination": {
+        "title": "Duração e rescisão",
+        "content": "Consulte a versão alemã para o texto vinculativo completo."
+      },
+      "finalProvisions": {
+        "title": "Disposições finais",
+        "content": "Cyprus law + Consulte a versão alemã para o texto vinculativo completo."
+      },
+      "compliance": {
+        "title": "Contacto Compliance",
+        "content": "compliance@event-bliss.com"
       }
     }
   },

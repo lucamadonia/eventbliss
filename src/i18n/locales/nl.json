@@ -475,7 +475,7 @@
     "terms": {
       "title": "Servicevoorwaarden",
       "lastUpdated": "Laatst bijgewerkt",
-      "intro": "Door EventBliss te gebruiken, ga je akkoord met deze voorwaarden.",
+      "intro": "Welkom bij EventBliss. Deze Voorwaarden regelen het gebruik van het platform, beheerd door MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. De bindende versie is de Duitse.",
       "acceptance": {
         "title": "Acceptatie",
         "content": "Door toegang tot EventBliss ga je akkoord met deze voorwaarden."
@@ -502,7 +502,24 @@
       },
       "governingLaw": {
         "title": "Toepasselijk Recht",
-        "content": "Deze voorwaarden vallen onder de wetten van Cyprus."
+        "content": "Toepasselijk recht: Het platform wordt beheerd door MYFAMBLISS GROUP LTD met statutaire zetel in de Republiek Cyprus. Cypriotisch recht is van toepassing, met uitsluiting van het Weens Koopverdrag. Dwingende consumentenbeschermingsregels van uw gewone verblijfplaats (bv. § 312g BGB in Duitsland) blijven onaangetast (Art. 6(2) Rome I). EU-platform voor geschillenbeslechting: https://ec.europa.eu/consumers/odr"
+      },
+      "lastUpdatedDate": "April 2026",
+      "booking_process": {
+        "title": "Boekingsproces",
+        "content": "De dienstverleningsovereenkomst wordt gesloten met het agentschap, niet met EventBliss. EventBliss treedt op als tussenpersoon. Bij online betaling vindt de bevestiging plaats na succesvolle Stripe-betaling. Bij betaling ter plaatse bevestigt het agentschap handmatig. Consumenten hebben herroepingsrecht volgens § 312g BGB (14 dagen), met uitzonderingen voor diensten op een vaste datum."
+      },
+      "payment_methods": {
+        "title": "Betaalmethoden",
+        "content": "Twee opties: (1) Online betaling via Stripe — kaart, Apple/Google Pay, SEPA. (2) Betaling ter plaatse — rechtstreeks aan het agentschap op de dag van de dienst. In beide gevallen is de weergegeven prijs definitief en omvat de platformkosten van 10%."
+      },
+      "cancellation_refund": {
+        "title": "Annulering en terugbetaling",
+        "content": "Het annuleringsbeleid (flexibel / matig / strikt) wordt per dienst getoond. Terugbetalingen worden binnen 14 dagen verwerkt op de oorspronkelijke betaalmethode. Voor boekingen met betaling ter plaatse worden annuleringen rechtstreeks met het agentschap afgehandeld; EventBliss bemiddelt bij geschillen."
+      },
+      "off_platform_bypass": {
+        "title": "Bescherming tegen omzeiling",
+        "content": "Agentschappen zijn contractueel verplicht alle boekingen via het platform af te handelen. Na een annulering mogen agentschappen u NIET rechtstreeks benaderen om een boeking buiten het platform met contante betaling aan te bieden — dit is een contractbreuk. Accepteer dergelijke aanbiedingen niet: u verliest de EventBliss-bescherming (support, terugbetalingsgarantie). Meld pogingen aan compliance@event-bliss.com — u ontvangt 20% tegoed op uw volgende boeking (max. € 200, 12 maanden)."
       }
     },
     "disclaimer": {
@@ -528,6 +545,101 @@
       "contact": {
         "title": "Contact",
         "content": "Voor vragen over deze disclaimer, neem contact op."
+      }
+    },
+    "agency_agreement": {
+      "title": "Agency Agreement (EventBliss Partner Agreement)",
+      "lastUpdated": "Laatst bijgewerkt",
+      "rightsReserved": "Alle rechten voorbehouden.",
+      "intro": "\"EventBliss\" is een merk en product van MYFAMBLISS GROUP LTD, een vennootschap opgericht naar het recht van de Republiek Cyprus, met statutaire zetel te Gladstonos 12-14, 8046 Paphos, Cyprus. De bindende versie van deze overeenkomst is de Duitse; deze vertaling is louter informatief.",
+      "parties": "Partijen: MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus (\"EventBliss\" of \"Platform\"), en het geregistreerde evenementenbureau (\"Agentschap\"). Een \"Klant\" is elke natuurlijke of rechtspersoon die via het platform boekt.",
+      "preamble": {
+        "title": "Preambule en toepassingsgebied",
+        "content": "EventBliss exploiteert een online marktplaats voor evenementendiensten. Definities (Platform, Agentschap, Klant, Boeking, Doorverwezen klant) gelden conform de Duitse versie."
+      },
+      "platformServices": {
+        "title": "Platformdiensten",
+        "content": "EventBliss biedt openbare listings, een digitale boekingsworkflow, betalingsverwerking via Stripe voor online boekingen, support en marketing. EventBliss treedt enkel op als tussenpersoon."
+      },
+      "agencyDuties": {
+        "title": "Verplichtingen van het Agentschap",
+        "content": "Correcte dienstverlening en kwaliteit, naleving van wet- en belastingverplichtingen, actueel houden van profiel- en kalendergegevens, reactie op aanvragen binnen 24 u op werkdagen, bindende prijzen inclusief btw."
+      },
+      "platformFee": {
+        "title": "Platformvergoeding",
+        "content": "EventBliss rekent een vergoeding van 10% op alle boekingen, ongeacht de betalingsmethode. Bij online betaling automatische inhouding vóór uitbetaling. Bij betaling ter plaatse dient het Agentschap de vergoeding binnen 14 dagen na dienstverlening af te dragen."
+      },
+      "paymentModes": {
+        "title": "Betaalmethoden en gelijke behandeling",
+        "content": "Zowel online (Stripe) als ter plaatse betalingen gelden als platformboekingen. De keuze van de betaalmethode ontslaat het Agentschap niet van de vergoedingplicht. Klanten aanzetten om buiten het platform te betalen is verboden en vormt een schending van clausule 6."
+      },
+      "exclusivity": {
+        "title": "EXCLUSIVITEIT EN BESCHERMING TEGEN OMZEILING",
+        "leadIn": "Raadpleeg de Duitse versie voor de volledige bindende tekst.",
+        "period": {
+          "title": "Exclusiviteitsperiode",
+          "content": "18 maanden — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "prohibition": {
+          "title": "Omzeilingsverbod",
+          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "dataPurpose": {
+          "title": "Doelbinding klantgegevens",
+          "content": "Art. 5 GDPR — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "penalty": {
+          "title": "Boetebeding",
+          "content": "Contractuele boete: 2× boekingswaarde (min. € 500) + € 10.000 per overtreding. Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "audit": {
+          "title": "Auditrecht",
+          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        }
+      },
+      "cancellationRates": {
+        "title": "Annuleringspercentage",
+        "leadIn": "Raadpleeg de Duitse versie voor de volledige bindende tekst.",
+        "window": {
+          "title": "Referentieperiode",
+          "content": "30 dagen — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "warning": {
+          "title": "Vroegtijdige waarschuwing (15%)",
+          "content": "> 15% — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "suspension": {
+          "title": "Opschorting (20%)",
+          "content": "> 20% — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        },
+        "exceptions": {
+          "title": "Uitzonderingen",
+          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        }
+      },
+      "qualityCriteria": {
+        "title": "Kwaliteit en vermelding",
+        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+      },
+      "liability": {
+        "title": "Aansprakelijkheid",
+        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+      },
+      "dataProtection": {
+        "title": "Gegevensbescherming",
+        "content": "GDPR Art. 28 — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+      },
+      "termTermination": {
+        "title": "Looptijd en beëindiging",
+        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+      },
+      "finalProvisions": {
+        "title": "Slotbepalingen",
+        "content": "Cyprus law + Raadpleeg de Duitse versie voor de volledige bindende tekst."
+      },
+      "compliance": {
+        "title": "Compliance-contact",
+        "content": "compliance@event-bliss.com"
       }
     }
   },
