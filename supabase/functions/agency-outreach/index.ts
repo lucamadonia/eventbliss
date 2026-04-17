@@ -76,7 +76,32 @@ function getSignature(senderEmail: string): string {
 // Email wrapper
 // ---------------------------------------------------------------------------
 
+function isPlainTextTemplate(body: string): boolean {
+  // Plain-text templates only use <p>, <br/>, <a> — no <div style=, <h2 style=, gradients
+  return !body.includes('style="background') && !body.includes('border-radius') && !body.includes('<h2 style=');
+}
+
 function wrapEmailHtml(body: string, signature: string): string {
+  const isPlain = isPlainTextTemplate(body);
+
+  if (isPlain) {
+    // Minimal wrapper — looks like a personal email, not marketing
+    return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
+<div style="max-width:600px;margin:0 auto;padding:24px;">
+  <div style="font-size:15px;line-height:1.7;color:#333333;">
+    ${body}
+    ${signature.replace(/color:#fff/g, 'color:#333').replace(/color:#94a3b8/g, 'color:#666').replace(/color:#a855f7/g, 'color:#7c3aed')}
+  </div>
+  <p style="margin-top:32px;font-size:10px;color:#999;">
+    Kein Interesse? Antworten Sie einfach mit "Stop" und wir entfernen Sie sofort.
+  </p>
+</div>
+</body></html>`;
+  }
+
+  // Full branded HTML wrapper for marketing templates
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#070012;font-family:'Segoe UI',Roboto,sans-serif;">

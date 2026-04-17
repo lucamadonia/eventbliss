@@ -83,6 +83,50 @@ const STAGE3_BODY = `<h2 style="margin:0 0 16px;font-size:22px;font-weight:800;c
 
 <p style="font-size:13px;color:#94a3b8;">Wir w\u00FCnschen {{agency_name}} weiterhin viel Erfolg! Sollten Sie sp\u00E4ter Interesse haben, melden Sie sich jederzeit.</p>`;
 
+// ─── Plain-text templates (persönlich, wie eine echte E-Mail) ────────
+const PLAIN_STAGE1_SUBJECT = "Kurze Frage an {{agency_name}}";
+const PLAIN_STAGE1_BODY = `<p>Hallo {{contact_name}},</p>
+
+<p>ich bin {{sender_name}} und arbeite bei EventBliss — einer neuen Event-Plattform, die Agenturen wie euch direkt mit Event-Planern verbindet.</p>
+
+<p>Ganz kurz: Wir listen aktuell die ersten 150 Agenturen komplett kostenlos in unserem Marketplace. Keine Gebühren, keine Provision, kein Abo. Euer Profil + Services wären sofort sichtbar für tausende Event-Planer, und unsere KI empfiehlt euch automatisch bei passenden Anfragen.</p>
+
+<p>Wir stehen noch am Anfang (investorenfinanziert, Sitz in Zypern), aber genau deshalb profitieren die ersten Partner am meisten — ihr seid von Tag 1 dabei.</p>
+
+<p>Hätte {{agency_name}} Interesse? Ich kann euch in 5 Minuten freischalten: {{signup_url}}</p>
+
+<p>Oder antwortet einfach kurz auf diese Mail — ich melde mich persönlich.</p>
+
+<p>Beste Grüße<br/>{{sender_name}}</p>`;
+
+const PLAIN_STAGE2_SUBJECT = "Nochmal kurz — {{contact_name}}";
+const PLAIN_STAGE2_BODY = `<p>Hey {{contact_name}},</p>
+
+<p>ich hatte euch letzte Woche wegen EventBliss geschrieben. Wollte nur kurz nachhaken ob die Mail angekommen ist.</p>
+
+<p>Mittlerweile sind schon einige Agenturen aus {{city}} mit dabei. Das Feedback ist super — vor allem die automatische KI-Empfehlung an Event-Planer kommt richtig gut an.</p>
+
+<p>Die kostenlosen Plätze sind begrenzt (erste 150). Falls ihr Interesse habt, einfach hier klicken: {{signup_url}}</p>
+
+<p>Oder kurz antworten — auch ein "Kein Interesse" ist völlig okay, dann nerve ich nicht weiter. :)</p>
+
+<p>Viele Grüße<br/>{{sender_name}}</p>`;
+
+const PLAIN_STAGE3_SUBJECT = "Letzte Nachricht von mir — {{agency_name}}";
+const PLAIN_STAGE3_BODY = `<p>Hallo {{contact_name}},</p>
+
+<p>versprochen, dies ist meine letzte Mail zu dem Thema.</p>
+
+<p>Falls {{agency_name}} irgendwann mal Lust hat reinzuschauen — der Link bleibt aktiv: {{signup_url}}</p>
+
+<p>Und hier könnt ihr sehen wie andere Agenturen bei uns aussehen: https://event-bliss.com/marketplace</p>
+
+<p>Ich wünsche euch weiterhin viel Erfolg!</p>
+
+<p>Beste Grüße<br/>{{sender_name}}</p>`;
+
+type TemplateStyle = "html" | "plain";
+
 interface CampaignFormData {
   name: string;
   sender_email: string;
@@ -121,10 +165,45 @@ export default function AkquiseCampaignManager() {
   const [form, setForm] = useState<CampaignFormData>(EMPTY_FORM);
   const [showStage2, setShowStage2] = useState(false);
   const [showStage3, setShowStage3] = useState(false);
+  const [templateStyle, setTemplateStyle] = useState<TemplateStyle>("plain");
+
+  const applyTemplateStyle = (style: TemplateStyle) => {
+    setTemplateStyle(style);
+    if (style === "plain") {
+      setForm((f) => ({
+        ...f,
+        template_stage1_subject: PLAIN_STAGE1_SUBJECT,
+        template_stage1_body: PLAIN_STAGE1_BODY,
+        template_stage2_subject: PLAIN_STAGE2_SUBJECT,
+        template_stage2_body: PLAIN_STAGE2_BODY,
+        template_stage3_subject: PLAIN_STAGE3_SUBJECT,
+        template_stage3_body: PLAIN_STAGE3_BODY,
+      }));
+    } else {
+      setForm((f) => ({
+        ...f,
+        template_stage1_subject: STAGE1_SUBJECT,
+        template_stage1_body: STAGE1_BODY,
+        template_stage2_subject: STAGE2_SUBJECT,
+        template_stage2_body: STAGE2_BODY,
+        template_stage3_subject: STAGE3_SUBJECT,
+        template_stage3_body: STAGE3_BODY,
+      }));
+    }
+  };
 
   const openCreate = () => {
     setEditingId(null);
-    setForm(EMPTY_FORM);
+    setTemplateStyle("plain");
+    setForm({
+      ...EMPTY_FORM,
+      template_stage1_subject: PLAIN_STAGE1_SUBJECT,
+      template_stage1_body: PLAIN_STAGE1_BODY,
+      template_stage2_subject: PLAIN_STAGE2_SUBJECT,
+      template_stage2_body: PLAIN_STAGE2_BODY,
+      template_stage3_subject: PLAIN_STAGE3_SUBJECT,
+      template_stage3_body: PLAIN_STAGE3_BODY,
+    });
     setShowStage2(false);
     setShowStage3(false);
     setShowForm(true);
@@ -271,9 +350,43 @@ export default function AkquiseCampaignManager() {
                 <Input type="number" placeholder="Drip Rate / Tag" value={form.drip_rate} onChange={(e) => set("drip_rate", Number(e.target.value))} className="bg-white/[0.04] border-white/10" />
               </div>
 
+              {/* Template style toggle */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Template-Stil:</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => applyTemplateStyle("plain")}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                      templateStyle === "plain"
+                        ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md"
+                        : "bg-white/5 text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Persönlich (Plain-Text)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyTemplateStyle("html")}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                      templateStyle === "html"
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md"
+                        : "bg-white/5 text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Marketing (HTML)
+                  </button>
+                </div>
+                <span className="text-[10px] text-muted-foreground ml-auto">
+                  {templateStyle === "plain" ? "Sieht aus wie eine persönliche E-Mail" : "Professionelles Design mit CTA-Buttons"}
+                </span>
+              </div>
+
               {/* Stage 1 */}
               <div className="space-y-2">
-                <span className="text-sm font-semibold text-foreground">Stage 1</span>
+                <span className="text-sm font-semibold text-foreground">Stage 1 — Erste Kontaktaufnahme</span>
                 <Input placeholder={STAGE1_SUBJECT} value={form.template_stage1_subject} onChange={(e) => set("template_stage1_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
                 <Textarea placeholder={STAGE1_BODY} value={form.template_stage1_body} onChange={(e) => set("template_stage1_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[120px]" />
               </div>
