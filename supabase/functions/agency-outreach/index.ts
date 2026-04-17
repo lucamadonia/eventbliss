@@ -375,9 +375,9 @@ serve(async (req) => {
     // ===================================================================
     if (mode === "personalize") {
       const directoryId: number = body.directory_id;
-      const campaignId: string = body.campaign_id;
+      const campaignId: string | null = body.campaign_id === "manual" ? null : body.campaign_id;
       const stage: string = body.stage ?? "stage_1";
-      if (!directoryId || !campaignId) throw new Error("directory_id + campaign_id required");
+      if (!directoryId) throw new Error("directory_id required");
 
       const { data: agency } = await (supabase as any).from("agency_directory")
         .select("*")
@@ -386,10 +386,15 @@ serve(async (req) => {
 
       if (!agency) throw new Error("Agency not found");
 
-      const { data: campaign } = await (supabase as any).from("agency_outreach_campaigns")
-        .select("sender_name, sender_email")
-        .eq("id", campaignId)
-        .single();
+      // Campaign lookup is optional — "KI personalisieren" works without a campaign
+      let campaign: { sender_name: string; sender_email: string } | null = null;
+      if (campaignId) {
+        const { data } = await (supabase as any).from("agency_outreach_campaigns")
+          .select("sender_name, sender_email")
+          .eq("id", campaignId)
+          .single();
+        campaign = data;
+      }
 
       const apiKey = Deno.env.get("OPENROUTER_API_KEY");
       const model = Deno.env.get("OPENROUTER_MODEL_FAST") ?? "anthropic/claude-haiku-4.5";
@@ -451,16 +456,18 @@ Antworte NUR mit dem JSON, kein Markdown drumherum.`;
         throw new Error("AI returned invalid JSON");
       }
 
-      // Save to queue
-      await (supabase as any).from("agency_outreach_queue").upsert({
-        campaign_id: campaignId,
-        directory_id: directoryId,
-        stage,
-        personalized_subject: personalized.subject,
-        personalized_body: personalized.body,
-        status: "pending",
-        scheduled_at: new Date().toISOString(),
-      }, { onConflict: "campaign_id,directory_id,stage" });
+      // Save to queue (only if a real campaign is assigned)
+      if (campaignId) {
+        await (supabase as any).from("agency_outreach_queue").upsert({
+          campaign_id: campaignId,
+          directory_id: directoryId,
+          stage,
+          personalized_subject: personalized.subject,
+          personalized_body: personalized.body,
+          status: "pending",
+          scheduled_at: new Date().toISOString(),
+        }, { onConflict: "campaign_id,directory_id,stage" });
+      }
 
       log("Personalized", { directoryId, subject: personalized.subject });
 
