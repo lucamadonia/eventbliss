@@ -47,29 +47,31 @@ const AgencyAgreement = () => {
   const exclusivityClauses = ["period", "prohibition", "dataPurpose", "penalty", "audit"];
   const cancellationClauses = ["window", "warning", "suspension", "exceptions"];
 
+  const ui = (k: string) => t(`legal.agency_agreement.ui.${k}`);
+
   // Key numbers shown as a hero strip
   const keyNumbers = [
-    { label: "Plattformgebühr", value: "10%", sub: "alle Buchungen", icon: Euro, tone: "violet" },
-    { label: "Exklusivität", value: "18", sub: "Monate Sperrfrist", icon: Clock, tone: "cyan" },
-    { label: "Warnschwelle", value: "15%", sub: "Stornorate / 30 Tage", icon: TrendingDown, tone: "amber" },
-    { label: "Sperrschwelle", value: "20%", sub: "Stornorate / 30 Tage", icon: AlertTriangle, tone: "red" },
-    { label: "Vertragsstrafe", value: "2× + 10k€", sub: "pro Vorfall", icon: Gavel, tone: "red" },
+    { label: ui("keyFee"), value: "10%", sub: ui("keyFeeSub"), icon: Euro, tone: "violet" },
+    { label: ui("keyExclusivity"), value: "18", sub: ui("keyExclusivitySub"), icon: Clock, tone: "cyan" },
+    { label: ui("keyWarn"), value: "15%", sub: ui("keyWarnSub"), icon: TrendingDown, tone: "amber" },
+    { label: ui("keySuspend"), value: "20%", sub: ui("keySuspendSub"), icon: AlertTriangle, tone: "red" },
+    { label: ui("keyPenalty"), value: "2× + 10k€", sub: ui("keyPenaltySub"), icon: Gavel, tone: "red" },
   ];
 
   // TOC entries
   const toc = [
-    { num: "1", key: "preamble", label: "Präambel" },
-    { num: "2", key: "platformServices", label: "Plattform-Leistungen" },
-    { num: "3", key: "agencyDuties", label: "Pflichten der Agentur" },
-    { num: "4", key: "platformFee", label: "Plattformgebühr" },
-    { num: "5", key: "paymentModes", label: "Zahlungsarten" },
-    { num: "6", key: "exclusivity", label: "Exklusivität & Umgehungsschutz", warn: true },
-    { num: "7", key: "cancellationRates", label: "Stornoquote", warn: true },
-    { num: "8", key: "qualityCriteria", label: "Qualitätskriterien" },
-    { num: "9", key: "liability", label: "Haftung" },
-    { num: "10", key: "dataProtection", label: "Datenschutz" },
-    { num: "11", key: "termTermination", label: "Laufzeit & Kündigung" },
-    { num: "12", key: "finalProvisions", label: "Schlussbestimmungen" },
+    { num: "1", key: "preamble", label: ui("tocPreamble") },
+    { num: "2", key: "platformServices", label: ui("tocPlatformServices") },
+    { num: "3", key: "agencyDuties", label: ui("tocAgencyDuties") },
+    { num: "4", key: "platformFee", label: ui("tocPlatformFee") },
+    { num: "5", key: "paymentModes", label: ui("tocPaymentModes") },
+    { num: "6", key: "exclusivity", label: ui("tocExclusivity"), warn: true },
+    { num: "7", key: "cancellationRates", label: ui("tocCancellationRates"), warn: true },
+    { num: "8", key: "qualityCriteria", label: ui("tocQualityCriteria") },
+    { num: "9", key: "liability", label: ui("tocLiability") },
+    { num: "10", key: "dataProtection", label: ui("tocDataProtection") },
+    { num: "11", key: "termTermination", label: ui("tocTermTermination") },
+    { num: "12", key: "finalProvisions", label: ui("tocFinalProvisions") },
   ];
 
   const toneClass = (tone: string) =>
@@ -108,7 +110,7 @@ const AgencyAgreement = () => {
               className="hidden sm:inline-flex text-slate-300 hover:text-white print:hidden"
             >
               <Printer className="w-4 h-4 mr-1.5" />
-              Drucken
+              {ui("printButton")}
             </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/" className="flex items-center gap-2 text-slate-300 hover:text-white">
@@ -130,17 +132,17 @@ const AgencyAgreement = () => {
           <div className="relative">
             <div className="flex items-center gap-2 mb-4">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] bg-violet-500/20 text-violet-200 border border-violet-400/30">
-                <Stamp className="w-3 h-3" /> Partner Agreement
+                <Stamp className="w-3 h-3" /> {ui("partnerBadge")}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-slate-300 border border-white/10">
-                v2026-04 · DE
+                {ui("versionBadge")}
               </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black font-['Be_Vietnam_Pro'] tracking-tight bg-gradient-to-br from-white via-slate-200 to-violet-200 bg-clip-text text-transparent mb-3">
               {t("legal.agency_agreement.title")}
             </h1>
             <p className="text-sm text-slate-400">
-              {t("legal.agency_agreement.lastUpdated")}: April 2026 · Stand April 2026
+              {ui("lastUpdatedLabel")}: April 2026 · {ui("asOfLabel")} April 2026
             </p>
           </div>
 
@@ -148,7 +150,7 @@ const AgencyAgreement = () => {
           <div className="relative mt-8 grid gap-4 sm:grid-cols-2">
             <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-violet-300 mb-3">
-                <Building2 className="w-3.5 h-3.5" /> Plattform-Betreiberin
+                <Building2 className="w-3.5 h-3.5" /> {ui("platformLabel")}
               </div>
               <p className="text-sm font-bold text-white leading-snug">MYFAMBLISS GROUP LTD</p>
               <p className="text-xs text-slate-400 mt-1 flex items-start gap-1.5">
@@ -156,24 +158,24 @@ const AgencyAgreement = () => {
                 Gladstonos 12-14, 8046 Paphos, Cyprus
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Registriert im Handelsregister der Republik Zypern
+                {ui("platformRegistry")}
               </p>
               <p className="text-[11px] italic text-slate-500 mt-2 leading-relaxed">
-                „EventBliss" ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD.
+                {ui("platformBrand")}
               </p>
             </div>
             <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 border-dashed">
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-cyan-300 mb-3">
-                <Users className="w-3.5 h-3.5" /> Vertragspartner / Agentur
+                <Users className="w-3.5 h-3.5" /> {ui("agencyLabel")}
               </div>
               <p className="text-sm font-bold text-white/80 leading-snug">
-                Die registrierte Event-Dienstleistungs-Agentur
+                {ui("agencyDesc")}
               </p>
               <p className="text-xs text-slate-400 mt-1">
-                Akzeptanz durch Aktivierung des Agentur-Profils auf EventBliss.
+                {ui("agencyAccept")}
               </p>
               <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
-                Name, Anschrift und USt-ID der Agentur werden bei Registrierung erfasst und sind Bestandteil dieses Vertrages.
+                {ui("agencyDataNote")}
               </p>
             </div>
           </div>
@@ -192,7 +194,7 @@ const AgencyAgreement = () => {
         {/* ============ KEY NUMBERS ============ */}
         <section className="mb-10">
           <div className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-3 font-semibold">
-            Kennzahlen auf einen Blick
+            {ui("keyNumbersHeader")}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {keyNumbers.map((k) => (
@@ -220,7 +222,7 @@ const AgencyAgreement = () => {
           <aside className="hidden lg:block print:hidden">
             <nav className="sticky top-6 p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-sm">
               <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-3">
-                Inhaltsverzeichnis
+                {ui("tocTitle")}
               </div>
               <ol className="space-y-2">
                 {toc.map((entry) => (
@@ -259,7 +261,7 @@ const AgencyAgreement = () => {
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-violet-300/70 font-semibold mb-1">
-                      <section.icon className="w-3 h-3" /> Standard-Klausel
+                      <section.icon className="w-3 h-3" /> {ui("clauseStandard")}
                     </div>
                     <h2 className="text-xl font-bold text-white leading-tight">
                       {t(`legal.agency_agreement.${section.key}.title`)}
@@ -281,7 +283,7 @@ const AgencyAgreement = () => {
               <div className="h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500" />
               <div className="p-6 bg-gradient-to-br from-red-950/60 via-red-950/40 to-amber-950/30">
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-red-300 font-bold mb-2">
-                  <AlertTriangle className="w-3 h-3" /> Kritische Klausel · Vertragsstrafe bewehrt
+                  <AlertTriangle className="w-3 h-3" /> {ui("clauseCriticalExcl")}
                 </div>
                 <div className="flex items-start gap-4 mb-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30">
@@ -289,7 +291,7 @@ const AgencyAgreement = () => {
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <div className="text-[10px] uppercase tracking-widest text-red-300/80 font-semibold">
-                      Abschnitt 6
+                      {ui("sectionLabel")} 6
                     </div>
                     <h2 className="text-2xl font-black text-red-100 leading-tight">
                       {t("legal.agency_agreement.exclusivity.title")}
@@ -303,9 +305,9 @@ const AgencyAgreement = () => {
                 {/* Visual: 18-month exclusivity timeline */}
                 <div className="mb-5 p-4 rounded-xl bg-black/30 border border-red-500/20">
                   <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-red-200 mb-2">
-                    <span>ERSTKONTAKT</span>
-                    <span>18 MONATE EXKLUSIVITÄT</span>
-                    <span>ENDE</span>
+                    <span>{ui("timelineStart")}</span>
+                    <span>{ui("timelineMiddle")}</span>
+                    <span>{ui("timelineEnd")}</span>
                   </div>
                   <div className="relative h-3 rounded-full bg-red-950 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500" />
@@ -313,9 +315,9 @@ const AgencyAgreement = () => {
                     <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/60" />
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-red-300/80 mt-2">
-                    <span>Buchungsanfrage</span>
-                    <span>Nur über Plattform buchbar</span>
-                    <span>Frei</span>
+                    <span>{ui("timelineStartSub")}</span>
+                    <span>{ui("timelineMiddleSub")}</span>
+                    <span>{ui("timelineEndSub")}</span>
                   </div>
                 </div>
 
@@ -343,16 +345,16 @@ const AgencyAgreement = () => {
                 {/* Penalty highlight card */}
                 <div className="mt-5 p-5 rounded-xl bg-gradient-to-br from-red-600/30 to-orange-600/20 border-2 border-red-400/40">
                   <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-red-200 font-bold mb-3">
-                    <Gavel className="w-3 h-3" /> Vertragsstrafe bei Verstoß
+                    <Gavel className="w-3 h-3" /> {ui("penaltyHeader")}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-lg bg-black/30">
                       <div className="text-3xl font-black text-white">2×</div>
-                      <div className="text-[11px] text-red-200 mt-1">Buchungswert (min. 500 €)</div>
+                      <div className="text-[11px] text-red-200 mt-1">{ui("penaltyDoubleLabel")}</div>
                     </div>
                     <div className="p-3 rounded-lg bg-black/30">
                       <div className="text-3xl font-black text-white">+ 10.000 €</div>
-                      <div className="text-[11px] text-red-200 mt-1">Pauschale je Vorfall</div>
+                      <div className="text-[11px] text-red-200 mt-1">{ui("penaltyFlatLabel")}</div>
                     </div>
                   </div>
                 </div>
@@ -367,7 +369,7 @@ const AgencyAgreement = () => {
               <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500" />
               <div className="p-6 bg-gradient-to-br from-amber-950/50 via-amber-950/30 to-yellow-950/20">
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-amber-300 font-bold mb-2">
-                  <AlertTriangle className="w-3 h-3" /> Qualitäts-Schwellwerte · Sperrung möglich
+                  <AlertTriangle className="w-3 h-3" /> {ui("clauseCriticalCanc")}
                 </div>
                 <div className="flex items-start gap-4 mb-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
@@ -375,7 +377,7 @@ const AgencyAgreement = () => {
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <div className="text-[10px] uppercase tracking-widest text-amber-300/80 font-semibold">
-                      Abschnitt 7
+                      {ui("sectionLabel")} 7
                     </div>
                     <h2 className="text-2xl font-black text-amber-100 leading-tight">
                       {t("legal.agency_agreement.cancellationRates.title")}
@@ -389,19 +391,19 @@ const AgencyAgreement = () => {
                 {/* Risk matrix visual */}
                 <div className="mb-5 grid grid-cols-3 gap-2">
                   <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">OK</div>
-                    <div className="text-2xl font-black text-emerald-100 mt-1">≤ 15%</div>
-                    <div className="text-[10px] text-emerald-200/70 mt-1">Normaler Betrieb</div>
+                    <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">{ui("riskOk")}</div>
+                    <div className="text-2xl font-black text-emerald-100 mt-1">{ui("riskOkThreshold")}</div>
+                    <div className="text-[10px] text-emerald-200/70 mt-1">{ui("riskOkSub")}</div>
                   </div>
                   <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/40 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-amber-300 font-bold">WARNING</div>
-                    <div className="text-2xl font-black text-amber-100 mt-1">&gt; 15%</div>
-                    <div className="text-[10px] text-amber-200/70 mt-1">Pflicht-Gespräch 14 T.</div>
+                    <div className="text-[10px] uppercase tracking-wider text-amber-300 font-bold">{ui("riskWarning")}</div>
+                    <div className="text-2xl font-black text-amber-100 mt-1">{ui("riskWarningThreshold")}</div>
+                    <div className="text-[10px] text-amber-200/70 mt-1">{ui("riskWarningSub")}</div>
                   </div>
                   <div className="p-4 rounded-xl bg-red-500/15 border border-red-500/40 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-red-300 font-bold">CRITICAL</div>
-                    <div className="text-2xl font-black text-red-100 mt-1">&gt; 20%</div>
-                    <div className="text-[10px] text-red-200/70 mt-1">Sperrung nach 7 T.</div>
+                    <div className="text-[10px] uppercase tracking-wider text-red-300 font-bold">{ui("riskCritical")}</div>
+                    <div className="text-2xl font-black text-red-100 mt-1">{ui("riskCriticalThreshold")}</div>
+                    <div className="text-[10px] text-red-200/70 mt-1">{ui("riskCriticalSub")}</div>
                   </div>
                 </div>
 
@@ -442,7 +444,7 @@ const AgencyAgreement = () => {
                   </div>
                   <div className="flex-1 min-w-0 pt-1">
                     <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-violet-300/70 font-semibold mb-1">
-                      <section.icon className="w-3 h-3" /> Standard-Klausel
+                      <section.icon className="w-3 h-3" /> {ui("clauseStandard")}
                     </div>
                     <h2 className="text-xl font-bold text-white leading-tight">
                       {t(`legal.agency_agreement.${section.key}.title`)}
@@ -483,27 +485,27 @@ const AgencyAgreement = () => {
               </div>
               <div className="relative">
                 <div className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-bold mb-4">
-                  Annahme & Unterzeichnung
+                  {ui("signatureHeading")}
                 </div>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                  Mit Aktivierung des Agentur-Profils auf EventBliss bestätigt die Agentur rechtsverbindlich, diesen Vertrag in der vorliegenden Fassung gelesen, verstanden und akzeptiert zu haben. Die Akzeptanz wird elektronisch dokumentiert und ersetzt eine handschriftliche Unterschrift im Sinne der elektronischen Signaturregelungen der EU (eIDAS).
+                  {ui("signatureBody")}
                 </p>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="pt-8 border-t-2 border-slate-500/50">
                     <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
-                      Für die Plattform
+                      {ui("signatureForPlatform")}
                     </div>
                     <div className="font-mono text-sm text-slate-300 mt-1">MYFAMBLISS GROUP LTD</div>
                     <div className="text-[11px] text-slate-500 mt-0.5">Paphos, Cyprus</div>
                   </div>
                   <div className="pt-8 border-t-2 border-slate-500/50">
                     <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
-                      Für die Agentur
+                      {ui("signatureForAgency")}
                     </div>
                     <div className="font-mono text-sm text-slate-300 mt-1">
-                      [Elektronische Akzeptanz bei Onboarding]
+                      {ui("signatureElectronic")}
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">Datum, Rechtsverbindlicher Vertreter</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">{ui("signatureDateRep")}</div>
                   </div>
                 </div>
               </div>
@@ -517,7 +519,7 @@ const AgencyAgreement = () => {
         <div className="container mx-auto px-4 text-center text-xs text-slate-500 max-w-6xl">
           <p>© 2026 MYFAMBLISS GROUP LTD · Gladstonos 12-14, 8046 Paphos, Cyprus · {t("legal.agency_agreement.rightsReserved")}</p>
           <p className="mt-1 text-slate-600">
-            Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung. Vertragssprache Deutsch.
+            {ui("footerBinding")}
           </p>
         </div>
       </footer>

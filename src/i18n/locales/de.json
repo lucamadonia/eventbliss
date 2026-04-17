@@ -1660,6 +1660,74 @@
       "compliance": {
         "title": "Kontakt bei Verdacht auf Umgehung",
         "content": "Kunden, Agenturen und Dritte können Verdachtsfälle zu Umgehungen, unzulässigen Direktkontaktierungen oder sonstigen Verstößen gegen diesen Vertrag vertraulich an die Compliance-Stelle von EventBliss melden. Meldungen werden diskret bearbeitet; die Identität des Hinweisgebers wird auf Wunsch gegenüber der betroffenen Agentur nicht offengelegt."
+      },
+      "ui": {
+        "partnerBadge": "Partner Agreement",
+        "versionBadge": "v2026-04 · DE",
+        "lastUpdatedLabel": "Zuletzt aktualisiert",
+        "asOfLabel": "Stand",
+        "printButton": "Drucken",
+        "backButton": "Zurück",
+        "keyNumbersHeader": "Kennzahlen auf einen Blick",
+        "platformLabel": "Plattform-Betreiberin",
+        "platformRegistry": "Registriert im Handelsregister der Republik Zypern",
+        "platformBrand": "„EventBliss\" ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD.",
+        "agencyLabel": "Vertragspartner / Agentur",
+        "agencyDesc": "Die registrierte Event-Dienstleistungs-Agentur",
+        "agencyAccept": "Akzeptanz durch Aktivierung des Agentur-Profils auf EventBliss.",
+        "agencyDataNote": "Name, Anschrift und USt-ID der Agentur werden bei Registrierung erfasst und sind Bestandteil dieses Vertrages.",
+        "tocTitle": "Inhaltsverzeichnis",
+        "clauseStandard": "Standard-Klausel",
+        "clauseCriticalExcl": "Kritische Klausel · Vertragsstrafe bewehrt",
+        "clauseCriticalCanc": "Qualitäts-Schwellwerte · Sperrung möglich",
+        "sectionLabel": "Abschnitt",
+        "timelineStart": "ERSTKONTAKT",
+        "timelineMiddle": "18 MONATE EXKLUSIVITÄT",
+        "timelineEnd": "ENDE",
+        "timelineStartSub": "Buchungsanfrage",
+        "timelineMiddleSub": "Nur über Plattform buchbar",
+        "timelineEndSub": "Frei",
+        "penaltyHeader": "Vertragsstrafe bei Verstoß",
+        "penaltyDoubleLabel": "Buchungswert (min. 500 €)",
+        "penaltyFlatLabel": "Pauschale je Vorfall",
+        "riskOk": "OK",
+        "riskOkThreshold": "≤ 15%",
+        "riskOkSub": "Normaler Betrieb",
+        "riskWarning": "WARNING",
+        "riskWarningThreshold": "> 15%",
+        "riskWarningSub": "Pflicht-Gespräch 14 T.",
+        "riskCritical": "CRITICAL",
+        "riskCriticalThreshold": "> 20%",
+        "riskCriticalSub": "Sperrung nach 7 T.",
+        "signatureHeading": "Annahme & Unterzeichnung",
+        "signatureBody": "Mit Aktivierung des Agentur-Profils auf EventBliss bestätigt die Agentur rechtsverbindlich, diesen Vertrag in der vorliegenden Fassung gelesen, verstanden und akzeptiert zu haben. Die Akzeptanz wird elektronisch dokumentiert und ersetzt eine handschriftliche Unterschrift im Sinne der elektronischen Signaturregelungen der EU (eIDAS).",
+        "signatureForPlatform": "Für die Plattform",
+        "signatureForAgency": "Für die Agentur",
+        "signatureElectronic": "[Elektronische Akzeptanz bei Onboarding]",
+        "signatureDateRep": "Datum, Rechtsverbindlicher Vertreter",
+        "footerBinding": "Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung. Vertragssprache Deutsch.",
+        "keyFee": "Plattformgebühr",
+        "keyFeeSub": "alle Buchungen",
+        "keyExclusivity": "Exklusivität",
+        "keyExclusivitySub": "Monate Sperrfrist",
+        "keyWarn": "Warnschwelle",
+        "keyWarnSub": "Stornorate / 30 Tage",
+        "keySuspend": "Sperrschwelle",
+        "keySuspendSub": "Stornorate / 30 Tage",
+        "keyPenalty": "Vertragsstrafe",
+        "keyPenaltySub": "pro Vorfall",
+        "tocPreamble": "Präambel",
+        "tocPlatformServices": "Plattform-Leistungen",
+        "tocAgencyDuties": "Pflichten der Agentur",
+        "tocPlatformFee": "Plattformgebühr",
+        "tocPaymentModes": "Zahlungsarten",
+        "tocExclusivity": "Exklusivität & Umgehungsschutz",
+        "tocCancellationRates": "Stornoquote",
+        "tocQualityCriteria": "Qualitätskriterien",
+        "tocLiability": "Haftung",
+        "tocDataProtection": "Datenschutz",
+        "tocTermTermination": "Laufzeit & Kündigung",
+        "tocFinalProvisions": "Schlussbestimmungen"
       }
     }
   },
@@ -1947,7 +2015,8 @@
       "agencies": "Agenturen",
       "ai": "KI-Assistent",
       "messages": "Nachrichten",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "expenses": "Ausgaben"
     },
     "responses": {
       "title": "Umfrage-Antworten",
@@ -4317,12 +4386,30 @@
       "themePickerTitle": "Theme wählen",
       "themePickerHint": "Dein Kunde sieht die Agentur-Seite in diesem Stil.",
       "themes": {
-        "dark": { "label": "Dark · Gaming", "tagline": "Neon-Gaming-Look mit Violett & Cyan" },
-        "light": { "label": "Modern · Hell", "tagline": "Clean, minimalistisch, corporate-ready" },
-        "classic": { "label": "Klassisch · Elegant", "tagline": "Zeitlos mit Serifen und Champagner-Tönen" },
-        "epic": { "label": "Episch · Kinoreif", "tagline": "Dramatische Gold- und Purpurtöne für Galaabende" },
-        "party": { "label": "Party · Neon", "tagline": "Vibrant Neon für Nightlife und Feiern" },
-        "adventure": { "label": "Adventure · Outdoor", "tagline": "Erdige Outdoor-Vibes für Festivals & Naturevents" }
+        "dark": {
+          "label": "Dark · Gaming",
+          "tagline": "Neon-Gaming-Look mit Violett & Cyan"
+        },
+        "light": {
+          "label": "Modern · Hell",
+          "tagline": "Clean, minimalistisch, corporate-ready"
+        },
+        "classic": {
+          "label": "Klassisch · Elegant",
+          "tagline": "Zeitlos mit Serifen und Champagner-Tönen"
+        },
+        "epic": {
+          "label": "Episch · Kinoreif",
+          "tagline": "Dramatische Gold- und Purpurtöne für Galaabende"
+        },
+        "party": {
+          "label": "Party · Neon",
+          "tagline": "Vibrant Neon für Nightlife und Feiern"
+        },
+        "adventure": {
+          "label": "Adventure · Outdoor",
+          "tagline": "Erdige Outdoor-Vibes für Festivals & Naturevents"
+        }
       }
     }
   },
