@@ -274,8 +274,8 @@ export default function AkquiseCampaignManager() {
               {/* Stage 1 */}
               <div className="space-y-2">
                 <span className="text-sm font-semibold text-foreground">Stage 1</span>
-                <Input placeholder={STAGE1_SUBJECT_PH} value={form.template_stage1_subject} onChange={(e) => set("template_stage1_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
-                <Textarea placeholder={STAGE1_BODY_PH} value={form.template_stage1_body} onChange={(e) => set("template_stage1_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[120px]" />
+                <Input placeholder={STAGE1_SUBJECT} value={form.template_stage1_subject} onChange={(e) => set("template_stage1_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
+                <Textarea placeholder={STAGE1_BODY} value={form.template_stage1_body} onChange={(e) => set("template_stage1_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[120px]" />
               </div>
 
               {/* Stage 2 */}
