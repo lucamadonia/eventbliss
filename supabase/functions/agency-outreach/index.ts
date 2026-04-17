@@ -469,6 +469,52 @@ Antworte NUR mit dem JSON, kein Markdown drumherum.`;
       });
     }
 
+    // ===================================================================
+    // MODE: send_single — Manual compose (admin sends one email)
+    // ===================================================================
+    if (mode === "send_single") {
+      const dirId = body.directory_id;
+      const rawSubject = body.subject;
+      const rawBody = body.body;
+      const sEmail = body.sender_email || "partner@event-bliss.com";
+      const sName = body.sender_name || "EventBliss";
+      if (!dirId || !rawSubject) throw new Error("directory_id + subject required");
+
+      const { data: ag } = await (supabase as any).from("agency_directory")
+        .select("name, email, city, country, contact_person, website")
+        .eq("id", dirId).single();
+      if (!ag?.email) throw new Error("Agency not found or no email");
+
+      const inviteToken = crypto.randomUUID().slice(0, 12);
+      const signupUrl = `https://event-bliss.com/agency-apply?invite=${inviteToken}`;
+      const vars: Record<string, string> = {
+        agency_name: ag.name || "", city: ag.city || "", country: ag.country || "",
+        contact_name: ag.contact_person || ag.name || "", website: ag.website || "",
+        signup_url: signupUrl, sender_name: sName,
+      };
+
+      const subj = interpolate(rawSubject, vars);
+      const bodyHtml = interpolate(rawBody, vars);
+      const signature = getSignature(sEmail);
+      const html = wrapEmailHtml(bodyHtml, signature);
+
+      await sendOutreachEmail(ag.email, subj, html, sEmail, sName);
+
+      await (supabase as any).from("agency_directory")
+        .update({ last_outreach_at: new Date().toISOString(), invite_token: inviteToken })
+        .eq("id", dirId);
+
+      await (supabase as any).from("agency_outreach_activity").insert({
+        directory_id: dirId, action: "email_sent",
+        details: { subject: subj, sender: sEmail, mode: "manual" },
+      });
+
+      log("Single email sent", { to: ag.email, subject: subj });
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Unknown mode" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

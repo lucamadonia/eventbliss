@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pause, Play, Pencil, Trash2, ChevronDown, ChevronUp, Send } from "lucide-react";
+import { Plus, Pause, Play, Pencil, Trash2, ChevronDown, ChevronUp, Send, Globe, Settings2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { getOutreachTemplates, getAvailableTemplateLangs, LANG_LABELS } from "@/lib/outreach-templates";
+import AkquiseTemplateEditor from "./AkquiseTemplateEditor";
+import AkquiseSignatureEditor from "./AkquiseSignatureEditor";
 import {
   useOutreachCampaigns,
   useCreateCampaign,
@@ -166,30 +169,28 @@ export default function AkquiseCampaignManager() {
   const [showStage2, setShowStage2] = useState(false);
   const [showStage3, setShowStage3] = useState(false);
   const [templateStyle, setTemplateStyle] = useState<TemplateStyle>("plain");
+  const [templateLang, setTemplateLang] = useState("de");
+  const [showSignatureEditor, setShowSignatureEditor] = useState(false);
+  const availableLangs = getAvailableTemplateLangs();
 
-  const applyTemplateStyle = (style: TemplateStyle) => {
+  const applyTemplateStyle = (style: TemplateStyle, lang?: string) => {
     setTemplateStyle(style);
-    if (style === "plain") {
-      setForm((f) => ({
-        ...f,
-        template_stage1_subject: PLAIN_STAGE1_SUBJECT,
-        template_stage1_body: PLAIN_STAGE1_BODY,
-        template_stage2_subject: PLAIN_STAGE2_SUBJECT,
-        template_stage2_body: PLAIN_STAGE2_BODY,
-        template_stage3_subject: PLAIN_STAGE3_SUBJECT,
-        template_stage3_body: PLAIN_STAGE3_BODY,
-      }));
-    } else {
-      setForm((f) => ({
-        ...f,
-        template_stage1_subject: STAGE1_SUBJECT,
-        template_stage1_body: STAGE1_BODY,
-        template_stage2_subject: STAGE2_SUBJECT,
-        template_stage2_body: STAGE2_BODY,
-        template_stage3_subject: STAGE3_SUBJECT,
-        template_stage3_body: STAGE3_BODY,
-      }));
-    }
+    const l = lang ?? templateLang;
+    const templates = getOutreachTemplates(l, style);
+    setForm((f) => ({
+      ...f,
+      template_stage1_subject: templates.stage1.subject,
+      template_stage1_body: templates.stage1.body,
+      template_stage2_subject: templates.stage2.subject,
+      template_stage2_body: templates.stage2.body,
+      template_stage3_subject: templates.stage3.subject,
+      template_stage3_body: templates.stage3.body,
+    }));
+  };
+
+  const handleLangChange = (lang: string) => {
+    setTemplateLang(lang);
+    applyTemplateStyle(templateStyle, lang);
   };
 
   const openCreate = () => {
@@ -384,23 +385,56 @@ export default function AkquiseCampaignManager() {
                 </span>
               </div>
 
-              {/* Stage 1 */}
+              {/* Language selector + Signature editor */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Select value={templateLang} onValueChange={handleLangChange}>
+                  <SelectTrigger className="w-32 bg-white/[0.04] border-white/10 h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableLangs.map((l) => (
+                      <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="text-[10px] text-muted-foreground flex-1">
+                  Templates werden in der gewählten Sprache geladen
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setShowSignatureEditor(true)} className="gap-1.5 border-white/10 h-8">
+                  <Settings2 className="w-3.5 h-3.5" /> Signaturen
+                </Button>
+              </div>
+
+              {/* Stage 1 — Full Template Editor */}
               <div className="space-y-2">
                 <span className="text-sm font-semibold text-foreground">Stage 1 — Erste Kontaktaufnahme</span>
-                <Input placeholder={STAGE1_SUBJECT} value={form.template_stage1_subject} onChange={(e) => set("template_stage1_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
-                <Textarea placeholder={STAGE1_BODY} value={form.template_stage1_body} onChange={(e) => set("template_stage1_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[120px]" />
+                <AkquiseTemplateEditor
+                  subject={form.template_stage1_subject}
+                  body={form.template_stage1_body}
+                  senderEmail={form.sender_email}
+                  senderName={form.sender_name}
+                  onSubjectChange={(s) => set("template_stage1_subject", s)}
+                  onBodyChange={(b) => set("template_stage1_body", b)}
+                />
               </div>
 
               {/* Stage 2 */}
               <div>
                 <button onClick={() => setShowStage2(!showStage2)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                   {showStage2 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  Stage 2 (Follow-Up)
+                  Stage 2 (Follow-Up Tag +3)
                 </button>
                 {showStage2 && (
-                  <div className="space-y-2 mt-2">
-                    <Input placeholder="Stage 2 Betreff" value={form.template_stage2_subject} onChange={(e) => set("template_stage2_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
-                    <Textarea placeholder="Stage 2 Body" value={form.template_stage2_body} onChange={(e) => set("template_stage2_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[100px]" />
+                  <div className="mt-3">
+                    <AkquiseTemplateEditor
+                      subject={form.template_stage2_subject}
+                      body={form.template_stage2_body}
+                      senderEmail={form.sender_email}
+                      senderName={form.sender_name}
+                      onSubjectChange={(s) => set("template_stage2_subject", s)}
+                      onBodyChange={(b) => set("template_stage2_body", b)}
+                    />
                   </div>
                 )}
               </div>
@@ -409,15 +443,24 @@ export default function AkquiseCampaignManager() {
               <div>
                 <button onClick={() => setShowStage3(!showStage3)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                   {showStage3 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  Stage 3 (Letzter Versuch)
+                  Stage 3 (Letzter Versuch Tag +7)
                 </button>
                 {showStage3 && (
-                  <div className="space-y-2 mt-2">
-                    <Input placeholder="Stage 3 Betreff" value={form.template_stage3_subject} onChange={(e) => set("template_stage3_subject", e.target.value)} className="bg-white/[0.04] border-white/10" />
-                    <Textarea placeholder="Stage 3 Body" value={form.template_stage3_body} onChange={(e) => set("template_stage3_body", e.target.value)} className="bg-white/[0.04] border-white/10 min-h-[100px]" />
+                  <div className="mt-3">
+                    <AkquiseTemplateEditor
+                      subject={form.template_stage3_subject}
+                      body={form.template_stage3_body}
+                      senderEmail={form.sender_email}
+                      senderName={form.sender_name}
+                      onSubjectChange={(s) => set("template_stage3_subject", s)}
+                      onBodyChange={(b) => set("template_stage3_body", b)}
+                    />
                   </div>
                 )}
               </div>
+
+              {/* Signature Editor overlay */}
+              {showSignatureEditor && <AkquiseSignatureEditor onClose={() => setShowSignatureEditor(false)} />}
 
               <div className="flex gap-3">
                 <Button onClick={handleSubmit} disabled={createCampaign.isPending || updateCampaign.isPending} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">

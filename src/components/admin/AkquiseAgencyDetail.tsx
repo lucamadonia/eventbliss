@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import AkquiseComposeEmail from "./AkquiseComposeEmail";
 import {
-  X, ExternalLink, Copy, Plus, StickyNote, MessageSquare, Sparkles, Link2,
+  X, ExternalLink, Copy, Plus, StickyNote, MessageSquare, Sparkles, Link2, Send,
   Mail, Phone, Globe, User, Building2, Target, Tags, Clock,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -116,6 +117,7 @@ export default function AkquiseAgencyDetail({ agencyId, onClose }: Props) {
   const [responseText, setResponseText] = useState("");
   const [responseSentiment, setResponseSentiment] = useState<"positive" | "neutral" | "negative">("neutral");
   const [newTag, setNewTag] = useState("");
+  const [showCompose, setShowCompose] = useState(false);
 
   if (isLoading || !agency) {
     return (
@@ -255,6 +257,10 @@ export default function AkquiseAgencyDetail({ agencyId, onClose }: Props) {
 
       {/* Quick actions */}
       <div className="grid grid-cols-2 gap-2">
+        <Button size="sm" onClick={() => setShowCompose(true)}
+          className="col-span-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 font-bold">
+          <Send className="w-4 h-4 mr-1" /> {t("admin.akquise.detail.composeMail", "Mail verfassen")}
+        </Button>
         <Button size="sm" variant="outline" className="border-white/10" onClick={() => setShowNoteModal(true)}>
           <StickyNote className="w-4 h-4 mr-1" /> {t("admin.akquise.addNote", "Notiz")}
         </Button>
@@ -268,6 +274,15 @@ export default function AkquiseAgencyDetail({ agencyId, onClose }: Props) {
           <Link2 className="w-4 h-4 mr-1" /> Invite-Link
         </Button>
       </div>
+
+      {/* Compose email overlay */}
+      {showCompose && agency && (
+        <AkquiseComposeEmail
+          agency={{ id: agency.id, name: agency.name, email: agency.email, city: agency.city, contact_person: agency.contact_person, country: agency.country }}
+          onClose={() => setShowCompose(false)}
+          onSent={() => setShowCompose(false)}
+        />
+      )}
 
       {/* Note modal */}
       {showNoteModal && (
