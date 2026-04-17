@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -218,11 +218,10 @@ export default function MarketplaceServicePage() {
   }, [selectedDate, availabilityMap, participants]);
 
   // Auto-clear wenn gewählte Uhrzeit nicht mehr passt (z. B. Teilnehmerzahl erhöht)
-  useMemo(() => {
-    if (selectedTime && timeSlots.length > 0) {
-      const chosen = timeSlots.find((t) => t.start === selectedTime);
-      if (chosen && !chosen.fitsParty) setSelectedTime("");
-    }
+  useEffect(() => {
+    if (!selectedTime || timeSlots.length === 0) return;
+    const chosen = timeSlots.find((t) => t.start === selectedTime);
+    if (chosen && !chosen.fitsParty) setSelectedTime("");
   }, [timeSlots, selectedTime]);
 
   const ratingBreakdown = useMemo(() => {
