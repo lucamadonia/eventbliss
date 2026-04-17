@@ -94,6 +94,10 @@ function wrapEmailHtml(body: string, signature: string): string {
     © ${new Date().getFullYear()} EventBliss · MYFAMBLISS GROUP LTD · Zypern<br>
     <a href="https://event-bliss.com" style="color:#64748b;text-decoration:none;">event-bliss.com</a>
   </p>
+  <p style="text-align:center;margin-top:16px;font-size:10px;color:#374151;">
+    Sie erhalten diese E-Mail weil Ihr Unternehmen im EventBliss-Verzeichnis gelistet ist.<br>
+    Kein Interesse? Antworten Sie einfach mit "Stop" und wir entfernen Sie sofort.
+  </p>
 </div>
 </body></html>`;
 }
@@ -280,8 +284,8 @@ serve(async (req) => {
           // Update agency_directory status
           const statusMap: Record<string, string> = {
             stage_1: "contacted",
-            stage_2: "followup_1",
-            stage_3: "followup_2",
+            stage_2: "follow_up_1",
+            stage_3: "follow_up_2",
           };
           await (supabase as any).from("agency_directory")
             .update({

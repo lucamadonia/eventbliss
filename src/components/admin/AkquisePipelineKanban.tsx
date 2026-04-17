@@ -16,7 +16,7 @@ interface Props {
 }
 
 const COLUMNS = [
-  { status: "none", label: "Neu", color: "bg-slate-500" },
+  { status: "new", label: "Neu", color: "bg-slate-500" },
   { status: "contacted", label: "Kontaktiert", color: "bg-blue-500" },
   { status: "follow_up_1", label: "Follow-Up 1", color: "bg-cyan-500" },
   { status: "follow_up_2", label: "Follow-Up 2", color: "bg-teal-500" },
@@ -81,7 +81,7 @@ export default function AkquisePipelineKanban({ onOpenAgency }: Props) {
       map[col.status] = [];
     }
     for (const agency of filtered) {
-      const status = agency.outreach_status || "none";
+      const status = agency.outreach_status || "new";
       if (!map[status]) map[status] = [];
       map[status].push(agency);
     }
@@ -241,7 +241,7 @@ function AgencyKanbanCard({
             <SelectContent>
               {ALL_STATUSES.filter((s) => s !== currentStatus).map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s === "none" ? "Neu" : s === "follow_up_1" ? "Follow-Up 1" : s === "follow_up_2" ? "Follow-Up 2" : s.charAt(0).toUpperCase() + s.slice(1)}
+                  {s === "new" ? "Neu" : s === "follow_up_1" ? "Follow-Up 1" : s === "follow_up_2" ? "Follow-Up 2" : s.charAt(0).toUpperCase() + s.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>

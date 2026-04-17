@@ -23,11 +23,65 @@ const SENDERS = [
   "rebecca@event-bliss.com",
 ];
 
-const STAGE1_SUBJECT_PH = "{{agency_name}} — kostenlos an 100.000+ Event-Planer empfohlen werden? \uD83D\uDE80";
-const STAGE1_BODY_PH = `<p>Hallo {{contact_person}},</p>
-<p>EventBliss ist die neue, investorengest\u00FCtzte Plattform, die Event-Agenturen direkt mit \u00FCber 100.000 Event-Planern verbindet. Als eine der ersten 150 Agenturen erhalten Sie einen <strong>kostenlosen Premium-Eintrag</strong>.</p>
-<p>Interesse? Antworten Sie einfach auf diese E-Mail oder buchen Sie direkt einen kurzen Call: <a href="https://event-bliss.com/call">event-bliss.com/call</a></p>
-<p>Viele Gr\u00FC\u00DFe,<br/>{{sender_name}}</p>`;
+// ─── Epic email templates ───────────────────────────────────────────────
+const STAGE1_SUBJECT = "{{agency_name}} — kostenlos an 100.000+ Event-Planer empfohlen werden? \uD83D\uDE80";
+const STAGE1_BODY = `<h2 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#fff;">Hallo {{contact_name}},</h2>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">wir sind <strong>EventBliss</strong> — eine <strong>investorengef\u00F6rderte Event-Tech-Plattform</strong> aus Zypern mit der Mission, das Event-Game in Europa auf ein komplett neues Level zu bringen.</p>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">Unsere App verbindet Event-Planer direkt mit Agenturen wie <strong>{{agency_name}}</strong>. Unser KI-Assistent empfiehlt eure Services <strong>automatisch</strong> an passende Events — basierend auf Stadt, Budget, Teilnehmerzahl und Eventtyp.</p>
+
+<div style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:20px;margin:20px 0;">
+  <p style="margin:0 0 8px;font-weight:800;color:#a855f7;font-size:14px;">\uD83C\uDF81 EXKLUSIV F\u00DCR DIE ERSTEN 150 AGENTUREN:</p>
+  <ul style="margin:0;padding-left:20px;color:#e2e8f0;font-size:14px;line-height:1.8;">
+    <li><strong>Komplett kostenloser</strong> Premium-Eintrag im Marketplace</li>
+    <li>Automatische <strong>KI-Empfehlung</strong> an 100.000+ Event-Planer</li>
+    <li>Eigenes <strong>Booking-Portal</strong> mit Stripe-Integration</li>
+    <li>Keine Provision, kein Abo, <strong>keine versteckten Kosten</strong></li>
+  </ul>
+</div>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">Wir sind ehrlich: Wir stehen am Anfang — und genau deshalb ist <strong>JETZT</strong> der beste Zeitpunkt f\u00FCr {{agency_name}}. Die ersten Partner profitieren am meisten.</p>
+
+<div style="text-align:center;margin:28px 0;">
+  <a href="{{signup_url}}" style="display:inline-block;padding:16px 36px;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;text-decoration:none;border-radius:12px;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(168,85,247,0.4);">Jetzt kostenlos listen lassen \u2192</a>
+</div>
+
+<p style="font-size:13px;color:#94a3b8;">Oder antworten Sie einfach auf diese E-Mail — wir melden uns innerhalb von 24h pers\u00F6nlich.</p>`;
+
+const STAGE2_SUBJECT = "Kurzes Follow-up — {{contact_name}}, noch {{free_slots}} von 150 Gratis-Pl\u00E4tzen frei";
+const STAGE2_BODY = `<h2 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#fff;">Hallo {{contact_name}},</h2>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">wir hatten Ihnen letzte Woche geschrieben — nur ein kurzes Follow-up zu unserem Angebot f\u00FCr {{agency_name}}.</p>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">Mittlerweile nutzen bereits <strong>zahlreiche Agenturen in {{city}}</strong> EventBliss als ihren Marketplace-Kanal. Die R\u00FCckmeldungen sind durchweg positiv.</p>
+
+<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:16px;margin:20px 0;text-align:center;">
+  <p style="margin:0;font-weight:800;color:#f59e0b;font-size:18px;">\u23F3 Noch wenige Gratis-Pl\u00E4tze verf\u00FCgbar</p>
+  <p style="margin:4px 0 0;color:#e2e8f0;font-size:13px;">Unverbindlich, kostenlos, sofort live</p>
+</div>
+
+<div style="text-align:center;margin:24px 0;">
+  <a href="{{signup_url}}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;text-decoration:none;border-radius:12px;font-weight:800;font-size:14px;">Kostenlos starten \u2192</a>
+</div>
+
+<p style="font-size:13px;color:#94a3b8;">Oder antworten Sie kurz — auch ein "Kein Interesse" ist v\u00F6llig okay.</p>`;
+
+const STAGE3_SUBJECT = "Letzte Nachricht — die Einladung bleibt offen, {{agency_name}} \u2709\uFE0F";
+const STAGE3_BODY = `<h2 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#fff;">Hallo {{contact_name}},</h2>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">dies ist unsere letzte Nachricht — wir m\u00F6chten Sie nicht weiter st\u00F6ren.</p>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">Die Einladung f\u00FCr {{agency_name}} bleibt aber offen: <strong>Ein kostenloser Premium-Eintrag im EventBliss Marketplace</strong>, inklusive KI-gest\u00FCtzte Empfehlung an tausende Event-Planer.</p>
+
+<p style="font-size:15px;line-height:1.7;color:#e2e8f0;">Schauen Sie sich gerne an, wie andere Agenturen bei uns pr\u00E4sentiert werden:<br/>
+<a href="https://event-bliss.com/marketplace" style="color:#a855f7;font-weight:600;">event-bliss.com/marketplace \u2192</a></p>
+
+<div style="text-align:center;margin:24px 0;">
+  <a href="{{signup_url}}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#6b7280,#374151);color:#fff;text-decoration:none;border-radius:12px;font-weight:700;font-size:14px;">Doch noch dabei sein \u2192</a>
+</div>
+
+<p style="font-size:13px;color:#94a3b8;">Wir w\u00FCnschen {{agency_name}} weiterhin viel Erfolg! Sollten Sie sp\u00E4ter Interesse haben, melden Sie sich jederzeit.</p>`;
 
 interface CampaignFormData {
   name: string;
@@ -47,12 +101,12 @@ const EMPTY_FORM: CampaignFormData = {
   sender_email: SENDERS[0],
   sender_name: "EventBliss Partnerschaften",
   drip_rate: 25,
-  template_stage1_subject: "",
-  template_stage1_body: "",
-  template_stage2_subject: "",
-  template_stage2_body: "",
-  template_stage3_subject: "",
-  template_stage3_body: "",
+  template_stage1_subject: STAGE1_SUBJECT,
+  template_stage1_body: STAGE1_BODY,
+  template_stage2_subject: STAGE2_SUBJECT,
+  template_stage2_body: STAGE2_BODY,
+  template_stage3_subject: STAGE3_SUBJECT,
+  template_stage3_body: STAGE3_BODY,
 };
 
 export default function AkquiseCampaignManager() {
