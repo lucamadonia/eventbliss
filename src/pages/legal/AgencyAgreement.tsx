@@ -133,12 +133,12 @@ const AgencyAgreement = () => {
                 {exclusivityClauses.map((clause, idx) => (
                   <div
                     key={clause}
-                    className="p-4 rounded-xl bg-black/30 border border-red-500/20"
+                    className="p-4 rounded-xl bg-black/40 border border-red-500/20"
                   >
                     <h3 className="text-red-200 font-semibold mb-2">
                       6.{idx + 1} {t(`legal.agency_agreement.exclusivity.${clause}.title`)}
                     </h3>
-                    <p className="text-muted-foreground whitespace-pre-line text-sm">
+                    <p className="text-red-50/90 whitespace-pre-line text-sm leading-relaxed">
                       {t(`legal.agency_agreement.exclusivity.${clause}.content`)}
                     </p>
                   </div>
@@ -163,14 +163,14 @@ const AgencyAgreement = () => {
                 {cancellationClauses.map((clause, idx) => (
                   <div
                     key={clause}
-                    className="p-4 rounded-xl bg-black/30 border border-amber-500/20"
+                    className="p-4 rounded-xl bg-black/40 border border-amber-500/20"
                   >
                     <h3 className="text-amber-200 font-semibold mb-2 flex items-center gap-2">
                       <Clock className="w-4 h-4" />
                       7.{idx + 1}{" "}
                       {t(`legal.agency_agreement.cancellationRates.${clause}.title`)}
                     </h3>
-                    <p className="text-muted-foreground whitespace-pre-line text-sm">
+                    <p className="text-amber-50/90 whitespace-pre-line text-sm leading-relaxed">
                       {t(`legal.agency_agreement.cancellationRates.${clause}.content`)}
                     </p>
                   </div>
