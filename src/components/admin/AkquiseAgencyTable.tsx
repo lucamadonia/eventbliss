@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, ChevronUp, ChevronDown, Check } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Check, Upload, Plus } from "lucide-react";
+import AkquiseImportDialog from "./AkquiseImportDialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,10 +52,29 @@ export default function AkquiseAgencyTable({ onOpenAgency }: Props) {
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [limit, setLimit] = useState(50);
 
+  const [showImport, setShowImport] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newCity, setNewCity] = useState("");
+  const [newCountry, setNewCountry] = useState("Deutschland");
+  const qc = useQueryClient();
+
   const bulkUpdate = useBulkUpdateStatus();
   const addToCampaign = useAddToCampaign();
   const { data: campaigns = [] } = useOutreachCampaigns();
   const activeCampaigns = campaigns.filter((c) => c.status === "active");
+
+  const handleManualAdd = async () => {
+    if (!newName || !newEmail || !newCity) return;
+    await (supabase.from as any)("agency_directory").insert({
+      name: newName, email: newEmail, city: newCity, country: newCountry,
+      country_code: "DE", outreach_status: "new", priority: "normal", status: "active",
+    });
+    setNewName(""); setNewEmail(""); setNewCity(""); setShowAddForm(false);
+    qc.invalidateQueries({ queryKey: ["agency-directory-table"] });
+    qc.invalidateQueries({ queryKey: ["outreach-pipeline"] });
+  };
 
   const { data: agencies = [], isLoading } = useQuery({
     queryKey: ["agency-directory-table", limit],
@@ -127,6 +147,44 @@ export default function AkquiseAgencyTable({ onOpenAgency }: Props) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+      {/* Action bar: Add + Import */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button onClick={() => setShowAddForm(!showAddForm)} variant="outline" size="sm" className="gap-1.5 border-white/10">
+          <Plus className="w-4 h-4" /> Manuell hinzufügen
+        </Button>
+        <Button onClick={() => setShowImport(true)} variant="outline" size="sm" className="gap-1.5 border-white/10">
+          <Upload className="w-4 h-4" /> CSV / JSON Import
+        </Button>
+        <Badge className="bg-white/5 text-muted-foreground border-0 ml-auto">{agencies.length} Agenturen</Badge>
+      </div>
+
+      {/* Manual add form (inline) */}
+      {showAddForm && (
+        <Card className="p-4 border-white/10 bg-white/[0.02] space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <Input placeholder="Name *" value={newName} onChange={(e) => setNewName(e.target.value)} className="bg-white/[0.04] border-white/10" />
+            <Input placeholder="E-Mail *" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="bg-white/[0.04] border-white/10" />
+            <Input placeholder="Stadt *" value={newCity} onChange={(e) => setNewCity(e.target.value)} className="bg-white/[0.04] border-white/10" />
+            <Input placeholder="Land" value={newCountry} onChange={(e) => setNewCountry(e.target.value)} className="bg-white/[0.04] border-white/10" />
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleManualAdd} disabled={!newName || !newEmail || !newCity} size="sm"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 font-bold">
+              <Plus className="w-4 h-4 mr-1" /> Hinzufügen
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setShowAddForm(false)}>Abbrechen</Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Import dialog */}
+      {showImport && (
+        <AkquiseImportDialog
+          onClose={() => setShowImport(false)}
+          onImported={() => { qc.invalidateQueries({ queryKey: ["agency-directory-table"] }); qc.invalidateQueries({ queryKey: ["outreach-pipeline"] }); }}
+        />
+      )}
+
       {/* Search + filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
