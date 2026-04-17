@@ -28,6 +28,7 @@ import {
   Euro,
   Wallet,
   AlertTriangle,
+  AlertCircle,
   MoreHorizontal,
   Eye,
   XCircle,
@@ -42,11 +43,14 @@ import {
 import { toast } from "sonner";
 
 type BookingStatus =
+  | "pending_payment"
   | "pending_confirmation"
   | "confirmed"
   | "completed"
   | "cancelled_by_customer"
   | "disputed";
+
+type PaymentMethod = "online" | "on_site" | null;
 
 interface Booking {
   id: string;
@@ -60,9 +64,17 @@ interface Booking {
   fee: number;
   status: BookingStatus;
   participants: number;
+  paymentMethod: PaymentMethod;
+  stripePaymentIntentId: string | null;
 }
 
 const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bgColor: string; icon: typeof Clock }> = {
+  pending_payment: {
+    label: "Zahlung ausstehend",
+    color: "text-amber-700 dark:text-amber-300",
+    bgColor: "bg-amber-100 dark:bg-amber-500/20 border border-amber-500/30",
+    icon: AlertCircle,
+  },
   pending_confirmation: {
     label: "Ausstehend",
     color: "text-yellow-700 dark:text-yellow-400",
@@ -97,6 +109,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bgCol
 
 const FILTER_TABS: { label: string; value: BookingStatus | "all" }[] = [
   { label: "Alle", value: "all" },
+  { label: "Unbezahlt", value: "pending_payment" },
   { label: "Ausstehend", value: "pending_confirmation" },
   { label: "Bestätigt", value: "confirmed" },
   { label: "Abgeschlossen", value: "completed" },
@@ -113,6 +126,7 @@ const formatDate = (iso: string) => {
 };
 
 const TIMELINE_STEPS: Record<BookingStatus, string[]> = {
+  pending_payment: ["Buchung erstellt", "Warte auf Zahlung"],
   pending_confirmation: ["Buchung erstellt", "Warte auf Bestätigung"],
   confirmed: ["Buchung erstellt", "Bestätigt durch Agentur"],
   completed: ["Buchung erstellt", "Bestätigt durch Agentur", "Service durchgeführt", "Abgeschlossen"],
@@ -157,6 +171,8 @@ async function fetchBookings(): Promise<Booking[]> {
     fee: b.platform_fee_cents || 0,
     status: (b.status as BookingStatus) || "pending_confirmation",
     participants: b.participants || 1,
+    paymentMethod: (b.payment_method as PaymentMethod) ?? null,
+    stripePaymentIntentId: b.stripe_payment_intent_id ?? null,
   }));
 }
 
@@ -357,12 +373,30 @@ export default function MarketplaceBookingsTab() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusCfg.color} ${statusCfg.bgColor}`}
-                        >
-                          <StatusIcon className="h-3 w-3" />
-                          {statusCfg.label}
-                        </span>
+                        <div className="flex flex-col items-start gap-1">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusCfg.color} ${statusCfg.bgColor}`}
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {statusCfg.label}
+                          </span>
+                          {booking.paymentMethod && (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                booking.paymentMethod === "on_site"
+                                  ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300"
+                                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                              }`}
+                              title={
+                                booking.paymentMethod === "on_site"
+                                  ? "Zahlung vor Ort"
+                                  : "Online-Zahlung"
+                              }
+                            >
+                              {booking.paymentMethod === "on_site" ? "Vor Ort" : "Online"}
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -432,11 +466,16 @@ export default function MarketplaceBookingsTab() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   Buchung {selectedBooking.nr}
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_CONFIG[selectedBooking.status].color} ${STATUS_CONFIG[selectedBooking.status].bgColor}`}
-                  >
-                    {STATUS_CONFIG[selectedBooking.status].label}
-                  </span>
+                  {(() => {
+                    const cfg = STATUS_CONFIG[selectedBooking.status] ?? STATUS_CONFIG.pending_confirmation;
+                    return (
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color} ${cfg.bgColor}`}
+                      >
+                        {cfg.label}
+                      </span>
+                    );
+                  })()}
                 </DialogTitle>
               </DialogHeader>
 
@@ -475,6 +514,21 @@ export default function MarketplaceBookingsTab() {
                   </h4>
                   <div className="bg-muted/50 rounded-lg p-3 space-y-2">
                     <div className="flex justify-between items-center">
+                      <span className="text-sm">Zahlungsart</span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          selectedBooking.paymentMethod === "on_site"
+                            ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        {selectedBooking.paymentMethod === "on_site" ? "Vor Ort" : "Online"}
+                        {selectedBooking.stripePaymentIntentId && (
+                          <span className="opacity-70">· bezahlt</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
                       <span className="text-sm">Gesamtbetrag</span>
                       <span className="font-bold">{formatCurrency(selectedBooking.total)}</span>
                     </div>
@@ -499,15 +553,16 @@ export default function MarketplaceBookingsTab() {
                     Status-Verlauf
                   </h4>
                   <div className="space-y-0">
-                    {TIMELINE_STEPS[selectedBooking.status].map((step, idx, arr) => {
+                    {(TIMELINE_STEPS[selectedBooking.status] ?? TIMELINE_STEPS.pending_confirmation).map((step, idx, arr) => {
                       const isLast = idx === arr.length - 1;
+                      const cfg = STATUS_CONFIG[selectedBooking.status] ?? STATUS_CONFIG.pending_confirmation;
                       return (
                         <div key={step} className="flex items-start gap-3">
                           <div className="flex flex-col items-center">
                             <div
                               className={`h-3 w-3 rounded-full mt-0.5 ${
                                 isLast
-                                  ? STATUS_CONFIG[selectedBooking.status].bgColor.split(" ")[0]
+                                  ? cfg.bgColor.split(" ")[0]
                                   : "bg-green-500"
                               }`}
                             />

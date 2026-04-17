@@ -2,12 +2,22 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CalendarCheck, Clock, Users, DollarSign, Check, X as XIcon,
-  ChevronRight, AlertCircle, CheckCircle2, XCircle, Ban, Loader2,
+  CalendarCheck, Clock, Users, DollarSign, Check,
+  AlertCircle, CheckCircle2, XCircle, Ban, Loader2, Wallet,
 } from "lucide-react";
 import { BookingGuideAssign } from "./BookingGuideAssign";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { StatCard } from "./ui/StatCard";
 import {
@@ -16,10 +26,12 @@ import {
   useCancelBooking,
   useCompleteBooking,
   type MarketplaceBooking,
+  type CancellationReasonCode,
 } from "@/hooks/useMarketplaceBookings";
+import { derivePaymentState } from "@/lib/bookingPayment";
 
 /* ─── Types ──────────────────────────────────────────── */
-type UIStatus = "new" | "confirmed" | "completed" | "cancelled";
+type UIStatus = "new" | "confirmed" | "completed" | "cancelled" | "unpaid" | "on_site";
 
 interface Props {
   agencyId: string;
@@ -42,11 +54,36 @@ function mapDBStatus(dbStatus: string): UIStatus {
   }
 }
 
+// Combined status — payment state takes precedence for unpaid/on_site surfacing.
+function mapWithPayment(b: MarketplaceBooking): UIStatus {
+  const base = mapDBStatus(b.status);
+  // Completed/cancelled bookings keep their terminal UI status — payment
+  // surfacing only matters for actionable states.
+  if (base === "completed" || base === "cancelled") return base;
+
+  const payment = derivePaymentState({
+    status: b.status,
+    stripe_payment_intent_id: b.stripe_payment_intent_id ?? null,
+    payment_method: b.payment_method ?? null,
+  });
+
+  if (payment === "unpaid") return "unpaid";
+  if (
+    payment === "on_site" &&
+    (b.status === "pending_confirmation" || b.status === "confirmed")
+  ) {
+    return "on_site";
+  }
+  return base;
+}
+
 const statusConfig: Record<UIStatus, { key: string; className: string; icon: typeof Clock }> = {
   new: { key: "new", className: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30", icon: AlertCircle },
   confirmed: { key: "confirmed", className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
   completed: { key: "completed", className: "bg-white/10 text-white/50 border-white/20", icon: Check },
   cancelled: { key: "cancelled", className: "bg-red-500/20 text-red-300 border-red-500/30", icon: XCircle },
+  unpaid: { key: "unpaid", className: "bg-amber-500/20 text-amber-300 border-amber-500/30", icon: AlertCircle },
+  on_site: { key: "onSite", className: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30", icon: Wallet },
 };
 
 type FilterTab = "all" | UIStatus;
@@ -55,8 +92,19 @@ const filterTabs: { id: FilterTab; key: string }[] = [
   { id: "all", key: "all" },
   { id: "new", key: "new" },
   { id: "confirmed", key: "confirmed" },
+  { id: "unpaid", key: "unpaid" },
+  { id: "on_site", key: "onSite" },
   { id: "completed", key: "completed" },
   { id: "cancelled", key: "cancelled" },
+];
+
+const cancellationReasons: { value: CancellationReasonCode; label: string }[] = [
+  { value: "agency_unavailable", label: "Nicht verfügbar (Termin nicht möglich)" },
+  { value: "agency_staff_shortage", label: "Personalengpass" },
+  { value: "agency_weather", label: "Wetter / höhere Gewalt" },
+  { value: "customer_no_show", label: "Kunde nicht erschienen" },
+  { value: "customer_unreachable", label: "Kunde nicht erreichbar" },
+  { value: "agency_other", label: "Anderer Grund" },
 ];
 
 function formatEUR(cents: number): string {
@@ -92,6 +140,11 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<FilterTab>("all");
 
+  // Cancel dialog state
+  const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
+  const [cancelReasonCode, setCancelReasonCode] = useState<CancellationReasonCode>("agency_unavailable");
+  const [cancelReasonText, setCancelReasonText] = useState("");
+
   const { data: bookings = [], isLoading } = useAgencyBookings(agencyId);
   const confirmBooking = useConfirmBooking();
   const cancelBooking = useCancelBooking();
@@ -99,7 +152,7 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
 
   const mappedBookings = bookings.map((b) => ({
     ...b,
-    uiStatus: mapDBStatus(b.status),
+    uiStatus: mapWithPayment(b),
   }));
 
   const filtered = mappedBookings.filter((b) => {
@@ -109,9 +162,46 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
 
   const newCount = mappedBookings.filter((b) => b.uiStatus === "new").length;
   const confirmedCount = mappedBookings.filter((b) => b.uiStatus === "confirmed").length;
+  // Revenue counts only paid or on_site bookings whose DB-status is terminal-ish
+  // (confirmed/completed). Unpaid is explicitly excluded until money lands.
   const monthlyRevenue = mappedBookings
-    .filter((b) => b.uiStatus === "completed" || b.uiStatus === "confirmed")
+    .filter((b) => {
+      if (b.uiStatus === "unpaid") return false;
+      const paymentState = derivePaymentState({
+        status: b.status,
+        stripe_payment_intent_id: b.stripe_payment_intent_id ?? null,
+        payment_method: b.payment_method ?? null,
+      });
+      const earns = paymentState === "paid" || paymentState === "on_site";
+      const dbOk = b.status === "confirmed" || b.status === "completed";
+      return earns && dbOk;
+    })
     .reduce((sum, b) => sum + b.total_price_cents, 0);
+
+  const openCancel = (bookingId: string) => {
+    setCancelTargetId(bookingId);
+    setCancelReasonCode("agency_unavailable");
+    setCancelReasonText("");
+  };
+
+  const confirmCancel = () => {
+    if (!cancelTargetId) return;
+    cancelBooking.mutate(
+      {
+        bookingId: cancelTargetId,
+        reasonCode: cancelReasonCode,
+        reasonText:
+          cancelReasonCode === "agency_other" ? cancelReasonText.trim() || undefined : undefined,
+        asAgency: true,
+      },
+      {
+        onSuccess: () => {
+          setCancelTargetId(null);
+          setCancelReasonText("");
+        },
+      },
+    );
+  };
 
   const kpis = [
     { label: t("bookingsManager.newRequests", "Neue Anfragen"), value: newCount, icon: AlertCircle, variant: "cyan" as const, trend: 0, sparkData: [1, 2, 1, newCount] },
@@ -233,7 +323,7 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
                         </span>
                       </div>
                       {/* Guide assignment — only for active bookings */}
-                      {(booking.uiStatus === "new" || booking.uiStatus === "confirmed") && (
+                      {(booking.uiStatus === "new" || booking.uiStatus === "confirmed" || booking.uiStatus === "on_site") && (
                         <div className="pt-1">
                           <BookingGuideAssign
                             bookingId={booking.id}
@@ -241,6 +331,20 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
                             currentGuideId={(booking as unknown as { assigned_guide_id?: string | null }).assigned_guide_id ?? null}
                             compact
                           />
+                        </div>
+                      )}
+
+                      {/* Payment-state sub-hint */}
+                      {booking.uiStatus === "unpaid" && (
+                        <div className="mt-1.5 flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-[10px] text-amber-200/90">
+                          <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
+                          <span>Noch nicht bezahlt — bitte keine Ressourcen zuweisen bis Zahlung bestätigt.</span>
+                        </div>
+                      )}
+                      {booking.uiStatus === "on_site" && (
+                        <div className="mt-1.5 flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/25 text-[10px] text-cyan-200/90">
+                          <Wallet className="w-3 h-3 mt-0.5 shrink-0" />
+                          <span>Zahlung erfolgt vor Ort.</span>
                         </div>
                       )}
                     </div>
@@ -267,7 +371,7 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
                             {t("bookingsManager.confirm", "Bestätigen")}
                           </Button>
                         )}
-                        {booking.uiStatus === "confirmed" && (
+                        {(booking.uiStatus === "confirmed" || booking.uiStatus === "on_site") && (
                           <Button
                             size="sm"
                             disabled={completeBooking.isPending}
@@ -278,17 +382,15 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
                             {t("bookingsManager.complete", "Abschließen")}
                           </Button>
                         )}
-                        {(booking.uiStatus === "new" || booking.uiStatus === "confirmed") && (
+                        {(booking.uiStatus === "new" ||
+                          booking.uiStatus === "confirmed" ||
+                          booking.uiStatus === "on_site" ||
+                          booking.uiStatus === "unpaid") && (
                           <Button
                             size="sm"
                             variant="ghost"
                             disabled={cancelBooking.isPending}
-                            onClick={() =>
-                              cancelBooking.mutate({
-                                bookingId: booking.id,
-                                asAgency: true,
-                              })
-                            }
+                            onClick={() => openCancel(booking.id)}
                             className="h-8 text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer text-xs"
                           >
                             <Ban className="w-3.5 h-3.5 mr-1" />
@@ -304,6 +406,77 @@ export default function AgencyBookingsManager({ agencyId }: Props) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Cancel reason dialog — contractual requirement (§ 7) */}
+      <AlertDialog open={!!cancelTargetId} onOpenChange={(o) => !o && setCancelTargetId(null)}>
+        <AlertDialogContent className="bg-[#1a1625] border-white/[0.08] text-slate-100">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-50">Buchung stornieren</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400 text-xs leading-relaxed">
+              Warum stornierst du? Diese Angabe ist vertraglich verpflichtend. Bei wiederholten Stornierungen &gt; 20 % kann dein Listing deaktiviert werden (siehe Agentur-Vertrag § 7).
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-slate-400">Grund</label>
+              <select
+                value={cancelReasonCode}
+                onChange={(e) => setCancelReasonCode(e.target.value as CancellationReasonCode)}
+                className="w-full h-10 px-3 text-sm bg-white/[0.04] border border-white/[0.08] text-slate-100 rounded-xl outline-none focus:border-violet-500/40 transition-all appearance-none cursor-pointer"
+              >
+                {cancellationReasons.map((r) => (
+                  <option key={r.value} value={r.value} className="bg-[#1a1625] text-slate-200">
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {cancelReasonCode === "agency_other" && (
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-400">Details (erforderlich)</label>
+                <textarea
+                  value={cancelReasonText}
+                  onChange={(e) => setCancelReasonText(e.target.value)}
+                  rows={3}
+                  placeholder="Bitte kurz erläutern…"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] text-slate-100 text-sm placeholder:text-slate-600 rounded-xl px-3 py-2.5 outline-none resize-none focus:border-violet-500/40 transition-all"
+                />
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="bg-white/[0.04] border-white/[0.1] text-slate-300 hover:bg-white/[0.08] hover:text-slate-100"
+              disabled={cancelBooking.isPending}
+            >
+              Abbrechen
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmCancel();
+              }}
+              disabled={
+                cancelBooking.isPending ||
+                (cancelReasonCode === "agency_other" && cancelReasonText.trim().length === 0)
+              }
+              className="bg-red-600/80 hover:bg-red-600 text-white border border-red-500/40"
+            >
+              {cancelBooking.isPending ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Storniere…
+                </>
+              ) : (
+                "Stornieren"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

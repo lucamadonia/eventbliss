@@ -36,6 +36,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { derivePaymentState, usePayBookingNow } from "@/lib/bookingPayment";
 
 // -------------------------------------------------------------------
 // Data
@@ -54,6 +55,8 @@ interface BookingDetails {
   currency: string;
   service_id: string;
   agency_id: string;
+  stripe_payment_intent_id?: string | null;
+  payment_method?: string | null;
   service_title?: string;
   service_slug?: string;
   service_cover?: string | null;
@@ -627,6 +630,8 @@ function getStatusMeta(status: string) {
   switch (status) {
     case "confirmed":
       return { label: "Bestätigt", sub: "Alles fix — deine Buchung ist bestätigt.", colorClass: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30", icon: CheckCircle2 };
+    case "pending_payment":
+      return { label: "Zahlung ausstehend", sub: "Die Zahlung ist noch nicht abgeschlossen.", colorClass: "bg-amber-500/20 text-amber-300 border-amber-400/30", icon: AlertCircle };
     case "pending_confirmation":
       return { label: "Wartet auf Bestätigung", sub: "Die Agentur bestätigt deine Buchung in Kürze.", colorClass: "bg-amber-500/20 text-amber-300 border-amber-400/30", icon: HourglassIcon };
     case "reserved":
@@ -731,8 +736,21 @@ export default function BookingSuccess() {
   const navigate = useNavigate();
   const bookingId = params.get("booking");
   const isDemo = params.get("demo") === "1";
+  const demoVariant = params.get("variant"); // 'unpaid' | 'onsite' | null
   const live = useBookingDetails(isDemo ? null : bookingId);
-  const booking: BookingDetails | null = isDemo ? DEMO_BOOKING : (live.data ?? null);
+  const demoBooking: BookingDetails | null = isDemo
+    ? (() => {
+        if (demoVariant === "unpaid") {
+          return { ...DEMO_BOOKING, status: "pending_payment", stripe_payment_intent_id: null, payment_method: "online" };
+        }
+        if (demoVariant === "onsite") {
+          return { ...DEMO_BOOKING, payment_method: "on_site", stripe_payment_intent_id: null };
+        }
+        return { ...DEMO_BOOKING, stripe_payment_intent_id: "pi_demo", payment_method: "online" };
+      })()
+    : null;
+  const booking: BookingDetails | null = isDemo ? demoBooking : (live.data ?? null);
+  const payNow = usePayBookingNow();
   const isLoading = isDemo ? false : live.isLoading;
   const error = isDemo ? null : live.error;
   const reduced = !!useReducedMotion();
@@ -838,9 +856,14 @@ export default function BookingSuccess() {
     );
   }
 
+  const paymentState = derivePaymentState(booking);
+  const isUnpaid = paymentState === "unpaid";
+  const isOnSite = paymentState === "on_site";
+
   const dayCount = daysUntil(booking.booking_date);
-  const excitementCopy =
-    dayCount <= 0
+  const excitementCopy = isUnpaid
+    ? "Schließe jetzt die Zahlung ab, damit deine Buchung bestätigt wird."
+    : dayCount <= 0
       ? "Es geht los! 🚀"
       : dayCount === 1
       ? "Nur noch 1 Tag! Bist du bereit? 🔥"
@@ -850,9 +873,10 @@ export default function BookingSuccess() {
       ? `Noch ${dayCount} Tage Vorfreude 💫`
       : `In ${dayCount} Tagen ist es soweit 🌟`;
 
-  const confettiCount = reduced ? 0 : isSmall ? 50 : 120;
-  const cornerCount = reduced ? 0 : isSmall ? 25 : 55;
-  const isPending = booking.status === "pending_confirmation";
+  const confettiCount = reduced || isUnpaid ? 0 : isSmall ? 50 : 120;
+  const cornerCount = reduced || isUnpaid ? 0 : isSmall ? 25 : 55;
+  const isPending = booking.status === "pending_confirmation" || booking.status === "pending_payment";
+  const headlineText = isUnpaid ? "Fast geschafft!" : "Gebucht!";
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#0a0612] text-white">
@@ -953,7 +977,7 @@ export default function BookingSuccess() {
           animate={{ opacity: 1 }}
           transition={{ delay: reduced ? 0 : 0.4 }}
         >
-          <StaggerHeadline text="Gebucht!" reduced={reduced} />
+          <StaggerHeadline text={headlineText} reduced={reduced} />
           <motion.p
             className="text-slate-300 mt-2"
             initial={{ opacity: 0, y: 6 }}
@@ -1001,6 +1025,52 @@ export default function BookingSuccess() {
             );
           })()}
         </motion.div>
+
+        {/* Unpaid banner — primary action: resume payment */}
+        {isUnpaid && (
+          <div
+            role="alert"
+            aria-live="polite"
+            className="mb-5 mx-auto max-w-lg rounded-2xl border border-amber-400/30 bg-amber-500/10 backdrop-blur-xl p-5"
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-300 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-amber-100 mb-1">Zahlung ausstehend</h3>
+                <p className="text-xs text-amber-200/80 mb-3 leading-relaxed">
+                  Deine Buchung ist reserviert, aber die Zahlung ist noch nicht abgeschlossen.
+                  Ohne Zahlung wird der Slot nach 24 Stunden freigegeben.
+                </p>
+                <Button
+                  onClick={() => payNow.mutate(booking.id)}
+                  disabled={payNow.isPending}
+                  className="bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold cursor-pointer w-full sm:w-auto min-h-[44px]"
+                >
+                  {payNow.isPending ? "Wird vorbereitet…" : "Jetzt bezahlen"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* On-site payment info — relaxed cyan info card */}
+        {isOnSite && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="mb-5 mx-auto max-w-lg rounded-2xl border border-cyan-400/30 bg-cyan-500/10 backdrop-blur-xl p-5"
+          >
+            <div className="flex items-start gap-3">
+              <span aria-hidden className="text-xl leading-none mt-0.5">💶</span>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-cyan-100 mb-1">Zahlung vor Ort</h3>
+                <p className="text-xs text-cyan-200/80 leading-relaxed">
+                  Bring das Geld zum Termin mit. Deine Agentur weist dich ggf. nochmal auf den Betrag hin.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Service hero card — with parallax tilt */}
         <TiltCard reduced={reduced} className="mb-5">

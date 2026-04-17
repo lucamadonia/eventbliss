@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Star, Clock, MapPin, Share2, Heart, ShieldCheck,
   ChevronRight, Check, AlertTriangle, Minus, Plus, Calendar,
-  Loader2,
+  Loader2, Lock, Wallet,
 } from "lucide-react";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
 import { useServiceAvailability } from "@/hooks/useServiceAvailability";
 import { supabase } from "@/integrations/supabase/client";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 // Design tokens
 const C = {
@@ -164,6 +165,7 @@ export default function MarketplaceServicePage() {
   const [selectedTime, setSelectedTime] = useState("");
   const [liked, setLiked] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
 
   const { data: s, isLoading, isError } = useMarketplaceServiceBySlug(slug);
   const createBooking = useCreateBooking();
@@ -233,6 +235,7 @@ export default function MarketplaceServicePage() {
         customerName: user.user_metadata?.full_name || user.email || "",
         customerEmail: user.email || "",
         autoConfirm: s.auto_confirm,
+        paymentMethod: s.payment_method,
         eventId: eventId || undefined,
       });
 
@@ -586,16 +589,39 @@ export default function MarketplaceServicePage() {
               </div>
             )}
 
+            {/* Payment hint */}
+            {s.payment_method === "on_site" ? (
+              <div className="px-3 py-2.5 rounded-xl text-xs font-['Be_Vietnam_Pro'] bg-[#00e3fd]/10 text-[#00e3fd] border border-[#00e3fd]/25 flex items-start gap-2">
+                <Wallet size={14} className="mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Vor-Ort-Zahlung</p>
+                  <p className="text-[10px] text-[#00e3fd]/80 mt-0.5">Bezahlung erfolgt direkt beim Termin.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 text-[11px] font-['Be_Vietnam_Pro'] text-gray-500">
+                <Lock size={12} />
+                <span>Sichere Online-Zahlung</span>
+              </div>
+            )}
+
             {/* Book Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleBook}
               disabled={isBooking}
-              className="w-full py-3.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-60 flex flex-col items-center justify-center gap-0.5"
             >
-              {isBooking && <Loader2 size={16} className="animate-spin" />}
-              Jetzt buchen
+              <span className="flex items-center justify-center gap-2">
+                {isBooking && <Loader2 size={16} className="animate-spin" />}
+                Jetzt buchen
+              </span>
+              {s.payment_method === "on_site" && (
+                <span className="text-[10px] font-medium font-['Be_Vietnam_Pro'] text-[#0d0d15]/70">
+                  Zahlung vor Ort
+                </span>
+              )}
             </motion.button>
 
             {/* Share / Favorite */}
@@ -658,7 +684,7 @@ export default function MarketplaceServicePage() {
           </button>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={handleBook}
+            onClick={() => setMobileBookingOpen(true)}
             disabled={isBooking}
             className="px-6 py-2.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] disabled:opacity-60 flex items-center gap-2"
           >
@@ -670,6 +696,136 @@ export default function MarketplaceServicePage() {
 
       {/* Bottom spacer for mobile bar */}
       <div className="lg:hidden h-20" />
+
+      {/* Mobile Booking Sheet */}
+      <Sheet open={mobileBookingOpen} onOpenChange={setMobileBookingOpen}>
+        <SheetContent
+          side="bottom"
+          className="lg:hidden bg-[#1f1f29] border-t border-[#484750]/20 text-white p-0 max-h-[90vh] rounded-t-2xl"
+        >
+          <div className="flex flex-col max-h-[90vh]">
+            <SheetHeader className="px-5 pt-5 pb-2 text-left">
+              <SheetTitle className="text-base font-bold font-game text-white">
+                {s.title}
+              </SheetTitle>
+              <div className="flex items-center gap-2 text-xs text-gray-400 font-['Be_Vietnam_Pro']">
+                <span className="font-semibold text-white">{formatPrice(s.price_cents)} €</span>
+                <span>{PRICE_TYPE_LABELS[s.price_type] ?? s.price_type}</span>
+              </div>
+            </SheetHeader>
+
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {/* Date */}
+              <div>
+                <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Datum wählen</label>
+                <div className="relative">
+                  <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/20 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:dark]"
+                  />
+                </div>
+              </div>
+
+              {/* Time */}
+              <div>
+                <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Uhrzeit</label>
+                <select
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/20 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors appearance-none"
+                >
+                  <option value="">Zeit wählen...</option>
+                  {timeSlots.map((t: string) => (
+                    <option key={t} value={t}>{t} Uhr</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Participants */}
+              {s.price_type === "per_person" && (
+                <div>
+                  <label className="block text-xs text-gray-500 font-['Be_Vietnam_Pro'] mb-1.5">Teilnehmer</label>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setParticipants((p) => Math.max(s.min_participants || 1, p - 1))}
+                      className="w-11 h-11 rounded-xl bg-[#13131b] border border-[#484750]/20 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                      aria-label="Weniger Teilnehmer"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <div className="flex-1 text-center">
+                      <span className="text-2xl font-bold font-game">{participants}</span>
+                      <span className="text-xs text-gray-500 font-['Be_Vietnam_Pro'] ml-1.5">
+                        {participants === 1 ? "Person" : "Personen"}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setParticipants((p) => Math.min(s.max_participants || 50, p + 1))}
+                      className="w-11 h-11 rounded-xl bg-[#13131b] border border-[#484750]/20 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                      aria-label="Mehr Teilnehmer"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Total */}
+              <div className="flex items-center justify-between pt-3 border-t border-[#484750]/15">
+                <span className="text-sm text-gray-400 font-['Be_Vietnam_Pro']">Gesamt</span>
+                <span className="text-2xl font-black font-game">{formatPrice(totalPrice)} €</span>
+              </div>
+
+              {/* Cancellation hint */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold font-['Be_Vietnam_Pro'] ${cancellation.color}`}>
+                Stornierung: {cancellation.label}
+              </div>
+
+              {/* Payment hint */}
+              {s.payment_method === "on_site" ? (
+                <div className="px-3 py-2.5 rounded-xl text-xs font-['Be_Vietnam_Pro'] bg-[#00e3fd]/10 text-[#00e3fd] border border-[#00e3fd]/25 flex items-start gap-2">
+                  <Wallet size={14} className="mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold">Vor-Ort-Zahlung</p>
+                    <p className="text-[10px] text-[#00e3fd]/80 mt-0.5">Bezahlung erfolgt direkt beim Termin.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-[11px] font-['Be_Vietnam_Pro'] text-gray-500">
+                  <Lock size={12} />
+                  <span>Sichere Online-Zahlung</span>
+                </div>
+              )}
+            </div>
+
+            {/* Footer CTA */}
+            <div className="px-5 py-4 border-t border-[#484750]/15 bg-[#1f1f29]">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={handleBook}
+                disabled={isBooking || !selectedDate || !selectedTime}
+                className="w-full py-3.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-0.5"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  {isBooking && <Loader2 size={16} className="animate-spin" />}
+                  {!selectedDate || !selectedTime ? "Datum und Uhrzeit wählen" : "Jetzt buchen"}
+                </span>
+                {s.payment_method === "on_site" && selectedDate && selectedTime && (
+                  <span className="text-[10px] font-medium font-['Be_Vietnam_Pro'] text-[#0d0d15]/70">
+                    Zahlung vor Ort
+                  </span>
+                )}
+              </motion.button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

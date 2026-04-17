@@ -61,6 +61,7 @@ const formSchema = z.object({
   expected_referrals: z.string().optional(),
   payout_method: z.enum(["bank_transfer", "paypal"]),
   privacy_accepted: z.boolean().refine((val) => val === true, "Du musst die Datenschutzerklärung akzeptieren"),
+  agency_agreement_accepted: z.boolean().refine((val) => val === true, "Du musst den Agentur-Vertrag akzeptieren, um Services auf EventBliss anzubieten"),
 }).refine((data) => {
   if (data.agency_mode === "existing") {
     return !!data.existing_agency_id;
@@ -153,6 +154,7 @@ export default function AgencyApply() {
       expected_referrals: "",
       payout_method: "bank_transfer",
       privacy_accepted: false,
+      agency_agreement_accepted: false,
     },
   });
 
@@ -661,6 +663,38 @@ export default function AgencyApply() {
                               &{" "}
                               <Link to="/legal/terms" className="text-primary hover:underline">
                                 {t("landing.footer.terms", "AGB")}
+                              </Link>
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agency_agreement_accepted"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-normal">
+                              {t(
+                                "agencyApply.form.agencyAgreement",
+                                "Ich habe den Agentur-Vertrag gelesen und akzeptiere ihn — insbesondere die Klauseln zur Exklusivität (§ 6), zum Umgehungsschutz (§ 6.2) und zur Storno-Quoten-Regelung ab 20 % (§ 7)."
+                              )}{" "}
+                              <Link
+                                to="/legal/agency-agreement"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-amber-400 hover:text-amber-300 underline"
+                              >
+                                {t("agencyApply.form.agencyAgreementLink", "Agentur-Vertrag öffnen →")}
                               </Link>
                             </FormLabel>
                             <FormMessage />

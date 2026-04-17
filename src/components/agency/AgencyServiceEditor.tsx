@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useCreateService, useUpdateService, useSubmitForReview } from "@/hooks/useAgencyServices";
 import { AgencyAvailabilityEditor } from "./AgencyAvailabilityEditor";
+import { paymentMethods, type PaymentMethodValue } from "./service-editor-options";
 
 /* ─── Types ──────────────────────────────────────────── */
 interface ServiceFormData {
@@ -27,6 +28,7 @@ interface ServiceFormData {
   autoConfirm: boolean;
   bookingMode: "internal" | "external_redirect" | "external_api";
   externalBookingUrl: string;
+  paymentMethod: PaymentMethodValue;
 }
 
 interface ServiceEditorProps {
@@ -53,6 +55,7 @@ interface ServiceEditorProps {
     autoConfirm?: boolean;
     bookingMode?: string;
     externalBookingUrl?: string;
+    paymentMethod?: string;
   } | null;
 }
 
@@ -110,6 +113,7 @@ const emptyForm: ServiceFormData = {
   autoConfirm: false,
   bookingMode: "internal",
   externalBookingUrl: "",
+  paymentMethod: "online",
 };
 
 const bookingModes = [
@@ -219,8 +223,10 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
         leadTimeDays: service.leadTimeDays ? String(service.leadTimeDays) : "7",
         cancellationPolicy: service.cancellationPolicy || "moderate",
         autoConfirm: service.autoConfirm || false,
-        bookingMode: (service.bookingMode as any) || "internal",
+        bookingMode: (service.bookingMode as ServiceFormData["bookingMode"]) || "internal",
         externalBookingUrl: service.externalBookingUrl || "",
+        paymentMethod:
+          service.paymentMethod === "on_site" ? "on_site" : "online",
       });
     } else {
       setForm(emptyForm);
@@ -252,6 +258,7 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     booking_mode: form.bookingMode,
     external_booking_url: form.bookingMode === "external_redirect" ? form.externalBookingUrl || undefined : undefined,
+    payment_method: form.paymentMethod,
   });
 
   const handleSaveDraft = () => {
@@ -564,6 +571,58 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                   <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
                     <p className="text-[10px] text-amber-300/70">
                       API-Integrationen mit Calendly, cal.com und weiteren Anbietern sind in Kürze verfügbar.
+                    </p>
+                  </div>
+                )}
+              </FormSection>
+
+              {/* Zahlung */}
+              <FormSection title="Zahlung">
+                <div className="space-y-2">
+                  {paymentMethods.map((method) => (
+                    <button
+                      key={method.value}
+                      type="button"
+                      onClick={() => update("paymentMethod", method.value)}
+                      className={cn(
+                        "w-full text-left p-3 rounded-xl border transition-all duration-200 cursor-pointer",
+                        form.paymentMethod === method.value
+                          ? "border-violet-500/40 bg-violet-500/10"
+                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.04] text-sm shrink-0 mt-0.5">
+                          {method.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn(
+                            "text-xs font-medium",
+                            form.paymentMethod === method.value ? "text-violet-300" : "text-slate-300"
+                          )}>
+                            {method.label}
+                          </p>
+                          <p className="text-[10px] text-slate-600 mt-0.5">{method.description}</p>
+                        </div>
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border-2 shrink-0 mt-1 flex items-center justify-center transition-colors",
+                          form.paymentMethod === method.value
+                            ? "border-violet-500 bg-violet-500"
+                            : "border-white/[0.15]"
+                        )}>
+                          {form.paymentMethod === method.value && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {form.paymentMethod === "on_site" && (
+                  <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
+                    <p className="text-[10px] text-amber-300/80 leading-relaxed">
+                      Vor-Ort-Zahlung bedeutet kein Stripe-Schutz bei Kündigung. Du bist vertraglich verpflichtet, die Plattformgebühr binnen 14 Tagen nach Leistung abzuführen.
                     </p>
                   </div>
                 )}

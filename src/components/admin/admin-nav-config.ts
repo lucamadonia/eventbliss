@@ -3,6 +3,7 @@ import {
   Handshake, Coins, Banknote, TrendingUp, Building2,
   Settings, Store, ShoppingCart, PieChart, Package,
   Gamepad2, Landmark, Flag, Scroll, ServerCog, Megaphone,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +55,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { key: "agencies", labelKey: "admin.tabs.agencies", defaultLabel: "Agenturen", icon: Landmark },
       { key: "agency-affiliates", labelKey: "admin.tabs.agencyAffiliates", defaultLabel: "Agentur-Partner", icon: Building2 },
       { key: "agency-analytics", labelKey: "admin.tabs.agencyAnalytics", defaultLabel: "Agentur-Stats", icon: TrendingUp },
+      { key: "agency-risk", labelKey: "admin.tabs.agencyRisk", defaultLabel: "Storno-Risiko", icon: ShieldAlert },
       { key: "agency-akquise", labelKey: "admin.akquise.navLabel", defaultLabel: "Akquise", icon: Megaphone },
     ],
   },
