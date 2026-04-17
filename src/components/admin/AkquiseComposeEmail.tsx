@@ -199,7 +199,20 @@ export default function AkquiseComposeEmail({ agency, onClose, onSent }: Akquise
             </div>
             <div className="mt-3 text-[10px] text-muted-foreground bg-black/20 rounded-lg p-2">
               <Building2 className="w-3 h-3 inline mr-1" />
-              <strong>EventBliss:</strong> 170+ Partner-Agenturen · 100.000+ Event-Planer · 17 Games · 10 Sprachen · KI-Empfehlungen · Stripe-Bookings · Investor-Backed (MYFAMBLISS GROUP LTD, Zypern)
+              <strong>EventBliss — Die All-in-One Event-Planungsplattform:</strong><br/>
+              🎯 100.000+ Event-Planer · 170+ Partner-Agenturen · 10 Sprachen<br/>
+              🎮 17 Party-Games (Bomb, Taboo, Quiz, HeadUp, StoryBuilder, ...) + TV-Modus für Events<br/>
+              📱 iOS App + Android App + PWA + Web — überall nutzbar<br/>
+              🤖 KI-Event-Assistent (Claude) — plant Trips, Aktivitäten, Tagespläne, Budget automatisch<br/>
+              📊 Integriertes CRM + Booking-Kalender + Stripe-Zahlungen + Rechnungen<br/>
+              🌐 Marketplace mit Agentur-Profilen + SEO + Embeddable iFrames für eigene Websites<br/>
+              📋 Umfragen-Tool für Gruppen (Budget, Destination, Aktivitäten-Voting)<br/>
+              📅 Smart Booking-Kalender (Monat/Woche/Tag/Resource-Views) + Konflikterkennung<br/>
+              💼 3-Tier B2B Modell (Starter kostenlos / Professional 49€ / Enterprise 149€)<br/>
+              📈 KI-gestützte Werbung — Services werden automatisch bei passenden Events empfohlen<br/>
+              🔗 Stripe Connect für automatische Agentur-Auszahlungen<br/>
+              📧 Automatische Booking-Bestätigung + 24h-Reminder Mails<br/>
+              🏢 Investor-Backed · MYFAMBLISS GROUP LTD · Zypern
             </div>
           </div>
 
