@@ -29,6 +29,9 @@ interface ServiceFormData {
   bookingMode: "internal" | "external_redirect" | "external_api";
   externalBookingUrl: string;
   paymentMethod: PaymentMethodValue;
+  capacityPerSlot: string;
+  groupsPerSlot: string;
+  groupsPerGuide: string;
 }
 
 interface ServiceEditorProps {
@@ -56,6 +59,9 @@ interface ServiceEditorProps {
     bookingMode?: string;
     externalBookingUrl?: string;
     paymentMethod?: string;
+    capacityPerSlot?: number;
+    groupsPerSlot?: number;
+    groupsPerGuide?: number;
   } | null;
 }
 
@@ -114,6 +120,9 @@ const emptyForm: ServiceFormData = {
   bookingMode: "internal",
   externalBookingUrl: "",
   paymentMethod: "online",
+  capacityPerSlot: "10",
+  groupsPerSlot: "1",
+  groupsPerGuide: "1",
 };
 
 const bookingModes = [
@@ -227,6 +236,9 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
         externalBookingUrl: service.externalBookingUrl || "",
         paymentMethod:
           service.paymentMethod === "on_site" ? "on_site" : "online",
+        capacityPerSlot: service.capacityPerSlot ? String(service.capacityPerSlot) : "10",
+        groupsPerSlot: service.groupsPerSlot ? String(service.groupsPerSlot) : "1",
+        groupsPerGuide: service.groupsPerGuide ? String(service.groupsPerGuide) : "1",
       });
     } else {
       setForm(emptyForm);
@@ -259,6 +271,9 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
     booking_mode: form.bookingMode,
     external_booking_url: form.bookingMode === "external_redirect" ? form.externalBookingUrl || undefined : undefined,
     payment_method: form.paymentMethod,
+    capacity_per_slot: Math.max(1, parseInt(form.capacityPerSlot || "10") || 10),
+    groups_per_slot: Math.max(1, parseInt(form.groupsPerSlot || "1") || 1),
+    groups_per_guide: Math.max(1, parseInt(form.groupsPerGuide || "1") || 1),
   });
 
   const handleSaveDraft = () => {
@@ -626,6 +641,58 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                     </p>
                   </div>
                 )}
+              </FormSection>
+
+              {/* Kapazität pro Slot */}
+              <FormSection title="Kapazität pro Slot">
+                <p className="text-[11px] text-slate-500 -mt-1 mb-2 leading-relaxed">
+                  Wie viele Personen und parallele Gruppen passen in einen Zeitslot? Ist ein Slot voll, wird die Uhrzeit im Kunden-Buchungsdialog automatisch ausgegraut.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField label="Personen pro Gruppe">
+                    <Input
+                      type="number"
+                      min={1}
+                      value={form.capacityPerSlot}
+                      onChange={(e) => update("capacityPerSlot", e.target.value)}
+                      placeholder="10"
+                      className={inputClass}
+                    />
+                  </FormField>
+                  <FormField label="Parallele Gruppen pro Slot">
+                    <Input
+                      type="number"
+                      min={1}
+                      value={form.groupsPerSlot}
+                      onChange={(e) => update("groupsPerSlot", e.target.value)}
+                      placeholder="1"
+                      className={inputClass}
+                    />
+                  </FormField>
+                </div>
+                <FormField label="Gruppen pro Guide">
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.groupsPerGuide}
+                    onChange={(e) => update("groupsPerGuide", e.target.value)}
+                    placeholder="1"
+                    className={inputClass}
+                  />
+                  <p className="text-[10px] text-slate-600 mt-1">
+                    Wie viele Gruppen kann ein Guide gleichzeitig betreuen? Beeinflusst die Guide-Zuweisung im Dashboard.
+                  </p>
+                </FormField>
+                <div className="px-3 py-2 rounded-xl bg-violet-500/5 border border-violet-500/15">
+                  <p className="text-[11px] text-violet-300/80 leading-relaxed">
+                    Effektive Slot-Kapazität:&nbsp;
+                    <strong className="text-violet-200">
+                      {Math.max(1, parseInt(form.capacityPerSlot || "10") || 10) *
+                        Math.max(1, parseInt(form.groupsPerSlot || "1") || 1)}
+                    </strong>
+                    &nbsp;Personen je Uhrzeit.
+                  </p>
+                </div>
               </FormSection>
 
               {/* Buchungseinstellungen */}

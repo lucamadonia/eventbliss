@@ -176,13 +176,54 @@ export default function MarketplaceServicePage() {
   const availMonth = selectedDate ? parseInt(selectedDate.slice(5, 7), 10) - 1 : now.getMonth();
   const { data: availabilityMap } = useServiceAvailability(s?.id, availYear, availMonth);
 
-  // Compute time slots from availability data or fallback
-  const timeSlots = useMemo(() => {
-    if (!selectedDate || !availabilityMap) return TIME_SLOTS_FALLBACK;
+  // Verfügbarkeits-Slots für den gewählten Tag mit Kapazitätsinfo.
+  // Fallback: wenn Agentur noch keine Verfügbarkeit konfiguriert hat, zeigen
+  // wir die Default-Stunden ohne Kapazitäts-Constraint (jede frei, 99/99).
+  interface SlotOption {
+    start: string;
+    end?: string;
+    available: boolean;
+    fitsParty: boolean; // passt die gewünschte Gruppe noch rein?
+    availableParticipants: number;
+    maxParticipants: number;
+  }
+  const timeSlots = useMemo<SlotOption[]>(() => {
+    if (!selectedDate || !availabilityMap) {
+      return TIME_SLOTS_FALLBACK.map((t) => ({
+        start: t,
+        available: true,
+        fitsParty: true,
+        availableParticipants: 99,
+        maxParticipants: 99,
+      }));
+    }
     const daySlots = availabilityMap.get(selectedDate);
-    if (!daySlots?.length) return TIME_SLOTS_FALLBACK;
-    return daySlots.filter((t: any) => t.available).map((t: any) => t.start);
-  }, [selectedDate, availabilityMap]);
+    if (!daySlots?.length) {
+      return TIME_SLOTS_FALLBACK.map((t) => ({
+        start: t,
+        available: true,
+        fitsParty: true,
+        availableParticipants: 99,
+        maxParticipants: 99,
+      }));
+    }
+    return daySlots.map((t) => ({
+      start: t.start,
+      end: t.end,
+      available: t.available,
+      fitsParty: t.available && t.availableParticipants >= participants,
+      availableParticipants: t.availableParticipants,
+      maxParticipants: t.maxParticipants,
+    }));
+  }, [selectedDate, availabilityMap, participants]);
+
+  // Auto-clear wenn gewählte Uhrzeit nicht mehr passt (z. B. Teilnehmerzahl erhöht)
+  useMemo(() => {
+    if (selectedTime && timeSlots.length > 0) {
+      const chosen = timeSlots.find((t) => t.start === selectedTime);
+      if (chosen && !chosen.fitsParty) setSelectedTime("");
+    }
+  }, [timeSlots, selectedTime]);
 
   const ratingBreakdown = useMemo(() => {
     // No live reviews yet - show empty breakdown based on avg_rating
@@ -530,10 +571,26 @@ export default function MarketplaceServicePage() {
                 className="w-full px-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/10 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors appearance-none"
               >
                 <option value="">Zeit wählen...</option>
-                {timeSlots.map((t: string) => (
-                  <option key={t} value={t}>{t} Uhr</option>
-                ))}
+                {timeSlots.map((t) => {
+                  const label = !t.available
+                    ? `${t.start} Uhr — ausgebucht`
+                    : !t.fitsParty
+                    ? `${t.start} Uhr — nur noch ${t.availableParticipants} ${t.availableParticipants === 1 ? "Platz" : "Plätze"} frei`
+                    : t.availableParticipants < t.maxParticipants
+                    ? `${t.start} Uhr (${t.availableParticipants} von ${t.maxParticipants} frei)`
+                    : `${t.start} Uhr`;
+                  return (
+                    <option key={t.start} value={t.start} disabled={!t.available || !t.fitsParty}>
+                      {label}
+                    </option>
+                  );
+                })}
               </select>
+              {timeSlots.length > 0 && timeSlots.every((t) => !t.fitsParty) && (
+                <p className="text-[11px] text-amber-400 mt-1.5 font-['Be_Vietnam_Pro']">
+                  Für {participants} {participants === 1 ? "Person" : "Personen"} ist an diesem Tag kein Slot mehr frei.
+                </p>
+              )}
             </div>
 
             {/* Participants */}
@@ -739,10 +796,26 @@ export default function MarketplaceServicePage() {
                   className="w-full px-4 py-3 rounded-xl bg-[#13131b] border border-[#484750]/20 text-sm font-['Be_Vietnam_Pro'] text-white focus:outline-none focus:border-[#cf96ff]/40 transition-colors appearance-none"
                 >
                   <option value="">Zeit wählen...</option>
-                  {timeSlots.map((t: string) => (
-                    <option key={t} value={t}>{t} Uhr</option>
-                  ))}
+                  {timeSlots.map((t) => {
+                    const label = !t.available
+                      ? `${t.start} Uhr — ausgebucht`
+                      : !t.fitsParty
+                      ? `${t.start} Uhr — nur noch ${t.availableParticipants} ${t.availableParticipants === 1 ? "Platz" : "Plätze"} frei`
+                      : t.availableParticipants < t.maxParticipants
+                      ? `${t.start} Uhr (${t.availableParticipants} von ${t.maxParticipants} frei)`
+                      : `${t.start} Uhr`;
+                    return (
+                      <option key={t.start} value={t.start} disabled={!t.available || !t.fitsParty}>
+                        {label}
+                      </option>
+                    );
+                  })}
                 </select>
+                {timeSlots.length > 0 && timeSlots.every((t) => !t.fitsParty) && (
+                  <p className="text-[11px] text-amber-400 mt-1.5 font-['Be_Vietnam_Pro']">
+                    Für {participants} {participants === 1 ? "Person" : "Personen"} ist an diesem Tag kein Slot mehr frei.
+                  </p>
+                )}
               </div>
 
               {/* Participants */}
