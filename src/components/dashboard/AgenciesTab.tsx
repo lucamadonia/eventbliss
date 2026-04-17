@@ -402,7 +402,7 @@ function MarketplaceServiceCard({
           onClick={() => navigate(`/marketplace/service/${service.slug}?event_id=${eventId}`)}
           className="w-full py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 hover:shadow-[#cf96ff]/30 transition-shadow flex items-center justify-center gap-1.5"
         >
-          F\u00fcr Event buchen
+          Für Event buchen
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -438,7 +438,7 @@ function BrowseServicesSection({ eventId }: { eventId: string }) {
             </div>
             <div>
               <h3 className="font-display font-bold text-lg">Dienstleistungen entdecken</h3>
-              <p className="text-xs text-muted-foreground">Services direkt f\u00fcr dein Event buchen</p>
+              <p className="text-xs text-muted-foreground">Services direkt für dein Event buchen</p>
             </div>
           </div>
         </div>
