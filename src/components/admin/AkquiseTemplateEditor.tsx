@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Code2, Eye, Monitor, Smartphone, Save, Variable } from "lucide-react";
+import { Code2, Eye, Monitor, Smartphone, Save, Variable, Pen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -163,6 +163,15 @@ export default function AkquiseTemplateEditor({
               </div>
               <div className="prose prose-sm prose-invert max-w-none text-sm leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: previewBody }} />
+              {/* Signature preview */}
+              <div className="mt-6 pt-4 border-t border-white/10">
+                <div className="text-sm">
+                  <strong className="text-foreground">{senderName}</strong><br/>
+                  <span className="text-xs text-muted-foreground">EventBliss · MYFAMBLISS GROUP LTD</span><br/>
+                  <span className="text-xs text-muted-foreground">📧 {senderEmail}</span><br/>
+                  <a href="https://event-bliss.com" className="text-xs text-purple-400">event-bliss.com</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

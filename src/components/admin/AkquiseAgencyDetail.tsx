@@ -176,11 +176,29 @@ export default function AkquiseAgencyDetail({ agencyId, onClose }: Props) {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      {/* Header — name + city editable */}
       <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-black text-foreground">{agency.name}</h2>
-          <p className="text-sm text-muted-foreground">{agency.city}, {agency.country}</p>
+        <div className="flex-1 min-w-0 space-y-1">
+          <input
+            defaultValue={agency.name}
+            onBlur={(e) => { if (e.target.value !== agency.name) save("name", e.target.value); }}
+            className="text-xl font-black text-foreground bg-transparent border-0 outline-none w-full hover:bg-white/5 focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
+          />
+          <div className="flex gap-2">
+            <input
+              defaultValue={agency.city}
+              onBlur={(e) => { if (e.target.value !== agency.city) save("city", e.target.value); }}
+              className="text-sm text-muted-foreground bg-transparent border-0 outline-none hover:bg-white/5 focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
+              placeholder="Stadt"
+            />
+            <span className="text-sm text-muted-foreground">,</span>
+            <input
+              defaultValue={agency.country}
+              onBlur={(e) => { if (e.target.value !== agency.country) save("country", e.target.value); }}
+              className="text-sm text-muted-foreground bg-transparent border-0 outline-none hover:bg-white/5 focus:bg-white/10 rounded px-1 transition-colors"
+              placeholder="Land"
+            />
+          </div>
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="outline" className="border-purple-500/50 text-purple-400">{agency.outreach_status || "none"}</Badge>
             {agency.response_sentiment && (
