@@ -135,6 +135,9 @@ const AppContent = () => {
           <Route path="/partner-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/partner-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          {/* Common alias paths (/agency/apply, /apply) so deep links and human-typed URLs work */}
+          <Route path="/agency/apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyDashboard /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency/pricing" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyPricing /></Suspense></ErrorBoundary>} />
