@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
+// NOTE: ?target=deno forces esm.sh to serve a SubtleCrypto-compatible build.
+// Without it, `constructEventAsync` can fall back to Node's sync `crypto`
+// which is absent in Deno Edge Runtime and throws
+// "SubtleCryptoProvider cannot be used in a synchronous context".
+import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
 
@@ -226,6 +230,58 @@ serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         logStep("Checkout completed", { sessionId: session.id, customerId: session.customer });
 
+        // Marketplace booking? Route to marketplace handling instead of the
+        // subscription flow. This makes a SINGLE Stripe Dashboard endpoint
+        // work for both worlds — if the user also has a dedicated
+        // marketplace-webhook endpoint, that one processes it independently
+        // (both are idempotent via processed_webhook_events).
+        const isMarketplace =
+          session.metadata?.source === "marketplace" ||
+          !!session.metadata?.booking_id;
+        if (isMarketplace) {
+          const bookingId = session.metadata?.booking_id;
+          if (bookingId) {
+            logStep("Routing marketplace checkout.session.completed", { bookingId });
+
+            // Determine status based on service.auto_confirm — mirror of
+            // marketplace-webhook logic
+            const { data: booking } = await supabaseClient
+              .from("marketplace_bookings")
+              .select("service_id")
+              .eq("id", bookingId)
+              .single();
+            let newStatus = "pending_confirmation";
+            if (booking?.service_id) {
+              const { data: service } = await supabaseClient
+                .from("marketplace_services")
+                .select("auto_confirm")
+                .eq("id", booking.service_id)
+                .single();
+              if (service?.auto_confirm) newStatus = "confirmed";
+            }
+            const paymentIntentId = typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : session.payment_intent?.id || null;
+            const update: Record<string, unknown> = {
+              status: newStatus,
+              stripe_payment_intent_id: paymentIntentId,
+              stripe_checkout_session_id: session.id,
+            };
+            if (newStatus === "confirmed") update.confirmed_at = new Date().toISOString();
+
+            const { error: updateError } = await supabaseClient
+              .from("marketplace_bookings")
+              .update(update)
+              .eq("id", bookingId);
+            if (updateError) {
+              logStep("ERROR updating marketplace booking", { bookingId, error: updateError });
+            } else {
+              logStep("Marketplace booking updated via stripe-webhook", { bookingId, newStatus });
+            }
+          }
+          break;
+        }
+
         // Track affiliate commission if a coupon was used
         await trackAffiliateCommission(supabaseClient, session, stripe);
 
@@ -322,6 +378,40 @@ serve(async (req) => {
             }, { onConflict: "user_id" });
           
           logStep("Monthly subscription created", { userId, subscriptionId });
+        }
+        break;
+      }
+
+      case "charge.refunded": {
+        // Also mirror the marketplace-webhook refund handling here so a
+        // single Stripe endpoint can cover both subscription and
+        // marketplace refunds.
+        const charge = event.data.object as Stripe.Charge;
+        const paymentIntentId = typeof charge.payment_intent === "string"
+          ? charge.payment_intent
+          : charge.payment_intent?.id || null;
+        if (paymentIntentId) {
+          const { data: mpBooking } = await supabaseClient
+            .from("marketplace_bookings")
+            .select("id")
+            .eq("stripe_payment_intent_id", paymentIntentId)
+            .maybeSingle();
+          if (mpBooking) {
+            const refundAmountCents = charge.amount_refunded || 0;
+            await supabaseClient
+              .from("marketplace_bookings")
+              .update({
+                status: "refunded",
+                stripe_refund_id: charge.refunds?.data?.[0]?.id || null,
+                refund_amount_cents: refundAmountCents,
+                refunded_at: new Date().toISOString(),
+              })
+              .eq("id", mpBooking.id);
+            logStep("Marketplace booking refunded via stripe-webhook", {
+              bookingId: mpBooking.id,
+              refundAmountCents,
+            });
+          }
         }
         break;
       }
