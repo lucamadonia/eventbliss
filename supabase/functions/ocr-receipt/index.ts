@@ -66,12 +66,20 @@ serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Prefer direct OpenAI, fall back to OpenRouter (same OpenAI-compatible
+  // chat-completions schema). Either key unlocks gpt-4o-mini vision.
   const openaiKey = Deno.env.get("OPENAI_API_KEY");
+  const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
+  const apiKey = openaiKey ?? openrouterKey;
+  const apiBase = openaiKey
+    ? "https://api.openai.com/v1"
+    : "https://openrouter.ai/api/v1";
+  const model = openaiKey ? "gpt-4o-mini" : "openai/gpt-4o-mini";
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-  if (!openaiKey) {
-    return json({ error: "OPENAI_API_KEY not configured" }, 500, corsHeaders);
+  if (!apiKey) {
+    return json({ error: "Weder OPENAI_API_KEY noch OPENROUTER_API_KEY konfiguriert" }, 500, corsHeaders);
   }
 
   try {
@@ -105,15 +113,21 @@ serve(async (req) => {
       return json({ error: "Signed URL fehlgeschlagen" }, 500, corsHeaders);
     }
 
-    // Call OpenAI
-    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Call OpenAI / OpenRouter (same schema).
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    };
+    if (!openaiKey) {
+      // OpenRouter requires these headers for attribution/referer policy.
+      headers["HTTP-Referer"] = "https://event-bliss.com";
+      headers["X-Title"] = "EventBliss Expenses OCR";
+    }
+    const openaiResponse = await fetch(`${apiBase}/chat/completions`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiKey}`,
-      },
+      headers,
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model,
         temperature: 0,
         response_format: { type: "json_schema", json_schema: OCR_SCHEMA },
         messages: [
@@ -132,9 +146,10 @@ serve(async (req) => {
 
     if (!openaiResponse.ok) {
       const errText = await openaiResponse.text();
-      log("OpenAI error", { status: openaiResponse.status, body: errText });
+      const provider = openaiKey ? "OpenAI" : "OpenRouter";
+      log(`${provider} error`, { status: openaiResponse.status, body: errText });
       return json(
-        { error: `OpenAI: ${openaiResponse.status}`, detail: errText.slice(0, 400) },
+        { error: `${provider}: ${openaiResponse.status}`, detail: errText.slice(0, 400) },
         502,
         corsHeaders,
       );
@@ -143,14 +158,14 @@ serve(async (req) => {
     const data = await openaiResponse.json();
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
-      return json({ error: "Leere OpenAI-Antwort" }, 502, corsHeaders);
+      return json({ error: "Leere Antwort vom LLM" }, 502, corsHeaders);
     }
 
     let parsed: ReceiptOcrResult;
     try {
       parsed = JSON.parse(content) as ReceiptOcrResult;
     } catch {
-      return json({ error: "OpenAI-Antwort war kein valides JSON", raw: content.slice(0, 400) }, 502, corsHeaders);
+      return json({ error: "LLM-Antwort war kein valides JSON", raw: content.slice(0, 400) }, 502, corsHeaders);
     }
 
     log("Parsed", {
