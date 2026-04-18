@@ -6,9 +6,11 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   Plus, Minus, User, Play, Eye, EyeOff, ChevronRight,
   Clock, CheckCircle2, Trophy, ArrowLeft, RotateCcw,
-  Shield, AlertTriangle, Crown, Send,
+  Shield, AlertTriangle, Crown, Send, Lock, LockOpen,
+  Sparkles, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHaptics } from '@/hooks/useHaptics';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -97,6 +99,91 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 // ---------------------------------------------------------------------------
+// Reveal VFX helpers — particle bursts, glow rings, scan lines
+// ---------------------------------------------------------------------------
+
+/**
+ * ParticleBurst — N small dots fly radially outward from the center.
+ * Used twice: once at the moment the lock "cracks" (cyan/violet sparks),
+ * once as ambient sparkle around the revealed safe word.
+ */
+function ParticleBurst({
+  count = 14,
+  color = '#df8eff',
+  radius = 120,
+  size = 6,
+  duration = 0.9,
+  delay = 0,
+}: { count?: number; color?: string; radius?: number; size?: number; duration?: number; delay?: number }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      {Array.from({ length: count }).map((_, i) => {
+        const angle = (i / count) * Math.PI * 2;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        return (
+          <motion.span
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: size, height: size,
+              background: color,
+              boxShadow: `0 0 ${size * 2}px ${color}`,
+            }}
+            initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+            animate={{ x, y, opacity: [0, 1, 0], scale: [0, 1, 0.4] }}
+            transition={{ duration, delay, ease: 'easeOut' }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * RotatingGlowRing — conic gradient behind the revealed word. Spins
+ * slowly while the role is on screen; intensifies for impostor.
+ */
+function RotatingGlowRing({ impostor }: { impostor: boolean }) {
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: impostor ? 4 : 10, ease: 'linear' }}
+    >
+      <div
+        className="w-[140%] h-[140%] rounded-full opacity-30 blur-3xl"
+        style={{
+          background: impostor
+            ? 'conic-gradient(from 0deg, transparent 0%, #ff6e84 25%, transparent 50%, #a70138 75%, transparent 100%)'
+            : 'conic-gradient(from 0deg, transparent 0%, #8ff5ff 25%, transparent 50%, #df8eff 75%, transparent 100%)',
+        }}
+      />
+    </motion.div>
+  );
+}
+
+/**
+ * DangerScanLine — horizontal red line sweeping top→bottom twice for
+ * the impostor reveal. Paired with a red vignette that pulses at the
+ * edges of the card.
+ */
+function DangerScanLine() {
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-x-0 h-[3px]"
+      style={{
+        background: 'linear-gradient(90deg, transparent, #ff6e84, transparent)',
+        boxShadow: '0 0 20px #ff6e84, 0 0 40px #ff6e84',
+      }}
+      initial={{ top: -10 }}
+      animate={{ top: ['0%', '100%', '0%'] }}
+      transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -129,6 +216,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const [currentWordSet, setCurrentWordSet] = useState<WordSet | null>(null);
   const [revealIndex, setRevealIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(false);
+  // Short-lived "unlocking" stage between tap and reveal — the lock
+  // animation owns ~1100ms of screen time before the actual word/role
+  // is shown. Keeps the tap → reveal moment suspenseful.
+  const [unlocking, setUnlocking] = useState(false);
+  const haptics = useHaptics();
   const [timeLeft, setTimeLeft] = useState(0);
   const [currentSpeaker, setCurrentSpeaker] = useState(0);
   const [votingPlayer, setVotingPlayer] = useState(0);
@@ -286,8 +378,15 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   }, [phase]);
 
   // --- Word reveal navigation ---
+  // First tap triggers the lock-unlock sequence (~1100ms). Second tap
+  // (on the revealed content) advances to the next player or starts
+  // the discussion phase. Haptics mirror the visual beats so it feels
+  // physical: medium on tap, heavy at the "crack", celebrate/warning
+  // when the role is revealed.
   const handleRevealTap = () => {
+    if (unlocking) return; // ignore taps during the animation
     if (wordVisible) {
+      void haptics.light();
       setWordVisible(false);
       if (revealIndex < players.length - 1) {
         setRevealIndex((i) => i + 1);
@@ -295,9 +394,21 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
         setPhase('discussion');
         setCurrentSpeaker(0);
       }
-    } else {
-      setWordVisible(true);
+      return;
     }
+    // Start the unlock sequence
+    void haptics.medium();
+    setUnlocking(true);
+    // Mid-animation "crack" haptic
+    window.setTimeout(() => { void haptics.heavy(); }, 500);
+    // Final reveal haptic — gentler if safe word, sharper for impostor
+    const isImpostor = players[revealIndex]?.isImpostor;
+    window.setTimeout(() => {
+      if (isImpostor) void haptics.warning();
+      else void haptics.success();
+      setWordVisible(true);
+      setUnlocking(false);
+    }, 1100);
   };
 
   // --- Mark spoken ---
@@ -616,12 +727,12 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(223,142,255,0.4),transparent_60%)]" />
 
                 <AnimatePresence mode="wait">
-                  {!wordVisible ? (
+                  {!wordVisible && !unlocking && (
                     <motion.div
                       key={`pass-${revealIndex}`}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
                       className="relative z-10 w-full space-y-6"
                     >
                       <div className="space-y-2">
@@ -634,8 +745,15 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       </div>
                       <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-[#44484f]/40 flex flex-col items-center justify-center overflow-hidden bg-black/40">
                         <div className="absolute inset-0 bg-gradient-to-tr from-[#df8eff]/5 to-[#ff6b98]/5" />
-                        <Shield className="w-14 h-14 text-[#df8eff]/40 mb-2 relative" />
-                        <p className="relative text-2xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent">
+                        {/* Ambient lock — gently breathes to signal "tap to unlock" */}
+                        <motion.div
+                          animate={{ scale: [1, 1.06, 1], y: [0, -2, 0] }}
+                          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                          className="relative"
+                        >
+                          <Lock className="w-14 h-14 text-[#df8eff]/60 drop-shadow-[0_0_16px_rgba(223,142,255,0.35)]" />
+                        </motion.div>
+                        <p className="relative mt-3 text-2xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent">
                           {currentPlayer.name}
                         </p>
                       </div>
@@ -650,7 +768,101 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         </span>
                       </motion.button>
                     </motion.div>
-                  ) : (
+                  )}
+
+                  {unlocking && (
+                    <motion.div
+                      key={`unlocking-${revealIndex}`}
+                      initial={{ opacity: 0 }}
+                      animate={{
+                        opacity: 1,
+                        // Whole card shakes subtly while the lock breaks
+                        x: [0, -3, 3, -3, 3, 0, 0, 0],
+                      }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 1.1, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1] }}
+                      className="relative z-10 w-full min-h-[260px] flex flex-col items-center justify-center"
+                    >
+                      {/* Radial flash behind the lock */}
+                      <motion.div
+                        className="absolute inset-0 rounded-xl"
+                        initial={{ opacity: 0, scale: 0.6 }}
+                        animate={{
+                          opacity: [0, 0.45, 0.3, 0.9, 0],
+                          scale:   [0.6, 1, 1.1, 1.6, 2],
+                          background: currentPlayer.isImpostor
+                            ? 'radial-gradient(circle, rgba(255,110,132,0.55), transparent 65%)'
+                            : 'radial-gradient(circle, rgba(143,245,255,0.55), transparent 65%)',
+                        }}
+                        transition={{ duration: 1.1, ease: 'easeOut' }}
+                      />
+
+                      {/* The lock itself — shake → spin-up → fly away */}
+                      <motion.div
+                        className="relative"
+                        initial={{ rotate: 0, scale: 1, y: 0, opacity: 1 }}
+                        animate={{
+                          // t=0 to 0.5: violent shake in place
+                          // t=0.5 to 0.8: scale up + flash
+                          // t=0.8 to 1.1: shackle flies up, body dissolves
+                          rotate: [0, -6, 6, -8, 8, -4, 0, -14],
+                          scale:  [1, 1, 1, 1, 1.05, 1.2, 1.3, 0.6],
+                          y:      [0, 0, 0, 0, 0, -6, -14, -36],
+                          opacity: [1, 1, 1, 1, 1, 1, 0.7, 0],
+                        }}
+                        transition={{ duration: 1.1, times: [0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.78, 1] }}
+                      >
+                        <Lock
+                          className="w-20 h-20 drop-shadow-[0_0_24px_rgba(223,142,255,0.6)]"
+                          style={{
+                            color: currentPlayer.isImpostor ? '#ff6e84' : '#df8eff',
+                          }}
+                        />
+                        {/* Swap-in open-lock on the tail end for a crisp unlock beat */}
+                        <motion.div
+                          className="absolute inset-0"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0, 0, 0, 0, 0, 0.9, 0] }}
+                          transition={{ duration: 1.1, times: [0, 0.5, 0.6, 0.65, 0.7, 0.75, 0.8, 0.95] }}
+                        >
+                          <LockOpen
+                            className="w-20 h-20"
+                            style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#8ff5ff' }}
+                          />
+                        </motion.div>
+                      </motion.div>
+
+                      {/* Sparks at the moment of cracking */}
+                      <motion.div
+                        className="absolute inset-0"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0, 0, 0, 0.9, 1, 0.4, 0] }}
+                        transition={{ duration: 1.1, times: [0, 0.4, 0.5, 0.55, 0.6, 0.7, 0.85, 1] }}
+                      >
+                        <ParticleBurst
+                          count={18}
+                          color={currentPlayer.isImpostor ? '#ff6e84' : '#8ff5ff'}
+                          radius={140}
+                          size={6}
+                          duration={0.6}
+                          delay={0.55}
+                        />
+                      </motion.div>
+
+                      {/* Tiny "cracking" label */}
+                      <motion.span
+                        className="absolute bottom-4 text-[10px] font-bold tracking-[0.3em] uppercase"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: [0, 1, 1, 0], y: [6, 0, 0, -4] }}
+                        transition={{ duration: 1.1, times: [0, 0.2, 0.8, 1] }}
+                        style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#8ff5ff' }}
+                      >
+                        {currentPlayer.isImpostor ? 'Intrusion erkannt' : 'Zugang gewährt'}
+                      </motion.span>
+                    </motion.div>
+                  )}
+
+                  {wordVisible && !unlocking && (
                     <motion.div
                       key={`word-${revealIndex}`}
                       initial={{ opacity: 0, scale: 0.85, rotateY: 60 }}
@@ -659,52 +871,158 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       transition={{ type: 'spring', stiffness: 220, damping: 18 }}
                       className="relative z-10 w-full space-y-6"
                     >
+                      {/* Rotating background glow ring — role-tinted */}
+                      <RotatingGlowRing impostor={currentPlayer.isImpostor} />
+
                       {currentPlayer.isImpostor ? (
-                        <div className="space-y-4">
-                          <span className="text-[#ff6e84] font-bold tracking-[0.25em] text-[10px] uppercase">
-                            Rolle enthüllt
-                          </span>
-                          <motion.div
-                            animate={{ x: [0, -4, 4, -4, 4, 0] }}
-                            transition={{ duration: 0.5, repeat: 2 }}
-                            className="flex justify-center"
+                        <div className="relative space-y-4">
+                          {/* Danger scan line sweeping the card edges */}
+                          <div className="absolute -inset-x-6 -inset-y-6 pointer-events-none overflow-hidden rounded-2xl">
+                            <DangerScanLine />
+                            {/* Red vignette pulse at the edges */}
+                            <motion.div
+                              className="absolute inset-0 rounded-2xl"
+                              animate={{
+                                boxShadow: [
+                                  'inset 0 0 24px rgba(255,110,132,0.35)',
+                                  'inset 0 0 60px rgba(255,110,132,0.55)',
+                                  'inset 0 0 24px rgba(255,110,132,0.35)',
+                                ],
+                              }}
+                              transition={{ duration: 1.4, repeat: Infinity }}
+                            />
+                          </div>
+                          <motion.span
+                            className="relative text-[#ff6e84] font-bold tracking-[0.25em] text-[10px] uppercase"
+                            initial={{ opacity: 0, letterSpacing: '0.6em' }}
+                            animate={{ opacity: 1, letterSpacing: '0.25em' }}
+                            transition={{ duration: 0.4 }}
                           >
-                            <AlertTriangle className="w-16 h-16 text-[#ff6e84] drop-shadow-[0_0_24px_rgba(255,110,132,0.55)]" />
+                            Rolle enthüllt
+                          </motion.span>
+                          <motion.div
+                            animate={{ x: [0, -5, 5, -5, 5, 0], rotate: [0, -3, 3, -3, 3, 0] }}
+                            transition={{ duration: 0.6, repeat: 2 }}
+                            className="relative flex justify-center"
+                          >
+                            {/* Warning icon with radial pulse behind it */}
+                            <motion.div
+                              className="absolute w-24 h-24 rounded-full"
+                              animate={{
+                                scale: [1, 1.6, 1],
+                                opacity: [0.5, 0, 0.5],
+                              }}
+                              transition={{ duration: 1.4, repeat: Infinity }}
+                              style={{ background: 'radial-gradient(circle, rgba(255,110,132,0.4), transparent 70%)' }}
+                            />
+                            <AlertTriangle className="relative w-16 h-16 text-[#ff6e84] drop-shadow-[0_0_28px_rgba(255,110,132,0.7)]" />
                           </motion.div>
                           <motion.h2
-                            className="text-4xl font-black tracking-tight text-[#ff6e84] drop-shadow-[0_0_20px_rgba(255,110,132,0.5)]"
-                            animate={{ scale: [1, 1.04, 1] }}
-                            transition={{ repeat: Infinity, duration: 1.6 }}
+                            className="relative text-4xl sm:text-5xl font-black tracking-tight text-[#ff6e84] drop-shadow-[0_0_24px_rgba(255,110,132,0.6)]"
+                            initial={{ opacity: 0, scale: 0.7 }}
+                            animate={{ opacity: 1, scale: [0.7, 1.1, 1] }}
+                            transition={{ duration: 0.55, ease: 'backOut' }}
                           >
-                            HOCHSTAPLER
+                            <motion.span
+                              animate={{
+                                textShadow: [
+                                  '0 0 0px #ff6e84',
+                                  '0 0 28px #ff6e84, 2px 0 0 #a70138, -2px 0 0 #ffb2b9',
+                                  '0 0 12px #ff6e84',
+                                ],
+                              }}
+                              transition={{ duration: 1.8, repeat: Infinity }}
+                            >
+                              HOCHSTAPLER
+                            </motion.span>
                           </motion.h2>
-                          <p className="text-sm text-[#a8abb3]">
+                          <p className="relative text-sm text-[#a8abb3]">
                             Du kennst das Wort nicht.<br />Bluff dich durch und falle nicht auf.
                           </p>
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff6e84]/10 border border-[#ff6e84]/30 text-[11px] font-bold uppercase tracking-widest text-[#ff6e84]">
+                          <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff6e84]/10 border border-[#ff6e84]/30 text-[11px] font-bold uppercase tracking-widest text-[#ff6e84]">
+                            <Zap className="w-3 h-3" />
                             Kategorie · {currentWordSet?.category}
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-4">
-                          <span className="text-[#8ff5ff] font-bold tracking-[0.25em] text-[10px] uppercase">
+                        <div className="relative space-y-4">
+                          {/* Floating sparkles around the safe word */}
+                          {[0, 1, 2, 3, 4, 5].map((i) => (
+                            <motion.span
+                              key={i}
+                              className="absolute"
+                              style={{
+                                top:   `${15 + Math.sin(i) * 30 + i * 8}%`,
+                                left:  `${10 + (i * 83) % 80}%`,
+                                color: i % 2 === 0 ? '#8ff5ff' : '#df8eff',
+                              }}
+                              initial={{ opacity: 0, y: 10, scale: 0.4 }}
+                              animate={{
+                                opacity: [0, 0.9, 0.5, 0.9, 0],
+                                y: [10, -8, 2, -6, -14],
+                                scale: [0.4, 1, 0.8, 1.05, 0.6],
+                              }}
+                              transition={{
+                                duration: 3 + (i % 3) * 0.5,
+                                delay: 0.2 + i * 0.25,
+                                repeat: Infinity,
+                                repeatDelay: 0.4,
+                              }}
+                            >
+                              <Sparkles className="w-4 h-4" />
+                            </motion.span>
+                          ))}
+
+                          <motion.span
+                            className="relative text-[#8ff5ff] font-bold tracking-[0.25em] text-[10px] uppercase"
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                          >
                             Dein Wort
-                          </span>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#a8abb3]">
+                          </motion.span>
+                          <p className="relative text-[11px] font-semibold uppercase tracking-[0.25em] text-[#a8abb3]">
                             {currentWordSet?.category}
                           </p>
-                          <p className="text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.35)] tracking-tight">
-                            {currentWordSet?.word}
-                          </p>
-                          <p className="text-xs text-[#a8abb3]/80">
+                          {/* Letter-by-letter reveal of the word */}
+                          <motion.p
+                            className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
+                            initial="hidden"
+                            animate="show"
+                            variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}
+                          >
+                            {(currentWordSet?.word ?? '').split('').map((ch, i) => (
+                              <motion.span
+                                key={`${ch}-${i}`}
+                                className="inline-block"
+                                variants={{
+                                  hidden: { opacity: 0, y: 20, rotateX: 80 },
+                                  show:   { opacity: 1, y: 0,  rotateX: 0,  transition: { type: 'spring', stiffness: 280, damping: 14 } },
+                                }}
+                                style={{ whiteSpace: 'pre' }}
+                              >
+                                {ch}
+                              </motion.span>
+                            ))}
+                          </motion.p>
+                          <p className="relative text-xs text-[#a8abb3]/80">
                             Merk's dir gut — aber verrate nichts.
                           </p>
+                          {/* Success particle burst fires once at reveal */}
+                          <div className="relative">
+                            <ParticleBurst count={14} color="#8ff5ff" radius={150} size={5} duration={1.1} delay={0} />
+                          </div>
                         </div>
                       )}
                       <motion.button
                         onClick={handleRevealTap}
                         whileTap={{ scale: 0.95 }}
-                        className="w-full py-4 px-8 rounded-full bg-[#20262f] border border-[#df8eff]/30 text-[#df8eff] font-extrabold text-sm tracking-[0.2em] uppercase hover:bg-[#262c36] transition-colors"
+                        className={cn(
+                          "relative w-full py-4 px-8 rounded-full border font-extrabold text-sm tracking-[0.2em] uppercase transition-colors",
+                          currentPlayer.isImpostor
+                            ? "bg-[#20262f] border-[#ff6e84]/30 text-[#ff6e84] hover:bg-[#262c36]"
+                            : "bg-[#20262f] border-[#8ff5ff]/30 text-[#8ff5ff] hover:bg-[#262c36]",
+                        )}
                       >
                         <span className="inline-flex items-center gap-2">
                           <EyeOff className="w-4 h-4" /> Verstanden · Weitergeben
