@@ -32,6 +32,14 @@ interface ServiceFormData {
   capacityPerSlot: string;
   groupsPerSlot: string;
   groupsPerGuide: string;
+  // Scheduling
+  durationMinutes: string;
+  bufferBeforeMinutes: string;
+  bufferAfterMinutes: string;
+  schedulingMode: "always_available" | "weekly_recurring" | "specific_dates" | "mixed";
+  recurrenceInterval: string;
+  recurrenceAnchorDate: string; // ISO date or ""
+  specificDates: string;        // newline-separated list of "YYYY-MM-DD HH:mm-HH:mm" lines
 }
 
 interface ServiceEditorProps {
@@ -62,8 +70,48 @@ interface ServiceEditorProps {
     capacityPerSlot?: number;
     groupsPerSlot?: number;
     groupsPerGuide?: number;
+    durationMinutes?: number | null;
+    bufferBeforeMinutes?: number;
+    bufferAfterMinutes?: number;
+    schedulingMode?: string;
+    recurrenceInterval?: number;
+    recurrenceAnchorDate?: string | null;
   } | null;
 }
+
+const schedulingModes = [
+  {
+    value: "always_available" as const,
+    label: "Jederzeit verfügbar",
+    description: "Kunde wählt Datum/Zeit frei (nach Vorlaufzeit).",
+    icon: "🌐",
+  },
+  {
+    value: "weekly_recurring" as const,
+    label: "Wiederkehrend wöchentlich",
+    description: "Feste Wochentage & Uhrzeiten (alle X Wochen).",
+    icon: "📅",
+  },
+  {
+    value: "specific_dates" as const,
+    label: "Nur Einzeltermine",
+    description: "Nur an konkreten Tagen buchbar.",
+    icon: "📌",
+  },
+  {
+    value: "mixed" as const,
+    label: "Mixed (wöchentlich + Einzeltermine)",
+    description: "Wöchentliche Slots + zusätzliche Sondertermine.",
+    icon: "🔀",
+  },
+];
+
+const recurrenceIntervalOptions = [
+  { value: "1", label: "Jede Woche" },
+  { value: "2", label: "Alle zwei Wochen" },
+  { value: "3", label: "Alle drei Wochen" },
+  { value: "4", label: "Alle vier Wochen (~monatlich)" },
+];
 
 const categories = [
   { value: "workshop", label: "Workshop" },
@@ -123,6 +171,13 @@ const emptyForm: ServiceFormData = {
   capacityPerSlot: "10",
   groupsPerSlot: "1",
   groupsPerGuide: "1",
+  durationMinutes: "120",
+  bufferBeforeMinutes: "0",
+  bufferAfterMinutes: "15",
+  schedulingMode: "weekly_recurring",
+  recurrenceInterval: "1",
+  recurrenceAnchorDate: "",
+  specificDates: "",
 };
 
 const bookingModes = [
@@ -239,6 +294,13 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
         capacityPerSlot: service.capacityPerSlot ? String(service.capacityPerSlot) : "10",
         groupsPerSlot: service.groupsPerSlot ? String(service.groupsPerSlot) : "1",
         groupsPerGuide: service.groupsPerGuide ? String(service.groupsPerGuide) : "1",
+        durationMinutes: service.durationMinutes ? String(service.durationMinutes) : "120",
+        bufferBeforeMinutes: typeof service.bufferBeforeMinutes === "number" ? String(service.bufferBeforeMinutes) : "0",
+        bufferAfterMinutes: typeof service.bufferAfterMinutes === "number" ? String(service.bufferAfterMinutes) : "15",
+        schedulingMode: (service.schedulingMode as ServiceFormData["schedulingMode"]) || "weekly_recurring",
+        recurrenceInterval: service.recurrenceInterval ? String(service.recurrenceInterval) : "1",
+        recurrenceAnchorDate: service.recurrenceAnchorDate || "",
+        specificDates: "",
       });
     } else {
       setForm(emptyForm);
@@ -279,7 +341,69 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
     capacity_per_slot: Math.max(1, parseInt(form.capacityPerSlot || "10") || 10),
     groups_per_slot: Math.max(1, parseInt(form.groupsPerSlot || "1") || 1),
     groups_per_guide: Math.max(1, parseInt(form.groupsPerGuide || "1") || 1),
+    duration_minutes: form.durationMinutes ? Math.max(1, parseInt(form.durationMinutes)) : undefined,
+    buffer_before_minutes: Math.max(0, Math.min(1440, parseInt(form.bufferBeforeMinutes || "0") || 0)),
+    buffer_after_minutes: Math.max(0, Math.min(1440, parseInt(form.bufferAfterMinutes || "0") || 0)),
+    scheduling_mode: form.schedulingMode,
+    recurrence_interval: Math.max(1, Math.min(12, parseInt(form.recurrenceInterval || "1") || 1)),
+    recurrence_anchor_date: form.recurrenceAnchorDate || undefined,
+    specific_dates: form.schedulingMode === "specific_dates" || form.schedulingMode === "mixed"
+      ? parseSpecificDates(form.specificDates)
+      : [],
   });
+
+  // Parse user textarea into array of { date, start_time, end_time, notes? }
+  // Accepted formats per line:
+  //   2026-05-12 14:00-17:00
+  //   2026-05-12 14:00-17:00 Sommer-Special
+  //   2026-05-12T14:00
+  //   2026-05-12  (uses service duration)
+  interface ParsedDate {
+    date: string;
+    start_time: string;
+    end_time: string;
+    notes?: string;
+  }
+  function parseSpecificDates(raw: string): ParsedDate[] {
+    if (!raw?.trim()) return [];
+    const duration = form.durationMinutes ? parseInt(form.durationMinutes) : 120;
+    const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const out: ParsedDate[] = [];
+    for (const line of lines) {
+      // 2026-05-12 14:00-17:00 [notes...]
+      const withRange = line.match(/^(\d{4}-\d{2}-\d{2})[T\s]+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})(?:\s+(.+))?$/);
+      if (withRange) {
+        out.push({
+          date: withRange[1],
+          start_time: withRange[2].length === 4 ? `0${withRange[2]}` : withRange[2],
+          end_time: withRange[3].length === 4 ? `0${withRange[3]}` : withRange[3],
+          notes: withRange[4],
+        });
+        continue;
+      }
+      // 2026-05-12 14:00 [notes...] (auto-compute end from duration)
+      const withStart = line.match(/^(\d{4}-\d{2}-\d{2})[T\s]+(\d{1,2}:\d{2})(?:\s+(.+))?$/);
+      if (withStart) {
+        const [h, m] = withStart[2].split(":").map(Number);
+        const endMinutes = h * 60 + m + duration;
+        const eh = Math.floor(endMinutes / 60) % 24;
+        const em = endMinutes % 60;
+        out.push({
+          date: withStart[1],
+          start_time: withStart[2].length === 4 ? `0${withStart[2]}` : withStart[2],
+          end_time: `${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}`,
+          notes: withStart[3],
+        });
+        continue;
+      }
+      // Nur Datum
+      const onlyDate = line.match(/^(\d{4}-\d{2}-\d{2})$/);
+      if (onlyDate) {
+        out.push({ date: onlyDate[1], start_time: "10:00", end_time: "12:00" });
+      }
+    }
+    return out;
+  }
 
   const handleSaveDraft = () => {
     if (!form.title || !form.price) return;
@@ -698,6 +822,157 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
                     &nbsp;Personen je Uhrzeit.
                   </p>
                 </div>
+              </FormSection>
+
+              {/* Dauer & Puffer */}
+              <FormSection title="Dauer & Puffer">
+                <p className="text-[11px] text-slate-500 -mt-1 mb-2 leading-relaxed">
+                  Wie lange dauert die Leistung, und wieviel Pause brauchst du vor/nach der Buchung?
+                </p>
+                <FormField label="Dauer der Leistung (Minuten)">
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.durationMinutes}
+                    onChange={(e) => update("durationMinutes", e.target.value)}
+                    placeholder="120"
+                    className={inputClass}
+                  />
+                </FormField>
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField label="Puffer davor (Min.)">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={form.bufferBeforeMinutes}
+                      onChange={(e) => update("bufferBeforeMinutes", e.target.value)}
+                      placeholder="0"
+                      className={inputClass}
+                    />
+                  </FormField>
+                  <FormField label="Puffer danach (Min.)">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={form.bufferAfterMinutes}
+                      onChange={(e) => update("bufferAfterMinutes", e.target.value)}
+                      placeholder="15"
+                      className={inputClass}
+                    />
+                  </FormField>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-violet-500/5 border border-violet-500/15">
+                  <p className="text-[11px] text-violet-300/80 leading-relaxed">
+                    Abstand zwischen zwei Buchungen:&nbsp;
+                    <strong className="text-violet-200">
+                      {(parseInt(form.bufferBeforeMinutes || "0") || 0) +
+                        (parseInt(form.durationMinutes || "0") || 0) +
+                        (parseInt(form.bufferAfterMinutes || "0") || 0)}
+                      &nbsp;Min.
+                    </strong>
+                  </p>
+                </div>
+              </FormSection>
+
+              {/* Terminmodus / Wiederholung */}
+              <FormSection title="Terminmodus">
+                <p className="text-[11px] text-slate-500 -mt-1 mb-2 leading-relaxed">
+                  Wie soll der Service angeboten werden? Wöchentlich wiederkehrend, nur an Einzelterminen oder kombiniert?
+                </p>
+                <div className="space-y-2">
+                  {schedulingModes.map((mode) => (
+                    <button
+                      key={mode.value}
+                      type="button"
+                      onClick={() => update("schedulingMode", mode.value)}
+                      className={cn(
+                        "w-full text-left p-3 rounded-xl border transition-all duration-200 cursor-pointer",
+                        form.schedulingMode === mode.value
+                          ? "border-violet-500/40 bg-violet-500/10"
+                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.04] text-sm shrink-0 mt-0.5">
+                          {mode.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn(
+                            "text-xs font-medium",
+                            form.schedulingMode === mode.value ? "text-violet-300" : "text-slate-300"
+                          )}>
+                            {mode.label}
+                          </p>
+                          <p className="text-[10px] text-slate-600 mt-0.5">{mode.description}</p>
+                        </div>
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border-2 shrink-0 mt-1 flex items-center justify-center transition-colors",
+                          form.schedulingMode === mode.value
+                            ? "border-violet-500 bg-violet-500"
+                            : "border-white/[0.15]"
+                        )}>
+                          {form.schedulingMode === mode.value && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {(form.schedulingMode === "weekly_recurring" || form.schedulingMode === "mixed") && (
+                  <div className="space-y-3 pt-2">
+                    <FormSelect
+                      label="Wiederholungsintervall"
+                      value={form.recurrenceInterval}
+                      onChange={(v) => update("recurrenceInterval", v)}
+                      options={recurrenceIntervalOptions}
+                    />
+                    {parseInt(form.recurrenceInterval) > 1 && (
+                      <FormField label="Anker-Datum (erster Termin)">
+                        <Input
+                          type="date"
+                          value={form.recurrenceAnchorDate}
+                          onChange={(e) => update("recurrenceAnchorDate", e.target.value)}
+                          className={inputClass}
+                        />
+                        <p className="text-[10px] text-slate-600 mt-1">
+                          Nötig für „alle X Wochen" — legt den Start der Zählung fest.
+                        </p>
+                      </FormField>
+                    )}
+                    {isEditing && service ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setAvailabilityOpen(true)}
+                        className="w-full border-white/[0.1] text-slate-300 hover:bg-white/[0.04] cursor-pointer"
+                      >
+                        <CalendarClock className="w-4 h-4 mr-2" />
+                        Wochentage & Uhrzeiten bearbeiten
+                      </Button>
+                    ) : (
+                      <p className="text-[11px] text-slate-500 italic">
+                        Wochentage & Uhrzeiten kannst du nach dem Speichern konfigurieren.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {(form.schedulingMode === "specific_dates" || form.schedulingMode === "mixed") && (
+                  <FormField label="Einzeltermine">
+                    <textarea
+                      value={form.specificDates}
+                      onChange={(e) => update("specificDates", e.target.value)}
+                      placeholder={"z. B.\n2026-05-12 14:00-17:00 Sommer-Special\n2026-06-09 10:00 (Dauer automatisch)\n2026-07-03"}
+                      rows={5}
+                      className={textareaClass + " font-mono text-[12px]"}
+                    />
+                    <p className="text-[10px] text-slate-600 mt-1 leading-relaxed">
+                      Ein Termin pro Zeile: <code>YYYY-MM-DD HH:MM-HH:MM Notizen</code> oder <code>YYYY-MM-DD HH:MM</code> (Ende wird aus Dauer berechnet) oder nur <code>YYYY-MM-DD</code> (10:00-12:00 Default).
+                    </p>
+                  </FormField>
+                )}
               </FormSection>
 
               {/* Buchungseinstellungen */}
