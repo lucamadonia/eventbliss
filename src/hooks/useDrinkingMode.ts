@@ -173,6 +173,9 @@ export interface DrinkingModeAPI {
   isDrinkingMode: boolean;
   /** Unlock the Easter Egg (first discovery) */
   activate: () => void;
+  /** Re-hide the Easter Egg: disables mode AND forgets the discovery
+   *  so the Profile row disappears until the user taps 5× again. */
+  deactivate: () => void;
   /** Toggle drinking mode on/off */
   toggle: () => void;
   /** Record a drink — returns disclaimer message if threshold hit, else null */
@@ -191,6 +194,16 @@ export function useDrinkingMode(): DrinkingModeAPI {
       localStorage.setItem(ACTIVATED_KEY, "true");
       localStorage.setItem(STORAGE_KEY, "true");
     } catch { /* quota exceeded — silent */ }
+    emitChange();
+  }, []);
+
+  const deactivate = useCallback(() => {
+    try {
+      localStorage.removeItem(ACTIVATED_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(DRINKS_KEY);
+      localStorage.removeItem(SESSION_KEY);
+    } catch { /* silent */ }
     emitChange();
   }, []);
 
@@ -235,6 +248,7 @@ export function useDrinkingMode(): DrinkingModeAPI {
     isActivated: state.activated,
     isDrinkingMode: state.enabled,
     activate,
+    deactivate,
     toggle,
     recordDrink,
     drinkCount,

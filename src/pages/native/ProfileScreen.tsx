@@ -30,6 +30,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { languages } from "@/i18n";
 import { cn } from "@/lib/utils";
 
@@ -55,11 +56,14 @@ export default function ProfileScreen() {
   const [showAgeConfirm, setShowAgeConfirm] = useState(false);
   const [ageChecked, setAgeChecked] = useState(false);
 
-  // Easter Egg: tap version text 5 times within 3 seconds
+  // Easter Egg: tap version text 5 times within 3 seconds.
+  // - First time: opens the 18+ age confirm dialog to UNLOCK the mode.
+  // - After it's unlocked: 5 taps hide it again (clears activation so
+  //   the Profile row and drinking menu disappear). Lets testers + users
+  //   switch the easter egg off without having to clear app data.
   const tapCountRef = useRef(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleVersionTap = useCallback(() => {
-    if (drinkingMode.isActivated) return; // already discovered
     tapCountRef.current += 1;
     haptics.light();
     if (tapCountRef.current === 1) {
@@ -68,12 +72,16 @@ export default function ProfileScreen() {
     if (tapCountRef.current >= 5) {
       tapCountRef.current = 0;
       if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-      // Show age confirmation dialog FIRST — don't activate yet
       haptics.medium();
-      setShowAgeConfirm(true);
-      setAgeChecked(false);
+      if (drinkingMode.isActivated) {
+        drinkingMode.deactivate();
+        toast.success(t('native.profile.partyHidden', 'Party-Modus wieder versteckt'));
+      } else {
+        setShowAgeConfirm(true);
+        setAgeChecked(false);
+      }
     }
-  }, [drinkingMode, haptics]);
+  }, [drinkingMode, haptics, t]);
 
   const confirmActivation = useCallback(() => {
     if (!ageChecked) return;
