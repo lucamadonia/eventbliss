@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Loader2, X } from "lucide-react";
+import { ArrowRight, Check, Loader2, X, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/expenses-v2/types";
 import { useSettleDebt } from "@/hooks/expenses";
 import type { SettlementMethod, SimplifiedDebt } from "@/lib/expenses-v2/types";
+import { buildSettlementAction, hasDeepLink } from "@/lib/expenses-v2/paymentLinks";
 
 interface Participant {
   id: string;
@@ -13,6 +15,8 @@ interface Participant {
   paypal_me?: string;
   revolut_tag?: string;
   iban?: string;
+  bic?: string;
+  twint_number?: string;
 }
 
 interface SettlementFlowProps {
@@ -24,25 +28,10 @@ interface SettlementFlowProps {
   onSettled?: () => void;
 }
 
-const METHOD_LABELS: Record<SettlementMethod, { label: string; emoji: string; deepLink?: (p: Participant, amount: number) => string | null }> = {
-  paypal: {
-    label: "PayPal",
-    emoji: "💙",
-    deepLink: (p, a) => (p.paypal_me ? `https://paypal.me/${p.paypal_me}/${a.toFixed(2)}` : null),
-  },
-  revolut: {
-    label: "Revolut",
-    emoji: "🟣",
-    deepLink: (p, a) => (p.revolut_tag ? `https://revolut.me/${p.revolut_tag}?amount=${a.toFixed(2)}` : null),
-  },
-  bank: {
-    label: "Überweisung",
-    emoji: "🏦",
-    deepLink: (p, a) =>
-      p.iban
-        ? `bank://transfer?iban=${encodeURIComponent(p.iban)}&amount=${a.toFixed(2)}`
-        : null,
-  },
+const METHOD_LABELS: Record<SettlementMethod, { label: string; emoji: string }> = {
+  paypal: { label: "PayPal", emoji: "💙" },
+  revolut: { label: "Revolut", emoji: "🟣" },
+  bank: { label: "Überweisung", emoji: "🏦" },
   wise: { label: "Wise", emoji: "🟢" },
   apple_pay: { label: "Apple Pay", emoji: "" },
   google_pay: { label: "Google Pay", emoji: "G" },
@@ -85,8 +74,9 @@ export function SettlementFlow({
 
   const handleSettle = async (debt: SimplifiedDebt, method: SettlementMethod) => {
     const toParticipant = participants.find((p) => p.id === debt.to_participant_id);
-    const config = METHOD_LABELS[method];
-    const link = toParticipant && config.deepLink ? config.deepLink(toParticipant, debt.amount) : null;
+    const action = toParticipant
+      ? buildSettlementAction(method, toParticipant, debt.amount, `Ausgleich ${nameOf(debt.from_participant_id)}`)
+      : null;
 
     await settle.mutateAsync({
       eventId,
@@ -95,13 +85,20 @@ export function SettlementFlow({
       amount: debt.amount,
       method,
       currency,
-      referenceUrl: link ?? undefined,
+      referenceUrl: action?.kind === "open" ? action.url : undefined,
     });
 
     setActiveDebtKey(null);
 
-    if (link) {
-      window.open(link, "_blank");
+    if (action?.kind === "open") {
+      window.open(action.url, "_blank");
+    } else if (action?.kind === "copy") {
+      try {
+        await navigator.clipboard.writeText(action.value);
+        toast.success(action.hint);
+      } catch {
+        toast.info("In die Zwischenablage kopieren fehlgeschlagen — Details in der Aktivität.");
+      }
     }
 
     onSettled?.();
@@ -185,7 +182,9 @@ export function SettlementFlow({
                       {(Object.keys(METHOD_LABELS) as SettlementMethod[]).map((m) => {
                         const cfg = METHOD_LABELS[m];
                         const to = participants.find((p) => p.id === d.to_participant_id);
-                        const hasDeepLink = to && cfg.deepLink && cfg.deepLink(to, d.amount);
+                        const action = to ? buildSettlementAction(m, to, d.amount) : null;
+                        const linkable = to ? hasDeepLink(m, to, d.amount) : false;
+                        const copyable = action?.kind === "copy";
                         return (
                           <button
                             key={m}
@@ -196,8 +195,11 @@ export function SettlementFlow({
                           >
                             <span className="text-lg">{cfg.emoji}</span>
                             <span className="flex-1 text-left">{cfg.label}</span>
-                            {hasDeepLink && (
+                            {linkable && (
                               <span className="text-[9px] text-emerald-400 font-bold">LINK</span>
+                            )}
+                            {copyable && (
+                              <Copy className="w-3 h-3 text-slate-400" aria-label="Kopiert in Zwischenablage" />
                             )}
                           </button>
                         );
