@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Package, Eye, Pencil, Trash2, Star, Plus, Search, Filter,
-  TrendingUp, ShoppingBag, BarChart3, DollarSign,
+  Package, Eye, Pencil, Trash2, Star, Plus, Search, Loader2,
+  ShoppingBag, BarChart3, DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { GlassCard } from "./ui/GlassCard";
 import { StatCard } from "./ui/StatCard";
 import { AgencyServiceEditor } from "./AgencyServiceEditor";
+import { useAgencyServices, type AgencyService } from "@/hooks/useAgencyServices";
 
 /* ─── Types ──────────────────────────────────────────── */
 type ServiceStatus = "draft" | "pending_review" | "approved" | "rejected" | "suspended";
@@ -26,71 +26,65 @@ interface MarketplaceService {
   reviewCount: number;
   bookingsThisMonth: number;
   coverColor: string;
+  // Back-reference to the raw AgencyService so the editor prop types line up
+  raw: AgencyService;
 }
 
-/* ─── Mock Data ──────────────────────────────────────── */
-const mockServices: MarketplaceService[] = [
-  {
-    id: "svc-1",
-    title: "Premium Cocktail Workshop",
-    category: "Workshop",
-    price: 49,
-    priceType: "pro Person",
-    status: "approved",
-    rating: 4.8,
-    reviewCount: 24,
-    bookingsThisMonth: 7,
-    coverColor: "from-violet-500 to-fuchsia-500",
-  },
-  {
-    id: "svc-2",
-    title: "Live-Band: Jazz Ensemble",
-    category: "Musik",
-    price: 1200,
-    priceType: "Pauschal",
-    status: "approved",
-    rating: 4.9,
-    reviewCount: 18,
-    bookingsThisMonth: 3,
-    coverColor: "from-cyan-500 to-blue-500",
-  },
-  {
-    id: "svc-3",
-    title: "Food Truck Catering",
-    category: "Catering",
-    price: 25,
-    priceType: "pro Person",
-    status: "pending_review",
-    rating: 0,
-    reviewCount: 0,
-    bookingsThisMonth: 0,
-    coverColor: "from-amber-500 to-orange-500",
-  },
-  {
-    id: "svc-4",
-    title: "Eventfotografie Deluxe",
-    category: "Fotografie",
-    price: 890,
-    priceType: "Pauschal",
-    status: "draft",
-    rating: 0,
-    reviewCount: 0,
-    bookingsThisMonth: 0,
-    coverColor: "from-emerald-500 to-teal-500",
-  },
-  {
-    id: "svc-5",
-    title: "Escape Room Teambuilding",
-    category: "Entertainment",
-    price: 35,
-    priceType: "pro Person",
-    status: "rejected",
-    rating: 0,
-    reviewCount: 0,
-    bookingsThisMonth: 0,
-    coverColor: "from-red-500 to-pink-500",
-  },
+const CATEGORY_LABELS: Record<string, string> = {
+  workshop: "Workshop",
+  entertainment: "Entertainment",
+  catering: "Catering",
+  music: "Musik",
+  photography: "Fotografie",
+  venue: "Location",
+  wellness: "Wellness",
+  sport: "Sport",
+  decoration: "Dekoration",
+  transport: "Transport",
+  other: "Sonstiges",
+};
+
+const PRICE_TYPE_LABELS: Record<string, string> = {
+  per_person: "pro Person",
+  flat: "Pauschal",
+  flat_rate: "Pauschal",
+  per_hour: "pro Stunde",
+  custom: "individuell",
+};
+
+// Deterministic cover gradient from category so repeated renders stay stable
+const COVER_COLORS = [
+  "from-violet-500 to-fuchsia-500",
+  "from-cyan-500 to-blue-500",
+  "from-amber-500 to-orange-500",
+  "from-emerald-500 to-teal-500",
+  "from-red-500 to-pink-500",
+  "from-indigo-500 to-purple-500",
 ];
+
+function mapService(s: AgencyService): MarketplaceService {
+  const categoryKey = s.category in CATEGORY_LABELS ? s.category : "other";
+  const colorIdx = Math.abs(
+    [...s.id].reduce((acc, ch) => acc + ch.charCodeAt(0), 0),
+  ) % COVER_COLORS.length;
+  const rawStatus = (s.status as ServiceStatus) ?? "draft";
+  const knownStatus: ServiceStatus = (
+    ["draft", "pending_review", "approved", "rejected", "suspended"] as ServiceStatus[]
+  ).includes(rawStatus) ? rawStatus : "draft";
+  return {
+    id: s.id,
+    title: s.title ?? "Ohne Titel",
+    category: CATEGORY_LABELS[categoryKey] ?? categoryKey,
+    price: (s.price_cents ?? 0) / 100,
+    priceType: PRICE_TYPE_LABELS[s.price_type] ?? s.price_type,
+    status: knownStatus,
+    rating: s.avg_rating ?? 0,
+    reviewCount: s.review_count ?? 0,
+    bookingsThisMonth: s.booking_count ?? 0,
+    coverColor: COVER_COLORS[colorIdx],
+    raw: s,
+  };
+}
 
 const statusConfig: Record<ServiceStatus, { label: string; className: string }> = {
   draft: { label: "Entwurf", className: "bg-slate-500/20 text-slate-300 border-slate-500/30" },
@@ -121,16 +115,20 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingService, setEditingService] = useState<MarketplaceService | null>(null);
 
-  const filteredServices = mockServices.filter((s) => {
+  // Real data from DB (was hardcoded mockServices before)
+  const { data: rawServices = [], isLoading } = useAgencyServices(agencyId || undefined);
+  const services = useMemo(() => rawServices.map(mapService), [rawServices]);
+
+  const filteredServices = services.filter((s) => {
     if (activeFilter !== "all" && s.status !== activeFilter) return false;
     if (searchQuery && !s.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
-  const totalServices = mockServices.length;
-  const activeListings = mockServices.filter((s) => s.status === "approved").length;
-  const monthlyBookings = mockServices.reduce((sum, s) => sum + s.bookingsThisMonth, 0);
-  const monthlyRevenue = mockServices.reduce((sum, s) => sum + s.bookingsThisMonth * s.price, 0);
+  const totalServices = services.length;
+  const activeListings = services.filter((s) => s.status === "approved").length;
+  const monthlyBookings = services.reduce((sum, s) => sum + s.bookingsThisMonth, 0);
+  const monthlyRevenue = services.reduce((sum, s) => sum + s.bookingsThisMonth * s.price, 0);
 
   const kpis = [
     { label: "Gesamt Services", value: totalServices, icon: Package, variant: "purple" as const, sparkData: [2, 3, 3, 4, totalServices] },
@@ -215,6 +213,11 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
 
       {/* Service List */}
       <div className="space-y-3">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-6 h-6 text-violet-400 animate-spin" />
+          </div>
+        ) : (
         <AnimatePresence mode="popLayout">
           {filteredServices.length === 0 ? (
             <motion.div
@@ -294,30 +297,33 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
                     {statusConfig[service.status].label}
                   </Badge>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Actions — always visible on mobile, reveal-on-hover on desktop */}
+                  <div className="flex items-center gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-8 h-8 text-slate-500 hover:text-violet-300 cursor-pointer"
+                      className="w-9 h-9 sm:w-8 sm:h-8 text-slate-400 sm:text-slate-500 hover:text-violet-300 cursor-pointer"
                       onClick={() => handleEdit(service)}
                       title="Bearbeiten"
+                      aria-label="Bearbeiten"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-8 h-8 text-slate-500 hover:text-cyan-300 cursor-pointer"
+                      className="w-9 h-9 sm:w-8 sm:h-8 text-slate-400 sm:text-slate-500 hover:text-cyan-300 cursor-pointer"
                       title="Ansehen"
+                      aria-label="Ansehen"
                     >
                       <Eye className="w-3.5 h-3.5" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-8 h-8 text-slate-500 hover:text-red-400 cursor-pointer"
+                      className="w-9 h-9 sm:w-8 sm:h-8 text-slate-400 sm:text-slate-500 hover:text-red-400 cursor-pointer"
                       title="Löschen"
+                      aria-label="Löschen"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
@@ -327,6 +333,7 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
             ))
           )}
         </AnimatePresence>
+        )}
       </div>
 
       {/* Service Editor Slide-over */}
@@ -334,7 +341,29 @@ export default function AgencyMarketplace({ agencyId = "" }: { agencyId?: string
         open={editorOpen}
         onClose={() => { setEditorOpen(false); setEditingService(null); }}
         agencyId={agencyId}
-        service={editingService}
+        service={editingService ? {
+          id: editingService.raw.id,
+          title: editingService.raw.title,
+          category: editingService.raw.category,
+          price: editingService.raw.price_cents / 100,
+          priceType: editingService.raw.price_type,
+          shortDescription: editingService.raw.short_description ?? undefined,
+          description: editingService.raw.description ?? undefined,
+          includes: editingService.raw.includes ?? [],
+          requirements: editingService.raw.requirements ?? [],
+          minParticipants: editingService.raw.min_participants ?? undefined,
+          maxParticipants: editingService.raw.max_participants ?? undefined,
+          locationType: editingService.raw.location_type,
+          locationAddress: editingService.raw.location_address ?? undefined,
+          locationCity: editingService.raw.location_city ?? undefined,
+          leadTimeDays: editingService.raw.advance_booking_days,
+          cancellationPolicy: editingService.raw.cancellation_policy,
+          autoConfirm: editingService.raw.auto_confirm,
+          paymentMethod: editingService.raw.payment_method,
+          capacityPerSlot: editingService.raw.capacity_per_slot,
+          groupsPerSlot: editingService.raw.groups_per_slot,
+          groupsPerGuide: editingService.raw.groups_per_guide,
+        } : null}
       />
     </div>
   );
