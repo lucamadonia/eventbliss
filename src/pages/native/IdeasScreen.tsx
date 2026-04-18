@@ -10,7 +10,7 @@
  *
  * Desktop IdeasHub stays unchanged — this is native-only.
  */
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,19 @@ import { gamesLibrary, type GameItem, type GameCategory } from "@/lib/games-libr
 import { themeIdeas, type ThemeItem, type ThemeCategory } from "@/lib/theme-ideas-library";
 import { useHaptics } from "@/hooks/useHaptics";
 import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
-import { spring, stagger, staggerItem } from "@/lib/motion";
+import { spring, staggerItem } from "@/lib/motion";
+
+// Local stagger with a much tighter cadence — the shared `stagger`
+// (0.06s) would spread 20 cards over 1.2s which feels laggy on mount.
+// 0.015s keeps the staircase effect but the whole list settles in <300ms.
+const fastStagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.015,
+      delayChildren: 0,
+    },
+  },
+};
 import { cn } from "@/lib/utils";
 
 type Tab = "games" | "themes";
@@ -91,6 +103,9 @@ export default function IdeasScreen() {
   const [gameCat, setGameCat] = useState<GameCategory | "all">("all");
   const [themeCat, setThemeCat] = useState<ThemeCategory | "all">("all");
 
+  // `t` from i18next changes reference on every render in some setups,
+  // which would re-filter the whole 147-item library each time. Using
+  // `i18n.language` keeps the memo stable per language switch instead.
   const filteredGames = useMemo(() => {
     let result = gamesLibrary;
     if (gameCat !== "all") result = result.filter((g) => g.categories.includes(gameCat));
@@ -104,7 +119,8 @@ export default function IdeasScreen() {
       );
     }
     return result;
-  }, [gameCat, query, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameCat, query, i18n.language]);
 
   const filteredThemes = useMemo(() => {
     let result = themeIdeas;
@@ -118,7 +134,22 @@ export default function IdeasScreen() {
       );
     }
     return result;
-  }, [themeCat, query, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [themeCat, query, i18n.language]);
+
+  // Paginate the list so the initial render stays snappy. Users almost
+  // never scroll through all 147 games at once — we show a dense first
+  // batch, then expose "Mehr laden" to reveal the next chunk without
+  // re-mounting the framer-motion stagger on everything.
+  const PAGE_SIZE = 20;
+  const [gamesPage, setGamesPage] = useState(1);
+  const [themesPage, setThemesPage] = useState(1);
+  useEffect(() => {
+    setGamesPage(1);
+  }, [gameCat, query, tab]);
+  useEffect(() => {
+    setThemesPage(1);
+  }, [themeCat, query, tab]);
 
   const shuffleGames = useCallback(() => {
     haptics.light();
@@ -241,17 +272,21 @@ export default function IdeasScreen() {
             <motion.div
               key="games"
               className="px-5 pt-1 space-y-3"
-              variants={stagger}
+              variants={fastStagger}
               initial="initial"
               animate="animate"
             >
-              {filteredGames.slice(0, 50).map((game) => (
+              {filteredGames.slice(0, gamesPage * PAGE_SIZE).map((game) => (
                 <GameItemCard key={game.id} game={game} t={t} haptics={haptics} language={i18n.language} />
               ))}
-              {filteredGames.length > 50 && (
-                <p className="text-center text-xs text-muted-foreground/60 py-4">
-                  {t('native.ideas.moreGames', { count: filteredGames.length - 50 })}
-                </p>
+              {filteredGames.length > gamesPage * PAGE_SIZE && (
+                <button
+                  type="button"
+                  onClick={() => { haptics.light(); setGamesPage((p) => p + 1); }}
+                  className="w-full h-11 rounded-2xl bg-foreground/5 border border-border text-sm font-semibold text-foreground hover:bg-foreground/10 active:scale-[0.98] transition-all"
+                >
+                  {t('native.ideas.loadMore', 'Mehr laden')} ({Math.min(PAGE_SIZE, filteredGames.length - gamesPage * PAGE_SIZE)})
+                </button>
               )}
               {filteredGames.length === 0 && <EmptyState text={t('native.ideas.noGames')} />}
             </motion.div>
@@ -259,13 +294,22 @@ export default function IdeasScreen() {
             <motion.div
               key="themes"
               className="px-5 pt-1 grid grid-cols-2 gap-3"
-              variants={stagger}
+              variants={fastStagger}
               initial="initial"
               animate="animate"
             >
-              {filteredThemes.slice(0, 40).map((theme) => (
+              {filteredThemes.slice(0, themesPage * PAGE_SIZE).map((theme) => (
                 <ThemeItemCard key={theme.id} theme={theme} t={t} haptics={haptics} />
               ))}
+              {filteredThemes.length > themesPage * PAGE_SIZE && (
+                <button
+                  type="button"
+                  onClick={() => { haptics.light(); setThemesPage((p) => p + 1); }}
+                  className="col-span-2 w-full h-11 rounded-2xl bg-foreground/5 border border-border text-sm font-semibold text-foreground hover:bg-foreground/10 active:scale-[0.98] transition-all"
+                >
+                  {t('native.ideas.loadMore', 'Mehr laden')} ({Math.min(PAGE_SIZE, filteredThemes.length - themesPage * PAGE_SIZE)})
+                </button>
+              )}
               {filteredThemes.length === 0 && (
                 <div className="col-span-2">
                   <EmptyState text={t('native.ideas.noThemes')} />
