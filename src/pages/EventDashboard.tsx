@@ -33,7 +33,8 @@ import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import { AgenciesTab } from "@/components/dashboard/AgenciesTab";
 import { PlannerTab } from "@/components/dashboard/PlannerTab";
 import { ResponsesTab } from "@/components/dashboard/ResponsesTab";
-import { ExpensesTab } from "@/components/dashboard/ExpensesTab";
+// Full-featured expenses page: split (equal / custom / percentage), paywall at 5+
+import EventExpenses from "@/pages/EventExpenses";
 import { FileEdit, Building2, LogIn } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import {
@@ -188,7 +189,14 @@ const EventDashboard = () => {
           />
         );
       case "expenses":
-        return <ExpensesTab event={event} participants={participants} />;
+        // Render the full EventExpenses page inside the dashboard tab so
+        // users get split/percent/paywall like before. Wrapped so its
+        // own min-h-screen doesn't fight the dashboard layout.
+        return (
+          <div className="-m-6 sm:-m-8 [&>div]:min-h-0">
+            <EventExpenses />
+          </div>
+        );
       case "responses":
         return <ResponsesTab event={event} responses={responses} isLoading={statsLoading} />;
       case "formbuilder":
