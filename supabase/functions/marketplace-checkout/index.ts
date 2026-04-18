@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getSafeOrigin } from "../_shared/origin.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -118,8 +119,9 @@ serve(async (req) => {
       agencyId: booking.agency_id,
     });
 
-    // Determine origin for redirect URLs
-    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, "") || "https://event-bliss.com";
+    // Normalise origin so Stripe's success_url / cancel_url always point
+    // at event-bliss.com (never capacitor://localhost). See _shared/origin.ts.
+    const origin = getSafeOrigin(req);
 
     // Build rich metadata so the payment is traceable end-to-end to
     // booking / agency / customer without needing Stripe Connect.

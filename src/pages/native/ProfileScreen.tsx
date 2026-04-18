@@ -21,6 +21,7 @@ import {
   Sun,
   Flower2,
   ShieldCheck,
+  Receipt,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuthContext } from "@/components/auth/AuthProvider";
@@ -118,6 +119,12 @@ export default function ProfileScreen() {
       sublabel: t('native.profile.adminDashboard'),
       onClick: () => go("/admin"),
     } as Item] : []),
+    {
+      icon: Receipt,
+      label: t('native.profile.myBookings', 'Meine Buchungen'),
+      sublabel: t('native.profile.myBookingsSub', 'Agenturen & Dienstleister'),
+      onClick: () => go("/my-bookings"),
+    },
     { icon: Settings, label: t('native.profile.settings'), onClick: () => go("/settings") },
     {
       icon: Globe,
