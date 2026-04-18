@@ -23,15 +23,17 @@ import {
 import { BalanceCard } from "@/components/expenses-v2/BalanceCard";
 import { AddExpenseSheet } from "@/components/expenses-v2/AddExpenseSheet";
 import { ExpenseRow } from "@/components/expenses-v2/ExpenseRow";
+import { ExpenseDetailSheet } from "@/components/expenses-v2/ExpenseDetailSheet";
 import { SettlementFlow } from "@/components/expenses-v2/SettlementFlow";
 import { SettledList } from "@/components/expenses-v2/SettledList";
 import { ActivityTimeline } from "@/components/expenses-v2/ActivityTimeline";
+import { RecurringPanel } from "@/components/expenses-v2/RecurringPanel";
 import { AmbientBg } from "@/components/expenses-v2/AmbientBg";
 import { CountUp } from "@/components/expenses-v2/CountUp";
 import { Confetti } from "@/components/expenses-v2/Confetti";
 import { formatMoney } from "@/lib/expenses-v2/types";
 
-type Tab = "list" | "settle" | "timeline";
+type Tab = "list" | "settle" | "timeline" | "recurring";
 
 export default function EventExpensesV2() {
   const { slug } = useParams<{ slug: string }>();
@@ -52,6 +54,10 @@ export default function EventExpensesV2() {
   const [addOpen, setAddOpen] = useState(false);
   const [balanceExpanded, setBalanceExpanded] = useState(false);
   const [confettiFire, setConfettiFire] = useState(false);
+  const [detailExpenseId, setDetailExpenseId] = useState<string | null>(null);
+  const detailExpense = detailExpenseId
+    ? data?.items.find((e) => e.id === detailExpenseId) ?? null
+    : null;
 
   // Scroll-aware header
   const { scrollY } = useScroll();
@@ -176,6 +182,7 @@ export default function EventExpensesV2() {
             [
               { id: "list", label: "Ledger", count: data?.summary.count ?? 0 },
               { id: "settle", label: "Begleichen", count: simplifiedDebts.length },
+              { id: "recurring", label: "Wiederkehrend" },
               { id: "timeline", label: "Verlauf" },
             ] as const
           ).map((t) => {
@@ -302,6 +309,7 @@ export default function EventExpensesV2() {
                               }))}
                               currentParticipantId={currentParticipantId}
                               currency={currency}
+                              onTap={(id) => setDetailExpenseId(id)}
                               onDelete={handleDelete}
                             />
                           ))}
@@ -371,6 +379,27 @@ export default function EventExpensesV2() {
               </motion.div>
             )}
 
+            {tab === "recurring" && eventId && (
+              <motion.div
+                key="recurring"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <RecurringPanel
+                  eventId={eventId}
+                  participants={(participants ?? []).map((p) => ({
+                    id: p.id,
+                    user_id: p.user_id,
+                    name: p.name ?? undefined,
+                  }))}
+                  currency={currency}
+                  defaultPayerId={currentParticipantId}
+                />
+              </motion.div>
+            )}
+
             {tab === "timeline" && eventId && (
               <motion.div
                 key="timeline"
@@ -428,6 +457,19 @@ export default function EventExpensesV2() {
           defaultPayerId={currentParticipantId}
         />
       )}
+
+      {/* Expense detail drawer */}
+      <ExpenseDetailSheet
+        open={!!detailExpenseId}
+        onClose={() => setDetailExpenseId(null)}
+        expense={detailExpense}
+        participants={(participants ?? []).map((p) => ({
+          id: p.id,
+          name: p.name ?? undefined,
+        }))}
+        currentParticipantId={currentParticipantId}
+        currency={currency}
+      />
     </div>
   );
 }
