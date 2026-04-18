@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { initDeepLinks } from "@/lib/deep-links";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
@@ -133,6 +133,10 @@ const AppContent = () => {
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/settings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><ProfileSettings /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          {/* Native app uses /profile as a tab destination. On web we
+              alias it to /settings so hand-typed URLs and shared deep
+              links still land somewhere sensible. */}
+          <Route path="/profile" element={<Navigate to="/settings" replace />} />
           <Route path="/premium" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><Premium /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/partner-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/partner-apply" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PartnerApply /></ProtectedRoute></Suspense></ErrorBoundary>} />
