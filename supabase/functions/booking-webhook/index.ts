@@ -245,6 +245,19 @@ serve(async (req) => {
         const customerPhone = event.data.phone || event.data.invitee?.phone || null;
         const bookingDate = event.data.date || event.data.scheduled_event?.start_time?.split('T')[0] || new Date().toISOString().split('T')[0];
         const bookingTime = event.data.time || event.data.scheduled_event?.start_time?.slice(11, 16) || '00:00';
+        const participantCount = event.data.participantCount || event.data.participant_count || 1;
+
+        // Pull the service's actual price so the external booking isn't
+        // stored as a 0 € row (which would then surface as a fake 0 € on
+        // /my-bookings if ever joined). External providers don't tell us
+        // the paid amount, so we use the service's list price as the
+        // authoritative EventBliss-side figure.
+        const unitPrice = service.price_cents ?? 0;
+        const totalFromService = service.price_type === 'per_person'
+          ? unitPrice * participantCount
+          : unitPrice;
+        const platformFee = Math.round(totalFromService * 0.10);
+        const agencyPayout = totalFromService - platformFee;
 
         const { error: insertError } = await supabaseClient
           .from('marketplace_bookings')
@@ -258,11 +271,11 @@ serve(async (req) => {
             status: 'confirmed',
             booking_date: bookingDate,
             booking_time: bookingTime,
-            participant_count: event.data.participantCount || event.data.participant_count || 1,
-            unit_price_cents: 0,
-            total_price_cents: 0,
-            platform_fee_cents: 0,
-            agency_payout_cents: 0,
+            participant_count: participantCount,
+            unit_price_cents: unitPrice,
+            total_price_cents: totalFromService,
+            platform_fee_cents: platformFee,
+            agency_payout_cents: agencyPayout,
             customer_name: customerName,
             customer_email: customerEmail,
             customer_phone: customerPhone,

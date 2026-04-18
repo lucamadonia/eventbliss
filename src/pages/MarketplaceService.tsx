@@ -262,6 +262,16 @@ export default function MarketplaceServicePage() {
       return;
     }
 
+    // Price guard — Stripe requires min 50 ¢ for online payments. An unset or
+    // zeroed price would either be silently rejected by Stripe (making the
+    // booking orphan) or would produce a 0 € booking in our DB. Fail fast
+    // here with a clear error so the user reloads instead of paying blind.
+    if (s.payment_method !== "on_site" && (!totalPrice || totalPrice < 50)) {
+      const { toast } = await import("sonner");
+      toast.error("Preis konnte nicht berechnet werden — bitte Seite neu laden.");
+      return;
+    }
+
     setIsBooking(true);
     try {
       const result = await createBooking.mutateAsync({

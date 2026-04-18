@@ -256,7 +256,12 @@ export function AgencyServiceEditor({ open, onClose, agencyId, service }: Servic
     short_description: form.shortDescription || undefined,
     description: form.description || undefined,
     category: form.category,
-    price_cents: Math.round(parseFloat(form.price || "0") * 100),
+    // Comma-safe parse: "12,50" is a common German input but parseFloat strips
+    // at the comma and would silently truncate to 12. Normalize first.
+    price_cents: Math.max(
+      0,
+      Math.round(parseFloat(String(form.price || "0").replace(",", ".")) * 100) || 0,
+    ),
     price_type: form.priceType,
     min_participants: form.minParticipants ? parseInt(form.minParticipants) : undefined,
     max_participants: form.maxParticipants ? parseInt(form.maxParticipants) : undefined,
