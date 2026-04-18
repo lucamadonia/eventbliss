@@ -19,6 +19,7 @@ import { NativeShell } from "./NativeShell";
 import { PageTransition } from "./PageTransition";
 import { NativeStackPage } from "./NativeStackPage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import PageLoader from "@/components/ui/PageLoader";
@@ -44,6 +45,10 @@ import Auth from "@/pages/Auth";
 import EventSurvey from "@/pages/EventSurvey";
 const EventDashboard = lazy(() => import("@/pages/EventDashboard"));
 const EventExpenses = lazy(() => import("@/pages/EventExpenses"));
+const EventExpensesV2 = lazy(() => import("@/pages/EventExpensesV2"));
+const MyBookings = lazy(() => import("@/pages/MyBookings"));
+const BookingSuccess = lazy(() => import("@/pages/BookingSuccess"));
+const PublicBooking = lazy(() => import("@/pages/PublicBooking"));
 const Premium = lazy(() => import("@/pages/Premium"));
 const ProfileSettings = lazy(() => import("@/pages/ProfileSettings"));
 const Admin = lazy(() => import("@/pages/Admin"));
@@ -66,6 +71,17 @@ function wrap(node: JSX.Element, title?: string, opts?: { fullscreen?: boolean; 
       </NativeStackPage>
     </ErrorBoundary>
   );
+}
+
+/**
+ * Picks between the stable EventExpenses page and the new v2 rebuild
+ * based on the `expenses_v2` feature flag. Kept near the routes so
+ * there's only one branch point across the entire native shell.
+ */
+function ExpensesGate() {
+  const { enabled, isLoading } = useFeatureFlag("expenses_v2");
+  if (isLoading) return <PageLoader />;
+  return enabled ? <EventExpensesV2 /> : <EventExpenses />;
 }
 
 export function NativeApp() {
@@ -150,7 +166,39 @@ export function NativeApp() {
               />
               <Route
                 path="/e/:slug/expenses"
-                element={wrap(<EventExpenses />, "Expenses")}
+                element={wrap(<ExpensesGate />, "Expenses")}
+              />
+              <Route
+                path="/e/:slug/expenses-v2"
+                element={wrap(<Suspense fallback={<PageLoader />}><EventExpensesV2 /></Suspense>, "Expenses")}
+              />
+
+              {/* Booking flow — mirrors App.tsx so users don't bounce out of
+                  the native shell after Stripe Checkout completes. */}
+              <Route
+                path="/my-bookings"
+                element={wrap(
+                  <ProtectedRoute>
+                    <Suspense fallback={<PageLoader />}><MyBookings /></Suspense>
+                  </ProtectedRoute>,
+                  "Meine Buchungen",
+                )}
+              />
+              <Route
+                path="/booking-success"
+                element={wrap(
+                  <ProtectedRoute>
+                    <Suspense fallback={<PageLoader />}><BookingSuccess /></Suspense>
+                  </ProtectedRoute>,
+                  "Buchung bestätigt",
+                )}
+              />
+              <Route
+                path="/booking/:number"
+                element={wrap(
+                  <Suspense fallback={<PageLoader />}><PublicBooking /></Suspense>,
+                  "Buchung",
+                )}
               />
               <Route
                 path="/e/:slug/claim/:token"

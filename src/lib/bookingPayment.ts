@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { openCheckout } from "@/lib/nativeCheckout";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -62,10 +63,15 @@ export function usePayBookingNow(): {
       if (error) throw error;
       const url = (data as { url?: string } | null)?.url;
       if (!url) throw new Error("Keine Checkout-URL erhalten");
-      return url;
+      return { url, bookingId };
     },
-    onSuccess: (url) => {
-      window.location.href = url;
+    onSuccess: ({ url, bookingId }) => {
+      // Native: in-app browser, landing back on BookingSuccess via router.
+      // Web: full-page redirect.
+      void openCheckout({
+        url,
+        onFinishPath: `/booking-success?booking=${bookingId}`,
+      });
     },
     onError: (e: Error) => {
       toast.error(`Zahlung konnte nicht gestartet werden: ${e.message}`);

@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import NativeEventGuests from "./NativeEventGuests";
 import NativeEventSchedule from "./NativeEventSchedule";
 import NativeEventExpenses from "./NativeEventExpenses";
+import EventExpensesV2 from "@/pages/EventExpensesV2";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import NativeResponsesTab from "@/components/native/responses";
 import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import {
@@ -706,6 +708,7 @@ export default function NativeEventDashboard() {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const [activeTab, setActiveTab] = useState<TabId>("uebersicht");
+  const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
   const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
 
@@ -764,7 +767,7 @@ export default function NativeEventDashboard() {
       case "zeitplan":
         return <NativeEventSchedule eventSlug={slug!} />;
       case "ausgaben":
-        return <NativeEventExpenses eventSlug={slug!} />;
+        return useV2Expenses ? <EventExpensesV2 /> : <NativeEventExpenses eventSlug={slug!} />;
       case "marketplace":
         return event ? <NativeMarketplaceEmbed eventId={event.id} /> : null;
       case "dienstleister":

@@ -7,6 +7,7 @@ import {
   Loader2, Lock, Wallet,
 } from "lucide-react";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
+import { openCheckout } from "@/lib/nativeCheckout";
 import { useServiceAvailability } from "@/hooks/useServiceAvailability";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -288,7 +289,14 @@ export default function MarketplaceServicePage() {
       // go straight to the celebration page (e.g. when no Stripe is
       // connected yet for the agency).
       if (result?.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
+        // Native: opens in-app SFSafariVC, then routes to BookingSuccess
+        // when the sheet closes. Web: plain window.location redirect.
+        await openCheckout({
+          url: result.checkoutUrl,
+          onFinishPath: result?.id
+            ? `/booking-success?booking=${result.id}`
+            : "/my-bookings",
+        });
       } else if (result?.id) {
         navigate(`/booking-success?booking=${result.id}`);
       } else {

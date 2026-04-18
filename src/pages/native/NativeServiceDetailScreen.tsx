@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
 import { useServiceAvailability } from "@/hooks/useServiceAvailability";
 import { useHaptics } from "@/hooks/useHaptics";
+import { openCheckout } from "@/lib/nativeCheckout";
 import { spring } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -165,7 +166,16 @@ export default function NativeServiceDetailScreen() {
       });
 
       if (result?.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
+        // SFSafariVC / Custom Tabs — keeps the user inside the app chrome.
+        // After the in-app browser closes we land on BookingSuccess which
+        // re-verifies payment against Stripe, so the screen is always in
+        // sync with the real session state.
+        await openCheckout({
+          url: result.checkoutUrl,
+          onFinishPath: result?.id
+            ? `/booking-success?booking=${result.id}`
+            : "/my-bookings",
+        });
       } else if (result?.id) {
         navigate(`/booking-success?booking=${result.id}`);
       } else {
