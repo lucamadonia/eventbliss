@@ -58,6 +58,7 @@ import JoinEvent from "./pages/JoinEvent";
 import EventSurvey from "./pages/EventSurvey";
 import EventDashboard from "./pages/EventDashboard";
 import EventExpenses from "./pages/EventExpenses";
+import EventExpensesV2 from "./pages/EventExpensesV2";
 import Danke from "./pages/Danke";
 import Auth from "./pages/Auth";
 import ClaimInvite from "./pages/ClaimInvite";
@@ -115,6 +116,7 @@ const AppContent = () => {
           <Route path="/e/:slug" element={<EventSurvey />} />
           <Route path="/e/:slug/dashboard" element={<EventDashboard />} />
           <Route path="/e/:slug/expenses" element={<EventExpenses />} />
+          <Route path="/e/:slug/expenses-v2" element={<EventExpensesV2 />} />
           <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
           <Route path="/client/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClientPortal /></Suspense></ErrorBoundary>} />
           <Route path="/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GamesHub /></Suspense></ErrorBoundary>} />
