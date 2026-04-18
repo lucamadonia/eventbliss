@@ -9,12 +9,10 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
-import { getTranslatedModes } from '../ui/getTranslatedModes';
-import { WHOAMI_CHARACTERS, type WhoAmICharacter } from './whoami-content-de';
-import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { WHOAMI_CHARACTERS } from './whoami-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { useHaptics } from "@/hooks/useHaptics";
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
@@ -24,23 +22,11 @@ interface Player {
 const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 const MAX_QUESTIONS = 20;
 
-const GAME_MODES: GameMode[] = [
-  { id: 'prominente', name: 'Prominente', desc: 'Beruehmte Persoenlichkeiten', icon: <Star className="w-6 h-6" /> },
-  { id: 'tiere', name: 'Tiere', desc: 'Rate das Tier!', icon: <PawPrint className="w-6 h-6" /> },
-  { id: 'berufe', name: 'Berufe', desc: 'Welcher Beruf bist du?', icon: <Briefcase className="w-6 h-6" /> },
-  { id: 'filme', name: 'Filme', desc: 'Filmcharaktere erraten', icon: <Film className="w-6 h-6" /> },
-];
-
 const MODE_TO_CATEGORY: Record<string, string> = {
   prominente: 'Prominente',
   tiere: 'Tiere',
   berufe: 'Berufe',
   filme: 'Filme',
-};
-
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 10, max: 30, default: 20, step: 1, label: 'Max. Fragen pro Spieler' },
-  rounds: { min: 1, max: 5, default: 1, step: 1, label: 'Runden' },
 };
 
 function shuffle<T>(arr: T[]): T[] {
@@ -60,6 +46,7 @@ const EP_STYLE = `
 export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const haptics = useHaptics();
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -234,6 +221,32 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     setPhase('guessing');
   };
 
+  // Simplified "heads-up" style actions for the new UI: phone-holder
+  // taps SOLVED when the active player guessed correctly, or SKIP to
+  // surrender this round to the next player.
+  const handleSolvedDirect = () => {
+    if (!activePlayer) return;
+    void haptics.celebrate();
+    const qAsked = activePlayer.questionsAsked + 1;
+    const bonus = Math.min(10, Math.max(1, maxQ - qAsked + 1));
+    setPlayers((prev) => prev.map((p, i) =>
+      i === activeIdx ? { ...p, guessedCorrectly: true, score: p.score + bonus } : p,
+    ));
+    setGuessCorrect(true);
+    setPhase('guessResult');
+  };
+
+  const handleSkipDirect = () => {
+    if (!activePlayer) return;
+    void haptics.warning();
+    // Give up this character — count as eliminated, advance to next.
+    setPlayers((prev) => prev.map((p, i) =>
+      i === activeIdx ? { ...p, eliminated: true, questionsAsked: maxQ } : p,
+    ));
+    setGuessCorrect(false);
+    setPhase('guessResult');
+  };
+
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
@@ -283,15 +296,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
 
   if (phase === 'setup') {
     return (
-      <GameSetup
-        gameId="whoami"
-        modes={getTranslatedModes('whoami', GAME_MODES, t)}
-        settings={SETUP_SETTINGS}
+      <WhoAmISetup
         onStart={handleStart}
-        title="Wer bin ich?"
-        minPlayers={2}
-        maxPlayers={10}
         onlinePlayers={online?.players}
+        t={t}
+        haptics={haptics}
       />
     );
   }
@@ -364,72 +373,99 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           </motion.div>
         )}
 
-        {/* ASKING PHASE */}
+        {/* ASKING PHASE — heads-up post-it gameplay */}
         {phase === 'asking' && activePlayer && (
-          <motion.div key="asking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center gap-5 px-4 py-6">
-            <ActivePlayerBanner
-              playerName={activePlayer.name}
-              playerColor={activePlayer.color}
-              playerAvatar={activePlayer.avatar}
-              hidden={false}
-            />
-            {/* Player info */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                style={{ backgroundColor: activePlayer.color }}>{activePlayer.avatar}</div>
-              <div>
-                <div className="font-bold text-white">{activePlayer.name}</div>
-                <div className="text-xs text-white/40">Frage {activePlayer.questionsAsked + 1}/{maxQ}</div>
+          <motion.div
+            key="asking"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="flex-1 flex flex-col items-center justify-between px-6 py-8 relative"
+          >
+            {/* Top strip: round + character countdown */}
+            <div className="w-full max-w-sm flex items-center justify-between text-xs">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#a8abb3]">
+                  Runde {currentRound}/{totalRounds}
+                </span>
+                <span className="text-[#df8eff] font-black text-sm mt-0.5">
+                  {MODE_TO_CATEGORY[mode]}
+                </span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#a8abb3]">
+                  Am Zug
+                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                    style={{ backgroundColor: activePlayer.color }}>
+                    {activePlayer.avatar}
+                  </div>
+                  <span className="text-white font-bold text-sm truncate max-w-[100px]">
+                    {activePlayer.name}
+                  </span>
+                </div>
               </div>
             </div>
-            {/* Big ? card */}
-            <div className="w-full max-w-sm rounded-2xl glass-card border border-[#df8eff]/20 p-8 text-center">
-              <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
-                <HelpCircle className="w-16 h-16 mx-auto text-[#df8eff] neon-glow" style={{ filter: 'drop-shadow(0 0 15px rgba(223,142,255,0.5))' }} />
+
+            {/* Neon post-it card — tilt + glow */}
+            <div className="relative w-full max-w-sm aspect-square" style={{ perspective: '1000px' }}>
+              <motion.div
+                initial={{ rotate: -6, opacity: 0, y: 20 }}
+                animate={{ rotate: -2, opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 120, damping: 16 }}
+                className="relative h-full w-full"
+              >
+                <div className="absolute inset-0 bg-[#8ff5ff]/20 rounded-2xl blur-2xl" />
+                <div
+                  className="relative h-full w-full rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-2xl"
+                  style={{
+                    background: 'rgba(32, 38, 47, 0.6)',
+                    backdropFilter: 'blur(24px)',
+                    WebkitBackdropFilter: 'blur(24px)',
+                    border: '1px solid rgba(143, 245, 255, 0.3)',
+                  }}
+                >
+                  {/* Top-fold visual — the "tape" */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-2 bg-[#8ff5ff] rounded-b-full shadow-[0_4px_14px_rgba(143,245,255,0.6)]" />
+                  <span className="text-[#00deec] font-bold tracking-[0.2em] text-[11px] uppercase mb-4">
+                    Deine Identität
+                  </span>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-white break-words px-2">
+                    {activePlayer.character}
+                  </h1>
+                  <div className="h-1 w-24 mt-6 rounded-full bg-gradient-to-r from-transparent via-[#8ff5ff] to-transparent opacity-60" />
+                </div>
               </motion.div>
-              <div className="text-[#a8abb3] text-sm mt-3">Wer bin ich?</div>
             </div>
-            {/* Last vote results */}
-            {Object.keys(voteResults).length > 0 && (
-              <div className="flex gap-3">
-                <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold">
-                  Ja: {voteSummary.yes}
-                </div>
-                <div className="px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold">
-                  Nein: {voteSummary.no}
-                </div>
-                <div className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-bold">
-                  Vielleicht: {voteSummary.maybe}
-                </div>
-              </div>
-            )}
-            {/* Question input */}
-            <div className="w-full max-w-sm space-y-3">
-              <input type="text" value={currentQuestion} onChange={(e) => setCurrentQuestion(e.target.value)}
-                placeholder="Stelle eine Ja/Nein Frage..."
-                className="w-full bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50" />
-              <div className="flex gap-3">
-                <motion.button whileTap={{ scale: 0.97 }} onClick={submitQuestion}
-                  disabled={!currentQuestion.trim()}
-                  className={cn("flex-1 py-3.5 rounded-2xl font-bold text-sm",
-                    currentQuestion.trim()
-                      ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] shadow-[0_0_20px_rgba(207,150,255,0.25)]'
-                      : 'bg-white/5 text-white/20 cursor-not-allowed')}>
-                  Frage stellen
-                </motion.button>
-                <motion.button whileTap={{ scale: 0.97 }} onClick={skipToGuess}
-                  className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-[#8ff5ff] to-[#0ea5e9] text-[#0a0e14] font-bold text-sm shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-                  Raten!
-                </motion.button>
-              </div>
+
+            {/* Sub-instruction */}
+            <div className="text-center space-y-1 my-2">
+              <p className="text-[#a8abb3] font-medium text-sm">
+                Nur für die Mitspieler sichtbar
+              </p>
+              <p className="text-[#72757d] text-xs">
+                Halte das Handy vor deine Stirn — die anderen geben dir Tipps.
+              </p>
             </div>
-            {/* Progress */}
-            <div className="w-full max-w-sm">
-              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                <motion.div className="h-full bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] rounded-full"
-                  animate={{ width: `${(activePlayer.questionsAsked / maxQ) * 100}%` }} />
-              </div>
+
+            {/* Action buttons */}
+            <div className="w-full max-w-sm grid grid-cols-2 gap-3">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSkipDirect}
+                className="h-14 rounded-full bg-[#0f141a] border border-[#44484f]/60 flex items-center justify-center gap-2 font-black tracking-[0.15em] uppercase text-[#a8abb3] hover:bg-[#20262f] transition-colors"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Skip
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSolvedDirect}
+                className="h-14 rounded-full flex items-center justify-center gap-2 font-black tracking-[0.15em] uppercase text-[#003f43] shadow-[0_0_25px_rgba(143,245,255,0.4)] transition-all"
+                style={{ background: 'linear-gradient(135deg, #8ff5ff, #00eefc)' }}
+              >
+                <Check className="w-4 h-4" />
+                Gelöst
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -502,29 +538,144 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           </motion.div>
         )}
 
-        {/* GUESS RESULT */}
+        {/* GUESS RESULT — celebration card when correct, skip toast when not */}
         {phase === 'guessResult' && activePlayer && (
-          <motion.div key="guessResult" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
-            {guessCorrect ? (<>
-              <motion.div initial={{ rotate: -180, scale: 0 }} animate={{ rotate: 0, scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-                <div className="w-24 h-24 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                  <Check className="w-12 h-12 text-emerald-400" /></div>
-              </motion.div>
-              <h2 className="text-2xl font-extrabold text-emerald-400">Richtig!</h2>
-              <div className="text-white/60">{activePlayer.name} ist <span className="text-[#df8eff] font-bold">{activePlayer.character}</span></div>
-            </>) : (<>
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
-                <div className="w-24 h-24 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                  <X className="w-12 h-12 text-red-400" /></div>
-              </motion.div>
-              <h2 className="text-2xl font-extrabold text-red-400">Falsch!</h2>
-              <div className="text-white/40 text-sm">Noch {maxQ - (activePlayer?.questionsAsked ?? 0)} Fragen uebrig</div>
-            </>)}
-            <motion.button whileTap={{ scale: 0.97 }} onClick={afterGuess}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-              Weiter <ArrowRight className="w-5 h-5" />
-            </motion.button>
+          <motion.div
+            key="guessResult"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="flex-1 px-6 py-6 max-w-2xl mx-auto w-full"
+          >
+            {guessCorrect ? (
+              <div className="space-y-6">
+                {/* Celebration header with floating confetti icons */}
+                <div className="text-center space-y-3 relative">
+                  <div className="absolute -top-8 inset-x-0 flex justify-between px-4 opacity-60 pointer-events-none">
+                    <motion.div initial={{ rotate: 45, y: -5 }} animate={{ rotate: 60, y: 5 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2 }}>
+                      <Sparkles className="w-6 h-6 text-[#ff6b98]" />
+                    </motion.div>
+                    <motion.div initial={{ rotate: -12, y: 0 }} animate={{ rotate: 12, y: -8 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2.4 }}>
+                      <Star className="w-8 h-8 text-[#df8eff]" style={{ filter: 'drop-shadow(0 0 8px #df8eff)' }} />
+                    </motion.div>
+                    <motion.div initial={{ rotate: 180, y: 4 }} animate={{ rotate: 200, y: -4 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2.2 }}>
+                      <Sparkles className="w-6 h-6 text-[#8ff5ff]" />
+                    </motion.div>
+                  </div>
+                  <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase">Glückwunsch!</p>
+                  <motion.h2
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', bounce: 0.4 }}
+                    className="text-4xl sm:text-5xl font-black tracking-tight leading-none drop-shadow-[0_0_15px_rgba(223,142,255,0.5)]"
+                  >
+                    RICHTIG GERATEN!
+                  </motion.h2>
+                </div>
+
+                {/* Character result card */}
+                <div
+                  className="rounded-2xl p-8 border border-[#df8eff]/15 relative overflow-hidden"
+                  style={{
+                    background: 'rgba(32, 38, 47, 0.45)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                  }}
+                >
+                  <div className="absolute top-0 right-0 p-6 opacity-15 pointer-events-none">
+                    <HelpCircle className="w-24 h-24 text-[#df8eff]" />
+                  </div>
+                  <div className="relative z-10 flex flex-col items-center text-center space-y-4">
+                    <div
+                      className="w-36 h-36 rounded-full p-1 shadow-[0_0_40px_rgba(223,142,255,0.3)]"
+                      style={{ background: 'linear-gradient(135deg, #df8eff, #ff6b98)' }}
+                    >
+                      <div className="w-full h-full rounded-full bg-[#20262f] border-4 border-[#0a0e14] flex items-center justify-center text-5xl font-black text-white">
+                        {activePlayer.avatar}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black">{activePlayer.character}</h3>
+                      <p className="text-[#a8abb3] font-medium text-sm mt-1">
+                        Kategorie · {MODE_TO_CATEGORY[mode]}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-[#0f141a] rounded-2xl p-4 flex items-center gap-3 border border-[#44484f]/20">
+                    <div className="w-11 h-11 rounded-lg bg-[#8ff5ff]/10 flex items-center justify-center shrink-0">
+                      <HelpCircle className="w-5 h-5 text-[#8ff5ff]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">Fragen benötigt</p>
+                      <p className="text-2xl font-black text-white">{activePlayer.questionsAsked + 1}</p>
+                    </div>
+                  </div>
+                  <div className="bg-[#0f141a] rounded-2xl p-4 flex items-center gap-3 border border-[#44484f]/20">
+                    <div className="w-11 h-11 rounded-lg bg-[#df8eff]/10 flex items-center justify-center shrink-0">
+                      <Star className="w-5 h-5 text-[#df8eff]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">Punkte</p>
+                      <p className="text-2xl font-black text-white">{activePlayer.score}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reward card */}
+                <div
+                  className="rounded-2xl p-5 border border-[#df8eff]/20 flex justify-between items-center"
+                  style={{ background: 'linear-gradient(90deg, rgba(187,0,88,0.15), rgba(215,121,255,0.15))' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[#0a0e14] flex items-center justify-center shadow-lg">
+                      <Trophy className="w-6 h-6 text-[#ff6b98]" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-extrabold text-white">
+                        +{Math.min(10, Math.max(1, maxQ - (activePlayer.questionsAsked + 1) + 1))} Punkte
+                      </p>
+                      <p className="text-xs text-[#a8abb3]">Belohnung für Runde</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-3 pt-2">
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={afterGuess}
+                    className="w-full h-14 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 text-[#0a0e14] shadow-[0_12px_24px_-8px_rgba(223,142,255,0.4)]"
+                    style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                  >
+                    <Play className="w-5 h-5" />
+                    Nächster Spieler
+                  </motion.button>
+                </div>
+              </div>
+            ) : (
+              // Skip / wrong path — compact feedback
+              <div className="flex-1 flex flex-col items-center justify-center gap-5 min-h-[60vh]">
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+                  <div className="w-24 h-24 rounded-2xl bg-[#ff6e84]/15 border border-[#ff6e84]/30 flex items-center justify-center">
+                    <X className="w-12 h-12 text-[#ff6e84]" />
+                  </div>
+                </motion.div>
+                <h2 className="text-2xl font-extrabold text-[#ff6e84]">Übersprungen</h2>
+                <div className="text-[#a8abb3] text-sm text-center">
+                  {activePlayer.name} war <span className="text-white font-bold">{activePlayer.character}</span>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={afterGuess}
+                  className="flex items-center gap-2 px-8 py-3.5 rounded-full h-14 font-extrabold text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]"
+                  style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                >
+                  Weiter <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -570,6 +721,291 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// WhoAmISetup — bento-style custom setup screen (player strip + category grid)
+// ---------------------------------------------------------------------------
+
+interface WhoAmISetupProps {
+  onStart: (
+    mapped: { id: string; name: string; color: string; avatar: string }[],
+    selectedMode: string,
+    settings: { timer: number; rounds: number },
+  ) => void;
+  onlinePlayers?: { id: string; name: string; color?: string; avatar?: string }[];
+  t: (key: string, fallback?: string) => string;
+  haptics: ReturnType<typeof useHaptics>;
+}
+
+const SETUP_CATEGORIES: Array<{
+  id: string;
+  label: string;
+  desc: string;
+  icon: React.ReactNode;
+  tone: 'primary' | 'secondary' | 'tertiary' | 'accent';
+}> = [
+  { id: 'prominente', label: 'Prominente', desc: 'Hollywood-Stars, Musiker und Pop-Kultur-Ikonen.', icon: <Star className="w-6 h-6" />, tone: 'primary' },
+  { id: 'filme',      label: 'Filmhelden', desc: 'Von Klassiker-Ikonen bis Blockbuster-Legenden.', icon: <Film className="w-6 h-6" />, tone: 'primary' },
+  { id: 'tiere',      label: 'Tiere',      desc: 'Vom Dschungel bis zum Ozean — rate das Tier!', icon: <PawPrint className="w-6 h-6" />, tone: 'tertiary' },
+  { id: 'berufe',     label: 'Berufe',     desc: 'Welchen Job übst du gerade aus?',                icon: <Briefcase className="w-6 h-6" />, tone: 'secondary' },
+];
+
+const TONE_CLASSES: Record<'primary' | 'secondary' | 'tertiary' | 'accent', { ring: string; glow: string; iconBg: string; iconFg: string; text: string }> = {
+  primary:   { ring: 'border-[#df8eff]', glow: 'shadow-[0_0_24px_rgba(223,142,255,0.22)]', iconBg: 'bg-[#df8eff]', iconFg: 'text-[#0a0e14]', text: 'text-[#df8eff]' },
+  secondary: { ring: 'border-[#ff6b98]', glow: 'shadow-[0_0_24px_rgba(255,107,152,0.22)]', iconBg: 'bg-[#ff6b98]', iconFg: 'text-[#0a0e14]', text: 'text-[#ff6b98]' },
+  tertiary:  { ring: 'border-[#8ff5ff]', glow: 'shadow-[0_0_24px_rgba(143,245,255,0.22)]', iconBg: 'bg-[#8ff5ff]', iconFg: 'text-[#003f43]', text: 'text-[#8ff5ff]' },
+  accent:    { ring: 'border-[#df8eff]', glow: 'shadow-[0_0_24px_rgba(223,142,255,0.22)]', iconBg: 'bg-[#df8eff]', iconFg: 'text-[#0a0e14]', text: 'text-[#df8eff]' },
+};
+
+function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
+  const isOnline = (onlinePlayers?.length ?? 0) > 0;
+  const [players, setPlayers] = useState<{ id: string; name: string; color: string; avatar: string }[]>(() => {
+    if (isOnline && onlinePlayers) {
+      return onlinePlayers.map((p, i) => ({
+        id: p.id,
+        name: p.name,
+        color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length],
+        avatar: p.avatar ?? p.name.slice(0, 1).toUpperCase(),
+      }));
+    }
+    return [
+      { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
+      { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
+    ];
+  });
+  const [categoryId, setCategoryId] = useState('prominente');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const MIN = 2;
+  const MAX = 10;
+
+  const addPlayer = () => {
+    if (players.length >= MAX) return;
+    const nextIdx = players.length;
+    const id = `p-${Date.now()}-${nextIdx}`;
+    setPlayers((prev) => [...prev, {
+      id, name: `Spieler ${nextIdx + 1}`,
+      color: PLAYER_COLORS[nextIdx % PLAYER_COLORS.length],
+      avatar: String(nextIdx + 1),
+    }]);
+    setEditingId(id);
+  };
+
+  const removePlayer = (id: string) => {
+    setPlayers((prev) => prev.length > MIN ? prev.filter((p) => p.id !== id) : prev);
+  };
+
+  const renamePlayer = (id: string, name: string) => {
+    setPlayers((prev) => prev.map((p) => p.id === id ? { ...p, name, avatar: name.slice(0, 1).toUpperCase() || '?' } : p));
+  };
+
+  const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
+
+  const handleStart = () => {
+    if (!canStart) return;
+    void haptics.celebrate();
+    onStart(players, categoryId, { timer: 20, rounds: 1 });
+  };
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+      {/* Ambient glows */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
+        <div className="absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-[#ff6b98]/10 blur-[100px]" />
+      </div>
+
+      <main className="pt-10 pb-40 px-6 max-w-2xl mx-auto">
+        {/* Hero */}
+        <div className="relative mb-10">
+          <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">Spielvorbereitung</p>
+          <h2 className="text-4xl font-extrabold tracking-tight leading-tight drop-shadow-[0_0_8px_rgba(223,142,255,0.35)]">
+            Wer wirst du heute sein?
+          </h2>
+          <p className="text-[#a8abb3] text-sm mt-2 max-w-md">
+            Wähle deine Mitspieler und eine Kategorie — der Rest passiert im Spiel.
+          </p>
+        </div>
+
+        {/* Player strip */}
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3] inline-flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#8ff5ff]" />
+              Spieler · {players.length}/{MAX}
+            </h3>
+            {!isOnline && players.length < MAX && (
+              <button
+                type="button"
+                onClick={addPlayer}
+                className="text-xs font-bold text-[#df8eff] hover:opacity-80 transition-opacity"
+              >
+                + Hinzufügen
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-3 -mx-6 px-6 snap-x">
+            {players.map((p, i) => {
+              const isEditing = editingId === p.id;
+              const isFirst = i === 0;
+              return (
+                <div key={p.id} className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-20">
+                  <div className="relative">
+                    <div
+                      className="w-20 h-20 rounded-full p-1 shadow-lg shadow-[#df8eff]/15"
+                      style={{
+                        background: isFirst
+                          ? 'linear-gradient(135deg, #df8eff, #ff6b98)'
+                          : `linear-gradient(135deg, ${p.color}, #20262f)`,
+                      }}
+                    >
+                      <div className="w-full h-full rounded-full border-4 border-[#0a0e14] flex items-center justify-center text-xl font-black text-white"
+                        style={{ backgroundColor: p.color }}>
+                        {p.avatar}
+                      </div>
+                    </div>
+                    {isFirst && (
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#8ff5ff] border-4 border-[#0a0e14]" />
+                    )}
+                    {!isOnline && !isFirst && players.length > MIN && (
+                      <button
+                        type="button"
+                        onClick={() => removePlayer(p.id)}
+                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#20262f] border border-[#44484f] flex items-center justify-center hover:bg-[#ff6e84]/20 hover:border-[#ff6e84]/40 transition-colors"
+                        aria-label={`${p.name} entfernen`}
+                      >
+                        <X className="w-3 h-3 text-[#a8abb3]" />
+                      </button>
+                    )}
+                  </div>
+                  {isEditing ? (
+                    <input
+                      autoFocus
+                      type="text"
+                      value={p.name}
+                      maxLength={14}
+                      onChange={(e) => renamePlayer(p.id, e.target.value)}
+                      onBlur={() => setEditingId(null)}
+                      onKeyDown={(e) => e.key === 'Enter' && setEditingId(null)}
+                      className="w-20 text-center text-xs font-bold bg-transparent border-b border-[#df8eff] text-white focus:outline-none"
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => !isOnline && setEditingId(p.id)}
+                      disabled={isOnline}
+                      className="text-xs font-bold truncate max-w-full hover:text-[#df8eff] transition-colors"
+                    >
+                      {p.name}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            {!isOnline && players.length < MAX && (
+              <button
+                type="button"
+                onClick={addPlayer}
+                className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-20 group"
+              >
+                <div className="w-20 h-20 rounded-full border-2 border-dashed border-[#44484f] flex items-center justify-center text-[#72757d] group-hover:border-[#df8eff] group-hover:text-[#df8eff] transition-colors active:scale-95">
+                  <Play className="w-6 h-6 rotate-0" />
+                </div>
+                <span className="text-xs font-semibold text-[#a8abb3]">Gast</span>
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* Category bento grid */}
+        <section className="mb-16">
+          <div className="flex items-center gap-2 mb-5">
+            <Sparkles className="w-4 h-4 text-[#8ff5ff]" />
+            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3]">Wähle ein Thema</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {SETUP_CATEGORIES.map((cat) => {
+              const active = categoryId === cat.id;
+              const tone = TONE_CLASSES[cat.tone];
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => { void haptics.select(); setCategoryId(cat.id); }}
+                  className={cn(
+                    'group relative overflow-hidden rounded-2xl p-5 text-left transition-all active:scale-[0.98]',
+                    active
+                      ? cn('bg-[#df8eff]/10 border-2', tone.ring, tone.glow)
+                      : 'bg-[#0f141a] border border-[#44484f]/20 hover:border-[#df8eff]/30',
+                  )}
+                >
+                  {/* Oversized bg icon */}
+                  <div className={cn(
+                    'absolute top-0 right-0 p-3 opacity-10 transition-opacity',
+                    active ? 'opacity-25' : 'group-hover:opacity-20',
+                    tone.text,
+                  )}>
+                    <span className="block scale-[3] origin-top-right">
+                      {cat.icon}
+                    </span>
+                  </div>
+                  <div className="relative z-10">
+                    <div className={cn(
+                      'w-11 h-11 rounded-full flex items-center justify-center mb-3',
+                      active ? tone.iconBg : 'bg-[#20262f]',
+                      active ? tone.iconFg : tone.text,
+                    )}>
+                      {cat.icon}
+                    </div>
+                    <h4 className={cn(
+                      'text-base font-extrabold mb-1',
+                      active ? tone.text : 'text-white group-hover:' + tone.text,
+                    )}>
+                      {cat.label}
+                    </h4>
+                    <p className="text-xs text-[#a8abb3] leading-relaxed">{cat.desc}</p>
+                    {active && (
+                      <div className={cn('mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest', tone.text)}>
+                        <Check className="w-3 h-3" /> Ausgewählt
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      </main>
+
+      {/* Floating CTA */}
+      <div className="fixed bottom-6 inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
+        <motion.button
+          type="button"
+          onClick={handleStart}
+          disabled={!canStart}
+          whileTap={canStart ? { scale: 0.97 } : {}}
+          className={cn(
+            'w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all',
+            canStart
+              ? 'text-[#0a0e14] shadow-[0_20px_40px_rgba(223,142,255,0.35)]'
+              : 'bg-[#20262f] text-[#44484f] cursor-not-allowed',
+          )}
+          style={canStart ? { background: 'linear-gradient(90deg, #df8eff, #d779ff)' } : {}}
+        >
+          {canStart ? (
+            <>
+              SPIEL STARTEN
+              <Play className="w-5 h-5" />
+            </>
+          ) : (
+            'Mindestens 2 Spieler'
+          )}
+        </motion.button>
+      </div>
+      {/* Unused prop — silence lint */}
+      <span className="hidden">{t('whoami.setup.hidden', '')}</span>
     </div>
   );
 }
