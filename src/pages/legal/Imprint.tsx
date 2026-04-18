@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Building2, MapPin, Phone, Mail } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Phone, Mail, Globe, FileBadge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
@@ -40,7 +40,24 @@ const Imprint = () => {
               <h2 className="text-xl font-semibold">{t("legal.imprint.company")}</h2>
             </div>
             <p className="text-lg font-medium mb-2">MYFAMBLISS GROUP LTD</p>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
+              EventBliss ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD.
+            </p>
+            <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
+                  Company Registration No.
+                </dt>
+                <dd className="text-foreground font-mono">HE 473088</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
+                  VAT ID
+                </dt>
+                <dd className="text-foreground font-mono">CY60165018Q</dd>
+              </div>
+            </dl>
+            <p className="text-muted-foreground mt-4">
               {t("legal.imprint.registeredCompany")}
             </p>
           </section>
@@ -53,7 +70,7 @@ const Imprint = () => {
             </div>
             <address className="not-italic text-muted-foreground">
               <p>Gladstonos 12-14</p>
-              <p>8042 Paphos</p>
+              <p>8046 Paphos</p>
               <p>Cyprus</p>
             </address>
           </section>
@@ -77,6 +94,12 @@ const Imprint = () => {
                   info@event-bliss.com
                 </a>
               </p>
+              <p className="flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                <a href="https://www.mfg.cy" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  www.mfg.cy
+                </a>
+              </p>
             </div>
           </section>
 
@@ -84,7 +107,11 @@ const Imprint = () => {
           <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
             <h2 className="text-xl font-semibold mb-4">{t("legal.imprint.responsibleContent")}</h2>
             <p className="text-muted-foreground">MYFAMBLISS GROUP LTD</p>
-            <p className="text-muted-foreground">Gladstonos 12-14, 8042 Paphos, Cyprus</p>
+            <p className="text-muted-foreground">Gladstonos 12-14, 8046 Paphos, Cyprus</p>
+            <p className="text-xs text-muted-foreground/80 font-mono mt-1 flex items-center gap-1.5">
+              <FileBadge className="w-3 h-3" />
+              HE 473088 · VAT ID CY60165018Q
+            </p>
           </section>
 
           {/* EU Dispute Resolution */}

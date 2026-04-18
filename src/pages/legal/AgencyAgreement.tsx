@@ -157,8 +157,18 @@ const AgencyAgreement = () => {
                 <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
                 Gladstonos 12-14, 8046 Paphos, Cyprus
               </p>
-              <p className="text-[11px] text-slate-500 mt-1">
-                {ui("platformRegistry")}
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-2 text-[10px]">
+                <div>
+                  <div className="uppercase tracking-widest text-slate-500 font-semibold">Reg. No.</div>
+                  <div className="text-slate-300 font-mono">HE 473088</div>
+                </div>
+                <div>
+                  <div className="uppercase tracking-widest text-slate-500 font-semibold">VAT ID</div>
+                  <div className="text-slate-300 font-mono">CY60165018Q</div>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2">
+                {ui("platformRegistry")} · <a href="https://www.mfg.cy" target="_blank" rel="noopener noreferrer" className="text-violet-300 hover:text-violet-200 underline">www.mfg.cy</a>
               </p>
               <p className="text-[11px] italic text-slate-500 mt-2 leading-relaxed">
                 {ui("platformBrand")}
