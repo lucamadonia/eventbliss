@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Loader2, Receipt, Calendar, StickyNote } from "lucide-react";
+import { X, Save, Loader2, Calendar, StickyNote, Receipt as ReceiptIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SplitConfigurator } from "./SplitConfigurator";
-import { useAddExpenseV2, useExpenseCategories } from "@/hooks/expenses";
+import { ReceiptAttach } from "./ReceiptAttach";
+import { useAddExpenseV2, useExpenseCategories, useReceiptUpload } from "@/hooks/expenses";
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
-import type { SplitType } from "@/lib/expenses-v2/types";
+import type { SplitType, ReceiptOcrResult } from "@/lib/expenses-v2/types";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface Participant {
   id: string;
@@ -51,8 +53,14 @@ export function AddExpenseSheet({
   const [splitMode, setSplitMode] = useState<SplitType>("equal");
   const [shares, setShares] = useState<Array<{ participant_id: string; amount: number }>>([]);
   const [step, setStep] = useState<"quick" | "detail" | "split">("quick");
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [receiptOcr, setReceiptOcr] = useState<ReceiptOcrResult | null>(null);
+  const [ocrScanning, setOcrScanning] = useState(false);
 
   const addExpense = useAddExpenseV2();
+  const receiptUpload = useReceiptUpload();
+  const haptics = useHaptics();
   const { data: categories = [] } = useExpenseCategories(eventId);
 
   // Reset on open
@@ -68,7 +76,46 @@ export function AddExpenseSheet({
     setSplitMode("equal");
     setStep("quick");
     setShares([]);
+    setReceiptFile(null);
+    setReceiptPreview(null);
+    setReceiptOcr(null);
+    setOcrScanning(false);
   }, [open, defaultPayerId, participants]);
+
+  // Kick off receipt upload + OCR as soon as a file is picked so the UX feels snappy
+  useEffect(() => {
+    if (!receiptFile) {
+      setReceiptPreview(null);
+      return;
+    }
+    setReceiptPreview(URL.createObjectURL(receiptFile));
+    (async () => {
+      setOcrScanning(true);
+      try {
+        const res = await receiptUpload.mutateAsync({
+          eventId,
+          file: receiptFile,
+          dispatchOcr: true,
+        });
+        if (res.ocr) {
+          setReceiptOcr(res.ocr);
+          void haptics.success();
+        }
+      } catch {
+        // handled by toast in hook
+      } finally {
+        setOcrScanning(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receiptFile, eventId]);
+
+  const applyOcr = (ocr: ReceiptOcrResult) => {
+    if (ocr.total != null) setAmount(String(ocr.total).replace(".", ","));
+    if (ocr.merchant && !description) setDescription(ocr.merchant);
+    if (ocr.date) setDate(ocr.date.slice(0, 10));
+    void haptics.medium();
+  };
 
   // Keep shares in sync with amount in equal mode
   const amountNum = useMemo(() => parseFloat(amount.replace(",", ".") || "0") || 0, [amount]);
@@ -278,6 +325,21 @@ export function AddExpenseSheet({
                     rows={2}
                     placeholder="Zusatzinfo, z. B. 'Trinkgeld schon drin'"
                     className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-violet-400/40 resize-none"
+                  />
+                </div>
+
+                {/* Receipt + OCR */}
+                <div>
+                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
+                    <ReceiptIcon className="w-3 h-3" /> Beleg (optional)
+                  </div>
+                  <ReceiptAttach
+                    onFile={setReceiptFile}
+                    onOcr={applyOcr}
+                    previewUrl={receiptPreview}
+                    ocr={receiptOcr}
+                    isScanning={ocrScanning}
+                    compact
                   />
                 </div>
               </motion.div>
