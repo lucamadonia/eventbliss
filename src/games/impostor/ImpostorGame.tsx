@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameEnd } from '../social/useGameEnd';
@@ -576,98 +575,190 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- WORD REVEAL ---
   if (phase === 'wordReveal') {
     const currentPlayer = players[revealIndex];
+    const phaseNum = String(revealIndex + 1).padStart(2, '0');
+    const totalPhases = String(players.length).padStart(2, '0');
     return (
-      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center px-4">
-        <div className="max-w-sm w-full text-center space-y-8">
-          <AnimatePresence mode="wait">
-            {!wordVisible ? (
+      <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        {/* Ambient glow layer */}
+        <div className="pointer-events-none absolute inset-0 -z-0">
+          <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
+          <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full bg-[#ff6b98]/10 blur-[120px]" />
+          <div className="absolute bottom-0 inset-x-0 h-[40%] bg-gradient-to-t from-[#0a0e14] to-transparent" />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-10">
+          <div className="w-full max-w-md space-y-8">
+            {/* Phase pill */}
+            <div className="flex justify-center">
+              <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#df8eff]/20 text-[#df8eff] text-[10px] font-bold tracking-[0.25em] uppercase">
+                Secret Reveal · {phaseNum}/{totalPhases}
+              </div>
+            </div>
+
+            {/* Main secret card with asymmetric deco */}
+            <div className="relative group">
+              {/* Decorative rotating square top-left */}
               <motion.div
-                key={`pass-${revealIndex}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="space-y-6"
+                className="absolute -top-4 -left-4 w-16 h-16 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
+                animate={{ rotate: [12, 45, 12] }}
+                transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              <div className="relative z-10 rounded-2xl p-8 flex flex-col items-center text-center space-y-6 shadow-2xl overflow-hidden"
+                style={{
+                  background: 'rgba(32, 38, 47, 0.4)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(223, 142, 255, 0.12)',
+                }}
               >
-                <div className="flex justify-center">
-                  <Shield className="w-16 h-16 text-[#df8eff] opacity-60" />
-                </div>
-                <div>
-                  <p className="text-[#a8abb3] text-sm mb-2">
-                    {revealIndex + 1} / {players.length}
-                  </p>
-                  <h2 className="text-2xl font-bold text-white mb-1">
-                    Gib das Handy an
-                  </h2>
-                  <p
-                    className="text-3xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent"
-                  >
-                    {currentPlayer.name}
-                  </p>
-                </div>
-                <motion.button
-                  onClick={handleRevealTap}
-                  className="w-full py-4 rounded-2xl bg-[#1b2028]/80 border border-[#44484f] text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-700/80 transition-colors"
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <Eye className="w-5 h-5" />
-                  Antippen zum Aufdecken
-                </motion.button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key={`word-${revealIndex}`}
-                initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
-                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="space-y-6"
-              >
-                {currentPlayer.isImpostor ? (
-                  <div className="space-y-4">
+                {/* Radial texture */}
+                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(223,142,255,0.4),transparent_60%)]" />
+
+                <AnimatePresence mode="wait">
+                  {!wordVisible ? (
                     <motion.div
-                      animate={{ x: [0, -5, 5, -5, 5, 0] }}
-                      transition={{ duration: 0.5, repeat: 2 }}
+                      key={`pass-${revealIndex}`}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      className="relative z-10 w-full space-y-6"
                     >
-                      <AlertTriangle className="w-20 h-20 text-red-500 mx-auto drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]" />
+                      <div className="space-y-2">
+                        <span className="text-[#ff6b98] font-bold tracking-[0.25em] text-[10px] uppercase">
+                          Phase {phaseNum}
+                        </span>
+                        <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
+                          HANDY WEITERGEBEN
+                        </h2>
+                      </div>
+                      <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-[#44484f]/40 flex flex-col items-center justify-center overflow-hidden bg-black/40">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-[#df8eff]/5 to-[#ff6b98]/5" />
+                        <Shield className="w-14 h-14 text-[#df8eff]/40 mb-2 relative" />
+                        <p className="relative text-2xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent">
+                          {currentPlayer.name}
+                        </p>
+                      </div>
+                      <motion.button
+                        onClick={handleRevealTap}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full py-4 px-8 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(223,142,255,0.4)] hover:shadow-[0_0_30px_rgba(223,142,255,0.6)] transition-all"
+                        style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <Eye className="w-4 h-4" /> Geheimnis anzeigen
+                        </span>
+                      </motion.button>
                     </motion.div>
-                    <motion.p
-                      className="text-4xl font-black text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.5)]"
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
+                  ) : (
+                    <motion.div
+                      key={`word-${revealIndex}`}
+                      initial={{ opacity: 0, scale: 0.85, rotateY: 60 }}
+                      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+                      className="relative z-10 w-full space-y-6"
                     >
-                      HOCHSTAPLER!
-                    </motion.p>
-                    <p className="text-[#a8abb3] text-sm">
-                      Du kennst das Wort nicht. Falle nicht auf!
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      Kategorie: {currentWordSet?.category}
-                    </p>
+                      {currentPlayer.isImpostor ? (
+                        <div className="space-y-4">
+                          <span className="text-[#ff6e84] font-bold tracking-[0.25em] text-[10px] uppercase">
+                            Rolle enthüllt
+                          </span>
+                          <motion.div
+                            animate={{ x: [0, -4, 4, -4, 4, 0] }}
+                            transition={{ duration: 0.5, repeat: 2 }}
+                            className="flex justify-center"
+                          >
+                            <AlertTriangle className="w-16 h-16 text-[#ff6e84] drop-shadow-[0_0_24px_rgba(255,110,132,0.55)]" />
+                          </motion.div>
+                          <motion.h2
+                            className="text-4xl font-black tracking-tight text-[#ff6e84] drop-shadow-[0_0_20px_rgba(255,110,132,0.5)]"
+                            animate={{ scale: [1, 1.04, 1] }}
+                            transition={{ repeat: Infinity, duration: 1.6 }}
+                          >
+                            HOCHSTAPLER
+                          </motion.h2>
+                          <p className="text-sm text-[#a8abb3]">
+                            Du kennst das Wort nicht.<br />Bluff dich durch und falle nicht auf.
+                          </p>
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff6e84]/10 border border-[#ff6e84]/30 text-[11px] font-bold uppercase tracking-widest text-[#ff6e84]">
+                            Kategorie · {currentWordSet?.category}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <span className="text-[#8ff5ff] font-bold tracking-[0.25em] text-[10px] uppercase">
+                            Dein Wort
+                          </span>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#a8abb3]">
+                            {currentWordSet?.category}
+                          </p>
+                          <p className="text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.35)] tracking-tight">
+                            {currentWordSet?.word}
+                          </p>
+                          <p className="text-xs text-[#a8abb3]/80">
+                            Merk's dir gut — aber verrate nichts.
+                          </p>
+                        </div>
+                      )}
+                      <motion.button
+                        onClick={handleRevealTap}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full py-4 px-8 rounded-full bg-[#20262f] border border-[#df8eff]/30 text-[#df8eff] font-extrabold text-sm tracking-[0.2em] uppercase hover:bg-[#262c36] transition-colors"
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <EyeOff className="w-4 h-4" /> Verstanden · Weitergeben
+                        </span>
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Decorative corner bracket bottom-right */}
+              <div className="pointer-events-none absolute -bottom-2 -right-2 w-24 h-24 border-b-2 border-r-2 border-[#8ff5ff]/30 rounded-br-3xl" />
+            </div>
+
+            {/* Players ready mini grid */}
+            <div className="grid grid-cols-4 gap-3 pt-4">
+              {players.map((p, i) => {
+                const done = i < revealIndex;
+                const current = i === revealIndex;
+                return (
+                  <div
+                    key={p.id}
+                    className={cn(
+                      'flex flex-col items-center space-y-2',
+                      !done && !current && 'opacity-40',
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'w-12 h-12 rounded-full border-2 flex items-center justify-center text-white text-xs font-bold',
+                        done && 'bg-[#df8eff]/20 border-[#df8eff]',
+                        current && 'bg-[#ff6b98]/20 border-[#ff6b98] shadow-[0_0_16px_rgba(255,107,152,0.4)]',
+                        !done && !current && 'bg-[#20262f] border-[#44484f]',
+                      )}
+                    >
+                      {done ? (
+                        <CheckCircle2 className="w-5 h-5 text-[#df8eff]" />
+                      ) : (
+                        getPlayerInitial(p.name)
+                      )}
+                    </div>
+                    <span
+                      className={cn(
+                        'text-[9px] font-bold uppercase tracking-wider',
+                        current ? 'text-[#ff6b98]' : done ? 'text-[#df8eff]/80' : 'text-[#a8abb3]',
+                      )}
+                    >
+                      {p.name.length > 8 ? p.name.slice(0, 8) : p.name}
+                    </span>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-[#a8abb3] text-sm uppercase tracking-wider">
-                      {currentWordSet?.category}
-                    </p>
-                    <p className="text-5xl font-black text-white drop-shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-                      {currentWordSet?.word}
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      Merke dir das Wort!
-                    </p>
-                  </div>
-                )}
-                <motion.button
-                  onClick={handleRevealTap}
-                  className="w-full py-4 rounded-2xl bg-purple-600/20 border border-[#df8eff]/40 text-purple-300 font-semibold flex items-center justify-center gap-2 hover:bg-purple-600/30 transition-colors"
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <EyeOff className="w-5 h-5" />
-                  Verstanden &mdash; Weitergeben
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -676,80 +767,135 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- DISCUSSION ---
   if (phase === 'discussion') {
     const urgency = timeLeft <= 10;
+    const spokenCount = players.filter((p) => p.hasSpoken).length;
+    const progress = players.length > 0 ? spokenCount / players.length : 0;
     return (
-      <div className="min-h-screen bg-[#0a0e14] px-4 py-6">
-        <div className="mx-auto max-w-md space-y-6">
-          {/* Timer */}
-          <motion.div
-            className={cn(
-              'text-center py-4 rounded-2xl border',
-              urgency
-                ? 'border-red-500/50 bg-red-500/10'
-                : 'border-[#df8eff]/30 bg-[#df8eff]/5'
-            )}
-            animate={urgency ? { scale: [1, 1.02, 1] } : {}}
-            transition={urgency ? { repeat: Infinity, duration: 0.5 } : {}}
-          >
-            <Clock className={cn('w-6 h-6 mx-auto mb-1', urgency ? 'text-red-400' : 'text-[#df8eff]')} />
-            <p className={cn('text-4xl font-black', urgency ? 'text-red-400' : 'text-white')}>
-              {formatTime(timeLeft)}
-            </p>
-            <p className="text-[#a8abb3] text-xs mt-1">
-              Kategorie: <span className="text-[#df8eff]">{currentWordSet?.category}</span>
-            </p>
-          </motion.div>
+      <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        {/* Ambient glow */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute top-0 -right-20 w-72 h-72 rounded-full bg-[#df8eff]/10 blur-[110px]" />
+          <div className="absolute bottom-0 -left-20 w-80 h-80 rounded-full bg-[#ff6b98]/10 blur-[130px]" />
+        </div>
 
-          {/* Speaker list */}
-          <section className="space-y-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
-              Jeder sagt etwas zum Wort
-            </h2>
-            {players.map((player, i) => (
-              <motion.button
-                key={player.id}
-                onClick={() => !player.hasSpoken && markSpoken(i)}
-                disabled={player.hasSpoken}
-                className={cn(
-                  'w-full flex items-center gap-3 p-3 rounded-xl border transition-colors text-left',
-                  i === currentSpeaker && !player.hasSpoken
-                    ? 'border-[#df8eff] bg-[#df8eff]/10 ring-1 ring-[#df8eff]/50'
-                    : player.hasSpoken
-                      ? 'border-[#44484f]/30 bg-[#1b2028]/20 opacity-60'
-                      : 'border-[#44484f]/50 bg-[#151a21]/40 hover:border-[#44484f]/60'
-                )}
-                layout
-              >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
-                  style={{ backgroundColor: getPlayerColor(i) }}
-                >
-                  {getPlayerInitial(player.name)}
-                </div>
-                <span className="flex-1 text-white font-medium text-sm">
-                  {player.name}
-                </span>
-                {player.hasSpoken ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
-                ) : i === currentSpeaker ? (
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 1 }}
+        <div className="relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
+          {/* Phase pill */}
+          <div className="flex justify-center">
+            <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#df8eff]/20 text-[#df8eff] text-[10px] font-bold tracking-[0.25em] uppercase">
+              Diskussion · Phase 02
+            </div>
+          </div>
+
+          {/* Timer card */}
+          <div className="relative group">
+            <motion.div
+              className="absolute -top-3 -right-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#8ff5ff] to-[#df8eff]"
+              animate={{ rotate: [12, -12, 12] }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className={cn(
+                'relative z-10 rounded-2xl p-6 text-center overflow-hidden',
+                urgency ? 'border border-[#ff6e84]/50' : 'border border-[#df8eff]/20',
+              )}
+              style={{
+                background: 'rgba(32, 38, 47, 0.4)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}
+              animate={urgency ? { scale: [1, 1.02, 1] } : {}}
+              transition={urgency ? { repeat: Infinity, duration: 0.6 } : {}}
+            >
+              <span className={cn(
+                'text-[10px] font-bold tracking-[0.3em] uppercase',
+                urgency ? 'text-[#ff6e84]' : 'text-[#a8abb3]',
+              )}>
+                {urgency ? 'Letzte Sekunden' : 'Zeit für Diskussion'}
+              </span>
+              <p className={cn(
+                'text-6xl font-black tabular-nums tracking-tighter mt-1 drop-shadow-[0_0_12px_rgba(241,243,252,0.25)]',
+                urgency ? 'text-[#ff6e84]' : 'text-white',
+              )}>
+                {formatTime(timeLeft)}
+              </p>
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0e14]/60 border border-[#44484f]/40 text-[11px] text-[#a8abb3]">
+                Kategorie · <span className="text-[#df8eff] font-semibold">{currentWordSet?.category}</span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Progress + speakers */}
+          <section className="space-y-3">
+            <div className="flex items-end justify-between">
+              <h2 className="text-xs font-black uppercase tracking-[0.25em] text-[#a8abb3]">
+                Reihum sprechen
+              </h2>
+              <span className="text-[11px] font-mono text-[#8ff5ff]">
+                {spokenCount} / {players.length}
+              </span>
+            </div>
+            <div className="h-1 w-full rounded-full bg-[#20262f] overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#ff6b98]"
+                animate={{ width: `${progress * 100}%` }}
+                transition={{ type: 'spring', stiffness: 140, damping: 22 }}
+              />
+            </div>
+            <div className="space-y-2">
+              {players.map((player, i) => {
+                const isActive = i === currentSpeaker && !player.hasSpoken;
+                return (
+                  <motion.button
+                    key={player.id}
+                    onClick={() => !player.hasSpoken && markSpoken(i)}
+                    disabled={player.hasSpoken}
+                    layout
+                    whileTap={{ scale: player.hasSpoken ? 1 : 0.98 }}
+                    className={cn(
+                      'w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors overflow-hidden relative',
+                      isActive && 'border-[#df8eff]/60 shadow-[0_0_16px_rgba(223,142,255,0.18)]',
+                      player.hasSpoken && 'border-[#44484f]/30 opacity-50',
+                      !isActive && !player.hasSpoken && 'border-[#44484f]/50 hover:border-[#df8eff]/30',
+                    )}
+                    style={{
+                      background: isActive
+                        ? 'linear-gradient(90deg, rgba(223,142,255,0.12), rgba(255,107,152,0.08))'
+                        : 'rgba(21, 26, 33, 0.4)',
+                    }}
                   >
-                    <ChevronRight className="w-5 h-5 text-[#df8eff]" />
-                  </motion.div>
-                ) : null}
-              </motion.button>
-            ))}
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
+                      style={{ backgroundColor: getPlayerColor(i) }}
+                    >
+                      {getPlayerInitial(player.name)}
+                    </div>
+                    <span className="flex-1 text-sm font-semibold">{player.name}</span>
+                    {player.hasSpoken ? (
+                      <CheckCircle2 className="w-5 h-5 text-[#8ff5ff]" />
+                    ) : isActive ? (
+                      <motion.div
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.2 }}
+                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#df8eff]"
+                      >
+                        Am Zug
+                        <ChevronRight className="w-4 h-4" />
+                      </motion.div>
+                    ) : null}
+                  </motion.button>
+                );
+              })}
+            </div>
           </section>
 
-          {/* Skip button */}
+          {/* CTA to voting */}
           <motion.button
             onClick={skipToVoting}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.3)]"
             whileTap={{ scale: 0.97 }}
+            className="w-full py-4 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_25px_rgba(255,107,152,0.35)] flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(90deg, #df8eff, #ff6b98)' }}
           >
             Zur Abstimmung
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </motion.button>
         </div>
       </div>
@@ -760,18 +906,38 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'voting') {
     const voter = players[votingPlayer];
     return (
-      <div className="min-h-screen bg-[#0a0e14] px-4 py-6">
-        <div className="mx-auto max-w-md space-y-6">
-          <div className="text-center space-y-1">
-            <p className="text-[#a8abb3] text-sm">
-              {votingPlayer + 1} / {players.length}
-            </p>
-            <h2 className="text-xl font-bold text-white">
-              {voter.name} stimmt ab
-            </h2>
-            <p className="text-[#a8abb3] text-xs">
-              Wer ist der Hochstapler?
-            </p>
+      <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-[#ff6b98]/12 blur-[120px]" />
+          <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
+        </div>
+        <div className="relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
+          <div className="flex justify-center">
+            <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#ff6b98]/30 text-[#ff6b98] text-[10px] font-bold tracking-[0.25em] uppercase">
+              Abstimmung · {votingPlayer + 1}/{players.length}
+            </div>
+          </div>
+          <div className="relative group">
+            <motion.div
+              className="absolute -top-3 -left-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
+              animate={{ rotate: [12, 40, 12] }}
+              transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <div
+              className="relative z-10 rounded-2xl p-6 text-center space-y-2 overflow-hidden"
+              style={{
+                background: 'rgba(32, 38, 47, 0.4)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 107, 152, 0.18)',
+              }}
+            >
+              <span className="text-[#ff6b98] font-bold tracking-[0.25em] text-[10px] uppercase">
+                {voter.name} stimmt ab
+              </span>
+              <h2 className="text-2xl font-extrabold tracking-tight">Wer ist der Hochstapler?</h2>
+              <p className="text-xs text-[#a8abb3]">Geheime Wahl — antippen um abzustimmen.</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -782,26 +948,31 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   key={target.id}
                   onClick={() => !isSelf && castVote(target.id)}
                   disabled={isSelf}
-                  className={cn(
-                    'relative p-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all',
-                    isSelf
-                      ? 'border-gray-800 bg-gray-900/50 opacity-30 cursor-not-allowed'
-                      : 'border-[#44484f] bg-[#151a21]/40 hover:border-[#ff6b98]/60 hover:bg-[#ff6b98]/5 active:scale-95'
-                  )}
                   whileHover={!isSelf ? { scale: 1.03 } : {}}
                   whileTap={!isSelf ? { scale: 0.95 } : {}}
+                  className={cn(
+                    'relative p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all overflow-hidden',
+                    isSelf
+                      ? 'border-[#44484f]/30 opacity-30 cursor-not-allowed'
+                      : 'border-[#44484f]/50 hover:border-[#ff6b98]/60',
+                  )}
+                  style={{
+                    background: isSelf
+                      ? 'rgba(21, 26, 33, 0.3)'
+                      : 'rgba(32, 38, 47, 0.4)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                  }}
                 >
                   <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                    className="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg shadow-[0_0_12px_rgba(0,0,0,0.4)]"
                     style={{ backgroundColor: getPlayerColor(i) }}
                   >
                     {getPlayerInitial(target.name)}
                   </div>
-                  <span className="text-white font-semibold text-sm truncate max-w-full">
-                    {target.name}
-                  </span>
+                  <span className="text-sm font-semibold truncate max-w-full">{target.name}</span>
                   {isSelf && (
-                    <span className="text-[10px] text-gray-500">(Du)</span>
+                    <span className="text-[10px] uppercase tracking-widest text-[#a8abb3]">Du</span>
                   )}
                 </motion.button>
               );
