@@ -5,9 +5,9 @@ import {
   Plus,
   ArrowLeft,
   Sparkles,
-  Clock,
+  Circle,
+  CheckCircle2,
   Receipt as ReceiptIcon,
-  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,8 @@ import { BalanceCard } from "@/components/expenses-v2/BalanceCard";
 import { AddExpenseSheet } from "@/components/expenses-v2/AddExpenseSheet";
 import { ExpenseRow } from "@/components/expenses-v2/ExpenseRow";
 import { SettlementFlow } from "@/components/expenses-v2/SettlementFlow";
+import { SettledList } from "@/components/expenses-v2/SettledList";
+import { ActivityTimeline } from "@/components/expenses-v2/ActivityTimeline";
 import { AmbientBg } from "@/components/expenses-v2/AmbientBg";
 import { CountUp } from "@/components/expenses-v2/CountUp";
 import { Confetti } from "@/components/expenses-v2/Confetti";
@@ -321,38 +323,67 @@ export default function EventExpensesV2() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
+                className="space-y-8"
               >
-                <SettlementFlow
-                  eventId={eventId}
-                  debts={simplifiedDebts}
-                  participants={(participants ?? []).map((p) => ({
-                    id: p.id,
-                    name: p.name ?? undefined,
-                  }))}
-                  currentParticipantId={currentParticipantId}
-                  currency={currency}
-                  onSettled={() => {
-                    void haptics.success();
-                    setTab("list");
-                  }}
-                />
+                {/* Offen — noch zu begleichen */}
+                <section>
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-amber-300 font-bold flex items-center gap-1.5">
+                      <Circle className="w-3 h-3" />
+                      Noch offen ({simplifiedDebts.length})
+                    </div>
+                    {simplifiedDebts.length > 0 && (
+                      <span className="text-[10px] text-slate-500">
+                        Minimale Überweisungen
+                      </span>
+                    )}
+                  </div>
+                  <SettlementFlow
+                    eventId={eventId}
+                    debts={simplifiedDebts}
+                    participants={(participants ?? []).map((p) => ({
+                      id: p.id,
+                      name: p.name ?? undefined,
+                    }))}
+                    currentParticipantId={currentParticipantId}
+                    currency={currency}
+                    onSettled={() => {
+                      void haptics.success();
+                    }}
+                  />
+                </section>
+
+                {/* Beglichen — History */}
+                <section>
+                  <div className="mb-3 px-1">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-bold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Verlauf der Zahlungen
+                    </div>
+                  </div>
+                  <SettledList
+                    eventId={eventId}
+                    participants={participants ?? []}
+                    currentParticipantId={currentParticipantId}
+                    currency={currency}
+                  />
+                </section>
               </motion.div>
             )}
 
-            {tab === "timeline" && (
+            {tab === "timeline" && eventId && (
               <motion.div
                 key="timeline"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="p-8 text-center rounded-3xl bg-white/[0.03] border border-white/[0.06]"
               >
-                <Clock className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-                <h3 className="text-sm font-semibold text-slate-300 mb-1">Verlauf</h3>
-                <p className="text-xs text-slate-500">
-                  Activity-Timeline mit Pinch-Zoom kommt in Phase 5.
-                </p>
+                <ActivityTimeline
+                  eventId={eventId}
+                  participants={participants ?? []}
+                  currency={currency}
+                />
               </motion.div>
             )}
           </AnimatePresence>
