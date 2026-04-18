@@ -3,7 +3,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, ThumbsUp, ThumbsDown,
-  Timer, Flame, Heart, Shield, Sparkles, Zap,
+  Timer, Flame, Heart, Shield, Sparkles, Zap, Check, RefreshCw, Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -187,6 +187,14 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     if (mode === 'nur-pflicht') return drawDare();
     if (type === 'truth') drawTruth();
     else drawDare();
+  };
+
+  // Re-draw the same type without advancing the round. Used by the
+  // "Neue Aufgabe"-Button on the reveal card.
+  const rerollCurrent = () => {
+    haptics.light();
+    if (choiceType === 'truth') drawTruth();
+    else if (choiceType === 'dare') drawDare();
   };
 
   // ---------------------------------------------------------------------------
@@ -442,58 +450,213 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         )}
 
         {/* REVEAL PHASE */}
-        {phase === 'reveal' && currentItem && (
-          <motion.div key="reveal" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
-            {/* Timer for dares */}
-            {choiceType === 'dare' && (
-              <div className="flex items-center gap-2">
-                <Timer className={cn("w-5 h-5", timer.timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-[#ff6b98]')} />
-                <span className={cn("text-2xl font-mono font-bold", timer.timeLeft <= 10 ? 'text-red-400' : 'text-white/80')}>
-                  {timer.timeLeft}s
-                </span>
-              </div>
-            )}
-            {/* Card */}
-            <motion.div initial={{ rotateY: 90 }} animate={{ rotateY: 0 }} transition={{ duration: 0.4 }}
-              className={cn("w-full max-w-sm rounded-2xl p-6 border shadow-2xl relative overflow-hidden",
-                choiceType === 'truth'
-                  ? 'bg-[#1b2028] border-[#df8eff]/20'
-                  : 'bg-[#1b2028] border-[#ff6b98]/20')}>
-              <div className={cn("absolute inset-x-0 top-0 h-[2px]",
-                choiceType === 'truth' ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff]' : 'bg-gradient-to-r from-[#ff6b98] to-[#ff6b98]/80')} />
-              <div className="flex items-center gap-2 mb-4">
-                {choiceType === 'truth' ? <Heart className="w-5 h-5 text-[#df8eff]" /> : <Flame className="w-5 h-5 text-[#ff6b98]" />}
-                <span className={cn("text-xs font-bold uppercase tracking-widest",
-                  choiceType === 'truth' ? 'text-[#df8eff]' : 'text-[#ff6b98]')}>
-                  {choiceType === 'truth' ? 'Wahrheit' : 'Pflicht'}
-                </span>
-                <span className="ml-auto text-xs text-white/20">{currentItem.category}</span>
-              </div>
-              <p className="text-xl font-bold text-white leading-relaxed">{currentItem.text}</p>
-              <div className="flex gap-1 mt-4">
-                {[1,2,3].map((i) => (
-                  <div key={i} className={cn("w-2 h-2 rounded-full",
-                    i <= currentItem.intensity ? (choiceType === 'truth' ? 'bg-[#df8eff]' : 'bg-[#ff6b98]') : 'bg-white/10')} />
-                ))}
-              </div>
-            </motion.div>
-            {/* Action */}
-            <div className="flex gap-3 w-full max-w-sm">
-              {choiceType === 'dare' ? (
-                <motion.button whileTap={{ scale: 0.97 }} onClick={startVote}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#0ea5e9] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-                  <ThumbsUp className="w-5 h-5" /> Abstimmen
-                </motion.button>
-              ) : (
-                <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(207,150,255,0.25)]">
-                  Weiter <ArrowRight className="w-5 h-5" />
-                </motion.button>
+        {phase === 'reveal' && currentItem && (() => {
+          const isTruth = choiceType === 'truth';
+          // Tone tokens — full color palette per type
+          const tone = isTruth
+            ? { main: '#df8eff', dim: '#d779ff', onChip: '#3d0055', glow: 'rgba(223,142,255,0.3)' }
+            : { main: '#ff6b98', dim: '#e4006c', onChip: '#47001d', glow: 'rgba(255,107,152,0.3)' };
+          const others = players.filter((_, i) => i !== activeIdx);
+          const urgent = isTruth ? false : timer.timeLeft <= 10;
+          const timeStr = timer.timeLeft >= 60
+            ? `${Math.floor(timer.timeLeft / 60)}:${String(timer.timeLeft % 60).padStart(2, '0')}`
+            : `0:${String(timer.timeLeft).padStart(2, '0')}`;
+
+          return (
+            <motion.div
+              key="reveal"
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col items-center px-5 py-6 max-w-xl mx-auto w-full"
+            >
+              {/* Timer chip — only for dares */}
+              {!isTruth && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 flex flex-col items-center"
+                >
+                  <motion.div
+                    animate={urgent ? { scale: [1, 1.04, 1] } : {}}
+                    transition={urgent ? { duration: 0.6, repeat: Infinity } : {}}
+                    className={cn(
+                      'inline-flex items-center gap-2 px-6 py-2 rounded-full border',
+                      urgent
+                        ? 'bg-[#ff6e84]/15 border-[#ff6e84]/40 shadow-[0_0_20px_rgba(255,110,132,0.35)]'
+                        : 'bg-[#20262f] border-[#ff6b98]/30 shadow-[0_0_20px_rgba(255,107,152,0.25)]',
+                    )}
+                  >
+                    <Timer className={cn('w-5 h-5', urgent ? 'text-[#ff6e84]' : 'text-[#ff6b98]')} />
+                    <span className={cn('font-black text-2xl tracking-tighter tabular-nums', urgent ? 'text-[#ff6e84]' : 'text-white')}>
+                      {timeStr}
+                    </span>
+                  </motion.div>
+                  <span className={cn('text-[10px] font-bold uppercase tracking-[0.25em] mt-2', urgent ? 'text-[#ff6e84]' : 'text-[#ff6b98]')}>
+                    {urgent ? 'Letzte Sekunden!' : 'Beeil dich!'}
+                  </span>
+                </motion.div>
               )}
-            </div>
-          </motion.div>
-        )}
+
+              {/* Task card with outer gradient glow */}
+              <div className="relative w-full group">
+                {/* Gradient glow halo */}
+                <motion.div
+                  className="absolute -inset-1 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-1000"
+                  style={{
+                    background: 'linear-gradient(45deg, #ff6b98, #df8eff, #8ff5ff)',
+                  }}
+                  animate={{ opacity: [0.25, 0.45, 0.25] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                />
+
+                <motion.div
+                  initial={{ rotateY: 80, opacity: 0 }}
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  className="relative rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center border border-white/5 overflow-hidden"
+                  style={{
+                    background: 'rgba(27, 32, 40, 0.85)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                  }}
+                >
+                  {/* Corner-folded type badge */}
+                  <div className="absolute top-0 right-0">
+                    <div
+                      className="font-black px-5 py-1.5 rounded-bl-2xl uppercase tracking-widest text-[11px] shadow-lg"
+                      style={{ background: tone.main, color: tone.onChip }}
+                    >
+                      {isTruth ? 'Wahrheit' : 'Pflicht'}
+                    </div>
+                  </div>
+
+                  {/* Active player avatar */}
+                  {activePlayer && (
+                    <div className="absolute top-5 left-5 flex items-center gap-2">
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white border-2"
+                        style={{ backgroundColor: activePlayer.color, borderColor: tone.main }}
+                      >
+                        {activePlayer.avatar}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Big type icon + label */}
+                  <div className="mt-10 mb-5">
+                    <motion.div
+                      animate={{ scale: [1, 1.08, 1], y: [0, -3, 0] }}
+                      transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                      className="flex justify-center mb-3"
+                    >
+                      {isTruth
+                        ? <Heart className="w-14 h-14" style={{ color: tone.main, filter: `drop-shadow(0 0 16px ${tone.glow})` }} />
+                        : <Flame className="w-14 h-14" style={{ color: tone.main, filter: `drop-shadow(0 0 16px ${tone.glow})` }} />
+                      }
+                    </motion.div>
+                    <span className="text-[#8ff5ff] text-[10px] font-black uppercase tracking-[0.3em]">
+                      Deine Aufgabe
+                    </span>
+                  </div>
+
+                  {/* Task text */}
+                  <p className="font-black text-2xl sm:text-3xl leading-tight text-white tracking-tight px-2 mb-5">
+                    {currentItem.text}
+                  </p>
+
+                  {/* Intensity pips */}
+                  <div className="flex items-center gap-1.5 mb-6">
+                    <span className="text-[9px] text-[#a8abb3] font-bold uppercase tracking-widest mr-1">Level</span>
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="w-5 h-1.5 rounded-full"
+                        style={{
+                          background: i <= currentItem.intensity ? tone.main : 'rgba(255,255,255,0.1)',
+                          boxShadow: i <= currentItem.intensity ? `0 0 6px ${tone.glow}` : 'none',
+                        }}
+                      />
+                    ))}
+                    <span className="ml-auto text-[9px] text-[#a8abb3]/60 uppercase tracking-widest pl-2">
+                      {currentItem.category}
+                    </span>
+                  </div>
+
+                  {/* Social proof: who's waiting */}
+                  {others.length > 0 && (
+                    <div className="flex items-center gap-2 px-4 py-2.5 bg-[#000000]/40 rounded-full mb-6 border border-[#44484f]/30">
+                      <div className="flex -space-x-2">
+                        {others.slice(0, 3).map((p) => (
+                          <div
+                            key={p.id}
+                            className="w-6 h-6 rounded-full border-2 border-[#1b2028] flex items-center justify-center text-[9px] font-bold text-white"
+                            style={{ backgroundColor: p.color }}
+                          >
+                            {p.avatar}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[#a8abb3] text-[11px] font-medium">
+                        {others.length > 3
+                          ? `+${others.length - 3} warten auf dich`
+                          : 'warten auf dich'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Action stack */}
+                  <div className="w-full flex flex-col gap-3">
+                    {!isTruth ? (
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => { haptics.celebrate(); startVote(); }}
+                        className="w-full h-14 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-2 text-white"
+                        style={{
+                          background: `linear-gradient(90deg, ${tone.main}, ${tone.dim})`,
+                          boxShadow: `0 0 24px ${tone.glow}, inset 0 0 12px rgba(255,255,255,0.15)`,
+                        }}
+                      >
+                        <Check className="w-5 h-5" />
+                        Erledigt
+                      </motion.button>
+                    ) : (
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => { haptics.celebrate(); nextRound(); }}
+                        className="w-full h-14 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-2"
+                        style={{
+                          background: `linear-gradient(90deg, ${tone.main}, ${tone.dim})`,
+                          color: tone.onChip,
+                          boxShadow: `0 0 24px ${tone.glow}, inset 0 0 12px rgba(255,255,255,0.15)`,
+                        }}
+                      >
+                        <Check className="w-5 h-5" />
+                        Erledigt
+                      </motion.button>
+                    )}
+
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={rerollCurrent}
+                      className="w-full h-12 rounded-full flex items-center justify-center gap-2 bg-[#20262f]/50 border border-[#44484f]/30 text-[#a8abb3] font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#262c36] transition-colors"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      Neue Aufgabe
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Discrete rules link */}
+              <button
+                type="button"
+                className="mt-8 opacity-40 hover:opacity-100 transition-opacity flex items-center gap-2 text-[#a8abb3] cursor-pointer"
+              >
+                <Info className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em]">Regeln anzeigen</span>
+              </button>
+            </motion.div>
+          );
+        })()}
 
         {/* VOTE PHASE */}
         {phase === 'vote' && activePlayer && (
