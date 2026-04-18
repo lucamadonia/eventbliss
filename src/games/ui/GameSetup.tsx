@@ -187,10 +187,17 @@ export function GameSetup({
                   onChange={(e) => updateName(player.id, e.target.value)}
                   placeholder={`Spieler ${i + 1}`}
                   maxLength={20}
-                  readOnly={!!allAutoPlayers?.find(op => op.id === player.id)}
+                  inputMode="text"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  /* Only TRUE online players (remote devices) are read-only —
+                     their name is authoritative on their own phone. Local
+                     party-session players are just cached presets and MUST
+                     stay editable, otherwise the keyboard never opens. */
+                  readOnly={!!autoOnlinePlayers?.find(op => op.id === player.id)}
                   className={cn(
                     "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base",
-                    allAutoPlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
+                    autoOnlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
                   )}
                 />
                 {autoOnlinePlayers?.find(op => op.id === player.id) && (
@@ -198,7 +205,7 @@ export function GameSetup({
                     <Globe className="w-4 h-4 text-[#df8eff]" />
                   </div>
                 )}
-                {players.length > minPlayers && !allAutoPlayers?.find(op => op.id === player.id) && (
+                {players.length > minPlayers && !autoOnlinePlayers?.find(op => op.id === player.id) && (
                   <button
                     onClick={() => removePlayer(player.id)}
                     className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"
