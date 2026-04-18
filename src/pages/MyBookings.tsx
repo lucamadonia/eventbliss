@@ -311,7 +311,7 @@ export default function MyBookings() {
                     </span>
                     <span className="flex items-center gap-1.5 font-semibold text-slate-200">
                       <Euro className="w-3.5 h-3.5 text-slate-600" />
-                      {booking.totalPrice.toLocaleString("de-DE")},00 EUR
+                      {new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(booking.totalPrice)}
                     </span>
                   </div>
 

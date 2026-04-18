@@ -36,7 +36,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { derivePaymentState, usePayBookingNow } from "@/lib/bookingPayment";
+import { derivePaymentState, usePayBookingNow, verifyBookingPayment } from "@/lib/bookingPayment";
+import { useQueryClient } from "@tanstack/react-query";
 
 // -------------------------------------------------------------------
 // Data
@@ -56,6 +57,7 @@ interface BookingDetails {
   service_id: string;
   agency_id: string;
   stripe_payment_intent_id?: string | null;
+  stripe_checkout_session_id?: string | null;
   payment_method?: string | null;
   service_title?: string;
   service_slug?: string;
@@ -751,8 +753,36 @@ export default function BookingSuccess() {
     : null;
   const booking: BookingDetails | null = isDemo ? demoBooking : (live.data ?? null);
   const payNow = usePayBookingNow();
+  const qc = useQueryClient();
   const isLoading = isDemo ? false : live.isLoading;
   const error = isDemo ? null : live.error;
+
+  // Self-heal: if the Stripe webhook didn't fire (or was misconfigured),
+  // actively verify the Checkout Session against Stripe on page load.
+  // Runs once per booking id as long as the booking looks unpaid but has
+  // a session id (classic "just returned from Stripe" state).
+  const [verifyAttempted, setVerifyAttempted] = useState<string | null>(null);
+  useEffect(() => {
+    if (!booking || isDemo) return;
+    if (verifyAttempted === booking.id) return;
+    const needsVerify =
+      !booking.stripe_payment_intent_id &&
+      !!booking.stripe_checkout_session_id &&
+      booking.payment_method !== "on_site" &&
+      booking.status !== "cancelled_by_customer" &&
+      booking.status !== "cancelled_by_agency" &&
+      booking.status !== "refunded";
+    if (!needsVerify) return;
+    setVerifyAttempted(booking.id);
+    (async () => {
+      const result = await verifyBookingPayment(booking.id);
+      if (result.status === "confirmed_now" || result.status === "already_confirmed") {
+        // Refetch the booking so the UI reflects the confirmed/paid state
+        qc.invalidateQueries({ queryKey: ["booking-success", booking.id] });
+        qc.invalidateQueries({ queryKey: ["my-bookings"] });
+      }
+    })();
+  }, [booking, isDemo, qc, verifyAttempted]);
   const reduced = !!useReducedMotion();
   const [showConfetti, setShowConfetti] = useState(true);
   const [showSecondBurst, setShowSecondBurst] = useState(false);
