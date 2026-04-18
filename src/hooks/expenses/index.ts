@@ -4,6 +4,7 @@ export {
   useAddExpenseV2,
   useUpdateExpenseV2,
   useDeleteExpenseV2,
+  useRestoreExpenseV2,
   expenseKeys,
   shareIsPaid,
 } from "./useExpensesV2";

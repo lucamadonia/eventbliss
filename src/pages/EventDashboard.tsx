@@ -35,6 +35,8 @@ import { PlannerTab } from "@/components/dashboard/PlannerTab";
 import { ResponsesTab } from "@/components/dashboard/ResponsesTab";
 // Full-featured expenses page: split (equal / custom / percentage), paywall at 5+
 import EventExpenses from "@/pages/EventExpenses";
+import EventExpensesV2 from "@/pages/EventExpensesV2";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { FileEdit, Building2, LogIn } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import {
@@ -97,6 +99,7 @@ const EventDashboard = () => {
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const { user } = useAuthContext();
   const { allowedTabs } = useParticipantPermissions(event, participants);
+  const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState<ResponseStats | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
@@ -189,12 +192,12 @@ const EventDashboard = () => {
           />
         );
       case "expenses":
-        // Render the full EventExpenses page inside the dashboard tab so
-        // users get split/percent/paywall like before. Wrapped so its
-        // own min-h-screen doesn't fight the dashboard layout.
+        // Feature flag `expenses_v2` swaps the tab body between the
+        // current stable page and the v2 rebuild. Wrapper undoes the
+        // dashboard's outer padding so the inner page fills the frame.
         return (
           <div className="-m-6 sm:-m-8 [&>div]:min-h-0">
-            <EventExpenses />
+            {useV2Expenses ? <EventExpensesV2 /> : <EventExpenses />}
           </div>
         );
       case "responses":

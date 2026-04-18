@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
@@ -9,16 +9,19 @@ import {
   CheckCircle2,
   Receipt as ReceiptIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEvent } from "@/hooks/useEvent";
 import { useAuth } from "@/hooks/useAuth";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useShake } from "@/hooks/useShake";
 import {
   useExpensesV2,
   useBalances,
   useSimplifiedDebts,
   useDeleteExpenseV2,
+  useRestoreExpenseV2,
 } from "@/hooks/expenses";
 import { BalanceCard } from "@/components/expenses-v2/BalanceCard";
 import { AddExpenseSheet } from "@/components/expenses-v2/AddExpenseSheet";
@@ -49,6 +52,8 @@ export default function EventExpensesV2() {
   const { data: balances = [] } = useBalances(eventId);
   const { data: simplifiedDebts = [] } = useSimplifiedDebts(eventId);
   const deleteExpense = useDeleteExpenseV2(eventId ?? "");
+  const restoreExpense = useRestoreExpenseV2(eventId ?? "");
+  const lastDeletedIdRef = useRef<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("list");
   const [addOpen, setAddOpen] = useState(false);
@@ -108,6 +113,19 @@ export default function EventExpensesV2() {
     }
   }, [allSettled, data?.summary.count, eventId, haptics]);
 
+  // Shake-to-undo — triggers restore on the most recent soft-deleted
+  // expense. Must stay above any early return so the hook order is
+  // stable across renders.
+  useShake(
+    () => {
+      if (!lastDeletedIdRef.current) return;
+      restoreExpense.mutate({ id: lastDeletedIdRef.current });
+      lastDeletedIdRef.current = null;
+      void haptics.medium();
+    },
+    { enabled: !!eventId },
+  );
+
   if (eventLoading || !event) {
     return (
       <div className="min-h-screen bg-[#0B0D12] flex items-center justify-center">
@@ -123,9 +141,25 @@ export default function EventExpensesV2() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Ausgabe wirklich löschen?")) return;
     await haptics.warning();
     await deleteExpense.mutateAsync({ id });
+    lastDeletedIdRef.current = id;
+    // Sonner's built-in "Undo" action — lasts 10s. Shake-to-undo uses
+    // the same ref so both pathways converge on one restore call.
+    toast("Ausgabe gelöscht", {
+      description: "Rückgängig oder schütteln, um wiederherzustellen.",
+      duration: 10000,
+      action: {
+        label: "Rückgängig",
+        onClick: () => {
+          if (lastDeletedIdRef.current) {
+            restoreExpense.mutate({ id: lastDeletedIdRef.current });
+            lastDeletedIdRef.current = null;
+            void haptics.light();
+          }
+        },
+      },
+    });
   };
 
   return (

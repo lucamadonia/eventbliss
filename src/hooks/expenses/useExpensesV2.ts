@@ -300,5 +300,28 @@ export function useDeleteExpenseV2(eventId: string) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// useRestoreExpenseV2 — undo a soft delete (clears deleted_at)
+// ---------------------------------------------------------------------------
+export function useRestoreExpenseV2(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const { error } = await (supabase.from as any)("expenses")
+        .update({ deleted_at: null, deleted_by: null, deletion_reason: null })
+        .eq("id", id);
+      if (error) throw error;
+      return { id };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: expenseKeys.byEvent(eventId) });
+      qc.invalidateQueries({ queryKey: expenseKeys.balances(eventId) });
+      qc.invalidateQueries({ queryKey: expenseKeys.simplified(eventId) });
+      toast.success("Ausgabe wiederhergestellt");
+    },
+    onError: (e: Error) => toast.error(`Fehler: ${e.message}`),
+  });
+}
+
 export { shareIsPaid };
 export type { ReceiptOcrResult };
