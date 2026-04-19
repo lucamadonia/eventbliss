@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, Timer,
   Zap, MessageSquare, Shuffle, BarChart3, Clock, Check,
-  X as CloseIcon, Users, Stars, Flame,
+  X as CloseIcon, Users, Stars, Flame, Plus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -1066,7 +1066,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
                 className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-16 group"
               >
                 <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#44484f] flex items-center justify-center text-[#72757d] group-hover:border-[#df8eff] group-hover:text-[#df8eff] transition-colors active:scale-95">
-                  <Plus />
+                  <Plus className="w-6 h-6" />
                 </div>
                 <span className="text-[10px] font-bold text-[#a8abb3]">Gast</span>
               </button>
