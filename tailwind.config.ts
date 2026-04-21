@@ -173,6 +173,50 @@ export default {
           "0%": { transform: "rotateY(0deg)" },
           "100%": { transform: "rotateY(180deg)" },
         },
+        aurora: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        "border-spin": {
+          to: { "--angle": "360deg" } as Record<string, string>,
+        },
+        "text-scramble": {
+          "0%": { opacity: "0.3" },
+          "100%": { opacity: "1" },
+        },
+        sparkle: {
+          "0%": { opacity: "0", transform: "scale(0) rotate(0deg)" },
+          "50%": { opacity: "1" },
+          "100%": { opacity: "0", transform: "scale(1.4) rotate(180deg)" },
+        },
+        grain: {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "25%": { transform: "translate(-5%, 5%)" },
+          "50%": { transform: "translate(5%, -5%)" },
+          "75%": { transform: "translate(-3%, -3%)" },
+        },
+        "mask-reveal": {
+          from: { clipPath: "inset(0 100% 0 0)" },
+          to: { clipPath: "inset(0 0 0 0)" },
+        },
+        "magnetic-pulse": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.03)" },
+        },
+        "aurora-halo": {
+          "0%, 100%": {
+            transform: "translate3d(-50%, -50%, 0) scale(1)",
+            opacity: "0.55",
+          },
+          "50%": {
+            transform: "translate3d(-50%, -50%, 0) scale(1.15)",
+            opacity: "0.85",
+          },
+        },
+        "orbit-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -192,6 +236,15 @@ export default {
         "float-random": "float-random 8s ease-in-out infinite",
         shimmer: "shimmer 2s infinite linear",
         "card-flip": "card-flip 0.6s ease-in-out",
+        aurora: "aurora 12s ease infinite",
+        "border-spin": "border-spin 4s linear infinite",
+        "text-scramble": "text-scramble 600ms ease-out forwards",
+        sparkle: "sparkle 700ms ease-out forwards",
+        grain: "grain 8s steps(6) infinite",
+        "mask-reveal": "mask-reveal 800ms cubic-bezier(.77,0,.18,1) forwards",
+        "magnetic-pulse": "magnetic-pulse 2.5s ease-in-out infinite",
+        "aurora-halo": "aurora-halo 6s ease-in-out infinite",
+        "orbit-slow": "orbit-slow 40s linear infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
