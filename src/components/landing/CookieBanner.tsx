@@ -32,6 +32,26 @@ export function CookieBanner() {
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
+    // Listen for user-triggered re-open from the footer link.
+    const reopen = () => {
+      // Pre-fill from stored prefs so the user sees their current state.
+      if (consent) {
+        try {
+          const stored = JSON.parse(consent);
+          setPreferences({
+            necessary: true,
+            analytics: !!stored.analytics,
+            marketing: !!stored.marketing,
+          });
+        } catch {
+          /* ignore */
+        }
+      }
+      setShowDetails(true);
+      setIsVisible(true);
+    };
+    window.addEventListener("eventbliss:open-cookie-settings", reopen);
+    return () => window.removeEventListener("eventbliss:open-cookie-settings", reopen);
   }, []);
 
   const saveConsent = (prefs: CookiePreferences) => {

@@ -79,7 +79,7 @@ const Disclaimer = () => {
               </p>
               <div className="space-y-2 text-muted-foreground">
                 <p>MYFAMBLISS GROUP LTD</p>
-                <p>Gladstonos 12-14, 8042 Paphos, Cyprus</p>
+                <p>Gladstonos 12-14, 8046 Paphos, Cyprus</p>
                 <p>
                   <a href="mailto:info@event-bliss.com" className="text-primary hover:underline">
                     info@event-bliss.com

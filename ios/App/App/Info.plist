@@ -7,13 +7,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>de</string>
 	<key>NSCameraUsageDescription</key>
-	<string>EventBliss benoetigt Zugriff auf die Kamera, damit du Profilbilder aufnehmen und Fotos mit deinen Spielergebnissen teilen kannst.</string>
+	<string>EventBliss benötigt Zugriff auf die Kamera, damit du Profilbilder aufnehmen und Belege scannen kannst.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>EventBliss benoetigt Zugriff auf deine Fotos, damit du ein Profilbild auswaehlen kannst.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>EventBliss speichert mit deiner Erlaubnis Spielergebnisse und Fotos in deiner Mediathek.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>EventBliss verwendet deinen Standort fuer Geografie-Spiele wie World Finder und Street View.</string>
+	<string>EventBliss benötigt Zugriff auf deine Fotos, damit du ein Profilbild auswählen oder Belege hochladen kannst.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleDisplayName</key>

@@ -3,6 +3,7 @@ import { MapPin, Phone, Mail, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { NewsletterForm } from "./NewsletterForm";
+import { JGA_CITIES } from "@/lib/jga-cities";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 export function LandingFooter() {
@@ -11,6 +12,9 @@ export function LandingFooter() {
   const productLinks = [
     { label: t("landing.footer.features"), href: "#features" },
     { label: t("landing.footer.solutions"), href: "#solutions" },
+    { label: t("landing.footer.budgetCalculator", "JGA-Budget-Rechner"), href: "/jga/kalkulator" },
+    { label: t("landing.footer.cityGuides", "JGA-Städte-Guides"), href: "/jga/berlin" },
+    { label: t("landing.footer.activityIdeas", "Aktivitäten-Ideen"), href: "/ideen/karting" },
   ];
 
   const partnerLinks = [
@@ -25,11 +29,34 @@ export function LandingFooter() {
     { label: t("landing.footer.privacy"), href: "/legal/privacy" },
     { label: t("landing.footer.terms"), href: "/legal/terms" },
     { label: t("landing.footer.disclaimer"), href: "/legal/disclaimer" },
+    {
+      label: t("landing.footer.cookieSettings", "Cookie-Einstellungen verwalten"),
+      href: "#cookie-settings",
+      onClick: () => window.dispatchEvent(new Event("eventbliss:open-cookie-settings")),
+    },
   ];
 
   return (
     <footer className="relative border-t border-border/50 bg-card/30">
       <div className="container max-w-7xl mx-auto px-4 py-16">
+        {/* JGA city link cluster — internal-link SEO + crawl entry points */}
+        <div className="mb-12 pb-12 border-b border-border/40">
+          <h4 className="font-display font-semibold mb-4 text-center text-sm uppercase tracking-wider text-muted-foreground">
+            {t("landing.footer.popularCities", "Beliebte JGA-Städte")}
+          </h4>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {JGA_CITIES.map((c) => (
+              <Link
+                key={c.slug}
+                to={`/jga/${c.slug}`}
+                className="px-3 py-1.5 rounded-full text-sm bg-card/40 border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+              >
+                JGA {c.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand & Newsletter */}
           <div className="lg:col-span-2">
@@ -92,12 +119,22 @@ export function LandingFooter() {
             <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    to={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.onClick ? (
+                    <button
+                      type="button"
+                      onClick={link.onClick}
+                      className="text-muted-foreground hover:text-foreground transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

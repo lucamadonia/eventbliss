@@ -1,0 +1,50 @@
+# AI Policy for EventBliss (event-bliss.com)
+# Last updated: 2026-05-17
+
+# This site grants permission for AI search engines and LLM crawlers to index and cite content.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Canonical site context for AI consumers
+Sitemap: https://event-bliss.com/sitemap.xml
+LLMs: https://event-bliss.com/llms.txt

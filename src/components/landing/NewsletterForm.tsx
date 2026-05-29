@@ -44,6 +44,21 @@ export function NewsletterForm({ variant = "stacked", className = "" }: Newslett
     setIsLoading(true);
 
     try {
+      // Generate a 32-byte cryptographically random confirmation token.
+      const tokenBytes = new Uint8Array(32);
+      crypto.getRandomValues(tokenBytes);
+      const confirmation_token = Array.from(tokenBytes)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      const consent_evidence = {
+        form_version: "newsletter-form/2026-05-18",
+        locale: i18n.language,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+        timestamp: new Date().toISOString(),
+        page: typeof window !== "undefined" ? window.location.pathname : "",
+      };
+
       const { error: dbError } = await supabase
         .from("newsletter_subscribers")
         .insert({
@@ -52,6 +67,9 @@ export function NewsletterForm({ variant = "stacked", className = "" }: Newslett
           gdpr_consent: gdprConsent,
           marketing_consent: marketingConsent,
           source: "landing_page",
+          confirmation_token,
+          consent_evidence,
+          // `confirmed_at` stays NULL until the user clicks the DOI link.
         });
 
       if (dbError) {
@@ -62,12 +80,21 @@ export function NewsletterForm({ variant = "stacked", className = "" }: Newslett
           throw dbError;
         }
       } else {
+        // Trigger the DOI confirmation email via the dedicated edge function.
+        // Failure of the email send is logged but does not block the success
+        // toast — the user can re-request the confirmation mail.
+        supabase.functions
+          .invoke("newsletter-send-confirm", {
+            body: { email: email.toLowerCase().trim(), token: confirmation_token, locale: i18n.language },
+          })
+          .catch((e) => console.warn("[newsletter] confirm-mail dispatch failed", e));
+
         setIsSuccess(true);
         toast.success(t("newsletter.success"));
         setEmail("");
         setGdprConsent(false);
         setMarketingConsent(false);
-        
+
         // Reset success state after 5 seconds
         setTimeout(() => setIsSuccess(false), 5000);
       }

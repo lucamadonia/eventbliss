@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
+import { stripExif, sanitizeFileName } from "@/lib/exif-strip";
 
 export interface EventFile {
   id: string;
   event_id: string;
   file_name: string;
+  /** Storage path inside the private `event-files` bucket. Frontend renders via signed URLs. */
   file_url: string;
   file_size: number;
   file_type: string;
@@ -15,6 +17,23 @@ export interface EventFile {
   created_at: string;
   event_name?: string;
 }
+
+const SIGNED_URL_TTL_SECONDS = 60 * 60; // 1 hour
+const ALLOWED_MIME_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/heic",
+  "image/heif",
+  "image/webp",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+  "text/csv",
+  "text/plain",
+]);
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 
 export function useEventFiles() {
   const { user } = useAuthContext();
@@ -55,32 +74,45 @@ export function useEventFiles() {
     async (file: File, eventId: string, category: string) => {
       if (!user) return;
 
-      const filePath = `${eventId}/${Date.now()}_${file.name}`;
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`"${file.name}" ist größer als 25 MB.`);
+        return;
+      }
+      if (!ALLOWED_MIME_TYPES.has(file.type)) {
+        toast.error(`Dateityp "${file.type || "unbekannt"}" wird nicht akzeptiert.`);
+        return;
+      }
+
+      // Strip EXIF (incl. GPS) from images before upload — GDPR Art. 32 hardening.
+      const safeFile = await stripExif(file, { maxDimension: 3200 });
+      const cleanName = sanitizeFileName(safeFile.name);
+      const filePath = `${eventId}/${Date.now()}_${cleanName}`;
+
       try {
         const { error: uploadError } = await supabase.storage
           .from("event-files")
-          .upload(filePath, file);
+          .upload(filePath, safeFile, {
+            contentType: safeFile.type,
+            upsert: false,
+          });
 
         if (uploadError) throw uploadError;
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("event-files").getPublicUrl(filePath);
 
         const { error: insertError } = await (supabase.from as any)(
           "event_files",
         ).insert({
           event_id: eventId,
-          file_name: file.name,
-          file_url: publicUrl,
-          file_size: file.size,
-          file_type: file.type,
+          file_name: cleanName,
+          // Store the relative storage path, not a URL. Rendering uses createSignedUrl().
+          file_url: filePath,
+          file_size: safeFile.size,
+          file_type: safeFile.type,
           category,
           uploaded_by: user.id,
         });
 
         if (insertError) throw insertError;
-        toast.success(`"${file.name}" hochgeladen`);
+        toast.success(`"${cleanName}" hochgeladen`);
         await fetchFiles();
       } catch (err) {
         console.error("Error uploading file:", err);
@@ -90,20 +122,42 @@ export function useEventFiles() {
     [user, fetchFiles],
   );
 
+  /**
+   * Mints a time-limited signed URL for a stored file path. Use this in
+   * UI components instead of constructing public URLs.
+   */
+  const getSignedUrl = useCallback(async (filePath: string): Promise<string | null> => {
+    try {
+      const { data, error } = await supabase.storage
+        .from("event-files")
+        .createSignedUrl(filePath, SIGNED_URL_TTL_SECONDS);
+      if (error) throw error;
+      return data?.signedUrl ?? null;
+    } catch (err) {
+      console.error("Error creating signed URL:", err);
+      return null;
+    }
+  }, []);
+
   const deleteFile = useCallback(
     async (fileId: string) => {
       try {
         const target = files.find((f) => f.id === fileId);
         if (!target) return;
 
-        // Extract storage path from URL
-        const url = new URL(target.file_url);
-        const pathMatch = url.pathname.match(/event-files\/(.+)$/);
-        if (pathMatch) {
-          await supabase.storage
-            .from("event-files")
-            .remove([decodeURIComponent(pathMatch[1])]);
+        // `file_url` is now a storage path; older rows may still hold a public URL.
+        let storagePath = target.file_url;
+        if (storagePath.startsWith("http")) {
+          try {
+            const url = new URL(storagePath);
+            const pathMatch = url.pathname.match(/event-files\/(.+)$/);
+            if (pathMatch) storagePath = decodeURIComponent(pathMatch[1]);
+          } catch {
+            // ignore — try as-is
+          }
         }
+
+        await supabase.storage.from("event-files").remove([storagePath]);
 
         const { error } = await (supabase.from as any)("event_files")
           .delete()
@@ -131,5 +185,6 @@ export function useEventFiles() {
     deleteFile,
     fetchFiles,
     getStorageUsage,
+    getSignedUrl,
   };
 }

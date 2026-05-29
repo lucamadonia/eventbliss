@@ -660,9 +660,14 @@ const DynamicSurveyForm = ({
                       <Textarea
                         placeholder="z.B. Höhenangst, Laktoseintoleranz, Vegetarier..."
                         className="resize-none"
+                        maxLength={500}
                         {...field}
                       />
                     </FormControl>
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                      ⚠️ <strong>Hinweis Datenschutz:</strong> Bitte gib hier nur Informationen an, die du <em>freiwillig</em> teilen möchtest. Mit dem Absenden des Formulars willigst du gemäß <strong>Art. 9 Abs. 2 lit. a DSGVO</strong> ausdrücklich in die Verarbeitung dieser Angaben ein. Sensible Gesundheits- oder Religionsdetails bitte nur eintragen, wenn organisatorisch zwingend nötig.
+                      Mehr Info: <a href="/legal/privacy" className="text-primary hover:underline" target="_blank" rel="noopener">Datenschutzerklärung §10</a>.
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}

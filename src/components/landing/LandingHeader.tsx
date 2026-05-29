@@ -32,6 +32,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
   const navItems = [
     { label: t("landing.nav.features"), href: "features" },
     { label: t("landing.nav.howItWorks"), href: "how-it-works" },
+    { label: t("landing.nav.calculator", "Budget-Rechner"), href: "jga/kalkulator", isRoute: true },
     { label: t("landing.nav.ideas"), href: "ideas", isRoute: true },
     { label: t("landing.nav.games"), href: "games", isRoute: true },
     { label: t("landing.nav.faq"), href: "faq" },

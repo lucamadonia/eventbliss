@@ -10,6 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { MfaEnrollment } from "@/components/auth/MfaEnrollment";
 import { usePremium } from "@/hooks/usePremium";
 import { useAICredits } from "@/hooks/useAICredits";
 import { Button } from "@/components/ui/button";
@@ -155,14 +156,52 @@ export default function ProfileSettings() {
 
     setIsDeletingAccount(true);
     try {
+      // GDPR Art. 17 — Permanently delete the auth user via privileged edge fn.
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: {},
+      });
+      if (error) throw error;
+      if ((data as { error?: string })?.error) {
+        throw new Error((data as { error?: string }).error);
+      }
+
       await signOut();
-      toast.success(t("profile.accountDeleteRequested"));
+      toast.success(t("profile.accountDeleted", "Dein Konto wurde dauerhaft gelöscht."));
       navigate("/");
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : t("common.error");
       toast.error(errorMessage);
     } finally {
       setIsDeletingAccount(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      toast.loading(t("profile.exportInProgress", "Datenexport wird vorbereitet…"), { id: "export" });
+      const { data, error } = await supabase.functions.invoke("export-user-data", {
+        body: {},
+      });
+      if (error) throw error;
+
+      // Edge function returns JSON; browser auto-receives via attachment header
+      // when fetched directly. Functions.invoke unwraps as `data`, so we
+      // re-package it into a downloadable blob here.
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `eventbliss-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(t("profile.exportReady", "Dein Datenexport wurde heruntergeladen."), { id: "export" });
+    } catch (err) {
+      console.error("[export-user-data]", err);
+      toast.error(t("profile.exportFailed", "Export fehlgeschlagen. Bitte später erneut versuchen."), { id: "export" });
     }
   };
 
@@ -542,6 +581,15 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
+        {/* MFA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <MfaEnrollment />
+        </motion.div>
+
         {/* Danger Zone */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -556,7 +604,10 @@ export default function ProfileSettings() {
               </CardTitle>
               <CardDescription>{t("profile.dangerZoneDescription")}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              <Button variant="outline" onClick={handleExportData}>
+                {t("profile.exportData", "Meine Daten exportieren (GDPR Art. 20)")}
+              </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive">
