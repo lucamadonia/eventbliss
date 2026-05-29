@@ -56,14 +56,13 @@ jobs:
 
       - name: Ensure iOS platform (SDK) is installed
         run: |
-          # Xcode 26 ships platforms as separate downloadable components; the
-          # runner's default image may lack the iOS platform, which makes
-          # `archive -destination generic/platform=iOS` fail with
-          # "iOS 26.0 is not installed". Fetch it if missing.
-          if ! xcodebuild -showsdks 2>/dev/null | grep -qi "iphoneos"; then
-            echo "iOS platform missing — downloading…"
-            xcodebuild -downloadPlatform iOS || sudo xcodebuild -downloadPlatform iOS
-          fi
+          # Xcode 26 ships platforms as separate downloadable components. On the
+          # macos-26 runner `xcodebuild -showsdks` lists iOS 26 but the platform
+          # device-support component is incomplete, so archiving with
+          # `-destination generic/platform=iOS` still fails with
+          # "iOS 26.0 is not installed". Fetch it unconditionally (idempotent —
+          # a no-op when already fully installed).
+          xcodebuild -downloadPlatform iOS || sudo xcodebuild -downloadPlatform iOS
           xcodebuild -showsdks | grep -i ios || true
 
       - name: Install dependencies
