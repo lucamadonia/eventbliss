@@ -25,7 +25,9 @@ env:
 jobs:
   build:
     name: Build & Upload to TestFlight
-    runs-on: macos-15
+    # macos-26 ships Xcode 26 / iOS 26 SDK — required by App Store Connect since
+    # 2026 (uploads built with older SDKs are rejected: STATE_ERROR.VALIDATION_ERROR).
+    runs-on: macos-26
     timeout-minutes: 45
 
     steps:
@@ -45,7 +47,10 @@ jobs:
 
       - name: Select Xcode
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer || \
+          # Prefer Xcode 26 (iOS 26 SDK) required by App Store Connect; fall
+          # back to whichever Xcode 26.x is the runner default.
+          sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer || \
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
 
