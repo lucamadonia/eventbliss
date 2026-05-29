@@ -12,6 +12,7 @@ export const GAME_TIERS: GameTier[] = [
   { gameId: 'headup', tier: 'free' },
   { gameId: 'taboo', tier: 'free' },
   { gameId: 'this-or-that', tier: 'free' },
+  { gameId: 'ohrwurm', tier: 'free' },
 
   // PREMIUM GAMES (locked for free users after 2 rounds per day)
   { gameId: 'hochstapler', tier: 'premium', freeRoundsLimit: 2 },

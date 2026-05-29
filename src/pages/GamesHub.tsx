@@ -13,7 +13,7 @@ import {
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
   HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
   Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
-  Wine, Globe, X,
+  Wine, Globe, X, Music2,
 } from "lucide-react";
 
 const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
@@ -36,6 +36,7 @@ const EmojiGuessGame = lazy(() => import("@/games/emojiguess/EmojiGuessGame"));
 const FakeOrFactGame = lazy(() => import("@/games/fakeorfact/FakeOrFactGame"));
 const StoryBuilderGame = lazy(() => import("@/games/storybuilder/StoryBuilderGame"));
 const BottleSpinGame = lazy(() => import("@/games/bottlespin/BottleSpinGame"));
+const OhrwurmGame = lazy(() => import("@/games/ohrwurm/OhrwurmGame"));
 
 // Design tokens
 const C = {
@@ -79,6 +80,7 @@ const allGames: GameCardData[] = [
   { id: "fake-or-fact", name: "Fake or Fact", desc: "Wahrheit oder Lüge? Teste dein Wissen!", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5, image: "/images/games/fake-or-fact.webp" },
   { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
   { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
+  { id: "ohrwurm", name: "Ohrwurm", desc: "Song hören, ins richtige Jahr einordnen — Musik-Quiz mit QR & Spotify", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", players: "2-4", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
 ];
 
 const categories = [
@@ -111,6 +113,7 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   "fake-or-fact": ["quiz", "wort"],
   "story-builder": ["kreativ", "wort"],
   "flaschendrehen": ["party", "social"],
+  "ohrwurm": ["party", "quiz"],
 };
 
 const recentGames = [
@@ -436,6 +439,7 @@ const GamesHubInner = () => {
   if (gameId === "fake-or-fact") return <>{rulesOverlay}<Suspense fallback={GameFallback}><FakeOrFactGame /></Suspense></>;
   if (gameId === "story-builder") return <>{rulesOverlay}<Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></>;
   if (gameId === "flaschendrehen") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></>;
+  if (gameId === "ohrwurm") return <>{rulesOverlay}<Suspense fallback={GameFallback}><OhrwurmGame /></Suspense></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {
