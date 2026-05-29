@@ -34,6 +34,14 @@ const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const AgencyPricing = lazy(() => import("./pages/AgencyPricing"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
+const JgaCity = lazy(() => import("./pages/JgaCity"));
+const JgaCalculator = lazy(() => import("./pages/JgaCalculator"));
+const IdeaActivity = lazy(() => import("./pages/IdeaActivity"));
+const StagDoCity = lazy(() => import("./pages/StagDoCity"));
+const ActivityEN = lazy(() => import("./pages/ActivityEN"));
+const HenDoCity = lazy(() => import("./pages/HenDoCity"));
+const IntlCity = lazy(() => import("./pages/IntlCity"));
+const ActivityIntl = lazy(() => import("./pages/ActivityIntl"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const GamesHub = lazy(() => import("./pages/GamesHub"));
 const MyBookings = lazy(() => import("@/pages/MyBookings"));
@@ -52,17 +60,20 @@ import { languages } from "@/i18n";
 import PageLoader from "@/components/ui/PageLoader";
 import { isNative } from "@/lib/platform";
 const NativeApp = lazy(() => import("@/components/native/NativeApp"));
-import Landing from "./pages/Landing";
-import CreateEvent from "./pages/CreateEvent";
-import JoinEvent from "./pages/JoinEvent";
-import EventSurvey from "./pages/EventSurvey";
-import EventDashboard from "./pages/EventDashboard";
-import EventExpenses from "./pages/EventExpenses";
-import EventExpensesV2 from "./pages/EventExpensesV2";
-import Danke from "./pages/Danke";
-import Auth from "./pages/Auth";
-import ClaimInvite from "./pages/ClaimInvite";
-import NotFound from "./pages/NotFound";
+// Web pages — lazy so they stay OUT of the entry chunk. Important for the
+// native app too: it renders only <NativeApp> but still loads this entry
+// chunk, so eagerly importing these web-only pages bloated native cold-start.
+const Landing = lazy(() => import("./pages/Landing"));
+const CreateEvent = lazy(() => import("./pages/CreateEvent"));
+const JoinEvent = lazy(() => import("./pages/JoinEvent"));
+const EventSurvey = lazy(() => import("./pages/EventSurvey"));
+const EventDashboard = lazy(() => import("./pages/EventDashboard"));
+const EventExpenses = lazy(() => import("./pages/EventExpenses"));
+const EventExpensesV2 = lazy(() => import("./pages/EventExpensesV2"));
+const Danke = lazy(() => import("./pages/Danke"));
+const Auth = lazy(() => import("./pages/Auth"));
+const ClaimInvite = lazy(() => import("./pages/ClaimInvite"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -109,15 +120,15 @@ const AppContent = () => {
         <Toaster />
         <Sonner />
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/create" element={<CreateEvent />} />
-          <Route path="/join" element={<JoinEvent />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/e/:slug" element={<EventSurvey />} />
-          <Route path="/e/:slug/dashboard" element={<EventDashboard />} />
-          <Route path="/e/:slug/expenses" element={<EventExpenses />} />
-          <Route path="/e/:slug/expenses-v2" element={<EventExpensesV2 />} />
-          <Route path="/e/:slug/claim/:token" element={<ClaimInvite />} />
+          <Route path="/" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Landing /></Suspense></ErrorBoundary>} />
+          <Route path="/create" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CreateEvent /></Suspense></ErrorBoundary>} />
+          <Route path="/join" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JoinEvent /></Suspense></ErrorBoundary>} />
+          <Route path="/auth" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Auth /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventSurvey /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/dashboard" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventDashboard /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/expenses" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventExpenses /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/expenses-v2" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventExpensesV2 /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/claim/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClaimInvite /></Suspense></ErrorBoundary>} />
           <Route path="/client/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClientPortal /></Suspense></ErrorBoundary>} />
           <Route path="/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GamesHub /></Suspense></ErrorBoundary>} />
           <Route path="/games/:gameId" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GamesHub /></Suspense></ErrorBoundary>} />
@@ -129,7 +140,46 @@ const AppContent = () => {
           <Route path="/marketplace/service/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceService /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense></ErrorBoundary>} />
           <Route path="/embed/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyEmbed /></Suspense></ErrorBoundary>} />
-          <Route path="/danke" element={<Danke />} />
+          <Route path="/danke" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Danke /></Suspense></ErrorBoundary>} />
+          {/* SEO landing pages — public, no auth */}
+          <Route path="/jga/kalkulator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/stag-do/calculator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/despedida/calculadora" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/evg/calculatrice" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/addio/calcolatore" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/despedida-de-solteiro/calculadora" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/vrijgezellenfeest/calculator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/wieczor-kawalerski/kalkulator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/bekarliga-veda/hesaplayici" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/jga/:stadt" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCity /></Suspense></ErrorBoundary>} />
+          <Route path="/ideen/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IdeaActivity /></Suspense></ErrorBoundary>} />
+          <Route path="/stag-do/:city" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><StagDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/activities/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityEN /></Suspense></ErrorBoundary>} />
+          <Route path="/jga-frauen/:stadt" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/hen-do/:city" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          {/* Hen Do — 7 additional languages */}
+          <Route path="/despedida-soltera/:ciudad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/evjf/:ville" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/addio-nubilato/:citta" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/despedida-de-solteira/:cidade" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/vrijgezellinnenfeest/:stad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/wieczor-panienski/:miasto" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/kadin-bekarliga-veda/:sehir" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/despedida/:ciudad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/evg/:ville" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/addio/:citta" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/despedida-de-solteiro/:cidade" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/vrijgezellenfeest/:stad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/wieczor-kawalerski/:miasto" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/bekarliga-veda/:sehir" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          {/* Multilingual activity glossary — 7 languages */}
+          <Route path="/actividades/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/activites/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/attivita/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/atividades/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/activiteiten/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/atrakcje/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/aktiviteler/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/settings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><ProfileSettings /></ProtectedRoute></Suspense></ErrorBoundary>} />
@@ -158,7 +208,7 @@ const AppContent = () => {
           <Route path="/legal/terms" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Terms /></Suspense></ErrorBoundary>} />
           <Route path="/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
           <Route path="/legal/agency-agreement" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyAgreement /></Suspense></ErrorBoundary>} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><NotFound /></Suspense></ErrorBoundary>} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

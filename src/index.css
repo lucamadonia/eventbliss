@@ -1,11 +1,7 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
-@import "@fontsource/space-grotesk/400.css";
-@import "@fontsource/space-grotesk/500.css";
-@import "@fontsource/space-grotesk/600.css";
-@import "@fontsource/space-grotesk/700.css";
+/* Core fonts are self-hosted in src/fonts.css (variable, latin + latin-ext
+   only — see imports in main.tsx). The previous per-weight static @fontsource
+   imports here pulled every subset (cyrillic/greek/vietnamese) for all weights
+   and duplicated Plus Jakarta Sans with the old Google Fonts <link>. */
 
 @tailwind base;
 @tailwind components;
@@ -905,4 +901,51 @@ html.capacitor-native .pb-tabbar {
   .mask-reveal {
     clip-path: inset(0 0 0 0) !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NATIVE (Capacitor) PERFORMANCE OVERRIDES
+   The system WebView (WKWebView / Android System WebView) composites
+   backdrop-filter and infinite decorative animations far more expensively
+   than a desktop browser. The `.capacitor-native` class is set on <html>
+   synchronously before first paint (src/main.tsx). Web / PWA is unaffected
+   and keeps the full glassmorphism look.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root.capacitor-native {
+  /* Raise glass opacity so surfaces stay legible once the blur is removed. */
+  --glass-bg: 240 15% 11% / 0.94;
+  --glass-blur: 0px;
+}
+
+/* #1 WebView frame-killer: kill every backdrop-filter on native. Covers the
+   .glass-card component AND all Tailwind `backdrop-blur-*` utilities at once,
+   without touching the 128 files that use them. */
+.capacitor-native .glass-card,
+.capacitor-native [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Persistent fixed/sticky surfaces re-composite every frame — make them
+   solid-ish on native so removing the blur doesn't cause content bleed-through. */
+.capacitor-native [class*="backdrop-blur"].fixed,
+.capacitor-native [class*="backdrop-blur"].sticky {
+  background-color: hsl(240 18% 9% / 0.96);
+}
+
+/* Stop ambient infinite CSS animations on native — they never let the
+   compositor idle (battery + jank). Short tap/transition animations and
+   framer-motion micro-interactions are unaffected. */
+.capacitor-native .text-aurora,
+.capacitor-native .holo-border::before,
+.capacitor-native .aurora-field::before,
+.capacitor-native .aurora-field::after,
+.capacitor-native .grain-overlay::after,
+.capacitor-native .magnetic-pulse,
+.capacitor-native [class*="aurora-halo"],
+.capacitor-native [class*="orbit-slow"],
+.capacitor-native [class*="conic-spin"],
+.capacitor-native [class*="animate-float"],
+.capacitor-native [class*="animate-glow"] {
+  animation: none !important;
 }

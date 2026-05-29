@@ -1,8 +1,16 @@
 /**
  * FloatingOrbs — ambient drifting blur circles for home/splash backgrounds.
  * Smooth 15-30s loops, mix-blend-mode screen, very subtle.
+ *
+ * NATIVE PERF: in the Capacitor WebView the animated version is a worst case —
+ * 4 large elements with `filter: blur(50-80px)` animating `left`/`top` (which
+ * triggers layout every frame) on infinite loops, recompositing huge offscreen
+ * blur layers nonstop. On native we render a STATIC version (composited once,
+ * no per-frame layout) so the ambiance stays but the jank/battery cost is gone.
+ * Web / PWA keeps the full drifting animation.
  */
 import { motion } from "framer-motion";
+import { isNative } from "@/lib/platform";
 
 const orbs = [
   { size: 280, x1: "10%", x2: "60%", y1: "5%", y2: "25%", dur: 25, color: "rgba(139, 92, 246, 0.15)", blur: "80px" },
@@ -12,30 +20,45 @@ const orbs = [
 ];
 
 export function FloatingOrbs() {
+  const native = isNative();
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {orbs.map((orb, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: orb.size,
-            height: orb.size,
-            backgroundColor: orb.color,
-            filter: `blur(${orb.blur})`,
-            mixBlendMode: "screen",
-          }}
-          animate={{
-            left: [orb.x1, orb.x2, orb.x1],
-            top: [orb.y1, orb.y2, orb.y1],
-          }}
-          transition={{
-            duration: orb.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+      {orbs.map((orb, i) => {
+        const base = {
+          width: orb.size,
+          height: orb.size,
+          backgroundColor: orb.color,
+          filter: `blur(${orb.blur})`,
+          mixBlendMode: "screen" as const,
+        };
+        if (native) {
+          // Static — positioned once, no layout-triggering animation.
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full"
+              style={{ ...base, left: orb.x1, top: orb.y1 }}
+            />
+          );
+        }
+        return (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={base}
+            animate={{
+              left: [orb.x1, orb.x2, orb.x1],
+              top: [orb.y1, orb.y2, orb.y1],
+            }}
+            transition={{
+              duration: orb.dur,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        );
+      })}
     </div>
   );
 }

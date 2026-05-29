@@ -108,5 +108,22 @@ export default defineConfig(({ mode }) => {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Capacitor: iOS 14+ WKWebView / Android System WebView (Chromium 90+).
+    // es2020 produces smaller, faster-to-parse output than the esnext default.
+    target: ["es2020", "safari14"],
+    // Split the monolithic bundle so the initial cold-start chunk is small and
+    // heavy deps load on demand. Big win on the WebView's slow parse/exec.
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "motion": ["framer-motion"],
+          "supabase": ["@supabase/supabase-js"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1200,
+  },
 });
 });
