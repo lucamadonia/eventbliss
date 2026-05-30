@@ -5337,12 +5337,12 @@
     "ohrwurm": {
       "title": "Ohrwurm",
       "tagline": "Song hören, ins richtige Jahr einordnen — wer baut zuerst die längste Hit-Timeline?",
-      "step1": "Karte ziehen, QR-Code scannen und den Song auf Spotify anhören — das Jahr bleibt geheim.",
-      "step2": "Ordne den Song in deine eigene Timeline ein: zwischen welche beiden Jahre gehört er?",
-      "step3": "Konter-Fenster: Andere können mit 1 🎣 anfechten und die Karte klauen, wenn sie richtiger liegen.",
-      "step4": "Aufdecken! Richtig platziert = Karte behalten. Falsch = zurück auf den Stapel oder vom Konter geklaut.",
-      "step5": "Wer zuerst 6, 10 oder 15 Karten korrekt einsortiert hat (je nach Modus), gewinnt.",
-      "tip": "🎣 Hooks sind deine Joker: KONTERN (Platzierung anfechten), TAUSCHEN (1 🎣 für eine neue Karte, wenn du den Song nicht kennst) und BONUS — nennst du beim Hören Titel UND Künstler richtig, gibt's +1 🎣. Jeder startet mit 3 🎣."
+      "step1": "Der Song wird direkt in der App abgespielt (30s, Titel & Jahr verborgen). Du hast 60 Sekunden zum Einordnen — sonst verfällt die Karte.",
+      "step2": "Wer Titel & Interpret kennt, sagt sie VOR dem Aufdecken an — das ist deine Bonus-Chance.",
+      "step3": "Ordne den Song in deine EIGENE Timeline ein: zwischen welche beiden Jahre gehört er?",
+      "step4": "Kontern: Andere mit mindestens 1 🎣 fechten vor dem Aufdecken an. Lagst du falsch und der Konter richtig, klaut er die Karte UND bekommt seinen 🎣 zurück — sonst ist der eingesetzte 🎣 weg.",
+      "step5": "Bonus: Karte gewonnen + Titel & Interpret richtig angesagt → +1 🎣. Schaffst du alles (richtig platziert + angesagt) in unter 10 Sekunden → +2 🎣 (Speed-Bonus). Wer zuerst 6/10/15 Karten hat, gewinnt.",
+      "tip": "🎣 Hooks sind deine Joker: KONTERN (anfechten & klauen), TAUSCHEN (1 🎣 für eine neue Karte) und BONUS/SPEED (Titel + Interpret, extra schnell). Jeder startet mit 3 🎣, maximal 5."
     },
     "drueck-das-wort": {
       "title": "Drück das Wort",

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowLeft, ArrowRight, RotateCcw, Trophy, Users, User, Plus, X as CloseIcon,
-  Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown,
+  Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,12 @@ import {
   type Participant, type Phase, type PendingCounter, type RoundResolution, type Song,
 } from './ohrwurm-engine';
 import { OHRWURM_GENRES } from './ohrwurm-content';
+import { useGameTimer } from '../engine/TimerSystem';
+import { MysteryPlayer } from './MysteryPlayer';
+import { supabase } from '@/integrations/supabase/client';
+
+const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
+const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
 
 // ---------------------------------------------------------------------------
 // Design-Tokens (Spec §6) — als lokale Konstanten, damit das Corporate-Design
@@ -74,11 +80,22 @@ export default function OhrwurmGame() {
   const [resolution, setResolution] = useState<RoundResolution | null>(null);
   const [flipped, setFlipped] = useState(false);
   const [swapUsed, setSwapUsed] = useState(false);
+  const [bonusClaimed, setBonusClaimed] = useState(false); // aktive Person hat Titel+Interpret angesagt
   const [bonusDecided, setBonusDecided] = useState(false);
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
   const [winner, setWinner] = useState<Participant | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+
+  // --- In-App-Wiedergabe (verborgene 30s-Vorschau) + Runden-Timer ---
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const drawIdRef = useRef(0);
+  const playStartedAtRef = useRef<number | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [listening, setListening] = useState(false);              // Timer läuft (Song gestartet)
+  const [placeElapsedMs, setPlaceElapsedMs] = useState<number | null>(null);
 
   const active = participants[turn] ?? null;
   const ownedIds = useMemo(
@@ -89,6 +106,29 @@ export default function OhrwurmGame() {
   const flash = useCallback((msg: string) => {
     setToast(msg);
     window.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1800);
+  }, []);
+
+  const stopAudio = useCallback(() => {
+    const a = audioRef.current;
+    if (a) { a.pause(); try { a.currentTime = 0; } catch { /* noop */ } }
+    setIsAudioPlaying(false);
+  }, []);
+
+  // Vorschau für die gezogene Karte server-seitig (iTunes) auflösen.
+  const loadPreview = useCallback(async (s: Song, myDraw: number) => {
+    setPreviewLoading(true);
+    setPreviewUrl(null);
+    try {
+      const { data } = await supabase.functions.invoke('ohrwurm-preview', {
+        body: { artist: s.artist, title: s.title },
+      });
+      if (drawIdRef.current !== myDraw) return; // veraltete Antwort verwerfen
+      setPreviewUrl((data as { previewUrl?: string | null } | null)?.previewUrl ?? null);
+    } catch {
+      if (drawIdRef.current === myDraw) setPreviewUrl(null);
+    } finally {
+      if (drawIdRef.current === myDraw) setPreviewLoading(false);
+    }
   }, []);
 
   // --- Stapel: oberste Karte ziehen, ggf. neu mischen (Spec §2.6) ---------
@@ -114,9 +154,17 @@ export default function OhrwurmGame() {
     setResolution(null);
     setFlipped(false);
     setSwapUsed(false);
+    setBonusClaimed(false);
     setBonusDecided(false);
+    // Wiedergabe/Timer für die neue Runde zurücksetzen + Vorschau laden
+    stopAudio();
+    setListening(false);
+    setPlaceElapsedMs(null);
+    playStartedAtRef.current = null;
+    const myDraw = ++drawIdRef.current;
+    void loadPreview(card, myDraw);
     setPhase('draw');
-  }, [takeCard]);
+  }, [takeCard, stopAudio, loadPreview]);
 
   // --- Spielstart ---------------------------------------------------------
   const handleStart = useCallback((cfg: OhrwurmConfig, players: SetupPlayer[]) => {
@@ -140,6 +188,57 @@ export default function OhrwurmGame() {
     beginTurn(parts, d, 0);
   }, [beginTurn, haptics]);
 
+  // --- 60s-Timer: läuft ab → Karte verfällt, nächste Person ---------------
+  const handleTimeout = useCallback(() => {
+    if (!song) return;
+    stopAudio();
+    setListening(false);
+    void haptics.error();
+    flash('⏱ Zeit abgelaufen — Karte verfällt');
+    const nextIdx = (turn + 1) % participants.length;
+    const newDeck = [song, ...deck]; // verfallene Karte zurück nach unten
+    window.setTimeout(() => beginTurn(participants, newDeck, nextIdx), 650);
+  }, [song, stopAudio, haptics, flash, turn, participants, deck, beginTurn]);
+
+  const roundTimer = useGameTimer(ROUND_SECONDS, handleTimeout);
+
+  // Beim ersten Play: Timer starten + Startzeit merken; danach play/pause.
+  const togglePlay = useCallback(() => {
+    if (!listening) {
+      playStartedAtRef.current = Date.now();
+      setListening(true);
+      roundTimer.reset(ROUND_SECONDS);
+      roundTimer.start();
+      void haptics.medium();
+    }
+    const a = audioRef.current;
+    if (!a || !previewUrl) return;
+    if (a.paused) {
+      a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
+    } else {
+      a.pause();
+      setIsAudioPlaying(false);
+    }
+  }, [listening, roundTimer, haptics, previewUrl]);
+
+  const replayAudio = useCallback(() => {
+    const a = audioRef.current;
+    if (!a || !previewUrl) return;
+    try { a.currentTime = 0; } catch { /* noop */ }
+    a.play().then(() => setIsAudioPlaying(true)).catch(() => {});
+    void haptics.light();
+  }, [previewUrl, haptics]);
+
+  // Fallback ohne Clip: Timer manuell starten
+  const startListeningNoAudio = useCallback(() => {
+    if (listening) return;
+    playStartedAtRef.current = Date.now();
+    setListening(true);
+    roundTimer.reset(ROUND_SECONDS);
+    roundTimer.start();
+    void haptics.medium();
+  }, [listening, roundTimer, haptics]);
+
   // --- Phase 1: Tausch (Spec §2.4 #2) -------------------------------------
   const handleSwap = useCallback(() => {
     if (!active || !song || swapUsed || active.hooks < 1) return;
@@ -152,13 +251,27 @@ export default function OhrwurmGame() {
     setDeck(rest);
     setSong(card);
     setSwapUsed(true);
+    setBonusClaimed(false); // neue Karte → ggf. erneut Titel+Interpret ansagen
+    // neuer Song → Wiedergabe/Timer zurücksetzen, neue Vorschau laden
+    stopAudio();
+    setListening(false);
+    setPlaceElapsedMs(null);
+    playStartedAtRef.current = null;
+    roundTimer.reset(ROUND_SECONDS);
+    const myDraw = ++drawIdRef.current;
+    void loadPreview(card, myDraw);
     flash('Karte getauscht — 1 🎣 abgegeben');
-  }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash]);
+  }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
 
   // --- Phase 2: Einordnen -------------------------------------------------
   const handlePlace = useCallback((slotIndex: number) => {
     if (!active) return;
     void haptics.light();
+    // Speed messen + Timer/Audio stoppen
+    const elapsed = playStartedAtRef.current != null ? Date.now() - playStartedAtRef.current : null;
+    setPlaceElapsedMs(elapsed);
+    roundTimer.pause();
+    stopAudio();
     setPlacement(slotIndex);
     const someoneCanCounter = participants.some((p, i) => i !== turn && p.hooks >= 1);
     if (someoneCanCounter) {
@@ -167,7 +280,7 @@ export default function OhrwurmGame() {
       goReveal(slotIndex, null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, participants, turn, haptics]);
+  }, [active, participants, turn, haptics, roundTimer, stopAudio]);
 
   // --- Phase 3: Konter ----------------------------------------------------
   const handleChooseCounter = useCallback((pid: string) => {
@@ -196,11 +309,21 @@ export default function OhrwurmGame() {
     if (!active || !song) return;
     const res = resolveRound(active.id, active.timeline, { slotIndex }, ct, song);
 
+    // Erfolgreicher Konter (Konterer gewinnt die Karte): eingesetzten 🎣
+    // zurückgeben (Hitster: nur fehlgeschlagene Token sind verloren).
+    const counterRefund = !!(ct && res.winnerId === ct.participantId);
+
     setParticipants((prev) => {
       let next = prev;
       if (res.winnerId) {
         next = prev.map((p) =>
-          p.id === res.winnerId ? { ...p, timeline: insertSorted(p.timeline, song) } : p,
+          p.id === res.winnerId
+            ? {
+                ...p,
+                timeline: insertSorted(p.timeline, song),
+                hooks: counterRefund ? Math.min(MAX_HOOKS, p.hooks + 1) : p.hooks,
+              }
+            : p,
         );
       } else {
         // zurück auf den Stapel (nach ganz unten)
@@ -219,15 +342,18 @@ export default function OhrwurmGame() {
   };
 
   // --- Phase 5: Bonus -----------------------------------------------------
+  // Speed-Bonus: innerhalb 10s platziert UND angesagt → +2 statt +1 🎣.
+  const speedEligible = placeElapsedMs != null && placeElapsedMs <= SPEED_BONUS_MS && bonusClaimed;
   const handleBonus = useCallback((earned: boolean) => {
     setBonusDecided(true);
     if (earned && active) {
+      const amount = speedEligible ? 2 : 1;
       void haptics.success();
       setParticipants((prev) => prev.map((p, i) =>
-        i === turn ? { ...p, hooks: Math.min(MAX_HOOKS, p.hooks + 1) } : p));
-      flash('+1 🎣 Bonus!');
+        i === turn ? { ...p, hooks: Math.min(MAX_HOOKS, p.hooks + amount) } : p));
+      flash(speedEligible ? '⚡ Blitz-Bonus! +2 🎣' : '+1 🎣 Bonus!');
     }
-  }, [active, turn, haptics, flash]);
+  }, [active, turn, haptics, flash, speedEligible]);
 
   // --- Weiter / Sieg-Check ------------------------------------------------
   const handleContinue = useCallback(() => {
@@ -252,11 +378,18 @@ export default function OhrwurmGame() {
   }, [phase, winner, recordEnd]);
 
   const resetGame = useCallback(() => {
+    stopAudio();
+    roundTimer.reset(ROUND_SECONDS);
+    setListening(false);
+    setPreviewUrl(null);
     setPhase('setup');
     setParticipants([]);
     setWinner(null);
     setSong(null);
-  }, []);
+  }, [stopAudio, roundTimer]);
+
+  // Beim Verlassen des Spiels Audio stoppen.
+  useEffect(() => () => { const a = audioRef.current; if (a) a.pause(); }, []);
 
   // =========================================================================
   // Render
@@ -265,7 +398,10 @@ export default function OhrwurmGame() {
     return <OhrwurmSetup onStart={handleStart} haptics={haptics} />;
   }
 
-  const bonusOpen = phase === 'reveal' && !!resolution?.bonusEligible && !bonusDecided;
+  // Bonus-Bestätigung nur, wenn vorab angesagt UND die Karte gewonnen wurde.
+  const bonusOpen = phase === 'reveal' && !!resolution?.bonusEligible && bonusClaimed && !bonusDecided;
+  // Angesagt, aber Karte nicht gewonnen → Bonus verfällt (Hinweis).
+  const bonusForfeited = phase === 'reveal' && bonusClaimed && !resolution?.bonusEligible;
 
   return (
     <div
@@ -296,36 +432,94 @@ export default function OhrwurmGame() {
       {/* Scoreboard */}
       <Scoreboard participants={participants} activeId={active?.id} winTarget={winTarget} />
 
+      {/* Verborgener Audio-Player (30s-Vorschau) — kein Titel/Interpret sichtbar */}
+      <audio
+        ref={audioRef}
+        src={previewUrl ?? undefined}
+        preload="none"
+        onPlay={() => setIsAudioPlaying(true)}
+        onPause={() => setIsAudioPlaying(false)}
+        onEnded={() => setIsAudioPlaying(false)}
+        className="hidden"
+        aria-hidden="true"
+      />
+
       {/* Phase content */}
       <div className="relative z-10 flex-1 flex flex-col px-4 pb-6">
         <AnimatePresence mode="wait">
-          {/* ---- DRAW: QR-Karte hören ---- */}
+          {/* ---- DRAW: verborgen in der App anhören (30s) + 60s-Timer ---- */}
           {phase === 'draw' && song && active && (
             <motion.div key="draw" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center gap-6 py-4">
               <PhaseBanner
                 tone="primary"
                 kicker={`${active.name} ist dran`}
-                title="Scannen & hören"
-                sub="QR-Code mit dem Handy scannen, Song anhören — das Jahr bleibt geheim."
+                title="Anhören & einordnen"
+                sub="Song läuft verborgen — 60s Zeit. In den ersten 10s + Titel & Interpret = Speed-Bonus."
               />
-              <QrCard song={song} />
-              <div className="flex flex-col items-center gap-3 w-full max-w-sm">
-                <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); setPhase('place'); }}
-                  className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
-                  style={{ background: OW.primary, color: OW.bg }}>
-                  In Timeline einordnen <ChevronRight className="w-5 h-5" />
-                </motion.button>
-                <button
-                  onClick={handleSwap}
-                  disabled={swapUsed || active.hooks < 1}
-                  className="inline-flex items-center gap-2 text-sm font-bold disabled:opacity-30 transition-opacity"
-                  style={{ color: OW.secondary }}
-                >
-                  <Repeat className="w-4 h-4" />
-                  {swapUsed ? 'Tausch verbraucht' : `Song unbekannt? Tauschen (1 🎣)`}
-                </button>
-              </div>
+
+              {(previewLoading || previewUrl) ? (
+                <MysteryPlayer
+                  loading={previewLoading}
+                  hasPreview={!!previewUrl}
+                  isPlaying={isAudioPlaying}
+                  started={listening}
+                  timeLeft={roundTimer.timeLeft}
+                  total={ROUND_SECONDS}
+                  speedActive={listening && (ROUND_SECONDS - roundTimer.timeLeft) < 10}
+                  onPlay={togglePlay}
+                  onReplay={replayAudio}
+                />
+              ) : (
+                /* Fallback: kein Clip gefunden → QR/Spotify + manueller Start */
+                <div className="flex flex-col items-center gap-4">
+                  <QrCard song={song} />
+                  {!listening ? (
+                    <button onClick={startListeningNoAudio}
+                      className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
+                      style={{ background: OW.primary, color: OW.bg }}>
+                      Anhören & 60s starten
+                    </button>
+                  ) : (
+                    <div className="font-mono font-black text-3xl tabular-nums"
+                      style={{ color: roundTimer.timeLeft <= 10 ? '#ff5d73' : OW.text }}>
+                      {roundTimer.timeLeft}s
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Aktionen erst nach Start sichtbar */}
+              {listening && (
+                <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); setPhase('place'); }}
+                    className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
+                    style={{ background: OW.primary, color: OW.bg }}>
+                    In Timeline einordnen <ChevronRight className="w-5 h-5" />
+                  </motion.button>
+                  <button
+                    type="button"
+                    onClick={() => { void haptics.select(); setBonusClaimed((v) => !v); }}
+                    aria-pressed={bonusClaimed}
+                    className="w-full h-12 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                    style={bonusClaimed
+                      ? { background: `${OW.accent}1f`, color: OW.accent, border: `1.5px solid ${OW.accent}` }
+                      : { background: OW.surface, color: OW.dim, border: '1.5px solid transparent' }}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {bonusClaimed ? 'Titel & Interpret angesagt ✓' : 'Titel & Interpret nennen? (Bonus)'}
+                  </button>
+                  <button
+                    onClick={handleSwap}
+                    disabled={swapUsed || active.hooks < 1}
+                    className="inline-flex items-center gap-2 text-sm font-bold disabled:opacity-30 transition-opacity"
+                    style={{ color: OW.secondary }}
+                  >
+                    <Repeat className="w-4 h-4" />
+                    {swapUsed ? 'Tausch verbraucht' : `Song unbekannt? Tauschen (1 🎣)`}
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -335,7 +529,19 @@ export default function OhrwurmGame() {
               className="flex-1 flex flex-col gap-5 py-4">
               <PhaseBanner tone="accent" kicker={`${active.name}s Timeline`} title="Wohin gehört der Song?"
                 sub="Tippe die Lücke, in der das Erscheinungsjahr liegt." />
-              <MysteryChip />
+              <div className="flex items-center justify-center gap-3">
+                <MysteryChip />
+                {listening && (
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-full font-mono font-black"
+                    style={{
+                      background: OW.surface,
+                      color: roundTimer.timeLeft <= 10 ? '#ff5d73' : (ROUND_SECONDS - roundTimer.timeLeft) < 10 ? OW.accent : OW.text,
+                    }}>
+                    {roundTimer.timeLeft}s
+                    {(ROUND_SECONDS - roundTimer.timeLeft) < 10 && <Zap className="w-3.5 h-3.5" style={{ color: OW.accent }} />}
+                  </div>
+                )}
+              </div>
               <TimelinePlacer timeline={active.timeline} onSelect={handlePlace} accent={active.color} />
             </motion.div>
           )}
@@ -394,25 +600,37 @@ export default function OhrwurmGame() {
               />
               {bonusOpen ? (
                 <div className="w-full max-w-sm rounded-2xl p-4 flex flex-col gap-3"
-                  style={{ background: OW.surface, border: `1px solid ${OW.accent}` }}>
+                  style={{ background: OW.surface, border: `1px solid ${OW.accent}`, boxShadow: speedEligible ? `0 0 26px ${OW.accent}55` : 'none' }}>
                   <p className="text-sm font-bold text-center" style={{ color: OW.accent }}>
-                    <Sparkles className="inline w-4 h-4 mr-1" />
-                    Titel <span className="opacity-70">&</span> Künstler beim Hören richtig genannt?
+                    {speedEligible ? <Zap className="inline w-4 h-4 mr-1" fill={OW.accent} /> : <Sparkles className="inline w-4 h-4 mr-1" />}
+                    {speedEligible && <span className="font-black">BLITZ! </span>}
+                    Hat {active.name} Titel <span className="opacity-70">&</span> Interpret richtig angesagt?
                   </p>
                   <p className="text-[11px] text-center -mt-1" style={{ color: OW.dim }}>
-                    Bonus: beides richtig erkannt = +1 🎣 Hook als Joker
+                    {speedEligible
+                      ? 'Innerhalb 10s platziert — beides korrekt = +2 🎣 Speed-Bonus!'
+                      : 'Auflösung steht oben — die Gruppe bestätigt. Beides korrekt = +1 🎣 Bonus.'}
                   </p>
                   <div className="flex gap-3">
-                    <button onClick={() => handleBonus(true)} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>Ja · +1 🎣</button>
+                    <button onClick={() => handleBonus(true)} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>
+                      Ja · +{speedEligible ? 2 : 1} 🎣
+                    </button>
                     <button onClick={() => handleBonus(false)} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>Nein</button>
                   </div>
                 </div>
               ) : (
-                <motion.button whileTap={{ scale: 0.97 }} onClick={handleContinue}
-                  className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
-                  style={{ background: OW.primary, color: OW.bg }}>
-                  Weiter <ArrowRight className="w-5 h-5" />
-                </motion.button>
+                <>
+                  {bonusForfeited && (
+                    <p className="text-[11px] text-center -mt-2" style={{ color: OW.dim }}>
+                      Bonus verfällt — Karte nicht gewonnen.
+                    </p>
+                  )}
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={handleContinue}
+                    className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
+                    style={{ background: OW.primary, color: OW.bg }}>
+                    Weiter <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </>
               )}
             </motion.div>
           )}
@@ -649,7 +867,7 @@ function ResolutionSummary({ resolution, active, counter, participants }: {
       : `${active.name} lag richtig ✓`;
     tone = OW.secondary;
   } else {
-    headline = `${winnerName} kontert erfolgreich und klaut die Karte 🎣`;
+    headline = `${winnerName} kontert erfolgreich — klaut die Karte und bekommt den 🎣 zurück`;
     tone = OW.secondary;
   }
 

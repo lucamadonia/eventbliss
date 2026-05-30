@@ -4470,12 +4470,12 @@
     "ohrwurm": {
       "title": "Ohrwurm",
       "tagline": "Hear the song, place it in the right year — who builds the longest hit timeline first?",
-      "step1": "Draw a card, scan the QR code and listen to the song on Spotify — the year stays hidden.",
-      "step2": "Place the song in your own timeline: which two years does it belong between?",
-      "step3": "Counter window: others can challenge with 1 🎣 and steal the card if they place it better.",
-      "step4": "Reveal! Placed correctly = keep the card. Wrong = back to the deck or stolen by the counter.",
-      "step5": "Whoever first sorts 6, 10 or 15 cards correctly (depending on mode) wins.",
-      "tip": "🎣 Hooks are your jokers: COUNTER (challenge a placement), SWAP (spend 1 🎣 for a new card if you don't know the song) and BONUS — name both the title AND the artist while listening to earn +1 🎣. Everyone starts with 3 🎣."
+      "step1": "The song plays right inside the app (30s, title & year hidden). You have 60 seconds to place it — otherwise the card is forfeited.",
+      "step2": "If you know the title & artist, call them out BEFORE the reveal — that's your bonus chance.",
+      "step3": "Place the song in your OWN timeline: which two years does it belong between?",
+      "step4": "Counter: others with at least 1 🎣 challenge before the reveal. If you were wrong and the counter was right, they steal the card AND get their 🎣 back — otherwise the spent 🎣 is gone.",
+      "step5": "Bonus: win the card + correctly call title & artist → +1 🎣. Do it all (placed right + called) in under 10 seconds → +2 🎣 (speed bonus). First to 6/10/15 cards wins.",
+      "tip": "🎣 Hooks are your jokers: COUNTER (challenge & steal), SWAP (1 🎣 for a new card) and BONUS/SPEED (title + artist, extra fast). Everyone starts with 3 🎣, max 5."
     },
     "drueck-das-wort": {
       "title": "Press the Word",
