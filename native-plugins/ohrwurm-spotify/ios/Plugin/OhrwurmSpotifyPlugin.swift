@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Capacitor
 import SpotifyiOS
 
@@ -18,6 +19,31 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, SPTAppRemoteDelegate, SPTSessionMa
     private var sessionManager: SPTSessionManager?
     private var connectCall: CAPPluginCall?
     private var pendingUri: String?
+
+    // Capacitor leitet eingehende URLs (Spotify-Auth-Redirect) als Notification
+    // weiter — wir reichen sie an den SessionManager durch.
+    override public func load() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleOpenURL(_:)),
+            name: NSNotification.Name(rawValue: "CapacitorOpenURL"),
+            object: nil
+        )
+    }
+
+    @objc func handleOpenURL(_ notification: Notification) {
+        var url: URL?
+        var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+        if let dict = notification.object as? [String: Any] {
+            url = dict["url"] as? URL
+            options = dict["options"] as? [UIApplication.OpenURLOptionsKey: Any] ?? [:]
+        } else if let u = notification.object as? URL {
+            url = u
+        }
+        if let u = url {
+            sessionManager?.application(UIApplication.shared, open: u, options: options)
+        }
+    }
 
     @objc func isAvailable(_ call: CAPPluginCall) {
         // Spotify app installed? SPTAppRemote exposes this via the configuration.

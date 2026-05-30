@@ -1064,11 +1064,12 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
               const activeP = playback === m.id;
               const dimmed = m.id === 'spotify' && !spotifyModePossible();
               return (
-                <button key={m.id} onClick={() => { void haptics.select(); setPlayback(m.id); }}
-                  className="rounded-2xl p-4 text-left transition-all active:scale-[0.98]"
-                  style={{ background: OW.surface, border: `2px solid ${activeP ? OW.secondary : 'transparent'}`, opacity: dimmed ? 0.55 : 1 }}>
+                <button key={m.id} disabled={dimmed}
+                  onClick={() => { if (dimmed) return; void haptics.select(); setPlayback(m.id); }}
+                  className="rounded-2xl p-4 text-left transition-all active:scale-[0.98] disabled:cursor-not-allowed"
+                  style={{ background: OW.surface, border: `2px solid ${activeP ? OW.secondary : 'transparent'}`, opacity: dimmed ? 0.5 : 1 }}>
                   <div className="font-black" style={{ color: activeP ? OW.secondary : OW.text }}>{m.label}</div>
-                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{m.desc}</div>
+                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{dimmed ? 'Nur in der App' : m.desc}</div>
                 </button>
               );
             })}

@@ -206,6 +206,9 @@ importers:
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      ohrwurm-spotify:
+        specifier: file:./native-plugins/ohrwurm-spotify
+        version: file:native-plugins/ohrwurm-spotify(@capacitor/core@8.3.0)
       qrcode.react:
         specifier: ^4.2.0
         version: 4.2.0(react@18.3.1)
@@ -4574,6 +4577,11 @@ packages:
   object.assign@4.1.7:
     resolution: {integrity: sha512-nK28WOo+QIjBkDduTINE4JkF/UJJKyf2EJxvJKfblDpyg0Q+pkOHNTL0Qwy6NP6FhE/EnzV73BxxqcJaXY9anw==}
     engines: {node: '>= 0.4'}
+
+  ohrwurm-spotify@file:native-plugins/ohrwurm-spotify:
+    resolution: {directory: native-plugins/ohrwurm-spotify, type: directory}
+    peerDependencies:
+      '@capacitor/core': ^8.0.0
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -10724,6 +10732,10 @@ snapshots:
       es-object-atoms: 1.1.1
       has-symbols: 1.1.0
       object-keys: 1.1.1
+
+  ohrwurm-spotify@file:native-plugins/ohrwurm-spotify(@capacitor/core@8.3.0):
+    dependencies:
+      '@capacitor/core': 8.3.0
 
   once@1.4.0:
     dependencies:

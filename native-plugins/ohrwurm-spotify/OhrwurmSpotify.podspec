@@ -13,9 +13,10 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target = '14.0'
   s.dependency 'Capacitor'
-  # SpotifyiOS (App Remote) must be available to the App target.
-  # Easiest: add SpotifyiOS.xcframework manually to the App target (see SETUP.md),
-  # OR uncomment the line below if you vendor the framework here:
-  # s.vendored_frameworks = 'ios/Frameworks/SpotifyiOS.xcframework'
+  # SpotifyiOS App Remote framework. The binary is NOT committed — it is fetched
+  # into ios/Frameworks/ by a CI step (or locally, see SETUP.md) before
+  # `pod install`, because CocoaPods does not run prepare_command for local
+  # (:path) pods like Capacitor plugins.
+  s.vendored_frameworks = 'ios/Frameworks/SpotifyiOS.xcframework'
   s.swift_version = '5.1'
 end

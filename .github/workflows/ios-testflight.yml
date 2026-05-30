@@ -77,6 +77,18 @@ jobs:
           VITE_GOOGLE_MAPS_KEY: ${{ secrets.VITE_GOOGLE_MAPS_KEY }}
         run: pnpm run build
 
+      - name: Fetch Spotify iOS SDK (App Remote framework)
+        run: |
+          set -e
+          SDK_TAG=v5.0.1
+          curl -L "https://github.com/spotify/ios-sdk/archive/refs/tags/${SDK_TAG}.tar.gz" -o /tmp/spotify-ios-sdk.tgz
+          tar -xzf /tmp/spotify-ios-sdk.tgz -C /tmp
+          DEST="node_modules/ohrwurm-spotify/ios/Frameworks"
+          mkdir -p "$DEST"
+          cp -R "/tmp/ios-sdk-${SDK_TAG#v}/SpotifyiOS.xcframework" "$DEST/"
+          echo "SpotifyiOS.xcframework vendored into the plugin:"
+          ls -la "$DEST"
+
       - name: Capacitor sync iOS
         run: pnpm exec cap sync ios
 
