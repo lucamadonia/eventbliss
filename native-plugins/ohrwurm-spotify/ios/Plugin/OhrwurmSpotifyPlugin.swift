@@ -13,7 +13,19 @@ import SpotifyiOS
 //  - Add `spotify` to LSApplicationQueriesSchemes in Info.plist.
 
 @objc(OhrwurmSpotifyPlugin)
-public class OhrwurmSpotifyPlugin: CAPPlugin, SPTAppRemoteDelegate, SPTSessionManagerDelegate {
+public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDelegate, SPTSessionManagerDelegate {
+
+    // Capacitor-6+/8-Registrierung (ersetzt die alte .m-CAP_PLUGIN-Makro-Registrierung).
+    public let identifier = "OhrwurmSpotifyPlugin"
+    public let jsName = "OhrwurmSpotify"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "connect", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "play", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "pause", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "resume", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "disconnect", returnType: CAPPluginReturnPromise),
+    ]
 
     private var appRemote: SPTAppRemote?
     private var sessionManager: SPTSessionManager?

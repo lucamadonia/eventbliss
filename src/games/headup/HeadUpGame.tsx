@@ -92,12 +92,14 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const cooldownRef = useRef(false);
   const orientationActiveRef = useRef(false);
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
+  const [isArmed, setIsArmed] = useState(false); // sichtbarer „Bereit"-Status
 
   useTVGameBridge('headup', { phase: screen, currentRound, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length }, [screen, currentRound, currentWordIndex]);
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
     armedRef.current = false;
+    setIsArmed(false);
     triggerHaptic('heavy');
     setScreen('roundResult');
   }, []);
@@ -118,7 +120,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (countdown === null) return;
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
-      armedRef.current = false; // erst flach halten (Neutral), bevor die erste Neigung zählt
+      armedRef.current = false; setIsArmed(false); // erst flach halten (Neutral), bevor die erste Neigung zählt
       setTimeout(() => { orientationActiveRef.current = true; }, 500);
       if (online?.isHost) {
         online.broadcast('tv-state', {
@@ -177,11 +179,11 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       // Re-Arm: eine Neigung zählt genau einmal. Erst zurück in die Neutralzone
       // (<15°), dann ist die nächste Neigung wieder scharf. Verhindert Dauerfeuer.
       if (!armedRef.current) {
-        if (Math.abs(beta) < 15) armedRef.current = true;
+        if (Math.abs(beta) < 15) { armedRef.current = true; setIsArmed(true); }
         return;
       }
-      if (beta > 30) { armedRef.current = false; advanceWord(true); }
-      else if (beta < -30) { armedRef.current = false; advanceWord(false); }
+      if (beta > 30) { armedRef.current = false; setIsArmed(false); advanceWord(true); }
+      else if (beta < -30) { armedRef.current = false; setIsArmed(false); advanceWord(false); }
     };
     const init = async () => {
       try {
@@ -366,8 +368,18 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 <Smartphone className="w-12 h-12 text-[#df8eff]" />
               </div>
             </motion.div>
-            <p className="text-xl font-extrabold text-center mb-2">Halte das Handy an deine Stirn</p>
-            <p className="text-[#a8abb3] text-center text-sm mb-8 max-w-xs">Kippe vorwaerts fuer richtig, rueckwaerts zum Ueberspringen</p>
+            <p className="text-xl font-extrabold text-center mb-3">Halte das Handy an deine Stirn</p>
+            <div className="flex flex-col gap-2 mb-6 w-full max-w-xs">
+              <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#8ff5ff]/10 border border-[#8ff5ff]/25">
+                <ChevronDown className="w-6 h-6 text-[#8ff5ff] shrink-0" />
+                <span className="text-sm font-bold text-[#8ff5ff]">Nach <span className="underline">unten</span> kippen = <span className="text-white">RICHTIG</span></span>
+              </div>
+              <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#ff6e84]/10 border border-[#ff6e84]/25">
+                <ChevronUp className="w-6 h-6 text-[#ff6e84] shrink-0" />
+                <span className="text-sm font-bold text-[#ff6e84]">Nach <span className="underline">oben</span> kippen = <span className="text-white">SKIP</span></span>
+              </div>
+              <p className="text-[10px] text-center text-[#a8abb3] mt-1">Nach jeder Neigung kurz flach halten</p>
+            </div>
             {countdown !== null && (
               <motion.div key={countdown} initial={{ scale: 2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }}
                 className="text-7xl font-black text-[#df8eff] neon-glow">{countdown === 0 ? 'LOS!' : countdown}</motion.div>
@@ -426,6 +438,16 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                     <span className="text-5xl md:text-8xl font-black tracking-tighter italic text-[#df8eff] neon-glow leading-none">{currentWord}</span>
                   </motion.div>
                 </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Bereit-/Re-Arm-Status — zeigt, wann die nächste Neigung zählt */}
+            <div className="flex justify-center pb-1 z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-bold transition-all"
+                style={isArmed
+                  ? { background: 'rgba(143,245,255,0.12)', color: '#8ff5ff', border: '1px solid rgba(143,245,255,0.30)' }
+                  : { background: 'rgba(255,210,63,0.10)', color: '#ffd23f', border: '1px solid rgba(255,210,63,0.25)' }}>
+                {isArmed ? '● Bereit — jetzt kippen' : '↺ kurz flach halten …'}
               </div>
             </div>
 
