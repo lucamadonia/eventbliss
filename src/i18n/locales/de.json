@@ -5334,6 +5334,16 @@
       "step3": "Beantworte die Frage oder mache die Aufgabe",
       "tip": "Karma dreht die Flasche — sei nett zu deinen Mitspielern!"
     },
+    "ohrwurm": {
+      "title": "Ohrwurm",
+      "tagline": "Song hören, ins richtige Jahr einordnen — wer baut zuerst die längste Hit-Timeline?",
+      "step1": "Karte ziehen, QR-Code scannen und den Song auf Spotify anhören — das Jahr bleibt geheim.",
+      "step2": "Ordne den Song in deine eigene Timeline ein: zwischen welche beiden Jahre gehört er?",
+      "step3": "Konter-Fenster: Andere können mit 1 🎣 anfechten und die Karte klauen, wenn sie richtiger liegen.",
+      "step4": "Aufdecken! Richtig platziert = Karte behalten. Falsch = zurück auf den Stapel oder vom Konter geklaut.",
+      "step5": "Wer zuerst 6, 10 oder 15 Karten korrekt einsortiert hat (je nach Modus), gewinnt.",
+      "tip": "🎣 Hooks sind deine Joker: KONTERN (Platzierung anfechten), TAUSCHEN (1 🎣 für eine neue Karte, wenn du den Song nicht kennst) und BONUS — nennst du beim Hören Titel UND Künstler richtig, gibt's +1 🎣. Jeder startet mit 3 🎣."
+    },
     "drueck-das-wort": {
       "title": "Drück das Wort",
       "tagline": "Finde das richtige Wort unter Zeitdruck — ein falscher Klick und es wird eng!",

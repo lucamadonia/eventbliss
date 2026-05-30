@@ -4467,6 +4467,16 @@
       "step3": "Answer the question or complete the dare",
       "tip": "Karma spins the bottle — be nice to your fellow players!"
     },
+    "ohrwurm": {
+      "title": "Ohrwurm",
+      "tagline": "Hear the song, place it in the right year — who builds the longest hit timeline first?",
+      "step1": "Draw a card, scan the QR code and listen to the song on Spotify — the year stays hidden.",
+      "step2": "Place the song in your own timeline: which two years does it belong between?",
+      "step3": "Counter window: others can challenge with 1 🎣 and steal the card if they place it better.",
+      "step4": "Reveal! Placed correctly = keep the card. Wrong = back to the deck or stolen by the counter.",
+      "step5": "Whoever first sorts 6, 10 or 15 cards correctly (depending on mode) wins.",
+      "tip": "🎣 Hooks are your jokers: COUNTER (challenge a placement), SWAP (spend 1 🎣 for a new card if you don't know the song) and BONUS — name both the title AND the artist while listening to earn +1 🎣. Everyone starts with 3 🎣."
+    },
     "drueck-das-wort": {
       "title": "Press the Word",
       "tagline": "Find the right word under time pressure — one wrong tap and it gets tight!",

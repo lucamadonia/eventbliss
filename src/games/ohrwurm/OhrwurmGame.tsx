@@ -399,6 +399,9 @@ export default function OhrwurmGame() {
                     <Sparkles className="inline w-4 h-4 mr-1" />
                     Titel <span className="opacity-70">&</span> Künstler beim Hören richtig genannt?
                   </p>
+                  <p className="text-[11px] text-center -mt-1" style={{ color: OW.dim }}>
+                    Bonus: beides richtig erkannt = +1 🎣 Hook als Joker
+                  </p>
                   <div className="flex gap-3">
                     <button onClick={() => handleBonus(true)} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>Ja · +1 🎣</button>
                     <button onClick={() => handleBonus(false)} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>Nein</button>
@@ -680,16 +683,22 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
     { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
     { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
   ]);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  // Tastatur-Sichtbarkeit (Native): fixe Start-CTA ausblenden, damit das
+  // fokussierte Namensfeld nicht verdeckt wird — gleicher Event wie NativeShell.
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const h = (e: Event) => setKeyboardVisible(!!(e as CustomEvent).detail?.visible);
+    window.addEventListener('capacitor:keyboard', h);
+    return () => window.removeEventListener('capacitor:keyboard', h);
+  }, []);
 
   const MIN = 2, MAX = 4; // Spec §2.1: 2–4 Teilnehmer
   const addPlayer = () => {
     if (players.length >= MAX) return;
     const idx = players.length;
     void haptics.select();
-    const id = `p-${idx + 1}-${players.length}`;
+    const id = `p-${idx + 1}-${Date.now()}`;
     setPlayers((prev) => [...prev, { id, name: `${mode === 'group' ? 'Gruppe' : 'Spieler'} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) }]);
-    setEditingId(id);
   };
   const removePlayer = (id: string) => setPlayers((prev) => (prev.length > MIN ? prev.filter((p) => p.id !== id) : prev));
   const renamePlayer = (id: string, name: string) =>
@@ -789,57 +798,65 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
               {mode === 'group' ? 'Gruppen' : 'Spieler'} · {players.length}/{MAX}
             </h3>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-3 -mx-6 px-6 no-scrollbar">
-            {players.map((p, i) => {
-              const isEditing = editingId === p.id;
-              return (
-                <div key={p.id} className="shrink-0 flex flex-col items-center gap-2 w-16">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-full p-0.5" style={{ background: `linear-gradient(135deg, ${p.color}, ${OW.surface})` }}>
-                      <div className="w-full h-full rounded-full flex items-center justify-center text-lg font-black text-white" style={{ background: p.color, border: `2px solid ${OW.bg}` }}>{p.avatar}</div>
-                    </div>
-                    {players.length > MIN && (
-                      <button onClick={() => { void haptics.light(); removePlayer(p.id); }}
-                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: OW.surface, border: '1px solid rgba(255,255,255,0.15)' }} aria-label="entfernen">
-                        <CloseIcon className="w-2.5 h-2.5" style={{ color: OW.dim }} />
-                      </button>
-                    )}
-                  </div>
-                  {isEditing ? (
-                    <input autoFocus type="text" value={p.name} maxLength={12}
-                      onChange={(e) => renamePlayer(p.id, e.target.value)}
-                      onBlur={() => setEditingId(null)}
-                      onKeyDown={(e) => e.key === 'Enter' && setEditingId(null)}
-                      className="w-16 text-center text-[10px] font-bold bg-transparent border-b focus:outline-none"
-                      style={{ borderColor: OW.primary, color: OW.text }} />
-                  ) : (
-                    <button onClick={() => setEditingId(p.id)} className="text-[10px] font-bold truncate max-w-full">{p.name}</button>
-                  )}
+          <div className="space-y-2.5">
+            {players.map((p, i) => (
+              <div key={p.id} className="flex items-center gap-3">
+                <div
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-base font-black text-white shrink-0"
+                  style={{ background: p.color, border: `2px solid ${OW.bg}` }}
+                >
+                  {p.avatar}
                 </div>
-              );
-            })}
+                <input
+                  type="text"
+                  value={p.name}
+                  onChange={(e) => renamePlayer(p.id, e.target.value)}
+                  onFocus={(e) => e.currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' })}
+                  placeholder={`${mode === 'group' ? 'Gruppe' : 'Spieler'} ${i + 1}`}
+                  maxLength={16}
+                  inputMode="text"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="flex-1 min-w-0 rounded-xl px-3.5 py-3 text-base font-bold focus:outline-none focus:ring-2 focus:ring-[#FF2E88]/40"
+                  style={{ background: OW.surface, color: OW.text, border: '1px solid rgba(255,255,255,0.08)', caretColor: OW.primary }}
+                />
+                {players.length > MIN && (
+                  <button
+                    onClick={() => { void haptics.light(); removePlayer(p.id); }}
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 active:scale-95 transition-transform"
+                    style={{ background: 'rgba(255,46,136,0.12)' }}
+                    aria-label={`${p.name || 'Teilnehmer'} entfernen`}
+                  >
+                    <CloseIcon className="w-4 h-4" style={{ color: OW.primary }} />
+                  </button>
+                )}
+              </div>
+            ))}
             {players.length < MAX && (
-              <button onClick={addPlayer} className="shrink-0 flex flex-col items-center gap-2 w-16 group">
-                <div className="w-16 h-16 rounded-full border-2 border-dashed flex items-center justify-center active:scale-95 transition-transform" style={{ borderColor: 'rgba(255,255,255,0.2)', color: OW.dim }}>
-                  <Plus className="w-6 h-6" />
-                </div>
-                <span className="text-[10px] font-bold" style={{ color: OW.dim }}>{mode === 'group' ? 'Gruppe' : 'Gast'}</span>
+              <button
+                onClick={addPlayer}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed text-sm font-bold active:scale-[0.99] transition-transform"
+                style={{ borderColor: 'rgba(255,255,255,0.18)', color: OW.dim }}
+              >
+                <Plus className="w-4 h-4" /> {mode === 'group' ? 'Gruppe' : 'Spieler'} hinzufügen
               </button>
             )}
           </div>
         </section>
       </main>
 
-      {/* Start CTA */}
-      <div className="fixed bottom-6 inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
-        <motion.button onClick={start} disabled={!canStart} whileTap={canStart ? { scale: 0.97 } : {}}
-          className="w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all"
-          style={canStart
-            ? { background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg, boxShadow: `0 20px 40px ${OW.primary}40` }
-            : { background: OW.surface, color: OW.dim }}>
-          {canStart ? <>Spiel starten <Crown className="w-5 h-5" /></> : `Mindestens ${MIN} ${mode === 'group' ? 'Gruppen' : 'Spieler'}`}
-        </motion.button>
-      </div>
+      {/* Start CTA — bei offener Tastatur ausblenden, damit das Namensfeld frei bleibt */}
+      {!keyboardVisible && (
+        <div className="fixed bottom-6 inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
+          <motion.button onClick={start} disabled={!canStart} whileTap={canStart ? { scale: 0.97 } : {}}
+            className="w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all"
+            style={canStart
+              ? { background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg, boxShadow: `0 20px 40px ${OW.primary}40` }
+              : { background: OW.surface, color: OW.dim }}>
+            {canStart ? <>Spiel starten <Crown className="w-5 h-5" /></> : `Mindestens ${MIN} ${mode === 'group' ? 'Gruppen' : 'Spieler'}`}
+          </motion.button>
+        </div>
+      )}
     </div>
   );
 }

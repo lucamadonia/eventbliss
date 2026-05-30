@@ -19,7 +19,7 @@ const GAME_ICONS: Record<string, string> = {
   "this-or-that": "↔️", "wahrheit-pflicht": "❤️",
   "story-builder": "📖", "geteilt-gequizzt": "🔗",
   "schnellzeichner": "🎨", "split-quiz": "🧩",
-  "wo-ist-was": "🗺️",
+  ohrwurm: "🎵",
 };
 
 const GAME_GRADIENTS: Record<string, string> = {
@@ -32,6 +32,7 @@ const GAME_GRADIENTS: Record<string, string> = {
   quickdraw: "from-orange-500 to-red-500", splitquiz: "from-purple-500 to-indigo-500",
   hochstapler: "from-slate-500 to-zinc-600", "wo-ist-was": "from-lime-500 to-green-500",
   flaschendrehen: "from-green-500 to-emerald-500",
+  ohrwurm: "from-[#FF2E88] to-[#26E0C4]",
 };
 
 const STEP_COLORS = [

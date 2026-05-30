@@ -23,6 +23,7 @@ const GAME_NAMES: Record<string, string> = {
   'fake-or-fact': 'Fake or Fact',
   'story-builder': 'Story Builder',
   flaschendrehen: 'Flaschendrehen',
+  ohrwurm: 'Ohrwurm',
 };
 
 const GAME_ICONS: Record<string, string> = {
@@ -31,7 +32,7 @@ const GAME_ICONS: Record<string, string> = {
   'split-quiz': '🧩', 'geteilt-gequizzt': '🔗', schnellzeichner: '🎨',
   'wahrheit-pflicht': '❤️', 'this-or-that': '↔️', 'wer-bin-ich': '❓',
   'emoji-raten': '😀', 'fake-or-fact': '🎲', 'story-builder': '📖',
-  flaschendrehen: '🍾',
+  flaschendrehen: '🍾', ohrwurm: '🎵',
 };
 
 interface GameTitleBarProps {
