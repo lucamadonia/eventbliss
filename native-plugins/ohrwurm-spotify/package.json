@@ -1,0 +1,33 @@
+{
+  "name": "ohrwurm-spotify",
+  "version": "0.1.0",
+  "description": "Capacitor plugin: hidden full-song playback via the Spotify App Remote SDK (Premium) for the OHRWURM game.",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "verify": "echo 'build the app projects to verify native code'"
+  },
+  "files": [
+    "dist/",
+    "ios/",
+    "android/",
+    "OhrwurmSpotify.podspec"
+  ],
+  "keywords": ["capacitor", "spotify", "app-remote", "ohrwurm"],
+  "capacitor": {
+    "ios": { "src": "ios" },
+    "android": {
+      "src": "android",
+      "path": "android"
+    }
+  },
+  "devDependencies": {
+    "@capacitor/core": "^8.0.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^8.0.0"
+  }
+}

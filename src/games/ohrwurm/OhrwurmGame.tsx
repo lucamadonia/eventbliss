@@ -19,6 +19,7 @@ import { OHRWURM_GENRES } from './ohrwurm-content';
 import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
 import { supabase } from '@/integrations/supabase/client';
+import { type PlaybackMode, spotifyModePossible, getSpotifyBridge } from './playback';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -56,6 +57,7 @@ interface OhrwurmConfig {
   mode: 'solo' | 'group';
   winTarget: number;
   genre: string | null;
+  playback: PlaybackMode;
 }
 
 interface SetupPlayer { id: string; name: string; color: string; avatar: string; }
@@ -184,9 +186,15 @@ export default function OhrwurmGame() {
     });
     setWinTarget(cfg.winTarget);
     setGenre(cfg.genre);
+    // Spotify-Premium-Modus gewählt? Bridge prüfen — sonst Fallback-Hinweis.
+    if (cfg.playback === 'spotify') {
+      void getSpotifyBridge().then((b) => {
+        if (!b) flash('Spotify-Premium nicht verfügbar — es läuft die 30s-Vorschau');
+      });
+    }
     void haptics.celebrate();
     beginTurn(parts, d, 0);
-  }, [beginTurn, haptics]);
+  }, [beginTurn, haptics, flash]);
 
   // --- 60s-Timer: läuft ab → Karte verfällt, nächste Person ---------------
   const handleTimeout = useCallback(() => {
@@ -897,6 +905,7 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
   const [mode, setMode] = useState<'solo' | 'group'>('solo');
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
+  const [playback, setPlayback] = useState<PlaybackMode>('preview');
   const [players, setPlayers] = useState<SetupPlayer[]>([
     { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
     { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
@@ -926,7 +935,7 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
   const start = () => {
     if (!canStart) return;
     void haptics.celebrate();
-    onStart({ mode, winTarget, genre }, players);
+    onStart({ mode, winTarget, genre, playback }, players);
   };
 
   const TARGETS = [
@@ -1006,6 +1015,33 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
               <GenrePill key={g} label={g} active={genre === g} onClick={() => { void haptics.select(); setGenre(g); }} />
             ))}
           </div>
+        </section>
+
+        {/* Wiedergabe */}
+        <section className="mb-8">
+          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Wiedergabe</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {([
+              { id: 'preview', label: 'Vorschau', desc: '30s, verdeckt — überall' },
+              { id: 'spotify', label: 'Spotify Premium', desc: 'Vollversion, verdeckt — App + Premium' },
+            ] as const).map((m) => {
+              const activeP = playback === m.id;
+              const dimmed = m.id === 'spotify' && !spotifyModePossible();
+              return (
+                <button key={m.id} onClick={() => { void haptics.select(); setPlayback(m.id); }}
+                  className="rounded-2xl p-4 text-left transition-all active:scale-[0.98]"
+                  style={{ background: OW.surface, border: `2px solid ${activeP ? OW.secondary : 'transparent'}`, opacity: dimmed ? 0.55 : 1 }}>
+                  <div className="font-black" style={{ color: activeP ? OW.secondary : OW.text }}>{m.label}</div>
+                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{m.desc}</div>
+                </button>
+              );
+            })}
+          </div>
+          {playback === 'spotify' && (
+            <p className="text-[11px] mt-2" style={{ color: OW.dim }}>
+              Braucht Spotify Premium + installierte Spotify-App (nur native). Sonst läuft automatisch die 30s-Vorschau.
+            </p>
+          )}
         </section>
 
         {/* Teilnehmer */}

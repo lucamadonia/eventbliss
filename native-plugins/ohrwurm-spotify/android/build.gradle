@@ -1,0 +1,45 @@
+ext {
+    junitVersion =  project.hasProperty('junitVersion') ? rootProject.ext.junitVersion : '4.13.2'
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace "com.eventbliss.ohrwurmspotify"
+    compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
+    defaultConfig {
+        minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 23
+        targetSdkVersion project.hasProperty('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 34
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    // Spotify App Remote AAR is not on Maven — drop it in libs/ (see SETUP.md).
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    implementation project(':capacitor-android')
+    // Spotify Auth (Maven):
+    implementation 'com.spotify.android:auth:2.1.1'
+    // Spotify App Remote (local AAR placed in android/libs/):
+    implementation(name: 'spotify-app-remote-release-0.8.0', ext: 'aar')
+    // App Remote transitively needs gson:
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
