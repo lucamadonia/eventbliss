@@ -3708,7 +3708,8 @@
       "geteiltGequizzt": "Shared & Quizzed",
       "storyBuilder": "Story Builder",
       "woIstWas": "Where Is It?",
-      "drueckDasWort": "Press the Word"
+      "drueckDasWort": "Press the Word",
+      "ohrwurm": "Ohrwurm"
     },
     "gameDescs": {
       "bomb": "Who gets the bang?",
@@ -3727,7 +3728,8 @@
       "geteiltGequizzt": "Cooperative quiz",
       "storyBuilder": "Crazy stories",
       "woIstWas": "Find the place",
-      "drueckDasWort": "Type fast, think fast"
+      "drueckDasWort": "Type fast, think fast",
+      "ohrwurm": "Hear the song, place the year"
     },
     "events": {
       "title": "Events",

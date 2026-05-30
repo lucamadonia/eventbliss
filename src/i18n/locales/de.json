@@ -4575,7 +4575,8 @@
       "geteiltGequizzt": "Geteilt & Gequizzt",
       "storyBuilder": "Story Builder",
       "woIstWas": "Wo ist was?",
-      "drueckDasWort": "Drück das Wort"
+      "drueckDasWort": "Drück das Wort",
+      "ohrwurm": "Ohrwurm"
     },
     "gameDescs": {
       "bomb": "Bei wem knallt's?",
@@ -4594,7 +4595,8 @@
       "geteiltGequizzt": "Kooperatives Quiz",
       "storyBuilder": "Verrückte Geschichten",
       "woIstWas": "Finde den Ort",
-      "drueckDasWort": "Schnell tippen, schnell denken"
+      "drueckDasWort": "Schnell tippen, schnell denken",
+      "ohrwurm": "Song hören, Jahr einordnen"
     },
     "events": {
       "title": "Events",

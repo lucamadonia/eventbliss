@@ -56,6 +56,7 @@ const GAMES: GameMeta[] = [
   { id: "story-builder",   nameKey: "native.gameNames.storyBuilder",    descKey: "native.gameDescs.storyBuilder",    image: "/images/games/story-builder.webp",   gradient: "from-teal-400 to-emerald-500",     tier: "premium", badge: "Neu", categories: ["kreativ", "wort"] },
   { id: "wo-ist-was",      nameKey: "native.gameNames.woIstWas",        descKey: "native.gameDescs.woIstWas",        image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        tier: "premium",               categories: ["karte", "quiz"] },
   { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium",               categories: ["wort", "reaktion"] },
+  { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        tier: "free",    badge: "Neu", categories: ["party", "quiz"] },
 ];
 
 const CATEGORIES: { id: Category; labelKey: string; icon: typeof Sparkles }[] = [
