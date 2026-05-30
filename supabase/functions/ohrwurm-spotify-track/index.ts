@@ -59,25 +59,32 @@ serve(async (req) => {
     const token = await getAppToken();
     if (!token) return json({ uri: null, reason: "no_credentials" });
 
-    // Präzise Suche: track + artist Filter erhöht die Trefferqualität.
-    const q = `track:${title} artist:${artist}`;
-    const url =
-      "https://api.spotify.com/v1/search?" +
-      new URLSearchParams({
-        q,
-        type: "track",
-        limit: "1",
-        market: (market || "DE").toUpperCase(),
-      }).toString();
+    const mkt = (market || "DE").toUpperCase();
 
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return json({ uri: null });
-
-    const data = await res.json() as {
-      tracks?: { items?: Array<{ uri?: string; name?: string; artists?: Array<{ name?: string }> }> };
+    let lastBody = "";
+    const search = async (q: string, withMarket: boolean) => {
+      const params: Record<string, string> = { q, type: "track", limit: "1" };
+      if (withMarket) params.market = mkt;
+      const url = "https://api.spotify.com/v1/search?" + new URLSearchParams(params).toString();
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) {
+        lastBody = (await res.text().catch(() => "")).slice(0, 300);
+        return { ok: false, status: res.status, hit: undefined as undefined | { uri?: string; name?: string; artists?: Array<{ name?: string }> } };
+      }
+      const data = await res.json() as {
+        tracks?: { items?: Array<{ uri?: string; name?: string; artists?: Array<{ name?: string }> }> };
+      };
+      return { ok: true, status: 200, hit: data.tracks?.items?.[0] };
     };
-    const hit = data.tracks?.items?.[0];
-    if (!hit?.uri) return json({ uri: null });
+
+    // 1) mit Markt, 2) ohne Markt, 3) lockere Freitext-Suche.
+    let r = await search(`track:${title} artist:${artist}`, true);
+    if (!r.ok) r = await search(`track:${title} artist:${artist}`, false);
+    if (r.ok && !r.hit?.uri) r = await search(`${artist} ${title}`, false);
+
+    if (!r.ok) return json({ uri: null, reason: `search_${r.status}`, detail: lastBody });
+    const hit = r.hit;
+    if (!hit?.uri) return json({ uri: null, reason: "no_hit" });
 
     return json({ uri: hit.uri, name: hit.name, artist: hit.artists?.[0]?.name });
   } catch (_e) {
