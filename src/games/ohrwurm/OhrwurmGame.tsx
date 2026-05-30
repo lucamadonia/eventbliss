@@ -19,7 +19,7 @@ import { OHRWURM_GENRES } from './ohrwurm-content';
 import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
 import { supabase } from '@/integrations/supabase/client';
-import { type PlaybackMode, spotifyModePossible, getSpotifyBridge } from './playback';
+import { type PlaybackMode, type SpotifyBridge, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -98,6 +98,10 @@ export default function OhrwurmGame() {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [listening, setListening] = useState(false);              // Timer läuft (Song gestartet)
   const [placeElapsedMs, setPlaceElapsedMs] = useState<number | null>(null);
+  // Spotify-Premium-Vollversion (nur aktiv, wenn die native Bridge verbindet —
+  // bis zur On-Device-Einrichtung null → es läuft die 30s-Vorschau).
+  const spotifyBridgeRef = useRef<SpotifyBridge | null>(null);
+  const [spotifyUri, setSpotifyUri] = useState<string | null>(null);
 
   const active = participants[turn] ?? null;
   const ownedIds = useMemo(
@@ -113,6 +117,7 @@ export default function OhrwurmGame() {
   const stopAudio = useCallback(() => {
     const a = audioRef.current;
     if (a) { a.pause(); try { a.currentTime = 0; } catch { /* noop */ } }
+    spotifyBridgeRef.current?.pause().catch(() => {});
     setIsAudioPlaying(false);
   }, []);
 
@@ -165,6 +170,11 @@ export default function OhrwurmGame() {
     playStartedAtRef.current = null;
     const myDraw = ++drawIdRef.current;
     void loadPreview(card, myDraw);
+    // Spotify-Premium aktiv? Track-URI parallel auflösen (Bridge spielt sie ab).
+    setSpotifyUri(null);
+    if (spotifyBridgeRef.current) {
+      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+    }
     setPhase('draw');
   }, [takeCard, stopAudio, loadPreview]);
 
@@ -186,10 +196,12 @@ export default function OhrwurmGame() {
     });
     setWinTarget(cfg.winTarget);
     setGenre(cfg.genre);
-    // Spotify-Premium-Modus gewählt? Bridge prüfen — sonst Fallback-Hinweis.
+    // Spotify-Premium-Modus gewählt? Bridge verbinden — sonst Fallback-Hinweis.
+    spotifyBridgeRef.current = null;
     if (cfg.playback === 'spotify') {
       void getSpotifyBridge().then((b) => {
-        if (!b) flash('Spotify-Premium nicht verfügbar — es läuft die 30s-Vorschau');
+        if (b) spotifyBridgeRef.current = b;
+        else flash('Spotify-Premium nicht verfügbar — es läuft die 30s-Vorschau');
       });
     }
     void haptics.celebrate();
@@ -212,12 +224,23 @@ export default function OhrwurmGame() {
 
   // Beim ersten Play: Timer starten + Startzeit merken; danach play/pause.
   const togglePlay = useCallback(() => {
+    const bridge = spotifyBridgeRef.current;
+    const useSpotify = !!(bridge && spotifyUri);
     if (!listening) {
       playStartedAtRef.current = Date.now();
       setListening(true);
       roundTimer.reset(ROUND_SECONDS);
       roundTimer.start();
       void haptics.medium();
+      if (useSpotify) {
+        bridge!.play(spotifyUri!).then(() => setIsAudioPlaying(true)).catch(() => {});
+        return;
+      }
+    }
+    if (useSpotify) {
+      if (isAudioPlaying) bridge!.pause().then(() => setIsAudioPlaying(false)).catch(() => {});
+      else bridge!.resume().then(() => setIsAudioPlaying(true)).catch(() => {});
+      return;
     }
     const a = audioRef.current;
     if (!a || !previewUrl) return;
@@ -227,15 +250,21 @@ export default function OhrwurmGame() {
       a.pause();
       setIsAudioPlaying(false);
     }
-  }, [listening, roundTimer, haptics, previewUrl]);
+  }, [listening, roundTimer, haptics, previewUrl, spotifyUri, isAudioPlaying]);
 
   const replayAudio = useCallback(() => {
+    const bridge = spotifyBridgeRef.current;
+    if (bridge && spotifyUri) {
+      bridge.play(spotifyUri).then(() => setIsAudioPlaying(true)).catch(() => {});
+      void haptics.light();
+      return;
+    }
     const a = audioRef.current;
     if (!a || !previewUrl) return;
     try { a.currentTime = 0; } catch { /* noop */ }
     a.play().then(() => setIsAudioPlaying(true)).catch(() => {});
     void haptics.light();
-  }, [previewUrl, haptics]);
+  }, [previewUrl, haptics, spotifyUri]);
 
   // Fallback ohne Clip: Timer manuell starten
   const startListeningNoAudio = useCallback(() => {
@@ -268,6 +297,10 @@ export default function OhrwurmGame() {
     roundTimer.reset(ROUND_SECONDS);
     const myDraw = ++drawIdRef.current;
     void loadPreview(card, myDraw);
+    setSpotifyUri(null);
+    if (spotifyBridgeRef.current) {
+      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+    }
     flash('Karte getauscht — 1 🎣 abgegeben');
   }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
 
@@ -387,6 +420,9 @@ export default function OhrwurmGame() {
 
   const resetGame = useCallback(() => {
     stopAudio();
+    spotifyBridgeRef.current?.disconnect().catch(() => {});
+    spotifyBridgeRef.current = null;
+    setSpotifyUri(null);
     roundTimer.reset(ROUND_SECONDS);
     setListening(false);
     setPreviewUrl(null);
@@ -466,10 +502,10 @@ export default function OhrwurmGame() {
                 sub="Song läuft verborgen — 60s Zeit. In den ersten 10s + Titel & Interpret = Speed-Bonus."
               />
 
-              {(previewLoading || previewUrl) ? (
+              {(previewLoading || previewUrl || spotifyUri) ? (
                 <MysteryPlayer
-                  loading={previewLoading}
-                  hasPreview={!!previewUrl}
+                  loading={previewLoading && !spotifyUri}
+                  hasPreview={!!previewUrl || !!spotifyUri}
                   isPlaying={isAudioPlaying}
                   started={listening}
                   timeLeft={roundTimer.timeLeft}
