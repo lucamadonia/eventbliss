@@ -7,7 +7,7 @@
 //                ohrwurm-spotify) + installierte Spotify-App + Premium + eine
 //                Spotify-Developer-App (Client ID). Fehlt etwas → Fallback Preview.
 
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import type { Song } from './ohrwurm-engine';
 
@@ -39,30 +39,59 @@ interface NativeSpotifyPlugin {
   disconnect(): Promise<void>;
 }
 
+// Capacitor-Standard: registerPlugin routet zur nativen Implementierung (das
+// veraltete Capacitor.Plugins.X ist unzuverlässig, wenn die App registerPlugin
+// nie aufruft — war der Grund, warum die Bridge auf iOS „nicht verfügbar" war).
+const OhrwurmSpotify = registerPlugin<NativeSpotifyPlugin>('OhrwurmSpotify');
+
+export interface SpotifyBridgeResult {
+  bridge: SpotifyBridge | null;
+  /** Diagnose-Grund (ok / web / spotify_app_fehlt / connect_false / auth:… / err:…). */
+  reason: string;
+}
+
 /**
- * Liefert die native Spotify-Bridge, falls verbunden — sonst null (→ Fallback).
- * Voraussetzungen: native Plattform + Plugin installiert + Client ID gesetzt +
- * Spotify-App installiert + Premium-Login erfolgreich.
+ * Verbindet die native Spotify-Bridge. Gibt bridge=null + Grund zurück, damit
+ * der Fehlschlag im Spiel sichtbar gemacht werden kann.
  */
-export async function getSpotifyBridge(): Promise<SpotifyBridge | null> {
-  if (!Capacitor.isNativePlatform() || !SPOTIFY_CLIENT_ID) return null;
-  const plugin = (Capacitor as unknown as { Plugins?: Record<string, unknown> })
-    .Plugins?.OhrwurmSpotify as NativeSpotifyPlugin | undefined;
-  if (!plugin) return null;
+export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
+  if (!Capacitor.isNativePlatform()) return { bridge: null, reason: 'web' };
+  if (!SPOTIFY_CLIENT_ID) return { bridge: null, reason: 'no_client_id' };
+
+  let available: boolean;
   try {
-    const { available } = await plugin.isAvailable();
-    if (!available) return null;
-    const { connected } = await plugin.connect({ clientId: SPOTIFY_CLIENT_ID, redirectUrl: SPOTIFY_REDIRECT_URL });
-    if (!connected) return null;
-    return {
-      play: (uri) => plugin.play({ uri }),
-      pause: () => plugin.pause(),
-      resume: () => plugin.resume(),
-      disconnect: () => plugin.disconnect(),
-    };
-  } catch {
-    return null;
+    const res = await OhrwurmSpotify.isAvailable();
+    available = res.available;
+  } catch (e) {
+    // z.B. „not implemented" = natives Plugin nicht registriert
+    return { bridge: null, reason: 'err:' + msg(e) };
   }
+  if (!available) return { bridge: null, reason: 'spotify_app_fehlt' };
+
+  try {
+    const { connected } = await OhrwurmSpotify.connect({
+      clientId: SPOTIFY_CLIENT_ID,
+      redirectUrl: SPOTIFY_REDIRECT_URL,
+    });
+    if (!connected) return { bridge: null, reason: 'connect_false' };
+  } catch (e) {
+    return { bridge: null, reason: 'auth:' + msg(e) };
+  }
+
+  return {
+    reason: 'ok',
+    bridge: {
+      play: (uri) => OhrwurmSpotify.play({ uri }),
+      pause: () => OhrwurmSpotify.pause(),
+      resume: () => OhrwurmSpotify.resume(),
+      disconnect: () => OhrwurmSpotify.disconnect(),
+    },
+  };
+}
+
+function msg(e: unknown): string {
+  const m = (e as { message?: string })?.message ?? String(e);
+  return m.slice(0, 60);
 }
 
 /** Löst Künstler+Titel zu einer Spotify-Track-URI auf (Edge Function). */

@@ -91,11 +91,13 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [countdown, setCountdown] = useState<number | null>(null);
   const cooldownRef = useRef(false);
   const orientationActiveRef = useRef(false);
+  const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
 
   useTVGameBridge('headup', { phase: screen, currentRound, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length }, [screen, currentRound, currentWordIndex]);
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
+    armedRef.current = false;
     triggerHaptic('heavy');
     setScreen('roundResult');
   }, []);
@@ -116,6 +118,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (countdown === null) return;
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
+      armedRef.current = false; // erst flach halten (Neutral), bevor die erste Neigung zählt
       setTimeout(() => { orientationActiveRef.current = true; }, 500);
       if (online?.isHost) {
         online.broadcast('tv-state', {
@@ -171,8 +174,14 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     const handle = (e: DeviceOrientationEvent) => {
       if (!orientationActiveRef.current) return;
       const beta = e.beta ?? 0;
-      if (beta > 30) advanceWord(true);
-      if (beta < -30) advanceWord(false);
+      // Re-Arm: eine Neigung zählt genau einmal. Erst zurück in die Neutralzone
+      // (<15°), dann ist die nächste Neigung wieder scharf. Verhindert Dauerfeuer.
+      if (!armedRef.current) {
+        if (Math.abs(beta) < 15) armedRef.current = true;
+        return;
+      }
+      if (beta > 30) { armedRef.current = false; advanceWord(true); }
+      else if (beta < -30) { armedRef.current = false; advanceWord(false); }
     };
     const init = async () => {
       try {

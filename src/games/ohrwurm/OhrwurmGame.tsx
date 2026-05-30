@@ -199,9 +199,9 @@ export default function OhrwurmGame() {
     // Spotify-Premium-Modus gewählt? Bridge verbinden — sonst Fallback-Hinweis.
     spotifyBridgeRef.current = null;
     if (cfg.playback === 'spotify') {
-      void getSpotifyBridge().then((b) => {
-        if (b) spotifyBridgeRef.current = b;
-        else flash('Spotify-Premium nicht verfügbar — es läuft die 30s-Vorschau');
+      void getSpotifyBridge().then(({ bridge, reason }) => {
+        if (bridge) { spotifyBridgeRef.current = bridge; flash('Spotify verbunden ✓'); }
+        else flash('Spotify: ' + reason + ' — 30s-Vorschau');
       });
     }
     void haptics.celebrate();
