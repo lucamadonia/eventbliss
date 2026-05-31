@@ -52,10 +52,13 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     // Capacitor leitet eingehende URLs (Spotify-Auth-Redirect) als Notification
     // weiter — wir reichen sie an den SessionManager durch.
     override public func load() {
+        // WICHTIG: Capacitors typisiertes Symbol verwenden (nicht den String) —
+        // identisch zu @capacitor/app. Ein abweichender rawValue wuerde das
+        // Observer-Matching stillschweigend verhindern.
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleOpenURL(_:)),
-            name: NSNotification.Name(rawValue: "CapacitorOpenURL"),
+            name: Notification.Name.capacitorOpenURL,
             object: nil
         )
         // Aus gespeicherter Config SessionManager + AppRemote wiederherstellen,
@@ -70,17 +73,22 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     }
 
     @objc func handleOpenURL(_ notification: Notification) {
+        // Capacitor postet object als [String: Any?] mit url=NSURL (siehe
+        // @capacitor/app AppPlugin.makeUrlOpenObject). Ein Cast auf
+        // [String: Any] (ohne ?) schlaegt fehl → fruehere Ursache, dass der
+        // Spotify-Redirect den SessionManager nie erreichte.
         var url: URL?
-        var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-        if let dict = notification.object as? [String: Any] {
-            url = dict["url"] as? URL
-            options = dict["options"] as? [UIApplication.OpenURLOptionsKey: Any] ?? [:]
+        if let object = notification.object as? [String: Any?] {
+            if let nsurl = object["url"] as? NSURL { url = nsurl as URL }
+            else if let u = object["url"] as? URL { url = u }
+        } else if let nsurl = notification.object as? NSURL {
+            url = nsurl as URL
         } else if let u = notification.object as? URL {
             url = u
         }
-        if let u = url {
-            sessionManager?.application(UIApplication.shared, open: u, options: options)
-        }
+        guard let target = url else { return }
+        // Die Spotify-SDK liest Token/Code aus der URL; options sind nicht noetig.
+        sessionManager?.application(UIApplication.shared, open: target, options: [:])
     }
 
     // MARK: - Helpers
