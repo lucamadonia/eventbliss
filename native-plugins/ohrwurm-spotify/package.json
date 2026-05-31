@@ -13,6 +13,7 @@
     "dist/",
     "ios/",
     "android/",
+    "Package.swift",
     "OhrwurmSpotify.podspec"
   ],
   "keywords": ["capacitor", "spotify", "app-remote", "ohrwurm"],
