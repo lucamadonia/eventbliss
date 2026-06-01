@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameTimer } from '../engine/TimerSystem';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
@@ -139,6 +138,20 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+/**
+ * Verteilt die vier Antworten fair auf beide Teams: JEDES Team sieht die
+ * richtige Antwort + genau EINEN (je unterschiedlichen) Ablenker, zufällig
+ * angeordnet. Vorher bekam ein Team statisch nur die Indizes 0/1 bzw. 2/3 —
+ * lag die richtige Antwort in der anderen Hälfte, hatte ein Team gar keine
+ * richtige Option zur Auswahl. Gibt pro Team zwei Indizes in q.answers zurück.
+ */
+function computeSplit(q: QuizQuestion): [number[], number[]] {
+  const wrong = shuffle([0, 1, 2, 3].filter((i) => i !== q.correct));
+  const pairA = shuffle([q.correct, wrong[0]]);
+  const pairB = shuffle([q.correct, wrong[1]]);
+  return [pairA, pairB];
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -184,6 +197,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const deck = useRef<QuizQuestion[]>([]);
   const deckPos = useRef(0);
   const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion | null>(null);
+  // Pro Frage: welche zwei Antwort-Indizes sieht Team A bzw. Team B (je
+  // richtige Antwort + ein Ablenker). Siehe computeSplit().
+  const [answerSplit, setAnswerSplit] = useState<[number[], number[]]>([[0, 1], [2, 3]]);
 
   /* ---- Round tracking for MVP ---- */
   const playerCorrectMap = useRef<Record<string, number>>({});
@@ -193,7 +209,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     question: currentQuestion?.question || '',
     answers: currentQuestion?.answers || [],
     category: currentQuestion?.category || '',
-    correctAnswer: phase === 'reveal' ? currentQuestion?.correctIndex ?? -1 : -1,
+    correctAnswer: phase === 'reveal' ? currentQuestion?.correct ?? -1 : -1,
   }, [phase, currentRound, activeTeamIdx]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
@@ -206,6 +222,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
       if (data.currentRound !== undefined) setCurrentRound(data.currentRound as number);
       if (data.activeTeamIdx !== undefined) setActiveTeamIdx(data.activeTeamIdx as number);
       if (data.currentQuestion !== undefined) setCurrentQuestion(data.currentQuestion as QuizQuestion | null);
+      if (data.answerSplit) setAnswerSplit(data.answerSplit as [number[], number[]]);
       if (data.selectedAnswer !== undefined) setSelectedAnswer(data.selectedAnswer as number | null);
       if (data.teamAnswered) setTeamAnswered(data.teamAnswered as [boolean, boolean]);
     });
@@ -216,10 +233,10 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     if (!online?.isHost) return;
     online.broadcast('splitquiz-state', {
       phase, teamA, teamB, currentRound, activeTeamIdx,
-      currentQuestion, selectedAnswer, teamAnswered,
+      currentQuestion, answerSplit, selectedAnswer, teamAnswered,
       ...overrides,
     });
-  }, [online, phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, selectedAnswer, teamAnswered]);
+  }, [online, phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, answerSplit, selectedAnswer, teamAnswered]);
 
   // Broadcast on key state changes
   useEffect(() => {
@@ -348,6 +365,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setPhase('handoff');
     const q = drawQuestion();
     setCurrentQuestion(q);
+    setAnswerSplit(computeSplit(q));
   }
 
   /* ---- Begin question for active team ---- */
@@ -421,6 +439,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setCurrentBet(1);
     const q = drawQuestion();
     setCurrentQuestion(q);
+    setAnswerSplit(computeSplit(q));
     setPhase('handoff');
   }
 
@@ -439,9 +458,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     timer.reset(20);
   }
 
-  /* ---- Get visible answers for a team ---- */
-  function getTeamAnswers(teamIdx: number): [number, number] {
-    return teamIdx === 0 ? [0, 1] : [2, 3];
+  /* ---- Get visible answers for a team (richtige Antwort + 1 Ablenker) ---- */
+  function getTeamAnswers(teamIdx: number): number[] {
+    return answerSplit[teamIdx] ?? (teamIdx === 0 ? [0, 1] : [2, 3]);
   }
 
   /* ---- MVP calculation ---- */

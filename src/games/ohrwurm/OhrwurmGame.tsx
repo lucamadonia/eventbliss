@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowLeft, ArrowRight, RotateCcw, Trophy, Users, User, Plus, X as CloseIcon,
@@ -854,27 +854,90 @@ function RevealCard({ song, flipped }: { song: Song; flipped: boolean }) {
   );
 }
 
-/** Horizontale Timeline mit antippbaren Slots zwischen/um die Karten. */
+/**
+ * Era-Farbe: bildet das Jahr auf ein chronologisches Spektrum ab — alt = kühl
+ * (Teal) → Gold → neu = warm (Pink), exakt die Marken-Trias in zeitlicher
+ * Reihenfolge. So liest sich der Zeitstrahl als Verlauf der Jahrzehnte.
+ */
+function eraColor(year: number): string {
+  const t = Math.max(0, Math.min(1, (year - 1955) / 70)); // 1955..2025
+  const hue = t < 0.5
+    ? 174 + (46 - 174) * (t / 0.5)                 // Teal → Gold
+    : (46 - 76 * ((t - 0.5) / 0.5) + 360) % 360;   // Gold → Pink
+  return `hsl(${hue.toFixed(0)} 85% 62%)`;
+}
+
+/**
+ * Horizontale Timeline mit antippbaren Slots — als leuchtender Zeitstrahl:
+ * durchscheinender Glow-Thread, Era-Farbspektrum, gestaffelt einfliegende
+ * Premium-Karten und magnetische Drop-Zonen. `prefers-reduced-motion`-aware.
+ */
 function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[]; onSelect: (slot: number) => void; accent: string }) {
+  const reduce = useReducedMotion();
+
+  const itemVar = {
+    hidden: reduce ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.92 },
+    show: (i: number) => reduce
+      ? { opacity: 1, transition: { delay: i * 0.03 } }
+      : { opacity: 1, y: 0, scale: 1, transition: { delay: i * 0.05, type: 'spring' as const, stiffness: 320, damping: 26 } },
+  };
+
+  let pos = 0;
+
   const slot = (i: number, label: string) => (
-    <button key={`slot-${i}`} onClick={() => onSelect(i)}
-      className="shrink-0 w-16 h-[120px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all active:scale-95 group"
-      style={{ background: 'rgba(255,210,63,0.06)', border: `2px dashed ${accent}` }}>
-      <Plus className="w-5 h-5 transition-transform group-hover:scale-125" style={{ color: accent }} />
-      <span className="text-[9px] font-bold leading-tight text-center px-1" style={{ color: OW.dim }}>{label}</span>
-    </button>
+    <motion.button key={`slot-${i}`} onClick={() => onSelect(i)}
+      custom={pos++} variants={itemVar}
+      whileHover={reduce ? undefined : { scale: 1.08, y: -4 }}
+      whileTap={{ scale: 0.9 }}
+      className="relative z-10 shrink-0 w-[60px] h-[136px] rounded-2xl flex flex-col items-center justify-center gap-2 snap-center"
+      style={{
+        background: `linear-gradient(180deg, ${accent}1f, ${accent}05)`,
+        border: `2px dashed ${accent}`,
+        backdropFilter: 'blur(2px)',
+      }}>
+      <motion.span className="grid place-items-center w-9 h-9 rounded-full"
+        style={{ background: `${accent}26`, border: `1px solid ${accent}66` }}
+        animate={reduce ? undefined : { boxShadow: [`0 0 0px ${accent}00`, `0 0 16px ${accent}cc`, `0 0 0px ${accent}00`] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}>
+        <Plus className="w-5 h-5" style={{ color: accent }} />
+      </motion.span>
+      <span className="text-[9px] font-extrabold uppercase tracking-wider leading-tight text-center px-1" style={{ color: OW.dim }}>{label}</span>
+    </motion.button>
   );
 
-  const card = (s: Song) => (
-    <div key={s.id} className="shrink-0 w-[100px] h-[120px] rounded-2xl p-3 flex flex-col justify-between"
-      style={{ background: OW.surface, border: '1px solid rgba(255,255,255,0.06)' }}>
-      <span className="text-2xl font-black" style={{ color: OW.accent }}>{s.year}</span>
-      <div className="leading-tight">
-        <div className="text-[11px] font-bold line-clamp-2">{s.title}</div>
-        <div className="text-[10px] truncate" style={{ color: OW.dim }}>{s.artist} {s.flag}</div>
-      </div>
-    </div>
-  );
+  const card = (s: Song) => {
+    const c = eraColor(s.year);
+    return (
+      <motion.div key={s.id}
+        custom={pos++} variants={itemVar}
+        whileHover={reduce ? undefined : { y: -8, scale: 1.04 }}
+        transition={reduce ? undefined : { type: 'spring', stiffness: 400, damping: 24 }}
+        className="relative z-10 shrink-0 w-[108px] h-[136px] rounded-2xl p-3 flex flex-col justify-between overflow-hidden snap-center"
+        style={{
+          background: 'linear-gradient(165deg, #2b2046 0%, #1b1430 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: `0 10px 26px -14px ${c}`,
+        }}>
+        {/* Era-Leiste oben */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-[3px]"
+          style={{ background: `linear-gradient(90deg, transparent, ${c}, transparent)` }} />
+        {/* weicher Era-Glow */}
+        <div aria-hidden className="absolute -top-7 -right-7 w-24 h-24 rounded-full blur-2xl pointer-events-none"
+          style={{ background: c, opacity: 0.2 }} />
+        {/* Jahr als Neon-Text */}
+        <span className="relative text-[27px] leading-none font-black tabular-nums"
+          style={{ color: c, textShadow: `0 0 18px ${c}66` }}>{s.year}</span>
+        {/* Titel + Interpret */}
+        <div className="relative leading-tight">
+          <div className="text-[11px] font-bold line-clamp-2 text-white">{s.title}</div>
+          <div className="text-[10px] truncate flex items-center gap-1.5" style={{ color: OW.dim }}>
+            <span className="inline-block w-1.5 h-1.5 rounded-full shrink-0" style={{ background: c, boxShadow: `0 0 6px ${c}` }} />
+            <span className="truncate">{s.artist} {s.flag}</span>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   const items: React.ReactNode[] = [];
   items.push(slot(0, timeline.length ? 'früher' : 'hier'));
@@ -885,8 +948,15 @@ function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[]; onSe
   });
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-3 px-1 items-center snap-x no-scrollbar">
-      {items}
+    <div className="overflow-x-auto pb-3 no-scrollbar">
+      <motion.div
+        className="relative flex gap-3 items-center px-1 w-max min-w-full snap-x"
+        initial="hidden" animate="show">
+        {/* durchscheinender Glow-Thread (Karten decken ihn, Slots lassen ihn durchglühen) */}
+        <div aria-hidden className="absolute inset-x-1 top-1/2 -translate-y-1/2 h-[3px] rounded-full pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, transparent, #26E0C4aa 15%, #FFD23Faa 50%, #FF2E88aa 85%, transparent)' }} />
+        {items}
+      </motion.div>
     </div>
   );
 }
