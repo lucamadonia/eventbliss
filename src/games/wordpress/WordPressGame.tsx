@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
@@ -311,12 +309,13 @@ interface PlayingProps {
   totalRounds: number;
   currentPlayerIndex: number;
   onPlayerDone: (updatedPlayer: PlayerState) => void;
+  onWordChange?: (text: string) => void;
 }
 
 const WORDS_PER_TURN = 12;
 const FORBIDDEN_WORDS = ['Hund', 'Pizza', 'Blau', 'Lampe', 'Katze', 'Apfel', 'Rot', 'Stern'];
 
-function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone }: PlayingProps) {
+function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone, onWordChange }: PlayingProps) {
   const player = players[currentPlayerIndex];
   const [wordIndex, setWordIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<WordItem | null>(null);
@@ -361,6 +360,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
 
     const word = generateWord(mode, forbiddenWord.current, wordIndex);
     setCurrentWord(word);
+    onWordChange?.(word.text); // TV-Ansicht mit aktuellem Wort versorgen
     tappedRef.current = false;
     setFlyAway(false);
     setFeedback(null);
@@ -739,13 +739,17 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const [totalRounds, setTotalRounds] = useState(5);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [turnQueue, setTurnQueue] = useState<number[]>([]);
+  // Live-Wort aus PlayingScreen hochgereicht (currentWord lebt dort als State —
+  // ein direkter Verweis hier warf "Can't find variable: currentWord" und
+  // crashte das Spiel). Dient nur der TV-Ansicht.
+  const [liveWord, setLiveWord] = useState('');
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
   useTVGameBridge('wordpress', {
     phase, round, currentPlayerIndex, players, totalRounds,
-    currentWord: currentWord?.text || '',
-  }, [phase, round, currentPlayerIndex]);
+    currentWord: liveWord,
+  }, [phase, round, currentPlayerIndex, liveWord]);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     setPlayers(ps);
@@ -851,6 +855,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
             totalRounds={totalRounds}
             currentPlayerIndex={currentPlayerIndex}
             onPlayerDone={handlePlayerDone}
+            onWordChange={setLiveWord}
           />
         </motion.div>
       )}
