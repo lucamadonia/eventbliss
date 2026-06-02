@@ -110,6 +110,7 @@ export default function OhrwurmGame() {
   // Spotify-Premium-Vollversion (nur aktiv, wenn die native Bridge verbindet —
   // bis zur On-Device-Einrichtung null → es läuft die 30s-Vorschau).
   const spotifyBridgeRef = useRef<SpotifyBridge | null>(null);
+  const spotifyModeRef = useRef(false); // ist der Spotify-Premium-Modus gewählt?
   const [spotifyUri, setSpotifyUri] = useState<string | null>(null);
   // Sichtbarer Spotify-Verbindungsstatus: null | 'connecting' | 'ok' | 'preview:<grund>'
   const [spotifyStatus, setSpotifyStatus] = useState<string | null>(null);
@@ -182,15 +183,12 @@ export default function OhrwurmGame() {
     const myDraw = ++drawIdRef.current;
     void loadPreview(card, myDraw);
     // Spotify-Premium aktiv? Track-URI parallel auflösen (Bridge spielt sie ab).
-    setSpotifyUri(null);
-    if (spotifyBridgeRef.current) {
-      // Hitster-Modell: vorab gebackene URI bevorzugen (keine Laufzeit-Suche);
-      // sonst Laufzeit-Resolver, sonst greift die 30s-Vorschau.
-      if (card.spotifyUri) {
-        setSpotifyUri(card.spotifyUri);
-      } else {
-        void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
-      }
+    // Gebackene URI SOFORT setzen — unabhängig davon, ob die Bridge schon
+    // verbunden ist (sie verbindet async erst nach dem Spotify-Login; sonst
+    // bliebe die erste Karte ohne URI → 30s-Vorschau trotz „verbunden").
+    setSpotifyUri(card.spotifyUri ?? null);
+    if (!card.spotifyUri && spotifyModeRef.current) {
+      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
     }
     setPhase('draw');
   }, [takeCard, stopAudio, loadPreview]);
@@ -317,15 +315,12 @@ export default function OhrwurmGame() {
     roundTimer.reset(ROUND_SECONDS);
     const myDraw = ++drawIdRef.current;
     void loadPreview(card, myDraw);
-    setSpotifyUri(null);
-    if (spotifyBridgeRef.current) {
-      // Hitster-Modell: vorab gebackene URI bevorzugen (keine Laufzeit-Suche);
-      // sonst Laufzeit-Resolver, sonst greift die 30s-Vorschau.
-      if (card.spotifyUri) {
-        setSpotifyUri(card.spotifyUri);
-      } else {
-        void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
-      }
+    // Gebackene URI SOFORT setzen — unabhängig davon, ob die Bridge schon
+    // verbunden ist (sie verbindet async erst nach dem Spotify-Login; sonst
+    // bliebe die erste Karte ohne URI → 30s-Vorschau trotz „verbunden").
+    setSpotifyUri(card.spotifyUri ?? null);
+    if (!card.spotifyUri && spotifyModeRef.current) {
+      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
     }
     flash('Karte getauscht — 1 🎣 abgegeben');
   }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
