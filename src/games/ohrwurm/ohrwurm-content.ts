@@ -5,6 +5,10 @@
 // damit das Modul klein bleibt, und werden beim Laden einmalig zu Song[] geparst.
 // Die Spotify-Such-URL (= QR-Inhalt, vgl. Spec §5.1) wird zur Laufzeit gebaut.
 
+// Vorab aufgelöste Spotify-Track-URIs (id → "spotify:track:…"), befüllt durch
+// scripts/resolve-spotify-uris.mjs. Leer = es greift der Laufzeit-Resolver.
+import SPOTIFY_URIS from './spotify-uris.json';
+
 export interface Song {
   id: string;          // "ow-0001"
   year: number;        // Erscheinungsjahr
@@ -14,6 +18,13 @@ export interface Song {
   genre: string;       // Genre
   /** open.spotify.com/search/... — Inhalt des QR-Codes (Spec §5.1) */
   qrPayload: string;
+  /**
+   * Vorab aufgelöste Spotify-Track-URI (spotify:track:…) für die Premium-
+   * Vollwiedergabe — wie bei Hitster fest hinterlegt, damit zur Laufzeit KEINE
+   * Spotify-Suche nötig ist. Befüllt durch scripts/resolve-spotify-uris.mjs
+   * (spotify-uris.json). Fehlt sie → Laufzeit-Resolver → 30s-Vorschau.
+   */
+  spotifyUri?: string;
 }
 
 /** Spotify-Such-URL bauen — identisch mit dem QR-Code-Inhalt der Karte. */
@@ -1317,16 +1328,19 @@ let _cache: Song[] | null = null;
 export function getAllSongs(): Song[] {
   if (_cache) return _cache;
   const lines = PACKED.trim().split(/\r?\n/);
+  const uris = SPOTIFY_URIS as Record<string, string>;
   _cache = lines.map((line, i) => {
     const [year, artist, title, flag, genre] = line.split('~');
+    const id = 'ow-' + String(i + 1).padStart(4, '0');
     return {
-      id: 'ow-' + String(i + 1).padStart(4, '0'),
+      id,
       year: Number(year),
       artist,
       title,
       flag,
       genre,
       qrPayload: spotifySearchUrl(artist, title),
+      spotifyUri: uris[id],
     };
   });
   return _cache;

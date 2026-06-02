@@ -173,7 +173,13 @@ export default function OhrwurmGame() {
     // Spotify-Premium aktiv? Track-URI parallel auflösen (Bridge spielt sie ab).
     setSpotifyUri(null);
     if (spotifyBridgeRef.current) {
-      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+      // Hitster-Modell: vorab gebackene URI bevorzugen (keine Laufzeit-Suche);
+      // sonst Laufzeit-Resolver, sonst greift die 30s-Vorschau.
+      if (card.spotifyUri) {
+        setSpotifyUri(card.spotifyUri);
+      } else {
+        void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+      }
     }
     setPhase('draw');
   }, [takeCard, stopAudio, loadPreview]);
@@ -299,7 +305,13 @@ export default function OhrwurmGame() {
     void loadPreview(card, myDraw);
     setSpotifyUri(null);
     if (spotifyBridgeRef.current) {
-      void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+      // Hitster-Modell: vorab gebackene URI bevorzugen (keine Laufzeit-Suche);
+      // sonst Laufzeit-Resolver, sonst greift die 30s-Vorschau.
+      if (card.spotifyUri) {
+        setSpotifyUri(card.spotifyUri);
+      } else {
+        void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
+      }
     }
     flash('Karte getauscht — 1 🎣 abgegeben');
   }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
