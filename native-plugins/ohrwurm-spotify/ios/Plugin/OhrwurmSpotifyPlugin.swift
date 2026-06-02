@@ -101,24 +101,10 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             url = u
         }
         guard let target = url else { return }
-        // 1) Stammt der Redirect von appRemote.authorizeAndPlayURI? Dann enthaelt
-        //    er einen App-Remote-Access-Token → direkt setzen + verbinden. (Wuerde
-        //    er nur an den SessionManager gehen, etabliert authorizeAndPlayURI die
-        //    Verbindung nie → isConnected bliebe false → jeder Play oeffnet Spotify.)
-        if let remote = appRemote,
-           let params = remote.authorizationParameters(from: target) {
-            if let token = params[SPTAppRemoteAccessTokenKey] {
-                remote.connectionParameters.accessToken = token
-                let defaults = UserDefaults.standard
-                defaults.set(token, forKey: kToken)
-                // Ablauf unbekannt → konservativ 50 Min ab jetzt.
-                defaults.set(Date().timeIntervalSince1970 + 3000, forKey: kExpiry)
-                wantsConnection = true
-                DispatchQueue.main.async { remote.connect() }
-                return
-            }
-        }
-        // 2) Sonst: normaler SessionManager-Auth-Redirect.
+        // Den Redirect IMMER an den SessionManager geben → sessionManager(didInitiate:)
+        // feuert → Token wird persistiert, am AppRemote gesetzt, connect() gestartet
+        // und connectCall aufgeloest (Bridge = ok). Ihn vorher abzufangen wuerde
+        // didInitiate verhindern → Bridge null → 30s-Vorschau (alte Regression).
         sessionManager?.application(UIApplication.shared, open: target, options: [:])
     }
 
