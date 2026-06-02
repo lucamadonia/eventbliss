@@ -27,8 +27,9 @@ const CONTENT = join(ROOT, 'src/games/ohrwurm/ohrwurm-content.ts');
 const OUT = join(ROOT, 'src/games/ohrwurm/spotify-uris.json');
 
 const CLIENT_ID = process.env.VITE_SPOTIFY_CLIENT_ID || '370afb4c06fc4e67b5f5e7687604d5d5';
-const PORT = Number(process.env.PORT || 8888);
-const REDIRECT = `http://127.0.0.1:${PORT}/callback`;
+// Muss EXAKT einer im Spotify-Dashboard registrierten Redirect-URI entsprechen.
+const PORT = Number(process.env.PORT || 8080);
+const REDIRECT = process.env.SPOTIFY_REDIRECT || `http://127.0.0.1:${PORT}/spotify-callback`;
 const MARKET = process.env.SPOTIFY_MARKET || 'DE';
 
 const b64url = (buf) => buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -58,7 +59,7 @@ async function login() {
 
   return new Promise((resolve, reject) => {
     const server = createServer(async (req, res) => {
-      if (!req.url.startsWith('/callback')) { res.writeHead(404); res.end(); return; }
+      if (!req.url.startsWith('/spotify-callback')) { res.writeHead(404); res.end(); return; }
       const url = new URL(req.url, REDIRECT);
       const code = url.searchParams.get('code');
       const err = url.searchParams.get('error');
