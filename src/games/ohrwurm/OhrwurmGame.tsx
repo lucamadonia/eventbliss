@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowLeft, ArrowRight, RotateCcw, Trophy, Users, User, Plus, X as CloseIcon,
-  Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown, Zap,
+  Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown, Zap, Heart,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -684,17 +684,24 @@ export default function OhrwurmGame() {
               {/* Spotify-Aktionen — nur wenn die Premium-Bridge verbunden ist:
                   ganzen Song hören (ohne Timer) + zur eigenen Bibliothek. */}
               {spotifyBridgeRef.current && spotifyUri && (
-                <div className="flex gap-2 w-full max-w-sm">
+                <div className="flex flex-col gap-2 w-full max-w-sm">
                   <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => {}); setIsAudioPlaying(true); }}
-                    className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                    className="h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
                     style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
-                    <Music2 className="w-4 h-4" /> Ganzer Song
+                    <Music2 className="w-4 h-4" /> Ganzer Song hören
                   </button>
-                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((ok) => flash(ok ? '❤️ Zu Spotify hinzugefügt' : 'Konnte nicht hinzufügen')).catch(() => flash('Konnte nicht hinzufügen')); }}
-                    className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-                    style={{ background: 'rgba(255,255,255,0.06)', color: OW.text }}>
-                    <Plus className="w-4 h-4" /> Zu Spotify
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((ok) => flash(ok ? '❤️ Zu Lieblingssongs' : 'Konnte nicht speichern')).catch(() => flash('Konnte nicht speichern')); }}
+                      className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                      style={{ background: 'rgba(255,255,255,0.06)', color: OW.text, border: '1px solid rgba(255,255,255,0.12)' }}>
+                      <Heart className="w-4 h-4" /> Like
+                    </button>
+                    <button onClick={() => { void haptics.light(); flash('Füge zur Playlist hinzu…'); spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri).then((ok) => flash(ok ? '🎵 In OHRWURM-Playlist' : 'Konnte nicht hinzufügen')).catch(() => flash('Konnte nicht hinzufügen')); }}
+                      className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                      style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
+                      <Plus className="w-4 h-4" /> Playlist
+                    </button>
+                  </div>
                 </div>
               )}
               {bonusOpen ? (

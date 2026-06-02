@@ -178,7 +178,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         //    wenn die Spotify-App nicht ohnehin schon verbunden ist.
         //    Nach der ersten Zustimmung fragt Spotify nicht erneut.
         triedStoredToken = false
-        let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify]
+        let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify, .playlistModifyPublic, .playlistModifyPrivate]
         DispatchQueue.main.async {
             self.sessionManager?.initiateSession(with: scope, options: .clientOnly, campaign: nil)
         }
@@ -273,7 +273,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         if triedStoredToken {
             triedStoredToken = false
             clearToken()
-            let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify]
+            let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify, .playlistModifyPublic, .playlistModifyPrivate]
             DispatchQueue.main.async {
                 self.sessionManager?.initiateSession(with: scope, options: .clientOnly, campaign: nil)
             }

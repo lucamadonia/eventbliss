@@ -30,6 +30,8 @@ export interface SpotifyBridge {
   disconnect(): Promise<void>;
   /** Track in die eigene Spotify-Bibliothek („Liked Songs") speichern. */
   saveTrack(uri: string): Promise<boolean>;
+  /** Track in die eigene „OHRWURM 🎵"-Playlist legen (wird bei Bedarf angelegt). */
+  addToPlaylist(uri: string): Promise<boolean>;
 }
 
 interface NativeSpotifyPlugin {
@@ -98,6 +100,43 @@ export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
             headers: { Authorization: 'Bearer ' + token },
           });
           return res.ok;
+        } catch {
+          return false;
+        }
+      },
+      addToPlaylist: async (uri) => {
+        try {
+          const { token } = await OhrwurmSpotify.getToken();
+          if (!token) return false;
+          const auth = { Authorization: 'Bearer ' + token };
+          const me = await fetch('https://api.spotify.com/v1/me', { headers: auth });
+          if (!me.ok) return false;
+          const userId = ((await me.json()) as { id?: string }).id;
+          if (!userId) return false;
+          // Vorhandene OHRWURM-Playlist suchen, sonst anlegen.
+          const PL_NAME = 'OHRWURM 🎵';
+          let playlistId: string | null = null;
+          const lists = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', { headers: auth });
+          if (lists.ok) {
+            const items = ((await lists.json()) as { items?: Array<{ id: string; name: string }> }).items ?? [];
+            playlistId = items.find((p) => p.name === PL_NAME)?.id ?? null;
+          }
+          if (!playlistId) {
+            const created = await fetch(`https://api.spotify.com/v1/users/${encodeURIComponent(userId)}/playlists`, {
+              method: 'POST',
+              headers: { ...auth, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: PL_NAME, public: false, description: 'Songs aus dem OHRWURM-Spiel' }),
+            });
+            if (!created.ok) return false;
+            playlistId = ((await created.json()) as { id?: string }).id ?? null;
+          }
+          if (!playlistId) return false;
+          const add = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: 'POST',
+            headers: { ...auth, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uris: [uri] }),
+          });
+          return add.ok;
         } catch {
           return false;
         }
