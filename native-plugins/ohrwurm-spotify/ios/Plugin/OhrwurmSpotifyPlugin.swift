@@ -171,15 +171,12 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             return
         }
 
-        // 2) Gültiges Token vorhanden? Still verbinden — keine erneute Zustimmung.
-        if let token = storedValidToken(), let remote = appRemote {
-            triedStoredToken = true
-            remote.connectionParameters.accessToken = token
-            DispatchQueue.main.async { remote.connect() }
-            return
-        }
-
-        // 3) Volle Zustimmung (einmalig). Scopes für Playback-Steuerung.
+        // 2) Verbindung IMMER über den SessionManager herstellen: das weckt die
+        //    Spotify-App per kurzem App-Wechsel und etabliert die App-Remote-
+        //    Verbindung zuverlässig. Der stille appRemote.connect()-Pfad mit
+        //    gespeichertem Token feuert oft GAR KEINE Callback (→ connect_timeout),
+        //    wenn die Spotify-App nicht ohnehin schon verbunden ist.
+        //    Nach der ersten Zustimmung fragt Spotify nicht erneut.
         triedStoredToken = false
         let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify]
         DispatchQueue.main.async {
