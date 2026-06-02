@@ -1322,14 +1322,13 @@ const PACKED = `
 2024~Windows95Man~No Rules!~🇫🇮~Electronic
 `;
 
-let _cache: Song[] | null = null;
+let _base: Song[] | null = null;
+let _extra: Song[] = [];
 
-/** Alle Songs (lazy geparst, einmalig gecached). */
-export function getAllSongs(): Song[] {
-  if (_cache) return _cache;
+function parseBase(): Song[] {
   const lines = PACKED.trim().split(/\r?\n/);
   const uris = SPOTIFY_URIS as Record<string, string>;
-  _cache = lines.map((line, i) => {
+  return lines.map((line, i) => {
     const [year, artist, title, flag, genre] = line.split('~');
     const id = 'ow-' + String(i + 1).padStart(4, '0');
     return {
@@ -1343,5 +1342,19 @@ export function getAllSongs(): Song[] {
       spotifyUri: uris[id],
     };
   });
-  return _cache;
+}
+
+/** Alle Songs (statische 1281er-Liste + ggf. zur Laufzeit zugeschaltete DB-Songs). */
+export function getAllSongs(): Song[] {
+  if (!_base) _base = parseBase();
+  return _extra.length ? [..._base, ..._extra] : _base;
+}
+
+/**
+ * Admin-/DB-Songs zuschalten (ergänzen die statische Liste). Wird von
+ * OhrwurmGame beim Start aufgerufen, nachdem die ohrwurm_songs-Tabelle
+ * (gefiltert nach Sprache) geladen wurde.
+ */
+export function setExtraSongs(songs: Song[]): void {
+  _extra = songs;
 }

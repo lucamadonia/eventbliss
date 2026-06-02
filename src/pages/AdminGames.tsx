@@ -349,6 +349,10 @@ export default function AdminGames() {
             <p className="text-xs text-[#a8abb3] mt-0.5">{totalItems} Einträge · {GAMES.length} Spiele · {LANGS.length} Sprachen</p>
           </div>
           <div className="flex items-center gap-2">
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/ohrwurm-songs')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#FF2E88] to-[#d779ff] text-white">
+              🎵 OHRWURM Songs
+            </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={handleDownloadTemplate}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-[#1b2028] border border-white/5 text-[#a8abb3] hover:border-white/10">
               <Layers className="w-3.5 h-3.5" /> Vorlage

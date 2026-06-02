@@ -33,6 +33,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         CAPPluginMethod(name: "pause", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "resume", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "disconnect", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getToken", returnType: CAPPluginReturnPromise),
     ]
 
     private var appRemote: SPTAppRemote?
@@ -168,7 +169,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
 
         // 3) Volle Zustimmung (einmalig). Scopes für Playback-Steuerung.
         triedStoredToken = false
-        let scope: SPTScope = [.appRemoteControl, .streaming]
+        let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify]
         DispatchQueue.main.async {
             self.sessionManager?.initiateSession(with: scope, options: .clientOnly, campaign: nil)
         }
@@ -205,6 +206,12 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     @objc func disconnect(_ call: CAPPluginCall) {
         appRemote?.disconnect()
         call.resolve()
+    }
+
+    // Aktuellen User-Access-Token (für Web-API-Aufrufe wie „Track speichern").
+    @objc func getToken(_ call: CAPPluginCall) {
+        if let token = storedValidToken() { call.resolve(["token": token]) }
+        else { call.resolve([:]) }
     }
 
     // MARK: - SPTSessionManagerDelegate
@@ -245,7 +252,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         if triedStoredToken {
             triedStoredToken = false
             clearToken()
-            let scope: SPTScope = [.appRemoteControl, .streaming]
+            let scope: SPTScope = [.appRemoteControl, .streaming, .userLibraryModify]
             DispatchQueue.main.async {
                 self.sessionManager?.initiateSession(with: scope, options: .clientOnly, campaign: nil)
             }

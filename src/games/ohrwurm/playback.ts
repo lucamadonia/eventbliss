@@ -28,11 +28,14 @@ export interface SpotifyBridge {
   pause(): Promise<void>;
   resume(): Promise<void>;
   disconnect(): Promise<void>;
+  /** Track in die eigene Spotify-Bibliothek („Liked Songs") speichern. */
+  saveTrack(uri: string): Promise<boolean>;
 }
 
 interface NativeSpotifyPlugin {
   isAvailable(): Promise<{ available: boolean }>;
   connect(o: { clientId: string; redirectUrl: string }): Promise<{ connected: boolean }>;
+  getToken(): Promise<{ token: string | null }>;
   play(o: { uri: string }): Promise<void>;
   pause(): Promise<void>;
   resume(): Promise<void>;
@@ -85,6 +88,20 @@ export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
       pause: () => OhrwurmSpotify.pause(),
       resume: () => OhrwurmSpotify.resume(),
       disconnect: () => OhrwurmSpotify.disconnect(),
+      saveTrack: async (uri) => {
+        try {
+          const { token } = await OhrwurmSpotify.getToken();
+          const id = uri.split(':').pop();
+          if (!token || !id) return false;
+          const res = await fetch('https://api.spotify.com/v1/me/tracks?ids=' + encodeURIComponent(id), {
+            method: 'PUT',
+            headers: { Authorization: 'Bearer ' + token },
+          });
+          return res.ok;
+        } catch {
+          return false;
+        }
+      },
     },
   };
 }

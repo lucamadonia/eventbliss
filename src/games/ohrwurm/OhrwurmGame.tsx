@@ -20,6 +20,8 @@ import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
 import { supabase } from '@/integrations/supabase/client';
 import { type PlaybackMode, type SpotifyBridge, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
+import { loadExtraSongs } from './ohrwurm-extra-songs';
+import { useTranslation } from 'react-i18next';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -68,8 +70,15 @@ interface SetupPlayer { id: string; name: string; color: string; avatar: string;
 export default function OhrwurmGame() {
   const navigate = useNavigate();
   const haptics = useHaptics();
+  const { i18n } = useTranslation();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
+
+  // Admin-gepflegte Songs (Tabelle ohrwurm_songs) für die aktuelle Sprache
+  // zur statischen Liste zuschalten.
+  useEffect(() => {
+    void loadExtraSongs(i18n.language?.split('-')[0]);
+  }, [i18n.language]);
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -654,6 +663,22 @@ export default function OhrwurmGame() {
               <ResolutionSummary
                 resolution={resolution} active={active} counter={counter} participants={participants}
               />
+              {/* Spotify-Aktionen — nur wenn die Premium-Bridge verbunden ist:
+                  ganzen Song hören (ohne Timer) + zur eigenen Bibliothek. */}
+              {spotifyBridgeRef.current && spotifyUri && (
+                <div className="flex gap-2 w-full max-w-sm">
+                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => {}); setIsAudioPlaying(true); }}
+                    className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                    style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
+                    <Music2 className="w-4 h-4" /> Ganzer Song
+                  </button>
+                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((ok) => flash(ok ? '❤️ Zu Spotify hinzugefügt' : 'Konnte nicht hinzufügen')).catch(() => flash('Konnte nicht hinzufügen')); }}
+                    className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+                    style={{ background: 'rgba(255,255,255,0.06)', color: OW.text }}>
+                    <Plus className="w-4 h-4" /> Zu Spotify
+                  </button>
+                </div>
+              )}
               {bonusOpen ? (
                 <div className="w-full max-w-sm rounded-2xl p-4 flex flex-col gap-3"
                   style={{ background: OW.surface, border: `1px solid ${OW.accent}`, boxShadow: speedEligible ? `0 0 26px ${OW.accent}55` : 'none' }}>
