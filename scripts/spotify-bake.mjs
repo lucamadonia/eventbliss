@@ -119,7 +119,18 @@ async function search(token, song) {
 async function main() {
   console.log(`OHRWURM Spotify-Bake · Redirect: ${REDIRECT}`);
   const token = await login();
-  console.log('✓ Eingeloggt. Teste Suche …');
+  // Konto-Diagnose: WER ist eingeloggt und hat das Konto Premium?
+  try {
+    const meRes = await fetch('https://api.spotify.com/v1/me', { headers: { Authorization: `Bearer ${token}` } });
+    if (meRes.ok) {
+      const me = await meRes.json();
+      console.log(`✓ Eingeloggt als: ${me.display_name || me.id}  ·  ${me.email || '(keine E-Mail)'}  ·  Plan: ${me.product}`);
+      if (me.product !== 'premium') console.log('⚠ WARNUNG: Dieses Konto hat KEIN Premium — Vollwiedergabe braucht Premium.');
+    } else {
+      console.log(`/me -> HTTP ${meRes.status} (` + (await meRes.text()).slice(0, 120) + ')');
+    }
+  } catch { /* ignore */ }
+  console.log('Teste Suche …');
   // Sofort-Test: scheitert der erste Call mit 403, ist es app-/dev-mode-seitig.
   const songs = loadSongs();
   const out = JSON.parse(readFileSync(OUT, 'utf8').trim() || '{}');
