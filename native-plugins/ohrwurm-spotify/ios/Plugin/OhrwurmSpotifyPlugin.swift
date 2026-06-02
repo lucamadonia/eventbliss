@@ -189,15 +189,22 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             call.reject("uri is required")
             return
         }
-        guard let remote = appRemote, remote.isConnected else {
-            pendingUri = uri
-            call.reject("not_connected")
+        guard let remote = appRemote else {
+            call.reject("no_remote")
             return
         }
-        remote.playerAPI?.play(uri, callback: { _, error in
-            if let error = error { call.reject("play_failed: \(error.localizedDescription)") }
-            else { call.resolve() }
-        })
+        if remote.isConnected {
+            remote.playerAPI?.play(uri, callback: { _, error in
+                if let error = error { call.reject("play_failed: \(error.localizedDescription)") }
+                else { call.resolve() }
+            })
+        } else {
+            // Noch nicht verbunden → Verbindung herstellen UND abspielen in einem
+            // Schritt. authorizeAndPlayURI weckt die Spotify-App und etabliert die
+            // App-Remote-Verbindung zuverlässig (der Standard-Bootstrap-Weg).
+            _ = remote.authorizeAndPlayURI(uri)
+            call.resolve()
+        }
     }
 
     @objc func pause(_ call: CAPPluginCall) {
@@ -230,6 +237,11 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         triedStoredToken = false
         appRemote?.connectionParameters.accessToken = session.accessToken
         DispatchQueue.main.async { self.appRemote?.connect() }
+        // Autorisierung erfolgreich → Bridge gilt als verbunden. Die eigentliche
+        // App-Remote-Verbindung wird beim ersten Play via authorizeAndPlayURI
+        // sichergestellt (zuverlässiger als auf didEstablishConnection zu warten).
+        connectCall?.resolve(["connected": true])
+        connectCall = nil
     }
 
     public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
