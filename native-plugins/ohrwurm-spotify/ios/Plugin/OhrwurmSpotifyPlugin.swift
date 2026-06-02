@@ -43,6 +43,10 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     // true, solange ein Connect-Versuch mit gespeichertem Token läuft — schlägt
     // er fehl (Token abgelaufen), fallen wir auf die volle Zustimmung zurück.
     private var triedStoredToken = false
+    // true, sobald der Spotify-Modus aktiv ist: dann versuchen wir die App-Remote-
+    // Verbindung bei jedem applicationDidBecomeActive (der zuverlässige Zeitpunkt,
+    // an dem Spotify frisch aktiv ist) erneut herzustellen.
+    private var wantsConnection = false
 
     // UserDefaults-Schlüssel.
     private let kClientId = "ohrwurm.spotify.clientId"
@@ -60,6 +64,15 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             self,
             selector: #selector(handleOpenURL(_:)),
             name: Notification.Name.capacitorOpenURL,
+            object: nil
+        )
+        // App-Remote-Verbindung erst herstellen, wenn unsere App wieder aktiv ist
+        // (nach dem Spotify-Auth-Sprung). connect() direkt in didInitiate scheitert
+        // oft still, weil Spotify in dem Moment noch nicht „warm" ist.
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
         // Aus gespeicherter Config SessionManager + AppRemote wiederherstellen,
@@ -88,8 +101,37 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             url = u
         }
         guard let target = url else { return }
-        // Die Spotify-SDK liest Token/Code aus der URL; options sind nicht noetig.
+        // 1) Stammt der Redirect von appRemote.authorizeAndPlayURI? Dann enthaelt
+        //    er einen App-Remote-Access-Token → direkt setzen + verbinden. (Wuerde
+        //    er nur an den SessionManager gehen, etabliert authorizeAndPlayURI die
+        //    Verbindung nie → isConnected bliebe false → jeder Play oeffnet Spotify.)
+        if let remote = appRemote,
+           let params = remote.authorizationParameters(from: target) {
+            if let token = params[SPTAppRemoteAccessTokenKey] {
+                remote.connectionParameters.accessToken = token
+                let defaults = UserDefaults.standard
+                defaults.set(token, forKey: kToken)
+                // Ablauf unbekannt → konservativ 50 Min ab jetzt.
+                defaults.set(Date().timeIntervalSince1970 + 3000, forKey: kExpiry)
+                wantsConnection = true
+                DispatchQueue.main.async { remote.connect() }
+                return
+            }
+        }
+        // 2) Sonst: normaler SessionManager-Auth-Redirect.
         sessionManager?.application(UIApplication.shared, open: target, options: [:])
+    }
+
+    // Unsere App ist (wieder) im Vordergrund. Ist der Spotify-Modus aktiv und die
+    // App-Remote-Verbindung noch nicht hergestellt, jetzt verbinden — Spotify ist
+    // nach dem Auth-Sprung frisch aktiv, sodass connect() zuverlaessig greift.
+    @objc func handleDidBecomeActive() {
+        guard wantsConnection, let remote = appRemote, !remote.isConnected else { return }
+        if let token = storedValidToken() {
+            remote.connectionParameters.accessToken = token
+        }
+        guard remote.connectionParameters.accessToken != nil else { return }
+        DispatchQueue.main.async { remote.connect() }
     }
 
     // MARK: - Helpers
@@ -151,6 +193,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         }
 
         self.connectCall = call
+        self.wantsConnection = true
 
         // Sicherheitsnetz: feuert keine App-Remote-Callback (z.B. Spotify-App
         // reagiert nicht / Token still ungültig), darf connect() nicht ewig
@@ -194,15 +237,27 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             return
         }
         if remote.isConnected {
+            // Verbunden → versteckte Hintergrundwiedergabe, KEIN App-Wechsel,
+            // KEIN sichtbarer Songname. Unsere Buttons (Pause/Resume) greifen.
             remote.playerAPI?.play(uri, callback: { _, error in
                 if let error = error { call.reject("play_failed: \(error.localizedDescription)") }
                 else { call.resolve() }
             })
         } else {
-            // Noch nicht verbunden → Verbindung herstellen UND abspielen in einem
-            // Schritt. authorizeAndPlayURI weckt die Spotify-App und etabliert die
-            // App-Remote-Verbindung zuverlässig (der Standard-Bootstrap-Weg).
-            _ = remote.authorizeAndPlayURI(uri)
+            // Noch nicht verbunden → Song einreihen und Verbindung herstellen
+            // (Spotify ist gerade aktiv genug). Sobald didEstablishConnection
+            // feuert, wird pendingUri im Hintergrund gespielt — ohne App-Wechsel.
+            pendingUri = uri
+            wantsConnection = true
+            if let token = storedValidToken() { remote.connectionParameters.accessToken = token }
+            DispatchQueue.main.async { remote.connect() }
+            // Absolutes Sicherheitsnetz: klappt die Verbindung binnen 6s gar nicht,
+            // lieber einmalig via authorizeAndPlayURI abspielen als Stille.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
+                guard let self = self, self.pendingUri == uri, let r = self.appRemote, !r.isConnected else { return }
+                self.pendingUri = nil
+                _ = r.authorizeAndPlayURI(uri)
+            }
             call.resolve()
         }
     }
@@ -220,6 +275,8 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     }
 
     @objc func disconnect(_ call: CAPPluginCall) {
+        wantsConnection = false
+        pendingUri = nil
         appRemote?.disconnect()
         call.resolve()
     }
