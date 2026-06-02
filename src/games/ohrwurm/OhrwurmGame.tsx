@@ -111,6 +111,8 @@ export default function OhrwurmGame() {
   // bis zur On-Device-Einrichtung null → es läuft die 30s-Vorschau).
   const spotifyBridgeRef = useRef<SpotifyBridge | null>(null);
   const [spotifyUri, setSpotifyUri] = useState<string | null>(null);
+  // Sichtbarer Spotify-Verbindungsstatus: null | 'connecting' | 'ok' | 'preview:<grund>'
+  const [spotifyStatus, setSpotifyStatus] = useState<string | null>(null);
 
   const active = participants[turn] ?? null;
   const ownedIds = useMemo(
@@ -214,10 +216,13 @@ export default function OhrwurmGame() {
     // Spotify-Premium-Modus gewählt? Bridge verbinden — sonst Fallback-Hinweis.
     spotifyBridgeRef.current = null;
     if (cfg.playback === 'spotify') {
+      setSpotifyStatus('connecting');
       void getSpotifyBridge().then(({ bridge, reason }) => {
-        if (bridge) { spotifyBridgeRef.current = bridge; flash('Spotify verbunden ✓'); }
-        else flash('Spotify: ' + reason + ' — 30s-Vorschau');
+        if (bridge) { spotifyBridgeRef.current = bridge; setSpotifyStatus('ok'); flash('Spotify verbunden ✓'); }
+        else { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); }
       });
+    } else {
+      setSpotifyStatus(null);
     }
     void haptics.celebrate();
     beginTurn(parts, d, 0);
@@ -493,6 +498,24 @@ export default function OhrwurmGame() {
           Ziel {winTarget}
         </div>
       </div>
+
+      {/* Spotify-Verbindungsstatus (sichtbar im Premium-Modus) */}
+      {spotifyStatus && (
+        <div className="relative z-10 px-4 py-1.5 text-[11px] font-bold flex items-center justify-center gap-1.5"
+          style={
+            spotifyStatus === 'ok'
+              ? { background: 'rgba(29,185,84,0.14)', color: '#1DB954' }
+              : spotifyStatus === 'connecting'
+                ? { background: 'rgba(255,210,63,0.12)', color: OW.accent }
+                : { background: 'rgba(255,46,136,0.12)', color: OW.primary }
+          }>
+          {spotifyStatus === 'ok'
+            ? '✓ Spotify verbunden — Vollwiedergabe'
+            : spotifyStatus === 'connecting'
+              ? '⏳ Spotify verbindet…'
+              : '⚠ Spotify: ' + spotifyStatus.replace('preview:', '') + ' — 30s-Vorschau'}
+        </div>
+      )}
 
       {/* Scoreboard */}
       <Scoreboard participants={participants} activeId={active?.id} winTarget={winTarget} />

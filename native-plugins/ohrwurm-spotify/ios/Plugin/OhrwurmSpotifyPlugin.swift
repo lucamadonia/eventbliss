@@ -152,6 +152,18 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
 
         self.connectCall = call
 
+        // Sicherheitsnetz: feuert keine App-Remote-Callback (z.B. Spotify-App
+        // reagiert nicht / Token still ungültig), darf connect() nicht ewig
+        // hängen → nach 15s mit Grund ablehnen UND Token verwerfen, damit der
+        // nächste Versuch sauber neu autorisiert (statt erneut still zu hängen).
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+            guard let self = self, self.connectCall === call else { return }
+            self.connectCall = nil
+            if self.triedStoredToken { self.clearToken() }
+            self.triedStoredToken = false
+            call.reject("connect_timeout")
+        }
+
         // 1) Bereits verbunden? Sofort zurück.
         if let remote = appRemote, remote.isConnected {
             call.resolve(["connected": true])
