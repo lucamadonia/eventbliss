@@ -26,7 +26,7 @@ const ROOT = join(__dirname, '..');
 const CONTENT = join(ROOT, 'src/games/ohrwurm/ohrwurm-content.ts');
 const OUT = join(ROOT, 'src/games/ohrwurm/spotify-uris.json');
 
-const CLIENT_ID = process.env.VITE_SPOTIFY_CLIENT_ID || '370afb4c06fc4e67b5f5e7687604d5d5';
+const CLIENT_ID = process.env.VITE_SPOTIFY_CLIENT_ID || '0f3fe9b6275f4742b7fc508c7d8c7cd3';
 // Muss EXAKT einer im Spotify-Dashboard registrierten Redirect-URI entsprechen.
 const PORT = Number(process.env.PORT || 8080);
 const REDIRECT = process.env.SPOTIFY_REDIRECT || `http://127.0.0.1:${PORT}/spotify-callback`;
@@ -101,11 +101,16 @@ function loadSongs() {
   });
 }
 
-async function search(token, song) {
+async function search(token, song, attempt = 0) {
   for (const q of [`track:${song.title} artist:${song.artist}`, `${song.artist} ${song.title}`]) {
     const url = 'https://api.spotify.com/v1/search?' + new URLSearchParams({ q, type: 'track', limit: '1', market: MARKET });
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 429) { await sleep((Number(res.headers.get('retry-after') || '2') * 1000) + 250); return search(token, song); }
+    if (res.status === 429) {
+      if (attempt >= 8) return null; // nicht endlos haengen — Song als Miss zurueckstellen
+      const wait = Math.min((Number(res.headers.get('retry-after') || '2') * 1000) + 300, 30000);
+      await sleep(wait);
+      return search(token, song, attempt + 1);
+    }
     if (res.status === 401) throw new Error('401 — Token abgelaufen/ungültig');
     if (res.status === 403) throw new Error('403 — Zugriff verweigert: ' + (await res.text()).slice(0, 200));
     if (!res.ok) continue;
@@ -148,7 +153,8 @@ async function main() {
     if (uri) { out[song.id] = uri; hit++; } else miss++;
     done++;
     if (done % 25 === 0) { writeFileSync(OUT, JSON.stringify(out, null, 0) + '\n'); process.stdout.write(`\r${done}/${songs.length}  ✓${hit} ·ohne ${miss}  `); }
-    await sleep(80);
+    await sleep(Number(process.env.SPOTIFY_DELAY || 300)); // sanfter gegen Rate-Limit
+
   }
   writeFileSync(OUT, JSON.stringify(out, null, 0) + '\n');
   console.log(`\n✓ Fertig: ${Object.keys(out).length} URIs in spotify-uris.json (${miss} ohne Treffer).`);

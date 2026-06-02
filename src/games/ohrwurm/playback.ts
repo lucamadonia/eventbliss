@@ -18,7 +18,7 @@ export type PlaybackMode = 'preview' | 'spotify';
  * Mobile-App). Override via .env VITE_SPOTIFY_CLIENT_ID möglich.
  */
 const SPOTIFY_CLIENT_ID =
-  (import.meta.env.VITE_SPOTIFY_CLIENT_ID as string | undefined) ?? '370afb4c06fc4e67b5f5e7687604d5d5';
+  (import.meta.env.VITE_SPOTIFY_CLIENT_ID as string | undefined) ?? '0f3fe9b6275f4742b7fc508c7d8c7cd3';
 /** Muss in der Spotify-Developer-App als Redirect-URI registriert sein. */
 const SPOTIFY_REDIRECT_URL = 'eventbliss://spotify-callback';
 
