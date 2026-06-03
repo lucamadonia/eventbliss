@@ -29,9 +29,9 @@ export interface SpotifyBridge {
   resume(): Promise<void>;
   disconnect(): Promise<void>;
   /** Track in die eigene Spotify-Bibliothek („Liked Songs") speichern. */
-  saveTrack(uri: string): Promise<boolean>;
+  saveTrack(uri: string): Promise<{ ok: boolean; detail: string }>;
   /** Track in die eigene „OHRWURM 🎵"-Playlist legen (wird bei Bedarf angelegt). */
-  addToPlaylist(uri: string): Promise<boolean>;
+  addToPlaylist(uri: string): Promise<{ ok: boolean; detail: string }>;
 }
 
 interface NativeSpotifyPlugin {
@@ -42,6 +42,8 @@ interface NativeSpotifyPlugin {
   pause(): Promise<void>;
   resume(): Promise<void>;
   disconnect(): Promise<void>;
+  saveTrack(o: { uri: string }): Promise<{ ok: boolean; detail: string }>;
+  addToPlaylist(o: { uri: string }): Promise<{ ok: boolean; detail: string }>;
 }
 
 // Capacitor-Standard: registerPlugin routet zur nativen Implementierung (das
@@ -90,55 +92,20 @@ export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
       pause: () => OhrwurmSpotify.pause(),
       resume: () => OhrwurmSpotify.resume(),
       disconnect: () => OhrwurmSpotify.disconnect(),
+      // Nativ ausgeführt (URLSession) — kein WebView-CORS, das die fetch-Variante
+      // auf iOS scheitern ließ. detail enthält den HTTP-Code zur Diagnose.
       saveTrack: async (uri) => {
         try {
-          const { token } = await OhrwurmSpotify.getToken();
-          const id = uri.split(':').pop();
-          if (!token || !id) return false;
-          const res = await fetch('https://api.spotify.com/v1/me/tracks?ids=' + encodeURIComponent(id), {
-            method: 'PUT',
-            headers: { Authorization: 'Bearer ' + token },
-          });
-          return res.ok;
-        } catch {
-          return false;
+          return await OhrwurmSpotify.saveTrack({ uri });
+        } catch (e) {
+          return { ok: false, detail: 'err:' + msg(e) };
         }
       },
       addToPlaylist: async (uri) => {
         try {
-          const { token } = await OhrwurmSpotify.getToken();
-          if (!token) return false;
-          const auth = { Authorization: 'Bearer ' + token };
-          const me = await fetch('https://api.spotify.com/v1/me', { headers: auth });
-          if (!me.ok) return false;
-          const userId = ((await me.json()) as { id?: string }).id;
-          if (!userId) return false;
-          // Vorhandene OHRWURM-Playlist suchen, sonst anlegen.
-          const PL_NAME = 'OHRWURM 🎵';
-          let playlistId: string | null = null;
-          const lists = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', { headers: auth });
-          if (lists.ok) {
-            const items = ((await lists.json()) as { items?: Array<{ id: string; name: string }> }).items ?? [];
-            playlistId = items.find((p) => p.name === PL_NAME)?.id ?? null;
-          }
-          if (!playlistId) {
-            const created = await fetch(`https://api.spotify.com/v1/users/${encodeURIComponent(userId)}/playlists`, {
-              method: 'POST',
-              headers: { ...auth, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: PL_NAME, public: false, description: 'Songs aus dem OHRWURM-Spiel' }),
-            });
-            if (!created.ok) return false;
-            playlistId = ((await created.json()) as { id?: string }).id ?? null;
-          }
-          if (!playlistId) return false;
-          const add = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-            method: 'POST',
-            headers: { ...auth, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uris: [uri] }),
-          });
-          return add.ok;
-        } catch {
-          return false;
+          return await OhrwurmSpotify.addToPlaylist({ uri });
+        } catch (e) {
+          return { ok: false, detail: 'err:' + msg(e) };
         }
       },
     },

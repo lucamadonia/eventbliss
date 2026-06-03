@@ -691,12 +691,12 @@ export default function OhrwurmGame() {
                     <Music2 className="w-4 h-4" /> Ganzer Song hören
                   </button>
                   <div className="flex gap-2">
-                    <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((ok) => flash(ok ? '❤️ Zu Lieblingssongs' : 'Konnte nicht speichern')).catch(() => flash('Konnte nicht speichern')); }}
+                    <button onClick={() => { void haptics.light(); flash('Speichere…'); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((r) => flash(r.ok ? '❤️ Zu Lieblingssongs' : 'Like fehlgeschlagen (' + r.detail + ')')).catch(() => flash('Like fehlgeschlagen')); }}
                       className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
                       style={{ background: 'rgba(255,255,255,0.06)', color: OW.text, border: '1px solid rgba(255,255,255,0.12)' }}>
                       <Heart className="w-4 h-4" /> Like
                     </button>
-                    <button onClick={() => { void haptics.light(); flash('Füge zur Playlist hinzu…'); spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri).then((ok) => flash(ok ? '🎵 In OHRWURM-Playlist' : 'Konnte nicht hinzufügen')).catch(() => flash('Konnte nicht hinzufügen')); }}
+                    <button onClick={() => { void haptics.light(); flash('Füge zur Playlist hinzu…'); spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri).then((r) => flash(r.ok ? '🎵 In OHRWURM-Playlist' : 'Playlist fehlgeschlagen (' + r.detail + ')')).catch(() => flash('Playlist fehlgeschlagen')); }}
                       className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
                       style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
                       <Plus className="w-4 h-4" /> Playlist

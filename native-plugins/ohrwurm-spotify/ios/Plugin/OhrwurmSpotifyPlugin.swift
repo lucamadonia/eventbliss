@@ -34,6 +34,8 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         CAPPluginMethod(name: "resume", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "disconnect", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "getToken", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "saveTrack", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "addToPlaylist", returnType: CAPPluginReturnPromise),
     ]
 
     private var appRemote: SPTAppRemote?
@@ -271,6 +273,79 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     @objc func getToken(_ call: CAPPluginCall) {
         if let token = storedValidToken() { call.resolve(["token": token]) }
         else { call.resolve([:]) }
+    }
+
+    // MARK: - Spotify Web API (nativ, kein WebView-CORS)
+
+    // Authentifizierter Request via URLSession. done(statusCode, body).
+    private func spotifyApi(_ method: String, _ urlString: String, _ token: String, _ body: Data?,
+                            _ done: @escaping (Int, Data?) -> Void) {
+        guard let url = URL(string: urlString) else { done(0, nil); return }
+        var req = URLRequest(url: url)
+        req.httpMethod = method
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if body != nil { req.setValue("application/json", forHTTPHeaderField: "Content-Type") }
+        req.httpBody = body
+        URLSession.shared.dataTask(with: req) { data, resp, _ in
+            done((resp as? HTTPURLResponse)?.statusCode ?? 0, data)
+        }.resume()
+    }
+
+    // Track in die „Liked Songs" speichern. Liefert ok + detail (http_NNN/no_token).
+    @objc func saveTrack(_ call: CAPPluginCall) {
+        guard let uri = call.getString("uri"), let id = uri.components(separatedBy: ":").last, !id.isEmpty else {
+            call.resolve(["ok": false, "detail": "bad_uri"]); return
+        }
+        guard let token = storedValidToken() else { call.resolve(["ok": false, "detail": "no_token"]); return }
+        spotifyApi("PUT", "https://api.spotify.com/v1/me/tracks?ids=\(id)", token, nil) { code, _ in
+            call.resolve(["ok": (200...299).contains(code), "detail": "http_\(code)"])
+        }
+    }
+
+    // Track in die Playlist „OHRWURM 🎵" legen (anlegen, falls nicht vorhanden).
+    @objc func addToPlaylist(_ call: CAPPluginCall) {
+        guard let uri = call.getString("uri"), !uri.isEmpty else { call.resolve(["ok": false, "detail": "bad_uri"]); return }
+        guard let token = storedValidToken() else { call.resolve(["ok": false, "detail": "no_token"]); return }
+        let plName = "OHRWURM 🎵"
+
+        func addTo(_ playlistId: String) {
+            let body = try? JSONSerialization.data(withJSONObject: ["uris": [uri]])
+            spotifyApi("POST", "https://api.spotify.com/v1/playlists/\(playlistId)/tracks", token, body) { code, _ in
+                call.resolve(["ok": (200...299).contains(code), "detail": "add_\(code)"])
+            }
+        }
+
+        // 1) /me → User-ID
+        spotifyApi("GET", "https://api.spotify.com/v1/me", token, nil) { code, data in
+            guard code == 200, let data = data,
+                  let me = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+                  let userId = me["id"] as? String else {
+                call.resolve(["ok": false, "detail": "me_\(code)"]); return
+            }
+            // 2) bestehende Playlist suchen
+            self.spotifyApi("GET", "https://api.spotify.com/v1/me/playlists?limit=50", token, nil) { code2, data2 in
+                var existing: String?
+                if code2 == 200, let data2 = data2,
+                   let obj = (try? JSONSerialization.jsonObject(with: data2)) as? [String: Any],
+                   let items = obj["items"] as? [[String: Any]] {
+                    existing = items.first(where: { ($0["name"] as? String) == plName })?["id"] as? String
+                }
+                if let pid = existing { addTo(pid); return }
+                // 3) sonst anlegen
+                let createBody = try? JSONSerialization.data(withJSONObject: [
+                    "name": plName, "public": false, "description": "Songs aus dem OHRWURM-Spiel",
+                ])
+                let createURL = "https://api.spotify.com/v1/users/\(userId.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? userId)/playlists"
+                self.spotifyApi("POST", createURL, token, createBody) { code3, data3 in
+                    guard (200...299).contains(code3), let data3 = data3,
+                          let obj = (try? JSONSerialization.jsonObject(with: data3)) as? [String: Any],
+                          let pid = obj["id"] as? String else {
+                        call.resolve(["ok": false, "detail": "create_\(code3)"]); return
+                    }
+                    addTo(pid)
+                }
+            }
+        }
     }
 
     // MARK: - SPTSessionManagerDelegate
