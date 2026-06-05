@@ -513,10 +513,10 @@ export default function OhrwurmGame() {
             }>
             <span className="flex items-center gap-1.5">
               {ok
-                ? '✓ Spotify Premium aktiv'
+                ? '✓ Spotify · voller Song nach Auflösung (im Spiel: Vorschau)'
                 : connecting
-                  ? '⏳ Spotify verbindet…'
-                  : '⚠ Spotify: ' + (reason || 'nicht verbunden') + ' — 30s-Vorschau'}
+                  ? '⏳ Spotify…'
+                  : '⚠ Spotify: ' + (reason || 'nicht verfügbar') + ' — nur Vorschau'}
             </span>
           </div>
         );
