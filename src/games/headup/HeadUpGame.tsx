@@ -10,6 +10,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
 import { useGameTimer } from '../engine/TimerSystem';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -78,7 +79,6 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
-  const [newPlayerName, setNewPlayerName] = useState('');
   const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);
   const [wordQueue, setWordQueue] = useState<string[]>([]);
@@ -260,6 +260,20 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
               <span className="inline-block mt-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#ff6b98]/15 text-[#ff6b98] border border-[#ff6b98]/20">Party Game</span>
             </div>
 
+            {/* Players */}
+            <div className="mb-6">
+              <PlayerSetup
+                players={playerNames.map((name, i) => ({ id: String(i), name }))}
+                onAdd={() => setPlayerNames([...playerNames, ''])}
+                onRemove={(id) => setPlayerNames(playerNames.filter((_, j) => j !== Number(id)))}
+                onRename={(id, name) => { const n = [...playerNames]; n[Number(id)] = name; setPlayerNames(n); }}
+                min={2}
+                max={12}
+                accent="#df8eff"
+                label="Spieler"
+              />
+            </div>
+
             {/* Featured Category */}
             {featured && (
               <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setSelectedCategory(featured); handleStartRound(); }}
@@ -301,37 +315,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             {/* Settings */}
             <div className="glass-card rounded-2xl p-5 border border-[#20262f] mb-6">
               <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-4">Einstellungen</h3>
-              <div className="mb-4">
+              <div>
                 <label className="text-xs text-[#a8abb3] mb-2 block">Zeit: <span className="text-[#df8eff] font-bold">{timerDuration}s</span></label>
                 <input type="range" min={15} max={120} step={5} value={timerDuration} onChange={(e) => setTimerDuration(+e.target.value)}
                   className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#df8eff]" />
-              </div>
-              <div>
-                <label className="text-xs text-[#a8abb3] mb-2 block">Spieler ({playerNames.length})</label>
-                <div className="space-y-2 mb-3">
-                  {playerNames.map((name, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#df8eff] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">{i + 1}</div>
-                      <input type="text" value={name} maxLength={15}
-                        onChange={(e) => { const n = [...playerNames]; n[i] = e.target.value; setPlayerNames(n); }}
-                        className="flex-1 bg-[#151a21] border border-[#20262f] rounded-lg px-3 py-1.5 text-base text-white placeholder:text-[#a8abb3]/40 focus:outline-none focus:border-[#df8eff]/40" />
-                      {playerNames.length > 2 && (
-                        <button onClick={() => setPlayerNames(playerNames.filter((_, j) => j !== i))}
-                          className="w-7 h-7 rounded-full bg-[#ff6e84]/10 flex items-center justify-center text-[#ff6e84] text-xs">✕</button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {playerNames.length < 12 && (
-                  <div className="flex items-center gap-2">
-                    <input type="text" value={newPlayerName} maxLength={15} placeholder="Name hinzufuegen..."
-                      onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
-                      className="flex-1 bg-[#151a21] border border-dashed border-[#df8eff]/20 rounded-lg px-3 py-1.5 text-base text-white placeholder:text-[#a8abb3]/30 focus:outline-none focus:border-[#df8eff]/40" />
-                    <button onClick={() => { if (newPlayerName.trim()) { setPlayerNames([...playerNames, newPlayerName.trim()]); setNewPlayerName(''); } }}
-                      className="px-3 py-1.5 rounded-lg bg-[#df8eff]/10 text-[#df8eff] text-xs font-bold">+</button>
-                  </div>
-                )}
               </div>
             </div>
 

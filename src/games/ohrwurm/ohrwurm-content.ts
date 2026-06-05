@@ -27,9 +27,27 @@ export interface Song {
   spotifyUri?: string;
 }
 
-/** Spotify-Such-URL bauen — identisch mit dem QR-Code-Inhalt der Karte. */
+/** Spotify-Such-URL bauen — Fallback-QR-Inhalt, wenn keine Track-URI vorliegt. */
 export function spotifySearchUrl(artist: string, title: string): string {
   return 'https://open.spotify.com/search/' + encodeURIComponent(artist + ' ' + title);
+}
+
+/**
+ * Track-Direktlink (open.spotify.com/track/<id>) aus einer Spotify-URI
+ * ("spotify:track:<id>"). Öffnet den Song DIREKT (kein Suchumweg). Leer → ''.
+ */
+export function spotifyTrackUrl(uri: string): string {
+  const id = uri.split(':')[2];
+  return id ? 'https://open.spotify.com/track/' + id : '';
+}
+
+/**
+ * Spotify-Deep-Link (spotify:track:<id>) aus einer Spotify-URI — öffnet den
+ * Track direkt in der nativen Spotify-App. Leer → ''.
+ */
+export function spotifyTrackDeepLink(uri: string): string {
+  const id = uri.split(':')[2];
+  return id ? 'spotify:track:' + id : '';
 }
 
 // Filterbare Genres (>= 15 Songs) für den Genre-Battle-Modus.
@@ -1338,7 +1356,8 @@ function parseBase(): Song[] {
       title,
       flag,
       genre,
-      qrPayload: spotifySearchUrl(artist, title),
+      // Mit gebackener URI → Track direkt öffnen; sonst Such-Fallback.
+      qrPayload: uris[id] ? spotifyTrackUrl(uris[id]) : spotifySearchUrl(artist, title),
       spotifyUri: uris[id],
     };
   });

@@ -7,7 +7,6 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   ArrowLeft,
   Timer,
-  Users,
   Trophy,
   RotateCcw,
   Check,
@@ -25,6 +24,7 @@ import { getCategories, generateCategoryPrompt } from "@/games/content/categorie
 import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { haptics } from "@/hooks/useHaptics";
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -161,37 +161,16 @@ function SetupScreen({
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 pb-28">
       {/* Players Card */}
-      <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-4">
-        <div className="flex items-center gap-2">
-          <Users className="h-5 w-5 text-[#df8eff]" />
-          <h2 className="text-base font-extrabold font-[Plus_Jakarta_Sans] text-white">Spieler</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {names.map((name, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#df8eff]/20 to-[#d779ff]/10 border border-[#df8eff]/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm">{AVATARS[i % AVATARS.length]}</span>
-              </div>
-              <input
-                value={name}
-                onChange={(e) => updateName(i, e.target.value)}
-                placeholder={`Spieler ${i + 1}`}
-                className="flex-1 min-w-0 rounded-[0.75rem] border border-[#44484f]/20 bg-[#151a21] px-3 py-2.5 text-base text-white placeholder:text-white/20 outline-none focus:border-[#df8eff]/30 transition-colors"
-              />
-              {names.length > 2 && (
-                <button onClick={() => removePlayer(i)} className="text-white/20 hover:text-red-400 transition-colors text-lg px-0.5 flex-shrink-0">
-                  x
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        {names.length < 15 && (
-          <button onClick={addPlayer} className="w-full rounded-[0.75rem] border border-dashed border-white/[0.08] py-2 text-sm text-white/30 hover:text-white/50 hover:border-white/15 transition-colors">
-            + Spieler hinzufugen
-          </button>
-        )}
-      </div>
+      <PlayerSetup
+        players={names.map((name, i) => ({ id: String(i), name, avatar: AVATARS[i % AVATARS.length] }))}
+        onAdd={addPlayer}
+        onRemove={(id) => removePlayer(Number(id))}
+        onRename={(id, name) => updateName(Number(id), name)}
+        min={2}
+        max={15}
+        accent="#df8eff"
+        label="Spieler"
+      />
 
       {/* Mode Selection Cards */}
       <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-4">

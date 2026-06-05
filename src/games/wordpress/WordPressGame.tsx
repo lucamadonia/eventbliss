@@ -4,12 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
-  Type, Plus, Trash2, ChevronRight, RotateCcw, Trophy, Zap,
+  Type, ChevronRight, RotateCcw, Trophy, Zap,
   Palette, Ban, Gauge, Crown, Target, Flame,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -205,34 +204,16 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
         </div>
 
         {/* Players */}
-        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
-          <h2 className="text-white font-semibold text-lg">Spieler ({players.length})</h2>
-          <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
-            {players.map((p, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <span className="text-[#df8eff]/60 text-sm w-6 text-right">{i + 1}.</span>
-                <Input value={p}
-                  onChange={e => { const next = [...players]; next[i] = e.target.value; setPlayers(next); }}
-                  placeholder={`Spieler ${i + 1}`}
-                  className="bg-white/10 border-[#df8eff]/20 text-white placeholder:text-[#a8abb3]/50"
-                  maxLength={20} />
-                {players.length > 1 && (
-                  <button onClick={() => setPlayers(players.filter((_, idx) => idx !== i))}
-                    className="text-[#a8abb3]/50 hover:text-red-400 transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          {players.length < 8 && (
-            <Button variant="ghost" size="sm"
-              onClick={() => setPlayers([...players, `Spieler ${players.length + 1}`])}
-              className="text-[#df8eff]/60 hover:text-white w-full">
-              <Plus className="w-4 h-4 mr-1" /> Spieler hinzufuegen
-            </Button>
-          )}
-        </div>
+        <PlayerSetup
+          players={players.map((name, i) => ({ id: String(i), name }))}
+          onAdd={() => setPlayers([...players, ''])}
+          onRemove={(id) => setPlayers(players.filter((_, idx) => idx !== Number(id)))}
+          onRename={(id, name) => { const next = [...players]; next[Number(id)] = name; setPlayers(next); }}
+          min={1}
+          max={8}
+          accent="#df8eff"
+          label="Spieler"
+        />
 
         {/* Mode */}
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">

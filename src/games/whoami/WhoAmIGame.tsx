@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { WHOAMI_CHARACTERS } from './whoami-content-de';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -777,7 +778,6 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
     ];
   });
   const [categoryId, setCategoryId] = useState('prominente');
-  const [editingId, setEditingId] = useState<string | null>(null);
   const MIN = 2;
   const MAX = 10;
 
@@ -790,7 +790,6 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
       color: PLAYER_COLORS[nextIdx % PLAYER_COLORS.length],
       avatar: String(nextIdx + 1),
     }]);
-    setEditingId(id);
   };
 
   const removePlayer = (id: string) => {
@@ -831,92 +830,17 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
 
         {/* Player strip */}
         <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3] inline-flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#8ff5ff]" />
-              Spieler · {players.length}/{MAX}
-            </h3>
-            {!isOnline && players.length < MAX && (
-              <button
-                type="button"
-                onClick={addPlayer}
-                className="text-xs font-bold text-[#df8eff] hover:opacity-80 transition-opacity"
-              >
-                + Hinzufügen
-              </button>
-            )}
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-3 -mx-6 px-6 snap-x">
-            {players.map((p, i) => {
-              const isEditing = editingId === p.id;
-              const isFirst = i === 0;
-              return (
-                <div key={p.id} className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-20">
-                  <div className="relative">
-                    <div
-                      className="w-20 h-20 rounded-full p-1 shadow-lg shadow-[#df8eff]/15"
-                      style={{
-                        background: isFirst
-                          ? 'linear-gradient(135deg, #df8eff, #ff6b98)'
-                          : `linear-gradient(135deg, ${p.color}, #20262f)`,
-                      }}
-                    >
-                      <div className="w-full h-full rounded-full border-4 border-[#0a0e14] flex items-center justify-center text-xl font-black text-white"
-                        style={{ backgroundColor: p.color }}>
-                        {p.avatar}
-                      </div>
-                    </div>
-                    {isFirst && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#8ff5ff] border-4 border-[#0a0e14]" />
-                    )}
-                    {!isOnline && !isFirst && players.length > MIN && (
-                      <button
-                        type="button"
-                        onClick={() => removePlayer(p.id)}
-                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#20262f] border border-[#44484f] flex items-center justify-center hover:bg-[#ff6e84]/20 hover:border-[#ff6e84]/40 transition-colors"
-                        aria-label={`${p.name} entfernen`}
-                      >
-                        <X className="w-3 h-3 text-[#a8abb3]" />
-                      </button>
-                    )}
-                  </div>
-                  {isEditing ? (
-                    <input
-                      autoFocus
-                      type="text"
-                      value={p.name}
-                      maxLength={14}
-                      onChange={(e) => renamePlayer(p.id, e.target.value)}
-                      onBlur={() => setEditingId(null)}
-                      onKeyDown={(e) => e.key === 'Enter' && setEditingId(null)}
-                      className="w-20 text-center text-xs font-bold bg-transparent border-b border-[#df8eff] text-white focus:outline-none"
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => !isOnline && setEditingId(p.id)}
-                      disabled={isOnline}
-                      className="text-xs font-bold truncate max-w-full hover:text-[#df8eff] transition-colors"
-                    >
-                      {p.name}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-            {!isOnline && players.length < MAX && (
-              <button
-                type="button"
-                onClick={addPlayer}
-                className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-20 group"
-              >
-                <div className="w-20 h-20 rounded-full border-2 border-dashed border-[#44484f] flex items-center justify-center text-[#72757d] group-hover:border-[#df8eff] group-hover:text-[#df8eff] transition-colors active:scale-95">
-                  <Play className="w-6 h-6 rotate-0" />
-                </div>
-                <span className="text-xs font-semibold text-[#a8abb3]">Gast</span>
-              </button>
-            )}
-          </div>
+          <PlayerSetup
+            players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, readOnly: isOnline }))}
+            onAdd={addPlayer}
+            onRemove={removePlayer}
+            onRename={renamePlayer}
+            min={MIN}
+            max={isOnline ? players.length : MAX}
+            accent="#df8eff"
+            label="Spieler"
+            maxNameLength={14}
+          />
         </section>
 
         {/* Category bento grid */}

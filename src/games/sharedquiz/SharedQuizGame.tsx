@@ -4,7 +4,7 @@ import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRul
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import {
-  Play, Trophy, RotateCcw, ArrowRight, Plus, Minus,
+  Play, Trophy, RotateCcw, ArrowRight,
   Users, Eye, MessageCircle, Lightbulb, HelpCircle, Check, X,
   ChevronRight, Link, Crown,
 } from 'lucide-react';
@@ -13,6 +13,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import { SHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -251,32 +252,18 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           </div>
 
           {/* Players */}
-          <section className="space-y-3 mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">Spieler ({players.length})</h2>
-            <AnimatePresence initial={false}>
-              {players.map((p, i) => (
-                <motion.div key={p.id} layout initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20, height: 0 }} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
-                    style={{ backgroundColor: p.color }}>{getPlayerInitial(p.name)}</div>
-                  <input type="text" value={p.name} onChange={e => updateName(p.id, e.target.value)}
-                    maxLength={20} className="flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8ff5ff]/50 text-sm" />
-                  {players.length > 3 && (
-                    <button onClick={() => removePlayer(p.id)}
-                      className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center">
-                      <Minus className="w-4 h-4 text-red-400" />
-                    </button>
-                  )}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            {players.length < 10 && (
-              <button onClick={addPlayer}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 hover:border-[#8ff5ff]/50 hover:text-[#8ff5ff] transition-colors text-sm">
-                <Plus className="w-4 h-4" /> Spieler hinzufuegen
-              </button>
-            )}
-          </section>
+          <div className="mb-6">
+            <PlayerSetup
+              players={players.map((p) => ({ id: p.id, name: p.name, color: p.color }))}
+              onAdd={addPlayer}
+              onRemove={removePlayer}
+              onRename={updateName}
+              min={3}
+              max={10}
+              accent="#8ff5ff"
+              label="Spieler"
+            />
+          </div>
 
           {/* Mode */}
           <section className="space-y-3 mb-6">

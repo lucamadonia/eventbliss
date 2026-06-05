@@ -2,7 +2,7 @@
 // schaltet sie zur statischen Liste hinzu. Gefiltert nach Sprache.
 
 import { supabase } from '@/integrations/supabase/client';
-import { setExtraSongs, spotifySearchUrl, type Song } from './ohrwurm-content';
+import { setExtraSongs, spotifySearchUrl, spotifyTrackUrl, type Song } from './ohrwurm-content';
 
 interface Row {
   id: string;
@@ -35,7 +35,8 @@ export async function loadExtraSongs(language?: string): Promise<number> {
       title: r.title,
       flag: r.country || '🌍',
       genre: r.genre || 'Pop',
-      qrPayload: spotifySearchUrl(r.artist, r.title),
+      // Mit hinterlegter URI → Track direkt öffnen; sonst Such-Fallback.
+      qrPayload: r.spotify_uri ? spotifyTrackUrl(r.spotify_uri) : spotifySearchUrl(r.artist, r.title),
       spotifyUri: r.spotify_uri || undefined,
     }));
     setExtraSongs(songs);

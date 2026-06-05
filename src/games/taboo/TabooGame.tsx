@@ -10,6 +10,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -87,7 +88,6 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
-  const [playerInput, setPlayerInput] = useState('');
   const [teams, setTeams] = useState<[Team, Team]>(buildTeams(initialPlayers));
   const [activeTeamIdx, setActiveTeamIdx] = useState(0);
   const [explainerIdx, setExplainerIdx] = useState<[number, number]>([0, 0]);
@@ -117,16 +117,19 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   }
 
   function addPlayer() {
-    const name = playerInput.trim();
-    if (!name || playerNames.includes(name)) return;
-    const next = [...playerNames, name];
+    const next = [...playerNames, ''];
     setPlayerNames(next);
     setTeams(buildTeams(next));
-    setPlayerInput('');
   }
 
-  function removePlayer(name: string) {
-    const next = playerNames.filter(n => n !== name);
+  function removePlayer(idx: number) {
+    const next = playerNames.filter((_, i) => i !== idx);
+    setPlayerNames(next);
+    setTeams(buildTeams(next));
+  }
+
+  function renamePlayer(idx: number, name: string) {
+    const next = playerNames.map((n, i) => (i === idx ? name : n));
     setPlayerNames(next);
     setTeams(buildTeams(next));
   }
@@ -326,33 +329,17 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
             <p className="text-[#a8abb3] text-sm mt-2 max-w-xs mx-auto">Erklaere Begriffe, ohne die verbotenen Woerter zu verwenden!</p>
           </div>
           {/* Player input */}
-          <div className="glass-card border border-[#44484f]/30 rounded-2xl p-4 mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Users className="w-4 h-4 text-[#df8eff]/70" />
-              <span className="text-xs font-semibold text-[#a8abb3] uppercase tracking-wider">Spieler ({playerNames.length})</span>
-            </div>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={playerInput}
-                onChange={(e) => setPlayerInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPlayer(); } }}
-                placeholder="Name eingeben..."
-                maxLength={20}
-                className="flex-1 px-3 py-2 rounded-full bg-[#f1f3fc]/[0.06] border border-[#44484f]/30 text-sm text-[#f1f3fc] placeholder:text-[#a8abb3]/50 focus:outline-none focus:border-[#df8eff]/50"
-              />
-              <button
-                type="button"
-                onClick={addPlayer}
-                disabled={!playerInput.trim()}
-                className="px-4 py-2 rounded-full bg-[#df8eff] text-[#0a0e14] text-xs font-bold uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_12px_rgba(223,142,255,0.4)] transition-shadow"
-              >
-                +
-              </button>
-            </div>
-            {playerNames.length === 0 && (
-              <p className="text-xs text-[#a8abb3]/60 text-center">Mindestens 2 Spieler hinzufuegen (1 pro Team)</p>
-            )}
+          <div className="mb-4">
+            <PlayerSetup
+              players={playerNames.map((name, i) => ({ id: String(i), name }))}
+              onAdd={addPlayer}
+              onRemove={(id) => removePlayer(Number(id))}
+              onRename={(id, name) => renamePlayer(Number(id), name)}
+              min={2}
+              max={20}
+              accent="#df8eff"
+              label="Spieler"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -362,19 +349,9 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
                 <div className="space-y-1.5">{t.players.length === 0 ? (
                   <div className="text-xs text-[#a8abb3]/40 italic">Leer</div>
                 ) : t.players.map(p => (
-                  <div key={p} className="flex items-center justify-between gap-2 group">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${i === 0 ? 'bg-[#df8eff]' : 'bg-[#8ff5ff]'}`} />
-                      <span className="text-sm text-[#f1f3fc]/70 truncate">{p}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removePlayer(p)}
-                      className="text-[#a8abb3]/40 hover:text-[#ff6b98] transition-colors flex-shrink-0"
-                      aria-label={`${p} entfernen`}
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                  <div key={p} className="flex items-center gap-2 min-w-0 group">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${i === 0 ? 'bg-[#df8eff]' : 'bg-[#8ff5ff]'}`} />
+                    <span className="text-sm text-[#f1f3fc]/70 truncate">{p}</span>
                   </div>
                 ))}</div>
               </div>

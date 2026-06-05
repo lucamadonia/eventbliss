@@ -6,9 +6,10 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   Play, Trophy, RotateCcw, Timer, ArrowRight, ArrowLeft,
-  Smartphone, Shuffle, Zap, Crown, Star, ChevronRight, X, Plus, Minus,
+  Smartphone, Shuffle, Zap, Crown, Star, ChevronRight, X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -505,35 +506,16 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           </div>
 
           {/* Player names */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-[#f1f3fc]">Spieler ({playerNames.length})</label>
-            <div className="grid grid-cols-2 gap-2">
-              {playerNames.map((name, i) => (
-                <div key={i} className="flex items-center gap-1">
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => updatePlayerName(i, e.target.value)}
-                    className="flex-1 px-2 py-1.5 rounded-lg bg-white/5 border border-[#44484f] text-white text-xs focus:border-[#df8eff] focus:outline-none"
-                    maxLength={20}
-                  />
-                  {playerNames.length > 4 && (
-                    <button onClick={() => removePlayer(i)} className="p-1 text-[#a8abb3]/60 hover:text-red-400">
-                      <Minus className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {playerNames.length < 30 && (
-              <button
-                onClick={addPlayer}
-                className="w-full py-2 rounded-xl border border-dashed border-[#44484f] text-[#a8abb3] text-xs font-medium flex items-center justify-center gap-1.5 hover:border-[#44484f] hover:text-[#f1f3fc] transition-colors"
-              >
-                <Plus className="w-3 h-3" /> Spieler hinzufügen
-              </button>
-            )}
-          </div>
+          <PlayerSetup
+            players={playerNames.map((name, i) => ({ id: String(i), name }))}
+            onAdd={addPlayer}
+            onRemove={(id) => removePlayer(Number(id))}
+            onRename={(id, name) => updatePlayerName(Number(id), name)}
+            min={4}
+            max={30}
+            accent="#df8eff"
+            label="Spieler"
+          />
 
           {/* Teams visualization */}
           <div className="grid grid-cols-2 gap-3">

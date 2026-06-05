@@ -4,13 +4,14 @@ import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRul
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
-  Plus, Minus, User, Play, Eye, EyeOff, ChevronRight,
+  Play, Eye, EyeOff, ChevronRight,
   Clock, CheckCircle2, Trophy, ArrowLeft, RotateCcw,
   Shield, AlertTriangle, Crown, Send, Lock, LockOpen,
   Sparkles, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHaptics } from '@/hooks/useHaptics';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -563,56 +564,16 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           )}
 
           {/* Player list */}
-          <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
-              Spieler ({players.length})
-            </h2>
-            <AnimatePresence initial={false}>
-              {players.map((player, i) => (
-                <motion.div
-                  key={player.id}
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20, height: 0 }}
-                  className="flex items-center gap-3"
-                >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
-                    style={{ backgroundColor: getPlayerColor(i) }}
-                  >
-                    {player.name ? getPlayerInitial(player.name) : <User className="w-4 h-4" />}
-                  </div>
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={(e) => updateName(player.id, e.target.value)}
-                    placeholder={`Spieler ${i + 1}`}
-                    maxLength={20}
-                    className="flex-1 bg-[#151a21]/60 border border-[#44484f] rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50 text-base"
-                  />
-                  {players.length > 4 && (
-                    <button
-                      onClick={() => removePlayer(player.id)}
-                      className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"
-                    >
-                      <Minus className="w-4 h-4 text-red-400" />
-                    </button>
-                  )}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            {players.length < 15 && (
-              <motion.button
-                onClick={addPlayer}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-[#44484f] text-[#a8abb3] hover:border-[#df8eff]/50 hover:text-[#df8eff] transition-colors text-sm"
-                whileTap={{ scale: 0.98 }}
-              >
-                <Plus className="w-4 h-4" />
-                Spieler hinzufügen
-              </motion.button>
-            )}
-          </section>
+          <PlayerSetup
+            players={players.map((p) => ({ id: p.id, name: p.name }))}
+            onAdd={addPlayer}
+            onRemove={removePlayer}
+            onRename={updateName}
+            min={4}
+            max={15}
+            accent="#df8eff"
+            label="Spieler"
+          />
 
           {/* Impostor count */}
           <section className="space-y-3">
