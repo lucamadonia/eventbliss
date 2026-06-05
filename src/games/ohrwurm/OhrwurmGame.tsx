@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowLeft, ArrowRight, RotateCcw, Trophy, Users, User, Plus, X as CloseIcon,
   Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown, Zap, Heart,
+  Play, Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -50,6 +51,7 @@ const OW_STYLE = `
 .ow-glow-teal { text-shadow: 0 0 18px rgba(38,224,196,.55), 0 0 40px rgba(38,224,196,.3); }
 .ow-card-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 @keyframes ow-eq { 0%,100% { height: 20%; } 50% { height: 100%; } }
+.ow-chip:focus-visible { outline: 2px solid #FF2E8899; outline-offset: 2px; }
 `;
 
 // ---------------------------------------------------------------------------
@@ -116,6 +118,9 @@ export default function OhrwurmGame() {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   // Sichtbarer Spotify-Verbindungsstatus: null | 'connecting' | 'ok' | 'preview:<grund>'
   const [spotifyStatus, setSpotifyStatus] = useState<string | null>(null);
+  // Lade-Status der Reveal-Spotify-Aktionen (verhindert Doppel-Schreiben bei Doppeltipp).
+  const [likeBusy, setLikeBusy] = useState(false);
+  const [playlistBusy, setPlaylistBusy] = useState(false);
   // Refs für den nativen playerState-Handler (läuft außerhalb des Renders):
   // gegen Stale-Events der Vorkarte absichern (URI- + Phasen-Abgleich).
   const spotifyUriRef = useRef<string | null>(null);
@@ -640,7 +645,6 @@ export default function OhrwurmGame() {
                   total={ROUND_SECONDS}
                   speedActive={listening && (ROUND_SECONDS - roundTimer.timeLeft) < 10}
                   onPlay={togglePlay}
-                  onReplay={replayAudio}
                 />
               ) : (
                 /* Fallback: kein Clip gefunden → QR/Spotify + manueller Start */
@@ -663,33 +667,37 @@ export default function OhrwurmGame() {
 
               {/* Aktionen erst nach Start sichtbar */}
               {listening && (
-                <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+                <div className="flex flex-col gap-3 w-full max-w-sm">
+                  {/* Sekundär-Aktionen — filigrane Chips, OBERHALB des Primär-Buttons */}
+                  <div role="group" aria-label="Aktionen" className="flex items-stretch gap-2 w-full">
+                    <ActionChip
+                      icon={RotateCcw} label="Nochmal"
+                      ariaLabel="Song noch einmal von vorn hören"
+                      onClick={replayAudio}
+                    />
+                    <ActionChip
+                      icon={Sparkles} label={bonusClaimed ? 'Bonus ✓' : 'Bonus'} tone="accent" toggle active={bonusClaimed}
+                      ariaLabel="Titel und Interpret ansagen für Bonus"
+                      onClick={() => { void haptics.select(); setBonusClaimed((v) => !v); }}
+                    />
+                    <ActionChip
+                      icon={Repeat} label={swapUsed ? 'Getauscht' : 'Tauschen'} tone="secondary"
+                      cost={swapUsed ? undefined : '1 🎣'}
+                      disabled={swapUsed || active.hooks < 1}
+                      ariaLabel={swapUsed ? 'Tausch bereits genutzt' : active.hooks < 1 ? 'Tauschen nicht möglich — kein 🎣 übrig' : 'Song unbekannt — Karte tauschen für 1 🎣'}
+                      onClick={() => {
+                        if (swapUsed) { flash('Tausch verbraucht'); return; }
+                        if (active.hooks < 1) { flash('Kein 🎣 — kannst nicht tauschen'); return; }
+                        handleSwap();
+                      }}
+                    />
+                  </div>
+                  {/* Ein großer Primär-Button */}
                   <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); setPhase('place'); }}
                     className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
-                    style={{ background: OW.primary, color: OW.bg }}>
+                    style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
                     In Timeline einordnen <ChevronRight className="w-5 h-5" />
                   </motion.button>
-                  <button
-                    type="button"
-                    onClick={() => { void haptics.select(); setBonusClaimed((v) => !v); }}
-                    aria-pressed={bonusClaimed}
-                    className="w-full h-12 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
-                    style={bonusClaimed
-                      ? { background: `${OW.accent}1f`, color: OW.accent, border: `1.5px solid ${OW.accent}` }
-                      : { background: OW.surface, color: OW.dim, border: '1.5px solid transparent' }}
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    {bonusClaimed ? 'Titel & Interpret angesagt ✓' : 'Titel & Interpret nennen? (Bonus)'}
-                  </button>
-                  <button
-                    onClick={handleSwap}
-                    disabled={swapUsed || active.hooks < 1}
-                    className="inline-flex items-center gap-2 text-sm font-bold disabled:opacity-30 transition-opacity"
-                    style={{ color: OW.secondary }}
-                  >
-                    <Repeat className="w-4 h-4" />
-                    {swapUsed ? 'Tausch verbraucht' : `Song unbekannt? Tauschen (1 🎣)`}
-                  </button>
                 </div>
               )}
             </motion.div>
@@ -771,26 +779,41 @@ export default function OhrwurmGame() {
                 resolution={resolution} active={active} counter={counter} participants={participants}
               />
               {/* Spotify-Aktionen — nur wenn die Premium-Bridge verbunden ist:
-                  ganzen Song hören (ohne Timer) + zur eigenen Bibliothek. */}
+                  ganzen Song hören (ohne Timer) + zur eigenen Bibliothek.
+                  Filigrane Chip-Leiste, oberhalb des „Weiter"-Primärbuttons. */}
               {spotifyBridgeRef.current && spotifyUri && spotifyConnected && (
-                <div className="flex flex-col gap-2 w-full max-w-sm">
-                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => { setSpotifyConnected(false); playPreviewFallback(); }); }}
-                    className="h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-                    style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
-                    <Music2 className="w-4 h-4" /> Ganzer Song hören
-                  </button>
-                  <div className="flex gap-2">
-                    <button onClick={() => { void haptics.light(); flash('Speichere…'); spotifyBridgeRef.current?.saveTrack?.(spotifyUri).then((r) => flash(r.ok ? '❤️ Zu Lieblingssongs' : 'Like fehlgeschlagen (' + r.detail + ')')).catch(() => flash('Like fehlgeschlagen')); }}
-                      className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: OW.text, border: '1px solid rgba(255,255,255,0.12)' }}>
-                      <Heart className="w-4 h-4" /> Like
-                    </button>
-                    <button onClick={() => { void haptics.light(); flash('Füge zur Playlist hinzu…'); spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri).then((r) => flash(r.ok ? '🎵 In OHRWURM-Playlist' : 'Playlist fehlgeschlagen (' + r.detail + ')')).catch(() => flash('Playlist fehlgeschlagen')); }}
-                      className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
-                      style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
-                      <Plus className="w-4 h-4" /> Playlist
-                    </button>
-                  </div>
+                <div role="group" aria-label="Spotify-Aktionen" className="flex items-stretch gap-2 w-full max-w-sm">
+                  <ActionChip
+                    icon={Play} label="Ganzer Song" tone="spotify"
+                    ariaLabel="Ganzen Song auf Spotify hören"
+                    onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => { setSpotifyConnected(false); playPreviewFallback(); }); }}
+                  />
+                  <ActionChip
+                    icon={Heart} label="Like" busy={likeBusy}
+                    ariaLabel="Song zu Lieblingssongs hinzufügen"
+                    onClick={() => {
+                      if (likeBusy) return;
+                      void haptics.light(); setLikeBusy(true);
+                      // Promise.resolve fängt den Fall ab, dass die Methode fehlt
+                      // (?. → undefined) — sonst würde .then werfen und busy hängenbleiben.
+                      Promise.resolve(spotifyBridgeRef.current?.saveTrack?.(spotifyUri))
+                        .then((r) => flash(r?.ok ? '❤️ Zu Lieblingssongs' : 'Like fehlgeschlagen' + (r ? ' (' + r.detail + ')' : '')))
+                        .catch(() => flash('Like fehlgeschlagen'))
+                        .finally(() => setLikeBusy(false));
+                    }}
+                  />
+                  <ActionChip
+                    icon={Plus} label="Playlist" tone="spotify" busy={playlistBusy}
+                    ariaLabel="Song zur OHRWURM-Playlist hinzufügen"
+                    onClick={() => {
+                      if (playlistBusy) return;
+                      void haptics.light(); setPlaylistBusy(true);
+                      Promise.resolve(spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri))
+                        .then((r) => flash(r?.ok ? '🎵 In OHRWURM-Playlist' : 'Playlist fehlgeschlagen' + (r ? ' (' + r.detail + ')' : '')))
+                        .catch(() => flash('Playlist fehlgeschlagen'))
+                        .finally(() => setPlaylistBusy(false));
+                    }}
+                  />
                 </div>
               )}
               {bonusOpen ? (
@@ -822,7 +845,7 @@ export default function OhrwurmGame() {
                   )}
                   <motion.button whileTap={{ scale: 0.97 }} onClick={handleContinue}
                     className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
-                    style={{ background: OW.primary, color: OW.bg }}>
+                    style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
                     Weiter <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </>
@@ -934,6 +957,73 @@ function PhaseBanner({ tone, kicker, title, sub }: { tone: 'primary' | 'secondar
       <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">{title}</h2>
       <p className="text-sm" style={{ color: OW.dim }}>{sub}</p>
     </div>
+  );
+}
+
+// Filigraner Sekundär-Aktions-Chip (Icon über Mini-Label). Visuell zurückgenommen,
+// aber Tap-Target ≥ 52px. Genau EIN großer Primär-Button pro Screen; alles Weitere
+// landet in einer Chip-Leiste oberhalb davon.
+type ChipTone = 'default' | 'accent' | 'secondary' | 'spotify';
+
+function chipToneStyle(tone: ChipTone, active: boolean): React.CSSProperties {
+  if (active) {
+    return {
+      background: `${OW.accent}1f`, color: OW.accent, border: `1.5px solid ${OW.accent}`,
+      boxShadow: `0 0 18px ${OW.accent}40, inset 0 1px 0 ${OW.accent}22`,
+    };
+  }
+  switch (tone) {
+    case 'secondary':
+      return { background: 'rgba(38,224,196,0.10)', color: OW.secondary, border: '1.5px solid rgba(38,224,196,0.28)' };
+    case 'spotify':
+      return { background: 'rgba(29,185,84,0.14)', color: '#1DB954', border: '1.5px solid rgba(29,185,84,0.40)' };
+    default:
+      return { background: OW.surface, color: OW.dim, border: '1.5px solid transparent' };
+  }
+}
+
+function ActionChip({
+  icon: Icon, label, tone = 'default', toggle = false, active = false, busy = false, cost, disabled = false, onClick, ariaLabel,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  tone?: ChipTone;
+  /** Ist der Chip ein An/Aus-Schalter? Steuert aria-pressed (entkoppelt vom Ton). */
+  toggle?: boolean;
+  active?: boolean;
+  busy?: boolean;
+  cost?: string;
+  disabled?: boolean;
+  onClick: () => void;
+  ariaLabel?: string;
+}) {
+  return (
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.96 }}
+      onClick={onClick}
+      aria-pressed={toggle ? active : undefined}
+      aria-disabled={disabled || undefined}
+      aria-busy={busy || undefined}
+      aria-label={ariaLabel ?? label}
+      className={cn(
+        'ow-chip relative flex-1 flex flex-col items-center justify-center gap-1 rounded-2xl min-h-[52px] px-2 py-2',
+        'font-bold transition-[background,border-color,box-shadow,opacity,color] duration-200',
+        disabled && 'opacity-30',
+      )}
+      style={chipToneStyle(tone, active)}
+    >
+      {busy ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <Icon className="w-[18px] h-[18px]" />}
+      <span className="text-[10px] font-bold leading-none tracking-[0.04em] whitespace-nowrap">{label}</span>
+      {cost && (
+        <span
+          className="absolute top-0.5 right-1 text-[9px] font-mono font-black leading-none px-1 py-0.5 rounded-full"
+          style={{ background: OW.bg, color: tone === 'secondary' ? OW.secondary : OW.dim }}
+        >
+          {cost}
+        </span>
+      )}
+    </motion.button>
   );
 }
 

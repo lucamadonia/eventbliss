@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Zap, Loader2, Music2 } from 'lucide-react';
+import { Play, Pause, Zap, Loader2, Music2 } from 'lucide-react';
 
 // OHRWURM — „Mystery Player": spielt die 30s-Vorschau ab, OHNE Titel/Interpret
 // zu zeigen. Dreht eine Vinyl, animiert Equalizer-Bars und zeigt einen
@@ -30,11 +30,10 @@ export interface MysteryPlayerProps {
   total: number;           // 60
   speedActive: boolean;    // innerhalb der ersten 10s
   onPlay: () => void;      // starten / fortsetzen
-  onReplay: () => void;    // von vorn abspielen
 }
 
 export function MysteryPlayer({
-  loading, hasPreview, isPlaying, started, timeLeft, total, speedActive, onPlay, onReplay,
+  loading, hasPreview, isPlaying, started, timeLeft, total, speedActive, onPlay,
 }: MysteryPlayerProps) {
   const reduce = useReducedMotion();
 
@@ -184,18 +183,6 @@ export function MysteryPlayer({
           </p>
         )}
       </div>
-
-      {/* Replay */}
-      {started && (
-        <button
-          type="button"
-          onClick={onReplay}
-          className="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-opacity hover:opacity-80"
-          style={{ color: C.secondary }}
-        >
-          <RotateCcw className="w-3.5 h-3.5" /> Nochmal hören
-        </button>
-      )}
     </div>
   );
 }
