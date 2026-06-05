@@ -247,11 +247,17 @@ export default function OhrwurmGame() {
       void getSpotifyBridge().then(({ bridge, reason }) => {
         if (!bridge) { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); return; }
         spotifyBridgeRef.current = bridge;
-        setSpotifyStatus('ok');
-        flash('Spotify verbunden ✓');
+        // Bridge ist verfügbar, aber noch NICHT zwingend echt verbunden — die
+        // App-Remote-Verbindung kommt async (oft erst, wenn die App nach dem Auth-
+        // Sprung wieder aktiv ist). Status bleibt 'connecting', bis das echte
+        // connection-Event true meldet. Solange läuft die 30s-Vorschau.
+        setSpotifyStatus('connecting');
+        let everConnected = false;
         // Echten Verbindungs- und Player-Zustand abonnieren (Single Source of Truth).
         const unsubConn = bridge.onConnection((connected) => {
           setSpotifyConnected(connected);
+          setSpotifyStatus(connected ? 'ok' : 'connecting');
+          if (connected && !everConnected) { everConnected = true; flash('Spotify verbunden ✓'); }
           if (!connected) setIsAudioPlaying(false);
         });
         const unsubState = bridge.onPlayerState((s: SpotifyPlayerState) => {
@@ -265,7 +271,10 @@ export default function OhrwurmGame() {
         });
         spotifyUnsubsRef.current.push(unsubConn, unsubState);
         // Initialen Verbindungsstatus abfragen (Event kann schon vorher gefeuert haben).
-        void bridge.isConnected().then(setSpotifyConnected);
+        void bridge.isConnected().then((c) => {
+          setSpotifyConnected(c);
+          if (c) { everConnected = true; setSpotifyStatus('ok'); }
+        });
       });
     } else {
       setSpotifyStatus(null);

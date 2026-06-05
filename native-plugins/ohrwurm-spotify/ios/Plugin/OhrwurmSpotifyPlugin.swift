@@ -379,10 +379,16 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         triedStoredToken = false
         appRemote?.connectionParameters.accessToken = session.accessToken
         DispatchQueue.main.async { self.appRemote?.connect() }
-        // KEIN optimistisches connectCall-Resolve hier: die Autorisierung ist nur
-        // der erste Schritt. „Verbunden" gilt erst, wenn appRemoteDidEstablishConnection
-        // feuert (echte App-Remote-Verbindung) — erst dann steuern unsere Buttons
-        // die Wiedergabe zuverlässig. Das 15s-connect_timeout schützt vor Hängern.
+        // Autorisierung erfolgreich → Bridge gilt als VERFÜGBAR und connect() wird
+        // aufgelöst. WICHTIG: das ist NICHT „echt verbunden" — die App-Remote-
+        // Verbindung feuert oft erst verzögert (handleDidBecomeActive nach dem Auth-
+        // Sprung), manchmal kommt gar kein Callback. Würden wir hier auf
+        // appRemoteDidEstablishConnection warten, liefe der 15s-connect_timeout ab
+        // → Bridge null → 30s-Vorschau (genau dieser Bug). Das Routing auf Spotify
+        // hängt stattdessen am echten Player-State: das JS spielt erst voll ab, wenn
+        // das "connection"-Event (aus appRemoteDidEstablishConnection) true meldet.
+        connectCall?.resolve(["connected": true])
+        connectCall = nil
     }
 
     public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
