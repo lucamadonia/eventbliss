@@ -19,7 +19,7 @@ import { OHRWURM_GENRES } from './ohrwurm-content';
 import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
 import { supabase } from '@/integrations/supabase/client';
-import { type PlaybackMode, type SpotifyBridge, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
+import { type PlaybackMode, type SpotifyBridge, type SpotifyPlayerState, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
 import { loadExtraSongs } from './ohrwurm-extra-songs';
 import { useTranslation } from 'react-i18next';
 
@@ -112,8 +112,18 @@ export default function OhrwurmGame() {
   const spotifyBridgeRef = useRef<SpotifyBridge | null>(null);
   const spotifyModeRef = useRef(false); // ist der Spotify-Premium-Modus gewählt?
   const [spotifyUri, setSpotifyUri] = useState<string | null>(null);
+  // Echte App-Remote-Verbindung (nativ gemeldet). Routing auf Spotify NUR wenn true.
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
   // Sichtbarer Spotify-Verbindungsstatus: null | 'connecting' | 'ok' | 'preview:<grund>'
   const [spotifyStatus, setSpotifyStatus] = useState<string | null>(null);
+  // Refs für den nativen playerState-Handler (läuft außerhalb des Renders):
+  // gegen Stale-Events der Vorkarte absichern (URI- + Phasen-Abgleich).
+  const spotifyUriRef = useRef<string | null>(null);
+  const phaseRef = useRef<Phase>('setup');
+  // Aktive native Event-Abos + Play-Watchdog (Cleanup).
+  const spotifyUnsubsRef = useRef<Array<() => void>>([]);
+  const playWatchdogRef = useRef<number | null>(null);
+  const isAudioPlayingRef = useRef(false);
 
   const active = participants[turn] ?? null;
   const ownedIds = useMemo(
@@ -126,9 +136,26 @@ export default function OhrwurmGame() {
     window.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1800);
   }, []);
 
+  // Refs für den nativen playerState-Handler aktuell halten (er läuft außerhalb
+  // des Renders und darf keine veralteten Closures sehen).
+  useEffect(() => { spotifyUriRef.current = spotifyUri; }, [spotifyUri]);
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
+  useEffect(() => { isAudioPlayingRef.current = isAudioPlaying; }, [isAudioPlaying]);
+
+  // 30s-Vorschau abspielen (Fallback, wenn Spotify nicht greift). Gibt true
+  // zurück, wenn ein Clip vorhanden ist und gestartet wurde.
+  const playPreviewFallback = useCallback((): boolean => {
+    const a = audioRef.current;
+    if (!a || !previewUrl) return false;
+    a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
+    return true;
+  }, [previewUrl]);
+
   const stopAudio = useCallback(() => {
+    if (playWatchdogRef.current != null) { window.clearTimeout(playWatchdogRef.current); playWatchdogRef.current = null; }
     const a = audioRef.current;
     if (a) { a.pause(); try { a.currentTime = 0; } catch { /* noop */ } }
+    // pause() lehnt ab, wenn nicht verbunden — bewusst geschluckt (Vorschau lief dann eh).
     spotifyBridgeRef.current?.pause().catch(() => {});
     setIsAudioPlaying(false);
   }, []);
@@ -213,11 +240,32 @@ export default function OhrwurmGame() {
     setGenre(cfg.genre);
     // Spotify-Premium-Modus gewählt? Bridge verbinden — sonst Fallback-Hinweis.
     spotifyBridgeRef.current = null;
+    spotifyModeRef.current = cfg.playback === 'spotify';
+    setSpotifyConnected(false);
     if (cfg.playback === 'spotify') {
       setSpotifyStatus('connecting');
       void getSpotifyBridge().then(({ bridge, reason }) => {
-        if (bridge) { spotifyBridgeRef.current = bridge; setSpotifyStatus('ok'); flash('Spotify verbunden ✓'); }
-        else { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); }
+        if (!bridge) { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); return; }
+        spotifyBridgeRef.current = bridge;
+        setSpotifyStatus('ok');
+        flash('Spotify verbunden ✓');
+        // Echten Verbindungs- und Player-Zustand abonnieren (Single Source of Truth).
+        const unsubConn = bridge.onConnection((connected) => {
+          setSpotifyConnected(connected);
+          if (!connected) setIsAudioPlaying(false);
+        });
+        const unsubState = bridge.onPlayerState((s: SpotifyPlayerState) => {
+          // Stale-Events der Vorkarte ignorieren: nur übernehmen, wenn die URI zur
+          // aktuell aktiven Karte passt und wir uns in einer Hör-/Reveal-Phase befinden.
+          if (s.uri && spotifyUriRef.current && s.uri !== spotifyUriRef.current) return;
+          if (phaseRef.current !== 'draw' && phaseRef.current !== 'reveal') return;
+          // Ein echtes Playback-Event beweist die Verbindung → Watchdog abbrechen.
+          if (playWatchdogRef.current != null) { window.clearTimeout(playWatchdogRef.current); playWatchdogRef.current = null; }
+          setIsAudioPlaying(!s.isPaused);
+        });
+        spotifyUnsubsRef.current.push(unsubConn, unsubState);
+        // Initialen Verbindungsstatus abfragen (Event kann schon vorher gefeuert haben).
+        void bridge.isConnected().then(setSpotifyConnected);
       });
     } else {
       setSpotifyStatus(null);
@@ -243,7 +291,8 @@ export default function OhrwurmGame() {
   // Beim ersten Play: Timer starten + Startzeit merken; danach play/pause.
   const togglePlay = useCallback(() => {
     const bridge = spotifyBridgeRef.current;
-    const useSpotify = !!(bridge && spotifyUri);
+    // Auf Spotify routen NUR bei echter Verbindung + vorhandener URI — sonst Vorschau.
+    const useSpotify = !!(bridge && spotifyUri && spotifyConnected);
     if (!listening) {
       playStartedAtRef.current = Date.now();
       setListening(true);
@@ -251,13 +300,28 @@ export default function OhrwurmGame() {
       roundTimer.start();
       void haptics.medium();
       if (useSpotify) {
-        bridge!.play(spotifyUri!).then(() => setIsAudioPlaying(true)).catch(() => {});
+        // isAudioPlaying wird vom nativen playerState-Event gesetzt, nicht optimistisch.
+        // Watchdog: kommt binnen 4s kein Event (z.B. Dev-Mode-403), auf Vorschau fallen.
+        if (playWatchdogRef.current != null) window.clearTimeout(playWatchdogRef.current);
+        playWatchdogRef.current = window.setTimeout(() => {
+          playWatchdogRef.current = null;
+          if (!isAudioPlayingRef.current) playPreviewFallback();
+        }, 4000);
+        bridge!.play(spotifyUri!).catch(() => {
+          if (playWatchdogRef.current != null) { window.clearTimeout(playWatchdogRef.current); playWatchdogRef.current = null; }
+          setSpotifyConnected(false);
+          playPreviewFallback();
+        });
         return;
       }
     }
     if (useSpotify) {
-      if (isAudioPlaying) bridge!.pause().then(() => setIsAudioPlaying(false)).catch(() => {});
-      else bridge!.resume().then(() => setIsAudioPlaying(true)).catch(() => {});
+      // isAudioPlaying spiegelt den echten Zustand → daran entscheiden, Event bestätigt.
+      if (isAudioPlaying) {
+        bridge!.pause().catch(() => { setSpotifyConnected(false); setIsAudioPlaying(false); });
+      } else {
+        bridge!.resume().catch(() => { setSpotifyConnected(false); playPreviewFallback(); });
+      }
       return;
     }
     const a = audioRef.current;
@@ -268,12 +332,13 @@ export default function OhrwurmGame() {
       a.pause();
       setIsAudioPlaying(false);
     }
-  }, [listening, roundTimer, haptics, previewUrl, spotifyUri, isAudioPlaying]);
+  }, [listening, roundTimer, haptics, previewUrl, spotifyUri, spotifyConnected, isAudioPlaying, playPreviewFallback]);
 
   const replayAudio = useCallback(() => {
     const bridge = spotifyBridgeRef.current;
-    if (bridge && spotifyUri) {
-      bridge.play(spotifyUri).then(() => setIsAudioPlaying(true)).catch(() => {});
+    if (bridge && spotifyUri && spotifyConnected) {
+      // isAudioPlaying setzt das playerState-Event; bei Fehlschlag Vorschau.
+      bridge.play(spotifyUri).catch(() => { setSpotifyConnected(false); playPreviewFallback(); });
       void haptics.light();
       return;
     }
@@ -282,7 +347,7 @@ export default function OhrwurmGame() {
     try { a.currentTime = 0; } catch { /* noop */ }
     a.play().then(() => setIsAudioPlaying(true)).catch(() => {});
     void haptics.light();
-  }, [previewUrl, haptics, spotifyUri]);
+  }, [previewUrl, haptics, spotifyUri, spotifyConnected, playPreviewFallback]);
 
   // Fallback ohne Clip: Timer manuell starten
   const startListeningNoAudio = useCallback(() => {
@@ -439,10 +504,21 @@ export default function OhrwurmGame() {
     if (phase === 'setup') recordedRef.current = false;
   }, [phase, winner, recordEnd]);
 
+  // Native Spotify-Abos + Watchdog abräumen (vor disconnect / beim Unmount).
+  const teardownSpotify = useCallback(() => {
+    if (playWatchdogRef.current != null) { window.clearTimeout(playWatchdogRef.current); playWatchdogRef.current = null; }
+    spotifyUnsubsRef.current.forEach((fn) => { try { fn(); } catch { /* noop */ } });
+    spotifyUnsubsRef.current = [];
+    spotifyBridgeRef.current?.removeAllListeners().catch(() => {});
+  }, []);
+
   const resetGame = useCallback(() => {
     stopAudio();
+    teardownSpotify();
     spotifyBridgeRef.current?.disconnect().catch(() => {});
     spotifyBridgeRef.current = null;
+    spotifyModeRef.current = false;
+    setSpotifyConnected(false);
     setSpotifyUri(null);
     roundTimer.reset(ROUND_SECONDS);
     setListening(false);
@@ -451,10 +527,14 @@ export default function OhrwurmGame() {
     setParticipants([]);
     setWinner(null);
     setSong(null);
-  }, [stopAudio, roundTimer]);
+  }, [stopAudio, teardownSpotify, roundTimer]);
 
-  // Beim Verlassen des Spiels Audio stoppen.
-  useEffect(() => () => { const a = audioRef.current; if (a) a.pause(); }, []);
+  // Beim Verlassen des Spiels Audio stoppen + native Abos/Verbindung lösen.
+  useEffect(() => () => {
+    const a = audioRef.current; if (a) a.pause();
+    teardownSpotify();
+    spotifyBridgeRef.current?.disconnect().catch(() => {});
+  }, [teardownSpotify]);
 
   // =========================================================================
   // Render
@@ -683,9 +763,9 @@ export default function OhrwurmGame() {
               />
               {/* Spotify-Aktionen — nur wenn die Premium-Bridge verbunden ist:
                   ganzen Song hören (ohne Timer) + zur eigenen Bibliothek. */}
-              {spotifyBridgeRef.current && spotifyUri && (
+              {spotifyBridgeRef.current && spotifyUri && spotifyConnected && (
                 <div className="flex flex-col gap-2 w-full max-w-sm">
-                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => {}); setIsAudioPlaying(true); }}
+                  <button onClick={() => { void haptics.light(); spotifyBridgeRef.current?.play(spotifyUri).catch(() => { setSpotifyConnected(false); playPreviewFallback(); }); }}
                     className="h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
                     style={{ background: 'rgba(29,185,84,0.16)', color: '#1DB954', border: '1px solid rgba(29,185,84,0.4)' }}>
                     <Music2 className="w-4 h-4" /> Ganzer Song hören

@@ -22,21 +22,41 @@ const SPOTIFY_CLIENT_ID =
 /** Muss in der Spotify-Developer-App als Redirect-URI registriert sein. */
 const SPOTIFY_REDIRECT_URL = 'eventbliss://spotify-callback';
 
+/** Echter Spotify-Player-Zustand (nativ abonniert, Single Source of Truth). */
+export interface SpotifyPlayerState {
+  isPaused: boolean;
+  uri: string;
+  position: number;
+}
+
 /** Native Spotify-App-Remote-Bridge (Capacitor-Plugin OhrwurmSpotify). */
 export interface SpotifyBridge {
   play(uri: string): Promise<void>;
   pause(): Promise<void>;
   resume(): Promise<void>;
   disconnect(): Promise<void>;
+  /** Echte App-Remote-Verbindung (nicht nur „autorisiert"). Routing-Gate. */
+  isConnected(): Promise<boolean>;
+  /** Echten Player-State abonnieren. Liefert eine Unsubscribe-Funktion. */
+  onPlayerState(cb: (state: SpotifyPlayerState) => void): () => void;
+  /** Verbindungsstatus-Änderungen abonnieren. Liefert eine Unsubscribe-Funktion. */
+  onConnection(cb: (connected: boolean) => void): () => void;
+  /** Alle nativen Listener entfernen (Cleanup vor disconnect). */
+  removeAllListeners(): Promise<void>;
   /** Track in die eigene Spotify-Bibliothek („Liked Songs") speichern. */
   saveTrack(uri: string): Promise<{ ok: boolean; detail: string }>;
   /** Track in die eigene „OHRWURM 🎵"-Playlist legen (wird bei Bedarf angelegt). */
   addToPlaylist(uri: string): Promise<{ ok: boolean; detail: string }>;
 }
 
+interface PluginListenerHandle {
+  remove: () => Promise<void> | void;
+}
+
 interface NativeSpotifyPlugin {
   isAvailable(): Promise<{ available: boolean }>;
   connect(o: { clientId: string; redirectUrl: string }): Promise<{ connected: boolean }>;
+  isConnected(): Promise<{ connected: boolean }>;
   getToken(): Promise<{ token: string | null }>;
   play(o: { uri: string }): Promise<void>;
   pause(): Promise<void>;
@@ -44,6 +64,9 @@ interface NativeSpotifyPlugin {
   disconnect(): Promise<void>;
   saveTrack(o: { uri: string }): Promise<{ ok: boolean; detail: string }>;
   addToPlaylist(o: { uri: string }): Promise<{ ok: boolean; detail: string }>;
+  addListener(eventName: 'playerState', cb: (s: SpotifyPlayerState) => void): Promise<PluginListenerHandle>;
+  addListener(eventName: 'connection', cb: (s: { connected: boolean }) => void): Promise<PluginListenerHandle>;
+  removeAllListeners(): Promise<void>;
 }
 
 // Capacitor-Standard: registerPlugin routet zur nativen Implementierung (das
@@ -92,6 +115,34 @@ export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
       pause: () => OhrwurmSpotify.pause(),
       resume: () => OhrwurmSpotify.resume(),
       disconnect: () => OhrwurmSpotify.disconnect(),
+      isConnected: async () => {
+        try {
+          return (await OhrwurmSpotify.isConnected()).connected;
+        } catch {
+          return false;
+        }
+      },
+      // addListener ist async; wir geben sofort eine Unsubscribe-Funktion zurück,
+      // die das Handle entfernt, sobald es da ist (auch falls vorher abgemeldet).
+      onPlayerState: (cb) => {
+        let handle: PluginListenerHandle | null = null;
+        let removed = false;
+        void OhrwurmSpotify.addListener('playerState', cb).then((h) => {
+          if (removed) void h.remove();
+          else handle = h;
+        });
+        return () => { removed = true; if (handle) void handle.remove(); };
+      },
+      onConnection: (cb) => {
+        let handle: PluginListenerHandle | null = null;
+        let removed = false;
+        void OhrwurmSpotify.addListener('connection', (s) => cb(s.connected)).then((h) => {
+          if (removed) void h.remove();
+          else handle = h;
+        });
+        return () => { removed = true; if (handle) void handle.remove(); };
+      },
+      removeAllListeners: () => OhrwurmSpotify.removeAllListeners(),
       // Nativ ausgeführt (URLSession) — kein WebView-CORS, das die fetch-Variante
       // auf iOS scheitern ließ. detail enthält den HTTP-Code zur Diagnose.
       saveTrack: async (uri) => {

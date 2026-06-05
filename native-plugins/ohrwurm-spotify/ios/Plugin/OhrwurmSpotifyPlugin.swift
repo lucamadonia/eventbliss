@@ -21,7 +21,7 @@ import SpotifyiOS
 //      during the Spotify app-switch (cold launch → would otherwise drop it).
 
 @objc(OhrwurmSpotifyPlugin)
-public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDelegate, SPTSessionManagerDelegate {
+public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDelegate, SPTSessionManagerDelegate, SPTAppRemotePlayerStateDelegate {
 
     // Capacitor-6+/8-Registrierung (ersetzt die alte .m-CAP_PLUGIN-Makro-Registrierung).
     public let identifier = "OhrwurmSpotifyPlugin"
@@ -29,6 +29,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "connect", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isConnected", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "play", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "pause", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "resume", returnType: CAPPluginReturnPromise),
@@ -42,6 +43,11 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     private var sessionManager: SPTSessionManager?
     private var connectCall: CAPPluginCall?
     private var pendingUri: String?
+    // Offener play()-Aufruf, der auf das Zustandekommen der App-Remote-Verbindung
+    // wartet. Wird in appRemoteDidEstablishConnection aufgelöst bzw. bei
+    // Fehlschlag/Timeout mit "not_connected" abgelehnt — damit das JS deterministisch
+    // auf die 30s-Vorschau zurückfällt (statt stiller „läuft", obwohl nichts spielt).
+    private var pendingPlayCall: CAPPluginCall?
     // true, solange ein Connect-Versuch mit gespeichertem Token läuft — schlägt
     // er fehl (Token abgelaufen), fallen wir auf die volle Zustimmung zurück.
     private var triedStoredToken = false
@@ -161,6 +167,12 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         call.resolve(["available": installed])
     }
 
+    // Echte App-Remote-Verbindung (nicht nur „autorisiert"). Das JS routet die
+    // Wiedergabe nur dann auf Spotify, wenn hier true zurückkommt — sonst Vorschau.
+    @objc func isConnected(_ call: CAPPluginCall) {
+        call.resolve(["connected": appRemote?.isConnected ?? false])
+    }
+
     @objc func connect(_ call: CAPPluginCall) {
         guard let clientId = call.getString("clientId"),
               let redirect = call.getString("redirectUrl"),
@@ -235,29 +247,38 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
             // Noch nicht verbunden → Song einreihen und Verbindung herstellen
             // (Spotify ist gerade aktiv genug). Sobald didEstablishConnection
             // feuert, wird pendingUri im Hintergrund gespielt — ohne App-Wechsel.
+            // KEIN authorizeAndPlayURI-Vordergrund-Fallback mehr: das würde Spotify
+            // mit sichtbarem Songnamen öffnen (Spoiler im Jahres-Ratespiel). Klappt
+            // die Verbindung nicht, wird der play()-Call abgelehnt → JS fällt auf
+            // die 30s-Vorschau zurück.
             pendingUri = uri
             wantsConnection = true
+            // Vorigen, noch offenen play()-Call ablehnen (überschriebene Anfrage).
+            pendingPlayCall?.reject("superseded")
+            pendingPlayCall = call
             if let token = storedValidToken() { remote.connectionParameters.accessToken = token }
             DispatchQueue.main.async { remote.connect() }
-            // Absolutes Sicherheitsnetz: klappt die Verbindung binnen 6s gar nicht,
-            // lieber einmalig via authorizeAndPlayURI abspielen als Stille.
+            // Sicherheitsnetz: kommt binnen 6s keine Verbindung zustande, den
+            // play()-Call ablehnen (Vorschau-Fallback im JS), ohne Spotify zu öffnen.
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
-                guard let self = self, self.pendingUri == uri, let r = self.appRemote, !r.isConnected else { return }
-                self.pendingUri = nil
-                _ = r.authorizeAndPlayURI(uri)
+                guard let self = self, self.pendingPlayCall === call else { return }
+                self.pendingPlayCall = nil
+                if self.pendingUri == uri { self.pendingUri = nil }
+                call.reject("not_connected")
             }
-            call.resolve()
         }
     }
 
     @objc func pause(_ call: CAPPluginCall) {
-        appRemote?.playerAPI?.pause({ _, error in
+        guard let remote = appRemote, remote.isConnected else { call.reject("not_connected"); return }
+        remote.playerAPI?.pause({ _, error in
             if let error = error { call.reject(error.localizedDescription) } else { call.resolve() }
         })
     }
 
     @objc func resume(_ call: CAPPluginCall) {
-        appRemote?.playerAPI?.resume({ _, error in
+        guard let remote = appRemote, remote.isConnected else { call.reject("not_connected"); return }
+        remote.playerAPI?.resume({ _, error in
             if let error = error { call.reject(error.localizedDescription) } else { call.resolve() }
         })
     }
@@ -265,7 +286,10 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     @objc func disconnect(_ call: CAPPluginCall) {
         wantsConnection = false
         pendingUri = nil
+        pendingPlayCall?.reject("disconnected")
+        pendingPlayCall = nil
         appRemote?.disconnect()
+        notifyListeners("connection", data: ["connected": false])
         call.resolve()
     }
 
@@ -355,11 +379,10 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         triedStoredToken = false
         appRemote?.connectionParameters.accessToken = session.accessToken
         DispatchQueue.main.async { self.appRemote?.connect() }
-        // Autorisierung erfolgreich → Bridge gilt als verbunden. Die eigentliche
-        // App-Remote-Verbindung wird beim ersten Play via authorizeAndPlayURI
-        // sichergestellt (zuverlässiger als auf didEstablishConnection zu warten).
-        connectCall?.resolve(["connected": true])
-        connectCall = nil
+        // KEIN optimistisches connectCall-Resolve hier: die Autorisierung ist nur
+        // der erste Schritt. „Verbunden" gilt erst, wenn appRemoteDidEstablishConnection
+        // feuert (echte App-Remote-Verbindung) — erst dann steuern unsere Buttons
+        // die Wiedergabe zuverlässig. Das 15s-connect_timeout schützt vor Hängern.
     }
 
     public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
@@ -374,15 +397,44 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         triedStoredToken = false
         connectCall?.resolve(["connected": true])
         connectCall = nil
+        // Echten Player-State abonnieren → das JS spiegelt damit den TATSÄCHLICHEN
+        // Spotify-Zustand (Play/Pause), statt einen optimistischen Boolean zu führen.
+        appRemote.playerAPI?.delegate = self
+        appRemote.playerAPI?.subscribe(toPlayerState: { _, _ in })
+        notifyListeners("connection", data: ["connected": true])
         if let uri = pendingUri {
-            appRemote.playerAPI?.play(uri, callback: { _, _ in })
+            appRemote.playerAPI?.play(uri, callback: { [weak self] _, error in
+                guard let self = self else { return }
+                if let error = error { self.pendingPlayCall?.reject("play_failed: \(error.localizedDescription)") }
+                else { self.pendingPlayCall?.resolve() }
+                self.pendingPlayCall = nil
+            })
             pendingUri = nil
+        } else {
+            // Verbindung kam ohne wartenden Song zustande (reiner connect()).
+            pendingPlayCall?.resolve()
+            pendingPlayCall = nil
         }
+    }
+
+    // MARK: - SPTAppRemotePlayerStateDelegate
+
+    public func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        // WICHTIG: track.name / Jahr NICHT mitsenden (Spoiler-Schutz). Das JS
+        // braucht nur isPaused (UI-Sync), uri (Stale-Event-Abgleich) und position.
+        notifyListeners("playerState", data: [
+            "isPaused": playerState.isPaused,
+            "uri": playerState.track.uri,
+            "position": playerState.playbackPosition,
+        ])
     }
 
     public func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
         // Verbindung abgebrochen — das Spiel fällt beim nächsten Play auf die
-        // Vorschau zurück.
+        // Vorschau zurück. JS informieren, damit Routing/Buttons nachziehen.
+        pendingPlayCall?.reject("not_connected")
+        pendingPlayCall = nil
+        notifyListeners("connection", data: ["connected": false])
     }
 
     public func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
@@ -399,5 +451,10 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         }
         connectCall?.reject("connect_failed: \(error?.localizedDescription ?? "unknown")")
         connectCall = nil
+        // Wartender Song kann nicht abgespielt werden → JS auf Vorschau zurückfallen.
+        pendingPlayCall?.reject("not_connected")
+        pendingPlayCall = nil
+        pendingUri = nil
+        notifyListeners("connection", data: ["connected": false])
     }
 }
