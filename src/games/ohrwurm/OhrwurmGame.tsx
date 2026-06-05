@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   ArrowLeft, ArrowRight, RotateCcw, Trophy, Users, User, Plus, X as CloseIcon,
   Check, Music2, Fish, Repeat, ExternalLink, ChevronRight, Sparkles, Crown, Zap, Heart,
-  Play, Loader2,
+  Play, Loader2, QrCode,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -121,6 +121,13 @@ export default function OhrwurmGame() {
   // Lade-Status der Reveal-Spotify-Aktionen (verhindert Doppel-Schreiben bei Doppeltipp).
   const [likeBusy, setLikeBusy] = useState(false);
   const [playlistBusy, setPlaylistBusy] = useState(false);
+  // Opt-in-Connect läuft gerade (warmUp)?
+  const [warming, setWarming] = useState(false);
+  // QR-Overlay sichtbar?
+  const [qrOpen, setQrOpen] = useState(false);
+  // Ref für den „verbindet"-Watchdog (liest echten Verbindungsstand im Timeout).
+  const spotifyConnectedRef = useRef(false);
+  const connectWatchdogRef = useRef<number | null>(null);
   // Refs für den nativen playerState-Handler (läuft außerhalb des Renders):
   // gegen Stale-Events der Vorkarte absichern (URI- + Phasen-Abgleich).
   const spotifyUriRef = useRef<string | null>(null);
@@ -146,6 +153,7 @@ export default function OhrwurmGame() {
   useEffect(() => { spotifyUriRef.current = spotifyUri; }, [spotifyUri]);
   useEffect(() => { phaseRef.current = phase; }, [phase]);
   useEffect(() => { isAudioPlayingRef.current = isAudioPlaying; }, [isAudioPlaying]);
+  useEffect(() => { spotifyConnectedRef.current = spotifyConnected; }, [spotifyConnected]);
 
   // 30s-Vorschau abspielen (Fallback, wenn Spotify nicht greift). Gibt true
   // zurück, wenn ein Clip vorhanden ist und gestartet wurde.
@@ -252,18 +260,28 @@ export default function OhrwurmGame() {
       void getSpotifyBridge().then(({ bridge, reason }) => {
         if (!bridge) { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); return; }
         spotifyBridgeRef.current = bridge;
-        // Bridge ist verfügbar, aber noch NICHT zwingend echt verbunden — die
-        // App-Remote-Verbindung kommt async (oft erst, wenn die App nach dem Auth-
-        // Sprung wieder aktiv ist). Status bleibt 'connecting', bis das echte
-        // connection-Event true meldet. Solange läuft die 30s-Vorschau.
+        // Bridge ist verfügbar, aber noch NICHT zwingend echt verbunden — der stille
+        // Auto-Connect klappt nur, wenn Spotify gerade eine aktive Session hat.
+        // Status 'connecting' nur kurz; greift der Auto-Connect nicht, schaltet der
+        // Watchdog auf einen klaren Nicht-verbunden-Zustand (kein Endlos-„verbindet").
         setSpotifyStatus('connecting');
         let everConnected = false;
+        if (connectWatchdogRef.current != null) window.clearTimeout(connectWatchdogRef.current);
+        connectWatchdogRef.current = window.setTimeout(() => {
+          connectWatchdogRef.current = null;
+          if (!spotifyConnectedRef.current) setSpotifyStatus('preview:nicht_verbunden');
+        }, 7000);
         // Echten Verbindungs- und Player-Zustand abonnieren (Single Source of Truth).
         const unsubConn = bridge.onConnection((connected) => {
           setSpotifyConnected(connected);
-          setSpotifyStatus(connected ? 'ok' : 'connecting');
-          if (connected && !everConnected) { everConnected = true; flash('Spotify verbunden ✓'); }
-          if (!connected) setIsAudioPlaying(false);
+          if (connected) {
+            if (connectWatchdogRef.current != null) { window.clearTimeout(connectWatchdogRef.current); connectWatchdogRef.current = null; }
+            setSpotifyStatus('ok');
+            if (!everConnected) { everConnected = true; flash('Spotify verbunden ✓'); }
+          } else {
+            setSpotifyStatus('preview:nicht_verbunden');
+            setIsAudioPlaying(false);
+          }
         });
         const unsubState = bridge.onPlayerState((s: SpotifyPlayerState) => {
           // Stale-Events der Vorkarte ignorieren: nur übernehmen, wenn die URI zur
@@ -362,6 +380,23 @@ export default function OhrwurmGame() {
     a.play().then(() => setIsAudioPlaying(true)).catch(() => {});
     void haptics.light();
   }, [previewUrl, haptics, spotifyUri, spotifyConnected, playPreviewFallback]);
+
+  // Opt-in: Spotify-Verbindung „anwerfen" (kurzer Spotify-Wechsel, neutraler Track,
+  // sofort pausiert). Erfolg meldet das connection-Event (setzt ok + flash); hier
+  // nur Fehlerfall + Diagnose anzeigen. Verhindert Endlos-„verbindet".
+  const handleConnectSpotify = useCallback(() => {
+    const bridge = spotifyBridgeRef.current;
+    if (!bridge || warming) return;
+    void haptics.medium();
+    setWarming(true);
+    setSpotifyStatus('connecting');
+    bridge.warmUp()
+      .then((r) => {
+        if (!r.connected) { setSpotifyStatus('preview:nicht_verbunden'); flash('Spotify nicht verbunden: ' + r.detail); }
+      })
+      .catch(() => { setSpotifyStatus('preview:nicht_verbunden'); flash('Spotify-Verbindung fehlgeschlagen'); })
+      .finally(() => setWarming(false));
+  }, [warming, haptics, flash]);
 
   // Fallback ohne Clip: Timer manuell starten
   const startListeningNoAudio = useCallback(() => {
@@ -521,6 +556,7 @@ export default function OhrwurmGame() {
   // Native Spotify-Abos + Watchdog abräumen (vor disconnect / beim Unmount).
   const teardownSpotify = useCallback(() => {
     if (playWatchdogRef.current != null) { window.clearTimeout(playWatchdogRef.current); playWatchdogRef.current = null; }
+    if (connectWatchdogRef.current != null) { window.clearTimeout(connectWatchdogRef.current); connectWatchdogRef.current = null; }
     spotifyUnsubsRef.current.forEach((fn) => { try { fn(); } catch { /* noop */ } });
     spotifyUnsubsRef.current = [];
     spotifyBridgeRef.current?.removeAllListeners().catch(() => {});
@@ -588,23 +624,42 @@ export default function OhrwurmGame() {
         </div>
       </div>
 
-      {/* Spotify-Verbindungsstatus (sichtbar im Premium-Modus) */}
-      {spotifyStatus && (
-        <div className="relative z-10 px-4 py-1.5 text-[11px] font-bold flex items-center justify-center gap-1.5"
-          style={
-            spotifyStatus === 'ok'
-              ? { background: 'rgba(29,185,84,0.14)', color: '#1DB954' }
-              : spotifyStatus === 'connecting'
-                ? { background: 'rgba(255,210,63,0.12)', color: OW.accent }
-                : { background: 'rgba(255,46,136,0.12)', color: OW.primary }
-          }>
-          {spotifyStatus === 'ok'
-            ? '✓ Spotify verbunden — Vollwiedergabe'
-            : spotifyStatus === 'connecting'
-              ? '⏳ Spotify verbindet…'
-              : '⚠ Spotify: ' + spotifyStatus.replace('preview:', '') + ' — 30s-Vorschau'}
-        </div>
-      )}
+      {/* Spotify-Verbindungsstatus (sichtbar im Premium-Modus) — aktionierbar:
+          nicht verbunden → „Mit Spotify verbinden" (Opt-in-Warmup) + Diagnose-Grund. */}
+      {spotifyStatus && (() => {
+        const ok = spotifyStatus === 'ok';
+        const connecting = spotifyStatus === 'connecting';
+        const reason = spotifyStatus.startsWith('preview:') ? spotifyStatus.slice('preview:'.length) : '';
+        const showConnect = !ok && !connecting && !!spotifyBridgeRef.current;
+        return (
+          <div className="relative z-10 px-4 py-1.5 text-[11px] font-bold flex items-center justify-center gap-2 flex-wrap"
+            style={
+              ok
+                ? { background: 'rgba(29,185,84,0.14)', color: '#1DB954' }
+                : connecting
+                  ? { background: 'rgba(255,210,63,0.12)', color: OW.accent }
+                  : { background: 'rgba(255,46,136,0.12)', color: OW.primary }
+            }>
+            <span className="flex items-center gap-1.5">
+              {ok
+                ? '✓ Spotify verbunden — Vollwiedergabe'
+                : connecting
+                  ? '⏳ Spotify verbindet…'
+                  : '⚠ Spotify nicht verbunden' + (reason && reason !== 'nicht_verbunden' ? ' (' + reason + ')' : '') + ' — 30s-Vorschau'}
+            </span>
+            {showConnect && (
+              <button
+                onClick={handleConnectSpotify}
+                disabled={warming}
+                className="ow-chip inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-black disabled:opacity-50"
+                style={{ background: '#1DB954', color: '#06210f' }}
+              >
+                {warming ? <Loader2 className="w-3 h-3 animate-spin" /> : <Music2 className="w-3 h-3" />} Mit Spotify verbinden
+              </button>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Scoreboard */}
       <Scoreboard participants={participants} activeId={active?.id} winTarget={winTarget} />
@@ -690,6 +745,11 @@ export default function OhrwurmGame() {
                         if (active.hooks < 1) { flash('Kein 🎣 — kannst nicht tauschen'); return; }
                         handleSwap();
                       }}
+                    />
+                    <ActionChip
+                      icon={QrCode} label="QR-Code"
+                      ariaLabel="QR-Code zum Scannen anzeigen"
+                      onClick={() => { void haptics.light(); setQrOpen(true); }}
                     />
                   </div>
                   {/* Ein großer Primär-Button */}
@@ -899,6 +959,34 @@ export default function OhrwurmGame() {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full font-bold text-sm shadow-xl"
             style={{ background: OW.elevated, color: OW.text, border: `1px solid ${OW.secondary}` }}>
             {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* QR-Overlay — immer per QR-Chip erreichbar (zum Scannen/Abspielen auf Spotify) */}
+      <AnimatePresence>
+        {qrOpen && song && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-6"
+            style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setQrOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', bounce: 0.35, duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex flex-col items-center gap-4"
+            >
+              <QrCard song={song} />
+              <button
+                onClick={() => setQrOpen(false)}
+                className="px-6 py-2.5 rounded-full text-sm font-bold"
+                style={{ background: OW.surface, color: OW.text, border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                Schließen
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

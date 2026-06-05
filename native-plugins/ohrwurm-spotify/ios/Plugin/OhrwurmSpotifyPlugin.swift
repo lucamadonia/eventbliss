@@ -30,6 +30,7 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "connect", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isConnected", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "warmUp", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "play", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "pause", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "resume", returnType: CAPPluginReturnPromise),
@@ -48,6 +49,11 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
     // Fehlschlag/Timeout mit "not_connected" abgelehnt — damit das JS deterministisch
     // auf die 30s-Vorschau zurückfällt (statt stiller „läuft", obwohl nichts spielt).
     private var pendingPlayCall: CAPPluginCall?
+    // Opt-in-Connect: ein wartender warmUp()-Aufruf, der per authorizeAndPlayURI die
+    // App-Remote-Verbindung anwirft. Nach Verbindungsaufbau wird der (neutrale)
+    // angeworfene Track sofort pausiert, damit nichts hörbar weiterläuft.
+    private var pendingWarmUpCall: CAPPluginCall?
+    private var warmupPauseOnConnect = false
     // true, solange ein Connect-Versuch mit gespeichertem Token läuft — schlägt
     // er fehl (Token abgelaufen), fallen wir auf die volle Zustimmung zurück.
     private var triedStoredToken = false
@@ -173,6 +179,33 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         call.resolve(["connected": appRemote?.isConnected ?? false])
     }
 
+    // Opt-in: Verbindung per kurzem Spotify-Wechsel „anwerfen". authorizeAndPlayURI
+    // weckt die Spotify-App UND etabliert die App-Remote-Verbindung zuverlässig
+    // (der stille connect() feuert keine Callback, wenn Spotify keine aktive
+    // Session hat). Leere URI = aktiven/letzten Track resümieren → KEIN Karten-
+    // Spoiler. Sobald verbunden, wird sofort pausiert (siehe didEstablishConnection).
+    @objc func warmUp(_ call: CAPPluginCall) {
+        guard let remote = appRemote else { call.reject("no_remote"); return }
+        if remote.isConnected {
+            call.resolve(["connected": true, "detail": "already"])
+            return
+        }
+        let uri = call.getString("uri") ?? ""
+        wantsConnection = true
+        warmupPauseOnConnect = true
+        pendingWarmUpCall?.reject("superseded")
+        pendingWarmUpCall = call
+        if let token = storedValidToken() { remote.connectionParameters.accessToken = token }
+        DispatchQueue.main.async { _ = remote.authorizeAndPlayURI(uri) }
+        // Sicherheitsnetz: kommt binnen 10s keine Verbindung, ablehnen (Diagnose).
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            guard let self = self, self.pendingWarmUpCall === call else { return }
+            self.pendingWarmUpCall = nil
+            self.warmupPauseOnConnect = false
+            call.reject("warmup_timeout")
+        }
+    }
+
     @objc func connect(_ call: CAPPluginCall) {
         guard let clientId = call.getString("clientId"),
               let redirect = call.getString("redirectUrl"),
@@ -288,6 +321,9 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         pendingUri = nil
         pendingPlayCall?.reject("disconnected")
         pendingPlayCall = nil
+        pendingWarmUpCall?.reject("disconnected")
+        pendingWarmUpCall = nil
+        warmupPauseOnConnect = false
         appRemote?.disconnect()
         notifyListeners("connection", data: ["connected": false])
         call.resolve()
@@ -408,6 +444,14 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         appRemote.playerAPI?.delegate = self
         appRemote.playerAPI?.subscribe(toPlayerState: { _, _ in })
         notifyListeners("connection", data: ["connected": true])
+        // Opt-in-Warmup: der neutrale „Anwerf"-Track wird sofort pausiert, damit
+        // nichts hörbar weiterläuft. Danach steht die Verbindung für versteckte Plays.
+        if warmupPauseOnConnect {
+            warmupPauseOnConnect = false
+            appRemote.playerAPI?.pause({ _, _ in })
+            pendingWarmUpCall?.resolve(["connected": true, "detail": "warmed"])
+            pendingWarmUpCall = nil
+        }
         if let uri = pendingUri {
             appRemote.playerAPI?.play(uri, callback: { [weak self] _, error in
                 guard let self = self else { return }
@@ -440,6 +484,9 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         // Vorschau zurück. JS informieren, damit Routing/Buttons nachziehen.
         pendingPlayCall?.reject("not_connected")
         pendingPlayCall = nil
+        pendingWarmUpCall?.reject("disconnected")
+        pendingWarmUpCall = nil
+        warmupPauseOnConnect = false
         notifyListeners("connection", data: ["connected": false])
     }
 
@@ -457,9 +504,12 @@ public class OhrwurmSpotifyPlugin: CAPPlugin, CAPBridgedPlugin, SPTAppRemoteDele
         }
         connectCall?.reject("connect_failed: \(error?.localizedDescription ?? "unknown")")
         connectCall = nil
-        // Wartender Song kann nicht abgespielt werden → JS auf Vorschau zurückfallen.
+        // Wartender Song/Warmup kann nicht abgespielt werden → JS auf Vorschau zurück.
         pendingPlayCall?.reject("not_connected")
         pendingPlayCall = nil
+        pendingWarmUpCall?.reject("connect_failed: \(error?.localizedDescription ?? "unknown")")
+        pendingWarmUpCall = nil
+        warmupPauseOnConnect = false
         pendingUri = nil
         notifyListeners("connection", data: ["connected": false])
     }

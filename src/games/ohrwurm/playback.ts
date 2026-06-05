@@ -37,6 +37,11 @@ export interface SpotifyBridge {
   disconnect(): Promise<void>;
   /** Echte App-Remote-Verbindung (nicht nur „autorisiert"). Routing-Gate. */
   isConnected(): Promise<boolean>;
+  /**
+   * Opt-in: Verbindung per kurzem Spotify-Wechsel „anwerfen" (authorizeAndPlayURI,
+   * neutraler Track, sofort pausiert). Liefert ok + Diagnose-Detail.
+   */
+  warmUp(): Promise<{ connected: boolean; detail: string }>;
   /** Echten Player-State abonnieren. Liefert eine Unsubscribe-Funktion. */
   onPlayerState(cb: (state: SpotifyPlayerState) => void): () => void;
   /** Verbindungsstatus-Änderungen abonnieren. Liefert eine Unsubscribe-Funktion. */
@@ -57,6 +62,7 @@ interface NativeSpotifyPlugin {
   isAvailable(): Promise<{ available: boolean }>;
   connect(o: { clientId: string; redirectUrl: string }): Promise<{ connected: boolean }>;
   isConnected(): Promise<{ connected: boolean }>;
+  warmUp(o: { uri?: string }): Promise<{ connected: boolean; detail: string }>;
   getToken(): Promise<{ token: string | null }>;
   play(o: { uri: string }): Promise<void>;
   pause(): Promise<void>;
@@ -120,6 +126,13 @@ export async function getSpotifyBridge(): Promise<SpotifyBridgeResult> {
           return (await OhrwurmSpotify.isConnected()).connected;
         } catch {
           return false;
+        }
+      },
+      warmUp: async () => {
+        try {
+          return await OhrwurmSpotify.warmUp({});
+        } catch (e) {
+          return { connected: false, detail: msg(e) };
         }
       },
       // addListener ist async; wir geben sofort eine Unsubscribe-Funktion zurück,

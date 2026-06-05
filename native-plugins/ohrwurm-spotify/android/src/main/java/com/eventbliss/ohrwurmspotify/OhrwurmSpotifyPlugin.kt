@@ -84,6 +84,7 @@ class OhrwurmSpotifyPlugin : Plugin() {
                 resolveCall?.let {
                     val ret = JSObject()
                     ret.put("connected", true)
+                    ret.put("detail", "connected")
                     it.resolve(ret)
                 }
                 // Wartenden Song im Hintergrund abspielen.
@@ -106,6 +107,19 @@ class OhrwurmSpotifyPlugin : Plugin() {
                 pendingUri = null
             }
         })
+    }
+
+    // Opt-in: Verbindung „anwerfen". Auf Android stellt SpotifyAppRemote.connect
+    // (mit showAuthView) die Verbindung ohnehin zuverlässig her — daher reicht ein
+    // erneuter Connect-Versuch. Liefert {connected, detail} fürs JS.
+    @PluginMethod
+    fun warmUp(call: PluginCall) {
+        val remote = appRemote
+        if (remote != null && remote.isConnected) {
+            val ret = JSObject(); ret.put("connected", true); ret.put("detail", "already")
+            call.resolve(ret); return
+        }
+        connectInternal(call)
     }
 
     @PluginMethod
