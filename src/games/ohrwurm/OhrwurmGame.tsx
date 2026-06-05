@@ -702,15 +702,20 @@ export default function OhrwurmGame() {
                   onPlay={togglePlay}
                 />
               ) : (
-                /* Fallback: kein Clip gefunden → QR/Spotify + manueller Start */
-                <div className="flex flex-col items-center gap-4">
-                  <QrCard song={song} />
+                /* Fallback: kein Clip & keine Spotify-URI → manueller Start, KEIN QR
+                   (QR würde beim Raten den Titel verraten — gibt es erst im Reveal). */
+                <div className="flex flex-col items-center gap-4 text-center">
                   {!listening ? (
-                    <button onClick={startListeningNoAudio}
-                      className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
-                      style={{ background: OW.primary, color: OW.bg }}>
-                      Anhören & 60s starten
-                    </button>
+                    <>
+                      <p className="text-sm max-w-xs" style={{ color: OW.dim }}>
+                        Kein Hörclip verfügbar — Jahr schätzen oder Karte tauschen.
+                      </p>
+                      <button onClick={startListeningNoAudio}
+                        className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
+                        style={{ background: OW.primary, color: OW.bg }}>
+                        60s starten
+                      </button>
+                    </>
                   ) : (
                     <div className="font-mono font-black text-3xl tabular-nums"
                       style={{ color: roundTimer.timeLeft <= 10 ? '#ff5d73' : OW.text }}>
@@ -745,11 +750,6 @@ export default function OhrwurmGame() {
                         if (active.hooks < 1) { flash('Kein 🎣 — kannst nicht tauschen'); return; }
                         handleSwap();
                       }}
-                    />
-                    <ActionChip
-                      icon={QrCode} label="QR-Code"
-                      ariaLabel="QR-Code zum Scannen anzeigen"
-                      onClick={() => { void haptics.light(); setQrOpen(true); }}
                     />
                   </div>
                   {/* Ein großer Primär-Button */}
@@ -838,11 +838,12 @@ export default function OhrwurmGame() {
               <ResolutionSummary
                 resolution={resolution} active={active} counter={counter} participants={participants}
               />
-              {/* Spotify-Aktionen — nur wenn die Premium-Bridge verbunden ist:
-                  ganzen Song hören (ohne Timer) + zur eigenen Bibliothek.
-                  Filigrane Chip-Leiste, oberhalb des „Weiter"-Primärbuttons. */}
-              {spotifyBridgeRef.current && spotifyUri && spotifyConnected && (
-                <div role="group" aria-label="Spotify-Aktionen" className="flex items-stretch gap-2 w-full max-w-sm">
+              {/* Aktionen NACH der Auflösung — filigrane Chip-Leiste über „Weiter".
+                  QR immer (zum Scannen/auf Spotify öffnen); Ganzer Song / Like /
+                  Playlist nur bei verbundener Premium-Bridge. */}
+              <div role="group" aria-label="Aktionen" className="flex items-stretch gap-2 w-full max-w-sm">
+                {spotifyBridgeRef.current && spotifyUri && spotifyConnected && (
+                  <>
                   <ActionChip
                     icon={Play} label="Ganzer Song" tone="spotify"
                     ariaLabel="Ganzen Song auf Spotify hören"
@@ -874,8 +875,14 @@ export default function OhrwurmGame() {
                         .finally(() => setPlaylistBusy(false));
                     }}
                   />
-                </div>
-              )}
+                  </>
+                )}
+                <ActionChip
+                  icon={QrCode} label="QR-Code"
+                  ariaLabel="QR-Code zum Scannen anzeigen"
+                  onClick={() => { void haptics.light(); setQrOpen(true); }}
+                />
+              </div>
               {bonusOpen ? (
                 <div className="w-full max-w-sm rounded-2xl p-4 flex flex-col gap-3"
                   style={{ background: OW.surface, border: `1px solid ${OW.accent}`, boxShadow: speedEligible ? `0 0 26px ${OW.accent}55` : 'none' }}>
