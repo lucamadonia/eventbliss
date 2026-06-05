@@ -530,6 +530,7 @@ export default function OhrwurmGame() {
         ref={audioRef}
         src={previewUrl ?? undefined}
         preload="none"
+        loop
         onPlay={() => setIsAudioPlaying(true)}
         onPause={() => setIsAudioPlaying(false)}
         onEnded={() => setIsAudioPlaying(false)}
