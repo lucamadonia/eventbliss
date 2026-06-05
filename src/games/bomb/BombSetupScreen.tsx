@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bomb, Plus, Trash2, User, Users, Zap, Brain, Timer, Hash, Wine, Shuffle } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Bomb, Users, Zap, Brain, Timer, Hash, Shuffle } from 'lucide-react';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import type { GameState, GameMode } from './BombGame';
 
 interface SetupScreenProps {
@@ -15,17 +15,6 @@ const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode
   { key: 'quiz', label: 'Quiz', desc: 'Multiple-Choice Fragen', icon: <Zap className="w-4 h-4" /> },
   { key: 'speed', label: 'Speed', desc: 'Timer wird jede Runde kuerzer', icon: <Timer className="w-4 h-4" /> },
   { key: 'alle', label: 'Alle antworten', desc: 'Jeder muss eine Antwort geben!', icon: <Users className="w-4 h-4" /> },
-];
-
-const AVATAR_COLORS = [
-  'from-[#cf96ff] to-[#8b5cf6]',
-  'from-[#00e3fd] to-[#0ea5e9]',
-  'from-[#ff7350] to-[#f43f5e]',
-  'from-[#fbbf24] to-[#f97316]',
-  'from-[#34d399] to-[#10b981]',
-  'from-[#f472b6] to-[#ec4899]',
-  'from-[#60a5fa] to-[#3b82f6]',
-  'from-[#a78bfa] to-[#7c3aed]',
 ];
 
 export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScreenProps) {
@@ -78,6 +67,25 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           <p className="text-white/50 text-sm max-w-[280px] mx-auto">
             Schaffst du es, die Bombe rechtzeitig weiterzugeben?
           </p>
+        </motion.div>
+
+        {/* Spieler — einheitlicher Block, IMMER ganz oben (1. Sektion) */}
+        <motion.div
+          className="mb-3"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.08 }}
+        >
+          <PlayerSetup
+            players={state.players.map((p, i) => ({ id: `b-${i}`, name: p.name }))}
+            onAdd={addPlayer}
+            onRemove={(id) => removePlayer(Number(id.slice(2)))}
+            onRename={(id, name) => setName(Number(id.slice(2)), name)}
+            min={2}
+            max={20}
+            accent="#cf96ff"
+            maxNameLength={12}
+          />
         </motion.div>
 
         {/* Bento Grid Config */}
@@ -205,65 +213,6 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           )}
         </motion.div>
 
-        {/* Spieler Section */}
-        <motion.div
-          className="mt-6"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.15 }}
-        >
-          <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">
-            Spieler ({state.players.length})
-          </h2>
-          <div className="grid grid-cols-3 gap-3 max-h-[320px] overflow-y-auto pr-1">
-            {state.players.map((p, i) => (
-              <motion.div
-                key={i}
-                className="relative group"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.05 * i }}
-              >
-                <div className={`p-[2px] rounded-2xl bg-gradient-to-br ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
-                  <div className="bg-[#1f1f29] rounded-[14px] p-3 flex flex-col items-center gap-2">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center`}>
-                      <User className="w-5 h-5 text-white" />
-                    </div>
-                    <Input
-                      value={p.name}
-                      onChange={(e) => setName(i, e.target.value)}
-                      placeholder={`Spieler ${i + 1}`}
-                      className="bg-[#13131b] border-0 text-white text-center text-base placeholder:text-white/30 h-8 rounded-lg"
-                      maxLength={12}
-                    />
-                  </div>
-                </div>
-                {state.players.length > 2 && (
-                  <button
-                    onClick={() => removePlayer(i)}
-                    className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-[#ff6e84] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  >
-                    <Trash2 className="w-3 h-3 text-white" />
-                  </button>
-                )}
-              </motion.div>
-            ))}
-
-            {/* Add Player Card */}
-            {state.players.length < 20 && (
-              <motion.button
-                onClick={addPlayer}
-                className="rounded-2xl border-2 border-dashed border-white/10 hover:border-[#cf96ff]/40 p-3 flex flex-col items-center justify-center gap-2 transition-colors min-h-[120px]"
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-white/30" />
-                </div>
-                <span className="text-white/30 text-xs">Hinzufuegen</span>
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
       </div>
 
       {/* Fixed Bottom CTA */}

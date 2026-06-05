@@ -19,6 +19,7 @@ import {
 import { OHRWURM_GENRES } from './ohrwurm-content';
 import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
+import { PlayerSetup } from '../ui/PlayerSetup';
 import { supabase } from '@/integrations/supabase/client';
 import { type PlaybackMode, type SpotifyBridge, type SpotifyPlayerState, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
 import { loadExtraSongs } from './ohrwurm-extra-songs';
@@ -1408,6 +1409,21 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
           </p>
         </section>
 
+        {/* Teilnehmer — einheitlicher Spieler-Block, IMMER ganz oben (1. Sektion) */}
+        <section className="mb-8">
+          <PlayerSetup
+            players={players}
+            onAdd={addPlayer}
+            onRemove={removePlayer}
+            onRename={renamePlayer}
+            min={MIN}
+            max={MAX}
+            accent={OW.primary}
+            label={mode === 'group' ? 'Gruppen' : 'Spieler'}
+            maxNameLength={16}
+          />
+        </section>
+
         {/* Modus */}
         <section className="mb-8">
           <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Modus</h3>
@@ -1487,59 +1503,6 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
           )}
         </section>
 
-        {/* Teilnehmer */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold tracking-[0.2em] uppercase inline-flex items-center gap-2" style={{ color: OW.dim }}>
-              <Users className="w-4 h-4" style={{ color: OW.secondary }} />
-              {mode === 'group' ? 'Gruppen' : 'Spieler'} · {players.length}/{MAX}
-            </h3>
-          </div>
-          <div className="space-y-2.5">
-            {players.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-3">
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center text-base font-black text-white shrink-0"
-                  style={{ background: p.color, border: `2px solid ${OW.bg}` }}
-                >
-                  {p.avatar}
-                </div>
-                <input
-                  type="text"
-                  value={p.name}
-                  onChange={(e) => renamePlayer(p.id, e.target.value)}
-                  onFocus={(e) => e.currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' })}
-                  placeholder={`${mode === 'group' ? 'Gruppe' : 'Spieler'} ${i + 1}`}
-                  maxLength={16}
-                  inputMode="text"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  className="flex-1 min-w-0 rounded-xl px-3.5 py-3 text-base font-bold focus:outline-none focus:ring-2 focus:ring-[#FF2E88]/40"
-                  style={{ background: OW.surface, color: OW.text, border: '1px solid rgba(255,255,255,0.08)', caretColor: OW.primary }}
-                />
-                {players.length > MIN && (
-                  <button
-                    onClick={() => { void haptics.light(); removePlayer(p.id); }}
-                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 active:scale-95 transition-transform"
-                    style={{ background: 'rgba(255,46,136,0.12)' }}
-                    aria-label={`${p.name || 'Teilnehmer'} entfernen`}
-                  >
-                    <CloseIcon className="w-4 h-4" style={{ color: OW.primary }} />
-                  </button>
-                )}
-              </div>
-            ))}
-            {players.length < MAX && (
-              <button
-                onClick={addPlayer}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed text-sm font-bold active:scale-[0.99] transition-transform"
-                style={{ borderColor: 'rgba(255,255,255,0.18)', color: OW.dim }}
-              >
-                <Plus className="w-4 h-4" /> {mode === 'group' ? 'Gruppe' : 'Spieler'} hinzufügen
-              </button>
-            )}
-          </div>
-        </section>
       </main>
 
       {/* Start CTA — bei offener Tastatur ausblenden, damit das Namensfeld frei bleibt */}

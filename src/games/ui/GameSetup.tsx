@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, User, Play, Globe, Wifi } from "lucide-react";
+import { motion } from "framer-motion";
+import { Play, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
+import { PlayerSetup, type PlayerSetupPlayer } from "./PlayerSetup";
 import { getOnlineRoomPlayers } from "../multiplayer/useGameRoom";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "./GameRulesModal";
@@ -125,6 +126,13 @@ export function GameSetup({
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
+  // Für den einheitlichen PlayerSetup-Block: echte Online-Spieler sind read-only
+  // (ihr Name ist auf deren eigenem Gerät maßgeblich); lokale/Party-Spieler editierbar.
+  const setupPlayers: PlayerSetupPlayer[] = players.map((p) => {
+    const online = autoOnlinePlayers?.find((op) => op.id === p.id);
+    return { id: p.id, name: p.name, color: online?.color, avatar: online?.avatar, readOnly: !!online };
+  });
+
   const canStart = players.every((p) => p.name.trim().length > 0) && selectedMode;
 
   const handleStart = () => {
@@ -152,82 +160,22 @@ export function GameSetup({
           {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
         </div>
 
-        {/* Player list */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-              Spieler ({players.length})
-            </h2>
-            {hasOnline && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
-                <Wifi className="w-3 h-3 text-[#df8eff]" />
-                <span className="text-[10px] font-bold text-[#df8eff] uppercase tracking-wider">Online Room</span>
-              </div>
-            )}
-          </div>
-          <AnimatePresence initial={false}>
-            {players.map((player, i) => (
-              <motion.div
-                key={player.id}
-                layout
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20, height: 0 }}
-                className="flex items-center gap-3"
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
-                  style={{ backgroundColor: getPlayerColor(i) }}
-                >
-                  {player.name ? getPlayerInitial(player.name) : <User className="w-4 h-4" />}
-                </div>
-                <input
-                  type="text"
-                  value={player.name}
-                  onChange={(e) => updateName(player.id, e.target.value)}
-                  placeholder={`Spieler ${i + 1}`}
-                  maxLength={20}
-                  inputMode="text"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  /* Only TRUE online players (remote devices) are read-only —
-                     their name is authoritative on their own phone. Local
-                     party-session players are just cached presets and MUST
-                     stay editable, otherwise the keyboard never opens. */
-                  readOnly={!!autoOnlinePlayers?.find(op => op.id === player.id)}
-                  className={cn(
-                    "flex-1 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base",
-                    autoOnlinePlayers?.find(op => op.id === player.id) && "border-[#df8eff]/30 bg-[#df8eff]/5"
-                  )}
-                />
-                {autoOnlinePlayers?.find(op => op.id === player.id) && (
-                  <div className="w-9 h-9 rounded-xl bg-[#df8eff]/10 flex items-center justify-center" title="Online-Spieler">
-                    <Globe className="w-4 h-4 text-[#df8eff]" />
-                  </div>
-                )}
-                {players.length > minPlayers && !autoOnlinePlayers?.find(op => op.id === player.id) && (
-                  <button
-                    onClick={() => removePlayer(player.id)}
-                    className="w-9 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors active:scale-95"
-                    aria-label="Spieler entfernen"
-                  >
-                    <Minus className="w-4 h-4 text-red-400" />
-                  </button>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {players.length < maxPlayers && (
-            <motion.button
-              onClick={addPlayer}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 hover:border-purple-500/50 hover:text-purple-400 transition-colors text-sm"
-              whileTap={{ scale: 0.98 }}
-            >
-              <Plus className="w-4 h-4" />
-              Spieler hinzufugen
-            </motion.button>
-          )}
-        </section>
+        {/* Player list — einheitlicher PlayerSetup-Block (oben, 1. Sektion) */}
+        <PlayerSetup
+          players={setupPlayers}
+          onAdd={addPlayer}
+          onRemove={removePlayer}
+          onRename={updateName}
+          min={minPlayers}
+          max={maxPlayers}
+          accent="#df8eff"
+          hint={hasOnline ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
+              <Wifi className="w-3 h-3 text-[#df8eff]" />
+              <span className="text-[10px] font-bold text-[#df8eff] uppercase tracking-wider">Online Room</span>
+            </div>
+          ) : undefined}
+        />
 
         {/* Mode selection */}
         {modes.length > 0 && (

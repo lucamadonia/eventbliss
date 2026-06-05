@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, Timer,
   Zap, MessageSquare, Shuffle, BarChart3, Clock, Check,
-  X as CloseIcon, Users, Stars, Flame, Plus,
+  Users, Stars, Flame,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { THISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content-de';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
+import { PlayerSetup } from '../ui/PlayerSetup';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -844,10 +845,9 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
       { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
     ];
   });
-  const [editingId, setEditingId] = useState<string | null>(null);
-
   const MIN = 2, MAX = 20;
   const addPlayer = () => {
+    if (isOnline) return; // Online: Spielerliste ist fix (Remote-Geräte)
     if (players.length >= MAX) return;
     const idx = players.length;
     const id = `p-${Date.now()}-${idx}`;
@@ -858,12 +858,13 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
       color: PLAYER_COLORS[idx % PLAYER_COLORS.length],
       avatar: String(idx + 1),
     }]);
-    setEditingId(id);
   };
   const removePlayer = (id: string) => {
+    if (isOnline) return;
     setPlayers((prev) => prev.length > MIN ? prev.filter((p) => p.id !== id) : prev);
   };
   const renamePlayer = (id: string, name: string) => {
+    if (isOnline) return;
     setPlayers((prev) => prev.map((p) =>
       p.id === id ? { ...p, name, avatar: name.slice(0, 1).toUpperCase() || '?' } : p,
     ));
@@ -915,6 +916,20 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
           <p className="text-[#a8abb3] text-sm max-w-[300px]">
             Wähl deinen Modus und startet den Präferenz-Battle.
           </p>
+        </section>
+
+        {/* Spieler — einheitlicher Block, IMMER ganz oben (1. Sektion) */}
+        <section className="mb-10">
+          <PlayerSetup
+            players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, readOnly: isOnline }))}
+            onAdd={addPlayer}
+            onRemove={removePlayer}
+            onRename={renamePlayer}
+            min={MIN}
+            max={isOnline ? players.length : MAX}
+            accent="#df8eff"
+            maxNameLength={12}
+          />
         </section>
 
         {/* Mode bento grid */}
@@ -982,95 +997,6 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
                 </button>
               );
             })}
-          </div>
-        </section>
-
-        {/* Player strip */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3] inline-flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#8ff5ff]" />
-              Spieler · {players.length}/{MAX}
-            </h3>
-            {!isOnline && players.length < MAX && (
-              <button
-                type="button"
-                onClick={addPlayer}
-                className="text-xs font-bold text-[#df8eff] hover:opacity-80 transition-opacity"
-              >
-                + Hinzufügen
-              </button>
-            )}
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-3 -mx-6 px-6 snap-x">
-            {players.map((p, i) => {
-              const isEditing = editingId === p.id;
-              const isFirst = i === 0;
-              return (
-                <div key={p.id} className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-16">
-                  <div className="relative">
-                    <div
-                      className="w-16 h-16 rounded-full p-0.5 shadow-lg"
-                      style={{
-                        background: isFirst
-                          ? 'linear-gradient(135deg, #df8eff, #ff6b98)'
-                          : `linear-gradient(135deg, ${p.color}, #20262f)`,
-                      }}
-                    >
-                      <div
-                        className="w-full h-full rounded-full border-2 border-[#0a0e14] flex items-center justify-center text-base font-black text-white"
-                        style={{ backgroundColor: p.color }}
-                      >
-                        {p.avatar}
-                      </div>
-                    </div>
-                    {!isOnline && !isFirst && players.length > MIN && (
-                      <button
-                        type="button"
-                        onClick={() => { void haptics.light(); removePlayer(p.id); }}
-                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#20262f] border border-[#44484f] flex items-center justify-center hover:bg-[#ff6e84]/20"
-                        aria-label={`${p.name} entfernen`}
-                      >
-                        <CloseIcon className="w-2.5 h-2.5 text-[#a8abb3]" />
-                      </button>
-                    )}
-                  </div>
-                  {isEditing ? (
-                    <input
-                      autoFocus
-                      type="text"
-                      value={p.name}
-                      maxLength={12}
-                      onChange={(e) => renamePlayer(p.id, e.target.value)}
-                      onBlur={() => setEditingId(null)}
-                      onKeyDown={(e) => e.key === 'Enter' && setEditingId(null)}
-                      className="w-16 text-center text-[10px] font-bold bg-transparent border-b border-[#df8eff] text-white focus:outline-none"
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => !isOnline && setEditingId(p.id)}
-                      disabled={isOnline}
-                      className="text-[10px] font-bold truncate max-w-full hover:text-[#df8eff] transition-colors"
-                    >
-                      {p.name}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-            {!isOnline && players.length < MAX && (
-              <button
-                type="button"
-                onClick={addPlayer}
-                className="flex-shrink-0 flex flex-col items-center gap-2 snap-start w-16 group"
-              >
-                <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#44484f] flex items-center justify-center text-[#72757d] group-hover:border-[#df8eff] group-hover:text-[#df8eff] transition-colors active:scale-95">
-                  <Plus className="w-6 h-6" />
-                </div>
-                <span className="text-[10px] font-bold text-[#a8abb3]">Gast</span>
-              </button>
-            )}
           </div>
         </section>
 
