@@ -75,8 +75,8 @@ async function resolveViaSpotify(song) {
   return null;
 }
 
-/** Fallback: über die deployte Edge-Function (App-Token). */
-async function resolveViaEdge(song) {
+/** Fallback: über die deployte Edge-Function (App-Token). Mit 429-Backoff. */
+async function resolveViaEdge(song, attempt = 0) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/ohrwurm-spotify-track`, {
     method: 'POST',
     headers: {
@@ -88,6 +88,11 @@ async function resolveViaEdge(song) {
   });
   const data = await res.json().catch(() => ({}));
   if (data?.reason === 'search_403') throw new Error('FORBIDDEN(edge): ' + (data.detail || ''));
+  if (data?.reason === 'search_429' || data?.reason === 'no_credentials') {
+    if (attempt >= 8) return null;
+    await sleep(4000 + attempt * 2000);
+    return resolveViaEdge(song, attempt + 1);
+  }
   return data?.uri ?? null;
 }
 
@@ -115,7 +120,7 @@ async function main() {
       writeFileSync(OUT, JSON.stringify(out, null, 0) + '\n');
       process.stdout.write(`\r${done}/${songs.length}  ✓${hit} ·${miss}  `);
     }
-    await sleep(USER_TOKEN ? 90 : 160); // sanftes Rate-Limit
+    await sleep(USER_TOKEN ? 90 : 280); // sanftes Rate-Limit (Edge etwas langsamer)
   }
   writeFileSync(OUT, JSON.stringify(out, null, 0) + '\n');
   console.log(`\nFertig. ${Object.keys(out).length} URIs in spotify-uris.json (${miss} ohne Treffer).`);
