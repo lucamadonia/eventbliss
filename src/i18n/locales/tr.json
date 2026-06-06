@@ -2594,6 +2594,711 @@
         "name": "Hazine Avı",
         "description": "İpuçlarını takip et ve bulmacaları çöz.",
         "instructions": "Bir sonraki yere götüren ipuçları gizleyin. Sonunda hazine bekliyor!"
+      },
+      "drink_roulette": {
+        "name": "İçki Ruleti",
+        "description": "Şans çarkı kimin içeceğine karar verir.",
+        "instructions": "**Hazırlık:**\nBir rulet çarkı temin edin ya da isimler/sayılarla kendiniz yapın. İçecekleri hazırlayın (shot, bira veya alkolsüz). Her oyuncuya bir numara veya konum atayın.\n\n**Oyun Akışı:**\nSırayla her oyuncu çarkı çevirir. Ok kimi gösterirse o kişi içer. Çeviren oyuncu ayrıca ekstra bir görev de verebilir.\n\n**Kurallar:**\n• Arka arkaya iki kez gösterilene: Çift shot\n• Ok kendini gösterirse: Diğer herkes içer\n• 'Joker' alanına gelirse: Oyuncu kimin içeceğini seçer\n\n**Varyantlar:**\n• Görev Ruleti: İçmek yerine görevler verilir\n• Meydan Okuma Ruleti: Farklı meydan okumalarla dolu alanlar\n• Gerçek Ruleti: Ok kimi gösterirse dürüstçe bir soruyu yanıtlamak zorunda\n\n**İpuçları:**\nDaha heyecanlı olması için bazı alanlara 'Herkes içer' veya 'Şelale' gibi özel eylemler yazın!"
+      },
+      "who_am_i": {
+        "name": "Ben Kimim?",
+        "description": "Alnındaki kağıttaki ünlü kişiyi evet/hayır soruları sorarak tahmin et.",
+        "instructions": "**Hazırlık:**\nPost-it kağıtlarına ünlü isimleri yazın — bekarlık partisi için ünlü çiftler ya da temaya uygun isimler harika olur. Herkes kağıdı görmeden alnına yapıştırır.\n\n**Oyun Akışı:**\nSırayla herkes bir evet/hayır sorusu sorar. 'Evet' alınınca soru sormaya devam edilebilir, 'Hayır'da sıra bir sonrakine geçer.\n\n**Kurallar:**\n• Yalnızca evet/hayır soruları\n• Tur başına maksimum 20 soru\n• Başkalarından ipucu yok\n\n**İpuçları:**\nÖnce cinsiyeti, sonra mesleği, ardından dönemi öğrenin!"
+      },
+      "flunkyball": {
+        "name": "Flunkyball",
+        "description": "Top ve şişeyle açık havada oynanan en eğlenceli içki oyunu.",
+        "instructions": "**Hazırlık:**\nİki takım yaklaşık 10 metre karşılıklı dizilir. Herkesin bir içeceği olur. Ortaya biraz su dolu bir şişe konur. Yumuşak bir top (tenis/softbol) gerekir.\n\n**Oyun Akışı:**\nA Takımı topu şişeye atar. İsabet olursa A Takımı hızlıca içmeye başlar. B Takımı şişeyi dikmeli, topu almalı ve yerlerine geçmelidir. Yerleşince A Takımı durdurulur.\n\n**Kurallar:**\n• Top oturarak atılmalıdır\n• Takımdaki herkes ayağa kalkana kadar içecek bırakılmaz\n• Şişe dik durmalıdır (yaslanmaz)\n• Bitirenler şişeyi ters çevirir\n• Tüm içeceğini ilk bitiren takım kazanır\n\n**Varyantlar:**\n• Bayrak: Her takımdan yalnızca biri atar\n• Sert Mod: Her isabet = yeni içecek aç\n• Yumuşak Mod: Alkol yerine su\n\n**İpuçları:**\nParklar ve bahçeler için biçilmiş kaftan! Şişe çok kolay devrilmemeli. Güneşli bir günde oynanırsa tadından yenilmez!"
+      },
+      "groom_bride_quiz": {
+        "name": "Bekarlığa Veda Yarışması",
+        "description": "Grup damat/gelini ne kadar iyi tanıyor?",
+        "instructions": "**Hazırlık:**\nBekarlığa vedadan önce şeref konuğu hakkında 20-30 soru toplayın: en sevdikleri şeyler, utanç verici anılar, ilişki detayları. Partnere gizlice sorulabilir. Yanıtları not edin!\n\n**Oyun Akışı:**\nSunucu soruları sorar. Grup (ya da şeref konuğu) yanıtlar. Yanlış yanıtlarda şeref konuğuna veya gruba ceza verilir.\n\n**Kurallar:**\n• Yanlış yanıt = şeref konuğuna shot/görev\n• Doğru yanıt = gruba shot/görev\n• Joker: 1 kez partner aranabilir\n• Mahrem sorularda: Şeref konuğu reddedebilir (= ceza)\n\n**Varyantlar:**\n• Takım Yarışması: Grup vs. şeref konuğu\n• Hız Yarışması: Yanıt için 10 saniye\n• Fotoğraf Yarışması: Geçmişten fotoğraflar göster\n\n**İpuçları:**\nKomik, utanç verici ve romantik soruları harmanlayın. En iyi sorular çoğu zaman partnerden gelir! Düğün gazetesi için her şeyi belgeleyin!"
+      },
+      "kiss_challenge": {
+        "name": "Öpücük Meydan Okuma",
+        "description": "Yabancılardan öpücük topla — ne kadar çok, o kadar iyi!",
+        "instructions": "**Hazırlık:**\nŞeref konuğu için beyaz bir tişört temin edin. Farklı renklerde ruj hazırlayın. Dezenfektan mendilleri unutmayın!\n\n**Oyun Akışı:**\nŞeref konuğu yabancılardan tişörtü üzerine öpücük (ruj izleri) toplamak zorundadır. Grup eşlik eder ve her şeyi belgeler.\n\n**Kurallar:**\n• Yalnızca gönüllü öpücükler sayılır!\n• Kibar ve saygılı bir şekilde sormak şart\n• Farklı renkler = bonus\n• Taciz yasak!\n• Süre sınırı: 1-2 saat\n\n**Varyantlar:**\n• Fotoğraflı Öpücük: Her kişiyle selfie\n• İmzalar: Ek olarak isim de toplayın\n• Meydan Okuma Artışı: Belirli 'tipleri' bulun\n\n**İpuçları:**\nHer zaman nazik ve saygılı bir şekilde isteyin. 'Hayır'ı kabul edin! Barlar ve kulüpler en iyi yerlerdir. Tişört harika bir anı olarak kalır!"
+      },
+      "selfie_mission": {
+        "name": "Selfie Görevi",
+        "description": "Belirlenen kurallara göre yaratıcı selfie'ler çek.",
+        "instructions": "Herkes bir selfie görevleri listesi alır (örn. bir polisle, bir çeşmenin üzerinde vb.). En çok görevi tamamlayan kazanır!"
+      },
+      "costume_tasks": {
+        "name": "Kostüm Görevleri",
+        "description": "Çılgın kostümler giy ve görevleri tamamla.",
+        "instructions": "Şeref konuğu saçma sapan bir kostümle halkın içinde görevler yapmak zorundadır. Grup her şeyi belgeler!"
+      },
+      "bucket_list": {
+        "name": "Yapılacaklar Listesi Meydan Okuma",
+        "description": "Önceden hazırlanmış bir listeden unutulmaz anlar yaşa.",
+        "instructions": "Eşsiz deneyimlerden oluşan bir liste hazırlayın. O gün içinde mümkün olduğunca çoğunu gerçekleştirmeye çalışın!"
+      },
+      "city_rally": {
+        "name": "Şehir Rallisi",
+        "description": "Görevler ve bulmacalarla şehir genelinde eğlenceli bir hazine avı.",
+        "instructions": "**Hazırlık:**\nŞehirde 8-12 durağı olan bir rota planlayın. Her durağa götürecek ipuçları hazırlayın. Her durak için görevler belirleyin. Takımlar oluşturun (2-4 kişi).\n\n**Oyun Akışı:**\nTakımlar aralıklı olarak başlar. Her durağa gelindiğinde: İpucunu oku, görevi tamamla, fotoğraf çek, bir sonraki ipucunu bul. Tüm görevleri en hızlı tamamlayan takım kazanır.\n\n**Kurallar:**\n• Tüm görevler fotoğraflanmalıdır\n• Süre sınırı: 2-3 saat\n• GPS takibi veya oyun yöneticisini arama serbest\n• Puan: Hız + yaratıcılık\n\n**Varyantlar:**\n• Bar Rallisi: Duraklar bar/meyhanelerdir\n• Fotoğraf Rallisi: Görev yerine yaratıcı fotoğraflar\n• QR Kod Rallisi: QR kodla ipuçları\n\n**İpuçları:**\nDuraklar için turistik yerleri kullanın. En iyi ralli; bilgi, aksiyon ve eğlenceyi harmanlayan güzergahtır. Ödül töreni için bir barda buluşun!"
+      },
+      "photo_scavenger_hunt": {
+        "name": "Fotoğraf Hazine Avı",
+        "description": "Listedeki her şeyi fotoğrafla — yaratıcı ol!",
+        "instructions": "Her takım bir fotoğraf görevleri listesi alır. Puanlar yaratıcılığa ve eksiksizliğe göre verilir."
+      },
+      "team_olympiad": {
+        "name": "Takım Olimpiyatı",
+        "description": "Birden fazla disiplin, tek bir şampiyon takım!",
+        "instructions": "Çeşitli yarışmalar planlayın (çuval yarışı, yumurta koşusu vb.). Takımlar puan toplar. Sonunda şampiyon ilan edilir."
+      },
+      "boot_camp": {
+        "name": "Kamp Meydan Okuma",
+        "description": "Tüm grup için fitness meydan okuması.",
+        "instructions": "Bir antrenör ya da grubun kendisi egzersizleri yönetir. Kim dayanabilir? Takım ruhu şart!"
+      },
+      "cocktail_contest": {
+        "name": "Kokteyl Yarışması",
+        "description": "En iyi içeceği kim karıştırır?",
+        "instructions": "Herkes kendi kokteylini yaratır. Kör tadım ve grubun değerlendirmesiyle en iyi barmen belirlenir!"
+      },
+      "wine_tasting": {
+        "name": "Kör Şarap Tadımı",
+        "description": "Gözlerin bağlıyken şarapları tahmin et.",
+        "instructions": "Farklı şaraplar gözler bağlı şekilde tatılır ve değerlendirilir. Doğru tahmin edilen üzüm çeşitleri veya bölgeler için puan kazanılır."
+      },
+      "tshirt_design": {
+        "name": "T-Shirt Boyama",
+        "description": "Gruba özel benzersiz bir tişört tasarla.",
+        "instructions": "Kumaş boyalarıyla tişörtler kişiselleştirilir. O günün mükemmel hatırası!"
+      },
+      "embarrassing_songs": {
+        "name": "Utanç Verici Şarkılar Söyleme",
+        "description": "En utanç verici şarkıları herkese açık alanda söyle.",
+        "instructions": "Onur kişisi, seçilen utanç verici şarkıları halka açık yerlerde yüksek sesle ve tüm içtenliğiyle söylemek zorunda."
+      },
+      "dare_dice": {
+        "name": "Dare Dice",
+        "description": "Kaderini zar at — görevi zar belirler.",
+        "instructions": "Görev zarını at. Ne gelirse yapılmak zorunda. Bahane yok!"
+      },
+      "never_have_i_ever": {
+        "name": "Hiç Yapmadım",
+        "description": "İtiraflar ve sırlar gün yüzüne çıkıyor.",
+        "instructions": "**Hazırlık:**\nTüm oyuncular daire şeklinde oturur. Herkesin bir içeceği ya da 10 parmağı/jetonu vardır. İsteğe bağlı: Başlangıç için hazır ifadeler.\n\n**Oyun Akışı:**\nSırayla herkes 'Hiç yapmadım...' diyerek bir ifade ekler. Bunu yapmış olanlar bir yudum içer veya bir parmağını/jetonunu kaybeder.\n\n**Kurallar:**\n• Dürüstlük şart!\n• 0 parmağa düşen: Bir tur pas geçer veya özel shot içer\n• Sorular sormak serbest: 'Gerçekten mi? Anlat bakalım!'\n• Yalan yakalandığında: Ceza içkisi\n\n**Varyantlar:**\n• Bekarlığa Veda Edisyonu: Sadece ilişki/flört konuları\n• Hızlı Tur: İfade başına 5 saniye\n• Hikaye Modu: İçen, hikayeyi anlatmak zorunda\n\n**İpuçları:**\nMasumca başlayın ve giderek ısıtın. En iyi ifadeler ilginç olacak kadar özgün ama çok kişisel olmayan ifadelerdir. Sınırlara saygı gösterin!"
+      },
+      "ring_search_pasta": {
+        "name": "Makarnada Yüzük Arama",
+        "description": "Gözlerin bağlıyken makarnanın içinde yüzüğü bul.",
+        "instructions": "Büyük bir kase makarnaya bir yüzük gizlenir. Gözler bağlı şekilde sadece ağız veya ellerle yüzüğü bulmak gerekir."
+      },
+      "toilet_paper_dress": {
+        "name": "Tuvalet Kağıdı Gelinliği",
+        "description": "Sadece tuvalet kağıdıyla bir gelinlik yarat.",
+        "instructions": "**Hazırlık:**\nGrubu 3-4 kişilik takımlara bölün. Her takım 2-3 rulo tuvalet kağıdı alır. İsteğe bağlı: Bant, makas (kolaylaştırır).\n\n**Oyun Akışı:**\nHer takım bir 'model' seçer. 10-15 dakika içinde tuvalet kağıdından bir gelinlik yaratılmalıdır. Model sonucu bir 'podyumda' sunar.\n\n**Kurallar:**\n• Süre sınırına kesinlikle uyun\n• Sadece sağlanan malzemeler kullanılır\n• Model yardım edemez\n• Elbise bir 'catwalk'ı atlatabilmeli\n\n**Varyantlar:**\n• Duvakla birlikte: Aksesuar bonusu\n• Defile: Müzik ve sunucuyla\n• Jüri Değerlendirmesi: Onur kişisi puanlar\n\n**İpuçları:**\nElbiseyi sadece asmak yerine vücuda sarın! En iyi elbiseler yapısal detaylara sahiptir (drapaj, kıvrımlar). Fotoğrafları unutmayın!"
+      },
+      "balloon_dance": {
+        "name": "Balon Dansı",
+        "description": "Aranızdaki balonla dans edin — düşürmeyin!",
+        "instructions": "Çiftler aralarında bir balonla dans eder. Balon yere düşerse veya patlarsa o çift elenir."
+      },
+      "limbo_competition": {
+        "name": "Limbo Yarışması",
+        "description": "Ne kadar alçalabilirsin?",
+        "instructions": "Çubuk giderek daha alçağa tutulur. Çubuğa dokunmadan veya düşmeden en alçaktan geçen kazanır!"
+      },
+      "pinata": {
+        "name": "Piñata",
+        "description": "Piñata'yı patlatın ve şekerleri toplayın!",
+        "instructions": "Gözler bağlı şekilde piñata'ya vurun, ta ki kırılana ve şeker yağmuruna tutulana kadar!"
+      },
+      "mystery_box": {
+        "name": "Gizemli Kutu",
+        "description": "Kutunun içindekileri bakmadan sadece dokunarak tahmin et.",
+        "instructions": "Çeşitli nesneler kutulara gizlenir. Gözler bağlı şekilde nesnelere dokunarak ne olduklarını tahmin etmek gerekir."
+      },
+      "hat_challenges": {
+        "name": "Şapkadan Görev Çek",
+        "description": "Bir görev çek ve hemen yerine getir.",
+        "instructions": "Görevler yazılıp şapkaya atılır. Sırayla çekilir ve anında uygulanır."
+      },
+      "photo_booth": {
+        "name": "Foto-Booth Challenge",
+        "description": "Komik aksesyuarlarla çılgın fotoğraflar çek.",
+        "instructions": "Aksesyuarlarla dolu bir fotoğraf köşesi kur. Herkes mümkün olduğunca çok komik fotoğraf çeker. En iyileri ödüllendirilir!"
+      },
+      "speed_dating": {
+        "name": "Hızlı Tanışma Oyunu",
+        "description": "Gruptaki herkesi 2 dakikada tanı.",
+        "instructions": "Herkes diğer herkesle 2'şer dakika konuşur. Zamanlayıcı çalınca sıra değişir. Sonunda: Kim kimden ne öğrendi?"
+      },
+      "who_knows_best": {
+        "name": "Kim En İyi Tanıyor?",
+        "description": "Onur konuğunu gerçekten kimin tanıdığını test edin.",
+        "instructions": "Onur konuğuyla ilgili sorular sorulur. En çok doğru cevaplayansa onu en iyi tanıyan kişidir!"
+      },
+      "charades": {
+        "name": "Sözsüz Anlatım",
+        "description": "Takımlar halinde mimikle tahmin etme oyunu.",
+        "instructions": "**Hazırlık:**\nKâğıtlara kavramlar yazın (filmler, ünlüler, eylemler). Takımlar oluşturun (3-6 kişi). Zamanlayıcıyı hazırlayın (tur başına 60-90 saniye).\n\n**Oynanış:**\nBir oyuncu bir kavram çeker ve sözsüz olarak canlandırır — kelime yok, ses yok, nesnelere işaret yok. Takım tahmin eder. Doğru bilince: Sonraki kavram.\n\n**Kurallar:**\n• Konuşma, mırıldanma veya ses çıkarma yasak\n• Nesnelere işaret etme yasak\n• Parmaklarla hece sayısı gösterilebilir\n• Tur süresi: 60-90 saniye\n• Her doğru bilinen kavram için puan\n\n**Varyantlar:**\n• Temalı oyun: Sadece filmler, sadece meslekler\n• Hızlı tur: Kavram başına 30 saniye\n• Ters: Hepsi canlandırır, tek kişi tahmin eder\n\n**İpuçları:**\nSık kullanılan jestleri öğrenin: 'Film' (kamera çevirir gibi), 'Kitap' (elleri açmak), 'Şarkı' (şarkı söyler gibi). Canlandırma ne kadar abartılı olursa, eğlence o kadar artar!"
+      },
+      "activity": {
+        "name": "Activity",
+        "description": "Anlat, çiz ya da canlandır — çok yönlü bir parti oyunu.",
+        "instructions": "**Hazırlık:**\nKartlara kavramlar yazın (veya Activity oyunu satın alın). Takımlar oluşturun. Çizim malzemeleri hazırlayın. Zamanlayıcı (30-60 saniye).\n\n**Oynanış:**\nKarta göre kavram; kelimeyi kullanmadan açıklanır, çizilir ya da mimikle canlandırılır. Takım süre dolmadan tahmin etmeye çalışır.\n\n**Kurallar:**\n• Açıklamada kelimeyi söylemek yasak\n• Çizmede harf veya rakam kullanmak yasak\n• Mimik: Ses çıkarma yasak\n• Her doğru tahmin: 1 puan\n• Yanlış yöntem: 0 puan\n\n**Varyantlar:**\n• Hızlı mod: Bir turda tüm yöntemler\n• Bekarlığa Veda Özel: Sadece ilişki kavramları\n• İçkili Activity: Yanlış tahmin = içki\n\n**İpuçları:**\nKolay ve zor kavramları karıştırın. En komik anlar genellikle zor mimiklerde doğar. Büyük bir çizim yüzeyi kullanın!"
+      },
+      "taboo": {
+        "name": "Tabu",
+        "description": "Yasaklı kelimeleri kullanmadan kavramı anlat.",
+        "instructions": "**Hazırlık:**\nTabu kartları hazırlayın: Her kartta bir kavram ve altında 5 yasaklı kelime. Takımlar oluşturun. Zamanlayıcıyı hazırlayın.\n\n**Oynanış:**\nBir oyuncu, tabu kelimelerini veya köklerini kullanmadan kavramı açıklar. Rakip takımdan bir oyuncu denetler. Takım tahmin eder.\n\n**Kurallar:**\n• Tabu kelimesi söylenirse = kavram kaybedilir\n• 'Kafiyesi var...' veya heceleme yasak\n• Rakip denetçi 'Tabu!' diyebilir\n• Tur başına 60 saniye\n• Her doğru bilinen kavram için puan\n\n**Varyantlar:**\n• Uzman modu: 7 tabu kelimesi\n• Hızlı Tabu: 30 saniye\n• Temalı turlar: Sadece filmler, sadece spor\n\n**İpuçları:**\nDolaylı anlatımlar ve mini hikâyeler harika işe yarar. 'Hayal et ki...' ile başlamak süper bir giriş. Tabu kelimeleri en bariz olanlardır — yaratıcı ol!"
+      },
+      "pictionary": {
+        "name": "Pictionary",
+        "description": "Zamana karşı kavramları çiz ve tahmin et.",
+        "instructions": "Kavramı takımının tahmin edebileceği şekilde çiz. Harf veya sembol kullanmak yasak!"
+      },
+      "cards_against": {
+        "name": "Cards Against Humanity",
+        "description": "Berbat insanlar için kart oyunu.",
+        "instructions": "**Hazırlık:**\nKart destesini temin edin (veya internetten yazdırın). Her oyuncu 10 beyaz kart alır. Siyah kartlar ortada bir demet olarak durur.\n\n**Oynanış:**\nBir 'Kart Çarı' siyah bir kart çeker ve yüksek sesle okur. Diğerleri en uygun beyaz kartı oynar. Çar kazananı seçer.\n\n**Kurallar:**\n• Çar her turda değişir\n• Beyaz kartlar anonim oynanır\n• Kazanan siyah kartı alır\n• __ & __ için iki beyaz kart oynanır\n• Çar'ın kararı kesindir!\n\n**Varyantlar:**\n• İçkili versiyon: Kazanan dışındakiler içer\n• Demokrasi: Herkes oy kullanır\n• Haiku: Üç kartla bir hikâye\n\n**İpuçları:**\nÇar mizah tarzını belirler! Kimileri zekice olanı sever, kimileri şok ediciyi. Bu oyunu kara mizahı anlayan insanlarla oynayın."
+      },
+      "rage_cage": {
+        "name": "Rage Cage",
+        "description": "Bardak ve topla hızlı bir içki oyunu.",
+        "instructions": "Topu hızla bardağa sokup bir sonrakine geç. Yakalanırsan ortadaki bardaktan içmek zorunda kalırsın!"
+      },
+      "flip_cup": {
+        "name": "Flip Cup",
+        "description": "Bardağını iç ve diğer takımdan önce çevir.",
+        "instructions": "Bardağı bitir ve tek parmakla ters çevir. O durana kadar sıradaki başlayamaz!"
+      },
+      "murder_mystery": {
+        "name": "Katil Kim?",
+        "description": "Yemek yerken cinayeti çözün.",
+        "instructions": "**Hazırlık:**\nMurder Mystery seti satın alın veya kendiniz hazırlayın. Rolleri misafirlere önceden dağıtın. Temaya uygun dekorasyon yapın. Yemeği planlayın.\n\n**Oynanış:**\nÇok kurslu bir yemek boyunca herkes rolünü oynar. İpuçları açıklanır, şüpheliler sorgulanır. Sonunda katil ortaya çıkarılmalıdır.\n\n**Kurallar:**\n• Herkes rolünde kalır\n• Katil yalan söyleyebilir, diğerleri söyleyemez\n• İpuçları belirli zamanlarda verilir\n• Tartışma ve sorgulama serbesttir\n• Sonunda: Oylama\n\n**Varyantlar:**\n• 1920'ler Gatsby Cinayeti\n• Restoranda dedektif yemeği\n• Outdoor: Şatoda cinayet\n\n**İpuçları:**\nMisafirler hazırlık yapabilsin diye rolleri önceden dağıtın. Kostümler atmosferi çok daha gerçekçi yapar. 3-4 saat ayırın!"
+      },
+      "escape_room_diy": {
+        "name": "Kendin Yap Escape Room",
+        "description": "Kendi Escape Room'unuzu yaratın.",
+        "instructions": "Bulmacalar ve şifreler önceden hazırlanır. Takım hepsini çözerek 'kaçmak' zorundadır. Süre sınırı var!"
+      },
+      "casino_night": {
+        "name": "Casino Gecesi",
+        "description": "Poker, Blackjack, Rulet — Las Vegas hissi!",
+        "instructions": "Oyun masalarını kurun. Herkes başlangıç fişi alır. Sonunda: En çok kazanan kim?"
+      },
+      "drag_race": {
+        "name": "Drag Race",
+        "description": "Birbirinizi makyajlayın ve şekillendirin.",
+        "instructions": "Takımlar halinde stil yapılır ve makyaj uygulanır. En iyi dönüşüm kazanır. Podyum yürüyüşü dahil!"
+      },
+      "dance_off": {
+        "name": "Dans Düellosu",
+        "description": "En iyi hareketlerinizi dans düellosunda sergileyin.",
+        "instructions": "İki kişi karşı karşıya gelir. Grup değerlendirir. Kazanan bir sonrakiyle yarışır."
+      },
+      "lip_sync_battle": {
+        "name": "Lip Sync Battle",
+        "description": "Performans her şeydir — şarkı söylemek şart değil!",
+        "instructions": "Bir şarkı seç ve sahneye her şeyini ver. Dudak senkronu mükemmel olmalı. Gösteri faktörü belirleyici!"
+      },
+      "twerk_contest": {
+        "name": "Twerk Yarışması",
+        "description": "En iyi twerk'i kim yapıyor?",
+        "instructions": "Müziği aç ve yeteneklerini göster! Grup değerlendiriyor. Çekinme yok!"
+      },
+      "pole_dance_intro": {
+        "name": "Pole Dance'e Giriş",
+        "description": "Direkle ilk tanışma dersi.",
+        "instructions": "Bir stüdyo ziyareti ya da taşınabilir kurs. Eğitmen rehberliğinde ilk hareketler öğrenilir. Eğlence garantili!"
+      },
+      "strip_poker_light": {
+        "name": "Strip Poker Light",
+        "description": "Masum sonuçlarıyla poker.",
+        "instructions": "Kaybeden bir kıyafet çıkarır ya da alternatif bir görev üstlenir. Sınırları önceden belirleyin!"
+      },
+      "dirty_minds_quiz": {
+        "name": "Dirty Minds Quiz",
+        "description": "Aklın ne kadar karanlık?",
+        "instructions": "İpuçları müstehcen gibi görünür ama cevap tamamen masum! Yanlış ize düşen içki içer."
+      },
+      "last_night_freedom": {
+        "name": "Last Night of Freedom",
+        "description": "Özgürlüğün son gecesi için eksiksiz bir görev listesi.",
+        "instructions": "Önceden hazırlanmış klasik bekarlığa veda görev listesi sırayla tamamlanır. Her şeyi belgeleyin!"
+      },
+      "family_feud": {
+        "name": "Aile Düellosu",
+        "description": "Anket sorularının en popüler cevaplarını tahmin edin.",
+        "instructions": "Takımlar birbirine karşı yarışır. Her soruda en çok verilen cevaplar tahmin edilir. İsabet başarı puanı getirir!"
+      },
+      "family_bingo": {
+        "name": "Aile Bingosu",
+        "description": "Tüm aile için klasik bingo.",
+        "instructions": "Sayılar ya da resimler okunur. Bir satırı dolduran 'Bingo!' diye bağırır. Kazananlara ödül!"
+      },
+      "memory_challenge": {
+        "name": "Hafıza Meydan Okuması",
+        "description": "Kart çiftleriyle hafızanı test et.",
+        "instructions": "Kartlar yüzüstü sıralanır. Çiftleri bul. En çok çifti bulan kazanır!"
+      },
+      "family_quiz": {
+        "name": "Aile Quizi",
+        "description": "Ailenizi ne kadar iyi tanıyorsunuz?",
+        "instructions": "Aile üyeleri ve ortak anılar hakkında sorular. Doğru cevaplar puan kazandırır!"
+      },
+      "time_capsule": {
+        "name": "Zaman Kapsülü Oluştur",
+        "description": "Geleceğe anılar biriktirin.",
+        "instructions": "Herkes anlamlı bir şey koyar. Kapatın ve ne zaman açılacağını birlikte belirleyin!"
+      },
+      "sack_race": {
+        "name": "Çuval Yarışı",
+        "description": "Her aile partisinin vazgeçilmez klasiği.",
+        "instructions": "**Hazırlık:**\nHer katılımcı için patates çuvalı ya da büyük çöp torbası. Başlangıç ve bitiş çizgisi işaretlenir (10-20 metre). Engeller isteğe bağlı.\n\n**Oyun Akışı:**\nTüm katılımcılar çuvallarına girer ve iki elleriyle sıkıca tutar. Komutla birlikte hedefe doğru zıplanır. İlk varan kazanır.\n\n**Kurallar:**\n• Eller çuvalda kalmalı\n• Düşme = kalk ve devam et\n• Çuval yırtılmamalı\n• İtmek yasak\n• Bitiş çizgisini geçmek sayılır\n\n**Varyantlar:**\n• Bayrak yarışı çuval: Takımlar halinde paslaşmalı\n• Engel parkuru: Slalomlu versiyon\n• Çift çuval: İki kişi, bir çuval\n\n**İpuçları:**\nDenge için büyük sıçramalar yerine küçük atlamalar tercih edin. Yumuşak zeminde oynayın (çimen). Adalet için çocuklar ve yetişkinler ayrı start almalı!"
+      },
+      "egg_and_spoon": {
+        "name": "Yumurta-Kaşık Yarışı",
+        "description": "Yumurtayı kaşıkta dengede tutarak hedefe ulaş.",
+        "instructions": "**Hazırlık:**\nHer katılımcı için: bir kaşık ve bir çiğ yumurta (ya da haşlanmış/plastik). Başlangıç ve bitiş çizgisi işaretlenir (15-20 metre).\n\n**Oyun Akışı:**\nYumurta kaşığa yerleştirilir, kaşık sapından tek elle tutulur. Komutla birlikte herkes hedefe koşar. Yumurta düşerse: başa dön.\n\n**Kurallar:**\n• Kaşıkta sadece bir el\n• Diğer el arkada\n• Elle yumurtayı dengelemek = diskaliifye\n• Düşen yumurta: Başa dön\n• Hedefe ilk sağlam yumurtayı ulaştıran kazanır\n\n**Varyantlar:**\n• Bayrak yarışı: Takımlar halinde paslaşmalı\n• Engel parkuru: Virajlar ve engeller\n• Su kaşığı: Yumurta yerine kaşıkta su\n\n**İpuçları:**\nYavaş ve dengeli gitmek hızlı gitmekten iyidir! Yumurtaya değil ileriye bakın. Daha az kaos için haşlanmış yumurta tercih edin!"
+      },
+      "can_knockdown": {
+        "name": "Kutu Vurma",
+        "description": "Kutu piramidini yıkın!",
+        "instructions": "Kutular üst üste dizilir. Topla hepsini devirmeye çalışın. Devirilen her kutu puan kazandırır."
+      },
+      "kubb": {
+        "name": "Viking Satrancı",
+        "description": "Her yaşa hitap eden İskandinav atış oyunu.",
+        "instructions": "**Hazırlık:**\nOyun alanını işaretleyin (5x8 metre). Her tarafa beş kubb yerleştirin. Kralı ortaya koyun. Atış çubuklarını dağıtın (takım başına 6 adet).\n\n**Oynanış:**\nTakımlar sırayla rakibin kubblarına atar. Devrilen kubblar rakibin sahasına fırlatılır ve orada dikilir. Amaç: Tüm kubbları, ardından Kralı devirmek.\n\n**Kurallar:**\n• Çubukları alttan atın (helikopter yasak)\n• Önce saha kubblarını, sonra ana kubbları hedefleyin\n• Kralı erken devirmek = oyunu kaybetmek!\n• Atış çubuğu dik düşmeli\n\n**Varyantlar:**\n• Hızlı Kubb: Tur başına süre sınırı\n• İçki Kubb: Devrilen kubb = rakip içer\n• Takım Turnuvası: Birden fazla takım\n\n**İpuçları:**\nStrateji çok önemli: Kubbları birbirine yakın atarak zincirleme reaksiyon yaratın. Kral konusunda dikkatli olun — pek çok oyun bu yüzden kaybedildi!"
+      },
+      "boccia": {
+        "name": "Bocce",
+        "description": "Toplarla oynanan bir hassasiyet oyunu.",
+        "instructions": "Toplarınızı hedef topa olabildiğince yakın atın. En yakın top puan kazanır!"
+      },
+      "tug_of_war": {
+        "name": "Halat Çekme",
+        "description": "Hangi takım daha güçlü?",
+        "instructions": "İki takım bir ipi çeker. Rakibini çizginin ötesine geçiren takım kazanır!"
+      },
+      "relay_race": {
+        "name": "Bayrak Yarışı",
+        "description": "Staffet çubuklu takım yarışması.",
+        "instructions": "Takımlar belirli bir mesafeyi koşarak çubuğu birbirlerine teslim eder. En hızlı takım kazanır!"
+      },
+      "water_balloon": {
+        "name": "Su Bombası Savaşı",
+        "description": "Sıcak günler için ıslak eğlence.",
+        "instructions": "Su bombaları doldurulur ve fırlatılır. Varyantlar: Su bombası atma, yakalama ya da saf kaos!"
+      },
+      "cooking_together": {
+        "name": "Birlikte Pişirme",
+        "description": "Birlikte harika bir ziyafet hazırlayın.",
+        "instructions": "Gruplara ayrılın. Her grup bir yemek kursu hazırlar. Sonunda hep birlikte tadını çıkarın!"
+      },
+      "puzzle_race": {
+        "name": "Puzzle Yarışması",
+        "description": "Hangi takım puzzleı ilk tamamlar?",
+        "instructions": "Tüm takımlara aynı puzzle verilir. Hazır mısınız, başlayın! En hızlı tamamlayan takım kazanır."
+      },
+      "campfire_stories": {
+        "name": "Kamp Ateşi Hikayeleri",
+        "description": "Ateş başında hikayeler anlatın.",
+        "instructions": "Sırayla hikayeler anlatılır — ürkütücü, komik ya da aile tarihinden kesitler. Akşamlar için mükemmel!"
+      },
+      "hide_and_seek": {
+        "name": "Saklambaç",
+        "description": "Küçük büyük herkesin sevdiği klasik.",
+        "instructions": "Bir kişi sayar, herkes saklanır. En son bulunan kazanır!"
+      },
+      "tag": {
+        "name": "Ebelemece",
+        "description": "Elinden geldiğince hızlı koş!",
+        "instructions": "Bir kişi ebe olur. Dokunduğu kişi yeni ebe olur. Sonsuz eğlence!"
+      },
+      "pot_hitting": {
+        "name": "Kör Tencere Vurma",
+        "description": "Gözlerin bağlıyken tencereyi bul.",
+        "instructions": "Gözler bağlı şekilde kepçeyle tencereyi bulmaya çalışın. Altında bir sürpriz sizi bekliyor!"
+      },
+      "telephone": {
+        "name": "Kulaktan Kulağa",
+        "description": "Mesaj nasıl değişiyor acaba?",
+        "instructions": "Bir mesajı fısıldayarak aktarın. Sonunda karşılaştırın: Ne kaldı geriye? Sonuçlar çoğunlukla çok komik!"
+      },
+      "musical_chairs": {
+        "name": "Müzikli Sandalye",
+        "description": "Müzik durduğunda hızlıca otur!",
+        "instructions": "**Hazırlık:**\nSandalyeleri bir sıra ya da daire şeklinde diz — oyuncu sayısından her zaman bir eksik. Müziği hazırla (durdurabildiğinden emin ol).\n\n**Oyun Akışı:**\nMüzik çalarken herkes sandalyelerin etrafında dolaşır. Müzik durduğunda: hemen otur! Sandalye bulamayanlar elenir. Bir sandalye kaldırılır.\n\n**Kurallar:**\n• Müzik durmadan sandalyelere dokunmak veya ayırmak yasak\n• Müzik durduğu anda hemen otur\n• İtmek yasak\n• Sandalyeye tam oturmak gerekir (sadece dokunmak yetmez)\n• Son sandalyeye sahip olan oyuncu kazanır\n\n**Varyantlar:**\n• Müzik Donması: Durunca sandalyeye oturmak yerine olduğun yerde don\n• Takım Versiyonu: Çiftler birlikte oynar\n• Dance-Off: Elenenler dans etmeye devam eder\n\n**İpuçları:**\nMüziği kontrol eden kişi bakmamalı! Beklenmedik duraklamalar oyunu çok daha heyecanlı yapar. Sandalyelerin sağlam durduğundan emin ol!"
+      },
+      "chocolate_game": {
+        "name": "Çikolata Yeme Yarışı",
+        "description": "Altı at ve mümkün olduğunca hızlı ye!",
+        "instructions": "Altı gelince: şapka, atkı ve eldiven giy, çikolatayı bıçak ve çatalla ye — ta ki bir sonraki kişi altı atana kadar!"
+      },
+      "cotton_blowing": {
+        "name": "Pamuk Üfleme",
+        "description": "Pamuk topunu masanın karşı tarafına üfle.",
+        "instructions": "Pamuk topunu ortaya koy. Herkes onu rakip tarafa üflemeye çalışır."
+      },
+      "mummy_wrap": {
+        "name": "Mumya Sarma",
+        "description": "Birini mümkün olduğunca hızlı tuvalet kağıdına sarın.",
+        "instructions": "Takımlar bir üyelerini baştan aşağı tuvalet kağıdıyla sarar. En hızlı ve en iyi mumyayı yapan takım kazanır!"
+      },
+      "treasure_hunt": {
+        "name": "Hazine Avı",
+        "description": "Haritayı takip ederek hazineyi bul!",
+        "instructions": "Bir hazine haritası sizi ipuçlarıyla dolu farklı istasyonlara yönlendirir. Sonunda hazine sizi bekliyor!"
+      },
+      "mini_golf": {
+        "name": "Mini Golf",
+        "description": "Her yaşa uygun klasik mini golf.",
+        "instructions": "Bir mini golf tesisini ziyaret edin. En az vuruşla bitiren kazanır!"
+      },
+      "bowling": {
+        "name": "Bowling",
+        "description": "Grev! Tüm pinler yere düşmeli.",
+        "instructions": "Topu pistde yuvarlayın ve tüm pinleri devirmeye çalışın. Her pin için puan kazanırsınız!"
+      },
+      "frisbee": {
+        "name": "Frizbi",
+        "description": "Frizbiyi birbirinize atın.",
+        "instructions": "Parkta ya da sahilde frizbiyi atın ve yakalayın. Basit ama çok eğlenceli!"
+      },
+      "kite_flying": {
+        "name": "Uçurtma Uçurma",
+        "description": "Renkli uçurtmaları gökyüzüne bırakın.",
+        "instructions": "Rüzgarlı bir günde uçurtmayı havalandırın. Kim daha yükseğe çıkarabilir? Sonbaharın rüzgarlı günleri için mükemmel!"
+      },
+      "bubble_contest": {
+        "name": "Sabun Köpüğü Yarışması",
+        "description": "En büyük sabun köpüğünü kim yapabilir?",
+        "instructions": "Sabun köpüğü solüsyonu ve farklı araçlarla mümkün olan en büyük balonları yapın. Çocuklar için büyülü bir deneyim!"
+      },
+      "photo_safari": {
+        "name": "Fotoğraf Safarisi",
+        "description": "Listedeki her şeyi doğada fotoğraflayın.",
+        "instructions": "Fotoğraflanacak şeylerin listesi hazır. Doğada arayın ve fotoğraflayın. Her bulunan için puan!"
+      },
+      "geocaching": {
+        "name": "Geocaching",
+        "description": "GPS ile modern bir hazine avı.",
+        "instructions": "Bir geocaching uygulamasıyla çevredeki gizli cache'leri bulun. Tüm aile için unutulmaz bir macera!"
+      },
+      "crafting": {
+        "name": "El Sanatları",
+        "description": "Farklı malzemelerle yaratıcılığınızı konuşturun.",
+        "instructions": "El sanatları malzemelerini hazırlayın ve hayal gücünüzü serbest bırakın. Resimden takıya her şey mümkün!"
+      },
+      "talent_show": {
+        "name": "Yetenek Şovu",
+        "description": "Gizli yeteneklerinizi gösterin!",
+        "instructions": "Herkes kısa bir performans hazırlar. Sonunda kazanan seçilir. Her şey serbest!"
+      },
+      "millionaire_family": {
+        "name": "Kim Milyoner Olmak İster (Aile Baskısı)",
+        "description": "Tüm ailenin keyif aldığı efsane quiz formatı.",
+        "instructions": "Zorluk derecesi giderek artan sorular. Jokerler serbest: Telefon, 50:50, Seyirci!"
+      },
+      "escape_room_family": {
+        "name": "Aile Kaçış Odası",
+        "description": "Birlikte bulmacaları çözün ve kaçın!",
+        "instructions": "Evde kullanılabilen bir kaçış odası seti satın alın ya da profesyonel bir mekâna gidin. Zaman baskısı altında bulmacaları birlikte çözün!"
+      },
+      "treehouse_build": {
+        "name": "Ağaç Evi Yapıyoruz",
+        "description": "Tüm ailenin ortak projesi.",
+        "instructions": "Birlikte bir ağaç evi planlayıp inşa edin. Birkaç hafta sonu sürecek bu proje harika bir sonuçla bitecek!"
+      },
+      "marriage_test": {
+        "name": "Evlilik Ehliyet Sınavı",
+        "description": "Eğlenceli görevlerle çiftlerin evlilik becerisi ölçülüyor.",
+        "instructions": "Çift çeşitli görevleri başarmak zorunda: bez değiştirmek, gözleri bağlıyken yemek yedirmek vb."
+      },
+      "wedding_bingo": {
+        "name": "Düğün Bingo",
+        "description": "Düğündeki özel anlarla Bingo!",
+        "instructions": "**Hazırlık:**\nTipik düğün sahneleriyle bingo kartları hazırlayın: 'Biri ağlıyor', 'Gelinin babası konuşuyor', 'Çocuk çerçeveye giriyor', 'Büyükanne dans ediyor'. Her misafire bir kart verilir.\n\n**Oynanış:**\nDüğün boyunca misafirler gözlemledikleri sahneleri işaretler. Bir satırı tamamlayan kişi 'Düğün Bingo!' diye bağırır ve ödülünü kazanır.\n\n**Kurallar:**\n• Sahneler gerçekten yaşanmış olmalı\n• Kasıtlı provokasyon geçersizdir\n• Satır: yatay, dikey veya çapraz\n• Birden fazla kazanan olabilir\n\n**Varyantlar:**\n• Full-House: Tüm kareler dolu ana ödül\n• Takım Bingo: Masalar birbirine karşı oynar\n• Fotoğraf Bingo: Sahneler fotoğraflanmalı\n\n**İpuçları:**\nKartlar birbirinden farklı olsun! Kaçınılmaz anları ('Pasta kesme') nadir anlarla ('Birinin şarabı döküldü') harmanlayın."
+      },
+      "balloon_dancing": {
+        "name": "Balonlu Dans",
+        "description": "Aranızda balonla ikili dans!",
+        "instructions": "Çiftler aralarında bir balonla dans eder. Balon düşer veya patlarsa çift elenilir!"
+      },
+      "bouquet_toss": {
+        "name": "Gelin Buketi Atma",
+        "description": "Buketi hangi bekar bayan kapacak?",
+        "instructions": "Tüm bekar kadınlar bir araya toplanır. Gelin buketi arkasına dönerek fırlatır. Yakalayan kişi sıradaki gelin!"
+      },
+      "garter_toss": {
+        "name": "Jartiyer Atışı",
+        "description": "Damat jartiyeri fırlatıyor.",
+        "instructions": "Damat gelinin jartiyerini çıkarır ve bekar erkeklere doğru fırlatır."
+      },
+      "newspaper_dance": {
+        "name": "Gazete Dansı",
+        "description": "Dans alanı giderek küçülüyor!",
+        "instructions": "**Hazırlık:**\nHer çifte açık bir gazete dans alanı olarak verilir. Müzik hazırlanır. Dans için alan açılır.\n\n**Oynanış:**\nTüm çiftler gazeteleri üzerinde dans eder. Her turdan sonra gazete katlanır (ikiye bölünür). Gazeteden adımı çıkan veya düşen çift elenir.\n\n**Kurallar:**\n• Her iki ortak da gazete üzerinde durmalı\n• Partneri kucaklamak serbest!\n• Gazete yırtılmaz\n• Müzik durur = Katlama zamanı\n\n**Varyantlar:**\n• Donma Dansı: Müzik durduğunda olduğun yerde kal\n• Balonlu Dans: Bir de aralarında balon olsun\n• Hızlı Versiyon: Her 30 saniyede bir katlama\n\n**İpuçları:**\nSır: Partneri kucağa almak ya da tek ayak üzerinde durmak! Düğünler ve partiler için mükemmel."
+      },
+      "kiss_marathon": {
+        "name": "Öpücük Maratonu",
+        "description": "Gecenin en uzun öpücüğü!",
+        "instructions": "**Hazırlık:**\nKronometre hazırlanır. Misafirler toplanır. İsteğe bağlı: müzik ve tezahürat. Çift ortada durur.\n\n**Oynanış:**\nVerilen işaretle çift öpüşmeye başlar. Misafirler saniyeleri sayar ya da bir sunucu süreyi tutar. Hedef: olabildiğince uzun süre öpüşmek!\n\n**Kurallar:**\n• Dudaklar birbirinden ayrılmaz\n• Burundan nefes almak serbesttir\n• Gülmekten vazgeçmek yok\n• Misafirler tezahürat yapabilir\n\n**Varyantlar:**\n• Çift Yarışması: Birden fazla çift katılır\n• Sürpriz Öpücük: Misafirler kadeh tıngırdattığında 'Öpücük!' diye bağırır\n• Rekor kırma: Önceki rekoru geçmeye çalışın\n\n**İpuçları:**\nTezahürat işi zorlaştırır (Gülme gelir!). Dünya rekoru 58 saatin üzerinde — oraya gitmenize gerek yok! 1-2 dakika bile etkileyici."
+      },
+      "wedding_abc": {
+        "name": "Düğün Alfabesi",
+        "description": "Her harf için bir dilek ya da tavsiye.",
+        "instructions": "Misafirler alfabenin her harfi için çifte bir dilek ya da tavsiye yazar."
+      },
+      "guest_lottery": {
+        "name": "Misafir Piyango",
+        "description": "Her misafirin harika ödüller kazanma şansı!",
+        "instructions": "Biletler geliş sırasında dağıtılır. Gece boyunca kazananlar çekilişle belirlenir."
+      },
+      "polaroid_guestbook": {
+        "name": "Polaroid Anı Defteri",
+        "description": "Anında fotoğraflar, kalıcı anılar.",
+        "instructions": "**Hazırlık:**\nYeterli filmle dolu bir Polaroid kamera hazırlanır. Boş sayfalı bir anı defteri/albüm. Kalemler, yapıştırıcı ve dekorasyon malzemeleri. Eğlenceli fotoğraflar için aksesuar kutusu.\n\n**Oynanış:**\nMisafirler Polaroid fotoğraf çektirir (tek, ikili, grup). Fotoğraflar anı defterine yapıştırılır ve kişisel mesajlarla süslenir.\n\n**Kurallar:**\n• Misafir başına en fazla 2 fotoğraf (film pahalı!)\n• Her fotoğrafa en az bir mesaj\n• Aksesuar kutusundan yararlan\n• Fotoğrafları yapıştırmadan önce kurut\n\n**Varyantlar:**\n• Fotoğraf Köşesi: Arka planlı sabit istasyon\n• Görevli Fotoğraflar: Belirli pozları canlandırın\n• Video Anı Defteri: Ek olarak kısa videolar\n\n**İpuçları:**\nBir 'anı defteri sorumlusu' büyük fark yaratır! Instax kameralar gerçek Polaroid'lardan daha uygun fiyatlı. Yapıştırıcı yerine Washi bant kullanın, çok daha şık görünür!"
+      },
+      "wish_tree": {
+        "name": "Dilek Ağacı",
+        "description": "Dileklerinizi ağaca asın.",
+        "instructions": "Küçük kartlara dilekler yazılarak dekoratif bir ağaca asılır. Hem şık bir süsleme hem de unutulmaz bir anı!"
+      },
+      "date_night_jar": {
+        "name": "Randevu Gecesi Kavanozu",
+        "description": "Gelecekteki buluşmalar için harika fikirler.",
+        "instructions": "Misafirler kağıtlara randevu fikirleri yazarak bir kavanozdaki bırakır. Çift düzenli aralıklarla bir tane çeker!"
+      },
+      "advice_cards": {
+        "name": "Tavsiye Kartları",
+        "description": "Misafirlerden gelen akıllı sözler.",
+        "instructions": "Tavsiye yazmak için yer bırakılmış kartlar misafirlerin önünde hazır olur. Çift bunları daha sonra birlikte okur."
+      },
+      "couple_quiz": {
+        "name": "Çift Yarışması",
+        "description": "Misafirler çifti ne kadar iyi tanıyor?",
+        "instructions": "Çift hakkında sorular sorulur. Misafirler cevaplarını yazar. En çok doğruyu bilen kazanır!"
+      },
+      "wedding_limbo": {
+        "name": "Düğün Limbosu",
+        "description": "Kıyafetlerinizle ne kadar aşağı gidebilirsiniz?",
+        "instructions": "Limbo çubuğu giderek alçaltılır. En son düşmeden geçen kazanır!"
+      },
+      "musical_chairs_wedding": {
+        "name": "Müzikli Sandalye",
+        "description": "Dans pistinin klasiği!",
+        "instructions": "Sandalyeler daire şeklinde dizilir; oyuncu sayısından bir eksik. Müzik durduğunda hemen otur!"
+      },
+      "conga_line": {
+        "name": "Conga Treni",
+        "description": "Hepiniz sıra olup düğün salonunu coşkuyla gezin!",
+        "instructions": "Müziği aç, öndekinin omuzlarına tutun ve conga treni salondan geçip gitsin!"
+      },
+      "wedding_karaoke": {
+        "name": "Düğün Karaokesi",
+        "description": "Çift için sahneye çıkın!",
+        "instructions": "Karaoke sistemi kurulur. Misafirler çift için şarkılar söyler. Cesaret ödüllendirilir!"
+      },
+      "first_dance_game": {
+        "name": "İlk Dans Sürprizi",
+        "description": "İlk dansta sürpriz bir an.",
+        "instructions": "İlk dans, dans stili değişiklikleri ya da önceden hazırlanmış bir koreografiyle renklendiriliyor!"
+      },
+      "mr_mrs_quiz": {
+        "name": "Bay & Bayan Yarışması",
+        "description": "Partneri kim daha iyi tanıyor?",
+        "instructions": "**Hazırlık:**\nÇift hakkında 15-20 soru hazırla. Her iki partner de 'O' ve 'Ben' (ya da isimler) yazan tabelalar alır. Sorular önceden bir partnerle gizlice mutabık kalınarak belirlenir.\n\n**Oyunun Akışı:**\nÇift yan yana oturur. Her soruda her ikisi de cevabın kimi tanımladığını gösteren tabelayı kaldırır. 'Doğru' cevap önceden belirlenmiştir.\n\n**Kurallar:**\n• Aynı anda göster (hile yok!)\n• Doğru cevap = puan\n• Yanlış cevap = ceza görevi ya da içki\n• Daha fazla puan toplayan kazanır\n\n**Varyantlar:**\n• Misafir Versiyonu: Misafirler de tahmin eder\n• İlişki Zaman Çizelgesi: Sorular kronolojik sıraya göre\n• Video Versiyonu: Cevaplar önceden kaydedilmiş\n\n**İpuçları:**\nUtandıran ve romantik soruları karıştır. En iyi sorular tatlı ya da komik hikâyeleri gün yüzüne çıkarır. Sunucu derinlemesine sorular sormalı!"
+      },
+      "wedding_photo_challenge": {
+        "name": "Fotoğraf Yarışması",
+        "description": "Belirli anları fotoğraflayın.",
+        "instructions": "Çekilmesi gereken sahnelerin yer aldığı bir liste hazırlanır. Misafirler fotoğraf çeker ve paylaşır!"
+      },
+      "guest_interview": {
+        "name": "Misafir Röportajları",
+        "description": "Misafirlerden video selamları.",
+        "instructions": "Bir kamera hazırda bekler. Misafirler röportaj verir ve video mesajları bırakır!"
+      },
+      "love_story_reading": {
+        "name": "Aşk Hikâyesi Anlatımı",
+        "description": "Çiftin hikâyesi herkese anlatılır.",
+        "instructions": "Sağdıçlar ya da aile üyeleri çiftin nasıl tanıştığını anlatır."
+      },
+      "wedding_tombola": {
+        "name": "Düğün Tombolası",
+        "description": "Bilet al, ödül kazan!",
+        "instructions": "Biletler satılır, ödüller çekilişle dağıtılır. Gelirler bağışlanabilir!"
+      },
+      "ring_warming": {
+        "name": "Yüzük Isıtma",
+        "description": "Tüm misafirler yüzükleri kutsar.",
+        "instructions": "**Hazırlık:**\nAlyanslar bir kurdeleye ya da küçük bir keseye yerleştirilir. Tören veya resepsiyon sırasında tüm misafirlere sırayla dolaştırılır.\n\n**Oyun Akışı:**\nHer misafir yüzükleri kısa süreliğine eline alır ve içten dileklerini, dualarını ya da olumlu enerjisini sessizce aktarır. Ardından bir sonrakine geçirir.\n\n**Kurallar:**\n• Dilekler sessizce tutulur (yüksek sesle söylenmez)\n• Herkes yalnızca kısa süre tutar (10-30 saniye)\n• Yüzük açılmaz/takılmaz\n• Tören sırasında: yüzükler nikah şahidine geri verilir\n\n**Varyantlar:**\n• Dilek Kartları: Ek olarak yazılı dilekler\n• Dua Turu: Herkes bir dilek söyler\n• Fotoğraf Anı: Herkes yüzüklerle fotoğraflanır\n\n**İpuçları:**\nBüyük düğünlerde birden fazla sıra aynı anda başlayabilir. Bir yardımcı süreci takip eder. Son derece duygusal bir an!"
+      },
+      "anniversary_dance": {
+        "name": "Yıldönümü Dansı",
+        "description": "Evli çiftler dans pistine evlilik yıllarına göre çıkar.",
+        "instructions": "**Hazırlık:**\nDJ veya sunucu yavaş tempolu bir şarkı hazırlar. Tüm evli çiftler dans pistine davet edilir.\n\n**Oyun Akışı:**\nTüm çiftler dans etmeye başlar. Sunucu sırayla çiftleri oturmaya davet eder: '1 yıldan az evli olanlar...' ardından 5 yıl, 10, 20 ve devamı. En uzun süredir evli olan çift pistte kalır ve tavsiyelerini paylaşır.\n\n**Kurallar:**\n• Dürüst cevaplar!\n• Yalnızca resmi olarak evli çiftler\n• Son kalan çift ödül kazanır\n• Genellikle: Kısa bir konuşma ya da gelin-damada tavsiye\n\n**Varyantlar:**\n• İlişki Dansı: Yalnızca evliler değil, tüm çiftler\n• Geri Sayım: Uzun evlilikten kısaya doğru\n• Röportaj: Kazanan çifte sorular sorulur\n\n**İpuçları:**\nÇok duygusal bir an! Kazananlar çoğunlukla büyükanne ve büyükbabalar olur. Mendilleri hazır tutun. Fotoğraflar için mükemmel bir kare!"
+      },
+      "bride_stealing": {
+        "name": "Gelin Kaçırma",
+        "description": "Gelin 'kaçırılır' ve fidye ödenerek kurtarılır.",
+        "instructions": "**Hazırlık:**\nBir grup misafir 'kaçırmayı' gizlice planlar. Hedef mekân (yakın bir bar) seçilir. Fidye görevleri hazırlanır.\n\n**Oyun Akışı:**\nGelin kutlama sırasında 'kaçırılarak' bir bara götürülür. Damat onu bulmak ve görevlerle ya da 'fidye'yle kurtarmak zorundadır.\n\n**Kurallar:**\n• Gelin haberdar olmalı ya da onay vermeli\n• Kaçırma çok erken olmamalı (yemekten sonra)\n• Fidye: Görevler, yalnızca para değil\n• Süre: En fazla 1-2 saat\n\n**Varyantlar:**\n• Bar Rallisi: Birden fazla bar durak olarak kullanılır\n• Görev Fidyesi: Her görev bir adım daha yaklaştırır\n• Takım Kurtarması: Damat + sağdıçlar birlikte\n\n**İpuçları:**\nTüm misafirlerin ne olduğundan haberi olmalı. Gelinin gerçekten razı olması şart! En iyisi restoranla/DJ ile önceden koordineli yürütmek."
+      },
+      "bridal_shoe_hiding": {
+        "name": "Gelin Ayakkabısı Saklama",
+        "description": "Ayakkabı saklanır ve fidye ödenerek geri alınır.",
+        "instructions": "Gelin ayakkabısı çocuklar ya da misafirler tarafından saklanır. Damat onu 'fidye ödeyerek' geri almak zorundadır!"
+      },
+      "piggy_bank_game": {
+        "name": "Kumbara Oyunu",
+        "description": "Misafirler kumbaralara bozuk para atar.",
+        "instructions": "İki kumbara: 'Kim bulaşık yıkayacak?' - 'Kim çöpü çıkaracak?'. Misafirler bozuk parayla oy kullanır!"
+      },
+      "wedding_bet": {
+        "name": "Düğün Bahisleri",
+        "description": "Çift hakkında bahisler yapılır.",
+        "instructions": "Misafirler bahis yapar: İlk kim ağlar? Pasta ne zaman düşer? Sabaha kadar kim dans eder?"
+      },
+      "song_request_cards": {
+        "name": "Şarkı İstek Kartları",
+        "description": "Misafirler şarkı isteğinde bulunur.",
+        "instructions": "Kartlar misafirlerin şarkı isteklerini yazması için masalara bırakılır. DJ onları çalar!"
+      },
+      "wedding_time_capsule": {
+        "name": "Düğün Zaman Kapsülü",
+        "description": "Geleceğe taşınan anılar.",
+        "instructions": "Misafirler ve çift anılarını bir kapsüle koyar. 10. yıldönümünde açılır!"
+      },
+      "congratulation_line": {
+        "name": "Tebrik Sırası",
+        "description": "Tüm misafirlerin düzenli bir şekilde tebrik etmesi.",
+        "instructions": "Misafirler sıraya girer. Herkes kısaca tebriklerini sunar. Sunucu akışı canlı tutar!"
+      },
+      "two_truths_lie": {
+        "name": "2 Doğru, 1 Yalan",
+        "description": "Üç ifade arasındaki yalanı bulun.",
+        "instructions": "Herkes kendisi hakkında üç şey söyler — ikisi doğru, biri yalan. Grup yalanı bulmaya çalışır!"
+      },
+      "speed_meeting": {
+        "name": "Hızlı Tanışma",
+        "description": "Rotasyon sistemiyle hızlı tanışma.",
+        "instructions": "Speed dating gibi ama sadece tanışmak için. Kişi başı 2 dakika, ardından sıradaki!"
+      },
+      "human_bingo": {
+        "name": "Tanışma Bingosu",
+        "description": "Açıklamalara uyan insanları bul.",
+        "instructions": "Özelliklerle dolu bingo kartları ('Evcil hayvanı var', '3 dil konuşuyor'). Uyan kişileri bul!"
+      },
+      "find_someone_who": {
+        "name": "Şunu yapanı bul...",
+        "description": "Belirli özelliklere sahip kişileri ara.",
+        "instructions": "Kriterlerin yer aldığı bir liste. Her madde için bir kişi bul ve imzalatır!"
+      },
+      "common_ground": {
+        "name": "Ortak Noktalar Bulun",
+        "description": "Aramızda neler ortak?",
+        "instructions": "Küçük gruplar halinde: Mümkün olduğunca çok ortak nokta bulun. En çok bulan grup kazanır!"
+      },
+      "story_cubes": {
+        "name": "Hikaye Zarları",
+        "description": "Zar at ve bir hikaye anlat.",
+        "instructions": "Üzerinde resimler olan zarlar atılır. Çıkan sembollerden bir hikaye uydurmanız gerekiyor!"
+      },
+      "name_ball": {
+        "name": "İsim Topu",
+        "description": "Top atarak isimleri öğren.",
+        "instructions": "Bir isim söyle ve topu o kişiye at. O da bir sonraki ismi söyler!"
+      },
+      "word_association": {
+        "name": "Kelime Çağrışımı",
+        "description": "Hızlı kelime tenisi.",
+        "instructions": "Biri bir kelime söyler, bir sonraki aklına gelen ilk şeyi söyler. Tekrar yok!"
+      },
+      "personality_quiz": {
+        "name": "Kişilik Testi",
+        "description": "Kişilik tiplerinizi keşfedin.",
+        "instructions": "Kısa bir kişilik testi yapın. Sonuçları karşılaştırın ve tartışın!"
+      },
+      "desert_island": {
+        "name": "Issız Ada",
+        "description": "Ne götürürdün?",
+        "instructions": "Herkes ıssız bir adaya 3-5 şey seçer ve nedenini açıklar. İnsanlar hakkında çok şey öğrenirsiniz!"
+      },
+      "would_you_rather": {
+        "name": "Hangisini Tercih Ederdin?",
+        "description": "İki seçenek arasında zor kararlar.",
+        "instructions": "Sırayla sorular sorulur. Herkes seçim yapmak ve açıklamak zorunda!"
+      },
+      "rose_bud_thorn": {
+        "name": "Gül, Tomurcuk, Diken",
+        "description": "Güzellikleri, umutları ve zorlukları paylaşın.",
+        "instructions": "Herkes paylaşır: Bir gül (güzel bir şey), bir tomurcuk (bir umut), bir diken (bir zorluk)."
+      },
+      "hot_seat": {
+        "name": "Sıcak Koltuk",
+        "description": "Tüm sorular tek kişiye yönelir.",
+        "instructions": "Bir kişi 'sıcak koltuğa' oturur ve grubun sorularını yanıtlar. Dürüstlük şart!"
+      },
+      "one_word_story": {
+        "name": "Tek Kelimelik Hikaye",
+        "description": "Birlikte kelime kelime bir hikaye kurun.",
+        "instructions": "Sırayla herkes bir kelime söyler. Birlikte (çoğunlukla eğlenceli) bir hikaye ortaya çıkar!"
+      },
+      "human_knot": {
+        "name": "İnsan Düğümü",
+        "description": "Ellerinizi bırakmadan düğümü çözün!",
+        "instructions": "Herkes çember oluşturur ve rastgele iki el tutar. Sonra: Elleri bırakmadan çözülün!"
+      },
+      "alphabet_introduction": {
+        "name": "Alfabetik Tanışma",
+        "description": "Sıfat ve isimle kendini tanıt.",
+        "instructions": "Herkes adıyla aynı harfle başlayan bir sıfatla kendini tanıtır!"
+      },
+      "interview_pairs": {
+        "name": "İkili Röportaj",
+        "description": "Birbirinizi röportaj yapın ve tanıtın.",
+        "instructions": "İkili gruplar halinde: Birbirinizi röportaj yapın, sonra partnerinizi gruba tanıtın!"
+      },
+      "favorites_lineup": {
+        "name": "Favoriler Sıralaması",
+        "description": "Tercihlerinize göre sıraya dizilip duruyorsunuz!",
+        "instructions": "Anons edilen kategoriye göre sıralanın: 'Sabahçı' ile 'Gece Kuşu' arasında, 'Pizza' ile 'Sushi' arasında!"
+      },
+      "emoji_introduction": {
+        "name": "Emoji Tanışması",
+        "description": "Kendini emojilerle anlat.",
+        "instructions": "Seni en iyi anlatan 3-5 emoji seç. Seçimini gruba açıkla!"
+      },
+      "show_and_tell": {
+        "name": "Göster ve Anlat",
+        "description": "Kişisel bir eşyanı paylaş.",
+        "instructions": "Herkes kendisi için anlamlı bir eşya getirir ve o eşyanın hikayesini anlatır!"
+      },
+      "trust_fall": {
+        "name": "Güven Düşüşü",
+        "description": "Geriye düş — takımın seni tutar.",
+        "instructions": "Bir kişi geriye doğru düşer, geri kalan grup onu yakalar. Güveni pekiştirmenin tam zamanı!"
+      },
+      "blind_drawing": {
+        "name": "Kör Çizim",
+        "description": "Talimatlara göre çiz — ama görmeden!",
+        "instructions": "Biri ne çizileceğini anlatır. Diğeri gözleri bağlı olarak çizer!"
+      },
+      "marshmallow_challenge": {
+        "name": "Marshmallow Challenge",
+        "description": "Spagetti ve marshmallow ile en yüksek kuleyi inşa edin.",
+        "instructions": "Spagetti, bant ve ip kullanarak bir kule inşa edin. Üstünde bir marshmallow durmalı!"
+      },
+      "egg_drop": {
+        "name": "Yumurta Düşürme Yarışması",
+        "description": "Yumurtayı düşüşten koruyun.",
+        "instructions": "Malzemeleri kullanarak yumurta için bir koruyucu yapı inşa edin. Yüksekten bırakılıyor — yumurta sağ kalacak mı?"
+      },
+      "minefield": {
+        "name": "Mayın Tarlası",
+        "description": "Partnerini gözleri bağlı engellerin arasından rehberle.",
+        "instructions": "Bir partner gözleri bağlı, diğeri sadece sözlü yönlendirme yapar. Engellere dokunma!"
       }
     },
     "themes": {
@@ -2611,6 +3316,231 @@
         "name": "Oktoberfest",
         "description": "Bavyera atmosferi",
         "tips": "Bira masaları, simit, sosis ve müzik!"
+      },
+      "90s_throwback": {
+        "name": "90'lar Nostalji",
+        "description": "Grunge, erkek grupları ve ilk cep telefonları",
+        "tips": "Plak kapakları dekor olarak, Walkman aksesuarları ve Backstreet Boys'tan Nirvana'ya uzanan bir playlist!"
+      },
+      "disco_fever": {
+        "name": "Disco Ateşi",
+        "description": "Simler, disko topu ve funk",
+        "tips": "Disko topu, sim yağmuru, Saturday Night Fever playlist — dans pistini yakın!"
+      },
+      "gatsby_20s": {
+        "name": "Gatsby / 1920'ler",
+        "description": "Cıvıl cıvıl Yirmili Yıllar; flapper kızlar ve jazz",
+        "tips": "Art Deco dekor, şampanya, tüy boa, swing müziği ve Charleston dansı!"
+      },
+      "white_party": {
+        "name": "Beyaz Parti",
+        "description": "Her şey beyaz — zarif ve yazlık",
+        "tips": "Beyaz dekor, beyaz çiçekler, açık renkli kokteyller ve dinlendirici lounge müziği!"
+      },
+      "black_tie": {
+        "name": "Siyah Kravat Galası",
+        "description": "Resmi ve zarif — smokinler ve gece elbiseleri",
+        "tips": "Şampanya, klasik müzik, şık masa dekorasyonu!"
+      },
+      "hollywood_glam": {
+        "name": "Hollywood Görkemi",
+        "description": "Kırmızı halı ve yıldız parıltısı",
+        "tips": "Kırmızı halı, paparazzi köşesi, altın süslemeler ve film müzikleri!"
+      },
+      "masquerade_ball": {
+        "name": "Maskeli Balo",
+        "description": "Venedik maskeleriyle gizemli bir zarafet",
+        "tips": "Venedik maskeleri, mum ışığı ve bordo ile altın kadife dekorasyonlar — asil ve esrarengiz."
+      },
+      "tropical_beach": {
+        "name": "Tropical Beach",
+        "description": "Palmiyeler ve kokteylerle Karayip havası",
+        "tips": "Hawaii gömlekleri, Tiki meşaleleri, hindistancevizi içecekleri ve tropik müzik!"
+      },
+      "mexican_fiesta": {
+        "name": "Mexican Fiesta",
+        "description": "Canlı renkler, takolar ve Mariachi",
+        "tips": "Sombreros, piñatalar, renkli flamalar, margaritalar ve salsa müziği!"
+      },
+      "festival_style": {
+        "name": "Festival Style",
+        "description": "Çiçek taçlarıyla açık hava festival enerjisi",
+        "tips": "Boho dekor, peri ışıkları, dinlenme köşeleri ve canlı müzik ya da DJ!"
+      },
+      "bbq_grill": {
+        "name": "BBQ & Grill",
+        "description": "Arkadaşlar ve aileyle mangal keyfi",
+        "tips": "Mangal, bahçe bankları, peri ışıkları ve BBQ klasikleri!"
+      },
+      "garden_party": {
+        "name": "Garden Party",
+        "description": "Yeşilin içinde zarif bir şölen",
+        "tips": "Çiçek dekorasyonları, güneş şemsiyeleri, piknik sepetleri ve hafif atıştırmalıklar!"
+      },
+      "game_night": {
+        "name": "Game Night",
+        "description": "Herkes için kutu ve kart oyunları",
+        "tips": "Rahat oturma köşeleri, bol oyun, atıştırmalıklar ve içecekler!"
+      },
+      "cocktail_party": {
+        "name": "Cocktail Party",
+        "description": "Şık içkiler ve keyifli sohbetler",
+        "tips": "Bar istasyonu, kokteyl menüsü, caz müziği ve zarif atıştırmalıklar!"
+      },
+      "wine_cheese": {
+        "name": "Wine & Cheese",
+        "description": "İnce peynirlerle şarap tadımı",
+        "tips": "Çeşit çeşit şarap, peynir tabağı, üzümler ve yumuşak müzik!"
+      },
+      "spa_day": {
+        "name": "Spa Day",
+        "description": "Wellness ve şımartma programı",
+        "tips": "Bornozlar, yüz maskeleri, salatalıklar, rahatlama müziği!"
+      },
+      "adventure_theme": {
+        "name": "Macera Teması",
+        "description": "Açık hava aksiyonu ve adrenalin",
+        "tips": "Kamp dekorasyonu, outdoor ekipmanı, doğa sesleri!"
+      },
+      "camping": {
+        "name": "Camping",
+        "description": "Yıldızların altında saf doğa",
+        "tips": "Çadırlar, kamp ateşi, sopalı ekmek ve gitar müziği!"
+      },
+      "road_trip": {
+        "name": "Road Trip",
+        "description": "Yolun özgürlüğü",
+        "tips": "Haritalar, vintage bavullar, road trip şarkıları!"
+      },
+      "city_break": {
+        "name": "Şehir Kaçamağı",
+        "description": "Kentsel hava ve gezi keyfi",
+        "tips": "Şehir posterleri, sokak lezzetleri ve bir city playlist şart!"
+      },
+      "beach_house": {
+        "name": "Plaj Evi",
+        "description": "Deniz kıyısında yaz günleri",
+        "tips": "Deniz kabukları, sörf tahtası dekorları, beach vibes ve dalga sesleri!"
+      },
+      "ski_lodge": {
+        "name": "Ski Lodge",
+        "description": "Kayak sonrası dağ evi gecesi",
+        "tips": "Kürk battaniyeler, sıcak şarap, şömine hissi ve Après-Ski hitleri!"
+      },
+      "lake_house": {
+        "name": "Lake House",
+        "description": "Göl kenarında dinginlik",
+        "tips": "Denizcilik temalı dekor, kano görünümleri, gün batımı ve sakin müzik!"
+      },
+      "cabin_woods": {
+        "name": "Orman Kulübesi",
+        "description": "Doğanın içinde sıcak ve keyifli",
+        "tips": "Mumlar, battaniyeler, orman sesleri ve rahat köşeler!"
+      },
+      "superhero": {
+        "name": "Süper Kahraman Partisi",
+        "description": "En sevdiğin süper kahramanlar olarak gel!",
+        "tips": "Cape zorunlu, çizgi roman dekoru ve süper kahraman müzikleri!"
+      },
+      "pirates": {
+        "name": "Korsan Macerası",
+        "description": "Ahoy! Hazine avı ve rom zamanı",
+        "tips": "Hazine haritaları, göz bantları, rom kokteylleri ve korsan bayrakları!"
+      },
+      "murder_mystery_theme": {
+        "name": "Murder Mystery",
+        "description": "Bir cinayet işlendi — katil kim?",
+        "tips": "Loş aydınlatma, gizemli müzik, kostümler ve ipucu kartları!"
+      },
+      "neon_glow": {
+        "name": "Neon Glow",
+        "description": "Siyah ışık altında parlayan renkler",
+        "tips": "UV ışık, neon renkler, parlayan aksesuarlar ve EDM müzik!"
+      },
+      "french_riviera": {
+        "name": "Fransız Rivierası",
+        "description": "Côte d'Azur zarafeti",
+        "tips": "Mavi-beyaz çizgiler, lavanta, rosé şarap ve chanson müziği!"
+      },
+      "italian_dolce_vita": {
+        "name": "İtalyan Dolce Vita",
+        "description": "Vespa şıklığı ve Akdeniz büyüsüyle La Dolce Vita",
+        "tips": "Vespa dekoru, zeytin dalları, Chianti şişeleri ve ayçiçekleriyle İtalyan yaşam sevincini hisset."
+      },
+      "greek_island": {
+        "name": "Yunan Adası",
+        "description": "Mavi-beyazın içinde Santorini vibes",
+        "tips": "Mavi-beyaz dekor, zeytin, feta ve bouzouki müziği!"
+      },
+      "spanish_flamenco": {
+        "name": "İspanyol Flamenko",
+        "description": "Tutku ve ateşli temperament",
+        "tips": "Kırmızı ve siyah, yelpazeler, tapas ve flamenko müziği!"
+      },
+      "irish_pub": {
+        "name": "Irish Pub",
+        "description": "Dublin'deki gibi samimi ve sıcak",
+        "tips": "Yeşil, Guinness, viski ve İrlanda halk müziği!"
+      },
+      "british_royal": {
+        "name": "British Royal",
+        "description": "Windsor ailesinin asaletiyle kusursuz zarafet",
+        "tips": "Union Jack, çay, scone ve İngiliz inceliği!"
+      },
+      "asian_zen": {
+        "name": "Asian Zen",
+        "description": "Uzak Doğu'nun huzur ve uyumu",
+        "tips": "Bambu, nilüfer çiçekleri, yeşil çay ve meditasyon müziği!"
+      },
+      "under_the_stars": {
+        "name": "Yıldızların Altında",
+        "description": "Pırıl pırıl yıldızlar altında romantik bir gece",
+        "tips": "Işıklar, yıldızlar, ay motifleri ve açık havada yumuşacık battaniyeler."
+      },
+      "vintage_tea_party": {
+        "name": "Vintage Tea Party",
+        "description": "Nostaljik tarzda büyüleyici bir çay partisi",
+        "tips": "Vintage çay setleri, çiçekler, dantel ve pastel tonlarla nostaljik bir atmosfer."
+      },
+      "art_deco": {
+        "name": "Art Deco",
+        "description": "1920'lerin geometrik zarafeti",
+        "tips": "Altın dokunuşlar, geometrik desenler ve caz müziği!"
+      },
+      "boho_chic": {
+        "name": "Boho Chic",
+        "description": "Özgür ruhlu ve doğayla iç içe",
+        "tips": "Makrome, düş kapanı, toprak tonları ve indie müzik!"
+      },
+      "rustic_farm": {
+        "name": "Çiftlik Şenliği",
+        "description": "Ahırda kırsal sıcaklık ve neşe",
+        "tips": "Saman balyaları, ahşap sandıklar, kır çiçekleri ve country müziği!"
+      },
+      "minimalist_modern": {
+        "name": "Minimalist Modern",
+        "description": "Net çizgiler ve şık sadelik",
+        "tips": "Temiz çizgiler, beyaz çiçekler ve tek bir öne çıkan detay — az çok demektir."
+      },
+      "bohemian_sunset": {
+        "name": "Bohemian Sunset",
+        "description": "Gün batımı renklerinde sıcak boho havası",
+        "tips": "Ayçiçekleri, terrakota, yastıklar ve sıcak gün batımı tonlarında boho halılar."
+      },
+      "industrial_chic": {
+        "name": "Industrial Chic",
+        "description": "Metal ve Edison ampulleriyle harika loft görünümü",
+        "tips": "Metal, Edison ampuller, beton ve ahşapla ham bir loft cazibesi."
+      },
+      "karibik": {
+        "name": "Karayipler",
+        "description": "Plaj ruhlu tropik ada cenneti",
+        "tips": "Palmiyeler, deniz kabukları, hamaklar ve tiki dekoru ile Karayip tatil havası."
+      },
+      "sports_day": {
+        "name": "Sports Day",
+        "description": "Olimpiyat ruhuyla sportif yarışmalar",
+        "tips": "Formalar, madalyalar, oyun alanları ve sporcu atıştırmalıkları!"
       }
     }
   },
@@ -3226,7 +4156,12 @@
         "saison": "Mevsimlik",
         "kostuem": "Kostüm",
         "wellness": "Wellness"
-      }
+      },
+      "loadMore": "Daha fazla",
+      "playableTitle": "Hemen oyna",
+      "playableSubtitle": "Hemen başla — uygulamaya entegre",
+      "playableAll": "Tümü",
+      "playableCta": "Oyna"
     },
     "profile": {
       "settings": "Ayarlar",

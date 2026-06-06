@@ -1079,6 +1079,46 @@
         "name": "Asian Zen",
         "description": "Ruhe und Harmonie aus dem Fernen Osten",
         "tips": "Bambus, Lotusblüten, grüner Tee und meditative Musik!"
+      },
+      "masquerade_ball": {
+        "name": "Maskenball",
+        "description": "Geheimnisvolle Eleganz mit venezianischen Masken",
+        "tips": "Venezianische Masken, Kerzenschein und Samt-Deko in Burgund und Gold — edel und mysteriös."
+      },
+      "italian_dolce_vita": {
+        "name": "Italienisches Dolce Vita",
+        "description": "La Dolce Vita mit Vespa-Flair und mediterranem Charme",
+        "tips": "Vespa-Deko, Olivenzweige, Chianti-Flaschen und Sonnenblumen für italienisches Lebensgefühl."
+      },
+      "under_the_stars": {
+        "name": "Unter dem Sternenhimmel",
+        "description": "Romantische Nacht unter funkelnden Sternen",
+        "tips": "Lichterketten, Sterne, Monde und kuschelige Decken unter freiem Himmel."
+      },
+      "vintage_tea_party": {
+        "name": "Vintage Tea Party",
+        "description": "Charmante Teegesellschaft im Vintage-Stil",
+        "tips": "Vintage-Teekannen, Blumen, Spitze und Pastelltöne für nostalgischen Charme."
+      },
+      "minimalist_modern": {
+        "name": "Minimalistisch Modern",
+        "description": "Klare Linien und elegante Schlichtheit",
+        "tips": "Klare Linien, weiße Blumen und einzelne Statement-Stücke — weniger ist mehr."
+      },
+      "bohemian_sunset": {
+        "name": "Bohemian Sunset",
+        "description": "Warmes Boho-Flair in Sonnenuntergangsfarben",
+        "tips": "Sonnenblumen, Terrakotta, Kissen und Boho-Teppiche in warmen Sonnenuntergangstönen."
+      },
+      "industrial_chic": {
+        "name": "Industrial Chic",
+        "description": "Cooler Loft-Look mit Metall und Edison-Lampen",
+        "tips": "Metall, Edison-Lampen, Beton und Holz für rauen Loft-Charme."
+      },
+      "karibik": {
+        "name": "Karibik",
+        "description": "Tropisches Inselparadies mit Strand-Vibes",
+        "tips": "Palmen, Muscheln, Hängematten und Tiki-Deko für karibisches Urlaubsfeeling."
       }
     }
   },
@@ -4649,7 +4689,12 @@
         "saison": "Saison",
         "kostuem": "Kostüm",
         "wellness": "Wellness"
-      }
+      },
+      "loadMore": "Mehr laden",
+      "playableTitle": "Direkt spielbar",
+      "playableSubtitle": "Sofort loslegen — in der App integriert",
+      "playableAll": "Alle",
+      "playableCta": "Spielen"
     },
     "profile": {
       "settings": "Einstellungen",

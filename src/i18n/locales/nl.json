@@ -2655,6 +2655,676 @@
         "name": "2 Waarheden en 1 Leugen",
         "description": "Raad de leugen onder drie beweringen.",
         "instructions": "**Voorbereiding:**\nElke speler bedenkt drie feiten over zichzelf: twee waar en één gelogen.\n\n**Speelwijze:**\nIedereen vertelt zijn drie feiten. De groep stemt welke ze denken dat de leugen is. De waarheid wordt onthuld.\n\n**Regels:**\n• Feiten moeten geloofwaardig zijn\n• De leugen mag niet te voor de hand liggen\n• Punten voor correct raden"
+      },
+      "flunkyball": {
+        "name": "Flunkyball",
+        "description": "Het ultieme buitendrankspel met bal en fles.",
+        "instructions": "**Voorbereiding:**\nTwee teams staan tegenover elkaar op ongeveer 10 meter afstand. Iedereen heeft een drankje. In het midden staat een fles met wat water. Er is een zachte bal nodig (tennis- of softbal).\n\n**Spelverloop:**\nTeam A gooit de bal naar de fles. Bij raak: Team A drinkt snel. Team B moet de fles rechtop zetten, de bal pakken en zich opstellen. Dan wordt Team A gestopt.\n\n**Regels:**\n• De bal moet zittend worden gegooid\n• Drankje pas neerzetten als iedereen in het team staat\n• De fles moet recht staan (niet leunen)\n• Wie klaar is met drinken, zet de fles ondersteboven\n• Het eerste team dat helemaal klaar is, wint\n\n**Varianten:**\n• Estafette: Slechts één persoon per team gooit\n• Hardcore: Elke raak = nieuw drankje openen\n• Softcore: Water in plaats van alcohol\n\n**Tips:**\nPerfect voor parken of tuinen! De fles mag niet te makkelijk omvallen. Zonneschijn maakt het spel nog leuker!"
+      },
+      "groom_bride_quiz": {
+        "name": "Vrijgezellenquiz",
+        "description": "Hoe goed kent de groep de bruidegom/de bruid?",
+        "instructions": "**Voorbereiding:**\nVóór het vrijgezellenfeest worden 20-30 vragen over de erepersoon verzameld: favoriete dingen, gênante verhalen, relatiedetails. De partner kan in het geheim worden gevraagd. Antwoorden noteren!\n\n**Spelverloop:**\nDe quizmaster stelt vragen. De groep (of de erepersoon) moet antwoorden. Bij foute antwoorden volgen strafrondes voor de erepersoon of de groep.\n\n**Regels:**\n• Fout antwoord = shot/opdracht voor de erepersoon\n• Goed antwoord = shot/opdracht voor de groep\n• Joker: 1x mag de partner gebeld worden\n• Bij intieme vragen: erepersoon mag weigeren (= straf)\n\n**Varianten:**\n• Teamquiz: Groep vs. erepersoon\n• Snelquiz: 10 seconden per antwoord\n• Fotoquiz: Beelden uit het verleden laten zien\n\n**Tips:**\nMeng grappige, gênante en romantische vragen door elkaar. De beste vragen komen vaak van de partner! Documenteer alles voor de huwelijkskrant!"
+      },
+      "kiss_challenge": {
+        "name": "Kusjes-Challenge",
+        "description": "Verzamel kusjes van vreemden — hoe meer, hoe beter!",
+        "instructions": "**Voorbereiding:**\nBesorge een wit T-shirt voor de erepersoon. Zet lippenstiften in verschillende kleuren klaar. Vergeet de desinfectiedoekjes niet!\n\n**Spelverloop:**\nDe erepersoon moet kusjes (lippenstiftafdrukken) van vreemden verzamelen op het T-shirt. De groep begeleidt en documenteert alles.\n\n**Regels:**\n• Alleen vrijwillige kusjes tellen!\n• Respectvol vragen is verplicht\n• Verschillende kleuren = bonus\n• Geen overlast!\n• Tijdslimiet: 1-2 uur\n\n**Varianten:**\n• Fotokus: Selfie met elke persoon\n• Handtekeningen: Ook namen verzamelen\n• Challenge-upgrade: Bepaalde 'types' vinden\n\n**Tips:**\nAltijd vriendelijk en respectvol vragen. Accepteer 'nee'! Bars en clubs werken het best. Het T-shirt is een geweldige herinnering!"
+      },
+      "selfie_mission": {
+        "name": "Selfie-Missie",
+        "description": "Maak creatieve selfies met specifieke opdrachten.",
+        "instructions": "Iedereen krijgt een lijst met selfie-opdrachten (bijv. met een agent, op een fontein, etc.). Wie de meeste haalt, wint!"
+      },
+      "costume_tasks": {
+        "name": "Verkleedopdrachten",
+        "description": "Trek gekke kostuums aan en voltooi opdrachten.",
+        "instructions": "De erepersoon moet verkleed in een gênant kostuum opdrachten uitvoeren in het openbaar. De groep documenteert alles!"
+      },
+      "bucket_list": {
+        "name": "Bucket List Challenge",
+        "description": "Beleef onvergetelijke momenten van een vooraf gemaakte lijst.",
+        "instructions": "Maak een lijst met unieke ervaringen. Probeer er op deze dag zo veel mogelijk af te vinken!"
+      },
+      "city_rally": {
+        "name": "Stadsrally",
+        "description": "Een speurtocht door de stad met opdrachten en raadsels.",
+        "instructions": "**Voorbereiding:**\nPlan een route door de stad met 8-12 stations. Maak aanwijzingen die naar het volgende station leiden. Bereid opdrachten voor bij elk station. Vorm teams (2-4 personen).\n\n**Spelverloop:**\nTeams starten met een tijdsverschil. Bij elk station: aanwijzing lezen, opdracht uitvoeren, foto maken, volgende aanwijzing vinden. Het snelste team met alle opdrachten wint.\n\n**Regels:**\n• Alle opdrachten moeten worden gefotografeerd\n• Tijdslimiet: 2-3 uur\n• GPS-tracking of bellen naar de spelleider is toegestaan\n• Punten voor snelheid + creativiteit\n\n**Varianten:**\n• Pubrally: Stations zijn bars/kroegen\n• Fotorally: Creatieve foto's in plaats van opdrachten\n• QR-coderally: Aanwijzingen via QR-code\n\n**Tips:**\nGebruik bezienswaardigheden als stations. De beste rally heeft een mix van kennis, actie en plezier. Eindig bij een bar voor de prijsuitreiking!"
+      },
+      "photo_scavenger_hunt": {
+        "name": "Foto-Speurtocht",
+        "description": "Fotografeer alles op de lijst — wees creatief!",
+        "instructions": "Elk team krijgt een lijst met foto-opdrachten. Punten worden gegeven voor creativiteit en volledigheid."
+      },
+      "team_olympiad": {
+        "name": "Team-Olympiade",
+        "description": "Meerdere disciplines, één kampioenenteam!",
+        "instructions": "Plan verschillende wedstrijden (zaklopen, eierlopen, etc.). Teams verzamelen punten. Aan het einde wordt de winnaar bekroond."
+      },
+      "boot_camp": {
+        "name": "Boot Camp Challenge",
+        "description": "Fitnesschallenge voor de hele groep.",
+        "instructions": "Een trainer of de groep zelf voert oefeningen uit. Wie houdt het vol? Teamgeest is vereist!"
+      },
+      "cocktail_contest": {
+        "name": "Cocktailwedstrijd",
+        "description": "Wie mixt de beste cocktail?",
+        "instructions": "Iedereen maakt zijn eigen cocktail. Blindproeverij en beoordeling door de groep. De beste bartender wint!"
+      },
+      "wine_tasting": {
+        "name": "Wijn-Blindproeverij",
+        "description": "Herken de wijnen met geblinddoekte ogen.",
+        "instructions": "Verschillende wijnen worden blind geproefd en beoordeeld. Punten voor correct geraden druivenrassen of regio's."
+      },
+      "tshirt_design": {
+        "name": "T-shirt beschilderen",
+        "description": "Ontwerp een uniek groeps-shirt.",
+        "instructions": "Met textielverf worden T-shirts op maat beschilderd. Een perfecte herinnering aan de dag!"
+      },
+      "embarrassing_songs": {
+        "name": "Gênante liedjes zingen",
+        "description": "Zing de gênantste liedjes op openbare plekken.",
+        "instructions": "De erepersoon moet uitgekozen gênante liedjes luid en vol overgave op openbare plekken zingen."
+      },
+      "dare_dice": {
+        "name": "Dare Dice",
+        "description": "Gooi je lot — de dobbelsteen bepaalt jouw opdracht.",
+        "instructions": "Gooi de opdracht-dobbelsteen. Wat hij aangeeft, moet worden gedaan. Geen smoesjes!"
+      },
+      "never_have_i_ever": {
+        "name": "Ik heb nog nooit",
+        "description": "Bekentenissen en geheimen komen aan het licht.",
+        "instructions": "**Voorbereiding:**\nAlle spelers zitten in een kring. Iedereen heeft een drankje of 10 vingers/chips. Optioneel: Voorbereide uitspraken om mee te beginnen.\n\n**Spelverloop:**\nOm de beurt zegt iedereen 'Ik heb nog nooit...' en vult een uitspraak in. Iedereen die het wél heeft gedaan, neemt een slok of verliest een vinger/chip.\n\n**Regels:**\n• Eerlijkheid is verplicht!\n• Bij 0 vingers: een rondje overslaan of een speciale shot\n• Doorvragen mag: 'Echt? Vertel!'\n• Betrapt op liegen: strafdrankje\n\n**Varianten:**\n• JVP-editie: Alleen relatie-/datingonderwerpen\n• Speedronde: 5 seconden per uitspraak\n• Story-modus: Wie drinkt, moet het verhaal vertellen\n\n**Tips:**\nBegin rustig en bouw het op. De beste uitspraken zijn specifiek genoeg om interessant te zijn, maar niet té persoonlijk. Respecteer elkaars grenzen!"
+      },
+      "ring_search_pasta": {
+        "name": "Ring zoeken in pasta",
+        "description": "Graaf met geblinddoekte ogen in pasta om de ring te vinden.",
+        "instructions": "Een ring wordt verstopt in een grote schaal pasta. Met geblinddoekte ogen en alleen met de mond of handen moet hij worden gevonden."
+      },
+      "toilet_paper_dress": {
+        "name": "Wc-papier bruidsjurk",
+        "description": "Maak een bruidsjurk van alleen wc-papier.",
+        "instructions": "**Voorbereiding:**\nVerdeel de groep in teams van 3-4 personen. Elk team krijgt 2-3 rollen wc-papier. Optioneel: Plakband, scharen (maakt het makkelijker).\n\n**Spelverloop:**\nElk team kiest een 'model'. In 10-15 minuten moet er een bruidsjurk van wc-papier worden gemaakt. Het model presenteert het resultaat op een 'catwalk'.\n\n**Regels:**\n• Houd je strikt aan de tijdslimiet\n• Alleen de aangeboden materialen gebruiken\n• Het model mag niet helpen\n• De jurk moet een 'catwalk' overleven\n\n**Varianten:**\n• Met sluier: bonus voor accessoires\n• Modeshow: met muziek en commentator\n• Juryoordeel: de erepersoon beoordeelt\n\n**Tips:**\nWikkel de jurk om het lichaam in plaats van er gewoon iets aan vast te hangen! De beste jurken hebben structuur (drapering, plooien). Vergeet de foto's niet!"
+      },
+      "balloon_dance": {
+        "name": "Ballondans",
+        "description": "Dans met een ballon tussen jullie in — laat hem niet vallen!",
+        "instructions": "Koppels dansen met een ballon tussen zich in. Als de ballon valt of knapt, valt het koppel af."
+      },
+      "limbo_competition": {
+        "name": "Limbo-wedstrijd",
+        "description": "Hoe laag kun jij gaan?",
+        "instructions": "Een stok wordt steeds lager gehouden. Wie het laagst gaat zonder de stok aan te raken of te vallen, wint!"
+      },
+      "pinata": {
+        "name": "Piñata",
+        "description": "Sla de piñata stuk en verzamel het snoep!",
+        "instructions": "Met geblinddoekte ogen op de piñata slaan totdat hij opengaat en het snoep naar beneden regent!"
+      },
+      "mystery_box": {
+        "name": "Mystery Box",
+        "description": "Voel wat er in de doos zit zonder te kijken.",
+        "instructions": "Verschillende voorwerpen worden in dozen verstopt. Met geblinddoekte ogen moeten ze worden betast en geraden."
+      },
+      "hat_challenges": {
+        "name": "Opdrachten uit de hoed",
+        "description": "Trek een opdracht en voer hem meteen uit.",
+        "instructions": "Opdrachten worden opgeschreven en in een hoed gegooid. Om de beurt trekt iemand een briefje en voert de opdracht direct uit."
+      },
+      "photo_booth": {
+        "name": "Fotohokje Challenge",
+        "description": "Maak gekke foto's met grappige rekwisieten.",
+        "instructions": "Richt een fotohoek in met rekwisieten. Iedereen maakt zoveel mogelijk grappige foto's. De beste worden beloond!"
+      },
+      "speed_dating": {
+        "name": "Speeddating-spel",
+        "description": "Leer iedereen in de groep kennen in 2 minuten.",
+        "instructions": "Iedereen praat 2 minuten met ieder ander. Als de timer afgaat, wissel je van gesprekspartner. Aan het einde: wie heeft wat over wie ontdekt?"
+      },
+      "who_knows_best": {
+        "name": "Wie kent wie het best?",
+        "description": "Test wie de erepersoon echt door en door kent.",
+        "instructions": "Er worden vragen gesteld over de erepersoon. Wie de meeste vragen goed beantwoordt, kent hem of haar het best!"
+      },
+      "activity": {
+        "name": "Activity",
+        "description": "Verklaar, teken of beeld uit — veelzijdig partyspel voor iedereen.",
+        "instructions": "**Voorbereiding:**\nBegrippen op kaartjes schrijven (of Activity-spel kopen). Teams vormen. Tekenmateriaal klaarleggen. Timer (30-60 seconden).\n\n**Spelverloop:**\nAl naargelang de kaart moet het begrip uitgelegd (zonder verwante woorden), getekend of met gebaren uitgebeeld worden. Het team raadt binnen de tijd.\n\n**Regels:**\n• Uitleggen: Het woord zelf mag je niet zeggen\n• Tekenen: Geen letters of cijfers\n• Gebaren: Geen geluiden\n• Per raak: 1 punt\n• Verkeerde methode: 0 punten\n\n**Varianten:**\n• Speed-modus: Alle methoden in één ronde\n• VrijgezellenfeestEditie: Alleen relatie-begrippen\n• Drink-Activity: Fout geraden = drinken\n\n**Tips:**\nMix makkelijke en moeilijke begrippen. De grappigste momenten ontstaan bij lastige gebaren. Gebruik een groot tekenoppervlak!"
+      },
+      "taboo": {
+        "name": "Taboe",
+        "description": "Leg het woord uit zonder de verboden woorden te gebruiken.",
+        "instructions": "**Voorbereiding:**\nTaboe-kaarten klaarmaken: elke kaart heeft een begrip en 5 verboden woorden. Teams vormen. Timer klaarleggen.\n\n**Spelverloop:**\nEen speler legt het begrip uit zonder de taboe-woorden of hun woordstammen te gebruiken. Een speler van het andere team houdt toezicht. Het eigen team raadt.\n\n**Regels:**\n• Taboe-woord gezegd = begrip kwijt\n• Geen 'rijmt op...' of spellen\n• Tegenstander mag 'Taboe!' roepen\n• 60 seconden per ronde\n• Punten per geraden begrip\n\n**Varianten:**\n• Expertmodus: 7 taboe-woorden\n• Speed-Taboe: 30 seconden\n• Themeronden: Alleen films, alleen sport\n\n**Tips:**\nOmschrijvingen en verhaaltjes werken geweldig. 'Stel je voor...' is een fantastische opener. De taboe-woorden zijn de voor de hand liggende — wees creatief!"
+      },
+      "cards_against": {
+        "name": "Cards Against Humanity",
+        "description": "Het kaartspel voor verschrikkelijke mensen.",
+        "instructions": "**Voorbereiding:**\nKaartendek aanschaffen (of online afdrukken). Elke speler krijgt 10 witte kaarten. Zwarte kaarten als stapel in het midden leggen.\n\n**Spelverloop:**\nEen 'Kaarttsaar' trekt een zwarte kaart en leest die voor. Alle anderen spelen de witte kaart die het beste past. De tsaar kiest de winnaar.\n\n**Regels:**\n• De tsaar wisselt elke ronde\n• Witte kaarten anoniem spelen\n• Winnaar houdt de zwarte kaart\n• Bij __ & __ twee witte kaarten spelen\n• Beslissing van de tsaar is definitief!\n\n**Varianten:**\n• Drinkversie: Iedereen behalve de winnaar drinkt\n• Democratie: Iedereen stemt\n• Haiku: Drie kaarten tot één verhaal\n\n**Tips:**\nDe tsaar bepaalt de humor! De één houdt van slim, de ander van shockerend. Speel met mensen die van zwarte humor houden."
+      },
+      "rage_cage": {
+        "name": "Rage Cage",
+        "description": "Snel drinkspel met bekers en ballen.",
+        "instructions": "Gooi de bal zo snel mogelijk in de beker en geef door. Wie ingehaald wordt, moet uit het midden drinken!"
+      },
+      "flip_cup": {
+        "name": "Flip Cup",
+        "description": "Drink je beker leeg en flip hem sneller om dan het andere team.",
+        "instructions": "Drink de beker leeg en flip hem met één vinger om. Pas als hij staat, mag de volgende beginnen!"
+      },
+      "murder_mystery": {
+        "name": "Moorddiner",
+        "description": "Los de moordzaak op terwijl jullie dineren.",
+        "instructions": "**Voorbereiding:**\nMurder Mystery-set kopen of zelf maken. Rollen van tevoren aan gasten uitdelen. Decoratie passend bij het thema. Eten plannen.\n\n**Spelverloop:**\nTijdens een meergangendiner spelen alle gasten hun rol. Aanwijzingen worden onthuld, verdachten ondervraagd. Aan het einde moet de moordenaar ontmaskerd worden.\n\n**Regels:**\n• Iedereen blijft in karakter\n• De moordenaar mag liegen, anderen niet\n• Aanwijzingen worden op vaste momenten gegeven\n• Discussie en ondervraging toegestaan\n• Aan het einde: stemming\n\n**Varianten:**\n• Moord in de jaren 20 à la Gatsby\n• Crime-dinner in een restaurant\n• Buiten: Moord op het kasteel\n\n**Tips:**\nDeel rollen van tevoren uit, zodat gasten zich kunnen voorbereiden. Kostuums maken het extra authentiek. Reken op 3-4 uur!"
+      },
+      "escape_room_diy": {
+        "name": "DIY Escape Room",
+        "description": "Maak jullie eigen escape room.",
+        "instructions": "Puzzels en codes worden van tevoren klaargezet. Het team moet alles oplossen om te 'ontsnappen'. Tijdslimiet!"
+      },
+      "casino_night": {
+        "name": "Casino Night",
+        "description": "Poker, Blackjack, Roulette — het Las Vegas-gevoel!",
+        "instructions": "Richt speeltafels in. Iedereen krijgt startersfiches. Aan het einde: wie heeft het meest gewonnen?"
+      },
+      "drag_race": {
+        "name": "Drag Race",
+        "description": "Schmink en style elkaar helemaal op.",
+        "instructions": "In teams wordt gestyled en geschminkt. De beste transformatie wint. Runway walk inbegrepen!"
+      },
+      "dance_off": {
+        "name": "Dance-Off",
+        "description": "Laat je beste moves zien in een dansduel.",
+        "instructions": "Twee deelnemers treden tegen elkaar aan. De groep beoordeelt. De winnaar daagt de volgende uit."
+      },
+      "lip_sync_battle": {
+        "name": "Lip Sync Battle",
+        "description": "Performance is alles — ook zonder zangtalent!",
+        "instructions": "Kies een nummer en geef alles bij je optreden. Lip sync moet vlekkeloos zijn. Show-factor telt!"
+      },
+      "twerk_contest": {
+        "name": "Twerk-wedstrijd",
+        "description": "Wie kan het beste twerken?",
+        "instructions": "Muziek aan en laten zien wat je in huis hebt! De groep beoordeelt. Durf alles!"
+      },
+      "pole_dance_intro": {
+        "name": "Pole Dance Intro",
+        "description": "Een proefles aan de paal.",
+        "instructions": "Een studiobezoek of mobiele les. Onder begeleiding leer je de eerste moves. Gegarandeerd plezier!"
+      },
+      "strip_poker_light": {
+        "name": "Strip-Poker Light",
+        "description": "Poker met onschuldige gevolgen.",
+        "instructions": "Wie verliest, trekt een kledingstuk uit of voert een alternatieve opdracht uit. Grenzen vooraf afspreken!"
+      },
+      "dirty_minds_quiz": {
+        "name": "Dirty Minds Quiz",
+        "description": "Hoe vuil zijn jouw gedachten?",
+        "instructions": "De hints klinken pikant, maar het antwoord is onschuldig! Wie op het verkeerde spoor belandt, drinkt."
+      },
+      "last_night_freedom": {
+        "name": "Last Night of Freedom",
+        "description": "Een complete uitdagenlijst voor de laatste vrijgezellenavond.",
+        "instructions": "Een vooraf samengestelde lijst met alle klassieke vrijgezellenfeest-opdrachten wordt afgewerkt. Documenteer alles!"
+      },
+      "family_bingo": {
+        "name": "Familie-Bingo",
+        "description": "Klassiek bingo voor het hele gezin.",
+        "instructions": "Nummers of plaatjes worden afgeroepen. Wie een rij vol heeft, roept 'Bingo!' Prijzen voor de winnaars."
+      },
+      "memory_challenge": {
+        "name": "Memory-Challenge",
+        "description": "Test je geheugen met kaartenparen.",
+        "instructions": "Kaarten liggen omgekeerd op tafel. Vind de paren. Wie de meeste vindt, wint!"
+      },
+      "family_quiz": {
+        "name": "Familie-Quiz",
+        "description": "Hoe goed kennen jullie je eigen familie?",
+        "instructions": "Vragen over familieleden en gedeelde herinneringen. Punten voor de juiste antwoorden!"
+      },
+      "time_capsule": {
+        "name": "Tijdcapsule maken",
+        "description": "Bewaar herinneringen voor de toekomst.",
+        "instructions": "Iedereen legt iets betekenisvols erin. Sluit hem af en prik een datum wanneer hij geopend wordt!"
+      },
+      "sack_race": {
+        "name": "Zakkenrace",
+        "description": "De klassieker op elk familiefeest.",
+        "instructions": "**Voorbereiding:**\nAardappelzakken of grote vuilniszakken voor elke deelnemer. Start- en finishlijn markeren (10-20 meter). Hindernissen optioneel.\n\n**Spelverloop:**\nAlle deelnemers stappen in de zakken en houden die met beide handen vast. Op commando wordt naar de finish gesprongen. Wie als eerste aankomt, wint.\n\n**Regels:**\n• Handen moeten aan de zak blijven\n• Vallen = opstaan en doorgaan\n• Zak mag niet scheuren\n• Duwen verboden\n• Over de finishlijn gaan telt\n\n**Varianten:**\n• Estafette-zakkenrace: Teams met overdracht\n• Hindernisparcours: Met slalom\n• Duozakkenrace: Twee personen, één zak\n\n**Tips:**\nKleine sprongetjes voor balans, geen grote sprongen. Speel op een zachte ondergrond (gras). Start kinderen en volwassenen apart voor eerlijk spel!"
+      },
+      "egg_and_spoon": {
+        "name": "Eierlopen",
+        "description": "Balanceer het ei op de lepel naar de finish.",
+        "instructions": "**Voorbereiding:**\nVoor elke deelnemer: een lepel en een rauw ei (of hardgekookt/van plastic). Start- en finishlijn markeren (15-20 meter).\n\n**Spelverloop:**\nHet ei ligt op de lepel, die met één hand aan de steel wordt vastgehouden. Op commando lopen alle deelnemers naar de finish. Valt het ei eraf: terug naar de start.\n\n**Regels:**\n• Slechts één hand aan de lepel\n• Andere hand achter de rug\n• Ei met hand stabiliseren = diskwalificatie\n• Gevallen ei: terug naar de start\n• Eerste heel ei bij de finish wint\n\n**Varianten:**\n• Estafette: Teams met overdracht\n• Hindernisparcours: Met bochten en horden\n• Waterlepel: Lepel met water in plaats van ei\n\n**Tips:**\nLangzaam en gelijkmatig is beter dan snel! Niet op het ei staren — kijk vooruit. Hardgekookte eieren voor minder chaos!"
+      },
+      "can_knockdown": {
+        "name": "Blikgooien",
+        "description": "Gooi de blikkenpiramide omver!",
+        "instructions": "Blikken worden gestapeld. Met een bal probeer je ze allemaal om te gooien. Punten voor elk omvergegooid blik."
+      },
+      "kubb": {
+        "name": "Wikingerschaak",
+        "description": "Het Scandinavische werpspel voor alle leeftijden.",
+        "instructions": "**Voorbereiding:**\nSpeelveld markeren (5x8 meter). Vijf kubbs per kant opstellen. Koning in het midden. Werpstokken verdelen (6 per team).\n\n**Spelverloop:**\nTeams gooien om beurten naar de kubbs van de tegenstander. Omgegooid kubbs worden naar het veld van de tegenstander gegooid en daar neergezet. Doel: alle kubbs omgooien, dan de koning treffen.\n\n**Regels:**\n• Werpstokken van onderaf gooien (helikopter verboden)\n• Eerst alle veldkubbs raken, dan de basiskubbs\n• Koning te vroeg geraakt = verloren!\n• Werpstok moet rechtop landen\n\n**Varianten:**\n• Speed-Kubb: Tijdslimiet per ronde\n• Drink-Kubb: Geraakte kubb = tegenstander drinkt\n• Teamtoernooi: Meerdere teams\n\n**Tips:**\nStrategie is alles: gooi kubbs dicht bij elkaar voor een kettingreactie. Wees voorzichtig met de koning — zo zijn al veel wedstrijden verloren gegaan!"
+      },
+      "boccia": {
+        "name": "Boccia",
+        "description": "Precisiespel met ballen.",
+        "instructions": "Gooi je ballen zo dicht mogelijk bij de doelbal. De dichtstbijzijnde bal wint punten!"
+      },
+      "tug_of_war": {
+        "name": "Touwtrekken",
+        "description": "Welk team is het sterkst?",
+        "instructions": "Twee teams trekken aan een touw. Het team dat het andere over de lijn trekt, wint!"
+      },
+      "relay_race": {
+        "name": "Estafetteloop",
+        "description": "Teamwedstrijd met estafettestokje.",
+        "instructions": "Teams lopen een parcours en geven het stokje door. Het snelste team wint!"
+      },
+      "water_balloon": {
+        "name": "Waterballonnenveldslag",
+        "description": "Nat plezier voor hete dagen.",
+        "instructions": "Waterballonnen worden gevuld en gegooid. Varianten: gooien, vangen, of gewoon lekker chaos!"
+      },
+      "cooking_together": {
+        "name": "Samen koken",
+        "description": "Bereid samen een heerlijk feestmaal.",
+        "instructions": "Verdeel je in groepjes. Elke groep bereidt een gang. Aan het einde samen genieten!"
+      },
+      "puzzle_race": {
+        "name": "Puzzelwedstrijd",
+        "description": "Welk team legt de puzzel als eerste?",
+        "instructions": "Identieke puzzels voor alle teams. Op je plaatsen, klaar, puzzelen! Het snelste team wint."
+      },
+      "campfire_stories": {
+        "name": "Kampvuurverhalen",
+        "description": "Vertel verhalen bij het vuur.",
+        "instructions": "Om de beurt worden verhalen verteld — griezelig, grappig of uit de familiegeschiedenis. Perfect voor avonden!"
+      },
+      "hide_and_seek": {
+        "name": "Verstoppertje",
+        "description": "De klassieker voor jong en oud.",
+        "instructions": "Eén persoon telt, de rest verstopt zich. Wie als laatste gevonden wordt, wint!"
+      },
+      "tag": {
+        "name": "Tikkertje",
+        "description": "Ren zo snel als je kunt!",
+        "instructions": "Eén speler is de tikker. Wie getikt wordt, wordt de nieuwe tikker. Eindeloos veel plezier!"
+      },
+      "pot_hitting": {
+        "name": "Sla de pot",
+        "description": "Vind de pot met geblinddoekte ogen.",
+        "instructions": "Met een blinddoek en een houten lepel de pot opsporen. Daaronder wacht een verrassing!"
+      },
+      "telephone": {
+        "name": "Geheimpost",
+        "description": "Hoe verandert de boodschap onderweg?",
+        "instructions": "Fluister een bericht door. Aan het einde vergelijken: wat is er aangekomen? Meestal hilarisch!"
+      },
+      "musical_chairs": {
+        "name": "Stoelendans",
+        "description": "Als de muziek stopt, snel een stoel pakken!",
+        "instructions": "**Voorbereiding:**\nStoelen in een rij of kring neerzetten — altijd één minder dan het aantal spelers. Zorg voor muziek (met pauzemogelijkheid).\n\n**Spelverloop:**\nIedereen loopt om de stoelen heen terwijl de muziek speelt. Als de muziek stopt: snel zitten! Wie geen stoel krijgt, valt af. Daarna wordt er één stoel weggehaald.\n\n**Regels:**\n• Niet aanraken of reserveren vóór de muziek stopt\n• Direct gaan zitten zodra de muziek stopt\n• Duwen verboden\n• Echt gaan zitten (niet alleen aanraken)\n• De laatste speler met een stoel wint\n\n**Varianten:**\n• Muziek-freeze: bij stop bevriezen in plaats van zitten\n• Teamversie: duo's spelen samen\n• Dance-off: afgevallen spelers blijven dansen\n\n**Tips:**\nDe muziekbediener mag niet kijken! Onvoorspelbare pauzes maken het spannender. Zet de stoelen stabiel neer!"
+      },
+      "chocolate_game": {
+        "name": "Chocoladespel",
+        "description": "Gooi een zes en eet zo snel je kunt!",
+        "instructions": "Bij een 6: muts, sjaal en handschoenen aantrekken, chocolade met mes en vork eten — totdat de volgende een 6 gooit!"
+      },
+      "cotton_blowing": {
+        "name": "Watten blazen",
+        "description": "Blaas het wattenbolletje over de tafel.",
+        "instructions": "Wattenbol in het midden. Iedereen probeert hem naar de kant van de tegenstander te blazen."
+      },
+      "mummy_wrap": {
+        "name": "Mummie inpakken",
+        "description": "Wikkel iemand zo snel mogelijk in toiletpapier.",
+        "instructions": "Teams wikkelen een teamlid volledig in toiletpapier. Het snelste team met de mooiste mummie wint!"
+      },
+      "treasure_hunt": {
+        "name": "Schattenjacht",
+        "description": "Volg de kaart naar de schat!",
+        "instructions": "Een schatkaart leidt naar verschillende stations met aanwijzingen. Aan het einde wacht de schat!"
+      },
+      "mini_golf": {
+        "name": "Minigolf",
+        "description": "Klassieke minigolf voor alle leeftijden.",
+        "instructions": "Bezoek een midgetgolfbaan. Wie de minste slagen nodig heeft, wint!"
+      },
+      "bowling": {
+        "name": "Bowling",
+        "description": "Strike! Alle pins moeten omvallen.",
+        "instructions": "Gooi de bal over de baan en probeer alle pins omver te gooien. Punten voor elke pin!"
+      },
+      "frisbee": {
+        "name": "Frisbee",
+        "description": "Gooi de schijf heen en weer.",
+        "instructions": "Gooi en vang de frisbee in het park of op het strand. Simpel, maar ontzettend leuk!"
+      },
+      "kite_flying": {
+        "name": "Vliegeren",
+        "description": "Laat kleurrijke vliegers de lucht in.",
+        "instructions": "Start een vlieger bij windstil weer. Wie krijgt hem het hoogst? Perfect voor winderige herfstdagen!"
+      },
+      "bubble_contest": {
+        "name": "Zeepbellen-wedstrijd",
+        "description": "Wie maakt de grootste zeepbel?",
+        "instructions": "Maak met zeepbellenoplossing en allerlei gereedschap de grootste bellen. Magisch voor kinderen!"
+      },
+      "photo_safari": {
+        "name": "Foto-safari",
+        "description": "Fotografeer alles op de lijst in de natuur.",
+        "instructions": "Een lijst met te fotograferen dingen. Zoek en fotografeer ze in de natuur. Punten voor elke vondst!"
+      },
+      "geocaching": {
+        "name": "Geocaching",
+        "description": "Modern schatzzoeken met GPS.",
+        "instructions": "Zoek verborgen caches in de buurt met een geocaching-app. Een avontuur voor het hele gezin!"
+      },
+      "crafting": {
+        "name": "Knutselen",
+        "description": "Laat je creativiteit los met allerlei materialen.",
+        "instructions": "Leg knutselmateriaal klaar en geef de fantasie vrij spel. Van tekening tot sieraad!"
+      },
+      "talent_show": {
+        "name": "Talentshow",
+        "description": "Laat jullie verborgen talenten zien!",
+        "instructions": "Iedereen bereidt een korte act voor. Aan het einde wordt de winnaar gekozen. Alles is toegestaan!"
+      },
+      "millionaire_family": {
+        "name": "Wie wordt Miljonair (Gezinseditie)",
+        "description": "Het populaire quizformat voor het hele gezin.",
+        "instructions": "Vragen met stijgende moeilijkheidsgraad. Jokers zijn toegestaan: bellen, 50:50, publiek!"
+      },
+      "escape_room_family": {
+        "name": "Gezins-escape room",
+        "description": "Los samen de puzzels op en ontsnapt!",
+        "instructions": "Koop een escape room-set voor thuis of bezoek er een. Samen puzzels oplossen tegen de klok!"
+      },
+      "treehouse_build": {
+        "name": "Boomhut bouwen",
+        "description": "Een gezamenlijk project voor het hele gezin.",
+        "instructions": "Plan en bouw samen een boomhut. Een project voor meerdere weekenden — met een geweldig resultaat!"
+      },
+      "marriage_test": {
+        "name": "Huwelijksgeschiktheidstest",
+        "description": "Grappige opdrachten testen de huwelijksvaardigheden.",
+        "instructions": "Het stel moet allerlei opdrachten voltooien: luier verschonen, eten aanreiken met geblinddoekte ogen, enz."
+      },
+      "balloon_dancing": {
+        "name": "Ballondansen",
+        "description": "Dans in tweetallen met een ballon tussen jullie in.",
+        "instructions": "Koppels dansen met een ballon tussen zich in. Valt of knapt hij, dan ligt het koppel eruit!"
+      },
+      "bouquet_toss": {
+        "name": "Bruidsboeket gooien",
+        "description": "Welke vrijgezelle dame vangt het boeket?",
+        "instructions": "Alle ongetrouwde vrouwen verzamelen zich. De bruid gooit het boeket achteruit. Wie het vangt, trouwt als volgende!"
+      },
+      "garter_toss": {
+        "name": "Kousenband gooien",
+        "description": "De bruidegom gooit de kousenband.",
+        "instructions": "De bruidegom verwijdert de kousenband van de bruid en gooit hem naar de vrijgezelle mannen."
+      },
+      "newspaper_dance": {
+        "name": "Krantendans",
+        "description": "De dansvloer wordt steeds kleiner!",
+        "instructions": "**Voorbereiding:**\nElk koppel krijgt een uitgevouwen krant als dansvloer. Zet muziek klaar. Maak ruimte om te dansen.\n\n**Spelverloop:**\nAlle koppels dansen op hun krant. Na elke ronde wordt de krant gevouwen (gehalveerd). Wie van de krant afstapt of valt, ligt eruit.\n\n**Regels:**\n• Beide partners moeten op de krant blijven\n• Je partner optillen is toegestaan!\n• De krant mag niet worden gescheurd\n• Muziek stopt = vouwen\n\n**Varianten:**\n• Freeze-dans: Bevries als de muziek stopt\n• Ballondans: Houd ook een ballon tussen jullie lichamen\n• Snelheidsversie: Krant elke 30 seconden vouwen\n\n**Tips:**\nHet geheim: partner op de voeten nemen of op één been balanceren! Perfect voor bruiloften en feesten."
+      },
+      "kiss_marathon": {
+        "name": "Kusmarathon",
+        "description": "De langste kus van de avond!",
+        "instructions": "**Voorbereiding:**\nStopwatch klaarzetten. Gasten verzamelen zich. Optioneel: muziek en aanmoedigingen. Het bruidspaar staat in het midden.\n\n**Spelverloop:**\nOp commando begint het bruidspaar te kussen. De gasten tellen de seconden of een presentator stopt de tijd. Doel: zo lang mogelijk kussen!\n\n**Regels:**\n• Lippen mogen elkaar niet verlaten\n• Ademen door de neus is toegestaan\n• Niet stoppen door te lachen\n• Gasten mogen aanmoedigen\n\n**Varianten:**\n• Koppel-uitdaging: Meerdere koppels doen mee\n• Verrassingskus: Gasten roepen 'Kussen!' bij glas klinken\n• Record breken: Vorig record verslaan\n\n**Tips:**\nAanmoedigen maakt het moeilijker (van het lachen!). Het wereldrecord staat op meer dan 58 uur — dat hoeft echt niet! 1-2 minuten is al indrukwekkend."
+      },
+      "wedding_abc": {
+        "name": "Bruiloft-ABC",
+        "description": "Voor elke letter een wens of tip.",
+        "instructions": "Gasten schrijven voor elke letter van het alfabet een wens of een stukje levensadvies voor het koppel."
+      },
+      "guest_lottery": {
+        "name": "Gastenloterij",
+        "description": "Elke gast maakt kans op geweldige prijzen!",
+        "instructions": "Loten worden uitgedeeld bij aankomst. In de loop van de avond worden winnaars getrokken."
+      },
+      "polaroid_guestbook": {
+        "name": "Polaroid-gastenboek",
+        "description": "Instantfoto's als blijvende herinnering.",
+        "instructions": "**Voorbereiding:**\nPolaroidcamera met voldoende film klaarzetten. Gastenboek/album met lege pagina's. Pennen, lijm en decoratie. Rekwisieten voor grappige foto's.\n\n**Spelverloop:**\nGasten maken polaroidfoto's (alleen, in koppels, in groepen). Foto's worden in het gastenboek geplakt en voorzien van een persoonlijke groet.\n\n**Regels:**\n• Max. 2 foto's per gast (film is duur!)\n• Minimaal één groet per foto\n• Gebruik de rekwisietenkist\n• Foto's laten drogen voor het plakken\n\n**Varianten:**\n• Fotobooth: Vaste opstelling met achtergrond\n• Opdrachtfoto's: Bepaalde poses nadoen\n• Video-gastenboek: Aanvullend korte video's\n\n**Tips:**\nEen 'gastenboek-begeleider' is goud waard! Instax-camera's zijn goedkoper dan echte polaroids. Washi-tape in plaats van lijm geeft een mooier resultaat!"
+      },
+      "wish_tree": {
+        "name": "Wensenboom",
+        "description": "Hang jullie wensen aan de boom.",
+        "instructions": "Kleine kaartjes worden beschreven en aan een decoratieve boom gehangen. Een prachtige versiering én een blijvende herinnering!"
+      },
+      "date_night_jar": {
+        "name": "Date-avond-pot",
+        "description": "Ideeën voor toekomstige dates.",
+        "instructions": "Gasten schrijven date-ideeën op briefjes en gooien ze in een pot. Het koppel trekt er regelmatig een!"
+      },
+      "advice_cards": {
+        "name": "Advieskaartjes",
+        "description": "Wijze woorden van de gasten.",
+        "instructions": "Kaartjes met ruimte voor advies liggen klaar. Het koppel leest ze later samen."
+      },
+      "couple_quiz": {
+        "name": "Koppel-quiz",
+        "description": "Hoe goed kennen de gasten het bruidspaar?",
+        "instructions": "Er worden vragen gesteld over het koppel. Gasten schrijven hun antwoorden op. Wie het meeste weet, wint!"
+      },
+      "wedding_limbo": {
+        "name": "Bruiloft-limbo",
+        "description": "Hoe laag kom jij in feestkleding?",
+        "instructions": "De limbo-stang gaat steeds lager. Wie als laatste doorkomt zonder te vallen, wint!"
+      },
+      "musical_chairs_wedding": {
+        "name": "Stoelendans",
+        "description": "De klassieker voor op de dansvloer!",
+        "instructions": "Stoelen in een cirkel, één minder dan het aantal spelers. Als de muziek stopt, snel zitten!"
+      },
+      "conga_line": {
+        "name": "Conga-line",
+        "description": "Iedereen in een rij door het feest dansen!",
+        "instructions": "Muziek aan, handen op de schouders van de persoon voor je, en dan conga door de zaal!"
+      },
+      "wedding_karaoke": {
+        "name": "Bruiloft-Karaoke",
+        "description": "Zingen voor het bruidspaar!",
+        "instructions": "Zet een karaoke-installatie op. Gasten zingen nummers voor het stel. Lef wordt beloond!"
+      },
+      "first_dance_game": {
+        "name": "Openingsdans-Spel",
+        "description": "Een verrassing tijdens de eerste dans.",
+        "instructions": "De openingsdans wordt opgepept met stijlwisselingen of een ingestudeerde choreografie!"
+      },
+      "mr_mrs_quiz": {
+        "name": "Mr & Mrs Quiz",
+        "description": "Wie kent de partner het best?",
+        "instructions": "**Voorbereiding:**\nStel 15-20 vragen op over het stel. Beide partners krijgen bordjes met 'Hij' en 'Zij' (of namen). Stem de antwoorden van tevoren stiekem af met één partner.\n\n**Spelverloop:**\nHet stel zit naast elkaar. Bij elke vraag houden beiden het bordje omhoog dat van toepassing is. Het 'juiste' antwoord is vooraf vastgesteld.\n\n**Regels:**\n• Gelijktijdig laten zien (niet spieken!)\n• Goed antwoord = punt\n• Fout antwoord = strafopgave of shot\n• Wie de meeste punten heeft, wint\n\n**Varianten:**\n• Gasten-editie: gasten raden mee\n• Relatie-tijdlijn: vragen chronologisch\n• Video-versie: antwoorden werden vooraf opgenomen\n\n**Tips:**\nMix vragen van gênant tot romantisch. De beste vragen onthullen lieve of grappige verhalen. De moderator mag gerust doorvragen!"
+      },
+      "wedding_photo_challenge": {
+        "name": "Foto-Challenge",
+        "description": "Fotografeer bepaalde momenten.",
+        "instructions": "Een lijst met te fotograferen scènes. Gasten maken foto's en delen ze!"
+      },
+      "guest_interview": {
+        "name": "Gaste-Interviews",
+        "description": "Video-groeten van de gasten.",
+        "instructions": "Er staat een camera klaar. Gasten worden geïnterviewd en geven videoboodschappen!"
+      },
+      "love_story_reading": {
+        "name": "Liefdesverhaal voorlezen",
+        "description": "Het verhaal van het stel wordt verteld.",
+        "instructions": "Getuigen of familieleden vertellen hoe het stel elkaar heeft leren kennen."
+      },
+      "wedding_tombola": {
+        "name": "Bruiloft-Tombola",
+        "description": "Loten kopen, prijzen winnen!",
+        "instructions": "Loten worden verkocht, prijzen worden verloot. De opbrengst kan worden gedoneerd!"
+      },
+      "ring_warming": {
+        "name": "Ringen Opwarmen",
+        "description": "Alle gasten zegenen de ringen.",
+        "instructions": "**Voorbereiding:**\nDe trouwringen worden aan een lint gedaan of in een klein zakje gestopt. Tijdens de ceremonie of de receptie worden ze door alle gasten doorgegeven.\n\n**Spelverloop:**\nElke gast houdt de ringen even vast en geeft ze stilletjes goede wensen, een zegen of positieve energie mee. Daarna worden ze doorgegeven.\n\n**Regels:**\n• Stille wensen (niet hardop uitspreken)\n• Iedereen slechts kort (10-30 seconden)\n• Ring niet openmaken/passen\n• Bij ceremonie: ringen terug naar de getuige\n\n**Varianten:**\n• Wensbriefjes: ook schriftelijke wensen toevoegen\n• Zegen-ronde: iedereen spreekt een wens uit\n• Fotomoment: iedereen wordt met de ring gefotografeerd\n\n**Tips:**\nBij grote bruiloften tegelijk in meerdere rijen starten. Een helper houdt het overzicht. Een heel emotioneel moment!"
+      },
+      "anniversary_dance": {
+        "name": "Jubileumdans",
+        "description": "Getrouwde stellen op de dansvloer, gerangschikt naar jaren.",
+        "instructions": "**Voorbereiding:**\nDJ of presentator kiest een langzaam nummer. Alle getrouwde stellen worden de dansvloer op gevraagd.\n\n**Spelverloop:**\nAlle stellen beginnen te dansen. De presentator vraagt stellen om te gaan zitten: 'Wie minder dan 1 jaar getrouwd is...' dan 5 jaar, 10, 20 enzovoort. Het langst getrouwde stel blijft staan en geeft tips.\n\n**Regels:**\n• Eerlijke antwoorden!\n• Alleen officieel getrouwde stellen\n• Het laatste stel krijgt een prijs\n• Vaak: korte speech of advies aan het bruidspaar\n\n**Varianten:**\n• Relatie-dans: alle stellen, niet alleen getrouwden\n• Aftellen: van lang getrouwd naar kort\n• Interview: het winnende stel wordt ondervraagd\n\n**Tips:**\nEen heel emotioneel moment! Grootouders zijn vaak de winnaars. Zorg voor zakdoekjes. Het perfecte moment voor foto's!"
+      },
+      "bride_stealing": {
+        "name": "Bruid stelen",
+        "description": "De bruid wordt 'ontvoerd' en moet worden vrijgekocht.",
+        "instructions": "**Voorbereiding:**\nEen groep gasten plant de 'ontvoering' stiekem. De locatie (een nabijgelegen café) wordt gekozen. Losgeldobjecten worden voorbereid.\n\n**Spelverloop:**\nDe bruid wordt tijdens het feest 'ontvoerd' en naar een café gebracht. De bruidegom moet haar vinden en vrijkopen via opdrachten of 'losgeld'.\n\n**Regels:**\n• De bruid moet ingewijd zijn of instemmen\n• Ontvoering niet te vroeg (na het eten)\n• Losgeld: opdrachten, niet alleen geld\n• Duur: max. 1-2 uur\n\n**Varianten:**\n• Café-rallye: meerdere cafés als tussenstops\n• Opdrachten-losgeld: per opdracht een stap dichterbij\n• Team-redding: bruidegom + getuigen\n\n**Tips:**\nAlle gasten moeten weten wat er gebeurt. De bruid moet echt akkoord gaan! Spreek het bij voorkeur af met het restaurant/de DJ."
+      },
+      "bridal_shoe_hiding": {
+        "name": "Bruidsschoen verstoppen",
+        "description": "De schoen wordt verstopt en moet worden vrijgekocht.",
+        "instructions": "De bruidsschoen wordt verstopt door kinderen of gasten. De bruidegom moet hem 'vrijkopen'!"
+      },
+      "piggy_bank_game": {
+        "name": "Spaarpotspel",
+        "description": "Gasten gooien munten in spaarpotten.",
+        "instructions": "Twee spaarpotten: 'Wie doet de afwas?' – 'Wie brengt het afval buiten?'. Gasten stemmen met munten!"
+      },
+      "wedding_bet": {
+        "name": "Bruiloft-Weddenschappen",
+        "description": "Weddenschappen over het bruidspaar.",
+        "instructions": "Gasten wedden: Wie huilt het eerst? Wanneer valt de taart? Wie danst tot het einde?"
+      },
+      "song_request_cards": {
+        "name": "Muziekwens-Kaartjes",
+        "description": "Gasten vragen hun favoriete nummers aan.",
+        "instructions": "Er liggen kaartjes klaar waarop gasten hun muziekwensen noteren. De DJ draait ze!"
+      },
+      "wedding_time_capsule": {
+        "name": "Bruiloft-Tijdcapsule",
+        "description": "Herinneringen voor de toekomst.",
+        "instructions": "Gasten en het bruidspaar stoppen herinneringen in een capsule. Openen op de 10e trouwdag!"
+      },
+      "congratulation_line": {
+        "name": "Gelukwensen-Rij",
+        "description": "Georganiseerd feliciteren van alle gasten.",
+        "instructions": "Gasten stellen zich op in een rij. Iedereen feliciteert kort. De ceremoniemeester houdt de vaart erin!"
+      },
+      "speed_meeting": {
+        "name": "Speed Meeting",
+        "description": "Snel kennismaken op basis van rotatie.",
+        "instructions": "Net als speed-dating, maar om elkaar te leren kennen. 2 minuten per persoon, dan wisselen!"
+      },
+      "human_bingo": {
+        "name": "Kennismakings-Bingo",
+        "description": "Vind mensen die bij de omschrijvingen passen.",
+        "instructions": "Bingo-kaarten met eigenschappen ('Heeft een huisdier', 'Spreekt 3 talen'). Vind de passende personen!"
+      },
+      "find_someone_who": {
+        "name": "Vind iemand die...",
+        "description": "Zoek personen met bepaalde eigenschappen.",
+        "instructions": "Een lijst met criteria. Vind voor elk punt een persoon en laat ze ondertekenen!"
+      },
+      "common_ground": {
+        "name": "Overeenkomsten vinden",
+        "description": "Wat hebben we allemaal gemeen?",
+        "instructions": "In kleine groepjes: Vind zoveel mogelijk overeenkomsten. De groep met de meeste wint!"
+      },
+      "story_cubes": {
+        "name": "Story Cubes",
+        "description": "Gooi de dobbelstenen en vertel een verhaal.",
+        "instructions": "Dobbelstenen met afbeeldingen worden gegooid. Van de symbolen moet een verhaal worden verteld!"
+      },
+      "name_ball": {
+        "name": "Namenbal",
+        "description": "Leer namen kennen door de bal te gooien.",
+        "instructions": "Roep een naam en gooi de bal naar die persoon. Zij roepen de volgende naam!"
+      },
+      "word_association": {
+        "name": "Woordassociaties",
+        "description": "Razendsnel woord-tennis.",
+        "instructions": "Iemand zegt een woord, de volgende zegt het eerste wat in hem opkomt. Geen herhalingen!"
+      },
+      "personality_quiz": {
+        "name": "Persoonlijkheids-Quiz",
+        "description": "Ontdek meer over jullie persoonlijkheidstypes.",
+        "instructions": "Een korte persoonlijkheidstest. Resultaten vergelijken en bespreken!"
+      },
+      "desert_island": {
+        "name": "Onbewoond Eiland",
+        "description": "Wat zou jij meenemen?",
+        "instructions": "Iedereen kiest 3-5 dingen voor een onbewoond eiland en legt uit waarom. Je leert zoveel over mensen!"
+      },
+      "would_you_rather": {
+        "name": "Zou jij liever...?",
+        "description": "Lastige keuzes tussen twee opties.",
+        "instructions": "Vragen worden om beurten gesteld. Iedereen moet kiezen én motiveren!"
+      },
+      "rose_bud_thorn": {
+        "name": "Roos, Knop, Doorn",
+        "description": "Deel positieve dingen, hoop en uitdagingen.",
+        "instructions": "Iedereen deelt: Een roos (iets goeds), een knop (een hoop), een doorn (een uitdaging)."
+      },
+      "hot_seat": {
+        "name": "Hete Stoel",
+        "description": "Alle vragen gaan naar één persoon.",
+        "instructions": "Één persoon zit op de 'hete stoel' en beantwoordt vragen van de groep. Eerlijkheid telt!"
+      },
+      "one_word_story": {
+        "name": "Één-Woord-Verhaal",
+        "description": "Bouw samen een verhaal — woord voor woord.",
+        "instructions": "Om de beurt zegt iedereen één woord. Samen ontstaat er een (meestal grappig) verhaal!"
+      },
+      "human_knot": {
+        "name": "Mensenknoop",
+        "description": "Ontwar de knoop zonder los te laten!",
+        "instructions": "Iedereen staat in een kring en pakt twee willekeurige handen. Dan: ontwarren zonder loslaten!"
+      },
+      "alphabet_introduction": {
+        "name": "Alfabet-Voorstelling",
+        "description": "Stel jezelf voor met een bijvoeglijk naamwoord en je naam.",
+        "instructions": "Iedereen stelt zich voor met een bijvoeglijk naamwoord dat met dezelfde letter begint als de naam!"
+      },
+      "interview_pairs": {
+        "name": "Interview-Koppels",
+        "description": "Interview elkaar en stel de ander voor.",
+        "instructions": "In koppels: elkaar interviewen, en dan de partner aan de groep voorstellen!"
+      },
+      "favorites_lineup": {
+        "name": "Favorieten-Opstelling",
+        "description": "Stel je op op basis van voorkeuren.",
+        "instructions": "Op commando opstellen: van 'vroege vogel' tot 'nachtuil', van 'pizza' tot 'sushi'!"
+      },
+      "emoji_introduction": {
+        "name": "Emoji-Voorstelling",
+        "description": "Beschrijf jezelf met emoji's.",
+        "instructions": "Kies 3-5 emoji's die jou beschrijven. Leg de groep uit waarom je deze hebt gekozen!"
+      },
+      "show_and_tell": {
+        "name": "Laten Zien en Vertellen",
+        "description": "Deel een persoonlijk voorwerp.",
+        "instructions": "Iedereen neemt een betekenisvol voorwerp mee en vertelt het verhaal erachter!"
+      },
+      "trust_fall": {
+        "name": "Vertrouwensval",
+        "description": "Val achterover — je team vangt je op.",
+        "instructions": "Één persoon valt achterover, de groep vangt hem of haar op. Vertrouwen opbouwen!"
+      },
+      "blind_drawing": {
+        "name": "Blind Tekenen",
+        "description": "Teken op aanwijzingen — zonder te kijken!",
+        "instructions": "Eén persoon beschrijft wat er getekend moet worden. De ander tekent met geblinddoekte ogen!"
+      },
+      "marshmallow_challenge": {
+        "name": "Marshmallow Challenge",
+        "description": "Bouw de hoogste toren met spaghetti en een marshmallow.",
+        "instructions": "Bouw met spaghetti, plakband en touw een toren. Bovenop moet een marshmallow staan!"
+      },
+      "egg_drop": {
+        "name": "Ei-Val Challenge",
+        "description": "Bescherm een ei tegen de val.",
+        "instructions": "Bouw van materialen een bescherming voor een ei. Het wordt van hoogte laten vallen. Overleeft het ei het?"
+      },
+      "minefield": {
+        "name": "Mijnenveld",
+        "description": "Leid je partner blind door hindernissen heen.",
+        "instructions": "Één partner heeft een blinddoek, de ander geeft alleen aanwijzingen. Raak de hindernissen niet aan!"
       }
     },
     "themes": {
@@ -2687,6 +3357,216 @@
         "name": "Tuinfeest",
         "description": "Elegant feest in het groen",
         "tips": "Bloemdecoratie, parasols, picknickmanden en lichte hapjes!"
+      },
+      "90s_throwback": {
+        "name": "90s Throwback",
+        "description": "Grunge, boygroups en de eerste mobieltjes",
+        "tips": "Albumhoezen als decoratie, Walkman-rekwisieten en nummers van Backstreet Boys tot Nirvana!"
+      },
+      "gatsby_20s": {
+        "name": "Gatsby / De Jaren Twintig",
+        "description": "De Roaring Twenties met flappers en jazz",
+        "tips": "Art-decodecoratieI, champagne, veren boa, swingmuziek en Charleston!"
+      },
+      "white_party": {
+        "name": "White Party",
+        "description": "Alles in het wit — stijlvol en zomers",
+        "tips": "Witte decoratie, witte bloemen, lichte cocktails en ontspannen loungemuziek!"
+      },
+      "black_tie": {
+        "name": "Black Tie Gala",
+        "description": "Formeel en elegant — smokings en avondjurken",
+        "tips": "Champagne, klassieke muziek en elegante tafeldecoratie!"
+      },
+      "hollywood_glam": {
+        "name": "Hollywood Glamour",
+        "description": "Rode loper en sterrenpracht",
+        "tips": "Rode loper, paparazzihoek, gouden decoratie en filmmuziek!"
+      },
+      "masquerade_ball": {
+        "name": "Maskerbal",
+        "description": "Mysterieuze elegantie met Venetiaanse maskers",
+        "tips": "Venetiaanse maskers, kaarslicht en fluwelen decoratie in bordeauxrood en goud — weelderig en mysterieus."
+      },
+      "mexican_fiesta": {
+        "name": "Mexican Fiesta",
+        "description": "Vrolijke kleuren, tacos en mariachi",
+        "tips": "Sombreros, piñata's, kleurrijke slingers, margarita's en salsaritmem!"
+      },
+      "festival_style": {
+        "name": "Festival Style",
+        "description": "Outdoor-festivalsfeer met bloemenkransen",
+        "tips": "Boho-decoratie, lichtjesslinger, chill-hoekjes en livemuziek of een DJ!"
+      },
+      "bbq_grill": {
+        "name": "BBQ & Grill",
+        "description": "Barbecueën met vrienden en familie",
+        "tips": "Barbecue, tuinbanken, lichtjesslingers en BBQ-klassiekers!"
+      },
+      "game_night": {
+        "name": "Game Night",
+        "description": "Bord- en kaartspellen voor iedereen",
+        "tips": "Gezellige zithoekjes, stapels spellen, snacks en drankjes!"
+      },
+      "cocktail_party": {
+        "name": "Cocktailparty",
+        "description": "Stijlvolle drankjes en fijne gesprekken",
+        "tips": "Barstation, cocktailmenu, jazzmuziek en elegante hapjes!"
+      },
+      "wine_cheese": {
+        "name": "Wine & Cheese",
+        "description": "Wijnproeverij met verfijnde kazen",
+        "tips": "Diverse wijnen, kaasplank, druiven en subtiele achtergrondmuziek!"
+      },
+      "spa_day": {
+        "name": "Spa Day",
+        "description": "Welness en lekker verwend worden",
+        "tips": "Badjassen, gezichtsmaskers, komkommerschijfjes, ontspanningsmuziek!"
+      },
+      "adventure_theme": {
+        "name": "Avonturenthema",
+        "description": "Outdoor-actie en adrenaline",
+        "tips": "Camping-decoratie, outdoorspullen, natuurgeluiden!"
+      },
+      "camping": {
+        "name": "Camping",
+        "description": "Pure natuur onder de sterrenhemel",
+        "tips": "Tenten, kampvuur, stokbrood en gitaarmuziek!"
+      },
+      "road_trip": {
+        "name": "Road Trip",
+        "description": "Vrijheid op de open weg",
+        "tips": "Landkaarten, vintage koffers, road trip-nummers!"
+      },
+      "city_break": {
+        "name": "Stedentrip",
+        "description": "Urbane sfeer en sightseeing",
+        "tips": "Stadsposters, stedelijke snacks en een city-playlist!"
+      },
+      "beach_house": {
+        "name": "Strandhuis",
+        "description": "Zomerdagen aan zee",
+        "tips": "Schelpen, surfplanken als decoratie, beach vibes en het geluid van de golven!"
+      },
+      "ski_lodge": {
+        "name": "Ski Lodge",
+        "description": "Hüttenavond na het skiën",
+        "tips": "Bontdekens, glühwein, haardvuursfeer en après-ski-hits!"
+      },
+      "lake_house": {
+        "name": "Lake House",
+        "description": "Ontspannen aan het meer",
+        "tips": "Nautische decoratie, kano's, zonsondergang en chillige muziek!"
+      },
+      "cabin_woods": {
+        "name": "Boshuisje",
+        "description": "Knus midden in de natuur",
+        "tips": "Kaarsen, dekens, bosgeluiden en gezellige hoekjes!"
+      },
+      "superhero": {
+        "name": "Superheldenfeest",
+        "description": "Kom als jouw favoriete superheld!",
+        "tips": "Cape verplicht, comic-decoratie en superheldenmuziek!"
+      },
+      "pirates": {
+        "name": "Piratenavontuur",
+        "description": "Ahoi! Schatzoeken en rum",
+        "tips": "Schatkaarten, ooglapjes, rum-cocktails en piratenvlaggen!"
+      },
+      "murder_mystery_theme": {
+        "name": "Murder Mystery",
+        "description": "Er is een moord gepleegd — wie is de dader?",
+        "tips": "Gedempte verlichting, mysterieuze muziek, kostuums en aanwijzingskaartjes!"
+      },
+      "neon_glow": {
+        "name": "Neon Glow",
+        "description": "Stralende kleuren in zwart licht",
+        "tips": "Zwartlicht, neonkleuren, lichtgevende accessoires en EDM!"
+      },
+      "french_riviera": {
+        "name": "Franse Rivièra",
+        "description": "Côte d'Azur elegantie",
+        "tips": "Blauw-witte strepen, lavendel, rosé en chansons!"
+      },
+      "italian_dolce_vita": {
+        "name": "Italiaanse Dolce Vita",
+        "description": "La Dolce Vita met Vespa-flair en mediterrane charme",
+        "tips": "Vespa-decoratie, olijftakken, Chianti-flessen en zonnebloemen voor dat echte Italiaanse levensgevoel."
+      },
+      "greek_island": {
+        "name": "Grieks Eiland",
+        "description": "Santorini-vibes in blauw en wit",
+        "tips": "Blauw-witte decoratie, olijven, feta en bouzoukimuziek!"
+      },
+      "spanish_flamenco": {
+        "name": "Spaanse Flamenco",
+        "description": "Passie en temperament",
+        "tips": "Rood en zwart, waaiers, tapas en flamencmuziek!"
+      },
+      "irish_pub": {
+        "name": "Irish Pub",
+        "description": "Gezellig zoals in Dublin",
+        "tips": "Groen, Guinness, whiskey en Irish folk!"
+      },
+      "british_royal": {
+        "name": "British Royal",
+        "description": "Koninklijk zoals de Windsors",
+        "tips": "Union Jack, thee, scones en Britse elegantie!"
+      },
+      "asian_zen": {
+        "name": "Asian Zen",
+        "description": "Rust en harmonie uit het Verre Oosten",
+        "tips": "Bamboe, lotusbloemen, groene thee en meditatieve muziek!"
+      },
+      "under_the_stars": {
+        "name": "Onder de Sterrenhemel",
+        "description": "Romantische nacht onder een fonkelende sterrenhemel",
+        "tips": "Lichtjesslinger, sterren, manen en knus dekentjes onder de blote hemel."
+      },
+      "vintage_tea_party": {
+        "name": "Vintage Tea Party",
+        "description": "Charmant theekransje in vintage stijl",
+        "tips": "Vintage theekannen, bloemen, kant en pasteltinten voor een nostalgische sfeer."
+      },
+      "art_deco": {
+        "name": "Art Deco",
+        "description": "Geometrische elegantie uit de jaren '20",
+        "tips": "Gouden accenten, geometrische patronen en jazzmuziek!"
+      },
+      "boho_chic": {
+        "name": "Boho Chic",
+        "description": "Vrije geest en verbonden met de natuur",
+        "tips": "Macramé, dromenvangers, aardse tinten en indie-muziek!"
+      },
+      "rustic_farm": {
+        "name": "Schuurfeest",
+        "description": "Landelijke gezelligheid in de schuur",
+        "tips": "Strobalen, houten kisten, veldbloemen en countrymuziek!"
+      },
+      "minimalist_modern": {
+        "name": "Minimalistisch Modern",
+        "description": "Strakke lijnen en elegante eenvoud",
+        "tips": "Strakke lijnen, witte bloemen en één opvallend statement-stuk — minder is meer."
+      },
+      "bohemian_sunset": {
+        "name": "Bohemian Sunset",
+        "description": "Warme boho-sfeer in zonsondergangkleuren",
+        "tips": "Zonnebloemen, terracotta, kussens en boho-kleden in warme zonsondergangstinten."
+      },
+      "industrial_chic": {
+        "name": "Industrial Chic",
+        "description": "Coole loft-look met metaal en Edison-lampen",
+        "tips": "Metaal, Edison-lampen, beton en hout voor een stoere loft-sfeer."
+      },
+      "karibik": {
+        "name": "Caribisch",
+        "description": "Tropisch eilandparadijs met strandvibes",
+        "tips": "Palmbomen, schelpen, hangmatten en tiki-deco voor dat echte Caribische vakantiegevoel."
+      },
+      "sports_day": {
+        "name": "Sports Day",
+        "description": "Olympiade en sportieve wedstrijden",
+        "tips": "Shirts, medailles, speelvelden en sportieve snacks!"
       }
     }
   },
@@ -3302,7 +4182,12 @@
         "saison": "Seizoen",
         "kostuem": "Kostuum",
         "wellness": "Wellness"
-      }
+      },
+      "loadMore": "Meer laden",
+      "playableTitle": "Direct speelbaar",
+      "playableSubtitle": "Begin meteen — in de app geïntegreerd",
+      "playableAll": "Alle",
+      "playableCta": "Spelen"
     },
     "profile": {
       "settings": "Instellingen",

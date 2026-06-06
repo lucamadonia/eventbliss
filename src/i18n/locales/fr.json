@@ -2687,6 +2687,656 @@
         "name": "2 Vérités et 1 Mensonge",
         "description": "Devinez le mensonge parmi trois affirmations.",
         "instructions": "**Préparation:**\nChaque joueur pense à trois faits sur lui-même : deux vrais et un faux.\n\n**Déroulement:**\nChacun raconte ses trois faits. Le groupe vote lequel est le mensonge. La vérité est révélée.\n\n**Règles:**\n• Les faits doivent être crédibles\n• Le mensonge ne doit pas être évident\n• Points pour deviner correctement"
+      },
+      "kiss_challenge": {
+        "name": "Kiss Challenge",
+        "description": "Collecte des bisous d'inconnus — plus il y en a, mieux c'est !",
+        "instructions": "**Préparation :**\nProcure un t-shirt blanc pour la personne d'honneur. Prépare des rouges à lèvres de différentes couleurs. N'oublie pas les lingettes désinfectantes !\n\n**Déroulement :**\nLa personne d'honneur doit collecter des bisous (empreintes de rouge à lèvres) d'inconnus sur le t-shirt. Le groupe accompagne et documente tout.\n\n**Règles :**\n• Seuls les bisous volontaires comptent !\n• Demander poliment est obligatoire\n• Couleurs différentes = bonus\n• Pas de harcèlement !\n• Limite de temps : 1-2 heures\n\n**Variantes :**\n• Bisou-selfie : prendre un selfie avec chaque personne\n• Signatures : collecter aussi les prénoms\n• Niveau supérieur : trouver des « profils » spécifiques\n\n**Conseils :**\nToujours demander avec le sourire et le respect. Accepter le « non » ! Les bars et clubs sont les meilleurs endroits. Le t-shirt est un super souvenir !"
+      },
+      "selfie_mission": {
+        "name": "Selfie Mission",
+        "description": "Prends des selfies créatifs en suivant des défis bien précis.",
+        "instructions": "Chacun reçoit une liste de défis selfie (ex. avec un policier, sur une fontaine, etc.). Celui qui en réussit le plus gagne !"
+      },
+      "costume_tasks": {
+        "name": "Défis Déguisements",
+        "description": "Enfile des costumes loufoques et relève des défis !",
+        "instructions": "La personne d'honneur doit accomplir des défis en public avec un costume hilarant. Le groupe immortalise tout !"
+      },
+      "bucket_list": {
+        "name": "Bucket List Challenge",
+        "description": "Vis des moments inoubliables tirés d'une liste préparée à l'avance.",
+        "instructions": "Crée une liste d'expériences uniques. Essayez d'en cocher un maximum en une seule journée !"
+      },
+      "karaoke_battle": {
+        "name": "Karaoké Battle",
+        "description": "Chante pour la victoire — peu importe si c'est faux !",
+        "instructions": "Des équipes ou des participants s'affrontent en solo. Le groupe note. Des points bonus pour le show et le courage !"
+      },
+      "photo_scavenger_hunt": {
+        "name": "Chasse aux photos",
+        "description": "Photographie tout ce qui est sur la liste — fais preuve de créativité !",
+        "instructions": "Chaque équipe reçoit une liste de défis photo. Les points récompensent la créativité et l'exhaustivité."
+      },
+      "team_olympiad": {
+        "name": "Olympiades d'équipes",
+        "description": "Plusieurs épreuves, une seule équipe championne !",
+        "instructions": "Organisez différentes compétitions (course en sac, œuf-et-cuillère, etc.). Les équipes accumulent des points. Le grand vainqueur est sacré à la fin."
+      },
+      "boot_camp": {
+        "name": "Boot Camp Challenge",
+        "description": "Défi fitness pour tout le groupe.",
+        "instructions": "Un coach ou le groupe lui-même guide les exercices. Qui tiendra jusqu'au bout ? L'esprit d'équipe est de rigueur !"
+      },
+      "cocktail_contest": {
+        "name": "Concours de cocktails",
+        "description": "Qui mixe le meilleur drink ?",
+        "instructions": "Chacun crée son propre cocktail. Dégustation à l'aveugle et notation par le groupe. Le meilleur bartender remporte la mise !"
+      },
+      "wine_tasting": {
+        "name": "Dégustation de vins à l'aveugle",
+        "description": "Identifie les vins les yeux bandés.",
+        "instructions": "Différents vins sont dégustés et notés à l'aveugle. Des points pour chaque cépage ou région correctement devinés."
+      },
+      "tshirt_design": {
+        "name": "Customisation de t-shirts",
+        "description": "Crée un t-shirt de groupe unique en son genre.",
+        "instructions": "Les t-shirts sont personnalisés avec des peintures textiles. Un souvenir parfait de la journée !"
+      },
+      "embarrassing_songs": {
+        "name": "Chansons gênantes",
+        "description": "Chante les chansons les plus embarrassantes en public.",
+        "instructions": "La personne d'honneur doit chanter à tue-tête et avec conviction des chansons bien gênantes dans des lieux publics."
+      },
+      "dare_dice": {
+        "name": "Dé des Défis",
+        "description": "Lance le dé et accepte ton destin — c'est lui qui décide du défi.",
+        "instructions": "Lance le dé des défis. Ce qu'il indique doit être exécuté. Pas d'excuses !"
+      },
+      "ring_search_pasta": {
+        "name": "Trouver la bague dans les pâtes",
+        "description": "Fouille les pâtes les yeux bandés pour trouver la bague.",
+        "instructions": "Une bague est cachée dans un grand saladier de pâtes. Les yeux bandés, il faut la retrouver uniquement avec la bouche ou les mains."
+      },
+      "balloon_dance": {
+        "name": "Danse du ballon",
+        "description": "Dansez avec un ballon coincé entre vous — ne le laissez pas tomber !",
+        "instructions": "Des paires dansent avec un ballon entre elles. Si le ballon tombe ou éclate, la paire est éliminée."
+      },
+      "limbo_competition": {
+        "name": "Concours de limbo",
+        "description": "Jusqu'où peux-tu descendre ?",
+        "instructions": "La barre est abaissée de plus en plus. Celui qui passe le plus bas sans la toucher ni tomber remporte la victoire !"
+      },
+      "pinata": {
+        "name": "Piñata",
+        "description": "Frappez la piñata et ramassez les bonbons !",
+        "instructions": "Les yeux bandés, frappez la piñata jusqu'à ce qu'elle s'ouvre et fasse pleuvoir les bonbons !"
+      },
+      "mystery_box": {
+        "name": "Mystery Box",
+        "description": "Devine le contenu de la boîte rien qu'au toucher.",
+        "instructions": "Différents objets sont cachés dans des boîtes. Les yeux bandés, il faut les identifier uniquement en les touchant."
+      },
+      "hat_challenges": {
+        "name": "Défis du chapeau",
+        "description": "Tire un défi et exécute-le sur-le-champ.",
+        "instructions": "Les défis sont écrits sur des papiers et glissés dans un chapeau. Chacun tire à son tour et s'exécute immédiatement."
+      },
+      "photo_booth": {
+        "name": "Défi Photo Booth",
+        "description": "Prenez des photos folles avec des accessoires rigolos.",
+        "instructions": "Installe un coin photo avec des accessoires. Chacun prend le plus de photos amusantes possible. Les meilleures sont récompensées !"
+      },
+      "speed_dating": {
+        "name": "Jeu de speed dating",
+        "description": "Fais connaissance avec chaque membre du groupe en 2 minutes.",
+        "instructions": "Chacun discute 2 minutes avec chaque autre participant. Le minuteur sonne, on change de partenaire. À la fin : qui a appris quoi sur qui ?"
+      },
+      "who_knows_best": {
+        "name": "Qui connaît le mieux ?",
+        "description": "Teste qui connaît vraiment la personne à l'honneur.",
+        "instructions": "Des questions sur la personne à l'honneur sont posées. Celui qui en réussit le plus est son meilleur(e) ami(e) !"
+      },
+      "activity": {
+        "name": "Activity",
+        "description": "Explique, dessine ou mime — un jeu de soirée ultra polyvalent.",
+        "instructions": "**Préparation :**\nÉcrire des mots sur des cartes (ou acheter le jeu Activity). Former des équipes. Préparer du matériel de dessin. Minuteur (30-60 secondes).\n\n**Déroulement :**\nSelon la carte tirée, le mot doit être expliqué (sans mots de la même famille), dessiné ou mimé. L'équipe devine dans le temps imparti.\n\n**Règles :**\n• Expliquer : ne pas dire le mot\n• Dessiner : pas de lettres ni de chiffres\n• Mime : aucun son\n• Par bonne réponse : 1 point\n• Mauvaise méthode : 0 point\n\n**Variantes :**\n• Mode express : toutes les méthodes en un tour\n• Édition EVG/EVJF : que des termes liés au couple\n• Activity à boire : mauvaise réponse = on boit\n\n**Astuces :**\nMélange mots faciles et difficiles. Les meilleurs fous rires viennent des mimes impossibles. Utilise une grande surface de dessin !"
+      },
+      "taboo": {
+        "name": "Taboo",
+        "description": "Explique le mot sans prononcer les mots interdits.",
+        "instructions": "**Préparation :**\nPréparer les cartes Taboo : chaque carte a un mot à faire deviner et 5 mots interdits. Former des équipes. Préparer un minuteur.\n\n**Déroulement :**\nUn joueur fait deviner le mot sans utiliser les mots tabous ni leurs dérivés. Un joueur adverse surveille. L'équipe devine.\n\n**Règles :**\n• Mot tabou prononcé = carte perdue\n• Pas de « ça rime avec... » ni d'épellation\n• L'adversaire peut crier « Taboo ! »\n• 60 secondes par tour\n• Un point par mot deviné\n\n**Variantes :**\n• Mode expert : 7 mots tabous\n• Speed Taboo : 30 secondes\n• Tours thématiques : que des films, que du sport\n\n**Astuces :**\nLes périphrases et les petites histoires marchent très bien. « Imagine que... » est une super entrée en matière. Les mots tabous sont les plus évidents — sois créatif !"
+      },
+      "cards_against": {
+        "name": "Cards Against Humanity",
+        "description": "Le jeu de cartes pour des gens horribles.",
+        "instructions": "**Préparation :**\nSe procurer le jeu de cartes (ou l'imprimer en ligne). Chaque joueur reçoit 10 cartes blanches. Les cartes noires forment une pioche au centre.\n\n**Déroulement :**\nUn « tsar des cartes » tire une carte noire et la lit. Tous les autres jouent la carte blanche qui correspond le mieux. Le tsar choisit le gagnant.\n\n**Règles :**\n• Le tsar change à chaque tour\n• Les cartes blanches se jouent anonymement\n• Le gagnant conserve la carte noire\n• Pour __ & __ : jouer deux cartes blanches\n• La décision du tsar est sans appel !\n\n**Variantes :**\n• Version à boire : tous sauf le gagnant boivent\n• Démocratie : tout le monde vote\n• Haïku : trois cartes pour former une histoire\n\n**Astuces :**\nC'est le tsar qui donne le ton ! Certains apprécient le wit, d'autres adorent le choc. Jouez avec des gens qui assument l'humour noir."
+      },
+      "rage_cage": {
+        "name": "Rage Cage",
+        "description": "Jeu à boire rapide avec des gobelets et des balles.",
+        "instructions": "Envoie vite la balle dans le gobelet et passe au suivant. Celui qui se fait rattraper doit boire depuis le centre !"
+      },
+      "flip_cup": {
+        "name": "Flip Cup",
+        "description": "Bois et retourne ton gobelet plus vite que l'équipe adverse.",
+        "instructions": "Vide ton gobelet et retourne-le d'un coup de doigt. Pas de passage avant qu'il soit bien posé !"
+      },
+      "murder_mystery": {
+        "name": "Dîner meurtrier",
+        "description": "Résolvez l'enquête criminelle tout en dégustant votre repas.",
+        "instructions": "**Préparation :**\nAchetez un kit Murder Mystery ou créez-le vous-même. Distribuez les rôles aux invités (à l'avance !). Décorez selon le thème. Planifiez le menu.\n\n**Déroulement :**\nTout au long d'un repas en plusieurs services, chacun joue son rôle. Les indices sont révélés, les suspects interrogés. À la fin, le meurtrier doit être démasqué.\n\n**Règles :**\n• Tout le monde reste dans son rôle\n• Le meurtrier peut mentir, pas les autres\n• Les indices sont donnés à des moments précis\n• Discussion et interrogatoire autorisés\n• À la fin : vote\n\n**Variantes :**\n• Meurtre façon Gatsby des années 20\n• Dîner policier au restaurant\n• En plein air : meurtre au château\n\n**Conseils :**\nDistribuez les rôles à l'avance pour que les invités puissent se préparer. Les costumes rendent l'expérience plus immersive. Prévoyez 3 à 4 heures !"
+      },
+      "escape_room_diy": {
+        "name": "Escape Room maison",
+        "description": "Créez votre propre Escape Room.",
+        "instructions": "Préparez énigmes et codes à l'avance. L'équipe doit tout résoudre pour « s'échapper ». Chrono enclenché !"
+      },
+      "casino_night": {
+        "name": "Soirée Casino",
+        "description": "Poker, Blackjack, Roulette – l'ambiance Las Vegas garantie !",
+        "instructions": "Installez les tables de jeu. Chacun reçoit des jetons de départ. À la fin : qui repart avec le plus gros gain ?"
+      },
+      "drag_race": {
+        "name": "Drag Race",
+        "description": "Maquillez-vous et stylisez-vous les uns les autres.",
+        "instructions": "En équipes, on se coiffe et se maquille à fond. La meilleure transformation l'emporte. Défilé sur le runway inclus !"
+      },
+      "dance_off": {
+        "name": "Dance-Off",
+        "description": "Montrez vos meilleurs moves dans un duel de danse.",
+        "instructions": "Deux participants s'affrontent. Le groupe note. Le gagnant défie le suivant."
+      },
+      "lip_sync_battle": {
+        "name": "Lip Sync Battle",
+        "description": "La performance avant tout – même sans voix !",
+        "instructions": "Choisissez une chanson et donnez tout sur scène. Le lip sync doit être parfait. Le show-factor compte !"
+      },
+      "twerk_contest": {
+        "name": "Concours de twerk",
+        "description": "Qui a le meilleur twerk ?",
+        "instructions": "On lance la musique et on lâche les fesses ! Le groupe vote. Sans complexes !"
+      },
+      "pole_dance_intro": {
+        "name": "Initiation Pole Dance",
+        "description": "Une session découverte autour de la barre.",
+        "instructions": "Rendez-vous dans un studio ou faites appel à un cours mobile. Les premiers moves s'apprennent en toute sécurité. Fou rire garanti !"
+      },
+      "strip_poker_light": {
+        "name": "Strip-Poker soft",
+        "description": "Du poker aux conséquences bien sages.",
+        "instructions": "Qui perd enlève un vêtement ou réalise un défi alternatif. Fixez les limites à l'avance !"
+      },
+      "dirty_minds_quiz": {
+        "name": "Dirty Minds Quiz",
+        "description": "À quel point ton esprit est-il tordu ?",
+        "instructions": "Les indices semblent coquins, mais la réponse est totalement innocente ! Qui se laisse piéger prend une gorgée."
+      },
+      "last_night_freedom": {
+        "name": "Dernière nuit de liberté",
+        "description": "Une liste complète de défis pour l'ultime nuit de célibataire.",
+        "instructions": "On suit une liste préparée avec tous les grands classiques de l'EVG/EVJF. Et on documente tout !"
+      },
+      "family_bingo": {
+        "name": "Bingo en famille",
+        "description": "Le Bingo classique pour petits et grands.",
+        "instructions": "On annonce des chiffres ou des images. Le premier à compléter une rangée crie « Bingo ! » Des cadeaux pour les gagnants."
+      },
+      "memory_challenge": {
+        "name": "Challenge Mémoire",
+        "description": "Testez votre mémoire avec des paires de cartes.",
+        "instructions": "Les cartes sont posées face cachée. Retrouvez les paires. Celui qui en trouve le plus l'emporte !"
+      },
+      "family_quiz": {
+        "name": "Quiz en famille",
+        "description": "Vous connaissez vraiment bien votre famille ?",
+        "instructions": "Des questions sur les membres de la famille et les souvenirs partagés. Des points pour chaque bonne réponse !"
+      },
+      "time_capsule": {
+        "name": "Créer une capsule temporelle",
+        "description": "Conservez des souvenirs pour les années à venir.",
+        "instructions": "Chacun y glisse quelque chose de précieux. On ferme la capsule et on fixe une date d'ouverture !"
+      },
+      "sack_race": {
+        "name": "Course en sac",
+        "description": "Le grand classique de toutes les fêtes de famille.",
+        "instructions": "**Préparation :**\nUn sac de pommes de terre ou un grand sac poubelle pour chaque participant. Tracer les lignes de départ et d'arrivée (10-20 mètres). Obstacles en option.\n\n**Déroulement :**\nTous les participants entrent dans leur sac et le tiennent avec les deux mains. Au signal, tout le monde saute vers l'arrivée. Le premier qui y parvient gagne.\n\n**Règles :**\n• Les mains doivent rester sur le sac\n• Tomber = se relever et continuer\n• Ne pas déchirer le sac\n• Pousser les autres est interdit\n• Franchir la ligne d'arrivée pour valider\n\n**Variantes :**\n• Course en sac par équipes : relais avec passage de sac\n• Parcours d'obstacles : avec slalom\n• Course en duo : deux personnes, un seul sac\n\n**Conseils :**\nPrivilégiez des petits sauts pour garder l'équilibre plutôt que de grandes enjambées. Jouez sur pelouse (herbe). Faites partir les enfants et les adultes séparément pour plus d'équité !"
+      },
+      "egg_and_spoon": {
+        "name": "Course à l'œuf et à la cuillère",
+        "description": "Garde l'œuf en équilibre sur la cuillère jusqu'à l'arrivée.",
+        "instructions": "**Préparation :**\nPour chaque participant : une cuillère et un œuf cru (ou dur / en plastique). Tracer les lignes de départ et d'arrivée (15-20 mètres).\n\n**Déroulement :**\nL'œuf est posé sur la cuillère, tenue par le manche avec une seule main. Au signal, tout le monde court vers l'arrivée. Si l'œuf tombe : retour au départ.\n\n**Règles :**\n• Une seule main sur la cuillère\n• L'autre main dans le dos\n• Stabiliser l'œuf avec la main = disqualification\n• Œuf tombé : retour au départ\n• Le premier à arriver avec son œuf intact gagne\n\n**Variantes :**\n• Relais : équipes avec passage de cuillère\n• Parcours d'obstacles : virages et haies\n• Cuillère d'eau : remplacer l'œuf par de l'eau\n\n**Conseils :**\nLent et régulier vaut mieux que rapide ! Ne regardez pas l'œuf — regardez devant vous. Des œufs durs pour moins de dégâts !"
+      },
+      "can_knockdown": {
+        "name": "Lancer de boîtes",
+        "description": "Renversez toute la pyramide de boîtes !",
+        "instructions": "Empilez les boîtes en pyramide. À l'aide d'une balle, essayez de tout renverser. Des points pour chaque boîte tombée."
+      },
+      "kubb": {
+        "name": "Échecs vikings",
+        "description": "Le jeu de lancer scandinave pour tous les âges.",
+        "instructions": "**Préparation :**\nDélimiter le terrain (5x8 mètres). Placer cinq kubbs de chaque côté. Le roi au centre. Distribuer les bâtons de lancer (6 par équipe).\n\n**Déroulement :**\nLes équipes lancent à tour de rôle sur les kubbs adverses. Les kubbs renversés sont relancés dans le camp ennemi puis relevés. Objectif : abattre tous les kubbs, puis le roi.\n\n**Règles :**\n• Lancer les bâtons par en dessous (pas d'effet hélicoptère)\n• D'abord les kubbs de terrain, puis les kubbs de base\n• Renverser le roi trop tôt = défaite !\n• Le bâton doit atterrir debout\n\n**Variantes :**\n• Speed-Kubb : temps limité par manche\n• Kubb à boire : kubb touché = l'adversaire boit\n• Tournoi par équipes : plusieurs équipes\n\n**Conseils :**\nLa stratégie compte : regroupez les kubbs pour créer des réactions en chaîne. Soyez prudent avec le roi — beaucoup de parties ont été perdues à cause de lui !"
+      },
+      "boccia": {
+        "name": "Pétanque / Bocce",
+        "description": "Un jeu de précision avec des boules.",
+        "instructions": "Lancez vos boules le plus près possible de la boule cible. La boule la plus proche rapporte des points !"
+      },
+      "tug_of_war": {
+        "name": "Tir à la corde",
+        "description": "Quelle équipe est la plus forte ?",
+        "instructions": "Deux équipes tirent sur une corde. L'équipe qui fait franchir la ligne à l'adversaire remporte la victoire !"
+      },
+      "relay_race": {
+        "name": "Course de relais",
+        "description": "Course par équipes avec passage de témoin.",
+        "instructions": "Les équipes courent un parcours et se passent le témoin. L'équipe la plus rapide gagne !"
+      },
+      "water_balloon": {
+        "name": "Bataille de ballons d'eau",
+        "description": "Du fun bien mouillé pour les journées chaudes.",
+        "instructions": "Remplissez les ballons d'eau et lancez-les. Variantes : lancer de ballons, jeu d'attrape, ou pur chaos aquatique !"
+      },
+      "cooking_together": {
+        "name": "Cuisiner ensemble",
+        "description": "Préparez ensemble un vrai festin.",
+        "instructions": "Divisez-vous en groupes. Chaque groupe prépare un plat. À la fin, on déguste tous ensemble !"
+      },
+      "puzzle_race": {
+        "name": "Compétition de puzzle",
+        "description": "Quelle équipe termine son puzzle en premier ?",
+        "instructions": "Mêmes puzzles pour toutes les équipes. À vos marques, prêts, puzzlez ! L'équipe la plus rapide l'emporte."
+      },
+      "campfire_stories": {
+        "name": "Histoires au coin du feu",
+        "description": "Racontez des histoires autour du feu.",
+        "instructions": "Chacun raconte à tour de rôle — histoires effrayantes, drôles ou tirées de la saga familiale. Parfait pour les soirées !"
+      },
+      "hide_and_seek": {
+        "name": "Cache-cache",
+        "description": "Le grand classique pour petits et grands.",
+        "instructions": "Un joueur compte, tous les autres se cachent. Le dernier trouvé remporte la partie !"
+      },
+      "tag": {
+        "name": "Chat",
+        "description": "Cours aussi vite que tu peux !",
+        "instructions": "Un joueur est le chat. Celui qu'il touche devient le nouveau chat. Un plaisir sans fin !"
+      },
+      "pot_hitting": {
+        "name": "La marmite cachée",
+        "description": "Trouve la marmite les yeux bandés.",
+        "instructions": "Les yeux bandés, cherche la marmite à l'aide d'une cuillère en bois. Une surprise t'attend dessous !"
+      },
+      "telephone": {
+        "name": "Téléphone arabe",
+        "description": "Comment le message va-t-il se transformer ?",
+        "instructions": "Chuchote un message à ton voisin. À la fin, comparez : qu'est-il arrivé ? Le résultat est souvent hilarant !"
+      },
+      "musical_chairs": {
+        "name": "Les chaises musicales",
+        "description": "Quand la musique s'arrête, assieds-toi vite !",
+        "instructions": "**Préparation :**\nDispose les chaises en rangée ou en cercle — toujours une de moins que le nombre de joueurs. Prépare la musique (avec possibilité de la mettre en pause).\n\n**Déroulement :**\nTous tournent autour des chaises pendant que la musique joue. Quand la musique s'arrête : assieds-toi vite ! Celui qui n'a pas de chaise est éliminé. On retire une chaise.\n\n**Règles :**\n• Pas toucher ni réserver avant l'arrêt de la musique\n• S'asseoir immédiatement à l'arrêt de la musique\n• Interdiction de pousser\n• Bien s'asseoir sur la chaise (pas juste la toucher)\n• Le dernier joueur avec une chaise remporte la partie\n\n**Variantes :**\n• Freeze musical : à l'arrêt, on se fige au lieu de s'asseoir\n• Version en équipe : les duos jouent ensemble\n• Dance-off : les éliminés continuent de danser\n\n**Conseils :**\nCelui qui contrôle la musique ne doit pas regarder ! Des pauses imprévisibles rendent le jeu encore plus palpitant. Vérifiez que les chaises sont bien stables !"
+      },
+      "chocolate_game": {
+        "name": "Le jeu du chocolat",
+        "description": "Lance un six et mange le plus vite possible !",
+        "instructions": "Si tu fais un 6 : enfile bonnet, écharpe et gants, puis mange le chocolat au couteau et à la fourchette — jusqu'à ce que quelqu'un d'autre fasse un 6 !"
+      },
+      "cotton_blowing": {
+        "name": "Souffle de coton",
+        "description": "Souffle le coton jusqu'à l'autre bout de la table.",
+        "instructions": "Place un coton au centre. Chacun essaie de le souffler dans le camp adverse."
+      },
+      "mummy_wrap": {
+        "name": "La momie",
+        "description": "Emballez quelqu'un dans du papier toilette le plus vite possible.",
+        "instructions": "Les équipes enveloppent complètement un coéquipier dans du papier toilette. L'équipe la plus rapide avec la meilleure momie remporte la partie !"
+      },
+      "treasure_hunt": {
+        "name": "Chasse au trésor",
+        "description": "Suivez la carte jusqu'au trésor !",
+        "instructions": "Une carte au trésor mène à différentes étapes avec des indices. Le trésor vous attend au bout !"
+      },
+      "mini_golf": {
+        "name": "Mini-golf",
+        "description": "Le mini-golf classique pour tous les âges.",
+        "instructions": "Rendez-vous sur un parcours de mini-golf. Celui qui termine avec le moins de coups remporte la partie !"
+      },
+      "bowling": {
+        "name": "Bowling",
+        "description": "Strike ! Toutes les quilles doivent tomber.",
+        "instructions": "Lancez la boule sur la piste et essayez de renverser toutes les quilles. Un point par quille abattue !"
+      },
+      "frisbee": {
+        "name": "Frisbee",
+        "description": "Lancez le disque à tour de rôle.",
+        "instructions": "Au parc ou à la plage, lancez et attrapez le frisbee. Simple mais tellement amusant !"
+      },
+      "kite_flying": {
+        "name": "Cerfs-volants",
+        "description": "Faites s'envoler des cerfs-volants colorés.",
+        "instructions": "Par temps venteux, lancez un cerf-volant. Qui le fera monter le plus haut ? Parfait pour les journées d'automne venteuses !"
+      },
+      "bubble_contest": {
+        "name": "Concours de bulles de savon",
+        "description": "Qui fera la plus grosse bulle de savon ?",
+        "instructions": "Avec de la solution à bulles et différents outils, fabriquez les plus grandes bulles. Magique pour les enfants !"
+      },
+      "photo_safari": {
+        "name": "Safari Photo",
+        "description": "Photographiez tout ce qui figure sur la liste dans la nature.",
+        "instructions": "Une liste d'objets à photographier. Partez à leur recherche dans la nature et capturez-les. Des points pour chaque trouvaille !"
+      },
+      "geocaching": {
+        "name": "Géocaching",
+        "description": "La chasse au trésor moderne avec GPS.",
+        "instructions": "Utilisez une appli de géocaching pour trouver des caches cachées dans les environs. L'aventure pour toute la famille !"
+      },
+      "crafting": {
+        "name": "Bricolage",
+        "description": "Laissez libre cours à votre créativité avec différents matériaux.",
+        "instructions": "Préparez le matériel de bricolage et laissez la créativité s'exprimer sans limites. Des dessins aux bijoux, tout est possible !"
+      },
+      "talent_show": {
+        "name": "Spectacle de talents",
+        "description": "Révélez vos talents cachés !",
+        "instructions": "Chacun prépare un court numéro. À la fin, le grand gagnant est élu. Tout est permis !"
+      },
+      "millionaire_family": {
+        "name": "Qui veut gagner des millions (Édition Famille)",
+        "description": "Le célèbre format quiz adapté pour la famille.",
+        "instructions": "Des questions de difficulté croissante. Les jokers sont autorisés : Téléphone, 50:50, Public !"
+      },
+      "escape_room_family": {
+        "name": "Escape Room Familial",
+        "description": "Résolvez les énigmes ensemble et prenez la fuite !",
+        "instructions": "Achetez un kit d'escape room à domicile ou visitez-en un. Résolvez les énigmes en équipe contre la montre !"
+      },
+      "treehouse_build": {
+        "name": "Construire une cabane",
+        "description": "Un projet commun pour toute la famille.",
+        "instructions": "Planifiez et construisez ensemble une cabane dans les arbres. Un projet sur plusieurs week-ends — avec un résultat époustouflant !"
+      },
+      "marriage_test": {
+        "name": "Test d'aptitude au mariage",
+        "description": "Des défis hilarants pour tester les aptitudes conjugales.",
+        "instructions": "Le couple doit relever différents défis : changer une couche, nourrir l'autre les yeux bandés, et bien plus encore !"
+      },
+      "balloon_dancing": {
+        "name": "Danse au ballon",
+        "description": "Dansez en duo avec un ballon coincé entre vous.",
+        "instructions": "Les couples dansent avec un ballon serré entre eux. S'il tombe ou éclate, le couple est éliminé !"
+      },
+      "bouquet_toss": {
+        "name": "Lancer du bouquet",
+        "description": "Quelle célibataire attrapera le bouquet ?",
+        "instructions": "Toutes les femmes non mariées se rassemblent. La mariée lance le bouquet par-dessus son épaule. Celle qui l'attrape sera la prochaine à se marier !"
+      },
+      "garter_toss": {
+        "name": "Lancer de la jarretière",
+        "description": "Le marié lance la jarretière.",
+        "instructions": "Le marié retire la jarretière de la mariée et la lance en direction des célibataires masculins."
+      },
+      "newspaper_dance": {
+        "name": "Danse du journal",
+        "description": "La piste de danse rétrécit à chaque ronde !",
+        "instructions": "**Préparation :**\nChaque couple reçoit un journal déplié comme piste de danse. Préparez la musique. Dégagez l'espace pour danser.\n\n**Déroulement :**\nTous les couples dansent sur leur journal. Après chaque ronde, le journal est plié (en deux). Tout couple qui pose le pied en dehors ou tombe est éliminé.\n\n**Règles :**\n• Les deux partenaires doivent rester sur le journal\n• Soulever son partenaire est autorisé !\n• Le journal ne doit pas être déchiré\n• La musique s'arrête = on plie\n\n**Variantes :**\n• Freeze Dance : se figer quand la musique s'arrête\n• Danse au ballon : en plus, coincer un ballon entre les corps\n• Version express : plier le journal toutes les 30 secondes\n\n**Conseils :**\nL'astuce : porter son partenaire sur les pieds ou tenir sur une jambe ! Parfait pour les mariages et les soirées."
+      },
+      "kiss_marathon": {
+        "name": "Marathon du baiser",
+        "description": "Le baiser le plus long de la soirée !",
+        "instructions": "**Préparation :**\nPréparez un chronomètre. Les invités se rassemblent. En option : musique et encouragements. Les mariés se placent au centre.\n\n**Déroulement :**\nSur signal, les mariés commencent à s'embrasser. Les invités comptent les secondes ou un animateur chronomètre. Objectif : tenir le plus longtemps possible !\n\n**Règles :**\n• Les lèvres ne doivent pas se séparer\n• Respirer par le nez est autorisé\n• Pas d'arrêt pour cause de fou rire\n• Les invités peuvent encourager\n\n**Variantes :**\n• Défi en couple : plusieurs couples s'affrontent\n• Baiser surprise : les invités crient 'Embrassez-vous !' quand les verres tintent\n• Battre le record : surpasser le record précédent\n\n**Conseils :**\nLes encouragements compliquent les choses (fou rire garanti !). Le record du monde dépasse les 58 heures — pas besoin d'aller jusque-là ! 1 à 2 minutes, c'est déjà impressionnant."
+      },
+      "wedding_abc": {
+        "name": "L'ABC du mariage",
+        "description": "Un vœu ou un conseil pour chaque lettre de l'alphabet.",
+        "instructions": "Les invités écrivent un vœu ou un conseil pour les mariés pour chaque lettre de l'alphabet."
+      },
+      "guest_lottery": {
+        "name": "Loto des invités",
+        "description": "Chaque invité a sa chance de remporter de super lots !",
+        "instructions": "Les billets sont distribués à l'arrivée. Les gagnants sont tirés au sort tout au long de la soirée."
+      },
+      "polaroid_guestbook": {
+        "name": "Livre d'or Polaroid",
+        "description": "Des photos instantanées comme souvenir inoubliable.",
+        "instructions": "**Préparation :**\nPréparer un appareil Polaroid avec suffisamment de pellicule. Un livre d'or/album avec des pages vierges. Des stylos, de la colle et des décorations. Des accessoires pour des photos rigolotes.\n\n**Déroulement :**\nLes invités prennent des photos Polaroid (seuls, en duo ou en groupe). Les photos sont collées dans le livre d'or et accompagnées d'un message personnel.\n\n**Règles :**\n• Max. 2 photos par invité (la pellicule est précieuse !)\n• Au moins un message par photo\n• Utiliser la boîte d'accessoires\n• Laisser les photos sécher avant de les coller\n\n**Variantes :**\n• Photo Booth : station fixe avec fond décoratif\n• Photos à thème : reproduire des poses imposées\n• Livre d'or vidéo : ajouter de courtes vidéos\n\n**Conseils :**\nUn « responsable du livre d'or » est vraiment utile ! Les appareils Instax sont moins chers que les vrais Polaroids. Du washi tape à la place de la colle pour un rendu encore plus joli !"
+      },
+      "wish_tree": {
+        "name": "Arbre à vœux",
+        "description": "Accrochez vos vœux à l'arbre.",
+        "instructions": "Les invités écrivent leurs vœux sur de petites cartes et les accrochent à un arbre décoratif. Un souvenir magnifique et plein de douceur !"
+      },
+      "date_night_jar": {
+        "name": "Bocal des soirées en amoureux",
+        "description": "Des idées de rendez-vous pour les futurs mariés.",
+        "instructions": "Les invités écrivent des idées de sortie en amoureux sur des bouts de papier et les glissent dans un bocal. Les mariés en piochent un régulièrement !"
+      },
+      "advice_cards": {
+        "name": "Cartes de conseils",
+        "description": "Les mots pleins de sagesse de vos invités.",
+        "instructions": "Des cartes avec de l'espace pour écrire un conseil sont mises à disposition. Les mariés les lisent ensemble plus tard."
+      },
+      "couple_quiz": {
+        "name": "Quiz du couple",
+        "description": "Les invités connaissent-ils vraiment les mariés ?",
+        "instructions": "Des questions sur le couple sont posées. Les invités notent leurs réponses. Celui qui en sait le plus remporte la victoire !"
+      },
+      "wedding_limbo": {
+        "name": "Limbo de mariage",
+        "description": "Jusqu'où peux-tu descendre en tenue de fête ?",
+        "instructions": "La barre de limbo descend de plus en plus bas. Le dernier à passer sans tomber remporte la partie !"
+      },
+      "musical_chairs_wedding": {
+        "name": "Chaises musicales",
+        "description": "Le grand classique de la piste de danse !",
+        "instructions": "Des chaises en cercle, une de moins que le nombre de joueurs. Quand la musique s'arrête, trouvez une chaise !"
+      },
+      "conga_line": {
+        "name": "La conga",
+        "description": "Tous en file indienne à travers la fête !",
+        "instructions": "Musique en route, mains sur les épaules du voisin, et c'est parti pour la conga à travers la salle !"
+      },
+      "wedding_karaoke": {
+        "name": "Karaoké de mariage",
+        "description": "On chante pour les mariés !",
+        "instructions": "Installez un équipement karaoké. Les invités chantent des chansons pour les mariés. Le courage est récompensé !"
+      },
+      "first_dance_game": {
+        "name": "Jeu de la première danse",
+        "description": "Une surprise lors de la première danse.",
+        "instructions": "La première danse est pimentée par des changements de style ou une chorégraphie préparée à l'avance !"
+      },
+      "mr_mrs_quiz": {
+        "name": "Quiz Mr & Mrs",
+        "description": "Qui connaît le mieux l'autre ?",
+        "instructions": "**Préparation :**\nCréez 15 à 20 questions sur le couple. Les deux partenaires reçoivent des panneaux avec « Lui » et « Elle » (ou leurs prénoms). Les réponses sont convenues à l'avance en secret avec l'un des partenaires.\n\n**Déroulement :**\nLe couple est assis côte à côte. À chaque question, chacun lève le panneau correspondant à la bonne réponse selon lui. La « bonne » réponse a été définie à l'avance.\n\n**Règles :**\n• Montrer en même temps (pas de triche !)\n• Bonne réponse = un point\n• Mauvaise réponse = gage ou shot\n• Celui qui a le plus de points gagne\n\n**Variantes :**\n• Édition invités : les invités devinent aussi\n• Frise chronologique : questions dans l'ordre de la relation\n• Version vidéo : les réponses ont été enregistrées à l'avance\n\n**Conseils :**\nMélangez questions embarrassantes et romantiques. Les meilleures font ressortir des anecdotes adorables ou hilarantes. L'animateur doit rebondir et creuser !"
+      },
+      "wedding_photo_challenge": {
+        "name": "Défi photo",
+        "description": "Capturez des moments inoubliables en photo.",
+        "instructions": "Une liste de scènes à photographier est fournie. Les invités prennent les photos et les partagent !"
+      },
+      "guest_interview": {
+        "name": "Interviews des invités",
+        "description": "Des messages vidéo de vos invités.",
+        "instructions": "Une caméra est prête à filmer. Les invités sont interviewés et laissent de jolis messages vidéo !"
+      },
+      "love_story_reading": {
+        "name": "La lecture de l'histoire d'amour",
+        "description": "L'histoire du couple est racontée avec tendresse.",
+        "instructions": "Les témoins ou la famille racontent comment les mariés se sont rencontrés."
+      },
+      "wedding_tombola": {
+        "name": "Tombola de mariage",
+        "description": "Achetez vos billets et gagnez de beaux lots !",
+        "instructions": "Des billets sont vendus et les lots sont tirés au sort. Les recettes peuvent être reversées à une bonne cause !"
+      },
+      "ring_warming": {
+        "name": "Réchauffement des alliances",
+        "description": "Tous les invités bénissent les alliances.",
+        "instructions": "**Préparation :**\nLes alliances sont attachées à un ruban ou placées dans une petite pochette. Pendant la cérémonie ou la réception, elles sont passées de main en main parmi tous les invités.\n\n**Déroulement :**\nChaque invité tient les alliances quelques instants et leur transmet en silence ses vœux, sa bénédiction ou son énergie positive. Puis il les passe à son voisin.\n\n**Règles :**\n• Vœux silencieux (ne pas les prononcer à voix haute)\n• Chacun ne les garde que brièvement (10-30 secondes)\n• Ne pas ouvrir la pochette ni essayer les alliances\n• Lors de la cérémonie : renvoyer les alliances au témoin\n\n**Variantes :**\n• Cartes de vœux : des mots écrits en plus\n• Tour de bénédiction : chacun exprime un vœu à voix haute\n• Moment photo : chaque invité est pris en photo avec les alliances\n\n**Conseils :**\nPour les grands mariages, faire circuler les alliances sur plusieurs rangées simultanément. Un assistant veille au bon déroulement. Un moment plein d'émotion !"
+      },
+      "anniversary_dance": {
+        "name": "La danse des anniversaires",
+        "description": "Les couples mariés s'élancent sur la piste selon leurs années de mariage.",
+        "instructions": "**Préparation :**\nLe DJ ou l'animateur prépare une chanson lente. Tous les couples mariés sont invités sur la piste de danse.\n\n**Déroulement :**\nTous les couples commencent à danser. L'animateur invite progressivement les couples à s'asseoir : « Ceux qui sont mariés depuis moins d'un an… » puis 5 ans, 10, 20, etc. Le couple marié depuis le plus longtemps reste sur la piste et partage ses conseils.\n\n**Règles :**\n• Réponses honnêtes !\n• Couples légalement mariés uniquement\n• Le dernier couple reçoit un prix\n• Souvent : un petit discours ou un conseil pour les mariés\n\n**Variantes :**\n• Danse des couples : tous les couples, pas seulement les mariés\n• Compte à rebours : du plus long mariage au plus récent\n• Interview : le couple gagnant est interviewé\n\n**Conseils :**\nUn moment très émouvant ! Les grands-parents sont souvent les vainqueurs. Ayez des mouchoirs à portée de main. Parfait pour les photos !"
+      },
+      "bride_stealing": {
+        "name": "L'enlèvement de la mariée",
+        "description": "La mariée est « enlevée » et doit être libérée.",
+        "instructions": "**Préparation :**\nUn groupe d'invités organise l'« enlèvement » en secret. Un lieu de destination (un bar à proximité) est choisi. Des défis pour la rançon sont préparés.\n\n**Déroulement :**\nPendant la fête, la mariée est « enlevée » et emmenée dans un bar. Le marié doit la retrouver et la « libérer » en relevant des défis ou en payant une « rançon ».\n\n**Règles :**\n• La mariée doit être dans la confidence ou avoir donné son accord\n• Ne pas enlever la mariée trop tôt (après le repas)\n• Rançon : des défis, pas seulement de l'argent\n• Durée : 1 à 2 heures maximum\n\n**Variantes :**\n• Bar-rallye : plusieurs bars comme étapes\n• Rançon par défis : chaque défi rapproche d'un pas\n• Sauvetage en équipe : le marié + les témoins\n\n**Conseils :**\nTous les invités doivent être au courant ! La mariée doit vraiment être d'accord. Mieux vaut en parler au restaurant et au DJ à l'avance."
+      },
+      "bridal_shoe_hiding": {
+        "name": "La chaussure de la mariée cachée",
+        "description": "La chaussure est cachée et doit être rachetée.",
+        "instructions": "La chaussure de la mariée est cachée par les enfants ou les invités. Le marié doit la « racheter » !"
+      },
+      "piggy_bank_game": {
+        "name": "Le jeu des tirelires",
+        "description": "Les invités glissent des pièces dans des tirelires.",
+        "instructions": "Deux tirelires : « Qui fait la vaisselle ? » – « Qui sort les poubelles ? ». Les invités votent avec leurs pièces !"
+      },
+      "wedding_bet": {
+        "name": "Les paris du mariage",
+        "description": "Des paris sur les mariés.",
+        "instructions": "Les invités parient : qui pleurera en premier ? Quand la pièce montée tombera-t-elle ? Qui dansera jusqu'au bout ?"
+      },
+      "song_request_cards": {
+        "name": "Cartes de dédicaces musicales",
+        "description": "Les invités demandent leurs chansons préférées.",
+        "instructions": "Des cartes sont disposées sur les tables pour que les invités y notent leurs souhaits musicaux. Le DJ les passe !"
+      },
+      "wedding_time_capsule": {
+        "name": "La capsule temporelle du mariage",
+        "description": "Des souvenirs précieux pour le futur.",
+        "instructions": "Les invités et les mariés glissent des souvenirs dans une capsule. Elle sera ouverte le jour du 10e anniversaire !"
+      },
+      "congratulation_line": {
+        "name": "La haie des félicitations",
+        "description": "Tous les invités félicitent les mariés de façon organisée.",
+        "instructions": "Les invités font la queue et félicitent les mariés tour à tour. L'animateur maintient le rythme !"
+      },
+      "speed_meeting": {
+        "name": "Speed Meeting",
+        "description": "Faites connaissance rapidement grâce au principe de rotation.",
+        "instructions": "Comme un speed-dating, mais pour faire connaissance. 2 minutes par personne, puis on change !"
+      },
+      "human_bingo": {
+        "name": "Bingo des rencontres",
+        "description": "Trouve des personnes qui correspondent aux descriptions.",
+        "instructions": "Des cartes de bingo avec des caractéristiques ('A un animal de compagnie', 'Parle 3 langues'). Trouve les bonnes personnes !"
+      },
+      "find_someone_who": {
+        "name": "Trouve quelqu'un qui...",
+        "description": "Cherche des personnes avec des caractéristiques bien précises.",
+        "instructions": "Une liste de critères. Trouve une personne pour chaque point et fais-la signer !"
+      },
+      "common_ground": {
+        "name": "Points communs",
+        "description": "Qu'est-ce qu'on a tous en commun ?",
+        "instructions": "En petits groupes : trouvez un maximum de points communs. Le groupe avec le plus de points gagne !"
+      },
+      "story_cubes": {
+        "name": "Story Cubes",
+        "description": "Lance les dés et raconte une histoire.",
+        "instructions": "On lance des dés avec des images. À partir des symboles obtenus, il faut inventer une histoire !"
+      },
+      "name_ball": {
+        "name": "Balle des prénoms",
+        "description": "Apprends les prénoms en jouant à la balle.",
+        "instructions": "Lance le prénom de quelqu'un et envoie-lui la balle. Cette personne appelle le prochain !"
+      },
+      "word_association": {
+        "name": "Associations de mots",
+        "description": "Un tennis des mots à toute vitesse.",
+        "instructions": "Une personne dit un mot, la suivante dit le premier mot qui lui vient à l'esprit. Pas de répétitions !"
+      },
+      "personality_quiz": {
+        "name": "Quiz de personnalité",
+        "description": "Découvrez vos types de personnalité.",
+        "instructions": "Un petit test de personnalité. Comparez vos résultats et discutez-en !"
+      },
+      "desert_island": {
+        "name": "L'île déserte",
+        "description": "Qu'est-ce que tu emporterais ?",
+        "instructions": "Chacun choisit 3 à 5 objets pour une île déserte et explique pourquoi. On en apprend beaucoup sur les gens !"
+      },
+      "would_you_rather": {
+        "name": "Tu préfères... ?",
+        "description": "Des choix cornéliens entre deux options.",
+        "instructions": "On pose des questions à tour de rôle. Chacun doit choisir et justifier sa réponse !"
+      },
+      "rose_bud_thorn": {
+        "name": "Rose, Bouton, Épine",
+        "description": "Partagez le positif, vos espoirs et vos défis.",
+        "instructions": "Chacun partage : une rose (quelque chose de bien), un bouton (un espoir), une épine (un défi)."
+      },
+      "hot_seat": {
+        "name": "Siège chaud",
+        "description": "Toutes les questions sont pour une seule personne.",
+        "instructions": "Une personne s'installe sur le 'siège chaud' et répond aux questions du groupe. L'honnêteté, c'est la règle !"
+      },
+      "one_word_story": {
+        "name": "Histoire en un mot",
+        "description": "Construisez ensemble une histoire — mot par mot.",
+        "instructions": "Chacun dit un mot à tour de rôle. Ensemble, une histoire (souvent hilarante) prend forme !"
+      },
+      "human_knot": {
+        "name": "Nœud humain",
+        "description": "Démêlez-vous sans lâcher les mains !",
+        "instructions": "Tout le monde se met en cercle et attrape deux mains au hasard. Puis : se démêler sans se lâcher !"
+      },
+      "alphabet_introduction": {
+        "name": "Présentation alphabétique",
+        "description": "Présente-toi avec un adjectif et ton prénom.",
+        "instructions": "Chacun se présente avec un adjectif qui commence par la même lettre que son prénom !"
+      },
+      "interview_pairs": {
+        "name": "Duos d'interview",
+        "description": "Interviewez-vous mutuellement et présentez-vous au groupe.",
+        "instructions": "En duo : interviewez-vous mutuellement, puis présentez votre partenaire au groupe !"
+      },
+      "favorites_lineup": {
+        "name": "Rangement par préférences",
+        "description": "Rangez-vous selon vos goûts.",
+        "instructions": "Alignez-vous selon les consignes : de 'lève-tôt' à 'oiseau de nuit', de 'pizza' à 'sushi' !"
+      },
+      "emoji_introduction": {
+        "name": "Présentation en emojis",
+        "description": "Décris-toi avec des emojis.",
+        "instructions": "Choisis 3 à 5 emojis qui te représentent. Explique ton choix au groupe !"
+      },
+      "show_and_tell": {
+        "name": "Montre et raconte",
+        "description": "Partage un objet personnel qui compte pour toi.",
+        "instructions": "Chacun apporte un objet qui a de la valeur pour lui et raconte son histoire !"
+      },
+      "trust_fall": {
+        "name": "Chute de confiance",
+        "description": "Tombe en arrière — ton équipe te rattrape.",
+        "instructions": "Une personne se laisse tomber en arrière, le groupe la rattrape. Pour bâtir la confiance !"
+      },
+      "blind_drawing": {
+        "name": "Dessin à l'aveugle",
+        "description": "Dessine selon les instructions — sans regarder !",
+        "instructions": "L'un décrit ce qu'il faut dessiner. L'autre dessine les yeux bandés !"
+      },
+      "marshmallow_challenge": {
+        "name": "Marshmallow Challenge",
+        "description": "Construisez la tour la plus haute avec des spaghettis et un marshmallow.",
+        "instructions": "Construisez une tour avec des spaghettis, du ruban adhésif et de la ficelle. Un marshmallow doit trôner au sommet !"
+      },
+      "egg_drop": {
+        "name": "Défi chute d'œuf",
+        "description": "Protégez un œuf de la chute.",
+        "instructions": "Construisez une protection pour un œuf avec les matériaux disponibles. Il sera lâché d'une certaine hauteur. L'œuf survivra-t-il ?"
+      },
+      "minefield": {
+        "name": "Champ de mines",
+        "description": "Guide ton partenaire à l'aveugle à travers les obstacles.",
+        "instructions": "Un partenaire est aveugle, l'autre ne donne que des instructions verbales. Ne touchez pas les obstacles !"
       }
     },
     "themes": {
@@ -2734,6 +3384,201 @@
         "name": "Garden Party",
         "description": "Fête élégante dans le jardin",
         "tips": "Déco florale, parasols, paniers pique-nique et mets légers !"
+      },
+      "white_party": {
+        "name": "White Party",
+        "description": "Tout en blanc — élégant et estival",
+        "tips": "Déco blanche, fleurs blanches, cocktails clairs et musique lounge détendue !"
+      },
+      "black_tie": {
+        "name": "Gala Black Tie",
+        "description": "Formel et élégant — smokings et robes de soirée",
+        "tips": "Champagne, musique classique, décoration de table raffinée !"
+      },
+      "hollywood_glam": {
+        "name": "Glamour hollywoodien",
+        "description": "Tapis rouge et paillettes de star",
+        "tips": "Tapis rouge, coin paparazzi, déco dorée et bandes originales de films !"
+      },
+      "masquerade_ball": {
+        "name": "Bal masqué",
+        "description": "Élégance mystérieuse avec des masques vénitiens",
+        "tips": "Masques vénitiens, lumières de bougies et déco en velours bordeaux et or — noble et envoûtant."
+      },
+      "festival_style": {
+        "name": "Festival Style",
+        "description": "Ambiance festival en plein air avec couronnes de fleurs",
+        "tips": "Déco boho, guirlandes lumineuses, coins détente et musique live ou DJ !"
+      },
+      "bbq_grill": {
+        "name": "BBQ & Grill",
+        "description": "Grillades entre amis et en famille",
+        "tips": "Barbecue, bancs de jardin, guirlandes lumineuses et classiques du BBQ !"
+      },
+      "game_night": {
+        "name": "Game Night",
+        "description": "Jeux de société et de cartes pour tous",
+        "tips": "Coins cosy, plein de jeux, snacks et boissons !"
+      },
+      "cocktail_party": {
+        "name": "Cocktail Party",
+        "description": "Boissons raffinées et conversations élégantes",
+        "tips": "Bar à cocktails, menu de cocktails, musique jazz et amuse-bouches chics !"
+      },
+      "wine_cheese": {
+        "name": "Wine & Cheese",
+        "description": "Dégustation de vins avec des fromages fins",
+        "tips": "Sélection de vins variés, plateau de fromages, raisins et musique douce !"
+      },
+      "spa_day": {
+        "name": "Spa Day",
+        "description": "Bien-être et programme détente",
+        "tips": "Peignoirs, masques de beauté, concombres, musique relaxante !"
+      },
+      "adventure_theme": {
+        "name": "Thème Aventure",
+        "description": "Action en plein air et sensations fortes",
+        "tips": "Déco camping, équipement outdoor, sons de la nature !"
+      },
+      "camping": {
+        "name": "Camping",
+        "description": "Nature à l'état pur sous les étoiles",
+        "tips": "Tentes, feu de camp, pain sur bâton et musique à la guitare !"
+      },
+      "road_trip": {
+        "name": "Road Trip",
+        "description": "Liberté sur la route",
+        "tips": "Cartes routières, valises vintage, chansons de road trip !"
+      },
+      "city_break": {
+        "name": "Escapade en ville",
+        "description": "Ambiance urbaine et sightseeing",
+        "tips": "Affiches de villes, snacks urbains et playlist citadine !"
+      },
+      "beach_house": {
+        "name": "Maison de plage",
+        "description": "Journées d'été au bord de la mer",
+        "tips": "Coquillages, planches de surf en déco, beach vibes et bruit des vagues !"
+      },
+      "ski_lodge": {
+        "name": "Ski Lodge",
+        "description": "Soirée chalet après le ski",
+        "tips": "Plaids en fourrure, vin chaud, ambiance feu de cheminée et tubes après-ski !"
+      },
+      "lake_house": {
+        "name": "Lake House",
+        "description": "Détente au bord du lac",
+        "tips": "Déco nautique, canoës, coucher de soleil et musique lounge !"
+      },
+      "cabin_woods": {
+        "name": "Chalet en forêt",
+        "description": "Cosy au cœur de la nature",
+        "tips": "Bougies, plaids, sons de forêt et coins douillets !"
+      },
+      "superhero": {
+        "name": "Soirée super-héros",
+        "description": "Venez déguisés en vos super-héros préférés !",
+        "tips": "Cape obligatoire, déco comics et playlist de super-héros !"
+      },
+      "pirates": {
+        "name": "Aventure de pirates",
+        "description": "Moussaillon ! Chasse au trésor et rhum",
+        "tips": "Cartes au trésor, cache-œil, cocktails au rhum et drapeaux pirates !"
+      },
+      "murder_mystery_theme": {
+        "name": "Murder Mystery",
+        "description": "Un meurtre a lieu – qui est le coupable ?",
+        "tips": "Éclairage tamisé, musique mystérieuse, déguisements et cartes d'indices !"
+      },
+      "neon_glow": {
+        "name": "Neon Glow",
+        "description": "Couleurs fluo qui brillent sous la lumière noire",
+        "tips": "Lumière noire, couleurs néon, accessoires lumineux et EDM !"
+      },
+      "french_riviera": {
+        "name": "Riviera française",
+        "description": "L'élégance de la Côte d'Azur",
+        "tips": "Rayures bleu et blanc, lavande, rosé et chansons françaises !"
+      },
+      "italian_dolce_vita": {
+        "name": "Dolce Vita italienne",
+        "description": "La Dolce Vita avec l'esprit Vespa et le charme méditerranéen",
+        "tips": "Déco Vespa, branches d'olivier, bouteilles de Chianti et tournesols pour une ambiance 100 % italienne."
+      },
+      "greek_island": {
+        "name": "Île grecque",
+        "description": "Vibes Santorin en bleu et blanc",
+        "tips": "Déco bleu et blanc, olives, feta et musique de bouzouki !"
+      },
+      "spanish_flamenco": {
+        "name": "Flamenco espagnol",
+        "description": "Passion et tempérament",
+        "tips": "Rouge et noir, éventails, tapas et musique flamenco !"
+      },
+      "irish_pub": {
+        "name": "Irish Pub",
+        "description": "L'ambiance chaleureuse de Dublin",
+        "tips": "Vert, Guinness, whiskey et folk irlandais !"
+      },
+      "british_royal": {
+        "name": "British Royal",
+        "description": "Aussi majestueux que les Windsor",
+        "tips": "Union Jack, thé, scones et élégance britannique !"
+      },
+      "asian_zen": {
+        "name": "Asian Zen",
+        "description": "Sérénité et harmonie venues d'Extrême-Orient",
+        "tips": "Bambou, fleurs de lotus, thé vert et musique méditative !"
+      },
+      "under_the_stars": {
+        "name": "Sous le ciel étoilé",
+        "description": "Une nuit romantique sous un ciel scintillant",
+        "tips": "Guirlandes lumineuses, étoiles, lunes et couvertures douillettes sous le ciel ouvert."
+      },
+      "vintage_tea_party": {
+        "name": "Vintage Tea Party",
+        "description": "Charmante garden party à l'heure du thé façon vintage",
+        "tips": "Théières vintage, fleurs délicates, dentelle et tons pastel pour un charme nostalgique irrésistible."
+      },
+      "art_deco": {
+        "name": "Art Déco",
+        "description": "L'élégance géométrique des années 1920",
+        "tips": "Accents dorés, motifs géométriques et musique jazz — la grande époque dans toute sa splendeur !"
+      },
+      "boho_chic": {
+        "name": "Boho Chic",
+        "description": "Esprit libre et ancré dans la nature",
+        "tips": "Macramé, attrape-rêves, tons terreux et musique indie — laissez votre âme voyager !"
+      },
+      "rustic_farm": {
+        "name": "Fête à la Grange",
+        "description": "Convivialité champêtre au cœur de la grange",
+        "tips": "Bottes de paille, caisses en bois, fleurs sauvages et musique country — l'authenticité à l'état pur !"
+      },
+      "minimalist_modern": {
+        "name": "Minimalisme Moderne",
+        "description": "Lignes épurées et élégance dans la sobriété",
+        "tips": "Lignes nettes, fleurs blanches et quelques pièces maîtresses bien choisies — le moins, c'est le mieux."
+      },
+      "bohemian_sunset": {
+        "name": "Bohemian Sunset",
+        "description": "Ambiance boho chaleureuse aux couleurs du coucher de soleil",
+        "tips": "Tournesols, terre cuite, coussins moelleux et tapis boho dans de chaudes teintes crépusculaires."
+      },
+      "industrial_chic": {
+        "name": "Industrial Chic",
+        "description": "Look loft tendance avec métal et ampoules Edison",
+        "tips": "Métal, ampoules Edison, béton et bois pour un charme brut façon loft urbain."
+      },
+      "karibik": {
+        "name": "Caraïbes",
+        "description": "Paradis tropical avec des vibrations de plage ensoleillée",
+        "tips": "Palmiers, coquillages, hamacs et déco tiki pour un vrai dépaysement caraïbéen."
+      },
+      "sports_day": {
+        "name": "Journée Sportive",
+        "description": "Olympiades et compétitions sportives au programme",
+        "tips": "Maillots, médailles, terrains de jeu et snacks façon sportif — que les jeux commencent !"
       }
     }
   },
@@ -3349,7 +4194,12 @@
         "saison": "Saison",
         "kostuem": "Déguisement",
         "wellness": "Bien-être"
-      }
+      },
+      "loadMore": "Charger plus",
+      "playableTitle": "Jouable directement",
+      "playableSubtitle": "Commence tout de suite — intégré à l'app",
+      "playableAll": "Tout",
+      "playableCta": "Jouer"
     },
     "profile": {
       "settings": "Paramètres",

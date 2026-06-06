@@ -36,6 +36,7 @@ import { gamesLibrary, type GameItem, type GameCategory } from "@/lib/games-libr
 import { themeIdeas, type ThemeItem, type ThemeCategory } from "@/lib/theme-ideas-library";
 import { useHaptics } from "@/hooks/useHaptics";
 import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
+import { PlayableGamesShelf } from "@/components/ideas/PlayableGamesShelf";
 import { spring, staggerItem } from "@/lib/motion";
 
 // Local stagger with a much tighter cadence — the shared `stagger`
@@ -267,6 +268,8 @@ export default function IdeasScreen() {
 
       {/* Content — inline in the same scroll container */}
       <div>
+        {/* Special highlight: directly playable games (deep-link into /games) */}
+        {tab === "games" && !query && <PlayableGamesShelf />}
         <AnimatePresence mode="wait">
           {tab === "games" ? (
             <motion.div

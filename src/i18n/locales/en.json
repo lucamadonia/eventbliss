@@ -257,6 +257,576 @@
         "name": "Two Truths and a Lie",
         "description": "Guess the lie among three statements.",
         "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!"
+      },
+      "selfie_mission": {
+        "name": "Selfie Mission",
+        "description": "Strike a pose! Complete creative selfie challenges with specific prompts.",
+        "instructions": "Everyone gets a list of selfie challenges (e.g. with a police officer, on a fountain, etc.). Whoever completes the most wins!"
+      },
+      "costume_tasks": {
+        "name": "Costume Challenges",
+        "description": "Dress up in wild costumes and tackle hilarious tasks.",
+        "instructions": "The guest of honor must complete tasks out in public while wearing an embarrassing costume. The group documents everything!"
+      },
+      "bucket_list": {
+        "name": "Bucket List Challenge",
+        "description": "Tick off unforgettable experiences from a pre-made bucket list.",
+        "instructions": "Create a list of once-in-a-lifetime experiences. Try to check off as many as possible before the day is done!"
+      },
+      "karaoke_battle": {
+        "name": "Karaoke Battle",
+        "description": "Sing your heart out and compete for glory — pitch-perfect not required!",
+        "instructions": "Teams or solo performers face off against each other. The crowd votes. Bonus points for stage presence and sheer bravery!"
+      },
+      "photo_scavenger_hunt": {
+        "name": "Photo Scavenger Hunt",
+        "description": "Snap everything on the list — and get creative about it!",
+        "instructions": "Each team receives a list of photo challenges. Points are awarded for creativity and how many you complete."
+      },
+      "team_olympiad": {
+        "name": "Team Olympiad",
+        "description": "Multiple events, one champion team!",
+        "instructions": "Set up a variety of competitions (sack race, egg-and-spoon, etc.). Teams earn points along the way. A winner is crowned at the end."
+      },
+      "boot_camp": {
+        "name": "Boot Camp Challenge",
+        "description": "A full-group fitness challenge that'll push you to the limit.",
+        "instructions": "A trainer or the group itself leads everyone through a series of exercises. Who can keep up? Teamwork makes the dream work!"
+      },
+      "cocktail_contest": {
+        "name": "Cocktail Contest",
+        "description": "Who can mix the most amazing drink?",
+        "instructions": "Everyone crafts their own signature cocktail. A blind tasting and group vote determine the winner. May the best bartender win!"
+      },
+      "wine_tasting": {
+        "name": "Blind Wine Tasting",
+        "description": "Put your palate to the test — can you identify the wines?",
+        "instructions": "Various wines are tasted and rated blind. Earn points for correctly guessing grape varieties or regions."
+      },
+      "tshirt_design": {
+        "name": "T-Shirt Painting",
+        "description": "Design a one-of-a-kind group tee to remember the day.",
+        "instructions": "Use fabric paints to turn plain tees into personalized works of art. The perfect keepsake from an unforgettable day!"
+      },
+      "embarrassing_songs": {
+        "name": "Embarrassing Song Sing-Off",
+        "description": "Belt out the most cringe-worthy songs in public — loud and proud!",
+        "instructions": "The guest of honor must sing selected embarrassing songs out loud and with full passion at public locations."
+      },
+      "dare_dice": {
+        "name": "Dare Dice",
+        "description": "Roll your fate — the dice decide your challenge!",
+        "instructions": "Roll the dare dice. Whatever it lands on, you have to do it. No excuses!"
+      },
+      "ring_search_pasta": {
+        "name": "Find the Ring in the Pasta",
+        "description": "Dig through a bowl of pasta blindfolded to find the hidden ring.",
+        "instructions": "A ring is hidden in a large bowl of pasta. Blindfolded, you have to find it using only your mouth or hands."
+      },
+      "balloon_dance": {
+        "name": "Balloon Dance",
+        "description": "Dance with a balloon between you — don't let it drop!",
+        "instructions": "Pairs dance with a balloon held between them. If the balloon drops or pops, that pair is out."
+      },
+      "limbo_competition": {
+        "name": "Limbo Contest",
+        "description": "How low can you go?",
+        "instructions": "The bar gets lower and lower with each round. The player who makes it under the lowest point without touching the bar or falling wins!"
+      },
+      "pinata": {
+        "name": "Piñata",
+        "description": "Smash the piñata and grab all the candy!",
+        "instructions": "Swing away at the piñata while blindfolded until it bursts open and candy rains down!"
+      },
+      "mystery_box": {
+        "name": "Mystery Box",
+        "description": "Feel what's inside the box — no peeking!",
+        "instructions": "Different objects are hidden inside boxes. Players must reach in blindfolded and guess what they're touching."
+      },
+      "hat_challenges": {
+        "name": "Hat Challenges",
+        "description": "Draw a challenge and do it on the spot.",
+        "instructions": "Challenges are written on slips of paper and tossed into a hat. Players take turns drawing one and completing it right away."
+      },
+      "photo_booth": {
+        "name": "Photo Booth Challenge",
+        "description": "Strike wild poses with hilarious props.",
+        "instructions": "Set up a photo area with fun props. Everyone tries to snap as many silly photos as possible. The best shots win a prize!"
+      },
+      "speed_dating": {
+        "name": "Speed Dating Game",
+        "description": "Get to know everyone in the group in just 2 minutes.",
+        "instructions": "Everyone chats with each other person for 2 minutes. When the timer rings, rotate to the next! Afterwards: who remembered what about whom?"
+      },
+      "who_knows_best": {
+        "name": "Who Knows Them Best?",
+        "description": "Find out who really knows the guest of honour.",
+        "instructions": "Questions about the guest of honour are asked. Whoever answers the most correctly is the true #1 fan!"
+      },
+      "rage_cage": {
+        "name": "Rage Cage",
+        "description": "A fast-paced drinking game with cups and balls.",
+        "instructions": "Bounce your ball into the cup as fast as you can and pass it on. If you get lapped, you have to drink from the middle stack!"
+      },
+      "flip_cup": {
+        "name": "Flip Cup",
+        "description": "Drink and flip your cup faster than the other team.",
+        "instructions": "Chug your cup and flip it upside down with one finger. Only once it lands can the next player go!"
+      },
+      "escape_room_diy": {
+        "name": "DIY Escape Room",
+        "description": "Build your very own escape room experience.",
+        "instructions": "Prepare puzzles and codes in advance. The team must solve them all to 'escape'. Beat the clock!"
+      },
+      "casino_night": {
+        "name": "Casino Night",
+        "description": "Poker, blackjack, roulette — bring the Las Vegas vibes!",
+        "instructions": "Set up gaming tables for the evening. Everyone starts with a stack of chips. At the end, who's sitting on the biggest fortune?"
+      },
+      "drag_race": {
+        "name": "Drag Race",
+        "description": "Give each other the most fabulous makeovers.",
+        "instructions": "Teams style and glam each other up. The most jaw-dropping transformation wins. Runway walk included!"
+      },
+      "dance_off": {
+        "name": "Dance-Off",
+        "description": "Show off your best moves in an epic dance battle.",
+        "instructions": "Two players go head-to-head on the dance floor. The group votes for the winner. The winner faces the next challenger."
+      },
+      "lip_sync_battle": {
+        "name": "Lip Sync Battle",
+        "description": "It's all about the performance — no singing required!",
+        "instructions": "Pick a song and give it everything you've got! Your lip sync has to be on point. Showmanship is everything!"
+      },
+      "twerk_contest": {
+        "name": "Twerk Contest",
+        "description": "Who's got the best twerk in the room?",
+        "instructions": "Turn up the music and show off your moves! The group votes for the winner. Don't be shy!"
+      },
+      "pole_dance_intro": {
+        "name": "Pole Dance Intro",
+        "description": "A taste of pole dancing for first-timers.",
+        "instructions": "Visit a studio or book a mobile class. Learn your first moves with a professional instructor. Fun guaranteed!"
+      },
+      "strip_poker_light": {
+        "name": "Strip Poker Light",
+        "description": "Poker with lighthearted consequences.",
+        "instructions": "Losers remove one item of clothing — or complete a dare instead. Set your boundaries before you start!"
+      },
+      "dirty_minds_quiz": {
+        "name": "Dirty Minds Quiz",
+        "description": "Just how dirty is your mind?",
+        "instructions": "The clues sound naughty, but the answer is totally innocent! Anyone who falls for the dirty answer has to drink."
+      },
+      "last_night_freedom": {
+        "name": "Last Night of Freedom",
+        "description": "The ultimate checklist for your last night as a free agent.",
+        "instructions": "Work through a pre-made list of all the classic bachelorette/bachelor party challenges. Document everything!"
+      },
+      "family_bingo": {
+        "name": "Family Bingo",
+        "description": "Classic bingo fun for the whole family.",
+        "instructions": "Numbers or pictures are called out one by one. First to complete a row shouts 'Bingo!' Prizes for the winners."
+      },
+      "memory_challenge": {
+        "name": "Memory Challenge",
+        "description": "Test your memory by matching pairs of cards.",
+        "instructions": "Lay the cards face down. Flip them over to find the matching pairs. Whoever finds the most pairs wins!"
+      },
+      "family_quiz": {
+        "name": "Family Quiz",
+        "description": "How well do you really know your family?",
+        "instructions": "Answer questions about family members and shared memories. Score points for every correct answer!"
+      },
+      "time_capsule": {
+        "name": "Create a Time Capsule",
+        "description": "Collect memories to treasure in the future.",
+        "instructions": "Everyone adds something meaningful to the capsule. Seal it up and set a date to open it together!"
+      },
+      "can_knockdown": {
+        "name": "Can Knockdown",
+        "description": "Knock down the can pyramid!",
+        "instructions": "Stack the cans into a pyramid and try to knock them all down with a ball. Score points for every can you topple."
+      },
+      "boccia": {
+        "name": "Bocce Ball",
+        "description": "A classic precision game with balls.",
+        "instructions": "Toss your balls as close to the target ball as possible. The closest ball scores the points!"
+      },
+      "tug_of_war": {
+        "name": "Tug of War",
+        "description": "Which team is stronger?",
+        "instructions": "Two teams grab opposite ends of a rope and pull with all their might. The team that drags the other over the line wins!"
+      },
+      "relay_race": {
+        "name": "Relay Race",
+        "description": "A team racing challenge with a baton.",
+        "instructions": "Teams run a course and pass the baton. The fastest team wins!"
+      },
+      "water_balloon": {
+        "name": "Water Balloon Battle",
+        "description": "Wet and wild fun for hot days.",
+        "instructions": "Fill up water balloons and let them fly. Mix it up: throw, catch, or just embrace the chaos!"
+      },
+      "cooking_together": {
+        "name": "Cook Together",
+        "description": "Team up to cook a festive feast.",
+        "instructions": "Split into groups. Each group prepares one course. Then sit down together and enjoy the fruits of your labor!"
+      },
+      "puzzle_race": {
+        "name": "Puzzle Race",
+        "description": "Which team can solve the puzzle first?",
+        "instructions": "Every team gets the same puzzle. On your marks, get set, puzzle! The fastest team takes the win."
+      },
+      "campfire_stories": {
+        "name": "Campfire Stories",
+        "description": "Gather around the fire and share your stories.",
+        "instructions": "Take turns telling stories — spooky, hilarious, or straight from the family archives. Perfect for evening get-togethers!"
+      },
+      "hide_and_seek": {
+        "name": "Hide and Seek",
+        "description": "The classic game everyone loves.",
+        "instructions": "One person counts while everyone hides. The last one found wins!"
+      },
+      "tag": {
+        "name": "Tag",
+        "description": "Run as fast as you can!",
+        "instructions": "One person is 'it'. Whoever they tag becomes the new 'it'. The fun never stops!"
+      },
+      "pot_hitting": {
+        "name": "Pot Hunt",
+        "description": "Find the pot while blindfolded.",
+        "instructions": "Blindfolded and armed with a wooden spoon, find the hidden pot. A surprise is waiting underneath!"
+      },
+      "telephone": {
+        "name": "Telephone",
+        "description": "How much will the message change?",
+        "instructions": "Whisper a message down the line. At the end, compare what was sent vs. what arrived — usually hilarious!"
+      },
+      "chocolate_game": {
+        "name": "Chocolate Frenzy",
+        "description": "Roll a six and eat as fast as you can!",
+        "instructions": "Roll a 6: put on the hat, scarf, and gloves, then eat the chocolate with a knife and fork — until someone else rolls a 6!"
+      },
+      "cotton_blowing": {
+        "name": "Cotton Ball Blowing",
+        "description": "Blow the cotton ball across the table.",
+        "instructions": "Place a cotton ball in the center. Everyone tries to blow it onto the other team's side."
+      },
+      "mummy_wrap": {
+        "name": "Mummy Wrap",
+        "description": "Wrap someone in toilet paper as fast as you can.",
+        "instructions": "Teams wrap a teammate head to toe in toilet paper. The fastest team with the most impressive mummy wins!"
+      },
+      "treasure_hunt": {
+        "name": "Treasure Hunt",
+        "description": "Follow the map to the treasure!",
+        "instructions": "A treasure map leads to a series of stations, each with a clue. At the end, the treasure awaits!"
+      },
+      "mini_golf": {
+        "name": "Mini Golf",
+        "description": "Classic mini golf fun for all ages.",
+        "instructions": "Head to a mini golf course. Whoever finishes with the fewest strokes wins!"
+      },
+      "bowling": {
+        "name": "Bowling",
+        "description": "Strike! Knock down every last pin.",
+        "instructions": "Roll the ball down the lane and try to knock down all the pins. Score a point for every pin you topple!"
+      },
+      "frisbee": {
+        "name": "Frisbee",
+        "description": "Toss the disc back and forth.",
+        "instructions": "Head to the park or beach and start throwing and catching the frisbee. Simple, breezy, and a total blast!"
+      },
+      "kite_flying": {
+        "name": "Kite Flying",
+        "description": "Send colorful kites soaring into the sky.",
+        "instructions": "Find a breezy day and get your kite airborne. Who can fly it the highest? Perfect for a windy autumn afternoon!"
+      },
+      "bubble_contest": {
+        "name": "Bubble Blowing Contest",
+        "description": "Who can blow the biggest bubble?",
+        "instructions": "Grab some bubble solution and a variety of wands, then see who can make the most gigantic bubble. Pure magic for the little ones!"
+      },
+      "photo_safari": {
+        "name": "Photo Safari",
+        "description": "Snap everything on the list out in nature.",
+        "instructions": "Hand out a list of things to photograph, then head outside to hunt and snap them. Score points for every find!"
+      },
+      "geocaching": {
+        "name": "Geocaching",
+        "description": "Modern-day treasure hunting with GPS.",
+        "instructions": "Use a geocaching app to track down hidden caches in your area. A real adventure the whole family will love!"
+      },
+      "crafting": {
+        "name": "Crafting",
+        "description": "Get creative with all kinds of materials.",
+        "instructions": "Set out a spread of craft supplies and let your imagination run wild. From paintings to handmade jewelry — anything goes!"
+      },
+      "talent_show": {
+        "name": "Talent Show",
+        "description": "Show off your hidden talents!",
+        "instructions": "Everyone prepares a short act, then performs for the crowd. The winner gets voted on at the end. Absolutely anything is allowed!"
+      },
+      "millionaire_family": {
+        "name": "Who Wants to Be a Millionaire (Family Edition)",
+        "description": "The ultimate quiz-show format for the whole family.",
+        "instructions": "Questions get tougher as you climb the ladder. Lifelines are fair game: Phone a Friend, 50/50, Ask the Audience!"
+      },
+      "escape_room_family": {
+        "name": "Family Escape Room",
+        "description": "Solve the puzzles together and break free!",
+        "instructions": "Pick up an at-home escape room kit or visit one near you. Work together to crack every puzzle before the clock runs out!"
+      },
+      "treehouse_build": {
+        "name": "Build a Treehouse",
+        "description": "A fun shared project for the whole family.",
+        "instructions": "Plan and build your very own treehouse together. Spread it across a few weekends and enjoy an amazing result everyone can be proud of!"
+      },
+      "marriage_test": {
+        "name": "Marriage Fitness Test",
+        "description": "Hilarious challenges put couple skills to the test.",
+        "instructions": "The couple must tackle a series of fun challenges: changing a diaper, feeding each other blindfolded, and more!"
+      },
+      "balloon_dancing": {
+        "name": "Balloon Dancing",
+        "description": "Dance as a pair with a balloon squeezed between you.",
+        "instructions": "Couples dance with a balloon held between them. If it drops or pops, that couple is out!"
+      },
+      "bouquet_toss": {
+        "name": "Bouquet Toss",
+        "description": "Which lucky single lady will catch the bouquet?",
+        "instructions": "All unmarried women gather on the dance floor. The bride tosses the bouquet over her shoulder — whoever catches it is next to walk down the aisle!"
+      },
+      "garter_toss": {
+        "name": "Garter Toss",
+        "description": "The groom takes his shot at the single guys.",
+        "instructions": "The groom removes the bride's garter and tosses it into the crowd of single men — who will be the lucky one?"
+      },
+      "wedding_abc": {
+        "name": "Wedding ABC",
+        "description": "A wish or piece of advice for every letter of the alphabet.",
+        "instructions": "Guests write a wish or piece of advice for the couple for each letter of the alphabet — from A all the way to Z!"
+      },
+      "guest_lottery": {
+        "name": "Guest Lottery",
+        "description": "Every guest has a shot at amazing prizes!",
+        "instructions": "Lottery tickets are handed out upon arrival. Throughout the evening, lucky winners are drawn for prizes!"
+      },
+      "wish_tree": {
+        "name": "Wishing Tree",
+        "description": "Hang your wishes on the tree.",
+        "instructions": "Guests write heartfelt messages on little cards and hang them on a decorative tree — a beautiful keepsake and stunning decoration in one!"
+      },
+      "date_night_jar": {
+        "name": "Date Night Jar",
+        "description": "Fun ideas for future date nights.",
+        "instructions": "Guests jot down date ideas on slips of paper and drop them into a jar. The couple picks one out whenever they need date night inspiration!"
+      },
+      "advice_cards": {
+        "name": "Advice Cards",
+        "description": "Words of wisdom straight from the guests.",
+        "instructions": "Cards with space for heartfelt advice are laid out for guests to fill in. The couple reads them together later for a touching keepsake."
+      },
+      "couple_quiz": {
+        "name": "Couple Quiz",
+        "description": "How well do the guests really know the couple?",
+        "instructions": "Questions about the couple are read aloud and guests write down their answers. Whoever knows the most wins the crown!"
+      },
+      "wedding_limbo": {
+        "name": "Wedding Limbo",
+        "description": "How low can you go in your finest outfit?",
+        "instructions": "The limbo bar keeps getting lower and lower. Last one to make it through without falling wins the glory!"
+      },
+      "musical_chairs_wedding": {
+        "name": "Musical Chairs",
+        "description": "The classic party game hits the dance floor!",
+        "instructions": "Arrange chairs in a circle — always one fewer than the number of players. When the music stops, grab a seat fast!"
+      },
+      "conga_line": {
+        "name": "Conga Line",
+        "description": "Everyone in a line, dancing through the party!",
+        "instructions": "Crank up the music, put your hands on the shoulders of the person in front, and let the conga snake through the whole venue!"
+      },
+      "wedding_karaoke": {
+        "name": "Wedding Karaoke",
+        "description": "Sing your heart out for the happy couple!",
+        "instructions": "Set up a karaoke machine and let guests serenade the newlyweds. Bonus points for bravery — boldness will be rewarded!"
+      },
+      "first_dance_game": {
+        "name": "First Dance Surprise",
+        "description": "A surprise twist on the first dance.",
+        "instructions": "The first dance gets a fun upgrade — surprise style changes, genre switches, or a fully choreographed routine that wows the crowd!"
+      },
+      "wedding_photo_challenge": {
+        "name": "Photo Challenge",
+        "description": "Capture specific moments on camera.",
+        "instructions": "A list of scenes to photograph. Guests snap the shots and share them!"
+      },
+      "guest_interview": {
+        "name": "Guest Interviews",
+        "description": "Video messages from the guests.",
+        "instructions": "A camera is set up and ready to go. Guests get interviewed and record their personal video messages!"
+      },
+      "love_story_reading": {
+        "name": "Reading the Love Story",
+        "description": "The couple's story gets told.",
+        "instructions": "The best man, maid of honor, or family members share how the couple first met."
+      },
+      "wedding_tombola": {
+        "name": "Wedding Raffle",
+        "description": "Buy tickets, win prizes!",
+        "instructions": "Tickets go on sale and prizes are drawn. The proceeds can be donated to a good cause!"
+      },
+      "bridal_shoe_hiding": {
+        "name": "Hide the Bridal Shoe",
+        "description": "The shoe gets hidden and must be ransomed back.",
+        "instructions": "Kids or guests hide the bride's shoe. The groom has to 'buy it back' to get it!"
+      },
+      "piggy_bank_game": {
+        "name": "Piggy Bank Game",
+        "description": "Guests toss coins into piggy banks.",
+        "instructions": "Two piggy banks: 'Who does the dishes?' – 'Who takes out the trash?'. Guests vote with their coins!"
+      },
+      "wedding_bet": {
+        "name": "Wedding Bets",
+        "description": "Place bets on the happy couple.",
+        "instructions": "Guests bet on it all: Who cries first? When does the cake topple? Who's the last one dancing?"
+      },
+      "song_request_cards": {
+        "name": "Song Request Cards",
+        "description": "Guests request their favorite songs.",
+        "instructions": "Cards are laid out for guests to write down their song requests. The DJ plays them all!"
+      },
+      "wedding_time_capsule": {
+        "name": "Wedding Time Capsule",
+        "description": "Memories sealed away for the future.",
+        "instructions": "Guests and the couple place their memories into a capsule. Open it on your 10th anniversary!"
+      },
+      "congratulation_line": {
+        "name": "Congratulations Line",
+        "description": "An organized way for all guests to offer their congratulations.",
+        "instructions": "Guests line up one by one to offer a quick congrats. A host keeps things moving along!"
+      },
+      "speed_meeting": {
+        "name": "Speed Meeting",
+        "description": "Get to know people fast with a rotating format.",
+        "instructions": "Like speed dating, but just for getting to know each other. 2 minutes per person, then rotate!"
+      },
+      "human_bingo": {
+        "name": "Getting-to-Know-You Bingo",
+        "description": "Find people who match the descriptions on your card.",
+        "instructions": "Bingo cards filled with traits ('Has a pet', 'Speaks 3 languages'). Find someone who fits each one!"
+      },
+      "find_someone_who": {
+        "name": "Find Someone Who…",
+        "description": "Seek out people with specific traits.",
+        "instructions": "A list of criteria to work through. Find someone who matches each one and get their signature!"
+      },
+      "common_ground": {
+        "name": "Find Common Ground",
+        "description": "What do we all have in common?",
+        "instructions": "In small groups: find as many things you have in common as possible. The group with the most wins!"
+      },
+      "story_cubes": {
+        "name": "Story Cubes",
+        "description": "Roll the dice and spin a tale.",
+        "instructions": "Roll the picture dice and weave a story from whatever symbols come up!"
+      },
+      "name_ball": {
+        "name": "Name Ball",
+        "description": "Learn everyone's name with a toss.",
+        "instructions": "Call out someone's name and toss the ball to them. They call the next name!"
+      },
+      "word_association": {
+        "name": "Word Association",
+        "description": "Lightning-fast word tennis.",
+        "instructions": "One person says a word, the next says the first thing that pops into their head. No repeats!"
+      },
+      "personality_quiz": {
+        "name": "Personality Quiz",
+        "description": "Discover your personality types.",
+        "instructions": "Take a quick personality test, then compare and discuss your results!"
+      },
+      "desert_island": {
+        "name": "Desert Island",
+        "description": "What would you bring along?",
+        "instructions": "Everyone picks 3–5 items they'd take to a desert island and explains why. You'll learn so much about each other!"
+      },
+      "would_you_rather": {
+        "name": "Would You Rather...?",
+        "description": "Tough choices between two options.",
+        "instructions": "Take turns asking questions. Everyone must choose and explain their pick!"
+      },
+      "rose_bud_thorn": {
+        "name": "Rose, Bud, Thorn",
+        "description": "Share your highlights, hopes, and challenges.",
+        "instructions": "Everyone shares: a Rose (something good), a Bud (a hope), and a Thorn (a challenge)."
+      },
+      "hot_seat": {
+        "name": "Hot Seat",
+        "description": "All questions are aimed at one person.",
+        "instructions": "One person takes the 'hot seat' and answers questions from the group. Honesty is everything!"
+      },
+      "one_word_story": {
+        "name": "One-Word Story",
+        "description": "Build a story together — one word at a time.",
+        "instructions": "Go around and each person adds one word. Together you'll create a (usually hilarious) story!"
+      },
+      "human_knot": {
+        "name": "Human Knot",
+        "description": "Untangle yourselves without letting go!",
+        "instructions": "Everyone stands in a circle and grabs two random hands. Then untangle the knot without letting go!"
+      },
+      "alphabet_introduction": {
+        "name": "Alphabet Introductions",
+        "description": "Introduce yourself with an adjective and your name.",
+        "instructions": "Everyone introduces themselves with an adjective that starts with the same letter as their name!"
+      },
+      "interview_pairs": {
+        "name": "Interview Pairs",
+        "description": "Interview each other and introduce your partner.",
+        "instructions": "Pair up, interview each other, then introduce your partner to the whole group!"
+      },
+      "favorites_lineup": {
+        "name": "Favorites Lineup",
+        "description": "Line up according to your preferences.",
+        "instructions": "Line up based on the prompts: from 'early bird' to 'night owl', from 'pizza lover' to 'sushi fan'!"
+      },
+      "emoji_introduction": {
+        "name": "Emoji Introduction",
+        "description": "Describe yourself using emojis.",
+        "instructions": "Pick 3–5 emojis that describe you. Then explain your choices to the group!"
+      },
+      "show_and_tell": {
+        "name": "Show and Tell",
+        "description": "Share something personal that means a lot to you.",
+        "instructions": "Everyone brings along a meaningful object and shares the story behind it!"
+      },
+      "trust_fall": {
+        "name": "Trust Fall",
+        "description": "Fall backward — your team will catch you.",
+        "instructions": "One person falls backward and the group catches them. A great way to build trust!"
+      },
+      "blind_drawing": {
+        "name": "Blind Drawing",
+        "description": "Draw by following instructions — without seeing a thing!",
+        "instructions": "One person describes what to draw. The other draws it completely blindfolded!"
+      },
+      "marshmallow_challenge": {
+        "name": "Marshmallow Challenge",
+        "description": "Build the tallest tower using spaghetti and a marshmallow.",
+        "instructions": "Use spaghetti, tape, and string to build a tower. A marshmallow must sit right on top!"
+      },
+      "egg_drop": {
+        "name": "Egg Drop Challenge",
+        "description": "Protect an egg from the fall.",
+        "instructions": "Build a protective casing for an egg using available materials. Then drop it from height. Will the egg survive?"
+      },
+      "minefield": {
+        "name": "Minefield",
+        "description": "Guide your partner through obstacles — blindfolded.",
+        "instructions": "One partner is blindfolded, the other can only give verbal instructions. Don't touch the obstacles!"
       }
     },
     "themes": {
@@ -284,6 +854,221 @@
         "name": "Mexican Fiesta",
         "description": "Colorful, tacos and mariachi",
         "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!"
+      },
+      "90s_throwback": {
+        "name": "90s Throwback",
+        "description": "Grunge, boy bands, and the very first mobile phones",
+        "tips": "Use album covers as decorations, break out the Walkman props, and queue up everything from Backstreet Boys to Nirvana!"
+      },
+      "disco_fever": {
+        "name": "Disco Fever",
+        "description": "Glitter, disco balls, and all the funk",
+        "tips": "Hang a disco ball, scatter some glitter, and spin a Saturday Night Fever playlist!"
+      },
+      "white_party": {
+        "name": "White Party",
+        "description": "All-white everything — elegant and summery",
+        "tips": "White decorations, white flowers, light-colored cocktails, and chilled lounge music!"
+      },
+      "black_tie": {
+        "name": "Black Tie Gala",
+        "description": "Formal and elegant — tuxedos and evening gowns",
+        "tips": "Champagne, classical music, and stunning table decorations!"
+      },
+      "hollywood_glam": {
+        "name": "Hollywood Glamour",
+        "description": "Roll out the red carpet and let the star power shine",
+        "tips": "Red carpet entrance, a paparazzi corner, golden decor, and a movie soundtrack playlist!"
+      },
+      "masquerade_ball": {
+        "name": "Masquerade Ball",
+        "description": "Mysterious elegance with Venetian masks",
+        "tips": "Venetian masks, candlelight, and velvet decor in deep burgundy and gold — sophisticated and utterly mysterious."
+      },
+      "oktoberfest": {
+        "name": "Oktoberfest",
+        "description": "O'zapft is! Bavarian coziness at its finest",
+        "tips": "Beer benches, pretzels, white sausage, brass band music, and lederhosen/dirndl dress code!"
+      },
+      "festival_style": {
+        "name": "Festival Style",
+        "description": "Outdoor festival vibes with flower crowns",
+        "tips": "Boho decor, fairy lights, chill-out corners, and live music or a DJ!"
+      },
+      "bbq_grill": {
+        "name": "BBQ & Grill",
+        "description": "Grilling with friends and family",
+        "tips": "Grill, garden bench, string lights, and all the BBQ classics!"
+      },
+      "garden_party": {
+        "name": "Garden Party",
+        "description": "An elegant celebration in the great outdoors",
+        "tips": "Floral decor, parasols, picnic baskets, and light bites!"
+      },
+      "game_night": {
+        "name": "Game Night",
+        "description": "Board games and card games for everyone",
+        "tips": "Cozy seating areas, tons of games, snacks, and drinks!"
+      },
+      "cocktail_party": {
+        "name": "Cocktail Party",
+        "description": "Fancy drinks and polished conversation",
+        "tips": "A bar station, cocktail menu, jazz music, and elegant appetizers!"
+      },
+      "wine_cheese": {
+        "name": "Wine & Cheese",
+        "description": "Wine tasting paired with fine cheeses",
+        "tips": "A variety of wines, a cheese board, grapes, and soft background music!"
+      },
+      "spa_day": {
+        "name": "Spa Day",
+        "description": "Wellness and total pampering",
+        "tips": "Robes, face masks, cucumber slices, and relaxing music!"
+      },
+      "adventure_theme": {
+        "name": "Adventure Theme",
+        "description": "Outdoor action and adrenaline",
+        "tips": "Camping decor, outdoor gear, and nature sounds!"
+      },
+      "camping": {
+        "name": "Camping",
+        "description": "Pure nature under a starlit sky",
+        "tips": "Tents, a campfire, toasted marshmallow sticks, and acoustic guitar music!"
+      },
+      "road_trip": {
+        "name": "Road Trip",
+        "description": "Freedom on the open road",
+        "tips": "Maps, vintage suitcases, and the ultimate road trip playlist!"
+      },
+      "city_break": {
+        "name": "City Break",
+        "description": "Urban flair and sightseeing",
+        "tips": "City posters, urban snacks, and a city-vibes playlist!"
+      },
+      "beach_house": {
+        "name": "Beach House",
+        "description": "Summer days by the sea",
+        "tips": "Seashells, surfboards as decor, beach vibes, and the sound of waves!"
+      },
+      "ski_lodge": {
+        "name": "Ski Lodge",
+        "description": "Cozy lodge night after a day on the slopes",
+        "tips": "Faux-fur throws, mulled wine, crackling fire vibes, and après-ski bangers!"
+      },
+      "lake_house": {
+        "name": "Lake House",
+        "description": "Pure relaxation by the water",
+        "tips": "Nautical décor, canoes, golden-hour sunsets, and chill-out tunes!"
+      },
+      "cabin_woods": {
+        "name": "Forest Cabin",
+        "description": "Cozy and close to nature",
+        "tips": "Candles, blankets, forest soundscapes, and snug little nooks!"
+      },
+      "superhero": {
+        "name": "Superhero Party",
+        "description": "Come as your favorite superhero!",
+        "tips": "Capes required, comic-book décor, and an epic superhero playlist!"
+      },
+      "pirates": {
+        "name": "Pirate Adventure",
+        "description": "Ahoy! Treasure hunts and rum",
+        "tips": "Treasure maps, eye patches, rum cocktails, and Jolly Roger flags!"
+      },
+      "murder_mystery_theme": {
+        "name": "Murder Mystery",
+        "description": "A murder has been committed — who did it?",
+        "tips": "Dim lighting, mysterious music, costumes, and clue cards!"
+      },
+      "neon_glow": {
+        "name": "Neon Glow",
+        "description": "Glowing colors under black light",
+        "tips": "Black lights, neon colors, glow-in-the-dark accessories, and EDM!"
+      },
+      "french_riviera": {
+        "name": "French Riviera",
+        "description": "Côte d'Azur elegance",
+        "tips": "Blue-and-white stripes, lavender, rosé, and chansons!"
+      },
+      "italian_dolce_vita": {
+        "name": "Italian Dolce Vita",
+        "description": "La Dolce Vita with Vespa flair and Mediterranean charm",
+        "tips": "Vespa décor, olive branches, Chianti bottles, and sunflowers for that true Italian zest for life."
+      },
+      "greek_island": {
+        "name": "Greek Island",
+        "description": "Santorini vibes in blue and white",
+        "tips": "Blue-and-white décor, olives, feta, and bouzouki music!"
+      },
+      "spanish_flamenco": {
+        "name": "Spanish Flamenco",
+        "description": "Passion and fiery temperament",
+        "tips": "Red and black, fans, tapas, and flamenco music!"
+      },
+      "irish_pub": {
+        "name": "Irish Pub",
+        "description": "As warm and welcoming as Dublin",
+        "tips": "Green everywhere, Guinness, whiskey, and Irish folk music!"
+      },
+      "british_royal": {
+        "name": "British Royal",
+        "description": "Royal elegance fit for the Windsors",
+        "tips": "Union Jacks, tea, scones, and quintessential British sophistication!"
+      },
+      "asian_zen": {
+        "name": "Asian Zen",
+        "description": "Tranquility and harmony from the Far East",
+        "tips": "Bamboo, lotus blossoms, green tea, and meditative music!"
+      },
+      "under_the_stars": {
+        "name": "Under the Stars",
+        "description": "A romantic night beneath a sparkling starlit sky",
+        "tips": "String lights, star and moon decorations, and cozy blankets under the open sky."
+      },
+      "vintage_tea_party": {
+        "name": "Vintage Tea Party",
+        "description": "A charming tea gathering with a vintage twist",
+        "tips": "Vintage teapots, florals, lace, and pastel hues for irresistible nostalgic charm."
+      },
+      "art_deco": {
+        "name": "Art Deco",
+        "description": "Geometric elegance straight from the 1920s",
+        "tips": "Golden accents, geometric patterns, and jazz music — it's the bee's knees!"
+      },
+      "boho_chic": {
+        "name": "Boho Chic",
+        "description": "Free-spirited and deeply connected to nature",
+        "tips": "Macramé, dreamcatchers, earthy tones, and indie music!"
+      },
+      "rustic_farm": {
+        "name": "Barn Party",
+        "description": "Cozy countryside charm in a rustic barn setting",
+        "tips": "Hay bales, wooden crates, wildflowers, and country music!"
+      },
+      "minimalist_modern": {
+        "name": "Minimalist Modern",
+        "description": "Clean lines and effortless elegance",
+        "tips": "Clean lines, white blooms, and a single bold statement piece — less is definitely more."
+      },
+      "bohemian_sunset": {
+        "name": "Bohemian Sunset",
+        "description": "Warm boho vibes in gorgeous sunset hues",
+        "tips": "Sunflowers, terracotta, throw pillows, and boho rugs in rich, warm sunset tones."
+      },
+      "industrial_chic": {
+        "name": "Industrial Chic",
+        "description": "Cool loft aesthetic with metal accents and Edison bulbs",
+        "tips": "Metal, Edison bulbs, concrete, and wood for that raw, irresistible loft vibe."
+      },
+      "karibik": {
+        "name": "Caribbean",
+        "description": "A tropical island paradise with serious beach vibes",
+        "tips": "Palm trees, seashells, hammocks, and tiki décor for the ultimate Caribbean getaway feel."
+      },
+      "sports_day": {
+        "name": "Sports Day",
+        "description": "Olympic-style fun and friendly athletic competitions",
+        "tips": "Jerseys, medals, playing fields, and champion-worthy snacks!"
       }
     }
   },
@@ -3782,7 +4567,12 @@
         "saison": "Seasonal",
         "kostuem": "Costume",
         "wellness": "Wellness"
-      }
+      },
+      "loadMore": "Load more",
+      "playableTitle": "Play instantly",
+      "playableSubtitle": "Jump right in — built into the app",
+      "playableAll": "All",
+      "playableCta": "Play"
     },
     "profile": {
       "settings": "Settings",
