@@ -27,15 +27,22 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
 
   // TV is the speaker — play the hidden preview while a round runs.
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const shouldPlay = listening && !!previewUrl && phase !== 'reveal' && phase !== 'gameOver';
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    if (listening && previewUrl && phase !== 'reveal' && phase !== 'gameOver') {
-      a.play().catch(() => { /* autoplay may be blocked until first interaction */ });
-    } else {
-      a.pause();
-    }
-  }, [listening, previewUrl, phase]);
+    if (shouldPlay) a.play().catch(() => { /* autoplay may be blocked until first interaction */ });
+    else a.pause();
+  }, [shouldPlay, previewUrl]);
+
+  // Browsers block autoplay-with-sound until the page has had a user gesture.
+  // Retry playback once on the first interaction with the TV screen.
+  useEffect(() => {
+    const unlock = () => { if (shouldPlay) audioRef.current?.play().catch(() => {}); };
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+  }, [shouldPlay]);
 
   const progress = Math.max(0, Math.min(1, timeLeft / totalTime));
 

@@ -270,26 +270,6 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   const roundTimer = useGameTimer(ROUND_SECONDS, handleTimeout);
 
-  // Beim ersten Play: Timer starten + Startzeit merken; danach play/pause.
-  // Wiedergabe läuft IMMER über die verborgene 30s-Vorschau (<audio>).
-  const togglePlay = useCallback(() => {
-    if (!listening) {
-      playStartedAtRef.current = Date.now();
-      setListening(true);
-      roundTimer.reset(ROUND_SECONDS);
-      roundTimer.start();
-      void haptics.medium();
-    }
-    const a = audioRef.current;
-    if (!a || !previewUrl) return;
-    if (a.paused) {
-      a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
-    } else {
-      a.pause();
-      setIsAudioPlaying(false);
-    }
-  }, [listening, roundTimer, haptics, previewUrl]);
-
   const replayAudio = useCallback(() => {
     const a = audioRef.current;
     if (!a || !previewUrl) return;
@@ -297,16 +277,6 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     a.play().then(() => setIsAudioPlaying(true)).catch(() => {});
     void haptics.light();
   }, [previewUrl, haptics]);
-
-  // Fallback ohne Clip: Timer manuell starten
-  const startListeningNoAudio = useCallback(() => {
-    if (listening) return;
-    playStartedAtRef.current = Date.now();
-    setListening(true);
-    roundTimer.reset(ROUND_SECONDS);
-    roundTimer.start();
-    void haptics.medium();
-  }, [listening, roundTimer, haptics]);
 
   // --- Phase 1: Tausch (Spec §2.4 #2) -------------------------------------
   const handleSwap = useCallback(() => {
@@ -490,7 +460,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setListening(true);
     roundTimer.reset(ROUND_SECONDS);
     roundTimer.start();
-  }, [listening, roundTimer]);
+    void haptics.medium();
+  }, [listening, roundTimer, haptics]);
 
   // Route a player input: offline / host → run locally; remote client → send to host.
   const act = useCallback((type: string, payload: Record<string, unknown>, run: () => void) => {
@@ -544,15 +515,25 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnline, isHost, listening]);
 
-  // Host → broadcast full snapshot + a spoiler-free TV state on every change.
+  // Host → FULL authoritative snapshot, ONLY on real game-state changes.
+  // (Deliberately NOT depending on roundTimer.timeLeft: re-sending the whole
+  // snapshot every second would spam ~60 msgs/round and trigger a re-render
+  // storm on every client. The live countdown rides in tv-state below.)
   useEffect(() => {
     if (!online || !isHost) return;
     const snapshot = {
       phase, participants, turn, song, placement, counter, counteringId, resolution,
-      flipped, bonusClaimed, bonusDecided, winTarget, genre, winner,
+      flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner,
       previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
     };
     online.broadcast('ohrwurm-state', { snapshot: JSON.parse(JSON.stringify(snapshot)) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online, isHost, phase, participants, turn, song, placement, counter, counteringId, resolution, flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected]);
+
+  // Host → TV state (spoiler-free). Carries the live countdown, so it updates
+  // per second — but ONLY the TV consumes it, so no client re-render storm.
+  useEffect(() => {
+    if (!online || !isHost) return;
     online.broadcast('tv-state', {
       game: 'ohrwurm',
       phase,
@@ -564,13 +545,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       timeLeft: roundTimer.timeLeft,
       totalTime: ROUND_SECONDS,
       winTarget,
-      // Only expose the song (and audio) details that are safe per phase:
-      previewUrl,
+      previewUrl, // TV is the speaker — title stays hidden until reveal
       reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
       winnerName: winner?.name ?? null,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [online, isHost, phase, participants, turn, song, placement, counter, counteringId, resolution, flipped, bonusClaimed, bonusDecided, winTarget, genre, winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, roundTimer.timeLeft]);
+  }, [online, isHost, phase, participants, listening, roundTimer.timeLeft, previewUrl, song, winner]);
 
   // Non-host → apply incoming snapshots.
   useEffect(() => {
@@ -587,6 +567,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       setCounteringId(s.counteringId as string | null);
       setResolution(s.resolution as RoundResolution | null);
       setFlipped(s.flipped as boolean);
+      setSwapUsed(s.swapUsed as boolean);
       setBonusClaimed(s.bonusClaimed as boolean);
       setBonusDecided(s.bonusDecided as boolean);
       setWinTarget(s.winTarget as number);

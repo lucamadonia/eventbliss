@@ -2568,17 +2568,17 @@
       "bingo_tasks": {
         "name": "Bingo Zadań",
         "description": "Każdy otrzymuje kartę bingo z zabawnymi zadaniami do wykonania w mieście.",
-        "instructions": "Stwórz karty bingo z różnymi zadaniami. Grupa chodzi po mieście próbując je wykonać. Kto pierwszy uzupełni rząd, wygrywa!"
+        "instructions": "**Przygotowanie:**\nPrzygotuj karty bingo 5×5 z 25 różnymi zadaniami. Przykłady: „Powiedzieć komplement obcej osobie”, „Zdjęcie z policjantem”, „Zaśpiewać piosenkę”. Każdy uczestnik otrzymuje kartę i długopis.\n\n**Przebieg gry:**\nGrupa przemierza miasto. Każdy stara się wykonać zadania ze swojej karty. Zaliczone pola zostają odhaczone. Pozostałi gracze mogą pełnić rolę świadków.\n\n**Zasady:**\n• Pierwsza linia (pozioma, pionowa lub po skosie) = „BINGO!”\n• Wszystkie 25 pól = „Super-BINGO!”\n• Każde zadanie musi być udokumentowane zdjęciem\n• żadnego zadania nie wolno pominąć\n\n**Warianty:**\n• Bingo drużynowe: dwie drużyny rywalizują ze sobą\n• Bingo z piciem: przy każdym odhaczonym polu wznosimy toast\n• Bingo na czas: limit 2 godzin\n\n**Wskazówki:**\nMieszaj łatwe i trudne zadania. Najlepsze karty mają dobry balans między zadaniami krępującymi a wykonalnymi!"
       },
       "beer_pong": {
         "name": "Beer Pong",
         "description": "Klasyka - wrzuć piłkę do kubków przeciwnika.",
-        "instructions": "Ustaw kubki w trójkąt. Drużyny rzucają na zmianę. Trafienie = przeciwnik pije. Drużyna bez kubków przegrywa."
+        "instructions": "**Przygotowanie:**\nUstaw po 10 kubków na każdą drużynę w formacji piramidy (4-3-2-1) po obu stronach długiego stołu. Napełnij każdy kubek do jednej trzeciej piwem. Przygotuj kubki z wodą do mycia piłeczek.\n\n**Przebieg gry:**\nDwie drużyny stoją naprzeciwko siebie. Na zmianę każdy gracz rzuca piłeczką do tenisa stołowego. Jeśli trafi do kubka, drużyna przeciwna pije i usuwa kubek.\n\n**Zasady:**\n• „On Fire”: 2+ trafienia z rzędu = rzucaj dalej\n• Zasada łokcia: łokieć za krawędzią stołu\n• „Re-Rack”: 1-2× dozwolona zmiana formacji (przy 4 lub 2 kubkach)\n• Obaj gracze trafiają = piłki wracają\n• Przeciwnik może odbić „Bounce”\n\n**Warianty:**\n• Death Cup: trafienie w jeszcze pełny kubek = natychmiastowe zwycięstwo\n• Bounce Shot: odbicie liczy podwójnie, ale można je zablokować\n• Redemption: przegrany może rzucać dalej, aż do chybienia\n\n**Wskazówki:**\nIdealny rzut ma lekki łuk. W wersji bezalkoholowej: woda w kubkach, shoty obok!"
       },
       "truth_or_dare": {
         "name": "Prawda czy Wyzwanie",
         "description": "Klasyka dla odważnych wyznań i szalonych wyzwań.",
-        "instructions": "Na zmianę każdy wybiera: Prawda lub Wyzwanie. Odmowa = kara!"
+        "instructions": "**Przygotowanie:**\nNie potrzeba specjalnych przygotowań, ale gotowe pytania i zadania ułatwiają zabawę. Butelka do kręcenia jest opcjonalna. Przygotuj napoje dla osób odmawiających.\n\n**Przebieg gry:**\nKolejno każdy wybiera: „Prawda” (szczera odpowiedź na pytanie) lub „Wyzwanie” (wykonanie zadania). Poprzedni gracz lub grupa zadaje pytanie bądź wyznacza zadanie.\n\n**Zasady:**\n• Odmowa = kara (shot, krępujące zadanie)\n• Raz na grę można zmienić wybór\n• Prawda musi być szczera (ocenia grupa)\n• Zadania nie mogą nikomu zagrażać\n\n**Warianty:**\n• Edycja wieczoru kawalerskiego/panieńskiego: wszystkie pytania i zadania na temat związków\n• Hardcore: tylko wyzwania, bez prawdy\n• Wersja z kostką: parzysta = prawda, nieparzysta = wyzwanie\n\n**Wskazówki:**\nZacznij od niewinnych pytań i stopniowo podkręcaj poziom. Najlepsze wyzwania są krępujące, ale bezpieczne. Szanujcie swoje granice!"
       },
       "karaoke_battle": {
         "name": "Bitwa Karaoke",
@@ -2588,17 +2588,17 @@
       "shoe_game": {
         "name": "Gra Butów",
         "description": "Para młoda odpowiada na pytania butami.",
-        "instructions": "Para siedzi tyłem do siebie, każdy z własnym butem i butem partnera. Na pytania unoszą but tego, kogo dotyczy odpowiedź."
+        "instructions": "**Przygotowanie:**\nPara siada plecami do siebie na krzesłach. Każda osoba trzyma jeden swój but i jeden but partnera. Moderator ma listę 20-30 pytań.\n\n**Przebieg gry:**\nModerator zadaje pytania („Kto lepiej gotuje?”). Para unosi but osoby, której dotyczy odpowiedź — bez wcześniejszego uzgadniania.\n\n**Zasady:**\n• żadnego uzgadniania!\n• Przy jednakowej odpowiedzi: pocałunek\n• Przy różnej odpowiedzi: krótkie wyjaśnienie\n• 3 razy różna odpowiedź: zadanie karne\n\n**Warianty:**\n• Głosowanie gości: publiczność zgaduje razem z parą\n• Wersja z piciem: różne odpowiedzi = oboje piją\n• Wersja z historyjkami: przy każdej odpowiedzi opowiedzieć anegdotkę\n\n**Wskazówki:**\nMieszaj zabawne pytania („Kto głośniej chrapie?”) z romantycznymi („Kto pierwszy powiedział »kocham cię«?”). Idealne na wesela!"
       },
       "scavenger_hunt": {
         "name": "Poszukiwanie Skarbów",
         "description": "Podążaj za wskazówkami i rozwiązuj zagadki.",
-        "instructions": "Ukryj wskazówki prowadzące do następnego miejsca. Na końcu czeka skarb!"
+        "instructions": "**Przygotowanie:**\nZaplanuj 8-15 stacji ze wskazówkami. Każda wskazówka prowadzi do kolejnego miejsca. Na końcu czeka „skarb”. Można grać drużynowo lub wszyscy razem.\n\n**Przebieg gry:**\nDrużyny startują z pierwszą wskazówką. Każda wskazówka to zagadka, którą trzeba rozwiązać, by znaleźć następne miejsce. Aż do mety!\n\n**Zasady:**\n• Zachowaj kolejność stacji\n• Bez pomocy osób postronnych\n• Wszyscy członkowie drużyny muszą być obecni\n• Zdjęcie na każdej stacji jako dowód\n• Pierwsza drużyna na mecie wygrywa\n\n**Warianty:**\n• Łowy fotograficzne: zamiast miejsc — zadania zdjęciowe\n• Łowy z kodami QR: wskazówki w formie cyfrowej\n• Nocne łowy: z latarkami\n\n**Wskazówki:**\nWskazówki powinny być podchwytliwe, ale do rozwiązania. Dobry miks wiedzy, szukania i kreatywności. „Skarbem” mogą być przekąski, napoje lub niespodzianka!"
       },
       "charades": {
         "name": "Kalambury",
         "description": "Zgaduj słowa pokazywane gestami.",
-        "instructions": "Gracz pokazuje pojęcie bez mówienia. Drużyna musi zgadnąć w czasie."
+        "instructions": "**Przygotowanie:**\nNapisz hasła na kartkach (filmy, celebryci, czynności). Utwórz drużyny (3-6 osób). Przygotuj timer (60-90 sekund na rundę).\n\n**Przebieg gry:**\nGracz losuje hasło i przedstawia je pantomimą — bez słów, dźwięków ani wskazywania na przedmioty. Drużyna zgaduje. Po trafieniu: kolejne hasło.\n\n**Zasady:**\n• Zakaz mówienia, nucenia i wydawania dźwięków\n• Nie wolno wskazywać na przedmioty\n• Pokazywanie sylab na palcach jest dozwolone\n• Czas na rundę: 60-90 sekund\n• Punkt za każde odgadnięte hasło\n\n**Warianty:**\n• Pantomima tematyczna: tylko filmy, tylko zawody\n• Pantomima na czas: 30 sekund na hasło\n• Odwrócona: wszyscy pokazują, jedna osoba zgaduje\n\n**Wskazówki:**\nNaucz się typowych gestów: „film” (kręcenie kamerą), „książka” (otwarte dłonie), „piosenka” (udawanie śpiewu). Im bardziej szalona interpretacja, tym śmieszniej!"
       },
       "drink_roulette": {
         "name": "Ruletka Picia",
