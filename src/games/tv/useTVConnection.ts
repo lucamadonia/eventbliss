@@ -41,6 +41,13 @@ export function useTVConnection(roomCode: string) {
       if (!gameStartedRef.current) {
         gameStartedRef.current = true;
         setGameStarted(true);
+        // Re-announce TV presence now that a game is actively broadcasting.
+        // Covers the common case where the TV joined during the lobby (before
+        // the game component's 'tv-ready' listener existed) — the host now
+        // learns a TV is connected and treats it as the speaker.
+        const readyPayload = { tvReady: true, ts: Date.now() };
+        channel.send({ type: 'broadcast', event: 'tv-ready', payload: readyPayload });
+        tvChannel.send({ type: 'broadcast', event: 'tv-ready', payload: readyPayload });
       }
     };
 
