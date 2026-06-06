@@ -51,3 +51,20 @@ export const playableGames: PlayableGame[] = [
 
 /** Set of playable game ids — handy for "is this idea card also playable?" checks. */
 export const playableGameIds = new Set(playableGames.map((g) => g.id));
+
+/**
+ * Maps a static idea-card id (from games-library.ts) to its fully integrated
+ * playable counterpart (/games/:id). When an idea is also a real in-app game,
+ * IdeasScreen surfaces a "Play" deep-link instead of just showing instructions.
+ * Only semantically identical games are mapped here.
+ */
+export const ideaToPlayable: Record<string, string> = {
+  who_am_i: "wer-bin-ich",
+  truth_or_dare: "wahrheit-pflicht",
+  taboo: "taboo",
+  pictionary: "schnellzeichner",
+  would_you_rather: "this-or-that",
+  charades: "headup",
+  one_word_story: "story-builder",
+  two_truths_lie: "fake-or-fact",
+};
