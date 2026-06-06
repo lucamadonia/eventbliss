@@ -35,6 +35,7 @@ const GAME_LIST = [
   { id: "emoji-raten", name: "Emoji-Raten", icon: "😀" },
   { id: "fake-or-fact", name: "Fake or Fact", icon: "🎲" },
   { id: "story-builder", name: "Story Builder", icon: "📖" },
+  { id: "ohrwurm", name: "Ohrwurm", icon: "🎵" },
 ];
 
 interface GameLobbyProps {

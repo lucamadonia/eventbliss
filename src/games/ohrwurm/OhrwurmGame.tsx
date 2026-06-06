@@ -24,6 +24,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { type PlaybackMode, type SpotifyBridge, spotifyModePossible, getSpotifyBridge, resolveSpotifyUri } from './playback';
 import { loadExtraSongs } from './ohrwurm-extra-songs';
 import { useTranslation } from 'react-i18next';
+import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -70,12 +72,25 @@ interface SetupPlayer { id: string; name: string; color: string; avatar: string;
 // ===========================================================================
 // Haupt-Komponente
 // ===========================================================================
-export default function OhrwurmGame() {
+export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { i18n } = useTranslation();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
+
+  // --- Online roles -------------------------------------------------------
+  // Offline (no `online` prop) → this single device is effectively the host
+  // and runs all game logic, exactly as before. Online → the room host owns
+  // the authoritative state and broadcasts it; other devices mirror it and
+  // send their inputs back as actions.
+  const isOnline = !!online;
+  const isHost = !online || online.isHost;
+  const myId = online?.myPlayerId ?? null;
+  // Whether a TV is connected to the room (host learns this via the 'tv-ready'
+  // event and shares it in the snapshot). When a TV is present it is the
+  // speaker; otherwise the active player's own phone plays the preview.
+  const [tvConnected, setTvConnected] = useState(false);
 
   // Admin-gepflegte Songs (Tabelle ohrwurm_songs) für die aktuelle Sprache
   // zur statischen Liste zuschalten.
@@ -240,6 +255,9 @@ export default function OhrwurmGame() {
 
   // --- 60s-Timer: läuft ab → Karte verfällt, nächste Person ---------------
   const handleTimeout = useCallback(() => {
+    // In online mode only the host runs the authoritative timeout; clients just
+    // mirror the clock for display.
+    if (online && !online.isHost) return;
     if (!song) return;
     stopAudio();
     setListening(false);
@@ -458,10 +476,163 @@ export default function OhrwurmGame() {
   }, []);
 
   // =========================================================================
+  // Online sync (host-authority) + TV bridge
+  // =========================================================================
+  const iAmActive = !isOnline || (!!active && myId === active.id);
+  // Which device makes sound: offline → this one; online → the TV if connected,
+  // otherwise the active player's own phone.
+  const audioDevice = !isOnline ? true : (!tvConnected && !!active && myId === active.id);
+
+  // Authoritative timer start (host owns the 60s clock).
+  const beginListening = useCallback(() => {
+    if (listening) return;
+    playStartedAtRef.current = Date.now();
+    setListening(true);
+    roundTimer.reset(ROUND_SECONDS);
+    roundTimer.start();
+  }, [listening, roundTimer]);
+
+  // Route a player input: offline / host → run locally; remote client → send to host.
+  const act = useCallback((type: string, payload: Record<string, unknown>, run: () => void) => {
+    if (isOnline && !isHost) { online!.broadcast('ohrwurm-action', { type, ...payload }); return; }
+    run();
+  }, [isOnline, isHost, online]);
+
+  // Press "play": start the shared clock + (only on the audio device) play sound.
+  const pressPlay = useCallback(() => {
+    act('listen', {}, beginListening);
+    if (!audioDevice) return;
+    const a = audioRef.current;
+    if (!a || !previewUrl) return;
+    if (a.paused) a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
+    else { a.pause(); setIsAudioPlaying(false); }
+  }, [act, beginListening, audioDevice, previewUrl]);
+
+  // Host applies actions coming from remote clients.
+  const applyAction = useCallback((data: Record<string, unknown>) => {
+    switch (data.type) {
+      case 'toPlace': setPhase('place'); break;
+      case 'toggleBonus': setBonusClaimed((v) => !v); break;
+      case 'listen': beginListening(); break;
+      case 'swap': handleSwap(); break;
+      case 'place': handlePlace(data.slot as number); break;
+      case 'chooseCounter': handleChooseCounter(data.pid as string); break;
+      case 'commitCounter': handleCommitCounter(data.slot as number); break;
+      case 'noCounter': handleNoCounter(); break;
+      case 'bonus': handleBonus(data.earned as boolean); break;
+      case 'continue': handleContinue(); break;
+      default: break;
+    }
+  }, [beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue]);
+
+  useEffect(() => {
+    if (!online || !isHost) return;
+    return online.onBroadcast('ohrwurm-action', (data) => applyAction(data));
+  }, [online, isHost, applyAction]);
+
+  // Host learns a TV joined the room (TV broadcasts 'tv-ready' on connect).
+  useEffect(() => {
+    if (!online) return;
+    return online.onBroadcast('tv-ready', () => setTvConnected(true));
+  }, [online]);
+
+  // Non-host: mirror the host's clock locally for display only (host owns timeout).
+  useEffect(() => {
+    if (!isOnline || isHost) return;
+    if (listening) { roundTimer.reset(ROUND_SECONDS); roundTimer.start(); }
+    else roundTimer.pause();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnline, isHost, listening]);
+
+  // Host → broadcast full snapshot + a spoiler-free TV state on every change.
+  useEffect(() => {
+    if (!online || !isHost) return;
+    const snapshot = {
+      phase, participants, turn, song, placement, counter, counteringId, resolution,
+      flipped, bonusClaimed, bonusDecided, winTarget, genre, winner,
+      previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
+    };
+    online.broadcast('ohrwurm-state', { snapshot: JSON.parse(JSON.stringify(snapshot)) });
+    online.broadcast('tv-state', {
+      game: 'ohrwurm',
+      phase,
+      players: participants.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.timeline.length, hooks: p.hooks })),
+      activeId: active?.id ?? null,
+      activeName: active?.name ?? '',
+      timeline: active ? active.timeline.map((s) => ({ id: s.id, year: s.year })) : [],
+      listening,
+      timeLeft: roundTimer.timeLeft,
+      totalTime: ROUND_SECONDS,
+      winTarget,
+      // Only expose the song (and audio) details that are safe per phase:
+      previewUrl,
+      reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
+      winnerName: winner?.name ?? null,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online, isHost, phase, participants, turn, song, placement, counter, counteringId, resolution, flipped, bonusClaimed, bonusDecided, winTarget, genre, winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, roundTimer.timeLeft]);
+
+  // Non-host → apply incoming snapshots.
+  useEffect(() => {
+    if (!online || isHost) return;
+    return online.onBroadcast('ohrwurm-state', (data) => {
+      const s = (data as { snapshot?: Record<string, unknown> }).snapshot;
+      if (!s) return;
+      setPhase(s.phase as Phase);
+      setParticipants(s.participants as Participant[]);
+      setTurn(s.turn as number);
+      setSong(s.song as Song | null);
+      setPlacement(s.placement as number | null);
+      setCounter(s.counter as PendingCounter | null);
+      setCounteringId(s.counteringId as string | null);
+      setResolution(s.resolution as RoundResolution | null);
+      setFlipped(s.flipped as boolean);
+      setBonusClaimed(s.bonusClaimed as boolean);
+      setBonusDecided(s.bonusDecided as boolean);
+      setWinTarget(s.winTarget as number);
+      setGenre(s.genre as string | null);
+      setWinner(s.winner as Participant | null);
+      setPreviewUrl(s.previewUrl as string | null);
+      setSpotifyUri(s.spotifyUri as string | null);
+      setListening(s.listening as boolean);
+      setPlaceElapsedMs(s.placeElapsedMs as number | null);
+      setTvConnected(s.tvConnected as boolean);
+    });
+  }, [online, isHost]);
+
+  // Offline TV bridge (party mode / TV-room channel). Online TV uses the
+  // 'tv-state' broadcast above on the game-room channel.
+  useTVGameBridge('ohrwurm', {
+    phase,
+    players: participants.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.timeline.length, hooks: p.hooks })),
+    activeId: active?.id ?? null,
+    activeName: active?.name ?? '',
+    timeline: active ? active.timeline.map((s) => ({ id: s.id, year: s.year })) : [],
+    listening,
+    timeLeft: roundTimer.timeLeft,
+    totalTime: ROUND_SECONDS,
+    winTarget,
+    previewUrl,
+    reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
+    winnerName: winner?.name ?? null,
+  }, [phase, turn, listening, roundTimer.timeLeft, participants]);
+
+  // =========================================================================
   // Render
   // =========================================================================
   if (phase === 'setup') {
-    return <OhrwurmSetup onStart={handleStart} haptics={haptics} />;
+    if (isOnline && !isHost) {
+      return <OhrwurmWaiting roomCode={online!.roomCode} />;
+    }
+    const onlineRoster: SetupPlayer[] | undefined = isOnline
+      ? online!.players.map((p, i) => ({
+          id: p.id,
+          name: p.name,
+          color: PLAYER_COLORS[i % PLAYER_COLORS.length],
+          avatar: (p.name?.trim().slice(0, 1) || '?').toUpperCase(),
+        }))
+      : undefined;
+    return <OhrwurmSetup onStart={handleStart} haptics={haptics} initialPlayers={onlineRoster} lockRoster={isOnline} />;
   }
 
   // Bonus-Bestätigung nur, wenn vorab angesagt UND die Karte gewonnen wurde.
@@ -540,6 +711,25 @@ export default function OhrwurmGame() {
 
       {/* Phase content */}
       <div className="relative z-10 flex-1 flex flex-col px-4 pb-6">
+        {/* Online: block input on devices that aren't the acting player right now. */}
+        {isOnline && (() => {
+          const canInteract = phase === 'counter'
+            ? true // every player decides about countering from their own row
+            : phase === 'counterPlace'
+              ? myId === counteringId
+              : (phase === 'draw' || phase === 'place' || phase === 'reveal')
+                ? iAmActive
+                : true;
+          if (canInteract) return null;
+          return (
+            <div className="absolute inset-0 z-30 flex items-center justify-center" style={{ background: 'rgba(22,16,31,0.55)', backdropFilter: 'blur(1px)' }}>
+              <div className="px-5 py-3 rounded-2xl text-center" style={{ background: OW.surface, border: `1px solid ${OW.primary}` }}>
+                <p className="text-sm font-bold" style={{ color: OW.text }}>{active ? `${active.name} ist dran…` : 'Warten…'}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{tvConnected ? 'Schau auf den TV' : 'Gleich bist du dran'}</p>
+              </div>
+            </div>
+          );
+        })()}
         <AnimatePresence mode="wait">
           {/* ---- DRAW: verborgen in der App anhören (30s) + 60s-Timer ---- */}
           {phase === 'draw' && song && active && (
@@ -561,7 +751,7 @@ export default function OhrwurmGame() {
                   timeLeft={roundTimer.timeLeft}
                   total={ROUND_SECONDS}
                   speedActive={listening && (ROUND_SECONDS - roundTimer.timeLeft) < 10}
-                  onPlay={togglePlay}
+                  onPlay={pressPlay}
                 />
               ) : (
                 /* Fallback: kein Clip & keine Spotify-URI → manueller Start, KEIN QR
@@ -572,7 +762,7 @@ export default function OhrwurmGame() {
                       <p className="text-sm max-w-xs" style={{ color: OW.dim }}>
                         Kein Hörclip verfügbar — Jahr schätzen oder Karte tauschen.
                       </p>
-                      <button onClick={startListeningNoAudio}
+                      <button onClick={() => act('listen', {}, beginListening)}
                         className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
                         style={{ background: OW.primary, color: OW.bg }}>
                         60s starten
@@ -600,7 +790,7 @@ export default function OhrwurmGame() {
                     <ActionChip
                       icon={Sparkles} label={bonusClaimed ? 'Bonus ✓' : 'Bonus'} tone="accent" toggle active={bonusClaimed}
                       ariaLabel="Titel und Interpret ansagen für Bonus"
-                      onClick={() => { void haptics.select(); setBonusClaimed((v) => !v); }}
+                      onClick={() => { void haptics.select(); act('toggleBonus', {}, () => setBonusClaimed((v) => !v)); }}
                     />
                     <ActionChip
                       icon={Repeat} label={swapUsed ? 'Getauscht' : 'Tauschen'} tone="secondary"
@@ -610,12 +800,12 @@ export default function OhrwurmGame() {
                       onClick={() => {
                         if (swapUsed) { flash('Tausch verbraucht'); return; }
                         if (active.hooks < 1) { flash('Kein 🎣 — kannst nicht tauschen'); return; }
-                        handleSwap();
+                        act('swap', {}, handleSwap);
                       }}
                     />
                   </div>
                   {/* Ein großer Primär-Button */}
-                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); setPhase('place'); }}
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); act('toPlace', {}, () => setPhase('place')); }}
                     className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
                     style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
                     In Timeline einordnen <ChevronRight className="w-5 h-5" />
@@ -644,7 +834,7 @@ export default function OhrwurmGame() {
                   </div>
                 )}
               </div>
-              <TimelinePlacer timeline={active.timeline} onSelect={handlePlace} accent={active.color} />
+              <TimelinePlacer timeline={active.timeline} onSelect={(slot) => act('place', { slot }, () => handlePlace(slot))} accent={active.color} />
             </motion.div>
           )}
 
@@ -657,9 +847,11 @@ export default function OhrwurmGame() {
               <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
                 {participants.map((p, i) => {
                   if (i === turn) return null;
-                  const canCounter = p.hooks >= 1;
+                  // Online: you can only counter as yourself.
+                  const mine = !isOnline || p.id === myId;
+                  const canCounter = p.hooks >= 1 && mine;
                   return (
-                    <button key={p.id} onClick={() => canCounter && handleChooseCounter(p.id)} disabled={!canCounter}
+                    <button key={p.id} onClick={() => canCounter && act('chooseCounter', { pid: p.id }, () => handleChooseCounter(p.id))} disabled={!canCounter}
                       className="flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all disabled:opacity-35"
                       style={{ background: OW.surface, border: `1px solid ${canCounter ? p.color : 'transparent'}` }}>
                       <Avatar p={p} />
@@ -670,7 +862,7 @@ export default function OhrwurmGame() {
                   );
                 })}
               </div>
-              <button onClick={handleNoCounter}
+              <button onClick={() => act('noCounter', {}, handleNoCounter)}
                 className="mx-auto mt-2 px-8 py-3 rounded-2xl font-bold text-sm"
                 style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>
                 Niemand kontert — auflösen
@@ -687,7 +879,7 @@ export default function OhrwurmGame() {
                 title="Karte neu platzieren"
                 sub={`In ${active.name}s Timeline — wo gehört der Song wirklich hin?`} />
               <MysteryChip />
-              <TimelinePlacer timeline={active.timeline} onSelect={handleCommitCounter}
+              <TimelinePlacer timeline={active.timeline} onSelect={(slot) => act('commitCounter', { slot }, () => handleCommitCounter(slot))}
                 accent={participants.find((p) => p.id === counteringId)?.color ?? OW.secondary} />
             </motion.div>
           )}
@@ -766,10 +958,10 @@ export default function OhrwurmGame() {
                       : 'Auflösung steht oben — die Gruppe bestätigt. Beides korrekt = +1 🎣 Bonus.'}
                   </p>
                   <div className="flex gap-3">
-                    <button onClick={() => handleBonus(true)} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>
+                    <button onClick={() => act('bonus', { earned: true }, () => handleBonus(true))} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>
                       Ja · +{speedEligible ? 2 : 1} 🎣
                     </button>
-                    <button onClick={() => handleBonus(false)} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>Nein</button>
+                    <button onClick={() => act('bonus', { earned: false }, () => handleBonus(false))} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>Nein</button>
                   </div>
                 </div>
               ) : (
@@ -779,7 +971,7 @@ export default function OhrwurmGame() {
                       Bonus verfällt — Karte nicht gewonnen.
                     </p>
                   )}
-                  <motion.button whileTap={{ scale: 0.97 }} onClick={handleContinue}
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('continue', {}, handleContinue)}
                     className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
                     style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
                     Weiter <ArrowRight className="w-5 h-5" />
@@ -1209,18 +1401,25 @@ function ResolutionSummary({ resolution, active, counter, participants }: {
 interface SetupProps {
   onStart: (cfg: OhrwurmConfig, players: SetupPlayer[]) => void;
   haptics: ReturnType<typeof useHaptics>;
+  /** Online mode: seed the roster from the room and lock it. */
+  initialPlayers?: SetupPlayer[];
+  lockRoster?: boolean;
 }
 
-function OhrwurmSetup({ onStart, haptics }: SetupProps) {
+function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: SetupProps) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'solo' | 'group'>('solo');
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
   const [playback, setPlayback] = useState<PlaybackMode>('preview');
-  const [players, setPlayers] = useState<SetupPlayer[]>([
-    { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
-    { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
-  ]);
+  const [players, setPlayers] = useState<SetupPlayer[]>(
+    initialPlayers && initialPlayers.length >= 2
+      ? initialPlayers
+      : [
+          { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
+          { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
+        ],
+  );
   // Tastatur-Sichtbarkeit (Native): fixe Start-CTA ausblenden, damit das
   // fokussierte Namensfeld nicht verdeckt wird — gleicher Event wie NativeShell.
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -1281,13 +1480,13 @@ function OhrwurmSetup({ onStart, haptics }: SetupProps) {
         <section className="mb-8">
           <PlayerSetup
             players={players}
-            onAdd={addPlayer}
-            onRemove={removePlayer}
-            onRename={renamePlayer}
-            min={MIN}
-            max={MAX}
+            onAdd={lockRoster ? () => {} : addPlayer}
+            onRemove={lockRoster ? () => {} : removePlayer}
+            onRename={lockRoster ? () => {} : renamePlayer}
+            min={lockRoster ? players.length : MIN}
+            max={lockRoster ? players.length : MAX}
             accent={OW.primary}
-            label={mode === 'group' ? 'Gruppen' : 'Spieler'}
+            label={lockRoster ? 'Im Raum' : (mode === 'group' ? 'Gruppen' : 'Spieler')}
             maxNameLength={16}
           />
         </section>
@@ -1396,5 +1595,28 @@ function GenrePill({ label, active, onClick }: { label: string; active: boolean;
       style={{ background: active ? OW.secondary : OW.surface, color: active ? OW.bg : OW.dim, border: `1px solid ${active ? OW.secondary : 'transparent'}` }}>
       {label}
     </button>
+  );
+}
+
+/** Online guests wait here until the host starts the game (first state arrives). */
+function OhrwurmWaiting({ roomCode }: { roomCode: string }) {
+  return (
+    <div className="relative min-h-[100dvh] flex flex-col items-center justify-center gap-5 px-8 text-center font-game" style={{ background: OW.bg, color: OW.text }}>
+      <style>{OW_STYLE}</style>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full blur-[130px]" style={{ background: 'rgba(255,46,136,0.12)' }} />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full blur-[130px]" style={{ background: 'rgba(38,224,196,0.10)' }} />
+      </div>
+      <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'rgba(255,46,136,0.12)', border: `1px solid ${OW.primary}` }}>
+        <Music2 className="w-8 h-8" style={{ color: OW.primary }} />
+      </div>
+      <h1 className="relative text-3xl font-black ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</h1>
+      <div className="relative flex items-center gap-2 text-sm font-bold" style={{ color: OW.secondary }}>
+        <Loader2 className="w-4 h-4 animate-spin" /> Warte auf den Host…
+      </div>
+      <p className="relative text-xs" style={{ color: OW.dim }}>
+        Raum <span className="font-mono font-black tracking-widest" style={{ color: OW.accent }}>{roomCode}</span> · das Spiel startet gleich
+      </p>
+    </div>
   );
 }
