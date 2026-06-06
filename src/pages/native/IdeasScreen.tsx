@@ -31,12 +31,14 @@ import {
   PartyPopper,
   Shuffle,
   ChevronRight,
+  Play,
 } from "lucide-react";
 import { gamesLibrary, type GameItem, type GameCategory } from "@/lib/games-library";
 import { themeIdeas, type ThemeItem, type ThemeCategory } from "@/lib/theme-ideas-library";
 import { useHaptics } from "@/hooks/useHaptics";
 import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
 import { PlayableGamesShelf } from "@/components/ideas/PlayableGamesShelf";
+import { ideaToPlayable } from "@/lib/playable-games";
 import { spring, staggerItem } from "@/lib/motion";
 
 // Local stagger with a much tighter cadence — the shared `stagger`
@@ -341,6 +343,8 @@ function GameItemCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
+  const navigate = useNavigate();
+  const playableId = ideaToPlayable[game.id];
 
   return (
     <motion.div
@@ -381,6 +385,21 @@ function GameItemCard({
               </span>
             </div>
           </div>
+          {playableId && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                haptics.medium();
+                navigate(`/games/${playableId}`);
+              }}
+              className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 mt-0.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-[11px] font-semibold shadow-[0_0_12px_rgba(217,70,239,0.4)] active:scale-95 transition-transform"
+            >
+              <Play className="w-3 h-3 fill-white" />
+              {t('native.ideas.playableCta', 'Spielen')}
+            </span>
+          )}
           <ChevronRight
             className={cn(
               "w-4 h-4 text-muted-foreground/60 transition-transform mt-1 flex-shrink-0",
