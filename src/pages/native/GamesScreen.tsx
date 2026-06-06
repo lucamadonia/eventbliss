@@ -2,6 +2,9 @@
  * GamesScreen — native "Play" tab. The fun factor.
  * Uses REAL game thumbnails from /images/games/{id}.webp paired with
  * canonical game IDs that match the /games/:gameId router.
+ *
+ * The playable-games registry is shared via @/lib/playable-games so the
+ * "Play" tab, the Ideas highlight shelf and party mode never drift apart.
  */
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,41 +26,9 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
+import { playableGames, type PlayableGame } from "@/lib/playable-games";
 
 type Category = "alle" | "party" | "quiz" | "wort" | "karte" | "reaktion" | "social" | "kreativ";
-
-interface GameMeta {
-  id: string;
-  nameKey: string;
-  descKey: string;
-  image: string;
-  gradient: string;
-  tier: "free" | "premium";
-  categories: Category[];
-  badge?: "Hot" | "Neu";
-}
-
-const GAMES: GameMeta[] = [
-  { id: "bomb",            nameKey: "native.gameNames.bomb",            descKey: "native.gameDescs.bomb",            image: "/images/games/bomb.webp",            gradient: "from-orange-500 to-red-600",       tier: "free",    badge: "Hot", categories: ["party", "quiz"] },
-  { id: "headup",          nameKey: "native.gameNames.headup",          descKey: "native.gameDescs.headup",          image: "/images/games/headup.webp",          gradient: "from-violet-500 to-purple-600",    tier: "free",                  categories: ["party", "wort"] },
-  { id: "taboo",           nameKey: "native.gameNames.taboo",           descKey: "native.gameDescs.taboo",           image: "/images/games/taboo.webp",           gradient: "from-cyan-500 to-blue-600",        tier: "free",                  categories: ["party", "wort"] },
-  { id: "category",        nameKey: "native.gameNames.category",        descKey: "native.gameDescs.category",        image: "/images/games/category.webp",        gradient: "from-amber-500 to-orange-600",     tier: "free",                  categories: ["wort", "reaktion"] },
-  { id: "this-or-that",    nameKey: "native.gameNames.thisOrThat",      descKey: "native.gameDescs.thisOrThat",      image: "/images/games/this-or-that.webp",    gradient: "from-violet-500 to-fuchsia-600",   tier: "free",    badge: "Neu", categories: ["party", "social"] },
-  { id: "hochstapler",     nameKey: "native.gameNames.hochstapler",     descKey: "native.gameDescs.hochstapler",     image: "/images/games/hochstapler.webp",     gradient: "from-slate-600 to-gray-800",       tier: "premium", badge: "Neu", categories: ["social", "party"] },
-  { id: "wahrheit-pflicht",nameKey: "native.gameNames.wahrheitPflicht", descKey: "native.gameDescs.wahrheitPflicht", image: "/images/games/wahrheit-pflicht.webp",gradient: "from-pink-500 to-rose-600",        tier: "premium", badge: "Neu", categories: ["party", "social"] },
-  { id: "wer-bin-ich",     nameKey: "native.gameNames.werBinIch",       descKey: "native.gameDescs.werBinIch",       image: "/images/games/wer-bin-ich.webp",     gradient: "from-amber-400 to-orange-500",     tier: "premium", badge: "Neu", categories: ["social", "party"] },
-  { id: "flaschendrehen",  nameKey: "native.gameNames.flaschendrehen",  descKey: "native.gameDescs.flaschendrehen",  image: "/images/games/flaschendrehen.webp",  gradient: "from-violet-500 to-pink-500",      tier: "premium", badge: "Hot", categories: ["party", "social"] },
-  { id: "emoji-raten",     nameKey: "native.gameNames.emojiRaten",      descKey: "native.gameDescs.emojiRaten",      image: "/images/games/emoji-raten.webp",     gradient: "from-yellow-400 to-amber-500",     tier: "premium", badge: "Neu", categories: ["quiz", "kreativ"] },
-  { id: "fake-or-fact",    nameKey: "native.gameNames.fakeOrFact",      descKey: "native.gameDescs.fakeOrFact",      image: "/images/games/fake-or-fact.webp",    gradient: "from-red-500 to-rose-600",         tier: "premium", badge: "Neu", categories: ["quiz", "wort"] },
-  { id: "schnellzeichner", nameKey: "native.gameNames.schnellzeichner", descKey: "native.gameDescs.schnellzeichner", image: "/images/games/schnellzeichner.webp", gradient: "from-orange-500 to-red-500",       tier: "premium", badge: "Neu", categories: ["kreativ", "party"] },
-  { id: "split-quiz",      nameKey: "native.gameNames.splitQuiz",       descKey: "native.gameDescs.splitQuiz",       image: "/images/games/split-quiz.webp",      gradient: "from-blue-500 to-indigo-700",      tier: "premium",               categories: ["quiz", "social"] },
-  { id: "geteilt-gequizzt",nameKey: "native.gameNames.geteiltGequizzt", descKey: "native.gameDescs.geteiltGequizzt", image: "/images/games/geteilt-gequizzt.webp",gradient: "from-cyan-500 to-blue-600",        tier: "premium", badge: "Neu", categories: ["quiz", "social"] },
-  { id: "story-builder",   nameKey: "native.gameNames.storyBuilder",    descKey: "native.gameDescs.storyBuilder",    image: "/images/games/story-builder.webp",   gradient: "from-teal-400 to-emerald-500",     tier: "premium", badge: "Neu", categories: ["kreativ", "wort"] },
-  { id: "wo-ist-was",      nameKey: "native.gameNames.woIstWas",        descKey: "native.gameDescs.woIstWas",        image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        tier: "premium",               categories: ["karte", "quiz"] },
-  { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium",               categories: ["wort", "reaktion"] },
-  { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        tier: "free",    badge: "Neu", categories: ["party", "quiz"] },
-];
 
 const CATEGORIES: { id: Category; labelKey: string; icon: typeof Sparkles }[] = [
   { id: "alle",     labelKey: "native.games.categories.alle",     icon: Sparkles },
@@ -80,12 +51,12 @@ export default function GamesScreen() {
   const filtered = useMemo(
     () =>
       category === "alle"
-        ? GAMES
-        : GAMES.filter((g) => g.categories.includes(category)),
+        ? playableGames
+        : playableGames.filter((g) => (g.categories as string[]).includes(category)),
     [category]
   );
 
-  const playGame = (game: GameMeta) => {
+  const playGame = (game: PlayableGame) => {
     haptics.medium();
     navigate(`/games/${game.id}`);
   };
