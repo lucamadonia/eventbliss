@@ -22,6 +22,7 @@ const TVStoryView = lazy(() => import('./games/TVStoryView'));
 const TVTabooView = lazy(() => import('./games/TVTabooView'));
 const TVCategoryView = lazy(() => import('./games/TVCategoryView'));
 const TVImpostorView = lazy(() => import('./games/TVImpostorView'));
+const TVOhrwurmView = lazy(() => import('./games/TVOhrwurmView'));
 const TVSmartFallback = lazy(() => import('./games/TVSmartFallback'));
 
 const TVFallback = (
@@ -46,8 +47,9 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'taboo' && <TVTabooView {...props} />}
       {game === 'category' && <TVCategoryView {...props} />}
       {game === 'impostor' && <TVImpostorView {...props} />}
+      {game === 'ohrwurm' && <TVOhrwurmView {...props} />}
       {/* Smart fallback for games without specific TV view */}
-      {!['bomb', 'headup', 'quickdraw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'this-or-that', 'thisorthat', 'story-builder', 'taboo', 'category', 'impostor'].includes(game) && (
+      {!['bomb', 'headup', 'quickdraw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'this-or-that', 'thisorthat', 'story-builder', 'taboo', 'category', 'impostor', 'ohrwurm'].includes(game) && (
         <TVSmartFallback gameState={gameState} />
       )}
     </Suspense>

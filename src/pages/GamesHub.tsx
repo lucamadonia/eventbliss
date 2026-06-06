@@ -358,6 +358,7 @@ const GamesHubInner = () => {
       if (gameId === "fake-or-fact") return <FakeOrFactGame online={onlineProps} />;
       if (gameId === "story-builder") return <StoryBuilderGame online={onlineProps} />;
       if (gameId === "flaschendrehen") return <BottleSpinGame online={onlineProps} />;
+      if (gameId === "ohrwurm") return <OhrwurmGame online={onlineProps} />;
       return null;
     };
 
