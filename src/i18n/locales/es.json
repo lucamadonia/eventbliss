@@ -1311,7 +1311,8 @@
       "title": "Evento aún no asegurado",
       "body": "Sin una cuenta gratuita perderás el acceso a la gestión. Vincula tu evento a tu cuenta ahora para mantener el control total.",
       "cta": "Asegurar gratis",
-      "ctaLink": "Vincular a mi cuenta"
+      "ctaLink": "Vincular a mi cuenta",
+      "claiming": "Vinculando el evento a tu cuenta…"
     }
   },
   "messages": {

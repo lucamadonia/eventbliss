@@ -1361,7 +1361,8 @@
       "title": "Etkinlik henüz güvende değil",
       "body": "Ücretsiz hesap olmadan yönetim erişimini kaybedersin. Tam kontrolü korumak için etkinliğini şimdi hesabına bağla.",
       "cta": "Ücretsiz güvene al",
-      "ctaLink": "Hesabıma bağla"
+      "ctaLink": "Hesabıma bağla",
+      "claiming": "Etkinlik hesabına bağlanıyor…"
     }
   },
   "messages": {
