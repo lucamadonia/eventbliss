@@ -4354,7 +4354,9 @@
           "license": "Carnet de conducir"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Más preguntas propias con Premium"
+        "premiumHint": "Más preguntas propias con Premium",
+        "editAnswers": "Editar respuestas",
+        "noDatesYet": "Añade al menos una fecha"
       }
     },
     "join": {

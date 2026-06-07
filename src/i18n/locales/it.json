@@ -4349,7 +4349,9 @@
           "license": "Patente di guida"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Più domande personalizzate con Premium"
+        "premiumHint": "Più domande personalizzate con Premium",
+        "editAnswers": "Modifica risposte",
+        "noDatesYet": "Aggiungi almeno una data"
       }
     },
     "join": {

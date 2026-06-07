@@ -37,7 +37,12 @@ import { useAuthContext } from "@/components/auth/AuthProvider";
 import { spring, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { MobileHeader } from "@/components/native/MobileHeader";
-import { EventQuestionsStep } from "@/components/survey/EventQuestionsStep";
+import {
+  EventQuestionsStep,
+  defaultQuestionsOptions,
+  questionsOptionsToSettings,
+  type QuestionsOptions,
+} from "@/components/survey/EventQuestionsStep";
 import {
   questionConfigForEventType,
   DEFAULT_QUESTION_CONFIG,
@@ -62,6 +67,7 @@ interface FormData {
   participants: string[];
   question_config: QuestionConfigs;
   custom_questions: CustomQuestion[];
+  options: QuestionsOptions;
 }
 
 const stepVariants = {
@@ -102,6 +108,7 @@ export default function CreateEventFlow() {
     participants: [],
     question_config: DEFAULT_QUESTION_CONFIG,
     custom_questions: [],
+    options: defaultQuestionsOptions(),
   });
 
   // Guests pick their form questions inline; logged-in users keep the current
@@ -182,6 +189,7 @@ export default function CreateEventFlow() {
                 settings: {
                   question_config: form.question_config,
                   custom_questions: form.custom_questions,
+                  ...questionsOptionsToSettings(form.options),
                 },
               },
             });
@@ -287,8 +295,8 @@ export default function CreateEventFlow() {
             )}
             {stepKeys[step - 1] === "questions" && (
               <EventQuestionsStep
-                value={{ question_config: form.question_config, custom_questions: form.custom_questions }}
-                onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions }))}
+                value={{ question_config: form.question_config, custom_questions: form.custom_questions, options: form.options }}
+                onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
                 eventType={form.event_type}
               />
             )}

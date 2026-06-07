@@ -4311,7 +4311,9 @@
           "license": "Prawo jazdy"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Więcej własnych pytań z Premium"
+        "premiumHint": "Więcej własnych pytań z Premium",
+        "editAnswers": "Edytuj odpowiedzi",
+        "noDatesYet": "Dodaj co najmniej jeden termin"
       }
     },
     "join": {

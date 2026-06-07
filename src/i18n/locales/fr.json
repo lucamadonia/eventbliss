@@ -4349,7 +4349,9 @@
           "license": "Permis de conduire"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Plus de questions personnalisées avec Premium"
+        "premiumHint": "Plus de questions personnalisées avec Premium",
+        "editAnswers": "Modifier les réponses",
+        "noDatesYet": "Ajoute au moins une date"
       }
     },
     "join": {

@@ -1,6 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npx vitest *)",
+      "Bash(CAPACITOR_BUILD=true npx vite build)",
+      "Bash(echo \"BUILD_EXIT=$?\")"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "claude-flow"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

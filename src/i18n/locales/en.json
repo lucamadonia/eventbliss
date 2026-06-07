@@ -4722,7 +4722,9 @@
           "license": "Driver license"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "More custom questions with Premium"
+        "premiumHint": "More custom questions with Premium",
+        "editAnswers": "Edit answers",
+        "noDatesYet": "Add at least one date"
       }
     },
     "join": {
