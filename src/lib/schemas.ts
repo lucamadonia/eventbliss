@@ -104,6 +104,51 @@ export const dynamicResponseSchema = z.object({
 
 export type DynamicResponseFormData = z.infer<typeof dynamicResponseSchema>;
 
+/**
+ * Builds a response schema that only REQUIRES the questions the organizer enabled
+ * via question_config. Disabled questions become optional so the form can still
+ * be submitted (they aren't rendered anyway). `attendance` is treated as always
+ * required. date_blocks stays optional (it only renders when blocks are configured).
+ */
+export function makeDynamicResponseSchema(questionConfig?: {
+  attendance?: { enabled: boolean };
+  duration?: { enabled: boolean };
+  budget?: { enabled: boolean };
+  destination?: { enabled: boolean };
+  travel?: { enabled: boolean };
+  activities?: { enabled: boolean };
+  fitness?: { enabled: boolean };
+}) {
+  const on = (k: keyof NonNullable<typeof questionConfig>) =>
+    questionConfig?.[k]?.enabled !== false; // default to required when unknown
+  const str = (msg: string) => z.string().min(1, msg);
+  const strOpt = () => z.string().optional();
+  const multi = (msg: string) =>
+    z.union([z.string().min(1, msg), z.array(z.string()).min(1, msg)]);
+  const multiOpt = () => z.union([z.string(), z.array(z.string())]).optional();
+
+  return z.object({
+    participant: z.string().min(1, "Bitte wähle deinen Namen aus"),
+    attendance: on("attendance") ? str("Bitte gib an, ob du dabei sein kannst") : strOpt(),
+    duration_pref: on("duration") ? multi("Bitte wähle deine bevorzugte Dauer") : multiOpt(),
+    date_blocks: z.array(z.string()).optional(),
+    budget: on("budget") ? multi("Bitte wähle dein Budget") : multiOpt(),
+    destination: on("destination") ? multi("Bitte wähle eine Destination") : multiOpt(),
+    travel_pref: on("travel") ? str("Bitte wähle deine Reisebereitschaft") : strOpt(),
+    preferences: on("activities")
+      ? z.array(z.string()).min(1, "Bitte wähle mindestens eine Aktivität")
+      : z.array(z.string()).optional(),
+    fitness_level: on("fitness") ? str("Bitte wähle dein Fitness-Level") : strOpt(),
+    group_code: z.string().min(1, "Gruppencode ist erforderlich").max(50, "Gruppencode zu lang"),
+    // Always-optional fields
+    partial_days: z.string().max(500, "Maximal 500 Zeichen").optional(),
+    alcohol: z.string().optional(),
+    restrictions: z.string().max(500, "Maximal 500 Zeichen").optional(),
+    suggestions: z.string().max(1000, "Maximal 1000 Zeichen").optional(),
+    de_city: z.string().max(100, "Maximal 100 Zeichen").optional(),
+  });
+}
+
 // Admin Login Schema
 export const adminLoginSchema = z.object({
   password: z.string().min(1, "Passwort ist erforderlich"),
