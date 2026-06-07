@@ -4311,7 +4311,9 @@
           "license": "Carteira de motorista"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Mais perguntas próprias com Premium"
+        "premiumHint": "Mais perguntas próprias com Premium",
+        "editAnswers": "Editar respostas",
+        "noDatesYet": "Adiciona pelo menos uma data"
       }
     },
     "join": {

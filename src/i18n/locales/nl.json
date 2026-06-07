@@ -4337,7 +4337,9 @@
           "license": "Rijbewijs"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Meer eigen vragen met Premium"
+        "premiumHint": "Meer eigen vragen met Premium",
+        "editAnswers": "Antwoorden bewerken",
+        "noDatesYet": "Voeg minstens één datum toe"
       }
     },
     "join": {

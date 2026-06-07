@@ -32,7 +32,12 @@ import { TemplateSelector } from "@/components/create-event/TemplateSelector";
 import { type EventTemplate } from "@/lib/event-templates";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/components/auth/AuthProvider";
-import { EventQuestionsStep } from "@/components/survey/EventQuestionsStep";
+import {
+  EventQuestionsStep,
+  defaultQuestionsOptions,
+  questionsOptionsToSettings,
+  type QuestionsOptions,
+} from "@/components/survey/EventQuestionsStep";
 import {
   questionConfigForEventType,
   DEFAULT_QUESTION_CONFIG,
@@ -62,6 +67,7 @@ interface EventFormData {
   custom_template?: object;
   question_config: QuestionConfigs;
   custom_questions: CustomQuestion[];
+  options: QuestionsOptions;
 }
 
 const eventTypes = [
@@ -110,6 +116,7 @@ const CreateEvent = () => {
     custom_template: undefined,
     question_config: DEFAULT_QUESTION_CONFIG,
     custom_questions: [],
+    options: defaultQuestionsOptions(),
   });
 
   const [participantInput, setParticipantInput] = useState("");
@@ -215,6 +222,7 @@ const CreateEvent = () => {
                 settings: {
                   question_config: formData.question_config,
                   custom_questions: formData.custom_questions,
+                  ...questionsOptionsToSettings(formData.options),
                 },
               },
             });
@@ -453,8 +461,8 @@ const CreateEvent = () => {
             {!isAuthenticated && (
               <div className="pt-4 mt-2 border-t border-border/40">
                 <EventQuestionsStep
-                  value={{ question_config: formData.question_config, custom_questions: formData.custom_questions }}
-                  onChange={(v) => setFormData((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions }))}
+                  value={{ question_config: formData.question_config, custom_questions: formData.custom_questions, options: formData.options }}
+                  onChange={(v) => setFormData((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
                   eventType={formData.event_type}
                 />
               </div>

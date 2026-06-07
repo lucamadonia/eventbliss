@@ -4311,7 +4311,9 @@
           "license": "Sürücü belgesi"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Premium ile daha fazla özel soru"
+        "premiumHint": "Premium ile daha fazla özel soru",
+        "editAnswers": "Yanıtları düzenle",
+        "noDatesYet": "En az bir tarih ekle"
       }
     },
     "join": {

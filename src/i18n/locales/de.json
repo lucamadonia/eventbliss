@@ -4844,7 +4844,9 @@
           "license": "Führerschein"
         },
         "premiumBadge": "Premium",
-        "premiumHint": "Mehr eigene Fragen mit Premium"
+        "premiumHint": "Mehr eigene Fragen mit Premium",
+        "editAnswers": "Antworten bearbeiten",
+        "noDatesYet": "Lege mindestens einen Termin fest"
       }
     },
     "join": {
