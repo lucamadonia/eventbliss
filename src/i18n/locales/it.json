@@ -4286,7 +4286,69 @@
         "whatsAppText": "🎉 Sei invitato!\n\nUnisciti a \"{{name}}\" per {{honoree}}!\n\n👉 {{link}}\n📝 Codice: {{code}}"
       },
       "buttonNext": "Avanti",
-      "buttonCreate": "Crea Evento"
+      "buttonCreate": "Crea Evento",
+      "questions": {
+        "title": "Quali domande?",
+        "subtitle": "Scegli cosa chiedere nel modulo. Modificabile in qualsiasi momento.",
+        "smartHint": "Suggerimento smart attivo",
+        "countSuffix": "domande",
+        "extrasTitle": "Domande extra (facoltative)",
+        "attendanceAlways": "sempre presente",
+        "groups": {
+          "basics": "Base",
+          "logistik": "Logistica",
+          "vibe": "Atmosfera"
+        },
+        "presets": {
+          "recommended": "Consigliato",
+          "minimal": "Minimale",
+          "all": "Tutte"
+        },
+        "q": {
+          "attendance": {
+            "title": "Partecipazione",
+            "desc": "Ci sei?"
+          },
+          "duration": {
+            "title": "Durata",
+            "desc": "Giorno o weekend?"
+          },
+          "date_blocks": {
+            "title": "Date",
+            "desc": "Blocchi di date possibili"
+          },
+          "budget": {
+            "title": "Budget",
+            "desc": "Budget a persona"
+          },
+          "destination": {
+            "title": "Destinazione",
+            "desc": "Dove vuoi andare?"
+          },
+          "travel": {
+            "title": "Viaggio",
+            "desc": "Pernottamento ok?"
+          },
+          "activities": {
+            "title": "Attività",
+            "desc": "Cosa volete fare?"
+          },
+          "fitness": {
+            "title": "Fitness",
+            "desc": "Quanto sportivo dev’essere?"
+          },
+          "alcohol": {
+            "title": "Alcol",
+            "desc": "Con o senza?"
+          }
+        },
+        "custom": {
+          "dietary": "Alimentazione",
+          "song": "Richiesta canzone",
+          "tshirt": "Taglia T-shirt",
+          "license": "Patente di guida"
+        }
+      }
     },
     "join": {
       "headerTitle": "Partecipa a un Evento",

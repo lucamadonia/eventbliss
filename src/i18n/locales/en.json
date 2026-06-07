@@ -4659,7 +4659,69 @@
         "whatsAppText": "🎉 You're invited!\n\nJoin \"{{name}}\" for {{honoree}}!\n\n👉 {{link}}\n📝 Code: {{code}}"
       },
       "buttonNext": "Next",
-      "buttonCreate": "Create Event"
+      "buttonCreate": "Create Event",
+      "questions": {
+        "title": "Which questions?",
+        "subtitle": "Choose what your form should ask. You can change this anytime.",
+        "smartHint": "Smart suggestion on",
+        "countSuffix": "questions",
+        "extrasTitle": "Extra questions (optional)",
+        "attendanceAlways": "always on",
+        "groups": {
+          "basics": "Basics",
+          "logistik": "Logistics",
+          "vibe": "Vibe"
+        },
+        "presets": {
+          "recommended": "Recommended",
+          "minimal": "Minimal",
+          "all": "All"
+        },
+        "q": {
+          "attendance": {
+            "title": "RSVP",
+            "desc": "Are you in?"
+          },
+          "duration": {
+            "title": "Duration",
+            "desc": "Day or weekend?"
+          },
+          "date_blocks": {
+            "title": "Dates",
+            "desc": "Possible date blocks"
+          },
+          "budget": {
+            "title": "Budget",
+            "desc": "Budget per person"
+          },
+          "destination": {
+            "title": "Destination",
+            "desc": "Where to?"
+          },
+          "travel": {
+            "title": "Travel",
+            "desc": "Overnight okay?"
+          },
+          "activities": {
+            "title": "Activities",
+            "desc": "What do you want to do?"
+          },
+          "fitness": {
+            "title": "Fitness",
+            "desc": "How active?"
+          },
+          "alcohol": {
+            "title": "Alcohol",
+            "desc": "With or without?"
+          }
+        },
+        "custom": {
+          "dietary": "Diet",
+          "song": "Song wish",
+          "tshirt": "T-shirt size",
+          "license": "Driver license"
+        }
+      }
     },
     "join": {
       "headerTitle": "Join Event",

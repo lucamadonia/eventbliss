@@ -4248,7 +4248,69 @@
         "whatsAppText": "🎉 Jesteś zaproszony!\n\nDołącz do \"{{name}}\" dla {{honoree}}!\n\n👉 {{link}}\n📝 Kod: {{code}}"
       },
       "buttonNext": "Dalej",
-      "buttonCreate": "Utwórz Wydarzenie"
+      "buttonCreate": "Utwórz Wydarzenie",
+      "questions": {
+        "title": "Jakie pytania?",
+        "subtitle": "Wybierz, o co ma pytać formularz. Zawsze możesz to zmienić.",
+        "smartHint": "Aktywna inteligentna sugestia",
+        "countSuffix": "pytania",
+        "extrasTitle": "Dodatkowe pytania (opcjonalnie)",
+        "attendanceAlways": "zawsze obecne",
+        "groups": {
+          "basics": "Podstawy",
+          "logistik": "Logistyka",
+          "vibe": "Klimat"
+        },
+        "presets": {
+          "recommended": "Zalecane",
+          "minimal": "Minimalne",
+          "all": "Wszystkie"
+        },
+        "q": {
+          "attendance": {
+            "title": "Potwierdzenie",
+            "desc": "Czy będziesz?"
+          },
+          "duration": {
+            "title": "Czas trwania",
+            "desc": "Dzień czy weekend?"
+          },
+          "date_blocks": {
+            "title": "Terminy",
+            "desc": "Możliwe bloki terminów"
+          },
+          "budget": {
+            "title": "Budżet",
+            "desc": "Budżet na osobę"
+          },
+          "destination": {
+            "title": "Cel podróży",
+            "desc": "Dokąd się wybieramy?"
+          },
+          "travel": {
+            "title": "Dojazd",
+            "desc": "Nocleg w porządku?"
+          },
+          "activities": {
+            "title": "Aktywności",
+            "desc": "Co chcecie robić?"
+          },
+          "fitness": {
+            "title": "Kondycja",
+            "desc": "Jak bardzo sportowo?"
+          },
+          "alcohol": {
+            "title": "Alkohol",
+            "desc": "Z czy bez?"
+          }
+        },
+        "custom": {
+          "dietary": "Dieta",
+          "song": "Życzenie piosenki",
+          "tshirt": "Rozmiar koszulki",
+          "license": "Prawo jazdy"
+        }
+      }
     },
     "join": {
       "headerTitle": "Dołącz do Wydarzenia",

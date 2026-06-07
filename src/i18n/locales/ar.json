@@ -4248,7 +4248,69 @@
         "whatsAppText": "🎉 أنت مدعو!\n\nانضم إلى \"{{name}}\" لـ {{honoree}}!\n\n👉 {{link}}\n📝 الرمز: {{code}}"
       },
       "buttonNext": "التالي",
-      "buttonCreate": "إنشاء الحدث"
+      "buttonCreate": "إنشاء الحدث",
+      "questions": {
+        "title": "أي أسئلة؟",
+        "subtitle": "اختر ما يسأله نموذجك. يمكن تغييره لاحقاً في أي وقت.",
+        "smartHint": "الاقتراح الذكي نشط",
+        "countSuffix": "أسئلة",
+        "extrasTitle": "أسئلة إضافية (اختياري)",
+        "attendanceAlways": "دائماً مضمّن",
+        "groups": {
+          "basics": "الأساسيات",
+          "logistik": "اللوجستيات",
+          "vibe": "الأجواء"
+        },
+        "presets": {
+          "recommended": "موصى به",
+          "minimal": "الحد الأدنى",
+          "all": "الكل"
+        },
+        "q": {
+          "attendance": {
+            "title": "التأكيد",
+            "desc": "هل ستحضر؟"
+          },
+          "duration": {
+            "title": "المدة",
+            "desc": "يوم أم عطلة نهاية أسبوع؟"
+          },
+          "date_blocks": {
+            "title": "المواعيد",
+            "desc": "فترات الموعد المحتملة"
+          },
+          "budget": {
+            "title": "الميزانية",
+            "desc": "الميزانية لكل شخص"
+          },
+          "destination": {
+            "title": "الوجهة",
+            "desc": "أين تريدون الذهاب؟"
+          },
+          "travel": {
+            "title": "التنقل",
+            "desc": "هل الإقامة مقبولة؟"
+          },
+          "activities": {
+            "title": "الأنشطة",
+            "desc": "ماذا تريدون أن تفعلوا؟"
+          },
+          "fitness": {
+            "title": "اللياقة",
+            "desc": "ما مدى النشاط البدني المطلوب؟"
+          },
+          "alcohol": {
+            "title": "الكحول",
+            "desc": "مع أم بدون؟"
+          }
+        },
+        "custom": {
+          "dietary": "النظام الغذائي",
+          "song": "طلب أغنية",
+          "tshirt": "مقاس القميص",
+          "license": "رخصة القيادة"
+        }
+      }
     },
     "join": {
       "headerTitle": "انضم إلى حدث",

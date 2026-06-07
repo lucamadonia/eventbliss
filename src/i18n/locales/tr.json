@@ -4248,7 +4248,69 @@
         "whatsAppText": "🎉 Davetlisin!\n\n\"{{name}}\" etkinliğine {{honoree}} için katıl!\n\n👉 {{link}}\n📝 Kod: {{code}}"
       },
       "buttonNext": "İleri",
-      "buttonCreate": "Etkinlik Oluştur"
+      "buttonCreate": "Etkinlik Oluştur",
+      "questions": {
+        "title": "Hangi Sorular?",
+        "subtitle": "Formunun hangi soruları sormasını istediğini seç. İstediğin zaman değiştirebilirsin.",
+        "smartHint": "Akıllı öneri aktif",
+        "countSuffix": "Soru",
+        "extrasTitle": "Ek Sorular (isteğe bağlı)",
+        "attendanceAlways": "her zaman dahil",
+        "groups": {
+          "basics": "Temel Bilgiler",
+          "logistik": "Lojistik",
+          "vibe": "Atmosfer"
+        },
+        "presets": {
+          "recommended": "Önerilen",
+          "minimal": "Minimal",
+          "all": "Tümü"
+        },
+        "q": {
+          "attendance": {
+            "title": "Katılım",
+            "desc": "Geliyor musun?"
+          },
+          "duration": {
+            "title": "Süre",
+            "desc": "Bir gün mü, hafta sonu mu?"
+          },
+          "date_blocks": {
+            "title": "Tarihler",
+            "desc": "Uygun tarih aralıkları"
+          },
+          "budget": {
+            "title": "Bütçe",
+            "desc": "Kişi başı bütçe"
+          },
+          "destination": {
+            "title": "Hedef",
+            "desc": "Nereye gidiyoruz?"
+          },
+          "travel": {
+            "title": "Ulaşım",
+            "desc": "Geceleme uygun mu?"
+          },
+          "activities": {
+            "title": "Aktiviteler",
+            "desc": "Ne yapmak istersiniz?"
+          },
+          "fitness": {
+            "title": "Fiziksel Aktivite",
+            "desc": "Ne kadar sportif olsun?"
+          },
+          "alcohol": {
+            "title": "Alkol",
+            "desc": "Alkollü mü, alkolsüz mü?"
+          }
+        },
+        "custom": {
+          "dietary": "Beslenme",
+          "song": "Şarkı isteği",
+          "tshirt": "Tişört bedeni",
+          "license": "Sürücü belgesi"
+        }
+      }
     },
     "join": {
       "headerTitle": "Etkinliğe Katıl",
