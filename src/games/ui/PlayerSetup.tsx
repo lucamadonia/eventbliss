@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Plus, Minus, User, Globe } from 'lucide-react';
+import { Plus, Minus, User, Globe, CalendarPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHaptics } from '@/hooks/useHaptics';
 import { getPlayerColor, getPlayerInitial } from './PlayerAvatars';
+import { EventParticipantPicker } from './EventParticipantPicker';
 
 // OHRWURM/Party — EINHEITLICHER „Spieler hinzufügen"-Block für ALLE Spiele.
 // Controlled: das Spiel besitzt seine Spieler-Liste weiter (players + Handler).
@@ -35,6 +36,8 @@ export interface PlayerSetupProps {
   hint?: React.ReactNode;
   /** Max-Länge der Namensfelder. Default 20. */
   maxNameLength?: number;
+  /** Wenn gesetzt: zeigt „Aus Event übernehmen" — liefert gewählte Teilnehmer-Namen. */
+  onImportNames?: (names: string[]) => void;
 }
 
 const DEFAULT_ACCENT = '#A78BFA';
@@ -50,9 +53,11 @@ export function PlayerSetup({
   label = 'Spieler',
   hint,
   maxNameLength = 20,
+  onImportNames,
 }: PlayerSetupProps) {
   const haptics = useHaptics();
   const reduce = useReducedMotion();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const atMax = players.length >= max;
   const canRemove = players.length > min;
@@ -162,7 +167,28 @@ export function PlayerSetup({
             </motion.button>
           )}
         </AnimatePresence>
+
+        {/* Aus Event übernehmen — Teilnehmer eines eigenen Events laden */}
+        {onImportNames && !atMax && (
+          <button
+            type="button"
+            onClick={() => { void haptics.light(); setPickerOpen(true); }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-[var(--accent)] bg-[var(--accent)]/10 border border-[var(--accent)]/25 transition-colors hover:bg-[var(--accent)]/15"
+          >
+            <CalendarPlus className="w-4 h-4" />
+            Aus Event übernehmen
+          </button>
+        )}
       </div>
+
+      {onImportNames && (
+        <EventParticipantPicker
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onSelect={(names) => onImportNames(names)}
+          accent={accent}
+        />
+      )}
     </section>
   );
 }

@@ -1422,6 +1422,23 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
   const renamePlayer = (id: string, name: string) =>
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name, avatar: name.slice(0, 1).toUpperCase() || '?' } : p)));
 
+  const importNames = (names: string[]) => {
+    setPlayers((prev) => {
+      const kept = prev.filter((p) => p.name.trim() && !/^(Spieler|Gruppe) \d+$/.test(p.name.trim()) && p.name.trim() !== 'Du');
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= MAX) break;
+        const idx = merged.length;
+        merged.push({ id: `imp-${idx}-${n}`, name: n, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: (n.trim().slice(0, 1) || '?').toUpperCase() });
+      }
+      while (merged.length < MIN) {
+        const idx = merged.length;
+        merged.push({ id: `p-${idx + 1}`, name: `Spieler ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
+      }
+      return merged;
+    });
+  };
+
   const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
   const start = () => {
     if (!canStart) return;
@@ -1464,6 +1481,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
             onAdd={lockRoster ? () => {} : addPlayer}
             onRemove={lockRoster ? () => {} : removePlayer}
             onRename={lockRoster ? () => {} : renamePlayer}
+            onImportNames={lockRoster ? undefined : importNames}
             min={lockRoster ? players.length : MIN}
             max={lockRoster ? players.length : MAX}
             accent={OW.primary}
