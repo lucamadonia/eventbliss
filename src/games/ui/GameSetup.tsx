@@ -126,6 +126,21 @@ export function GameSetup({
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
+  // Import participant names from one of the user's events. Replaces the
+  // default "Spieler N" placeholders, keeps already-named players, caps at max.
+  const handleImportNames = useCallback((names: string[]) => {
+    setPlayers((prev) => {
+      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= maxPlayers) break;
+        merged.push(createPlayer(n));
+      }
+      while (merged.length < minPlayers) merged.push(createPlayer(`Spieler ${merged.length + 1}`));
+      return merged;
+    });
+  }, [maxPlayers, minPlayers]);
+
   // Für den einheitlichen PlayerSetup-Block: echte Online-Spieler sind read-only
   // (ihr Name ist auf deren eigenem Gerät maßgeblich); lokale/Party-Spieler editierbar.
   const setupPlayers: PlayerSetupPlayer[] = players.map((p) => {
@@ -166,6 +181,7 @@ export function GameSetup({
           onAdd={addPlayer}
           onRemove={removePlayer}
           onRename={updateName}
+          onImportNames={hasOnline ? undefined : handleImportNames}
           min={minPlayers}
           max={maxPlayers}
           accent="#df8eff"

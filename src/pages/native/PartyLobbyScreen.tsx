@@ -8,11 +8,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Minus, Trophy, Users, Tv, Crown, Gamepad2,
-  X, ChevronRight, RotateCcw, Sparkles,
+  X, ChevronRight, RotateCcw, Sparkles, CalendarPlus,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePartySession, PLAYER_COLORS } from "@/hooks/usePartySession";
 import { PartyGamePicker } from "@/components/native/PartyGamePicker";
+import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/platform";
@@ -29,6 +30,7 @@ export default function PartyLobbyScreen() {
   const party = usePartySession();
   const [newName, setNewName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
+  const [showEventPicker, setShowEventPicker] = useState(false);
   const [showFinalLeaderboard, setShowFinalLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -51,6 +53,12 @@ export default function PartyLobbyScreen() {
     party.addPlayer(trimmed);
     setNewName("");
   }, [newName, haptics, party]);
+
+  const handleImportNames = useCallback((names: string[]) => {
+    const free = 12 - (party.session?.players.length ?? 0);
+    names.slice(0, Math.max(0, free)).forEach((n) => party.addPlayer(n));
+    haptics.success();
+  }, [party, haptics]);
 
   const handleRemovePlayer = useCallback(
     (id: string) => {
@@ -236,7 +244,25 @@ export default function PartyLobbyScreen() {
               </motion.button>
             </motion.div>
           )}
+
+          {/* Aus Event übernehmen */}
+          {players.length < 12 && (
+            <button
+              type="button"
+              onClick={() => setShowEventPicker(true)}
+              className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-primary bg-primary/10 border border-primary/25"
+            >
+              <CalendarPlus className="w-4 h-4" />
+              Aus Event übernehmen
+            </button>
+          )}
         </section>
+
+        <EventParticipantPicker
+          open={showEventPicker}
+          onClose={() => setShowEventPicker(false)}
+          onSelect={handleImportNames}
+        />
 
         {/* TV Connection */}
         {party.tvCode && (

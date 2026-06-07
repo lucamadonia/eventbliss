@@ -36,6 +36,14 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
     onUpdate({ players: next });
   };
 
+  const importNames = (names: string[]) => {
+    const kept = state.players.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
+    const merged = [...kept];
+    for (const n of names) { if (merged.length >= 20) break; merged.push({ name: n, penalties: 0 }); }
+    while (merged.length < 2) merged.push({ name: '', penalties: 0 });
+    onUpdate({ players: merged });
+  };
+
   return (
     <motion.div
       className="min-h-screen bg-[#0d0d15] relative overflow-hidden"
@@ -81,6 +89,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             onAdd={addPlayer}
             onRemove={(id) => removePlayer(Number(id.slice(2)))}
             onRename={(id, name) => setName(Number(id.slice(2)), name)}
+            onImportNames={importNames}
             min={2}
             max={20}
             accent="#cf96ff"
