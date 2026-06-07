@@ -1,19 +1,22 @@
 /**
- * EventQuestionsStep — the "choose your questions" step shown to GUESTS (not
- * logged in) during event creation. Produces a `question_config` (+ optional
- * custom_questions) that is persisted onto the event so the public survey form
- * asks exactly the chosen questions.
+ * EventQuestionsStep — the polished, fully-localized "choose your questions" step
+ * shown to GUESTS (not logged in) during event creation. Produces a
+ * `question_config` (+ optional custom_questions) persisted onto the event so the
+ * public survey asks exactly the chosen questions.
  *
  * Controlled: parent owns `value` and gets updates via `onChange`.
  * `attendance` is always on (the whole RSVP/dashboard depends on it).
  */
 import { useMemo } from "react";
-import { motion } from "framer-motion";
-import { Check, Lock, Sparkles, Plus } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Check, Lock, Sparkles, Plus, Wand2, ListChecks, LayoutGrid } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   type QuestionConfigs,
   type CustomQuestion,
-  DEFAULT_SURVEY_CONFIG,
+  DEFAULT_QUESTION_CONFIG,
+  CORE_QUESTION_KEYS,
+  questionConfigForEventType,
 } from "@/lib/survey-config";
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
@@ -25,47 +28,65 @@ export interface QuestionsValue {
 
 type CoreKey = keyof QuestionConfigs;
 
-const GROUPS: { id: string; title: string; keys: CoreKey[] }[] = [
-  { id: "basics", title: "Basics", keys: ["attendance", "duration", "date_blocks"] },
-  { id: "logistik", title: "Logistik", keys: ["budget", "destination", "travel"] },
-  { id: "vibe", title: "Vibe", keys: ["activities", "fitness", "alcohol"] },
+const GROUPS: { id: string; keys: CoreKey[] }[] = [
+  { id: "basics", keys: ["attendance", "duration", "date_blocks"] },
+  { id: "logistik", keys: ["budget", "destination", "travel"] },
+  { id: "vibe", keys: ["activities", "fitness", "alcohol"] },
 ];
 
-const META: Record<CoreKey, { emoji: string; title: string; desc: string; preview: () => string[] }> = {
-  attendance:  { emoji: "🎉", title: "Zusage",      desc: "Bist du dabei?",            preview: () => DEFAULT_SURVEY_CONFIG.attendance_options.map(o => o.label) },
-  duration:    { emoji: "🗓️", title: "Zeitraum",    desc: "Tag oder Wochenende?",      preview: () => DEFAULT_SURVEY_CONFIG.duration_options.map(o => o.label) },
-  date_blocks: { emoji: "📅", title: "Termine",     desc: "Mögliche Termin-Blöcke",    preview: () => ["Termine, die du im Dashboard festlegst"] },
-  budget:      { emoji: "💶", title: "Budget",      desc: "Budget pro Person",         preview: () => DEFAULT_SURVEY_CONFIG.budget_options.map(o => o.label) },
-  destination: { emoji: "📍", title: "Reiseziel",   desc: "Wohin soll's gehen?",       preview: () => DEFAULT_SURVEY_CONFIG.destination_options.map(o => o.label) },
-  travel:      { emoji: "🧳", title: "Anreise",     desc: "Übernachtung okay?",        preview: () => DEFAULT_SURVEY_CONFIG.travel_options.map(o => o.label) },
-  activities:  { emoji: "🎯", title: "Aktivitäten", desc: "Was wollt ihr machen?",     preview: () => DEFAULT_SURVEY_CONFIG.activity_options.map(o => o.label) },
-  fitness:     { emoji: "💪", title: "Fitness",     desc: "Wie sportlich darf's sein?", preview: () => DEFAULT_SURVEY_CONFIG.fitness_options.map(o => o.label) },
-  alcohol:     { emoji: "🍻", title: "Alkohol",     desc: "Mit oder ohne?",            preview: () => DEFAULT_SURVEY_CONFIG.alcohol_options.map(o => o.label) },
+const EMOJI: Record<CoreKey, string> = {
+  attendance: "🎉", duration: "🗓️", date_blocks: "📅", budget: "💶",
+  destination: "📍", travel: "🧳", activities: "🎯", fitness: "💪", alcohol: "🍻",
 };
 
-const CUSTOM_PRESETS: { id: string; emoji: string; label: string; q: Omit<CustomQuestion, "id"> }[] = [
-  { id: "dietary",  emoji: "🥗", label: "Ernährung", q: { type: "textarea", label: "Ernährung / Allergien?", required: false, placeholder: "z.B. vegetarisch, Nuss-Allergie" } },
-  { id: "song",     emoji: "🎵", label: "Songwunsch", q: { type: "text", label: "Dein Songwunsch?", required: false } },
-  { id: "tshirt",   emoji: "👕", label: "T-Shirt-Größe", q: { type: "select", label: "T-Shirt-Größe", required: false, options: ["S", "M", "L", "XL", "XXL"] } },
-  { id: "license",  emoji: "🚗", label: "Führerschein", q: { type: "toggle", label: "Hast du einen Führerschein?", required: false } },
+const CUSTOM_PRESETS: { id: string; emoji: string; q: Omit<CustomQuestion, "id"> }[] = [
+  { id: "dietary",  emoji: "🥗", q: { type: "textarea", label: "Ernährung / Allergien?", required: false, placeholder: "z.B. vegetarisch, Nuss-Allergie" } },
+  { id: "song",     emoji: "🎵", q: { type: "text", label: "Songwunsch?", required: false } },
+  { id: "tshirt",   emoji: "👕", q: { type: "select", label: "T-Shirt-Größe", required: false, options: ["S", "M", "L", "XL", "XXL"] } },
+  { id: "license",  emoji: "🚗", q: { type: "toggle", label: "Führerschein?", required: false } },
 ];
+
+const clone = (c: QuestionConfigs): QuestionConfigs => JSON.parse(JSON.stringify(c));
+const sig = (c: QuestionConfigs) => CORE_QUESTION_KEYS.map((k) => (c[k]?.enabled ? "1" : "0")).join("");
 
 export function EventQuestionsStep({
   value,
   onChange,
+  eventType = "",
 }: {
   value: QuestionsValue;
   onChange: (v: QuestionsValue) => void;
-  /** Only used to show the "smart suggestion active" hint. */
   eventType?: string;
 }) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
+  const reduce = useReducedMotion();
   const { question_config: qc, custom_questions } = value;
 
   const enabledCount = useMemo(
-    () => Object.values(qc).filter((q) => q.enabled).length + custom_questions.length,
+    () => CORE_QUESTION_KEYS.filter((k) => qc[k]?.enabled).length + custom_questions.length,
     [qc, custom_questions],
   );
+
+  // Quick presets ------------------------------------------------------------
+  const presets = useMemo(() => {
+    const all = clone(DEFAULT_QUESTION_CONFIG);
+    CORE_QUESTION_KEYS.forEach((k) => (all[k] = { ...all[k], enabled: true }));
+    const minimal = clone(DEFAULT_QUESTION_CONFIG);
+    CORE_QUESTION_KEYS.forEach((k) => (minimal[k] = { ...minimal[k], enabled: false }));
+    (["attendance", "duration", "date_blocks"] as CoreKey[]).forEach((k) => (minimal[k].enabled = true));
+    return [
+      { id: "recommended", icon: Wand2, config: questionConfigForEventType(eventType) },
+      { id: "minimal", icon: ListChecks, config: minimal },
+      { id: "all", icon: LayoutGrid, config: all },
+    ];
+  }, [eventType]);
+  const activeSig = sig(qc);
+
+  const applyPreset = (config: QuestionConfigs) => {
+    haptics.medium();
+    onChange({ ...value, question_config: clone(config) });
+  };
 
   const toggle = (key: CoreKey) => {
     if (key === "attendance") return; // always on
@@ -86,88 +107,162 @@ export function EventQuestionsStep({
 
   return (
     <div className="pt-2">
-      <div className="flex items-center gap-2 mb-1">
-        <h2 className="text-2xl font-display font-bold text-foreground">Welche Fragen?</h2>
-      </div>
-      <p className="text-sm text-muted-foreground mb-3">
-        Wähle, was dein Formular fragen soll. Du kannst es später jederzeit anpassen.
+      <h2 className="text-2xl font-display font-bold text-foreground mb-1">
+        {t("native.create.questions.title", "Welche Fragen?")}
+      </h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        {t("native.create.questions.subtitle", "Wähle, was dein Formular fragen soll. Später jederzeit änderbar.")}
       </p>
 
-      {/* Smart hint + live counter */}
-      <div className="flex items-center justify-between gap-2 mb-5 rounded-2xl px-4 py-2.5 bg-primary/10 border border-primary/20">
+      {/* Hero: live counter + smart hint */}
+      <div className="flex items-center justify-between gap-3 mb-4 rounded-2xl px-4 py-3 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-primary/20">
         <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
-          <Sparkles className="w-3.5 h-3.5" /> Smart-Vorschlag aktiv
+          <Sparkles className="w-3.5 h-3.5" /> {t("native.create.questions.smartHint", "Smart-Vorschlag aktiv")}
         </span>
-        <span className="text-xs font-bold text-primary">{enabledCount} Fragen</span>
+        <span className="flex items-baseline gap-1">
+          <AnimatePresence mode="popLayout">
+            <motion.span
+              key={enabledCount}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6, scale: 1.3 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
+              transition={{ type: "spring", stiffness: 500, damping: 28 }}
+              className="text-lg font-black text-primary tabular-nums"
+            >
+              {enabledCount}
+            </motion.span>
+          </AnimatePresence>
+          <span className="text-xs font-semibold text-primary/80">{t("native.create.questions.countSuffix", "Fragen")}</span>
+        </span>
       </div>
 
-      {GROUPS.map((group) => (
-        <div key={group.id} className="mb-6">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70 mb-2.5">{group.title}</h3>
-          <div className="space-y-2.5">
-            {group.keys.map((key) => {
-              const m = META[key];
-              const locked = key === "attendance";
-              const on = qc[key].enabled;
-              return (
-                <motion.button
-                  key={key}
-                  type="button"
-                  whileTap={{ scale: locked ? 1 : 0.98 }}
-                  onClick={() => toggle(key)}
-                  className={cn(
-                    "w-full flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-colors",
-                    on
-                      ? "bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border-primary/40"
-                      : "bg-foreground/[0.03] border-border",
-                  )}
-                >
-                  <span className="text-2xl leading-none mt-0.5">{m.emoji}</span>
-                  <span className="flex-1 min-w-0">
-                    <span className="flex items-center gap-1.5">
-                      <span className="text-base font-semibold text-foreground">{m.title}</span>
-                      {locked && <Lock className="w-3 h-3 text-muted-foreground/70" />}
-                    </span>
-                    <span className="block text-xs text-muted-foreground mt-0.5">{m.desc}</span>
-                    <span className="block text-[11px] text-muted-foreground/60 mt-1 truncate">
-                      {m.preview().slice(0, 3).join(" · ")}
-                    </span>
-                  </span>
-                  <span
+      {/* Quick presets */}
+      <div className="flex gap-2 mb-6">
+        {presets.map((p) => {
+          const active = sig(p.config) === activeSig;
+          const Icon = p.icon;
+          return (
+            <motion.button
+              key={p.id}
+              type="button"
+              whileTap={{ scale: 0.96 }}
+              onClick={() => applyPreset(p.config)}
+              aria-pressed={active}
+              className={cn(
+                "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-2xl border text-xs font-semibold transition-colors",
+                active
+                  ? "bg-primary text-white border-primary shadow-[0_0_18px_rgba(139,92,246,0.35)]"
+                  : "bg-foreground/[0.04] text-foreground/80 border-border",
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              {t(`native.create.questions.presets.${p.id}`, p.id)}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Grouped question cards */}
+      {GROUPS.map((group) => {
+        const total = group.keys.length;
+        const on = group.keys.filter((k) => qc[k]?.enabled).length;
+        return (
+          <div key={group.id} className="mb-6">
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
+                {t(`native.create.questions.groups.${group.id}`, group.id)}
+              </h3>
+              <span className="text-[11px] font-mono text-muted-foreground/50">{on}/{total}</span>
+            </div>
+            <div className="space-y-2.5">
+              {group.keys.map((key) => {
+                const locked = key === "attendance";
+                const isOn = qc[key].enabled;
+                return (
+                  <motion.button
+                    key={key}
+                    type="button"
+                    layout={!reduce}
+                    whileTap={{ scale: locked ? 1 : 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    onClick={() => toggle(key)}
+                    aria-pressed={isOn}
+                    aria-disabled={locked}
                     className={cn(
-                      "shrink-0 w-6 h-6 rounded-full grid place-items-center border-2 transition-colors mt-0.5",
-                      on ? "bg-primary border-primary" : "border-muted-foreground/40",
+                      "w-full flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-colors",
+                      isOn
+                        ? "bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border-primary/40"
+                        : "bg-foreground/[0.03] border-border",
                     )}
                   >
-                    {on && <Check className="w-4 h-4 text-white" />}
-                  </span>
-                </motion.button>
-              );
-            })}
+                    <span className="text-2xl leading-none">{EMOJI[key]}</span>
+                    <span className="flex-1 min-w-0">
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-base font-semibold text-foreground">
+                          {t(`native.create.questions.q.${key}.title`, key)}
+                        </span>
+                        {locked && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-foreground/10 text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
+                            <Lock className="w-2.5 h-2.5" />
+                            {t("native.create.questions.attendanceAlways", "immer dabei")}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-xs text-muted-foreground mt-0.5">
+                        {t(`native.create.questions.q.${key}.desc`, "")}
+                      </span>
+                    </span>
+                    <span
+                      className={cn(
+                        "shrink-0 w-6 h-6 rounded-full grid place-items-center border-2 transition-colors",
+                        isOn ? "bg-primary border-primary" : "border-muted-foreground/40",
+                      )}
+                    >
+                      <AnimatePresence>
+                        {isOn && (
+                          <motion.span
+                            initial={reduce ? { opacity: 0 } : { scale: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={reduce ? { opacity: 0 } : { scale: 0 }}
+                            transition={{ type: "spring", stiffness: 600, damping: 24 }}
+                          >
+                            <Check className="w-4 h-4 text-white" />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      {/* Quick custom-question presets */}
+      {/* Extra questions */}
       <div className="mb-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70 mb-2.5">Extra-Fragen (optional)</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70 mb-2.5">
+          {t("native.create.questions.extrasTitle", "Extra-Fragen (optional)")}
+        </h3>
         <div className="flex flex-wrap gap-2">
           {CUSTOM_PRESETS.map((p) => {
             const on = custom_questions.some((c) => c.id === p.id);
             return (
-              <button
+              <motion.button
                 key={p.id}
                 type="button"
+                whileTap={{ scale: 0.95 }}
                 onClick={() => togglePreset(p.id, p.q)}
+                aria-pressed={on}
                 className={cn(
                   "inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium border transition-colors",
                   on ? "bg-primary text-white border-primary" : "bg-foreground/5 text-foreground/80 border-border",
                 )}
               >
                 <span>{p.emoji}</span>
-                {p.label}
+                {t(`native.create.questions.custom.${p.id}`, p.id)}
                 {on ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5 opacity-60" />}
-              </button>
+              </motion.button>
             );
           })}
         </div>

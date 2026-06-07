@@ -4274,7 +4274,69 @@
         "whatsAppText": "🎉 Je bent uitgenodigd!\n\nDoe mee met \"{{name}}\" voor {{honoree}}!\n\n👉 {{link}}\n📝 Code: {{code}}"
       },
       "buttonNext": "Volgende",
-      "buttonCreate": "Evenement Maken"
+      "buttonCreate": "Evenement Maken",
+      "questions": {
+        "title": "Welke vragen?",
+        "subtitle": "Kies wat je formulier vraagt. Later altijd aanpasbaar.",
+        "smartHint": "Slim voorstel actief",
+        "countSuffix": "vragen",
+        "extrasTitle": "Extra vragen (optioneel)",
+        "attendanceAlways": "altijd aanwezig",
+        "groups": {
+          "basics": "Basics",
+          "logistik": "Logistiek",
+          "vibe": "Sfeer"
+        },
+        "presets": {
+          "recommended": "Aanbevolen",
+          "minimal": "Minimaal",
+          "all": "Alle"
+        },
+        "q": {
+          "attendance": {
+            "title": "Aanwezigheid",
+            "desc": "Ben je erbij?"
+          },
+          "duration": {
+            "title": "Duur",
+            "desc": "Dag of weekend?"
+          },
+          "date_blocks": {
+            "title": "Datums",
+            "desc": "Mogelijke datumblokken"
+          },
+          "budget": {
+            "title": "Budget",
+            "desc": "Budget per persoon"
+          },
+          "destination": {
+            "title": "Bestemming",
+            "desc": "Waar naartoe?"
+          },
+          "travel": {
+            "title": "Reizen",
+            "desc": "Overnachting akkoord?"
+          },
+          "activities": {
+            "title": "Activiteiten",
+            "desc": "Wat willen jullie doen?"
+          },
+          "fitness": {
+            "title": "Fitness",
+            "desc": "Hoe sportief mag het zijn?"
+          },
+          "alcohol": {
+            "title": "Alcohol",
+            "desc": "Met of zonder?"
+          }
+        },
+        "custom": {
+          "dietary": "Voeding",
+          "song": "Songwens",
+          "tshirt": "T-shirtmaat",
+          "license": "Rijbewijs"
+        }
+      }
     },
     "join": {
       "headerTitle": "Deelnemen aan Evenement",

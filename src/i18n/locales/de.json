@@ -4781,7 +4781,69 @@
         "whatsAppText": "🎉 Du bist eingeladen!\n\nKomm zu \"{{name}}\" für {{honoree}}!\n\n👉 {{link}}\n📝 Code: {{code}}"
       },
       "buttonNext": "Weiter",
-      "buttonCreate": "Event erstellen"
+      "buttonCreate": "Event erstellen",
+      "questions": {
+        "title": "Welche Fragen?",
+        "subtitle": "Wähle, was dein Formular fragen soll. Später jederzeit änderbar.",
+        "smartHint": "Smart-Vorschlag aktiv",
+        "countSuffix": "Fragen",
+        "extrasTitle": "Extra-Fragen (optional)",
+        "attendanceAlways": "immer dabei",
+        "groups": {
+          "basics": "Basics",
+          "logistik": "Logistik",
+          "vibe": "Vibe"
+        },
+        "presets": {
+          "recommended": "Empfohlen",
+          "minimal": "Minimal",
+          "all": "Alle"
+        },
+        "q": {
+          "attendance": {
+            "title": "Zusage",
+            "desc": "Bist du dabei?"
+          },
+          "duration": {
+            "title": "Zeitraum",
+            "desc": "Tag oder Wochenende?"
+          },
+          "date_blocks": {
+            "title": "Termine",
+            "desc": "Mögliche Termin-Blöcke"
+          },
+          "budget": {
+            "title": "Budget",
+            "desc": "Budget pro Person"
+          },
+          "destination": {
+            "title": "Reiseziel",
+            "desc": "Wohin soll es gehen?"
+          },
+          "travel": {
+            "title": "Anreise",
+            "desc": "Übernachtung okay?"
+          },
+          "activities": {
+            "title": "Aktivitäten",
+            "desc": "Was wollt ihr machen?"
+          },
+          "fitness": {
+            "title": "Fitness",
+            "desc": "Wie sportlich darf es sein?"
+          },
+          "alcohol": {
+            "title": "Alkohol",
+            "desc": "Mit oder ohne?"
+          }
+        },
+        "custom": {
+          "dietary": "Ernährung",
+          "song": "Songwunsch",
+          "tshirt": "T-Shirt-Größe",
+          "license": "Führerschein"
+        }
+      }
     },
     "join": {
       "headerTitle": "Event beitreten",

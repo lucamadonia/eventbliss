@@ -4286,7 +4286,69 @@
         "whatsAppText": "🎉 Tu es invité !\n\nRejoins \"{{name}}\" pour {{honoree}} !\n\n👉 {{link}}\n📝 Code : {{code}}"
       },
       "buttonNext": "Suivant",
-      "buttonCreate": "Créer l’Événement"
+      "buttonCreate": "Créer l’Événement",
+      "questions": {
+        "title": "Quelles questions ?",
+        "subtitle": "Choisis ce que ton formulaire doit demander. Modifiable à tout moment.",
+        "smartHint": "Suggestion intelligente active",
+        "countSuffix": "questions",
+        "extrasTitle": "Questions supplémentaires (optionnel)",
+        "attendanceAlways": "toujours inclus",
+        "groups": {
+          "basics": "Essentiels",
+          "logistik": "Logistique",
+          "vibe": "Ambiance"
+        },
+        "presets": {
+          "recommended": "Recommandé",
+          "minimal": "Minimal",
+          "all": "Tout"
+        },
+        "q": {
+          "attendance": {
+            "title": "Présence",
+            "desc": "Tu viens ?"
+          },
+          "duration": {
+            "title": "Durée",
+            "desc": "Jour ou week-end ?"
+          },
+          "date_blocks": {
+            "title": "Dates",
+            "desc": "Créneaux disponibles"
+          },
+          "budget": {
+            "title": "Budget",
+            "desc": "Budget par personne"
+          },
+          "destination": {
+            "title": "Destination",
+            "desc": "Où voulez-vous aller ?"
+          },
+          "travel": {
+            "title": "Trajet",
+            "desc": "Nuit sur place OK ?"
+          },
+          "activities": {
+            "title": "Activités",
+            "desc": "Que voulez-vous faire ?"
+          },
+          "fitness": {
+            "title": "Forme physique",
+            "desc": "Quel niveau sportif ?"
+          },
+          "alcohol": {
+            "title": "Alcool",
+            "desc": "Avec ou sans ?"
+          }
+        },
+        "custom": {
+          "dietary": "Régime alimentaire",
+          "song": "Chanson souhaitée",
+          "tshirt": "Taille de t-shirt",
+          "license": "Permis de conduire"
+        }
+      }
     },
     "join": {
       "headerTitle": "Rejoindre un Événement",
