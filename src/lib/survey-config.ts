@@ -117,6 +117,28 @@ export const DEFAULT_QUESTION_CONFIG: QuestionConfigs = {
   alcohol: { enabled: true, multiSelect: false },
 };
 
+/** The 9 core question keys, in the order they appear on the survey. */
+export const CORE_QUESTION_KEYS: (keyof QuestionConfigs)[] = [
+  'attendance', 'duration', 'date_blocks', 'budget',
+  'destination', 'travel', 'activities', 'fitness', 'alcohol',
+];
+
+/**
+ * Smart per-event-type defaults for the "choose your questions" step.
+ * Travel-heavy questions (destination/travel) are pre-disabled for local events
+ * (birthday/other). `attendance` is ALWAYS enabled — the whole RSVP/dashboard
+ * evaluation depends on it, so it must never be switched off.
+ */
+export function questionConfigForEventType(eventType: string): QuestionConfigs {
+  const base: QuestionConfigs = JSON.parse(JSON.stringify(DEFAULT_QUESTION_CONFIG));
+  if (eventType === 'birthday' || eventType === 'other') {
+    base.destination = { ...base.destination, enabled: false };
+    base.travel = { ...base.travel, enabled: false };
+  }
+  base.attendance.enabled = true;
+  return base;
+}
+
 export interface EventSettings extends SurveyConfig {
   branding?: BrandingConfig;
 }

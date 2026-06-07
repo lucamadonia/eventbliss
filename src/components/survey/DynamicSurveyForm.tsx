@@ -35,7 +35,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { dynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
+import { makeDynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
 import {
   type EventSettings, 
   type SelectOption,
@@ -89,9 +89,11 @@ const DynamicSurveyForm = ({
   const config = mergeWithDefaults(settings);
   const dateBlocks = getDateBlocksArray(config.date_blocks, config.date_warnings);
   const questionConfig = config.question_config;
+  // Only require the questions the organizer actually enabled.
+  const responseSchema = useMemo(() => makeDynamicResponseSchema(questionConfig), [questionConfig]);
 
   const form = useForm<DynamicResponseFormData>({
-    resolver: zodResolver(dynamicResponseSchema),
+    resolver: zodResolver(responseSchema),
     defaultValues: {
       participant: "",
       attendance: "",
@@ -246,6 +248,7 @@ const DynamicSurveyForm = ({
             </div>
 
             {/* Duration Preference - Dynamic options (single or multi-select) */}
+            {questionConfig.duration?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -306,9 +309,10 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+            )}
 
             {/* Date Blocks - Dynamic from event settings */}
-            {dateBlocks.length > 0 && (
+            {questionConfig.date_blocks?.enabled !== false && dateBlocks.length > 0 && (
               <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
                 <FormField
                   control={form.control}
@@ -392,6 +396,7 @@ const DynamicSurveyForm = ({
             </div>
 
             {/* Budget - Dynamic options (single or multi-select) */}
+            {questionConfig.budget?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -451,8 +456,10 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+            )}
 
             {/* Destination - Dynamic options (single or multi-select) */}
+            {questionConfig.destination?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -531,8 +538,10 @@ const DynamicSurveyForm = ({
                 />
               )}
             </div>
+            )}
 
             {/* Travel Preference - Dynamic options */}
+            {questionConfig.travel?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -564,14 +573,18 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+            )}
 
             {/* Activity Preferences - Grouped by Category */}
-            <ActivityPreferencesSection 
-              control={form.control} 
-              activityOptions={config.activity_options} 
+            {questionConfig.activities?.enabled !== false && (
+            <ActivityPreferencesSection
+              control={form.control}
+              activityOptions={config.activity_options}
             />
+            )}
 
             {/* Fitness Level - Dynamic options */}
+            {questionConfig.fitness?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -608,8 +621,10 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+            )}
 
             {/* Alcohol - Dynamic options */}
+            {questionConfig.alcohol?.enabled !== false && (
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
                 control={form.control}
@@ -647,6 +662,7 @@ const DynamicSurveyForm = ({
                 )}
               />
             </div>
+            )}
 
             {/* Restrictions */}
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">

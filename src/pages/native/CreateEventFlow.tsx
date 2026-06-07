@@ -10,7 +10,7 @@
  *
  * Reuses the same Supabase Edge Function (create-event) as desktop.
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,6 +37,13 @@ import { useAuthContext } from "@/components/auth/AuthProvider";
 import { spring, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { MobileHeader } from "@/components/native/MobileHeader";
+import { EventQuestionsStep } from "@/components/survey/EventQuestionsStep";
+import {
+  questionConfigForEventType,
+  DEFAULT_QUESTION_CONFIG,
+  type QuestionConfigs,
+  type CustomQuestion,
+} from "@/lib/survey-config";
 
 const EVENT_TYPES = [
   { value: "bachelor", labelKey: "native.create.stepType.bachelor", emoji: "🎉", gradient: "from-violet-500 to-fuchsia-500" },
@@ -53,6 +60,8 @@ interface FormData {
   event_date: string;
   organizer_name: string;
   participants: string[];
+  question_config: QuestionConfigs;
+  custom_questions: CustomQuestion[];
 }
 
 const stepVariants = {
@@ -91,7 +100,20 @@ export default function CreateEventFlow() {
     event_date: "",
     organizer_name: user?.user_metadata?.first_name || user?.email?.split("@")[0] || "",
     participants: [],
+    question_config: DEFAULT_QUESTION_CONFIG,
+    custom_questions: [],
   });
+
+  // Guests pick their form questions inline; logged-in users keep the current
+  // flow (link immediately, questions configured later in the dashboard).
+  const isGuest = !user;
+  const stepKeys = useMemo(
+    () =>
+      (isGuest
+        ? ["type", "details", "guests", "questions", "review"]
+        : ["type", "details", "guests", "review"]) as const,
+    [isGuest],
+  );
 
   const update = <K extends keyof FormData>(key: K, value: FormData[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -121,11 +143,12 @@ export default function CreateEventFlow() {
   };
 
   const canProceed = () => {
-    switch (step) {
-      case 1: return !!form.event_type;
-      case 2: return !!form.name && !!form.honoree_name;
-      case 3: return true;
-      case 4: return true;
+    switch (stepKeys[step - 1]) {
+      case "type": return !!form.event_type;
+      case "details": return !!form.name && !!form.honoree_name;
+      case "guests": return true;
+      case "questions": return Object.values(form.question_config).some((q) => q.enabled);
+      case "review": return true;
       default: return false;
     }
   };
@@ -149,6 +172,23 @@ export default function CreateEventFlow() {
       });
       if (error) throw error;
       if (data?.success) {
+        // Guests pick their questions inline — persist them onto the event so the
+        // public form asks exactly what they chose (no link without a real form).
+        if (isGuest && data.event?.id) {
+          try {
+            await supabase.functions.invoke("update-event-settings", {
+              body: {
+                event_id: data.event.id,
+                settings: {
+                  question_config: form.question_config,
+                  custom_questions: form.custom_questions,
+                },
+              },
+            });
+          } catch (e) {
+            console.warn("Could not persist question config:", e);
+          }
+        }
         haptics.celebrate();
         setCreatedEvent({
           slug: data.event.slug,
@@ -156,7 +196,7 @@ export default function CreateEventFlow() {
           share_link: data.share_link || `${getBaseUrl()}/e/${data.event.slug}`,
         });
         setDirection(1);
-        setStep(5);
+        setStep(stepKeys.length + 1);
       } else throw new Error(data?.error || "Failed");
     } catch (err) {
       haptics.error();
@@ -181,8 +221,8 @@ export default function CreateEventFlow() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const totalSteps = 4;
-  const isSuccess = step === 5;
+  const totalSteps = stepKeys.length;
+  const isSuccess = step > stepKeys.length;
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -224,16 +264,19 @@ export default function CreateEventFlow() {
             exit="exit"
             className="absolute inset-0 overflow-y-auto native-scroll px-5 pb-8"
           >
-            {step === 1 && (
+            {stepKeys[step - 1] === "type" && (
               <StepType
                 selected={form.event_type}
-                onSelect={(v) => { haptics.medium(); update("event_type", v); }}
+                onSelect={(v) => {
+                  haptics.medium();
+                  setForm((prev) => ({ ...prev, event_type: v, question_config: questionConfigForEventType(v) }));
+                }}
               />
             )}
-            {step === 2 && (
+            {stepKeys[step - 1] === "details" && (
               <StepDetails form={form} update={update} />
             )}
-            {step === 3 && (
+            {stepKeys[step - 1] === "guests" && (
               <StepGuests
                 participants={form.participants}
                 input={participantInput}
@@ -242,10 +285,17 @@ export default function CreateEventFlow() {
                 onRemove={removeParticipant}
               />
             )}
-            {step === 4 && (
+            {stepKeys[step - 1] === "questions" && (
+              <EventQuestionsStep
+                value={{ question_config: form.question_config, custom_questions: form.custom_questions }}
+                onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions }))}
+                eventType={form.event_type}
+              />
+            )}
+            {stepKeys[step - 1] === "review" && (
               <StepReview form={form} />
             )}
-            {step === 5 && createdEvent && (
+            {isSuccess && createdEvent && (
               <StepSuccess
                 event={createdEvent}
                 formName={form.name}
@@ -266,7 +316,7 @@ export default function CreateEventFlow() {
       {!isSuccess && (
         <div className="safe-bottom px-5 pb-4 pt-2">
           <motion.button
-            onClick={step === 4 ? handleSubmit : next}
+            onClick={step === stepKeys.length ? handleSubmit : next}
             disabled={!canProceed() || isSubmitting}
             whileTap={{ scale: canProceed() ? 0.96 : 1 }}
             transition={spring.snappy}
@@ -279,7 +329,7 @@ export default function CreateEventFlow() {
           >
             {isSubmitting ? (
               <Loader2 className="w-5 h-5 animate-spin" />
-            ) : step === 4 ? (
+            ) : step === stepKeys.length ? (
               <>
                 {t('native.create.buttonCreate')}
                 <Check className="w-5 h-5" />
