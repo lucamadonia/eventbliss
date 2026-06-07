@@ -32,6 +32,13 @@ import { TemplateSelector } from "@/components/create-event/TemplateSelector";
 import { type EventTemplate } from "@/lib/event-templates";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { EventQuestionsStep } from "@/components/survey/EventQuestionsStep";
+import {
+  questionConfigForEventType,
+  DEFAULT_QUESTION_CONFIG,
+  type QuestionConfigs,
+  type CustomQuestion,
+} from "@/lib/survey-config";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +60,8 @@ interface EventFormData {
   focus_points: string[];
   template_id?: string;
   custom_template?: object;
+  question_config: QuestionConfigs;
+  custom_questions: CustomQuestion[];
 }
 
 const eventTypes = [
@@ -99,6 +108,8 @@ const CreateEvent = () => {
     focus_points: [], // Empty = use localized defaults from translations
     template_id: undefined,
     custom_template: undefined,
+    question_config: DEFAULT_QUESTION_CONFIG,
+    custom_questions: [],
   });
 
   const [participantInput, setParticipantInput] = useState("");
@@ -195,6 +206,22 @@ const CreateEvent = () => {
       if (error) throw error;
 
       if (data?.success) {
+        // Guests pick questions inline — persist them so the public form matches.
+        if (!isAuthenticated && data.event?.id) {
+          try {
+            await supabase.functions.invoke("update-event-settings", {
+              body: {
+                event_id: data.event.id,
+                settings: {
+                  question_config: formData.question_config,
+                  custom_questions: formData.custom_questions,
+                },
+              },
+            });
+          } catch (e) {
+            console.warn("Could not persist question config:", e);
+          }
+        }
         setCreatedEvent({
           slug: data.event.slug,
           access_code: data.event.access_code,
@@ -266,7 +293,7 @@ const CreateEvent = () => {
                       : ""
                   }`}
                   onClick={() => {
-                    updateFormData("event_type", type.value);
+                    setFormData((prev) => ({ ...prev, event_type: type.value, question_config: questionConfigForEventType(type.value) }));
                     // Auto-advance to template selection
                     setTimeout(() => setStep(2), 300);
                   }}
@@ -420,6 +447,17 @@ const CreateEvent = () => {
               <p className="text-center text-muted-foreground text-sm">
                 {t('createEvent.step3.noParticipants')}
               </p>
+            )}
+
+            {/* Guests pick their survey questions inline (logged-in users do it in the dashboard) */}
+            {!isAuthenticated && (
+              <div className="pt-4 mt-2 border-t border-border/40">
+                <EventQuestionsStep
+                  value={{ question_config: formData.question_config, custom_questions: formData.custom_questions }}
+                  onChange={(v) => setFormData((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions }))}
+                  eventType={formData.event_type}
+                />
+              </div>
             )}
           </motion.div>
         );
