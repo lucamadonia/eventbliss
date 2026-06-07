@@ -4352,7 +4352,9 @@
           "song": "Canción favorita",
           "tshirt": "Talla de camiseta",
           "license": "Carnet de conducir"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Más preguntas propias con Premium"
       }
     },
     "join": {

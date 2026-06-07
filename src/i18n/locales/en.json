@@ -4720,7 +4720,9 @@
           "song": "Song wish",
           "tshirt": "T-shirt size",
           "license": "Driver license"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "More custom questions with Premium"
       }
     },
     "join": {

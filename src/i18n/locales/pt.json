@@ -4309,7 +4309,9 @@
           "song": "Pedido de música",
           "tshirt": "Tamanho da camiseta",
           "license": "Carteira de motorista"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Mais perguntas próprias com Premium"
       }
     },
     "join": {
