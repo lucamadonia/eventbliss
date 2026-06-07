@@ -1361,7 +1361,8 @@
       "title": "Evento ainda não protegido",
       "body": "Sem uma conta gratuita perderás o acesso à gestão. Associa o teu evento à tua conta agora para manteres o controlo total.",
       "cta": "Proteger grátis",
-      "ctaLink": "Associar à minha conta"
+      "ctaLink": "Associar à minha conta",
+      "claiming": "A associar o evento à tua conta…"
     }
   },
   "messages": {

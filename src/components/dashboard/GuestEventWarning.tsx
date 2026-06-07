@@ -1,23 +1,65 @@
 /**
- * GuestEventWarning — shown on the dashboard of an UNCLAIMED event (created by a
- * guest without an account, i.e. events.created_by is null). Warns the organizer
- * that they will lose access to managing the event unless they register and link
- * it to an account, and offers a one-tap path to do so.
+ * GuestEventWarning — handles the lifecycle of an UNCLAIMED event
+ * (events.created_by is null, created by a guest without an account):
+ *
+ *  • Not logged in  → prominent warning that the organizer will lose access
+ *    unless they register, with a "secure for free" CTA → registration.
+ *  • Logged in + a pending claim token for this event on the device → auto-claim
+ *    via the claim-invite edge function, linking the organizer participant to the
+ *    account (after reload the dashboard recognizes them as organizer).
  */
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { ShieldAlert, ArrowRight } from "lucide-react";
+import { ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { getPendingClaim, clearPendingClaim } from "@/lib/guest-claim";
 
 export function GuestEventWarning({ event }: { event: { created_by?: string | null; slug?: string } | null | undefined }) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { t } = useTranslation();
+  const [claiming, setClaiming] = useState(false);
 
-  // Only for a not-logged-in viewer on an unclaimed (guest-created) event.
-  if (!event || event.created_by || user) return null;
+  // Auto-claim once the guest organizer has registered/logged in.
+  useEffect(() => {
+    if (!event || event.created_by || !user || !event.slug) return;
+    const pending = getPendingClaim();
+    if (!pending || pending.slug !== event.slug) return;
+    let cancelled = false;
+    setClaiming(true);
+    (async () => {
+      const { data, error } = await supabase.functions.invoke("claim-invite", {
+        body: { token: pending.token, user_id: user.id },
+      });
+      if (cancelled) return;
+      if (!error && (data as { success?: boolean } | null)?.success !== false) {
+        clearPendingClaim();
+        // Reload so get-event re-authorizes the now-linked organizer.
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        setClaiming(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [event, user]);
 
+  if (!event || event.created_by) return null;
+
+  // Logged-in + claiming in progress → brief linking state.
+  if (user) {
+    if (!claiming) return null;
+    return (
+      <div className="flex items-center gap-2 rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm font-medium text-primary">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        {t("dashboard.guestWarning.claiming", "Event wird mit deinem Konto verknüpft…")}
+      </div>
+    );
+  }
+
+  // Guest (not logged in) → warning + secure CTA.
   const goSecure = () => {
     const redirect = event.slug ? `/e/${event.slug}/dashboard` : "/";
     navigate(`/auth?redirect=${encodeURIComponent(redirect)}`);

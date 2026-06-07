@@ -2598,7 +2598,8 @@
       "title": "Event noch nicht gesichert",
       "body": "Ohne kostenloses Konto verlierst du den Zugriff auf die Verwaltung. Verknüpfe dein Event jetzt mit deinem Account, um die volle Kontrolle zu behalten.",
       "cta": "Kostenlos sichern",
-      "ctaLink": "Mit meinem Konto verknüpfen"
+      "ctaLink": "Mit meinem Konto verknüpfen",
+      "claiming": "Event wird mit deinem Konto verknüpft…"
     }
   },
   "messages": {

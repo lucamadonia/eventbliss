@@ -2521,7 +2521,8 @@
       "title": "Event not secured yet",
       "body": "Without a free account you will lose access to managing this event. Link it to your account now to keep full control.",
       "cta": "Secure for free",
-      "ctaLink": "Link to my account"
+      "ctaLink": "Link to my account",
+      "claiming": "Linking event to your account…"
     }
   },
   "messages": {

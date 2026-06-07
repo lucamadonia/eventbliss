@@ -1301,9 +1301,13 @@ serve(async (req) => {
 
     console.log("Event created:", event.id, "with template:", template_id || "none");
 
-    // Add organizer as first participant with user_id
+    // Add organizer as first participant with user_id.
+    // Capture the organizer's invite_token: for GUEST-created events (userId
+    // null) the client persists it so the organizer can later register and
+    // claim the event via claim-invite (get-event hides this token from guests).
+    let organizerToken: string | null = null;
     if (organizer_name) {
-      const { error: organizerError } = await supabase
+      const { data: organizerRow, error: organizerError } = await supabase
         .from("participants")
         .insert({
           event_id: event.id,
@@ -1319,10 +1323,14 @@ serve(async (req) => {
             can_view_all_expenses: true,
             can_edit_settings: true,
           },
-        });
+        })
+        .select("invite_token")
+        .single();
 
       if (organizerError) {
         console.error("Error adding organizer:", organizerError);
+      } else {
+        organizerToken = (organizerRow as { invite_token?: string | null } | null)?.invite_token ?? null;
       }
     }
 
@@ -1366,6 +1374,7 @@ serve(async (req) => {
           name: event.name,
           honoree_name: event.honoree_name,
         },
+        organizer_token: organizerToken,
         share_link: `${req.headers.get("origin")}/e/${event.slug}`,
       }),
       {

@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getBaseUrl } from "@/lib/platform";
+import { savePendingClaim } from "@/lib/guest-claim";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { spring, ease } from "@/lib/motion";
@@ -196,6 +197,8 @@ export default function CreateEventFlow() {
           } catch (e) {
             console.warn("Could not persist question config:", e);
           }
+          // Remember the organizer token so the guest can claim the event after registering.
+          savePendingClaim({ slug: data.event.slug, token: data.organizer_token });
         }
         haptics.celebrate();
         setCreatedEvent({

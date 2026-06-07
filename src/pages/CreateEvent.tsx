@@ -44,6 +44,7 @@ import {
   type QuestionConfigs,
   type CustomQuestion,
 } from "@/lib/survey-config";
+import { savePendingClaim } from "@/lib/guest-claim";
 import {
   Dialog,
   DialogContent,
@@ -229,6 +230,7 @@ const CreateEvent = () => {
           } catch (e) {
             console.warn("Could not persist question config:", e);
           }
+          savePendingClaim({ slug: data.event.slug, token: data.organizer_token });
         }
         setCreatedEvent({
           slug: data.event.slug,
