@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx vitest *)",
       "Bash(CAPACITOR_BUILD=true npx vite build)",
-      "Bash(echo \"BUILD_EXIT=$?\")"
+      "Bash(echo \"BUILD_EXIT=$?\")",
+      "Bash(gh run *)",
+      "Bash(sed -n '1,12p')",
+      "Bash(sed -n '243,262p' src/pages/EventDashboard.tsx)"
     ]
   },
   "enableAllProjectMcpServers": true,

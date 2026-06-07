@@ -39,6 +39,7 @@ import EventExpensesV2 from "@/pages/EventExpensesV2";
 import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { FileEdit, Building2, LogIn } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { GuestEventWarning } from "@/components/dashboard/GuestEventWarning";
 import {
   Dialog,
   DialogContent,
@@ -278,6 +279,7 @@ const EventDashboard = () => {
 
         {/* Content */}
         <main className="container max-w-6xl mx-auto px-4 py-6">
+          <div className="mb-4"><GuestEventWarning event={event} /></div>
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
