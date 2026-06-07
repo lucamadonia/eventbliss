@@ -1356,6 +1356,12 @@
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
       }
+    },
+    "guestWarning": {
+      "title": "الحدث غير محمي بعد",
+      "body": "بدون حساب مجاني ستفقد إمكانية إدارة الحدث. اربط حدثك بحسابك الآن للاحتفاظ بالتحكم الكامل.",
+      "cta": "تأمين مجانًا",
+      "ctaLink": "اربط بحسابي"
     }
   },
   "messages": {

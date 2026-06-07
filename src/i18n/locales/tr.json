@@ -1356,6 +1356,12 @@
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
       }
+    },
+    "guestWarning": {
+      "title": "Etkinlik henüz güvende değil",
+      "body": "Ücretsiz hesap olmadan yönetim erişimini kaybedersin. Tam kontrolü korumak için etkinliğini şimdi hesabına bağla.",
+      "cta": "Ücretsiz güvene al",
+      "ctaLink": "Hesabıma bağla"
     }
   },
   "messages": {

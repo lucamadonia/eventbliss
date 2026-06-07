@@ -46,6 +46,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useEvent, type EventData, type Participant } from "@/hooks/useEvent";
+import { GuestEventWarning } from "@/components/dashboard/GuestEventWarning";
 import { supabase } from "@/integrations/supabase/client";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
@@ -256,6 +257,8 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
       initial="initial"
       animate="animate"
     >
+      <motion.div variants={staggerItem}><GuestEventWarning event={event} /></motion.div>
+
       {/* Event Card */}
       <motion.div
         variants={staggerItem}

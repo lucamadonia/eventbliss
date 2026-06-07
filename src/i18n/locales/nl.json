@@ -1356,6 +1356,12 @@
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
       }
+    },
+    "guestWarning": {
+      "title": "Evenement nog niet beveiligd",
+      "body": "Zonder gratis account verlies je de toegang tot het beheer. Koppel je evenement nu aan je account om volledige controle te houden.",
+      "cta": "Gratis beveiligen",
+      "ctaLink": "Aan mijn account koppelen"
     }
   },
   "messages": {

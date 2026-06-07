@@ -1306,6 +1306,12 @@
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
       }
+    },
+    "guestWarning": {
+      "title": "Evento aún no asegurado",
+      "body": "Sin una cuenta gratuita perderás el acceso a la gestión. Vincula tu evento a tu cuenta ahora para mantener el control total.",
+      "cta": "Asegurar gratis",
+      "ctaLink": "Vincular a mi cuenta"
     }
   },
   "messages": {

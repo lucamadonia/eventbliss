@@ -1356,6 +1356,12 @@
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
       }
+    },
+    "guestWarning": {
+      "title": "Wydarzenie nie jest jeszcze zabezpieczone",
+      "body": "Bez darmowego konta stracisz dostęp do zarządzania. Połącz wydarzenie z kontem teraz, aby zachować pełną kontrolę.",
+      "cta": "Zabezpiecz za darmo",
+      "ctaLink": "Połącz z moim kontem"
     }
   },
   "messages": {
