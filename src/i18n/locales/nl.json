@@ -4335,7 +4335,9 @@
           "song": "Songwens",
           "tshirt": "T-shirtmaat",
           "license": "Rijbewijs"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Meer eigen vragen met Premium"
       }
     },
     "join": {

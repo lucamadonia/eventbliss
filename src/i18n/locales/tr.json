@@ -4309,7 +4309,9 @@
           "song": "Şarkı isteği",
           "tshirt": "Tişört bedeni",
           "license": "Sürücü belgesi"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Premium ile daha fazla özel soru"
       }
     },
     "join": {

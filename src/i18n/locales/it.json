@@ -4347,7 +4347,9 @@
           "song": "Richiesta canzone",
           "tshirt": "Taglia T-shirt",
           "license": "Patente di guida"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Più domande personalizzate con Premium"
       }
     },
     "join": {

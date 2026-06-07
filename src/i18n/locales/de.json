@@ -4842,7 +4842,9 @@
           "song": "Songwunsch",
           "tshirt": "T-Shirt-Größe",
           "license": "Führerschein"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Mehr eigene Fragen mit Premium"
       }
     },
     "join": {

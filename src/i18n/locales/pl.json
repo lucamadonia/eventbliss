@@ -4309,7 +4309,9 @@
           "song": "Życzenie piosenki",
           "tshirt": "Rozmiar koszulki",
           "license": "Prawo jazdy"
-        }
+        },
+        "premiumBadge": "Premium",
+        "premiumHint": "Więcej własnych pytań z Premium"
       }
     },
     "join": {
