@@ -1,23 +1,20 @@
 /**
- * Static meta prerenderer for the key public pages — browserless.
+ * Prerenderer for the key public pages.
  *
- * The app is a client SPA, so non-JS crawlers (many AI/GEO engines and social
- * preview scrapers) only ever see the default index.html <head>. This script
- * takes the freshly-built dist/index.html (which has the correct hashed asset
- * tags) and, per static route, writes dist/<route>/index.html with the
- * route-specific <title>, description, canonical, Open Graph and Twitter tags
- * injected. Vercel serves these static files before the SPA rewrite, so
- * crawlers get correct per-page meta + social previews; the React app still
- * boots and hydrates normally for users.
+ * Primary path: spin up Vite's preview server over the built dist/, drive a
+ * headless Chromium (Puppeteer) to each static route, let the SPA render +
+ * useSEO apply, and snapshot the FULL HTML (head + body) into
+ * dist/<route>/index.html. Vercel serves these static files before the SPA
+ * rewrite, so crawlers / AI-GEO engines / social scrapers get real content +
+ * per-page meta. The client app still boots (createRoot) and takes over.
  *
- * No headless browser is used (Puppeteer can't be installed in this repo due to
- * unresolvable local `@repo/*` / `link:` deps, and Chromium-in-CI is brittle).
- * The <body> stays client-rendered; <head> meta is what search snippets, social
- * cards and JSON-LD consumers read, which is the bulk of the ranking/CTR value.
+ * Fallback path (no Puppeteer / Chromium can't launch, e.g. some CI): inject
+ * just the per-route <head> meta (title/description/canonical/OG/Twitter) into
+ * the built shell. Head meta is what snippets + social cards consume, so SEO
+ * value is preserved even when full rendering isn't possible. The build never
+ * fails because of this script.
  *
- * Keep this map in sync with each page's useSEO() call. Skipped for Capacitor.
- *
- * Runs in the build after `vite build`.
+ * Skipped for Capacitor (native) builds.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
@@ -28,13 +25,14 @@ const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
 const SITE = "https://event-bliss.com";
 const OG = `${SITE}/og-image.png`;
+const PORT = 41739;
 
 if (process.env.CAPACITOR_BUILD) {
   console.log("prerender: skipped (CAPACITOR_BUILD).");
   process.exit(0);
 }
 
-// route → meta (mirror of each page's useSEO call)
+// route → meta (mirror of each page's useSEO call) — used for the fallback
 const PAGES = {
   "/games": {
     title: "Party Games — 24+ Free Group Games for Any Event | EventBliss",
@@ -69,21 +67,13 @@ const PAGES = {
     description: "Partnership agreement terms for agencies joining the EventBliss marketplace.",
   },
 };
+const ROUTES = Object.keys(PAGES);
 
-const shellPath = join(DIST, "index.html");
-if (!existsSync(shellPath)) {
-  console.warn("prerender: dist/index.html not found — run after vite build. Skipping.");
-  process.exit(0);
-}
-const shell = readFileSync(shellPath, "utf8");
-
+// ── Fallback: head-meta injection into the built shell ────────────────
 const attr = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-
-function setTitle(html, v) {
-  return html.replace(/<title>[\s\S]*?<\/title>/, `<title>${attr(v)}</title>`);
-}
+const shell = existsSync(join(DIST, "index.html")) ? readFileSync(join(DIST, "index.html"), "utf8") : null;
+function setTitle(html, v) { return html.replace(/<title>[\s\S]*?<\/title>/, `<title>${attr(v)}</title>`); }
 function setMeta(html, sel, key, value) {
-  // sel: 'name' | 'property'; key: the tag identifier (e.g. "og:title")
   const re = new RegExp(`(<meta\\s+${sel}="${key.replace(/[:]/g, "\\$&")}"\\s+content=")[^"]*(")`, "i");
   if (re.test(html)) return html.replace(re, `$1${attr(value)}$2`);
   return html.replace("</head>", `    <meta ${sel}="${key}" content="${attr(value)}" />\n  </head>`);
@@ -93,26 +83,121 @@ function setCanonical(html, href) {
   if (re.test(html)) return html.replace(re, `$1${attr(href)}$2`);
   return html.replace("</head>", `    <link rel="canonical" href="${attr(href)}" />\n  </head>`);
 }
-
-let ok = 0;
-for (const [route, meta] of Object.entries(PAGES)) {
+function metaInject(route) {
+  if (!shell) return null;
   const url = `${SITE}${route}`;
+  const m = PAGES[route];
   let html = shell;
-  html = setTitle(html, meta.title);
-  html = setMeta(html, "name", "title", meta.title);
-  html = setMeta(html, "name", "description", meta.description);
-  html = setMeta(html, "property", "og:title", meta.title);
-  html = setMeta(html, "property", "og:description", meta.description);
+  html = setTitle(html, m.title);
+  html = setMeta(html, "name", "title", m.title);
+  html = setMeta(html, "name", "description", m.description);
+  html = setMeta(html, "property", "og:title", m.title);
+  html = setMeta(html, "property", "og:description", m.description);
   html = setMeta(html, "property", "og:url", url);
   html = setMeta(html, "property", "og:image", OG);
-  html = setMeta(html, "name", "twitter:title", meta.title);
-  html = setMeta(html, "name", "twitter:description", meta.description);
+  html = setMeta(html, "name", "twitter:title", m.title);
+  html = setMeta(html, "name", "twitter:description", m.description);
   html = setMeta(html, "name", "twitter:url", url);
   html = setCanonical(html, url);
+  return html;
+}
 
+function writeRoute(route, html) {
   const dir = join(DIST, route);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "index.html"), html);
-  ok++;
 }
-console.log(`prerender (meta): ${ok}/${Object.keys(PAGES).length} static pages written.`);
+
+// ── Primary: full render via Vite preview + Puppeteer ─────────────────
+async function startBrowser() {
+  let puppeteer;
+  try {
+    puppeteer = (await import("puppeteer")).default;
+  } catch {
+    console.warn("prerender: puppeteer not installed — using head-meta fallback.");
+    return null;
+  }
+  let server;
+  try {
+    const { preview } = await import("vite");
+    server = await preview({ root: ROOT, preview: { port: PORT, strictPort: true } });
+  } catch (e) {
+    console.warn(`prerender: vite preview failed (${e?.message ?? e}) — fallback.`);
+    return null;
+  }
+  const launchOpts = {
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+  };
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts);
+  } catch (e1) {
+    // Chromium may be missing (e.g. pnpm skipped puppeteer's postinstall on CI).
+    // Try a one-off browser install, then retry once.
+    console.warn(`prerender: first Chromium launch failed (${e1?.message ?? e1}); installing browser…`);
+    try {
+      const { execSync } = await import("child_process");
+      execSync("node node_modules/puppeteer/install.mjs", { stdio: "inherit" });
+      browser = await puppeteer.launch(launchOpts);
+    } catch (e2) {
+      console.warn(`prerender: Chromium unavailable (${e2?.message ?? e2}) — head-meta fallback.`);
+      try { server.httpServer?.close(); } catch { /* noop */ }
+      return null;
+    }
+  }
+  return { browser, server };
+}
+
+let ctx = null;
+try {
+  ctx = await startBrowser();
+} catch (e) {
+  console.warn(`prerender: setup failed (${e?.message ?? e}) — fallback.`);
+}
+
+let full = 0;
+let meta = 0;
+for (const route of ROUTES) {
+  let html = null;
+  if (ctx?.browser) {
+    let page;
+    try {
+      page = await ctx.browser.newPage();
+      // domcontentloaded (not networkidle0, which can hang on websockets like
+      // Supabase realtime), then wait for the SPA to paint real text content.
+      await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await page.waitForFunction(
+        () => {
+          const r = document.querySelector("#root");
+          return r && r.innerText && r.innerText.replace(/\s/g, "").length > 80;
+        },
+        { timeout: 35000, polling: 250 },
+      );
+      await new Promise((r) => setTimeout(r, 900)); // let useSEO set head tags
+      html = "<!doctype html>\n" + (await page.content()).replace(/^<!doctype html>/i, "");
+      full++;
+    } catch (e) {
+      console.warn(`prerender ✗ full ${route}: ${e?.message ?? e} — meta fallback.`);
+      html = null;
+    } finally {
+      if (page) await page.close().catch(() => {});
+    }
+  }
+  if (!html) {
+    html = metaInject(route);
+    if (html) meta++;
+  }
+  if (html) {
+    writeRoute(route, html);
+  } else {
+    console.warn(`prerender: no output for ${route} (no shell).`);
+  }
+}
+
+if (ctx) {
+  try { await ctx.browser.close(); } catch { /* noop */ }
+  try { ctx.server.httpServer?.close(); } catch { /* noop */ }
+}
+console.log(`prerender: ${full} full-render + ${meta} meta-only = ${full + meta}/${ROUTES.length} pages.`);
+process.exit(0);
