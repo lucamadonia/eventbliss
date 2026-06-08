@@ -51,12 +51,13 @@ import {
   deSlugFromEn,
   enSlugFromDe,
 } from "@/lib/hen-do-overlay";
-import { HEN_DO_INTL, HEN_DO_LANG_META, type HenDoIntlLang } from "@/lib/hen-do-overlay-intl";
+import { HEN_DO_INTL, HEN_DO_LANG_META, type HenDoIntlLang, type HenDoPageLang } from "@/lib/hen-do-overlay-intl";
+import { getHenDoAr } from "@/lib/hen-do-overlay-ar";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
 
 const SITE_URL = "https://event-bliss.com";
 
-type Lang = "de" | "en" | HenDoIntlLang;
+type Lang = "de" | "en" | HenDoPageLang;
 
 const HEN_PATH_BY_LANG: Record<Lang, string> = {
   de: "/jga-frauen/",
@@ -68,6 +69,7 @@ const HEN_PATH_BY_LANG: Record<Lang, string> = {
   nl: HEN_DO_LANG_META.nl.path,
   pl: HEN_DO_LANG_META.pl.path,
   tr: HEN_DO_LANG_META.tr.path,
+  ar: HEN_DO_LANG_META.ar.path,
 };
 
 const HTML_LANG_BY_LANG: Record<Lang, string> = {
@@ -80,6 +82,7 @@ const HTML_LANG_BY_LANG: Record<Lang, string> = {
   nl: "nl-NL",
   pl: "pl-PL",
   tr: "tr-TR",
+  ar: "ar",
 };
 
 const LOCALE_BY_LANG: Record<Lang, string> = {
@@ -92,6 +95,7 @@ const LOCALE_BY_LANG: Record<Lang, string> = {
   nl: "nl_NL",
   pl: "pl_PL",
   tr: "tr_TR",
+  ar: "ar_AR",
 };
 
 const LANG_NAME: Record<Lang, string> = {
@@ -104,6 +108,7 @@ const LANG_NAME: Record<Lang, string> = {
   nl: "Nederlands",
   pl: "Polski",
   tr: "Türkçe",
+  ar: "العربية",
 };
 
 const COPY = {
@@ -288,6 +293,26 @@ const COPY = {
     langSwitch: HEN_DO_LANG_META.tr.langSwitch,
     badgeLabel: HEN_DO_LANG_META.tr.badgeLabel,
   },
+  ar: {
+    backLabel: HEN_DO_LANG_META.ar.label,
+    title: (n: string) => `${HEN_DO_LANG_META.ar.label} ${n}`,
+    titlePrefix: HEN_DO_LANG_META.ar.h1Prefix,
+    introHead: (n: string) => `${HEN_DO_LANG_META.ar.h1Prefix} ${n}`,
+    activitiesHead: HEN_DO_LANG_META.ar.activitiesHead,
+    neighborhoodsHead: HEN_DO_LANG_META.ar.neighborhoodsHead,
+    budgetHead: HEN_DO_LANG_META.ar.budgetHead,
+    seasonHead: HEN_DO_LANG_META.ar.seasonHead,
+    tipsHead: HEN_DO_LANG_META.ar.tipsHead,
+    faqHead: HEN_DO_LANG_META.ar.faqHead,
+    ctaHead: HEN_DO_LANG_META.ar.ctaHead,
+    ctaText: HEN_DO_LANG_META.ar.ctaText,
+    ctaButton: HEN_DO_LANG_META.ar.ctaButton,
+    plan: HEN_DO_LANG_META.ar.plan,
+    games: HEN_DO_LANG_META.ar.games,
+    otherCities: HEN_DO_LANG_META.ar.otherCities,
+    langSwitch: HEN_DO_LANG_META.ar.langSwitch,
+    badgeLabel: HEN_DO_LANG_META.ar.badgeLabel,
+  },
 } as const;
 
 function buildJsonLd(
@@ -413,6 +438,7 @@ function detectLang(pathname: string): Lang {
   if (pathname.startsWith("/vrijgezellinnenfeest/")) return "nl";
   if (pathname.startsWith("/wieczor-panienski/")) return "pl";
   if (pathname.startsWith("/kadin-bekarliga-veda/")) return "tr";
+  if (pathname.startsWith("/wadaa-azubiya-banat/")) return "ar";
   return "de";
 }
 
@@ -476,6 +502,7 @@ export default function HenDoCity() {
     };
 
     const allLangs: Lang[] = ["de", "en", "es", "fr", "it", "pt", "nl", "pl", "tr"];
+    if (getHenDoAr(data.city.slug)) allLangs.push("ar");
     for (const l of allLangs) {
       const slug = l === "de" ? data.city.slug : enSlug;
       add(HTML_LANG_BY_LANG[l], `${SITE_URL}${HEN_PATH_BY_LANG[l]}${slug}`);
@@ -502,7 +529,10 @@ export default function HenDoCity() {
     if (!data) return { vibe: "", tip: "" };
     if (lang === "de") return { vibe: data.overlay.vibeDe, tip: data.overlay.henTipDe };
     if (lang === "en") return { vibe: data.overlay.vibeEn, tip: data.overlay.henTipEn };
-    const intl = HEN_DO_INTL[data.city.slug]?.[lang as HenDoIntlLang];
+    const intl =
+      lang === "ar"
+        ? getHenDoAr(data.city.slug)
+        : HEN_DO_INTL[data.city.slug]?.[lang as HenDoIntlLang];
     return intl ?? { vibe: data.overlay.vibeEn, tip: data.overlay.henTipEn };
   }, [data, lang]);
 
@@ -531,6 +561,8 @@ export default function HenDoCity() {
           ogImage: `${SITE_URL}/og/jga-${data.city.slug}.svg`,
           ogType: "article",
           locale: LOCALE_BY_LANG[lang],
+          htmlLang: HTML_LANG_BY_LANG[lang],
+          dir: lang === "ar" ? "rtl" : "ltr",
           keywords: `${COPY[lang].titlePrefix} ${data.city.name}, ${COPY[lang].backLabel} ${data.city.name}, bachelorette ${data.city.name}`,
           jsonLd: buildJsonLd(data, lang, canonical, altUrl),
         }
@@ -556,7 +588,7 @@ export default function HenDoCity() {
       : HEN_DO_LANG_META[lang as HenDoIntlLang].introTpl(city.name, city.nameLocative);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
       <LandingHeader />
 
       {/* HERO */}
@@ -618,8 +650,8 @@ export default function HenDoCity() {
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
               <Globe className="w-4 h-4 text-muted-foreground" />
-              {(["de", "en", "es", "fr", "it", "pt", "nl", "pl", "tr"] as Lang[])
-                .filter((l) => l !== lang)
+              {(["de", "en", "es", "fr", "it", "pt", "nl", "pl", "tr", "ar"] as Lang[])
+                .filter((l) => l !== lang && (l !== "ar" || Boolean(getHenDoAr(data.city.slug))))
                 .map((l) => {
                   const slug = l === "de" ? data.city.slug : enSlug;
                   return (

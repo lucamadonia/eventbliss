@@ -8,6 +8,13 @@
 
 export type HenDoIntlLang = "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr";
 
+/**
+ * Languages that have a full hen-do page/route. Arabic ("ar") reuses the
+ * HenDoCity renderer + LANG_META but its per-city copy lives in
+ * hen-do-overlay-ar.ts, so it is kept out of the per-city HEN_DO_INTL map.
+ */
+export type HenDoPageLang = HenDoIntlLang | "ar";
+
 export interface HenDoTranslation {
   vibe: string;
   tip: string;
@@ -43,7 +50,7 @@ export interface HenDoLangMeta {
   forCount: string;
 }
 
-export const HEN_DO_LANG_META: Record<HenDoIntlLang, HenDoLangMeta> = {
+export const HEN_DO_LANG_META: Record<HenDoPageLang, HenDoLangMeta> = {
   es: {
     path: "/despedida-soltera/",
     label: "Despedida de Soltera",
@@ -246,6 +253,35 @@ export const HEN_DO_LANG_META: Record<HenDoIntlLang, HenDoLangMeta> = {
     activityLabel: "Aktivite:",
     eveningLabel: "Akşam:",
     forCount: "4+ kişiden itibaren",
+  },
+  ar: {
+    path: "/wadaa-azubiya-banat/",
+    label: "وداع عزوبية البنات",
+    locale: "ar_AR",
+    htmlLang: "ar",
+    titleTpl: (n) => `وداع عزوبية البنات في ${n} — سبا وكوكتيل | EventBliss`,
+    descriptionTpl: (n) => `وداع عزوبية البنات في ${n}: سبا، ورشة كوكتيل، برانش، جولات قوارب. خطّطي في دقائق مع EventBliss.`,
+    h1Prefix: "وداع عزوبية البنات في",
+    badgeLabel: (r) => `${r} · حفلة بنات`,
+    introTpl: (n) => `وداع عزوبية البنات في ${n} — الدليل الصادق لمجموعات البنات. سبا في الصباح، ورشة كوكتيل بعد الظهر، جولة حانات في المساء. أفضل أماكن ${n} دون فلتر سياحي.`,
+    activitiesHead: "أفضل الأنشطة",
+    neighborhoodsHead: "أين تسهرن",
+    budgetHead: "الميزانية",
+    seasonHead: "أفضل وقت",
+    tipsHead: "نصائح محلية",
+    faqHead: "الأسئلة الشائعة",
+    insiderTipHead: "نصيحة من الداخل للحفلة",
+    ctaHead: (n) => `جاهزات لوداع العزوبية في ${n}؟`,
+    ctaText: "أنشئي فعالية في 30 ثانية، ادعي المجموعة، صوّتن على الأنشطة — كل ذلك في تطبيق واحد.",
+    ctaButton: "أنشئي فعالية",
+    plan: "خطّطي للحفلة",
+    games: "شاهدي الألعاب",
+    otherCities: "وداع العزوبية في مدينة أخرى؟",
+    langSwitch: "اقرئي بلغة أخرى",
+    weekendLabel: "عطلة نهاية الأسبوع:",
+    activityLabel: "النشاط:",
+    eveningLabel: "السهرة:",
+    forCount: "من 4 أشخاص فأكثر",
   },
 };
 

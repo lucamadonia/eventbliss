@@ -65,6 +65,7 @@ const CITY_PATH_BY_LANG: Record<ActivityIntlLang, string> = {
   nl: "/vrijgezellenfeest/",
   pl: "/wieczor-kawalerski/",
   tr: "/bekarliga-veda/",
+  ar: "/wadaa-azubiya/",
 };
 
 // Map DE city slug → anglicised slug used by all non-DE city routes
@@ -101,6 +102,7 @@ function detectLang(pathname: string): ActivityIntlLang | null {
   if (pathname.startsWith("/activiteiten/")) return "nl";
   if (pathname.startsWith("/atrakcje/")) return "pl";
   if (pathname.startsWith("/aktiviteler/")) return "tr";
+  if (pathname.startsWith("/anshita/")) return "ar";
   return null;
 }
 
@@ -216,6 +218,7 @@ export default function ActivityIntl() {
       { l: "pl", href: `${SITE_URL}/atrakcje/${slug}` },
       { l: "pl-PL", href: `${SITE_URL}/atrakcje/${slug}` },
       { l: "tr", href: `${SITE_URL}/aktiviteler/${slug}` },
+      { l: "ar", href: `${SITE_URL}/anshita/${slug}` },
       { l: "tr-TR", href: `${SITE_URL}/aktiviteler/${slug}` },
       { l: "x-default", href: `${SITE_URL}/activities/${slug}` },
     ];
@@ -266,6 +269,8 @@ export default function ActivityIntl() {
           ogImage: `${SITE_URL}/og/ideen-${activity.value}.svg`,
           ogType: "article",
           locale: meta.locale,
+          htmlLang: meta.htmlLang,
+          dir: lang === "ar" ? "rtl" : "ltr",
           keywords: `${activity.label}, ${meta.label}`,
           jsonLd: buildJsonLd(activity, lang, url),
         }
@@ -289,7 +294,7 @@ export default function ActivityIntl() {
   ).slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
       <LandingHeader />
 
       {/* HERO */}

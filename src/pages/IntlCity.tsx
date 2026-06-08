@@ -42,12 +42,15 @@ import {
   getJgaCityByEnSlug,
   LANG_META,
   type IntlLang,
+  type IntlPageLang,
 } from "@/lib/intl-cities";
+import { getIntlAr } from "@/lib/intl-cities-ar";
+import { jgaHreflangs, isRtl } from "@/lib/seo-routes";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
 
 const SITE_URL = "https://event-bliss.com";
 
-function detectLang(pathname: string): IntlLang {
+function detectLang(pathname: string): IntlPageLang {
   if (pathname.startsWith("/despedida-de-solteiro/")) return "pt";
   if (pathname.startsWith("/despedida/")) return "es";
   if (pathname.startsWith("/evg/")) return "fr";
@@ -55,13 +58,14 @@ function detectLang(pathname: string): IntlLang {
   if (pathname.startsWith("/vrijgezellenfeest/")) return "nl";
   if (pathname.startsWith("/wieczor-kawalerski/")) return "pl";
   if (pathname.startsWith("/bekarliga-veda/")) return "tr";
+  if (pathname.startsWith("/wadaa-azubiya/")) return "ar";
   return "it";
 }
 
 function buildJsonLd(args: {
   city: ReturnType<typeof getJgaCityByEnSlug>;
   slug: string;
-  lang: IntlLang;
+  lang: IntlPageLang;
   url: string;
   intro: string;
   faqs: Array<{ q: string; a: string }>;
@@ -153,7 +157,7 @@ function buildJsonLd(args: {
         longitude: city.coordinates.lng,
       },
       touristType: [
-        lang === "es" ? "Despedida de Soltero" : lang === "fr" ? "EVG" : "Addio al Celibato",
+        LANG_META[lang].label,
         "Bachelor Party",
         "Stag Do",
         "Group Travel",
@@ -195,6 +199,7 @@ export default function IntlCity() {
     stad?: string;
     miasto?: string;
     sehir?: string;
+    city?: string;
   }>();
   const prefersReducedMotion = useReducedMotion();
 
@@ -207,12 +212,21 @@ export default function IntlCity() {
     params.cidade ??
     params.stad ??
     params.miasto ??
-    params.sehir;
+    params.sehir ??
+    params.city;
 
   const entry = useMemo(() => (slug ? getIntlCity(slug) : undefined), [slug]);
   const city = useMemo(() => (slug ? getJgaCityByEnSlug(slug) : undefined), [slug]);
 
-  const copy = useMemo(() => (entry ? entry[lang] : undefined), [entry, lang]);
+  const copy = useMemo(
+    () =>
+      entry
+        ? lang === "ar"
+          ? getIntlAr(entry.slug)
+          : entry[lang as IntlLang]
+        : undefined,
+    [entry, lang]
+  );
 
   const topActivities = useMemo(() => {
     if (!city) return [];
@@ -228,46 +242,25 @@ export default function IntlCity() {
       .slice(0, 8);
   }, [entry]);
 
-  // hreflang injection
+  // hreflang injection — derived from the central route map (only languages
+  // that actually have a translated page for this city, incl. Arabic).
   useEffect(() => {
-    if (!entry || !city) return;
+    if (!city) return;
     const head = document.head;
     const links: HTMLLinkElement[] = [];
-
-    const add = (l: string, href: string) => {
+    for (const { hreflang, href } of jgaHreflangs(city.slug, SITE_URL)) {
       const link = document.createElement("link");
       link.setAttribute("rel", "alternate");
-      link.setAttribute("hreflang", l);
+      link.setAttribute("hreflang", hreflang);
       link.setAttribute("href", href);
       link.setAttribute("data-intl-hreflang", "true");
       head.appendChild(link);
       links.push(link);
-    };
-
-    add("de", `${SITE_URL}/jga/${city.slug}`);
-    add("de-DE", `${SITE_URL}/jga/${city.slug}`);
-    add("en", `${SITE_URL}/stag-do/${entry.slug}`);
-    add("en-GB", `${SITE_URL}/stag-do/${entry.slug}`);
-    add("es", `${SITE_URL}/despedida/${entry.slug}`);
-    add("es-ES", `${SITE_URL}/despedida/${entry.slug}`);
-    add("fr", `${SITE_URL}/evg/${entry.slug}`);
-    add("fr-FR", `${SITE_URL}/evg/${entry.slug}`);
-    add("it", `${SITE_URL}/addio/${entry.slug}`);
-    add("it-IT", `${SITE_URL}/addio/${entry.slug}`);
-    add("pt", `${SITE_URL}/despedida-de-solteiro/${entry.slug}`);
-    add("pt-PT", `${SITE_URL}/despedida-de-solteiro/${entry.slug}`);
-    add("nl", `${SITE_URL}/vrijgezellenfeest/${entry.slug}`);
-    add("nl-NL", `${SITE_URL}/vrijgezellenfeest/${entry.slug}`);
-    add("pl", `${SITE_URL}/wieczor-kawalerski/${entry.slug}`);
-    add("pl-PL", `${SITE_URL}/wieczor-kawalerski/${entry.slug}`);
-    add("tr", `${SITE_URL}/bekarliga-veda/${entry.slug}`);
-    add("tr-TR", `${SITE_URL}/bekarliga-veda/${entry.slug}`);
-    add("x-default", `${SITE_URL}/stag-do/${entry.slug}`);
-
+    }
     return () => {
       links.forEach((l) => l.remove());
     };
-  }, [entry, city]);
+  }, [city]);
 
   const url = entry && city ? `${SITE_URL}${meta.path}${entry.slug}` : SITE_URL;
 
@@ -280,6 +273,8 @@ export default function IntlCity() {
           ogImage: `${SITE_URL}/og/jga-${city.slug}.svg`,
           ogType: "article",
           locale: meta.locale,
+          htmlLang: meta.htmlLang,
+          dir: isRtl(lang) ? "rtl" : "ltr",
           keywords: [
             `${meta.label} ${city.name}`,
             `${city.name} ${meta.label.toLowerCase()}`,
@@ -306,10 +301,11 @@ export default function IntlCity() {
     { lang: "nl", url: `/vrijgezellenfeest/${entry.slug}`, label: "Nederlands" },
     { lang: "pl", url: `/wieczor-kawalerski/${entry.slug}`, label: "Polski" },
     { lang: "tr", url: `/bekarliga-veda/${entry.slug}`, label: "Türkçe" },
-  ].filter((l) => l.lang !== lang);
+    { lang: "ar", url: `/wadaa-azubiya/${entry.slug}`, label: "العربية" },
+  ].filter((l) => l.lang !== lang && (l.lang !== "ar" || Boolean(getIntlAr(entry.slug))));
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={isRtl(lang) ? "rtl" : "ltr"}>
       <LandingHeader />
 
       {/* HERO */}

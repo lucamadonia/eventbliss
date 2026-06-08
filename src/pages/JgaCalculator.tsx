@@ -45,7 +45,7 @@ import { JGA_CITIES } from "@/lib/jga-cities";
 
 const SITE_URL = "https://event-bliss.com";
 
-type CalcLang = "de" | "en" | "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr";
+type CalcLang = "de" | "en" | "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr" | "ar";
 
 const ROUTE_BY_LANG: Record<CalcLang, string> = {
   de: "/jga/kalkulator",
@@ -57,19 +57,20 @@ const ROUTE_BY_LANG: Record<CalcLang, string> = {
   nl: "/vrijgezellenfeest/calculator",
   pl: "/wieczor-kawalerski/kalkulator",
   tr: "/bekarliga-veda/hesaplayici",
+  ar: "/wadaa-azubiya/hasiba",
 };
 
 const LOCALE_BY_LANG: Record<CalcLang, string> = {
   de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", it: "it_IT",
-  pt: "pt_PT", nl: "nl_NL", pl: "pl_PL", tr: "tr_TR",
+  pt: "pt_PT", nl: "nl_NL", pl: "pl_PL", tr: "tr_TR", ar: "ar_AR",
 };
 const HTML_LANG_BY_LANG: Record<CalcLang, string> = {
   de: "de-DE", en: "en-GB", es: "es-ES", fr: "fr-FR", it: "it-IT",
-  pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR",
+  pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ar: "ar",
 };
 const INTL_LOCALE_FORMAT: Record<CalcLang, string> = {
   de: "de-DE", en: "en-GB", es: "es-ES", fr: "fr-FR", it: "it-IT",
-  pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR",
+  pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ar: "ar",
 };
 
 // ──────────────────────────────────────────────────────────────────
@@ -567,6 +568,56 @@ const COPY: Record<CalcLang, CalcCopy> = {
     jsonLdName: "Bekarlığa Veda Bütçe Hesaplayıcısı",
     jsonLdDescription: "Ücretsiz bekarlığa veda bütçesi hesaplayıcısı. Şehir, kişi, program — kişi başı ve toplam maliyet anında.",
   },
+  ar: {
+    badge: "أداة مجانية · بدون تسجيل",
+    h1Prefix: "حاسبة ميزانية ",
+    h1Highlight: "وداع العزوبية",
+    intro: "كم تكلّف حفلة وداع العزوبية فعليًا؟ اختر المدينة، أدخل عدد الأشخاص، حدّد البرنامج — التكلفة لكل شخص تُحتسب فورًا. ببيانات من 41 مدينة أوروبية.",
+    inputsTitle: "تفاصيل حفلتك الأساسية",
+    inputs: {
+      city: "المدينة / الوجهة",
+      people: "عدد الأشخاص",
+      nights: "عدد الليالي",
+      activities: "الأنشطة",
+      partyNights: "ليالي السهر",
+      hotel: "الإقامة",
+      travel: "احتساب تكلفة السفر",
+      travelHintAbroad: "تقدير رحلة طيران دولية",
+      travelHintDomestic: "حصة تكلفة القطار / السيارة",
+    },
+    hotelOptions: {
+      hostel: "نُزل / غرفة مشتركة",
+      airbnb: "AirBnB / شقة (للمجموعة)",
+      midrange: "فندق متوسط",
+      premium: "فاخر / 4–5 نجوم",
+    },
+    cityGroups: { dach: "ألمانيا والنمسا وسويسرا", intl: "دولي" },
+    resultPrefix: "وداع العزوبية في",
+    perPerson: "لكل شخص",
+    total: "إجمالي الميزانية",
+    rows: { travel: "السفر", hotel: "الإقامة", activities: "الأنشطة", party: "ليالي السهر", food: "الطعام والشراب" },
+    ctas: { createEvent: "أنشئ فعالية الآن", viewCityGuide: "عرض دليل المدينة" },
+    disclaimer: "تقديرات مبنية على متوسطات — قد تختلف ميزانيتك الفعلية بنسبة 20–30٪ حسب الموسم واليوم والأسلوب.",
+    infoHeading: "كيف تحسب الأداة",
+    infoBody: "القيم مبنية على نطاقات أسعار حقيقية من أدلة مدن EventBliss. أسعار الفنادق لكل شخص لكل ليلة، الأنشطة بمتوسط خيارات المدينة، ليالي السهر تشمل الدخول و4–6 مشروبات. الطعام والشراب 35 € لكل شخص يوميًا.",
+    faqHead: "أسئلة شائعة حول ميزانية وداع العزوبية",
+    faqs: [
+      { q: "كم تكلّف حفلة وداع العزوبية لكل شخص في المتوسط؟", a: "تتراوح عطلة نهاية الأسبوع بين 230 € (مدينة اقتصادية) و1000 € (وجهات فاخرة). المتوسط في ألمانيا والنمسا وسويسرا 350–550 € للشخص." },
+      { q: "ما أرخص مدينة لوداع العزوبية في أوروبا؟", a: "بوخارست، تالين، كراكوف ووارسو ابتداءً من 180 € للشخص لثلاث ليالٍ شاملة الطيران." },
+      { q: "كم من الوقت أحتاج للتخطيط للميزانية؟", a: "موسم الذروة (مايو–سبتمبر) 8–12 أسبوعًا، ومواعيد المهرجانات 6–9 أشهر." },
+      { q: "كيف نقسّم التكاليف بإنصاف بين الجميع؟", a: "يقسّم EventBliss جميع المصاريف تلقائيًا بإنصاف بين كل المشاركين — دون فوضى 'من يدين لمن'." },
+      { q: "فندق أم AirBnB لمجموعة وداع العزوبية؟", a: "ابتداءً من 6 أشخاص يكون AirBnB أوفر دائمًا تقريبًا: مكان خاص لما قبل الحفلة، دون وقت إغلاق، ونصف سعر الفندق." },
+    ],
+    finalH2Prefix: "خطّطوا لـ",
+    finalH2Highlight: "وداع العزوبية",
+    finalText: "الميزانية مجرد خطوة أولى. ينظّم EventBliss مجموعتكم، ويقسّم كل التكاليف تلقائيًا، ويوفّر أكثر من 24 لعبة.",
+    finalCta: "أنشئ فعالية مجانًا",
+    title: "حاسبة ميزانية وداع العزوبية — التكلفة لكل شخص | EventBliss",
+    description: "كم تكلّف حفلة وداع العزوبية فعليًا؟ حاسبة مجانية لـ41 مدينة أوروبية. الأشخاص، الفندق، الأنشطة — التكلفة لكل شخص فورًا.",
+    keywords: "حاسبة ميزانية وداع العزوبية, تكلفة حفلة العزوبية, حاسبة تكاليف وداع العزوبية",
+    jsonLdName: "حاسبة ميزانية وداع العزوبية",
+    jsonLdDescription: "حاسبة مجانية لميزانية وداع العزوبية. اختر المدينة والأشخاص والبرنامج — التكلفة لكل شخص والإجمالي فورًا.",
+  },
 };
 
 // ──────────────────────────────────────────────────────────────────
@@ -623,6 +674,7 @@ function detectLang(pathname: string): CalcLang {
   if (pathname.startsWith("/vrijgezellenfeest/calculator")) return "nl";
   if (pathname.startsWith("/wieczor-kawalerski/kalkulator")) return "pl";
   if (pathname.startsWith("/bekarliga-veda/hesaplayici")) return "tr";
+  if (pathname.startsWith("/wadaa-azubiya/hasiba")) return "ar";
   return "de";
 }
 
@@ -740,6 +792,8 @@ export default function JgaCalculator() {
     ogImage: `${SITE_URL}/og-image.png`,
     ogType: "website",
     locale: LOCALE_BY_LANG[lang],
+    htmlLang: HTML_LANG_BY_LANG[lang],
+    dir: lang === "ar" ? "rtl" : "ltr",
     keywords: t.keywords,
     jsonLd,
   });
@@ -751,14 +805,14 @@ export default function JgaCalculator() {
     .map(([l, path]) => ({
       lang: l,
       url: path,
-      label: { de: "Deutsch", en: "English", es: "Español", fr: "Français", it: "Italiano", pt: "Português", nl: "Nederlands", pl: "Polski", tr: "Türkçe" }[l],
+      label: { de: "Deutsch", en: "English", es: "Español", fr: "Français", it: "Italiano", pt: "Português", nl: "Nederlands", pl: "Polski", tr: "Türkçe", ar: "العربية" }[l],
     }));
 
   const dachCities = JGA_CITIES.filter((c) => !c.isAbroad);
   const intlCities = JGA_CITIES.filter((c) => c.isAbroad);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
       <LandingHeader />
 
       {/* HERO */}

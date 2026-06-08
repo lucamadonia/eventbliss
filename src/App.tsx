@@ -153,6 +153,7 @@ const AppContent = () => {
           <Route path="/vrijgezellenfeest/calculator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
           <Route path="/wieczor-kawalerski/kalkulator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
           <Route path="/bekarliga-veda/hesaplayici" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
+          <Route path="/wadaa-azubiya/hasiba" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCalculator /></Suspense></ErrorBoundary>} />
           <Route path="/jga/:stadt" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JgaCity /></Suspense></ErrorBoundary>} />
           <Route path="/ideen/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IdeaActivity /></Suspense></ErrorBoundary>} />
           <Route path="/stag-do/:city" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><StagDoCity /></Suspense></ErrorBoundary>} />
@@ -167,6 +168,7 @@ const AppContent = () => {
           <Route path="/vrijgezellinnenfeest/:stad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
           <Route path="/wieczor-panienski/:miasto" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
           <Route path="/kadin-bekarliga-veda/:sehir" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
+          <Route path="/wadaa-azubiya-banat/:sehir" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HenDoCity /></Suspense></ErrorBoundary>} />
           <Route path="/despedida/:ciudad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
           <Route path="/evg/:ville" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
           <Route path="/addio/:citta" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
@@ -174,6 +176,7 @@ const AppContent = () => {
           <Route path="/vrijgezellenfeest/:stad" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
           <Route path="/wieczor-kawalerski/:miasto" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
           <Route path="/bekarliga-veda/:sehir" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
+          <Route path="/wadaa-azubiya/:city" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><IntlCity /></Suspense></ErrorBoundary>} />
           {/* Multilingual activity glossary — 7 languages */}
           <Route path="/actividades/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
           <Route path="/activites/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
@@ -182,6 +185,7 @@ const AppContent = () => {
           <Route path="/activiteiten/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
           <Route path="/atrakcje/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
           <Route path="/aktiviteler/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
+          <Route path="/anshita/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityIntl /></Suspense></ErrorBoundary>} />
           {/* User Pages (protected) */}
           <Route path="/my-events" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyEvents /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/settings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><ProfileSettings /></ProtectedRoute></Suspense></ErrorBoundary>} />

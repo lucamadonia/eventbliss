@@ -14,6 +14,10 @@ export interface SeoConfig {
   jsonLd?: object | object[];
   locale?: string; // e.g. "de_DE"
   keywords?: string;
+  /** Document language for <html lang> (e.g. "ar", "es-ES"). */
+  htmlLang?: string;
+  /** Text direction for <html dir> — "rtl" for Arabic, else "ltr". */
+  dir?: "rtl" | "ltr";
 }
 
 const META_TAG_ID = "data-managed-seo";
@@ -76,6 +80,12 @@ export function useSEO(config: SeoConfig) {
     const previousTitle = document.title;
     document.title = config.title;
 
+    const docEl = document.documentElement;
+    const previousLang = docEl.lang;
+    const previousDir = docEl.getAttribute("dir");
+    if (config.htmlLang) docEl.lang = config.htmlLang;
+    if (config.dir) docEl.setAttribute("dir", config.dir);
+
     setMetaByName("description", config.description);
     if (config.keywords) {
       setMetaByName("keywords", config.keywords);
@@ -109,6 +119,11 @@ export function useSEO(config: SeoConfig) {
 
     return () => {
       document.title = previousTitle;
+      if (config.htmlLang) docEl.lang = previousLang;
+      if (config.dir) {
+        if (previousDir) docEl.setAttribute("dir", previousDir);
+        else docEl.removeAttribute("dir");
+      }
       removeJsonLd();
     };
   }, [
@@ -120,5 +135,7 @@ export function useSEO(config: SeoConfig) {
     config.locale,
     config.keywords,
     config.jsonLd,
+    config.htmlLang,
+    config.dir,
   ]);
 }
