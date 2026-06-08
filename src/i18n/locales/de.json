@@ -1190,7 +1190,9 @@
       "login": "Anmelden",
       "signUp": "Registrieren",
       "partner": "Partner",
-      "games": "Spiele"
+      "games": "Spiele",
+      "calculator": "Budget-Rechner",
+      "forAgencies": "Für Agenturen"
     },
     "hero": {
       "badge": "Die #1 Event-Planungs-Plattform",
@@ -1485,7 +1487,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Zypern",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Alle Rechte vorbehalten."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Alle Rechte vorbehalten.",
+      "popularCities": "Beliebte JGA-Städte",
+      "budgetCalculator": "JGA-Budget-Rechner",
+      "cityGuides": "JGA-Städte-Guides",
+      "activityIdeas": "Aktivitäten-Ideen",
+      "cookieSettings": "Cookie-Einstellungen verwalten"
     }
   },
   "legal": {

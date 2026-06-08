@@ -64,7 +64,9 @@
       "login": "Giriş",
       "signUp": "Kayıt",
       "partner": "Ortaklar",
-      "games": "Oyunlar"
+      "games": "Oyunlar",
+      "calculator": "Bütçe hesaplayıcı",
+      "forAgencies": "Ajanslar için"
     },
     "hero": {
       "badge": "#1 Etkinlik Planlama Platformu",
@@ -355,7 +357,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Kıbrıs",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Tüm hakları saklıdır."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Tüm hakları saklıdır.",
+      "popularCities": "Popüler bekarlığa veda şehirleri",
+      "budgetCalculator": "Bekarlığa veda bütçe hesaplayıcı",
+      "cityGuides": "Şehir rehberleri",
+      "activityIdeas": "Aktivite fikirleri",
+      "cookieSettings": "Çerez ayarlarını yönet"
     },
     "agencyPortal": {
       "title": "Ajans Portalı",

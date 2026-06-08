@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { localizedCalculatorPath } from "@/lib/seo-routes";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { UserProfileMenu } from "@/components/landing/UserProfileMenu";
 import { useAuthContext } from "@/components/auth/AuthProvider";
@@ -17,7 +18,7 @@ interface LandingHeaderProps {
 export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   
   // Defensive try-catch for HMR edge cases
@@ -32,7 +33,7 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
   const navItems = [
     { label: t("landing.nav.features"), href: "features" },
     { label: t("landing.nav.howItWorks"), href: "how-it-works" },
-    { label: t("landing.nav.calculator", "Budget-Rechner"), href: "jga/kalkulator", isRoute: true },
+    { label: t("landing.nav.calculator", "Budget-Rechner"), href: localizedCalculatorPath(i18n.language).slice(1), isRoute: true },
     { label: t("landing.nav.ideas"), href: "ideas", isRoute: true },
     { label: t("landing.nav.games"), href: "games", isRoute: true },
     { label: t("landing.nav.faq"), href: "faq" },

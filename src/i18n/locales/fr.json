@@ -64,7 +64,9 @@
       "login": "Connexion",
       "signUp": "S'inscrire",
       "partner": "Partenaires",
-      "games": "Jeux"
+      "games": "Jeux",
+      "calculator": "Calculateur de budget",
+      "forAgencies": "Pour les agences"
     },
     "hero": {
       "badge": "La plateforme #1 de planification d'événements",
@@ -355,7 +357,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Chypre",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Tous droits réservés."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Tous droits réservés.",
+      "popularCities": "Villes EVG populaires",
+      "budgetCalculator": "Calculateur de budget EVG",
+      "cityGuides": "Guides de villes EVG",
+      "activityIdeas": "Idées d’activités",
+      "cookieSettings": "Gérer les cookies"
     },
     "agencyPortal": {
       "title": "Portail Agence",
