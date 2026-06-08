@@ -1,8 +1,8 @@
 /**
  * Per-language agency testimonials for the Agency Pricing page.
  * Native (not translated) — each language has its own agencies, names, cities,
- * quotes and metrics. Generated; images are added later (initials avatar shown
- * until real portraits exist). Pick via getTestimonials(i18n.language).
+ * quotes, metrics AND its own AI-generated portrait (Higgsfield soul_2, stored
+ * in public/testimonials/<lang>-<idx>.webp). Pick via getTestimonials(i18n.language).
  */
 
 export interface AgencyTestimonial {
@@ -13,7 +13,7 @@ export interface AgencyTestimonial {
   metricLabel: string;
   tierLabel: string;
   tierColor: string;
-  /** Optional portrait URL; when absent an initials avatar is rendered. */
+  /** Portrait URL (falls back to an initials avatar if missing). */
   image?: string;
 }
 
@@ -26,7 +26,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+63%",
       "metricLabel": "mehr Buchungsanfragen",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/de-0.webp"
     },
     {
       "name": "Tobias Brunner",
@@ -35,7 +36,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "8 Std.",
       "metricLabel": "weniger Admin pro Woche",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/de-1.webp"
     },
     {
       "name": "Carolin Weiss",
@@ -44,7 +46,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "4×",
       "metricLabel": "mehr Folgeanfragen pro Event",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/de-2.webp"
     }
   ],
   "en": [
@@ -55,7 +58,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "47",
       "metricLabel": "New bookings via marketplace (90 days)",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/en-0.webp"
     },
     {
       "name": "Aoife Brennan",
@@ -64,7 +68,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−60%",
       "metricLabel": "Time spent on admin per week",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/en-1.webp"
     },
     {
       "name": "Marcus Donovan",
@@ -73,7 +78,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "3×",
       "metricLabel": "Referral leads per event",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/en-2.webp"
     }
   ],
   "es": [
@@ -84,7 +90,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "47",
       "metricLabel": "reservas en el primer trimestre",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/es-0.webp"
     },
     {
       "name": "Diego Carrasco Montero",
@@ -93,7 +100,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−60%",
       "metricLabel": "horas de gestión administrativa",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/es-1.webp"
     },
     {
       "name": "Valeria Domínguez Olvera",
@@ -102,7 +110,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "3×",
       "metricLabel": "leads por evento celebrado",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/es-2.webp"
     }
   ],
   "fr": [
@@ -113,7 +122,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+38%",
       "metricLabel": "réservations en haute saison",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/fr-0.webp"
     },
     {
       "name": "Thomas Mercier",
@@ -122,7 +132,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−50%",
       "metricLabel": "temps passé sur l'administratif",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/fr-1.webp"
     },
     {
       "name": "Inès Marchand",
@@ -131,7 +142,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "11",
       "metricLabel": "nouveaux groupes via les écrans",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/fr-2.webp"
     }
   ],
   "it": [
@@ -142,7 +154,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+38%",
       "metricLabel": "prenotazioni a stagione",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/it-0.webp"
     },
     {
       "name": "Lorenzo Marchetti",
@@ -151,7 +164,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−55%",
       "metricLabel": "tempo su gestione e fatture",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/it-1.webp"
     },
     {
       "name": "Federica Esposito",
@@ -160,7 +174,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "47",
       "metricLabel": "nuovi contatti dagli schermi live",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/it-2.webp"
     }
   ],
   "nl": [
@@ -171,7 +186,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+62%",
       "metricLabel": "meer boekingen",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/nl-0.webp"
     },
     {
       "name": "Thomas Vermeulen",
@@ -180,7 +196,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−70%",
       "metricLabel": "minder administratietijd",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/nl-1.webp"
     },
     {
       "name": "Lotte Janssens",
@@ -189,7 +206,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "11",
       "metricLabel": "nieuwe leads per event",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/nl-2.webp"
     }
   ],
   "pt": [
@@ -200,7 +218,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+62%",
       "metricLabel": "Reservas via marketplace",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/pt-0.webp"
     },
     {
       "name": "Rui Cavaco",
@@ -209,7 +228,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−55%",
       "metricLabel": "Tempo em tarefas administrativas",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/pt-1.webp"
     },
     {
       "name": "Camila Nogueira",
@@ -218,7 +238,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "8×",
       "metricLabel": "Leads por evento",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/pt-2.webp"
     }
   ],
   "pl": [
@@ -229,7 +250,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+40%",
       "metricLabel": "więcej rezerwacji online",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/pl-0.webp"
     },
     {
       "name": "Tomasz Kowalczyk",
@@ -238,7 +260,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−60%",
       "metricLabel": "mniej pracy administracyjnej",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/pl-1.webp"
     },
     {
       "name": "Magdalena Lewandowska",
@@ -247,7 +270,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "3×",
       "metricLabel": "więcej leadów z eventu",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/pl-2.webp"
     }
   ],
   "tr": [
@@ -258,7 +282,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+63%",
       "metricLabel": "yeni rezervasyon",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/tr-0.webp"
     },
     {
       "name": "Burak Çetinkaya",
@@ -267,7 +292,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−55%",
       "metricLabel": "idari iş yükü",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/tr-1.webp"
     },
     {
       "name": "Elif Yıldırım",
@@ -276,7 +302,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "4×",
       "metricLabel": "etkinlik başına lead",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/tr-2.webp"
     }
   ],
   "ar": [
@@ -287,7 +314,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "+63%",
       "metricLabel": "زيادة في الحجوزات الشهرية",
       "tierLabel": "Professional",
-      "tierColor": "from-purple-600 to-pink-600"
+      "tierColor": "from-purple-600 to-pink-600",
+      "image": "/testimonials/ar-0.webp"
     },
     {
       "name": "كريم منصور",
@@ -296,7 +324,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "−75%",
       "metricLabel": "تقليص الوقت الإداري",
       "tierLabel": "Enterprise",
-      "tierColor": "from-amber-500 to-red-600"
+      "tierColor": "from-amber-500 to-red-600",
+      "image": "/testimonials/ar-1.webp"
     },
     {
       "name": "نورة القحطاني",
@@ -305,7 +334,8 @@ export const TESTIMONIALS_BY_LANG: Record<string, AgencyTestimonial[]> = {
       "metricValue": "4×",
       "metricLabel": "مضاعفة العملاء المحتملين لكل فعالية",
       "tierLabel": "Professional",
-      "tierColor": "from-pink-600 to-rose-500"
+      "tierColor": "from-pink-600 to-rose-500",
+      "image": "/testimonials/ar-2.webp"
     }
   ]
 };
