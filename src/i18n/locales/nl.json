@@ -43,7 +43,13 @@
     "saved": "Opgeslagen",
     "openInNewTab": "Openen in nieuw tabblad",
     "copyLink": "Link kopiëren",
-    "copyCode": "Code kopiëren"
+    "copyCode": "Code kopiëren",
+    "status": "Status",
+    "refresh": "Vernieuwen",
+    "actions": "Acties",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "dismiss": "Sluiten"
   },
   "feedback": {
     "button": "Feedback",
@@ -278,7 +284,13 @@
           "participantList": "Deelnemers",
           "expenses": "Kosten",
           "messages": "Berichten",
-          "askAI": "Vraag AI"
+          "askAI": "Vraag AI",
+          "statusConfirmed": "Bevestigd",
+          "statusMaybe": "Misschien",
+          "statusDeclined": "Afgezegd",
+          "statusInvited": "Uitgenodigd",
+          "newResponse": "Nieuwe reactie van Julia!",
+          "haveResponded": "hebben gereageerd"
         },
         "expenses": {
           "total": "Totaal",
@@ -289,7 +301,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Diner Restaurant",
           "drinks": "Drankjes Bar",
-          "gift": "Verrassingscadeau"
+          "gift": "Verrassingscadeau",
+          "catTransport": "Vervoer",
+          "catFood": "Eten",
+          "catActivities": "Activiteiten",
+          "catDrinks": "Drankjes",
+          "categories": "Categorieën",
+          "settlements": "Verrekening"
         },
         "ai": {
           "destinations": "Bestemmingen",
@@ -299,7 +317,8 @@
           "placeholder": "Kies optie...",
           "generating": "Genereren...",
           "inputPlaceholder": "Vraag AI...",
-          "response": "**Top 3 activiteitensuggesties voor je vrijgezellenfeest:**\n\n🚤 **Boottocht** - Ontspanning op het water\n\n🎯 **Escape Room** - Teamwork en spanning\n\n🍻 **Brouwerij tour** - Bierproeverij met rondleiding\n\n*Gebaseerd op: Budget €150-250, 8 deelnemers*"
+          "response": "**Top 3 activiteitensuggesties voor je vrijgezellenfeest:**\n\n🚤 **Boottocht** - Ontspanning op het water\n\n🎯 **Escape Room** - Teamwork en spanning\n\n🍻 **Brouwerij tour** - Bierproeverij met rondleiding\n\n*Gebaseerd op: Budget €150-250, 8 deelnemers*",
+          "regenerate": "Opnieuw genereren"
         },
         "survey": {
           "selectName": "Selecteer je naam",
@@ -314,7 +333,16 @@
           "wellness": "Wellness",
           "party": "Feest",
           "culture": "Cultuur",
-          "submit": "Antwoord versturen"
+          "submit": "Antwoord versturen",
+          "budgetLow": "Zuinig",
+          "budgetMid": "Gemiddeld",
+          "budgetHigh": "Royaal",
+          "budgetMax": "All-in",
+          "thankYou": "Bedankt!",
+          "submitted": "Je antwoord is opgeslagen",
+          "progress": "Voortgang",
+          "deadline": "Nog 5 dagen tot de deadline",
+          "submitting": "Wordt verzonden..."
         },
         "agencies": {
           "clickCity": "Klik op een stad",
@@ -327,7 +355,13 @@
           "boat": "Boottochten",
           "carnival": "Carnaval & Feest",
           "luxury": "Luxe & Cultuur",
-          "premium": "Premium Events"
+          "premium": "Premium Events",
+          "nightlife": "Nachtleven",
+          "searchPlaceholder": "Stad zoeken...",
+          "contact": "Aanvragen",
+          "cities": "Steden",
+          "verified": "Geverifieerd",
+          "partners": "Partners"
         }
       }
     },
@@ -433,6 +467,11 @@
         "avgCommission": "Gem. Commissie",
         "cities": "Steden"
       }
+    },
+    "stats": {
+      "agencies": "Partnerbureaus",
+      "countries": "Landen",
+      "languages": "Talen"
     }
   },
   "legal": {
@@ -862,7 +901,16 @@
     "resetPassword": "Reset password",
     "resettingPassword": "Resetting...",
     "passwordResetSuccess": "Password reset!",
-    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in."
+    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in.",
+    "passwordRequired": "Vul beide wachtwoordvelden in",
+    "passwordTooShort": "Wachtwoord moet minstens 8 tekens bevatten",
+    "passwordMismatch": "Wachtwoorden komen niet overeen",
+    "passwordChanged": "Wachtwoord succesvol gewijzigd",
+    "passwordChangeError": "Fout bij het wijzigen van het wachtwoord",
+    "changePasswordTitle": "Wachtwoord wijzigen vereist",
+    "changePasswordDescription": "Om veiligheidsredenen moet je je wachtwoord wijzigen voordat je verder kunt.",
+    "newPassword": "Nieuw wachtwoord",
+    "changePassword": "Wachtwoord wijzigen"
   },
   "survey": {
     "title": "Je Antwoord",
@@ -1691,16 +1739,27 @@
   "cookie": {
     "title": "We gebruiken cookies",
     "description": "We gebruiken cookies om je ervaring te verbeteren. Pas je voorkeuren hieronder aan.",
-    "necessary": "Noodzakelijke cookies",
+    "necessary": {
+      "title": "Noodzakelijke cookies",
+      "description": "Vereist voor de goede werking van de website"
+    },
     "necessaryDesc": "Essentieel voor de werking van de site. Kunnen niet worden uitgeschakeld.",
-    "analytics": "Analytische cookies",
+    "analytics": {
+      "title": "Analytische cookies",
+      "description": "Helpen ons begrijpen hoe bezoekers met onze website omgaan"
+    },
     "analyticsDesc": "Helpen ons te begrijpen hoe je onze site gebruikt.",
-    "marketing": "Marketing cookies",
+    "marketing": {
+      "title": "Marketingcookies",
+      "description": "Gebruikt om gepersonaliseerde advertenties te tonen"
+    },
     "marketingDesc": "Gebruikt om gepersonaliseerde advertenties te tonen.",
     "acceptAll": "Alles accepteren",
     "acceptSelected": "Selectie accepteren",
     "rejectAll": "Alles weigeren",
-    "learnMore": "Meer informatie"
+    "learnMore": "Meer informatie",
+    "hideDetails": "Details verbergen",
+    "showDetails": "Details tonen"
   },
   "newsletter": {
     "title": "Blijf op de hoogte",
@@ -1780,7 +1839,15 @@
       "placeholder": "VOUCHERCODE",
       "redeem": "Inwisselen",
       "success": "Voucher succesvol ingewisseld!",
-      "error": "Ongeldige vouchercode"
+      "error": "Ongeldige vouchercode",
+      "discountHint": "Met deze code krijg je korting!",
+      "discountHintDesc": "Klik op 'Kopen' of 'Abonneren' en voer de code in bij het afrekenen."
+    },
+    "credits": {
+      "monthly": "50 AI-credits/maand",
+      "remaining": "{{remaining}} van {{limit}} credits over",
+      "yearly": "100 AI-credits/maand",
+      "lifetime": "75 AI-credits/maand"
     }
   },
   "admin": {
@@ -4426,7 +4493,33 @@
       "price60plus": "60 €+",
       "rating": "Beoordeling",
       "rating4plus": "4+ sterren",
-      "resetAll": "Alles resetten"
+      "resetAll": "Alles resetten",
+      "country": "Land",
+      "countryAll": "Alle landen",
+      "sort": "Sortering",
+      "sortPopularity": "Populair",
+      "sortRating": "Best beoordeeld",
+      "sortPriceAsc": "Prijs oplopend",
+      "sortPriceDesc": "Prijs aflopend",
+      "sortNewest": "Nieuwste eerst",
+      "participants": "Voor minstens X personen",
+      "participantsPlaceholder": "bijv. 10",
+      "duration": "Max. duur",
+      "durationAll": "Alle",
+      "locationType": "Type dienst",
+      "anyLocation": "Alle",
+      "onSite": "Ter plaatse (bij de klant)",
+      "atAgency": "Bij het bureau",
+      "online": "Online",
+      "flexible": "Flexibel",
+      "priceType": "Prijsmodel",
+      "priceAny": "Alle",
+      "perPerson": "Per persoon",
+      "flatRate": "Vaste prijs",
+      "perHour": "Per uur",
+      "custom": "Aangepast",
+      "featuredOnly": "Alleen uitgelicht",
+      "instantBook": "Direct boekbaar"
     },
     "tiers": {
       "starter": "Starter",
@@ -5283,7 +5376,9 @@
       "subtitle": "EventBliss trekt dagelijks nieuwe gebruikers aan via games, enquêtes en TV-schermen. Als partner-agency ben je precies waar zij aan het plannen zijn – klaar om te boeken.",
       "trustNoFee": "Geen opstartkosten",
       "trustCancel": "Altijd opzegbaar",
-      "trustInstant": "Direct live"
+      "trustInstant": "Direct live",
+      "awardLine": "Best-in-Class evenementenplatform · 2026",
+      "seePricing": "Bekijk prijzen"
     },
     "stats": {
       "games": "Live Party Games",
@@ -5507,5 +5602,92 @@
       "titleLine2": "",
       "subtitle": "Echte cijfers, echte stemmen — na hun eerste kwartaal met EventBliss."
     }
+  },
+  "agencyApply": {
+    "form": {
+      "country": "Land",
+      "title": "Nu aanmelden",
+      "agencyMode": "Bureautype",
+      "existingAgency": "Bureau selecteren uit de gids",
+      "newAgency": "Nieuw bureau registreren",
+      "searchAgency": "Bureau zoeken...",
+      "noAgenciesFound": "Geen bureaus gevonden",
+      "agencyName": "Bureaunaam",
+      "city": "Stad",
+      "contactEmail": "Contact-e-mail",
+      "phone": "Telefoon",
+      "website": "Website",
+      "motivation": "Waarom wil je partner worden?",
+      "motivationPlaceholder": "Vertel ons over je bureau en waarom een partnerschap voor beide kanten voordelig zou zijn...",
+      "expectedReferrals": "Verwachte maandelijkse verwijzingen",
+      "selectOption": "Maak een keuze",
+      "payoutMethod": "Voorkeursuitbetaling",
+      "bankTransfer": "Bankoverschrijving",
+      "privacy": "Ik accepteer het",
+      "agencyAgreement": "Ik heb de bureauovereenkomst gelezen en geaccepteerd — in het bijzonder de bepalingen over exclusiviteit (§ 6), bescherming tegen omzeiling (§ 6.2) en de annuleringsquotaregel vanaf 20% (§ 7).",
+      "agencyAgreementLink": "Bureauovereenkomst openen →",
+      "submitting": "Bezig met verzenden...",
+      "submit": "Aanvraag verzenden"
+    },
+    "errors": {
+      "submitFailed": "Fout bij het verzenden van de aanvraag"
+    },
+    "benefits": {
+      "commission": {
+        "title": "Aantrekkelijke commissies",
+        "description": "Tot 20% per boeking via jouw verwijzing"
+      },
+      "tracking": {
+        "title": "Verwijzingstracking",
+        "description": "Automatische toewijzing via unieke code"
+      },
+      "vouchers": {
+        "title": "Exclusieve vouchers",
+        "description": "Speciale kortingscodes voor jouw klanten"
+      },
+      "support": {
+        "title": "Partnerondersteuning",
+        "description": "Toegewijd aanspreekpunt voor al je vragen"
+      }
+    },
+    "stats": {
+      "agencies": "Partnerbureaus",
+      "commissionRate": "Max. commissie",
+      "payouts": "Uitbetaald"
+    },
+    "success": {
+      "title": "Aanvraag verzonden!",
+      "description": "Bedankt voor je interesse in een partnerschap.",
+      "nextSteps": "We beoordelen je aanvraag en nemen binnen 48 uur contact met je op.",
+      "goToDashboard": "Naar het Agency Dashboard"
+    },
+    "hero": {
+      "badge": "Bureaupartnerschap",
+      "title": "Word EventBliss-partner",
+      "description": "Verdien commissie voor elke klant die je naar EventBliss brengt. Exclusieve voordelen voor evenementenbureaus."
+    }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Bureau niet gevonden",
+    "notFoundBody": "Het bureau met de slug \"{{slug}}\" bestaat niet of is niet meer actief.",
+    "toMarketplace": "Naar de marktplaats",
+    "breadcrumb": "Marktplaats",
+    "stats": {
+      "services": "Diensten",
+      "bookings": "Boekingen",
+      "rating": "Beoordeling",
+      "since": "Sinds {{year}}",
+      "activeSince": "Actief sinds",
+      "verified": "Geverifieerd",
+      "standard": "Standaard"
+    },
+    "tierBenefitsTitle": "Tiervoordelen",
+    "aboutTitle": "Over ons",
+    "aboutWithCity": "{{name}} is sinds {{year}} actief in {{city}}.",
+    "aboutNoCity": "{{name}} is sinds {{year}} actief.",
+    "servicesTitle": "Diensten",
+    "noServices": "Dit bureau heeft nog geen diensten in de marktplaats.",
+    "reviewsTitle": "Beoordelingen",
+    "noReviews": "Nog geen beoordelingen voor dit bureau."
   }
 }

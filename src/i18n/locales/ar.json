@@ -43,7 +43,13 @@
     "saved": "تم الحفظ",
     "openInNewTab": "فتح في علامة تبويب جديدة",
     "copyLink": "نسخ الرابط",
-    "copyCode": "نسخ الكود"
+    "copyCode": "نسخ الكود",
+    "status": "الحالة",
+    "refresh": "تحديث",
+    "actions": "إجراءات",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "dismiss": "إغلاق"
   },
   "feedback": {
     "button": "ملاحظات",
@@ -278,7 +284,13 @@
           "participantList": "المشاركون",
           "expenses": "النفقات",
           "messages": "الرسائل",
-          "askAI": "اسأل AI"
+          "askAI": "اسأل AI",
+          "statusConfirmed": "مؤكَّد",
+          "statusMaybe": "ربما",
+          "statusDeclined": "معتذر",
+          "statusInvited": "مدعو",
+          "newResponse": "رد جديد من جوليا!",
+          "haveResponded": "قد ردّوا"
         },
         "expenses": {
           "total": "الإجمالي",
@@ -289,7 +301,13 @@
           "escapeRoom": "غرفة الهروب",
           "dinner": "عشاء في المطعم",
           "drinks": "مشروبات في البار",
-          "gift": "هدية مفاجئة"
+          "gift": "هدية مفاجئة",
+          "catTransport": "المواصلات",
+          "catFood": "الطعام",
+          "catActivities": "الأنشطة",
+          "catDrinks": "المشروبات",
+          "categories": "الفئات",
+          "settlements": "التسوية"
         },
         "ai": {
           "destinations": "الوجهات",
@@ -299,7 +317,8 @@
           "placeholder": "اختر خياراً...",
           "generating": "جار التوليد...",
           "inputPlaceholder": "اسأل AI...",
-          "response": "**أفضل 3 اقتراحات للأنشطة لحفلة وداع العزوبية:**\n\n🚤 **جولة بالقارب** - استرخاء على الماء\n\n🎯 **غرفة الهروب** - عمل جماعي وإثارة\n\n🍻 **جولة في مصنع البيرة** - تذوق مع جولة\n\n*بناءً على: ميزانية €150-250، 8 مشاركين*"
+          "response": "**أفضل 3 اقتراحات للأنشطة لحفلة وداع العزوبية:**\n\n🚤 **جولة بالقارب** - استرخاء على الماء\n\n🎯 **غرفة الهروب** - عمل جماعي وإثارة\n\n🍻 **جولة في مصنع البيرة** - تذوق مع جولة\n\n*بناءً على: ميزانية €150-250، 8 مشاركين*",
+          "regenerate": "إعادة الإنشاء"
         },
         "survey": {
           "selectName": "اختر اسمك",
@@ -314,7 +333,16 @@
           "wellness": "العافية",
           "party": "حفلة",
           "culture": "ثقافة",
-          "submit": "إرسال الرد"
+          "submit": "إرسال الرد",
+          "budgetLow": "اقتصادي",
+          "budgetMid": "متوسط",
+          "budgetHigh": "سخي",
+          "budgetMax": "الكل شامل",
+          "thankYou": "شكرًا!",
+          "submitted": "تم حفظ ردك",
+          "progress": "التقدم",
+          "deadline": "باقٍ 5 أيام على الموعد النهائي",
+          "submitting": "جارٍ الإرسال..."
         },
         "agencies": {
           "clickCity": "انقر على مدينة",
@@ -327,7 +355,13 @@
           "boat": "جولات بالقارب",
           "carnival": "كرنفال & حفلة",
           "luxury": "فخامة & ثقافة",
-          "premium": "فعاليات بريميوم"
+          "premium": "فعاليات بريميوم",
+          "nightlife": "الحياة الليلية",
+          "searchPlaceholder": "ابحث عن مدينة...",
+          "contact": "استفسار",
+          "cities": "المدن",
+          "verified": "موثَّق",
+          "partners": "شركاء"
         }
       }
     },
@@ -433,6 +467,11 @@
         "avgCommission": "متوسط العمولة",
         "cities": "المدن"
       }
+    },
+    "stats": {
+      "agencies": "الوكالات الشريكة",
+      "countries": "الدول",
+      "languages": "اللغات"
     }
   },
   "legal": {
@@ -862,7 +901,16 @@
     "resetPassword": "Reset password",
     "resettingPassword": "Resetting...",
     "passwordResetSuccess": "Password reset!",
-    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in."
+    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in.",
+    "passwordRequired": "يرجى تعبئة حقلي كلمة المرور",
+    "passwordTooShort": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح",
+    "passwordChangeError": "حدث خطأ أثناء تغيير كلمة المرور",
+    "changePasswordTitle": "يلزم تغيير كلمة المرور",
+    "changePasswordDescription": "لأسباب أمنية، يجب عليك تغيير كلمة المرور قبل المتابعة.",
+    "newPassword": "كلمة مرور جديدة",
+    "changePassword": "تغيير كلمة المرور"
   },
   "survey": {
     "title": "إجابتك",
@@ -1691,16 +1739,27 @@
   "cookie": {
     "title": "نستخدم ملفات تعريف الارتباط",
     "description": "نستخدم ملفات تعريف الارتباط لتحسين تجربتك. يمكنك تخصيص تفضيلاتك أدناه.",
-    "necessary": "ملفات تعريف الارتباط الضرورية",
+    "necessary": {
+      "title": "ملفات تعريف الارتباط الضرورية",
+      "description": "مطلوبة لعمل الموقع بشكل صحيح"
+    },
     "necessaryDesc": "ضرورية لعمل الموقع. لا يمكن إيقاف تشغيلها.",
-    "analytics": "ملفات تعريف الارتباط التحليلية",
+    "analytics": {
+      "title": "ملفات تعريف الارتباط التحليلية",
+      "description": "تساعدنا على فهم كيفية تفاعل الزوار مع موقعنا"
+    },
     "analyticsDesc": "تساعدنا في فهم كيفية استخدامك لموقعنا.",
-    "marketing": "ملفات تعريف الارتباط التسويقية",
+    "marketing": {
+      "title": "ملفات تعريف الارتباط التسويقية",
+      "description": "تُستخدم لعرض إعلانات مخصصة"
+    },
     "marketingDesc": "تُستخدم لعرض إعلانات مخصصة لك.",
     "acceptAll": "قبول الكل",
     "acceptSelected": "قبول المحدد",
     "rejectAll": "رفض الكل",
-    "learnMore": "اعرف المزيد"
+    "learnMore": "اعرف المزيد",
+    "hideDetails": "إخفاء التفاصيل",
+    "showDetails": "عرض التفاصيل"
   },
   "newsletter": {
     "title": "ابق على اطلاع",
@@ -1780,7 +1839,15 @@
       "placeholder": "كود القسيمة",
       "redeem": "استخدام",
       "success": "تم استخدام القسيمة بنجاح!",
-      "error": "كود قسيمة غير صالح"
+      "error": "كود قسيمة غير صالح",
+      "discountHint": "هذا الرمز يمنحك خصمًا!",
+      "discountHintDesc": "انقر على \"شراء\" أو \"اشتراك\" وأدخل الرمز عند الدفع."
+    },
+    "credits": {
+      "monthly": "50 رصيد AI شهريًا",
+      "remaining": "تبقّى {{remaining}} من {{limit}} رصيد",
+      "yearly": "100 رصيد AI شهريًا",
+      "lifetime": "75 رصيد AI شهريًا"
     }
   },
   "admin": {
@@ -4400,7 +4467,33 @@
       "price60plus": "+60 €",
       "rating": "التقييم",
       "rating4plus": "+4 نجوم",
-      "resetAll": "إعادة تعيين الكل"
+      "resetAll": "إعادة تعيين الكل",
+      "country": "الدولة",
+      "countryAll": "كل الدول",
+      "sort": "الترتيب",
+      "sortPopularity": "الأكثر رواجًا",
+      "sortRating": "الأعلى تقييمًا",
+      "sortPriceAsc": "السعر تصاعديًا",
+      "sortPriceDesc": "السعر تنازليًا",
+      "sortNewest": "الأحدث أولًا",
+      "participants": "لـ X أشخاص على الأقل",
+      "participantsPlaceholder": "مثل: 10",
+      "duration": "أقصى مدة",
+      "durationAll": "الكل",
+      "locationType": "نوع الخدمة",
+      "anyLocation": "أي مكان",
+      "onSite": "في الموقع (لدى العميل)",
+      "atAgency": "في الوكالة",
+      "online": "عبر الإنترنت",
+      "flexible": "مرن",
+      "priceType": "نموذج التسعير",
+      "priceAny": "الكل",
+      "perPerson": "للشخص الواحد",
+      "flatRate": "سعر ثابت",
+      "perHour": "للساعة",
+      "custom": "مخصص",
+      "featuredOnly": "المميّزة فقط",
+      "instantBook": "حجز فوري"
     },
     "tiers": {
       "starter": "أساسي",
@@ -5006,7 +5099,9 @@
       "subtitle": "يجذب EventBliss مستخدمين جدداً كل يوم عبر الألعاب والاستطلاعات وشاشات التلفاز. كوكالة شريكة، أنت تماماً حيث يخططون – جاهزون للحجز.",
       "trustNoFee": "بدون رسوم إعداد",
       "trustCancel": "إلغاء في أي وقت",
-      "trustInstant": "مباشر فوراً"
+      "trustInstant": "مباشر فوراً",
+      "awardLine": "أفضل منصة فعاليات في فئتها · 2026",
+      "seePricing": "عرض الأسعار"
     },
     "stats": {
       "games": "ألعاب حفلات مباشرة",
@@ -5230,5 +5325,92 @@
       "titleLine2": "",
       "subtitle": "أرقام حقيقية وأصوات حقيقية — بعد ربعهم الأول مع EventBliss."
     }
+  },
+  "agencyApply": {
+    "form": {
+      "country": "الدولة",
+      "title": "قدّم الآن",
+      "agencyMode": "نوع الوكالة",
+      "existingAgency": "اختر وكالة من الدليل",
+      "newAgency": "تسجيل وكالة جديدة",
+      "searchAgency": "ابحث عن وكالة...",
+      "noAgenciesFound": "لم يتم العثور على وكالات",
+      "agencyName": "اسم الوكالة",
+      "city": "المدينة",
+      "contactEmail": "البريد الإلكتروني للتواصل",
+      "phone": "الهاتف",
+      "website": "الموقع الإلكتروني",
+      "motivation": "لماذا ترغب في أن تصبح شريكًا؟",
+      "motivationPlaceholder": "أخبرنا عن وكالتك ولماذا ستكون الشراكة مفيدة للطرفين...",
+      "expectedReferrals": "الإحالات الشهرية المتوقعة",
+      "selectOption": "يرجى الاختيار",
+      "payoutMethod": "طريقة الدفع المفضلة",
+      "bankTransfer": "تحويل بنكي",
+      "privacy": "أوافق على",
+      "agencyAgreement": "لقد قرأت ووافقت على اتفاقية الوكالة — وبخاصة البنود المتعلقة بالحصرية (§ 6)، وحماية الالتفاف (§ 6.2)، وقاعدة حصة الإلغاء اعتبارًا من 20% (§ 7).",
+      "agencyAgreementLink": "فتح اتفاقية الوكالة →",
+      "submitting": "جارٍ الإرسال...",
+      "submit": "إرسال الطلب"
+    },
+    "errors": {
+      "submitFailed": "حدث خطأ أثناء إرسال الطلب"
+    },
+    "benefits": {
+      "commission": {
+        "title": "عمولات جذابة",
+        "description": "حتى 20% لكل حجز عبر إحالتك"
+      },
+      "tracking": {
+        "title": "تتبّع الإحالات",
+        "description": "إسناد تلقائي عبر رمز فريد"
+      },
+      "vouchers": {
+        "title": "قسائم حصرية",
+        "description": "رموز خصم خاصة لعملائك"
+      },
+      "support": {
+        "title": "دعم الشركاء",
+        "description": "جهة اتصال مخصصة لكل الاستفسارات"
+      }
+    },
+    "stats": {
+      "agencies": "الوكالات الشريكة",
+      "commissionRate": "أقصى عمولة",
+      "payouts": "المبالغ المدفوعة"
+    },
+    "success": {
+      "title": "تم إرسال الطلب!",
+      "description": "شكرًا لاهتمامك بالشراكة.",
+      "nextSteps": "سنراجع طلبك ونعاود التواصل معك خلال 48 ساعة.",
+      "goToDashboard": "إلى لوحة تحكم الوكالة"
+    },
+    "hero": {
+      "badge": "شراكة الوكالات",
+      "title": "كن شريكًا في EventBliss",
+      "description": "اكسب عمولات عن كل عميل تجلبه إلى EventBliss. مزايا حصرية لوكالات الفعاليات."
+    }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "لم يتم العثور على الوكالة",
+    "notFoundBody": "الوكالة ذات المعرّف \"{{slug}}\" غير موجودة أو لم تعد نشطة.",
+    "toMarketplace": "إلى السوق",
+    "breadcrumb": "السوق",
+    "stats": {
+      "services": "الخدمات",
+      "bookings": "الحجوزات",
+      "rating": "التقييم",
+      "since": "منذ {{year}}",
+      "activeSince": "نشطة منذ",
+      "verified": "موثَّقة",
+      "standard": "قياسية"
+    },
+    "tierBenefitsTitle": "مزايا الفئة",
+    "aboutTitle": "من نحن",
+    "aboutWithCity": "{{name}} نشطة في {{city}} منذ {{year}}.",
+    "aboutNoCity": "{{name}} نشطة منذ {{year}}.",
+    "servicesTitle": "الخدمات",
+    "noServices": "لا تملك هذه الوكالة أي خدمات في السوق بعد.",
+    "reviewsTitle": "التقييمات",
+    "noReviews": "لا توجد تقييمات لهذه الوكالة بعد."
   }
 }

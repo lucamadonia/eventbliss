@@ -43,7 +43,13 @@
     "saved": "Salvato",
     "openInNewTab": "Apri in nuova scheda",
     "copyLink": "Copia link",
-    "copyCode": "Copia codice"
+    "copyCode": "Copia codice",
+    "status": "Stato",
+    "refresh": "Aggiorna",
+    "actions": "Azioni",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "dismiss": "Chiudi"
   },
   "feedback": {
     "button": "Feedback",
@@ -278,7 +284,13 @@
           "participantList": "Partecipanti",
           "expenses": "Spese",
           "messages": "Messaggi",
-          "askAI": "Chiedi all'AI"
+          "askAI": "Chiedi all'AI",
+          "statusConfirmed": "Confermato",
+          "statusMaybe": "Forse",
+          "statusDeclined": "Annullato",
+          "statusInvited": "Invitato",
+          "newResponse": "Nuova risposta da Julia!",
+          "haveResponded": "hanno risposto"
         },
         "expenses": {
           "total": "Totale",
@@ -289,7 +301,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Cena al Ristorante",
           "drinks": "Bevande al Bar",
-          "gift": "Regalo Sorpresa"
+          "gift": "Regalo Sorpresa",
+          "catTransport": "Trasporti",
+          "catFood": "Cibo",
+          "catActivities": "Attività",
+          "catDrinks": "Bevande",
+          "categories": "Categorie",
+          "settlements": "Conguaglio"
         },
         "ai": {
           "destinations": "Destinazioni",
@@ -299,7 +317,8 @@
           "placeholder": "Scegli un'opzione...",
           "generating": "Generazione...",
           "inputPlaceholder": "Chiedi all'AI...",
-          "response": "**Top 3 suggerimenti attività per l'addio al celibato:**\n\n🚤 **Tour in barca** - Relax sull'acqua\n\n🎯 **Escape Room** - Lavoro di squadra ed emozione\n\n🍻 **Tour del birrificio** - Degustazione con visita\n\n*Basato su: Budget €150-250, 8 partecipanti*"
+          "response": "**Top 3 suggerimenti attività per l'addio al celibato:**\n\n🚤 **Tour in barca** - Relax sull'acqua\n\n🎯 **Escape Room** - Lavoro di squadra ed emozione\n\n🍻 **Tour del birrificio** - Degustazione con visita\n\n*Basato su: Budget €150-250, 8 partecipanti*",
+          "regenerate": "Rigenera"
         },
         "survey": {
           "selectName": "Seleziona il tuo nome",
@@ -314,7 +333,16 @@
           "wellness": "Benessere",
           "party": "Festa",
           "culture": "Cultura",
-          "submit": "Invia risposta"
+          "submit": "Invia risposta",
+          "budgetLow": "Economico",
+          "budgetMid": "Medio",
+          "budgetHigh": "Generoso",
+          "budgetMax": "All-in",
+          "thankYou": "Grazie!",
+          "submitted": "La tua risposta è stata salvata",
+          "progress": "Avanzamento",
+          "deadline": "Ancora 5 giorni alla scadenza",
+          "submitting": "Invio in corso..."
         },
         "agencies": {
           "clickCity": "Clicca su una città",
@@ -327,7 +355,13 @@
           "boat": "Tour in barca",
           "carnival": "Carnevale & Festa",
           "luxury": "Lusso & Cultura",
-          "premium": "Eventi Premium"
+          "premium": "Eventi Premium",
+          "nightlife": "Vita notturna",
+          "searchPlaceholder": "Cerca città...",
+          "contact": "Richiedi",
+          "cities": "Città",
+          "verified": "Verificato",
+          "partners": "Partner"
         }
       }
     },
@@ -383,6 +417,11 @@
         "bookings": "Prenotazioni",
         "commission": "Commissione"
       }
+    },
+    "stats": {
+      "agencies": "Agenzie partner",
+      "countries": "Paesi",
+      "languages": "Lingue"
     }
   },
   "legal": {
@@ -812,7 +851,16 @@
     "resetPassword": "Reset password",
     "resettingPassword": "Resetting...",
     "passwordResetSuccess": "Password reset!",
-    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in."
+    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in.",
+    "passwordRequired": "Compila entrambi i campi della password",
+    "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+    "passwordMismatch": "Le password non corrispondono",
+    "passwordChanged": "Password modificata con successo",
+    "passwordChangeError": "Errore durante la modifica della password",
+    "changePasswordTitle": "Modifica password richiesta",
+    "changePasswordDescription": "Per motivi di sicurezza, devi modificare la password prima di continuare.",
+    "newPassword": "Nuova password",
+    "changePassword": "Modifica password"
   },
   "survey": {
     "title": "La Tua Risposta",
@@ -1641,16 +1689,27 @@
   "cookie": {
     "title": "Usiamo i Cookie",
     "description": "Utilizziamo cookie per migliorare la tua esperienza. Personalizza le tue preferenze qui sotto.",
-    "necessary": "Cookie Necessari",
+    "necessary": {
+      "title": "Cookie necessari",
+      "description": "Necessari per il corretto funzionamento del sito"
+    },
     "necessaryDesc": "Essenziali per il funzionamento del sito. Non possono essere disattivati.",
-    "analytics": "Cookie Analitici",
+    "analytics": {
+      "title": "Cookie analitici",
+      "description": "Ci aiutano a capire come i visitatori interagiscono con il sito"
+    },
     "analyticsDesc": "Ci aiutano a capire come utilizzi il nostro sito.",
-    "marketing": "Cookie di Marketing",
+    "marketing": {
+      "title": "Cookie di marketing",
+      "description": "Utilizzati per mostrare pubblicità personalizzata"
+    },
     "marketingDesc": "Usati per mostrarti pubblicità personalizzate.",
     "acceptAll": "Accetta Tutti",
     "acceptSelected": "Accetta Selezionati",
     "rejectAll": "Rifiuta Tutti",
-    "learnMore": "Maggiori informazioni"
+    "learnMore": "Maggiori informazioni",
+    "hideDetails": "Nascondi dettagli",
+    "showDetails": "Mostra dettagli"
   },
   "newsletter": {
     "title": "Resta Aggiornato",
@@ -1730,7 +1789,15 @@
       "placeholder": "CODICE VOUCHER",
       "redeem": "Riscatta",
       "success": "Voucher riscattato con successo!",
-      "error": "Codice voucher non valido"
+      "error": "Codice voucher non valido",
+      "discountHint": "Questo codice ti dà uno sconto!",
+      "discountHintDesc": "Clicca su 'Acquista' o 'Abbonati' e inserisci il codice al checkout."
+    },
+    "credits": {
+      "monthly": "50 crediti AI/mese",
+      "remaining": "{{remaining}} di {{limit}} crediti rimanenti",
+      "yearly": "100 crediti AI/mese",
+      "lifetime": "75 crediti AI/mese"
     }
   },
   "admin": {
@@ -2509,13 +2576,16 @@
       "bankTransfer": "Bonifico bancario",
       "privacy": "Accetto la",
       "submit": "Invia candidatura",
-      "submitting": "Invio in corso..."
+      "submitting": "Invio in corso...",
+      "agencyAgreement": "Ho letto e accetto il contratto di agenzia, in particolare le clausole su esclusività (§ 6), protezione dall'elusione (§ 6.2) e la regola sulla quota di annullamenti dal 20% (§ 7).",
+      "agencyAgreementLink": "Apri il contratto di agenzia →"
     },
     "success": {
       "title": "Candidatura inviata!",
       "description": "Grazie per il tuo interesse in una partnership.",
       "nextSteps": "Esamineremo la tua candidatura e ti contatteremo entro 48 ore.",
-      "backToHome": "Torna alla home"
+      "backToHome": "Torna alla home",
+      "goToDashboard": "Vai alla dashboard agenzia"
     },
     "errors": {
       "submitFailed": "Errore nell'invio della candidatura"
@@ -4438,7 +4508,33 @@
       "price60plus": "60 €+",
       "rating": "Valutazione",
       "rating4plus": "4+ stelle",
-      "resetAll": "Reimposta tutto"
+      "resetAll": "Reimposta tutto",
+      "country": "Paese",
+      "countryAll": "Tutti i paesi",
+      "sort": "Ordinamento",
+      "sortPopularity": "Popolari",
+      "sortRating": "Più votati",
+      "sortPriceAsc": "Prezzo crescente",
+      "sortPriceDesc": "Prezzo decrescente",
+      "sortNewest": "Più recenti",
+      "participants": "Per almeno X persone",
+      "participantsPlaceholder": "es. 10",
+      "duration": "Durata max.",
+      "durationAll": "Tutte",
+      "locationType": "Tipo di servizio",
+      "anyLocation": "Qualsiasi",
+      "onSite": "In loco (dal cliente)",
+      "atAgency": "Presso l'agenzia",
+      "online": "Online",
+      "flexible": "Flessibile",
+      "priceType": "Modello di prezzo",
+      "priceAny": "Tutti",
+      "perPerson": "A persona",
+      "flatRate": "Tariffa fissa",
+      "perHour": "All'ora",
+      "custom": "Personalizzato",
+      "featuredOnly": "Solo in evidenza",
+      "instantBook": "Prenotabile subito"
     },
     "tiers": {
       "starter": "Starter",
@@ -5295,7 +5391,9 @@
       "subtitle": "EventBliss attira ogni giorno nuovi utenti tramite giochi, sondaggi e schermi TV. Come agenzia partner, sei esattamente dove stanno pianificando – pronti a prenotare.",
       "trustNoFee": "Nessun costo di attivazione",
       "trustCancel": "Cancella quando vuoi",
-      "trustInstant": "Subito online"
+      "trustInstant": "Subito online",
+      "awardLine": "Migliore piattaforma per eventi · 2026",
+      "seePricing": "Vedi i prezzi"
     },
     "stats": {
       "games": "Party Games in diretta",
@@ -5519,5 +5617,28 @@
       "titleLine2": "",
       "subtitle": "Numeri reali, voci reali — dopo il primo trimestre con EventBliss."
     }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Agenzia non trovata",
+    "notFoundBody": "L'agenzia con lo slug \"{{slug}}\" non esiste o non è più attiva.",
+    "toMarketplace": "Al marketplace",
+    "breadcrumb": "Marketplace",
+    "stats": {
+      "services": "Servizi",
+      "bookings": "Prenotazioni",
+      "rating": "Valutazione",
+      "since": "Dal {{year}}",
+      "activeSince": "Attiva dal",
+      "verified": "Verificata",
+      "standard": "Standard"
+    },
+    "tierBenefitsTitle": "Vantaggi del livello",
+    "aboutTitle": "Chi siamo",
+    "aboutWithCity": "{{name}} è attiva a {{city}} dal {{year}}.",
+    "aboutNoCity": "{{name}} è attiva dal {{year}}.",
+    "servicesTitle": "Servizi",
+    "noServices": "Questa agenzia non ha ancora servizi nel marketplace.",
+    "reviewsTitle": "Recensioni",
+    "noReviews": "Nessuna recensione per questa agenzia."
   }
 }
