@@ -62,4 +62,6 @@ Allow: /
 User-agent: *
 Allow: /
 
+Sitemap: https://event-bliss.com/sitemap-index.xml
 Sitemap: https://event-bliss.com/sitemap.xml
+Sitemap: https://event-bliss.com/sitemap-i18n.xml

@@ -8,6 +8,13 @@ import { JGA_CITIES, type JgaCity } from "./jga-cities";
 
 export type IntlLang = "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr";
 
+/**
+ * Languages that have a full IntlCity page/route. Arabic ("ar") reuses the
+ * IntlCity renderer but its per-city copy lives in intl-cities-ar.ts (overlay)
+ * rather than on every INTL_CITIES entry, so it is kept separate from IntlLang.
+ */
+export type IntlPageLang = IntlLang | "ar";
+
 export interface IntlCopy {
   intro: string;
   tip: string;
@@ -191,7 +198,30 @@ export const LANG_META = {
     games: "Parti oyunlarını gör",
     otherCities: "Başka şehirde bekarlığa veda?",
   },
-} as const satisfies Record<IntlLang, Record<string, unknown>>;
+  ar: {
+    path: "/wadaa-azubiya/",
+    label: "وداع العزوبية",
+    locale: "ar_AR",
+    htmlLang: "ar",
+    titleTpl: (n: string) => `وداع العزوبية في ${n} — دليل كامل | EventBliss`,
+    descriptionTpl: (n: string) =>
+      `حفلة وداع العزوبية في ${n}: الأنشطة والحانات والأحياء والميزانية والنصائح. خطّط مع EventBliss في دقائق.`,
+    h1Prefix: "وداع العزوبية في",
+    introHeader: (n: string) => `لماذا وداع العزوبية في ${n}؟`,
+    activitiesHeader: (n: string) => `أفضل الأنشطة في ${n}`,
+    neighborhoodsHeader: "أين تسهرون",
+    budgetHeader: "الميزانية",
+    seasonHeader: "أفضل وقت",
+    tipsHeader: "نصائح محلية",
+    faqHeader: "الأسئلة الشائعة",
+    ctaHeader: (n: string) => `جاهزون لوداع العزوبية في ${n}؟`,
+    ctaText: "أنشئ فعالية في 30 ثانية، ادعُ مجموعتك، صوّتوا على الأنشطة وقسّموا التكاليف — كل ذلك في تطبيق واحد.",
+    ctaButton: "أنشئ فعالية مجانًا",
+    plan: "خطّط للحفلة",
+    games: "شاهد ألعاب الحفلات",
+    otherCities: "وداع العزوبية في مدينة أخرى؟",
+  },
+} as const satisfies Record<IntlPageLang, Record<string, unknown>>;
 
 // ──────────────────────────────────────────────────────────────────
 // English slug → German JGA city slug mapping (for data lookup)

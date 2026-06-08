@@ -6,7 +6,7 @@
  * Hat seine eigene Hero/Footer-Komposition mit der Landing-Designsprache
  * (Aurora, GlassCard, GradientButton), damit Style-Konsistenz erhalten bleibt.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Navigate, useParams, Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -37,6 +37,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { useSEO } from "@/hooks/useSEO";
 import { JGA_CITIES, getCityBySlug, type JgaCity } from "@/lib/jga-cities";
+import { jgaHreflangs } from "@/lib/seo-routes";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
 
 const SITE_URL = "https://event-bliss.com";
@@ -188,6 +189,24 @@ export default function JgaCity() {
     [city]
   );
 
+  // hreflang injection — point crawlers to every translated equivalent of this
+  // city (de/en + the 7 intl languages + Arabic where content exists).
+  useEffect(() => {
+    if (!city) return;
+    const head = document.head;
+    const links: HTMLLinkElement[] = [];
+    for (const { hreflang, href } of jgaHreflangs(city.slug, SITE_URL)) {
+      const link = document.createElement("link");
+      link.setAttribute("rel", "alternate");
+      link.setAttribute("hreflang", hreflang);
+      link.setAttribute("href", href);
+      link.setAttribute("data-jga-hreflang", "true");
+      head.appendChild(link);
+      links.push(link);
+    }
+    return () => links.forEach((l) => l.remove());
+  }, [city]);
+
   useSEO(
     city
       ? {
@@ -197,6 +216,8 @@ export default function JgaCity() {
           ogImage: `${SITE_URL}/og/jga-${city.slug}.svg`,
           ogType: "article",
           locale: "de_DE",
+          htmlLang: "de-DE",
+          dir: "ltr",
           keywords: `JGA ${city.name}, Junggesellenabschied ${city.name}, JGA Ideen ${city.name}, Bachelor Party ${city.name}, Junggesellinnenabschied ${city.name}`,
           jsonLd: buildJsonLd(city),
         }

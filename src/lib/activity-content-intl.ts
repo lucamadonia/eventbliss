@@ -11,8 +11,9 @@
  */
 
 import type { ActivityCategory, ActivityItem } from "./activities-library";
+import { AR_FRAMEWORKS } from "./activity-content-ar";
 
-export type ActivityIntlLang = "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr";
+export type ActivityIntlLang = "es" | "fr" | "it" | "pt" | "nl" | "pl" | "tr" | "ar";
 
 export interface CategoryFrameworkIntl {
   hookSentence: string;
@@ -273,6 +274,41 @@ export const ACTIVITY_LANG_META = {
       setting: "Yer",
     },
     calcLink: "Tam bütçe hesaplayıcıyı kullan",
+  },
+  ar: {
+    path: "/anshita/",
+    label: "أنشطة وداع العزوبية",
+    locale: "ar_AR",
+    htmlLang: "ar",
+    titleTpl: (n: string) => `${n} لوداع العزوبية — أفكار وتكاليف | EventBliss`,
+    descriptionTpl: (n: string) => `${n} كنشاط لوداع العزوبية: التكلفة للشخص، الحجم المثالي للمجموعة، أفضل المدن. خطّط مع EventBliss.`,
+    activityFor: "كنشاط لوداع العزوبية",
+    factsHeader: (n: string) => `معلومات عن ${n}`,
+    whenHeader: (n: string) => `متى يكون ${n} مناسبًا؟`,
+    whoHeader: "لأي المجموعات؟",
+    costHeader: (n: string) => `كيف تحسب تكلفة ${n}`,
+    citiesHeader: (n: string) => `أفضل المدن لـ${n}`,
+    mistakesHeader: (n: string) => `أخطاء شائعة مع ${n}`,
+    faqHeader: (n: string) => `أسئلة شائعة عن ${n}`,
+    ctaHeader: (n: string) => `خطّط لوداع العزوبية مع ${n}`,
+    ctaText: "أنشئ فعالية في 30 ثانية، ادعُ مجموعتك، صوّتوا على الأنشطة وقسّموا التكاليف — كل ذلك في تطبيق واحد.",
+    ctaButton: "أنشئ فعالية",
+    relatedHeader: (cat: string) => `المزيد من أنشطة ${cat}`,
+    cityCtaLabel: "عرض دليل المدينة",
+    bestForCount: 6,
+    weatherDep: "⚠️ يعتمد على الطقس — جهّز خطة بديلة داخلية",
+    weatherInd: "✓ مستقل عن الطقس — لا حاجة لخطة بديلة",
+    difficultyLabel: "الصعوبة",
+    difficulty: { low: "سهل (لجميع المستويات)", medium: "متوسط", high: "متطلّب" },
+    settingLabel: "المكان",
+    setting: { indoor: "داخلي", outdoor: "خارجي", both: "داخلي + خارجي" },
+    factsLabels: {
+      cost: "التكلفة للشخص",
+      group: "حجم المجموعة",
+      duration: "المدة",
+      setting: "المكان",
+    },
+    calcLink: "استخدم حاسبة الميزانية الكاملة",
   },
 } as const;
 
@@ -2103,4 +2139,5 @@ export const CATEGORY_FRAMEWORKS_INTL: Record<ActivityIntlLang, Record<ActivityC
   nl: NL,
   pl: PL,
   tr: TR,
+  ar: AR_FRAMEWORKS,
 };

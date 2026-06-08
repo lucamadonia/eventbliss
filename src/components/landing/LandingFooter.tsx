@@ -4,16 +4,18 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { NewsletterForm } from "./NewsletterForm";
 import { JGA_CITIES } from "@/lib/jga-cities";
+import { localizedJgaCityPath, localizedCalculatorPath } from "@/lib/seo-routes";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 export function LandingFooter() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   const productLinks = [
     { label: t("landing.footer.features"), href: "#features" },
     { label: t("landing.footer.solutions"), href: "#solutions" },
-    { label: t("landing.footer.budgetCalculator", "JGA-Budget-Rechner"), href: "/jga/kalkulator" },
-    { label: t("landing.footer.cityGuides", "JGA-Städte-Guides"), href: "/jga/berlin" },
+    { label: t("landing.footer.budgetCalculator", "JGA-Budget-Rechner"), href: localizedCalculatorPath(lang) },
+    { label: t("landing.footer.cityGuides", "JGA-Städte-Guides"), href: localizedJgaCityPath("berlin", lang) },
     { label: t("landing.footer.activityIdeas", "Aktivitäten-Ideen"), href: "/ideen/karting" },
   ];
 
@@ -48,10 +50,10 @@ export function LandingFooter() {
             {JGA_CITIES.map((c) => (
               <Link
                 key={c.slug}
-                to={`/jga/${c.slug}`}
+                to={localizedJgaCityPath(c.slug, lang)}
                 className="px-3 py-1.5 rounded-full text-sm bg-card/40 border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
               >
-                JGA {c.name}
+                {c.name}
               </Link>
             ))}
           </div>
