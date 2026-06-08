@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -264,6 +265,32 @@ export default function MarketplaceAgency() {
 
   const { data: agency, isLoading: agencyLoading, error: agencyError } = useAgencyBySlug(slug);
   const { data: services = [], isLoading: servicesLoading } = useAgencyApprovedServices(agency?.id);
+
+  const agencyUrl = `https://event-bliss.com/marketplace/agency/${slug ?? ""}`;
+  useSEO(
+    agency
+      ? {
+          title: `${agency.name}${agency.city ? ` — ${agency.city}` : ""} | EventBliss Marketplace`,
+          description: `${agency.name}: Event-Services${agency.city ? ` in ${agency.city}` : ""} auf dem EventBliss Marketplace — Angebote ansehen, Bewertungen lesen und direkt buchen.`,
+          canonical: agencyUrl,
+          ogImage: agency.logo_url || "https://event-bliss.com/og-image.png",
+          ogType: "profile",
+          jsonLd: {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: agency.name,
+            url: agencyUrl,
+            ...(agency.logo_url ? { image: agency.logo_url, logo: agency.logo_url } : {}),
+            ...(agency.website ? { sameAs: [agency.website.startsWith("http") ? agency.website : `https://${agency.website}`] } : {}),
+            ...(agency.city ? { address: { "@type": "PostalAddress", addressLocality: agency.city } } : {}),
+          },
+        }
+      : {
+          title: "Agentur | EventBliss Marketplace",
+          description: "Event-Agentur auf dem EventBliss Marketplace entdecken.",
+          canonical: agencyUrl,
+        }
+  );
 
   // Reviews: empty for now (no reviews table yet)
   const reviews: any[] = [];

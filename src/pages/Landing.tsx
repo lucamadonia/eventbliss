@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -92,6 +93,14 @@ const AUTO_ROTATE_INTERVAL = 4000;
 const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  useSEO({
+    title: "EventBliss — Smart Event & Party Planning App | Bachelor Parties, Birthdays & Trips",
+    description: "Plan bachelor parties, bachelorette celebrations, birthdays and group trips effortlessly — AI suggestions, automatic cost splitting, 24+ party games and real-time collaboration. 100% free.",
+    canonical: "https://event-bliss.com/",
+    ogImage: "https://event-bliss.com/og-image.png",
+    ogType: "website",
+    locale: "en_US",
+  });
 
   const [activeDemo, setActiveDemo] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);

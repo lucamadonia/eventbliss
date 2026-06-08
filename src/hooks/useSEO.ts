@@ -18,7 +18,11 @@ export interface SeoConfig {
   htmlLang?: string;
   /** Text direction for <html dir> — "rtl" for Arabic, else "ltr". */
   dir?: "rtl" | "ltr";
+  /** robots meta override, e.g. "noindex,follow" for thin/transactional pages. */
+  robots?: string;
 }
+
+const DEFAULT_ROBOTS = "index, follow, max-image-preview:large";
 
 const META_TAG_ID = "data-managed-seo";
 const JSON_LD_ID = "managed-seo-jsonld";
@@ -86,6 +90,8 @@ export function useSEO(config: SeoConfig) {
     if (config.htmlLang) docEl.lang = config.htmlLang;
     if (config.dir) docEl.setAttribute("dir", config.dir);
 
+    if (config.robots) setMetaByName("robots", config.robots);
+
     setMetaByName("description", config.description);
     if (config.keywords) {
       setMetaByName("keywords", config.keywords);
@@ -124,6 +130,7 @@ export function useSEO(config: SeoConfig) {
         if (previousDir) docEl.setAttribute("dir", previousDir);
         else docEl.removeAttribute("dir");
       }
+      if (config.robots) setMetaByName("robots", DEFAULT_ROBOTS);
       removeJsonLd();
     };
   }, [
@@ -137,5 +144,6 @@ export function useSEO(config: SeoConfig) {
     config.jsonLd,
     config.htmlLang,
     config.dir,
+    config.robots,
   ]);
 }

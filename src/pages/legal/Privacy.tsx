@@ -2,10 +2,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, Database, Cookie, Eye, Lock, UserCheck, Globe, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 const Privacy = () => {
   const { t } = useTranslation();
+  useSEO({
+    title: "Privacy Policy | EventBliss",
+    description: "How EventBliss collects, uses, stores and protects your personal data — your privacy rights and our data practices.",
+    canonical: "https://event-bliss.com/legal/privacy",
+  });
 
   const sections = [
     { icon: Eye, key: "dataCollection" },

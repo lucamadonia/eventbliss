@@ -7,6 +7,7 @@ import {
   Loader2, Lock, Wallet,
 } from "lucide-react";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
+import { useSEO } from "@/hooks/useSEO";
 import { openCheckout } from "@/lib/nativeCheckout";
 import { useServiceAvailability } from "@/hooks/useServiceAvailability";
 import { supabase } from "@/integrations/supabase/client";
@@ -176,6 +177,51 @@ export default function MarketplaceServicePage() {
   const availYear = selectedDate ? parseInt(selectedDate.slice(0, 4), 10) : now.getFullYear();
   const availMonth = selectedDate ? parseInt(selectedDate.slice(5, 7), 10) - 1 : now.getMonth();
   const { data: availabilityMap } = useServiceAvailability(s?.id, availYear, availMonth);
+
+  const serviceUrl = `https://event-bliss.com/marketplace/service/${slug ?? ""}`;
+  useSEO(
+    s
+      ? {
+          title: `${s.title} — ${s.agency_name} | EventBliss Marketplace`,
+          description:
+            (s.short_description || s.description || "").replace(/\s+/g, " ").trim().slice(0, 160) ||
+            `${s.title} buchen über den EventBliss Marketplace.`,
+          canonical: serviceUrl,
+          ogImage: s.cover_image_url || "https://event-bliss.com/og-image.png",
+          ogType: "product",
+          jsonLd: {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: s.title,
+            description: s.description || s.short_description || s.title,
+            serviceType: CATEGORY_LABELS[s.category] ?? s.category,
+            provider: { "@type": "Organization", name: s.agency_name },
+            areaServed: { "@type": "Place", name: "Europe" },
+            url: serviceUrl,
+            offers: {
+              "@type": "Offer",
+              price: (s.price_cents / 100).toFixed(2),
+              priceCurrency: "EUR",
+              availability: "https://schema.org/InStock",
+              url: serviceUrl,
+            },
+            ...(s.review_count > 0
+              ? {
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: s.avg_rating,
+                    reviewCount: s.review_count,
+                  },
+                }
+              : {}),
+          },
+        }
+      : {
+          title: "Service | EventBliss Marketplace",
+          description: "Event-Service auf dem EventBliss Marketplace entdecken und buchen.",
+          canonical: serviceUrl,
+        }
+  );
 
   // Verfügbarkeits-Slots für den gewählten Tag mit Kapazitätsinfo.
   // Fallback: wenn Agentur noch keine Verfügbarkeit konfiguriert hat, zeigen
