@@ -5511,6 +5511,13 @@
         "desc": "Disponibilité des services, créneaux et demandes visualisés."
       },
       "comparison": "Des SaaS all-in-one comparables coûtent 299-799€/mois."
+    },
+    "testimonials": {
+      "badge": "CHOISI PAR LES AGENCES",
+      "titleLine1": "Pourquoi 170+ agences",
+      "titleHighlight": "ne travaillent plus sans nous",
+      "titleLine2": "",
+      "subtitle": "Des chiffres réels, des voix réelles — après leur premier trimestre avec EventBliss."
     }
   }
 }

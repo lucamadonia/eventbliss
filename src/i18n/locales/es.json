@@ -5525,6 +5525,13 @@
         "desc": "Disponibilidad de servicios, franjas horarias y solicitudes visualizadas."
       },
       "comparison": "SaaS comparables para agencias cuestan 299-799€ al mes."
+    },
+    "testimonials": {
+      "badge": "ELEGIDO POR AGENCIAS",
+      "titleLine1": "Por qué 170+ agencias",
+      "titleHighlight": "ya no trabajan sin nosotros",
+      "titleLine2": "",
+      "subtitle": "Cifras reales, voces reales — tras su primer trimestre con EventBliss."
     }
   }
 }

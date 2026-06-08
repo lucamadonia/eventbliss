@@ -5473,6 +5473,13 @@
         "desc": "Disponibilidade de serviços, slots e pedidos visualizados no calendário."
       },
       "comparison": "SaaS all-in-one comparáveis custam 299-799€ por mês."
+    },
+    "testimonials": {
+      "badge": "ESCOLHIDO POR AGÊNCIAS",
+      "titleLine1": "Porque 170+ agências",
+      "titleHighlight": "já não trabalham sem nós",
+      "titleLine2": "",
+      "subtitle": "Números reais, vozes reais — após o primeiro trimestre com a EventBliss."
     }
   }
 }

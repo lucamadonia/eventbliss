@@ -5442,6 +5442,13 @@
         "desc": "Hizmet uygunluğu, zaman dilimleri ve talepler takvimde görsel."
       },
       "comparison": "Karşılaştırılabilir hepsi-bir-arada ajans SaaS ürünleri aylık 299-799€ tutar."
+    },
+    "testimonials": {
+      "badge": "AJANSLARIN TERCİHİ",
+      "titleLine1": "170+ ajans neden",
+      "titleHighlight": "artık bizsiz çalışmıyor",
+      "titleLine2": "",
+      "subtitle": "Gerçek rakamlar, gerçek sesler — EventBliss ile ilk çeyreklerinden sonra."
     }
   }
 }

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { getTestimonials } from "@/lib/agency-testimonials";
 import { toast } from "sonner";
 import {
   Check, Sparkles, Zap, Crown, Users, TrendingUp, Globe,
@@ -32,12 +33,6 @@ const IMG = {
   cta: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=2000&q=85",
   // Awards / trophy vibe
   awards: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1800&q=85",
-};
-
-const PORTRAITS = {
-  anna: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=400&q=85",
-  marco: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&h=400&q=85",
-  sophie: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=400&q=85",
 };
 
 const STATS = [
@@ -80,41 +75,15 @@ const ENTERPRISE_MODULES = [
   { key: "m10", icon: FolderOpen }, { key: "m11", icon: CalendarCheck },
 ];
 
-const TESTIMONIALS = [
-  {
-    key: "t1",
-    image: PORTRAITS.anna,
-    nameDefault: "Anna Richter",
-    roleDefault: "Gründerin · Berlin Events Co.",
-    tierLabel: "Professional",
-    tierColor: "from-purple-600 to-pink-600",
-    quoteDefault: "In 3 Monaten 47 neue Bookings nur über EventBliss — ohne einen einzigen Euro in Ads. Der KI-Planner empfiehlt uns automatisch bei passenden Events.",
-    metricValue: "47",
-    metricLabelDefault: "neue Bookings",
-  },
-  {
-    key: "t2",
-    image: PORTRAITS.marco,
-    nameDefault: "Marco Silveira",
-    roleDefault: "Managing Director · Lisboa Party Crew",
-    tierLabel: "Enterprise",
-    tierColor: "from-amber-500 to-red-600",
-    quoteDefault: "Wir haben unser altes CRM komplett abgelöst. Alles — Kalender, Kunden, Abrechnung, Team — an einem Ort. Unser Team ist 40% schneller.",
-    metricValue: "+40%",
-    metricLabelDefault: "Team-Speed",
-  },
-  {
-    key: "t3",
-    image: PORTRAITS.sophie,
-    nameDefault: "Sophie Laurent",
-    roleDefault: "Event-Planerin · Paris Celebrations",
-    tierLabel: "Professional",
-    tierColor: "from-pink-600 to-rose-500",
-    quoteDefault: "Die TV-Screens auf unseren Events bringen allein 8–12 Neukunden pro Party. Völlig passiv. Das ist Marketing, das sich selbst bezahlt.",
-    metricValue: "10×",
-    metricLabelDefault: "organisches Wachstum",
-  },
-];
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
 
 const TRUST_BAR = [
   { labelDefault: "10 Sprachen", icon: Globe },
@@ -204,6 +173,7 @@ export default function AgencyPricing() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
+  const testimonials = getTestimonials(i18n.language);
   useSEO({
     title: "EventBliss for Agencies — Pricing & Plans",
     description: "Plans and pricing for event agencies: list your services, receive bookings and grow with the EventBliss marketplace. Start free.",
@@ -538,8 +508,8 @@ export default function AgencyPricing() {
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            {TESTIMONIALS.map((tm, i) => (
-              <Reveal key={tm.key} delay={i * 130}>
+            {testimonials.map((tm, i) => (
+              <Reveal key={`${i18n.language}-${i}`} delay={i * 130}>
                 <Card className="relative h-full bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 p-8 hover:border-white/25 hover:-translate-y-1 transition-all overflow-hidden group">
                   <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/5 blur-3xl rounded-full opacity-60 group-hover:opacity-100 transition-opacity" />
                   <Quote className="absolute top-6 right-6 w-10 h-10 text-white/10" strokeWidth={2.5} />
@@ -548,19 +518,25 @@ export default function AgencyPricing() {
                   <div className="relative flex items-center gap-4 mb-6">
                     <div className="relative">
                       <div className={`absolute -inset-0.5 bg-gradient-to-br ${tm.tierColor} rounded-full opacity-80 blur-[2px]`} />
-                      <img
-                        src={tm.image}
-                        alt={t(`agencyPricing.testimonials.${tm.key}.name`, tm.nameDefault)}
-                        className="relative w-14 h-14 rounded-full object-cover border-2 border-[#0a0118]"
-                        loading="lazy"
-                      />
+                      {tm.image ? (
+                        <img
+                          src={tm.image}
+                          alt={tm.name}
+                          className="relative w-14 h-14 rounded-full object-cover border-2 border-[#0a0118]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className={`relative w-14 h-14 rounded-full grid place-items-center border-2 border-[#0a0118] bg-gradient-to-br ${tm.tierColor} text-white font-black text-lg`}>
+                          {initials(tm.name)}
+                        </div>
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="font-black text-white text-base truncate">
-                        {t(`agencyPricing.testimonials.${tm.key}.name`, tm.nameDefault)}
+                        {tm.name}
                       </div>
                       <div className="text-xs text-white/60 truncate">
-                        {t(`agencyPricing.testimonials.${tm.key}.role`, tm.roleDefault)}
+                        {tm.role}
                       </div>
                     </div>
                   </div>
@@ -574,7 +550,7 @@ export default function AgencyPricing() {
 
                   {/* Quote */}
                   <p className="relative text-white/90 text-sm md:text-[15px] leading-relaxed mb-6">
-                    "{t(`agencyPricing.testimonials.${tm.key}.quote`, tm.quoteDefault)}"
+                    "{tm.quote}"
                   </p>
 
                   {/* Metric + tier badge */}
@@ -584,7 +560,7 @@ export default function AgencyPricing() {
                         {tm.metricValue}
                       </div>
                       <div className="text-[11px] text-white/55 font-semibold mt-1 uppercase tracking-wider">
-                        {t(`agencyPricing.testimonials.${tm.key}.metricLabel`, tm.metricLabelDefault)}
+                        {tm.metricLabel}
                       </div>
                     </div>
                     <Badge className={`bg-gradient-to-r ${tm.tierColor} text-white border-0 font-bold px-3 py-1 text-[10px]`}>
