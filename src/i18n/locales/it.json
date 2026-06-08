@@ -5511,6 +5511,13 @@
         "desc": "Disponibilità servizi, slot e richieste visualizzati."
       },
       "comparison": "SaaS all-in-one comparabili per agenzie costano 299-799€ al mese."
+    },
+    "testimonials": {
+      "badge": "SCELTO DALLE AGENZIE",
+      "titleLine1": "Perché 170+ agenzie",
+      "titleHighlight": "non lavorano più senza di noi",
+      "titleLine2": "",
+      "subtitle": "Numeri reali, voci reali — dopo il primo trimestre con EventBliss."
     }
   }
 }

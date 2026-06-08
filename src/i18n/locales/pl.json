@@ -5473,6 +5473,13 @@
         "desc": "Dostępność usług, sloty i zapytania wizualnie w kalendarzu."
       },
       "comparison": "Porównywalne all-in-one SaaS dla agencji kosztują 299-799€ miesięcznie."
+    },
+    "testimonials": {
+      "badge": "WYBIERANE PRZEZ AGENCJE",
+      "titleLine1": "Dlaczego ponad 170 agencji",
+      "titleHighlight": "nie pracuje już bez nas",
+      "titleLine2": "",
+      "subtitle": "Realne liczby, realne głosy — po pierwszym kwartale z EventBliss."
     }
   }
 }

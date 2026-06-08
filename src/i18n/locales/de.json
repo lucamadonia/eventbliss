@@ -6050,6 +6050,13 @@
         "desc": "Service-Verfügbarkeit, Zeitslots und Anfragen visuell im Kalender."
       },
       "comparison": "Vergleichbare All-in-One-Agency-SaaS kosten 299-799€ im Monat."
+    },
+    "testimonials": {
+      "badge": "VON AGENTUREN GEWÄHLT",
+      "titleLine1": "Warum 170+ Agenturen",
+      "titleHighlight": "nicht mehr ohne uns",
+      "titleLine2": "arbeiten",
+      "subtitle": "Echte Zahlen, echte Stimmen — nach ihrem ersten Quartal mit EventBliss."
     }
   }
 }

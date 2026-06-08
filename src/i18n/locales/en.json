@@ -5928,6 +5928,13 @@
         "desc": "Service availability, time slots and inquiries visualised."
       },
       "comparison": "Comparable all-in-one agency SaaS products cost €299-799/month."
+    },
+    "testimonials": {
+      "badge": "CHOSEN BY AGENCIES",
+      "titleLine1": "Why 170+ agencies",
+      "titleHighlight": "won’t work without us",
+      "titleLine2": "anymore",
+      "subtitle": "Real numbers, real voices — after their first quarter with EventBliss."
     }
   }
 }
