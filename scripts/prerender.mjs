@@ -43,6 +43,10 @@ if (!existsSync(join(DIST, "index.html"))) {
   process.exit(0);
 }
 const shell = readFileSync(join(DIST, "index.html"), "utf8");
+// Neutral SPA shell for the catch-all rewrite (vercel.json → /app.html). Written
+// first so it always exists; lets us overwrite dist/index.html with the
+// body-rendered home for "/" without polluting the fallback for other routes.
+writeFileSync(join(DIST, "app.html"), shell);
 
 // ── HTML meta injection ───────────────────────────────────────────────
 const attr = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
@@ -252,7 +256,7 @@ async function bodyTier() {
   let full = 0, meta = 0;
   // route → {out, fallback{title,description,ogType}}
   const jobs = [];
-  jobs.push({ route: "/", out: "__home__", fb: { ...HOME, ogType: "website" } });
+  jobs.push({ route: "/", out: "__index__", fb: { ...HOME, ogType: "website" } });
   for (const [route, t] of Object.entries(CALC)) jobs.push({ route, out: route, fb: { title: t, description: t, ogType: "website" } });
   for (const [route, m] of Object.entries(STATIC)) jobs.push({ route, out: route, fb: { ...m, ogType: route.startsWith("/legal") ? "article" : "website" } });
 
@@ -266,7 +270,7 @@ async function bodyTier() {
       html = buildHtml({ title: job.fb.title, description: job.fb.description, canonical: `${SITE}${job.route === "/" ? "/" : job.route}`, ogType: job.fb.ogType });
       meta++;
     }
-    if (job.out === "__home__") { mkdirSync(DIST, { recursive: true }); writeFileSync(join(DIST, "home.html"), html); }
+    if (job.out === "__index__") { writeFileSync(join(DIST, "index.html"), html); }
     else writeRoute(job.out, html);
   }
   if (ctx) {
