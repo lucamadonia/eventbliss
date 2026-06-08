@@ -43,7 +43,13 @@
     "saved": "Kaydedildi",
     "openInNewTab": "Yeni sekmede aç",
     "copyLink": "Linki kopyala",
-    "copyCode": "Kodu kopyala"
+    "copyCode": "Kodu kopyala",
+    "status": "Durum",
+    "refresh": "Yenile",
+    "actions": "İşlemler",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "dismiss": "Kapat"
   },
   "feedback": {
     "button": "Geri Bildirim",
@@ -278,7 +284,13 @@
           "participantList": "Katılımcılar",
           "expenses": "Masraflar",
           "messages": "Mesajlar",
-          "askAI": "AI'ya Sor"
+          "askAI": "AI'ya Sor",
+          "statusConfirmed": "Onaylandı",
+          "statusMaybe": "Belki",
+          "statusDeclined": "Reddedildi",
+          "statusInvited": "Davet edildi",
+          "newResponse": "Julia'dan yeni yanıt!",
+          "haveResponded": "yanıt verdi"
         },
         "expenses": {
           "total": "Toplam",
@@ -289,7 +301,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Restoran Akşam Yemeği",
           "drinks": "Bar İçecekleri",
-          "gift": "Sürpriz Hediye"
+          "gift": "Sürpriz Hediye",
+          "catTransport": "Ulaşım",
+          "catFood": "Yemek",
+          "catActivities": "Aktiviteler",
+          "catDrinks": "İçecekler",
+          "categories": "Kategoriler",
+          "settlements": "Hesaplaşma"
         },
         "ai": {
           "destinations": "Hedefler",
@@ -299,7 +317,8 @@
           "placeholder": "Seçenek seç...",
           "generating": "Oluşturuluyor...",
           "inputPlaceholder": "AI'ya sor...",
-          "response": "**Bekarlığa veda için en iyi 3 aktivite önerisi:**\n\n🚤 **Tekne turu** - Suda rahatlama\n\n🎯 **Escape Room** - Takım çalışması ve heyecan\n\n🍻 **Bira fabrikası turu** - Tadım ile tur\n\n*Baz alınan: Bütçe €150-250, 8 katılımcı*"
+          "response": "**Bekarlığa veda için en iyi 3 aktivite önerisi:**\n\n🚤 **Tekne turu** - Suda rahatlama\n\n🎯 **Escape Room** - Takım çalışması ve heyecan\n\n🍻 **Bira fabrikası turu** - Tadım ile tur\n\n*Baz alınan: Bütçe €150-250, 8 katılımcı*",
+          "regenerate": "Yeniden oluştur"
         },
         "survey": {
           "selectName": "Adınızı seçin",
@@ -314,7 +333,16 @@
           "wellness": "Wellness",
           "party": "Parti",
           "culture": "Kültür",
-          "submit": "Cevabı gönder"
+          "submit": "Cevabı gönder",
+          "budgetLow": "Ekonomik",
+          "budgetMid": "Orta",
+          "budgetHigh": "Cömert",
+          "budgetMax": "Sınırsız",
+          "thankYou": "Teşekkürler!",
+          "submitted": "Yanıtın kaydedildi",
+          "progress": "İlerleme",
+          "deadline": "Son tarihe 5 gün kaldı",
+          "submitting": "Gönderiliyor..."
         },
         "agencies": {
           "clickCity": "Bir şehre tıklayın",
@@ -327,7 +355,13 @@
           "boat": "Tekne turları",
           "carnival": "Karnaval & Parti",
           "luxury": "Lüks & Kültür",
-          "premium": "Premium Etkinlikler"
+          "premium": "Premium Etkinlikler",
+          "nightlife": "Gece Hayatı",
+          "searchPlaceholder": "Şehir ara...",
+          "contact": "Teklif al",
+          "cities": "Şehirler",
+          "verified": "Doğrulandı",
+          "partners": "Partnerler"
         }
       }
     },
@@ -433,6 +467,11 @@
         "avgCommission": "Ort. Komisyon",
         "cities": "Şehirler"
       }
+    },
+    "stats": {
+      "agencies": "Partner ajanslar",
+      "countries": "Ülkeler",
+      "languages": "Diller"
     }
   },
   "legal": {
@@ -862,7 +901,16 @@
     "resetPassword": "Reset password",
     "resettingPassword": "Resetting...",
     "passwordResetSuccess": "Password reset!",
-    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in."
+    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in.",
+    "passwordRequired": "Lütfen her iki parola alanını da doldurun",
+    "passwordTooShort": "Parola en az 8 karakter olmalıdır",
+    "passwordMismatch": "Parolalar eşleşmiyor",
+    "passwordChanged": "Parola başarıyla değiştirildi",
+    "passwordChangeError": "Parola değiştirilirken hata oluştu",
+    "changePasswordTitle": "Parola değişikliği gerekli",
+    "changePasswordDescription": "Güvenlik nedeniyle devam etmeden önce parolanızı değiştirmeniz gerekiyor.",
+    "newPassword": "Yeni parola",
+    "changePassword": "Parolayı değiştir"
   },
   "survey": {
     "title": "Cevabınız",
@@ -1691,16 +1739,27 @@
   "cookie": {
     "title": "Çerez Kullanıyoruz",
     "description": "Deneyiminizi geliştirmek için çerezler kullanıyoruz. Tercihlerinizi aşağıdan özelleştirebilirsiniz.",
-    "necessary": "Gerekli Çerezler",
+    "necessary": {
+      "title": "Gerekli Çerezler",
+      "description": "Web sitesinin düzgün çalışması için gereklidir"
+    },
     "necessaryDesc": "Sitenin çalışması için gereklidir. Devre dışı bırakılamaz.",
-    "analytics": "Analitik Çerezler",
+    "analytics": {
+      "title": "Analitik Çerezler",
+      "description": "Ziyaretçilerin web sitemizle nasıl etkileşime girdiğini anlamamıza yardımcı olur"
+    },
     "analyticsDesc": "Sitemizi nasıl kullandığınızı anlamamıza yardımcı olur.",
-    "marketing": "Pazarlama Çerezleri",
+    "marketing": {
+      "title": "Pazarlama Çerezleri",
+      "description": "Kişiselleştirilmiş reklamlar sunmak için kullanılır"
+    },
     "marketingDesc": "Kişiselleştirilmiş reklamlar göstermek için kullanılır.",
     "acceptAll": "Tümünü Kabul Et",
     "acceptSelected": "Seçilenleri Kabul Et",
     "rejectAll": "Tümünü Reddet",
-    "learnMore": "Daha fazla bilgi"
+    "learnMore": "Daha fazla bilgi",
+    "hideDetails": "Ayrıntıları Gizle",
+    "showDetails": "Ayrıntıları Göster"
   },
   "newsletter": {
     "title": "Güncel Kalın",
@@ -1780,7 +1839,15 @@
       "placeholder": "KUPON KODU",
       "redeem": "Kullan",
       "success": "Kupon başarıyla kullanıldı!",
-      "error": "Geçersiz kupon kodu"
+      "error": "Geçersiz kupon kodu",
+      "discountHint": "Bu kod size indirim sağlar!",
+      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin."
+    },
+    "credits": {
+      "monthly": "Aylık 50 AI kredisi",
+      "remaining": "{{limit}} kredinin {{remaining}} tanesi kaldı",
+      "yearly": "Aylık 100 AI kredisi",
+      "lifetime": "Aylık 75 AI kredisi"
     }
   },
   "admin": {
@@ -4400,7 +4467,33 @@
       "price60plus": "60 €+",
       "rating": "Değerlendirme",
       "rating4plus": "4+ yıldız",
-      "resetAll": "Tümünü sıfırla"
+      "resetAll": "Tümünü sıfırla",
+      "country": "Ülke",
+      "countryAll": "Tüm ülkeler",
+      "sort": "Sıralama",
+      "sortPopularity": "Popüler",
+      "sortRating": "En yüksek puanlı",
+      "sortPriceAsc": "Fiyat artan",
+      "sortPriceDesc": "Fiyat azalan",
+      "sortNewest": "Önce en yeni",
+      "participants": "En az X kişi için",
+      "participantsPlaceholder": "örn. 10",
+      "duration": "Maks. süre",
+      "durationAll": "Tümü",
+      "locationType": "Hizmet türü",
+      "anyLocation": "Herhangi biri",
+      "onSite": "Yerinde (müşteride)",
+      "atAgency": "Ajansta",
+      "online": "Çevrimiçi",
+      "flexible": "Esnek",
+      "priceType": "Fiyatlandırma modeli",
+      "priceAny": "Tümü",
+      "perPerson": "Kişi başı",
+      "flatRate": "Sabit ücret",
+      "perHour": "Saat başı",
+      "custom": "Özel",
+      "featuredOnly": "Yalnızca öne çıkanlar",
+      "instantBook": "Anında rezerve edilebilir"
     },
     "tiers": {
       "starter": "Başlangıç",
@@ -5226,7 +5319,9 @@
       "subtitle": "EventBliss her gün oyunlar, anketler ve TV ekranları üzerinden yeni kullanıcılar çekiyor. Partner ajans olarak tam olarak onların plan yaptığı yerdesin – rezervasyona hazır.",
       "trustNoFee": "Kurulum ücreti yok",
       "trustCancel": "İstediğin zaman iptal",
-      "trustInstant": "Anında yayında"
+      "trustInstant": "Anında yayında",
+      "awardLine": "Sınıfının En İyisi Etkinlik Platformu · 2026",
+      "seePricing": "Fiyatları gör"
     },
     "stats": {
       "games": "Canlı Parti Oyunları",
@@ -5450,5 +5545,92 @@
       "titleLine2": "",
       "subtitle": "Gerçek rakamlar, gerçek sesler — EventBliss ile ilk çeyreklerinden sonra."
     }
+  },
+  "agencyApply": {
+    "form": {
+      "country": "Ülke",
+      "title": "Hemen Başvur",
+      "agencyMode": "Ajans Türü",
+      "existingAgency": "Dizinden ajans seç",
+      "newAgency": "Yeni ajans kaydet",
+      "searchAgency": "Ajans ara...",
+      "noAgenciesFound": "Ajans bulunamadı",
+      "agencyName": "Ajans Adı",
+      "city": "Şehir",
+      "contactEmail": "İletişim E-postası",
+      "phone": "Telefon",
+      "website": "Web Sitesi",
+      "motivation": "Neden partner olmak istiyorsunuz?",
+      "motivationPlaceholder": "Bize ajansınızdan ve bir ortaklığın her iki taraf için neden faydalı olacağından bahsedin...",
+      "expectedReferrals": "Beklenen aylık yönlendirme sayısı",
+      "selectOption": "Lütfen seçin",
+      "payoutMethod": "Tercih Edilen Ödeme",
+      "bankTransfer": "Banka Havalesi",
+      "privacy": "Kabul ediyorum:",
+      "agencyAgreement": "Ajans sözleşmesini okudum ve kabul ediyorum — özellikle münhasırlık (§ 6), atlatma koruması (§ 6.2) ve %20'den itibaren iptal kotası kuralı (§ 7) maddelerini.",
+      "agencyAgreementLink": "Ajans sözleşmesini aç →",
+      "submitting": "Gönderiliyor...",
+      "submit": "Başvuruyu Gönder"
+    },
+    "errors": {
+      "submitFailed": "Başvuru gönderilirken hata oluştu"
+    },
+    "benefits": {
+      "commission": {
+        "title": "Cazip Komisyonlar",
+        "description": "Yönlendirmeniz üzerinden rezervasyon başına %20'ye kadar"
+      },
+      "tracking": {
+        "title": "Referans Takibi",
+        "description": "Benzersiz kod ile otomatik atama"
+      },
+      "vouchers": {
+        "title": "Özel Kuponlar",
+        "description": "Müşterileriniz için özel indirim kodları"
+      },
+      "support": {
+        "title": "Partner Desteği",
+        "description": "Tüm sorularınız için özel iletişim kişisi"
+      }
+    },
+    "stats": {
+      "agencies": "Partner Ajanslar",
+      "commissionRate": "Maks. Komisyon",
+      "payouts": "Ödenen Tutar"
+    },
+    "success": {
+      "title": "Başvuru Gönderildi!",
+      "description": "Ortaklığa gösterdiğiniz ilgi için teşekkür ederiz.",
+      "nextSteps": "Başvurunuzu inceleyip 48 saat içinde size geri döneceğiz.",
+      "goToDashboard": "Ajans Paneline Git"
+    },
+    "hero": {
+      "badge": "Ajans Ortaklığı",
+      "title": "EventBliss Partneri Olun",
+      "description": "EventBliss'e getirdiğiniz her müşteri için komisyon kazanın. Etkinlik ajansları için özel avantajlar."
+    }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Ajans bulunamadı",
+    "notFoundBody": "\"{{slug}}\" kısaltmasına sahip ajans mevcut değil veya artık aktif değil.",
+    "toMarketplace": "Pazara git",
+    "breadcrumb": "Pazar",
+    "stats": {
+      "services": "Hizmetler",
+      "bookings": "Rezervasyonlar",
+      "rating": "Puan",
+      "since": "{{year}} yılından beri",
+      "activeSince": "Aktif olduğu tarih",
+      "verified": "Doğrulandı",
+      "standard": "Standart"
+    },
+    "tierBenefitsTitle": "Seviye avantajları",
+    "aboutTitle": "Hakkımızda",
+    "aboutWithCity": "{{name}}, {{year}} yılından beri {{city}} şehrinde faaliyet gösteriyor.",
+    "aboutNoCity": "{{name}}, {{year}} yılından beri faaliyet gösteriyor.",
+    "servicesTitle": "Hizmetler",
+    "noServices": "Bu ajansın pazarda henüz hizmeti yok.",
+    "reviewsTitle": "Değerlendirmeler",
+    "noReviews": "Bu ajans için henüz değerlendirme yok."
   }
 }

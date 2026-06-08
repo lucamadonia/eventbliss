@@ -1119,7 +1119,12 @@
     "reset": "Reset",
     "openInNewTab": "Open in new tab",
     "copyLink": "Copy link",
-    "copyCode": "Copy code"
+    "copyCode": "Copy code",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "dismiss": "Dismiss"
   },
   "feedback": {
     "button": "Feedback",
@@ -1358,7 +1363,13 @@
           "participantList": "Participants",
           "expenses": "Expenses",
           "messages": "Messages",
-          "askAI": "Ask AI"
+          "askAI": "Ask AI",
+          "statusConfirmed": "Confirmed",
+          "statusMaybe": "Maybe",
+          "statusDeclined": "Declined",
+          "statusInvited": "Invited",
+          "newResponse": "New response from Julia!",
+          "haveResponded": "have responded"
         },
         "expenses": {
           "total": "Total",
@@ -1369,7 +1380,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Restaurant Dinner",
           "drinks": "Bar Drinks",
-          "gift": "Surprise Gift"
+          "gift": "Surprise Gift",
+          "catTransport": "Transport",
+          "catFood": "Food",
+          "catActivities": "Activities",
+          "catDrinks": "Drinks",
+          "categories": "Categories",
+          "settlements": "Settlement"
         },
         "ai": {
           "destinations": "Destinations",
@@ -1379,7 +1396,8 @@
           "placeholder": "Select an option...",
           "generating": "Generating...",
           "inputPlaceholder": "Ask AI...",
-          "response": "**Top 3 Activity Suggestions for Your Party:**\n\n🚤 **Boat Tour** - Relaxed trip on the water\n\n🎯 **Escape Room** - Teamwork and excitement\n\n🍻 **Brewery Tour** - Beer tasting with guided tour\n\n*Based on: Budget €150-250, 8 participants*"
+          "response": "**Top 3 Activity Suggestions for Your Party:**\n\n🚤 **Boat Tour** - Relaxed trip on the water\n\n🎯 **Escape Room** - Teamwork and excitement\n\n🍻 **Brewery Tour** - Beer tasting with guided tour\n\n*Based on: Budget €150-250, 8 participants*",
+          "regenerate": "Regenerate"
         },
         "survey": {
           "selectName": "Select your name",
@@ -1394,7 +1412,16 @@
           "wellness": "Wellness",
           "party": "Party",
           "culture": "Culture",
-          "submit": "Submit Response"
+          "submit": "Submit Response",
+          "budgetLow": "Budget",
+          "budgetMid": "Medium",
+          "budgetHigh": "Generous",
+          "budgetMax": "All-in",
+          "thankYou": "Thank you!",
+          "submitted": "Your response has been saved",
+          "progress": "Progress",
+          "deadline": "5 days left until the deadline",
+          "submitting": "Sending..."
         },
         "agencies": {
           "clickCity": "Click on a city",
@@ -1407,7 +1434,13 @@
           "boat": "Boat Tours",
           "carnival": "Carnival & Party",
           "luxury": "Luxury & Culture",
-          "premium": "Premium Events"
+          "premium": "Premium Events",
+          "nightlife": "Nightlife",
+          "searchPlaceholder": "Search city...",
+          "contact": "Inquire",
+          "cities": "Cities",
+          "verified": "Verified",
+          "partners": "Partners"
         }
       }
     },
@@ -1443,6 +1476,11 @@
       "cityGuides": "Stag-Do City Guides",
       "activityIdeas": "Activity Ideas",
       "cookieSettings": "Manage cookie settings"
+    },
+    "stats": {
+      "agencies": "Partner agencies",
+      "countries": "Countries",
+      "languages": "Languages"
     }
   },
   "legal": {
@@ -3061,7 +3099,13 @@
       "aiFeatures": "All AI features unlocked",
       "prioritySupport": "Priority support"
     },
-    "subscribe": "Upgrade Now"
+    "subscribe": "Upgrade Now",
+    "credits": {
+      "monthly": "50 AI credits/month",
+      "remaining": "{{remaining}} of {{limit}} credits remaining",
+      "yearly": "100 AI credits/month",
+      "lifetime": "75 AI credits/month"
+    }
   },
   "admin": {
     "credits": {
@@ -3839,13 +3883,16 @@
       "bankTransfer": "Bank Transfer",
       "privacy": "I accept the",
       "submit": "Submit Application",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "agencyAgreement": "I have read and accept the agency agreement — in particular the clauses on exclusivity (§ 6), circumvention protection (§ 6.2) and the cancellation-quota rule from 20% (§ 7).",
+      "agencyAgreementLink": "Open agency agreement →"
     },
     "success": {
       "title": "Application Submitted!",
       "description": "Thank you for your interest in a partnership.",
       "nextSteps": "We will review your application and get back to you within 48 hours.",
-      "backToHome": "Back to Home"
+      "backToHome": "Back to Home",
+      "goToDashboard": "To Agency Dashboard"
     },
     "errors": {
       "submitFailed": "Error submitting the application"
@@ -4811,7 +4858,33 @@
       "price60plus": "60 €+",
       "rating": "Rating",
       "rating4plus": "4+ stars",
-      "resetAll": "Reset all"
+      "resetAll": "Reset all",
+      "country": "Country",
+      "countryAll": "All countries",
+      "sort": "Sorting",
+      "sortPopularity": "Popular",
+      "sortRating": "Best rated",
+      "sortPriceAsc": "Price ascending",
+      "sortPriceDesc": "Price descending",
+      "sortNewest": "Newest first",
+      "participants": "For at least X people",
+      "participantsPlaceholder": "e.g. 10",
+      "duration": "Max. duration",
+      "durationAll": "All",
+      "locationType": "Service type",
+      "anyLocation": "Any",
+      "onSite": "On-site (at the customer)",
+      "atAgency": "At the agency",
+      "online": "Online",
+      "flexible": "Flexible",
+      "priceType": "Pricing model",
+      "priceAny": "All",
+      "perPerson": "Per person",
+      "flatRate": "Flat rate",
+      "perHour": "Per hour",
+      "custom": "Custom",
+      "featuredOnly": "Featured only",
+      "instantBook": "Instantly bookable"
     },
     "tiers": {
       "starter": "Starter",
@@ -5712,7 +5785,9 @@
       "subtitle": "EventBliss attracts new users every day through games, surveys and TV screens. As a partner agency, you're right where they are planning – ready to book.",
       "trustNoFee": "No setup fee",
       "trustCancel": "Cancel anytime",
-      "trustInstant": "Live instantly"
+      "trustInstant": "Live instantly",
+      "awardLine": "Best-in-Class Event Platform · 2026",
+      "seePricing": "See pricing"
     },
     "stats": {
       "games": "Live Party Games",
@@ -5936,5 +6011,28 @@
       "titleLine2": "anymore",
       "subtitle": "Real numbers, real voices — after their first quarter with EventBliss."
     }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Agency not found",
+    "notFoundBody": "The agency with the slug \"{{slug}}\" does not exist or is no longer active.",
+    "toMarketplace": "To marketplace",
+    "breadcrumb": "Marketplace",
+    "stats": {
+      "services": "Services",
+      "bookings": "Bookings",
+      "rating": "Rating",
+      "since": "Since {{year}}",
+      "activeSince": "Active since",
+      "verified": "Verified",
+      "standard": "Standard"
+    },
+    "tierBenefitsTitle": "Tier benefits",
+    "aboutTitle": "About us",
+    "aboutWithCity": "{{name}} has been active in {{city}} since {{year}}.",
+    "aboutNoCity": "{{name}} has been active since {{year}}.",
+    "servicesTitle": "Services",
+    "noServices": "This agency has no services in the marketplace yet.",
+    "reviewsTitle": "Reviews",
+    "noReviews": "No reviews for this agency yet."
   }
 }

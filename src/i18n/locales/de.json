@@ -1169,7 +1169,12 @@
     "reset": "Zurücksetzen",
     "openInNewTab": "In neuem Tab öffnen",
     "copyLink": "Link kopieren",
-    "copyCode": "Code kopieren"
+    "copyCode": "Code kopieren",
+    "refresh": "Aktualisieren",
+    "actions": "Aktionen",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "dismiss": "Schließen"
   },
   "feedback": {
     "button": "Feedback",
@@ -1408,7 +1413,13 @@
           "participantList": "Teilnehmer",
           "expenses": "Kosten",
           "messages": "Nachrichten",
-          "askAI": "KI fragen"
+          "askAI": "KI fragen",
+          "statusConfirmed": "Bestätigt",
+          "statusMaybe": "Vielleicht",
+          "statusDeclined": "Abgesagt",
+          "statusInvited": "Eingeladen",
+          "newResponse": "Neue Antwort von Julia!",
+          "haveResponded": "haben geantwortet"
         },
         "expenses": {
           "total": "Gesamt",
@@ -1419,7 +1430,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Abendessen Restaurant",
           "drinks": "Getränke Bar",
-          "gift": "Überraschungsgeschenk"
+          "gift": "Überraschungsgeschenk",
+          "catTransport": "Transport",
+          "catFood": "Essen",
+          "catActivities": "Aktivitäten",
+          "catDrinks": "Getränke",
+          "categories": "Kategorien",
+          "settlements": "Ausgleich"
         },
         "ai": {
           "destinations": "Reiseziele",
@@ -1429,7 +1446,8 @@
           "placeholder": "Wähle eine Option...",
           "generating": "Generiere...",
           "inputPlaceholder": "Frag die KI...",
-          "response": "**Top 3 Aktivitätsvorschläge für euren JGA:**\n\n🚤 **Bootstour** - Entspannt über die Alster\n\n🎯 **Escape Room** - Teamwork und Spannung\n\n🍻 **Brauerei-Tour** - Bierverkostung mit Führung\n\n*Basierend auf: Budget €150-250, 8 Teilnehmer*"
+          "response": "**Top 3 Aktivitätsvorschläge für euren JGA:**\n\n🚤 **Bootstour** - Entspannt über die Alster\n\n🎯 **Escape Room** - Teamwork und Spannung\n\n🍻 **Brauerei-Tour** - Bierverkostung mit Führung\n\n*Basierend auf: Budget €150-250, 8 Teilnehmer*",
+          "regenerate": "Neu generieren"
         },
         "survey": {
           "selectName": "Wähle deinen Namen",
@@ -1444,7 +1462,16 @@
           "wellness": "Wellness",
           "party": "Party",
           "culture": "Kultur",
-          "submit": "Antwort absenden"
+          "submit": "Antwort absenden",
+          "budgetLow": "Sparsam",
+          "budgetMid": "Mittel",
+          "budgetHigh": "Großzügig",
+          "budgetMax": "All-in",
+          "thankYou": "Danke!",
+          "submitted": "Deine Antwort wurde gespeichert",
+          "progress": "Fortschritt",
+          "deadline": "Noch 5 Tage bis zur Deadline",
+          "submitting": "Wird gesendet..."
         },
         "agencies": {
           "clickCity": "Klicke auf eine Stadt",
@@ -1457,7 +1484,13 @@
           "boat": "Bootstouren",
           "carnival": "Karneval & Party",
           "luxury": "Luxus & Kultur",
-          "premium": "Premium Events"
+          "premium": "Premium Events",
+          "nightlife": "Nachtleben",
+          "searchPlaceholder": "Stadt suchen...",
+          "contact": "Anfragen",
+          "cities": "Städte",
+          "verified": "Verifiziert",
+          "partners": "Partner"
         }
       }
     },
@@ -1493,6 +1526,11 @@
       "cityGuides": "JGA-Städte-Guides",
       "activityIdeas": "Aktivitäten-Ideen",
       "cookieSettings": "Cookie-Einstellungen verwalten"
+    },
+    "stats": {
+      "agencies": "Partneragenturen",
+      "countries": "Länder",
+      "languages": "Sprachen"
     }
   },
   "legal": {
@@ -3153,7 +3191,13 @@
       "aiFeatures": "Alle KI-Funktionen freigeschaltet",
       "prioritySupport": "Prioritäts-Support"
     },
-    "subscribe": "Jetzt upgraden"
+    "subscribe": "Jetzt upgraden",
+    "credits": {
+      "monthly": "50 KI-Credits/Monat",
+      "remaining": "{{remaining}} von {{limit}} Credits übrig",
+      "yearly": "100 KI-Credits/Monat",
+      "lifetime": "75 KI-Credits/Monat"
+    }
   },
   "admin": {
     "credits": {
@@ -3931,13 +3975,16 @@
       "bankTransfer": "Banküberweisung",
       "privacy": "Ich akzeptiere die",
       "submit": "Bewerbung einreichen",
-      "submitting": "Wird eingereicht..."
+      "submitting": "Wird eingereicht...",
+      "agencyAgreement": "Ich habe den Agenturvertrag gelesen und akzeptiere ihn – insbesondere die Klauseln zur Exklusivität (§ 6), zum Umgehungsschutz (§ 6.2) und zur Stornoquoten-Regelung ab 20 % (§ 7).",
+      "agencyAgreementLink": "Agenturvertrag öffnen →"
     },
     "success": {
       "title": "Bewerbung eingereicht!",
       "description": "Vielen Dank für dein Interesse an einer Partnerschaft.",
       "nextSteps": "Wir prüfen deine Bewerbung und melden uns innerhalb von 48 Stunden.",
-      "backToHome": "Zurück zur Startseite"
+      "backToHome": "Zurück zur Startseite",
+      "goToDashboard": "Zum Agency-Dashboard"
     },
     "errors": {
       "submitFailed": "Fehler beim Einreichen der Bewerbung"
@@ -4933,7 +4980,33 @@
       "price60plus": "60 €+",
       "rating": "Bewertung",
       "rating4plus": "4+ Sterne",
-      "resetAll": "Alle zurücksetzen"
+      "resetAll": "Alle zurücksetzen",
+      "country": "Land",
+      "countryAll": "Alle Länder",
+      "sort": "Sortierung",
+      "sortPopularity": "Beliebt",
+      "sortRating": "Beste Bewertung",
+      "sortPriceAsc": "Preis aufsteigend",
+      "sortPriceDesc": "Preis absteigend",
+      "sortNewest": "Neueste zuerst",
+      "participants": "Für mindestens X Personen",
+      "participantsPlaceholder": "z. B. 10",
+      "duration": "Max. Dauer",
+      "durationAll": "Alle",
+      "locationType": "Art des Services",
+      "anyLocation": "Beliebig",
+      "onSite": "Vor Ort (beim Kunden)",
+      "atAgency": "Bei der Agentur",
+      "online": "Online",
+      "flexible": "Flexibel",
+      "priceType": "Preismodell",
+      "priceAny": "Alle",
+      "perPerson": "Pro Person",
+      "flatRate": "Pauschalpreis",
+      "perHour": "Pro Stunde",
+      "custom": "Individuell",
+      "featuredOnly": "Nur Empfohlene",
+      "instantBook": "Sofort buchbar"
     },
     "tiers": {
       "starter": "Starter",
@@ -5834,7 +5907,9 @@
       "subtitle": "EventBliss zieht täglich neue User über Games, Umfragen und TV-Screens an. Als Partner-Agentur bist du genau dort, wo sie gerade planen – bereit zu buchen.",
       "trustNoFee": "Keine Einrichtungsgebühr",
       "trustCancel": "Jederzeit kündbar",
-      "trustInstant": "Sofort live"
+      "trustInstant": "Sofort live",
+      "awardLine": "Beste Event-Plattform ihrer Klasse · 2026",
+      "seePricing": "Preise ansehen"
     },
     "stats": {
       "games": "Live Party-Games",
@@ -6058,5 +6133,28 @@
       "titleLine2": "arbeiten",
       "subtitle": "Echte Zahlen, echte Stimmen — nach ihrem ersten Quartal mit EventBliss."
     }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Agentur nicht gefunden",
+    "notFoundBody": "Die Agentur mit dem Slug „{{slug}}“ existiert nicht oder ist nicht mehr aktiv.",
+    "toMarketplace": "Zum Marktplatz",
+    "breadcrumb": "Marktplatz",
+    "stats": {
+      "services": "Services",
+      "bookings": "Buchungen",
+      "rating": "Bewertung",
+      "since": "Seit {{year}}",
+      "activeSince": "Aktiv seit",
+      "verified": "Verifiziert",
+      "standard": "Standard"
+    },
+    "tierBenefitsTitle": "Tier-Vorteile",
+    "aboutTitle": "Über uns",
+    "aboutWithCity": "{{name}} ist seit {{year}} in {{city}} aktiv.",
+    "aboutNoCity": "{{name}} ist seit {{year}} aktiv.",
+    "servicesTitle": "Services",
+    "noServices": "Diese Agentur hat noch keine Services im Marktplatz.",
+    "reviewsTitle": "Bewertungen",
+    "noReviews": "Für diese Agentur gibt es noch keine Bewertungen."
   }
 }

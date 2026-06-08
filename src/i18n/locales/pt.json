@@ -43,7 +43,13 @@
     "saved": "Guardado",
     "openInNewTab": "Abrir em novo separador",
     "copyLink": "Copiar link",
-    "copyCode": "Copiar código"
+    "copyCode": "Copiar código",
+    "status": "Estado",
+    "refresh": "Atualizar",
+    "actions": "Ações",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "dismiss": "Fechar"
   },
   "feedback": {
     "button": "Feedback",
@@ -278,7 +284,13 @@
           "participantList": "Participantes",
           "expenses": "Despesas",
           "messages": "Mensagens",
-          "askAI": "Perguntar à IA"
+          "askAI": "Perguntar à IA",
+          "statusConfirmed": "Confirmado",
+          "statusMaybe": "Talvez",
+          "statusDeclined": "Recusado",
+          "statusInvited": "Convidado",
+          "newResponse": "Nova resposta da Julia!",
+          "haveResponded": "responderam"
         },
         "expenses": {
           "total": "Total",
@@ -289,7 +301,13 @@
           "escapeRoom": "Escape Room",
           "dinner": "Jantar no Restaurante",
           "drinks": "Bebidas no Bar",
-          "gift": "Presente Surpresa"
+          "gift": "Presente Surpresa",
+          "catTransport": "Transporte",
+          "catFood": "Comida",
+          "catActivities": "Atividades",
+          "catDrinks": "Bebidas",
+          "categories": "Categorias",
+          "settlements": "Acerto de contas"
         },
         "ai": {
           "destinations": "Destinos",
@@ -299,7 +317,8 @@
           "placeholder": "Escolher opção...",
           "generating": "A gerar...",
           "inputPlaceholder": "Perguntar à IA...",
-          "response": "**Top 3 sugestões de atividades para a despedida:**\n\n🚤 **Passeio de barco** - Relaxar na água\n\n🎯 **Escape Room** - Trabalho de equipa e emoção\n\n🍻 **Tour de cervejaria** - Degustação com visita\n\n*Baseado em: Orçamento €150-250, 8 participantes*"
+          "response": "**Top 3 sugestões de atividades para a despedida:**\n\n🚤 **Passeio de barco** - Relaxar na água\n\n🎯 **Escape Room** - Trabalho de equipa e emoção\n\n🍻 **Tour de cervejaria** - Degustação com visita\n\n*Baseado em: Orçamento €150-250, 8 participantes*",
+          "regenerate": "Gerar novamente"
         },
         "survey": {
           "selectName": "Seleciona o teu nome",
@@ -314,7 +333,16 @@
           "wellness": "Bem-estar",
           "party": "Festa",
           "culture": "Cultura",
-          "submit": "Enviar resposta"
+          "submit": "Enviar resposta",
+          "budgetLow": "Económico",
+          "budgetMid": "Médio",
+          "budgetHigh": "Generoso",
+          "budgetMax": "Tudo incluído",
+          "thankYou": "Obrigado!",
+          "submitted": "A sua resposta foi guardada",
+          "progress": "Progresso",
+          "deadline": "Faltam 5 dias para o prazo",
+          "submitting": "A enviar..."
         },
         "agencies": {
           "clickCity": "Clica numa cidade",
@@ -327,7 +355,13 @@
           "boat": "Passeios de barco",
           "carnival": "Carnaval & Festa",
           "luxury": "Luxo & Cultura",
-          "premium": "Eventos Premium"
+          "premium": "Eventos Premium",
+          "nightlife": "Vida noturna",
+          "searchPlaceholder": "Procurar cidade...",
+          "contact": "Pedir orçamento",
+          "cities": "Cidades",
+          "verified": "Verificado",
+          "partners": "Parceiros"
         }
       }
     },
@@ -433,6 +467,11 @@
         "avgCommission": "Comissão Média",
         "cities": "Cidades"
       }
+    },
+    "stats": {
+      "agencies": "Agências parceiras",
+      "countries": "Países",
+      "languages": "Idiomas"
     }
   },
   "legal": {
@@ -862,7 +901,16 @@
     "resetPassword": "Reset password",
     "resettingPassword": "Resetting...",
     "passwordResetSuccess": "Password reset!",
-    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in."
+    "passwordResetSuccessDescription": "Your password has been changed successfully. You can now log in.",
+    "passwordRequired": "Preencha ambos os campos de palavra-passe",
+    "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres",
+    "passwordMismatch": "As palavras-passe não coincidem",
+    "passwordChanged": "Palavra-passe alterada com sucesso",
+    "passwordChangeError": "Erro ao alterar a palavra-passe",
+    "changePasswordTitle": "É necessário alterar a palavra-passe",
+    "changePasswordDescription": "Por motivos de segurança, tem de alterar a sua palavra-passe antes de continuar.",
+    "newPassword": "Nova palavra-passe",
+    "changePassword": "Alterar palavra-passe"
   },
   "survey": {
     "title": "A Tua Resposta",
@@ -1691,16 +1739,27 @@
   "cookie": {
     "title": "Usamos Cookies",
     "description": "Usamos cookies para melhorar a tua experiência. Personaliza as tuas preferências abaixo.",
-    "necessary": "Cookies Necessárias",
+    "necessary": {
+      "title": "Cookies necessários",
+      "description": "Necessários para o funcionamento correto do site"
+    },
     "necessaryDesc": "Essenciais para o funcionamento do site. Não podem ser desativadas.",
-    "analytics": "Cookies de Análise",
+    "analytics": {
+      "title": "Cookies de análise",
+      "description": "Ajudam-nos a perceber como os visitantes interagem com o nosso site"
+    },
     "analyticsDesc": "Ajudam-nos a entender como usas o nosso site.",
-    "marketing": "Cookies de Marketing",
+    "marketing": {
+      "title": "Cookies de marketing",
+      "description": "Utilizados para apresentar anúncios personalizados"
+    },
     "marketingDesc": "Usadas para te mostrar anúncios personalizados.",
     "acceptAll": "Aceitar Todas",
     "acceptSelected": "Aceitar Selecionadas",
     "rejectAll": "Rejeitar Todas",
-    "learnMore": "Saber mais"
+    "learnMore": "Saber mais",
+    "hideDetails": "Ocultar detalhes",
+    "showDetails": "Mostrar detalhes"
   },
   "newsletter": {
     "title": "Mantém-te Atualizado",
@@ -1780,7 +1839,15 @@
       "placeholder": "CÓDIGO DO VOUCHER",
       "redeem": "Resgatar",
       "success": "Voucher resgatado com sucesso!",
-      "error": "Código de voucher inválido"
+      "error": "Código de voucher inválido",
+      "discountHint": "Este código dá-lhe um desconto!",
+      "discountHintDesc": "Clique em 'Comprar' ou 'Subscrever' e introduza o código no checkout."
+    },
+    "credits": {
+      "monthly": "50 créditos de IA/mês",
+      "remaining": "{{remaining}} de {{limit}} créditos restantes",
+      "yearly": "100 créditos de IA/mês",
+      "lifetime": "75 créditos de IA/mês"
     }
   },
   "admin": {
@@ -4400,7 +4467,33 @@
       "price60plus": "60 €+",
       "rating": "Avaliação",
       "rating4plus": "4+ estrelas",
-      "resetAll": "Repor tudo"
+      "resetAll": "Repor tudo",
+      "country": "País",
+      "countryAll": "Todos os países",
+      "sort": "Ordenação",
+      "sortPopularity": "Populares",
+      "sortRating": "Melhor avaliados",
+      "sortPriceAsc": "Preço crescente",
+      "sortPriceDesc": "Preço decrescente",
+      "sortNewest": "Mais recentes primeiro",
+      "participants": "Para pelo menos X pessoas",
+      "participantsPlaceholder": "ex.: 10",
+      "duration": "Duração máx.",
+      "durationAll": "Todas",
+      "locationType": "Tipo de serviço",
+      "anyLocation": "Qualquer",
+      "onSite": "No local (em casa do cliente)",
+      "atAgency": "Na agência",
+      "online": "Online",
+      "flexible": "Flexível",
+      "priceType": "Modelo de preços",
+      "priceAny": "Todos",
+      "perPerson": "Por pessoa",
+      "flatRate": "Preço fixo",
+      "perHour": "Por hora",
+      "custom": "Personalizado",
+      "featuredOnly": "Apenas em destaque",
+      "instantBook": "Reserva imediata"
     },
     "tiers": {
       "starter": "Starter",
@@ -5257,7 +5350,9 @@
       "subtitle": "O EventBliss atrai novos utilizadores todos os dias via jogos, questionários e ecrãs de TV. Como agência parceira, estás exatamente onde eles estão a planear – prontos a reservar.",
       "trustNoFee": "Sem taxa de ativação",
       "trustCancel": "Cancela quando quiseres",
-      "trustInstant": "Live num instante"
+      "trustInstant": "Live num instante",
+      "awardLine": "Melhor plataforma de eventos da categoria · 2026",
+      "seePricing": "Ver preços"
     },
     "stats": {
       "games": "Party Games ao vivo",
@@ -5481,5 +5576,92 @@
       "titleLine2": "",
       "subtitle": "Números reais, vozes reais — após o primeiro trimestre com a EventBliss."
     }
+  },
+  "agencyApply": {
+    "form": {
+      "country": "País",
+      "title": "Candidate-se agora",
+      "agencyMode": "Tipo de agência",
+      "existingAgency": "Selecionar agência do diretório",
+      "newAgency": "Registar nova agência",
+      "searchAgency": "Procurar agência...",
+      "noAgenciesFound": "Nenhuma agência encontrada",
+      "agencyName": "Nome da agência",
+      "city": "Cidade",
+      "contactEmail": "E-mail de contacto",
+      "phone": "Telefone",
+      "website": "Site",
+      "motivation": "Porque quer tornar-se parceiro?",
+      "motivationPlaceholder": "Fale-nos da sua agência e de por que motivo uma parceria seria vantajosa para ambas as partes...",
+      "expectedReferrals": "Referências mensais previstas",
+      "selectOption": "Selecione",
+      "payoutMethod": "Pagamento preferido",
+      "bankTransfer": "Transferência bancária",
+      "privacy": "Aceito a",
+      "agencyAgreement": "Li e aceito o contrato de agência — em particular as cláusulas sobre exclusividade (§ 6), proteção contra evasão (§ 6.2) e a regra da quota de cancelamento a partir de 20% (§ 7).",
+      "agencyAgreementLink": "Abrir contrato de agência →",
+      "submitting": "A enviar...",
+      "submit": "Enviar candidatura"
+    },
+    "errors": {
+      "submitFailed": "Erro ao enviar a candidatura"
+    },
+    "benefits": {
+      "commission": {
+        "title": "Comissões atrativas",
+        "description": "Até 20% por reserva através da sua referência"
+      },
+      "tracking": {
+        "title": "Acompanhamento de referências",
+        "description": "Atribuição automática através de código único"
+      },
+      "vouchers": {
+        "title": "Vouchers exclusivos",
+        "description": "Códigos de desconto especiais para os seus clientes"
+      },
+      "support": {
+        "title": "Apoio a parceiros",
+        "description": "Contacto dedicado para todas as questões"
+      }
+    },
+    "stats": {
+      "agencies": "Agências parceiras",
+      "commissionRate": "Comissão máx.",
+      "payouts": "Pago"
+    },
+    "success": {
+      "title": "Candidatura enviada!",
+      "description": "Obrigado pelo seu interesse numa parceria.",
+      "nextSteps": "Vamos analisar a sua candidatura e responder-lhe no prazo de 48 horas.",
+      "goToDashboard": "Ir para o painel da agência"
+    },
+    "hero": {
+      "badge": "Parceria de agências",
+      "title": "Torne-se parceiro EventBliss",
+      "description": "Ganhe comissões por cada cliente que trouxer à EventBliss. Vantagens exclusivas para agências de eventos."
+    }
+  },
+  "marketplaceAgency": {
+    "notFoundTitle": "Agência não encontrada",
+    "notFoundBody": "A agência com o slug \"{{slug}}\" não existe ou já não está ativa.",
+    "toMarketplace": "Ir para o marketplace",
+    "breadcrumb": "Marketplace",
+    "stats": {
+      "services": "Serviços",
+      "bookings": "Reservas",
+      "rating": "Avaliação",
+      "since": "Desde {{year}}",
+      "activeSince": "Ativa desde",
+      "verified": "Verificada",
+      "standard": "Padrão"
+    },
+    "tierBenefitsTitle": "Vantagens do nível",
+    "aboutTitle": "Sobre nós",
+    "aboutWithCity": "A {{name}} está ativa em {{city}} desde {{year}}.",
+    "aboutNoCity": "A {{name}} está ativa desde {{year}}.",
+    "servicesTitle": "Serviços",
+    "noServices": "Esta agência ainda não tem serviços no marketplace.",
+    "reviewsTitle": "Avaliações",
+    "noReviews": "Ainda não há avaliações para esta agência."
   }
 }
