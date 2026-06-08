@@ -64,7 +64,9 @@
       "login": "تسجيل الدخول",
       "signUp": "التسجيل",
       "partner": "الشركاء",
-      "games": "ألعاب"
+      "games": "ألعاب",
+      "calculator": "حاسبة الميزانية",
+      "forAgencies": "للوكالات"
     },
     "hero": {
       "badge": "منصة #1 لتخطيط الفعاليات",
@@ -355,7 +357,12 @@
       "address": "غلادستونوس 12-14، 8042 بافوس، قبرص",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. جميع الحقوق محفوظة."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. جميع الحقوق محفوظة.",
+      "popularCities": "أشهر مدن وداع العزوبية",
+      "budgetCalculator": "حاسبة ميزانية وداع العزوبية",
+      "cityGuides": "أدلة المدن",
+      "activityIdeas": "أفكار الأنشطة",
+      "cookieSettings": "إدارة إعدادات الكوكيز"
     },
     "agencyPortal": {
       "title": "بوابة الوكالة",

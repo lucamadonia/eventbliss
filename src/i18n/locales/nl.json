@@ -64,7 +64,9 @@
       "login": "Inloggen",
       "signUp": "Registreren",
       "partner": "Partners",
-      "games": "Spellen"
+      "games": "Spellen",
+      "calculator": "Budgetcalculator",
+      "forAgencies": "Voor bureaus"
     },
     "hero": {
       "badge": "Het #1 evenementenplanningsplatform",
@@ -355,7 +357,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Cyprus",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Alle rechten voorbehouden."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Alle rechten voorbehouden.",
+      "popularCities": "Populaire vrijgezellensteden",
+      "budgetCalculator": "Vrijgezellenfeest-calculator",
+      "cityGuides": "Stedengidsen",
+      "activityIdeas": "Activiteitideeën",
+      "cookieSettings": "Cookie-instellingen beheren"
     },
     "agencyPortal": {
       "title": "Agentuurportaal",

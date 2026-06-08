@@ -64,7 +64,9 @@
       "login": "Iniciar sesión",
       "signUp": "Registrarse",
       "partner": "Socios",
-      "games": "Juegos"
+      "games": "Juegos",
+      "calculator": "Calculadora",
+      "forAgencies": "Para agencias"
     },
     "hero": {
       "badge": "La plataforma #1 de planificación de eventos",
@@ -355,7 +357,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Chipre",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Todos los derechos reservados."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. Todos los derechos reservados.",
+      "popularCities": "Ciudades populares para despedidas",
+      "budgetCalculator": "Calculadora de despedida",
+      "cityGuides": "Guías de ciudades",
+      "activityIdeas": "Ideas de actividades",
+      "cookieSettings": "Gestionar cookies"
     },
     "agencyPortal": {
       "title": "Portal de Agencia",

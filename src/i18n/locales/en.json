@@ -1140,7 +1140,9 @@
       "login": "Login",
       "signUp": "Sign Up",
       "partner": "Partners",
-      "games": "Games"
+      "games": "Games",
+      "calculator": "Budget Calculator",
+      "forAgencies": "For Agencies"
     },
     "hero": {
       "badge": "The #1 Event Planning Platform",
@@ -1435,7 +1437,12 @@
       "address": "Gladstonos 12-14, 8046 Paphos, Cyprus",
       "phone": "+357 99 980 583",
       "company": "MYFAMBLISS GROUP LTD",
-      "copyright": "© 2025 MYFAMBLISS GROUP LTD. All rights reserved."
+      "copyright": "© 2025 MYFAMBLISS GROUP LTD. All rights reserved.",
+      "popularCities": "Popular Stag-Do Cities",
+      "budgetCalculator": "Stag-Do Budget Calculator",
+      "cityGuides": "Stag-Do City Guides",
+      "activityIdeas": "Activity Ideas",
+      "cookieSettings": "Manage cookie settings"
     }
   },
   "legal": {
