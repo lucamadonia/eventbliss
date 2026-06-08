@@ -125,16 +125,30 @@ async function startBrowser() {
     console.warn(`prerender: vite preview failed (${e?.message ?? e}) — fallback.`);
     return null;
   }
-  const launchOpts = {
+  let launchOpts = {
     headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
   };
+  // On Vercel's build container the bundled Chromium can't launch (missing libs).
+  // @sparticuz/chromium ships a Lambda/Vercel-compatible headless build.
+  if (process.env.VERCEL) {
+    try {
+      const chromium = (await import("@sparticuz/chromium")).default;
+      launchOpts = {
+        args: [...chromium.args, "--disable-dev-shm-usage"],
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      };
+      console.log("prerender: using @sparticuz/chromium (Vercel).");
+    } catch (e) {
+      console.warn(`prerender: @sparticuz/chromium unavailable (${e?.message ?? e}).`);
+    }
+  }
   let browser;
   try {
     browser = await puppeteer.launch(launchOpts);
   } catch (e1) {
-    // Chromium may be missing (e.g. pnpm skipped puppeteer's postinstall on CI).
-    // Try a one-off browser install, then retry once.
+    // Non-Vercel CI: bundled Chromium may be missing — install once and retry.
     console.warn(`prerender: first Chromium launch failed (${e1?.message ?? e1}); installing browser…`);
     try {
       const { execSync } = await import("child_process");
