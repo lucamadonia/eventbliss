@@ -50,6 +50,7 @@ import { getActivitySpec, getActivityBySlug } from "@/lib/activity-content";
 import {
   ACTIVITY_LANG_META,
   CATEGORY_FRAMEWORKS_INTL,
+  localizeSpecValue,
   type ActivityIntlLang,
 } from "@/lib/activity-content-intl";
 import { JGA_CITIES } from "@/lib/jga-cities";
@@ -373,12 +374,12 @@ export default function ActivityIntl() {
             <FactCard
               icon={<Users className="w-5 h-5" />}
               label={meta.factsLabels.group}
-              value={spec.groupSize}
+              value={localizeSpecValue(spec.groupSize, lang)}
             />
             <FactCard
               icon={<Clock className="w-5 h-5" />}
               label={meta.factsLabels.duration}
-              value={spec.duration}
+              value={localizeSpecValue(spec.duration, lang)}
             />
             <FactCard
               icon={<Cloud className="w-5 h-5" />}
