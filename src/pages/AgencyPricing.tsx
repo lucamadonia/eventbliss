@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -203,6 +204,13 @@ export default function AgencyPricing() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
+  useSEO({
+    title: "EventBliss for Agencies — Pricing & Plans",
+    description: "Plans and pricing for event agencies: list your services, receive bookings and grow with the EventBliss marketplace. Start free.",
+    canonical: "https://event-bliss.com/agency/pricing",
+    ogImage: "https://event-bliss.com/og-image.png",
+    ogType: "website",
+  });
   const [loadingTier, setLoadingTier] = useState<Tier | null>(null);
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [mouse, setMouse] = useState({ x: 50, y: 50 });

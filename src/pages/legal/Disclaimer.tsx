@@ -2,10 +2,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowLeft, AlertTriangle, Link2, FileWarning, Globe, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 const Disclaimer = () => {
   const { t } = useTranslation();
+  useSEO({
+    title: "Disclaimer | EventBliss",
+    description: "Liability, content and external-link disclaimer for the EventBliss platform.",
+    canonical: "https://event-bliss.com/legal/disclaimer",
+  });
 
   const sections = [
     { icon: FileWarning, key: "general" },

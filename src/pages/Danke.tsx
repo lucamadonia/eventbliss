@@ -1,8 +1,15 @@
 import { Link } from "react-router-dom";
 import { CheckCircle, Heart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 
 const Danke = () => {
+  useSEO({
+    title: "Danke | EventBliss",
+    description: "Deine Antwort wurde gespeichert.",
+    canonical: "https://event-bliss.com/danke",
+    robots: "noindex, follow",
+  });
   return (
     <main className="min-h-screen hero-gradient flex items-center justify-center p-4">
       <div className="text-center max-w-md animate-scale-in">

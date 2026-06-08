@@ -66,18 +66,12 @@
     <meta name="twitter:image" content="https://event-bliss.com/og-image.png" />
     <meta name="twitter:image:alt" content="EventBliss App - Smart Event Planning" />
 
-    <!-- Hreflang for multi-language support -->
-    <link rel="alternate" hreflang="en" href="https://event-bliss.com/?lng=en" />
-    <link rel="alternate" hreflang="de" href="https://event-bliss.com/?lng=de" />
-    <link rel="alternate" hreflang="es" href="https://event-bliss.com/?lng=es" />
-    <link rel="alternate" hreflang="fr" href="https://event-bliss.com/?lng=fr" />
-    <link rel="alternate" hreflang="it" href="https://event-bliss.com/?lng=it" />
-    <link rel="alternate" hreflang="nl" href="https://event-bliss.com/?lng=nl" />
-    <link rel="alternate" hreflang="pt" href="https://event-bliss.com/?lng=pt" />
-    <link rel="alternate" hreflang="pl" href="https://event-bliss.com/?lng=pl" />
-    <link rel="alternate" hreflang="tr" href="https://event-bliss.com/?lng=tr" />
-    <link rel="alternate" hreflang="ar" href="https://event-bliss.com/?lng=ar" />
-    <link rel="alternate" hreflang="x-default" href="https://event-bliss.com/" />
+    <!--
+      Note: the marketing/app pages at "/" are single-URL (language via client
+      state), so no per-language hreflang here. Real per-language URLs exist for
+      the SEO landing pages (city/activity/calculator) and carry their own
+      hreflang via the i18n sitemap + per-page tags.
+    -->
 
     <!-- Leaflet removed — unused dependency (privacy/security cleanup) -->
 
@@ -134,6 +128,41 @@
         "ratingValue": "4.9",
         "ratingCount": "1247"
       }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://event-bliss.com/#organization",
+      "name": "EventBliss",
+      "legalName": "MYFAMBLISS GROUP LTD",
+      "url": "https://event-bliss.com",
+      "logo": "https://event-bliss.com/favicon.png",
+      "email": "info@event-bliss.com",
+      "telephone": "+357 99 980 583",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Gladstonos 12-14",
+        "addressLocality": "Paphos",
+        "postalCode": "8042",
+        "addressCountry": "CY"
+      },
+      "sameAs": [
+        "https://www.instagram.com/eventblissapp",
+        "https://twitter.com/eventblissapp"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://event-bliss.com/#website",
+      "name": "EventBliss",
+      "url": "https://event-bliss.com",
+      "inLanguage": ["en", "de", "es", "fr", "it", "nl", "pt", "pl", "tr", "ar"],
+      "publisher": { "@id": "https://event-bliss.com/#organization" }
     }
     </script>
   </head>

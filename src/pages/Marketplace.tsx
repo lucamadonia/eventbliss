@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -252,6 +253,13 @@ function SkeletonCard() {
 export default function Marketplace() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  useSEO({
+    title: "Event Services Marketplace — Book Party & Event Pros | EventBliss",
+    description: "Browse and book vetted agencies and services for bachelor parties, weddings, birthdays and group events across Europe — compare offers, prices and reviews.",
+    canonical: "https://event-bliss.com/marketplace",
+    ogImage: "https://event-bliss.com/og-image.png",
+    ogType: "website",
+  });
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [activePriceIdx, setActivePriceIdx] = useState(0);

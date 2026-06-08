@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAgency } from "@/hooks/useAgency";
 import { useAuth } from "@/hooks/useAuth";
+import { useSEO } from "@/hooks/useSEO";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 // ---------------------------------------------------------------------------
@@ -88,6 +89,11 @@ function useAgencyParty(): { party: PartyData | null; source: "session" | "query
 
 const AgencyAgreement = () => {
   const { t } = useTranslation();
+  useSEO({
+    title: "Agency Partner Agreement | EventBliss",
+    description: "Partnership agreement terms for agencies joining the EventBliss marketplace.",
+    canonical: "https://event-bliss.com/legal/agency-agreement",
+  });
   const ui = (k: string) => t(`legal.agency_agreement.ui.${k}`);
   const { party: agencyParty, source: agencySource } = useAgencyParty();
 

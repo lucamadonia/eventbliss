@@ -2,10 +2,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText, CheckCircle2, XCircle, CreditCard, Scale, Bell, Calendar, Wallet, RotateCcw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 const Terms = () => {
   const { t } = useTranslation();
+  useSEO({
+    title: "Terms of Service | EventBliss",
+    description: "The terms and conditions governing your use of EventBliss — accounts, services, payments and responsibilities.",
+    canonical: "https://event-bliss.com/legal/terms",
+  });
 
   const sections = [
     { icon: CheckCircle2, key: "acceptance" },

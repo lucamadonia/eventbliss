@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useMemo, useCallback, useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
@@ -650,6 +651,13 @@ const GamesHubInner = () => {
 
 /** Outer wrapper — single TVBroadcastProvider persists across game switches */
 function GamesHub() {
+  useSEO({
+    title: "Party Games — 24+ Free Group Games for Any Event | EventBliss",
+    description: "Play 24+ free party games for bachelor & bachelorette parties, birthdays and group events — no install, works on any phone or on the big screen via TV mode.",
+    canonical: "https://event-bliss.com/games",
+    ogImage: "https://event-bliss.com/og-image.png",
+    ogType: "website",
+  });
   // Use PartySession TV code if a party is active, otherwise auto-generate
   const partyTvCode = (() => {
     try {

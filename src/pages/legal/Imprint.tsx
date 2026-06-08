@@ -2,10 +2,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Building2, MapPin, Phone, Mail, Globe, FileBadge } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 const Imprint = () => {
   const { t } = useTranslation();
+  useSEO({
+    title: "Imprint | EventBliss",
+    description: "Legal information and company details for EventBliss — operated by MYFAMBLISS GROUP LTD, Paphos, Cyprus.",
+    canonical: "https://event-bliss.com/legal/imprint",
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
