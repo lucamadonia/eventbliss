@@ -267,6 +267,9 @@ importers:
       '@eslint/js':
         specifier: ^9.32.0
         version: 9.32.0
+      '@sparticuz/chromium':
+        specifier: ^149.0.0
+        version: 149.0.0
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.13.2)(@types/node@22.16.5)(typescript@5.8.3)))
@@ -2279,6 +2282,10 @@ packages:
     resolution: {integrity: sha512-2HRCml6OztYXyJXAvdDXPKcawukWY2GpR5/nxKp4iBgiO3wcoEGkAaqctIbZcNB6KlUQBIqt8VYkNSj2397EfA==}
     cpu: [x64]
     os: [win32]
+
+  '@sparticuz/chromium@149.0.0':
+    resolution: {integrity: sha512-2NECBVKlUA9xIUXb4fT8OoGKdAJs+I2tNYscO8FwcxCKCWA7FmpPI0fdVxGJoIJglrFZYn+4YEJqChq4rdrxQg==}
+    engines: {node: ^22.17.0 || >=24.0.0}
 
   '@supabase/auth-js@2.89.0':
     resolution: {integrity: sha512-wiWZdz8WMad8LQdJMWYDZ2SJtZP5MwMqzQq3ehtW2ngiI3UTgbKiFrvMUUS3KADiVlk4LiGfODB2mrYx7w2f8w==}
@@ -5549,6 +5556,9 @@ packages:
   tar-fs@3.1.1:
     resolution: {integrity: sha512-LZA0oaPOc2fVo82Txf3gw+AkEd38szODlptMYejQUhndHMLQ9M059uXR+AfS7DNo0NpINvSqDsvyaCrBVkptWg==}
 
+  tar-fs@3.1.2:
+    resolution: {integrity: sha512-QGxxTxxyleAdyM3kpFs14ymbYmNFrfY+pHj7Z8FgtbZ7w2//VAgLMac7sT6nRpIHjppXO2AwwEOg0bPFVRcmXw==}
+
   tar-stream@2.2.0:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
     engines: {node: '>=6'}
@@ -8289,6 +8299,14 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.59.0':
     optional: true
+
+  '@sparticuz/chromium@149.0.0':
+    dependencies:
+      tar-fs: 3.1.2
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
 
   '@supabase/auth-js@2.89.0':
     dependencies:
@@ -12086,6 +12104,18 @@ snapshots:
       tar-stream: 2.2.0
 
   tar-fs@3.1.1:
+    dependencies:
+      pump: 3.0.4
+      tar-stream: 3.1.8
+    optionalDependencies:
+      bare-fs: 4.5.5
+      bare-path: 3.0.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+
+  tar-fs@3.1.2:
     dependencies:
       pump: 3.0.4
       tar-stream: 3.1.8
