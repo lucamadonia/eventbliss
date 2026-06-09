@@ -792,6 +792,14 @@
     },
     "error": {
       "failed": "Creazione fallita. Riprova."
+    },
+    "loginPrompt": {
+      "title": "Accesso consigliato",
+      "description": "Con un account puoi gestire i tuoi eventi e non perderli mai.",
+      "benefit1": "Salva gli eventi in 'I miei eventi'",
+      "benefit2": "Accesso alla dashboard ovunque",
+      "benefit3": "Funzioni Premium come i modelli IA",
+      "continueAnyway": "Continua senza accedere"
     }
   },
   "joinEvent": {
@@ -1027,12 +1035,35 @@
     "team": {
       "title": "Gestisci Team",
       "invite": "Invita",
-      "permissions": "Permessi",
+      "permissions": {
+        "viewResponses": "Visualizza le risposte",
+        "addExpenses": "Inserisci le spese",
+        "viewAllExpenses": "Vedi tutte le spese",
+        "editSettings": "Modifica le impostazioni"
+      },
       "removeAccess": "Rimuovi Accesso",
       "roles": {
         "organizer": "Organizzatore",
         "guest": "Ospite"
-      }
+      },
+      "nameRequired": "Il nome non può essere vuoto",
+      "participantAdded": "{{name}} è stato aggiunto",
+      "addError": "Errore durante l'aggiunta",
+      "status": {
+        "activated": "Attivato",
+        "invited": "Invitato",
+        "ready": "Pronto",
+        "noAccess": "Nessun accesso"
+      },
+      "addParticipant": "Aggiungi partecipante",
+      "addParticipantDesc": "Aggiungi un nuovo ospite all'evento",
+      "participantName": "Nome",
+      "namePlaceholder": "es. Mario Rossi",
+      "participantEmail": "Email (facoltativa)",
+      "emailPlaceholder": "mario@example.com",
+      "participantRole": "Ruolo",
+      "addButton": "Aggiungi",
+      "description": "Attiva l'accesso alla dashboard per i partecipanti e condividi il link di invito. Con il link possono creare un account e verificarsi."
     },
     "overview": {
       "title": "Panoramica",
@@ -1049,6 +1080,30 @@
         "active": "Attivo",
         "completed": "Completato",
         "cancelled": "Annullato"
+      },
+      "statuses": {
+        "draft": "Bozza",
+        "planning": "Pianificazione",
+        "active": "Attivo",
+        "completed": "Completato",
+        "cancelled": "Annullato"
+      },
+      "participantStatus": {
+        "confirmed": "Confermato",
+        "declined": "Rifiutato",
+        "maybe": "Forse",
+        "invited": "Invitato"
+      },
+      "pendingResponses": "Risposte in attesa",
+      "pendingResponsesDesc": "{{count}} partecipanti non hanno ancora risposto.",
+      "noParticipants": "Nessun partecipante ancora aggiunto.",
+      "quickActions": {
+        "expenses": "Spese",
+        "expensesDesc": "Gestisci e dividi i costi",
+        "messages": "Messaggi",
+        "messagesDesc": "Copia e condividi i modelli",
+        "ai": "Assistente IA",
+        "aiDesc": "Genera idee e proposte"
       }
     },
     "form": {
@@ -1059,7 +1114,51 @@
       "save": "Salva",
       "successMessage": "Configurazione modulo salvata!",
       "coreQuestions": "Domande Principali",
-      "customQuestions": "Domande Personalizzate",
+      "customQuestions": {
+        "presets": {
+          "dietary": "Alimentazione",
+          "songWish": "Richiesta canzone",
+          "tshirtSize": "Taglia T-shirt",
+          "driversLicense": "Patente",
+          "specialWishes": "Richieste particolari"
+        },
+        "presetQuestions": {
+          "dietary": {
+            "label": "Ci sono restrizioni alimentari?",
+            "placeholder": "es. vegetariano, vegano, allergie..."
+          },
+          "songWish": {
+            "label": "La tua canzone da aggiungere alla playlist?",
+            "placeholder": "Artista - Titolo della canzone"
+          },
+          "tshirtSize": {
+            "label": "Che taglia di T-shirt porti?"
+          },
+          "driversLicense": {
+            "label": "Hai la patente e puoi guidare?"
+          },
+          "specialWishes": {
+            "label": "C'è qualcosa che vuoi ancora comunicarci?",
+            "placeholder": "Richieste particolari, idee, osservazioni..."
+          }
+        },
+        "quickAdd": "Aggiunta rapida:",
+        "questionPlaceholder": "Inserisci la domanda...",
+        "placeholderPlaceholder": "Testo segnaposto (opzionale)",
+        "options": "Opzioni:",
+        "addOption": "Aggiungi opzione",
+        "requiredField": "Campo obbligatorio",
+        "noQuestions": "Ancora nessuna domanda personalizzata aggiunta.",
+        "noQuestionsHint": "Usa i pulsanti rapidi qui sopra o aggiungi una nuova domanda.",
+        "addNew": "Aggiungi nuova domanda",
+        "questionsConfigured": "domanda/e personalizzata/e configurata/e",
+        "noPreview": "Aggiungi domande per vedere l'anteprima",
+        "previewTitle": "Anteprima del modulo",
+        "previewDescription": "Ecco come appaiono le tue domande personalizzate nel sondaggio",
+        "previewReadOnly": "Anteprima in sola lettura",
+        "untitledQuestion": "Domanda senza titolo",
+        "selectPlaceholder": "Seleziona un'opzione..."
+      },
       "questionEnabled": "Domanda attivata",
       "questionDisabled": "Domanda disattivata",
       "singleSelect": "Selezione singola",
@@ -1244,7 +1343,19 @@
       "title": "Programma",
       "setDate": "Imposta Data",
       "dateSet": "La data è fissata!",
-      "noDate": "Nessuna data ancora fissata"
+      "noDate": "Nessuna data ancora fissata",
+      "loading": "Caricamento delle date...",
+      "noData": "Ancora nessun dato",
+      "noDataDesc": "Non appena i partecipanti indicheranno la loro disponibilità, qui appariranno i risultati.",
+      "activeVotes": "{{count}} voti attivi",
+      "dateLocked": "La data {{block}} è stabilita",
+      "topRecommendations": "Migliori consigli",
+      "block": "Blocco",
+      "yes": "Sì",
+      "maybe": "Forse",
+      "allDates": "Tutte le date",
+      "locked": "Stabilita",
+      "legend": "Il punteggio si calcola in base ai voti \"Sì\" (100%) e ai voti \"Forse\" (50%). Valori più alti indicano una migliore disponibilità."
     },
     "settings": {
       "title": "Impostazioni",
@@ -1279,7 +1390,10 @@
         "title": "Zona Pericolosa",
         "deleteEvent": "Elimina Evento",
         "deleteWarning": "Questa azione non può essere annullata."
-      }
+      },
+      "publicVisibility": "Visibilità pubblica",
+      "publicVisibilityDesc": "Scegli quali schede i visitatori possono vedere senza accedere (usando solo il codice di accesso).",
+      "publicVisibilityNote": "I visitatori devono registrarsi per apportare modifiche (aggiungere spese, modificare risposte, ecc.)."
     },
     "ai": {
       "title": "Assistente IA",
@@ -1371,7 +1485,10 @@
         "outdoor": "Action & outdoor adventure",
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
-      }
+      },
+      "basedOnNoName": "In base a {{count}} risposte",
+      "budgetTip": "Consiglio sul budget",
+      "listen": "Leggi ad alta voce"
     },
     "guestWarning": {
       "title": "Evento non ancora protetto",
@@ -1379,7 +1496,58 @@
       "cta": "Proteggi gratis",
       "ctaLink": "Collega al mio account",
       "claiming": "Collegamento dell evento al tuo account…"
-    }
+    },
+    "destination": {
+      "destinations": {
+        "deCity": "Città tedesca",
+        "barcelona": "Barcellona",
+        "lisbon": "Lisbona",
+        "either": "Indifferente"
+      },
+      "activities": {
+        "karting": "Kart",
+        "escapeRoom": "Escape room",
+        "lasertag": "Laser tag",
+        "axeThrowing": "Lancio dell'ascia",
+        "vrSimracing": "Sim racing VR",
+        "climbing": "Arrampicata",
+        "bubbleSoccer": "Bubble soccer",
+        "outdoor": "Outdoor",
+        "wellness": "Benessere",
+        "food": "Gastronomia",
+        "mixed": "Misto"
+      },
+      "loading": "Caricamento dei dati sulle destinazioni...",
+      "noData": "Ancora nessun dato",
+      "noDataDesc": "Non appena i partecipanti indicheranno le loro preferenze, i risultati compariranno qui.",
+      "topDestination": "Destinazione top",
+      "votesOf": "{{votes}} di {{total}} voti ({{percent}}%)",
+      "voting": "Votazione",
+      "budgetDistribution": "Distribuzione del budget",
+      "recommendation": "Consiglio",
+      "recommendationText": "In base alle votazioni, il budget è di {{budget}}.",
+      "popularActivities": "Attività più gettonate",
+      "noActivities": "Nessuna attività selezionata."
+    },
+    "ideas": {
+      "attendance": {
+        "yes": "Ci sono",
+        "maybe": "Forse",
+        "no": "Non ci sono"
+      },
+      "loading": "Caricamento delle idee...",
+      "noIdeas": "Ancora nessuna idea",
+      "noIdeasDesc": "Non appena i partecipanti forniranno proposte o vincoli, appariranno qui.",
+      "suggestions": "Proposte e desideri",
+      "entries": "{{count}} voci",
+      "restrictions": "Vincoli",
+      "partialAvailability": "Disponibilità parziale",
+      "suggestionsCount": "{{count}} proposte",
+      "restrictionsCount": "{{count}} vincoli",
+      "notesCount": "{{count}} note"
+    },
+    "loginRequired": "Accesso richiesto",
+    "loginRequiredDesc": "Devi registrarti o accedere per apportare modifiche. La visualizzazione è gratuita!"
   },
   "messages": {
     "title": "Modelli di Messaggi",
@@ -1454,6 +1622,13 @@
       "copySurveyLink": "Copia link sondaggio",
       "copyAccessCode": "Copia codice di accesso",
       "openSurvey": "Apri sondaggio"
+    },
+    "placeholders": {
+      "dateNotSet": "[Data non ancora stabilita]",
+      "deadlineNotSet": "[Nessuna scadenza]",
+      "destination": "Inserisci la destinazione",
+      "meetingPoint": "Inserisci il punto d'incontro",
+      "meetingTime": "Inserisci l'orario"
     }
   },
   "agencies": {
@@ -1610,7 +1785,24 @@
     "settlementExplanation": "I conguagli mostrano chi deve pagare a chi affinché tutti siano coperti equamente.",
     "balanceTooltip": "{{name}} ha pagato {{paid}} e deve {{owes}}. Differenza: {{balance}}",
     "noPaymentNeeded": "{{name}} non deve pagare perché ha già pagato abbastanza.",
-    "people": "persone"
+    "people": "persone",
+    "transferSettled": "Trasferimento contrassegnato come pagato",
+    "transferUnsettled": "Trasferimento contrassegnato come non pagato",
+    "markedPaid": "Contrassegnato come pagato",
+    "markedUnpaid": "Contrassegnato come non pagato",
+    "updated": "Spesa aggiornata",
+    "totalExpenses": "Totale",
+    "participants": "Partecipanti",
+    "openAmount": "In sospeso",
+    "open": "in sospeso",
+    "paidAmount": "Pagato",
+    "paymentProgress": "Avanzamento pagamenti",
+    "breakdown": "Suddivisione per categoria",
+    "settlement": "Saldo",
+    "markPaid": "Pagato",
+    "paymentStatus": "Stato pagamento",
+    "editExpense": "Modifica",
+    "budgetUsed": "Budget utilizzato"
   },
   "notifications": {
     "linkCopied": "Link copiato!",
@@ -1677,7 +1869,8 @@
       "requirements": "Requisiti",
       "requirementPlaceholder": "es. Abbigliamento sportivo, documento...",
       "notes": "Note",
-      "notesPlaceholder": "Informazioni aggiuntive..."
+      "notesPlaceholder": "Informazioni aggiuntive...",
+      "category": "Categoria"
     },
     "categories": {
       "title": "Categoria",
@@ -1695,6 +1888,28 @@
       "title": "Filtra",
       "byCategory": "Per Categoria",
       "showAll": "Mostra Tutto"
+    },
+    "authRequired": "Accesso richiesto",
+    "loginToAdd": "Accedi per aggiungere o modificare le attività.",
+    "export": {
+      "icalDownloaded": "File del calendario scaricato",
+      "title": "Esporta",
+      "pdf": "Anteprima di stampa (PDF)",
+      "ical": "Calendario (iCal)"
+    },
+    "viewMode": {
+      "list": "Elenco",
+      "calendar": "Calendario"
+    },
+    "addDate": "Aggiungi data",
+    "calendar": {
+      "weekView": "Vista settimanale",
+      "days": "Giorni",
+      "items": "Voci",
+      "time": "Ora",
+      "endTime": "Fine",
+      "legend": "Legenda",
+      "helpText": "Clicca su una fascia oraria o trascina per creare nuove attività. Trascina le attività esistenti per spostarle."
     }
   },
   "cookie": {
@@ -1842,7 +2057,27 @@
       "adjustmentHistory": "Storico regolazioni",
       "amount": "Importo",
       "adjustedBy": "Regolato da",
-      "date": "Data"
+      "date": "Data",
+      "fetchError": "Errore nel caricamento degli utenti",
+      "invalidAmount": "Quantità non valida",
+      "adminCheckError": "Impossibile verificare lo stato di admin",
+      "noPermission": "Nessuna autorizzazione admin",
+      "rlsError": "Nessuna autorizzazione. Verifica i diritti di admin.",
+      "searchPlaceholder": "Cerca per e-mail o nome...",
+      "noSearchResults": "Nessun utente trovato",
+      "noUsers": "Nessun utente disponibile",
+      "user": "Utente",
+      "plan": "Piano",
+      "used": "Utilizzati",
+      "available": "Disponibili",
+      "bonus": "Bonus",
+      "adjust": "Modifica",
+      "showingUsers": "{{count}} utenti mostrati",
+      "action": "Azione",
+      "addCreditsBtn": "Aggiungi crediti",
+      "removeCreditsBtn": "Rimuovi crediti",
+      "recentAdjustments": "Ultime modifiche",
+      "noAdjustments": "Nessuna modifica disponibile"
     },
     "aiAds": {
       "navLabel": "AI Advertising",
@@ -1919,7 +2154,12 @@
         "progress": "Progress",
         "noCampaigns": "No campaigns created yet",
         "templateVars": "Variables: {{agency_name}}, {{city}}, {{contact_name}}, {{signup_url}}, {{sender_name}}",
-        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀"
+        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀",
+        "saveTemplateName": "Nome modello:",
+        "templateSaved": "Modello salvato",
+        "saveTemplate": "Salva come modello",
+        "templateLibrary": "Libreria modelli",
+        "noCustomTemplates": "Ancora nessun modello personalizzato salvato."
       },
       "detail": {
         "contactPerson": "Contact person",
@@ -1944,7 +2184,9 @@
         "activityTitle": "Activity",
         "noActivity": "No activity yet",
         "nextSteps": "Next steps",
-        "save": "Save"
+        "save": "Save",
+        "composeMail": "Scrivi email",
+        "signatures": "Modifica firme"
       },
       "table": {
         "search": "Search name, city or email...",
@@ -1967,8 +2209,258 @@
         "link_clicked": "Invite link clicked"
       },
       "emptyState": "No agencies in the system yet. Import a CSV file or wait for autopilot.",
-      "freeSlotsCounter": "{{count}} of 150 free slots available"
-    }
+      "freeSlotsCounter": "{{count}} of 150 free slots available",
+      "title": "CRM acquisizione agenzie",
+      "subtitle": "Gestisci outreach, pipeline e campagne",
+      "addNote": "Nota",
+      "logResponse": "Risposta",
+      "searchTable": "Cerca per nome, città o email...",
+      "noResults": "Nessun risultato",
+      "loadMore": "Carica altri",
+      "campaignsTitle": "Campagne",
+      "newCampaign": "Nuova campagna",
+      "noCampaignsYet": "Ancora nessuna campagna. Crea la tua prima!",
+      "editCampaign": "Modifica campagna",
+      "createCampaign": "Crea nuova campagna",
+      "save": "Salva",
+      "create": "Crea",
+      "cancel": "Annulla",
+      "activeCampaigns": "Campagne attive",
+      "noCampaigns": "Ancora nessuna campagna creata. Avvia una nuova campagna nella scheda Campagne.",
+      "searchName": "Cerca nome...",
+      "filterCity": "Città",
+      "emptyColumn": "Vuota",
+      "col_rejected": "Rifiutato"
+    },
+    "agencyAffiliate": {
+      "addedSuccess": "Agenzia aggiunta come partner",
+      "addedError": "Errore durante l'aggiunta",
+      "fillRequired": "Compila tutti i campi obbligatori",
+      "manualAddedSuccess": "Agenzia aggiunta manualmente",
+      "statusUpdated": "Stato aggiornato",
+      "statusError": "Errore durante l'aggiornamento",
+      "noAffiliateId": "L'agenzia deve essere prima approvata",
+      "voucherAssigned": "Buono assegnato",
+      "voucherAlreadyAssigned": "Buono già assegnato",
+      "voucherError": "Errore durante l'assegnazione",
+      "title": "Agenzie partner",
+      "description": "Gestisci le partnership con le agenzie e le provvigioni",
+      "addAgency": "Aggiungi agenzia",
+      "createAgency": "Nuova agenzia",
+      "registeredAgencies": "Agenzie registrate",
+      "pending": "In sospeso",
+      "active": "Attiva",
+      "suspended": "Sospesa",
+      "noAgencies": "Nessuna agenzia partner ancora registrata",
+      "approve": "Approva",
+      "reject": "Rifiuta",
+      "assignVoucher": "Buono",
+      "addAgencyTitle": "Aggiungi agenzia come partner",
+      "addAgencyDesc": "Scegli un'agenzia dalla directory e configura la provvigione",
+      "searchAgencies": "Cerca agenzia...",
+      "noAvailableAgencies": "Nessuna agenzia disponibile trovata",
+      "contactEmail": "E-mail di contatto",
+      "commissionRate": "Tasso di provvigione (%)",
+      "addPartner": "Aggiungi partner",
+      "assignVoucherTitle": "Assegna buono",
+      "assignVoucherDesc": "Scegli un buono per",
+      "selectVoucher": "Seleziona buono",
+      "selectVoucherPlaceholder": "Scegli buono...",
+      "assignVoucherBtn": "Assegna buono",
+      "createAgencyTitle": "Crea manualmente una nuova agenzia",
+      "createAgencyDesc": "Crea una nuova agenzia non presente nella directory",
+      "agencyName": "Nome agenzia",
+      "city": "Città",
+      "phone": "Telefono",
+      "website": "Sito web",
+      "descriptions": "Descrizioni (multilingue)",
+      "descriptionPlaceholder": "Descrizione dell'agenzia in {{lang}}...",
+      "descriptionHint": "Suggerimento: le descrizioni vengono mostrate in base alla lingua dell'utente.",
+      "createPartner": "Crea agenzia"
+    },
+    "agencyAnalytics": {
+      "phone": "Telefono",
+      "email": "E-mail",
+      "website": "Sito web",
+      "unknown": "Sconosciuto",
+      "title": "Analytics agenzie",
+      "description": "Panoramica di tutte le interazioni con le agenzie",
+      "last7days": "Ultimi 7 giorni",
+      "last30days": "Ultimi 30 giorni",
+      "last90days": "Ultimi 90 giorni",
+      "totalInteractions": "Totale",
+      "calls": "Chiamate",
+      "emails": "E-mail",
+      "websiteClicks": "Siti web",
+      "conversionRate": "Conversioni",
+      "byType": "Per tipo di interazione",
+      "noData": "Nessun dato disponibile",
+      "byCity": "Per città",
+      "timeline": "Andamento temporale",
+      "timelineDesc": "Interazioni degli ultimi 14 giorni",
+      "topAgencies": "Migliori agenzie",
+      "agency": "Agenzia",
+      "total": "Totale"
+    },
+    "audit": {
+      "title": "Registro di audit",
+      "subtitle": "Registrazione cronologica di tutte le azioni admin — chi ha modificato cosa e quando.",
+      "searchPlaceholder": "Azione, e-mail o ID target …",
+      "targetFilter": "Tipo di target",
+      "allTargets": "Tutti i target",
+      "refresh": "Aggiorna",
+      "empty": "Ancora nessuna azione admin registrata",
+      "noResults": "Nessuna voce per il tuo filtro",
+      "limitReached": "Mostro le ultime {{limit}} voci — per le più vecchie interroga direttamente Supabase."
+    },
+    "flags": {
+      "toggled": "Flag aggiornato",
+      "created": "Flag creato",
+      "title": "Feature Flag",
+      "subtitle": "Attiva/disattiva le funzionalità a runtime o distribuiscile gradualmente",
+      "new": "Nuovo flag",
+      "newTitle": "Nuovo Feature Flag",
+      "newDescription": "Crea un nuovo Feature Flag. La key viene referenziata nel codice.",
+      "key": "Key",
+      "name": "Nome",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Cosa fa questo flag?",
+      "create": "Crea",
+      "empty": "Ancora nessun Feature Flag creato",
+      "enabled": "Attivo",
+      "disabled": "Inattivo",
+      "rollout": "Rollout",
+      "updated": "Aggiornato"
+    },
+    "settings": {
+      "planUpdated": "Piano aggiornato",
+      "planCreated": "Piano creato",
+      "planKeyRequired": "La chiave del piano è obbligatoria",
+      "planConfig": "Configurazione piano",
+      "planConfigDesc": "Gestisci crediti AI, prezzi e funzionalità per ogni piano",
+      "newPlan": "Nuovo piano",
+      "plan": "Piano",
+      "credits": "Crediti AI/mese",
+      "price": "Prezzo",
+      "interval": "Intervallo",
+      "features": "Funzionalità",
+      "status": "Stato",
+      "editPlan": "Modifica piano",
+      "planKey": "Chiave piano",
+      "displayName": "Nome visualizzato",
+      "aiCredits": "Crediti AI / mese",
+      "sortOrder": "Ordinamento",
+      "priceCents": "Prezzo (centesimi)",
+      "currency": "Valuta",
+      "billingInterval": "Intervallo di fatturazione",
+      "stripePriceId": "Stripe Price ID",
+      "isActive": "Piano attivo",
+      "saved": "Salvato",
+      "on": "Attivo",
+      "off": "Disattivo",
+      "save": "Salva",
+      "title": "Impostazioni di sistema",
+      "subtitle": "Configurazione a livello di piattaforma — sblocco funzionalità, impostazioni e-mail predefinite, sicurezza.",
+      "warningTitle": "Attenzione",
+      "warningBody": "Le modifiche hanno effetto immediato su tutti gli utenti. Testa prima le impostazioni critiche in staging. I segreti come le password SMTP e le chiavi Stripe NON vengono salvati qui — vanno inseriti nei Secrets di Supabase.",
+      "entries": "Impostazioni",
+      "lastUpdated": "Ultimo aggiornamento",
+      "dangerTitle": "Zona pericolosa",
+      "dangerSubtitle": "Operazioni irreversibili — solo se sai cosa stai facendo.",
+      "maintenanceToggle": "Attiva/disattiva modalità manutenzione",
+      "maintenanceConfirm": "Attivare la modalità manutenzione?",
+      "maintenanceDesc": "In modalità manutenzione tutti gli utenti non amministratori vedono una pagina di manutenzione. Niente nuove registrazioni, niente prenotazioni. Attivala solo se DAVVERO necessario.",
+      "confirmToggle": "Sì, attiva/disattiva"
+    },
+    "stats": {
+      "groupGrowth": "Crescita",
+      "groupGrowthSub": "Utenti e attività",
+      "totalUsers": "Utenti totali",
+      "thisWeek": "questa settimana",
+      "new24h": "Nuovi (24h)",
+      "activeUsers": "Attivi (30 giorni)",
+      "events": "Eventi",
+      "groupRevenue": "Fatturato",
+      "groupRevenueSub": "Abbonamenti e MRR",
+      "mrr": "MRR (agenzie)",
+      "mrrSub": "Professional + Enterprise",
+      "premium": "Utenti Premium",
+      "totalSubs": "Abbonamenti attivi",
+      "vouchersRedeemed": "Voucher riscattati",
+      "groupAgencies": "Agenzie",
+      "groupAgenciesSub": "Piattaforma B2B",
+      "totalAgencies": "Agenzie totali",
+      "proAgencies": "Professional",
+      "enterpriseAgencies": "Enterprise",
+      "starterAgencies": "Starter (gratuito)",
+      "groupMarketplace": "Marketplace",
+      "groupMarketplaceSub": "Servizi e prenotazioni",
+      "totalServices": "Servizi attivi",
+      "pendingServices": "Da verificare",
+      "reviewNeeded": "Revisione necessaria",
+      "totalBookings": "Prenotazioni totali",
+      "bookings30d": "Prenotazioni (30 giorni)",
+      "title": "Panoramica della piattaforma",
+      "subtitle": "I KPI più importanti a colpo d'occhio — in tempo reale dal database.",
+      "alertPendingTitle": "Revisione necessaria",
+      "alertPendingBody": "{{count}} servizi del marketplace in attesa di approvazione."
+    },
+    "subscriptions": {
+      "fetchError": "Errore durante il caricamento degli abbonamenti",
+      "updated": "Abbonamento aggiornato",
+      "updateError": "Errore durante l'aggiornamento",
+      "userRequired": "Seleziona un utente",
+      "alreadyExists": "L'utente ha già un abbonamento. Modifica quello esistente.",
+      "created": "Abbonamento creato",
+      "createError": "Errore durante la creazione",
+      "confirmDelete": "Eliminare davvero l'abbonamento?",
+      "deleted": "Abbonamento eliminato",
+      "deleteError": "Errore durante l'eliminazione",
+      "title": "Gestione abbonamenti",
+      "create": "Nuovo abbonamento",
+      "user": "Utente",
+      "plan": "Piano",
+      "type": "Tipo",
+      "expires": "Scade il",
+      "notes": "Nota",
+      "noSubscriptions": "Nessun abbonamento trovato",
+      "editTitle": "Modifica abbonamento",
+      "editDescription": "Modifica il piano, la data di scadenza o le note",
+      "expiryDate": "Data di scadenza",
+      "expiryHint": "Lascia vuoto per Lifetime (illimitato)",
+      "notesPlaceholder": "es. account partner, accesso di prova...",
+      "createTitle": "Crea nuovo abbonamento",
+      "createDescription": "Crea un abbonamento manuale per un utente",
+      "selectUser": "Seleziona utente...",
+      "searchUser": "Cerca utente...",
+      "noUserFound": "Nessun utente trovato"
+    },
+    "vouchers": {
+      "fetchError": "Errore durante il caricamento dei voucher",
+      "codeRequired": "Il codice è obbligatorio",
+      "discountValueRequired": "Il valore dello sconto è obbligatorio",
+      "stripeCouponError": "Voucher creato, ma il coupon Stripe non è riuscito",
+      "created": "Voucher creato",
+      "duplicateCode": "Questo codice esiste già",
+      "createError": "Errore durante la creazione",
+      "deactivated": "Voucher disattivato",
+      "activated": "Voucher attivato",
+      "title": "Gestione voucher",
+      "create": "Crea voucher",
+      "createTitle": "Crea nuovo voucher",
+      "createDescription": "Crea un codice sconto o di sblocco",
+      "code": "Codice",
+      "type": "Tipo",
+      "maxUses": "Utilizzi max.",
+      "unlimited": "Illimitato",
+      "validUntil": "Valido fino al",
+      "value": "Valore",
+      "usage": "Utilizzo",
+      "status": "Stato",
+      "noVouchers": "Nessun voucher disponibile"
+    },
+    "title": "Portale amministratore",
+    "backToApp": "Indietro"
   },
   "templates": {
     "title": "Scegli un modello",
@@ -2374,7 +2866,12 @@
         "name": "Ritiro Aziendale",
         "desc": "Team building, workshop e networking"
       }
-    }
+    },
+    "loginRequired": "Accedi per usare le funzioni IA",
+    "noCredits": "Nessun credito IA rimanente",
+    "upgradeForCredits": "Aggiorna il tuo piano per ottenere più crediti IA",
+    "designTitle": "Design e colori",
+    "moreDesigns": "Mostra altri design"
   },
   "affiliate": {
     "portal": {
@@ -2385,8 +2882,12 @@
         "vouchers": "Buoni",
         "commissions": "Commissioni",
         "payouts": "Pagamenti",
-        "settings": "Impostazioni"
-      }
+        "settings": "Impostazioni",
+        "analytics": "Analytics",
+        "links": "Link",
+        "marketing": "Marketing"
+      },
+      "performanceChart": "Performance degli ultimi 12 mesi"
     },
     "stats": {
       "totalEarnings": "Guadagni totali",
@@ -2395,7 +2896,9 @@
       "conversionRate": "Tasso di conversione",
       "thisMonth": "Questo mese",
       "allTime": "Sempre",
-      "tier": "Stato Tier"
+      "tier": "Stato Tier",
+      "earnings": "Ricavi",
+      "conversions": "Conversioni"
     },
     "vouchers": {
       "title": "I miei codici sconto",
@@ -2407,7 +2910,12 @@
       "copied": "Codice copiato!",
       "discount": "Sconto",
       "active": "Attivo",
-      "inactive": "Inattivo"
+      "inactive": "Inattivo",
+      "shareMessage": "🎉 Approfitta di uno sconto ${discountText} con il codice: ${code} \n  \n 👉 Riscattalo subito su EventBliss!",
+      "messageCopied": "Messaggio copiato!",
+      "noVouchersDesc": "Non appena ti verranno assegnati dei buoni, li vedrai qui.",
+      "code": "Codice buono",
+      "convRate": "Tasso di conv."
     },
     "commissions": {
       "title": "Le mie commissioni",
@@ -2486,6 +2994,163 @@
         "support": "Supporto personale",
         "supportDesc": "Contatto diretto con il nostro team"
       }
+    },
+    "admin": {
+      "totalPartners": "Partner totali",
+      "activePartners": "Partner attivi",
+      "totalEarnings": "Provvigioni totali",
+      "pendingPayouts": "Pagamenti in sospeso",
+      "searchPlaceholder": "Cerca partner...",
+      "createPartner": "Crea partner",
+      "partnerList": "Elenco partner",
+      "name": "Nome",
+      "email": "E-mail",
+      "tier": "Livello",
+      "commission": "Provvigione",
+      "earnings": "Guadagni",
+      "pending": "In sospeso",
+      "actions": "Azioni",
+      "noPartners": "Nessun partner trovato",
+      "editPartner": "Modifica partner",
+      "assignVoucher": "Assegna buono",
+      "selectVoucher": "Seleziona buono",
+      "selectVoucherPlaceholder": "Scegli buono...",
+      "customCommissionType": "Tipo di provvigione personalizzato",
+      "useDefault": "Usa predefinito",
+      "customRate": "Tariffa personalizzata",
+      "assign": "Assegna",
+      "approveAll": "Approva tutte",
+      "export": "Esporta",
+      "commissionsList": "Commissioni",
+      "date": "Data",
+      "partner": "Partner",
+      "voucher": "Buono",
+      "customer": "Cliente",
+      "orderAmount": "Valore ordine",
+      "approve": "Approva",
+      "cancel": "Annulla",
+      "markPaid": "Segna come pagata",
+      "noCommissions": "Nessuna commissione trovata",
+      "payoutsList": "Pagamenti",
+      "amount": "Importo",
+      "method": "Metodo",
+      "period": "Periodo",
+      "reference": "Riferimento",
+      "process": "Elabora",
+      "complete": "Completa",
+      "failed": "Non riuscita",
+      "noPayouts": "Nessun pagamento trovato",
+      "processPayout": "Elabora pagamento",
+      "referencePlaceholder": "es. riferimento bonifico SEPA",
+      "startProcessing": "Avvia elaborazione",
+      "markCompleted": "Segna come completato"
+    },
+    "commission": {
+      "percentage": "Percentuale",
+      "fixed": "Importo fisso",
+      "pending": "In sospeso",
+      "approved": "Approvata",
+      "paid": "Pagata",
+      "total": "Totale",
+      "cancelled": "Annullata"
+    },
+    "form": {
+      "contactName": "Referente",
+      "email": "E-mail",
+      "companyName": "Nome azienda",
+      "phone": "Telefono",
+      "website": "Sito web",
+      "taxId": "Partita IVA",
+      "commissionType": "Tipo di provvigione",
+      "commissionRate": "Tasso di provvigione",
+      "tier": "Livello",
+      "notes": "Note"
+    },
+    "status": {
+      "pending": "In sospeso",
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "terminated": "Terminato"
+    },
+    "payout": {
+      "pending": "In sospeso",
+      "processing": "In elaborazione",
+      "completed": "Completato",
+      "total": "Totale",
+      "failed": "Non riuscita"
+    },
+    "analytics": {
+      "title": "Analisi e report",
+      "subtitle": "Approfondimenti dettagliati sulle tue performance",
+      "7days": "Ultimi 7 giorni",
+      "30days": "Ultimi 30 giorni",
+      "90days": "Ultimi 90 giorni",
+      "year": "Quest'anno",
+      "funnel": "Funnel di conversione",
+      "impressions": "Impression",
+      "clicks": "Clic",
+      "conversions": "Conversioni",
+      "revenue": "Ricavi",
+      "weeklyEarnings": "Questa settimana",
+      "lastWeek": "settimana scorsa",
+      "conversionRate": "Tasso di conversione",
+      "epc": "Guadagno per clic",
+      "avgEarnings": "Guadagno medio per clic",
+      "aov": "Valore medio ordine",
+      "avgOrder": "Valore medio dell'ordine",
+      "earningsOverTime": "Ricavi nel tempo",
+      "conversionsByDay": "Conversioni al giorno",
+      "revenueByVoucher": "Ricavi per buono",
+      "noData": "Ancora nessun dato disponibile",
+      "topVouchers": "Buoni più usati",
+      "redemptions": "Riscatti",
+      "noVouchers": "Nessun buono disponibile"
+    },
+    "linkGenerator": {
+      "title": "Generatore di link",
+      "subtitle": "Crea link affiliato tracciabili",
+      "voucher": "Codice buono",
+      "selectVoucher": "Scegli buono (opzionale)",
+      "source": "Sorgente traffico (utm_source)",
+      "selectSource": "Scegli sorgente",
+      "medium": "Mezzo (utm_medium)",
+      "selectMedium": "Scegli mezzo",
+      "campaign": "Campagna (utm_campaign)",
+      "campaignPlaceholder": "es. summer_sale_2025",
+      "generatedUrl": "Link generato",
+      "shortUrl": "Link breve",
+      "hideQR": "Nascondi codice QR",
+      "showQR": "Mostra codice QR",
+      "qrDownloaded": "Codice QR scaricato",
+      "downloadQR": "Scarica codice QR"
+    },
+    "marketing": {
+      "title": "Materiali di marketing",
+      "subtitle": "Banner, template per i social media e modelli e-mail per la tua promozione",
+      "selectVoucher": "Buono per i template:",
+      "banners": "Banner",
+      "social": "Social media",
+      "email": "E-mail",
+      "bannerDownload": "Preparazione del download del banner in corso...",
+      "customBanner": "Banner personalizzato",
+      "customBannerDesc": "Ti serve un banner di un'altra dimensione o con un design personalizzato? Contatta il nostro team!",
+      "contactTeam": "Contatta il team",
+      "copyText": "Copia testo",
+      "popularHashtags": "Hashtag popolari",
+      "subject": "Oggetto"
+    },
+    "notifications": {
+      "newCommission": "Nuova commissione",
+      "earned": "guadagnato",
+      "payoutPending": "Pagamento richiesto",
+      "payoutProcessing": "Pagamento in elaborazione",
+      "payoutCompleted": "Pagamento completato",
+      "payoutFailed": "Pagamento non riuscito",
+      "yesterday": "Ieri",
+      "title": "Notifiche",
+      "markAllRead": "Segna tutte come lette",
+      "noNotifications": "Nessuna nuova notifica",
+      "viewAll": "Mostra tutte"
     }
   },
   "partnerApply": {
@@ -3715,7 +4380,9 @@
       "start": "Avvia",
       "reset": "Reimposta"
     },
-    "back": "Indietro"
+    "back": "Indietro",
+    "showing": "mostrati {{count}}",
+    "loadMore": "Carica altri {{count}}"
   },
   "ideasHub": {
     "title": "Giochi e Idee",
@@ -3824,7 +4491,66 @@
       "avgBudgetPerEvent": "Budget Medio/Evento",
       "clientRetention": "Fidelizzazione Clienti"
     },
-    "calendar": "Calendario",
+    "calendar": {
+      "filter": {
+        "statusAll": "Tutti gli stati",
+        "pending": "In attesa",
+        "confirmed": "Confermato",
+        "completed": "Completato",
+        "cancelled": "Annullato",
+        "sourceAll": "Tutte le origini",
+        "sourceMarketplace": "Marketplace",
+        "sourceManual": "Manuale",
+        "dateAll": "Tutte",
+        "dateToday": "Oggi",
+        "dateWeek": "Settimana",
+        "dateMonth": "Mese",
+        "dateUpcoming": "In arrivo",
+        "datePast": "Passate",
+        "service": "Servizio",
+        "serviceAll": "Tutti i servizi",
+        "guide": "Guida",
+        "guideAll": "Tutte le guide",
+        "guideUnassigned": "Senza guida",
+        "status": "Stato",
+        "source": "Origine",
+        "customerPlaceholder": "Cliente / e-mail / n.",
+        "onlyConflicts": "Mostra solo i conflitti",
+        "conflictsOnly": "Solo conflitti",
+        "clear": "Reimposta filtri",
+        "allShown": "Nessun filtro attivo — tutte le prenotazioni sono visibili"
+      },
+      "bookingSingular": "Prenotazione",
+      "bookingPlural": "Prenotazioni",
+      "today": "Oggi",
+      "export": "Esporta",
+      "exportLabel": "Esporta / Stampa",
+      "exportICal": "iCal (.ics)",
+      "exportCSV": "CSV",
+      "print": "Stampa / PDF",
+      "newBooking": "Nuovo appuntamento",
+      "day": {
+        "empty": "Nessun appuntamento — clicca su una fascia oraria per creare un appuntamento"
+      },
+      "month": {
+        "doubleClickHint": "Doppio clic per un nuovo appuntamento",
+        "noBookings": "Nessun appuntamento in questo giorno.",
+        "selectDay": "Scegli un giorno per i dettagli — doppio clic per un nuovo appuntamento"
+      },
+      "resource": {
+        "unassigned": "Senza guida",
+        "groupBy": "Raggruppa per",
+        "byGuide": "Guida",
+        "byService": "Servizio",
+        "guide": "Guida",
+        "service": "Servizio",
+        "noGuides": "Ancora nessuna guida — aggiungine qualcuna nel modulo Guide",
+        "noServices": "Ancora nessun servizio"
+      },
+      "week": {
+        "time": "Ore"
+      }
+    },
     "runOfShow": {
       "liveTimeline": "Cronologia Live",
       "currentPhase": "Fase Attuale",
@@ -4100,7 +4826,68 @@
       "noData": "No data yet — stats will appear once your services are recommended through the AI.",
       "upsellHeadline": "Unlock AI Performance",
       "upsellBody": "Upgrade to Enterprise to see how often your services are recommended, clicked, and booked.",
-      "upsellCta": "Unlock Enterprise"
+      "upsellCta": "Unlock Enterprise",
+      "title": "Performance IA",
+      "subtitle": "Qui vedi come i tuoi servizi vengono consigliati e prenotati tramite l'IA.",
+      "scopeLabel": "Agenzia",
+      "impressions": "Impressioni",
+      "clicks": "Clic",
+      "ctr": "CTR",
+      "revenue": "Fatturato attribuito",
+      "impressionsPerService": "Impressioni per servizio",
+      "perService": "Performance per servizio",
+      "loading": "Caricamento…",
+      "recentActivity": "Ultime raccomandazioni IA",
+      "noFeed": "Ancora nessuna attività.",
+      "topKeywords": "Top keyword",
+      "noKeywords": "Ancora nessun dato sulle keyword.",
+      "feedLine": "Il tuo servizio '{{section}}' è stato consigliato il {{date}} per un evento {{eventType}}{{city}} (tramite {{requestType}})"
+    },
+    "embed": {
+      "copied": "Copiato negli appunti",
+      "noAgency": "Nessuna agenzia trovata.",
+      "title": "Incorporamento e pagina pubblica",
+      "subtitle": "Condividi i tuoi servizi e il calendario di prenotazione — sul tuo sito web o come pagina pubblica EventBliss.",
+      "publicUrlTitle": "La tua pagina pubblica EventBliss",
+      "publicUrlDesc": "Se non hai un sito web tuo — condividi questo link direttamente con i clienti, sui social media, nelle firme e-mail ecc.",
+      "open": "Apri",
+      "publicUrlHint": "Adatto ai QR code, responsive, ottimizzato per la SEO. I clienti possono prenotare i servizi direttamente.",
+      "embedTitle": "Incorpora sul tuo sito web",
+      "embedDesc": "Inserisci i tuoi servizi + il calendario di prenotazione direttamente nel tuo sito web esistente.",
+      "themePickerTitle": "Scegli un tema",
+      "themePickerHint": "Il tuo cliente vede la pagina dell'agenzia in questo stile.",
+      "language": "Lingua",
+      "height": "Altezza (px)",
+      "hideChrome": "Nascondi l'header dell'app",
+      "hideChromeHint": "Consigliato per un incorporamento pulito",
+      "iframeLabel": "iframe semplice",
+      "iframeHint": "Basta copiarlo e incollarlo nel tuo sito web — ad es. in WordPress come blocco HTML.",
+      "scriptLabel": "Snippet script (Vanilla JS)",
+      "tipTitle": "Consiglio da pro",
+      "tipBody": "Per WordPress esiste il plugin \"Advanced iframe\". Per Webflow/Framer/Wix usa i rispettivi blocchi di embed. Se hai un sito React/Next.js personalizzato, usa lo snippet script — così l'iframe si carica in lazy loading durante lo scorrimento."
+    },
+    "earnings": {
+      "pending": "Nuove richieste",
+      "pendingSub": "in attesa di conferma",
+      "confirmed": "Confermate",
+      "confirmedSub": "eventi in arrivo",
+      "revenueMonth": "Fatturato di questo mese",
+      "revenueMonthSub": "al netto del 10% di commissione",
+      "revenueTotal": "Fatturato totale",
+      "paidBookings": "prenotazioni pagate",
+      "title": "Fatturato del marketplace",
+      "liveBadge": "Live da Supabase",
+      "chartTitle": "Andamento del fatturato",
+      "chartSub": "ultimi 6 mesi",
+      "chartEmpty": "Ancora nessun dato — la tua prima prenotazione comparirà qui.",
+      "bookingsThis": "Prenotazioni",
+      "participantsTotal": "Partecipanti",
+      "avgBooking": "Prenotazione media",
+      "topServicesTitle": "Servizi top",
+      "topServicesSub": "per fatturato",
+      "topServicesEmpty": "Ancora nessuna prenotazione di servizi.",
+      "unknownService": "Servizio senza nome",
+      "bookingsLabel": "Prenotazioni"
     }
   },
   "games": {
@@ -4227,7 +5014,9 @@
       "partyGamesCount": "24+ Giochi di Gruppo",
       "partyGamesSubtitle": "Tabù, Bomba, Headup e altro",
       "findInspiration": "Trova ispirazione",
-      "findInspirationSub": "Temi, giochi e idee per il tuo evento"
+      "findInspirationSub": "Temi, giochi e idee per il tuo evento",
+      "marketplace": "Marketplace",
+      "marketplaceSub": "Servizi ed esperienze"
     },
     "games": {
       "subtitle": "Giochi di Gruppo",
@@ -4372,7 +5161,10 @@
       "partyModeActivatedDesc": "D’ora in poi bevi invece di ricevere una punizione",
       "close": "Chiudi",
       "adminPanel": "Pannello Admin",
-      "adminDashboard": "Dashboard"
+      "adminDashboard": "Dashboard",
+      "partyHidden": "Modalità party nascosta di nuovo",
+      "myBookings": "Le mie prenotazioni",
+      "myBookingsSub": "Agenzie e fornitori di servizi"
     },
     "create": {
       "headerTitle": "Crea Evento",
@@ -4404,7 +5196,8 @@
         "inputPlaceholder": "Inserisci un nome...",
         "guestCount_one": "{{count}} ospite",
         "guestCount_other": "{{count}} ospiti",
-        "noGuests": "Ancora nessun ospite — puoi invitarli dopo."
+        "noGuests": "Ancora nessun ospite — puoi invitarli dopo.",
+        "guestCount": "{{count}} ospiti"
       },
       "stepReview": {
         "title": "Tutto corretto?",
@@ -4653,7 +5446,11 @@
       "completed": "Completato",
       "cancelled": "Annullato"
     },
-    "participants": "Partecipanti"
+    "participants": "Partecipanti",
+    "paymentCancelled": "Pagamento annullato — puoi riprenderlo in qualsiasi momento.",
+    "onSiteBadge": "Pagamento in loco",
+    "payingPreparing": "In preparazione…",
+    "payNow": "Paga ora"
   },
   "agencyDashboard": {
     "nav": {
@@ -4698,7 +5495,13 @@
       "confirmed": "Confermato",
       "completed": "Completato",
       "cancelled": "Annullato"
-    }
+    },
+    "guideAssigned": "Guida assegnata",
+    "guideUnassigned": "Assegnazione rimossa",
+    "guideLoading": "Caricamento guide…",
+    "noGuides": "Nessuna guida — aggiungine qualcuna nel modulo Guide",
+    "guidePlaceholder": "Assegna guida",
+    "guideNone": "nessuna guida"
   },
   "guideManager": {
     "title": "Gestione guide",
@@ -4755,7 +5558,34 @@
       "confirmed": "Confermato",
       "completed": "Completato",
       "cancelled": "Annullato"
-    }
+    },
+    "createSuccess": "Appuntamento creato",
+    "createTitle": "Nuovo appuntamento",
+    "createDescription": "Prenotazione manuale — ad es. per clienti telefonici o walk-in. Nessun checkout Stripe, conferma immediata.",
+    "service": "Servizio",
+    "noServices": "Ancora nessun servizio approvato — creane prima uno nel modulo Marketplace.",
+    "selectService": "Seleziona servizio",
+    "date": "Data",
+    "time": "Ora",
+    "participants": "Partecipanti",
+    "range": "Consentito",
+    "priceOverride": "Prezzo a persona (opzionale)",
+    "totalPreview": "Totale",
+    "customerSection": "Cliente",
+    "customerName": "Nome",
+    "customerEmail": "E-mail",
+    "customerPhone": "Telefono",
+    "notes": "Note",
+    "assignmentSection": "Assegnazione",
+    "assignGuide": "Guida",
+    "noGuide": "— nessuna guida —",
+    "assignTeam": "Membro del team",
+    "noTeam": "— nessuno —",
+    "conflictBlocking": "Conflitti rilevati",
+    "conflictWarning": "Attenzione — possibili sovrapposizioni",
+    "conflictContinueHint": "Puoi comunque procedere — verifica prima.",
+    "conflictBlockedTooltip": "Risolvi i conflitti prima di creare",
+    "createSubmit": "Crea appuntamento"
   },
   "calendarSync": {
     "title": "Abbonamento calendario",
@@ -4828,7 +5658,8 @@
       "form": "Formulario",
       "responses": "Respuestas",
       "ai": "IA",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "marketplace": "Marketplace"
     },
     "honoree": "Homenajeado",
     "noDate": "Sin fecha",
@@ -4850,7 +5681,8 @@
       "inviteGuests": "Invitar",
       "planActivity": "Planificar",
       "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA"
+      "aiAssistant": "Asistente IA",
+      "browseMarketplace": "Marketplace"
     },
     "recentActivity": "Actividad reciente",
     "noActivity": "Sin actividad",
@@ -5697,5 +6529,145 @@
     "noServices": "Questa agenzia non ha ancora servizi nel marketplace.",
     "reviewsTitle": "Recensioni",
     "noReviews": "Nessuna recensione per questa agenzia."
+  },
+  "myEvents": {
+    "editFolder": "Modifica cartella",
+    "newFolder": "Nuova cartella",
+    "folderName": "Nome cartella",
+    "folderColor": "Colore",
+    "save": "Salva",
+    "deleteEvent": "Eliminare l'evento?",
+    "deleteEventDescription": "Questo evento verrà contrassegnato come eliminato. Puoi indicare un motivo e ripristinarlo in seguito.",
+    "deleteReason": "Motivo (facoltativo)",
+    "deleteReasonPlaceholder": "es. Evento di prova, Non più necessario...",
+    "restoreEvent": "Ripristina",
+    "moveToFolder": "Sposta nella cartella",
+    "removeFromFolder": "Rimuovi dalla cartella",
+    "unarchiveEvent": "Ripristina",
+    "archiveEvent": "Archivia",
+    "folderCreated": "Cartella creata",
+    "folderDeleted": "Cartella eliminata",
+    "eventArchived": "Evento archiviato",
+    "eventUnarchived": "Evento ripristinato",
+    "eventDeleted": "Evento eliminato",
+    "eventRestored": "Evento ripristinato",
+    "allEvents": "Tutti gli eventi",
+    "unfiled": "Senza cartella",
+    "archived": "Archiviati",
+    "deleted": "Eliminati",
+    "noArchivedEvents": "Nessun evento archiviato",
+    "noDeletedEvents": "Nessun evento eliminato"
+  },
+  "profile": {
+    "account": "Account",
+    "myEvents": "I miei eventi",
+    "settings": "Impostazioni",
+    "premium": "Premium",
+    "toAgencyDashboard": "Vai alla Agency Dashboard",
+    "becomeAgency": "Per le agenzie",
+    "adminArea": "Area amministratore",
+    "noEvents": "Ancora nessun evento",
+    "noEventsDescription": "Crea il tuo primo evento e invita i tuoi amici!",
+    "createFirstEvent": "Crea il primo evento",
+    "passwordMismatch": "Le password non coincidono.",
+    "passwordTooShort": "La password deve contenere almeno 8 caratteri.",
+    "passwordChanged": "Password modificata con successo!",
+    "deleteConfirmationRequired": "Digita DELETE per confermare.",
+    "accountDeleted": "Il tuo account è stato eliminato definitivamente.",
+    "exportInProgress": "Preparazione dell'esportazione dei dati in corso…",
+    "exportReady": "L'esportazione dei tuoi dati è stata scaricata.",
+    "exportFailed": "Esportazione non riuscita. Riprova più tardi.",
+    "subscription": {
+      "planLifetime": "Premium (a vita)",
+      "planYearly": "Premium (annuale)",
+      "planMonthly": "Premium (mensile)",
+      "planFree": "Gratuito",
+      "title": "Il mio abbonamento",
+      "description": "Gestisci il tuo abbonamento e i metodi di pagamento",
+      "status": "Stato",
+      "cancelScheduled": "Disdetta programmata",
+      "endsOn": "Termina il {{date}}",
+      "renewsOn": "Rinnovo il {{date}}",
+      "lifetimeInfo": "Il tuo accesso a vita è attivo in modo permanente.",
+      "manage": "Gestisci abbonamento",
+      "noSubscription": "Non hai alcun abbonamento attivo.",
+      "upgradeNow": "Passa subito a Premium"
+    },
+    "invoices": {
+      "paid": "Pagata",
+      "open": "Aperta",
+      "void": "Annullata",
+      "title": "Le mie fatture",
+      "description": "Riepilogo dei tuoi pagamenti",
+      "noInvoices": "Nessuna fattura disponibile.",
+      "downloadPdf": "Scarica PDF",
+      "viewOnline": "Visualizza online"
+    },
+    "accountInfo": "Informazioni account",
+    "accountInfoDescription": "I tuoi dati di accesso",
+    "emailCannotChange": "L'indirizzo email non può essere modificato.",
+    "aiCredits": {
+      "title": "Crediti AI",
+      "description": "I tuoi crediti mensili per le funzioni AI",
+      "noCredits": "Nessun credito - è richiesto un abbonamento Premium",
+      "used": "Utilizzati",
+      "remaining": "Rimanenti",
+      "limit": "Limite mensile",
+      "resetDate": "Prossimo azzeramento"
+    },
+    "changePassword": "Cambia password",
+    "changePasswordDescription": "Scegli una nuova password sicura.",
+    "newPassword": "Nuova password",
+    "updatePassword": "Aggiorna password",
+    "dangerZoneDescription": "Elimina definitivamente il tuo account.",
+    "exportData": "Esporta i miei dati (GDPR Art. 20)",
+    "deleteAccount": "Elimina account",
+    "deleteAccountTitle": "Eliminare davvero l'account?",
+    "deleteAccountWarning": "Questa azione non può essere annullata. Tutti i tuoi eventi e dati verranno eliminati definitivamente.",
+    "typeDeleteToConfirm": "Digita DELETE per confermare"
+  },
+  "agencyPortal": {
+    "loginRequired": "Accesso richiesto",
+    "loginDesc": "Accedi per utilizzare il portale agenzie.",
+    "pending": {
+      "title": "Candidatura in elaborazione",
+      "description": "La tua candidatura come partner agenzia è attualmente in fase di revisione.",
+      "notice": "Ti contatteremo entro 48 ore."
+    },
+    "notAgency": {
+      "title": "Diventa partner agenzia",
+      "description": "Non sei ancora un partner agenzia. Registra la tua agenzia e guadagna commissioni.",
+      "cta": "Candidati ora"
+    },
+    "title": "Portale agenzie",
+    "activePartner": "Partner attivo",
+    "stats": {
+      "referrals": "Segnalazioni",
+      "bookings": "Prenotazioni",
+      "commission": "Commissioni"
+    },
+    "tabs": {
+      "dashboard": "Panoramica",
+      "vouchers": "Buoni",
+      "commissions": "Commissioni",
+      "payouts": "Pagamenti",
+      "settings": "Impostazioni"
+    },
+    "dashboard": {
+      "welcome": "Bentornato!",
+      "subtitle": "Qui trovi una panoramica delle tue attività come partner.",
+      "agencyInfo": "Info agenzia",
+      "name": "Nome",
+      "location": "Sede",
+      "commissionRate": "Tasso di commissione",
+      "performance": "Performance",
+      "conversionRate": "Tasso di conversione",
+      "avgCommission": "Commissione media"
+    }
+  },
+  "whoami": {
+    "setup": {
+      "hidden": ""
+    }
   }
 }

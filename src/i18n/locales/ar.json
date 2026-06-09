@@ -842,6 +842,14 @@
     },
     "error": {
       "failed": "فشل الإنشاء. حاول مرة أخرى."
+    },
+    "loginPrompt": {
+      "title": "يُنصح بتسجيل الدخول",
+      "description": "بحساب يمكنك إدارة فعالياتك وعدم فقدانها أبدًا.",
+      "benefit1": "احفظ الفعاليات في \"فعالياتي\"",
+      "benefit2": "الوصول إلى لوحة التحكم من أي مكان",
+      "benefit3": "ميزات بريميوم مثل قوالب الذكاء الاصطناعي",
+      "continueAnyway": "المتابعة بدون تسجيل الدخول"
     }
   },
   "joinEvent": {
@@ -1077,12 +1085,35 @@
     "team": {
       "title": "إدارة الفريق",
       "invite": "دعوة",
-      "permissions": "الصلاحيات",
+      "permissions": {
+        "viewResponses": "عرض الردود",
+        "addExpenses": "إضافة المصروفات",
+        "viewAllExpenses": "عرض جميع المصروفات",
+        "editSettings": "تعديل الإعدادات"
+      },
       "removeAccess": "إزالة الوصول",
       "roles": {
         "organizer": "منظم",
         "guest": "ضيف"
-      }
+      },
+      "nameRequired": "لا يمكن أن يكون الاسم فارغاً",
+      "participantAdded": "تمت إضافة {{name}}",
+      "addError": "خطأ أثناء الإضافة",
+      "status": {
+        "activated": "مُفعّل",
+        "invited": "مدعو",
+        "ready": "جاهز",
+        "noAccess": "لا يوجد وصول"
+      },
+      "addParticipant": "إضافة مشارك",
+      "addParticipantDesc": "أضف ضيفًا جديدًا إلى الفعالية",
+      "participantName": "الاسم",
+      "namePlaceholder": "مثال: محمد أحمد",
+      "participantEmail": "البريد الإلكتروني (اختياري)",
+      "emailPlaceholder": "max@example.com",
+      "participantRole": "الدور",
+      "addButton": "إضافة",
+      "description": "فعّل وصول لوحة التحكم للمشاركين وشارك رابط الدعوة. باستخدام الرابط يمكنهم إنشاء حساب والتحقق من هويتهم."
     },
     "overview": {
       "title": "نظرة عامة",
@@ -1099,6 +1130,30 @@
         "active": "نشط",
         "completed": "مكتمل",
         "cancelled": "ملغي"
+      },
+      "statuses": {
+        "draft": "مسودة",
+        "planning": "التخطيط",
+        "active": "نشط",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+      },
+      "participantStatus": {
+        "confirmed": "مؤكَّد",
+        "declined": "رفض",
+        "maybe": "ربما",
+        "invited": "مدعوّ"
+      },
+      "pendingResponses": "الردود المعلّقة",
+      "pendingResponsesDesc": "لم يردّ {{count}} مشارك بعد.",
+      "noParticipants": "لم تتم إضافة أي مشاركين بعد.",
+      "quickActions": {
+        "expenses": "المصروفات",
+        "expensesDesc": "إدارة التكاليف وتقسيمها",
+        "messages": "الرسائل",
+        "messagesDesc": "نسخ القوالب ومشاركتها",
+        "ai": "مساعد الذكاء الاصطناعي",
+        "aiDesc": "توليد الأفكار والاقتراحات"
       }
     },
     "form": {
@@ -1109,7 +1164,51 @@
       "save": "حفظ",
       "successMessage": "تم حفظ إعدادات النموذج!",
       "coreQuestions": "الأسئلة الأساسية",
-      "customQuestions": "أسئلة مخصصة",
+      "customQuestions": {
+        "presets": {
+          "dietary": "النظام الغذائي",
+          "songWish": "أغنية مطلوبة",
+          "tshirtSize": "مقاس القميص",
+          "driversLicense": "رخصة القيادة",
+          "specialWishes": "طلبات خاصة"
+        },
+        "presetQuestions": {
+          "dietary": {
+            "label": "هل توجد قيود غذائية؟",
+            "placeholder": "مثل نباتي، نباتي صرف، حساسية..."
+          },
+          "songWish": {
+            "label": "ما الأغنية التي تتمنى إضافتها إلى قائمة التشغيل؟",
+            "placeholder": "الفنان - عنوان الأغنية"
+          },
+          "tshirtSize": {
+            "label": "ما مقاس القميص الذي ترتديه؟"
+          },
+          "driversLicense": {
+            "label": "هل لديك رخصة قيادة ويمكنك القيادة؟"
+          },
+          "specialWishes": {
+            "label": "هل هناك شيء آخر تود إخبارنا به؟",
+            "placeholder": "طلبات خاصة، أفكار، ملاحظات..."
+          }
+        },
+        "quickAdd": "إضافة سريعة:",
+        "questionPlaceholder": "أدخل السؤال...",
+        "placeholderPlaceholder": "نص العنصر النائب (اختياري)",
+        "options": "الخيارات:",
+        "addOption": "إضافة خيار",
+        "requiredField": "حقل إلزامي",
+        "noQuestions": "لم تتم إضافة أي أسئلة خاصة بعد.",
+        "noQuestionsHint": "استخدم أزرار الإضافة السريعة بالأعلى أو أضف سؤالًا جديدًا.",
+        "addNew": "إضافة سؤال جديد",
+        "questionsConfigured": "سؤال (أسئلة) خاص تم إعداده",
+        "noPreview": "أضف أسئلة لرؤية المعاينة",
+        "previewTitle": "معاينة النموذج",
+        "previewDescription": "هكذا ستظهر أسئلتك الخاصة في الاستبيان",
+        "previewReadOnly": "معاينة للقراءة فقط",
+        "untitledQuestion": "سؤال بدون عنوان",
+        "selectPlaceholder": "اختر خيارًا..."
+      },
       "questionEnabled": "السؤال مفعل",
       "questionDisabled": "السؤال معطل",
       "singleSelect": "اختيار واحد",
@@ -1294,7 +1393,19 @@
       "title": "الجدول",
       "setDate": "تحديد التاريخ",
       "dateSet": "تم تحديد التاريخ!",
-      "noDate": "لم يتم تحديد تاريخ بعد"
+      "noDate": "لم يتم تحديد تاريخ بعد",
+      "loading": "جارٍ تحميل المواعيد...",
+      "noData": "لا توجد بيانات بعد",
+      "noDataDesc": "بمجرد أن يحدّد المشاركون مدى توفّرهم، ستظهر النتائج هنا.",
+      "activeVotes": "{{count}} صوت نشط",
+      "dateLocked": "تم تحديد الموعد {{block}}",
+      "topRecommendations": "أفضل التوصيات",
+      "block": "الكتلة",
+      "yes": "نعم",
+      "maybe": "ربما",
+      "allDates": "جميع المواعيد",
+      "locked": "محدَّد",
+      "legend": "يُحتسب النقاط من أصوات \"نعم\" (100%) وأصوات \"ربما\" (50%). القيم الأعلى تعني توفّراً أفضل."
     },
     "settings": {
       "title": "الإعدادات",
@@ -1329,7 +1440,10 @@
         "title": "منطقة الخطر",
         "deleteEvent": "حذف الفعالية",
         "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
-      }
+      },
+      "publicVisibility": "الظهور العام",
+      "publicVisibilityDesc": "اختر علامات التبويب التي يمكن للزوار رؤيتها دون تسجيل الدخول (باستخدام رمز الوصول فقط).",
+      "publicVisibilityNote": "يحتاج الزوار إلى التسجيل لإجراء التغييرات (إضافة مصروفات، تعديل الردود، إلخ)."
     },
     "ai": {
       "title": "مساعد الذكاء الاصطناعي",
@@ -1421,7 +1535,10 @@
         "outdoor": "Action & outdoor adventure",
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
-      }
+      },
+      "basedOnNoName": "بناءً على {{count}} إجابة",
+      "budgetTip": "نصيحة الميزانية",
+      "listen": "استماع"
     },
     "guestWarning": {
       "title": "الحدث غير محمي بعد",
@@ -1429,7 +1546,58 @@
       "cta": "تأمين مجانًا",
       "ctaLink": "اربط بحسابي",
       "claiming": "يتم ربط الحدث بحسابك…"
-    }
+    },
+    "destination": {
+      "destinations": {
+        "deCity": "مدينة ألمانية",
+        "barcelona": "برشلونة",
+        "lisbon": "لشبونة",
+        "either": "لا فرق"
+      },
+      "activities": {
+        "karting": "سباق الكارتينغ",
+        "escapeRoom": "غرفة الهروب",
+        "lasertag": "ليزر تاغ",
+        "axeThrowing": "رمي الفؤوس",
+        "vrSimracing": "سباق افتراضي VR",
+        "climbing": "التسلق",
+        "bubbleSoccer": "كرة الفقاعات",
+        "outdoor": "في الهواء الطلق",
+        "wellness": "العافية",
+        "food": "فنون الطهي",
+        "mixed": "متنوّع"
+      },
+      "loading": "جارٍ تحميل بيانات الوجهة...",
+      "noData": "لا توجد بيانات بعد",
+      "noDataDesc": "بمجرد أن يحدّد المشاركون تفضيلاتهم، ستظهر النتائج هنا.",
+      "topDestination": "أفضل وجهة",
+      "votesOf": "{{votes}} من {{total}} صوت ({{percent}}%)",
+      "voting": "التصويت",
+      "budgetDistribution": "توزيع الميزانية",
+      "recommendation": "التوصية",
+      "recommendationText": "بناءً على الأصوات، تبلغ الميزانية {{budget}}.",
+      "popularActivities": "الأنشطة الشائعة",
+      "noActivities": "لم يتم اختيار أي أنشطة بعد."
+    },
+    "ideas": {
+      "attendance": {
+        "yes": "حاضر",
+        "maybe": "ربما",
+        "no": "غير حاضر"
+      },
+      "loading": "جارٍ تحميل الأفكار...",
+      "noIdeas": "لا توجد أفكار بعد",
+      "noIdeasDesc": "بمجرد أن يقدّم المشاركون اقتراحات أو قيوداً، ستظهر هنا.",
+      "suggestions": "الاقتراحات والرغبات",
+      "entries": "{{count}} إدخال",
+      "restrictions": "القيود",
+      "partialAvailability": "توفّر جزئي",
+      "suggestionsCount": "{{count}} اقتراح",
+      "restrictionsCount": "{{count}} قيد",
+      "notesCount": "{{count}} ملاحظة"
+    },
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "loginRequiredDesc": "يجب عليك التسجيل أو تسجيل الدخول لإجراء التغييرات. العرض مجاني!"
   },
   "messages": {
     "title": "قوالب الرسائل",
@@ -1504,6 +1672,13 @@
       "copySurveyLink": "نسخ رابط الاستبيان",
       "copyAccessCode": "نسخ كود الوصول",
       "openSurvey": "فتح الاستبيان"
+    },
+    "placeholders": {
+      "dateNotSet": "[لم يُحدّد التاريخ بعد]",
+      "deadlineNotSet": "[لا يوجد موعد نهائي]",
+      "destination": "أدرج الوجهة",
+      "meetingPoint": "أدرج نقطة اللقاء",
+      "meetingTime": "أدرج الوقت"
     }
   },
   "agencies": {
@@ -1660,7 +1835,24 @@
     "settlementExplanation": "تظهر التسويات من يجب أن يدفع لمن حتى يتم تغطية الجميع بشكل عادل.",
     "balanceTooltip": "{{name}} دفع {{paid}} ومدين بـ {{owes}}. الفرق: {{balance}}",
     "noPaymentNeeded": "{{name}} لا يحتاج للدفع لأنه دفع ما يكفي بالفعل.",
-    "people": "أشخاص"
+    "people": "أشخاص",
+    "transferSettled": "تم تحديد التحويل كمدفوع",
+    "transferUnsettled": "تم تحديد التحويل كغير مدفوع",
+    "markedPaid": "تم التحديد كمدفوع",
+    "markedUnpaid": "تم التحديد كغير مدفوع",
+    "updated": "تم تحديث المصروف",
+    "totalExpenses": "الإجمالي",
+    "participants": "المشاركون",
+    "openAmount": "مفتوح",
+    "open": "مفتوح",
+    "paidAmount": "مدفوع",
+    "paymentProgress": "تقدّم الدفع",
+    "breakdown": "تفصيل الفئات",
+    "settlement": "التسوية",
+    "markPaid": "مدفوع",
+    "paymentStatus": "حالة الدفع",
+    "editExpense": "تعديل",
+    "budgetUsed": "الميزانية المستخدمة"
   },
   "notifications": {
     "linkCopied": "تم نسخ الرابط!",
@@ -1727,7 +1919,8 @@
       "requirements": "المتطلبات",
       "requirementPlaceholder": "مثل ملابس رياضية، هوية...",
       "notes": "ملاحظات",
-      "notesPlaceholder": "معلومات إضافية..."
+      "notesPlaceholder": "معلومات إضافية...",
+      "category": "الفئة"
     },
     "categories": {
       "title": "الفئة",
@@ -1745,6 +1938,28 @@
       "title": "تصفية",
       "byCategory": "حسب الفئة",
       "showAll": "عرض الكل"
+    },
+    "authRequired": "تسجيل الدخول مطلوب",
+    "loginToAdd": "يرجى تسجيل الدخول لإضافة الأنشطة أو تعديلها.",
+    "export": {
+      "icalDownloaded": "تم تنزيل ملف التقويم",
+      "title": "تصدير",
+      "pdf": "عرض الطباعة (PDF)",
+      "ical": "التقويم (iCal)"
+    },
+    "viewMode": {
+      "list": "قائمة",
+      "calendar": "تقويم"
+    },
+    "addDate": "إضافة تاريخ",
+    "calendar": {
+      "weekView": "عرض الأسبوع",
+      "days": "الأيام",
+      "items": "العناصر",
+      "time": "الوقت",
+      "endTime": "النهاية",
+      "legend": "وسيلة الإيضاح",
+      "helpText": "انقر على فترة زمنية أو اسحب لإنشاء أنشطة جديدة. اسحب الأنشطة الحالية لنقلها."
     }
   },
   "cookie": {
@@ -1892,7 +2107,27 @@
       "adjustmentHistory": "سجل التعديلات",
       "amount": "المبلغ",
       "adjustedBy": "تم التعديل بواسطة",
-      "date": "التاريخ"
+      "date": "التاريخ",
+      "fetchError": "حدث خطأ أثناء تحميل المستخدمين",
+      "invalidAmount": "عدد غير صالح",
+      "adminCheckError": "تعذّر التحقق من حالة المسؤول",
+      "noPermission": "لا توجد صلاحيات مسؤول",
+      "rlsError": "لا توجد صلاحية. يرجى التحقق من حقوق المسؤول.",
+      "searchPlaceholder": "ابحث بالبريد الإلكتروني أو الاسم...",
+      "noSearchResults": "لم يتم العثور على مستخدمين",
+      "noUsers": "لا يوجد مستخدمون",
+      "user": "المستخدم",
+      "plan": "الخطة",
+      "used": "المستهلك",
+      "available": "المتاح",
+      "bonus": "مكافأة",
+      "adjust": "تعديل",
+      "showingUsers": "عرض {{count}} مستخدم",
+      "action": "الإجراء",
+      "addCreditsBtn": "إضافة رصيد",
+      "removeCreditsBtn": "إزالة رصيد",
+      "recentAdjustments": "آخر التعديلات",
+      "noAdjustments": "لا توجد تعديلات"
     },
     "aiAds": {
       "navLabel": "AI Advertising",
@@ -1969,7 +2204,12 @@
         "progress": "Progress",
         "noCampaigns": "No campaigns created yet",
         "templateVars": "Variables: {{agency_name}}, {{city}}, {{contact_name}}, {{signup_url}}, {{sender_name}}",
-        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀"
+        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀",
+        "saveTemplateName": "اسم القالب:",
+        "templateSaved": "تم حفظ القالب",
+        "saveTemplate": "حفظ كقالب",
+        "templateLibrary": "مكتبة القوالب",
+        "noCustomTemplates": "لم يتم حفظ أي قوالب مخصصة بعد."
       },
       "detail": {
         "contactPerson": "Contact person",
@@ -1994,7 +2234,9 @@
         "activityTitle": "Activity",
         "noActivity": "No activity yet",
         "nextSteps": "Next steps",
-        "save": "Save"
+        "save": "Save",
+        "composeMail": "إنشاء بريد",
+        "signatures": "تعديل التوقيعات"
       },
       "table": {
         "search": "Search name, city or email...",
@@ -2017,8 +2259,258 @@
         "link_clicked": "Invite link clicked"
       },
       "emptyState": "No agencies in the system yet. Import a CSV file or wait for autopilot.",
-      "freeSlotsCounter": "{{count}} of 150 free slots available"
-    }
+      "freeSlotsCounter": "{{count}} of 150 free slots available",
+      "title": "نظام إدارة علاقات استقطاب الوكالات",
+      "subtitle": "إدارة التواصل ومسار العملاء والحملات",
+      "addNote": "ملاحظة",
+      "logResponse": "رد",
+      "searchTable": "ابحث بالاسم أو المدينة أو البريد الإلكتروني...",
+      "noResults": "لا توجد نتائج",
+      "loadMore": "تحميل المزيد",
+      "campaignsTitle": "الحملات",
+      "newCampaign": "حملة جديدة",
+      "noCampaignsYet": "لا توجد حملات بعد. أنشئ حملتك الأولى!",
+      "editCampaign": "تعديل الحملة",
+      "createCampaign": "إنشاء حملة جديدة",
+      "save": "حفظ",
+      "create": "إنشاء",
+      "cancel": "إلغاء",
+      "activeCampaigns": "الحملات النشطة",
+      "noCampaigns": "لم يتم إنشاء أي حملات بعد. ابدأ حملة جديدة من علامة تبويب الحملات.",
+      "searchName": "ابحث بالاسم...",
+      "filterCity": "المدينة",
+      "emptyColumn": "فارغ",
+      "col_rejected": "مرفوض"
+    },
+    "agencyAffiliate": {
+      "addedSuccess": "تمت إضافة الوكالة كشريك",
+      "addedError": "خطأ أثناء الإضافة",
+      "fillRequired": "يرجى ملء جميع الحقول الإلزامية",
+      "manualAddedSuccess": "تمت إضافة الوكالة يدويًا",
+      "statusUpdated": "تم تحديث الحالة",
+      "statusError": "خطأ أثناء التحديث",
+      "noAffiliateId": "يجب الموافقة على الوكالة أولاً",
+      "voucherAssigned": "تم تخصيص القسيمة",
+      "voucherAlreadyAssigned": "القسيمة مخصّصة بالفعل",
+      "voucherError": "خطأ أثناء التخصيص",
+      "title": "شركاء الوكالات",
+      "description": "إدارة شراكات الوكالات والعمولات",
+      "addAgency": "إضافة وكالة",
+      "createAgency": "وكالة جديدة",
+      "registeredAgencies": "الوكالات المسجّلة",
+      "pending": "معلّق",
+      "active": "نشط",
+      "suspended": "موقوف",
+      "noAgencies": "لا يوجد شركاء وكالات مسجّلون بعد",
+      "approve": "الموافقة",
+      "reject": "الرفض",
+      "assignVoucher": "قسيمة",
+      "addAgencyTitle": "إضافة وكالة كشريك",
+      "addAgencyDesc": "اختر وكالة من الدليل وقم بتهيئة العمولة",
+      "searchAgencies": "البحث عن وكالة...",
+      "noAvailableAgencies": "لم يُعثر على وكالات متاحة",
+      "contactEmail": "البريد الإلكتروني للتواصل",
+      "commissionRate": "معدّل العمولة (%)",
+      "addPartner": "إضافة شريك",
+      "assignVoucherTitle": "تخصيص قسيمة",
+      "assignVoucherDesc": "اختر قسيمة لـ",
+      "selectVoucher": "اختيار قسيمة",
+      "selectVoucherPlaceholder": "اختر قسيمة...",
+      "assignVoucherBtn": "تخصيص قسيمة",
+      "createAgencyTitle": "إنشاء وكالة جديدة يدويًا",
+      "createAgencyDesc": "أنشئ وكالة جديدة غير موجودة في الدليل",
+      "agencyName": "اسم الوكالة",
+      "city": "المدينة",
+      "phone": "الهاتف",
+      "website": "الموقع الإلكتروني",
+      "descriptions": "الأوصاف (متعدّدة اللغات)",
+      "descriptionPlaceholder": "وصف الوكالة بـ {{lang}}...",
+      "descriptionHint": "نصيحة: تُعرَض الأوصاف حسب لغة المستخدم.",
+      "createPartner": "إنشاء وكالة"
+    },
+    "agencyAnalytics": {
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "website": "الموقع الإلكتروني",
+      "unknown": "غير معروف",
+      "title": "تحليلات الوكالات",
+      "description": "نظرة عامة على جميع تفاعلات الوكالات",
+      "last7days": "آخر 7 أيام",
+      "last30days": "آخر 30 يومًا",
+      "last90days": "آخر 90 يومًا",
+      "totalInteractions": "الإجمالي",
+      "calls": "المكالمات",
+      "emails": "رسائل البريد الإلكتروني",
+      "websiteClicks": "المواقع الإلكترونية",
+      "conversionRate": "التحويلات",
+      "byType": "حسب نوع التفاعل",
+      "noData": "لا توجد بيانات",
+      "byCity": "حسب المدينة",
+      "timeline": "التسلسل الزمني",
+      "timelineDesc": "التفاعلات خلال آخر 14 يوماً",
+      "topAgencies": "أفضل الوكالات",
+      "agency": "الوكالة",
+      "total": "الإجمالي"
+    },
+    "audit": {
+      "title": "سجل التدقيق",
+      "subtitle": "سجل زمني لجميع إجراءات المسؤولين — من غيّر ماذا ومتى.",
+      "searchPlaceholder": "الإجراء أو البريد الإلكتروني أو معرّف الهدف …",
+      "targetFilter": "نوع الهدف",
+      "allTargets": "جميع الأهداف",
+      "refresh": "تحديث",
+      "empty": "لم يتم تسجيل أي إجراءات للمسؤولين بعد",
+      "noResults": "لا توجد إدخالات مطابقة لعامل التصفية",
+      "limitReached": "عرض آخر {{limit}} إدخالاً — استعلم عن الأقدم مباشرةً عبر Supabase."
+    },
+    "flags": {
+      "toggled": "تم تحديث العلامة",
+      "created": "تم إنشاء العلامة",
+      "title": "علامات الميزات",
+      "subtitle": "تفعيل/تعطيل الميزات أثناء التشغيل أو طرحها تدريجياً",
+      "new": "علامة جديدة",
+      "newTitle": "علامة ميزة جديدة",
+      "newDescription": "أنشئ علامة ميزة جديدة. يُشار إلى المفتاح في الكود.",
+      "key": "المفتاح",
+      "name": "الاسم",
+      "description": "الوصف",
+      "descriptionPlaceholder": "ماذا تفعل هذه العلامة؟",
+      "create": "إنشاء",
+      "empty": "لم يتم إنشاء أي علامات ميزات بعد",
+      "enabled": "نشط",
+      "disabled": "غير نشط",
+      "rollout": "الطرح",
+      "updated": "محدّث"
+    },
+    "settings": {
+      "planUpdated": "تم تحديث الخطة",
+      "planCreated": "تم إنشاء الخطة",
+      "planKeyRequired": "مفتاح الخطة مطلوب",
+      "planConfig": "إعدادات الخطة",
+      "planConfigDesc": "إدارة رصيد الذكاء الاصطناعي والأسعار والميزات لكل خطة",
+      "newPlan": "خطة جديدة",
+      "plan": "الخطة",
+      "credits": "رصيد الذكاء الاصطناعي/شهر",
+      "price": "السعر",
+      "interval": "الفترة",
+      "features": "الميزات",
+      "status": "الحالة",
+      "editPlan": "تعديل الخطة",
+      "planKey": "مفتاح الخطة",
+      "displayName": "الاسم المعروض",
+      "aiCredits": "رصيد الذكاء الاصطناعي / شهر",
+      "sortOrder": "الترتيب",
+      "priceCents": "السعر (سنت)",
+      "currency": "العملة",
+      "billingInterval": "فترة الفوترة",
+      "stripePriceId": "معرّف سعر Stripe",
+      "isActive": "الخطة مفعّلة",
+      "saved": "تم الحفظ",
+      "on": "تشغيل",
+      "off": "إيقاف",
+      "save": "حفظ",
+      "title": "إعدادات النظام",
+      "subtitle": "إعدادات على مستوى المنصة — تفعيل الميزات، الإعدادات الافتراضية للبريد الإلكتروني، الأمان.",
+      "warningTitle": "تنبيه",
+      "warningBody": "تسري التغييرات فوراً على جميع المستخدمين. اختبر الإعدادات الحساسة أولاً في بيئة الاختبار (Staging). لا يتم تخزين الأسرار مثل كلمات مرور SMTP ومفاتيح Stripe هنا — مكانها في Supabase Secrets.",
+      "entries": "الإعدادات",
+      "lastUpdated": "آخر تحديث",
+      "dangerTitle": "منطقة الخطر",
+      "dangerSubtitle": "عمليات لا يمكن التراجع عنها — استخدمها فقط إذا كنت تعرف ما تفعله.",
+      "maintenanceToggle": "تبديل وضع الصيانة",
+      "maintenanceConfirm": "تفعيل وضع الصيانة؟",
+      "maintenanceDesc": "في وضع الصيانة، يرى جميع المستخدمين غير المسؤولين صفحة صيانة. لا تسجيلات جديدة ولا حجوزات. لا تفعّله إلا عند الضرورة القصوى.",
+      "confirmToggle": "نعم، بدّل"
+    },
+    "stats": {
+      "groupGrowth": "النمو",
+      "groupGrowthSub": "المستخدمون والنشاط",
+      "totalUsers": "إجمالي المستخدمين",
+      "thisWeek": "هذا الأسبوع",
+      "new24h": "جديد (24 ساعة)",
+      "activeUsers": "نشط (30 يومًا)",
+      "events": "الفعاليات",
+      "groupRevenue": "الإيرادات",
+      "groupRevenueSub": "الاشتراكات وMRR",
+      "mrr": "MRR (الوكالات)",
+      "mrrSub": "Professional + Enterprise",
+      "premium": "مستخدمو Premium",
+      "totalSubs": "الاشتراكات النشطة",
+      "vouchersRedeemed": "القسائم المستردة",
+      "groupAgencies": "الوكالات",
+      "groupAgenciesSub": "منصة B2B",
+      "totalAgencies": "إجمالي الوكالات",
+      "proAgencies": "Professional",
+      "enterpriseAgencies": "Enterprise",
+      "starterAgencies": "Starter (مجاني)",
+      "groupMarketplace": "السوق",
+      "groupMarketplaceSub": "الخدمات والحجوزات",
+      "totalServices": "الخدمات النشطة",
+      "pendingServices": "قيد المراجعة",
+      "reviewNeeded": "المراجعة مطلوبة",
+      "totalBookings": "إجمالي الحجوزات",
+      "bookings30d": "الحجوزات (30 يومًا)",
+      "title": "نظرة عامة على المنصة",
+      "subtitle": "أهم مؤشرات الأداء في لمحة — مباشرة من قاعدة البيانات.",
+      "alertPendingTitle": "المراجعة مطلوبة",
+      "alertPendingBody": "{{count}} من خدمات السوق بانتظار الموافقة."
+    },
+    "subscriptions": {
+      "fetchError": "خطأ في تحميل الاشتراكات",
+      "updated": "تم تحديث الاشتراك",
+      "updateError": "خطأ في التحديث",
+      "userRequired": "يرجى اختيار مستخدم",
+      "alreadyExists": "المستخدم لديه اشتراك بالفعل. يرجى تعديل الاشتراك الحالي.",
+      "created": "تم إنشاء الاشتراك",
+      "createError": "خطأ في الإنشاء",
+      "confirmDelete": "هل تريد حذف الاشتراك فعلاً؟",
+      "deleted": "تم حذف الاشتراك",
+      "deleteError": "خطأ في الحذف",
+      "title": "إدارة الاشتراكات",
+      "create": "اشتراك جديد",
+      "user": "المستخدم",
+      "plan": "الخطة",
+      "type": "النوع",
+      "expires": "ينتهي في",
+      "notes": "ملاحظة",
+      "noSubscriptions": "لم يتم العثور على اشتراكات",
+      "editTitle": "تعديل الاشتراك",
+      "editDescription": "تغيير الخطة أو تاريخ الانتهاء أو الملاحظات",
+      "expiryDate": "تاريخ الانتهاء",
+      "expiryHint": "اتركه فارغًا للاشتراك مدى الحياة (غير محدود)",
+      "notesPlaceholder": "مثال: حساب شريك، وصول تجريبي...",
+      "createTitle": "إنشاء اشتراك جديد",
+      "createDescription": "إنشاء اشتراك يدوي لمستخدم",
+      "selectUser": "اختيار مستخدم...",
+      "searchUser": "البحث عن مستخدم...",
+      "noUserFound": "لم يتم العثور على مستخدم"
+    },
+    "vouchers": {
+      "fetchError": "خطأ في تحميل القسائم",
+      "codeRequired": "الرمز مطلوب",
+      "discountValueRequired": "قيمة الخصم مطلوبة",
+      "stripeCouponError": "تم إنشاء القسيمة، لكن فشل إنشاء كوبون Stripe",
+      "created": "تم إنشاء القسيمة",
+      "duplicateCode": "هذا الرمز موجود بالفعل",
+      "createError": "خطأ في الإنشاء",
+      "deactivated": "تم تعطيل القسيمة",
+      "activated": "تم تفعيل القسيمة",
+      "title": "إدارة القسائم",
+      "create": "إنشاء قسيمة",
+      "createTitle": "إنشاء قسيمة جديدة",
+      "createDescription": "أنشئ رمز خصم أو رمز تفعيل",
+      "code": "الرمز",
+      "type": "النوع",
+      "maxUses": "أقصى عدد للاستخدامات",
+      "unlimited": "غير محدود",
+      "validUntil": "صالح حتى",
+      "value": "القيمة",
+      "usage": "الاستخدام",
+      "status": "الحالة",
+      "noVouchers": "لا توجد قسائم"
+    },
+    "title": "بوابة المسؤول",
+    "backToApp": "رجوع"
   },
   "templates": {
     "title": "اختر قالباً",
@@ -2424,7 +2916,12 @@
         "name": "خلوة شركة",
         "desc": "بناء فريق وورش عمل وتواصل مهني"
       }
-    }
+    },
+    "loginRequired": "يُرجى تسجيل الدخول لاستخدام ميزات الذكاء الاصطناعي",
+    "noCredits": "لم تتبقَّ أي أرصدة للذكاء الاصطناعي",
+    "upgradeForCredits": "قم بترقية باقتك للحصول على المزيد من أرصدة الذكاء الاصطناعي",
+    "designTitle": "التصميم والألوان",
+    "moreDesigns": "عرض المزيد من التصاميم"
   },
   "affiliate": {
     "portal": {
@@ -2435,8 +2932,12 @@
         "vouchers": "القسائم",
         "commissions": "العمولات",
         "payouts": "المدفوعات",
-        "settings": "الإعدادات"
-      }
+        "settings": "الإعدادات",
+        "analytics": "التحليلات",
+        "links": "الروابط",
+        "marketing": "التسويق"
+      },
+      "performanceChart": "الأداء خلال الأشهر الـ 12 الماضية"
     },
     "stats": {
       "totalEarnings": "إجمالي الأرباح",
@@ -2445,7 +2946,9 @@
       "conversionRate": "معدل التحويل",
       "thisMonth": "هذا الشهر",
       "allTime": "كل الوقت",
-      "tier": "حالة المستوى"
+      "tier": "حالة المستوى",
+      "earnings": "الأرباح",
+      "conversions": "التحويلات"
     },
     "vouchers": {
       "title": "رموز القسائم الخاصة بي",
@@ -2457,7 +2960,12 @@
       "copied": "تم نسخ الرمز!",
       "discount": "خصم",
       "active": "نشط",
-      "inactive": "غير نشط"
+      "inactive": "غير نشط",
+      "shareMessage": "🎉 احصل على خصم ${discountText} باستخدام الرمز: ${code}\n\n👉 استبدله الآن على EventBliss!",
+      "messageCopied": "تم نسخ الرسالة!",
+      "noVouchersDesc": "بمجرد تخصيص قسائم لك، ستظهر هنا.",
+      "code": "رمز القسيمة",
+      "convRate": "معدل التحويل"
     },
     "commissions": {
       "title": "عمولاتي",
@@ -2536,6 +3044,163 @@
         "support": "دعم شخصي",
         "supportDesc": "اتصال مباشر مع فريقنا"
       }
+    },
+    "admin": {
+      "totalPartners": "إجمالي الشركاء",
+      "activePartners": "الشركاء النشطون",
+      "totalEarnings": "إجمالي العمولات",
+      "pendingPayouts": "المدفوعات المعلّقة",
+      "searchPlaceholder": "البحث عن شريك...",
+      "createPartner": "إنشاء شريك",
+      "partnerList": "قائمة الشركاء",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "tier": "المستوى",
+      "commission": "العمولة",
+      "earnings": "الأرباح",
+      "pending": "معلّق",
+      "actions": "الإجراءات",
+      "noPartners": "لم يُعثر على شركاء",
+      "editPartner": "تعديل الشريك",
+      "assignVoucher": "تخصيص قسيمة",
+      "selectVoucher": "اختيار قسيمة",
+      "selectVoucherPlaceholder": "اختر قسيمة...",
+      "customCommissionType": "نوع عمولة مخصّص",
+      "useDefault": "استخدام الافتراضي",
+      "customRate": "معدّل مخصّص",
+      "assign": "تخصيص",
+      "approveAll": "الموافقة على الكل",
+      "export": "تصدير",
+      "commissionsList": "العمولات",
+      "date": "التاريخ",
+      "partner": "الشريك",
+      "voucher": "قسيمة",
+      "customer": "العميل",
+      "orderAmount": "قيمة الطلب",
+      "approve": "موافقة",
+      "cancel": "إلغاء",
+      "markPaid": "وضع علامة كمدفوع",
+      "noCommissions": "لم يتم العثور على عمولات",
+      "payoutsList": "المدفوعات",
+      "amount": "المبلغ",
+      "method": "الطريقة",
+      "period": "الفترة",
+      "reference": "المرجع",
+      "process": "معالجة",
+      "complete": "إكمال",
+      "failed": "فشل",
+      "noPayouts": "لم يتم العثور على مدفوعات",
+      "processPayout": "معالجة الدفعة",
+      "referencePlaceholder": "مثال: مرجع تحويل SEPA",
+      "startProcessing": "بدء المعالجة",
+      "markCompleted": "وضع علامة كمكتمل"
+    },
+    "commission": {
+      "percentage": "نسبة مئوية",
+      "fixed": "مبلغ ثابت",
+      "pending": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "paid": "مدفوع",
+      "total": "الإجمالي",
+      "cancelled": "ملغى"
+    },
+    "form": {
+      "contactName": "جهة الاتصال",
+      "email": "البريد الإلكتروني",
+      "companyName": "اسم الشركة",
+      "phone": "الهاتف",
+      "website": "الموقع الإلكتروني",
+      "taxId": "الرقم الضريبي",
+      "commissionType": "نوع العمولة",
+      "commissionRate": "معدّل العمولة",
+      "tier": "المستوى",
+      "notes": "ملاحظات"
+    },
+    "status": {
+      "pending": "معلّق",
+      "active": "نشط",
+      "suspended": "موقوف",
+      "terminated": "منتهٍ"
+    },
+    "payout": {
+      "pending": "قيد الانتظار",
+      "processing": "قيد المعالجة",
+      "completed": "مكتمل",
+      "total": "الإجمالي",
+      "failed": "فشل"
+    },
+    "analytics": {
+      "title": "التحليلات والتقارير",
+      "subtitle": "رؤى مفصلة حول أدائك",
+      "7days": "آخر 7 أيام",
+      "30days": "آخر 30 يوماً",
+      "90days": "آخر 90 يوماً",
+      "year": "هذا العام",
+      "funnel": "مسار التحويل",
+      "impressions": "مرات الظهور",
+      "clicks": "النقرات",
+      "conversions": "التحويلات",
+      "revenue": "الإيرادات",
+      "weeklyEarnings": "هذا الأسبوع",
+      "lastWeek": "الأسبوع الماضي",
+      "conversionRate": "معدل التحويل",
+      "epc": "الأرباح لكل نقرة",
+      "avgEarnings": "متوسط الأرباح لكل نقرة",
+      "aov": "متوسط قيمة الطلب",
+      "avgOrder": "متوسط قيمة الطلب",
+      "earningsOverTime": "الأرباح بمرور الوقت",
+      "conversionsByDay": "التحويلات لكل يوم",
+      "revenueByVoucher": "الإيرادات حسب القسيمة",
+      "noData": "لا توجد بيانات بعد",
+      "topVouchers": "أفضل القسائم",
+      "redemptions": "عمليات الاسترداد",
+      "noVouchers": "لا توجد قسائم"
+    },
+    "linkGenerator": {
+      "title": "مولّد الروابط",
+      "subtitle": "أنشئ روابط إحالة قابلة للتتبع",
+      "voucher": "رمز القسيمة",
+      "selectVoucher": "اختر قسيمة (اختياري)",
+      "source": "مصدر الزيارات (utm_source)",
+      "selectSource": "اختر المصدر",
+      "medium": "الوسيط (utm_medium)",
+      "selectMedium": "اختر الوسيط",
+      "campaign": "الحملة (utm_campaign)",
+      "campaignPlaceholder": "مثال: summer_sale_2025",
+      "generatedUrl": "الرابط المُنشأ",
+      "shortUrl": "رابط قصير",
+      "hideQR": "إخفاء رمز QR",
+      "showQR": "عرض رمز QR",
+      "qrDownloaded": "تم تنزيل رمز QR",
+      "downloadQR": "تنزيل رمز QR"
+    },
+    "marketing": {
+      "title": "المواد التسويقية",
+      "subtitle": "لافتات وقوالب لوسائل التواصل الاجتماعي وقوالب بريد إلكتروني لإعلاناتك",
+      "selectVoucher": "قسيمة للقوالب:",
+      "banners": "اللافتات",
+      "social": "وسائل التواصل الاجتماعي",
+      "email": "البريد الإلكتروني",
+      "bannerDownload": "يتم تجهيز تنزيل اللافتة...",
+      "customBanner": "لافتة مخصصة",
+      "customBannerDesc": "هل تحتاج إلى لافتة بحجم مختلف أو بتصميم مخصص؟ تواصل مع فريقنا!",
+      "contactTeam": "تواصل مع الفريق",
+      "copyText": "نسخ النص",
+      "popularHashtags": "الوسوم الشائعة",
+      "subject": "الموضوع"
+    },
+    "notifications": {
+      "newCommission": "عمولة جديدة",
+      "earned": "تم كسبها",
+      "payoutPending": "تم طلب الدفعة",
+      "payoutProcessing": "الدفعة قيد المعالجة",
+      "payoutCompleted": "اكتملت الدفعة",
+      "payoutFailed": "فشلت الدفعة",
+      "yesterday": "أمس",
+      "title": "الإشعارات",
+      "markAllRead": "تعليم الكل كمقروء",
+      "noNotifications": "لا توجد إشعارات جديدة",
+      "viewAll": "عرض الكل"
     }
   },
   "partnerApply": {
@@ -3690,7 +4355,9 @@
     "randomTheme": "ثيم عشوائي",
     "randomThemePick": "ثيم عشوائي",
     "themesCount": "ثيمات تم العثور عليها",
-    "noThemesFound": "لم يتم العثور على ثيمات."
+    "noThemesFound": "لم يتم العثور على ثيمات.",
+    "showing": "عرض {{count}}",
+    "loadMore": "تحميل {{count}} المزيد"
   },
   "ideasHub": {
     "title": "الألعاب والأفكار",
@@ -3799,7 +4466,66 @@
       "avgBudgetPerEvent": "متوسط الميزانية/فعالية",
       "clientRetention": "الاحتفاظ بالعملاء"
     },
-    "calendar": "التقويم",
+    "calendar": {
+      "filter": {
+        "statusAll": "جميع الحالات",
+        "pending": "قيد الانتظار",
+        "confirmed": "مؤكد",
+        "completed": "مكتمل",
+        "cancelled": "ملغى",
+        "sourceAll": "جميع المصادر",
+        "sourceMarketplace": "السوق",
+        "sourceManual": "يدوي",
+        "dateAll": "الكل",
+        "dateToday": "اليوم",
+        "dateWeek": "الأسبوع",
+        "dateMonth": "الشهر",
+        "dateUpcoming": "القادمة",
+        "datePast": "الماضية",
+        "service": "الخدمة",
+        "serviceAll": "جميع الخدمات",
+        "guide": "المرشد",
+        "guideAll": "جميع المرشدين",
+        "guideUnassigned": "بدون مرشد",
+        "status": "الحالة",
+        "source": "المصدر",
+        "customerPlaceholder": "العميل / البريد الإلكتروني / الرقم",
+        "onlyConflicts": "عرض التعارضات فقط",
+        "conflictsOnly": "التعارضات فقط",
+        "clear": "إعادة تعيين عوامل التصفية",
+        "allShown": "لا توجد عوامل تصفية نشطة — جميع الحجوزات مرئية"
+      },
+      "bookingSingular": "حجز",
+      "bookingPlural": "الحجوزات",
+      "today": "اليوم",
+      "export": "تصدير",
+      "exportLabel": "تصدير / طباعة",
+      "exportICal": "iCal (.ics)",
+      "exportCSV": "CSV",
+      "print": "طباعة / PDF",
+      "newBooking": "موعد جديد",
+      "day": {
+        "empty": "لا توجد مواعيد — انقر على فترة زمنية لإنشاء موعد"
+      },
+      "month": {
+        "doubleClickHint": "انقر نقرًا مزدوجًا لإنشاء موعد جديد",
+        "noBookings": "لا توجد مواعيد في هذا اليوم.",
+        "selectDay": "اختر يومًا لعرض التفاصيل — انقر نقرًا مزدوجًا لإنشاء موعد جديد"
+      },
+      "resource": {
+        "unassigned": "بدون مرشد",
+        "groupBy": "التجميع حسب",
+        "byGuide": "المرشد",
+        "byService": "الخدمة",
+        "guide": "المرشد",
+        "service": "الخدمة",
+        "noGuides": "لا يوجد مرشدون بعد — أضف بعضهم من وحدة المرشدين",
+        "noServices": "لا توجد خدمات بعد"
+      },
+      "week": {
+        "time": "الساعة"
+      }
+    },
     "runOfShow": {
       "liveTimeline": "الجدول الزمني المباشر",
       "currentPhase": "المرحلة الحالية",
@@ -4075,7 +4801,68 @@
       "noData": "No data yet — stats will appear once your services are recommended through the AI.",
       "upsellHeadline": "Unlock AI Performance",
       "upsellBody": "Upgrade to Enterprise to see how often your services are recommended, clicked, and booked.",
-      "upsellCta": "Unlock Enterprise"
+      "upsellCta": "Unlock Enterprise",
+      "title": "أداء الذكاء الاصطناعي",
+      "subtitle": "هنا ترى كيف يتم التوصية بخدماتك وحجزها عبر الذكاء الاصطناعي.",
+      "scopeLabel": "الوكالة",
+      "impressions": "مرات الظهور",
+      "clicks": "النقرات",
+      "ctr": "معدل النقر إلى الظهور",
+      "revenue": "الإيرادات المنسوبة",
+      "impressionsPerService": "مرات الظهور لكل خدمة",
+      "perService": "الأداء لكل خدمة",
+      "loading": "جارٍ التحميل…",
+      "recentActivity": "أحدث توصيات الذكاء الاصطناعي",
+      "noFeed": "لا توجد أنشطة بعد.",
+      "topKeywords": "أهم الكلمات المفتاحية",
+      "noKeywords": "لا توجد بيانات كلمات مفتاحية بعد.",
+      "feedLine": "تمت التوصية بخدمتك '{{section}}' بتاريخ {{date}} في فعالية {{eventType}}{{city}} (عبر {{requestType}})"
+    },
+    "embed": {
+      "copied": "تم النسخ إلى الحافظة",
+      "noAgency": "لم يتم العثور على وكالة.",
+      "title": "التضمين والصفحة العامة",
+      "subtitle": "شارك خدماتك وتقويم الحجوزات — على موقعك الإلكتروني أو كصفحة EventBliss عامة.",
+      "publicUrlTitle": "صفحة EventBliss العامة الخاصة بك",
+      "publicUrlDesc": "إذا لم يكن لديك موقع إلكتروني خاص بك — شارك هذا الرابط مباشرةً مع العملاء، على وسائل التواصل الاجتماعي، في توقيعات البريد الإلكتروني، إلخ.",
+      "open": "فتح",
+      "publicUrlHint": "ملائمة لرمز QR، متجاوبة، محسّنة لمحركات البحث. يمكن للعملاء حجز الخدمات مباشرةً.",
+      "embedTitle": "التضمين على موقعك الإلكتروني",
+      "embedDesc": "أضف خدماتك وتقويم الحجوزات مباشرةً إلى موقعك الإلكتروني الحالي.",
+      "themePickerTitle": "اختر النمط",
+      "themePickerHint": "سيرى عميلك صفحة الوكالة بهذا النمط.",
+      "language": "اللغة",
+      "height": "الارتفاع (بكسل)",
+      "hideChrome": "إخفاء رأس التطبيق",
+      "hideChromeHint": "موصى به لتضمين نظيف",
+      "iframeLabel": "iframe بسيط",
+      "iframeHint": "ما عليك سوى النسخ واللصق في موقعك الإلكتروني — مثلاً في WordPress كمكوّن HTML.",
+      "scriptLabel": "مقتطف برمجي (Vanilla JS)",
+      "tipTitle": "نصيحة احترافية",
+      "tipBody": "بالنسبة إلى WordPress، يوجد إضافة \"Advanced iframe\". وبالنسبة إلى Webflow/Framer/Wix، استخدم مكوّنات التضمين الخاصة بها. وإذا كان لديك موقع React/Next.js خاص بك، فاستخدم المقتطف البرمجي — عندها يتم تحميل الـ iframe بشكل كسول عند التمرير."
+    },
+    "earnings": {
+      "pending": "طلبات جديدة",
+      "pendingSub": "في انتظار التأكيد",
+      "confirmed": "مؤكَّد",
+      "confirmedSub": "فعاليات قادمة",
+      "revenueMonth": "إيرادات هذا الشهر",
+      "revenueMonthSub": "بعد عمولة 10%",
+      "revenueTotal": "إجمالي الإيرادات",
+      "paidBookings": "حجوزات مدفوعة",
+      "title": "إيرادات السوق",
+      "liveBadge": "مباشر من Supabase",
+      "chartTitle": "تطوّر الإيرادات",
+      "chartSub": "آخر 6 أشهر",
+      "chartEmpty": "لا توجد بيانات بعد — سيظهر حجزك الأول هنا.",
+      "bookingsThis": "الحجوزات",
+      "participantsTotal": "المشاركون",
+      "avgBooking": "متوسط الحجز",
+      "topServicesTitle": "أفضل الخدمات",
+      "topServicesSub": "حسب الإيرادات",
+      "topServicesEmpty": "لا توجد حجوزات خدمات بعد.",
+      "unknownService": "خدمة غير مسماة",
+      "bookingsLabel": "الحجوزات"
     }
   },
   "games": {
@@ -4202,7 +4989,9 @@
       "partyGamesCount": "+24 لعبة حفلات",
       "partyGamesSubtitle": "تابو، بومب، Headup والمزيد",
       "findInspiration": "ابحث عن إلهام",
-      "findInspirationSub": "مواضيع وألعاب وأفكار لحدثك"
+      "findInspirationSub": "مواضيع وألعاب وأفكار لحدثك",
+      "marketplace": "المتجر",
+      "marketplaceSub": "الخدمات والتجارب"
     },
     "games": {
       "subtitle": "ألعاب الحفلات",
@@ -4347,7 +5136,10 @@
       "partyModeActivatedDesc": "من الآن تشرب بدلاً من تلقّي عقوبة",
       "close": "إغلاق",
       "adminPanel": "لوحة الإدارة",
-      "adminDashboard": "Dashboard"
+      "adminDashboard": "Dashboard",
+      "partyHidden": "تم إخفاء وضع الحفلة مجددًا",
+      "myBookings": "حجوزاتي",
+      "myBookingsSub": "الوكالات ومقدّمو الخدمات"
     },
     "create": {
       "headerTitle": "إنشاء حدث",
@@ -4379,7 +5171,8 @@
         "inputPlaceholder": "أدخل اسمًا...",
         "guestCount_one": "ضيف {{count}}",
         "guestCount_other": "{{count}} ضيوف",
-        "noGuests": "لا ضيوف بعد — يمكنك دعوتهم لاحقًا."
+        "noGuests": "لا ضيوف بعد — يمكنك دعوتهم لاحقًا.",
+        "guestCount": "{{count}} ضيوف"
       },
       "stepReview": {
         "title": "كل شيء صحيح؟",
@@ -4677,7 +5470,11 @@
       "completed": "مكتمل",
       "cancelled": "ملغى"
     },
-    "participants": "المشاركون"
+    "participants": "المشاركون",
+    "paymentCancelled": "تم إلغاء الدفع — يمكنك متابعته في أي وقت.",
+    "onSiteBadge": "الدفع في الموقع",
+    "payingPreparing": "جارٍ التحضير…",
+    "payNow": "ادفع الآن"
   },
   "agencyDashboard": {
     "nav": {
@@ -4722,7 +5519,13 @@
       "confirmed": "مؤكد",
       "completed": "مكتمل",
       "cancelled": "ملغى"
-    }
+    },
+    "guideAssigned": "تم تعيين المرشد",
+    "guideUnassigned": "تمت إزالة التعيين",
+    "guideLoading": "جارٍ تحميل المرشدين…",
+    "noGuides": "لا يوجد مرشدون — أضف بعضهم في وحدة المرشدين",
+    "guidePlaceholder": "تعيين مرشد",
+    "guideNone": "بدون مرشد"
   },
   "bookingCalendar": {
     "title": "تقويم الحجوزات",
@@ -4759,7 +5562,34 @@
       "confirmed": "مؤكد",
       "completed": "مكتمل",
       "cancelled": "ملغى"
-    }
+    },
+    "createSuccess": "تم إنشاء الموعد",
+    "createTitle": "موعد جديد",
+    "createDescription": "حجز يدوي — مثلًا للعملاء عبر الهاتف أو الزوار المباشرين. بدون دفع عبر Stripe، يُؤكَّد فورًا.",
+    "service": "الخدمة",
+    "noServices": "لا توجد خدمات معتمدة بعد — أنشئ واحدة أولًا في وحدة السوق.",
+    "selectService": "اختر خدمة",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "participants": "المشاركون",
+    "range": "المسموح به",
+    "priceOverride": "السعر للشخص الواحد (اختياري)",
+    "totalPreview": "الإجمالي",
+    "customerSection": "العميل",
+    "customerName": "الاسم",
+    "customerEmail": "البريد الإلكتروني",
+    "customerPhone": "الهاتف",
+    "notes": "ملاحظات",
+    "assignmentSection": "الإسناد",
+    "assignGuide": "المرشد",
+    "noGuide": "— بدون مرشد —",
+    "assignTeam": "عضو الفريق",
+    "noTeam": "— لا أحد —",
+    "conflictBlocking": "تم اكتشاف تعارضات",
+    "conflictWarning": "تنبيه — تداخلات محتملة",
+    "conflictContinueHint": "يمكنك الإنشاء رغم ذلك — يُرجى التحقق أولًا.",
+    "conflictBlockedTooltip": "يُرجى حل التعارضات قبل الإنشاء",
+    "createSubmit": "إنشاء الموعد"
   },
   "calendarSync": {
     "title": "اشتراك التقويم",
@@ -5485,5 +6315,249 @@
     "noServices": "لا تملك هذه الوكالة أي خدمات في السوق بعد.",
     "reviewsTitle": "التقييمات",
     "noReviews": "لا توجد تقييمات لهذه الوكالة بعد."
+  },
+  "guideManager": {
+    "totalGuides": "إجمالي المرشدين",
+    "activeGuides": "المرشدون النشطون",
+    "avgDaily": "متوسط الحجوزات/اليوم",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "maxDaily": "الحد الأقصى للحجوزات/اليوم",
+    "color": "اللون",
+    "specialties": "التخصصات",
+    "notes": "ملاحظات",
+    "noGuides": "لم يتم إنشاء أي مرشدين بعد",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "createGuide": "إنشاء مرشد",
+    "editGuide": "تعديل المرشد",
+    "deleteGuide": "حذف المرشد"
+  },
+  "myEvents": {
+    "editFolder": "تعديل المجلد",
+    "newFolder": "مجلد جديد",
+    "folderName": "اسم المجلد",
+    "folderColor": "اللون",
+    "save": "حفظ",
+    "deleteEvent": "حذف الفعالية؟",
+    "deleteEventDescription": "سيتم وضع علامة على هذه الفعالية كمحذوفة. يمكنك إدخال سبب واستعادتها لاحقًا.",
+    "deleteReason": "السبب (اختياري)",
+    "deleteReasonPlaceholder": "مثال: فعالية تجريبية، لم تعد مطلوبة...",
+    "restoreEvent": "استعادة",
+    "moveToFolder": "نقل إلى مجلد",
+    "removeFromFolder": "إزالة من المجلد",
+    "unarchiveEvent": "استعادة",
+    "archiveEvent": "أرشفة",
+    "folderCreated": "تم إنشاء المجلد",
+    "folderDeleted": "تم حذف المجلد",
+    "eventArchived": "تمت أرشفة الفعالية",
+    "eventUnarchived": "تمت استعادة الفعالية",
+    "eventDeleted": "تم حذف الفعالية",
+    "eventRestored": "تمت استعادة الفعالية",
+    "allEvents": "جميع الفعاليات",
+    "unfiled": "بدون مجلد",
+    "archived": "مؤرشف",
+    "deleted": "محذوف",
+    "noArchivedEvents": "لا توجد فعاليات مؤرشفة",
+    "noDeletedEvents": "لا توجد فعاليات محذوفة"
+  },
+  "profile": {
+    "account": "الحساب",
+    "myEvents": "فعالياتي",
+    "settings": "الإعدادات",
+    "premium": "بريميوم",
+    "toAgencyDashboard": "إلى لوحة تحكم الوكالة",
+    "becomeAgency": "للوكالات",
+    "adminArea": "منطقة المسؤول",
+    "noEvents": "لا توجد فعاليات بعد",
+    "noEventsDescription": "أنشئ فعاليتك الأولى وادعُ أصدقاءك!",
+    "createFirstEvent": "إنشاء أول فعالية",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+    "passwordTooShort": "يجب أن تتكوّن كلمة المرور من 8 أحرف على الأقل.",
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح!",
+    "deleteConfirmationRequired": "يرجى كتابة DELETE للتأكيد.",
+    "accountDeleted": "تم حذف حسابك نهائيًا.",
+    "exportInProgress": "جارٍ تجهيز تصدير البيانات…",
+    "exportReady": "تم تنزيل تصدير بياناتك.",
+    "exportFailed": "فشل التصدير. يرجى المحاولة لاحقًا.",
+    "subscription": {
+      "planLifetime": "بريميوم (مدى الحياة)",
+      "planYearly": "بريميوم (سنوي)",
+      "planMonthly": "بريميوم (شهري)",
+      "planFree": "مجاني",
+      "title": "اشتراكي",
+      "description": "إدارة اشتراكك وطرق الدفع",
+      "status": "الحالة",
+      "cancelScheduled": "تم جدولة الإلغاء",
+      "endsOn": "ينتهي في {{date}}",
+      "renewsOn": "يتجدد في {{date}}",
+      "lifetimeInfo": "وصولك مدى الحياة مفعّل بشكل دائم.",
+      "manage": "إدارة الاشتراك",
+      "noSubscription": "ليس لديك اشتراك نشط.",
+      "upgradeNow": "الترقية إلى بريميوم الآن"
+    },
+    "invoices": {
+      "paid": "مدفوعة",
+      "open": "مستحقة",
+      "void": "ملغاة",
+      "title": "فواتيري",
+      "description": "نظرة عامة على مدفوعاتك",
+      "noInvoices": "لا توجد فواتير.",
+      "downloadPdf": "تنزيل PDF",
+      "viewOnline": "عرض عبر الإنترنت"
+    },
+    "accountInfo": "معلومات الحساب",
+    "accountInfoDescription": "بيانات تسجيل دخولك",
+    "emailCannotChange": "لا يمكن تغيير عنوان البريد الإلكتروني.",
+    "aiCredits": {
+      "title": "أرصدة الذكاء الاصطناعي",
+      "description": "أرصدتك الشهرية لميزات الذكاء الاصطناعي",
+      "noCredits": "لا توجد أرصدة - يلزم اشتراك Premium",
+      "used": "المستخدَم",
+      "remaining": "المتبقي",
+      "limit": "الحد الشهري",
+      "resetDate": "إعادة التعيين التالية"
+    },
+    "changePassword": "تغيير كلمة المرور",
+    "changePasswordDescription": "اختر كلمة مرور جديدة آمنة.",
+    "newPassword": "كلمة المرور الجديدة",
+    "updatePassword": "تحديث كلمة المرور",
+    "dangerZoneDescription": "احذف حسابك نهائياً.",
+    "exportData": "تصدير بياناتي (المادة 20 من اللائحة العامة لحماية البيانات)",
+    "deleteAccount": "حذف الحساب",
+    "deleteAccountTitle": "هل تريد حقاً حذف الحساب؟",
+    "deleteAccountWarning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع فعالياتك وبياناتك نهائياً.",
+    "typeDeleteToConfirm": "اكتب DELETE للتأكيد"
+  },
+  "nativeFab": {
+    "createEvent": "إنشاء فعالية",
+    "joinEvent": "الانضمام إلى فعالية",
+    "createRoom": "إنشاء غرفة",
+    "joinRoom": "الانضمام إلى غرفة",
+    "quickGame": "لعبة سريعة"
+  },
+  "agencyPortal": {
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "loginDesc": "يرجى تسجيل الدخول للوصول إلى بوابة الوكالات.",
+    "pending": {
+      "title": "الطلب قيد المراجعة",
+      "description": "تتم حاليًا مراجعة طلبك كشريك وكالة.",
+      "notice": "سنتواصل معك خلال 48 ساعة."
+    },
+    "notAgency": {
+      "title": "كن شريك وكالة",
+      "description": "لست شريك وكالة بعد. سجّل وكالتك واكسب العمولات.",
+      "cta": "قدّم الآن"
+    },
+    "title": "بوابة الوكالات",
+    "activePartner": "شريك نشط",
+    "stats": {
+      "referrals": "الإحالات",
+      "bookings": "الحجوزات",
+      "commission": "العمولات"
+    },
+    "tabs": {
+      "dashboard": "نظرة عامة",
+      "vouchers": "القسائم",
+      "commissions": "العمولات",
+      "payouts": "المدفوعات",
+      "settings": "الإعدادات"
+    },
+    "dashboard": {
+      "welcome": "مرحبًا بعودتك!",
+      "subtitle": "هنا تجد نظرة عامة على أنشطتك كشريك.",
+      "agencyInfo": "معلومات الوكالة",
+      "name": "الاسم",
+      "location": "الموقع",
+      "commissionRate": "نسبة العمولة",
+      "performance": "الأداء",
+      "conversionRate": "معدل التحويل",
+      "avgCommission": "متوسط العمولة"
+    }
+  },
+  "nativeJoinRoom": {
+    "invalidCode": "يجب أن يتكوّن الرمز من 6 أحرف.",
+    "title": "الانضمام إلى الغرفة",
+    "subtitle": "أدخل الرمز المكوّن من 6 أرقام",
+    "hint": "اطلب من المضيف رمز الغرفة المكوّن من 6 أرقام",
+    "join": "انضمام"
+  },
+  "nativeDashboard": {
+    "timeAgo": {
+      "justNow": "الآن",
+      "minutesAgo": "قبل {{count}} دقيقة",
+      "hoursAgo": "قبل {{count}} ساعة",
+      "yesterday": "أمس",
+      "daysAgo": "قبل {{count}} يوم"
+    },
+    "guest": "ضيف",
+    "quickActions": {
+      "inviteGuests": "دعوة الضيوف",
+      "planActivity": "تخطيط نشاط",
+      "addExpense": "تسجيل مصروف",
+      "browseMarketplace": "المتجر"
+    },
+    "honoree": "ضيف الشرف",
+    "noDate": "لا يوجد تاريخ",
+    "participants": "المشاركون",
+    "confirmed": "التأكيدات",
+    "maybe": "ربما",
+    "countdown": {
+      "today": "اليوم!",
+      "tomorrow": "غدًا!",
+      "inDays": "بعد {{count}} يوم"
+    },
+    "confirmedOf": "أكّد {{yes}} من {{total}}",
+    "recentActivity": "أحدث الأنشطة",
+    "noActivity": "لا توجد أنشطة بعد",
+    "tabs": {
+      "marketplace": "المتجر"
+    },
+    "services": {
+      "openMarketplaceSub": "اكتشف واحجز خدمات لفعاليتك",
+      "openMarketplace": "فتح المتجر",
+      "bookedServices": "الخدمات المحجوزة",
+      "noBookings": "لم يتم حجز أي خدمات بعد",
+      "details": "التفاصيل",
+      "cancel": "إلغاء"
+    },
+    "status": {
+      "active": "نشط",
+      "planning": "قيد التخطيط",
+      "draft": "مسودة"
+    },
+    "loading": "جارٍ تحميل لوحة التحكم...",
+    "notFound": "لم يتم العثور على الفعالية",
+    "notFoundDesc": "تعذّر تحميل الفعالية.",
+    "back": "رجوع"
+  },
+  "nativeGuests": {
+    "organizer": "المنظِّم",
+    "guestRole": "ضيف",
+    "status": {
+      "confirmed": "تأكيد الحضور",
+      "maybe": "ربما",
+      "declined": "اعتذار"
+    },
+    "searchPlaceholder": "البحث عن الضيوف...",
+    "inviteLink": "رابط الدعوة",
+    "eventCode": "رمز الفعالية"
+  },
+  "nativeSchedule": {
+    "noActivities": "لم يتم تخطيط أي أنشطة بعد",
+    "addActivity": "إضافة نشاط",
+    "form": {
+      "title": "العنوان",
+      "time": "الوقت",
+      "category": "الفئة",
+      "notes": "ملاحظات",
+      "add": "إضافة"
+    }
+  },
+  "whoami": {
+    "setup": {
+      "hidden": ""
+    }
   }
 }
