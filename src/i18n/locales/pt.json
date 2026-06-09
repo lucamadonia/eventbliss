@@ -49,7 +49,13 @@
     "actions": "Ações",
     "active": "Ativo",
     "inactive": "Inativo",
-    "dismiss": "Fechar"
+    "dismiss": "Fechar",
+    "reset": "Repor",
+    "home": "Página inicial",
+    "warning": "Aviso",
+    "organizer": "Organizador",
+    "people": "Pessoas",
+    "unknown": "Desconhecido"
   },
   "feedback": {
     "button": "Feedback",
@@ -318,7 +324,11 @@
           "generating": "A gerar...",
           "inputPlaceholder": "Perguntar à IA...",
           "response": "**Top 3 sugestões de atividades para a despedida:**\n\n🚤 **Passeio de barco** - Relaxar na água\n\n🎯 **Escape Room** - Trabalho de equipa e emoção\n\n🍻 **Tour de cervejaria** - Degustação com visita\n\n*Baseado em: Orçamento €150-250, 8 participantes*",
-          "regenerate": "Gerar novamente"
+          "regenerate": "Gerar novamente",
+          "responseDestinations": "**Melhores destinos para a vossa despedida de solteiro:**\n\n🏙️ **Hamburgo** - Cidade portuária com a Reeperbahn e cultura\n• 2h de viagem · 80-150 €/noite · Muita vida noturna\n\n🍺 **Munique** - Ambiente da Oktoberfest e jardins de cerveja\n• 4h de viagem · 100-180 €/noite · Tradição bávara\n\n🎉 **Colónia** - Cidade do Carnaval às margens do Reno\n• 3h de viagem · 70-120 €/noite · Atmosfera de festa\n\n*Recomendação: Hamburgo é a que melhor se adequa ao vosso orçamento!*",
+          "responseActivities": "**Top 5 atividades para 8 pessoas:**\n\n1. 🚤 **Passeio de barco** - Descontração pelo Alster\n   ~25 €/pessoa · 2 horas\n\n2. 🎯 **Escape Room** - Trabalho de equipa e emoção\n   ~30 €/pessoa · 1 hora\n\n3. 🍻 **Visita a cervejaria** - Prova de cervejas\n   ~35 €/pessoa · 2,5 horas\n\n4. 🎳 **Bowling + jantar** - Combinação clássica\n   ~45 €/pessoa · 3 horas\n\n5. 🏎️ **Karting** - Ação para todos\n   ~40 €/pessoa · 1,5 horas\n\n*Todas as atividades dentro do vosso orçamento de 150-250 €!*",
+          "responseSchedule": "**Plano de dia perfeito para a despedida de solteiro:**\n\n🌅 **10:00** - Pequeno-almoço em conjunto\n   Café no porto · Começar todos juntos\n\n🚶 **12:00** - Visita guiada à cidade diferente\n   Tour interativo com desafios\n\n🍕 **14:00** - Almoço e surpresa\n   Entrega do presente ao Mario!\n\n🎯 **16:00** - Desafio Escape Room\n   Equipas umas contra as outras\n\n🍺 **19:00** - Visita à cervejaria\n   Com prova e jantar\n\n🎉 **22:00** - Local da festa\n   DJ e pista de dança reservados\n\n*Margem de tempo prevista entre as atividades!*",
+          "responseBudget": "**Plano de orçamento para 8 pessoas:**\n\n📊 **Orçamento total:** 1.600 € - 2.000 €\n\n**Discriminação por pessoa (~200 €):**\n\n🏨 Alojamento: 60-80 €\n   2 noites em hostel/hotel\n\n🚌 Viagem: 25-35 €\n   Bilhete de grupo de comboio\n\n🍽️ Refeições: 50-60 €\n   3x refeições + snacks\n\n🎯 Atividades: 50-70 €\n   2-3 eventos planeados\n\n🍺 Bebidas/diversão: 30-40 €\n   Programa noturno\n\n💰 **Dicas para poupar:**\n• Pedir descontos de grupo\n• Aproveitar a happy hour\n• Pequeno-almoço por conta própria"
         },
         "survey": {
           "selectName": "Seleciona o teu nome",
@@ -1019,7 +1029,8 @@
         "label": "Desejos e ideias",
         "placeholder": "O que sempre quiseste fazer?"
       }
-    }
+    },
+    "stepCounter": "Passo {{current}} de {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1848,7 +1859,22 @@
       "remaining": "{{remaining}} de {{limit}} créditos restantes",
       "yearly": "100 créditos de IA/mês",
       "lifetime": "75 créditos de IA/mês"
-    }
+    },
+    "cancelSuccess": "A tua subscrição foi cancelada e termina no fim do período contratado.",
+    "cancelError": "Erro ao cancelar. Tenta novamente.",
+    "cancellationScheduled": "Cancelamento agendado",
+    "cancelledAt": "Termina a",
+    "monthlyDescription": "Flexível e cancelável a qualquer momento",
+    "cancelSubscription": "Cancelar subscrição",
+    "currentPlan": "Plano atual",
+    "yearly": "Anual",
+    "yearlyDescription": "Mais popular - poupa 28%",
+    "perYear": "ano",
+    "savePercent": "Poupa 28%",
+    "subscribeYearly": "Subscrever anualmente",
+    "cancelConfirmTitle": "Cancelar mesmo a subscrição?",
+    "cancelConfirmDescription": "O teu acesso permanece ativo até ao fim do período contratado. Podes voltar a subscrever quando quiseres.",
+    "confirmCancel": "Sim, cancelar"
   },
   "admin": {
     "credits": {
@@ -2631,12 +2657,16 @@
       "difficulty": "Dificuldade",
       "kidsFriendly": "Apto para crianças",
       "alcoholFree": "Sem álcool",
-      "clear": "Limpar filtros"
+      "clear": "Limpar filtros",
+      "drinking": "Jogo de bebida",
+      "classic": "Clássico",
+      "description": "Filtra os resultados conforme as tuas preferências"
     },
     "difficulty": {
       "easy": "Fácil",
       "medium": "Médio",
-      "hard": "Difícil"
+      "hard": "Difícil",
+      "label": "Dificuldade"
     },
     "searchPlaceholder": "Pesquisar jogos...",
     "resultsCount": "{{count}} jogos encontrados",
@@ -3623,7 +3653,44 @@
         "description": "Olimpíadas e competições esportivas",
         "tips": "Camisetas, medalhas, campos de jogo e lanchinhos de atleta!"
       }
-    }
+    },
+    "tts": {
+      "error": "Erro ao ler em voz alta",
+      "notSupported": "A conversão de texto em voz não é suportada pelo teu navegador",
+      "modelReady": "Modelo de voz pronto!",
+      "downloadError": "Erro ao transferir o modelo",
+      "title": "Ler instruções em voz alta",
+      "selectVoice": "Escolher voz",
+      "firstTimeDownload": "Primeira utilização: a transferir voz de alta qualidade (~50MB)",
+      "loadingVoice": "A carregar modelo de voz...",
+      "nextSection": "Secção seguinte"
+    },
+    "copied": "copiado!",
+    "removedFromFavorites": "Removido dos favoritos",
+    "addedToFavorites": "Adicionado aos favoritos",
+    "timer": {
+      "title": "Cronómetro do jogo",
+      "finished": "Tempo esgotado!",
+      "timeUp": "O cronómetro chegou ao fim. O jogo terminou!",
+      "custom": "min",
+      "pause": "Pausa",
+      "start": "Iniciar",
+      "reset": "Repor"
+    },
+    "back": "Voltar",
+    "random": "Aleatório",
+    "randomPick": "Seleção aleatória",
+    "hideDetails": "Ocultar detalhes",
+    "showDetails": "Mostrar detalhes",
+    "dressCode": "Código de vestuário",
+    "music": "Música",
+    "decorationTips": "Dicas de decoração",
+    "colorPalette": "Paleta de cores",
+    "searchThemesPlaceholder": "Procurar temas...",
+    "randomTheme": "Tema aleatório",
+    "randomThemePick": "Tema aleatório",
+    "themesCount": "temas encontrados",
+    "noThemesFound": "Nenhum tema encontrado."
   },
   "ideasHub": {
     "title": "Jogos e Ideias",
@@ -3638,7 +3705,13 @@
       "categories": "Categorias",
       "languages": "Idiomas"
     },
-    "openGames": "Abrir Todos os Jogos"
+    "openGames": "Abrir Todos os Jogos",
+    "badge": "Inspiração para o teu evento",
+    "cta": {
+      "title": "Pronto para o teu evento?",
+      "description": "Cria já o teu evento gratuitamente e usa todos os jogos e temas no teu planeamento.",
+      "button": "Criar evento"
+    }
   },
   "eventTypes": {
     "bachelor": "Despedida (Ele)",

@@ -49,7 +49,13 @@
     "actions": "Akcje",
     "active": "Aktywny",
     "inactive": "Nieaktywny",
-    "dismiss": "Zamknij"
+    "dismiss": "Zamknij",
+    "reset": "Resetuj",
+    "home": "Strona główna",
+    "warning": "Ostrzeżenie",
+    "organizer": "Organizator",
+    "people": "Osoby",
+    "unknown": "Nieznany"
   },
   "feedback": {
     "button": "Opinie",
@@ -318,7 +324,11 @@
           "generating": "Generowanie...",
           "inputPlaceholder": "Zapytaj AI...",
           "response": "**Top 3 sugestie aktywności na wieczór kawalerski:**\n\n🚤 **Rejs łodzią** - Relaks na wodzie\n\n🎯 **Escape Room** - Praca zespołowa i emocje\n\n🍻 **Wycieczka do browaru** - Degustacja piwa z zwiedzaniem\n\n*Na podstawie: Budżet €150-250, 8 uczestników*",
-          "regenerate": "Wygeneruj ponownie"
+          "regenerate": "Wygeneruj ponownie",
+          "responseDestinations": "**Najlepsze kierunki na wasze wieczór kawalerski/panieński:**\n\n🏙️ **Hamburg** – portowe miasto z Reeperbahn i kulturą\n• 2h dojazdu · €80-150/noc · Bogate życie nocne\n\n🍺 **Monachium** – klimat Oktoberfest i ogródki piwne\n• 4h dojazdu · €100-180/noc · Bawarska tradycja\n\n🎉 **Kolonia** – miasto karnawału nad Renem\n• 3h dojazdu · €70-120/noc · Imprezowa atmosfera\n\n*Rekomendacja: Hamburg najlepiej pasuje do waszego budżetu!*",
+          "responseActivities": "**Top 5 aktywności dla 8 osób:**\n\n1. 🚤 **Rejs łodzią** – relaks na jeziorze Alster\n   ~€25/osoba · 2 godziny\n\n2. 🎯 **Escape room** – współpraca i emocje\n   ~€30/osoba · 1 godzina\n\n3. 🍻 **Zwiedzanie browaru** – degustacja piwa\n   ~€35/osoba · 2,5 godziny\n\n4. 🎳 **Kręgle + kolacja** – klasyczne połączenie\n   ~€45/osoba · 3 godziny\n\n5. 🏎️ **Gokarty** – akcja dla wszystkich\n   ~€40/osoba · 1,5 godziny\n\n*Wszystkie aktywności w waszym budżecie €150-250!*",
+          "responseSchedule": "**Idealny plan dnia na wieczór kawalerski/panieński:**\n\n🌅 **10:00** – Wspólne śniadanie\n   Kawiarnia w porcie · Start wszyscy razem\n\n🚶 **12:00** – Zwiedzanie miasta inaczej\n   Interaktywna trasa z zadaniami\n\n🍕 **14:00** – Obiad i niespodzianka\n   Wręczenie prezentu dla Mario!\n\n🎯 **16:00** – Escape room challenge\n   Drużyny przeciwko sobie\n\n🍺 **19:00** – Wizyta w browarze\n   Z degustacją i kolacją\n\n🎉 **22:00** – Lokal imprezowy\n   DJ i parkiet zarezerwowane\n\n*Zaplanowano bufor czasowy między aktywnościami!*",
+          "responseBudget": "**Plan budżetu dla 8 osób:**\n\n📊 **Budżet całkowity:** €1600 - €2000\n\n**Rozbicie na osobę (~€200):**\n\n🏨 Nocleg: €60-80\n   2 noce w hostelu/hotelu\n\n🚌 Dojazd: €25-35\n   Bilet grupowy na pociąg\n\n🍽️ Jedzenie: €50-60\n   3x posiłki + przekąski\n\n🎯 Aktywności: €50-70\n   2-3 zaplanowane wydarzenia\n\n🍺 Napoje/zabawa: €30-40\n   Program wieczorny\n\n💰 **Wskazówki na oszczędności:**\n• Zapytaj o rabaty grupowe\n• Korzystaj z happy hour\n• Śniadanie we własnym zakresie"
         },
         "survey": {
           "selectName": "Wybierz swoje imię",
@@ -1019,7 +1029,8 @@
         "label": "Życzenia i pomysły",
         "placeholder": "Co zawsze chciałeś zrobić?"
       }
-    }
+    },
+    "stepCounter": "Krok {{current}} z {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1848,7 +1859,22 @@
       "remaining": "Pozostało {{remaining}} z {{limit}} kredytów",
       "yearly": "100 kredytów AI/miesiąc",
       "lifetime": "75 kredytów AI/miesiąc"
-    }
+    },
+    "cancelSuccess": "Twoja subskrypcja została anulowana i wygaśnie z końcem okresu rozliczeniowego.",
+    "cancelError": "Błąd podczas anulowania. Spróbuj ponownie.",
+    "cancellationScheduled": "Anulowanie zaplanowane",
+    "cancelledAt": "Kończy się",
+    "monthlyDescription": "Elastyczna i można anulować w każdej chwili",
+    "cancelSubscription": "Anuluj subskrypcję",
+    "currentPlan": "Aktualny plan",
+    "yearly": "Rocznie",
+    "yearlyDescription": "Najpopularniejszy – oszczędź 28%",
+    "perYear": "rok",
+    "savePercent": "Oszczędź 28%",
+    "subscribeYearly": "Subskrybuj rocznie",
+    "cancelConfirmTitle": "Na pewno anulować subskrypcję?",
+    "cancelConfirmDescription": "Twój dostęp pozostanie aktywny do końca okresu rozliczeniowego. Możesz w każdej chwili zapisać się ponownie.",
+    "confirmCancel": "Tak, anuluj"
   },
   "admin": {
     "credits": {
@@ -2631,12 +2657,16 @@
       "difficulty": "Trudność",
       "kidsFriendly": "Dla dzieci",
       "alcoholFree": "Bez alkoholu",
-      "clear": "Wyczyść filtry"
+      "clear": "Wyczyść filtry",
+      "drinking": "Gra alkoholowa",
+      "classic": "Klasyka",
+      "description": "Filtruj wyniki według własnych preferencji"
     },
     "difficulty": {
       "easy": "Łatwy",
       "medium": "Średni",
-      "hard": "Trudny"
+      "hard": "Trudny",
+      "label": "Trudność"
     },
     "searchPlaceholder": "Szukaj gier...",
     "resultsCount": "{{count}} gier znaleziono",
@@ -3623,7 +3653,44 @@
         "description": "Olimpiada i sportowe zawody",
         "tips": "Koszulki, medale, boiska i sportowe przekąski!"
       }
-    }
+    },
+    "tts": {
+      "error": "Błąd podczas odczytywania",
+      "notSupported": "Twoja przeglądarka nie obsługuje funkcji zamiany tekstu na mowę",
+      "modelReady": "Model głosu gotowy!",
+      "downloadError": "Błąd podczas pobierania modelu",
+      "title": "Przeczytaj instrukcję na głos",
+      "selectVoice": "Wybierz głos",
+      "firstTimeDownload": "Pierwsze uruchomienie: pobieranie wysokiej jakości głosu (~50 MB)",
+      "loadingVoice": "Ładowanie modelu głosu...",
+      "nextSection": "Następna sekcja"
+    },
+    "copied": "skopiowano!",
+    "removedFromFavorites": "Usunięto z ulubionych",
+    "addedToFavorites": "Dodano do ulubionych",
+    "timer": {
+      "title": "Minutnik gry",
+      "finished": "Czas minął!",
+      "timeUp": "Minutnik się skończył. Gra dobiegła końca!",
+      "custom": "min",
+      "pause": "Pauza",
+      "start": "Start",
+      "reset": "Resetuj"
+    },
+    "back": "Wstecz",
+    "random": "Losowo",
+    "randomPick": "Losowy wybór",
+    "hideDetails": "Ukryj szczegóły",
+    "showDetails": "Pokaż szczegóły",
+    "dressCode": "Dress code",
+    "music": "Muzyka",
+    "decorationTips": "Wskazówki dekoracyjne",
+    "colorPalette": "Paleta kolorów",
+    "searchThemesPlaceholder": "Szukaj motywów...",
+    "randomTheme": "Losowy motyw",
+    "randomThemePick": "Losowy motyw",
+    "themesCount": "znalezione motywy",
+    "noThemesFound": "Nie znaleziono motywów."
   },
   "ideasHub": {
     "title": "Gry i Pomysły",
@@ -3638,7 +3705,13 @@
       "categories": "Kategorie",
       "languages": "Języki"
     },
-    "openGames": "Otwórz Wszystkie Gry"
+    "openGames": "Otwórz Wszystkie Gry",
+    "badge": "Inspiracja na Twoje wydarzenie",
+    "cta": {
+      "title": "Gotowy na swoje wydarzenie?",
+      "description": "Utwórz teraz bezpłatnie swoje wydarzenie i wykorzystaj wszystkie gry oraz motywy w swoim planowaniu.",
+      "button": "Utwórz wydarzenie"
+    }
   },
   "eventTypes": {
     "bachelor": "Wieczór Kawalerski",

@@ -49,7 +49,13 @@
     "actions": "Azioni",
     "active": "Attivo",
     "inactive": "Inattivo",
-    "dismiss": "Chiudi"
+    "dismiss": "Chiudi",
+    "reset": "Reimposta",
+    "home": "Home",
+    "warning": "Avviso",
+    "organizer": "Organizzatore",
+    "people": "Persone",
+    "unknown": "Sconosciuto"
   },
   "feedback": {
     "button": "Feedback",
@@ -318,7 +324,11 @@
           "generating": "Generazione...",
           "inputPlaceholder": "Chiedi all'AI...",
           "response": "**Top 3 suggerimenti attività per l'addio al celibato:**\n\n🚤 **Tour in barca** - Relax sull'acqua\n\n🎯 **Escape Room** - Lavoro di squadra ed emozione\n\n🍻 **Tour del birrificio** - Degustazione con visita\n\n*Basato su: Budget €150-250, 8 partecipanti*",
-          "regenerate": "Rigenera"
+          "regenerate": "Rigenera",
+          "responseDestinations": "**Top destinazioni per il vostro addio al celibato:**\n\n🏙️ **Amburgo** - Città portuale con la Reeperbahn e cultura\n• 2h di viaggio · €80-150/notte · Vita notturna intensa\n\n🍺 **Monaco** - Atmosfera Oktoberfest e birrerie all'aperto\n• 4h di viaggio · €100-180/notte · Tradizione bavarese\n\n🎉 **Colonia** - La città del carnevale sul Reno\n• 3h di viaggio · €70-120/notte · Atmosfera di festa\n\n*Consiglio: Amburgo è la scelta più adatta al vostro budget!*",
+          "responseActivities": "**Top 5 attività per 8 persone:**\n\n1. 🚤 **Giro in barca** - Relax sull'Alster\n   ~€25/persona · 2 ore\n\n2. 🎯 **Escape Room** - Gioco di squadra e suspense\n   ~€30/persona · 1 ora\n\n3. 🍻 **Tour del birrificio** - Degustazione di birra\n   ~€35/persona · 2,5 ore\n\n4. 🎳 **Bowling + cena** - Combo classica\n   ~€45/persona · 3 ore\n\n5. 🏎️ **Go-kart** - Azione per tutti\n   ~€40/persona · 1,5 ore\n\n*Tutte le attività rientrano nel vostro budget di €150-250!*",
+          "responseSchedule": "**Il programma perfetto per l'addio al celibato:**\n\n🌅 **10:00** - Colazione insieme\n   Café sul porto · Si parte tutti insieme\n\n🚶 **12:00** - Tour della città diverso dal solito\n   Tour interattivo con missioni\n\n🍕 **14:00** - Pranzo e sorpresa\n   Consegna del regalo a Mario!\n\n🎯 **16:00** - Sfida Escape Room\n   Squadre l'una contro l'altra\n\n🍺 **19:00** - Visita al birrificio\n   Con degustazione e cena\n\n🎉 **22:00** - Location per la festa\n   DJ e pista da ballo riservati\n\n*Margini di tempo previsti tra le attività!*",
+          "responseBudget": "**Piano del budget per 8 persone:**\n\n📊 **Budget totale:** €1.600 - €2.000\n\n**Dettaglio per persona (~€200):**\n\n🏨 Alloggio: €60-80\n   2 notti in ostello/hotel\n\n🚌 Viaggio: €25-35\n   Biglietto di gruppo treno\n\n🍽️ Cibo: €50-60\n   3 pasti + snack\n\n🎯 Attività: €50-70\n   2-3 eventi in programma\n\n🍺 Bevande/divertimento: €30-40\n   Programma serale\n\n💰 **Consigli per risparmiare:**\n• Chiedi sconti di gruppo\n• Approfitta dell'happy hour\n• Colazione fai-da-te"
         },
         "survey": {
           "selectName": "Seleziona il tuo nome",
@@ -969,7 +979,8 @@
         "label": "Desideri e idee",
         "placeholder": "Cosa hai sempre voluto fare?"
       }
-    }
+    },
+    "stepCounter": "Passo {{current}} di {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1798,7 +1809,22 @@
       "remaining": "{{remaining}} di {{limit}} crediti rimanenti",
       "yearly": "100 crediti AI/mese",
       "lifetime": "75 crediti AI/mese"
-    }
+    },
+    "cancelSuccess": "Il tuo abbonamento è stato annullato e terminerà alla fine del periodo.",
+    "cancelError": "Errore durante l'annullamento. Riprova.",
+    "cancellationScheduled": "Annullamento programmato",
+    "cancelledAt": "Termina il",
+    "monthlyDescription": "Flessibile e annullabile in qualsiasi momento",
+    "cancelSubscription": "Annulla abbonamento",
+    "currentPlan": "Piano attuale",
+    "yearly": "Annuale",
+    "yearlyDescription": "Il più scelto - risparmi il 28%",
+    "perYear": "anno",
+    "savePercent": "Risparmia il 28%",
+    "subscribeYearly": "Abbonati annualmente",
+    "cancelConfirmTitle": "Vuoi davvero annullare l'abbonamento?",
+    "cancelConfirmDescription": "Il tuo accesso rimane attivo fino alla fine del periodo. Puoi riabbonarti in qualsiasi momento.",
+    "confirmCancel": "Sì, annulla"
   },
   "admin": {
     "credits": {
@@ -2664,7 +2690,8 @@
     "difficulty": {
       "easy": "Facile",
       "medium": "Medio",
-      "hard": "Difficile"
+      "hard": "Difficile",
+      "label": "Difficoltà"
     },
     "searchPlaceholder": "Cerca giochi...",
     "searchThemesPlaceholder": "Cerca temi...",
@@ -3664,7 +3691,31 @@
         "description": "Olimpiadi e gare sportive all'ultimo fiato",
         "tips": "Maglie da gara, medaglie, campi di gioco e snack da vero campione!"
       }
-    }
+    },
+    "tts": {
+      "error": "Errore durante la lettura",
+      "notSupported": "La sintesi vocale non è supportata dal tuo browser",
+      "modelReady": "Modello vocale pronto!",
+      "downloadError": "Errore durante il download del modello",
+      "title": "Leggi le istruzioni",
+      "selectVoice": "Scegli la voce",
+      "firstTimeDownload": "Primo avvio: download voce di alta qualità (~50MB)",
+      "loadingVoice": "Caricamento modello vocale...",
+      "nextSection": "Sezione successiva"
+    },
+    "copied": "copiato!",
+    "removedFromFavorites": "Rimosso dai preferiti",
+    "addedToFavorites": "Aggiunto ai preferiti",
+    "timer": {
+      "title": "Timer di gioco",
+      "finished": "Tempo scaduto!",
+      "timeUp": "Il timer è scaduto. Il gioco è finito!",
+      "custom": "min",
+      "pause": "Pausa",
+      "start": "Avvia",
+      "reset": "Reimposta"
+    },
+    "back": "Indietro"
   },
   "ideasHub": {
     "title": "Giochi e Idee",
@@ -3679,7 +3730,13 @@
       "categories": "Categorie",
       "languages": "Lingue"
     },
-    "openGames": "Apri Tutti i Giochi"
+    "openGames": "Apri Tutti i Giochi",
+    "badge": "Ispirazione per il tuo evento",
+    "cta": {
+      "title": "Pronto per il tuo evento?",
+      "description": "Crea ora gratuitamente il tuo evento e usa tutti i giochi e i temi nella tua pianificazione.",
+      "button": "Crea evento"
+    }
   },
   "eventTypes": {
     "bachelor": "Addio Celibato",

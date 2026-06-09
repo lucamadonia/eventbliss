@@ -49,7 +49,13 @@
     "actions": "Actions",
     "active": "Actif",
     "inactive": "Inactif",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "reset": "Réinitialiser",
+    "home": "Accueil",
+    "warning": "Avertissement",
+    "organizer": "Organisateur",
+    "people": "Personnes",
+    "unknown": "Inconnu"
   },
   "feedback": {
     "button": "Feedback",
@@ -318,7 +324,11 @@
           "generating": "Génération...",
           "inputPlaceholder": "Demander à l'IA...",
           "response": "**Top 3 suggestions d'activités pour votre EVG:**\n\n🚤 **Tour en bateau** - Détente sur l'eau\n\n🎯 **Escape Room** - Travail d'équipe et suspense\n\n🍻 **Visite de brasserie** - Dégustation de bière avec visite\n\n*Basé sur: Budget €150-250, 8 participants*",
-          "regenerate": "Régénérer"
+          "regenerate": "Régénérer",
+          "responseDestinations": "**Top destinations pour votre EVJF/EVG :**\n\n🏙️ **Hambourg** - Ville portuaire avec la Reeperbahn & la culture\n• 2 h de trajet · 80-150 €/nuit · Vie nocturne animée\n\n🍺 **Munich** - Ambiance Oktoberfest & brasseries en plein air\n• 4 h de trajet · 100-180 €/nuit · Tradition bavaroise\n\n🎉 **Cologne** - La ville du carnaval au bord du Rhin\n• 3 h de trajet · 70-120 €/nuit · Ambiance festive\n\n*Recommandation : Hambourg correspond le mieux à votre budget !*",
+          "responseActivities": "**Top 5 des activités pour 8 personnes :**\n\n1. 🚤 **Balade en bateau** - Détente sur l'Alster\n   ~25 €/pers. · 2 heures\n\n2. 🎯 **Escape Game** - Esprit d'équipe & suspense\n   ~30 €/pers. · 1 heure\n\n3. 🍻 **Visite de brasserie** - Dégustation de bière\n   ~35 €/pers. · 2,5 heures\n\n4. 🎳 **Bowling + dîner** - Le combo classique\n   ~45 €/pers. · 3 heures\n\n5. 🏎️ **Karting** - De l'action pour tous\n   ~40 €/pers. · 1,5 heure\n\n*Toutes les activités dans votre budget de 150-250 € !*",
+          "responseSchedule": "**Le programme parfait pour la journée :**\n\n🌅 **10h00** - Petit-déjeuner ensemble\n   Café du port · Tout le monde démarre ensemble\n\n🚶 **12h00** - Visite de la ville autrement\n   Tour interactif avec des défis\n\n🍕 **14h00** - Déjeuner & surprise\n   Remise du cadeau pour Mario !\n\n🎯 **16h00** - Défi Escape Game\n   Équipes les unes contre les autres\n\n🍺 **19h00** - Visite de brasserie\n   Avec dégustation & dîner\n\n🎉 **22h00** - Lieu de fête\n   DJ & piste de danse réservés\n\n*Du temps de battement prévu entre les activités !*",
+          "responseBudget": "**Plan budgétaire pour 8 personnes :**\n\n📊 **Budget total :** 1 600 - 2 000 €\n\n**Détail par personne (~200 €) :**\n\n🏨 Hébergement : 60-80 €\n   2 nuits en auberge/hôtel\n\n🚌 Trajet : 25-35 €\n   Billet de groupe en train\n\n🍽️ Repas : 50-60 €\n   3 repas + snacks\n\n🎯 Activités : 50-70 €\n   2-3 événements prévus\n\n🍺 Boissons/fun : 30-40 €\n   Programme de la soirée\n\n💰 **Astuces pour économiser :**\n• Demander des réductions de groupe\n• Profiter des happy hours\n• Préparer soi-même le petit-déjeuner"
         },
         "survey": {
           "selectName": "Sélectionnez votre nom",
@@ -969,7 +979,8 @@
         "label": "Souhaits et idées",
         "placeholder": "Qu'avez-vous toujours voulu faire ?"
       }
-    }
+    },
+    "stepCounter": "Étape {{current}} sur {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1798,7 +1809,22 @@
       "remaining": "{{remaining}} crédits restants sur {{limit}}",
       "yearly": "100 crédits IA/mois",
       "lifetime": "75 crédits IA/mois"
-    }
+    },
+    "cancelSuccess": "Ton abonnement a été résilié et prendra fin à l'échéance.",
+    "cancelError": "Erreur lors de la résiliation. Merci de réessayer.",
+    "cancellationScheduled": "Résiliation programmée",
+    "cancelledAt": "Se termine le",
+    "monthlyDescription": "Flexible & résiliable à tout moment",
+    "cancelSubscription": "Résilier l'abonnement",
+    "currentPlan": "Formule actuelle",
+    "yearly": "Annuel",
+    "yearlyDescription": "Le plus populaire - économise 28 %",
+    "perYear": "an",
+    "savePercent": "Économise 28 %",
+    "subscribeYearly": "S'abonner à l'année",
+    "cancelConfirmTitle": "Vraiment résilier l'abonnement ?",
+    "cancelConfirmDescription": "Ton accès reste actif jusqu'à l'échéance. Tu peux te réabonner à tout moment.",
+    "confirmCancel": "Oui, résilier"
   },
   "admin": {
     "credits": {
@@ -2664,7 +2690,8 @@
     "difficulty": {
       "easy": "Facile",
       "medium": "Moyen",
-      "hard": "Difficile"
+      "hard": "Difficile",
+      "label": "Difficulté"
     },
     "searchPlaceholder": "Rechercher des jeux...",
     "searchThemesPlaceholder": "Rechercher des thèmes...",
@@ -3664,7 +3691,31 @@
         "description": "Olympiades et compétitions sportives au programme",
         "tips": "Maillots, médailles, terrains de jeu et snacks façon sportif — que les jeux commencent !"
       }
-    }
+    },
+    "tts": {
+      "error": "Erreur lors de la lecture",
+      "notSupported": "La synthèse vocale n'est pas prise en charge par ton navigateur",
+      "modelReady": "Modèle vocal prêt !",
+      "downloadError": "Erreur lors du téléchargement du modèle",
+      "title": "Lire les règles à voix haute",
+      "selectVoice": "Choisir une voix",
+      "firstTimeDownload": "Premier lancement : téléchargement d'une voix haute qualité (~50 Mo)",
+      "loadingVoice": "Chargement du modèle vocal...",
+      "nextSection": "Section suivante"
+    },
+    "copied": "copié !",
+    "removedFromFavorites": "Retiré des favoris",
+    "addedToFavorites": "Ajouté aux favoris",
+    "timer": {
+      "title": "Minuteur de jeu",
+      "finished": "Temps écoulé !",
+      "timeUp": "Le minuteur est terminé. La partie est finie !",
+      "custom": "min",
+      "pause": "Pause",
+      "start": "Démarrer",
+      "reset": "Réinitialiser"
+    },
+    "back": "Retour"
   },
   "ideasHub": {
     "title": "Jeux et Idées",
@@ -3679,7 +3730,13 @@
       "categories": "Catégories",
       "languages": "Langues"
     },
-    "openGames": "Ouvrir Tous les Jeux"
+    "openGames": "Ouvrir Tous les Jeux",
+    "badge": "De l'inspiration pour ton événement",
+    "cta": {
+      "title": "Prêt pour ton événement ?",
+      "description": "Crée ton événement gratuitement dès maintenant et profite de tous les jeux et thèmes dans ta planification.",
+      "button": "Créer un événement"
+    }
   },
   "eventTypes": {
     "bachelor": "EVJG",
