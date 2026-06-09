@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useGameTimer } from '../engine/TimerSystem';
-import { THISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content-de';
+import { getTHISORTHAT_PAIRS, type ThisOrThatPair } from './thisorthat-content';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -89,7 +89,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const gameRecordedRef = useRef(false);
   const [currentRound, setCurrentRound] = useState(1);
 
-  const [deck] = useState(() => shuffle(THISORTHAT_PAIRS));
+  const [deck] = useState(() => shuffle(getTHISORTHAT_PAIRS()));
   const [deckPos, setDeckPos] = useState(0);
   const [currentPair, setCurrentPair] = useState<ThisOrThatPair | null>(null);
   const [voterIdx, setVoterIdx] = useState(0);

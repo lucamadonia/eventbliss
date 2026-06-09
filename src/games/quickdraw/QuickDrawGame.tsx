@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { PlayerSetup } from '../ui/PlayerSetup';
-import { DRAW_WORDS, type DrawWord } from './quickdraw-words-de';
+import { getDRAW_WORDS, type DrawWord } from './quickdraw-words';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -92,7 +92,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const [phase, setPhase] = useState<Phase>('setup');
   const [round, setRound] = useState(1);
   const [drawerIdx, setDrawerIdx] = useState(0);
-  const deck = useRef<DrawWord[]>(shuffle(DRAW_WORDS));
+  const deck = useRef<DrawWord[]>(shuffle(getDRAW_WORDS()));
   const deckPos = useRef(0);
   const [currentWord, setCurrentWord] = useState<DrawWord | null>(null);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -126,7 +126,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {
     if (deckPos.current >= deck.current.length) {
-      deck.current = shuffle(DRAW_WORDS);
+      deck.current = shuffle(getDRAW_WORDS());
       deckPos.current = 0;
     }
     return deck.current[deckPos.current++];
@@ -191,7 +191,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const saveDrawing = () => { if (canvasRef.current) setDrawingDataURL(canvasRef.current.toDataURL()); };
 
   /* ---- Game flow ---- */
-  function startGame() { setPlayers(players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(DRAW_WORDS); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
+  function startGame() { setPlayers(players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
   function beginRound(dIdx: number) { setDrawerIdx(dIdx); setCurrentWord(drawWord()); setGuesses([]); setGuessInput(''); setCurrentGuesser(0); setDrawingDataURL(null); setTool('pen'); setPenSize(6); setPhase('drawerReveal'); }
   function startDrawing() {
     setPhase('drawing'); startTimer(MODE_TIMERS[mode]); setTimeout(initCanvas, 50);

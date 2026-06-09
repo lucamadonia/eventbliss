@@ -14,6 +14,7 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { localizeMaterial } from "@/lib/game-materials-i18n";
 import {
   Sparkles,
   Star,
@@ -500,7 +501,7 @@ function GameItemCard({
                   <div className="flex flex-wrap gap-1">
                     {game.materials.map((m) => (
                       <span key={m} className="px-2 py-0.5 rounded-full bg-foreground/5 border border-border text-[11px] text-foreground/80">
-                        {m}
+                        {localizeMaterial(m, i18n.language)}
                       </span>
                     ))}
                   </div>

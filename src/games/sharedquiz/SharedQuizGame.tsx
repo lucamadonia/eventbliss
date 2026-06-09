@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import { PlayerSetup } from '../ui/PlayerSetup';
-import { SHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content-de';
+import { getSHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
@@ -88,7 +88,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
   const [round, setRound] = useState(1);
-  const deck = useRef<SharedQuizQuestion[]>(shuffle(SHARED_QUIZ_QUESTIONS));
+  const deck = useRef<SharedQuizQuestion[]>(shuffle(getSHARED_QUIZ_QUESTIONS()));
   const deckPos = useRef(0);
   const [currentQ, setCurrentQ] = useState<SharedQuizQuestion | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -119,7 +119,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   /* ---- Draw question ---- */
   function drawQuestion(): SharedQuizQuestion {
     if (deckPos.current >= deck.current.length) {
-      deck.current = shuffle(SHARED_QUIZ_QUESTIONS);
+      deck.current = shuffle(getSHARED_QUIZ_QUESTIONS());
       deckPos.current = 0;
     }
     return deck.current[deckPos.current++];
@@ -134,7 +134,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   function startGame() {
     const reset = players.map(p => ({ ...p, score: 0 }));
     setPlayers(reset);
-    deck.current = shuffle(SHARED_QUIZ_QUESTIONS);
+    deck.current = shuffle(getSHARED_QUIZ_QUESTIONS());
     deckPos.current = 0;
     setRound(1);
     setRoleIndices([0, 1, 2]);

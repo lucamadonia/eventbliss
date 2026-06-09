@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { localizeMaterial } from "@/lib/game-materials-i18n";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Clock, 
@@ -356,7 +357,7 @@ export const GameCard = forwardRef<HTMLDivElement, GameCardProps>(
                         {t('gamesLibrary.materials')}:
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        {game.materials.join(', ')}
+                        {game.materials.map((m) => localizeMaterial(m, i18n.language)).join(', ')}
                       </span>
                     </div>
                   )}

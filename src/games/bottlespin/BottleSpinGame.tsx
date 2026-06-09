@@ -15,9 +15,7 @@ import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import {
-  BOTTLE_CARDS, CATEGORY_META, type BottleCard, type BottleCategory,
-} from './bottlespin-content-de';
+import { getBOTTLE_CARDS, getCATEGORY_META, type BottleCard, type BottleCategory } from './bottlespin-content';
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
@@ -92,8 +90,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   useTVGameBridge('bottlespin', { phase, currentRound, selectedIdx, rotation, players }, [phase, currentRound, selectedIdx]);
 
   const deck = useMemo(() => {
-    const filtered = BOTTLE_CARDS.filter((c) => selectedCategories.includes(c.category));
-    return shuffle(filtered.length > 0 ? filtered : BOTTLE_CARDS);
+    const filtered = getBOTTLE_CARDS().filter((c) => selectedCategories.includes(c.category));
+    return shuffle(filtered.length > 0 ? filtered : getBOTTLE_CARDS());
   }, [selectedCategories]);
   const deckPos = useRef(0);
 
@@ -327,8 +325,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
             {mode === 'fragen' && !isSpinning && selectedIdx < 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 className="flex flex-wrap gap-2 justify-center max-w-xs">
-                {(Object.keys(CATEGORY_META) as BottleCategory[]).map((cat) => {
-                  const meta = CATEGORY_META[cat], active = selectedCategories.includes(cat);
+                {(Object.keys(getCATEGORY_META()) as BottleCategory[]).map((cat) => {
+                  const meta = getCATEGORY_META()[cat], active = selectedCategories.includes(cat);
                   return (
                     <button key={cat} onClick={() => toggleCategory(cat)}
                       className={cn('px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200',
@@ -399,8 +397,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                 <div className="p-6 flex flex-col items-center gap-4">
                   {/* Category label */}
                   <span className="text-[10px] font-bold uppercase tracking-[0.25em] italic"
-                    style={{ color: CATEGORY_META[currentCard.category].color }}>
-                    {CATEGORY_META[currentCard.category].name}
+                    style={{ color: getCATEGORY_META()[currentCard.category].color }}>
+                    {getCATEGORY_META()[currentCard.category].name}
                   </span>
                   {/* Type label */}
                   <h3 className={cn('text-5xl font-black tracking-tight',
@@ -413,7 +411,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                   <p className="text-2xl font-bold text-white leading-tight text-center">{currentCard.text}</p>
                   {/* Decorative icon */}
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.04] border border-white/[0.06]">
-                    <span className="text-lg">{CATEGORY_META[currentCard.category].emoji}</span>
+                    <span className="text-lg">{getCATEGORY_META()[currentCard.category].emoji}</span>
                   </div>
                 </div>
               </div>

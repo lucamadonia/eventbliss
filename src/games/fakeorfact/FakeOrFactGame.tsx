@@ -6,7 +6,7 @@ import {
   Trophy, RotateCcw, ArrowRight, Check, X, Shield, HelpCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { FACTS, THREE_STATEMENTS, type Fact, type ThreeStatements } from './fakeorfact-content-de';
+import { getFACTS, getTHREE_STATEMENTS, type Fact, type ThreeStatements } from './fakeorfact-content';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameEnd } from '../social/useGameEnd';
@@ -121,13 +121,13 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
       setVotes([]);
 
       if (selectedMode === 'three') {
-        const shuffled = shuffle(THREE_STATEMENTS);
+        const shuffled = shuffle(getTHREE_STATEMENTS());
         setThreeDeck(shuffled);
         setThreeIdx(0);
         setCurrentThree(shuffled[0]);
         setPlayerThreeVote(null);
       } else {
-        const shuffled = shuffle(FACTS);
+        const shuffled = shuffle(getFACTS());
         setFactDeck(shuffled);
         setFactIdx(0);
         setCurrentFact(shuffled[0]);
