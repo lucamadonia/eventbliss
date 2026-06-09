@@ -50,8 +50,10 @@ import { getActivitySpec, getActivityBySlug } from "@/lib/activity-content";
 import {
   ACTIVITY_LANG_META,
   CATEGORY_FRAMEWORKS_INTL,
+  localizeSpecValue,
   type ActivityIntlLang,
 } from "@/lib/activity-content-intl";
+import { getActivityLabel, getCategoryLabel } from "@/lib/activity-labels-i18n";
 import { JGA_CITIES } from "@/lib/jga-cities";
 
 const SITE_URL = "https://event-bliss.com";
@@ -111,12 +113,14 @@ function buildJsonLd(activity: ActivityItem, lang: ActivityIntlLang, url: string
   const framework = CATEGORY_FRAMEWORKS_INTL[lang][activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
   const meta = ACTIVITY_LANG_META[lang];
+  const label = getActivityLabel(activity.value, activity.label, lang);
+  const catLabel = getCategoryLabel(activity.category, cat.label, lang);
 
   return [
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: meta.titleTpl(activity.label),
+      headline: meta.titleTpl(label),
       description: framework.introFor(activity),
       url,
       mainEntityOfPage: url,
@@ -132,11 +136,11 @@ function buildJsonLd(activity: ActivityItem, lang: ActivityIntlLang, url: string
         url: SITE_URL,
         logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.png` },
       },
-      articleSection: cat.label,
+      articleSection: catLabel,
       keywords: [
-        activity.label,
+        label,
         meta.label,
-        `${activity.label} ${meta.label}`,
+        `${label} ${meta.label}`,
       ].join(", "),
       speakable: {
         "@type": "SpeakableSpecification",
@@ -146,7 +150,7 @@ function buildJsonLd(activity: ActivityItem, lang: ActivityIntlLang, url: string
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: `${activity.label} — ${meta.label}`,
+      name: `${label} — ${meta.label}`,
       description: framework.introFor(activity),
       url,
       provider: { "@type": "Organization", name: "EventBliss", url: SITE_URL },
@@ -158,7 +162,7 @@ function buildJsonLd(activity: ActivityItem, lang: ActivityIntlLang, url: string
         priceCurrency: "EUR",
         offerCount: "176",
       },
-      category: cat.label,
+      category: catLabel,
     },
     {
       "@context": "https://schema.org",
@@ -175,7 +179,7 @@ function buildJsonLd(activity: ActivityItem, lang: ActivityIntlLang, url: string
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "EventBliss", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: meta.label, item: url },
-        { "@type": "ListItem", position: 3, name: activity.label, item: url },
+        { "@type": "ListItem", position: 3, name: label, item: url },
       ],
     },
   ];
@@ -263,15 +267,15 @@ export default function ActivityIntl() {
   useSEO(
     activity && lang && meta
       ? {
-          title: meta.titleTpl(activity.label),
-          description: meta.descriptionTpl(activity.label),
+          title: meta.titleTpl(getActivityLabel(activity.value, activity.label, lang)),
+          description: meta.descriptionTpl(getActivityLabel(activity.value, activity.label, lang)),
           canonical: url,
           ogImage: `${SITE_URL}/og/ideen-${activity.value}.svg`,
           ogType: "article",
           locale: meta.locale,
           htmlLang: meta.htmlLang,
           dir: lang === "ar" ? "rtl" : "ltr",
-          keywords: `${activity.label}, ${meta.label}`,
+          keywords: `${getActivityLabel(activity.value, activity.label, lang)}, ${meta.label}`,
           jsonLd: buildJsonLd(activity, lang, url),
         }
       : {
@@ -287,6 +291,8 @@ export default function ActivityIntl() {
   const spec = getActivitySpec(activity);
   const framework = CATEGORY_FRAMEWORKS_INTL[lang][activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
+  const label = getActivityLabel(activity.value, activity.label, lang);
+  const catLabel = getCategoryLabel(activity.category, cat.label, lang);
 
   // Same-category cross-links
   const sameCategoryActivities = ACTIVITIES_LIBRARY.filter(
@@ -316,11 +322,11 @@ export default function ActivityIntl() {
             </div>
 
             <Badge className="mb-6 px-4 py-2 text-sm" variant="secondary">
-              {cat.emoji} {cat.label}
+              {cat.emoji} {catLabel}
             </Badge>
 
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-              <AuroraText as="span">{activity.label}</AuroraText>
+              <AuroraText as="span">{label}</AuroraText>
               <span className="block text-2xl md:text-3xl mt-4 text-muted-foreground font-normal">
                 {meta.activityFor}
               </span>
@@ -360,7 +366,7 @@ export default function ActivityIntl() {
         <div className="container max-w-5xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-8 text-center">
-              {meta.factsHeader(activity.label)}
+              {meta.factsHeader(label)}
             </h2>
           </ScrollReveal>
 
@@ -373,12 +379,12 @@ export default function ActivityIntl() {
             <FactCard
               icon={<Users className="w-5 h-5" />}
               label={meta.factsLabels.group}
-              value={spec.groupSize}
+              value={localizeSpecValue(spec.groupSize, lang)}
             />
             <FactCard
               icon={<Clock className="w-5 h-5" />}
               label={meta.factsLabels.duration}
-              value={spec.duration}
+              value={localizeSpecValue(spec.duration, lang)}
             />
             <FactCard
               icon={<Cloud className="w-5 h-5" />}
@@ -403,7 +409,7 @@ export default function ActivityIntl() {
               <GlassCard padding="lg">
                 <h3 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
                   <ActivityIcon className="w-6 h-6 text-primary" />
-                  {meta.whenHeader(activity.label)}
+                  {meta.whenHeader(label)}
                 </h3>
                 <ul className="space-y-3 text-muted-foreground">
                   {framework.whenSection.map((item, i) => (
@@ -443,7 +449,7 @@ export default function ActivityIntl() {
             <GlassCard padding="lg" variant="glow">
               <h3 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
                 <Wallet className="w-6 h-6 text-primary" />
-                {meta.costHeader(activity.label)}
+                {meta.costHeader(label)}
               </h3>
               <p className="text-muted-foreground leading-relaxed">
                 {framework.costExplain}
@@ -467,7 +473,7 @@ export default function ActivityIntl() {
             <ScrollReveal>
               <div className="text-center mb-10">
                 <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                  {meta.citiesHeader(activity.label)}
+                  {meta.citiesHeader(label)}
                 </h2>
               </div>
             </ScrollReveal>
@@ -501,7 +507,7 @@ export default function ActivityIntl() {
             <div className="flex items-center gap-3 mb-8 justify-center">
               <AlertTriangle className="w-8 h-8 text-warning" />
               <h2 className="text-3xl md:text-4xl font-display font-bold">
-                {meta.mistakesHeader(activity.label)}
+                {meta.mistakesHeader(label)}
               </h2>
             </div>
           </ScrollReveal>
@@ -528,7 +534,7 @@ export default function ActivityIntl() {
         <div className="container max-w-3xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-10 text-center">
-              {meta.faqHeader(activity.label)}
+              {meta.faqHeader(label)}
             </h2>
           </ScrollReveal>
 
@@ -562,7 +568,7 @@ export default function ActivityIntl() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-display font-bold mb-6"
           >
-            {meta.ctaHeader(activity.label)}
+            {meta.ctaHeader(label)}
           </motion.h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">{meta.ctaText}</p>
           <Link to="/create">
@@ -580,7 +586,7 @@ export default function ActivityIntl() {
           <div className="container max-w-5xl mx-auto px-4">
             <ScrollReveal>
               <h2 className="text-2xl md:text-3xl font-display font-bold mb-8 text-center">
-                {meta.relatedHeader(cat.label)}
+                {meta.relatedHeader(catLabel)}
               </h2>
             </ScrollReveal>
 
@@ -592,7 +598,7 @@ export default function ActivityIntl() {
                   className="block p-4 rounded-xl bg-card/40 border border-border/40 hover:border-primary/50 hover:bg-card/60 transition-all text-center"
                 >
                   <div className="text-3xl mb-2">{a.emoji}</div>
-                  <div className="text-sm font-medium">{a.label}</div>
+                  <div className="text-sm font-medium">{getActivityLabel(a.value, a.label, lang)}</div>
                 </Link>
               ))}
             </div>

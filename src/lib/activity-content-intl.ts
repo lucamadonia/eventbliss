@@ -2141,3 +2141,41 @@ export const CATEGORY_FRAMEWORKS_INTL: Record<ActivityIntlLang, Record<ActivityC
   tr: TR,
   ar: AR_FRAMEWORKS,
 };
+
+// ──────────────────────────────────────────────────────────────────
+// Spec-value localization (groupSize / duration)
+//
+// ACTIVITY_SPECS in activity-content.ts store group/duration as German
+// strings ("6–16 Personen", "60–90 Minuten"). The numeric ranges are
+// language-neutral; only the unit words need translating. This keeps the
+// facts grid on every /actividades, /activities, /attivita … page in the
+// page language instead of leaking German "Personen"/"Minuten".
+// ──────────────────────────────────────────────────────────────────
+
+const SPEC_UNIT_I18N: Record<ActivityIntlLang, Record<string, string>> = {
+  en: { "pro Raum": "per room", "pro Person": "per person", Personen: "people", Minuten: "minutes", Stunden: "hours", Stunde: "hour", Aktivität: "activity", all: "Everyone" },
+  es: { "pro Raum": "por sala", "pro Person": "por persona", Personen: "personas", Minuten: "minutos", Stunden: "horas", Stunde: "hora", Aktivität: "actividad", all: "Todos" },
+  fr: { "pro Raum": "par salle", "pro Person": "par personne", Personen: "personnes", Minuten: "minutes", Stunden: "heures", Stunde: "heure", Aktivität: "activité", all: "Tous" },
+  it: { "pro Raum": "per stanza", "pro Person": "per persona", Personen: "persone", Minuten: "minuti", Stunden: "ore", Stunde: "ora", Aktivität: "attività", all: "Tutti" },
+  pt: { "pro Raum": "por sala", "pro Person": "por pessoa", Personen: "pessoas", Minuten: "minutos", Stunden: "horas", Stunde: "hora", Aktivität: "atividade", all: "Todos" },
+  nl: { "pro Raum": "per kamer", "pro Person": "per persoon", Personen: "personen", Minuten: "minuten", Stunden: "uur", Stunde: "uur", Aktivität: "activiteit", all: "Iedereen" },
+  pl: { "pro Raum": "na pokój", "pro Person": "na osobę", Personen: "osób", Minuten: "minut", Stunden: "godzin", Stunde: "godzina", Aktivität: "aktywność", all: "Wszyscy" },
+  tr: { "pro Raum": "oda başına", "pro Person": "kişi başı", Personen: "kişi", Minuten: "dakika", Stunden: "saat", Stunde: "saat", Aktivität: "aktivite", all: "Herkes" },
+  ar: { "pro Raum": "لكل غرفة", "pro Person": "لكل شخص", Personen: "أشخاص", Minuten: "دقيقة", Stunden: "ساعات", Stunde: "ساعة", Aktivität: "نشاط", all: "الجميع" },
+};
+
+// Longest tokens first so "Stunden" is replaced before "Stunde".
+const SPEC_TOKENS = ["pro Raum", "pro Person", "Personen", "Minuten", "Stunden", "Stunde", "Aktivität"];
+
+/** Translate the German unit words inside a spec value to the page language. */
+export function localizeSpecValue(value: string, lang: ActivityIntlLang): string {
+  if (!value) return value;
+  const map = SPEC_UNIT_I18N[lang];
+  if (!map) return value;
+  if (value === "all") return map.all ?? value;
+  let out = value;
+  for (const token of SPEC_TOKENS) {
+    if (map[token]) out = out.split(token).join(map[token]);
+  }
+  return out;
+}

@@ -54,6 +54,7 @@ import {
 import { HEN_DO_INTL, HEN_DO_LANG_META, type HenDoIntlLang, type HenDoPageLang } from "@/lib/hen-do-overlay-intl";
 import { getHenDoAr } from "@/lib/hen-do-overlay-ar";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
+import { getActivityLabel, getCategoryLabel } from "@/lib/activity-labels-i18n";
 
 const SITE_URL = "https://event-bliss.com";
 
@@ -696,10 +697,10 @@ export default function HenDoCity() {
                         {activity.emoji}
                       </span>
                       <Badge variant="outline" className="text-xs">
-                        {cat.emoji} {cat.label}
+                        {cat.emoji} {getCategoryLabel(activity.category, cat.label, "en")}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">{activity.label}</h3>
+                    <h3 className="text-lg font-semibold mb-2">{getActivityLabel(activity.value, activity.label, "en")}</h3>
                   </GlassCard>
                 </ScrollReveal>
               );
