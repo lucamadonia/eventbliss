@@ -842,6 +842,14 @@
     },
     "error": {
       "failed": "Oluşturma başarısız. Tekrar deneyin."
+    },
+    "loginPrompt": {
+      "title": "Giriş önerilir",
+      "description": "Bir hesapla etkinliklerini yönetebilir ve asla kaybetmezsin.",
+      "benefit1": "Etkinlikleri 'Etkinliklerim'e kaydet",
+      "benefit2": "Her yerden panel erişimi",
+      "benefit3": "Yapay zekâ şablonları gibi Premium özellikler",
+      "continueAnyway": "Girişsiz devam et"
     }
   },
   "joinEvent": {
@@ -1077,12 +1085,35 @@
     "team": {
       "title": "Takımı Yönet",
       "invite": "Davet Et",
-      "permissions": "İzinler",
+      "permissions": {
+        "viewResponses": "Yanıtları görüntüle",
+        "addExpenses": "Gider ekle",
+        "viewAllExpenses": "Tüm giderleri gör",
+        "editSettings": "Ayarları düzenle"
+      },
       "removeAccess": "Erişimi Kaldır",
       "roles": {
         "organizer": "Organizatör",
         "guest": "Misafir"
-      }
+      },
+      "nameRequired": "İsim boş olamaz",
+      "participantAdded": "{{name}} eklendi",
+      "addError": "Eklenirken hata oluştu",
+      "status": {
+        "activated": "Etkinleştirildi",
+        "invited": "Davet edildi",
+        "ready": "Hazır",
+        "noAccess": "Erişim yok"
+      },
+      "addParticipant": "Katılımcı ekle",
+      "addParticipantDesc": "Etkinliğe yeni bir misafir ekle",
+      "participantName": "Ad",
+      "namePlaceholder": "ör. Ahmet Yılmaz",
+      "participantEmail": "E-posta (isteğe bağlı)",
+      "emailPlaceholder": "ahmet@example.com",
+      "participantRole": "Rol",
+      "addButton": "Ekle",
+      "description": "Katılımcılar için panel erişimini etkinleştir ve davet bağlantısını paylaş. Bağlantı ile hesap oluşturup kimliklerini doğrulayabilirler."
     },
     "overview": {
       "title": "Genel Bakış",
@@ -1099,6 +1130,30 @@
         "active": "Aktif",
         "completed": "Tamamlandı",
         "cancelled": "İptal Edildi"
+      },
+      "statuses": {
+        "draft": "Taslak",
+        "planning": "Planlama",
+        "active": "Aktif",
+        "completed": "Tamamlandı",
+        "cancelled": "İptal Edildi"
+      },
+      "participantStatus": {
+        "confirmed": "Onaylandı",
+        "declined": "Reddedildi",
+        "maybe": "Belki",
+        "invited": "Davet Edildi"
+      },
+      "pendingResponses": "Bekleyen Yanıtlar",
+      "pendingResponsesDesc": "{{count}} katılımcı henüz yanıt vermedi.",
+      "noParticipants": "Henüz katılımcı eklenmedi.",
+      "quickActions": {
+        "expenses": "Giderler",
+        "expensesDesc": "Maliyetleri yönet ve paylaştır",
+        "messages": "Mesajlar",
+        "messagesDesc": "Şablonları kopyala ve paylaş",
+        "ai": "AI Asistanı",
+        "aiDesc": "Fikir ve öneri oluştur"
       }
     },
     "form": {
@@ -1109,7 +1164,51 @@
       "save": "Kaydet",
       "successMessage": "Form yapılandırması kaydedildi!",
       "coreQuestions": "Ana Sorular",
-      "customQuestions": "Özel Sorular",
+      "customQuestions": {
+        "presets": {
+          "dietary": "Beslenme",
+          "songWish": "Şarkı isteği",
+          "tshirtSize": "Tişört bedeni",
+          "driversLicense": "Sürücü belgesi",
+          "specialWishes": "Özel istekler"
+        },
+        "presetQuestions": {
+          "dietary": {
+            "label": "Beslenme kısıtlamaları var mı?",
+            "placeholder": "örn. vejetaryen, vegan, alerjiler..."
+          },
+          "songWish": {
+            "label": "Çalma listesi için şarkı isteğin?",
+            "placeholder": "Sanatçı - Şarkı adı"
+          },
+          "tshirtSize": {
+            "label": "Hangi tişört bedenini giyiyorsun?"
+          },
+          "driversLicense": {
+            "label": "Sürücü belgen var mı ve araç kullanabilir misin?"
+          },
+          "specialWishes": {
+            "label": "Bize iletmek istediğin başka bir şey var mı?",
+            "placeholder": "Özel istekler, fikirler, notlar..."
+          }
+        },
+        "quickAdd": "Hızlı ekle:",
+        "questionPlaceholder": "Soruyu girin...",
+        "placeholderPlaceholder": "Yer tutucu metin (isteğe bağlı)",
+        "options": "Seçenekler:",
+        "addOption": "Seçenek ekle",
+        "requiredField": "Zorunlu alan",
+        "noQuestions": "Henüz kendi sorunuz eklenmedi.",
+        "noQuestionsHint": "Yukarıdaki hızlı düğmeleri kullanın veya yeni bir soru ekleyin.",
+        "addNew": "Yeni soru ekle",
+        "questionsConfigured": "kendi sorunuz yapılandırıldı",
+        "noPreview": "Önizlemeyi görmek için soru ekleyin",
+        "previewTitle": "Form önizlemesi",
+        "previewDescription": "Kendi sorularınız ankette böyle görünür",
+        "previewReadOnly": "Salt okunur önizleme",
+        "untitledQuestion": "Başlıksız soru",
+        "selectPlaceholder": "Seçenek seçin..."
+      },
       "questionEnabled": "Soru etkin",
       "questionDisabled": "Soru devre dışı",
       "singleSelect": "Tekli seçim",
@@ -1294,7 +1393,19 @@
       "title": "Program",
       "setDate": "Tarih Belirle",
       "dateSet": "Tarih belirlendi!",
-      "noDate": "Henüz tarih belirlenmedi"
+      "noDate": "Henüz tarih belirlenmedi",
+      "loading": "Tarihler yükleniyor...",
+      "noData": "Henüz veri yok",
+      "noDataDesc": "Katılımcılar uygunluklarını belirttiğinde sonuçlar burada görünecek.",
+      "activeVotes": "{{count}} aktif oy",
+      "dateLocked": "{{block}} tarihi belirlendi",
+      "topRecommendations": "En İyi Öneriler",
+      "block": "Blok",
+      "yes": "Evet",
+      "maybe": "Belki",
+      "allDates": "Tüm Tarihler",
+      "locked": "Belirlendi",
+      "legend": "Puan, \"Evet\" oyları (%100) ve \"Belki\" oyları (%50) baz alınarak hesaplanır. Daha yüksek değerler daha iyi uygunluk anlamına gelir."
     },
     "settings": {
       "title": "Ayarlar",
@@ -1329,7 +1440,10 @@
         "title": "Tehlike Bölgesi",
         "deleteEvent": "Etkinliği Sil",
         "deleteWarning": "Bu işlem geri alınamaz."
-      }
+      },
+      "publicVisibility": "Herkese Açık Görünürlük",
+      "publicVisibilityDesc": "Ziyaretçilerin giriş yapmadan (yalnızca erişim koduyla) hangi sekmeleri görebileceğini seçin.",
+      "publicVisibilityNote": "Ziyaretçilerin değişiklik yapabilmesi için (gider ekleme, yanıt düzenleme vb.) kayıt olmaları gerekir."
     },
     "ai": {
       "title": "AI Asistan",
@@ -1421,7 +1535,10 @@
         "outdoor": "Action & outdoor adventure",
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
-      }
+      },
+      "basedOnNoName": "{{count}} yanıta dayanarak",
+      "budgetTip": "Bütçe ipucu",
+      "listen": "Sesli oku"
     },
     "guestWarning": {
       "title": "Etkinlik henüz güvende değil",
@@ -1429,7 +1546,58 @@
       "cta": "Ücretsiz güvene al",
       "ctaLink": "Hesabıma bağla",
       "claiming": "Etkinlik hesabına bağlanıyor…"
-    }
+    },
+    "destination": {
+      "destinations": {
+        "deCity": "Alman şehri",
+        "barcelona": "Barselona",
+        "lisbon": "Lizbon",
+        "either": "Fark etmez"
+      },
+      "activities": {
+        "karting": "Kart yarışı",
+        "escapeRoom": "Kaçış Odası",
+        "lasertag": "Lazer Etiket",
+        "axeThrowing": "Balta Fırlatma",
+        "vrSimracing": "VR Sim Yarış",
+        "climbing": "Tırmanış",
+        "bubbleSoccer": "Bubble Soccer",
+        "outdoor": "Açık Hava",
+        "wellness": "Wellness",
+        "food": "Gastronomi",
+        "mixed": "Karışık"
+      },
+      "loading": "Seyahat hedefi verileri yükleniyor...",
+      "noData": "Henüz veri yok",
+      "noDataDesc": "Katılımcılar tercihlerini belirttiğinde sonuçlar burada görünecek.",
+      "topDestination": "En İyi Hedef",
+      "votesOf": "{{total}} oydan {{votes}} ({{percent}}%)",
+      "voting": "Oylama",
+      "budgetDistribution": "Bütçe Dağılımı",
+      "recommendation": "Öneri",
+      "recommendationText": "Oylamalara göre bütçe {{budget}} seviyesinde.",
+      "popularActivities": "Popüler Etkinlikler",
+      "noActivities": "Henüz etkinlik seçilmedi."
+    },
+    "ideas": {
+      "attendance": {
+        "yes": "Geliyorum",
+        "maybe": "Belki",
+        "no": "Gelmiyorum"
+      },
+      "loading": "Fikirler yükleniyor...",
+      "noIdeas": "Henüz fikir yok",
+      "noIdeasDesc": "Katılımcılar öneri veya kısıtlama belirttiğinde burada görünecek.",
+      "suggestions": "Öneriler ve İstekler",
+      "entries": "{{count}} kayıt",
+      "restrictions": "Kısıtlamalar",
+      "partialAvailability": "Kısmi Uygunluk",
+      "suggestionsCount": "{{count}} öneri",
+      "restrictionsCount": "{{count}} kısıtlama",
+      "notesCount": "{{count}} not"
+    },
+    "loginRequired": "Giriş gerekli",
+    "loginRequiredDesc": "Değişiklik yapmak için kayıt olmalı veya giriş yapmalısın. Görüntüleme ücretsizdir!"
   },
   "messages": {
     "title": "Mesaj Şablonları",
@@ -1504,6 +1672,13 @@
       "copySurveyLink": "Anket linkini kopyala",
       "copyAccessCode": "Erişim kodunu kopyala",
       "openSurvey": "Anketi aç"
+    },
+    "placeholders": {
+      "dateNotSet": "[Tarih henüz belirlenmedi]",
+      "deadlineNotSet": "[Son tarih yok]",
+      "destination": "Hedef konumu ekle",
+      "meetingPoint": "Buluşma noktası ekle",
+      "meetingTime": "Saat ekle"
     }
   },
   "agencies": {
@@ -1660,7 +1835,24 @@
     "settlementExplanation": "Mahsuplaşmalar, herkesin adil bir şekilde karşılanması için kimin kime ödeme yapması gerektiğini gösterir.",
     "balanceTooltip": "{{name}} {{paid}} ödedi ve {{owes}} borçlu. Fark: {{balance}}",
     "noPaymentNeeded": "{{name}}'in ödeme yapması gerekmiyor çünkü zaten yeterince ödedi.",
-    "people": "kişi"
+    "people": "kişi",
+    "transferSettled": "Transfer ödenmiş olarak işaretlendi",
+    "transferUnsettled": "Transfer ödenmemiş olarak işaretlendi",
+    "markedPaid": "Ödenmiş olarak işaretlendi",
+    "markedUnpaid": "Ödenmemiş olarak işaretlendi",
+    "updated": "Gider güncellendi",
+    "totalExpenses": "Toplam",
+    "participants": "Katılımcılar",
+    "openAmount": "Açık",
+    "open": "açık",
+    "paidAmount": "Ödenen",
+    "paymentProgress": "Ödeme İlerlemesi",
+    "breakdown": "Kategori Dağılımı",
+    "settlement": "Hesaplaşma",
+    "markPaid": "Ödendi",
+    "paymentStatus": "Ödeme Durumu",
+    "editExpense": "Düzenle",
+    "budgetUsed": "Kullanılan bütçe"
   },
   "notifications": {
     "linkCopied": "Link kopyalandı!",
@@ -1727,7 +1919,8 @@
       "requirements": "Gereksinimler",
       "requirementPlaceholder": "örn. Spor kıyafeti, kimlik...",
       "notes": "Notlar",
-      "notesPlaceholder": "Ek bilgiler..."
+      "notesPlaceholder": "Ek bilgiler...",
+      "category": "Kategori"
     },
     "categories": {
       "title": "Kategori",
@@ -1745,6 +1938,28 @@
       "title": "Filtrele",
       "byCategory": "Kategoriye Göre",
       "showAll": "Tümünü Göster"
+    },
+    "authRequired": "Giriş gerekli",
+    "loginToAdd": "Etkinlik eklemek veya düzenlemek için lütfen giriş yap.",
+    "export": {
+      "icalDownloaded": "Takvim dosyası indirildi",
+      "title": "Dışa Aktar",
+      "pdf": "Yazdırma Görünümü (PDF)",
+      "ical": "Takvim (iCal)"
+    },
+    "viewMode": {
+      "list": "Liste",
+      "calendar": "Takvim"
+    },
+    "addDate": "Tarih ekle",
+    "calendar": {
+      "weekView": "Hafta görünümü",
+      "days": "Gün",
+      "items": "Kayıtlar",
+      "time": "Saat",
+      "endTime": "Bitiş",
+      "legend": "Açıklama",
+      "helpText": "Yeni etkinlik oluşturmak için bir zaman dilimine tıkla veya sürükle. Mevcut etkinlikleri taşımak için sürükle."
     }
   },
   "cookie": {
@@ -1892,7 +2107,27 @@
       "adjustmentHistory": "Ayarlama geçmişi",
       "amount": "Miktar",
       "adjustedBy": "Ayarlayan",
-      "date": "Tarih"
+      "date": "Tarih",
+      "fetchError": "Kullanıcılar yüklenirken hata oluştu",
+      "invalidAmount": "Geçersiz miktar",
+      "adminCheckError": "Yönetici durumu doğrulanamadı",
+      "noPermission": "Yönetici yetkisi yok",
+      "rlsError": "Yetki yok. Lütfen yönetici haklarını kontrol et.",
+      "searchPlaceholder": "E-posta veya ada göre ara...",
+      "noSearchResults": "Kullanıcı bulunamadı",
+      "noUsers": "Kullanıcı yok",
+      "user": "Kullanıcı",
+      "plan": "Plan",
+      "used": "Kullanılan",
+      "available": "Mevcut",
+      "bonus": "Bonus",
+      "adjust": "Ayarla",
+      "showingUsers": "{{count}} kullanıcı gösteriliyor",
+      "action": "İşlem",
+      "addCreditsBtn": "Kredi ekle",
+      "removeCreditsBtn": "Kredi çıkar",
+      "recentAdjustments": "Son ayarlamalar",
+      "noAdjustments": "Ayarlama yok"
     },
     "aiAds": {
       "navLabel": "AI Advertising",
@@ -1969,7 +2204,12 @@
         "progress": "Progress",
         "noCampaigns": "No campaigns created yet",
         "templateVars": "Variables: {{agency_name}}, {{city}}, {{contact_name}}, {{signup_url}}, {{sender_name}}",
-        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀"
+        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀",
+        "saveTemplateName": "Şablon adı:",
+        "templateSaved": "Şablon kaydedildi",
+        "saveTemplate": "Şablon olarak kaydet",
+        "templateLibrary": "Şablon kütüphanesi",
+        "noCustomTemplates": "Henüz kendi şablonun kaydedilmedi."
       },
       "detail": {
         "contactPerson": "Contact person",
@@ -1994,7 +2234,9 @@
         "activityTitle": "Activity",
         "noActivity": "No activity yet",
         "nextSteps": "Next steps",
-        "save": "Save"
+        "save": "Save",
+        "composeMail": "E-posta yaz",
+        "signatures": "İmzaları düzenle"
       },
       "table": {
         "search": "Search name, city or email...",
@@ -2017,8 +2259,258 @@
         "link_clicked": "Invite link clicked"
       },
       "emptyState": "No agencies in the system yet. Import a CSV file or wait for autopilot.",
-      "freeSlotsCounter": "{{count}} of 150 free slots available"
-    }
+      "freeSlotsCounter": "{{count}} of 150 free slots available",
+      "title": "Ajans Edinme CRM",
+      "subtitle": "Erişimi, pipeline'ı ve kampanyaları yönetin",
+      "addNote": "Not",
+      "logResponse": "Yanıt",
+      "searchTable": "Ad, şehir veya e-posta ara...",
+      "noResults": "Sonuç yok",
+      "loadMore": "Daha fazla yükle",
+      "campaignsTitle": "Kampanyalar",
+      "newCampaign": "Yeni kampanya",
+      "noCampaignsYet": "Henüz kampanya yok. İlkini oluştur!",
+      "editCampaign": "Kampanyayı düzenle",
+      "createCampaign": "Yeni kampanya oluştur",
+      "save": "Kaydet",
+      "create": "Oluştur",
+      "cancel": "İptal",
+      "activeCampaigns": "Aktif kampanyalar",
+      "noCampaigns": "Henüz kampanya oluşturulmadı. Kampanyalar sekmesinden yeni bir kampanya başlat.",
+      "searchName": "Ad ara...",
+      "filterCity": "Şehir",
+      "emptyColumn": "Boş",
+      "col_rejected": "Reddedildi"
+    },
+    "agencyAffiliate": {
+      "addedSuccess": "Ajans iş ortağı olarak eklendi",
+      "addedError": "Eklenirken hata oluştu",
+      "fillRequired": "Lütfen tüm zorunlu alanları doldurun",
+      "manualAddedSuccess": "Ajans manuel olarak eklendi",
+      "statusUpdated": "Durum güncellendi",
+      "statusError": "Güncellenirken hata oluştu",
+      "noAffiliateId": "Ajansın önce onaylanması gerekiyor",
+      "voucherAssigned": "Kupon atandı",
+      "voucherAlreadyAssigned": "Kupon zaten atanmış",
+      "voucherError": "Atanırken hata oluştu",
+      "title": "Ajans iş ortakları",
+      "description": "Ajans iş ortaklıklarını ve komisyonları yönetin",
+      "addAgency": "Ajans ekle",
+      "createAgency": "Yeni ajans",
+      "registeredAgencies": "Kayıtlı ajanslar",
+      "pending": "Bekliyor",
+      "active": "Aktif",
+      "suspended": "Askıya alındı",
+      "noAgencies": "Henüz kayıtlı ajans iş ortağı yok",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "assignVoucher": "Kupon",
+      "addAgencyTitle": "Ajansı iş ortağı olarak ekle",
+      "addAgencyDesc": "Dizinden bir ajans seçin ve komisyonu yapılandırın",
+      "searchAgencies": "Ajans ara...",
+      "noAvailableAgencies": "Uygun ajans bulunamadı",
+      "contactEmail": "İletişim e-postası",
+      "commissionRate": "Komisyon oranı (%)",
+      "addPartner": "İş ortağı ekle",
+      "assignVoucherTitle": "Kupon ata",
+      "assignVoucherDesc": "Şunun için bir kupon seçin:",
+      "selectVoucher": "Kupon seç",
+      "selectVoucherPlaceholder": "Kupon seçin...",
+      "assignVoucherBtn": "Kupon ata",
+      "createAgencyTitle": "Yeni ajansı manuel olarak oluştur",
+      "createAgencyDesc": "Dizinde olmayan yeni bir ajans oluşturun",
+      "agencyName": "Ajans adı",
+      "city": "Şehir",
+      "phone": "Telefon",
+      "website": "Web sitesi",
+      "descriptions": "Açıklamalar (çok dilli)",
+      "descriptionPlaceholder": "Ajansın {{lang}} dilindeki açıklaması...",
+      "descriptionHint": "İpucu: Açıklamalar kullanıcının diline göre gösterilir.",
+      "createPartner": "Ajans oluştur"
+    },
+    "agencyAnalytics": {
+      "phone": "Telefon",
+      "email": "E-posta",
+      "website": "Web sitesi",
+      "unknown": "Bilinmiyor",
+      "title": "Ajans analitiği",
+      "description": "Tüm ajans etkileşimlerine genel bakış",
+      "last7days": "Son 7 gün",
+      "last30days": "Son 30 gün",
+      "last90days": "Son 90 gün",
+      "totalInteractions": "Toplam",
+      "calls": "Aramalar",
+      "emails": "E-postalar",
+      "websiteClicks": "Web siteleri",
+      "conversionRate": "Dönüşümler",
+      "byType": "Etkileşim türüne göre",
+      "noData": "Veri yok",
+      "byCity": "Şehre göre",
+      "timeline": "Zaman çizelgesi",
+      "timelineDesc": "Son 14 günün etkileşimleri",
+      "topAgencies": "En iyi ajanslar",
+      "agency": "Ajans",
+      "total": "Toplam"
+    },
+    "audit": {
+      "title": "Denetim günlüğü",
+      "subtitle": "Tüm yönetici işlemlerinin kronolojik kaydı — kim, ne zaman, neyi değiştirdi.",
+      "searchPlaceholder": "İşlem, e-posta veya hedef kimliği …",
+      "targetFilter": "Hedef türü",
+      "allTargets": "Tüm hedefler",
+      "refresh": "Yenile",
+      "empty": "Henüz yönetici işlemi kaydedilmedi",
+      "noResults": "Filtrene uygun kayıt yok",
+      "limitReached": "Son {{limit}} kayıt gösteriliyor — daha eskileri doğrudan Supabase üzerinden sorgula."
+    },
+    "flags": {
+      "toggled": "Bayrak güncellendi",
+      "created": "Bayrak oluşturuldu",
+      "title": "Özellik bayrakları",
+      "subtitle": "Özellikleri çalışma anında aç/kapat veya kademeli olarak yayına al",
+      "new": "Yeni bayrak",
+      "newTitle": "Yeni özellik bayrağı",
+      "newDescription": "Yeni bir özellik bayrağı oluştur. Anahtar koddan referans alınır.",
+      "key": "Anahtar",
+      "name": "Ad",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Bu bayrak ne yapıyor?",
+      "create": "Oluştur",
+      "empty": "Henüz özellik bayrağı oluşturulmadı",
+      "enabled": "Aktif",
+      "disabled": "Pasif",
+      "rollout": "Yayılım",
+      "updated": "Güncellendi"
+    },
+    "settings": {
+      "planUpdated": "Plan güncellendi",
+      "planCreated": "Plan oluşturuldu",
+      "planKeyRequired": "Plan anahtarı zorunludur",
+      "planConfig": "Plan yapılandırması",
+      "planConfigDesc": "Plan başına AI kredilerini, fiyatları ve özellikleri yönetin",
+      "newPlan": "Yeni plan",
+      "plan": "Plan",
+      "credits": "AI Kredisi/Ay",
+      "price": "Fiyat",
+      "interval": "Aralık",
+      "features": "Özellikler",
+      "status": "Durum",
+      "editPlan": "Planı düzenle",
+      "planKey": "Plan anahtarı",
+      "displayName": "Görünen ad",
+      "aiCredits": "AI Kredisi / Ay",
+      "sortOrder": "Sıralama",
+      "priceCents": "Fiyat (Cent)",
+      "currency": "Para birimi",
+      "billingInterval": "Faturalandırma aralığı",
+      "stripePriceId": "Stripe Price ID",
+      "isActive": "Plan aktif",
+      "saved": "Kaydedildi",
+      "on": "Açık",
+      "off": "Kapalı",
+      "save": "Kaydet",
+      "title": "Sistem Ayarları",
+      "subtitle": "Platform genelinde yapılandırma — özellik açma, e-posta varsayılanları, güvenlik.",
+      "warningTitle": "Dikkat",
+      "warningBody": "Değişiklikler tüm kullanıcılar üzerinde anında etkili olur. Kritik ayarları önce staging ortamında test edin. SMTP parolaları ve Stripe anahtarları gibi gizli bilgiler BURADA saklanmaz — bunlar Supabase Secrets içine girilir.",
+      "entries": "Ayarlar",
+      "lastUpdated": "Son güncelleme",
+      "dangerTitle": "Tehlikeli Bölge",
+      "dangerSubtitle": "Geri alınamaz işlemler — yalnızca ne yaptığınızı biliyorsanız kullanın.",
+      "maintenanceToggle": "Bakım modunu aç/kapat",
+      "maintenanceConfirm": "Bakım modu etkinleştirilsin mi?",
+      "maintenanceDesc": "Bakım modunda tüm yönetici olmayan kullanıcılar bir bakım sayfası görür. Yeni kayıt yok, rezervasyon yok. Yalnızca GERÇEKTEN gerekliyse açın.",
+      "confirmToggle": "Evet, değiştir"
+    },
+    "stats": {
+      "groupGrowth": "Büyüme",
+      "groupGrowthSub": "Kullanıcılar ve aktivite",
+      "totalUsers": "Toplam kullanıcı",
+      "thisWeek": "bu hafta",
+      "new24h": "Yeni (24s)",
+      "activeUsers": "Aktif (30 gün)",
+      "events": "Etkinlikler",
+      "groupRevenue": "Gelir",
+      "groupRevenueSub": "Abonelikler ve MRR",
+      "mrr": "MRR (Ajanslar)",
+      "mrrSub": "Professional + Enterprise",
+      "premium": "Premium kullanıcılar",
+      "totalSubs": "Aktif abonelikler",
+      "vouchersRedeemed": "Kullanılan kuponlar",
+      "groupAgencies": "Ajanslar",
+      "groupAgenciesSub": "B2B platform",
+      "totalAgencies": "Toplam ajans",
+      "proAgencies": "Professional",
+      "enterpriseAgencies": "Enterprise",
+      "starterAgencies": "Starter (Ücretsiz)",
+      "groupMarketplace": "Marketplace",
+      "groupMarketplaceSub": "Hizmetler ve rezervasyonlar",
+      "totalServices": "Aktif hizmetler",
+      "pendingServices": "İncelenecek",
+      "reviewNeeded": "İnceleme gerekli",
+      "totalBookings": "Toplam rezervasyon",
+      "bookings30d": "Rezervasyonlar (30 gün)",
+      "title": "Platform Genel Bakış",
+      "subtitle": "En önemli KPI'lar bir bakışta — veritabanından canlı.",
+      "alertPendingTitle": "İnceleme gerekli",
+      "alertPendingBody": "{{count}} marketplace hizmeti onay bekliyor."
+    },
+    "subscriptions": {
+      "fetchError": "Abonelikler yüklenirken hata oluştu",
+      "updated": "Abonelik güncellendi",
+      "updateError": "Güncelleme sırasında hata oluştu",
+      "userRequired": "Lütfen bir kullanıcı seçin",
+      "alreadyExists": "Kullanıcının zaten bir aboneliği var. Lütfen mevcut olanı düzenleyin.",
+      "created": "Abonelik oluşturuldu",
+      "createError": "Oluşturma sırasında hata oluştu",
+      "confirmDelete": "Abonelik gerçekten silinsin mi?",
+      "deleted": "Abonelik silindi",
+      "deleteError": "Silme sırasında hata oluştu",
+      "title": "Abonelik Yönetimi",
+      "create": "Yeni abonelik",
+      "user": "Kullanıcı",
+      "plan": "Plan",
+      "type": "Tür",
+      "expires": "Sona eriyor",
+      "notes": "Not",
+      "noSubscriptions": "Abonelik bulunamadı",
+      "editTitle": "Aboneliği düzenle",
+      "editDescription": "Planı, sona erme tarihini veya notları değiştirin",
+      "expiryDate": "Sona erme tarihi",
+      "expiryHint": "Sınırsız (yaşam boyu) için boş bırakın",
+      "notesPlaceholder": "örn. Partner hesabı, deneme erişimi...",
+      "createTitle": "Yeni abonelik oluştur",
+      "createDescription": "Bir kullanıcı için manuel abonelik oluşturun",
+      "selectUser": "Kullanıcı seçin...",
+      "searchUser": "Kullanıcı ara...",
+      "noUserFound": "Kullanıcı bulunamadı"
+    },
+    "vouchers": {
+      "fetchError": "Kuponlar yüklenirken hata oluştu",
+      "codeRequired": "Kod gereklidir",
+      "discountValueRequired": "İndirim değeri gereklidir",
+      "stripeCouponError": "Kupon oluşturuldu ancak Stripe kuponu başarısız oldu",
+      "created": "Kupon oluşturuldu",
+      "duplicateCode": "Bu kod zaten mevcut",
+      "createError": "Oluşturma sırasında hata oluştu",
+      "deactivated": "Kupon devre dışı bırakıldı",
+      "activated": "Kupon etkinleştirildi",
+      "title": "Kupon Yönetimi",
+      "create": "Kupon oluştur",
+      "createTitle": "Yeni kupon oluştur",
+      "createDescription": "Bir indirim veya erişim açma kodu oluşturun",
+      "code": "Kod",
+      "type": "Tür",
+      "maxUses": "Maks. kullanım",
+      "unlimited": "Sınırsız",
+      "validUntil": "Geçerlilik tarihi",
+      "value": "Değer",
+      "usage": "Kullanım",
+      "status": "Durum",
+      "noVouchers": "Kupon yok"
+    },
+    "title": "Admin Portal",
+    "backToApp": "Geri"
   },
   "templates": {
     "title": "Bir şablon seç",
@@ -2424,7 +2916,12 @@
         "name": "Şirket Kampı",
         "desc": "Takım çalışması, atölyeler ve ağ oluşturma"
       }
-    }
+    },
+    "loginRequired": "Yapay zeka özelliklerini kullanmak için lütfen giriş yapın",
+    "noCredits": "Yapay zeka kredisi kalmadı",
+    "upgradeForCredits": "Daha fazla yapay zeka kredisi için planınızı yükseltin",
+    "designTitle": "Tasarım ve renkler",
+    "moreDesigns": "Daha fazla tasarım göster"
   },
   "affiliate": {
     "portal": {
@@ -2435,8 +2932,12 @@
         "vouchers": "Kuponlar",
         "commissions": "Komisyonlar",
         "payouts": "Ödemeler",
-        "settings": "Ayarlar"
-      }
+        "settings": "Ayarlar",
+        "analytics": "Analitik",
+        "links": "Bağlantılar",
+        "marketing": "Pazarlama"
+      },
+      "performanceChart": "Son 12 ayın performansı"
     },
     "stats": {
       "totalEarnings": "Toplam Kazanç",
@@ -2445,7 +2946,9 @@
       "conversionRate": "Dönüşüm Oranı",
       "thisMonth": "Bu Ay",
       "allTime": "Tüm Zamanlar",
-      "tier": "Tier Durumu"
+      "tier": "Tier Durumu",
+      "earnings": "Kazançlar",
+      "conversions": "Dönüşümler"
     },
     "vouchers": {
       "title": "Kupon Kodlarım",
@@ -2457,7 +2960,12 @@
       "copied": "Kod kopyalandı!",
       "discount": "İndirim",
       "active": "Aktif",
-      "inactive": "Pasif"
+      "inactive": "Pasif",
+      "shareMessage": "🎉 ${discountText} indirimi şu kodla kap: ${code}\n\n👉 Hemen EventBliss'te kullan!",
+      "messageCopied": "Mesaj kopyalandı!",
+      "noVouchersDesc": "Sana kupon atandığı anda burada görünür.",
+      "code": "Kupon kodu",
+      "convRate": "Dön. oranı"
     },
     "commissions": {
       "title": "Komisyonlarım",
@@ -2536,6 +3044,163 @@
         "support": "Kişisel destek",
         "supportDesc": "Ekibimizle doğrudan iletişim"
       }
+    },
+    "admin": {
+      "totalPartners": "Toplam iş ortağı",
+      "activePartners": "Aktif iş ortakları",
+      "totalEarnings": "Toplam komisyonlar",
+      "pendingPayouts": "Bekleyen ödemeler",
+      "searchPlaceholder": "İş ortağı ara...",
+      "createPartner": "İş ortağı oluştur",
+      "partnerList": "İş ortağı listesi",
+      "name": "Ad",
+      "email": "E-posta",
+      "tier": "Kademe",
+      "commission": "Komisyon",
+      "earnings": "Kazançlar",
+      "pending": "Bekliyor",
+      "actions": "İşlemler",
+      "noPartners": "İş ortağı bulunamadı",
+      "editPartner": "İş ortağını düzenle",
+      "assignVoucher": "Kupon ata",
+      "selectVoucher": "Kupon seç",
+      "selectVoucherPlaceholder": "Kupon seçin...",
+      "customCommissionType": "Özel komisyon türü",
+      "useDefault": "Varsayılanı kullan",
+      "customRate": "Özel oran",
+      "assign": "Ata",
+      "approveAll": "Tümünü onayla",
+      "export": "Dışa aktar",
+      "commissionsList": "Komisyonlar",
+      "date": "Tarih",
+      "partner": "Partner",
+      "voucher": "Kupon",
+      "customer": "Müşteri",
+      "orderAmount": "Sipariş tutarı",
+      "approve": "Onayla",
+      "cancel": "İptal et",
+      "markPaid": "Ödendi olarak işaretle",
+      "noCommissions": "Komisyon bulunamadı",
+      "payoutsList": "Ödemeler",
+      "amount": "Tutar",
+      "method": "Yöntem",
+      "period": "Dönem",
+      "reference": "Referans",
+      "process": "İşle",
+      "complete": "Tamamla",
+      "failed": "Başarısız",
+      "noPayouts": "Ödeme bulunamadı",
+      "processPayout": "Ödemeyi işle",
+      "referencePlaceholder": "örn. SEPA havale referansı",
+      "startProcessing": "İşlemeyi başlat",
+      "markCompleted": "Tamamlandı olarak işaretle"
+    },
+    "commission": {
+      "percentage": "Yüzde",
+      "fixed": "Sabit tutar",
+      "pending": "Beklemede",
+      "approved": "Onaylandı",
+      "paid": "Ödendi",
+      "total": "Toplam",
+      "cancelled": "İptal edildi"
+    },
+    "form": {
+      "contactName": "İletişim kişisi",
+      "email": "E-posta",
+      "companyName": "Şirket adı",
+      "phone": "Telefon",
+      "website": "Web sitesi",
+      "taxId": "Vergi No",
+      "commissionType": "Komisyon türü",
+      "commissionRate": "Komisyon oranı",
+      "tier": "Kademe",
+      "notes": "Notlar"
+    },
+    "status": {
+      "pending": "Bekliyor",
+      "active": "Aktif",
+      "suspended": "Askıya alındı",
+      "terminated": "Sonlandırıldı"
+    },
+    "payout": {
+      "pending": "Beklemede",
+      "processing": "İşleniyor",
+      "completed": "Tamamlandı",
+      "total": "Toplam",
+      "failed": "Başarısız"
+    },
+    "analytics": {
+      "title": "Analizler ve Raporlar",
+      "subtitle": "Performansınıza dair ayrıntılı içgörüler",
+      "7days": "Son 7 gün",
+      "30days": "Son 30 gün",
+      "90days": "Son 90 gün",
+      "year": "Bu yıl",
+      "funnel": "Dönüşüm hunisi",
+      "impressions": "Gösterimler",
+      "clicks": "Tıklamalar",
+      "conversions": "Dönüşümler",
+      "revenue": "Gelir",
+      "weeklyEarnings": "Bu hafta",
+      "lastWeek": "geçen hafta",
+      "conversionRate": "Dönüşüm oranı",
+      "epc": "Tıklama başına kazanç",
+      "avgEarnings": "Tıklama başına ortalama kazanç",
+      "aov": "Ort. sipariş değeri",
+      "avgOrder": "Ortalama sipariş değeri",
+      "earningsOverTime": "Zaman içindeki kazançlar",
+      "conversionsByDay": "Güne göre dönüşümler",
+      "revenueByVoucher": "Kupona göre gelir",
+      "noData": "Henüz veri yok",
+      "topVouchers": "En iyi kuponlar",
+      "redemptions": "Kullanımlar",
+      "noVouchers": "Kupon yok"
+    },
+    "linkGenerator": {
+      "title": "Bağlantı Oluşturucu",
+      "subtitle": "İzlenebilir ortaklık bağlantıları oluşturun",
+      "voucher": "Kupon kodu",
+      "selectVoucher": "Kupon seç (isteğe bağlı)",
+      "source": "Trafik kaynağı (utm_source)",
+      "selectSource": "Kaynak seç",
+      "medium": "Ortam (utm_medium)",
+      "selectMedium": "Ortam seç",
+      "campaign": "Kampanya (utm_campaign)",
+      "campaignPlaceholder": "örn. summer_sale_2025",
+      "generatedUrl": "Oluşturulan bağlantı",
+      "shortUrl": "Kısa bağlantı",
+      "hideQR": "QR kodunu gizle",
+      "showQR": "QR kodunu göster",
+      "qrDownloaded": "QR kodu indirildi",
+      "downloadQR": "QR kodunu indir"
+    },
+    "marketing": {
+      "title": "Pazarlama Materyalleri",
+      "subtitle": "Reklamlarınız için banner'lar, sosyal medya şablonları ve e-posta şablonları",
+      "selectVoucher": "Şablonlar için kupon:",
+      "banners": "Banner'lar",
+      "social": "Sosyal medya",
+      "email": "E-posta",
+      "bannerDownload": "Banner indirme hazırlanıyor...",
+      "customBanner": "Özel banner",
+      "customBannerDesc": "Farklı boyutta veya özel tasarımlı bir banner mı gerekiyor? Ekibimizle iletişime geçin!",
+      "contactTeam": "Ekiple iletişime geç",
+      "copyText": "Metni kopyala",
+      "popularHashtags": "Popüler hashtag'ler",
+      "subject": "Konu"
+    },
+    "notifications": {
+      "newCommission": "Yeni komisyon",
+      "earned": "kazanıldı",
+      "payoutPending": "Ödeme talep edildi",
+      "payoutProcessing": "Ödeme işleniyor",
+      "payoutCompleted": "Ödeme tamamlandı",
+      "payoutFailed": "Ödeme başarısız oldu",
+      "yesterday": "Dün",
+      "title": "Bildirimler",
+      "markAllRead": "Tümünü okundu işaretle",
+      "noNotifications": "Yeni bildirim yok",
+      "viewAll": "Tümünü görüntüle"
     }
   },
   "partnerApply": {
@@ -3690,7 +4355,9 @@
     "randomTheme": "Rastgele tema",
     "randomThemePick": "Rastgele tema",
     "themesCount": "tema bulundu",
-    "noThemesFound": "Tema bulunamadı."
+    "noThemesFound": "Tema bulunamadı.",
+    "showing": "{{count}} gösteriliyor",
+    "loadMore": "{{count}} tane daha yükle"
   },
   "ideasHub": {
     "title": "Oyunlar ve Fikirler",
@@ -3799,7 +4466,66 @@
       "avgBudgetPerEvent": "Ort. Bütçe/Etkinlik",
       "clientRetention": "Müşteri Sadakati"
     },
-    "calendar": "Takvim",
+    "calendar": {
+      "filter": {
+        "statusAll": "Tüm durumlar",
+        "pending": "Beklemede",
+        "confirmed": "Onaylandı",
+        "completed": "Tamamlandı",
+        "cancelled": "İptal edildi",
+        "sourceAll": "Tüm kaynaklar",
+        "sourceMarketplace": "Pazar yeri",
+        "sourceManual": "Manuel",
+        "dateAll": "Tümü",
+        "dateToday": "Bugün",
+        "dateWeek": "Hafta",
+        "dateMonth": "Ay",
+        "dateUpcoming": "Yaklaşan",
+        "datePast": "Geçmiş",
+        "service": "Hizmet",
+        "serviceAll": "Tüm hizmetler",
+        "guide": "Rehber",
+        "guideAll": "Tüm rehberler",
+        "guideUnassigned": "Rehbersiz",
+        "status": "Durum",
+        "source": "Kaynak",
+        "customerPlaceholder": "Müşteri / E-posta / No.",
+        "onlyConflicts": "Yalnızca çakışmaları göster",
+        "conflictsOnly": "Yalnızca çakışmalar",
+        "clear": "Filtreleri sıfırla",
+        "allShown": "Aktif filtre yok — tüm rezervasyonlar görünür"
+      },
+      "bookingSingular": "Rezervasyon",
+      "bookingPlural": "Rezervasyonlar",
+      "today": "Bugün",
+      "export": "Dışa aktar",
+      "exportLabel": "Dışa aktar / Yazdır",
+      "exportICal": "iCal (.ics)",
+      "exportCSV": "CSV",
+      "print": "Yazdır / PDF",
+      "newBooking": "Yeni randevu",
+      "day": {
+        "empty": "Randevu yok — randevu oluşturmak için bir zaman dilimine tıkla"
+      },
+      "month": {
+        "doubleClickHint": "Yeni randevu için çift tıkla",
+        "noBookings": "Bu günde randevu yok.",
+        "selectDay": "Ayrıntılar için bir gün seçin — yeni randevu için çift tıklayın"
+      },
+      "resource": {
+        "unassigned": "Rehbersiz",
+        "groupBy": "Gruplama ölçütü",
+        "byGuide": "Rehber",
+        "byService": "Hizmet",
+        "guide": "Rehber",
+        "service": "Hizmet",
+        "noGuides": "Henüz rehber yok — Rehberler modülünden ekleyin",
+        "noServices": "Henüz hizmet yok"
+      },
+      "week": {
+        "time": ""
+      }
+    },
     "runOfShow": {
       "liveTimeline": "Canlı Zaman Çizelgesi",
       "currentPhase": "Mevcut Aşama",
@@ -4075,7 +4801,68 @@
       "noData": "No data yet — stats will appear once your services are recommended through the AI.",
       "upsellHeadline": "Unlock AI Performance",
       "upsellBody": "Upgrade to Enterprise to see how often your services are recommended, clicked, and booked.",
-      "upsellCta": "Unlock Enterprise"
+      "upsellCta": "Unlock Enterprise",
+      "title": "Yapay Zeka Performansı",
+      "subtitle": "Hizmetlerinin yapay zeka üzerinden nasıl önerildiğini ve rezerve edildiğini burada görürsün.",
+      "scopeLabel": "Acente",
+      "impressions": "Gösterimler",
+      "clicks": "Tıklamalar",
+      "ctr": "TO",
+      "revenue": "Atfedilen ciro",
+      "impressionsPerService": "Hizmet başına gösterim",
+      "perService": "Hizmet başına performans",
+      "loading": "Yükleniyor…",
+      "recentActivity": "Son yapay zeka önerileri",
+      "noFeed": "Henüz etkinlik yok.",
+      "topKeywords": "En iyi anahtar kelimeler",
+      "noKeywords": "Henüz anahtar kelime verisi yok.",
+      "feedLine": "'{{section}}' hizmetin {{date}} tarihinde bir {{eventType}} etkinliğinde{{city}} önerildi ({{requestType}} ile)"
+    },
+    "embed": {
+      "copied": "Panoya kopyalandı",
+      "noAgency": "Acente bulunamadı.",
+      "title": "Yerleştirme ve Herkese Açık Sayfa",
+      "subtitle": "Hizmetlerini ve rezervasyon takvimini paylaş — kendi web sitende veya herkese açık bir EventBliss sayfası olarak.",
+      "publicUrlTitle": "Herkese açık EventBliss sayfan",
+      "publicUrlDesc": "Kendi web siten yoksa — bu bağlantıyı doğrudan müşterilerle, sosyal medyada, e-posta imzalarında vb. paylaş.",
+      "open": "Aç",
+      "publicUrlHint": "QR koda uygun, responsive, SEO için optimize edilmiş. Müşteriler doğrudan hizmet rezervasyonu yapabilir.",
+      "embedTitle": "Web sitene yerleştir",
+      "embedDesc": "Hizmetlerini ve rezervasyon takvimini doğrudan mevcut web sitene ekle.",
+      "themePickerTitle": "Tema seç",
+      "themePickerHint": "Müşterin acente sayfasını bu stilde görür.",
+      "language": "Dil",
+      "height": "Yükseklik (px)",
+      "hideChrome": "Uygulama başlığını gizle",
+      "hideChromeHint": "Temiz bir yerleştirme için önerilir",
+      "iframeLabel": "Basit iframe",
+      "iframeHint": "Kopyala ve web sitene yapıştır — örneğin WordPress'te HTML bloğu olarak.",
+      "scriptLabel": "Script kod parçası (Vanilla JS)",
+      "tipTitle": "Profesyonel ipucu",
+      "tipBody": "WordPress için \"Advanced iframe\" eklentisi var. Webflow/Framer/Wix için kendi yerleştirme bloklarını kullan. Kendi React/Next.js siten varsa script kod parçasını kullan — böylece iframe kaydırma sırasında lazy yüklenir."
+    },
+    "earnings": {
+      "pending": "Yeni talepler",
+      "pendingSub": "onay bekliyor",
+      "confirmed": "Onaylandı",
+      "confirmedSub": "yaklaşan etkinlikler",
+      "revenueMonth": "Bu ayki ciro",
+      "revenueMonthSub": "%10 komisyon sonrası",
+      "revenueTotal": "Toplam ciro",
+      "paidBookings": "ödenen rezervasyonlar",
+      "title": "Marketplace cirosu",
+      "liveBadge": "Supabase'den canlı",
+      "chartTitle": "Ciro seyri",
+      "chartSub": "son 6 ay",
+      "chartEmpty": "Henüz veri yok — ilk rezervasyonunuz burada görünecek.",
+      "bookingsThis": "Rezervasyonlar",
+      "participantsTotal": "Katılımcılar",
+      "avgBooking": "Ort. rezervasyon",
+      "topServicesTitle": "En çok tercih edilen hizmetler",
+      "topServicesSub": "ciroya göre",
+      "topServicesEmpty": "Henüz hizmet rezervasyonu yok.",
+      "unknownService": "Adsız hizmet",
+      "bookingsLabel": "Rezervasyonlar"
     }
   },
   "games": {
@@ -4202,7 +4989,9 @@
       "partyGamesCount": "24+ Parti Oyunu",
       "partyGamesSubtitle": "Tabu, Bomba, Headup ve daha fazlası",
       "findInspiration": "İlham bul",
-      "findInspirationSub": "Etkinliğin için temalar, oyunlar ve fikirler"
+      "findInspirationSub": "Etkinliğin için temalar, oyunlar ve fikirler",
+      "marketplace": "Marketplace",
+      "marketplaceSub": "Hizmetler ve deneyimler"
     },
     "games": {
       "subtitle": "Parti Oyunları",
@@ -4347,7 +5136,10 @@
       "partyModeActivatedDesc": "Artık ceza almak yerine içiyorsun",
       "close": "Kapat",
       "adminPanel": "Yönetici Paneli",
-      "adminDashboard": "Dashboard"
+      "adminDashboard": "Dashboard",
+      "partyHidden": "Parti modu yeniden gizlendi",
+      "myBookings": "Rezervasyonlarım",
+      "myBookingsSub": "Ajanslar ve hizmet sağlayıcılar"
     },
     "create": {
       "headerTitle": "Etkinlik Oluştur",
@@ -4379,7 +5171,8 @@
         "inputPlaceholder": "İsim gir...",
         "guestCount_one": "{{count}} misafir",
         "guestCount_other": "{{count}} misafir",
-        "noGuests": "Henüz misafir yok — sonra davet edebilirsin."
+        "noGuests": "Henüz misafir yok — sonra davet edebilirsin.",
+        "guestCount": "{{count}} misafir"
       },
       "stepReview": {
         "title": "Her şey doğru mu?",
@@ -4627,7 +5420,11 @@
       "completed": "Tamamlandı",
       "cancelled": "İptal edildi"
     },
-    "participants": "Katılımcılar"
+    "participants": "Katılımcılar",
+    "paymentCancelled": "Ödeme iptal edildi — istediğin zaman devam edebilirsin.",
+    "onSiteBadge": "Yerinde ödeme",
+    "payingPreparing": "Hazırlanıyor…",
+    "payNow": "Şimdi öde"
   },
   "agencyDashboard": {
     "nav": {
@@ -4672,7 +5469,13 @@
       "confirmed": "Onaylandı",
       "completed": "Tamamlandı",
       "cancelled": "İptal edildi"
-    }
+    },
+    "guideAssigned": "Rehber atandı",
+    "guideUnassigned": "Atama kaldırıldı",
+    "guideLoading": "Rehberler yükleniyor…",
+    "noGuides": "Rehber yok — Rehberler modülünden ekle",
+    "guidePlaceholder": "Rehber ata",
+    "guideNone": "rehber yok"
   },
   "bookingCalendar": {
     "title": "Rezervasyon Takvimi",
@@ -4709,7 +5512,34 @@
       "confirmed": "Onaylandı",
       "completed": "Tamamlandı",
       "cancelled": "İptal edildi"
-    }
+    },
+    "createSuccess": "Randevu oluşturuldu",
+    "createTitle": "Yeni randevu",
+    "createDescription": "Manuel rezervasyon — örneğin telefonla veya yerinde gelen müşteriler için. Stripe ödemesi yok, anında onaylanır.",
+    "service": "Hizmet",
+    "noServices": "Henüz onaylı hizmet yok — önce Marketplace modülünden bir tane oluşturun.",
+    "selectService": "Hizmet seçin",
+    "date": "Tarih",
+    "time": "Saat",
+    "participants": "Katılımcılar",
+    "range": "İzin verilen",
+    "priceOverride": "Kişi başı fiyat (isteğe bağlı)",
+    "totalPreview": "Toplam",
+    "customerSection": "Müşteri",
+    "customerName": "Ad",
+    "customerEmail": "E-posta",
+    "customerPhone": "Telefon",
+    "notes": "Notlar",
+    "assignmentSection": "Atama",
+    "assignGuide": "Rehber",
+    "noGuide": "— rehber yok —",
+    "assignTeam": "Ekip üyesi",
+    "noTeam": "— kimse yok —",
+    "conflictBlocking": "Çakışmalar tespit edildi",
+    "conflictWarning": "Dikkat — olası çakışmalar",
+    "conflictContinueHint": "Yine de oluşturabilirsiniz — lütfen önce kontrol edin.",
+    "conflictBlockedTooltip": "Oluşturmadan önce lütfen çakışmaları giderin",
+    "createSubmit": "Randevu oluştur"
   },
   "calendarSync": {
     "title": "Takvim Aboneliği",
@@ -4772,7 +5602,8 @@
       "form": "Formulario",
       "responses": "Respuestas",
       "ai": "IA",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "marketplace": "Marketplace"
     },
     "honoree": "Homenajeado",
     "noDate": "Sin fecha",
@@ -4794,7 +5625,8 @@
       "inviteGuests": "Invitar",
       "planActivity": "Planificar",
       "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA"
+      "aiAssistant": "Asistente IA",
+      "browseMarketplace": "Marketplace"
     },
     "recentActivity": "Actividad reciente",
     "noActivity": "Sin actividad",
@@ -5705,5 +6537,163 @@
     "noServices": "Bu ajansın pazarda henüz hizmeti yok.",
     "reviewsTitle": "Değerlendirmeler",
     "noReviews": "Bu ajans için henüz değerlendirme yok."
+  },
+  "guideManager": {
+    "totalGuides": "Toplam rehber",
+    "activeGuides": "Aktif rehberler",
+    "avgDaily": "Ø günlük rezervasyon",
+    "name": "Ad",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "maxDaily": "Maks. günlük rezervasyon",
+    "color": "Renk",
+    "specialties": "Uzmanlık alanları",
+    "notes": "Notlar",
+    "noGuides": "Henüz rehber eklenmedi",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "createGuide": "Rehber oluştur",
+    "editGuide": "Rehberi düzenle",
+    "deleteGuide": "Rehberi sil"
+  },
+  "myEvents": {
+    "editFolder": "Klasörü düzenle",
+    "newFolder": "Yeni klasör",
+    "folderName": "Klasör adı",
+    "folderColor": "Renk",
+    "save": "Kaydet",
+    "deleteEvent": "Etkinlik silinsin mi?",
+    "deleteEventDescription": "Bu etkinlik silinmiş olarak işaretlenecek. Bir neden belirtebilir ve daha sonra geri yükleyebilirsin.",
+    "deleteReason": "Neden (isteğe bağlı)",
+    "deleteReasonPlaceholder": "ör. Test etkinliği, Artık gerekli değil...",
+    "restoreEvent": "Geri yükle",
+    "moveToFolder": "Klasöre taşı",
+    "removeFromFolder": "Klasörden çıkar",
+    "unarchiveEvent": "Geri yükle",
+    "archiveEvent": "Arşivle",
+    "folderCreated": "Klasör oluşturuldu",
+    "folderDeleted": "Klasör silindi",
+    "eventArchived": "Etkinlik arşivlendi",
+    "eventUnarchived": "Etkinlik geri yüklendi",
+    "eventDeleted": "Etkinlik silindi",
+    "eventRestored": "Etkinlik geri yüklendi",
+    "allEvents": "Tüm etkinlikler",
+    "unfiled": "Klasörsüz",
+    "archived": "Arşivlenmiş",
+    "deleted": "Silinmiş",
+    "noArchivedEvents": "Arşivlenmiş etkinlik yok",
+    "noDeletedEvents": "Silinmiş etkinlik yok"
+  },
+  "profile": {
+    "account": "Hesap",
+    "myEvents": "Etkinliklerim",
+    "settings": "Ayarlar",
+    "premium": "Premium",
+    "toAgencyDashboard": "Agency Dashboard'a git",
+    "becomeAgency": "Ajanslar için",
+    "adminArea": "Yönetici alanı",
+    "noEvents": "Henüz etkinlik yok",
+    "noEventsDescription": "İlk etkinliğini oluştur ve arkadaşlarını davet et!",
+    "createFirstEvent": "İlk etkinliği oluştur",
+    "passwordMismatch": "Şifreler eşleşmiyor.",
+    "passwordTooShort": "Şifre en az 8 karakter olmalıdır.",
+    "passwordChanged": "Şifre başarıyla değiştirildi!",
+    "deleteConfirmationRequired": "Onaylamak için lütfen DELETE yazın.",
+    "accountDeleted": "Hesabın kalıcı olarak silindi.",
+    "exportInProgress": "Veri dışa aktarımı hazırlanıyor…",
+    "exportReady": "Veri dışa aktarımın indirildi.",
+    "exportFailed": "Dışa aktarma başarısız oldu. Lütfen daha sonra tekrar deneyin.",
+    "subscription": {
+      "planLifetime": "Premium (Ömür boyu)",
+      "planYearly": "Premium (Yıllık)",
+      "planMonthly": "Premium (Aylık)",
+      "planFree": "Ücretsiz",
+      "title": "Aboneliğim",
+      "description": "Aboneliğini ve ödeme yöntemlerini yönet",
+      "status": "Durum",
+      "cancelScheduled": "İptal planlandı",
+      "endsOn": "{{date}} tarihinde sona eriyor",
+      "renewsOn": "{{date}} tarihinde yenileniyor",
+      "lifetimeInfo": "Ömür boyu erişimin kalıcı olarak aktif.",
+      "manage": "Aboneliği yönet",
+      "noSubscription": "Aktif bir aboneliğin yok.",
+      "upgradeNow": "Şimdi Premium ol"
+    },
+    "invoices": {
+      "paid": "Ödendi",
+      "open": "Açık",
+      "void": "İptal edildi",
+      "title": "Faturalarım",
+      "description": "Ödemelerinin genel görünümü",
+      "noInvoices": "Fatura bulunmuyor.",
+      "downloadPdf": "PDF indir",
+      "viewOnline": "Çevrimiçi görüntüle"
+    },
+    "accountInfo": "Hesap bilgileri",
+    "accountInfoDescription": "Giriş bilgilerin",
+    "emailCannotChange": "E-posta adresi değiştirilemez.",
+    "aiCredits": {
+      "title": "AI kredileri",
+      "description": "Yapay zeka özellikleri için aylık kredilerin",
+      "noCredits": "Kredi yok - Premium abonelik gerekli",
+      "used": "Kullanılan",
+      "remaining": "Kalan",
+      "limit": "Aylık limit",
+      "resetDate": "Sonraki sıfırlama"
+    },
+    "changePassword": "Şifre değiştir",
+    "changePasswordDescription": "Güvenli yeni bir şifre seç.",
+    "newPassword": "Yeni şifre",
+    "updatePassword": "Şifreyi güncelle",
+    "dangerZoneDescription": "Hesabını kalıcı olarak sil.",
+    "exportData": "Verilerimi dışa aktar (GDPR Madde 20)",
+    "deleteAccount": "Hesabı sil",
+    "deleteAccountTitle": "Hesap gerçekten silinsin mi?",
+    "deleteAccountWarning": "Bu işlem geri alınamaz. Tüm etkinliklerin ve verilerin kalıcı olarak silinecek.",
+    "typeDeleteToConfirm": "Onaylamak için DELETE yazın"
+  },
+  "agencyPortal": {
+    "loginRequired": "Giriş gerekli",
+    "loginDesc": "Ajans portalına erişmek için lütfen giriş yap.",
+    "pending": {
+      "title": "Başvuru inceleniyor",
+      "description": "Ajans iş ortağı başvurun şu anda inceleniyor.",
+      "notice": "48 saat içinde seninle iletişime geçeceğiz."
+    },
+    "notAgency": {
+      "title": "Ajans iş ortağı ol",
+      "description": "Henüz ajans iş ortağı değilsin. Ajansını kaydet ve komisyon kazan.",
+      "cta": "Hemen başvur"
+    },
+    "title": "Ajans portalı",
+    "activePartner": "Aktif iş ortağı",
+    "stats": {
+      "referrals": "Tavsiyeler",
+      "bookings": "Rezervasyonlar",
+      "commission": "Komisyonlar"
+    },
+    "tabs": {
+      "dashboard": "Genel bakış",
+      "vouchers": "Kuponlar",
+      "commissions": "Komisyonlar",
+      "payouts": "Ödemeler",
+      "settings": "Ayarlar"
+    },
+    "dashboard": {
+      "welcome": "Tekrar hoş geldin!",
+      "subtitle": "Burada iş ortağı etkinliklerinin genel bir görünümünü görürsün.",
+      "agencyInfo": "Ajans bilgisi",
+      "name": "Ad",
+      "location": "Konum",
+      "commissionRate": "Komisyon oranı",
+      "performance": "Performans",
+      "conversionRate": "Dönüşüm oranı",
+      "avgCommission": "Ort. komisyon"
+    }
+  },
+  "whoami": {
+    "setup": {
+      "hidden": ""
+    }
   }
 }

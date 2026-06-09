@@ -842,6 +842,14 @@
     },
     "error": {
       "failed": "Maken mislukt. Probeer opnieuw."
+    },
+    "loginPrompt": {
+      "title": "Inloggen aanbevolen",
+      "description": "Met een account kun je je evenementen beheren en raak je ze nooit kwijt.",
+      "benefit1": "Evenementen opslaan in 'Mijn evenementen'",
+      "benefit2": "Dashboardtoegang van overal",
+      "benefit3": "Premiumfuncties zoals AI-sjablonen",
+      "continueAnyway": "Doorgaan zonder inloggen"
     }
   },
   "joinEvent": {
@@ -1077,12 +1085,35 @@
     "team": {
       "title": "Team Beheren",
       "invite": "Uitnodigen",
-      "permissions": "Machtigingen",
+      "permissions": {
+        "viewResponses": "Reacties bekijken",
+        "addExpenses": "Uitgaven invoeren",
+        "viewAllExpenses": "Alle uitgaven bekijken",
+        "editSettings": "Instellingen bewerken"
+      },
       "removeAccess": "Toegang Verwijderen",
       "roles": {
         "organizer": "Organisator",
         "guest": "Gast"
-      }
+      },
+      "nameRequired": "Naam mag niet leeg zijn",
+      "participantAdded": "{{name}} is toegevoegd",
+      "addError": "Fout bij toevoegen",
+      "status": {
+        "activated": "Geactiveerd",
+        "invited": "Uitgenodigd",
+        "ready": "Klaar",
+        "noAccess": "Geen toegang"
+      },
+      "addParticipant": "Deelnemer toevoegen",
+      "addParticipantDesc": "Voeg een nieuwe gast toe aan het evenement",
+      "participantName": "Naam",
+      "namePlaceholder": "bijv. Jan Jansen",
+      "participantEmail": "E-mail (optioneel)",
+      "emailPlaceholder": "jan@voorbeeld.nl",
+      "participantRole": "Rol",
+      "addButton": "Toevoegen",
+      "description": "Activeer dashboardtoegang voor deelnemers en deel de uitnodigingslink. Met de link kunnen ze een account aanmaken en zich verifiëren."
     },
     "overview": {
       "title": "Overzicht",
@@ -1099,6 +1130,30 @@
         "active": "Actief",
         "completed": "Voltooid",
         "cancelled": "Geannuleerd"
+      },
+      "statuses": {
+        "draft": "Concept",
+        "planning": "Planning",
+        "active": "Actief",
+        "completed": "Afgerond",
+        "cancelled": "Geannuleerd"
+      },
+      "participantStatus": {
+        "confirmed": "Bevestigd",
+        "declined": "Afgewezen",
+        "maybe": "Misschien",
+        "invited": "Uitgenodigd"
+      },
+      "pendingResponses": "Openstaande reacties",
+      "pendingResponsesDesc": "{{count}} deelnemers hebben nog niet gereageerd.",
+      "noParticipants": "Nog geen deelnemers toegevoegd.",
+      "quickActions": {
+        "expenses": "Uitgaven",
+        "expensesDesc": "Kosten beheren & verdelen",
+        "messages": "Berichten",
+        "messagesDesc": "Sjablonen kopiëren & delen",
+        "ai": "AI-assistent",
+        "aiDesc": "Ideeën & suggesties genereren"
       }
     },
     "form": {
@@ -1109,7 +1164,51 @@
       "save": "Opslaan",
       "successMessage": "Formulierconfiguratie opgeslagen!",
       "coreQuestions": "Kernvragen",
-      "customQuestions": "Aangepaste Vragen",
+      "customQuestions": {
+        "presets": {
+          "dietary": "Voeding",
+          "songWish": "Songwens",
+          "tshirtSize": "T-shirtmaat",
+          "driversLicense": "Rijbewijs",
+          "specialWishes": "Bijzondere wensen"
+        },
+        "presetQuestions": {
+          "dietary": {
+            "label": "Zijn er voedingsbeperkingen?",
+            "placeholder": "bijv. vegetarisch, veganistisch, allergieën..."
+          },
+          "songWish": {
+            "label": "Jouw songwens voor de playlist?",
+            "placeholder": "Artiest - songtitel"
+          },
+          "tshirtSize": {
+            "label": "Welke T-shirtmaat heb je?"
+          },
+          "driversLicense": {
+            "label": "Heb je een rijbewijs en kun je rijden?"
+          },
+          "specialWishes": {
+            "label": "Is er nog iets dat je ons wilt laten weten?",
+            "placeholder": "Bijzondere wensen, ideeën, opmerkingen..."
+          }
+        },
+        "quickAdd": "Snel toevoegen:",
+        "questionPlaceholder": "Vraag invoeren...",
+        "placeholderPlaceholder": "Placeholdertekst (optioneel)",
+        "options": "Opties:",
+        "addOption": "Optie toevoegen",
+        "requiredField": "Verplicht veld",
+        "noQuestions": "Nog geen eigen vragen toegevoegd.",
+        "noQuestionsHint": "Gebruik de snelknoppen hierboven of voeg een nieuwe vraag toe.",
+        "addNew": "Nieuwe vraag toevoegen",
+        "questionsConfigured": "eigen vraag/vragen geconfigureerd",
+        "noPreview": "Voeg vragen toe om de voorvertoning te zien",
+        "previewTitle": "Formuliervoorvertoning",
+        "previewDescription": "Zo verschijnen jouw eigen vragen in de enquête",
+        "previewReadOnly": "Alleen-lezen voorvertoning",
+        "untitledQuestion": "Vraag zonder titel",
+        "selectPlaceholder": "Optie kiezen..."
+      },
       "questionEnabled": "Vraag ingeschakeld",
       "questionDisabled": "Vraag uitgeschakeld",
       "singleSelect": "Enkelvoudige selectie",
@@ -1294,7 +1393,19 @@
       "title": "Planning",
       "setDate": "Datum Instellen",
       "dateSet": "De datum staat vast!",
-      "noDate": "Nog geen datum ingesteld"
+      "noDate": "Nog geen datum ingesteld",
+      "loading": "Datums worden geladen...",
+      "noData": "Nog geen gegevens",
+      "noDataDesc": "Zodra deelnemers hun beschikbaarheid opgeven, verschijnen de resultaten hier.",
+      "activeVotes": "{{count}} actieve stemmen",
+      "dateLocked": "Datum {{block}} is vastgesteld",
+      "topRecommendations": "Topaanbevelingen",
+      "block": "Blok",
+      "yes": "Ja",
+      "maybe": "Misschien",
+      "allDates": "Alle datums",
+      "locked": "Vastgesteld",
+      "legend": "De score wordt berekend op basis van de \"Ja\"-stemmen (100%) en \"Misschien\"-stemmen (50%). Hogere waarden betekenen betere beschikbaarheid."
     },
     "settings": {
       "title": "Instellingen",
@@ -1329,7 +1440,10 @@
         "title": "Gevarenzone",
         "deleteEvent": "Evenement Verwijderen",
         "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt."
-      }
+      },
+      "publicVisibility": "Openbare zichtbaarheid",
+      "publicVisibilityDesc": "Kies welke tabbladen bezoekers kunnen zien zonder in te loggen (alleen met de toegangscode).",
+      "publicVisibilityNote": "Bezoekers moeten zich registreren om wijzigingen aan te brengen (uitgaven toevoegen, reacties bewerken, enz.)."
     },
     "ai": {
       "title": "AI Assistent",
@@ -1421,7 +1535,10 @@
         "outdoor": "Action & outdoor adventure",
         "culinary": "Culinary highlights",
         "luxury": "Luxurious with wow factor"
-      }
+      },
+      "basedOnNoName": "Op basis van {{count}} antwoorden",
+      "budgetTip": "Budgettip",
+      "listen": "Voorlezen"
     },
     "guestWarning": {
       "title": "Evenement nog niet beveiligd",
@@ -1429,7 +1546,58 @@
       "cta": "Gratis beveiligen",
       "ctaLink": "Aan mijn account koppelen",
       "claiming": "Evenement wordt aan je account gekoppeld…"
-    }
+    },
+    "destination": {
+      "destinations": {
+        "deCity": "Duitse stad",
+        "barcelona": "Barcelona",
+        "lisbon": "Lissabon",
+        "either": "Maakt niet uit"
+      },
+      "activities": {
+        "karting": "Karten",
+        "escapeRoom": "Escape room",
+        "lasertag": "Lasergamen",
+        "axeThrowing": "Bijlwerpen",
+        "vrSimracing": "VR-simracing",
+        "climbing": "Klimmen",
+        "bubbleSoccer": "Bubble soccer",
+        "outdoor": "Outdoor",
+        "wellness": "Wellness",
+        "food": "Culinair",
+        "mixed": "Gemengd"
+      },
+      "loading": "Bestemmingsgegevens worden geladen...",
+      "noData": "Nog geen gegevens",
+      "noDataDesc": "Zodra deelnemers hun voorkeuren opgeven, verschijnen de resultaten hier.",
+      "topDestination": "Topbestemming",
+      "votesOf": "{{votes}} van {{total}} stemmen ({{percent}}%)",
+      "voting": "Stemming",
+      "budgetDistribution": "Budgetverdeling",
+      "recommendation": "Aanbeveling",
+      "recommendationText": "Op basis van de stemmen ligt het budget op {{budget}}.",
+      "popularActivities": "Populaire activiteiten",
+      "noActivities": "Nog geen activiteiten geselecteerd."
+    },
+    "ideas": {
+      "attendance": {
+        "yes": "Erbij",
+        "maybe": "Misschien",
+        "no": "Niet erbij"
+      },
+      "loading": "Ideeën worden geladen...",
+      "noIdeas": "Nog geen ideeën",
+      "noIdeasDesc": "Zodra deelnemers suggesties of beperkingen opgeven, verschijnen die hier.",
+      "suggestions": "Suggesties & wensen",
+      "entries": "{{count}} items",
+      "restrictions": "Beperkingen",
+      "partialAvailability": "Gedeeltelijke beschikbaarheid",
+      "suggestionsCount": "{{count}} suggesties",
+      "restrictionsCount": "{{count}} beperkingen",
+      "notesCount": "{{count}} notities"
+    },
+    "loginRequired": "Inloggen vereist",
+    "loginRequiredDesc": "Je moet je registreren of inloggen om wijzigingen aan te brengen. Bekijken is gratis!"
   },
   "messages": {
     "title": "Berichtsjablonen",
@@ -1504,6 +1672,13 @@
       "copySurveyLink": "Enquête link kopiëren",
       "copyAccessCode": "Toegangscode kopiëren",
       "openSurvey": "Enquête openen"
+    },
+    "placeholders": {
+      "dateNotSet": "[Datum nog niet vastgesteld]",
+      "deadlineNotSet": "[Geen deadline]",
+      "destination": "Bestemming invoegen",
+      "meetingPoint": "Verzamelpunt invoegen",
+      "meetingTime": "Tijd invoegen"
     }
   },
   "agencies": {
@@ -1660,7 +1835,24 @@
     "settlementExplanation": "Verrekeningen tonen wie aan wie moet betalen zodat iedereen eerlijk gedekt is.",
     "balanceTooltip": "{{name}} betaalde {{paid}} en is {{owes}} verschuldigd. Verschil: {{balance}}",
     "noPaymentNeeded": "{{name}} hoeft niet te betalen omdat hij/zij al genoeg heeft betaald.",
-    "people": "personen"
+    "people": "personen",
+    "transferSettled": "Overboeking gemarkeerd als betaald",
+    "transferUnsettled": "Overboeking gemarkeerd als onbetaald",
+    "markedPaid": "Gemarkeerd als betaald",
+    "markedUnpaid": "Gemarkeerd als onbetaald",
+    "updated": "Uitgave bijgewerkt",
+    "totalExpenses": "Totaal",
+    "participants": "Deelnemers",
+    "openAmount": "Openstaand",
+    "open": "openstaand",
+    "paidAmount": "Betaald",
+    "paymentProgress": "Betalingsvoortgang",
+    "breakdown": "Uitsplitsing per categorie",
+    "settlement": "Verrekening",
+    "markPaid": "Betaald",
+    "paymentStatus": "Betaalstatus",
+    "editExpense": "Bewerken",
+    "budgetUsed": "Budget gebruikt"
   },
   "notifications": {
     "linkCopied": "Link gekopieerd!",
@@ -1727,7 +1919,8 @@
       "requirements": "Vereisten",
       "requirementPlaceholder": "bijv. Sportkleding, ID...",
       "notes": "Notities",
-      "notesPlaceholder": "Aanvullende informatie..."
+      "notesPlaceholder": "Aanvullende informatie...",
+      "category": "Categorie"
     },
     "categories": {
       "title": "Categorie",
@@ -1745,6 +1938,28 @@
       "title": "Filteren",
       "byCategory": "Op Categorie",
       "showAll": "Alles Tonen"
+    },
+    "authRequired": "Inloggen vereist",
+    "loginToAdd": "Log in om activiteiten toe te voegen of te bewerken.",
+    "export": {
+      "icalDownloaded": "Agendabestand gedownload",
+      "title": "Exporteren",
+      "pdf": "Afdrukweergave (PDF)",
+      "ical": "Agenda (iCal)"
+    },
+    "viewMode": {
+      "list": "Lijst",
+      "calendar": "Agenda"
+    },
+    "addDate": "Datum toevoegen",
+    "calendar": {
+      "weekView": "Weekweergave",
+      "days": "Dagen",
+      "items": "Items",
+      "time": "Tijd",
+      "endTime": "Einde",
+      "legend": "Legenda",
+      "helpText": "Klik op een tijdslot of sleep om nieuwe activiteiten te maken. Sleep bestaande activiteiten om ze te verplaatsen."
     }
   },
   "cookie": {
@@ -1892,7 +2107,27 @@
       "adjustmentHistory": "Aanpassingsgeschiedenis",
       "amount": "Bedrag",
       "adjustedBy": "Aangepast door",
-      "date": "Datum"
+      "date": "Datum",
+      "fetchError": "Fout bij het laden van gebruikers",
+      "invalidAmount": "Ongeldig aantal",
+      "adminCheckError": "Adminstatus kon niet worden geverifieerd",
+      "noPermission": "Geen adminrechten",
+      "rlsError": "Geen toestemming. Controleer de adminrechten.",
+      "searchPlaceholder": "Zoeken op e-mail of naam...",
+      "noSearchResults": "Geen gebruikers gevonden",
+      "noUsers": "Geen gebruikers beschikbaar",
+      "user": "Gebruiker",
+      "plan": "Abonnement",
+      "used": "Verbruikt",
+      "available": "Beschikbaar",
+      "bonus": "Bonus",
+      "adjust": "Aanpassen",
+      "showingUsers": "{{count}} gebruikers weergegeven",
+      "action": "Actie",
+      "addCreditsBtn": "Credits toevoegen",
+      "removeCreditsBtn": "Credits verwijderen",
+      "recentAdjustments": "Recente aanpassingen",
+      "noAdjustments": "Geen aanpassingen beschikbaar"
     },
     "aiAds": {
       "navLabel": "AI Advertising",
@@ -1969,7 +2204,12 @@
         "progress": "Progress",
         "noCampaigns": "No campaigns created yet",
         "templateVars": "Variables: {{agency_name}}, {{city}}, {{contact_name}}, {{signup_url}}, {{sender_name}}",
-        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀"
+        "defaultSubject": "{{agency_name}} — get recommended to 100,000+ event planners for free? 🚀",
+        "saveTemplateName": "Sjabloonnaam:",
+        "templateSaved": "Sjabloon opgeslagen",
+        "saveTemplate": "Opslaan als sjabloon",
+        "templateLibrary": "Sjabloonbibliotheek",
+        "noCustomTemplates": "Nog geen eigen sjablonen opgeslagen."
       },
       "detail": {
         "contactPerson": "Contact person",
@@ -1994,7 +2234,9 @@
         "activityTitle": "Activity",
         "noActivity": "No activity yet",
         "nextSteps": "Next steps",
-        "save": "Save"
+        "save": "Save",
+        "composeMail": "Mail opstellen",
+        "signatures": "Handtekeningen bewerken"
       },
       "table": {
         "search": "Search name, city or email...",
@@ -2017,8 +2259,258 @@
         "link_clicked": "Invite link clicked"
       },
       "emptyState": "No agencies in the system yet. Import a CSV file or wait for autopilot.",
-      "freeSlotsCounter": "{{count}} of 150 free slots available"
-    }
+      "freeSlotsCounter": "{{count}} of 150 free slots available",
+      "title": "Bureau-acquisitie CRM",
+      "subtitle": "Outreach, pipeline en campagnes beheren",
+      "addNote": "Notitie",
+      "logResponse": "Antwoord",
+      "searchTable": "Naam, stad of e-mail zoeken...",
+      "noResults": "Geen resultaten",
+      "loadMore": "Meer laden",
+      "campaignsTitle": "Campagnes",
+      "newCampaign": "Nieuwe campagne",
+      "noCampaignsYet": "Nog geen campagnes. Maak je eerste!",
+      "editCampaign": "Campagne bewerken",
+      "createCampaign": "Nieuwe campagne maken",
+      "save": "Opslaan",
+      "create": "Maken",
+      "cancel": "Annuleren",
+      "activeCampaigns": "Actieve campagnes",
+      "noCampaigns": "Nog geen campagnes gemaakt. Start een nieuwe campagne op het tabblad Campagnes.",
+      "searchName": "Naam zoeken...",
+      "filterCity": "Stad",
+      "emptyColumn": "Leeg",
+      "col_rejected": "Afgewezen"
+    },
+    "agencyAffiliate": {
+      "addedSuccess": "Bureau als partner toegevoegd",
+      "addedError": "Fout bij toevoegen",
+      "fillRequired": "Vul alle verplichte velden in",
+      "manualAddedSuccess": "Bureau handmatig toegevoegd",
+      "statusUpdated": "Status bijgewerkt",
+      "statusError": "Fout bij bijwerken",
+      "noAffiliateId": "Bureau moet eerst worden goedgekeurd",
+      "voucherAssigned": "Voucher toegewezen",
+      "voucherAlreadyAssigned": "Voucher al toegewezen",
+      "voucherError": "Fout bij toewijzen",
+      "title": "Bureau-partners",
+      "description": "Beheer bureau-partnerschappen en commissies",
+      "addAgency": "Bureau toevoegen",
+      "createAgency": "Nieuw bureau",
+      "registeredAgencies": "Geregistreerde bureaus",
+      "pending": "Openstaand",
+      "active": "Actief",
+      "suspended": "Geblokkeerd",
+      "noAgencies": "Nog geen bureau-partners geregistreerd",
+      "approve": "Goedkeuren",
+      "reject": "Afwijzen",
+      "assignVoucher": "Voucher",
+      "addAgencyTitle": "Bureau als partner toevoegen",
+      "addAgencyDesc": "Kies een bureau uit de directory en configureer de commissie",
+      "searchAgencies": "Bureau zoeken...",
+      "noAvailableAgencies": "Geen beschikbare bureaus gevonden",
+      "contactEmail": "Contact-e-mail",
+      "commissionRate": "Commissietarief (%)",
+      "addPartner": "Partner toevoegen",
+      "assignVoucherTitle": "Voucher toewijzen",
+      "assignVoucherDesc": "Kies een voucher voor",
+      "selectVoucher": "Voucher selecteren",
+      "selectVoucherPlaceholder": "Voucher kiezen...",
+      "assignVoucherBtn": "Voucher toewijzen",
+      "createAgencyTitle": "Nieuw bureau handmatig aanmaken",
+      "createAgencyDesc": "Maak een nieuw bureau aan dat niet in de directory staat",
+      "agencyName": "Bureaunaam",
+      "city": "Stad",
+      "phone": "Telefoon",
+      "website": "Website",
+      "descriptions": "Beschrijvingen (meertalig)",
+      "descriptionPlaceholder": "Beschrijving van het bureau in {{lang}}...",
+      "descriptionHint": "Tip: beschrijvingen worden weergegeven afhankelijk van de gebruikerstaal.",
+      "createPartner": "Bureau aanmaken"
+    },
+    "agencyAnalytics": {
+      "phone": "Telefoon",
+      "email": "E-mail",
+      "website": "Website",
+      "unknown": "Onbekend",
+      "title": "Bureau-analytics",
+      "description": "Overzicht van alle bureau-interacties",
+      "last7days": "Laatste 7 dagen",
+      "last30days": "Laatste 30 dagen",
+      "last90days": "Laatste 90 dagen",
+      "totalInteractions": "Totaal",
+      "calls": "Oproepen",
+      "emails": "E-mails",
+      "websiteClicks": "Websites",
+      "conversionRate": "Conversies",
+      "byType": "Op interactietype",
+      "noData": "Geen gegevens beschikbaar",
+      "byCity": "Op stad",
+      "timeline": "Tijdlijn",
+      "timelineDesc": "Interacties van de afgelopen 14 dagen",
+      "topAgencies": "Topbureaus",
+      "agency": "Bureau",
+      "total": "Totaal"
+    },
+    "audit": {
+      "title": "Auditlog",
+      "subtitle": "Chronologisch overzicht van alle adminacties — wie heeft wanneer wat gewijzigd.",
+      "searchPlaceholder": "Actie, e-mail of doel-ID …",
+      "targetFilter": "Doeltype",
+      "allTargets": "Alle doelen",
+      "refresh": "Vernieuwen",
+      "empty": "Nog geen adminacties geregistreerd",
+      "noResults": "Geen items voor je filter",
+      "limitReached": "Toont de laatste {{limit}} items — oudere rechtstreeks via Supabase opvragen."
+    },
+    "flags": {
+      "toggled": "Flag bijgewerkt",
+      "created": "Flag aangemaakt",
+      "title": "Feature Flags",
+      "subtitle": "Features tijdens runtime in-/uitschakelen of gefaseerd uitrollen",
+      "new": "Nieuwe flag",
+      "newTitle": "Nieuwe feature flag",
+      "newDescription": "Maak een nieuwe feature flag. De key wordt in de code gebruikt.",
+      "key": "Key",
+      "name": "Naam",
+      "description": "Beschrijving",
+      "descriptionPlaceholder": "Wat doet deze flag?",
+      "create": "Maken",
+      "empty": "Nog geen feature flags aangemaakt",
+      "enabled": "Actief",
+      "disabled": "Inactief",
+      "rollout": "Uitrol",
+      "updated": "Bijgewerkt"
+    },
+    "settings": {
+      "planUpdated": "Plan bijgewerkt",
+      "planCreated": "Plan aangemaakt",
+      "planKeyRequired": "Plan-key is verplicht",
+      "planConfig": "Planconfiguratie",
+      "planConfigDesc": "Beheer AI-credits, prijzen en functies per plan",
+      "newPlan": "Nieuw plan",
+      "plan": "Plan",
+      "credits": "AI-credits/maand",
+      "price": "Prijs",
+      "interval": "Interval",
+      "features": "Functies",
+      "status": "Status",
+      "editPlan": "Plan bewerken",
+      "planKey": "Plan-key",
+      "displayName": "Weergavenaam",
+      "aiCredits": "AI-credits / maand",
+      "sortOrder": "Sortering",
+      "priceCents": "Prijs (centen)",
+      "currency": "Valuta",
+      "billingInterval": "Factuurinterval",
+      "stripePriceId": "Stripe Price ID",
+      "isActive": "Plan actief",
+      "saved": "Opgeslagen",
+      "on": "Aan",
+      "off": "Uit",
+      "save": "Opslaan",
+      "title": "Systeeminstellingen",
+      "subtitle": "Platformbrede configuratie - functies vrijschakelen, e-mailstandaarden, beveiliging.",
+      "warningTitle": "Let op",
+      "warningBody": "Wijzigingen zijn direct van kracht voor alle gebruikers. Test kritieke instellingen eerst in staging. Geheimen zoals SMTP-wachtwoorden en Stripe-keys worden hier NIET opgeslagen - die horen in Supabase Secrets.",
+      "entries": "Instellingen",
+      "lastUpdated": "Laatst bijgewerkt",
+      "dangerTitle": "Danger Zone",
+      "dangerSubtitle": "Onomkeerbare acties - alleen als je weet wat je doet.",
+      "maintenanceToggle": "Onderhoudsmodus omschakelen",
+      "maintenanceConfirm": "Onderhoudsmodus inschakelen?",
+      "maintenanceDesc": "In de onderhoudsmodus zien alle niet-admingebruikers een onderhoudspagina. Geen nieuwe aanmeldingen, geen boekingen. Schakel alleen om als het ECHT nodig is.",
+      "confirmToggle": "Ja, omschakelen"
+    },
+    "stats": {
+      "groupGrowth": "Groei",
+      "groupGrowthSub": "Gebruikers en activiteit",
+      "totalUsers": "Totaal aantal gebruikers",
+      "thisWeek": "deze week",
+      "new24h": "Nieuw (24u)",
+      "activeUsers": "Actief (30 dagen)",
+      "events": "Events",
+      "groupRevenue": "Omzet",
+      "groupRevenueSub": "Abonnementen en MRR",
+      "mrr": "MRR (bureaus)",
+      "mrrSub": "Professional + Enterprise",
+      "premium": "Premium-gebruikers",
+      "totalSubs": "Actieve abonnementen",
+      "vouchersRedeemed": "Ingewisselde vouchers",
+      "groupAgencies": "Bureaus",
+      "groupAgenciesSub": "B2B-platform",
+      "totalAgencies": "Totaal aantal bureaus",
+      "proAgencies": "Professional",
+      "enterpriseAgencies": "Enterprise",
+      "starterAgencies": "Starter (gratis)",
+      "groupMarketplace": "Marktplaats",
+      "groupMarketplaceSub": "Diensten en boekingen",
+      "totalServices": "Actieve diensten",
+      "pendingServices": "Te controleren",
+      "reviewNeeded": "Beoordeling vereist",
+      "totalBookings": "Boekingen totaal",
+      "bookings30d": "Boekingen (30 dagen)",
+      "title": "Platformoverzicht",
+      "subtitle": "De belangrijkste KPI's in één oogopslag — live uit de database.",
+      "alertPendingTitle": "Beoordeling vereist",
+      "alertPendingBody": "{{count}} marktplaatsdiensten wachten op goedkeuring."
+    },
+    "subscriptions": {
+      "fetchError": "Fout bij het laden van abonnementen",
+      "updated": "Abonnement bijgewerkt",
+      "updateError": "Fout bij het bijwerken",
+      "userRequired": "Selecteer een gebruiker",
+      "alreadyExists": "Gebruiker heeft al een abonnement. Bewerk het bestaande abonnement.",
+      "created": "Abonnement aangemaakt",
+      "createError": "Fout bij het aanmaken",
+      "confirmDelete": "Abonnement echt verwijderen?",
+      "deleted": "Abonnement verwijderd",
+      "deleteError": "Fout bij het verwijderen",
+      "title": "Abonnementenbeheer",
+      "create": "Nieuw abonnement",
+      "user": "Gebruiker",
+      "plan": "Plan",
+      "type": "Type",
+      "expires": "Verloopt",
+      "notes": "Notitie",
+      "noSubscriptions": "Geen abonnementen gevonden",
+      "editTitle": "Abonnement bewerken",
+      "editDescription": "Wijzig het plan, de vervaldatum of notities",
+      "expiryDate": "Vervaldatum",
+      "expiryHint": "Laat leeg voor lifetime (onbeperkt)",
+      "notesPlaceholder": "bijv. partneraccount, testtoegang...",
+      "createTitle": "Nieuw abonnement aanmaken",
+      "createDescription": "Maak een handmatig abonnement voor een gebruiker",
+      "selectUser": "Gebruiker selecteren...",
+      "searchUser": "Gebruiker zoeken...",
+      "noUserFound": "Geen gebruiker gevonden"
+    },
+    "vouchers": {
+      "fetchError": "Fout bij het laden van vouchers",
+      "codeRequired": "Code is verplicht",
+      "discountValueRequired": "Kortingswaarde is verplicht",
+      "stripeCouponError": "Voucher aangemaakt, maar Stripe-coupon mislukt",
+      "created": "Voucher aangemaakt",
+      "duplicateCode": "Deze code bestaat al",
+      "createError": "Fout bij het aanmaken",
+      "deactivated": "Voucher gedeactiveerd",
+      "activated": "Voucher geactiveerd",
+      "title": "Voucherbeheer",
+      "create": "Voucher aanmaken",
+      "createTitle": "Nieuwe voucher aanmaken",
+      "createDescription": "Maak een kortings- of vrijschakelcode aan",
+      "code": "Code",
+      "type": "Type",
+      "maxUses": "Max. inwisselingen",
+      "unlimited": "Onbeperkt",
+      "validUntil": "Geldig tot",
+      "value": "Waarde",
+      "usage": "Gebruik",
+      "status": "Status",
+      "noVouchers": "Geen vouchers aanwezig"
+    },
+    "title": "Adminportaal",
+    "backToApp": "Terug"
   },
   "templates": {
     "title": "Kies een sjabloon",
@@ -2424,7 +2916,12 @@
         "name": "Bedrijfsretraite",
         "desc": "Teambuilding, workshops en netwerken"
       }
-    }
+    },
+    "loginRequired": "Log in om AI-functies te gebruiken",
+    "noCredits": "Geen AI-credits meer over",
+    "upgradeForCredits": "Upgrade je abonnement voor meer AI-credits",
+    "designTitle": "Ontwerp & kleuren",
+    "moreDesigns": "Meer ontwerpen tonen"
   },
   "affiliate": {
     "portal": {
@@ -2435,8 +2932,12 @@
         "vouchers": "Kortingscodes",
         "commissions": "Commissies",
         "payouts": "Uitbetalingen",
-        "settings": "Instellingen"
-      }
+        "settings": "Instellingen",
+        "analytics": "Analytics",
+        "links": "Links",
+        "marketing": "Marketing"
+      },
+      "performanceChart": "Prestaties van de afgelopen 12 maanden"
     },
     "stats": {
       "totalEarnings": "Totale inkomsten",
@@ -2445,7 +2946,9 @@
       "conversionRate": "Conversieratio",
       "thisMonth": "Deze maand",
       "allTime": "Altijd",
-      "tier": "Tier status"
+      "tier": "Tier status",
+      "earnings": "Inkomsten",
+      "conversions": "Conversies"
     },
     "vouchers": {
       "title": "Mijn kortingscodes",
@@ -2457,7 +2960,12 @@
       "copied": "Code gekopieerd!",
       "discount": "Korting",
       "active": "Actief",
-      "inactive": "Inactief"
+      "inactive": "Inactief",
+      "shareMessage": "🎉 Profiteer van ${discountText} korting met de code: ${code} \n \n 👉 Verzilver nu op EventBliss!",
+      "messageCopied": "Bericht gekopieerd!",
+      "noVouchersDesc": "Zodra er kortingsbonnen aan je worden toegewezen, zie je ze hier.",
+      "code": "Kortingscode",
+      "convRate": "Conv. ratio"
     },
     "commissions": {
       "title": "Mijn commissies",
@@ -2536,6 +3044,163 @@
         "support": "Persoonlijke ondersteuning",
         "supportDesc": "Direct contact met ons team"
       }
+    },
+    "admin": {
+      "totalPartners": "Partners totaal",
+      "activePartners": "Actieve partners",
+      "totalEarnings": "Totale commissies",
+      "pendingPayouts": "Openstaande uitbetalingen",
+      "searchPlaceholder": "Partners zoeken...",
+      "createPartner": "Partner aanmaken",
+      "partnerList": "Partnerlijst",
+      "name": "Naam",
+      "email": "E-mail",
+      "tier": "Niveau",
+      "commission": "Commissie",
+      "earnings": "Inkomsten",
+      "pending": "Openstaand",
+      "actions": "Acties",
+      "noPartners": "Geen partners gevonden",
+      "editPartner": "Partner bewerken",
+      "assignVoucher": "Voucher toewijzen",
+      "selectVoucher": "Voucher selecteren",
+      "selectVoucherPlaceholder": "Voucher kiezen...",
+      "customCommissionType": "Eigen commissietype",
+      "useDefault": "Standaard gebruiken",
+      "customRate": "Eigen tarief",
+      "assign": "Toewijzen",
+      "approveAll": "Alles goedkeuren",
+      "export": "Exporteren",
+      "commissionsList": "Commissies",
+      "date": "Datum",
+      "partner": "Partner",
+      "voucher": "Cadeaubon",
+      "customer": "Klant",
+      "orderAmount": "Bestelwaarde",
+      "approve": "Goedkeuren",
+      "cancel": "Annuleren",
+      "markPaid": "Markeren als betaald",
+      "noCommissions": "Geen commissies gevonden",
+      "payoutsList": "Uitbetalingen",
+      "amount": "Bedrag",
+      "method": "Methode",
+      "period": "Periode",
+      "reference": "Referentie",
+      "process": "Verwerken",
+      "complete": "Afronden",
+      "failed": "Mislukt",
+      "noPayouts": "Geen uitbetalingen gevonden",
+      "processPayout": "Uitbetaling verwerken",
+      "referencePlaceholder": "bijv. SEPA-overboekingsreferentie",
+      "startProcessing": "Verwerking starten",
+      "markCompleted": "Als afgerond markeren"
+    },
+    "commission": {
+      "percentage": "Percentage",
+      "fixed": "Vast bedrag",
+      "pending": "In afwachting",
+      "approved": "Goedgekeurd",
+      "paid": "Uitbetaald",
+      "total": "Totaal",
+      "cancelled": "Geannuleerd"
+    },
+    "form": {
+      "contactName": "Contactpersoon",
+      "email": "E-mail",
+      "companyName": "Bedrijfsnaam",
+      "phone": "Telefoon",
+      "website": "Website",
+      "taxId": "Btw-nummer",
+      "commissionType": "Commissietype",
+      "commissionRate": "Commissietarief",
+      "tier": "Niveau",
+      "notes": "Notities"
+    },
+    "status": {
+      "pending": "Openstaand",
+      "active": "Actief",
+      "suspended": "Geblokkeerd",
+      "terminated": "Beëindigd"
+    },
+    "payout": {
+      "pending": "In afwachting",
+      "processing": "In behandeling",
+      "completed": "Voltooid",
+      "total": "Totaal",
+      "failed": "Mislukt"
+    },
+    "analytics": {
+      "title": "Analytics & rapporten",
+      "subtitle": "Gedetailleerd inzicht in je prestaties",
+      "7days": "Afgelopen 7 dagen",
+      "30days": "Afgelopen 30 dagen",
+      "90days": "Afgelopen 90 dagen",
+      "year": "Dit jaar",
+      "funnel": "Conversiefunnel",
+      "impressions": "Vertoningen",
+      "clicks": "Klikken",
+      "conversions": "Conversies",
+      "revenue": "Inkomsten",
+      "weeklyEarnings": "Deze week",
+      "lastWeek": "vorige week",
+      "conversionRate": "Conversieratio",
+      "epc": "Earnings per click",
+      "avgEarnings": "Gemiddelde verdienste per klik",
+      "aov": "Gem. orderwaarde",
+      "avgOrder": "Gemiddelde bestelwaarde",
+      "earningsOverTime": "Inkomsten in de tijd",
+      "conversionsByDay": "Conversies per dag",
+      "revenueByVoucher": "Inkomsten per voucher",
+      "noData": "Nog geen gegevens beschikbaar",
+      "topVouchers": "Top-vouchers",
+      "redemptions": "Inwisselingen",
+      "noVouchers": "Geen vouchers aanwezig"
+    },
+    "linkGenerator": {
+      "title": "Linkgenerator",
+      "subtitle": "Maak traceerbare affiliate-links",
+      "voucher": "Vouchercode",
+      "selectVoucher": "Voucher kiezen (optioneel)",
+      "source": "Verkeersbron (utm_source)",
+      "selectSource": "Bron kiezen",
+      "medium": "Medium (utm_medium)",
+      "selectMedium": "Medium kiezen",
+      "campaign": "Campagne (utm_campaign)",
+      "campaignPlaceholder": "bijv. summer_sale_2025",
+      "generatedUrl": "Gegenereerde link",
+      "shortUrl": "Korte link",
+      "hideQR": "QR-code verbergen",
+      "showQR": "QR-code tonen",
+      "qrDownloaded": "QR-code gedownload",
+      "downloadQR": "QR-code downloaden"
+    },
+    "marketing": {
+      "title": "Marketingmateriaal",
+      "subtitle": "Banners, social media-templates en e-mailsjablonen voor je promotie",
+      "selectVoucher": "Voucher voor templates:",
+      "banners": "Banners",
+      "social": "Social media",
+      "email": "E-mail",
+      "bannerDownload": "Banner-download wordt voorbereid...",
+      "customBanner": "Eigen banner",
+      "customBannerDesc": "Heb je een banner in een ander formaat of met een eigen ontwerp nodig? Neem contact op met ons team!",
+      "contactTeam": "Contact opnemen met team",
+      "copyText": "Tekst kopiëren",
+      "popularHashtags": "Populaire hashtags",
+      "subject": "Onderwerp"
+    },
+    "notifications": {
+      "newCommission": "Nieuwe commissie",
+      "earned": "verdiend",
+      "payoutPending": "Uitbetaling aangevraagd",
+      "payoutProcessing": "Uitbetaling in behandeling",
+      "payoutCompleted": "Uitbetaling voltooid",
+      "payoutFailed": "Uitbetaling mislukt",
+      "yesterday": "Gisteren",
+      "title": "Meldingen",
+      "markAllRead": "Alles als gelezen markeren",
+      "noNotifications": "Geen nieuwe meldingen",
+      "viewAll": "Alles tonen"
     }
   },
   "partnerApply": {
@@ -3700,7 +4365,9 @@
       "start": "Start",
       "reset": "Resetten"
     },
-    "back": "Terug"
+    "back": "Terug",
+    "showing": "{{count}} weergegeven",
+    "loadMore": "{{count}} meer laden"
   },
   "ideasHub": {
     "title": "Spellen & Ideeën",
@@ -3809,7 +4476,66 @@
       "avgBudgetPerEvent": "Gem. Budget/Evenement",
       "clientRetention": "Klantbehoud"
     },
-    "calendar": "Kalender",
+    "calendar": {
+      "filter": {
+        "statusAll": "Alle statussen",
+        "pending": "In afwachting",
+        "confirmed": "Bevestigd",
+        "completed": "Afgerond",
+        "cancelled": "Geannuleerd",
+        "sourceAll": "Alle bronnen",
+        "sourceMarketplace": "Marketplace",
+        "sourceManual": "Handmatig",
+        "dateAll": "Alle",
+        "dateToday": "Vandaag",
+        "dateWeek": "Week",
+        "dateMonth": "Maand",
+        "dateUpcoming": "Aankomend",
+        "datePast": "Verleden",
+        "service": "Service",
+        "serviceAll": "Alle services",
+        "guide": "Gids",
+        "guideAll": "Alle gidsen",
+        "guideUnassigned": "Zonder gids",
+        "status": "Status",
+        "source": "Bron",
+        "customerPlaceholder": "Klant / e-mail / nr.",
+        "onlyConflicts": "Alleen conflicten tonen",
+        "conflictsOnly": "Alleen conflicten",
+        "clear": "Filters wissen",
+        "allShown": "Geen filters actief — alle boekingen zichtbaar"
+      },
+      "bookingSingular": "Boeking",
+      "bookingPlural": "Boekingen",
+      "today": "Vandaag",
+      "export": "Exporteren",
+      "exportLabel": "Exporteren / afdrukken",
+      "exportICal": "iCal (.ics)",
+      "exportCSV": "CSV",
+      "print": "Afdrukken / PDF",
+      "newBooking": "Nieuwe afspraak",
+      "day": {
+        "empty": "Geen afspraken — klik op een tijdslot om een afspraak aan te maken"
+      },
+      "month": {
+        "doubleClickHint": "Dubbelklik voor een nieuwe afspraak",
+        "noBookings": "Geen afspraken op deze dag.",
+        "selectDay": "Kies een dag voor details — dubbelklik voor een nieuwe afspraak"
+      },
+      "resource": {
+        "unassigned": "Zonder gids",
+        "groupBy": "Groeperen op",
+        "byGuide": "Gids",
+        "byService": "Service",
+        "guide": "Gids",
+        "service": "Service",
+        "noGuides": "Nog geen gidsen — voeg ze toe in de gidsenmodule",
+        "noServices": "Nog geen services"
+      },
+      "week": {
+        "time": "uur"
+      }
+    },
     "runOfShow": {
       "liveTimeline": "Live Tijdlijn",
       "currentPhase": "Huidige Fase",
@@ -4085,7 +4811,68 @@
       "noData": "No data yet — stats will appear once your services are recommended through the AI.",
       "upsellHeadline": "Unlock AI Performance",
       "upsellBody": "Upgrade to Enterprise to see how often your services are recommended, clicked, and booked.",
-      "upsellCta": "Unlock Enterprise"
+      "upsellCta": "Unlock Enterprise",
+      "title": "AI-prestaties",
+      "subtitle": "Hier zie je hoe je services via de AI worden aanbevolen en geboekt.",
+      "scopeLabel": "Agentschap",
+      "impressions": "Impressies",
+      "clicks": "Clicks",
+      "ctr": "CTR",
+      "revenue": "Toegewezen omzet",
+      "impressionsPerService": "Impressies per service",
+      "perService": "Prestaties per service",
+      "loading": "Laden…",
+      "recentActivity": "Laatste AI-aanbevelingen",
+      "noFeed": "Nog geen activiteiten.",
+      "topKeywords": "Top-zoekwoorden",
+      "noKeywords": "Nog geen zoekwoordgegevens beschikbaar.",
+      "feedLine": "Je '{{section}}'-service werd op {{date}} aanbevolen voor een {{eventType}}-evenement{{city}} (via {{requestType}})"
+    },
+    "embed": {
+      "copied": "Gekopieerd naar klembord",
+      "noAgency": "Geen agentschap gevonden.",
+      "title": "Insluiten & openbare pagina",
+      "subtitle": "Deel je services en de boekingskalender — op je website of als openbare EventBliss-pagina.",
+      "publicUrlTitle": "Jouw openbare EventBliss-pagina",
+      "publicUrlDesc": "Heb je geen eigen website? Deel deze link direct met klanten, op social media, in e-mailhandtekeningen enz.",
+      "open": "Openen",
+      "publicUrlHint": "QR-code-geschikt, responsief, SEO-geoptimaliseerd. Klanten kunnen direct services boeken.",
+      "embedTitle": "Insluiten op je website",
+      "embedDesc": "Voeg je services + boekingskalender direct toe aan je bestaande website.",
+      "themePickerTitle": "Thema kiezen",
+      "themePickerHint": "Je klant ziet de agentschapspagina in deze stijl.",
+      "language": "Taal",
+      "height": "Hoogte (px)",
+      "hideChrome": "App-header verbergen",
+      "hideChromeHint": "Aanbevolen voor een nette insluiting",
+      "iframeLabel": "Eenvoudig iframe",
+      "iframeHint": "Gewoon kopiëren en op je website plakken — bijv. in WordPress als HTML-blok.",
+      "scriptLabel": "Scriptfragment (Vanilla JS)",
+      "tipTitle": "Pro-tip",
+      "tipBody": "Voor WordPress is er de plug-in \"Advanced iframe\". Gebruik voor Webflow/Framer/Wix de eigen embed-blokken. Bij een eigen React/Next.js-site het scriptfragment gebruiken — dan laadt het iframe lazy tijdens het scrollen."
+    },
+    "earnings": {
+      "pending": "Nieuwe aanvragen",
+      "pendingSub": "wachten op bevestiging",
+      "confirmed": "Bevestigd",
+      "confirmedSub": "aankomende events",
+      "revenueMonth": "Omzet deze maand",
+      "revenueMonthSub": "na 10% commissie",
+      "revenueTotal": "Totale omzet",
+      "paidBookings": "betaalde boekingen",
+      "title": "Marketplace-omzet",
+      "liveBadge": "Live uit Supabase",
+      "chartTitle": "Omzetverloop",
+      "chartSub": "afgelopen 6 maanden",
+      "chartEmpty": "Nog geen gegevens — je eerste boeking verschijnt hier.",
+      "bookingsThis": "Boekingen",
+      "participantsTotal": "Deelnemers",
+      "avgBooking": "Gem. boeking",
+      "topServicesTitle": "Top-services",
+      "topServicesSub": "op omzet",
+      "topServicesEmpty": "Nog geen serviceboekingen.",
+      "unknownService": "Naamloze service",
+      "bookingsLabel": "Boekingen"
     }
   },
   "games": {
@@ -4212,7 +4999,9 @@
       "partyGamesCount": "24+ Feestspellen",
       "partyGamesSubtitle": "Taboe, Bom, Headup en meer",
       "findInspiration": "Vind inspiratie",
-      "findInspirationSub": "Thema’s, spellen en ideeën voor je evenement"
+      "findInspirationSub": "Thema’s, spellen en ideeën voor je evenement",
+      "marketplace": "Marketplace",
+      "marketplaceSub": "Diensten & ervaringen"
     },
     "games": {
       "subtitle": "Feestspellen",
@@ -4357,7 +5146,10 @@
       "partyModeActivatedDesc": "Vanaf nu drink je in plaats van een straf te krijgen",
       "close": "Sluiten",
       "adminPanel": "Beheerderspaneel",
-      "adminDashboard": "Dashboard"
+      "adminDashboard": "Dashboard",
+      "partyHidden": "Partymodus weer verborgen",
+      "myBookings": "Mijn boekingen",
+      "myBookingsSub": "Bureaus & dienstverleners"
     },
     "create": {
       "headerTitle": "Evenement Maken",
@@ -4389,7 +5181,8 @@
         "inputPlaceholder": "Voer een naam in...",
         "guestCount_one": "{{count}} gast",
         "guestCount_other": "{{count}} gasten",
-        "noGuests": "Nog geen gasten — je kunt ze later uitnodigen."
+        "noGuests": "Nog geen gasten — je kunt ze later uitnodigen.",
+        "guestCount": "{{count}} gasten"
       },
       "stepReview": {
         "title": "Alles klopt?",
@@ -4638,7 +5431,11 @@
       "completed": "Afgerond",
       "cancelled": "Geannuleerd"
     },
-    "participants": "Deelnemers"
+    "participants": "Deelnemers",
+    "paymentCancelled": "Betaling geannuleerd — je kunt deze op elk moment hervatten.",
+    "onSiteBadge": "Betaling ter plaatse",
+    "payingPreparing": "Wordt voorbereid…",
+    "payNow": "Nu betalen"
   },
   "agencyDashboard": {
     "nav": {
@@ -4683,7 +5480,13 @@
       "confirmed": "Bevestigd",
       "completed": "Afgerond",
       "cancelled": "Geannuleerd"
-    }
+    },
+    "guideAssigned": "Gids toegewezen",
+    "guideUnassigned": "Toewijzing verwijderd",
+    "guideLoading": "Gidsen laden…",
+    "noGuides": "Geen gidsen — voeg ze toe in de gidsenmodule",
+    "guidePlaceholder": "Gids toewijzen",
+    "guideNone": "geen gids"
   },
   "guideManager": {
     "title": "Gidsenbeheer",
@@ -4740,7 +5543,34 @@
       "confirmed": "Bevestigd",
       "completed": "Afgerond",
       "cancelled": "Geannuleerd"
-    }
+    },
+    "createSuccess": "Afspraak aangemaakt",
+    "createTitle": "Nieuwe afspraak",
+    "createDescription": "Handmatige boeking — bijv. voor telefoon-/walk-inklanten. Geen Stripe-checkout, direct bevestigd.",
+    "service": "Service",
+    "noServices": "Nog geen goedgekeurde services — maak er eerst een aan in de Marketplace-module.",
+    "selectService": "Service kiezen",
+    "date": "Datum",
+    "time": "Tijd",
+    "participants": "Deelnemers",
+    "range": "Toegestaan",
+    "priceOverride": "Prijs per persoon (optioneel)",
+    "totalPreview": "Totaal",
+    "customerSection": "Klant",
+    "customerName": "Naam",
+    "customerEmail": "E-mail",
+    "customerPhone": "Telefoon",
+    "notes": "Notities",
+    "assignmentSection": "Toewijzing",
+    "assignGuide": "Gids",
+    "noGuide": "— geen gids —",
+    "assignTeam": "Teamlid",
+    "noTeam": "— niemand —",
+    "conflictBlocking": "Conflicten gevonden",
+    "conflictWarning": "Let op — mogelijke overlappingen",
+    "conflictContinueHint": "Je kunt toch aanmaken — controleer het wel eerst.",
+    "conflictBlockedTooltip": "Los eerst de conflicten op voordat je aanmaakt",
+    "createSubmit": "Afspraak aanmaken"
   },
   "calendarSync": {
     "title": "Kalender abonneren",
@@ -4813,7 +5643,8 @@
       "form": "Formulario",
       "responses": "Respuestas",
       "ai": "IA",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "marketplace": "Marketplace"
     },
     "honoree": "Homenajeado",
     "noDate": "Sin fecha",
@@ -4835,7 +5666,8 @@
       "inviteGuests": "Invitar",
       "planActivity": "Planificar",
       "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA"
+      "aiAssistant": "Asistente IA",
+      "browseMarketplace": "Marketplace"
     },
     "recentActivity": "Actividad reciente",
     "noActivity": "Sin actividad",
@@ -5746,5 +6578,145 @@
     "noServices": "Dit bureau heeft nog geen diensten in de marktplaats.",
     "reviewsTitle": "Beoordelingen",
     "noReviews": "Nog geen beoordelingen voor dit bureau."
+  },
+  "myEvents": {
+    "editFolder": "Map bewerken",
+    "newFolder": "Nieuwe map",
+    "folderName": "Mapnaam",
+    "folderColor": "Kleur",
+    "save": "Opslaan",
+    "deleteEvent": "Evenement verwijderen?",
+    "deleteEventDescription": "Dit evenement wordt gemarkeerd als verwijderd. Je kunt een reden opgeven en het later herstellen.",
+    "deleteReason": "Reden (optioneel)",
+    "deleteReasonPlaceholder": "bijv. testevenement, niet meer nodig...",
+    "restoreEvent": "Herstellen",
+    "moveToFolder": "Naar map verplaatsen",
+    "removeFromFolder": "Uit map verwijderen",
+    "unarchiveEvent": "Herstellen",
+    "archiveEvent": "Archiveren",
+    "folderCreated": "Map aangemaakt",
+    "folderDeleted": "Map verwijderd",
+    "eventArchived": "Evenement gearchiveerd",
+    "eventUnarchived": "Evenement hersteld",
+    "eventDeleted": "Evenement verwijderd",
+    "eventRestored": "Evenement hersteld",
+    "allEvents": "Alle evenementen",
+    "unfiled": "Zonder map",
+    "archived": "Gearchiveerd",
+    "deleted": "Verwijderd",
+    "noArchivedEvents": "Geen gearchiveerde evenementen",
+    "noDeletedEvents": "Geen verwijderde evenementen"
+  },
+  "profile": {
+    "account": "Account",
+    "myEvents": "Mijn evenementen",
+    "settings": "Instellingen",
+    "premium": "Premium",
+    "toAgencyDashboard": "Naar Agency Dashboard",
+    "becomeAgency": "Voor bureaus",
+    "adminArea": "Beheerdersgedeelte",
+    "noEvents": "Nog geen evenementen",
+    "noEventsDescription": "Maak je eerste evenement aan en nodig je vrienden uit!",
+    "createFirstEvent": "Eerste evenement maken",
+    "passwordMismatch": "Wachtwoorden komen niet overeen.",
+    "passwordTooShort": "Wachtwoord moet minstens 8 tekens bevatten.",
+    "passwordChanged": "Wachtwoord succesvol gewijzigd!",
+    "deleteConfirmationRequired": "Typ DELETE om te bevestigen.",
+    "accountDeleted": "Je account is permanent verwijderd.",
+    "exportInProgress": "Gegevensexport wordt voorbereid…",
+    "exportReady": "Je gegevensexport is gedownload.",
+    "exportFailed": "Export mislukt. Probeer het later opnieuw.",
+    "subscription": {
+      "planLifetime": "Premium (Lifetime)",
+      "planYearly": "Premium (Jaarlijks)",
+      "planMonthly": "Premium (Maandelijks)",
+      "planFree": "Gratis",
+      "title": "Mijn abonnement",
+      "description": "Beheer je abonnement en betaalmethoden",
+      "status": "Status",
+      "cancelScheduled": "Opzegging gepland",
+      "endsOn": "Eindigt op {{date}}",
+      "renewsOn": "Verlenging op {{date}}",
+      "lifetimeInfo": "Je Lifetime-toegang is permanent actief.",
+      "manage": "Abonnement beheren",
+      "noSubscription": "Je hebt geen actief abonnement.",
+      "upgradeNow": "Word nu Premium"
+    },
+    "invoices": {
+      "paid": "Betaald",
+      "open": "Openstaand",
+      "void": "Geannuleerd",
+      "title": "Mijn facturen",
+      "description": "Overzicht van je betalingen",
+      "noInvoices": "Geen facturen aanwezig.",
+      "downloadPdf": "Pdf downloaden",
+      "viewOnline": "Online bekijken"
+    },
+    "accountInfo": "Accountgegevens",
+    "accountInfoDescription": "Je aanmeldgegevens",
+    "emailCannotChange": "Het e-mailadres kan niet worden gewijzigd.",
+    "aiCredits": {
+      "title": "AI-credits",
+      "description": "Je maandelijkse credits voor AI-functies",
+      "noCredits": "Geen credits - Premium-abonnement vereist",
+      "used": "Gebruikt",
+      "remaining": "Resterend",
+      "limit": "Maandelijks limiet",
+      "resetDate": "Volgende reset"
+    },
+    "changePassword": "Wachtwoord wijzigen",
+    "changePasswordDescription": "Kies een veilig nieuw wachtwoord.",
+    "newPassword": "Nieuw wachtwoord",
+    "updatePassword": "Wachtwoord bijwerken",
+    "dangerZoneDescription": "Verwijder je account permanent.",
+    "exportData": "Mijn gegevens exporteren (AVG art. 20)",
+    "deleteAccount": "Account verwijderen",
+    "deleteAccountTitle": "Account echt verwijderen?",
+    "deleteAccountWarning": "Deze actie kan niet ongedaan worden gemaakt. Al je events en gegevens worden permanent verwijderd.",
+    "typeDeleteToConfirm": "Typ DELETE om te bevestigen"
+  },
+  "agencyPortal": {
+    "loginRequired": "Aanmelding vereist",
+    "loginDesc": "Meld je aan om toegang te krijgen tot het bureauportaal.",
+    "pending": {
+      "title": "Aanvraag in behandeling",
+      "description": "Je aanvraag als bureaupartner wordt momenteel beoordeeld.",
+      "notice": "We nemen binnen 48 uur contact met je op."
+    },
+    "notAgency": {
+      "title": "Bureaupartner worden",
+      "description": "Je bent nog geen bureaupartner. Registreer je bureau en verdien commissies.",
+      "cta": "Nu aanmelden"
+    },
+    "title": "Bureauportaal",
+    "activePartner": "Actieve partner",
+    "stats": {
+      "referrals": "Aanbevelingen",
+      "bookings": "Boekingen",
+      "commission": "Commissies"
+    },
+    "tabs": {
+      "dashboard": "Overzicht",
+      "vouchers": "Vouchers",
+      "commissions": "Commissies",
+      "payouts": "Uitbetalingen",
+      "settings": "Instellingen"
+    },
+    "dashboard": {
+      "welcome": "Welkom terug!",
+      "subtitle": "Hier zie je een overzicht van je partneractiviteiten.",
+      "agencyInfo": "Bureau-info",
+      "name": "Naam",
+      "location": "Locatie",
+      "commissionRate": "Commissiepercentage",
+      "performance": "Prestaties",
+      "conversionRate": "Conversiepercentage",
+      "avgCommission": "Gem. commissie"
+    }
+  },
+  "whoami": {
+    "setup": {
+      "hidden": ""
+    }
   }
 }
