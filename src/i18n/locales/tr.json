@@ -49,7 +49,13 @@
     "actions": "İşlemler",
     "active": "Aktif",
     "inactive": "Pasif",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "reset": "Sıfırla",
+    "home": "Ana sayfa",
+    "warning": "Uyarı",
+    "organizer": "Organizatör",
+    "people": "Kişi",
+    "unknown": "Bilinmiyor"
   },
   "feedback": {
     "button": "Geri Bildirim",
@@ -318,7 +324,11 @@
           "generating": "Oluşturuluyor...",
           "inputPlaceholder": "AI'ya sor...",
           "response": "**Bekarlığa veda için en iyi 3 aktivite önerisi:**\n\n🚤 **Tekne turu** - Suda rahatlama\n\n🎯 **Escape Room** - Takım çalışması ve heyecan\n\n🍻 **Bira fabrikası turu** - Tadım ile tur\n\n*Baz alınan: Bütçe €150-250, 8 katılımcı*",
-          "regenerate": "Yeniden oluştur"
+          "regenerate": "Yeniden oluştur",
+          "responseDestinations": "**Bekarlığa veda partiniz için en iyi seyahat yerleri:**\n\n🏙️ **Hamburg** - Reeperbahn ve kültürüyle liman şehri\n• 2s yolculuk · €80-150/gece · Yoğun gece hayatı\n\n🍺 **Münih** - Oktoberfest havası ve bira bahçeleri\n• 4s yolculuk · €100-180/gece · Bavyera geleneği\n\n🎉 **Köln** - Ren kıyısında karnaval şehri\n• 3s yolculuk · €70-120/gece · Parti atmosferi\n\n*Öneri: Hamburg bütçenize en uygun seçenek!*",
+          "responseActivities": "**8 kişi için en iyi 5 etkinlik:**\n\n1. 🚤 **Tekne turu** - Alster'da keyifli bir gezinti\n   ~€25/kişi · 2 saat\n\n2. 🎯 **Kaçış odası** - Takım çalışması ve heyecan\n   ~€30/kişi · 1 saat\n\n3. 🍻 **Bira fabrikası turu** - Bira tadımı\n   ~€35/kişi · 2,5 saat\n\n4. 🎳 **Bovling + akşam yemeği** - Klasik ikili\n   ~€45/kişi · 3 saat\n\n5. 🏎️ **Kart yarışı** - Herkes için aksiyon\n   ~€40/kişi · 1,5 saat\n\n*Tüm etkinlikler €150-250 bütçenize uygun!*",
+          "responseSchedule": "**Mükemmel bekarlığa veda günü programı:**\n\n🌅 **10:00** - Birlikte kahvaltı\n   Limandaki kafe · Herkes birlikte başlıyor\n\n🚶 **12:00** - Farklı bir şehir turu\n   Görevlerle dolu interaktif tur\n\n🍕 **14:00** - Öğle yemeği ve sürpriz\n   Mario'ya hediye veriliyor!\n\n🎯 **16:00** - Kaçış odası mücadelesi\n   Takımlar karşı karşıya\n\n🍺 **19:00** - Bira fabrikası ziyareti\n   Tadım ve akşam yemeğiyle\n\n🎉 **22:00** - Parti mekanı\n   DJ ve dans pisti ayrıldı\n\n*Etkinlikler arasına zaman payı eklendi!*",
+          "responseBudget": "**8 kişi için bütçe planı:**\n\n📊 **Toplam bütçe:** €1.600 - €2.000\n\n**Kişi başı dökümü (~€200):**\n\n🏨 Konaklama: €60-80\n   Hostel/otelde 2 gece\n\n🚌 Ulaşım: €25-35\n   Grup tren bileti\n\n🍽️ Yemek: €50-60\n   3 öğün + atıştırmalıklar\n\n🎯 Etkinlikler: €50-70\n   2-3 planlı etkinlik\n\n🍺 İçecek/eğlence: €30-40\n   Akşam programı\n\n💰 **Tasarruf ipuçları:**\n• Grup indirimi iste\n• Happy hour'dan yararlan\n• Kahvaltıyı kendin hazırla"
         },
         "survey": {
           "selectName": "Adınızı seçin",
@@ -1019,7 +1029,8 @@
         "label": "İstekler ve fikirler",
         "placeholder": "Her zaman ne yapmak istediniz?"
       }
-    }
+    },
+    "stepCounter": "Adım {{current}} / {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1848,7 +1859,22 @@
       "remaining": "{{limit}} kredinin {{remaining}} tanesi kaldı",
       "yearly": "Aylık 100 AI kredisi",
       "lifetime": "Aylık 75 AI kredisi"
-    }
+    },
+    "cancelSuccess": "Aboneliğin iptal edildi ve dönem sonunda sona erecek.",
+    "cancelError": "İptal sırasında hata oluştu. Lütfen tekrar dene.",
+    "cancellationScheduled": "İptal planlandı",
+    "cancelledAt": "Sona erme tarihi",
+    "monthlyDescription": "Esnek ve istediğin zaman iptal edilebilir",
+    "cancelSubscription": "Aboneliği iptal et",
+    "currentPlan": "Mevcut plan",
+    "yearly": "Yıllık",
+    "yearlyDescription": "En popüler - %28 tasarruf et",
+    "perYear": "yıl",
+    "savePercent": "%28 tasarruf",
+    "subscribeYearly": "Yıllık abone ol",
+    "cancelConfirmTitle": "Aboneliği gerçekten iptal etmek istiyor musun?",
+    "cancelConfirmDescription": "Erişimin dönem sonuna kadar etkin kalır. İstediğin zaman tekrar abone olabilirsin.",
+    "confirmCancel": "Evet, iptal et"
   },
   "admin": {
     "credits": {
@@ -2631,12 +2657,16 @@
       "difficulty": "Zorluk",
       "kidsFriendly": "Çocuklara uygun",
       "alcoholFree": "Alkolsüz",
-      "clear": "Filtreleri temizle"
+      "clear": "Filtreleri temizle",
+      "drinking": "İçki oyunu",
+      "classic": "Klasik",
+      "description": "Sonuçları isteğine göre filtrele"
     },
     "difficulty": {
       "easy": "Kolay",
       "medium": "Orta",
-      "hard": "Zor"
+      "hard": "Zor",
+      "label": "Zorluk"
     },
     "searchPlaceholder": "Oyun ara...",
     "resultsCount": "{{count}} oyun bulundu",
@@ -3623,7 +3653,44 @@
         "description": "Olimpiyat ruhuyla sportif yarışmalar",
         "tips": "Formalar, madalyalar, oyun alanları ve sporcu atıştırmalıkları!"
       }
-    }
+    },
+    "tts": {
+      "error": "Sesli okuma sırasında hata oluştu",
+      "notSupported": "Metin okuma özelliği tarayıcın tarafından desteklenmiyor",
+      "modelReady": "Ses modeli hazır!",
+      "downloadError": "Model indirilirken hata oluştu",
+      "title": "Yönergeyi sesli oku",
+      "selectVoice": "Ses seç",
+      "firstTimeDownload": "İlk başlatma: Yüksek kaliteli ses indiriliyor (~50MB)",
+      "loadingVoice": "Ses modeli yükleniyor...",
+      "nextSection": "Sonraki bölüm"
+    },
+    "copied": "kopyalandı!",
+    "removedFromFavorites": "Favorilerden çıkarıldı",
+    "addedToFavorites": "Favorilere eklendi",
+    "timer": {
+      "title": "Oyun zamanlayıcısı",
+      "finished": "Süre doldu!",
+      "timeUp": "Zamanlayıcı sona erdi. Oyun bitti!",
+      "custom": "Dk",
+      "pause": "Duraklat",
+      "start": "Başlat",
+      "reset": "Sıfırla"
+    },
+    "back": "Geri",
+    "random": "Rastgele",
+    "randomPick": "Rastgele seçim",
+    "hideDetails": "Ayrıntıları gizle",
+    "showDetails": "Ayrıntıları göster",
+    "dressCode": "Kıyafet kuralı",
+    "music": "Müzik",
+    "decorationTips": "Dekorasyon ipuçları",
+    "colorPalette": "Renk paleti",
+    "searchThemesPlaceholder": "Tema ara...",
+    "randomTheme": "Rastgele tema",
+    "randomThemePick": "Rastgele tema",
+    "themesCount": "tema bulundu",
+    "noThemesFound": "Tema bulunamadı."
   },
   "ideasHub": {
     "title": "Oyunlar ve Fikirler",
@@ -3638,7 +3705,13 @@
       "categories": "Kategoriler",
       "languages": "Diller"
     },
-    "openGames": "Tüm Oyunları Aç"
+    "openGames": "Tüm Oyunları Aç",
+    "badge": "Etkinliğin için ilham",
+    "cta": {
+      "title": "Etkinliğin için hazır mısın?",
+      "description": "Hemen ücretsiz etkinliğini oluştur ve planlamanda tüm oyunları ve temaları kullan.",
+      "button": "Etkinlik oluştur"
+    }
   },
   "eventTypes": {
     "bachelor": "Bekarlığa Veda (O)",

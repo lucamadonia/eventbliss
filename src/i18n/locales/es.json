@@ -49,7 +49,13 @@
     "actions": "Acciones",
     "active": "Activo",
     "inactive": "Inactivo",
-    "dismiss": "Cerrar"
+    "dismiss": "Cerrar",
+    "reset": "Restablecer",
+    "home": "Inicio",
+    "warning": "Advertencia",
+    "organizer": "Organizador",
+    "people": "Personas",
+    "unknown": "Desconocido"
   },
   "feedback": {
     "button": "Feedback",
@@ -318,7 +324,11 @@
           "generating": "Generando...",
           "inputPlaceholder": "Preguntar a la IA...",
           "response": "**Top 3 sugerencias de actividades para tu despedida:**\n\n🚤 **Tour en barco** - Relax en el agua\n\n🎯 **Escape Room** - Trabajo en equipo y emoción\n\n🍻 **Tour de cervecería** - Degustación con visita\n\n*Basado en: Presupuesto €150-250, 8 participantes*",
-          "regenerate": "Regenerar"
+          "regenerate": "Regenerar",
+          "responseDestinations": "**Los mejores destinos para vuestra despedida:**\n\n🏙️ **Hamburgo** - Ciudad portuaria con la Reeperbahn y mucha cultura\n• 2 h de viaje · 80-150 €/noche · Mucha vida nocturna\n\n🍺 **Múnich** - Ambiente de Oktoberfest y cervecerías al aire libre\n• 4 h de viaje · 100-180 €/noche · Tradición bávara\n\n🎉 **Colonia** - La ciudad del carnaval junto al Rin\n• 3 h de viaje · 70-120 €/noche · Ambiente de fiesta\n\n*Recomendación: ¡Hamburgo es la que mejor se adapta a vuestro presupuesto!*",
+          "responseActivities": "**Las 5 mejores actividades para 8 personas:**\n\n1. 🚤 **Paseo en barco** - Relajaos por el Alster\n   ~25 €/persona · 2 horas\n\n2. 🎯 **Escape room** - Trabajo en equipo y emoción\n   ~30 €/persona · 1 hora\n\n3. 🍻 **Visita a una cervecería** - Cata de cervezas\n   ~35 €/persona · 2,5 horas\n\n4. 🎳 **Bolos + cena** - El combo clásico\n   ~45 €/persona · 3 horas\n\n5. 🏎️ **Karts** - Acción para todos\n   ~40 €/persona · 1,5 horas\n\n*¡Todas las actividades dentro de vuestro presupuesto de 150-250 €!*",
+          "responseSchedule": "**El plan perfecto para el día de la despedida:**\n\n🌅 **10:00** - Desayuno todos juntos\n   Café junto al puerto · Empezar todos a la vez\n\n🚶 **12:00** - Visita guiada con un toque diferente\n   Ruta interactiva con pruebas\n\n🍕 **14:00** - Comida y sorpresa\n   ¡Entrega del regalo para Mario!\n\n🎯 **16:00** - Reto en el escape room\n   Equipos enfrentados\n\n🍺 **19:00** - Visita a una cervecería\n   Con cata y cena\n\n🎉 **22:00** - Local de fiesta\n   DJ y pista de baile reservados\n\n*¡Con tiempo de margen entre actividades!*",
+          "responseBudget": "**Plan de presupuesto para 8 personas:**\n\n📊 **Presupuesto total:** 1.600 - 2.000 €\n\n**Desglose por persona (~200 €):**\n\n🏨 Alojamiento: 60-80 €\n   2 noches en hostel/hotel\n\n🚌 Viaje: 25-35 €\n   Billete de grupo en tren\n\n🍽️ Comida: 50-60 €\n   3 comidas + tentempiés\n\n🎯 Actividades: 50-70 €\n   2-3 eventos planificados\n\n🍺 Bebidas/diversión: 30-40 €\n   Programa nocturno\n\n💰 **Consejos para ahorrar:**\n• Pedid descuentos para grupos\n• Aprovechad la happy hour\n• Preparad el desayuno vosotros mismos"
         },
         "survey": {
           "selectName": "Selecciona tu nombre",
@@ -969,7 +979,8 @@
         "label": "Deseos e ideas",
         "placeholder": "¿Qué siempre has querido hacer?"
       }
-    }
+    },
+    "stepCounter": "Paso {{current}} de {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1798,7 +1809,22 @@
       "remaining": "{{remaining}} de {{limit}} créditos restantes",
       "yearly": "100 créditos de IA al mes",
       "lifetime": "75 créditos de IA al mes"
-    }
+    },
+    "cancelSuccess": "Tu suscripción se ha cancelado y finalizará al término del periodo contratado.",
+    "cancelError": "Error al cancelar. Inténtalo de nuevo.",
+    "cancellationScheduled": "Cancelación programada",
+    "cancelledAt": "Finaliza el",
+    "monthlyDescription": "Flexible y cancelable en cualquier momento",
+    "cancelSubscription": "Cancelar suscripción",
+    "currentPlan": "Plan actual",
+    "yearly": "Anual",
+    "yearlyDescription": "El más popular: ahorra un 28 %",
+    "perYear": "año",
+    "savePercent": "Ahorra un 28 %",
+    "subscribeYearly": "Suscribirse anualmente",
+    "cancelConfirmTitle": "¿Seguro que quieres cancelar la suscripción?",
+    "cancelConfirmDescription": "Tu acceso seguirá activo hasta el final del periodo contratado. Puedes volver a suscribirte cuando quieras.",
+    "confirmCancel": "Sí, cancelar"
   },
   "admin": {
     "credits": {
@@ -2664,7 +2690,8 @@
     "difficulty": {
       "easy": "Fácil",
       "medium": "Medio",
-      "hard": "Difícil"
+      "hard": "Difícil",
+      "label": "Dificultad"
     },
     "searchPlaceholder": "Buscar juegos...",
     "searchThemesPlaceholder": "Buscar temas...",
@@ -3669,7 +3696,31 @@
         "description": "Olimpiadas y competiciones deportivas",
         "tips": "¡Camisetas, medallas, campos de juego y snacks de atleta!"
       }
-    }
+    },
+    "tts": {
+      "error": "Error al leer en voz alta",
+      "notSupported": "Tu navegador no admite la función de texto a voz",
+      "modelReady": "¡Modelo de voz listo!",
+      "downloadError": "Error al descargar el modelo",
+      "title": "Leer instrucciones en voz alta",
+      "selectVoice": "Elegir voz",
+      "firstTimeDownload": "Primer inicio: descargando voz de alta calidad (~50 MB)",
+      "loadingVoice": "Cargando modelo de voz...",
+      "nextSection": "Siguiente sección"
+    },
+    "copied": "¡copiado!",
+    "removedFromFavorites": "Eliminado de favoritos",
+    "addedToFavorites": "Añadido a favoritos",
+    "timer": {
+      "title": "Temporizador del juego",
+      "finished": "¡Se acabó el tiempo!",
+      "timeUp": "El temporizador ha terminado. ¡El juego se acabó!",
+      "custom": "min",
+      "pause": "Pausar",
+      "start": "Iniciar",
+      "reset": "Restablecer"
+    },
+    "back": "Atrás"
   },
   "ideasHub": {
     "title": "Juegos e Ideas",
@@ -3684,7 +3735,13 @@
       "categories": "Categorías",
       "languages": "Idiomas"
     },
-    "openGames": "Abrir Todos los Juegos"
+    "openGames": "Abrir Todos los Juegos",
+    "badge": "Inspiración para tu evento",
+    "cta": {
+      "title": "¿Listo para tu evento?",
+      "description": "Crea ahora tu evento gratis y aprovecha todos los juegos y temáticas en tu planificación.",
+      "button": "Crear evento"
+    }
   },
   "eventTypes": {
     "bachelor": "Despedida (Él)",

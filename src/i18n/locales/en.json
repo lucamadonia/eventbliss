@@ -1124,7 +1124,11 @@
     "actions": "Actions",
     "active": "Active",
     "inactive": "Inactive",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "warning": "Warning",
+    "organizer": "Organizer",
+    "people": "People",
+    "unknown": "Unknown"
   },
   "feedback": {
     "button": "Feedback",
@@ -1397,7 +1401,11 @@
           "generating": "Generating...",
           "inputPlaceholder": "Ask AI...",
           "response": "**Top 3 Activity Suggestions for Your Party:**\n\n🚤 **Boat Tour** - Relaxed trip on the water\n\n🎯 **Escape Room** - Teamwork and excitement\n\n🍻 **Brewery Tour** - Beer tasting with guided tour\n\n*Based on: Budget €150-250, 8 participants*",
-          "regenerate": "Regenerate"
+          "regenerate": "Regenerate",
+          "responseDestinations": "**Top destinations for your stag/hen do:**\n\n🏙️ **Hamburg** - Port city with the Reeperbahn & culture\n• 2h travel · €80-150/night · Lively nightlife\n\n🍺 **Munich** - Oktoberfest vibes & beer gardens\n• 4h travel · €100-180/night · Bavarian tradition\n\n🎉 **Cologne** - Carnival city on the Rhine\n• 3h travel · €70-120/night · Party atmosphere\n\n*Recommendation: Hamburg fits your budget best!*",
+          "responseActivities": "**Top 5 activities for 8 people:**\n\n1. 🚤 **Boat trip** - Cruise the Alster\n   ~€25/person · 2 hours\n\n2. 🎯 **Escape room** - Teamwork & thrills\n   ~€30/person · 1 hour\n\n3. 🍻 **Brewery tour** - Beer tasting\n   ~€35/person · 2.5 hours\n\n4. 🎳 **Bowling + dinner** - The classic combo\n   ~€45/person · 3 hours\n\n5. 🏎️ **Karting** - Action for everyone\n   ~€40/person · 1.5 hours\n\n*All activities within your €150-250 budget!*",
+          "responseSchedule": "**The perfect day plan:**\n\n🌅 **10:00** - Breakfast together\n   Café by the harbour · Everyone starts together\n\n🚶 **12:00** - City tour with a twist\n   Interactive tour with challenges\n\n🍕 **14:00** - Lunch & surprise\n   Hand over the gift for Mario!\n\n🎯 **16:00** - Escape room challenge\n   Teams against each other\n\n🍺 **19:00** - Brewery visit\n   With tasting & dinner\n\n🎉 **22:00** - Party venue\n   DJ & dancefloor reserved\n\n*Buffer time planned between activities!*",
+          "responseBudget": "**Budget plan for 8 people:**\n\n📊 **Total budget:** €1,600 - €2,000\n\n**Breakdown per person (~€200):**\n\n🏨 Accommodation: €60-80\n   2 nights in a hostel/hotel\n\n🚌 Travel: €25-35\n   Group train ticket\n\n🍽️ Food: €50-60\n   3 meals + snacks\n\n🎯 Activities: €50-70\n   2-3 planned events\n\n🍺 Drinks/fun: €30-40\n   Evening programme\n\n💰 **Money-saving tips:**\n• Ask for group discounts\n• Use happy hours\n• Self-cater breakfast"
         },
         "survey": {
           "selectName": "Select your name",
@@ -2036,7 +2044,8 @@
         "label": "Wishes and ideas",
         "placeholder": "What have you always wanted to do?"
       }
-    }
+    },
+    "stepCounter": "Step {{current}} of {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -3105,7 +3114,22 @@
       "remaining": "{{remaining}} of {{limit}} credits remaining",
       "yearly": "100 AI credits/month",
       "lifetime": "75 AI credits/month"
-    }
+    },
+    "cancelConfirmDescription": "Your access stays active until the end of the billing period. You can resubscribe anytime.",
+    "cancelConfirmTitle": "Cancel your subscription?",
+    "cancelError": "Cancellation failed. Please try again.",
+    "cancelSubscription": "Cancel subscription",
+    "cancelSuccess": "Your subscription has been cancelled and will end when the current period expires.",
+    "cancellationScheduled": "Cancellation scheduled",
+    "cancelledAt": "Ends on",
+    "confirmCancel": "Yes, cancel",
+    "currentPlan": "Current plan",
+    "monthlyDescription": "Flexible & cancel anytime",
+    "perYear": "year",
+    "savePercent": "Save 28%",
+    "subscribeYearly": "Subscribe yearly",
+    "yearly": "Yearly",
+    "yearlyDescription": "Most popular — save 28%"
   },
   "admin": {
     "credits": {

@@ -49,7 +49,13 @@
     "actions": "Acties",
     "active": "Actief",
     "inactive": "Inactief",
-    "dismiss": "Sluiten"
+    "dismiss": "Sluiten",
+    "reset": "Resetten",
+    "home": "Startpagina",
+    "warning": "Waarschuwing",
+    "organizer": "Organisator",
+    "people": "Personen",
+    "unknown": "Onbekend"
   },
   "feedback": {
     "button": "Feedback",
@@ -318,7 +324,11 @@
           "generating": "Genereren...",
           "inputPlaceholder": "Vraag AI...",
           "response": "**Top 3 activiteitensuggesties voor je vrijgezellenfeest:**\n\n🚤 **Boottocht** - Ontspanning op het water\n\n🎯 **Escape Room** - Teamwork en spanning\n\n🍻 **Brouwerij tour** - Bierproeverij met rondleiding\n\n*Gebaseerd op: Budget €150-250, 8 deelnemers*",
-          "regenerate": "Opnieuw genereren"
+          "regenerate": "Opnieuw genereren",
+          "responseDestinations": "**Topbestemmingen voor jullie vrijgezellenfeest:**\n\n🏙️ **Hamburg** - Havenstad met de Reeperbahn & cultuur\n• 2u reistijd · €80-150/nacht · Volop nachtleven\n\n🍺 **München** - Oktoberfest-sfeer & biertuinen\n• 4u reistijd · €100-180/nacht · Beierse traditie\n\n🎉 **Keulen** - Carnavalsstad aan de Rijn\n• 3u reistijd · €70-120/nacht · Feestsfeer\n\n*Aanbeveling: Hamburg past het best bij jullie budget!*",
+          "responseActivities": "**Top 5 activiteiten voor 8 personen:**\n\n1. 🚤 **Boottocht** - Ontspannen over de Alster\n   ~€25/persoon · 2 uur\n\n2. 🎯 **Escape room** - Teamwork & spanning\n   ~€30/persoon · 1 uur\n\n3. 🍻 **Brouwerijtour** - Bierproeverij\n   ~€35/persoon · 2,5 uur\n\n4. 🎳 **Bowlen + diner** - Klassieke combi\n   ~€45/persoon · 3 uur\n\n5. 🏎️ **Karten** - Actie voor iedereen\n   ~€40/persoon · 1,5 uur\n\n*Alle activiteiten binnen jullie budget van €150-250!*",
+          "responseSchedule": "**Perfect dagprogramma voor het vrijgezellenfeest:**\n\n🌅 **10:00** - Samen ontbijten\n   Café aan de haven · Met z'n allen beginnen\n\n🚶 **12:00** - Een stadstour eens anders\n   Interactieve tour met opdrachten\n\n🍕 **14:00** - Lunch & verrassing\n   Cadeau-overhandiging voor Mario!\n\n🎯 **16:00** - Escape room challenge\n   Teams tegen elkaar\n\n🍺 **19:00** - Bezoek aan de brouwerij\n   Met proeverij & avondeten\n\n🎉 **22:00** - Feestlocatie\n   DJ & dansvloer gereserveerd\n\n*Tijdsmarges tussen de activiteiten ingepland!*",
+          "responseBudget": "**Budgetplan voor 8 personen:**\n\n📊 **Totaalbudget:** €1.600 - €2.000\n\n**Verdeling per persoon (~€200):**\n\n🏨 Overnachting: €60-80\n   2 nachten in hostel/hotel\n\n🚌 Reis: €25-35\n   Groepsticket trein\n\n🍽️ Eten: €50-60\n   3x maaltijden + snacks\n\n🎯 Activiteiten: €50-70\n   2-3 geplande events\n\n🍺 Drankjes/plezier: €30-40\n   Avondprogramma\n\n💰 **Bespaartips:**\n• Vraag naar groepskortingen\n• Maak gebruik van happy hour\n• Zelf ontbijt verzorgen"
         },
         "survey": {
           "selectName": "Selecteer je naam",
@@ -1019,7 +1029,8 @@
         "label": "Wensen en ideeën",
         "placeholder": "Wat heb je altijd al willen doen?"
       }
-    }
+    },
+    "stepCounter": "Stap {{current}} van {{total}}"
   },
   "dashboard": {
     "tabs": {
@@ -1848,7 +1859,22 @@
       "remaining": "{{remaining}} van {{limit}} credits over",
       "yearly": "100 AI-credits/maand",
       "lifetime": "75 AI-credits/maand"
-    }
+    },
+    "cancelSuccess": "Je abonnement is opgezegd en loopt af aan het einde van de looptijd.",
+    "cancelError": "Fout bij het opzeggen. Probeer het opnieuw.",
+    "cancellationScheduled": "Opzegging genoteerd",
+    "cancelledAt": "Eindigt op",
+    "monthlyDescription": "Flexibel & altijd opzegbaar",
+    "cancelSubscription": "Abonnement opzeggen",
+    "currentPlan": "Huidig plan",
+    "yearly": "Jaarlijks",
+    "yearlyDescription": "Meest gekozen - bespaar 28%",
+    "perYear": "jaar",
+    "savePercent": "Bespaar 28%",
+    "subscribeYearly": "Jaarlijks abonneren",
+    "cancelConfirmTitle": "Abonnement echt opzeggen?",
+    "cancelConfirmDescription": "Je toegang blijft actief tot het einde van de looptijd. Je kunt je altijd weer aanmelden.",
+    "confirmCancel": "Ja, opzeggen"
   },
   "admin": {
     "credits": {
@@ -2649,7 +2675,8 @@
     "difficulty": {
       "easy": "Makkelijk",
       "medium": "Gemiddeld",
-      "hard": "Moeilijk"
+      "hard": "Moeilijk",
+      "label": "Moeilijkheid"
     },
     "searchPlaceholder": "Spellen zoeken...",
     "searchThemesPlaceholder": "Thema's zoeken...",
@@ -3649,7 +3676,31 @@
         "description": "Olympiade en sportieve wedstrijden",
         "tips": "Shirts, medailles, speelvelden en sportieve snacks!"
       }
-    }
+    },
+    "tts": {
+      "error": "Fout bij voorlezen",
+      "notSupported": "Tekst-naar-spraak wordt niet ondersteund door je browser",
+      "modelReady": "Stemmodel klaar!",
+      "downloadError": "Fout bij het downloaden van het model",
+      "title": "Instructies voorlezen",
+      "selectVoice": "Stem kiezen",
+      "firstTimeDownload": "Eerste keer: hoogwaardige stem wordt geladen (~50MB)",
+      "loadingVoice": "Stemmodel laden...",
+      "nextSection": "Volgend gedeelte"
+    },
+    "copied": "gekopieerd!",
+    "removedFromFavorites": "Uit favorieten verwijderd",
+    "addedToFavorites": "Aan favorieten toegevoegd",
+    "timer": {
+      "title": "Spel-timer",
+      "finished": "Tijd is om!",
+      "timeUp": "De timer is afgelopen. Het spel is voorbij!",
+      "custom": "min",
+      "pause": "Pauze",
+      "start": "Start",
+      "reset": "Resetten"
+    },
+    "back": "Terug"
   },
   "ideasHub": {
     "title": "Spellen & Ideeën",
@@ -3664,7 +3715,13 @@
       "categories": "Categorieën",
       "languages": "Talen"
     },
-    "openGames": "Alle Spellen Openen"
+    "openGames": "Alle Spellen Openen",
+    "badge": "Inspiratie voor je event",
+    "cta": {
+      "title": "Klaar voor je event?",
+      "description": "Maak nu gratis je event aan en gebruik alle spellen en thema's in je planning.",
+      "button": "Event aanmaken"
+    }
   },
   "eventTypes": {
     "bachelor": "Vrijgezellenfeest (Hij)",

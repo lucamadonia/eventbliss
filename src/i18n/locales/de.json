@@ -1174,7 +1174,11 @@
     "actions": "Aktionen",
     "active": "Aktiv",
     "inactive": "Inaktiv",
-    "dismiss": "Schließen"
+    "dismiss": "Schließen",
+    "warning": "Warnung",
+    "organizer": "Organisator",
+    "people": "Personen",
+    "unknown": "Unbekannt"
   },
   "feedback": {
     "button": "Feedback",
@@ -1447,7 +1451,11 @@
           "generating": "Generiere...",
           "inputPlaceholder": "Frag die KI...",
           "response": "**Top 3 Aktivitätsvorschläge für euren JGA:**\n\n🚤 **Bootstour** - Entspannt über die Alster\n\n🎯 **Escape Room** - Teamwork und Spannung\n\n🍻 **Brauerei-Tour** - Bierverkostung mit Führung\n\n*Basierend auf: Budget €150-250, 8 Teilnehmer*",
-          "regenerate": "Neu generieren"
+          "regenerate": "Neu generieren",
+          "responseDestinations": "**Top Reiseziele für euren JGA:**\n\n🏙️ **Hamburg** - Hafenstadt mit Reeperbahn & Kultur\n• 2h Anreise · €80-150/Nacht · Viel Nachtleben\n\n🍺 **München** - Oktoberfest-Flair & Biergärten\n• 4h Anreise · €100-180/Nacht · Bayerische Tradition\n\n🎉 **Köln** - Karnevalsstadt am Rhein\n• 3h Anreise · €70-120/Nacht · Party-Atmosphäre\n\n*Empfehlung: Hamburg passt am besten zu eurem Budget!*",
+          "responseActivities": "**Top 5 Aktivitäten für 8 Personen:**\n\n1. 🚤 **Bootstour** - Entspannt über die Alster\n   ~€25/Person · 2 Stunden\n\n2. 🎯 **Escape Room** - Teamwork & Spannung\n   ~€30/Person · 1 Stunde\n\n3. 🍻 **Brauerei-Tour** - Bierverkostung\n   ~€35/Person · 2.5 Stunden\n\n4. 🎳 **Bowling + Dinner** - Klassiker-Kombi\n   ~€45/Person · 3 Stunden\n\n5. 🏎️ **Kartfahren** - Action für alle\n   ~€40/Person · 1.5 Stunden\n\n*Alle Aktivitäten in eurem Budget von €150-250!*",
+          "responseSchedule": "**Perfekter JGA-Tagesplan:**\n\n🌅 **10:00** - Gemeinsames Frühstück\n   Café am Hafen · Alle zusammen starten\n\n🚶 **12:00** - Stadtführung mal anders\n   Interaktive Tour mit Aufgaben\n\n🍕 **14:00** - Mittagessen & Überraschung\n   Geschenkübergabe für Mario!\n\n🎯 **16:00** - Escape Room Challenge\n   Teams gegeneinander\n\n🍺 **19:00** - Brauerei-Besuch\n   Mit Verkostung & Abendessen\n\n🎉 **22:00** - Party-Location\n   DJ & Dancefloor reserviert\n\n*Zeitpuffer zwischen Aktivitäten eingeplant!*",
+          "responseBudget": "**Budgetplan für 8 Personen:**\n\n📊 **Gesamtbudget:** €1.600 - €2.000\n\n**Aufschlüsselung pro Person (~€200):**\n\n🏨 Unterkunft: €60-80\n   2 Nächte im Hostel/Hotel\n\n🚌 Anreise: €25-35\n   Gruppenticket Bahn\n\n🍽️ Essen: €50-60\n   3x Mahlzeiten + Snacks\n\n🎯 Aktivitäten: €50-70\n   2-3 geplante Events\n\n🍺 Getränke/Spaß: €30-40\n   Abendprogramm\n\n💰 **Spartipps:**\n• Gruppenrabatte anfragen\n• Happy Hour nutzen\n• Selbstversorgung Frühstück"
         },
         "survey": {
           "selectName": "Wähle deinen Namen",
@@ -2086,7 +2094,8 @@
         "label": "Wünsche und Ideen",
         "placeholder": "Was wolltest du schon immer mal machen?"
       }
-    }
+    },
+    "stepCounter": "Schritt {{current}} von {{total}}"
   },
   "dashboard": {
     "tabs": {
