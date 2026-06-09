@@ -102,6 +102,8 @@ async function headMeta() {
     const henIntl = await vite.ssrLoadModule("/src/lib/hen-do-overlay-intl.ts");
     const acts = await vite.ssrLoadModule("/src/lib/activities-library.ts");
     const actIntl = await vite.ssrLoadModule("/src/lib/activity-content-intl.ts");
+    const actLabels = await vite.ssrLoadModule("/src/lib/activity-labels-i18n.ts");
+    const labelOf = (lang, a) => actLabels.getActivityLabel(a.value, a.label, lang);
 
     const { LANG_META, JGA_PATH, HEN_PATH, jgaHreflangs, henHreflangs, enSlugFromDe } = {
       ...intl, ...seo,
@@ -168,7 +170,8 @@ async function headMeta() {
       const ogImg = `${SITE}/og/ideen-${a.value}.svg`;
       for (const lang of LANGS) {
         const path = `${ACT_PATH[lang]}${a.value}`;
-        writeRoute(path, buildHtml({ title: actTitle(lang, a.label), description: actDesc(lang, a.label), canonical: SITE + path, ogImage: ogImg, hreflangs: hl }));
+        const lbl = labelOf(lang, a);
+        writeRoute(path, buildHtml({ title: actTitle(lang, lbl), description: actDesc(lang, lbl), canonical: SITE + path, ogImage: ogImg, hreflangs: hl }));
         n++;
       }
     }
