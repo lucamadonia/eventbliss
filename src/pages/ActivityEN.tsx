@@ -42,6 +42,7 @@ import {
 } from "@/lib/activities-library";
 import { getActivitySpec, getActivityBySlug } from "@/lib/activity-content";
 import { CATEGORY_FRAMEWORKS_EN, getCitiesForActivityEn } from "@/lib/activity-content-en";
+import { getActivityLabel, getCategoryLabel } from "@/lib/activity-labels-i18n";
 
 const SITE_URL = "https://event-bliss.com";
 
@@ -50,12 +51,14 @@ function buildJsonLd(activity: ActivityItem) {
   const spec = getActivitySpec(activity);
   const framework = CATEGORY_FRAMEWORKS_EN[activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
+  const label = getActivityLabel(activity.value, activity.label, "en");
+  const catLabel = getCategoryLabel(activity.category, cat.label, "en");
 
   return [
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: `${activity.label} for a Stag Do — Ideas, Costs & Top Cities`,
+      headline: `${label} for a Stag Do — Ideas, Costs & Top Cities`,
       description: framework.introFor(activity),
       url,
       mainEntityOfPage: url,
@@ -71,12 +74,12 @@ function buildJsonLd(activity: ActivityItem) {
         url: SITE_URL,
         logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.png` },
       },
-      articleSection: cat.label,
+      articleSection: catLabel,
       keywords: [
-        `${activity.label} stag do`,
-        `${activity.label} stag party`,
-        `${activity.label} group activity`,
-        `${activity.label} costs`,
+        `${label} stag do`,
+        `${label} stag party`,
+        `${label} group activity`,
+        `${label} costs`,
       ].join(", "),
       speakable: {
         "@type": "SpeakableSpecification",
@@ -91,7 +94,7 @@ function buildJsonLd(activity: ActivityItem) {
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: `${activity.label} for stag do groups`,
+      name: `${label} for stag do groups`,
       description: framework.introFor(activity),
       url,
       provider: { "@type": "Organization", name: "EventBliss", url: SITE_URL },
@@ -103,13 +106,13 @@ function buildJsonLd(activity: ActivityItem) {
         priceCurrency: "EUR",
         offerCount: "176",
       },
-      category: cat.label,
+      category: catLabel,
     },
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
-      name: `How to plan ${activity.label} for a stag do`,
-      description: `Step-by-step: organising ${activity.label} as a stag activity.`,
+      name: `How to plan ${label} for a stag do`,
+      description: `Step-by-step: organising ${label} as a stag activity.`,
       totalTime: spec.duration,
       estimatedCost: {
         "@type": "MonetaryAmount",
@@ -125,7 +128,7 @@ function buildJsonLd(activity: ActivityItem) {
         {
           "@type": "HowToStep",
           name: "Pick city and operator",
-          text: `${activity.label} is available in many European cities. Best operators in London, Berlin, Prague, Amsterdam, Barcelona and other stag hubs.`,
+          text: `${label} is available in many European cities. Best operators in London, Berlin, Prague, Amsterdam, Barcelona and other stag hubs.`,
         },
         {
           "@type": "HowToStep",
@@ -156,8 +159,8 @@ function buildJsonLd(activity: ActivityItem) {
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "EventBliss", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: "Stag Activities", item: `${SITE_URL}/activities/${activity.value}` },
-        { "@type": "ListItem", position: 3, name: cat.label, item: `${SITE_URL}/activities/${activity.value}` },
-        { "@type": "ListItem", position: 4, name: activity.label, item: url },
+        { "@type": "ListItem", position: 3, name: catLabel, item: `${SITE_URL}/activities/${activity.value}` },
+        { "@type": "ListItem", position: 4, name: label, item: url },
       ],
     },
   ];
@@ -211,13 +214,13 @@ export default function ActivityEN() {
   useSEO(
     activity
       ? {
-          title: `${activity.label} for a Stag Do — Ideas, Costs & Top Cities | EventBliss`,
-          description: `${activity.label} as a stag activity: cost per person, ideal group size, best cities in Europe. Step-by-step planning with EventBliss.`,
+          title: `${label} for a Stag Do — Ideas, Costs & Top Cities | EventBliss`,
+          description: `${label} as a stag activity: cost per person, ideal group size, best cities in Europe. Step-by-step planning with EventBliss.`,
           canonical: `${SITE_URL}/activities/${activity.value}`,
           ogImage: `${SITE_URL}/og/ideen-${activity.value}.svg`,
           ogType: "article",
           locale: "en_GB",
-          keywords: `${activity.label} stag do, ${activity.label} stag party, ${activity.label} group activity, ${activity.label} costs, ${activity.label} planning`,
+          keywords: `${label} stag do, ${label} stag party, ${label} group activity, ${label} costs, ${label} planning`,
           jsonLd: buildJsonLd(activity),
         }
       : {
@@ -233,6 +236,8 @@ export default function ActivityEN() {
   const spec = getActivitySpec(activity);
   const framework = CATEGORY_FRAMEWORKS_EN[activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
+  const label = getActivityLabel(activity.value, activity.label, "en");
+  const catLabel = getCategoryLabel(activity.category, cat.label, "en");
 
   return (
     <div className="min-h-screen bg-background">
@@ -257,11 +262,11 @@ export default function ActivityEN() {
             </div>
 
             <Badge className="mb-6 px-4 py-2 text-sm" variant="secondary">
-              {cat.emoji} {cat.label}
+              {cat.emoji} {catLabel}
             </Badge>
 
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-              <AuroraText as="span">{activity.label}</AuroraText>
+              <AuroraText as="span">{label}</AuroraText>
               <span className="block text-2xl md:text-3xl mt-4 text-muted-foreground font-normal">
                 as a stag-do activity
               </span>
@@ -274,7 +279,7 @@ export default function ActivityEN() {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link to="/create">
                 <GradientButton size="lg" icon={<PartyPopper className="w-5 h-5" />}>
-                  Plan a stag with {activity.label}
+                  Plan a stag with {label}
                   <ArrowRight className="w-5 h-5 ml-1" />
                 </GradientButton>
               </Link>
@@ -298,7 +303,7 @@ export default function ActivityEN() {
         <div className="container max-w-5xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-8 text-center">
-              {activity.label} facts
+              {label} facts
             </h2>
           </ScrollReveal>
 
@@ -354,7 +359,7 @@ export default function ActivityEN() {
               <GlassCard padding="lg">
                 <h3 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
                   <ActivityIcon className="w-6 h-6 text-primary" />
-                  When does {activity.label} work?
+                  When does {label} work?
                 </h3>
                 <ul className="space-y-3 text-muted-foreground">
                   {framework.whenSection.map((item, i) => (
@@ -394,7 +399,7 @@ export default function ActivityEN() {
             <GlassCard padding="lg" variant="glow">
               <h3 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
                 <Wallet className="w-6 h-6 text-primary" />
-                Budgeting {activity.label}
+                Budgeting {label}
               </h3>
               <p className="text-muted-foreground leading-relaxed">
                 {framework.costExplain}
@@ -418,10 +423,10 @@ export default function ActivityEN() {
             <ScrollReveal>
               <div className="text-center mb-10">
                 <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                  Top cities for <AuroraText>{activity.label}</AuroraText>
+                  Top cities for <AuroraText>{label}</AuroraText>
                 </h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  These {cities.length} European stag-do cities feature {activity.label}
+                  These {cities.length} European stag-do cities feature {label}
                   {" "}prominently in their top-activity set:
                 </p>
               </div>
@@ -456,7 +461,7 @@ export default function ActivityEN() {
             <div className="flex items-center gap-3 mb-8 justify-center">
               <AlertTriangle className="w-8 h-8 text-warning" />
               <h2 className="text-3xl md:text-4xl font-display font-bold">
-                Common mistakes with {activity.label}
+                Common mistakes with {label}
               </h2>
             </div>
           </ScrollReveal>
@@ -483,7 +488,7 @@ export default function ActivityEN() {
         <div className="container max-w-3xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-10 text-center">
-              FAQ — {activity.label}
+              FAQ — {label}
             </h2>
           </ScrollReveal>
 
@@ -517,7 +522,7 @@ export default function ActivityEN() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-display font-bold mb-6"
           >
-            Plan a stag with <AuroraText>{activity.label}</AuroraText>
+            Plan a stag with <AuroraText>{label}</AuroraText>
           </motion.h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
             Create an event in EventBliss in 30 seconds, invite your crew, vote on activities, split costs — all in one app.
@@ -537,7 +542,7 @@ export default function ActivityEN() {
           <div className="container max-w-5xl mx-auto px-4">
             <ScrollReveal>
               <h2 className="text-2xl md:text-3xl font-display font-bold mb-8 text-center">
-                More {cat.label} activities
+                More {catLabel} activities
               </h2>
             </ScrollReveal>
 
@@ -549,7 +554,7 @@ export default function ActivityEN() {
                   className="block p-4 rounded-xl bg-card/40 border border-border/40 hover:border-primary/50 hover:bg-card/60 transition-all text-center"
                 >
                   <div className="text-3xl mb-2">{a.emoji}</div>
-                  <div className="text-sm font-medium">{a.label}</div>
+                  <div className="text-sm font-medium">{getActivityLabel(a.value, a.label, "en")}</div>
                 </Link>
               ))}
             </div>

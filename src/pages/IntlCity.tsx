@@ -46,6 +46,8 @@ import {
 } from "@/lib/intl-cities";
 import { getIntlAr } from "@/lib/intl-cities-ar";
 import { jgaHreflangs, isRtl } from "@/lib/seo-routes";
+import { getActivityLabel, getCategoryLabel } from "@/lib/activity-labels-i18n";
+import type { ActivityIntlLang } from "@/lib/activity-content-intl";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
 
 const SITE_URL = "https://event-bliss.com";
@@ -392,6 +394,7 @@ export default function IntlCity() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {topActivities.map((activity, idx) => {
               const cat = ACTIVITY_CATEGORIES[activity.category];
+              const actLang = lang as ActivityIntlLang;
               return (
                 <ScrollReveal key={activity.value} delay={idx * 0.04}>
                   <GlassCard variant="hover" padding="md" className="h-full">
@@ -400,10 +403,10 @@ export default function IntlCity() {
                         {activity.emoji}
                       </span>
                       <Badge variant="outline" className="text-xs">
-                        {cat.emoji} {cat.label}
+                        {cat.emoji} {getCategoryLabel(activity.category, cat.label, actLang)}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold">{activity.label}</h3>
+                    <h3 className="text-lg font-semibold">{getActivityLabel(activity.value, activity.label, actLang)}</h3>
                   </GlassCard>
                 </ScrollReveal>
               );

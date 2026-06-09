@@ -38,6 +38,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 import { useSEO } from "@/hooks/useSEO";
 import { STAG_DO_CITIES, getStagDoCityBySlug, type StagDoCity } from "@/lib/stag-do-cities";
 import { ACTIVITIES_LIBRARY, ACTIVITY_CATEGORIES } from "@/lib/activities-library";
+import { getActivityLabel, getCategoryLabel } from "@/lib/activity-labels-i18n";
 
 const SITE_URL = "https://event-bliss.com";
 
@@ -346,10 +347,10 @@ export default function StagDoCity() {
                         {activity.emoji}
                       </span>
                       <Badge variant="outline" className="text-xs">
-                        {cat.emoji} {cat.label}
+                        {cat.emoji} {getCategoryLabel(activity.category, cat.label, "en")}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">{activity.label}</h3>
+                    <h3 className="text-lg font-semibold mb-2">{getActivityLabel(activity.value, activity.label, "en")}</h3>
                     {activity.tags && activity.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {activity.tags.slice(0, 3).map((tag) => (
