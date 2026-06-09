@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { WHOAMI_CHARACTERS } from './whoami-content-de';
+import { getWHOAMI_CHARACTERS } from './whoami-content';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -80,7 +80,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     settings: { timer: number; rounds: number },
   ) => {
     const category = MODE_TO_CATEGORY[selectedMode] ?? 'Prominente';
-    const pool = shuffle(WHOAMI_CHARACTERS.filter((c) => c.category === category));
+    const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
     const p: Player[] = mapped.map((m, i) => ({
       ...m, color: PLAYER_COLORS[i % PLAYER_COLORS.length],
       score: 0, character: pool[i % pool.length].name,
@@ -199,7 +199,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         // next round: reassign
         setCurrentRound((r) => r + 1);
         const category = MODE_TO_CATEGORY[mode] ?? 'Prominente';
-        const pool = shuffle(WHOAMI_CHARACTERS.filter((c) => c.category === category));
+        const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
         setPlayers((prev) => prev.map((p, i) => ({
           ...p, character: pool[i % pool.length].name,
           questionsAsked: 0, guessedCorrectly: false, eliminated: false,

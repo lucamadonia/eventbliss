@@ -14,7 +14,7 @@ import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
-import { TRUTH_QUESTIONS, DARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content-de';
+import { getTRUTH_QUESTIONS, getDARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -105,8 +105,8 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     task: currentItem ? ('question' in currentItem ? currentItem.question : currentItem.challenge) : '',
   }, [phase, currentRound, activeIdx, choiceType]);
 
-  const truthDeck = useMemo(() => shuffle(TRUTH_QUESTIONS), []);
-  const dareDeck = useMemo(() => shuffle(DARE_CHALLENGES), []);
+  const truthDeck = useMemo(() => shuffle(getTRUTH_QUESTIONS()), []);
+  const dareDeck = useMemo(() => shuffle(getDARE_CHALLENGES()), []);
   const truthPos = useMemo(() => ({ current: 0 }), []);
   const darePos = useMemo(() => ({ current: 0 }), []);
 

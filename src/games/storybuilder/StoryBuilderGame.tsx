@@ -9,7 +9,7 @@ import {
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
-import { STORY_STARTERS, STORY_PROMPTS } from './story-prompts-de';
+import { getSTORY_STARTERS, getSTORY_PROMPTS } from './story-prompts';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
@@ -139,9 +139,9 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       setCurrentSentenceNum(1);
       setInputText('');
 
-      promptsDeck.current = shuffle(STORY_PROMPTS);
+      promptsDeck.current = shuffle(getSTORY_PROMPTS());
       promptsPos.current = 0;
-      startersDeck.current = shuffle(STORY_STARTERS);
+      startersDeck.current = shuffle(getSTORY_STARTERS());
       startersPos.current = 0;
 
       // Set first prompt

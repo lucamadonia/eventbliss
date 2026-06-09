@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGameTimer } from '@/games/engine/TimerSystem';
-import { EMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content-de';
+import { getEMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
@@ -129,7 +129,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
       setMode(selectedMode);
       setTimerDuration(selectedMode === 'speed' ? 10 : settings.timer);
       setTotalRounds(settings.rounds);
-      deck.current = shuffle(EMOJI_PUZZLES);
+      deck.current = shuffle(getEMOJI_PUZZLES());
       deckPos.current = 0;
       setCurrentRound(1);
       setCurrentPlayerIdx(0);
@@ -145,7 +145,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
 
   function drawPuzzle(): EmojiPuzzle {
     if (deckPos.current >= deck.current.length) {
-      deck.current = shuffle(EMOJI_PUZZLES);
+      deck.current = shuffle(getEMOJI_PUZZLES());
       deckPos.current = 0;
     }
     return deck.current[deckPos.current++];
