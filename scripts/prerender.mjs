@@ -61,7 +61,9 @@ function setCanonical(h, href) {
   return re.test(h) ? h.replace(re, `$1${attr(href)}$2`)
     : h.replace("</head>", `    <link rel="canonical" href="${attr(href)}" />\n  </head>`);
 }
-function buildHtml({ title, description, canonical, ogImage = OG, ogType = "article", hreflangs = [] }) {
+const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function buildHtml({ title, description, canonical, ogImage = OG, ogType = "article", hreflangs = [], body = "" }) {
   let h = shell;
   h = setTitle(h, title);
   h = setMeta(h, "name", "title", title);
@@ -81,6 +83,9 @@ function buildHtml({ title, description, canonical, ogImage = OG, ogType = "arti
       .join("\n");
     h = h.replace("</head>", `${links}\n  </head>`);
   }
+  // Inject static, crawlable body content (read by non-JS AI crawlers; the SPA
+  // replaces #root on mount for real users). No-op if body is empty.
+  if (body) h = h.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
   return h;
 }
 function writeRoute(routePath, html) {
@@ -104,6 +109,48 @@ async function headMeta() {
     const actIntl = await vite.ssrLoadModule("/src/lib/activity-content-intl.ts");
     const actLabels = await vite.ssrLoadModule("/src/lib/activity-labels-i18n.ts");
     const labelOf = (lang, a) => actLabels.getActivityLabel(a.value, a.label, lang);
+    const actContent = await vite.ssrLoadModule("/src/lib/activity-content.ts");
+    const actEn = await vite.ssrLoadModule("/src/lib/activity-content-en.ts");
+    const CF_DE = actContent.CATEGORY_FRAMEWORKS;
+    const CF_EN = actEn.CATEGORY_FRAMEWORKS_EN;
+    const CF_INTL = actIntl.CATEGORY_FRAMEWORKS_INTL;
+    const getSpec = actContent.getActivitySpec;
+    const localizeSpec = actIntl.localizeSpecValue;
+
+    // Build a content-rich, crawlable body for an activity page from the data modules.
+    const activityBody = (lang, a, label) => {
+      try {
+        const fw = lang === "de" ? CF_DE[a.category] : lang === "en" ? CF_EN[a.category] : CF_INTL[lang][a.category];
+        if (!fw) return "";
+        const la = { ...a, label }; // activity with the localized name for framework interpolation
+        const spec = getSpec(a);
+        const gs = lang === "de" || lang === "en" ? spec.groupSize : localizeSpec(spec.groupSize, lang);
+        const du = lang === "de" || lang === "en" ? spec.duration : localizeSpec(spec.duration, lang);
+        const li = (arr) => (arr || []).map((x) => `<li>${esc(x)}</li>`).join("");
+        const faqs = (fw.faqs(la) || []).map((f) => `<div><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join("");
+        return `<main><article>` +
+          `<h1>${esc(label)}</h1>` +
+          `<p>${esc(fw.introFor(la))}</p>` +
+          `<ul><li>€${esc(String(spec.costFrom))}–€${esc(String(spec.costTo))}</li><li>${esc(gs)}</li><li>${esc(du)}</li></ul>` +
+          `<ul>${li(fw.whenSection)}</ul>` +
+          `<ul>${li(fw.whoSection)}</ul>` +
+          `<p>${esc(fw.costExplain)}</p>` +
+          `<ul>${li(fw.commonMistakes)}</ul>` +
+          `<section>${faqs}</section>` +
+          `</article></main>`;
+      } catch { return ""; }
+    };
+
+    // Build a basic crawlable body for a city page (name + description + top activities).
+    const cityBody = (lang, heading, description, activitySlugs) => {
+      try {
+        const items = (activitySlugs || []).slice(0, 12)
+          .map((s) => { const a = acts.ACTIVITIES_LIBRARY.find((x) => x.value === s); return a ? `<li>${esc(labelOf(lang, a))}</li>` : ""; })
+          .join("");
+        return `<main><article><h1>${esc(heading)}</h1><p>${esc(description)}</p>${items ? `<section><ul>${items}</ul></section>` : ""}</article></main>`;
+      } catch { return ""; }
+    };
+    const strip = (t) => t.replace(/\s*\|\s*EventBliss\s*$/, "");
 
     const { LANG_META, JGA_PATH, HEN_PATH, jgaHreflangs, henHreflangs, enSlugFromDe } = {
       ...intl, ...seo,
@@ -146,7 +193,8 @@ async function headMeta() {
         if (!hl.some((h) => h.hreflang === lang)) continue;
         const slug = lang === "de" ? c.slug : enOf(c.slug);
         const path = `${JGA_PATH[lang]}${slug}`;
-        writeRoute(path, buildHtml({ title: jgaTitle(lang, c), description: jgaDesc(lang, c), canonical: SITE + path, ogImage: ogImg, hreflangs: hl }));
+        const t = jgaTitle(lang, c), d = jgaDesc(lang, c);
+        writeRoute(path, buildHtml({ title: t, description: d, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), d, c.topActivitySlugs) }));
         n++;
       }
     }
@@ -159,7 +207,8 @@ async function headMeta() {
         if (!hl.some((h) => h.hreflang === lang)) continue;
         const slug = lang === "de" ? deSlug : enOf(deSlug);
         const path = `${HEN_PATH[lang]}${slug}`;
-        writeRoute(path, buildHtml({ title: henTitle(lang, name), description: henDesc(lang, name, loc), canonical: SITE + path, ogImage: ogImg, hreflangs: hl }));
+        const t = henTitle(lang, name), desc = henDesc(lang, name, loc);
+        writeRoute(path, buildHtml({ title: t, description: desc, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), desc, d.city.topActivitySlugs) }));
         n++;
       }
     }
@@ -171,7 +220,7 @@ async function headMeta() {
       for (const lang of LANGS) {
         const path = `${ACT_PATH[lang]}${a.value}`;
         const lbl = labelOf(lang, a);
-        writeRoute(path, buildHtml({ title: actTitle(lang, lbl), description: actDesc(lang, lbl), canonical: SITE + path, ogImage: ogImg, hreflangs: hl }));
+        writeRoute(path, buildHtml({ title: actTitle(lang, lbl), description: actDesc(lang, lbl), canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: activityBody(lang, a, lbl) }));
         n++;
       }
     }
