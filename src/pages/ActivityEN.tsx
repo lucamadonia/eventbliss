@@ -52,6 +52,7 @@ function buildJsonLd(activity: ActivityItem) {
   const framework = CATEGORY_FRAMEWORKS_EN[activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
   const label = getActivityLabel(activity.value, activity.label, "en");
+  const la = { ...activity, label };
   const catLabel = getCategoryLabel(activity.category, cat.label, "en");
 
   return [
@@ -59,7 +60,7 @@ function buildJsonLd(activity: ActivityItem) {
       "@context": "https://schema.org",
       "@type": "Article",
       headline: `${label} for a Stag Do — Ideas, Costs & Top Cities`,
-      description: framework.introFor(activity),
+      description: framework.introFor(la),
       url,
       mainEntityOfPage: url,
       image: `${SITE_URL}/og/ideen-${activity.value}.svg`,
@@ -95,7 +96,7 @@ function buildJsonLd(activity: ActivityItem) {
       "@context": "https://schema.org",
       "@type": "Service",
       name: `${label} for stag do groups`,
-      description: framework.introFor(activity),
+      description: framework.introFor(la),
       url,
       provider: { "@type": "Organization", name: "EventBliss", url: SITE_URL },
       areaServed: { "@type": "Place", name: "Europe" },
@@ -147,7 +148,7 @@ function buildJsonLd(activity: ActivityItem) {
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: framework.faqs(activity).map((faq) => ({
+      mainEntity: framework.faqs(la).map((faq) => ({
         "@type": "Question",
         name: faq.q,
         acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -237,6 +238,7 @@ export default function ActivityEN() {
   const framework = CATEGORY_FRAMEWORKS_EN[activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
   const label = getActivityLabel(activity.value, activity.label, "en");
+  const la = { ...activity, label };
   const catLabel = getCategoryLabel(activity.category, cat.label, "en");
 
   return (
@@ -273,7 +275,7 @@ export default function ActivityEN() {
             </h1>
 
             <p className="speakable-intro text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-              {framework.introFor(activity)}
+              {framework.introFor(la)}
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -493,7 +495,7 @@ export default function ActivityEN() {
           </ScrollReveal>
 
           <Accordion type="single" collapsible className="space-y-3">
-            {framework.faqs(activity).map((faq, i) => (
+            {framework.faqs(la).map((faq, i) => (
               <AccordionItem
                 key={i}
                 value={`item-${i}`}
