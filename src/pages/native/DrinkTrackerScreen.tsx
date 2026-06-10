@@ -7,6 +7,7 @@
  * Epic amber/gold design with motion effects.
  */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -49,6 +50,7 @@ function getAllTimeDrinks(): number {
 }
 
 export default function DrinkTrackerScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const drinkingMode = useDrinkingMode();
@@ -198,7 +200,7 @@ export default function DrinkTrackerScreen() {
         >
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-amber-400" />
-            <span className="text-sm font-semibold text-foreground">Nächster Rang</span>
+            <span className="text-sm font-semibold text-foreground">{t('nativeExtra.nextRank')}</span>
           </div>
           {(() => {
             const thresholds = [5, 15, 30, 50, 75, 100];
@@ -234,7 +236,7 @@ export default function DrinkTrackerScreen() {
         >
           <Droplets className="w-8 h-8 text-sky-400 flex-shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-foreground">Wasser nicht vergessen!</p>
+            <p className="text-sm font-semibold text-foreground">{t('nativeExtra.dontForgetWater')}</p>
             <p className="text-xs text-muted-foreground">
               Pro Drink mindestens ein Glas Wasser trinken. Euer Körper dankt's euch morgen. 💧
             </p>

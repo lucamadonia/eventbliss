@@ -192,7 +192,7 @@ export default function NativeServiceDetailScreen() {
     return (
       <div className="h-full bg-background flex items-center justify-center px-5">
         <div className="text-center space-y-3">
-          <h1 className="text-xl font-display font-bold text-foreground">Service nicht gefunden</h1>
+          <h1 className="text-xl font-display font-bold text-foreground">{t('nativeExtra.serviceNotFound')}</h1>
           <p className="text-sm text-muted-foreground">Dieser Service ist nicht mehr verfügbar.</p>
           <button
             onClick={() => navigate("/marketplace")}
@@ -357,7 +357,7 @@ export default function NativeServiceDetailScreen() {
                 </p>
                 {s.requirements.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-display font-semibold text-foreground mb-2">Hinweise</h3>
+                    <h3 className="text-sm font-display font-semibold text-foreground mb-2">{t('nativeExtra.notes')}</h3>
                     <ul className="space-y-1.5">
                       {s.requirements.map((r, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
@@ -465,11 +465,11 @@ export default function NativeServiceDetailScreen() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...spring.soft, delay: 0.3 }}
         >
-          <h3 className="font-display font-semibold text-sm text-foreground">Jetzt buchen</h3>
+          <h3 className="font-display font-semibold text-sm text-foreground">{t('nativeExtra.bookNow')}</h3>
 
           {/* Date */}
           <div>
-            <label className="block text-[11px] text-muted-foreground mb-1">Datum</label>
+            <label className="block text-[11px] text-muted-foreground mb-1">{t('nativeExtra.date')}</label>
             <div className="relative">
               <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <input
@@ -483,7 +483,7 @@ export default function NativeServiceDetailScreen() {
 
           {/* Time */}
           <div>
-            <label className="block text-[11px] text-muted-foreground mb-1">Uhrzeit</label>
+            <label className="block text-[11px] text-muted-foreground mb-1">{t('nativeExtra.time')}</label>
             <select
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
@@ -499,7 +499,7 @@ export default function NativeServiceDetailScreen() {
           {/* Participants */}
           {s.price_type === "per_person" && (
             <div>
-              <label className="block text-[11px] text-muted-foreground mb-1">Teilnehmer</label>
+              <label className="block text-[11px] text-muted-foreground mb-1">{t('nativeExtra.participants')}</label>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setParticipants((p) => Math.max(s.min_participants || 1, p - 1))}
@@ -525,7 +525,7 @@ export default function NativeServiceDetailScreen() {
 
           {/* Total */}
           <div className="flex items-center justify-between pt-2 border-t border-border">
-            <span className="text-xs text-muted-foreground">Gesamt</span>
+            <span className="text-xs text-muted-foreground">{t('nativeExtra.total')}</span>
             <span className="text-lg font-bold text-foreground tabular-nums">{formatPrice(totalPrice)} €</span>
           </div>
         </motion.div>

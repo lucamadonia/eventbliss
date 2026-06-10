@@ -39,3 +39,5 @@ android/app/build/
 # Claude Flow / Swarm tool artifacts (local only)
 .claude-flow/
 .swarm/
+appstore/
+scripts/_*

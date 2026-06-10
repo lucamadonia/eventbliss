@@ -6718,5 +6718,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Feest starten",
+    "nextRank": "Volgende rang",
+    "dontForgetWater": "Water niet vergeten!",
+    "budget": "Budget",
+    "newExpense": "Nieuwe uitgave",
+    "serviceNotFound": "Service niet gevonden",
+    "notes": "Opmerkingen",
+    "bookNow": "Nu boeken",
+    "date": "Datum",
+    "time": "Tijd",
+    "participants": "Deelnemers",
+    "total": "Totaal",
+    "connectTV": "Tv verbinden",
+    "partyOver": "Feest voorbij!",
+    "chooseGame": "Spel kiezen"
   }
 }

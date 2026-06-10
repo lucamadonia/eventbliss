@@ -116,7 +116,7 @@ export default function GamesScreen() {
             <PartyPopper className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground">Party starten</p>
+            <p className="text-sm font-semibold text-foreground">{t('nativeExtra.startParty')}</p>
             <p className="text-[11px] text-muted-foreground">Mehrere Spiele, eine Rangliste</p>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 group-active:translate-x-0.5 transition-transform" />

@@ -4975,7 +4975,7 @@
   "native": {
     "home": {
       "greeting": "أهلاً {{name}} 👋",
-      "heroTitle": "خلِّها",
+      "heroTitle": "لنجعلها",
       "heroHighlight": "أسطورية.",
       "newEvent": "حدث جديد",
       "planParty": "خطّط حفلة",
@@ -6559,5 +6559,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "ابدأ الحفلة",
+    "nextRank": "الرتبة التالية",
+    "dontForgetWater": "لا تنسَ الماء!",
+    "budget": "الميزانية",
+    "newExpense": "مصروف جديد",
+    "serviceNotFound": "الخدمة غير موجودة",
+    "notes": "ملاحظات",
+    "bookNow": "احجز الآن",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "participants": "المشاركون",
+    "total": "الإجمالي",
+    "connectTV": "ربط التلفاز",
+    "partyOver": "انتهت الحفلة!",
+    "chooseGame": "اختر لعبة"
   }
 }

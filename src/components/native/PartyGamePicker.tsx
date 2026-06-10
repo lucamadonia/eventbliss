@@ -85,7 +85,7 @@ export function PartyGamePicker({ open, onClose, onSelectGame, playerCount }: Pa
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-5 pb-3 safe-top">
             <div>
-              <h2 className="text-xl font-display font-bold text-foreground">Spiel wahlen</h2>
+              <h2 className="text-xl font-display font-bold text-foreground">{t('nativeExtra.chooseGame')}</h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <Users className="w-3.5 h-3.5 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">{playerCount} Spieler bereit</span>
