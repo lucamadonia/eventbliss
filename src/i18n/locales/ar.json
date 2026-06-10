@@ -6575,6 +6575,11 @@
     "total": "الإجمالي",
     "connectTV": "ربط التلفاز",
     "partyOver": "انتهت الحفلة!",
-    "chooseGame": "اختر لعبة"
+    "chooseGame": "اختر لعبة",
+    "cancellation": "الإلغاء",
+    "policyFlexible": "مرن",
+    "policyModerate": "معتدل",
+    "policyStrict": "صارم",
+    "chooseTime": "اختر الوقت..."
   }
 }

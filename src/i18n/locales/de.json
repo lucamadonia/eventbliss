@@ -6837,6 +6837,11 @@
     "total": "Gesamt",
     "connectTV": "TV verbinden",
     "partyOver": "Party vorbei!",
-    "chooseGame": "Spiel wählen"
+    "chooseGame": "Spiel wählen",
+    "cancellation": "Stornierung",
+    "policyFlexible": "Flexibel",
+    "policyModerate": "Moderat",
+    "policyStrict": "Streng",
+    "chooseTime": "Zeit wählen..."
   }
 }

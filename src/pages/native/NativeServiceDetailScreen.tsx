@@ -41,10 +41,10 @@ const PRICE_TYPE_LABELS: Record<string, string> = {
   custom: "Individuell",
 };
 
-const CANCELLATION: Record<string, { label: string; color: string }> = {
-  flexible: { label: "Flexibel", color: "text-emerald-400 bg-emerald-400/10" },
-  moderate: { label: "Moderat", color: "text-amber-400 bg-amber-400/10" },
-  strict: { label: "Strikt", color: "text-red-400 bg-red-400/10" },
+const CANCELLATION: Record<string, { labelKey: string; color: string }> = {
+  flexible: { labelKey: "nativeExtra.policyFlexible", color: "text-emerald-400 bg-emerald-400/10" },
+  moderate: { labelKey: "nativeExtra.policyModerate", color: "text-amber-400 bg-amber-400/10" },
+  strict: { labelKey: "nativeExtra.policyStrict", color: "text-red-400 bg-red-400/10" },
 };
 
 const TIME_SLOTS_FALLBACK = [
@@ -305,7 +305,7 @@ export default function NativeServiceDetailScreen() {
           {/* Info pills */}
           <div className="flex flex-wrap gap-2 mt-3">
             <span className={cn("px-2.5 py-1 rounded-full text-[11px] font-semibold", cancellation.color)}>
-              Stornierung: {cancellation.label}
+              {t('nativeExtra.cancellation')}: {t(cancellation.labelKey)}
             </span>
             {(s.agency_tier === "professional" || s.agency_tier === "enterprise") && (
               <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary/10 text-primary">
@@ -489,7 +489,7 @@ export default function NativeServiceDetailScreen() {
               onChange={(e) => setSelectedTime(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:border-primary/40 appearance-none"
             >
-              <option value="">Zeit wählen...</option>
+              <option value="">{t('nativeExtra.chooseTime')}</option>
               {timeSlots.map((t: string) => (
                 <option key={t} value={t}>{t} Uhr</option>
               ))}

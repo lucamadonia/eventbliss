@@ -6724,6 +6724,11 @@
     "total": "Razem",
     "connectTV": "Połącz z TV",
     "partyOver": "Koniec imprezy!",
-    "chooseGame": "Wybierz grę"
+    "chooseGame": "Wybierz grę",
+    "cancellation": "Anulowanie",
+    "policyFlexible": "Elastyczna",
+    "policyModerate": "Umiarkowana",
+    "policyStrict": "Restrykcyjna",
+    "chooseTime": "Wybierz godzinę..."
   }
 }
