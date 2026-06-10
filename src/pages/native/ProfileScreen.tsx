@@ -297,7 +297,7 @@ export default function ProfileScreen() {
               transition={{ duration: 0.25 }}
               className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
             >
-              <div className="p-2 max-h-64 overflow-y-auto">
+              <div className="p-2 max-h-[70vh] overflow-y-auto">
                 {languages.map((lang) => {
                   const active = i18n.language === lang.code;
                   return (
