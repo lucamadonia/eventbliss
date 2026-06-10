@@ -6734,6 +6734,11 @@
     "total": "Total",
     "connectTV": "Connect TV",
     "partyOver": "Party's over!",
-    "chooseGame": "Choose Game"
+    "chooseGame": "Choose Game",
+    "cancellation": "Cancellation",
+    "policyFlexible": "Flexible",
+    "policyModerate": "Moderate",
+    "policyStrict": "Strict",
+    "chooseTime": "Choose time..."
   }
 }

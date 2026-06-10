@@ -6734,6 +6734,11 @@
     "total": "Totaal",
     "connectTV": "Tv verbinden",
     "partyOver": "Feest voorbij!",
-    "chooseGame": "Spel kiezen"
+    "chooseGame": "Spel kiezen",
+    "cancellation": "Annulering",
+    "policyFlexible": "Flexibel",
+    "policyModerate": "Gematigd",
+    "policyStrict": "Strikt",
+    "chooseTime": "Tijd kiezen..."
   }
 }

@@ -6711,6 +6711,11 @@
     "total": "Toplam",
     "connectTV": "TV'ye bağlan",
     "partyOver": "Parti bitti!",
-    "chooseGame": "Oyun seç"
+    "chooseGame": "Oyun seç",
+    "cancellation": "İptal",
+    "policyFlexible": "Esnek",
+    "policyModerate": "Orta",
+    "policyStrict": "Katı",
+    "chooseTime": "Saat seçin..."
   }
 }

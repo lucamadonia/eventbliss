@@ -6685,6 +6685,11 @@
     "total": "Total",
     "connectTV": "Connecter la TV",
     "partyOver": "Fête terminée !",
-    "chooseGame": "Choisir un jeu"
+    "chooseGame": "Choisir un jeu",
+    "cancellation": "Annulation",
+    "policyFlexible": "Flexible",
+    "policyModerate": "Modérée",
+    "policyStrict": "Stricte",
+    "chooseTime": "Choisir l'heure..."
   }
 }
