@@ -5243,8 +5243,8 @@
   "native": {
     "home": {
       "greeting": "Hi {{name}} 👋",
-      "heroTitle": "Let's make it",
-      "heroHighlight": "epic.",
+      "heroTitle": "Machen wir's",
+      "heroHighlight": "unvergesslich.",
       "newEvent": "Neues Event",
       "planParty": "Party planen",
       "joinEvent": "Event beitreten",
@@ -6821,5 +6821,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Party starten",
+    "nextRank": "Nächster Rang",
+    "dontForgetWater": "Wasser nicht vergessen!",
+    "budget": "Budget",
+    "newExpense": "Neue Ausgabe",
+    "serviceNotFound": "Service nicht gefunden",
+    "notes": "Hinweise",
+    "bookNow": "Jetzt buchen",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "participants": "Teilnehmer",
+    "total": "Gesamt",
+    "connectTV": "TV verbinden",
+    "partyOver": "Party vorbei!",
+    "chooseGame": "Spiel wählen"
   }
 }

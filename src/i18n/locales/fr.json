@@ -5000,8 +5000,8 @@
   "native": {
     "home": {
       "greeting": "Salut {{name}} 👋",
-      "heroTitle": "Rendons-le",
-      "heroHighlight": "épique.",
+      "heroTitle": "Faisons-en un moment",
+      "heroHighlight": "inoubliable.",
       "newEvent": "Nouvel Événement",
       "planParty": "Organiser une fête",
       "joinEvent": "Rejoindre un événement",
@@ -6669,5 +6669,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Lancer la fête",
+    "nextRank": "Rang suivant",
+    "dontForgetWater": "N'oublie pas l'eau !",
+    "budget": "Budget",
+    "newExpense": "Nouvelle dépense",
+    "serviceNotFound": "Service introuvable",
+    "notes": "Remarques",
+    "bookNow": "Réserver",
+    "date": "Date",
+    "time": "Heure",
+    "participants": "Participants",
+    "total": "Total",
+    "connectTV": "Connecter la TV",
+    "partyOver": "Fête terminée !",
+    "chooseGame": "Choisir un jeu"
   }
 }

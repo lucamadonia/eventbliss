@@ -5000,8 +5000,8 @@
   "native": {
     "home": {
       "greeting": "Ciao {{name}} 👋",
-      "heroTitle": "Rendiamolo",
-      "heroHighlight": "epico.",
+      "heroTitle": "Rendiamola",
+      "heroHighlight": "epica.",
       "newEvent": "Nuovo Evento",
       "planParty": "Organizza una festa",
       "joinEvent": "Partecipa a un Evento",
@@ -6669,5 +6669,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Avvia la festa",
+    "nextRank": "Livello successivo",
+    "dontForgetWater": "Non dimenticare l'acqua!",
+    "budget": "Budget",
+    "newExpense": "Nuova spesa",
+    "serviceNotFound": "Servizio non trovato",
+    "notes": "Note",
+    "bookNow": "Prenota ora",
+    "date": "Data",
+    "time": "Ora",
+    "participants": "Partecipanti",
+    "total": "Totale",
+    "connectTV": "Collega la TV",
+    "partyOver": "Festa finita!",
+    "chooseGame": "Scegli il gioco"
   }
 }

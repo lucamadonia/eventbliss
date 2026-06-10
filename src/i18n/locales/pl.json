@@ -4976,7 +4976,7 @@
     "home": {
       "greeting": "Cześć {{name}} 👋",
       "heroTitle": "Zróbmy to",
-      "heroHighlight": "epicko.",
+      "heroHighlight": "niezapomniane.",
       "newEvent": "Nowe Wydarzenie",
       "planParty": "Zaplanuj imprezę",
       "joinEvent": "Dołącz do Wydarzenia",
@@ -6708,5 +6708,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Rozpocznij imprezę",
+    "nextRank": "Następny poziom",
+    "dontForgetWater": "Nie zapomnij o wodzie!",
+    "budget": "Budżet",
+    "newExpense": "Nowy wydatek",
+    "serviceNotFound": "Nie znaleziono usługi",
+    "notes": "Wskazówki",
+    "bookNow": "Zarezerwuj",
+    "date": "Data",
+    "time": "Godzina",
+    "participants": "Uczestnicy",
+    "total": "Razem",
+    "connectTV": "Połącz z TV",
+    "partyOver": "Koniec imprezy!",
+    "chooseGame": "Wybierz grę"
   }
 }

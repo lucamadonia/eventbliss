@@ -6718,5 +6718,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Start Party",
+    "nextRank": "Next Rank",
+    "dontForgetWater": "Don't forget water!",
+    "budget": "Budget",
+    "newExpense": "New Expense",
+    "serviceNotFound": "Service not found",
+    "notes": "Notes",
+    "bookNow": "Book Now",
+    "date": "Date",
+    "time": "Time",
+    "participants": "Participants",
+    "total": "Total",
+    "connectTV": "Connect TV",
+    "partyOver": "Party's over!",
+    "chooseGame": "Choose Game"
   }
 }

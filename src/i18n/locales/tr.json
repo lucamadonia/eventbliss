@@ -4975,8 +4975,8 @@
   "native": {
     "home": {
       "greeting": "Merhaba {{name}} 👋",
-      "heroTitle": "Bunu",
-      "heroHighlight": "epik yapalım.",
+      "heroTitle": "Hadi efsane",
+      "heroHighlight": "yapalım.",
       "newEvent": "Yeni Etkinlik",
       "planParty": "Parti planla",
       "joinEvent": "Etkinliğe Katıl",
@@ -6695,5 +6695,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Partiyi başlat",
+    "nextRank": "Sonraki seviye",
+    "dontForgetWater": "Su içmeyi unutma!",
+    "budget": "Bütçe",
+    "newExpense": "Yeni harcama",
+    "serviceNotFound": "Hizmet bulunamadı",
+    "notes": "Notlar",
+    "bookNow": "Hemen rezerve et",
+    "date": "Tarih",
+    "time": "Saat",
+    "participants": "Katılımcılar",
+    "total": "Toplam",
+    "connectTV": "TV'ye bağlan",
+    "partyOver": "Parti bitti!",
+    "chooseGame": "Oyun seç"
   }
 }

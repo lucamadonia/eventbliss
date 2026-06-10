@@ -4,6 +4,7 @@
  * Tracks overall scores, game history, and TV connection.
  */
 import { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -24,6 +25,7 @@ const AVATARS = [
 ];
 
 export default function PartyLobbyScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const haptics = useHaptics();
@@ -278,7 +280,7 @@ export default function PartyLobbyScreen() {
                   <Tv className="w-5 h-5 text-[#df8eff]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">TV verbinden</p>
+                  <p className="text-sm font-semibold text-foreground">{t('nativeExtra.connectTV')}</p>
                   <p className="text-xs text-muted-foreground truncate">
                     {getBaseUrl()}/tv/{party.tvCode}
                   </p>
@@ -451,7 +453,7 @@ export default function PartyLobbyScreen() {
               </motion.div>
 
               <div className="text-center">
-                <h2 className="text-2xl font-display font-bold text-foreground">Party vorbei!</h2>
+                <h2 className="text-2xl font-display font-bold text-foreground">{t('nativeExtra.partyOver')}</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {history.length} Spiel{history.length !== 1 ? "e" : ""} &middot; {players.length} Spieler
                 </p>

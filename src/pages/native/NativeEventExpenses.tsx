@@ -4,6 +4,7 @@
  * expandable split details, balance settlements, and add-expense FAB.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   Plus,
@@ -180,6 +181,7 @@ function StatusBadge({ status }: { status: ExpenseStatus }) {
 /* ------------------------------------------------------------------ */
 
 export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesProps) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const [filter, setFilter] = useState<FilterTab>("alle");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -419,7 +421,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
           {budget > 0 && (
           <div className="w-full mt-4 flex flex-col gap-1.5">
             <div className="flex justify-between text-[11px] text-white/50">
-              <span>Budget</span>
+              <span>{t('nativeExtra.budget')}</span>
               <span>{eurShort(totalCents)} / {eurShort(budget)}</span>
             </div>
             <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
@@ -704,6 +706,7 @@ interface AddExpenseModalProps {
 }
 
 function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: AddExpenseModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<CategoryKey>("activities");
@@ -798,7 +801,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
         <div className="px-5 pb-8 flex flex-col gap-5">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground">Neue Ausgabe</h2>
+            <h2 className="text-lg font-bold text-foreground">{t('nativeExtra.newExpense')}</h2>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center"

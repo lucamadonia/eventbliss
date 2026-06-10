@@ -4975,7 +4975,7 @@
   "native": {
     "home": {
       "greeting": "Olá {{name}} 👋",
-      "heroTitle": "Vamos tornar isto",
+      "heroTitle": "Vamos deixar",
       "heroHighlight": "épico.",
       "newEvent": "Novo Evento",
       "planParty": "Planear uma festa",
@@ -6708,5 +6708,22 @@
     "setup": {
       "hidden": ""
     }
+  },
+  "nativeExtra": {
+    "startParty": "Iniciar festa",
+    "nextRank": "Próximo nível",
+    "dontForgetWater": "Não esqueça a água!",
+    "budget": "Orçamento",
+    "newExpense": "Nova despesa",
+    "serviceNotFound": "Serviço não encontrado",
+    "notes": "Observações",
+    "bookNow": "Reservar agora",
+    "date": "Data",
+    "time": "Hora",
+    "participants": "Participantes",
+    "total": "Total",
+    "connectTV": "Conectar TV",
+    "partyOver": "Festa encerrada!",
+    "chooseGame": "Escolher jogo"
   }
 }
