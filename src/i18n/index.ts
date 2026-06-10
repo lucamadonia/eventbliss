@@ -49,8 +49,13 @@ function normalize(lng?: string | null): string {
 // so we can preload the right locale before init.
 function detectInitial(): string {
   try {
-    const stored = localStorage.getItem('i18nextLng');
-    if (stored) return normalize(stored);
+    // Only honour a stored language when the user explicitly picked one in
+    // settings; otherwise always follow the device/browser language so the
+    // app defaults to the user's device language on every launch.
+    if (localStorage.getItem('eb.langManual') === '1') {
+      const stored = localStorage.getItem('i18nextLng');
+      if (stored) return normalize(stored);
+    }
   } catch {
     /* localStorage unavailable */
   }

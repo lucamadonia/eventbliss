@@ -305,6 +305,7 @@ export default function ProfileScreen() {
                       key={lang.code}
                       onClick={() => {
                         haptics.select();
+                        try { localStorage.setItem("eb.langManual", "1"); } catch { /* noop */ }
                         i18n.changeLanguage(lang.code);
                         setShowLangPicker(false);
                       }}
