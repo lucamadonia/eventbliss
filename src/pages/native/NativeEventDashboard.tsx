@@ -811,7 +811,7 @@ export default function NativeEventDashboard() {
               {event.name}
             </h1>
             <p className="text-sm text-muted-foreground truncate">
-              Ehrengast: {event.honoree_name}
+              {t("nativeDashboard.honoree")}: {event.honoree_name}
             </p>
           </div>
         </div>
