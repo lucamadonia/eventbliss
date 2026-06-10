@@ -16,6 +16,7 @@ export const LanguageSwitcher = () => {
   const navigate = useNavigate();
 
   const handleChange = (value: string) => {
+    try { localStorage.setItem("eb.langManual", "1"); } catch { /* noop */ }
     void i18n.changeLanguage(value);
     // SEO landing pages derive their language from the URL — navigate to the
     // equivalent localized page so the content actually switches language.
