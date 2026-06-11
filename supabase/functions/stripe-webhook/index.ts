@@ -352,6 +352,10 @@ serve(async (req) => {
             .upsert({
               user_id: userId,
               plan: "premium",
+              provider: "stripe",
+              plan_type: "lifetime",
+              // Price id is not on the session object without expanding
+              // line items — skip it for one-time payments.
               stripe_customer_id: customerId,
               stripe_subscription_id: null, // No subscription for one-time payments
               expires_at: null, // Lifetime = no expiration
@@ -371,6 +375,9 @@ serve(async (req) => {
             .upsert({
               user_id: userId,
               plan: "premium",
+              provider: "stripe",
+              plan_type: planType,
+              product_id: subscription.items.data[0]?.price?.id ?? null,
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId,
               expires_at: new Date(subscription.current_period_end * 1000).toISOString(),

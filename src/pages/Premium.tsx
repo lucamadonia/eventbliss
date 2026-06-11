@@ -4,7 +4,7 @@ import i18n from "@/i18n";
 import { useEffect, useState } from "react";
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift, Calendar, XCircle, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift, Calendar, XCircle, AlertTriangle, RotateCcw, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -26,13 +26,26 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAICredits } from "@/hooks/useAICredits";
 import { toast } from "sonner";
 import { AI_CREDIT_LIMITS } from "@/lib/ai-credits";
+import { isNative, isIOS } from "@/lib/platform";
+import {
+  getPremiumOfferings,
+  findPremiumPackage,
+  purchasePackage,
+  hasPremiumEntitlement,
+  restorePurchases,
+  type PremiumPlan,
+} from "@/lib/revenuecat";
+import type { PurchasesOffering } from "@revenuecat/purchases-capacitor";
+
+const STORE_SUBSCRIPTIONS_URL_IOS = "https://apps.apple.com/account/subscriptions";
+const STORE_SUBSCRIPTIONS_URL_ANDROID = "https://play.google.com/store/account/subscriptions";
 
 export default function Premium() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
-  const { isPremium, loading: premiumLoading, subscriptionEnd, planType, cancelAtPeriodEnd, checkSubscription } = usePremium();
+  const { isPremium, loading: premiumLoading, subscription, subscriptionEnd, planType, cancelAtPeriodEnd, checkSubscription } = usePremium();
   const { remaining: creditsRemaining, limit: creditsLimit, loading: creditsLoading } = useAICredits();
   const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "yearly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
@@ -40,6 +53,42 @@ export default function Premium() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [voucherCode, setVoucherCode] = useState("");
   const [voucherLoading, setVoucherLoading] = useState(false);
+
+  // RevenueCat state (native in-app purchases)
+  const native = isNative();
+  const [rcOffering, setRcOffering] = useState<PurchasesOffering | null>(null);
+  const [rcPremiumActive, setRcPremiumActive] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
+
+  // Load RC offerings + entitlement state on native
+  useEffect(() => {
+    if (!native) return;
+    let cancelled = false;
+    (async () => {
+      const [offering, entitled] = await Promise.all([
+        getPremiumOfferings(),
+        hasPremiumEntitlement(),
+      ]);
+      if (cancelled) return;
+      if (offering) setRcOffering(offering);
+      setRcPremiumActive(entitled);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [native]);
+
+  // Store prices are authoritative on native; fall back to static prices
+  // until the offerings have loaded.
+  const displayPrice = (plan: PremiumPlan, fallback: string): string => {
+    if (!native || !rcOffering) return fallback;
+    return findPremiumPackage(rcOffering, plan)?.product.priceString ?? fallback;
+  };
+
+  // Which provider owns the active subscription? Prefer the explicit DB field,
+  // otherwise derive it: active RC entitlement → RevenueCat.
+  const isRevenueCatSubscription =
+    subscription?.provider === "revenuecat" || (subscription?.provider == null && rcPremiumActive);
 
   // Handle success/cancel from Stripe
   useEffect(() => {
@@ -65,29 +114,30 @@ export default function Premium() {
     }
 
     if (Capacitor.isNativePlatform()) {
+      // Native: purchase via RevenueCat in-app purchases (App Store / Google Play).
+      // Stripe checkout is not allowed for digital content (Apple Guideline 3.1.1).
       setCheckoutLoading(selectedPlanType);
       try {
-        const { data, error } = await supabase.functions.invoke("create-checkout", {
-          body: {
-            plan_type: selectedPlanType,
-            locale: i18n.language
-          }
-        });
-
-        if (error) throw error;
-
-        if (!data?.url) {
-          toast.error(t("premium.checkoutError"));
+        const offering = rcOffering ?? (await getPremiumOfferings());
+        const pkg = offering ? findPremiumPackage(offering, selectedPlanType) : null;
+        if (!pkg) {
+          toast.error(t("premium.native.productsUnavailable"));
           return;
         }
 
-        Browser.addListener('browserFinished', () => {
-          window.location.reload();
-        });
-        await Browser.open({ url: data.url });
+        const result = await purchasePackage(pkg);
+        if (result.cancelled) return;
+        if (!result.success) {
+          toast.error(t("premium.native.purchaseError"));
+          return;
+        }
+
+        setRcPremiumActive(await hasPremiumEntitlement(result.customerInfo));
+        toast.success(t("premium.subscriptionSuccess"));
+        await checkSubscription();
       } catch (err) {
-        console.error("Checkout error:", err);
-        toast.error(t("premium.checkoutError"));
+        console.error("Purchase error:", err);
+        toast.error(t("premium.native.purchaseError"));
       } finally {
         setCheckoutLoading(null);
       }
@@ -153,6 +203,103 @@ export default function Premium() {
     } finally {
       setPortalLoading(false);
     }
+  };
+
+  // Native: open the platform's subscription settings (Apple/Google manage
+  // and cancel subscriptions themselves — no Stripe portal in the app).
+  const handleManageInStore = async () => {
+    try {
+      await Browser.open({
+        url: isIOS() ? STORE_SUBSCRIPTIONS_URL_IOS : STORE_SUBSCRIPTIONS_URL_ANDROID,
+      });
+    } catch (err) {
+      console.error("Open store subscriptions error:", err);
+    }
+  };
+
+  // Native: restore previous purchases (required by Apple Guideline 3.1.1)
+  const handleRestorePurchases = async () => {
+    setRestoreLoading(true);
+    try {
+      const customerInfo = await restorePurchases();
+      if (!customerInfo) {
+        toast.error(t("premium.native.restoreError"));
+        return;
+      }
+      const entitled = await hasPremiumEntitlement(customerInfo);
+      setRcPremiumActive(entitled);
+      if (entitled) {
+        toast.success(t("premium.native.restoreSuccess"));
+        await checkSubscription();
+      } else {
+        toast.info(t("premium.native.restoreNone"));
+      }
+    } finally {
+      setRestoreLoading(false);
+    }
+  };
+
+  // Manage/cancel section for an active recurring subscription.
+  // Web: Stripe portal + cancel dialog (unchanged).
+  // Native + RevenueCat sub: link to App Store / Google Play subscription settings.
+  // Native + Stripe sub (bought on web): text hint only — no Stripe portal in
+  // the app (Apple steering risk).
+  const renderManageSubscription = () => {
+    if (native) {
+      if (isRevenueCatSubscription) {
+        return (
+          <div className="space-y-2">
+            <p className="text-xs text-center text-muted-foreground">
+              {t("premium.native.manageStoreHint")}
+            </p>
+            <Button
+              className="w-full"
+              size="lg"
+              variant="outline"
+              onClick={handleManageInStore}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              {t("premium.native.manageInStore")}
+            </Button>
+          </div>
+        );
+      }
+      return (
+        <p className="text-xs text-center text-muted-foreground border rounded-lg p-3">
+          {t("premium.native.manageOnWebsite")}
+        </p>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        <Button
+          className="w-full"
+          size="lg"
+          variant="outline"
+          onClick={handleManageSubscription}
+          disabled={portalLoading}
+        >
+          {portalLoading ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Settings className="h-4 w-4 mr-2" />
+          )}
+          {t("premium.manageSubscription")}
+        </Button>
+        {!cancelAtPeriodEnd && (
+          <Button
+            className="w-full"
+            size="lg"
+            variant="ghost"
+            onClick={() => setShowCancelDialog(true)}
+          >
+            <XCircle className="h-4 w-4 mr-2" />
+            {t("premium.cancelSubscription")}
+          </Button>
+        )}
+      </div>
+    );
   };
 
   const handleCancelSubscription = async () => {
@@ -312,7 +459,7 @@ export default function Premium() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <span className="text-4xl font-bold">€6,99</span>
+                  <span className="text-4xl font-bold">{displayPrice("monthly", "€6,99")}</span>
                   <span className="text-muted-foreground">/{t("premium.perMonth")}</span>
                 </div>
 
@@ -354,33 +501,7 @@ export default function Premium() {
                     {t("common.loading")}
                   </Button>
                 ) : isMonthlyActive ? (
-                  <div className="space-y-2">
-                    <Button 
-                      className="w-full" 
-                      size="lg" 
-                      variant="outline"
-                      onClick={handleManageSubscription}
-                      disabled={portalLoading}
-                    >
-                      {portalLoading ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Settings className="h-4 w-4 mr-2" />
-                      )}
-                      {t("premium.manageSubscription")}
-                    </Button>
-                    {!cancelAtPeriodEnd && (
-                      <Button 
-                        className="w-full" 
-                        size="lg" 
-                        variant="ghost"
-                        onClick={() => setShowCancelDialog(true)}
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        {t("premium.cancelSubscription")}
-                      </Button>
-                    )}
-                  </div>
+                  renderManageSubscription()
                 ) : isPremium ? (
                   <Button className="w-full" size="lg" disabled variant="outline">
                     {t("premium.currentPlan")}
@@ -434,7 +555,7 @@ export default function Premium() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <span className="text-4xl font-bold">€59,99</span>
+                  <span className="text-4xl font-bold">{displayPrice("yearly", "€59,99")}</span>
                   <span className="text-muted-foreground">/{t("premium.perYear")}</span>
                   <div className="mt-1">
                     <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20">
@@ -481,33 +602,7 @@ export default function Premium() {
                     {t("common.loading")}
                   </Button>
                 ) : isYearlyActive ? (
-                  <div className="space-y-2">
-                    <Button 
-                      className="w-full" 
-                      size="lg" 
-                      variant="outline"
-                      onClick={handleManageSubscription}
-                      disabled={portalLoading}
-                    >
-                      {portalLoading ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Settings className="h-4 w-4 mr-2" />
-                      )}
-                      {t("premium.manageSubscription")}
-                    </Button>
-                    {!cancelAtPeriodEnd && (
-                      <Button 
-                        className="w-full" 
-                        size="lg" 
-                        variant="ghost"
-                        onClick={() => setShowCancelDialog(true)}
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        {t("premium.cancelSubscription")}
-                      </Button>
-                    )}
-                  </div>
+                  renderManageSubscription()
                 ) : isLifetimeActive ? (
                   <Button className="w-full" size="lg" disabled variant="outline">
                     {t("premium.lifetimeActive")}
@@ -552,7 +647,7 @@ export default function Premium() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <span className="text-4xl font-bold">€19,99</span>
+                  <span className="text-4xl font-bold">{displayPrice("lifetime", "€19,99")}</span>
                   <span className="text-muted-foreground ml-2">{t("premium.oneTimePayment")}</span>
                 </div>
 
@@ -641,12 +736,31 @@ export default function Premium() {
           </motion.div>
         </div>
 
+        {/* Restore purchases — required by Apple for in-app purchases */}
+        {native && (
+          <div className="text-center mt-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRestorePurchases}
+              disabled={restoreLoading}
+            >
+              {restoreLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RotateCcw className="h-4 w-4 mr-2" />
+              )}
+              {t("premium.native.restorePurchases")}
+            </Button>
+          </div>
+        )}
+
         {!isPremium && (
           <>
             <p className="text-xs text-center text-muted-foreground mt-6">
-              {t("premium.securePayment")}
+              {native ? t("premium.native.securePayment") : t("premium.securePayment")}
             </p>
-            
+
             {/* Voucher Redemption Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

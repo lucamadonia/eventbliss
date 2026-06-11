@@ -50,6 +50,9 @@ importers:
       '@capacitor/status-bar':
         specifier: 8.0.2
         version: 8.0.2(@capacitor/core@8.3.0)
+      '@capgo/capacitor-social-login':
+        specifier: ^8.3.22
+        version: 8.3.22(@capacitor/core@8.3.0)
       '@diffusionstudio/vits-web':
         specifier: ^1.0.3
         version: 1.0.3
@@ -158,6 +161,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.7
         version: 1.2.7(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@revenuecat/purchases-capacitor':
+        specifier: ^13.1.7
+        version: 13.1.7(@capacitor/core@8.3.0)
       '@supabase/supabase-js':
         specifier: ^2.89.0
         version: 2.89.0
@@ -913,6 +919,11 @@ packages:
 
   '@capacitor/status-bar@8.0.2':
     resolution: {integrity: sha512-WXs8YB8B9eEaPZz+bcdY6t2nForF1FLoj/JU0Dl9RRgQnddnS98FEEyDooQhaY7wivr000j4+SC1FyeJkrFO7A==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capgo/capacitor-social-login@8.3.22':
+    resolution: {integrity: sha512-7afa+96ekeAU13uutqZVIVHCWXs40peKoWCK2jd9k7eWnFYcLtagRbwUf9CbaAO/zrHaifXpYQSuiWHGyH1QlQ==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -2108,6 +2119,14 @@ packages:
   '@remix-run/router@1.23.0':
     resolution: {integrity: sha512-O3rHJzAQKamUz1fvE0Qaw0xSFqsA/yafi2iqeE0pvdFtCO1viYx8QL6f3Ln/aCCTLxs68SLf0KPM9eSeM8yBnA==}
     engines: {node: '>=14.0.0'}
+
+  '@revenuecat/purchases-capacitor@13.1.7':
+    resolution: {integrity: sha512-qKrJeuNgdgaNXtVBs9PA5O/G2U4s6t6RkQ7jrahewOpkD/ij20wGQsre1kd/mXDFoJdA0w9YKKMpvb8LzgqYyA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@revenuecat/purchases-typescript-internal-esm@18.14.1':
+    resolution: {integrity: sha512-Gw1MIPNQvcnGUGwtN94fmlcClgElC4cJURJ7Z3haeZCWAyxFvwKBxB5WtoarMyP3DMN0bKZOV0vMLu4PUE+Ggw==}
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -6991,6 +7010,11 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.3.0
 
+  '@capgo/capacitor-social-login@8.3.22(@capacitor/core@8.3.0)':
+    dependencies:
+      '@capacitor/core': 8.3.0
+      tslib: 2.8.1
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -8180,6 +8204,13 @@ snapshots:
   '@radix-ui/rect@1.1.1': {}
 
   '@remix-run/router@1.23.0': {}
+
+  '@revenuecat/purchases-capacitor@13.1.7(@capacitor/core@8.3.0)':
+    dependencies:
+      '@capacitor/core': 8.3.0
+      '@revenuecat/purchases-typescript-internal-esm': 18.14.1
+
+  '@revenuecat/purchases-typescript-internal-esm@18.14.1': {}
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 

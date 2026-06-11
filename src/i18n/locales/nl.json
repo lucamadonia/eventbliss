@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Registreer om evenementen te maken en te beheren",
     "welcomeBack": "Welkom terug",
     "loginSubtitle": "Log in om je dashboard te bekijken",
+    "social": {
+      "apple": "Ga door met Apple",
+      "google": "Doorgaan met Google",
+      "or": "of",
+      "error": "Inloggen mislukt. Probeer het opnieuw."
+    },
     "emailPlaceholder": "jouw@email.nl",
     "invalidEmail": "Ongeldig e-mailadres",
     "passwordMinLength": "Wachtwoord moet minimaal 8 tekens bevatten",
@@ -3238,6 +3244,18 @@
     "exportData": "Mijn gegevens exporteren (AVG art. 20)"
   },
   "premium": {
+    "native": {
+      "securePayment": "Veilig betalen via de App Store of Google Play. Altijd opzegbaar.",
+      "restorePurchases": "Aankopen herstellen",
+      "restoreSuccess": "Aankopen hersteld – Premium is actief!",
+      "restoreNone": "Geen eerdere aankopen gevonden.",
+      "restoreError": "Aankopen konden niet worden hersteld. Probeer het opnieuw.",
+      "purchaseError": "De aankoop kon niet worden voltooid. Probeer het opnieuw.",
+      "productsUnavailable": "De producten zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
+      "manageInStore": "Abonnement beheren in de store",
+      "manageStoreHint": "Je abonnement loopt via de App Store of Google Play en kan daar worden beheerd of opgezegd.",
+      "manageOnWebsite": "Je abonnement is afgesloten op event-bliss.com en kan daar in je account worden beheerd."
+    },
     "title": "Premium Functies",
     "description": "Ontgrendel geavanceerde functies voor een betere ervaring.",
     "planName": "EventBliss Pro",
@@ -6633,6 +6651,7 @@
     "openMarketplace": "Marketplace openen"
   },
   "agencyPricing": {
+    "nativeNotice": "Pakketten voor bureaus kunnen via event-bliss.com in de browser worden geboekt.",
     "hero": {
       "badge": "🔥 LAUNCH-AANBIEDING: 50% VOOR ALTIJD BESPAREN",
       "titleLine1": "Bereik",

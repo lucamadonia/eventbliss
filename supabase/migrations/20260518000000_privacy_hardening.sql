@@ -131,15 +131,22 @@ COMMENT ON COLUMN public.affiliates.tax_id IS
 -- Audit trail entry
 -- ──────────────────────────────────────────────────────────────────
 
-INSERT INTO public.admin_audit_log (admin_user_id, admin_email, action, target_type, target_id, metadata)
-VALUES (
-  NULL,
-  'migration@event-bliss.com',
-  'privacy_hardening_2026_05_18',
-  'system',
-  NULL,
-  jsonb_build_object(
-    'items', ARRAY['0.3', '0.4', '0.11', '0.16'],
-    'description', 'Privacy hardening from DPO audit 2026-05-18'
-  )
-);
+-- Best-effort: admin_user_id is NOT NULL, so a system entry without a real
+-- admin user cannot be inserted; skip audit logging rather than failing the migration.
+DO $$
+BEGIN
+  INSERT INTO public.admin_audit_log (admin_user_id, admin_email, action, target_type, target_id, metadata)
+  VALUES (
+    NULL,
+    'migration@event-bliss.com',
+    'privacy_hardening_2026_05_18',
+    'system',
+    NULL,
+    jsonb_build_object(
+      'items', ARRAY['0.3', '0.4', '0.11', '0.16'],
+      'description', 'Privacy hardening from DPO audit 2026-05-18'
+    )
+  );
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'Skipping audit log entry: %', SQLERRM;
+END $$;

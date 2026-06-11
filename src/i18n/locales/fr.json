@@ -1959,6 +1959,12 @@
     "registerSubtitle": "Inscrivez-vous pour créer et gérer des événements",
     "welcomeBack": "Bon retour",
     "loginSubtitle": "Connectez-vous pour accéder à votre tableau de bord",
+    "social": {
+      "apple": "Continuer avec Apple",
+      "google": "Continuer avec Google",
+      "or": "ou",
+      "error": "Échec de la connexion. Veuillez réessayer."
+    },
     "emailPlaceholder": "votre@email.com",
     "invalidEmail": "Adresse e-mail invalide",
     "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
@@ -3188,6 +3194,18 @@
     "exportData": "Exporter mes données (RGPD art. 20)"
   },
   "premium": {
+    "native": {
+      "securePayment": "Paiement sécurisé via l'App Store ou Google Play. Résiliable à tout moment.",
+      "restorePurchases": "Restaurer les achats",
+      "restoreSuccess": "Achats restaurés – Premium est actif !",
+      "restoreNone": "Aucun achat antérieur trouvé.",
+      "restoreError": "Impossible de restaurer les achats. Veuillez réessayer.",
+      "purchaseError": "L'achat n'a pas pu être finalisé. Veuillez réessayer.",
+      "productsUnavailable": "Les produits ne sont pas disponibles pour le moment. Veuillez réessayer plus tard.",
+      "manageInStore": "Gérer l'abonnement dans le store",
+      "manageStoreHint": "Votre abonnement est facturé via l'App Store ou Google Play et peut y être géré ou résilié.",
+      "manageOnWebsite": "Votre abonnement a été souscrit sur event-bliss.com et peut y être géré depuis votre compte."
+    },
     "title": "Fonctionnalités Premium",
     "description": "Débloquez des fonctionnalités avancées.",
     "planName": "EventBliss Pro",
@@ -6583,6 +6601,7 @@
     "openMarketplace": "Ouvrir le Marketplace"
   },
   "agencyPricing": {
+    "nativeNotice": "Les offres pour agences peuvent être souscrites sur event-bliss.com depuis un navigateur.",
     "hero": {
       "badge": "🔥 OFFRE DE LANCEMENT : 50% DE RÉDUCTION À VIE",
       "titleLine1": "Atteins",

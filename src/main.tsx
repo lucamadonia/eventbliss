@@ -6,6 +6,8 @@ import "./index.css";
 import { i18nInitPromise } from "./i18n";
 import { initNativeSetup } from "./lib/native-setup";
 import { initPushNotifications } from "./lib/push-notifications";
+import { initRevenueCat } from "./lib/revenuecat";
+import { initSocialLogin } from "./lib/native-auth";
 
 // Mark native platform SYNCHRONOUSLY before first paint so native-only CSS
 // (e.g. disabled backdrop-blur in index.css) applies on the very first frame
@@ -25,4 +27,6 @@ i18nInitPromise.then(() => {
   // Initialize native features after render
   initNativeSetup();
   initPushNotifications();
+  initRevenueCat();
+  initSocialLogin();
 });

@@ -1,7 +1,9 @@
-import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { logInRevenueCat, logOutRevenueCat } from "@/lib/revenuecat";
+import { isNative } from "@/lib/platform";
 import { ForcePasswordChange } from "./ForcePasswordChange";
 
 type PlanType = "free" | "monthly" | "yearly" | "lifetime";
@@ -54,6 +56,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSubscriptionLoading(false);
     }
   }, [auth.user]);
+
+  // Keep RevenueCat identity in sync with the Supabase user (native only).
+  // App User ID = Supabase user.id; logOut only after a previous login to
+  // avoid logging out the anonymous RC user on cold start.
+  const rcUserIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isNative() || auth.isLoading) return;
+    const userId = auth.user?.id ?? null;
+    if (userId === rcUserIdRef.current) return;
+    if (userId) {
+      logInRevenueCat(userId);
+    } else if (rcUserIdRef.current) {
+      logOutRevenueCat();
+    }
+    rcUserIdRef.current = userId;
+  }, [auth.user?.id, auth.isLoading]);
 
   // Check if user needs to change password
   useEffect(() => {

@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, CheckCircle } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { createPasswordSchema } from "@/lib/password-validation";
 
 interface RegisterFormProps {
@@ -92,8 +93,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <>
+      <SocialLoginButtons />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -182,7 +185,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             {t('auth.loginNow')}
           </button>
         </p>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </>
   );
 }

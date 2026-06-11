@@ -3,12 +3,23 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
-// Price IDs for different plans
-const PRICE_IDS = {
-  monthly: "price_1Sjgb5G3F2f0Er10ZWjNEIjC", // 6.99€/month
-  yearly: "price_1Sl3apG3F2f0Er104W7XLYvH", // 59.99€/year
-  lifetime: "price_1SjgbNG3F2f0Er10zF9Midns", // 19.99€ one-time
-};
+// Price IDs are configured via Supabase secrets (no hardcoded fallbacks —
+// the function fails loudly if a price is not configured for the current
+// Stripe account).
+const PRICE_ENV_VARS = {
+  monthly: "STRIPE_PRICE_MONTHLY",
+  yearly: "STRIPE_PRICE_YEARLY",
+  lifetime: "STRIPE_PRICE_LIFETIME",
+} as const;
+
+function getPriceId(planType: string): string {
+  const envVar =
+    PRICE_ENV_VARS[planType as keyof typeof PRICE_ENV_VARS] ??
+    PRICE_ENV_VARS.monthly;
+  const priceId = Deno.env.get(envVar);
+  if (!priceId) throw new Error(`${envVar} not configured`);
+  return priceId;
+}
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -83,7 +94,7 @@ serve(async (req) => {
     }
 
     const origin = returnOrigin || req.headers.get("origin") || "https://event-bliss.com";
-    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS] || PRICE_IDS.monthly;
+    const priceId = getPriceId(planType);
     const mode = planType === "lifetime" ? "payment" : "subscription";
     
     logStep("Selected price", { priceId, mode, planType });
@@ -95,7 +106,6 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
-      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,

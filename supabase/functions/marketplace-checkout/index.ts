@@ -151,7 +151,6 @@ serve(async (req) => {
     // and is tracked via marketplace_bookings.agency_payout_cents.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
       customer_email: booking.customer_email ?? user.email ?? undefined,
       client_reference_id: String(booking.id),
       line_items: [

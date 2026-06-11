@@ -35,6 +35,14 @@
 				<string>eventbliss</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>app.eventbliss.googleauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.38219722223-rlpbmptot5lldkrbh2hrgo4cdmoe9hpe</string>
+			</array>
+		</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

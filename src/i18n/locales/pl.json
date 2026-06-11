@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Zarejestruj się, aby tworzyć i zarządzać wydarzeniami",
     "welcomeBack": "Witaj ponownie",
     "loginSubtitle": "Zaloguj się, aby uzyskać dostęp do panelu",
+    "social": {
+      "apple": "Kontynuuj z Apple",
+      "google": "Kontynuuj z Google",
+      "or": "lub",
+      "error": "Logowanie nie powiodło się. Spróbuj ponownie."
+    },
     "emailPlaceholder": "twoj@email.pl",
     "invalidEmail": "Nieprawidłowy adres email",
     "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",
@@ -3238,6 +3244,18 @@
     "exportData": "Eksportuj moje dane (RODO art. 20)"
   },
   "premium": {
+    "native": {
+      "securePayment": "Bezpieczna płatność przez App Store lub Google Play. Anuluj w dowolnym momencie.",
+      "restorePurchases": "Przywróć zakupy",
+      "restoreSuccess": "Zakupy przywrócone – Premium jest aktywne!",
+      "restoreNone": "Nie znaleziono wcześniejszych zakupów.",
+      "restoreError": "Nie udało się przywrócić zakupów. Spróbuj ponownie.",
+      "purchaseError": "Nie udało się sfinalizować zakupu. Spróbuj ponownie.",
+      "productsUnavailable": "Produkty są obecnie niedostępne. Spróbuj ponownie później.",
+      "manageInStore": "Zarządzaj subskrypcją w sklepie",
+      "manageStoreHint": "Twoja subskrypcja jest rozliczana przez App Store lub Google Play – tam możesz nią zarządzać lub ją anulować.",
+      "manageOnWebsite": "Twoja subskrypcja została wykupiona na event-bliss.com i tam możesz nią zarządzać w swoim koncie."
+    },
     "title": "Funkcje Premium",
     "description": "Odblokuj zaawansowane funkcje dla lepszego doświadczenia.",
     "planName": "EventBliss Pro",
@@ -6633,6 +6651,7 @@
     "openMarketplace": "Otwórz Marketplace"
   },
   "agencyPricing": {
+    "nativeNotice": "Pakiety dla agencji można zamówić na event-bliss.com w przeglądarce.",
     "hero": {
       "badge": "🔥 OFERTA STARTOWA: OSZCZĘDŹ 50% NA ZAWSZE",
       "titleLine1": "Dotrzyj do",
