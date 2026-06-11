@@ -3,8 +3,8 @@
     "apps": [],
     "details": [
       {
-        "appIDs": ["TEAMID.app.eventbliss"],
-        "appID": "TEAMID.app.eventbliss",
+        "appIDs": ["WU8U8HD73G.app.eventbliss"],
+        "appID": "WU8U8HD73G.app.eventbliss",
         "paths": ["/e/*", "/join", "/join/*"],
         "components": [
           { "/": "/e/*" },
