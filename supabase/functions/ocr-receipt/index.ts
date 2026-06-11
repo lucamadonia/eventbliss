@@ -63,7 +63,7 @@ const OCR_SCHEMA = {
 };
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   // Prefer direct OpenAI, fall back to OpenRouter (same OpenAI-compatible

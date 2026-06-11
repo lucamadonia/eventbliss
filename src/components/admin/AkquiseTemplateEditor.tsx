@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 
 interface AkquiseTemplateEditorProps {
   subject: string;
@@ -60,7 +61,10 @@ export default function AkquiseTemplateEditor({
   const [previewWidth, setPreviewWidth] = useState<"desktop" | "mobile">("desktop");
 
   const previewSubject = useMemo(() => interpolatePreview(subject, agencyPreview), [subject, agencyPreview]);
-  const previewBody = useMemo(() => interpolatePreview(body, agencyPreview), [body, agencyPreview]);
+  const previewBody = useMemo(
+    () => DOMPurify.sanitize(interpolatePreview(body, agencyPreview)),
+    [body, agencyPreview]
+  );
 
   const insertVariable = (key: string, target: "subject" | "body") => {
     const tag = `{{${key}}}`;

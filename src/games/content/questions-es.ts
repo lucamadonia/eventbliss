@@ -310,6 +310,6 @@ export const QUIZ_QUESTIONS_ES: QuizQuestion[] = [
   { id: 'yq-101', question: '¿De qué país es originario el plato llamado \'sushi\'?', answers: ['China', 'Tailandia', 'Japón', 'Corea'], correctIndex: 2, category: 'Comida', difficulty: 'easy' },
 ];
 
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_ES.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_ES.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_ES[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

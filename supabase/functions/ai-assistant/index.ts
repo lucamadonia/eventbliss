@@ -1556,7 +1556,7 @@ function buildContextInfo(context: RequestBody['context'], language: string): st
   const template = getPromptTemplate(language);
   const eventTypeName = template.event_types[context.event_type] || template.event_types.other;
   
-  let contextLines = [
+  const contextLines = [
     template.context_header,
     `${template.labels.event_name}: ${context.event_name || 'Event'}`,
     `Event-Typ: ${eventTypeName}`,
@@ -1648,7 +1648,7 @@ function getDayPlanPromptWithDays(language: string, targetDays: number): string 
 // =============================================================================
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

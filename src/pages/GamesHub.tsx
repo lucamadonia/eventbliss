@@ -129,7 +129,7 @@ const stagger = {
 };
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 22 } },
+  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 260, damping: 22 } },
 };
 
 function RatingStars({ rating }: { rating: number }) {

@@ -89,7 +89,7 @@ async function fetchListings(): Promise<Listing[]> {
 
   const serviceIds = (services || []).map((s: any) => s.id);
 
-  let translationsMap: Record<string, { title: string; description: string }> = {};
+  const translationsMap: Record<string, { title: string; description: string }> = {};
   if (serviceIds.length > 0) {
     const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
       .select("service_id, locale, title, description")

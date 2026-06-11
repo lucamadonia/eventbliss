@@ -308,7 +308,7 @@ export const VisualScheduleCalendar = ({
         }
         
         // Determine new date based on X position
-        let newDate = getDateFromX(dragState.currentX) || dragState.originalDate;
+        const newDate = getDateFromX(dragState.currentX) || dragState.originalDate;
         
         // Snap times
         const snappedStart = decimalToTime(Math.round(newStartDecimal * (60 / SNAP_INTERVAL)) / (60 / SNAP_INTERVAL));

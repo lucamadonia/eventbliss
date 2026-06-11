@@ -571,7 +571,7 @@ export const EpicNarrativeResponse = ({
     setHeroBurst(false);
     const t = setTimeout(() => setHeroBurst(true), 100);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [response]);
 
   return (

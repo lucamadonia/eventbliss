@@ -22,7 +22,7 @@ const log = (step: string, details?: unknown) => {
 };
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");

@@ -301,6 +301,6 @@ export const QUIZ_QUESTIONS_PL: QuizQuestion[] = [
   { id: 'yq-100', question: 'Jakie polskie danie to nadziewane miesem lub kapusta zawijane ciasto, gotowane lub smazone?', answers: ['Bigos', 'Pierogi', 'Golabki', 'Zurek'], correctIndex: 1, category: 'Jedzenie', difficulty: 'easy' },
   { id: 'yq-101', question: 'Z jakiej rosliny pozyskuje sie czekolade?', answers: ['Kawowiec', 'Kakaowiec', 'Trzcina cukrowa', 'Wanilia'], correctIndex: 1, category: 'Jedzenie', difficulty: 'medium' },
 ];
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_PL.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_PL.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_PL[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

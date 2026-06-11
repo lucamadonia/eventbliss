@@ -349,7 +349,7 @@ export const QUIZ_QUESTIONS_DE: QuizQuestion[] = [
   { id: 'ess-30', question: 'Welches Getränk wird aus Agave hergestellt?', answers: ['Rum', 'Whisky', 'Tequila', 'Wodka'], correctIndex: 2, category: 'Essen & Trinken', difficulty: 'easy' },
 ];
 
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 
 export function getRandomQuestion(): QuizQuestion {
   if (_usedIndices.size >= QUIZ_QUESTIONS_DE.length) {

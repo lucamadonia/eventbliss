@@ -9,7 +9,7 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -62,7 +62,7 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
     // Create Stripe coupon based on discount type
-    let couponParams: Stripe.CouponCreateParams = {
+    const couponParams: Stripe.CouponCreateParams = {
       duration: "once",
       name: `EventBliss Discount - ${code}`,
     };

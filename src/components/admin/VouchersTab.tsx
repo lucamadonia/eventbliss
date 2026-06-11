@@ -93,9 +93,20 @@ export function VouchersTab() {
 
   const generateCode = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    // Rejection sampling to avoid modulo bias
+    const maxValid = 256 - (256 % chars.length);
     let code = "EVB-";
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    let generated = 0;
+    while (generated < 8) {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      for (const byte of bytes) {
+        if (generated >= 8) break;
+        if (byte < maxValid) {
+          code += chars.charAt(byte % chars.length);
+          generated++;
+        }
+      }
     }
     setNewVoucher((prev) => ({ ...prev, code }));
   };

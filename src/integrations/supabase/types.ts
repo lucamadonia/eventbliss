@@ -53,6 +53,45 @@ export type Database = {
           },
         ]
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_email: string | null
+          admin_user_id: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          target_id: string | null
+          target_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_email?: string | null
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_email?: string | null
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_messages: {
         Row: {
           admin_id: string
@@ -362,6 +401,84 @@ export type Database = {
         }
         Relationships: []
       }
+      agencies: {
+        Row: {
+          accent_color: string | null
+          address: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          custom_domain: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          marketplace_enabled: boolean | null
+          marketplace_tier: string | null
+          max_events: number | null
+          max_members: number | null
+          name: string
+          owner_id: string
+          phone: string | null
+          primary_color: string | null
+          slug: string
+          storage_limit_gb: number | null
+          subscription_plan: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          custom_domain?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          marketplace_enabled?: boolean | null
+          marketplace_tier?: string | null
+          max_events?: number | null
+          max_members?: number | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          primary_color?: string | null
+          slug: string
+          storage_limit_gb?: number | null
+          subscription_plan?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          custom_domain?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          marketplace_enabled?: boolean | null
+          marketplace_tier?: string | null
+          max_events?: number | null
+          max_members?: number | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          primary_color?: string | null
+          slug?: string
+          storage_limit_gb?: number | null
+          subscription_plan?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       agency_affiliates: {
         Row: {
           affiliate_id: string | null
@@ -467,6 +584,65 @@ export type Database = {
           },
         ]
       }
+      agency_guides: {
+        Row: {
+          agency_id: string
+          avatar_url: string | null
+          color: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          max_daily_bookings: number | null
+          name: string
+          notes: string | null
+          phone: string | null
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agency_id: string
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_daily_bookings?: number | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_daily_bookings?: number | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_guides_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_interactions: {
         Row: {
           agency_id: string
@@ -516,6 +692,106 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agency_marketplace_subscriptions: {
+        Row: {
+          agency_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          started_at: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          started_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          started_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_marketplace_subscriptions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agency_members: {
+        Row: {
+          agency_id: string
+          created_at: string
+          email: string
+          id: string
+          invite_token: string | null
+          invited_at: string | null
+          invited_by: string | null
+          joined_at: string | null
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          email: string
+          id?: string
+          invite_token?: string | null
+          invited_at?: string | null
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          invite_token?: string | null
+          invited_at?: string | null
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_members_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
         ]
@@ -582,20 +858,80 @@ export type Database = {
           },
         ]
       }
+      calendar_tokens: {
+        Row: {
+          agency_id: string | null
+          created_at: string | null
+          guide_id: string | null
+          id: string
+          is_active: boolean | null
+          last_accessed_at: string | null
+          scope: string | null
+          token: string
+        }
+        Insert: {
+          agency_id?: string | null
+          created_at?: string | null
+          guide_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          scope?: string | null
+          token?: string
+        }
+        Update: {
+          agency_id?: string | null
+          created_at?: string | null
+          guide_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          scope?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_tokens_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_tokens_guide_id_fkey"
+            columns: ["guide_id"]
+            isOneToOne: false
+            referencedRelation: "agency_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           access_code: string | null
+          actual_budget: number | null
+          agency_id: string | null
+          archived_at: string | null
+          archived_by: string | null
+          client_email: string | null
+          client_name: string | null
           created_at: string
           created_by: string | null
           currency: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          deletion_reason: string | null
           description: string | null
           event_date: string | null
+          event_phase: string | null
           event_type: Database["public"]["Enums"]["event_type"]
+          expected_guests: number | null
           honoree_name: string
           id: string
           is_public: boolean | null
           locale: string | null
           name: string
+          planned_budget: number | null
           settings: Json | null
           slug: string
           status: Database["public"]["Enums"]["event_status"]
@@ -603,20 +939,34 @@ export type Database = {
           theme: Json | null
           timezone: string | null
           updated_at: string
+          venue_address: string | null
+          venue_name: string | null
         }
         Insert: {
           access_code?: string | null
+          actual_budget?: number | null
+          agency_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
           description?: string | null
           event_date?: string | null
+          event_phase?: string | null
           event_type?: Database["public"]["Enums"]["event_type"]
+          expected_guests?: number | null
           honoree_name: string
           id?: string
           is_public?: boolean | null
           locale?: string | null
           name: string
+          planned_budget?: number | null
           settings?: Json | null
           slug: string
           status?: Database["public"]["Enums"]["event_status"]
@@ -624,20 +974,34 @@ export type Database = {
           theme?: Json | null
           timezone?: string | null
           updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
         }
         Update: {
           access_code?: string | null
+          actual_budget?: number | null
+          agency_id?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
           description?: string | null
           event_date?: string | null
+          event_phase?: string | null
           event_type?: Database["public"]["Enums"]["event_type"]
+          expected_guests?: number | null
           honoree_name?: string
           id?: string
           is_public?: boolean | null
           locale?: string | null
           name?: string
+          planned_budget?: number | null
           settings?: Json | null
           slug?: string
           status?: Database["public"]["Enums"]["event_status"]
@@ -645,8 +1009,18 @@ export type Database = {
           theme?: Json | null
           timezone?: string | null
           updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "events_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expense_shares: {
         Row: {
@@ -758,6 +1132,329 @@ export type Database = {
             columns: ["paid_by_participant_id"]
             isOneToOne: false
             referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_flags: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_enabled: boolean
+          key: string
+          name: string
+          rollout_percentage: number | null
+          target_tiers: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          key: string
+          name: string
+          rollout_percentage?: number | null
+          target_tiers?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          key?: string
+          name?: string
+          rollout_percentage?: number | null
+          target_tiers?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketplace_bookings: {
+        Row: {
+          agency_id: string
+          agency_notes: string | null
+          agency_payout_cents: number
+          assigned_guide_id: string | null
+          assigned_team_member_id: string | null
+          booking_date: string
+          booking_number: string
+          booking_time: string
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          currency: string | null
+          customer_email: string
+          customer_id: string | null
+          customer_name: string
+          customer_notes: string | null
+          customer_phone: string | null
+          event_id: string | null
+          id: string
+          is_manual: boolean
+          participant_count: number
+          payment_method: string
+          platform_fee_cents: number
+          refund_amount_cents: number | null
+          refunded_at: string | null
+          service_id: string
+          source: string
+          status: Database["public"]["Enums"]["booking_status"]
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_refund_id: string | null
+          stripe_transfer_id: string | null
+          total_price_cents: number
+          unit_price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          agency_notes?: string | null
+          agency_payout_cents: number
+          assigned_guide_id?: string | null
+          assigned_team_member_id?: string | null
+          booking_date: string
+          booking_number: string
+          booking_time: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_email: string
+          customer_id?: string | null
+          customer_name: string
+          customer_notes?: string | null
+          customer_phone?: string | null
+          event_id?: string | null
+          id?: string
+          is_manual?: boolean
+          participant_count: number
+          payment_method?: string
+          platform_fee_cents: number
+          refund_amount_cents?: number | null
+          refunded_at?: string | null
+          service_id: string
+          source?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          stripe_transfer_id?: string | null
+          total_price_cents: number
+          unit_price_cents: number
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          agency_notes?: string | null
+          agency_payout_cents?: number
+          assigned_guide_id?: string | null
+          assigned_team_member_id?: string | null
+          booking_date?: string
+          booking_number?: string
+          booking_time?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_email?: string
+          customer_id?: string | null
+          customer_name?: string
+          customer_notes?: string | null
+          customer_phone?: string | null
+          event_id?: string | null
+          id?: string
+          is_manual?: boolean
+          participant_count?: number
+          payment_method?: string
+          platform_fee_cents?: number
+          refund_amount_cents?: number | null
+          refunded_at?: string | null
+          service_id?: string
+          source?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          stripe_transfer_id?: string | null
+          total_price_cents?: number
+          unit_price_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_bookings_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_bookings_assigned_guide_id_fkey"
+            columns: ["assigned_guide_id"]
+            isOneToOne: false
+            referencedRelation: "agency_guides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_bookings_assigned_team_member_id_fkey"
+            columns: ["assigned_team_member_id"]
+            isOneToOne: false
+            referencedRelation: "agency_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_bookings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_services: {
+        Row: {
+          admin_rejection_reason: string | null
+          admin_reviewed_at: string | null
+          admin_reviewed_by: string | null
+          advance_booking_days: number | null
+          agency_id: string
+          auto_confirm: boolean | null
+          avg_rating: number | null
+          booking_count: number | null
+          booking_mode: string | null
+          cancellation_policy: string | null
+          category: string
+          cover_image_url: string | null
+          created_at: string
+          deposit_percent: number | null
+          duration_minutes: number | null
+          external_booking_url: string | null
+          external_provider: string | null
+          external_provider_config: Json | null
+          featured_until: string | null
+          gallery_urls: string[] | null
+          id: string
+          is_featured: boolean | null
+          location_address: string | null
+          location_city: string | null
+          location_country: string | null
+          location_type: string | null
+          max_participants: number | null
+          min_participants: number | null
+          payment_method: string
+          price_cents: number
+          price_type: string
+          requires_deposit: boolean | null
+          review_count: number | null
+          slug: string
+          status: Database["public"]["Enums"]["listing_status"]
+          subcategory: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_rejection_reason?: string | null
+          admin_reviewed_at?: string | null
+          admin_reviewed_by?: string | null
+          advance_booking_days?: number | null
+          agency_id: string
+          auto_confirm?: boolean | null
+          avg_rating?: number | null
+          booking_count?: number | null
+          booking_mode?: string | null
+          cancellation_policy?: string | null
+          category: string
+          cover_image_url?: string | null
+          created_at?: string
+          deposit_percent?: number | null
+          duration_minutes?: number | null
+          external_booking_url?: string | null
+          external_provider?: string | null
+          external_provider_config?: Json | null
+          featured_until?: string | null
+          gallery_urls?: string[] | null
+          id?: string
+          is_featured?: boolean | null
+          location_address?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          location_type?: string | null
+          max_participants?: number | null
+          min_participants?: number | null
+          payment_method?: string
+          price_cents: number
+          price_type?: string
+          requires_deposit?: boolean | null
+          review_count?: number | null
+          slug: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_rejection_reason?: string | null
+          admin_reviewed_at?: string | null
+          admin_reviewed_by?: string | null
+          advance_booking_days?: number | null
+          agency_id?: string
+          auto_confirm?: boolean | null
+          avg_rating?: number | null
+          booking_count?: number | null
+          booking_mode?: string | null
+          cancellation_policy?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          deposit_percent?: number | null
+          duration_minutes?: number | null
+          external_booking_url?: string | null
+          external_provider?: string | null
+          external_provider_config?: Json | null
+          featured_until?: string | null
+          gallery_urls?: string[] | null
+          id?: string
+          is_featured?: boolean | null
+          location_address?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          location_type?: string | null
+          max_participants?: number | null
+          min_participants?: number | null
+          payment_method?: string
+          price_cents?: number
+          price_type?: string
+          requires_deposit?: boolean | null
+          review_count?: number | null
+          slug?: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_services_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
         ]
@@ -1224,6 +1921,39 @@ export type Database = {
         }
         Relationships: []
       }
+      system_settings: {
+        Row: {
+          category: string
+          description: string | null
+          id: string
+          is_secret: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          category: string
+          description?: string | null
+          id?: string
+          is_secret?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          category?: string
+          description?: string | null
+          id?: string
+          is_secret?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       user_activity_logs: {
         Row: {
           action_data: Json | null
@@ -1388,9 +2118,61 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      agency_earnings_monthly: {
+        Row: {
+          agency_id: string | null
+          bookings_count: number | null
+          earnings_cents: number | null
+          month: string | null
+          participants: number | null
+        }
+        Relationships: []
+      }
+      agency_earnings_summary: {
+        Row: {
+          agency_id: string | null
+          cancelled_count: number | null
+          completed_count: number | null
+          confirmed_count: number | null
+          earnings_last_month_cents: number | null
+          earnings_mtd_cents: number | null
+          earnings_total_cents: number | null
+          paid_bookings_count: number | null
+          participants_total: number | null
+          pending_count: number | null
+        }
+        Relationships: []
+      }
+      agency_top_services: {
+        Row: {
+          agency_id: string | null
+          booking_count: number | null
+          participants_total: number | null
+          revenue_cents: number | null
+          service_id: string | null
+          service_title: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      create_manual_booking: {
+        Args: {
+          p_agency_id: string
+          p_assigned_guide_id?: string
+          p_assigned_team_member_id?: string
+          p_booking_date: string
+          p_booking_time: string
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_notes?: string
+          p_customer_phone?: string
+          p_participant_count: number
+          p_service_id: string
+          p_unit_price_cents?: number
+        }
+        Returns: string
+      }
       get_affiliate_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -1409,6 +2191,15 @@ export type Database = {
         Returns: boolean
       }
       is_premium: { Args: { _user_id: string }; Returns: boolean }
+      log_admin_action: {
+        Args: {
+          p_action: string
+          p_metadata?: Json
+          p_target_id?: string
+          p_target_type?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       affiliate_status: "pending" | "active" | "suspended" | "terminated"
@@ -1420,6 +2211,17 @@ export type Database = {
         | "agency"
         | "affiliate"
         | "moderator"
+      booking_status:
+        | "pending_payment"
+        | "pending_confirmation"
+        | "confirmed"
+        | "in_progress"
+        | "completed"
+        | "cancelled_by_customer"
+        | "cancelled_by_agency"
+        | "refunded"
+        | "disputed"
+        | "no_show"
       commission_status: "pending" | "approved" | "paid" | "cancelled"
       commission_type: "percentage" | "fixed"
       event_status: "draft" | "planning" | "active" | "completed" | "cancelled"
@@ -1432,6 +2234,13 @@ export type Database = {
         | "drinks"
         | "gifts"
         | "other"
+      listing_status:
+        | "draft"
+        | "pending_review"
+        | "approved"
+        | "rejected"
+        | "suspended"
+        | "archived"
       participant_role: "organizer" | "guest"
       participant_status: "invited" | "confirmed" | "declined" | "maybe"
       payout_method: "bank_transfer" | "paypal" | "stripe"
@@ -1574,6 +2383,18 @@ export const Constants = {
         "affiliate",
         "moderator",
       ],
+      booking_status: [
+        "pending_payment",
+        "pending_confirmation",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled_by_customer",
+        "cancelled_by_agency",
+        "refunded",
+        "disputed",
+        "no_show",
+      ],
       commission_status: ["pending", "approved", "paid", "cancelled"],
       commission_type: ["percentage", "fixed"],
       event_status: ["draft", "planning", "active", "completed", "cancelled"],
@@ -1586,6 +2407,14 @@ export const Constants = {
         "drinks",
         "gifts",
         "other",
+      ],
+      listing_status: [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "suspended",
+        "archived",
       ],
       participant_role: ["organizer", "guest"],
       participant_status: ["invited", "confirmed", "declined", "maybe"],

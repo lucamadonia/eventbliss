@@ -13,7 +13,7 @@ function sanitizeString(value: unknown, maxLength = 200): string | null {
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   // Handle CORS preflight
   if (req.method === "OPTIONS") {

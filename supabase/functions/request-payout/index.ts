@@ -10,7 +10,7 @@ const logStep = (step: string, details?: any) => {
 const MIN_PAYOUT_AMOUNT = 50; // Minimum payout amount in EUR
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

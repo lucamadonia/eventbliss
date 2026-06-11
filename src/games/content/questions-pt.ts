@@ -301,6 +301,6 @@ export const QUIZ_QUESTIONS_PT: QuizQuestion[] = [
   { id: 'yq-100', question: 'Qual especiaria, das mais caras do mundo, vem dos estigmas de uma flor de acafrao?', answers: ['Caril', 'Acafrao', 'Cominhos', 'Paprika'], correctIndex: 1, category: 'Culinaria', difficulty: 'hard' },
   { id: 'yq-101', question: 'Qual e o licor de origem portuguesa, doce e fortificado, produzido no vale do Douro?', answers: ['Vinho do Porto', 'Conhaque', 'Vermute', 'Xerez'], correctIndex: 0, category: 'Culinaria', difficulty: 'medium' },
 ];
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_PT.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_PT.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_PT[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

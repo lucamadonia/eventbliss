@@ -243,21 +243,6 @@
         "description": "Collect kisses from strangers - the more the better!",
         "instructions": "**Preparation:**\nGet white t-shirt for the guest of honor. Provide various colored lipsticks. Don't forget disinfecting wipes!\n\n**Gameplay:**\nThe guest of honor must collect kisses (lipstick prints) from strangers on the t-shirt. The group accompanies and documents everything.\n\n**Rules:**\n• Only voluntary kisses count!\n• Respectful asking is mandatory\n• Different colors = Bonus\n• No harassment!\n• Time limit: 1-2 hours\n\n**Variants:**\n• Photo Kiss: Selfie with each person\n• Signatures: Additionally collect names\n• Challenge Escalation: Find specific 'types'\n\n**Tips:**\nAlways ask friendly and respectfully. Accept 'no'! Bars and clubs work best. The t-shirt is a great souvenir!"
       },
-      "pictionary": {
-        "name": "Pictionary",
-        "description": "Draw and guess terms against the clock.",
-        "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!"
-      },
-      "family_feud": {
-        "name": "Family Feud",
-        "description": "Guess the most popular survey answers.",
-        "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!"
-      },
-      "two_truths_lie": {
-        "name": "Two Truths and a Lie",
-        "description": "Guess the lie among three statements.",
-        "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!"
-      },
       "selfie_mission": {
         "name": "Selfie Mission",
         "description": "Strike a pose! Complete creative selfie challenges with specific prompts.",
@@ -363,6 +348,11 @@
         "description": "Find out who really knows the guest of honour.",
         "instructions": "Questions about the guest of honour are asked. Whoever answers the most correctly is the true #1 fan!"
       },
+      "pictionary": {
+        "name": "Pictionary",
+        "description": "Draw and guess terms against the clock.",
+        "instructions": "Draw the term so your team can guess it. No letters or symbols allowed!"
+      },
       "rage_cage": {
         "name": "Rage Cage",
         "description": "A fast-paced drinking game with cups and balls.",
@@ -422,6 +412,11 @@
         "name": "Last Night of Freedom",
         "description": "The ultimate checklist for your last night as a free agent.",
         "instructions": "Work through a pre-made list of all the classic bachelorette/bachelor party challenges. Document everything!"
+      },
+      "family_feud": {
+        "name": "Family Feud",
+        "description": "Guess the most popular survey answers.",
+        "instructions": "Teams compete. For each question, guess the most popular answers. Points for hits!"
       },
       "family_bingo": {
         "name": "Family Bingo",
@@ -708,6 +703,11 @@
         "description": "An organized way for all guests to offer their congratulations.",
         "instructions": "Guests line up one by one to offer a quick congrats. A host keeps things moving along!"
       },
+      "two_truths_lie": {
+        "name": "Two Truths and a Lie",
+        "description": "Guess the lie among three statements.",
+        "instructions": "Everyone tells three facts about themselves - two true, one false. The group must guess the lie!"
+      },
       "speed_meeting": {
         "name": "Speed Meeting",
         "description": "Get to know people fast with a rotating format.",
@@ -835,6 +835,11 @@
         "description": "Neon colors, synth music and shoulder pads",
         "tips": "Think neon lights, disco balls and 80s hits from A-ha to Madonna!"
       },
+      "90s_throwback": {
+        "name": "90s Throwback",
+        "description": "Grunge, boy bands, and the very first mobile phones",
+        "tips": "Use album covers as decorations, break out the Walkman props, and queue up everything from Backstreet Boys to Nirvana!"
+      },
       "casino_royale": {
         "name": "Casino Royale",
         "description": "Elegant James Bond atmosphere with gaming tables",
@@ -845,25 +850,20 @@
         "description": "Caribbean flair with palm trees and cocktails",
         "tips": "Hawaiian shirts, tiki torches, coconut drinks and tropical music!"
       },
-      "gatsby_20s": {
-        "name": "Gatsby / 1920s",
-        "description": "The roaring twenties with flappers and jazz",
-        "tips": "Art deco decor, champagne, feather boas, swing music and Charleston!"
+      "dirndl_lederhosen": {
+        "name": "Dirndl & Lederhosen",
+        "description": "Bavarian tradition with pretzels and beer steins",
+        "tips": "Beer benches, Oktoberfest music, pretzels and beer steins!"
       },
-      "mexican_fiesta": {
-        "name": "Mexican Fiesta",
-        "description": "Colorful, tacos and mariachi",
-        "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!"
+      "superhero": {
+        "name": "Superhero Party",
+        "description": "Come as your favorite superhero!",
+        "tips": "Capes required, comic-book décor, and an epic superhero playlist!"
       },
-      "90s_throwback": {
-        "name": "90s Throwback",
-        "description": "Grunge, boy bands, and the very first mobile phones",
-        "tips": "Use album covers as decorations, break out the Walkman props, and queue up everything from Backstreet Boys to Nirvana!"
-      },
-      "disco_fever": {
-        "name": "Disco Fever",
-        "description": "Glitter, disco balls, and all the funk",
-        "tips": "Hang a disco ball, scatter some glitter, and spin a Saturday Night Fever playlist!"
+      "murder_mystery_theme": {
+        "name": "Murder Mystery",
+        "description": "A murder has been committed — who did it?",
+        "tips": "Dim lighting, mysterious music, costumes, and clue cards!"
       },
       "white_party": {
         "name": "White Party",
@@ -875,40 +875,55 @@
         "description": "Formal and elegant — tuxedos and evening gowns",
         "tips": "Champagne, classical music, and stunning table decorations!"
       },
-      "hollywood_glam": {
-        "name": "Hollywood Glamour",
-        "description": "Roll out the red carpet and let the star power shine",
-        "tips": "Red carpet entrance, a paparazzi corner, golden decor, and a movie soundtrack playlist!"
-      },
-      "masquerade_ball": {
-        "name": "Masquerade Ball",
-        "description": "Mysterious elegance with Venetian masks",
-        "tips": "Venetian masks, candlelight, and velvet decor in deep burgundy and gold — sophisticated and utterly mysterious."
+      "festival_style": {
+        "name": "Festival Style",
+        "description": "Outdoor festival vibes with flower crowns",
+        "tips": "Boho decor, fairy lights, chill-out corners, and live music or a DJ!"
       },
       "oktoberfest": {
         "name": "Oktoberfest",
         "description": "O'zapft is! Bavarian coziness at its finest",
         "tips": "Beer benches, pretzels, white sausage, brass band music, and lederhosen/dirndl dress code!"
       },
-      "festival_style": {
-        "name": "Festival Style",
-        "description": "Outdoor festival vibes with flower crowns",
-        "tips": "Boho decor, fairy lights, chill-out corners, and live music or a DJ!"
+      "mexican_fiesta": {
+        "name": "Mexican Fiesta",
+        "description": "Colorful, tacos and mariachi",
+        "tips": "Sombreros, piñatas, colorful banners, margaritas and salsa music!"
       },
-      "bbq_grill": {
-        "name": "BBQ & Grill",
-        "description": "Grilling with friends and family",
-        "tips": "Grill, garden bench, string lights, and all the BBQ classics!"
+      "gatsby_20s": {
+        "name": "Gatsby / 1920s",
+        "description": "The roaring twenties with flappers and jazz",
+        "tips": "Art deco decor, champagne, feather boas, swing music and Charleston!"
+      },
+      "pirates": {
+        "name": "Pirate Adventure",
+        "description": "Ahoy! Treasure hunts and rum",
+        "tips": "Treasure maps, eye patches, rum cocktails, and Jolly Roger flags!"
+      },
+      "wellness_retreat": {
+        "name": "Wellness Retreat",
+        "description": "Pure relaxation - spa and self-care",
+        "tips": "Candles, relaxing music, face masks, tea and wellness snacks!"
+      },
+      "sports_day": {
+        "name": "Sports Day",
+        "description": "Olympic-style fun and friendly athletic competitions",
+        "tips": "Jerseys, medals, playing fields, and champion-worthy snacks!"
+      },
+      "game_night": {
+        "name": "Game Night",
+        "description": "Board games and card games for everyone",
+        "tips": "Cozy seating areas, tons of games, snacks, and drinks!"
       },
       "garden_party": {
         "name": "Garden Party",
         "description": "An elegant celebration in the great outdoors",
         "tips": "Floral decor, parasols, picnic baskets, and light bites!"
       },
-      "game_night": {
-        "name": "Game Night",
-        "description": "Board games and card games for everyone",
-        "tips": "Cozy seating areas, tons of games, snacks, and drinks!"
+      "bbq_grill": {
+        "name": "BBQ & Grill",
+        "description": "Grilling with friends and family",
+        "tips": "Grill, garden bench, string lights, and all the BBQ classics!"
       },
       "cocktail_party": {
         "name": "Cocktail Party",
@@ -930,70 +945,115 @@
         "description": "Outdoor action and adrenaline",
         "tips": "Camping decor, outdoor gear, and nature sounds!"
       },
-      "camping": {
-        "name": "Camping",
-        "description": "Pure nature under a starlit sky",
-        "tips": "Tents, a campfire, toasted marshmallow sticks, and acoustic guitar music!"
+      "hollywood_glam": {
+        "name": "Hollywood Glamour",
+        "description": "Roll out the red carpet and let the star power shine",
+        "tips": "Red carpet entrance, a paparazzi corner, golden decor, and a movie soundtrack playlist!"
       },
-      "road_trip": {
-        "name": "Road Trip",
-        "description": "Freedom on the open road",
-        "tips": "Maps, vintage suitcases, and the ultimate road trip playlist!"
+      "masquerade": {
+        "name": "Masquerade Ball",
+        "description": "Mysterious behind Venetian masks",
+        "tips": "Masks required, candles, dramatic music and elegant decor!"
       },
-      "city_break": {
-        "name": "City Break",
-        "description": "Urban flair and sightseeing",
-        "tips": "City posters, urban snacks, and a city-vibes playlist!"
-      },
-      "beach_house": {
-        "name": "Beach House",
-        "description": "Summer days by the sea",
-        "tips": "Seashells, surfboards as decor, beach vibes, and the sound of waves!"
+      "caribbean": {
+        "name": "Caribbean",
+        "description": "Reggae, beach and sunshine",
+        "tips": "Bob Marley, colorful cocktails, beach decor and flip-flops!"
       },
       "ski_lodge": {
         "name": "Ski Lodge",
         "description": "Cozy lodge night after a day on the slopes",
         "tips": "Faux-fur throws, mulled wine, crackling fire vibes, and après-ski bangers!"
       },
+      "boho_chic": {
+        "name": "Boho Chic",
+        "description": "Free-spirited and deeply connected to nature",
+        "tips": "Macramé, dreamcatchers, earthy tones, and indie music!"
+      },
+      "rustic_farm": {
+        "name": "Barn Party",
+        "description": "Cozy countryside charm in a rustic barn setting",
+        "tips": "Hay bales, wooden crates, wildflowers, and country music!"
+      },
+      "city_break": {
+        "name": "City Break",
+        "description": "Urban flair and sightseeing",
+        "tips": "City posters, urban snacks, and a city-vibes playlist!"
+      },
+      "road_trip": {
+        "name": "Road Trip",
+        "description": "Freedom on the open road",
+        "tips": "Maps, vintage suitcases, and the ultimate road trip playlist!"
+      },
+      "camping": {
+        "name": "Camping",
+        "description": "Pure nature under a starlit sky",
+        "tips": "Tents, a campfire, toasted marshmallow sticks, and acoustic guitar music!"
+      },
       "lake_house": {
         "name": "Lake House",
         "description": "Pure relaxation by the water",
         "tips": "Nautical décor, canoes, golden-hour sunsets, and chill-out tunes!"
+      },
+      "beach_house": {
+        "name": "Beach House",
+        "description": "Summer days by the sea",
+        "tips": "Seashells, surfboards as decor, beach vibes, and the sound of waves!"
       },
       "cabin_woods": {
         "name": "Forest Cabin",
         "description": "Cozy and close to nature",
         "tips": "Candles, blankets, forest soundscapes, and snug little nooks!"
       },
-      "superhero": {
-        "name": "Superhero Party",
-        "description": "Come as your favorite superhero!",
-        "tips": "Capes required, comic-book décor, and an epic superhero playlist!"
-      },
-      "pirates": {
-        "name": "Pirate Adventure",
-        "description": "Ahoy! Treasure hunts and rum",
-        "tips": "Treasure maps, eye patches, rum cocktails, and Jolly Roger flags!"
-      },
-      "murder_mystery_theme": {
-        "name": "Murder Mystery",
-        "description": "A murder has been committed — who did it?",
-        "tips": "Dim lighting, mysterious music, costumes, and clue cards!"
+      "disco_fever": {
+        "name": "Disco Fever",
+        "description": "Glitter, disco balls, and all the funk",
+        "tips": "Hang a disco ball, scatter some glitter, and spin a Saturday Night Fever playlist!"
       },
       "neon_glow": {
         "name": "Neon Glow",
         "description": "Glowing colors under black light",
         "tips": "Black lights, neon colors, glow-in-the-dark accessories, and EDM!"
       },
+      "under_stars": {
+        "name": "Under the Stars",
+        "description": "Romantic under the open sky",
+        "tips": "Picnic blankets, fairy lights, a telescope and romantic music!"
+      },
+      "vintage_tea": {
+        "name": "Vintage Tea Party",
+        "description": "Elegant afternoon tea like in the old days",
+        "tips": "Vintage china, flowers, finger food and classical music!"
+      },
+      "art_deco": {
+        "name": "Art Deco",
+        "description": "Geometric elegance straight from the 1920s",
+        "tips": "Golden accents, geometric patterns, and jazz music — it's the bee's knees!"
+      },
+      "minimalist": {
+        "name": "Minimalist Modern",
+        "description": "Less is more - clean lines",
+        "tips": "White and black, clear shapes, subtle decor!"
+      },
+      "bohemian": {
+        "name": "Bohemian",
+        "description": "Colorful, free and creative",
+        "tips": "Colorful fabrics, plants, lights and world music!"
+      },
+      "industrial": {
+        "name": "Industrial Chic",
+        "description": "Raw aesthetics with metal and concrete",
+        "tips": "Metal, Edison bulbs, exposed brick and urban sounds!"
+      },
       "french_riviera": {
         "name": "French Riviera",
         "description": "Côte d'Azur elegance",
         "tips": "Blue-and-white stripes, lavender, rosé, and chansons!"
       },
-      "italian_dolce_vita": {
+      "italian_dolce": {
         "name": "Italian Dolce Vita",
-        "description": "La Dolce Vita with Vespa flair and Mediterranean charm",
-        "tips": "Vespa décor, olive branches, Chianti bottles, and sunflowers for that true Italian zest for life."
+        "description": "La dolce vita - the sweet life",
+        "tips": "Lemons, Aperol Spritz, pizza and Italian music!"
       },
       "greek_island": {
         "name": "Greek Island",
@@ -1020,6 +1080,16 @@
         "description": "Tranquility and harmony from the Far East",
         "tips": "Bamboo, lotus blossoms, green tea, and meditative music!"
       },
+      "masquerade_ball": {
+        "name": "Masquerade Ball",
+        "description": "Mysterious elegance with Venetian masks",
+        "tips": "Venetian masks, candlelight, and velvet decor in deep burgundy and gold — sophisticated and utterly mysterious."
+      },
+      "italian_dolce_vita": {
+        "name": "Italian Dolce Vita",
+        "description": "La Dolce Vita with Vespa flair and Mediterranean charm",
+        "tips": "Vespa décor, olive branches, Chianti bottles, and sunflowers for that true Italian zest for life."
+      },
       "under_the_stars": {
         "name": "Under the Stars",
         "description": "A romantic night beneath a sparkling starlit sky",
@@ -1029,21 +1099,6 @@
         "name": "Vintage Tea Party",
         "description": "A charming tea gathering with a vintage twist",
         "tips": "Vintage teapots, florals, lace, and pastel hues for irresistible nostalgic charm."
-      },
-      "art_deco": {
-        "name": "Art Deco",
-        "description": "Geometric elegance straight from the 1920s",
-        "tips": "Golden accents, geometric patterns, and jazz music — it's the bee's knees!"
-      },
-      "boho_chic": {
-        "name": "Boho Chic",
-        "description": "Free-spirited and deeply connected to nature",
-        "tips": "Macramé, dreamcatchers, earthy tones, and indie music!"
-      },
-      "rustic_farm": {
-        "name": "Barn Party",
-        "description": "Cozy countryside charm in a rustic barn setting",
-        "tips": "Hay bales, wooden crates, wildflowers, and country music!"
       },
       "minimalist_modern": {
         "name": "Minimalist Modern",
@@ -1064,11 +1119,6 @@
         "name": "Caribbean",
         "description": "A tropical island paradise with serious beach vibes",
         "tips": "Palm trees, seashells, hammocks, and tiki décor for the ultimate Caribbean getaway feel."
-      },
-      "sports_day": {
-        "name": "Sports Day",
-        "description": "Olympic-style fun and friendly athletic competitions",
-        "tips": "Jerseys, medals, playing fields, and champion-worthy snacks!"
       }
     },
     "showing": "showing {{count}}",
@@ -2341,6 +2391,33 @@
         "defaultWarning": "Possible restrictions",
         "hintInput": "Enter note..."
       },
+      "customQuestionBuilder": {
+        "quickAdd": "Quick add:",
+        "presets": {
+          "dietary": "Dietary",
+          "songWish": "Song request",
+          "tshirtSize": "T-shirt size",
+          "driversLicense": "Driver's license",
+          "specialWishes": "Special requests"
+        },
+        "types": {
+          "text": "Short text",
+          "textarea": "Long text",
+          "select": "Dropdown",
+          "radio": "Single choice",
+          "checkbox": "Multiple choice",
+          "toggle": "Yes/No"
+        },
+        "questionPlaceholder": "Enter question...",
+        "placeholderPlaceholder": "Placeholder text (optional)",
+        "options": "Options:",
+        "addOption": "Add option",
+        "requiredField": "Required field",
+        "noQuestions": "No custom questions added yet.",
+        "noQuestionsHint": "Use the quick buttons above or add a new question.",
+        "addNew": "Add new question",
+        "questionsConfigured": "custom question(s) configured"
+      },
       "activitySelector": {
         "searchPlaceholder": "Search activities...",
         "selected": "selected",
@@ -3092,6 +3169,7 @@
     "planName": "EventBliss Pro",
     "planDescription": "Everything you need for perfect events",
     "perMonth": "month",
+    "perYear": "year",
     "badge": "Premium",
     "active": "Active",
     "validUntil": "Valid until",
@@ -3103,15 +3181,29 @@
     "manageSubscription": "Manage Subscription",
     "securePayment": "Secure payment via Stripe. Cancel anytime.",
     "monthly": "Monthly",
+    "monthlyDescription": "Flexible & cancel anytime",
+    "yearly": "Yearly",
+    "yearlyDescription": "Most popular — save 28%",
+    "savePercent": "Save 28%",
     "lifetime": "Lifetime",
     "lifetimeDescription": "Pay once, use forever",
     "popular": "Popular",
     "oneTimePayment": "one-time",
     "foreverAccess": "Access forever",
     "lifetimeActive": "Lifetime active",
+    "currentPlan": "Current plan",
     "subscribeMonthly": "Subscribe monthly",
+    "subscribeYearly": "Subscribe yearly",
     "buyLifetime": "Buy once",
     "upgradeToLifetime": "Upgrade to Lifetime",
+    "cancelSubscription": "Cancel subscription",
+    "cancelConfirmTitle": "Cancel your subscription?",
+    "cancelConfirmDescription": "Your access stays active until the end of the billing period. You can resubscribe anytime.",
+    "confirmCancel": "Yes, cancel",
+    "cancelSuccess": "Your subscription has been cancelled and will end when the current period expires.",
+    "cancelError": "Cancellation failed. Please try again.",
+    "cancellationScheduled": "Cancellation scheduled",
+    "cancelledAt": "Ends on",
     "features": {
       "unlimitedEvents": "Unlimited Events",
       "aiAssistant": "AI Assistant",
@@ -3158,22 +3250,7 @@
       "remaining": "{{remaining}} of {{limit}} credits remaining",
       "yearly": "100 AI credits/month",
       "lifetime": "75 AI credits/month"
-    },
-    "cancelConfirmDescription": "Your access stays active until the end of the billing period. You can resubscribe anytime.",
-    "cancelConfirmTitle": "Cancel your subscription?",
-    "cancelError": "Cancellation failed. Please try again.",
-    "cancelSubscription": "Cancel subscription",
-    "cancelSuccess": "Your subscription has been cancelled and will end when the current period expires.",
-    "cancellationScheduled": "Cancellation scheduled",
-    "cancelledAt": "Ends on",
-    "confirmCancel": "Yes, cancel",
-    "currentPlan": "Current plan",
-    "monthlyDescription": "Flexible & cancel anytime",
-    "perYear": "year",
-    "savePercent": "Save 28%",
-    "subscribeYearly": "Subscribe yearly",
-    "yearly": "Yearly",
-    "yearlyDescription": "Most popular — save 28%"
+    }
   },
   "admin": {
     "credits": {
@@ -4984,6 +5061,34 @@
       "feedLine": "Your '{{section}}' service was recommended on {{date}} for a {{eventType}} event{{city}} (via {{requestType}})"
     },
     "embed": {
+      "themePickerTitle": "Choose a theme",
+      "themePickerHint": "Your customer sees the agency page in this style.",
+      "themes": {
+        "dark": {
+          "label": "Dark · Gaming",
+          "tagline": "Neon gaming look with violet & cyan"
+        },
+        "light": {
+          "label": "Modern · Light",
+          "tagline": "Clean, minimalist, corporate-ready"
+        },
+        "classic": {
+          "label": "Classic · Elegant",
+          "tagline": "Timeless with serifs and champagne tones"
+        },
+        "epic": {
+          "label": "Epic · Cinematic",
+          "tagline": "Dramatic gold and purple tones for gala nights"
+        },
+        "party": {
+          "label": "Party · Neon",
+          "tagline": "Vibrant neon for nightlife and celebrations"
+        },
+        "adventure": {
+          "label": "Adventure · Outdoor",
+          "tagline": "Earthy outdoor vibes for festivals & nature events"
+        }
+      },
       "copied": "Copied to clipboard",
       "noAgency": "No agency found.",
       "title": "Embedding & public page",
@@ -4994,8 +5099,6 @@
       "publicUrlHint": "QR-code ready, responsive, SEO-optimised. Customers can book services directly.",
       "embedTitle": "Embed on your website",
       "embedDesc": "Add your services + booking calendar straight into your existing website.",
-      "themePickerTitle": "Choose a theme",
-      "themePickerHint": "Your customer sees the agency page in this style.",
       "language": "Language",
       "height": "Height (px)",
       "hideChrome": "Hide app header",

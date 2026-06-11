@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -53,7 +53,7 @@ export function useCalendarTokens(agencyId: string | undefined) {
       if (!agencyId) return [];
 
       const { data, error } = await supabase
-        .from("calendar_tokens" as string)
+        .from("calendar_tokens")
         .select("*")
         .eq("agency_id", agencyId)
         .eq("is_active", true)
@@ -80,7 +80,7 @@ export function useCreateCalendarToken() {
       scope?: "all" | "confirmed_only" | "guide_personal";
     }) => {
       const { data, error } = await supabase
-        .from("calendar_tokens" as string)
+        .from("calendar_tokens")
         .insert({
           agency_id: agencyId,
           guide_id: guideId || null,
@@ -116,7 +116,7 @@ export function useRevokeCalendarToken() {
       agencyId: string;
     }) => {
       const { error } = await supabase
-        .from("calendar_tokens" as string)
+        .from("calendar_tokens")
         .update({ is_active: false })
         .eq("id", tokenId);
 
@@ -152,13 +152,13 @@ export function useRegenerateCalendarToken() {
     }) => {
       // Deactivate old token
       await supabase
-        .from("calendar_tokens" as string)
+        .from("calendar_tokens")
         .update({ is_active: false })
         .eq("id", tokenId);
 
       // Create new token
       const { data, error } = await supabase
-        .from("calendar_tokens" as string)
+        .from("calendar_tokens")
         .insert({
           agency_id: agencyId,
           guide_id: guideId || null,
@@ -174,7 +174,7 @@ export function useRegenerateCalendarToken() {
       queryClient.invalidateQueries({
         queryKey: ["calendar-tokens", variables.agencyId],
       });
-      toast.success("Token erneuert — alter Token ist ungueltig");
+      toast.success("Token erneuert â€” alter Token ist ungueltig");
     },
     onError: (error: Error) => {
       toast.error("Fehler: " + error.message);

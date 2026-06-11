@@ -25,7 +25,7 @@ const SurveyCompletionScreen = ({
   const shouldReduceMotion = useReducedMotion();
   const transition = shouldReduceMotion
     ? { duration: 0 }
-    : { type: "spring", stiffness: 200, damping: 20 };
+    : { type: "spring" as const, stiffness: 200, damping: 20 };
 
   return (
     <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">

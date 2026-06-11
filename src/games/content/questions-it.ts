@@ -303,6 +303,6 @@ export const QUIZ_QUESTIONS_IT: QuizQuestion[] = [
   { id: 'yq-101', question: 'Quale ingrediente principale e usato per preparare il tradizionale hummus mediorientale?', answers: ['Lenticchie', 'Ceci', 'Fagioli', 'Piselli'], correctIndex: 1, category: 'Cucina', difficulty: 'medium' },
 ];
 
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_IT.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_IT.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_IT[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

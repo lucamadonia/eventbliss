@@ -44,7 +44,7 @@ function getPool(): QuizQuestion[] {
   return key ? (mod as Record<string, unknown>)[key] as QuizQuestion[] : de.QUIZ_QUESTIONS_DE;
 }
 
-let _usedIndices = new Set<number>();
+const _usedIndices = new Set<number>();
 
 export function getRandomQuestion(): QuizQuestion {
   const pool = getPool();

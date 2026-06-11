@@ -527,7 +527,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
     };
     online.broadcast('ohrwurm-state', { snapshot: JSON.parse(JSON.stringify(snapshot)) });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [online, isHost, phase, participants, turn, song, placement, counter, counteringId, resolution, flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected]);
 
   // Host → TV state (spoiler-free). Carries the live countdown, so it updates

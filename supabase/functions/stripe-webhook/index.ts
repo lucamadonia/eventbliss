@@ -152,7 +152,7 @@ async function trackAffiliateCommission(
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeadersWithStripe(req);
+  const corsHeaders = getCorsHeadersWithStripe(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });

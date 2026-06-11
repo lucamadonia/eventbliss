@@ -11,7 +11,9 @@ import { TemplateDetailModal } from "./templates/TemplateDetailModal";
 import { TemplateRecommendations } from "./templates/TemplateRecommendations";
 
 export function AgencyTemplates() {
-  const { templates, isLoading, createTemplate, deleteTemplate, useTemplate } = useEventTemplates();
+  // "useTemplate" is a plain mutation function, not a hook — rename locally so
+  // eslint react-hooks/rules-of-hooks doesn't treat calls to it as hook calls.
+  const { templates, isLoading, createTemplate, deleteTemplate, useTemplate: applyTemplate } = useEventTemplates();
 
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,7 +61,7 @@ export function AgencyTemplates() {
 
   // Handle use template
   const handleUse = async (id: string) => {
-    await useTemplate(id);
+    await applyTemplate(id);
   };
 
   // Handle delete template

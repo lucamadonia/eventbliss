@@ -8,7 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { localizedCalculatorPath } from "@/lib/seo-routes";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { UserProfileMenu } from "@/components/landing/UserProfileMenu";
-import { useAuthContext } from "@/components/auth/AuthProvider";
+import { useOptionalAuthContext } from "@/components/auth/AuthProvider";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 interface LandingHeaderProps {
@@ -21,14 +21,10 @@ export const LandingHeader = ({ onScrollToSection }: LandingHeaderProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   
-  // Defensive try-catch for HMR edge cases
-  let authState = { isAuthenticated: false, isLoading: true };
-  try {
-    authState = useAuthContext();
-  } catch (e) {
-    // Context not ready during HMR, use defaults
-  }
-  const { isAuthenticated, isLoading } = authState;
+  // Context may be missing during HMR edge cases — fall back to defaults
+  const authState = useOptionalAuthContext();
+  const isAuthenticated = authState?.isAuthenticated ?? false;
+  const isLoading = authState?.isLoading ?? true;
 
   const navItems = [
     { label: t("landing.nav.features"), href: "features" },

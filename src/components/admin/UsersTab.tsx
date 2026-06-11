@@ -559,7 +559,21 @@ export function UsersTab() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const generatePassword = () => { const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%"; let p = ""; for (let i = 0; i < 12; i++) p += chars.charAt(Math.floor(Math.random() * chars.length)); return p; };
+  const generatePassword = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+    // Rejection sampling to avoid modulo bias
+    const maxValid = 256 - (256 % chars.length);
+    let p = "";
+    while (p.length < 12) {
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      for (const byte of bytes) {
+        if (p.length >= 12) break;
+        if (byte < maxValid) p += chars.charAt(byte % chars.length);
+      }
+    }
+    return p;
+  };
 
   if (isLoading) return <Card><CardContent className="py-8"><div className="flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></CardContent></Card>;
 

@@ -301,6 +301,6 @@ export const QUIZ_QUESTIONS_TR: QuizQuestion[] = [
   { id: 'yq-99', question: '\'Croissant\' (kruvasan) hangi ulke ile ozdeslesmis bir hamur isidir?', answers: ['Italya', 'Fransa', 'Almanya', 'Ingiltere'], correctIndex: 1, category: 'Yemek', difficulty: 'easy' },
   { id: 'yq-100', question: 'Hangi meyve kurutuldugunda \'kuru uzum\' olur?', answers: ['Erik', 'Uzum', 'Incir', 'Kayisi'], correctIndex: 1, category: 'Yemek', difficulty: 'easy' },
 ];
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_TR.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_TR.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_TR[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

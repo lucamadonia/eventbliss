@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Link,
   Copy,
@@ -79,10 +79,25 @@ export function AffiliateLinkGenerator() {
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }, [affiliateId, selectedVoucher, utmSource, utmMedium, utmCampaign]);
 
-  const shortUrl = useMemo(() => {
-    // Simulated short URL - in production this would call a URL shortener service
-    const hash = btoa(`${affiliateId}-${selectedVoucher || 'default'}`).slice(0, 8);
-    return `evtbl.is/${hash}`;
+  // Simulated short URL - in production this would call a URL shortener service.
+  // Uses a one-way SHA-256 hash so the affiliate ID cannot be decoded from the link.
+  const [shortUrl, setShortUrl] = useState("evtbl.is/...");
+
+  useEffect(() => {
+    let cancelled = false;
+    const computeShortUrl = async () => {
+      const data = new TextEncoder().encode(`${affiliateId}-${selectedVoucher || "default"}`);
+      const digest = await crypto.subtle.digest("SHA-256", data);
+      const hash = Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("")
+        .slice(0, 8);
+      if (!cancelled) setShortUrl(`evtbl.is/${hash}`);
+    };
+    computeShortUrl();
+    return () => {
+      cancelled = true;
+    };
   }, [affiliateId, selectedVoucher]);
 
   const copyToClipboard = async (text: string) => {

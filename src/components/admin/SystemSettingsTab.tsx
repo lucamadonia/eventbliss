@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,7 @@ export default function SystemSettingsTab() {
     setSaving(setting.id);
     const { error } = await supabase
       .from("system_settings")
-      .update({ value: newValue, updated_at: new Date().toISOString() })
+      .update({ value: newValue as Json, updated_at: new Date().toISOString() })
       .eq("id", setting.id);
     if (error) {
       toast.error(`${t("common.error", "Fehler")}: ${error.message}`);
@@ -74,7 +75,7 @@ export default function SystemSettingsTab() {
         p_action: "system_setting.update",
         p_target_type: "system_setting",
         p_target_id: setting.id,
-        p_metadata: { category: setting.category, key: setting.key, new_value: newValue },
+        p_metadata: { category: setting.category, key: setting.key, new_value: newValue } as Json,
       });
       toast.success(t("admin.settings.saved", "Gespeichert"));
       const { [setting.id]: _discarded, ...rest } = edits;

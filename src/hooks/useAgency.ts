@@ -121,7 +121,7 @@ export function useAgency(): UseAgencyResult {
       // Fetch task counts for members with user_ids
       const memberRows = (allMembers || []) as any[];
       const userIds = memberRows.filter((m) => m.user_id).map((m) => m.user_id);
-      let taskCounts: Record<string, number> = {};
+      const taskCounts: Record<string, number> = {};
       if (userIds.length > 0) {
         const { data: tasks } = await (supabase
           .from("event_tasks" as any)
