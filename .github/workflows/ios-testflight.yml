@@ -155,6 +155,29 @@ jobs:
           cd ios/App
           agvtool new-version -all ${{ github.run_number }}
 
+      - name: Scope manual signing to App target
+        # Global xcodebuild signing overrides break SPM package targets
+        # ("X does not support provisioning profiles"), so patch the signing
+        # settings into the App target's build configurations instead.
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          python3 - <<'EOF'
+          import os, re
+          p = "ios/App/App.xcodeproj/project.pbxproj"
+          s = open(p).read()
+          team = os.environ["APPLE_TEAM_ID"]
+          name = os.environ["PP_NAME"]
+          ins = ('CODE_SIGN_STYLE = Manual;\n'
+                 '\t\t\t\tDEVELOPMENT_TEAM = ' + team + ';\n'
+                 '\t\t\t\t"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";\n'
+                 '\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "' + name + '";')
+          s2, n = re.subn(r'CODE_SIGN_STYLE = Automatic;', ins, s)
+          assert n >= 2, f"expected >=2 app build configs, patched {n}"
+          open(p, "w").write(s2)
+          print(f"Patched manual signing into {n} build configurations")
+          EOF
+
       - name: Build archive
         run: |
           set -o pipefail
@@ -165,10 +188,6 @@ jobs:
             -configuration Release \
             -archivePath "build/ios/xcarchive/App.xcarchive" \
             -destination "generic/platform=iOS" \
-            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="$PP_NAME" \
             COMPILER_INDEX_STORE_ENABLE=NO \
             2>&1 | tee build/ios/xcarchive/archive.log
 
