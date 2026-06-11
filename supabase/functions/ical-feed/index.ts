@@ -60,7 +60,7 @@ function formatNow(): string {
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -160,7 +160,7 @@ serve(async (req) => {
       ...new Set((bookings || []).map((b: Record<string, unknown>) => b.service_id as string)),
     ];
 
-    let servicesMap: Record<string, { title: string; duration_minutes: number; location_city: string | null; location_address: string | null }> = {};
+    const servicesMap: Record<string, { title: string; duration_minutes: number; location_city: string | null; location_address: string | null }> = {};
 
     if (serviceIds.length > 0) {
       // Fetch services
@@ -293,7 +293,7 @@ serve(async (req) => {
     console.error("Error in ical-feed:", errorMessage);
     return new Response("Internal server error", {
       status: 500,
-      headers: getCorsHeaders(req),
+      headers: getCorsHeaders(req.headers.get("origin")),
     });
   }
 });

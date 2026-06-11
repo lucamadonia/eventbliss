@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -180,7 +180,13 @@ serve(async (req) => {
           is_form_locked: isFormLocked,
           locked_block: lockedBlock,
           creator_is_premium: creatorIsPremium,
-          created_by: event.created_by,
+          // Don't leak the creator's user id to unauthorized callers. The
+          // frontend (GuestEventWarning) only needs truthiness to distinguish
+          // unclaimed guest events (created_by === null) from owned events,
+          // so unauthorized callers get a non-identifying placeholder.
+          created_by: isAuthorized
+            ? event.created_by
+            : (event.created_by ? "redacted" : null),
         },
         participants: safeParticipants,
         response_count: responseCount || 0,

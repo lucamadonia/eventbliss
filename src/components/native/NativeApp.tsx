@@ -59,7 +59,7 @@ const Terms = lazy(() => import("@/pages/legal/Terms"));
 const Disclaimer = lazy(() => import("@/pages/legal/Disclaimer"));
 const ClaimInvite = lazy(() => import("@/pages/ClaimInvite"));
 const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
-const GameProfilePage = lazy(() => import("@/games/social/GameProfilePage"));
+const GameProfilePage = lazy(() => import("@/games/social/GameProfilePage").then(m => ({ default: m.GameProfilePage })));
 const TVScreen = lazy(() => import("@/games/tv/TVScreen"));
 const MarketplaceAgency = lazy(() => import("@/pages/MarketplaceAgency"));
 

@@ -120,6 +120,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Like useAuthContext, but returns undefined instead of throwing when no
+ * AuthProvider is mounted (e.g. during HMR edge cases).
+ */
+export function useOptionalAuthContext() {
+  return useContext(AuthContext);
+}
+
 export function useAuthContext() {
   const context = useContext(AuthContext);
   if (context === undefined) {

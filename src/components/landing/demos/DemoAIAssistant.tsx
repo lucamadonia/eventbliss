@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plane, Sparkles, Calendar, Wallet, Bot, Send, RefreshCw, Users, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -171,7 +172,14 @@ const DemoAIAssistant = () => {
       .split('\n')
       .map((line, i) => (
         <span key={i}>
-          <span dangerouslySetInnerHTML={{ __html: line }} />
+          <span
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(line, {
+                ALLOWED_TAGS: ["strong", "em", "br", "span"],
+                ALLOWED_ATTR: ["class"],
+              }),
+            }}
+          />
           {i < text.split('\n').length - 1 && <br />}
         </span>
       ));

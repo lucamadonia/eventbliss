@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -30,7 +30,6 @@ serve(async (req) => {
     
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '');
-      console.log('Auth token present:', !!token);
       const { data: { user }, error: authError } = await supabase.auth.getUser(token);
       if (authError) {
         console.log('Auth error:', authError.message);
@@ -63,8 +62,7 @@ serve(async (req) => {
         .single();
 
       const planKey = subscription?.plan || 'free';
-      console.log('User plan:', planKey);
-      
+
       const { data: planConfig, error: planError } = await supabase
         .from('plan_configs')
         .select('ai_credits_monthly')

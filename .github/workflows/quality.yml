@@ -1,0 +1,54 @@
+name: Quality Gate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Test, Typecheck & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Same pnpm/Node setup as ios-testflight.yml — keep versions in sync.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # BLOCKING: unit tests (vitest) must pass.
+      - name: Run tests (vitest)
+        run: pnpm test
+
+      # NON-BLOCKING (report only): the codebase currently still has TypeScript
+      # errors. Once `npx tsc --noEmit -p tsconfig.app.json` reaches 0 errors,
+      # remove `continue-on-error: true` to make this step blocking.
+      - name: Typecheck (tsc --noEmit)
+        continue-on-error: true
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      # NON-BLOCKING (report only): lint still reports errors. Once
+      # `pnpm lint` reaches 0 errors, remove `continue-on-error: true`
+      # to make this step blocking.
+      - name: Lint (eslint)
+        continue-on-error: true
+        run: pnpm lint

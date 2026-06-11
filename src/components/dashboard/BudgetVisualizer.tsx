@@ -71,9 +71,9 @@ function parseBudget(body: string): { days: DayBudget[]; total: number; notes: s
 }
 
 function sumEurosInLine(text: string): number {
-  const matches = text.match(/€\s*([\d.,]+)/g) || [];
-  return matches.reduce((sum, m) => {
-    const n = parseFloat(m.replace(/[€\s]/g, "").replace(",", "."));
+  const matches: string[] = text.match(/€\s*([\d.,]+)/g) ?? [];
+  return matches.reduce((sum: number, m: string) => {
+    const n = Number(m.replace(/[€\s]/g, "").replace(",", "."));
     return isNaN(n) ? sum : sum + n;
   }, 0);
 }

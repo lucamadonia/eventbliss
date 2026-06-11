@@ -131,7 +131,7 @@ function getGlobalPlayerId(): string {
 
 // Global singleton channel — shared across hook instances
 let _globalChannel: RealtimeChannel | null = null;
-let _globalListeners = new Map<string, Set<BroadcastCallback>>();
+const _globalListeners = new Map<string, Set<BroadcastCallback>>();
 let _globalPlayers: RoomPlayer[] = [];
 /** Global room state — persists across hook instances so OnlineGameWrapper
  *  can pick up the room created by GameLobby without re-subscribing. */

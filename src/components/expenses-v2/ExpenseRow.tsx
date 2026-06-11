@@ -37,6 +37,8 @@ export function ExpenseRow({
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
   const rowOpacity = useTransform(x, [-250, -120, 0], [0.5, 0.85, 1]);
+  const editIconOpacity = useTransform(x, [-100, -50, 0], [1, 1, 0]);
+  const deleteIconOpacity = useTransform(x, [-150, -100, 0], [1, 0.5, 0]);
 
   const payer = expense.payers?.[0];
   const payerName = payer && participants.find((p) => p.id === payer.participant_id)?.name;
@@ -65,7 +67,7 @@ export function ExpenseRow({
         {onEdit && (
           <motion.div
             className="w-12 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center"
-            style={{ opacity: useTransform(x, [-100, -50, 0], [1, 1, 0]) }}
+            style={{ opacity: editIconOpacity }}
           >
             <Pencil className="w-4 h-4 text-blue-300" />
           </motion.div>
@@ -73,7 +75,7 @@ export function ExpenseRow({
         {onDelete && (
           <motion.div
             className="w-12 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center"
-            style={{ opacity: useTransform(x, [-150, -100, 0], [1, 0.5, 0]) }}
+            style={{ opacity: deleteIconOpacity }}
           >
             <Trash2 className="w-4 h-4 text-rose-300" />
           </motion.div>

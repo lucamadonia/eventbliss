@@ -1,8 +1,17 @@
 {
   "rewrites": [
-    { "source": "/((?!assets/|images/|icons/|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/app.html" }
+    { "source": "/((?!assets/|images/|icons/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/app.html" }
   ],
   "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

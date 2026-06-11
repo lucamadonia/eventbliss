@@ -301,6 +301,6 @@ export const QUIZ_QUESTIONS_NL: QuizQuestion[] = [
   { id: 'yq-100', question: 'Welke drank wordt gemaakt door druiven te laten gisten?', answers: ['Bier', 'Wijn', 'Cider', 'Whisky'], correctIndex: 1, category: 'Eten & Drinken', difficulty: 'easy' },
   { id: 'yq-101', question: 'Welke Italiaanse kaas wordt traditioneel op pizza gesmolten?', answers: ['Parmezaan', 'Mozzarella', 'Gorgonzola', 'Ricotta'], correctIndex: 1, category: 'Eten & Drinken', difficulty: 'easy' },
 ];
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_NL.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_NL.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_NL[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

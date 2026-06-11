@@ -302,7 +302,7 @@ export function parseDayPlan(response: string): ParsedDayPlan {
   const lines = response.split('\n');
   let currentDay: ParsedDay | null = null;
   let currentTimeBlock: ParsedTimeBlock | null = null;
-  let introLines: string[] = [];
+  const introLines: string[] = [];
   let foundFirstDay = false;
   let dayCounter = 0;
 
@@ -1211,7 +1211,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
 
   const lines = response.split('\n');
   let currentActivity: ParsedActivityExtended | null = null;
-  let introLines: string[] = [];
+  const introLines: string[] = [];
   let foundFirstActivity = false;
   let activityCounter = 0;
   let inHighlights = false;
@@ -1247,7 +1247,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
     // Pattern 5: **Aktivität 1: Name** or numbered label
     const actMatch5 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:\.\s]+([^*]+)\*\*/i);
 
-    let actMatch = actMatch1 || actMatch2 || actMatch3 || actMatch4 || actMatch5;
+    const actMatch = actMatch1 || actMatch2 || actMatch3 || actMatch4 || actMatch5;
 
     if (actMatch) {
       // Save previous activity with accumulated description
@@ -1439,7 +1439,7 @@ export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
 
   const lines = response.split('\n');
   let currentIdea: ParsedTripIdea | null = null;
-  let introLines: string[] = [];
+  const introLines: string[] = [];
   let foundFirstIdea = false;
   let ideaCounter = 0;
   let inWhyPerfect = false;

@@ -308,6 +308,6 @@ export const QUIZ_QUESTIONS_FR: QuizQuestion[] = [
   { id: 'yq-101', question: 'Quel est le jour de l\'an dans le calendrier gregorien ?', answers: ['1er janvier', '31 decembre', '1er mars', '21 mars'], correctIndex: 0, category: 'Culture generale', difficulty: 'easy' },
 ];
 
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_FR.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_FR.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_FR[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

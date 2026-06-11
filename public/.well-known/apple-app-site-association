@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.app.eventbliss"],
+        "appID": "TEAMID.app.eventbliss",
+        "paths": ["/e/*", "/join", "/join/*"],
+        "components": [
+          { "/": "/e/*" },
+          { "/": "/join" },
+          { "/": "/join/*" }
+        ]
+      }
+    ]
+  }
+}

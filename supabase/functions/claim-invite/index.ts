@@ -8,7 +8,7 @@ interface ClaimRequest {
 }
 
 serve(async (req: Request): Promise<Response> => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   // Handle CORS preflight
   if (req.method === "OPTIONS") {

@@ -143,7 +143,7 @@ async function fetchBookings(): Promise<Booking[]> {
 
   const serviceIds = [...new Set((bookings || []).map((b: any) => b.service_id).filter(Boolean))];
 
-  let titleMap: Record<string, string> = {};
+  const titleMap: Record<string, string> = {};
   if (serviceIds.length > 0) {
     const { data: translations } = await (supabase.from as any)("marketplace_service_translations")
       .select("service_id, locale, title")

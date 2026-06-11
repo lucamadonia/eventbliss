@@ -329,7 +329,7 @@ export const QUIZ_QUESTIONS_EN: QuizQuestion[] = [
   { id: 'yq-100', question: 'What is the Japanese green powdered tea used in ceremonies called?', answers: ['Sencha', 'Matcha', 'Oolong', 'Genmaicha'], correctIndex: 1, category: 'Food & Drinks', difficulty: 'hard' },
 ];
 
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 
 export function getRandomQuestion(): QuizQuestion {
   if (_usedIndices.size >= QUIZ_QUESTIONS_EN.length) {

@@ -12,7 +12,7 @@ import { lazy, Suspense } from "react";
 // TV Screen (lazy loaded)
 const TVScreen = lazy(() => import("./games/tv/TVScreen"));
 const TVCodeEntryPage = lazy(() => import("./games/tv/TVScreen").then(m => ({ default: m.TVCodeEntry })));
-const GameProfilePage = lazy(() => import("./games/social/GameProfilePage"));
+const GameProfilePage = lazy(() => import("./games/social/GameProfilePage").then(m => ({ default: m.GameProfilePage })));
 const AdminGames = lazy(() => import("./pages/AdminGames"));
 const OhrwurmSongs = lazy(() => import("./pages/admin/OhrwurmSongs"));
 

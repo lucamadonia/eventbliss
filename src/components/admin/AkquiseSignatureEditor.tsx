@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 
 interface AkquiseSignatureEditorProps { onClose: () => void }
 
@@ -114,7 +115,7 @@ export default function AkquiseSignatureEditor({ onClose }: AkquiseSignatureEdit
             {/* Preview */}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Preview</label>
-              <div className="rounded-xl border border-white/10 bg-white p-4" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+              <div className="rounded-xl border border-white/10 bg-white p-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(previewHtml) }} />
             </div>
 
             <div className="flex gap-2">

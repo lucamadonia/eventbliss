@@ -18,6 +18,19 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Android App Links (deep links) for event-bliss.com.
+                 autoVerify requires /.well-known/assetlinks.json on the host
+                 with the release signing key's SHA256 fingerprint. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="event-bliss.com" />
+                <data android:pathPrefix="/e/" />
+                <data android:path="/join" />
+                <data android:pathPrefix="/join/" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -301,6 +301,6 @@ export const QUIZ_QUESTIONS_AR: QuizQuestion[] = [
   { id: 'yq-100', question: 'ما اسم المشروب الياباني الكحولي المخمّر المصنوع من الأرز؟', answers: ['الساكي', 'الميسو', 'الواسابي', 'الماتشا'], correctIndex: 0, category: 'طعام', difficulty: 'hard' },
   { id: 'yq-101', question: 'ما الحلوى الفرنسية الصغيرة المستديرة المصنوعة من بياض البيض واللوز بحشوة كريمية؟', answers: ['الكرواسون', 'الماكارون', 'الإكلير', 'الكريب'], correctIndex: 1, category: 'طعام', difficulty: 'hard' },
 ];
-let _usedIndices: Set<number> = new Set();
+const _usedIndices: Set<number> = new Set();
 export function getRandomQuestion(): QuizQuestion { if (_usedIndices.size >= QUIZ_QUESTIONS_AR.length) { _usedIndices.clear(); } let idx: number; do { idx = Math.floor(Math.random() * QUIZ_QUESTIONS_AR.length); } while (_usedIndices.has(idx)); _usedIndices.add(idx); return QUIZ_QUESTIONS_AR[idx]; }
 export function resetQuestions(): void { _usedIndices.clear(); }

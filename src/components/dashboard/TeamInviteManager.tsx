@@ -85,11 +85,6 @@ export function TeamInviteManager({
   onUpdate,
 }: TeamInviteManagerProps) {
   const { t, ready } = useTranslation();
-  
-  // Ensure i18n is ready before rendering
-  if (!ready) {
-    return <SkeletonCard className="p-6" showAvatar={false} />;
-  }
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
@@ -102,6 +97,11 @@ export function TeamInviteManager({
   const [newParticipantEmail, setNewParticipantEmail] = useState("");
   const [newParticipantRole, setNewParticipantRole] = useState<"guest" | "organizer">("guest");
   const [isAddingParticipant, setIsAddingParticipant] = useState(false);
+
+  // Ensure i18n is ready before rendering (after all hooks to keep hook order stable)
+  if (!ready) {
+    return <SkeletonCard className="p-6" showAvatar={false} />;
+  }
 
   const getInviteLink = (inviteToken: string) => {
     return `${getBaseUrl()}/e/${eventSlug}/claim/${inviteToken}`;

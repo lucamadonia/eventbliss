@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 // Simple validation helpers
 function isValidString(value: unknown, maxLength = 500): value is string {
@@ -25,10 +26,14 @@ function sanitizeStringArray(value: unknown, maxItems = 50, maxLength = 200): st
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  if (!checkRateLimit("submit-response", getClientIp(req), 20)) {
+    return rateLimitResponse(corsHeaders);
   }
 
   try {
