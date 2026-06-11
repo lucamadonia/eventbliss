@@ -40,10 +40,7 @@
 			<string>app.eventbliss.googleauth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!-- Reversed Google iOS client ID — replace after creating the
-				     iOS OAuth client in Google Cloud Console. Example:
-				     com.googleusercontent.apps.1234567890-abcdef -->
-				<string>com.googleusercontent.apps.REPLACE_WITH_IOS_CLIENT_ID</string>
+				<string>com.googleusercontent.apps.38219722223-rlpbmptot5lldkrbh2hrgo4cdmoe9hpe</string>
 			</array>
 		</dict>
 	</array>
