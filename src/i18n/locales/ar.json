@@ -2004,6 +2004,18 @@
     }
   },
   "premium": {
+    "native": {
+      "securePayment": "دفع آمن عبر App Store أو Google Play. يمكن الإلغاء في أي وقت.",
+      "restorePurchases": "استعادة المشتريات",
+      "restoreSuccess": "تمت استعادة المشتريات – بريميوم نشط الآن!",
+      "restoreNone": "لم يتم العثور على مشتريات سابقة.",
+      "restoreError": "تعذرت استعادة المشتريات. يرجى المحاولة مرة أخرى.",
+      "purchaseError": "تعذر إتمام عملية الشراء. يرجى المحاولة مرة أخرى.",
+      "productsUnavailable": "المنتجات غير متاحة حاليًا. يرجى المحاولة لاحقًا.",
+      "manageInStore": "إدارة الاشتراك في المتجر",
+      "manageStoreHint": "تتم فوترة اشتراكك عبر App Store أو Google Play، ويمكنك إدارته أو إلغاؤه هناك.",
+      "manageOnWebsite": "تم الاشتراك عبر event-bliss.com ويمكن إدارته هناك من حسابك."
+    },
     "title": "ميزات بريميوم",
     "description": "افتح ميزات متقدمة لتجربة أفضل.",
     "planName": "EventBliss Pro",
@@ -5994,6 +6006,7 @@
     }
   },
   "agencyPricing": {
+    "nativeNotice": "يمكن حجز باقات الوكالات عبر event-bliss.com من المتصفح.",
     "hero": {
       "badge": "🔥 عرض الإطلاق: وفّر 50% إلى الأبد",
       "titleLine1": "صِل إلى",

@@ -3238,6 +3238,18 @@
     "exportData": "Verilerimi dışa aktar (GDPR Madde 20)"
   },
   "premium": {
+    "native": {
+      "securePayment": "App Store veya Google Play üzerinden güvenli ödeme. İstediğin zaman iptal edebilirsin.",
+      "restorePurchases": "Satın alımları geri yükle",
+      "restoreSuccess": "Satın alımlar geri yüklendi – Premium aktif!",
+      "restoreNone": "Önceki satın alım bulunamadı.",
+      "restoreError": "Satın alımlar geri yüklenemedi. Tekrar dene.",
+      "purchaseError": "Satın alma tamamlanamadı. Tekrar dene.",
+      "productsUnavailable": "Ürünler şu anda kullanılamıyor. Daha sonra tekrar dene.",
+      "manageInStore": "Aboneliği mağazada yönet",
+      "manageStoreHint": "Aboneliğin App Store veya Google Play üzerinden faturalandırılıyor; orada yönetebilir veya iptal edebilirsin.",
+      "manageOnWebsite": "Aboneliğin event-bliss.com üzerinden satın alındı ve orada hesabından yönetilebilir."
+    },
     "title": "Premium Özellikler",
     "description": "Daha iyi bir deneyim için gelişmiş özelliklerin kilidini aç.",
     "planName": "EventBliss Pro",
@@ -6633,6 +6645,7 @@
     "openMarketplace": "Marketplace'i aç"
   },
   "agencyPricing": {
+    "nativeNotice": "Ajans paketleri tarayıcıda event-bliss.com üzerinden satın alınabilir.",
     "hero": {
       "badge": "🔥 LANSMAN FIRSATI: SONSUZA DEK %50 İNDİRİM",
       "titleLine1": "Ulaş",

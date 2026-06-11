@@ -42,8 +42,37 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    // Check for lifetime/manual subscription in DB
-    if (dbSub && dbSub.plan === "premium" && (!dbSub.stripe_subscription_id || !dbSub.expires_at)) {
+    // Active RevenueCat subscription (native IAP) is the source of truth —
+    // return it directly and never overwrite it with the Stripe lookup.
+    if (
+      dbSub &&
+      dbSub.provider === "revenuecat" &&
+      dbSub.plan === "premium" &&
+      (!dbSub.expires_at || new Date(dbSub.expires_at) > new Date())
+    ) {
+      logStep("Active RevenueCat subscription found", {
+        planType: dbSub.plan_type,
+        expiresAt: dbSub.expires_at,
+      });
+      return new Response(JSON.stringify({
+        subscribed: true,
+        plan: "premium",
+        plan_type: dbSub.plan_type || (dbSub.expires_at ? "monthly" : "lifetime"),
+        subscription_end: dbSub.expires_at,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // Check for lifetime/manual subscription in DB (Stripe lifetime purchases
+    // and admin-granted subscriptions; RevenueCat is handled above)
+    if (
+      dbSub &&
+      dbSub.plan === "premium" &&
+      dbSub.provider !== "revenuecat" &&
+      (!dbSub.stripe_subscription_id || !dbSub.expires_at)
+    ) {
       logStep("Lifetime/manual subscription found");
       return new Response(JSON.stringify({
         subscribed: true,
@@ -109,6 +138,9 @@ serve(async (req) => {
       const { error: upsertError } = await supabaseClient.from("subscriptions").upsert({
         user_id: user.id,
         plan: "premium",
+        provider: "stripe",
+        plan_type: isYearly ? "yearly" : "monthly",
+        product_id: subscription.items.data[0]?.price?.id ?? null,
         stripe_customer_id: customerId,
         stripe_subscription_id: subscription.id,
         expires_at: subscriptionEnd,

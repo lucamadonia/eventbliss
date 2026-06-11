@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getTestimonials } from "@/lib/agency-testimonials";
+import { isNative } from "@/lib/platform";
 import { toast } from "sonner";
 import {
   Check, Sparkles, Zap, Crown, Users, TrendingUp, Globe,
@@ -184,6 +185,9 @@ export default function AgencyPricing() {
   const [loadingTier, setLoadingTier] = useState<Tier | null>(null);
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [mouse, setMouse] = useState({ x: 50, y: 50 });
+  // Apple Guideline 3.1.1/3.1.3: no Stripe checkout (and no external purchase
+  // links) for agency tiers inside the native app — plain text notice only.
+  const native = isNative();
 
   useEffect(() => {
     const onScroll = () => setShowStickyCta(window.scrollY > 800);
@@ -199,12 +203,21 @@ export default function AgencyPricing() {
   }, []);
 
   const handleSubscribe = async (tier: Tier) => {
-    if (!isAuthenticated) {
-      navigate("/auth?redirect=/agency/pricing");
+    if (tier === "starter") {
+      if (!isAuthenticated) {
+        navigate("/auth?redirect=/agency/pricing");
+        return;
+      }
+      navigate("/agency-apply");
       return;
     }
-    if (tier === "starter") {
-      navigate("/agency-apply");
+    if (native) {
+      // Defense in depth — paid-tier buttons are hidden on native anyway.
+      toast.info(t("agencyPricing.nativeNotice"));
+      return;
+    }
+    if (!isAuthenticated) {
+      navigate("/auth?redirect=/agency/pricing");
       return;
     }
     setLoadingTier(tier);
@@ -293,16 +306,18 @@ export default function AgencyPricing() {
               {t("agencyPricing.hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
-              <Button
-                size="lg"
-                onClick={() => handleSubscribe("professional")}
-                disabled={loadingTier !== null}
-                className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_16px_48px_rgba(236,72,153,0.6)] transition-all hover:scale-[1.03] text-white border-0 font-bold text-base h-14 px-8 rounded-xl shadow-2xl shadow-pink-500/50 cursor-pointer"
-              >
-                <Zap className="w-5 h-5 mr-2" />
-                {t("agencyPricing.cta.primary")}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              {!native && (
+                <Button
+                  size="lg"
+                  onClick={() => handleSubscribe("professional")}
+                  disabled={loadingTier !== null}
+                  className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_16px_48px_rgba(236,72,153,0.6)] transition-all hover:scale-[1.03] text-white border-0 font-bold text-base h-14 px-8 rounded-xl shadow-2xl shadow-pink-500/50 cursor-pointer"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  {t("agencyPricing.cta.primary")}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
               <Button
                 size="lg"
                 variant="outline"
@@ -642,16 +657,20 @@ export default function AgencyPricing() {
           </div>
 
           <div className="text-center">
-            <Button
-              onClick={() => handleSubscribe("enterprise")}
-              disabled={loadingTier !== null}
-              size="lg"
-              className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 hover:shadow-[0_16px_48px_rgba(245,158,11,0.5)] hover:scale-[1.03] transition-all text-white border-0 font-bold h-14 px-8 rounded-xl shadow-2xl shadow-orange-500/40 cursor-pointer"
-            >
-              <Crown className="w-5 h-5 mr-2" />
-              {t("agencyPricing.pricing.tiers.enterprise.cta")} – 149€/mo
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            {native ? (
+              <p className="text-white/70 text-sm max-w-md mx-auto">{t("agencyPricing.nativeNotice")}</p>
+            ) : (
+              <Button
+                onClick={() => handleSubscribe("enterprise")}
+                disabled={loadingTier !== null}
+                size="lg"
+                className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 hover:shadow-[0_16px_48px_rgba(245,158,11,0.5)] hover:scale-[1.03] transition-all text-white border-0 font-bold h-14 px-8 rounded-xl shadow-2xl shadow-orange-500/40 cursor-pointer"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                {t("agencyPricing.pricing.tiers.enterprise.cta")} – 149€/mo
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -671,6 +690,11 @@ export default function AgencyPricing() {
                 </span>
               </h2>
               <p className="text-lg text-white/70 max-w-2xl mx-auto">{t("agencyPricing.pricing.subtitle")}</p>
+              {native && (
+                <p className="mt-6 text-sm text-white/80 max-w-xl mx-auto rounded-xl bg-white/5 border border-white/15 px-5 py-4">
+                  {t("agencyPricing.nativeNotice")}
+                </p>
+              )}
             </div>
           </Reveal>
 
@@ -730,17 +754,23 @@ export default function AgencyPricing() {
                           </div>
                         </div>
 
-                        <Button
-                          onClick={() => handleSubscribe(tier.id)}
-                          disabled={isLoading}
-                          size="lg"
-                          className={`w-full mb-6 font-bold h-12 rounded-xl cursor-pointer transition-all ${tier.highlight
-                            ? "bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_12px_32px_rgba(236,72,153,0.55)] hover:scale-[1.02] text-white border-0 shadow-lg shadow-pink-500/40"
-                            : "bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-white/40"
-                          }`}
-                        >
-                          {isLoading ? t("agencyPricing.pricing.loading") : (<><span>{t(`agencyPricing.pricing.tiers.${tier.id}.cta`)}</span><ArrowRight className="w-4 h-4 ml-2" /></>)}
-                        </Button>
+                        {native && tier.id !== "starter" ? (
+                          <p className="w-full mb-6 text-xs text-white/60 text-center rounded-xl border border-white/15 bg-white/5 px-4 py-3">
+                            {t("agencyPricing.nativeNotice")}
+                          </p>
+                        ) : (
+                          <Button
+                            onClick={() => handleSubscribe(tier.id)}
+                            disabled={isLoading}
+                            size="lg"
+                            className={`w-full mb-6 font-bold h-12 rounded-xl cursor-pointer transition-all ${tier.highlight
+                              ? "bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_12px_32px_rgba(236,72,153,0.55)] hover:scale-[1.02] text-white border-0 shadow-lg shadow-pink-500/40"
+                              : "bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-white/40"
+                            }`}
+                          >
+                            {isLoading ? t("agencyPricing.pricing.loading") : (<><span>{t(`agencyPricing.pricing.tiers.${tier.id}.cta`)}</span><ArrowRight className="w-4 h-4 ml-2" /></>)}
+                          </Button>
+                        )}
 
                         <ul className="space-y-3">
                           {features.map((f, i) => {
@@ -824,14 +854,16 @@ export default function AgencyPricing() {
                 </h2>
                 <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">{t("agencyPricing.cta.subtitle")}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button
-                    size="lg"
-                    onClick={() => handleSubscribe("professional")}
-                    disabled={loadingTier !== null}
-                    className="bg-white hover:bg-white/90 text-purple-900 font-bold h-14 px-8 rounded-xl shadow-2xl shadow-black/40 hover:scale-[1.03] transition-all cursor-pointer"
-                  >
-                    {t("agencyPricing.cta.primary")} <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  {!native && (
+                    <Button
+                      size="lg"
+                      onClick={() => handleSubscribe("professional")}
+                      disabled={loadingTier !== null}
+                      className="bg-white hover:bg-white/90 text-purple-900 font-bold h-14 px-8 rounded-xl shadow-2xl shadow-black/40 hover:scale-[1.03] transition-all cursor-pointer"
+                    >
+                      {t("agencyPricing.cta.primary")} <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
                   <Button
                     size="lg"
                     variant="outline"
@@ -870,23 +902,25 @@ export default function AgencyPricing() {
       </section>
 
       {/* ═══════ STICKY CTA ═══════ */}
-      <div
-        className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
-          showStickyCta ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0 pointer-events-none"
-        }`}
-      >
-        <Button
-          onClick={() => handleSubscribe("professional")}
-          disabled={loadingTier !== null}
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_16px_48px_rgba(236,72,153,0.7)] hover:scale-[1.05] transition-all text-white border-0 font-bold h-14 px-6 rounded-xl shadow-2xl shadow-pink-500/60 cursor-pointer"
+      {!native && (
+        <div
+          className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
+            showStickyCta ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0 pointer-events-none"
+          }`}
         >
-          <Zap className="w-5 h-5 mr-2" />
-          <span className="hidden sm:inline">{t("agencyPricing.cta.primary")}</span>
-          <span className="sm:hidden">49€/mo</span>
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
+          <Button
+            onClick={() => handleSubscribe("professional")}
+            disabled={loadingTier !== null}
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_16px_48px_rgba(236,72,153,0.7)] hover:scale-[1.05] transition-all text-white border-0 font-bold h-14 px-6 rounded-xl shadow-2xl shadow-pink-500/60 cursor-pointer"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            <span className="hidden sm:inline">{t("agencyPricing.cta.primary")}</span>
+            <span className="sm:hidden">49€/mo</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

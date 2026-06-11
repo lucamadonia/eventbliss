@@ -3188,6 +3188,18 @@
     "exportData": "Esporta i miei dati (GDPR Art. 20)"
   },
   "premium": {
+    "native": {
+      "securePayment": "Pagamento sicuro tramite App Store o Google Play. Disdici quando vuoi.",
+      "restorePurchases": "Ripristina acquisti",
+      "restoreSuccess": "Acquisti ripristinati – Premium è attivo!",
+      "restoreNone": "Nessun acquisto precedente trovato.",
+      "restoreError": "Impossibile ripristinare gli acquisti. Riprova.",
+      "purchaseError": "Impossibile completare l'acquisto. Riprova.",
+      "productsUnavailable": "I prodotti non sono al momento disponibili. Riprova più tardi.",
+      "manageInStore": "Gestisci abbonamento nello store",
+      "manageStoreHint": "Il tuo abbonamento è fatturato tramite App Store o Google Play e può essere gestito o disdetto lì.",
+      "manageOnWebsite": "Il tuo abbonamento è stato attivato su event-bliss.com e può essere gestito lì dal tuo account."
+    },
     "title": "Funzionalità Premium",
     "description": "Sblocca funzionalità avanzate per un'esperienza migliore.",
     "planName": "EventBliss Pro",
@@ -6583,6 +6595,7 @@
     "openMarketplace": "Apri Marketplace"
   },
   "agencyPricing": {
+    "nativeNotice": "I piani per agenzie possono essere acquistati su event-bliss.com dal browser.",
     "hero": {
       "badge": "🔥 OFFERTA LANCIO: RISPARMIA IL 50% PER SEMPRE",
       "titleLine1": "Raggiungi",

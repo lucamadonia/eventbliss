@@ -8,6 +8,8 @@ interface Subscription {
   id: string;
   user_id: string;
   plan: "free" | "premium";
+  /** Payment provider that owns this subscription ("stripe" | "revenuecat" | null for manual/voucher). */
+  provider?: string | null;
   started_at: string;
   expires_at: string | null;
 }
