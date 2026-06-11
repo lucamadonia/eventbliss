@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Etkinlik oluşturmak ve yönetmek için kaydolun",
     "welcomeBack": "Tekrar hoş geldiniz",
     "loginSubtitle": "Panelinize erişmek için giriş yapın",
+    "social": {
+      "apple": "Apple ile Devam Et",
+      "google": "Google ile Devam Et",
+      "or": "veya",
+      "error": "Giriş başarısız oldu. Lütfen tekrar deneyin."
+    },
     "emailPlaceholder": "sizin@email.com",
     "invalidEmail": "Geçersiz e-posta adresi",
     "passwordMinLength": "Şifre en az 8 karakter olmalıdır",

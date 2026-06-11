@@ -878,6 +878,12 @@
     "registerSubtitle": "سجّل لإنشاء وإدارة الفعاليات",
     "welcomeBack": "مرحباً بعودتك",
     "loginSubtitle": "سجّل الدخول للوصول إلى لوحة التحكم",
+    "social": {
+      "apple": "المتابعة باستخدام Apple",
+      "google": "المتابعة باستخدام Google",
+      "or": "أو",
+      "error": "فشل تسجيل الدخول. يُرجى المحاولة مرة أخرى."
+    },
     "emailPlaceholder": "بريدك@email.com",
     "invalidEmail": "عنوان بريد إلكتروني غير صالح",
     "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",

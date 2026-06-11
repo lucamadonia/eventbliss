@@ -22,6 +22,7 @@ let package = Package(
         .package(name: "CapacitorPushNotifications", path: "..\..\..\node_modules\.pnpm\@capacitor+push-notifications@8.0.3_@capacitor+core@8.3.0\node_modules\@capacitor\push-notifications"),
         .package(name: "CapacitorSplashScreen", path: "..\..\..\node_modules\.pnpm\@capacitor+splash-screen@8.0.1_@capacitor+core@8.3.0\node_modules\@capacitor\splash-screen"),
         .package(name: "CapacitorStatusBar", path: "..\..\..\node_modules\.pnpm\@capacitor+status-bar@8.0.2_@capacitor+core@8.3.0\node_modules\@capacitor\status-bar"),
+        .package(name: "CapgoCapacitorSocialLogin", path: "..\..\..\node_modules\.pnpm\@capgo+capacitor-social-login@8.3.22_@capacitor+core@8.3.0\node_modules\@capgo\capacitor-social-login"),
         .package(name: "RevenuecatPurchasesCapacitor", path: "..\..\..\node_modules\.pnpm\@revenuecat+purchases-capacitor@13.1.7_@capacitor+core@8.3.0\node_modules\@revenuecat\purchases-capacitor"),
         .package(name: "OhrwurmSpotify", path: "..\..\..\node_modules\.pnpm\ohrwurm-spotify@file+native-plugins+ohrwurm-spotify_@capacitor+core@8.3.0\node_modules\ohrwurm-spotify")
     ],
@@ -41,6 +42,7 @@ let package = Package(
                 .product(name: "CapacitorPushNotifications", package: "CapacitorPushNotifications"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
                 .product(name: "CapacitorStatusBar", package: "CapacitorStatusBar"),
+                .product(name: "CapgoCapacitorSocialLogin", package: "CapgoCapacitorSocialLogin"),
                 .product(name: "RevenuecatPurchasesCapacitor", package: "RevenuecatPurchasesCapacitor"),
                 .product(name: "OhrwurmSpotify", package: "OhrwurmSpotify")
             ]

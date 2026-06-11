@@ -1959,6 +1959,12 @@
     "registerSubtitle": "Inscrivez-vous pour créer et gérer des événements",
     "welcomeBack": "Bon retour",
     "loginSubtitle": "Connectez-vous pour accéder à votre tableau de bord",
+    "social": {
+      "apple": "Continuer avec Apple",
+      "google": "Continuer avec Google",
+      "or": "ou",
+      "error": "Échec de la connexion. Veuillez réessayer."
+    },
     "emailPlaceholder": "votre@email.com",
     "invalidEmail": "Adresse e-mail invalide",
     "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",

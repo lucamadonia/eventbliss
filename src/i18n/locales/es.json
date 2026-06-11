@@ -1959,6 +1959,12 @@
     "registerSubtitle": "Regístrate para crear y gestionar eventos",
     "welcomeBack": "Bienvenido de nuevo",
     "loginSubtitle": "Inicia sesión para acceder a tu panel",
+    "social": {
+      "apple": "Continuar con Apple",
+      "google": "Continuar con Google",
+      "or": "o",
+      "error": "Error al iniciar sesión. Inténtalo de nuevo."
+    },
     "emailPlaceholder": "tu@email.com",
     "invalidEmail": "Dirección de correo inválida",
     "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",

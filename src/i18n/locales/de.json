@@ -1939,6 +1939,12 @@
     "registerSubtitle": "Registriere dich, um Events zu erstellen und zu verwalten",
     "welcomeBack": "Willkommen zurück",
     "loginSubtitle": "Melde dich an, um auf dein Dashboard zuzugreifen",
+    "social": {
+      "apple": "Mit Apple fortfahren",
+      "google": "Mit Google fortfahren",
+      "or": "oder",
+      "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut."
+    },
     "emailPlaceholder": "deine@email.de",
     "invalidEmail": "Ungültige E-Mail-Adresse",
     "passwordMinLength": "Passwort muss mindestens 8 Zeichen haben",

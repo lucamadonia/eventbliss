@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Zarejestruj się, aby tworzyć i zarządzać wydarzeniami",
     "welcomeBack": "Witaj ponownie",
     "loginSubtitle": "Zaloguj się, aby uzyskać dostęp do panelu",
+    "social": {
+      "apple": "Kontynuuj z Apple",
+      "google": "Kontynuuj z Google",
+      "or": "lub",
+      "error": "Logowanie nie powiodło się. Spróbuj ponownie."
+    },
     "emailPlaceholder": "twoj@email.pl",
     "invalidEmail": "Nieprawidłowy adres email",
     "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",

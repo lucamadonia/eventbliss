@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Registe-se para criar e gerir eventos",
     "welcomeBack": "Bem-vindo de volta",
     "loginSubtitle": "Inicie sessão para aceder ao seu painel",
+    "social": {
+      "apple": "Continuar com a Apple",
+      "google": "Continuar com o Google",
+      "or": "ou",
+      "error": "Falha ao iniciar sessão. Tente novamente."
+    },
     "emailPlaceholder": "seu@email.pt",
     "invalidEmail": "Endereço de email inválido",
     "passwordMinLength": "A palavra-passe deve ter pelo menos 8 caracteres",

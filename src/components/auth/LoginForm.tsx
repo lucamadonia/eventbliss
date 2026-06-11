@@ -9,6 +9,7 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
@@ -80,6 +81,8 @@ export function LoginForm({ onSwitchToRegister, onForgotPassword }: LoginFormPro
             {t('auth.loginSubtitle')}
           </p>
         </div>
+
+        <SocialLoginButtons />
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">

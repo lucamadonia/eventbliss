@@ -1939,6 +1939,12 @@
     "registerSubtitle": "Register to create and manage events",
     "welcomeBack": "Welcome back",
     "loginSubtitle": "Sign in to access your dashboard",
+    "social": {
+      "apple": "Continue with Apple",
+      "google": "Continue with Google",
+      "or": "or",
+      "error": "Sign-in failed. Please try again."
+    },
     "emailPlaceholder": "your@email.com",
     "invalidEmail": "Invalid email address",
     "passwordMinLength": "Password must be at least 8 characters",

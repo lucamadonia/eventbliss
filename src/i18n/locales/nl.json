@@ -2009,6 +2009,12 @@
     "registerSubtitle": "Registreer om evenementen te maken en te beheren",
     "welcomeBack": "Welkom terug",
     "loginSubtitle": "Log in om je dashboard te bekijken",
+    "social": {
+      "apple": "Ga door met Apple",
+      "google": "Doorgaan met Google",
+      "or": "of",
+      "error": "Inloggen mislukt. Probeer het opnieuw."
+    },
     "emailPlaceholder": "jouw@email.nl",
     "invalidEmail": "Ongeldig e-mailadres",
     "passwordMinLength": "Wachtwoord moet minimaal 8 tekens bevatten",

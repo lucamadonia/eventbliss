@@ -1959,6 +1959,12 @@
     "registerSubtitle": "Registrati per creare e gestire eventi",
     "welcomeBack": "Bentornato",
     "loginSubtitle": "Accedi per accedere alla tua dashboard",
+    "social": {
+      "apple": "Continua con Apple",
+      "google": "Continua con Google",
+      "or": "oppure",
+      "error": "Accesso non riuscito. Riprova."
+    },
     "emailPlaceholder": "tua@email.com",
     "invalidEmail": "Indirizzo email non valido",
     "passwordMinLength": "La password deve contenere almeno 8 caratteri",
