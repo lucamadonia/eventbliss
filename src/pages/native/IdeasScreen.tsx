@@ -107,10 +107,28 @@ export default function IdeasScreen() {
   const [gameCat, setGameCat] = useState<GameCategory | "all">("all");
   const [themeCat, setThemeCat] = useState<ThemeCategory | "all">("all");
 
+  // Defer the heavy list work (filtering 147 games + mounting ~20 animated
+  // cards) past the very first paint: the tab switch immediately shows the
+  // header/tabs/search plus pulsing skeleton cards (same pattern as
+  // EventsScreen), and one frame later the real list mounts. rAF + setTimeout
+  // guarantees the skeleton frame actually gets painted before the state flip.
+  const [listReady, setListReady] = useState(false);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const raf = requestAnimationFrame(() => {
+      timer = setTimeout(() => setListReady(true), 0);
+    });
+    return () => {
+      cancelAnimationFrame(raf);
+      if (timer !== undefined) clearTimeout(timer);
+    };
+  }, []);
+
   // `t` from i18next changes reference on every render in some setups,
   // which would re-filter the whole 147-item library each time. Using
   // `i18n.language` keeps the memo stable per language switch instead.
   const filteredGames = useMemo(() => {
+    if (!listReady) return [];
     let result = gamesLibrary;
     if (gameCat !== "all") result = result.filter((g) => g.categories.includes(gameCat));
     if (query) {
@@ -124,9 +142,10 @@ export default function IdeasScreen() {
     }
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameCat, query, i18n.language]);
+  }, [listReady, gameCat, query, i18n.language]);
 
   const filteredThemes = useMemo(() => {
+    if (!listReady) return [];
     let result = themeIdeas;
     if (themeCat !== "all") result = result.filter((th) => th.category === themeCat);
     if (query) {
@@ -139,7 +158,7 @@ export default function IdeasScreen() {
     }
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [themeCat, query, i18n.language]);
+  }, [listReady, themeCat, query, i18n.language]);
 
   // Paginate the list so the initial render stays snappy. Users almost
   // never scroll through all 147 games at once — we show a dense first
@@ -271,8 +290,21 @@ export default function IdeasScreen() {
 
       {/* Content — inline in the same scroll container */}
       <div>
+        {/* First frame: pulsing skeleton cards (pattern from EventsScreen)
+            while the heavy list build is deferred behind listReady. */}
+        {!listReady && (
+          <div className="px-5 pt-1 space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="h-24 rounded-2xl bg-foreground/5 border border-border/50 animate-pulse"
+              />
+            ))}
+          </div>
+        )}
         {/* Special highlight: directly playable games (deep-link into /games) */}
-        {tab === "games" && !query && <PlayableGamesShelf />}
+        {listReady && tab === "games" && !query && <PlayableGamesShelf />}
+        {listReady && (
         <AnimatePresence mode="wait">
           {tab === "games" ? (
             <motion.div
@@ -324,6 +356,7 @@ export default function IdeasScreen() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </div>
     </div>
   );

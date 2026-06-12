@@ -9,9 +9,10 @@
  * This component is only rendered when isNative() === true.
  * Desktop / mobile web continue using the original <AppContent /> tree.
  */
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { isNative } from "@/lib/platform";
 import { useLaunchFlow } from "@/hooks/useLaunchFlow";
 import { SplashExperience } from "./SplashExperience";
 import { OnboardingSlides } from "./OnboardingSlides";
@@ -24,14 +25,68 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import PageLoader from "@/components/ui/PageLoader";
 
-// Native-only screens (lazy)
-const HomeScreen = lazy(() => import("@/pages/native/HomeScreen"));
-const EventsScreen = lazy(() => import("@/pages/native/EventsScreen"));
-const GamesScreen = lazy(() => import("@/pages/native/GamesScreen"));
-const IdeasScreen = lazy(() => import("@/pages/native/IdeasScreen"));
-const ProfileScreen = lazy(() => import("@/pages/native/ProfileScreen"));
-const CreateEventFlow = lazy(() => import("@/pages/native/CreateEventFlow"));
+// Native-only screens (lazy). The tab-root factories are extracted into
+// named consts so they can be handed BOTH to lazy() and to the idle
+// preloader below — warming the chunks during the splash makes the first
+// tap on every tab hit already-downloaded-and-parsed code.
+const loadHomeScreen = () => import("@/pages/native/HomeScreen");
+const loadEventsScreen = () => import("@/pages/native/EventsScreen");
+const loadGamesScreen = () => import("@/pages/native/GamesScreen");
+const loadIdeasScreen = () => import("@/pages/native/IdeasScreen");
+const loadProfileScreen = () => import("@/pages/native/ProfileScreen");
+const loadCreateEventFlow = () => import("@/pages/native/CreateEventFlow");
+
+const HomeScreen = lazy(loadHomeScreen);
+const EventsScreen = lazy(loadEventsScreen);
+const GamesScreen = lazy(loadGamesScreen);
+const IdeasScreen = lazy(loadIdeasScreen);
+const ProfileScreen = lazy(loadProfileScreen);
+const CreateEventFlow = lazy(loadCreateEventFlow);
 const JoinEventFlow = lazy(() => import("@/pages/native/JoinEventFlow"));
+
+/**
+ * Idle preloader for the bottom-tab screens (+ the FAB's create flow).
+ *
+ * Started from NativeApp's mount effect, i.e. WHILE the ~2.1s splash
+ * animation is still playing, so the chunks are warm before the user can
+ * even tap a tab. Imports are staggered ~300ms apart and scheduled through
+ * requestIdleCallback (setTimeout fallback — WKWebView has no rIC) so the
+ * main thread is never blocked during the splash/handoff animation.
+ *
+ * Native-only: on the web nothing changes — pure on-demand lazy loading.
+ * A failed preload is harmless; lazy() simply fetches again on demand.
+ */
+const TAB_SCREEN_LOADERS = [
+  loadHomeScreen,
+  loadEventsScreen,
+  loadGamesScreen,
+  loadIdeasScreen,
+  loadProfileScreen,
+  loadCreateEventFlow,
+];
+
+let tabPreloadStarted = false;
+
+function preloadTabScreens(): void {
+  if (tabPreloadStarted || !isNative()) return;
+  tabPreloadStarted = true;
+
+  const whenIdle = (cb: () => void) => {
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(() => cb(), { timeout: 1000 });
+    } else {
+      setTimeout(cb, 50);
+    }
+  };
+
+  TAB_SCREEN_LOADERS.forEach((load, i) => {
+    setTimeout(() => {
+      whenIdle(() => {
+        load().catch(() => undefined);
+      });
+    }, i * 300);
+  });
+}
 const AdminScreen = lazy(() => import("@/pages/native/AdminScreen"));
 const DrinkTrackerScreen = lazy(() => import("@/pages/native/DrinkTrackerScreen"));
 const PartyLobbyScreen = lazy(() => import("@/pages/native/PartyLobbyScreen"));
@@ -87,6 +142,11 @@ function ExpensesGate() {
 
 export function NativeApp() {
   const { stage, completeSplash, completeOnboarding } = useLaunchFlow();
+
+  // Warm all tab chunks while the splash plays (see preloadTabScreens).
+  useEffect(() => {
+    preloadTabScreens();
+  }, []);
 
   return (
     <>
