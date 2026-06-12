@@ -1753,6 +1753,12 @@
             "purpose": "Affichage de cartes — votre adresse IP et les tuiles de carte demandées sont transmises lors du chargement d'une carte",
             "location": "États-Unis",
             "safeguards": "Contrat de sous-traitance avec CCT ; EU-U.S. Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Chatbot d'assistance sur le site web ; traite les messages que vous saisissez dans le chat",
+            "location": "États-Unis",
+            "safeguards": "DPA, CCT"
           }
         }
       },
@@ -2195,6 +2201,10 @@
     },
     "legalLinks": {
       "title": "Informations légales"
+    },
+    "chat": {
+      "title": "Chat en direct",
+      "subtitle": "Notre assistant IA Blissy répond instantanément à vos questions, 24 h/24. Pour les demandes complexes, vous pouvez toujours nous contacter par e-mail."
     }
   },
   "createEvent": {

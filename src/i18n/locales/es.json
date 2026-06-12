@@ -1753,6 +1753,12 @@
             "purpose": "Visualización de mapas: al cargarse un mapa se transmiten tu dirección IP y las teselas de mapa solicitadas",
             "location": "EE. UU.",
             "safeguards": "Contrato de encargo con CCT; EU-U.S. Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Chatbot de soporte en el sitio web; trata los mensajes que introduces en el chat",
+            "location": "EE. UU.",
+            "safeguards": "DPA, CCT"
           }
         }
       },
@@ -2195,6 +2201,10 @@
     },
     "legalLinks": {
       "title": "Información legal"
+    },
+    "chat": {
+      "title": "Chat en vivo",
+      "subtitle": "Nuestro asistente de IA Blissy responde a tus preguntas al instante, las 24 horas. Para cuestiones complejas, también puedes escribirnos por correo electrónico."
     }
   },
   "createEvent": {

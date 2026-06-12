@@ -1803,6 +1803,12 @@
             "purpose": "Harita görüntüleme — bir harita yüklendiğinde IP adresiniz ve istenen harita karoları iletilir",
             "location": "ABD",
             "safeguards": "SCC'ler içeren veri işleme sözleşmesi; AB-ABD Veri Gizliliği Çerçevesi (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Web sitesindeki destek sohbet robotu; sohbete girdiğiniz mesajları işler",
+            "location": "ABD",
+            "safeguards": "DPA, SCC'ler"
           }
         }
       },
@@ -2245,6 +2251,10 @@
     },
     "legalLinks": {
       "title": "Yasal"
+    },
+    "chat": {
+      "title": "Canlı sohbet",
+      "subtitle": "Yapay zekâ asistanımız Blissy sorularınızı anında yanıtlar — günün her saati. Karmaşık konular için bize e-posta ile de ulaşabilirsiniz."
     }
   },
   "createEvent": {

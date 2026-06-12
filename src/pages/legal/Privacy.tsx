@@ -86,6 +86,7 @@ const PROCESSOR_ROWS = [
   "mistral",
   "spotify",
   "mapbox",
+  "chatbase",
 ];
 
 const RETENTION_ITEMS = ["account", "events", "payments", "logs"];

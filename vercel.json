@@ -1,4 +1,4 @@
-{
+﻿{
   "rewrites": [
     { "source": "/((?!assets/|images/|icons/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/app.html" }
   ],
@@ -41,7 +41,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com https://maps.googleapis.com https://maps.gstatic.com https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com; img-src 'self' data: blob: https: https://*.mapbox.com https://*.googleusercontent.com https://maps.googleapis.com https://maps.gstatic.com https://*.supabase.co https://huggingface.co https://*.huggingface.co; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' blob: https://audio-ssl.itunes.apple.com https://*.mzstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://itunes.apple.com https://api.stripe.com https://api.mapbox.com https://events.mapbox.com https://*.mapbox.com https://maps.googleapis.com https://maps.gstatic.com https://api.mistral.ai https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co; frame-src https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com https://maps.googleapis.com https://maps.gstatic.com https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com; img-src 'self' data: blob: https: https://*.mapbox.com https://*.googleusercontent.com https://maps.googleapis.com https://maps.gstatic.com https://*.supabase.co https://huggingface.co https://*.huggingface.co; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' blob: https://audio-ssl.itunes.apple.com https://*.mzstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://itunes.apple.com https://api.stripe.com https://api.mapbox.com https://events.mapbox.com https://*.mapbox.com https://maps.googleapis.com https://maps.gstatic.com https://api.mistral.ai https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co; frame-src https://www.chatbase.co https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'self'; upgrade-insecure-requests"
         },
         {
           "key": "Cross-Origin-Opener-Policy",

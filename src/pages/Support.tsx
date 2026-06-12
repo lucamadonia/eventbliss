@@ -6,7 +6,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Clock, LifeBuoy, Mail } from "lucide-react";
+import { Clock, LifeBuoy, Mail, MessageCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +24,7 @@ import {
   type StaticPage,
 } from "@/lib/legal-routes";
 import { HTML_LANG_BY_LANG, LOCALE_BY_LANG, isRtl, toSeoLang } from "@/lib/seo-routes";
+import { isWeb } from "@/lib/platform";
 import NotFound from "@/pages/NotFound";
 
 const GRADIENT = "from-purple-500 to-blue-500";
@@ -132,6 +133,32 @@ const Support = () => {
           </div>
         </div>
       </section>
+
+      {/* Live chat (web only — external embeds stay out of the native app) */}
+      {isWeb() && (
+        <section id="chat" className="scroll-mt-24">
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className={`w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br ${GRADIENT} flex items-center justify-center`}
+            >
+              <MessageCircle className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-2xl font-semibold">{t("support.chat.title")}</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-5">{t("support.chat.subtitle")}</p>
+          <div className="rounded-2xl border border-border/50 overflow-hidden bg-card/50 backdrop-blur-sm">
+            <iframe
+              src="https://www.chatbase.co/chatbot-iframe/-tb0zOeB5bTQRv79MIEPy"
+              title={t("support.chat.title")}
+              width="100%"
+              style={{ height: "100%", minHeight: 700 }}
+              frameBorder="0"
+              loading="lazy"
+              allow="microphone"
+            />
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section id="faq" className="scroll-mt-24">

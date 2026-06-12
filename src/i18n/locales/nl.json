@@ -1803,6 +1803,12 @@
             "purpose": "Kaartweergave — je IP-adres en de opgevraagde kaarttegels worden verzonden wanneer een kaart laadt",
             "location": "VS",
             "safeguards": "Verwerkersovereenkomst met SCC's; EU-VS Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Supportchatbot op de website; verwerkt de berichten die je in de chat invoert",
+            "location": "VS",
+            "safeguards": "Verwerkersovereenkomst, SCC's"
           }
         }
       },
@@ -2245,6 +2251,10 @@
     },
     "legalLinks": {
       "title": "Juridisch"
+    },
+    "chat": {
+      "title": "Livechat",
+      "subtitle": "Onze AI-assistent Blissy beantwoordt je vragen direct — de klok rond. Voor complexe vragen kun je ons ook per e-mail bereiken."
     }
   },
   "createEvent": {

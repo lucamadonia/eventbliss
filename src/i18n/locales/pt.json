@@ -1803,6 +1803,12 @@
             "purpose": "Apresentação de mapas — o teu endereço IP e os mosaicos de mapa pedidos são transmitidos quando um mapa é carregado",
             "location": "EUA",
             "safeguards": "Contrato de subcontratação com CCT; EU-U.S. Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Chatbot de apoio no site; trata as mensagens que introduzes no chat",
+            "location": "EUA",
+            "safeguards": "DPA, CCT"
           }
         }
       },
@@ -2245,6 +2251,10 @@
     },
     "legalLinks": {
       "title": "Informação legal"
+    },
+    "chat": {
+      "title": "Chat ao vivo",
+      "subtitle": "O nosso assistente de IA Blissy responde às tuas perguntas de imediato — 24 horas por dia. Para questões complexas, podes continuar a contactar-nos por e-mail."
     }
   },
   "createEvent": {

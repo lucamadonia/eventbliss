@@ -1803,6 +1803,12 @@
             "purpose": "Wyświetlanie map — Twój adres IP i żądane kafelki mapy są przesyłane podczas ładowania mapy",
             "location": "USA",
             "safeguards": "Umowa powierzenia z SCC; EU-U.S. Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Chatbot wsparcia na stronie internetowej; przetwarza wiadomości wpisywane przez Ciebie na czacie",
+            "location": "USA",
+            "safeguards": "Umowa powierzenia, SCC"
           }
         }
       },
@@ -2245,6 +2251,10 @@
     },
     "legalLinks": {
       "title": "Informacje prawne"
+    },
+    "chat": {
+      "title": "Czat na żywo",
+      "subtitle": "Nasz asystent AI Blissy odpowiada na Twoje pytania natychmiast — przez całą dobę. W złożonych sprawach możesz nadal napisać do nas e-mail."
     }
   },
   "createEvent": {

@@ -1733,6 +1733,12 @@
             "purpose": "Kartendarstellung — beim Laden einer Karte werden deine IP-Adresse und die angeforderten Kartenkacheln übermittelt",
             "location": "USA",
             "safeguards": "AV-Vertrag mit SCCs; EU-US Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Support-Chatbot auf der Website; verarbeitet die von dir im Chat eingegebenen Nachrichten",
+            "location": "USA",
+            "safeguards": "DPA, SCCs"
           }
         }
       },
@@ -2175,6 +2181,10 @@
     },
     "legalLinks": {
       "title": "Rechtliches"
+    },
+    "chat": {
+      "title": "Live-Chat",
+      "subtitle": "Unser KI-Assistent Blissy beantwortet deine Fragen sofort — rund um die Uhr. Bei komplexen Anliegen erreichst du uns weiterhin per E-Mail."
     }
   },
   "createEvent": {

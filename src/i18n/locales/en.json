@@ -1733,6 +1733,12 @@
             "purpose": "Map display — your IP address and the requested map tiles are transmitted when a map loads",
             "location": "USA",
             "safeguards": "DPA with SCCs; EU-U.S. Data Privacy Framework (Google)"
+          },
+          "chatbase": {
+            "name": "Chatbase",
+            "purpose": "Support chatbot on the website; processes the messages you enter in the chat",
+            "location": "USA",
+            "safeguards": "DPA, SCCs"
           }
         }
       },
@@ -2175,6 +2181,10 @@
     },
     "legalLinks": {
       "title": "Legal"
+    },
+    "chat": {
+      "title": "Live chat",
+      "subtitle": "Our AI assistant Blissy answers your questions instantly — around the clock. For complex issues you can still reach us by email."
     }
   },
   "createEvent": {
