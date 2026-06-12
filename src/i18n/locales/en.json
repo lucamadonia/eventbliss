@@ -5963,6 +5963,14 @@
     }
   },
   "marketplace": {
+    "partnerAgencies": {
+      "title": "Partner Agencies",
+      "bookable": "Bookable",
+      "call": "Call",
+      "email": "Email",
+      "website": "Website",
+      "empty": "No partner agencies for this city"
+    },
     "title": "Marketplace",
     "subtitle": "Discover experiences, service providers & packages for your next event",
     "searchPlaceholder": "Search services, workshops, experiences...",

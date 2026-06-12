@@ -5987,6 +5987,14 @@
     }
   },
   "marketplace": {
+    "partnerAgencies": {
+      "title": "Agencias asociadas",
+      "bookable": "Reservable",
+      "call": "Llamar",
+      "email": "Correo",
+      "website": "Sitio web",
+      "empty": "No hay agencias asociadas para esta ciudad"
+    },
     "title": "Marketplace",
     "subtitle": "Descubre experiencias, proveedores y paquetes para tu próximo evento",
     "searchPlaceholder": "Buscar servicios, talleres, experiencias...",

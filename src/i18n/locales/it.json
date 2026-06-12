@@ -5987,6 +5987,14 @@
     }
   },
   "marketplace": {
+    "partnerAgencies": {
+      "title": "Agenzie partner",
+      "bookable": "Prenotabile",
+      "call": "Chiama",
+      "email": "E-mail",
+      "website": "Sito web",
+      "empty": "Nessuna agenzia partner per questa città"
+    },
     "title": "Marketplace",
     "subtitle": "Scopri esperienze, fornitori e pacchetti per il tuo prossimo evento",
     "searchPlaceholder": "Cerca servizi, workshop, esperienze...",

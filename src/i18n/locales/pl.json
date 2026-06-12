@@ -6037,6 +6037,14 @@
     }
   },
   "marketplace": {
+    "partnerAgencies": {
+      "title": "Agencje partnerskie",
+      "bookable": "Do rezerwacji",
+      "call": "Zadzwoń",
+      "email": "E-mail",
+      "website": "Strona",
+      "empty": "Brak agencji partnerskich dla tego miasta"
+    },
     "title": "Marketplace",
     "subtitle": "Odkryj doświadczenia, usługodawców i pakiety na Twoje następne wydarzenie",
     "searchPlaceholder": "Szukaj usług, warsztatów, doświadczeń...",

@@ -16,6 +16,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { FloatingOrbs } from "@/components/vfx/FloatingOrbs";
+import { PartnerAgenciesSection } from "@/components/native/PartnerAgenciesSection";
 import { cn } from "@/lib/utils";
 
 // ─── Category config ─────────────────────────────────────────────
@@ -469,6 +470,9 @@ export default function NativeMarketplaceScreen() {
           </button>
         </motion.div>
       )}
+
+      {/* Partner agencies (collapsed by default) */}
+      <PartnerAgenciesSection cityFilter={cityFilter} />
 
       {/* Bottom spacing for tabbar */}
       <div className="h-8" />
