@@ -11,6 +11,7 @@ import {
   X, ChevronDown, Store, DollarSign,
 } from "lucide-react";
 import { useMarketplaceServices, type MarketplaceService } from "@/hooks/useMarketplaceServices";
+import { optimizedImageUrl } from "@/lib/images";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { spring, stagger, staggerItem } from "@/lib/motion";
@@ -77,10 +78,11 @@ function NativeServiceCard({
       <div className={`relative h-36 bg-gradient-to-br ${gradient} overflow-hidden`}>
         {service.cover_image_url && (
           <img
-            src={service.cover_image_url}
+            src={optimizedImageUrl(service.cover_image_url)}
             alt={service.title}
             className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />

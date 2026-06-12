@@ -3,7 +3,7 @@
  * Displays RSVP stats, searchable guest list with swipe actions,
  * and invite tools (share link, access code).
  */
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import {
@@ -62,6 +62,10 @@ const AVATAR_GRADIENTS: Record<GuestStatus, string> = {
   declined:  "from-red-400 to-rose-600",
   invited:   "from-zinc-400 to-zinc-500",
 };
+
+// Incremental rendering: mount the first batch of cards immediately, reveal
+// the rest in batches as an invisible sentinel at the list end scrolls into view.
+const GUEST_PAGE_SIZE = 30;
 
 /* ------------------------------------------------------------------ */
 /*  Swipeable Guest Card                                               */
@@ -195,6 +199,34 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
       (g) => g.name.toLowerCase().includes(q) || g.email.toLowerCase().includes(q)
     );
   }, [search, guests]);
+
+  // Incremental list rendering — first batch immediately, rest on scroll
+  const [visibleCount, setVisibleCount] = useState(GUEST_PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setVisibleCount(GUEST_PAGE_SIZE);
+  }, [search]);
+
+  const visibleGuests = useMemo(
+    () => (filtered.length > visibleCount ? filtered.slice(0, visibleCount) : filtered),
+    [filtered, visibleCount]
+  );
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || visibleCount >= filtered.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisibleCount((count) => Math.min(count + GUEST_PAGE_SIZE, filtered.length));
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [visibleCount, filtered.length]);
 
   // Share URL using real slug
   const shareUrl = `${window.location.origin}/e/${eventSlug}`;
@@ -331,17 +363,22 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
             animate="animate"
           >
             <AnimatePresence mode="popLayout">
-              {filtered.map((guest) => (
+              {visibleGuests.map((guest) => (
                 <motion.div
                   key={guest.id}
                   variants={staggerItem}
                   layout
                   exit={{ opacity: 0, x: -60, transition: { duration: 0.2 } }}
+                  className="native-card-cv"
                 >
                   <GuestCard guest={guest} />
                 </motion.div>
               ))}
             </AnimatePresence>
+            {/* Invisible sentinel — reveals the next batch when scrolled near */}
+            {visibleCount < filtered.length && (
+              <div ref={sentinelRef} aria-hidden="true" className="h-px w-full" />
+            )}
           </motion.div>
         )}
 

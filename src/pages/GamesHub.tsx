@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -143,14 +143,17 @@ function RatingStars({ rating }: { rating: number }) {
   );
 }
 
-function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData; onClick: () => void; onOnline?: () => void; premiumInfo?: { isLocked: boolean; freePlaysLeft: number; isPremium: boolean } }) {
+// Memoized: re-renders only when game/premiumInfo/handler identity changes.
+// Handlers receive the game (id) as argument so the parent can pass
+// useCallback-stable references instead of per-card inline closures.
+const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData; onClick: (game: GameCardData) => void; onOnline?: (gameId: string) => void; premiumInfo?: { isLocked: boolean; freePlaysLeft: number; isPremium: boolean } }) {
   const Icon = game.icon;
   return (
     <motion.button
       variants={fadeUp}
       whileHover={{ scale: 1.02, y: -4 }}
       whileTap={{ scale: 0.97 }}
-      onClick={onClick}
+      onClick={() => onClick(game)}
       className={`group relative w-full overflow-hidden rounded-[1rem] border border-[#484750]/10 bg-[#1f1f29] text-left transition-all hover:border-[#cf96ff]/30 hover:shadow-[0_0_20px_rgba(207,150,255,0.15)] ${premiumInfo?.isLocked ? "opacity-75" : ""}`}
     >
       {/* Game card header with image */}
@@ -203,7 +206,7 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
           </div>
           {onOnline && (
             <button
-              onClick={(e) => { e.stopPropagation(); onOnline(); }}
+              onClick={(e) => { e.stopPropagation(); onOnline(game.id); }}
               className="flex items-center justify-center rounded-lg border border-[#df8eff]/25 bg-[#df8eff]/10 px-2 py-1.5 transition-colors hover:bg-[#df8eff]/20"
               title="Online spielen"
             >
@@ -214,7 +217,7 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
       </div>
     </motion.button>
   );
-}
+});
 
 // Marks a game entry whose free play was already counted in handleGameClick,
 // so the direct-entry effect below never double-counts after navigate().
@@ -320,6 +323,9 @@ const GamesHubInner = () => {
     }
     navigate(`/games/${game.id}`);
   }, [premiumInfoMap, isPremium, premiumLoading, navigate]);
+
+  // Stable reference so memoized GameCards don't re-render on every parent render.
+  const handleOpenOnline = useCallback((id: string) => setOnlineGameId(id), []);
 
   // ---- Free-play counting for direct entries (deep link, reload, quick start) ----
   // Guards: counted at most ONCE per game entry (useRef), and never again when
@@ -624,7 +630,7 @@ const GamesHubInner = () => {
           <div className="grid grid-cols-2 gap-3">
             <AnimatePresence>
               {filteredGames.map((game) => (
-                <GameCard key={game.id} game={game} onClick={() => handleGameClick(game)} onOnline={() => setOnlineGameId(game.id)} premiumInfo={premiumInfoMap[game.id]} />
+                <GameCard key={game.id} game={game} onClick={handleGameClick} onOnline={handleOpenOnline} premiumInfo={premiumInfoMap[game.id]} />
               ))}
             </AnimatePresence>
           </div>

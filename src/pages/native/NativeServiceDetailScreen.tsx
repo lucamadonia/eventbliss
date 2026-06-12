@@ -14,6 +14,7 @@ import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarket
 import { useServiceAvailability } from "@/hooks/useServiceAvailability";
 import { useHaptics } from "@/hooks/useHaptics";
 import { openCheckout } from "@/lib/nativeCheckout";
+import { optimizedImageUrl } from "@/lib/images";
 import { spring } from "@/lib/motion";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -219,10 +220,12 @@ export default function NativeServiceDetailScreen() {
       {/* Hero */}
       <div className="relative h-56 w-full overflow-hidden">
         {s.cover_image_url ? (
+          /* Hero is above the fold — eager loading (no lazy), async decode only */
           <img
-            src={s.cover_image_url}
+            src={optimizedImageUrl(s.cover_image_url, { width: 1080 })}
             alt={s.title}
             className="absolute inset-0 w-full h-full object-cover"
+            decoding="async"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/30 via-background to-primary/20" />
@@ -422,9 +425,11 @@ export default function NativeServiceDetailScreen() {
                 <div className="flex items-center gap-3">
                   {s.agency_logo ? (
                     <img
-                      src={s.agency_logo}
+                      src={optimizedImageUrl(s.agency_logo, { width: 160 })}
                       alt={s.agency_name}
                       className="w-11 h-11 rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-500 to-primary flex items-center justify-center text-base font-bold text-white">

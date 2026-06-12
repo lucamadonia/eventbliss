@@ -3,7 +3,8 @@
  * Vertical timeline with animated connecting lines, stagger reveal,
  * expand-on-tap activity cards, day selector, and Add Activity FAB.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -191,12 +192,10 @@ const formVariant = {
 export default function NativeEventSchedule({ eventSlug }: NativeEventScheduleProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
+  const queryClient = useQueryClient();
   const [selectedDay, setSelectedDay] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [allActivities, setAllActivities] = useState<Activity[]>([]);
-  const [eventId, setEventId] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -204,53 +203,48 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   const [formCategory, setFormCategory] = useState<ActivityCategory>("activity");
   const [formNotes, setFormNotes] = useState("");
 
-  /* ---------- Fetch real data from Supabase ---------- */
-  const fetchActivities = useCallback(async () => {
-    setLoading(true);
-    const { data: eventData } = await supabase
-      .from("events")
-      .select("id, event_date")
-      .eq("slug", eventSlug)
-      .single();
+  /* ---------- Fetch real data from Supabase (cached via TanStack Query) ---------- */
+  const { data: scheduleData, isLoading: loading } = useQuery({
+    queryKey: ["native-schedule", eventSlug],
+    queryFn: async () => {
+      const { data: eventData } = await supabase
+        .from("events")
+        .select("id, event_date")
+        .eq("slug", eventSlug)
+        .single();
 
-    if (!eventData) {
-      setLoading(false);
-      return;
-    }
+      if (!eventData) {
+        return { eventId: null as string | null, activities: [] as Activity[] };
+      }
 
-    setEventId(eventData.id);
+      const { data } = await supabase
+        .from("schedule_activities")
+        .select("*")
+        .eq("event_id", eventData.id)
+        .order("day_date", { ascending: true })
+        .order("start_time", { ascending: true });
 
-    const { data } = await supabase
-      .from("schedule_activities")
-      .select("*")
-      .eq("event_id", eventData.id)
-      .order("day_date", { ascending: true })
-      .order("start_time", { ascending: true });
+      const activities: Activity[] = (data || []).map((a) => ({
+        id: a.id,
+        time: a.start_time?.slice(0, 5) || "00:00",
+        title: a.title,
+        category: (a.category as ActivityCategory) || "other",
+        duration: computeDuration(a.start_time, a.end_time),
+        cost: a.estimated_cost
+          ? `${a.estimated_cost}\u20AC${a.cost_per_person ? "/P" : ""}`
+          : null,
+        location: a.location || "",
+        emoji: getCategoryEmoji(a.category),
+        description: a.description || "",
+        dayDate: a.day_date,
+      }));
 
-    if (data) {
-      setAllActivities(
-        data.map((a) => ({
-          id: a.id,
-          time: a.start_time?.slice(0, 5) || "00:00",
-          title: a.title,
-          category: (a.category as ActivityCategory) || "other",
-          duration: computeDuration(a.start_time, a.end_time),
-          cost: a.estimated_cost
-            ? `${a.estimated_cost}\u20AC${a.cost_per_person ? "/P" : ""}`
-            : null,
-          location: a.location || "",
-          emoji: getCategoryEmoji(a.category),
-          description: a.description || "",
-          dayDate: a.day_date,
-        })),
-      );
-    }
-    setLoading(false);
-  }, [eventSlug]);
+      return { eventId: eventData.id as string | null, activities };
+    },
+  });
 
-  useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
+  const eventId = scheduleData?.eventId ?? null;
+  const allActivities = useMemo(() => scheduleData?.activities ?? [], [scheduleData]);
 
   /* ---------- Group activities by day ---------- */
   const days: DayTab[] = useMemo(() => {
@@ -308,8 +302,8 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
     setFormCategory("activity");
     setFormNotes("");
     // Refetch to show the new activity
-    fetchActivities();
-  }, [haptics, eventId, formTitle, formTime, formCategory, formNotes, days, selectedDay, fetchActivities]);
+    queryClient.invalidateQueries({ queryKey: ["native-schedule", eventSlug] });
+  }, [haptics, eventId, formTitle, formTime, formCategory, formNotes, days, selectedDay, queryClient, eventSlug]);
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
@@ -345,7 +339,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
       )}
 
       {/* ------- Timeline ------- */}
-      <div className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
+      <div className="flex-1 overflow-y-auto native-scroll px-5 pb-28 pt-4">
         {loading ? (
           /* ---------- Loading Skeleton ---------- */
           <div className="flex flex-col gap-4 pt-2">
@@ -596,7 +590,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
               initial="initial"
               animate="animate"
               exit="exit"
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-card border-t border-border/50 p-5 pb-8 safe-bottom max-h-[80vh] overflow-y-auto"
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-card border-t border-border/50 p-5 pb-8 safe-bottom max-h-[80vh] overflow-y-auto native-scroll"
             >
               {/* Handle */}
               <div className="flex justify-center mb-4">

@@ -642,6 +642,14 @@ html.capacitor-native .pb-tabbar {
   padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
+/* Rendering-only optimization for long native lists: offscreen cards skip
+   layout/paint entirely (content-visibility) while reserving their natural
+   height so scrollbars/scroll position stay stable. Visually identical. */
+.capacitor-native .native-card-cv {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 72px;
+}
+
 /* No-scrollbar utility — hides scrollbar on horizontal carousels */
 .no-scrollbar {
   -ms-overflow-style: none;

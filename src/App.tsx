@@ -77,7 +77,17 @@ const Auth = lazy(() => import("./pages/Auth"));
 const ClaimInvite = lazy(() => import("./pages/ClaimInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Serve cached data for a minute before refetching — kills the
+      // refetch cascade on every tab/screen switch and app resume.
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+      retry: isNative() ? 1 : 2,
+    },
+  },
+});
 
 const DeepLinkHandler = () => {
   const navigate = useNavigate();

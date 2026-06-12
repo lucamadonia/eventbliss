@@ -4,6 +4,7 @@
  * expandable split details, balance settlements, and add-expense FAB.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import {
@@ -115,6 +116,64 @@ const FILTER_TABS: { id: FilterTab; label: string }[] = [
   { id: "bezahlt", label: "Bezahlt" },
 ];
 
+// Stable fallbacks so memo dependencies don't churn while the query loads
+const EMPTY_PARTICIPANTS: { id: string; name: string }[] = [];
+const EMPTY_RAW_EXPENSES: any[] = [];
+
+// Compute simplified settlements from expense data: figure out who owes whom
+function computeSettlements(rawExpenses: any[], pMap: Map<string, string>): Settlement[] {
+  // Net balance per participant: positive = owed money, negative = owes money
+  const balances = new Map<string, number>();
+
+  rawExpenses.forEach(e => {
+    const paidById = e.paid_by_participant_id;
+    if (!paidById) return;
+    const amountCents = Math.round((e.amount || 0) * 100);
+
+    // The payer is owed the full amount
+    balances.set(paidById, (balances.get(paidById) || 0) + amountCents);
+
+    // Each share participant owes their share
+    (e.expense_shares || []).forEach((s: any) => {
+      const shareCents = Math.round((s.amount || 0) * 100);
+      balances.set(s.participant_id, (balances.get(s.participant_id) || 0) - shareCents);
+    });
+  });
+
+  // Simplify debts
+  const debtors: { id: string; amount: number }[] = [];
+  const creditors: { id: string; amount: number }[] = [];
+
+  balances.forEach((amount, id) => {
+    if (amount < -50) debtors.push({ id, amount: -amount }); // owes money
+    if (amount > 50) creditors.push({ id, amount }); // owed money
+  });
+
+  debtors.sort((a, b) => b.amount - a.amount);
+  creditors.sort((a, b) => b.amount - a.amount);
+
+  const newSettlements: Settlement[] = [];
+  let di = 0, ci = 0;
+
+  while (di < debtors.length && ci < creditors.length) {
+    const transfer = Math.min(debtors[di].amount, creditors[ci].amount);
+    if (transfer > 50) {
+      newSettlements.push({
+        from: pMap.get(debtors[di].id) || "Gast",
+        to: pMap.get(creditors[ci].id) || "Gast",
+        amount: transfer,
+        settled: false,
+      });
+    }
+    debtors[di].amount -= transfer;
+    creditors[ci].amount -= transfer;
+    if (debtors[di].amount < 50) di++;
+    if (creditors[ci].amount < 50) ci++;
+  }
+
+  return newSettlements;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Animated Counter Hook                                              */
 /* ------------------------------------------------------------------ */
@@ -183,42 +242,35 @@ function StatusBadge({ status }: { status: ExpenseStatus }) {
 export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<FilterTab>("alle");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  // Locally toggled "settled" checkmarks (by settlement index)
+  const [settledKeys, setSettledKeys] = useState<Set<number>>(() => new Set());
 
-  // Real data state
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [eventId, setEventId] = useState<string | null>(null);
-  const [participantMap, setParticipantMap] = useState<Map<string, string>>(new Map());
-  const [participantList, setParticipantList] = useState<{ id: string; name: string }[]>([]);
-  const [settlements, setSettlements] = useState<Settlement[]>([]);
-  const [budget, setBudget] = useState<number>(0); // cents
-  const [fetchKey, setFetchKey] = useState(0);
-
-  // Fetch real data from Supabase
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      setLoading(true);
-
+  // Fetch real data from Supabase (cached via TanStack Query)
+  const { data: expensesData, isLoading: loading } = useQuery({
+    queryKey: ["native-expenses", eventSlug],
+    queryFn: async () => {
       // Get event ID from slug
       const { data: eventData } = await supabase
         .from("events").select("id, settings").eq("slug", eventSlug).single();
-      if (!eventData) { setLoading(false); return; }
-      setEventId(eventData.id);
+      if (!eventData) {
+        return {
+          eventId: null as string | null,
+          budget: 0,
+          participants: EMPTY_PARTICIPANTS,
+          raw: EMPTY_RAW_EXPENSES,
+        };
+      }
       // Budget may be stored in settings JSON
       const settings = eventData.settings as Record<string, any> | null;
-      setBudget(Math.round(((settings?.budget as number) || 0) * 100));
+      const budget = Math.round(((settings?.budget as number) || 0) * 100);
 
       // Fetch participants for name mapping
       const { data: parts } = await supabase
         .from("participants").select("id, name").eq("event_id", eventData.id);
-      const pMap = new Map<string, string>();
-      const pList: { id: string; name: string }[] = [];
-      (parts || []).forEach(p => { pMap.set(p.id, p.name); pList.push({ id: p.id, name: p.name }); });
-      setParticipantMap(pMap);
-      setParticipantList(pList);
 
       // Fetch expenses with shares
       const { data } = await supabase
@@ -228,90 +280,62 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
         .is("deleted_at", null)
         .order("expense_date", { ascending: false });
 
-      if (data) {
-        setExpenses(data.map(e => {
-          const cat = (e.category || "other") as CategoryKey;
-          const sharesCount = e.expense_shares?.length || 1;
-          return {
-            id: e.id,
-            title: e.description || "Ausgabe",
-            category: cat,
-            amount: Math.round((e.amount || 0) * 100),
-            paidBy: pMap.get(e.paid_by_participant_id || "") || "Unbekannt",
-            participants: sharesCount,
-            perPerson: Math.round(((e.amount || 0) * 100) / sharesCount),
-            status: (e.expense_shares?.every((s: any) => s.is_paid) ? "paid" : "open") as ExpenseStatus,
-            emoji: getCategoryEmoji(e.category),
-            shares: (e.expense_shares || []).map((s: any) => ({
-              name: pMap.get(s.participant_id) || "Gast",
-              amount: Math.round((s.amount || 0) * 100),
-              paid: !!s.is_paid,
-            })),
-          };
-        }));
+      return {
+        eventId: eventData.id as string | null,
+        budget,
+        participants: (parts || []).map(p => ({ id: p.id, name: p.name })),
+        raw: (data || []) as any[],
+      };
+    },
+  });
 
-        // Compute settlements: figure out who owes whom
-        computeSettlements(data, pMap);
-      }
-      setLoading(false);
+  const eventId = expensesData?.eventId ?? null;
+  const budget = expensesData?.budget ?? 0; // cents
+  const participantList = expensesData?.participants ?? EMPTY_PARTICIPANTS;
+  const rawExpenses = expensesData?.raw ?? EMPTY_RAW_EXPENSES;
+
+  const participantMap = useMemo(() => {
+    const pMap = new Map<string, string>();
+    participantList.forEach(p => pMap.set(p.id, p.name));
+    return pMap;
+  }, [participantList]);
+
+  const expenses = useMemo<Expense[]>(() => rawExpenses.map(e => {
+    const cat = (e.category || "other") as CategoryKey;
+    const sharesCount = e.expense_shares?.length || 1;
+    return {
+      id: e.id,
+      title: e.description || "Ausgabe",
+      category: cat,
+      amount: Math.round((e.amount || 0) * 100),
+      paidBy: participantMap.get(e.paid_by_participant_id || "") || "Unbekannt",
+      participants: sharesCount,
+      perPerson: Math.round(((e.amount || 0) * 100) / sharesCount),
+      status: (e.expense_shares?.every((s: any) => s.is_paid) ? "paid" : "open") as ExpenseStatus,
+      emoji: getCategoryEmoji(e.category),
+      shares: (e.expense_shares || []).map((s: any) => ({
+        name: participantMap.get(s.participant_id) || "Gast",
+        amount: Math.round((s.amount || 0) * 100),
+        paid: !!s.is_paid,
+      })),
     };
+  }), [rawExpenses, participantMap]);
 
-    fetchExpenses();
-  }, [eventSlug, fetchKey]);
+  // Settlements: memoized O(n²) computation over the raw expense data
+  const baseSettlements = useMemo(
+    () => computeSettlements(rawExpenses, participantMap),
+    [rawExpenses, participantMap]
+  );
 
-  // Compute simplified settlements from expense data
-  const computeSettlements = (rawExpenses: any[], pMap: Map<string, string>) => {
-    // Net balance per participant: positive = owed money, negative = owes money
-    const balances = new Map<string, number>();
+  // Reset local "settled" toggles whenever the underlying data changes
+  useEffect(() => { setSettledKeys(new Set()); }, [baseSettlements]);
 
-    rawExpenses.forEach(e => {
-      const paidById = e.paid_by_participant_id;
-      if (!paidById) return;
-      const amountCents = Math.round((e.amount || 0) * 100);
-
-      // The payer is owed the full amount
-      balances.set(paidById, (balances.get(paidById) || 0) + amountCents);
-
-      // Each share participant owes their share
-      (e.expense_shares || []).forEach((s: any) => {
-        const shareCents = Math.round((s.amount || 0) * 100);
-        balances.set(s.participant_id, (balances.get(s.participant_id) || 0) - shareCents);
-      });
-    });
-
-    // Simplify debts
-    const debtors: { id: string; amount: number }[] = [];
-    const creditors: { id: string; amount: number }[] = [];
-
-    balances.forEach((amount, id) => {
-      if (amount < -50) debtors.push({ id, amount: -amount }); // owes money
-      if (amount > 50) creditors.push({ id, amount }); // owed money
-    });
-
-    debtors.sort((a, b) => b.amount - a.amount);
-    creditors.sort((a, b) => b.amount - a.amount);
-
-    const newSettlements: Settlement[] = [];
-    let di = 0, ci = 0;
-
-    while (di < debtors.length && ci < creditors.length) {
-      const transfer = Math.min(debtors[di].amount, creditors[ci].amount);
-      if (transfer > 50) {
-        newSettlements.push({
-          from: pMap.get(debtors[di].id) || "Gast",
-          to: pMap.get(creditors[ci].id) || "Gast",
-          amount: transfer,
-          settled: false,
-        });
-      }
-      debtors[di].amount -= transfer;
-      creditors[ci].amount -= transfer;
-      if (debtors[di].amount < 50) di++;
-      if (creditors[ci].amount < 50) ci++;
-    }
-
-    setSettlements(newSettlements);
-  };
+  const settlements = useMemo<Settlement[]>(
+    () => settledKeys.size === 0
+      ? baseSettlements
+      : baseSettlements.map((s, i) => (settledKeys.has(i) ? { ...s, settled: true } : s)),
+    [baseSettlements, settledKeys]
+  );
 
   // Totals
   const totalCents = useMemo(() => expenses.reduce((s, e) => s + e.amount, 0), [expenses]);
@@ -358,14 +382,22 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
   const toggleSettled = useCallback(
     (idx: number) => {
       haptics.medium();
-      setSettlements((prev) =>
-        prev.map((s, i) => (i === idx ? { ...s, settled: !s.settled } : s))
-      );
+      setSettledKeys((prev) => {
+        const next = new Set(prev);
+        if (next.has(idx)) {
+          next.delete(idx);
+        } else {
+          next.add(idx);
+        }
+        return next;
+      });
     },
     [haptics]
   );
 
-  const refetchExpenses = useCallback(() => setFetchKey(k => k + 1), []);
+  const refetchExpenses = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["native-expenses", eventSlug] });
+  }, [queryClient, eventSlug]);
 
   if (loading) {
     return (
@@ -791,7 +823,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={spring.slow}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl border-t border-border/50 max-h-[85vh] overflow-y-auto"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl border-t border-border/50 max-h-[85vh] overflow-y-auto native-scroll"
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">

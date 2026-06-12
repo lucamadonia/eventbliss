@@ -2,7 +2,7 @@
  * ProfileScreen — native "Profile" tab.
  * User avatar, settings links, theme toggle, language, premium, logout.
  */
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,6 +41,93 @@ interface Item {
   onClick?: () => void;
   destructive?: boolean;
 }
+
+// Static theme definitions — labels are resolved via t() at render time.
+const THEMES = [
+  { id: "dark", labelKey: "native.profile.themeDark", icon: Moon },
+  { id: "light", labelKey: "native.profile.themeLight", icon: Sun },
+  { id: "rose", labelKey: "native.profile.themeRose", icon: Flower2 },
+] as const;
+
+// Language picker — inline expand (memoized; JSX output identical)
+const LanguagePickerPanel = memo(function LanguagePickerPanel({
+  currentLanguage,
+  onSelect,
+}: {
+  currentLanguage: string;
+  onSelect: (code: string) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
+    >
+      <div className="p-2 max-h-[70vh] overflow-y-auto native-scroll">
+        {languages.map((lang) => {
+          const active = currentLanguage === lang.code;
+          return (
+            <button
+              key={lang.code}
+              onClick={() => onSelect(lang.code)}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
+                active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
+              )}
+            >
+              <span className="text-lg">{lang.flag}</span>
+              <span className="flex-1">{lang.name}</span>
+              {active && <Check className="w-4 h-4 text-primary" />}
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+});
+
+// Theme picker — inline expand (memoized; JSX output identical)
+const ThemePickerPanel = memo(function ThemePickerPanel({
+  activeTheme,
+  onSelect,
+}: {
+  activeTheme: string | undefined;
+  onSelect: (id: string) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
+    >
+      <div className="p-2">
+        {THEMES.map((th) => {
+          const active = activeTheme === th.id;
+          const ThemeIcon = th.icon;
+          return (
+            <button
+              key={th.id}
+              onClick={() => onSelect(th.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
+                active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
+              )}
+            >
+              <ThemeIcon className="w-4 h-4" />
+              <span className="flex-1">{t(th.labelKey)}</span>
+              {active && <Check className="w-4 h-4 text-primary" />}
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+});
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
@@ -113,11 +200,20 @@ export default function ProfileScreen() {
     navigate("/auth");
   };
 
-  const themes = [
-    { id: "dark", label: t('native.profile.themeDark'), icon: Moon },
-    { id: "light", label: t('native.profile.themeLight'), icon: Sun },
-    { id: "rose", label: t('native.profile.themeRose'), icon: Flower2 },
-  ];
+  const handleSelectLanguage = useCallback((code: string) => {
+    haptics.select();
+    try { localStorage.setItem("eb.langManual", "1"); } catch { /* noop */ }
+    i18n.changeLanguage(code);
+    setShowLangPicker(false);
+  }, [haptics, i18n]);
+
+  const handleSelectTheme = useCallback((id: string) => {
+    haptics.select();
+    setTheme(id);
+    setShowThemePicker(false);
+  }, [haptics, setTheme]);
+
+  const activeThemeDef = THEMES.find((th) => th.id === theme);
 
   const items: Item[] = [
     // Admin — only visible for admin users
@@ -143,7 +239,7 @@ export default function ProfileScreen() {
     {
       icon: Palette,
       label: t('native.profile.appearance'),
-      sublabel: themes.find((th) => th.id === theme)?.label || t('native.profile.themeDark'),
+      sublabel: (activeThemeDef && t(activeThemeDef.labelKey)) || t('native.profile.themeDark'),
       onClick: () => { haptics.light(); setShowThemePicker((v) => !v); setShowLangPicker(false); },
     },
     // Party-Modus (18+) — only visible after Easter Egg discovery
@@ -290,76 +386,14 @@ export default function ProfileScreen() {
         {/* Language picker — inline expand */}
         <AnimatePresence>
           {showLangPicker && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
-            >
-              <div className="p-2 max-h-[70vh] overflow-y-auto">
-                {languages.map((lang) => {
-                  const active = i18n.language === lang.code;
-                  return (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        haptics.select();
-                        try { localStorage.setItem("eb.langManual", "1"); } catch { /* noop */ }
-                        i18n.changeLanguage(lang.code);
-                        setShowLangPicker(false);
-                      }}
-                      className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
-                        active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
-                      )}
-                    >
-                      <span className="text-lg">{lang.flag}</span>
-                      <span className="flex-1">{lang.name}</span>
-                      {active && <Check className="w-4 h-4 text-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
+            <LanguagePickerPanel currentLanguage={i18n.language} onSelect={handleSelectLanguage} />
           )}
         </AnimatePresence>
 
         {/* Theme picker — inline expand */}
         <AnimatePresence>
           {showThemePicker && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mx-5 mt-3 overflow-hidden rounded-2xl bg-card border border-border"
-            >
-              <div className="p-2">
-                {themes.map((t) => {
-                  const active = theme === t.id;
-                  const ThemeIcon = t.icon;
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => {
-                        haptics.select();
-                        setTheme(t.id);
-                        setShowThemePicker(false);
-                      }}
-                      className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
-                        active ? "bg-primary/15 text-primary font-semibold" : "text-foreground hover:bg-muted"
-                      )}
-                    >
-                      <ThemeIcon className="w-4 h-4" />
-                      <span className="flex-1">{t.label}</span>
-                      {active && <Check className="w-4 h-4 text-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
+            <ThemePickerPanel activeTheme={theme} onSelect={handleSelectTheme} />
           )}
         </AnimatePresence>
 

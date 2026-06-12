@@ -1,6 +1,7 @@
-import { createContext, useContext, ReactNode, useState, useEffect, useCallback, useRef } from "react";
+import { createContext, useContext, ReactNode, useState, useEffect, useMemo, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { useAuth } from "@/hooks/useAuth";
+import { usePremium } from "@/hooks/usePremium";
 import { supabase } from "@/integrations/supabase/client";
 import { logInRevenueCat, logOutRevenueCat } from "@/lib/revenuecat";
 import { isNative } from "@/lib/platform";
@@ -28,34 +29,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [checkingPassword, setCheckingPassword] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
-  const [planType, setPlanType] = useState<PlanType>("free");
-  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
-  // Sync subscription from Stripe via edge function
-  const syncSubscription = useCallback(async () => {
-    if (!auth.user) {
-      setIsPremium(false);
-      setPlanType("free");
-      return;
-    }
-
-    setSubscriptionLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
-      
-      if (error) {
-        console.error("Error syncing subscription:", error);
-      } else if (data) {
-        setIsPremium(data.subscribed === true);
-        setPlanType(data.plan_type || "free");
-      }
-    } catch (err) {
-      console.error("Error in syncSubscription:", err);
-    } finally {
-      setSubscriptionLoading(false);
-    }
-  }, [auth.user]);
+  // Subscription state comes from the shared usePremium query (deduped across
+  // all observers by TanStack Query) instead of a second check-subscription
+  // call path. syncSubscription stays in the context as an alias on refetch.
+  const {
+    isPremium,
+    planType,
+    loading: subscriptionLoading,
+    refetch: syncSubscription,
+  } = usePremium();
 
   // Keep RevenueCat identity in sync with the Supabase user (native only).
   // App User ID = Supabase user.id; logOut only after a previous login to
@@ -105,27 +88,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkPasswordRequirement();
   }, [auth.user, auth.isLoading]);
 
-  // Sync subscription on login and when user changes
-  useEffect(() => {
-    if (auth.user && !auth.isLoading) {
-      syncSubscription();
-    } else if (!auth.user) {
-      setIsPremium(false);
-      setPlanType("free");
-    }
-  }, [auth.user, auth.isLoading, syncSubscription]);
-
   const handlePasswordChanged = () => {
     setMustChangePassword(false);
   };
 
-  const contextValue: AuthContextType = {
-    ...auth,
-    isPremium,
-    planType,
-    subscriptionLoading,
-    syncSubscription,
-  };
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user: auth.user,
+      session: auth.session,
+      isLoading: auth.isLoading,
+      isAuthenticated: auth.isAuthenticated,
+      isPremium,
+      planType,
+      subscriptionLoading,
+      syncSubscription,
+      signIn: auth.signIn,
+      signUp: auth.signUp,
+      signOut: auth.signOut,
+    }),
+    [
+      auth.user,
+      auth.session,
+      auth.isLoading,
+      auth.isAuthenticated,
+      auth.signIn,
+      auth.signUp,
+      auth.signOut,
+      isPremium,
+      planType,
+      subscriptionLoading,
+      syncSubscription,
+    ]
+  );
 
   return (
     <AuthContext.Provider value={contextValue}>
