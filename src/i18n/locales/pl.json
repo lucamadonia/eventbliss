@@ -1809,6 +1809,12 @@
             "purpose": "Chatbot wsparcia na stronie internetowej; przetwarza wiadomości wpisywane przez Ciebie na czacie",
             "location": "USA",
             "safeguards": "Umowa powierzenia, SCC"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "Wysyłka e-maili transakcyjnych i powiadomień (np. potwierdzenia rezerwacji, potwierdzenie newslettera)",
+            "location": "UE (Niemcy)",
+            "safeguards": "Umowa powierzenia (art. 28 RODO)"
           }
         }
       },
@@ -1876,7 +1882,7 @@
           },
           "portability": {
             "label": "Prawo do przenoszenia danych (art. 20 RODO)",
-            "desc": "Możesz otrzymać dostarczone przez siebie dane w ustrukturyzowanym, powszechnie używanym formacie nadającym się do odczytu maszynowego. Poproś o eksport e-mailem na adres support@event-bliss.com."
+            "desc": "Możesz otrzymać dostarczone przez siebie dane w ustrukturyzowanym, powszechnie używanym formacie nadającym się do odczytu maszynowego. Pobierz je bezpośrednio w aplikacji w sekcji Profil → Ustawienia → „Eksportuj moje dane” lub poproś o eksport e-mailem na adres support@event-bliss.com."
           },
           "objection": {
             "label": "Prawo sprzeciwu (art. 21 RODO)",
@@ -1917,43 +1923,43 @@
       },
       "services": {
         "title": "Nasze Usługi",
-        "content": "EventBliss dostarcza narzędzia do planowania."
+        "content": "EventBliss prowadzi internetowy marketplace, na którym niezależne agencje eventowe oferują swoje usługi (np. DJ-e, fotografowie, catering, dekoracje, lokale na wydarzenia).\n\nWażne: EventBliss działa jako pośrednik i NIE jest stroną umowy o zarezerwowaną usługę. Umowa o świadczenie usługi zawierana jest wyłącznie między Tobą (klientem) a daną agencją. EventBliss zapewnia infrastrukturę techniczną, obsługę płatności, komunikację, wsparcie oraz rozstrzyganie sporów."
       },
       "booking_process": {
         "title": "Proces rezerwacji",
-        "content": "Umowa o świadczenie usług zawierana jest z agencją, nie z EventBliss. EventBliss działa jako pośrednik. Przy płatności online potwierdzenie następuje po udanej płatności Stripe. Przy płatności na miejscu agencja potwierdza ręcznie. Konsumenci mają prawo odstąpienia od umowy zgodnie z § 312g BGB (14 dni), z wyjątkami dla usług w oznaczonym terminie."
+        "content": "1. Zapytanie: wybierasz agencję/usługę i wysyłasz zapytanie rezerwacyjne z datą, szczegółami i swoimi danymi kontaktowymi.\n\n2. Potwierdzenie: umowa z agencją zostaje zawarta, gdy (a) płatność online przez Stripe zostanie pomyślnie zrealizowana (automatyczne potwierdzenie) lub (b) agencja ręcznie potwierdzi Twoje zapytanie (przy rezerwacjach z płatnością na miejscu).\n\n3. Wykonanie usługi: agencja wykonuje usługę w uzgodnionym terminie. EventBliss nie uczestniczy w samym wykonaniu, lecz koordynuje komunikację za pośrednictwem platformy.\n\nPrawo odstąpienia od umowy zawieranej na odległość (§§ 312g, 355 BGB): jako konsumentowi przysługuje Ci co do zasady 14-dniowe prawo odstąpienia. Wyjątek: w przypadku usług w zakresie wypoczynku świadczonych w oznaczonym terminie (§ 312g ust. 2 pkt 9 BGB) — co dotyczy praktycznie wszystkich usług eventowych z ustaloną datą — ustawowe prawo odstąpienia nie przysługuje. Dodatkowo obowiązuje polityka anulowania właściwa dla danej usługi (zob. „Anulowanie i zwrot”), która jest korzystniejsza dla klienta.\n\nCała komunikacja z agencją odbywa się przez czat platformy. Prowadź komunikację właśnie tam — w razie sporu będzie udokumentowana."
       },
       "payment_methods": {
         "title": "Metody płatności",
-        "content": "Dwie opcje: (1) Płatność online przez Stripe — karta, Apple/Google Pay, SEPA. (2) Płatność na miejscu — bezpośrednio u agencji w dniu usługi. W obu przypadkach wyświetlana cena jest ostateczna i zawiera 10% prowizji platformy."
+        "content": "EventBliss obsługuje dwie metody płatności. O ich dostępności decyduje każda agencja osobno dla każdej usługi:\n\n• Płatność online (Stripe): karta kredytowa (Visa, Mastercard, Amex), Apple Pay, Google Pay, polecenie zapłaty SEPA oraz inne metody specyficzne dla danego kraju. Płatność następuje natychmiast i jest zabezpieczona przez Stripe jako dostawcę usług płatniczych zgodnego z PCI-DSS. Po udanej płatności otrzymujesz e-mailem automatyczne potwierdzenie rezerwacji oraz pokwitowanie.\n\n• Płatność na miejscu (on_site): cenę płacisz bezpośrednio agencji w dniu wydarzenia (lub zgodnie z ustaleniami) gotówką albo uzgodnioną metodą. Podana cena jest wiążąca — agencja nie może żądać kwoty wyższej niż wskazana w rezerwacji. Rezerwację potwierdza agencja ręcznie za pośrednictwem platformy.\n\nCena całkowita i prowizja platformy: wszystkie ceny na EventBliss są cenami końcowymi, zawierającymi należny podatek VAT (o ile agencja jest podatnikiem VAT) oraz prowizję platformy w wysokości 10 %. Prowizja ta jest rozliczana wewnętrznie między agencją a EventBliss; Ty płacisz wyłącznie wyświetloną cenę całkowitą.\n\nProblemy z płatnościami: w razie problemów z płatnościami online (np. nieudane obciążenia, chargebacki) lub płatnościami na miejscu (np. rozbieżności cenowe) skontaktuj się z support@event-bliss.com. EventBliss pośredniczy w obu przypadkach — również przy rezerwacjach z płatnością na miejscu."
       },
       "payment": {
         "title": "Płatności",
-        "content": "Podstawowe funkcje są darmowe."
+        "content": "Przy płatnościach online cała kwota jest pobierana natychmiast w momencie rezerwacji. Wypłata środków agencji następuje po wykonaniu usługi zgodnie z harmonogramem wypłat (zwykle 24–72 godziny po wydarzeniu), aby w razie sporów możliwe były zwroty.\n\nPrzy płatności na miejscu żadna kwota nie jest pobierana z góry. Płatność następuje bezpośrednio na rzecz agencji.\n\nPokwitowania i faktury: przy płatnościach online automatycznie otrzymujesz potwierdzenie płatności od Stripe oraz — jeśli agencja je udostępni — fakturę w swojej strefie rezerwacji. Przy płatnościach na miejscu agencja jest zobowiązana wystawić pokwitowanie/fakturę.\n\nOdsetki za opóźnienie i dalsze koszty zwłoki w płatności wynikają z przepisów ustawowych (§§ 286, 288 BGB)."
       },
       "cancellation_refund": {
         "title": "Anulowanie i zwrot",
-        "content": "Polityka anulowania (elastyczna / umiarkowana / rygorystyczna) jest widoczna przy każdej usłudze. Zwroty są przetwarzane na pierwotną metodę płatności w ciągu 14 dni. Dla rezerwacji z płatnością na miejscu anulowania są ustalane bezpośrednio z agencją; EventBliss pośredniczy w sporach."
+        "content": "Każda agencja ustala politykę anulowania dla każdej usługi. Jest ona przejrzyście prezentowana przed sfinalizowaniem rezerwacji. Istnieją trzy poziomy:\n\n• elastyczna: pełny zwrot do 7 dni przed wydarzeniem, później 50 %.\n• umiarkowana: pełny zwrot do 14 dni przed wydarzeniem, 50 % do 7 dni, później brak zwrotu.\n• rygorystyczna: zwrot 50 % do 30 dni przed wydarzeniem, później brak zwrotu.\n\nSposób zwrotu: przy płatnościach online zwrot trafia automatycznie na pierwotną metodę płatności. W zależności od banku lub wystawcy karty środki pojawiają się w ciągu 5 do 14 dni.\n\nRezerwacje z płatnością na miejscu: ponieważ żadne środki nie przeszły przez EventBliss, anulowanie rozliczasz bezpośrednio z agencją. Uzgodniona polityka anulowania pozostaje przy tym wiążąca. W razie sporu EventBliss pośredniczy; napisz na support@event-bliss.com, podając numer rezerwacji.\n\nSiła wyższa i przypadki szczególne: jeżeli agencja nie jest w stanie wykonać usługi (np. choroba, ograniczenia urzędowe), zwracana jest pełna kwota, niezależnie od poziomu anulowania.\n\nNiewykonanie usługi z winy agencji: jeżeli agencja nie stawi się lub wykona usługę w sposób rażąco wadliwy, obowiązuje ochrona kupującego EventBliss. Zgłoś zdarzenie w ciągu 48 godzin od planowanego terminu wraz z dowodami na support@event-bliss.com — przy zasadnym zgłoszeniu otrzymasz pełny zwrot."
       },
       "off_platform_bypass": {
         "title": "Ochrona przed obejściem platformy",
-        "content": "Agencje są zobowiązane umową do obsługi wszystkich rezerwacji przez platformę. Po anulowaniu agencje NIE mogą kontaktować się z Tobą bezpośrednio w celu zaoferowania rezerwacji poza platformą z płatnością gotówkową — stanowi to naruszenie umowy. Nie akceptuj takich ofert: stracisz ochronę EventBliss (wsparcie, gwarancję zwrotu). Zgłaszaj próby na compliance@event-bliss.com — otrzymasz bon 20% na kolejną rezerwację (maks. 200 €, 12 miesięcy)."
+        "content": "Agencje na EventBliss są umownie zobowiązane do realizowania za pośrednictwem platformy WSZYSTKICH rezerwacji, które zostały zainicjowane na platformie. Chroni to Ciebie jako klienta i gwarantuje, że korzystasz ze wszystkich świadczeń ochrony kupującego.\n\nCzego NIE wolno: agencja NIE może kontaktować się z Tobą — w szczególności po anulowaniu, ale także już na etapie pierwszego kontaktu — aby umówić rezerwację poza platformą (np. przez WhatsApp, telefon, e-mail, płatność gotówką, przelew bezpośredni) w celu ominięcia prowizji platformy. Takie próby stanowią naruszenie umowy przez agencję wobec EventBliss.\n\nDlaczego warto odrzucać takie oferty: rezygnując z platformy, tracisz całą ochronę EventBliss:\n\n• Brak ochrony kupującego: brak zwrotu w razie niewykonania usługi, szkód lub oszustwa.\n• Brak wsparcia: EventBliss nie może Ci pomóc, ponieważ żadna umowa nie przechodzi przez platformę.\n• Brak udokumentowanej komunikacji: brak możliwych do prześledzenia dowodów w razie sporu.\n• Brak weryfikacji opinii i tożsamości: platforma nie może już ręczyć za wiarygodność.\n• Wątpliwości podatkowe: płatność gotówką bez prawidłowej faktury może oznaczać problemy dla obu stron.\n\nZgłaszanie prób obejścia: jeżeli agencja skontaktuje się z Tobą bezpośrednio i zaproponuje rezerwację poza platformą (np. „Zapłać mi 200 € gotówką, to zaoszczędzimy prowizję”), zgłoś to niezwłocznie na compliance@event-bliss.com. Pomocne będą: zrzut ekranu wiadomości, ID rezerwacji/usługi, moment kontaktu.\n\nRabat w podziękowaniu: w ramach podziękowania, po weryfikacji zgłoszenia, przyznamy Ci 20 % rabatu na następną rezerwację w EventBliss (maks. wartość 200 €, do wykorzystania w ciągu 12 miesięcy).\n\nPoufność: Twoje zgłoszenie traktujemy poufnie. Zgłoszona agencja nie dowie się, kto je przekazał."
       },
       "prohibited": {
         "title": "Zabronione",
-        "content": "Nie używaj do nielegalnych działań."
+        "content": "Zobowiązujesz się nie wykorzystywać platformy do celów niezgodnych z prawem, oszukańczych lub szkodliwych. Zabronione są w szczególności:\n\n• nadużywanie metod płatności (np. nieuzasadnione chargebacki po wykonaniu usługi opłaconej online, odmowa zapłaty przy rezerwacjach z płatnością na miejscu);\n• obraźliwe, dyskryminujące lub zawierające groźby zachowania wobec agencji lub pracowników;\n• manipulowanie opiniami (np. fałszywe opinie, szantażowanie negatywnymi opiniami);\n• podawanie nieprawdziwych danych przy rezerwacji (np. fałszywa tożsamość, sfałszowane środki płatnicze);\n• wykorzystywanie platformy do pośredniczenia w nielegalnych treściach, usługach lub produktach;\n• samodzielne omijanie platformy po pierwszym kontakcie nawiązanym przez EventBliss (zob. „Ochrona przed obejściem platformy”)."
       },
       "liability": {
         "title": "Ograniczenie Odpowiedzialności",
-        "content": "Nie ponosimy odpowiedzialności za szkody."
+        "content": "Jako operator platformy EventBliss odpowiada wyłącznie za szkody wynikające z winy umyślnej lub rażącego niedbalstwa, a także za naruszenie życia, ciała i zdrowia zgodnie z przepisami ustawowymi.\n\nZa jakość, terminowość i zgodność z umową zarezerwowanej usługi odpowiada wyłącznie dana agencja — EventBliss nie jest wykonawcą usługi.\n\nEventBliss dobrowolnie zapewnia jednak ochronę kupującego przy płatnościach online (zob. „Anulowanie i zwrot”) i pośredniczy w razie sporów, również przy rezerwacjach z płatnością na miejscu."
       },
       "changes": {
         "title": "Zmiany",
-        "content": "Możemy aktualizować regulamin."
+        "content": "Możemy aktualizować niniejszy regulamin, aby uwzględnić zmiany przepisów lub nowe funkcje. O istotnych zmianach poinformujemy Cię e-mailem co najmniej 30 dni przed ich wejściem w życie. Dalsze korzystanie po wejściu zmian w życie oznacza ich akceptację."
       },
       "governingLaw": {
         "title": "Prawo Właściwe",
-        "content": "Prawo właściwe: Platforma jest obsługiwana przez MYFAMBLISS GROUP LTD z siedzibą w Republice Cypryjskiej. Stosuje się prawo cypryjskie z wyłączeniem CISG. Bezwzględnie obowiązujące przepisy o ochronie konsumentów państwa miejsca zwykłego pobytu (np. § 312g BGB w Niemczech) pozostają nienaruszone (Art. 6(2) Rzym I). Platforma UE do rozstrzygania sporów online: https://ec.europa.eu/consumers/odr"
+        "content": "„EventBliss” to marka i produkt MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cypr. Niniejszy regulamin podlega prawu Republiki Cypryjskiej z wyłączeniem Konwencji Narodów Zjednoczonych o umowach międzynarodowej sprzedaży towarów. W przypadku konsumentów mających zwykłe miejsce pobytu w Unii Europejskiej ten wybór prawa obowiązuje tylko w takim zakresie, w jakim nie pozbawia konsumenta ochrony wynikającej z bezwzględnie obowiązujących przepisów o ochronie konsumentów państwa jego zwykłego pobytu (art. 6 ust. 2 rozporządzenia Rzym I). Bezwzględnie obowiązujące prawa konsumentów — w szczególności prawo odstąpienia na podstawie § 312g niemieckiego kodeksu cywilnego (BGB) dla konsumentów zamieszkałych w Niemczech — pozostają nienaruszone.\n\nJurysdykcja: wobec konsumentów obowiązują ustawowe zasady jurysdykcji, w szczególności sąd miejsca zamieszkania konsumenta. Wobec przedsiębiorców wyłącznie właściwy jest sąd siedziby MYFAMBLISS GROUP LTD w Republice Cypryjskiej.\n\nPozasądowe rozstrzyganie sporów: unijna platforma internetowego rozstrzygania sporów (ODR) działająca na podstawie rozporządzenia (UE) nr 524/2013 została zamknięta z dniem 20 lipca 2025 r. (rozporządzenie (UE) 2024/3228). Nie jesteśmy zobowiązani ani gotowi do udziału w postępowaniach rozstrzygania sporów przed konsumenckim organem polubownym, zawsze jednak staramy się wyjaśniać sprawy bezpośrednio przez support@event-bliss.com."
       },
       "meta": {
         "title": "Regulamin | EventBliss",
@@ -2055,15 +2061,15 @@
         "leadIn": "Pełny wiążący tekst znajduje się w wersji niemieckiej.",
         "period": {
           "title": "Okres wyłączności",
-          "content": "18 miesięcy — Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "Każdy klient pozyskany za pośrednictwem Platformy jest objęty wyłącznością na rzecz EventBliss przez 18 miesięcy od pierwszego kontaktu, włącznie z kolejnymi rezerwacjami i powiązanymi transakcjami pochodnymi."
         },
         "prohibition": {
           "title": "Zakaz obchodzenia",
-          "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "Po anulowaniu Agencja nie może oferować porównywalnej usługi poza platformą. Agencji nie wolno nakłaniać do płatności gotówką na miejscu, gdy oferta jest ustawiona na płatność online, przekazywać kontaktów klientów osobom trzecim, prowadzić równoległych rezerwacji własnymi kanałami ani skłaniać klientów do anulowania rezerwacji na platformie na rzecz uzgodnień poza platformą."
         },
         "dataPurpose": {
           "title": "Ograniczenie celu danych",
-          "content": "Art. 5 GDPR — Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "Dane kontaktowe klientów otrzymane z Platformy podlegają ścisłemu ograniczeniu celu zgodnie z art. 5 ust. 1 lit. b RODO. Ich wykorzystanie ogranicza się do realizacji konkretnej rezerwacji; zabronione są budowanie własnych baz klientów, marketing, newslettery oraz upselling wykraczający poza daną rezerwację."
         },
         "penalty": {
           "title": "Kara umowna",
@@ -2071,7 +2077,7 @@
         },
         "audit": {
           "title": "Prawo audytu",
-          "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "W razie uzasadnionego podejrzenia EventBliss może zażądać przedłożenia w terminie 14 dni rejestrów komunikacji, dowodów płatności oraz wyciągów z kalendarza rezerwacji. Odmowa lub opóźnione dostarczenie rodzi wzruszalne domniemanie naruszenia."
         }
       },
       "cancellationRates": {
@@ -2087,32 +2093,32 @@
         },
         "suspension": {
           "title": "Zawieszenie (20%)",
-          "content": "> 20% — Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "Powyżej 20 % EventBliss może — po pisemnym uprzedzeniu z 7-dniowym wyprzedzeniem — wstrzymać poszczególne oferty, wstrzymać cały profil lub usunąć Agencję z Platformy. Środki te zostają zniesione, gdy tylko wskaźnik spadnie poniżej 15 %."
         },
         "exceptions": {
           "title": "Wyjątki",
-          "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+          "content": "Siła wyższa, błędne informacje przekazane przez klienta, zwłoka klienta w płatności oraz uzasadnione względy bezpieczeństwa lub higieny są wyłączone z obliczeń, o ile zostaną terminowo udokumentowane i poparte dowodami."
         }
       },
       "qualityCriteria": {
         "title": "Jakość i listing",
-        "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+        "content": "Czas reakcji poniżej 24 godzin w dni robocze, minimalna średnia ocena 4,0/5,0 z ostatnich 20 rezerwacji, kompletne profile, prawnie wiążące ceny zgodnie z PAngV (niemieckim rozporządzeniem o podawaniu cen) oraz ważne prawa do korzystania ze wszystkich materiałów graficznych."
       },
       "liability": {
         "title": "Odpowiedzialność",
-        "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+        "content": "Agencja ponosi wyłączną odpowiedzialność za wykonanie usługi oraz za zdarzenia w miejscu wydarzenia. EventBliss odpowiada wyłącznie za dostępność platformy w granicach standardów rynkowych. Agencja zwalnia EventBliss z roszczeń osób trzecich wynikających z wadliwego wykonania usługi oraz jest zobowiązana utrzymywać ubezpieczenie OC działalności na sumę co najmniej 1 000 000 EUR (szkody na osobie) i 500 000 EUR (szkody majątkowe)."
       },
       "dataProtection": {
         "title": "Ochrona danych",
-        "content": "GDPR Art. 28 — Pełny wiążący tekst znajduje się w wersji niemieckiej."
+        "content": "Każda ze stron działa jako niezależny administrator danych dla własnych celów przetwarzania. W zakresie, w jakim EventBliss przetwarza dane na zlecenie Agencji, obowiązuje odrębna umowa powierzenia przetwarzania zgodnie z art. 28 RODO. Naruszenia ochrony danych dotyczące klientów platformy należy zgłaszać EventBliss w ciągu 24 godzin od ich wykrycia."
       },
       "termTermination": {
         "title": "Czas trwania i rozwiązanie",
-        "content": "Pełny wiążący tekst znajduje się w wersji niemieckiej."
+        "content": "Umowa zostaje zawarta na czas nieoznaczony. Każda ze stron może ją wypowiedzieć bez podania przyczyny z zachowaniem 30-dniowego pisemnego okresu wypowiedzenia ze skutkiem na koniec miesiąca. EventBliss może wypowiedzieć umowę ze skutkiem natychmiastowym w razie naruszeń punktu 6, powtarzających się przekroczeń wskaźnika anulowań, istotnej zwłoki w płatnościach lub niewypłacalności. 18-miesięczna wyłączność z punktu 6.1 pozostaje w mocy po rozwiązaniu umowy."
       },
       "finalProvisions": {
         "title": "Postanowienia końcowe",
-        "content": "Cyprus law + Pełny wiążący tekst znajduje się w wersji niemieckiej."
+        "content": "Prawo właściwe: niniejsza umowa podlega wyłącznie prawu Republiki Cypryjskiej, z wyłączeniem Konwencji Narodów Zjednoczonych o umowach międzynarodowej sprzedaży towarów (CISG) oraz norm kolizyjnych, które prowadziłyby do zastosowania innego porządku prawnego. Bezwzględnie obowiązujące przepisy o ochronie konsumentów państwa zwykłego pobytu klienta pozostają nienaruszone w relacji między Agencją a Klientem.\n\nWyłączna jurysdykcja: dla wszystkich sporów wynikających z niniejszej umowy lub z nią związanych wyłącznie właściwe są, w zakresie dopuszczalnym przez prawo, sądy właściwe dla siedziby MYFAMBLISS GROUP LTD w Republice Cypryjskiej. EventBliss zastrzega sobie prawo pozwania Agencji także przed sąd właściwy dla jej ogólnej siedziby.\n\nAlternatywne rozstrzyganie sporów: przed wszczęciem postępowania sądowego strony podejmą próbę polubownego rozwiązania sporu. Na żądanie przeprowadzone zostanie ustrukturyzowane postępowanie mediacyjne według regulaminu uznanej instytucji z siedzibą na Cyprze.\n\nKlauzula salwatoryjna, wymogi formy, prawa do zmian oraz ograniczenia cesji obowiązują w brzmieniu określonym w wersji niemieckiej. Wersją wiążącą jest niemiecki oryginał."
       },
       "compliance": {
         "title": "Kontakt Compliance",

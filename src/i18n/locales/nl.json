@@ -1809,6 +1809,12 @@
             "purpose": "Supportchatbot op de website; verwerkt de berichten die je in de chat invoert",
             "location": "VS",
             "safeguards": "Verwerkersovereenkomst, SCC's"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "Verzending van transactionele en notificatie-e-mails (bijv. boekingsbevestigingen, nieuwsbriefbevestiging)",
+            "location": "EU (Duitsland)",
+            "safeguards": "Verwerkersovereenkomst (art. 28 AVG)"
           }
         }
       },
@@ -1876,7 +1882,7 @@
           },
           "portability": {
             "label": "Recht op overdraagbaarheid van gegevens (art. 20 AVG)",
-            "desc": "Je kunt de gegevens die je hebt verstrekt ontvangen in een gestructureerd, gangbaar en machineleesbaar formaat. Vraag een export aan per e-mail aan support@event-bliss.com."
+            "desc": "Je kunt de gegevens die je hebt verstrekt ontvangen in een gestructureerd, gangbaar en machineleesbaar formaat. Download ze rechtstreeks in de app via Profiel → Instellingen → 'Mijn gegevens exporteren' of vraag de export per e-mail aan via support@event-bliss.com."
           },
           "objection": {
             "label": "Recht van bezwaar (art. 21 AVG)",
@@ -1917,43 +1923,43 @@
       },
       "services": {
         "title": "Onze Diensten",
-        "content": "EventBliss biedt tools voor evenementenplanning."
+        "content": "EventBliss exploiteert een online marktplaats waarop onafhankelijke evenementenbureaus hun diensten aanbieden (bijv. dj's, fotografen, catering, decoratie, evenementenlocaties).\n\nBelangrijk: EventBliss treedt op als bemiddelaar en is NIET de contractuele aanbieder van de geboekte dienst. De dienstverleningsovereenkomst komt uitsluitend tot stand tussen jou (de klant) en het betreffende agentschap. EventBliss levert de technische infrastructuur, betalingsverwerking, communicatie, support en geschillenbeslechting."
       },
       "booking_process": {
         "title": "Boekingsproces",
-        "content": "De dienstverleningsovereenkomst wordt gesloten met het agentschap, niet met EventBliss. EventBliss treedt op als tussenpersoon. Bij online betaling vindt de bevestiging plaats na succesvolle Stripe-betaling. Bij betaling ter plaatse bevestigt het agentschap handmatig. Consumenten hebben herroepingsrecht volgens § 312g BGB (14 dagen), met uitzonderingen voor diensten op een vaste datum."
+        "content": "1. Aanvraag: je kiest een agentschap/dienst en verstuurt een boekingsaanvraag met datum, details en je contactgegevens.\n\n2. Bevestiging: de overeenkomst met het agentschap komt tot stand zodra (a) de online betaling via Stripe succesvol is afgerond (automatische bevestiging) of (b) het agentschap je aanvraag handmatig bevestigt (bij boekingen met betaling ter plaatse).\n\n3. Uitvoering: het agentschap levert de dienst op de afgesproken datum. EventBliss is niet bij de uitvoering zelf betrokken, maar coördineert de communicatie via het platform.\n\nHerroepingsrecht bij overeenkomsten op afstand (§§ 312g, 355 BGB): als consument heb je in beginsel een herroepingsrecht van 14 dagen. Uitzondering: bij vrijetijdsdiensten met een vaste datum (§ 312g lid 2 nr. 9 BGB) — wat geldt voor vrijwel alle evenementendiensten met een vaste datum — vervalt het wettelijke herroepingsrecht. Het dienstspecifieke annuleringsbeleid (zie 'Annulering en terugbetaling') geldt aanvullend en is klantvriendelijker.\n\nAlle communicatie met het agentschap verloopt via de chat van het platform. Houd de communicatie daar, zodat deze bij een geschil gedocumenteerd is."
       },
       "payment_methods": {
         "title": "Betaalmethoden",
-        "content": "Twee opties: (1) Online betaling via Stripe — kaart, Apple/Google Pay, SEPA. (2) Betaling ter plaatse — rechtstreeks aan het agentschap op de dag van de dienst. In beide gevallen is de weergegeven prijs definitief en omvat de platformkosten van 10%."
+        "content": "EventBliss ondersteunt twee betaalmethoden. Welke beschikbaar is, bepaalt elk agentschap per dienst:\n\n• Online betaling (Stripe): creditcard (Visa, Mastercard, Amex), Apple Pay, Google Pay, SEPA-incasso en andere landspecifieke methoden. De betaling vindt direct plaats en wordt beveiligd door Stripe als PCI-DSS-conforme betaaldienstverlener. Na een geslaagde betaling ontvang je per e-mail automatisch een boekingsbevestiging en een betaalbewijs.\n\n• Betaling ter plaatse (on_site): je betaalt de prijs op de dag van het evenement (of zoals afgesproken) rechtstreeks aan het agentschap, contant of via een afgesproken methode. De vermelde prijs is bindend — het agentschap mag niet meer verlangen dan in de boeking is aangegeven. De boeking wordt bevestigd door handmatige bevestiging van het agentschap via het platform.\n\nTotaalprijs & platformvergoeding: alle prijzen op EventBliss zijn eindprijzen inclusief toepasselijke btw (voor zover het agentschap btw-plichtig is) en inclusief de platformvergoeding van 10 %. Deze vergoeding wordt intern tussen het agentschap en EventBliss verrekend; jij betaalt alleen de getoonde totaalprijs.\n\nBetalingsproblemen: neem bij problemen met online betalingen (bijv. mislukte afschrijvingen, chargebacks) of betalingen ter plaatse (bijv. prijsafwijkingen) contact op met support@event-bliss.com. EventBliss bemiddelt in beide gevallen — ook bij boekingen met betaling ter plaatse."
       },
       "payment": {
         "title": "Betalingsvoorwaarden",
-        "content": "Basisfuncties zijn gratis. Premium kan betaling vereisen."
+        "content": "Bij online betalingen wordt het totaalbedrag direct bij de boeking afgeschreven. De uitbetaling aan het agentschap vindt plaats na de uitvoering van de dienst volgens het uitbetalingsschema (doorgaans 24–72 uur na het evenement), zodat terugbetalingen bij geschillen mogelijk blijven.\n\nBij betaling ter plaatse wordt vooraf geen bedrag afgeschreven. De betaling vindt rechtstreeks aan het agentschap plaats.\n\nBewijzen & facturen: bij online betalingen ontvang je automatisch een betalingsbevestiging van Stripe en — indien door het agentschap verstrekt — een factuur in je boekingsoverzicht. Bij betaling ter plaatse is het agentschap verplicht een kwitantie/factuur uit te reiken.\n\nVertragingsrente en verdere kosten bij te late betaling volgen de wettelijke regels (§§ 286, 288 BGB)."
       },
       "cancellation_refund": {
         "title": "Annulering en terugbetaling",
-        "content": "Het annuleringsbeleid (flexibel / matig / strikt) wordt per dienst getoond. Terugbetalingen worden binnen 14 dagen verwerkt op de oorspronkelijke betaalmethode. Voor boekingen met betaling ter plaatse worden annuleringen rechtstreeks met het agentschap afgehandeld; EventBliss bemiddelt bij geschillen."
+        "content": "Elk agentschap stelt per dienst een annuleringsbeleid vast. Dit wordt transparant getoond voordat je een boeking afrondt. Er zijn drie niveaus:\n\n• flexibel: volledige terugbetaling tot 7 dagen voor het evenement, daarna 50 %.\n• gematigd: volledige terugbetaling tot 14 dagen voor het evenement, 50 % tot 7 dagen, daarna geen terugbetaling.\n• strikt: 50 % terugbetaling tot 30 dagen voor het evenement, daarna geen terugbetaling.\n\nWijze van terugbetaling: bij online betalingen wordt het bedrag automatisch teruggestort op je oorspronkelijke betaalmethode. Afhankelijk van je bank of kaartuitgever verschijnt de creditering binnen 5 tot 14 dagen.\n\nBoekingen met betaling ter plaatse: omdat er geen geld via EventBliss is gelopen, handel je annuleringen rechtstreeks met het agentschap af. Het afgesproken annuleringsbeleid blijft daarbij bindend. Bij onenigheid bemiddelt EventBliss; neem contact op met support@event-bliss.com onder vermelding van je boekingsnummer.\n\nOvermacht & bijzondere gevallen: als het agentschap de dienst niet kan leveren (bijv. ziekte, overheidsbeperkingen), wordt het volledige bedrag terugbetaald, ongeacht het annuleringsniveau.\n\nNiet-nakoming door het agentschap: als het agentschap niet komt opdagen of de dienst ernstig gebrekkig levert, geldt de kopersbescherming van EventBliss. Meld het voorval binnen 48 uur na de geplande datum met bewijs aan support@event-bliss.com — bij een gegronde melding ontvang je het volledige bedrag terug."
       },
       "off_platform_bypass": {
         "title": "Bescherming tegen omzeiling",
-        "content": "Agentschappen zijn contractueel verplicht alle boekingen via het platform af te handelen. Na een annulering mogen agentschappen u NIET rechtstreeks benaderen om een boeking buiten het platform met contante betaling aan te bieden — dit is een contractbreuk. Accepteer dergelijke aanbiedingen niet: u verliest de EventBliss-bescherming (support, terugbetalingsgarantie). Meld pogingen aan compliance@event-bliss.com — u ontvangt 20% tegoed op uw volgende boeking (max. € 200, 12 maanden)."
+        "content": "Agentschappen op EventBliss zijn contractueel verplicht om ALLE boekingen die op het platform zijn ontstaan, via het platform af te wikkelen. Dit beschermt jou als klant en zorgt ervoor dat je alle voordelen van de kopersbescherming behoudt.\n\nWat NIET is toegestaan: een agentschap mag geen contact met je opnemen — met name na een annulering, maar ook al tijdens het eerste contact — om een boeking buiten het platform om te regelen (bijv. via WhatsApp, telefoon, e-mail, contante betaling, rechtstreekse bankoverschrijving) om de platformvergoeding te omzeilen. Dergelijke pogingen vormen een contractbreuk van het agentschap jegens EventBliss.\n\nWaarom je zulke aanbiedingen moet afslaan: buiten het platform om verlies je alle bescherming van EventBliss:\n\n• Geen kopersbescherming: geen terugbetaling bij niet-nakoming, schade of fraude.\n• Geen support: EventBliss kan je niet helpen, omdat er geen overeenkomst via het platform loopt.\n• Geen gedocumenteerde communicatie: geen traceerbaar bewijs bij een geschil.\n• Geen beoordelings- en identiteitsverificatie: het platform kan niet langer instaan voor de betrouwbaarheid.\n• Fiscale risico's: contante betaling zonder deugdelijke factuur kan voor beide partijen problemen opleveren.\n\nOmzeilingspogingen melden: als een agentschap rechtstreeks contact met je opneemt en je een boeking buiten het platform om aanbiedt (bijv. 'Betaal me 200 € contant, dan besparen we de vergoeding'), meld dit dan direct aan compliance@event-bliss.com. Nuttig zijn: een screenshot van het bericht, het boekings-/service-ID en het tijdstip van het contact.\n\nBedanktegoed: als blijk van waardering crediteren we je na verificatie 20 % korting op je volgende EventBliss-boeking (max. 200 € waarde, inwisselbaar binnen 12 maanden).\n\nVertrouwelijkheid: je melding wordt vertrouwelijk behandeld. Het gemelde agentschap komt niet te weten wie de melding heeft gedaan."
       },
       "prohibited": {
         "title": "Verboden Activiteiten",
-        "content": "Je mag onze diensten niet gebruiken voor illegale activiteiten."
+        "content": "Je verbindt je ertoe het platform niet te gebruiken voor illegale, frauduleuze of schadelijke doeleinden. In het bijzonder is verboden:\n\n• misbruik van betaalmethoden (bijv. ongerechtvaardigde chargebacks nadat de dienst is geleverd en online is betaald, betalingsweigering bij boekingen met betaling ter plaatse);\n• beledigend, discriminerend of bedreigend gedrag jegens agentschappen of medewerkers;\n• manipulatie van beoordelingen (bijv. nepbeoordelingen, chantage met negatieve beoordelingen);\n• het verstrekken van onjuiste gegevens bij boekingen (bijv. valse identiteit, frauduleuze betaalmiddelen);\n• het gebruik van het platform voor het bemiddelen van illegale content, diensten of producten;\n• het zelf omzeilen van het platform na het eerste contact via EventBliss (zie 'Bescherming tegen omzeiling')."
       },
       "liability": {
         "title": "Beperking van Aansprakelijkheid",
-        "content": "EventBliss is niet aansprakelijk voor schade door gebruik."
+        "content": "Als platformexploitant is EventBliss uitsluitend aansprakelijk voor schade die voortvloeit uit opzet of grove nalatigheid, alsmede voor letsel aan leven, lichaam en gezondheid volgens de wettelijke bepalingen.\n\nDe kwaliteit, tijdigheid en contractconformiteit van de geboekte dienst vallen uitsluitend onder de verantwoordelijkheid van het betreffende agentschap — EventBliss is niet de dienstverlener.\n\nEventBliss verleent echter vrijwillig kopersbescherming bij online betalingen (zie 'Annulering en terugbetaling') en bemiddelt bij geschillen, ook bij boekingen met betaling ter plaatse."
       },
       "changes": {
         "title": "Wijzigingen",
-        "content": "We kunnen deze voorwaarden bijwerken."
+        "content": "We kunnen deze voorwaarden bijwerken om ze aan te passen aan wettelijke wijzigingen of nieuwe functies. Wezenlijke wijzigingen kondigen we ten minste 30 dagen vóór de inwerkingtreding per e-mail bij je aan. Voortgezet gebruik na de inwerkingtreding geldt als instemming."
       },
       "governingLaw": {
         "title": "Toepasselijk Recht",
-        "content": "Toepasselijk recht: Het platform wordt beheerd door MYFAMBLISS GROUP LTD met statutaire zetel in de Republiek Cyprus. Cypriotisch recht is van toepassing, met uitsluiting van het Weens Koopverdrag. Dwingende consumentenbeschermingsregels van uw gewone verblijfplaats (bv. § 312g BGB in Duitsland) blijven onaangetast (Art. 6(2) Rome I). EU-platform voor geschillenbeslechting: https://ec.europa.eu/consumers/odr"
+        "content": "'EventBliss' is een merk en product van MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. Op deze voorwaarden is het recht van de Republiek Cyprus van toepassing, met uitsluiting van het Weens Koopverdrag. Voor consumenten met gewone verblijfplaats in de Europese Unie geldt deze rechtskeuze slechts voor zover zij de consument niet de bescherming ontneemt van dwingende consumentenbeschermende bepalingen van de staat van zijn gewone verblijfplaats (art. 6 lid 2 Rome I-Verordening). Dwingende consumentenrechten — in het bijzonder het herroepingsrecht op grond van § 312g van het Duitse Burgerlijk Wetboek (BGB) voor consumenten die in Duitsland wonen — blijven onverlet.\n\nBevoegde rechter: voor consumenten gelden de wettelijke bevoegdheidsregels, in het bijzonder die van de woonplaats van de consument. Jegens ondernemers is de rechter van de zetel van MYFAMBLISS GROUP LTD in de Republiek Cyprus exclusief bevoegd.\n\nBuitengerechtelijke geschillenbeslechting: het EU-platform voor onlinegeschillenbeslechting (ODR) op grond van Verordening (EU) nr. 524/2013 is per 20 juli 2025 stopgezet (Verordening (EU) 2024/3228). Wij zijn niet verplicht en niet bereid om deel te nemen aan geschillenbeslechtingsprocedures voor een consumentengeschillencommissie, maar streven er altijd naar zaken rechtstreeks op te lossen via support@event-bliss.com."
       },
       "meta": {
         "title": "Servicevoorwaarden | EventBliss",
@@ -2055,15 +2061,15 @@
         "leadIn": "Raadpleeg de Duitse versie voor de volledige bindende tekst.",
         "period": {
           "title": "Exclusiviteitsperiode",
-          "content": "18 maanden — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Elke via het Platform aangebrachte klant is gedurende 18 maanden vanaf het eerste contact exclusief aan EventBliss verbonden, met inbegrip van vervolgboekingen en daarmee samenhangende afgeleide opdrachten."
         },
         "prohibition": {
           "title": "Omzeilingsverbod",
-          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Na een annulering mag het Agentschap geen vergelijkbare dienst buiten het platform om aanbieden. Het Agentschap mag niet aanzetten tot contante betaling ter plaatse wanneer de vermelding op online betaling is ingesteld, geen klantcontacten met derden delen, geen parallelle boekingen via eigen kanalen afwikkelen en klanten niet bewegen om platformboekingen te annuleren ten gunste van afspraken buiten het platform."
         },
         "dataPurpose": {
           "title": "Doelbinding klantgegevens",
-          "content": "Art. 5 GDPR — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Klantcontactgegevens die via het Platform zijn ontvangen, zijn onderworpen aan strikte doelbinding conform art. 5 lid 1 sub b AVG. Het gebruik is beperkt tot de uitvoering van de specifieke boeking; het opbouwen van eigen klantenbestanden, marketing, nieuwsbrieven en upselling buiten de boeking zijn verboden."
         },
         "penalty": {
           "title": "Boetebeding",
@@ -2071,7 +2077,7 @@
         },
         "audit": {
           "title": "Auditrecht",
-          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Bij gegronde verdenking kan EventBliss verlangen dat binnen 14 dagen communicatielogboeken, betalingsbewijzen en uittreksels uit de boekingsagenda worden overgelegd. Weigering of te late aanlevering vestigt een weerlegbaar vermoeden van schending."
         }
       },
       "cancellationRates": {
@@ -2087,32 +2093,32 @@
         },
         "suspension": {
           "title": "Opschorting (20%)",
-          "content": "> 20% — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Boven 20 % kan EventBliss — na een schriftelijke aankondiging met een termijn van 7 dagen — afzonderlijke vermeldingen pauzeren, het volledige profiel pauzeren of het Agentschap van het Platform verwijderen. De maatregelen worden opgeheven zodra het percentage onder 15 % zakt."
         },
         "exceptions": {
           "title": "Uitzonderingen",
-          "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+          "content": "Overmacht, onjuiste informatie van de klant, betalingsverzuim van de klant en gerechtvaardigde veiligheids- of hygiënebezwaren blijven buiten de berekening, mits tijdig gedocumenteerd en met bewijs onderbouwd."
         }
       },
       "qualityCriteria": {
         "title": "Kwaliteit en vermelding",
-        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        "content": "Reactietijd van minder dan 24 uur op werkdagen, een gemiddelde beoordeling van ten minste 4,0/5,0 over de laatste 20 boekingen, volledige profielen, juridisch bindende prijzen conform de PAngV (Duitse prijsaanduidingsverordening) en geldige gebruiksrechten voor al het beeldmateriaal."
       },
       "liability": {
         "title": "Aansprakelijkheid",
-        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        "content": "Het Agentschap is als enige aansprakelijk voor de uitvoering van de dienst en voor incidenten op de locatie. EventBliss is uitsluitend aansprakelijk voor de beschikbaarheid van het platform binnen marktconforme normen. Het Agentschap vrijwaart EventBliss tegen aanspraken van derden die voortvloeien uit gebrekkige dienstverlening en dient een bedrijfsaansprakelijkheidsverzekering aan te houden van ten minste EUR 1.000.000 (letselschade) en EUR 500.000 (materiële schade)."
       },
       "dataProtection": {
         "title": "Gegevensbescherming",
-        "content": "GDPR Art. 28 — Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        "content": "Elke partij treedt op als zelfstandige verwerkingsverantwoordelijke voor haar eigen verwerkingsdoeleinden. Voor zover EventBliss gegevens in opdracht van het Agentschap verwerkt, geldt de afzonderlijke verwerkersovereenkomst conform art. 28 AVG. Datalekken waarbij platformklanten betrokken zijn, moeten binnen 24 uur na ontdekking aan EventBliss worden gemeld."
       },
       "termTermination": {
         "title": "Looptijd en beëindiging",
-        "content": "Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        "content": "De overeenkomst geldt voor onbepaalde tijd. Elke partij kan zonder opgave van redenen schriftelijk opzeggen met een termijn van 30 dagen tegen het einde van de maand. EventBliss kan met onmiddellijke ingang opzeggen bij schendingen van artikel 6, herhaalde overschrijding van het annuleringspercentage, aanzienlijk betalingsverzuim of insolventie. De 18-maandenexclusiviteit uit artikel 6.1 blijft na beëindiging van kracht."
       },
       "finalProvisions": {
         "title": "Slotbepalingen",
-        "content": "Cyprus law + Raadpleeg de Duitse versie voor de volledige bindende tekst."
+        "content": "Toepasselijk recht: op deze overeenkomst is uitsluitend het recht van de Republiek Cyprus van toepassing, met uitsluiting van het Weens Koopverdrag (CISG) en van conflictenrechtelijke verwijzingsregels die tot de toepassing van een ander rechtsstelsel zouden leiden. Dwingende consumentenbeschermende regels van de gewone verblijfplaats van de klant blijven in de verhouding tussen Agentschap en Klant onverlet.\n\nExclusieve bevoegdheid: voor alle geschillen die voortvloeien uit of verband houden met deze overeenkomst zijn, voor zover wettelijk toegestaan, uitsluitend de bevoegde rechters van de zetel van MYFAMBLISS GROUP LTD in de Republiek Cyprus bevoegd. EventBliss behoudt zich het recht voor het Agentschap ook voor de rechter van diens algemene vestigingsplaats te dagvaarden.\n\nAlternatieve geschillenbeslechting: voordat een gerechtelijke procedure wordt gestart, streven de partijen naar een minnelijke oplossing. Op verzoek wordt een gestructureerde mediationprocedure gevoerd volgens de regels van een erkende, in Cyprus gevestigde instelling.\n\nDe salvatorische clausule, vormvereisten, wijzigingsrechten en overdrachtsbeperkingen gelden zoals vastgelegd in de Duitse versie. De bindende versie is het Duitse origineel."
       },
       "compliance": {
         "title": "Compliance-contact",

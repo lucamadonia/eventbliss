@@ -1739,6 +1739,12 @@
             "purpose": "Support-Chatbot auf der Website; verarbeitet die von dir im Chat eingegebenen Nachrichten",
             "location": "USA",
             "safeguards": "DPA, SCCs"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "Versand von Transaktions- und Benachrichtigungs-E-Mails (z. B. Buchungsbestätigungen, Newsletter-Bestätigung)",
+            "location": "EU (Deutschland)",
+            "safeguards": "AVV (Art. 28 DSGVO)"
           }
         }
       },
@@ -1806,7 +1812,7 @@
           },
           "portability": {
             "label": "Recht auf Datenübertragbarkeit (Art. 20 DSGVO)",
-            "desc": "Du kannst die von dir bereitgestellten Daten in einem strukturierten, gängigen, maschinenlesbaren Format erhalten. Fordere den Export per E-Mail an support@event-bliss.com an."
+            "desc": "Du kannst die von dir bereitgestellten Daten in einem strukturierten, gängigen, maschinenlesbaren Format erhalten. Lade sie direkt in der App unter Profil → Einstellungen → „Meine Daten exportieren“ herunter oder fordere den Export per E-Mail an support@event-bliss.com an."
           },
           "objection": {
             "label": "Widerspruchsrecht (Art. 21 DSGVO)",
@@ -1883,7 +1889,7 @@
       },
       "governingLaw": {
         "title": "Anwendbares Recht & Gerichtsstand",
-        "content": "„EventBliss\" ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Zypern. Auf diese Bedingungen findet das Recht der Republik Zypern Anwendung unter Ausschluss des UN-Kaufrechts. Diese Rechtswahl gilt für Verbraucher mit gewöhnlichem Aufenthalt in der Europäischen Union jedoch nur insoweit, als zwingende verbraucherschützende Vorschriften des Staates, in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, nicht entgegenstehen (Art. 6 Abs. 2 Rom-I-VO). Zwingende Verbraucherschutzrechte — insbesondere das Widerrufsrecht nach § 312g BGB in Deutschland — bleiben unberührt.\n\nGerichtsstand: Für Verbraucher gelten die gesetzlichen Gerichtsstände, insbesondere der Wohnsitz des Verbrauchers. Gegenüber Unternehmern ist ausschließlicher Gerichtsstand der Sitz der MYFAMBLISS GROUP LTD in der Republik Zypern.\n\nAußergerichtliche Streitbeilegung: Die EU-Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: https://ec.europa.eu/consumers/odr. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen, bemühen uns aber um eine direkte Klärung über support@event-bliss.com."
+        "content": "„EventBliss\" ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Zypern. Auf diese Bedingungen findet das Recht der Republik Zypern Anwendung unter Ausschluss des UN-Kaufrechts. Diese Rechtswahl gilt für Verbraucher mit gewöhnlichem Aufenthalt in der Europäischen Union jedoch nur insoweit, als zwingende verbraucherschützende Vorschriften des Staates, in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, nicht entgegenstehen (Art. 6 Abs. 2 Rom-I-VO). Zwingende Verbraucherschutzrechte — insbesondere das Widerrufsrecht nach § 312g BGB in Deutschland — bleiben unberührt.\n\nGerichtsstand: Für Verbraucher gelten die gesetzlichen Gerichtsstände, insbesondere der Wohnsitz des Verbrauchers. Gegenüber Unternehmern ist ausschließlicher Gerichtsstand der Sitz der MYFAMBLISS GROUP LTD in der Republik Zypern.\n\nAußergerichtliche Streitbeilegung: Die EU-Plattform zur Online-Streitbeilegung (OS-Plattform) nach der Verordnung (EU) Nr. 524/2013 wurde zum 20. Juli 2025 eingestellt (Verordnung (EU) 2024/3228). Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen, bemühen uns aber um eine direkte Klärung über support@event-bliss.com."
       },
       "meta": {
         "title": "Allgemeine Geschäftsbedingungen | EventBliss",

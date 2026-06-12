@@ -1809,6 +1809,12 @@
             "purpose": "Web sitesindeki destek sohbet robotu; sohbete girdiğiniz mesajları işler",
             "location": "ABD",
             "safeguards": "DPA, SCC'ler"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "İşlemsel ve bildirim e-postalarının gönderimi (ör. rezervasyon onayları, bülten onayı)",
+            "location": "AB (Almanya)",
+            "safeguards": "Veri işleme sözleşmesi (GDPR Madde 28)"
           }
         }
       },
@@ -1876,7 +1882,7 @@
           },
           "portability": {
             "label": "Veri taşınabilirliği hakkı (GDPR Madde 20)",
-            "desc": "Sağladığınız verileri yapılandırılmış, yaygın olarak kullanılan ve makine tarafından okunabilir bir formatta alabilirsiniz. Dışa aktarım için support@event-bliss.com adresine e-posta gönderin."
+            "desc": "Bize sağladığınız verileri yapılandırılmış, yaygın olarak kullanılan ve makine tarafından okunabilir bir formatta alabilirsiniz. Verilerinizi doğrudan uygulamada Profil → Ayarlar → \"Verilerimi dışa aktar\" yolunu izleyerek indirin veya dışa aktarımı e-posta ile support@event-bliss.com adresinden talep edin."
           },
           "objection": {
             "label": "İtiraz hakkı (GDPR Madde 21)",
@@ -1917,43 +1923,43 @@
       },
       "services": {
         "title": "Hizmetlerimiz",
-        "content": "EventBliss etkinlik planlama araçları sunar."
+        "content": "EventBliss, bağımsız etkinlik ajanslarının hizmetlerini (ör. DJ'ler, fotoğrafçılar, catering, dekorasyon, etkinlik mekânları) sunduğu bir çevrimiçi pazaryeri işletmektedir.\n\nÖnemli: EventBliss yalnızca aracıdır ve rezerve edilen hizmetin sözleşme tarafı DEĞİLDİR. Hizmet sözleşmesi münhasıran siz (müşteri) ile ilgili ajans arasında kurulur. EventBliss; teknik altyapıyı, ödeme işlemlerini, iletişimi, desteği ve uyuşmazlık çözümünü sağlar."
       },
       "booking_process": {
         "title": "Rezervasyon süreci",
-        "content": "Hizmet sözleşmesi EventBliss ile değil, ajans ile kurulur. EventBliss aracı olarak hareket eder. Çevrimiçi ödemede, onay Stripe ödemesinin başarılı olmasının ardından verilir. Yerinde ödemede ajans manuel olarak onaylar. Tüketicilerin § 312g BGB uyarınca 14 günlük cayma hakkı vardır; sabit tarihli hizmetler için istisnalar geçerlidir."
+        "content": "1. Talep: Bir ajans/hizmet seçer ve tarih, ayrıntılar ve iletişim bilgilerinizi içeren bir rezervasyon talebi gönderirsiniz.\n\n2. Onay: Ajans ile sözleşme, (a) Stripe üzerinden çevrimiçi ödemenin başarıyla tamamlanmasıyla (otomatik onay) veya (b) yerinde ödemede ajansın talebinizi manuel olarak onaylamasıyla kurulur.\n\n3. Hizmetin ifası: Ajans, hizmeti kararlaştırılan tarihte ifa eder. EventBliss ifaya katılmaz; ancak bilgi akışını platform üzerinden koordine eder.\n\nMesafeli sözleşmelerde cayma hakkı (§§ 312g, 355 BGB): Tüketici olarak kural gereği sözleşmenin kurulmasından itibaren 14 günlük cayma hakkına sahipsiniz. İstisna: Belirli bir tarihe bağlı boş zaman hizmetlerinde (§ 312g f. 2 No. 9 BGB) — yani sabit tarihli neredeyse tüm etkinlik hizmetlerinde — yasal cayma hakkı uygulanmaz. Hizmete özgü iptal politikası (bkz. \"İptal ve iade\" bölümü) ek olarak geçerlidir ve daha müşteri dostudur.\n\nSiz ve ajans arasındaki tüm bildirimler platformun sohbeti üzerinden yürütülür. Lütfen iletişimi orada tutun — böylece uyuşmazlık hâlinde belgelenmiş olur."
       },
       "payment_methods": {
         "title": "Ödeme yöntemleri",
-        "content": "İki seçenek: (1) Stripe üzerinden çevrimiçi ödeme — kart, Apple/Google Pay, SEPA. (2) Yerinde ödeme — hizmet sırasında doğrudan ajansa. Her iki durumda da görüntülenen fiyat nihaidir ve %10 platform komisyonunu içerir."
+        "content": "EventBliss iki ödeme yöntemini destekler. Hangisinin sunulacağına ilgili ajans her hizmet için ayrıca karar verir:\n\n• Çevrimiçi ödeme (Stripe): Kredi kartı (Visa, Mastercard, Amex), Apple Pay, Google Pay, SEPA otomatik ödeme ve diğer ülkeye özgü yöntemler. Ödeme anında gerçekleşir ve ödeme hizmeti sağlayıcısı olan Stripe tarafından PCI-DSS uyumlu şekilde güvence altına alınır. Başarılı ödemenin ardından otomatik rezervasyon onayı ve makbuz, e-posta ile tarafınıza gönderilir.\n\n• Yerinde ödeme (on_site): Bedel, etkinlik günü (veya kararlaştırıldığı şekilde) doğrudan ajansa nakit veya kararlaştırılan yöntemle ödenir. Listelenen fiyat bağlayıcıdır — ajans, rezervasyonda belirtilenden daha yüksek bir tutar talep edemez. Rezervasyon onayı, ajansın platform üzerinden vereceği manuel onayla gerçekleşir.\n\nToplam fiyat ve platform komisyonu: EventBliss'teki tüm fiyatlar, (ajansın KDV mükellefi olması hâlinde) yasal KDV ve %10 platform komisyonu dâhil nihai fiyatlardır. Bu komisyon, ajans ile EventBliss arasında dahili olarak mahsup edilir; müşteri olarak yalnızca görünen nihai fiyatı ödersiniz.\n\nÖdeme sorunları: Çevrimiçi ödemelerdeki sorunlarda (ör. başarısız tahsilat, ters ibraz/chargeback) veya yerinde ödemelerdeki sorunlarda (ör. tutar farklılığı) support@event-bliss.com ile iletişime geçin. EventBliss her durumda — yerinde ödemeli rezervasyonlarda dahi — arabuluculuk yapar."
       },
       "payment": {
         "title": "Ödeme",
-        "content": "Temel özellikler ücretsizdir."
+        "content": "Çevrimiçi ödemede toplam bedel, rezervasyon anında derhâl tahsil edilir. Olası uyuşmazlıklarda size iade yapılabilmesi için tutarın ajansa aktarılması, hizmetin ifasından sonra ödeme planına göre (genellikle etkinlikten 24–72 saat sonra) gerçekleşir.\n\nYerinde ödemede önceden herhangi bir tutar tahsil edilmez. Ödeme doğrudan ajansa yapılır.\n\nMakbuz ve faturalar: Çevrimiçi ödemelerde Stripe'tan otomatik bir ödeme onayı ve — ajans tarafından sağlanmışsa — hesabınızın rezervasyon alanı üzerinden bir fatura alırsınız. Yerinde ödemelerde ajans, makbuz/fatura düzenlemekle yükümlüdür.\n\nGeç ödeme hâlinde temerrüt faizi ve diğer masraflar yasal hükümlere (§§ 286, 288 BGB) tabidir."
       },
       "cancellation_refund": {
         "title": "İptal ve iade",
-        "content": "İptal politikası (esnek / orta / katı) her hizmet için gösterilir. İadeler 14 gün içinde orijinal ödeme yöntemine yapılır. Yerinde ödemeli rezervasyonlarda iptaller doğrudan ajans ile yürütülür; uyuşmazlık halinde EventBliss arabulucu olur."
+        "content": "Her ajans, hizmet başına bir iptal politikası belirler. Bu politika, rezervasyonu tamamlamadan önce size şeffaf biçimde gösterilir. Üç kademe vardır:\n\n• esnek: Etkinlikten 7 gün öncesine kadar tam iade, sonrasında %50.\n• orta: Etkinlikten 14 gün öncesine kadar tam iade, 7 güne kadar %50, sonrasında iade yok.\n• katı: Etkinlikten 30 gün öncesine kadar %50 iade, sonrasında iade yok.\n\nİade yöntemi: Çevrimiçi ödemelerde iade edilen tutar, otomatik olarak orijinal ödeme aracınıza geri aktarılır. Alacak kaydı, bankanıza veya kart sağlayıcınıza bağlı olarak 5 ila 14 gün içinde hesabınızda görünür.\n\nYerinde ödemeli rezervasyonlarda: EventBliss'e herhangi bir ödeme yapılmadığından, iptali doğrudan ajansla görüşürsünüz. Kararlaştırılan iptal politikası yine de bağlayıcıdır. Anlaşmazlık veya zorluk hâlinde EventBliss arabuluculuk yapar; rezervasyon numaranızla birlikte support@event-bliss.com adresine başvurun.\n\nMücbir sebep ve özel durumlar: Hizmetin ajans tarafından ifasının imkânsız hâle gelmesi durumunda (ör. hastalık, resmî makam kısıtlamaları), iptal kademesinden bağımsız olarak kural gereği bedelin tamamı iade edilir.\n\nAjans kusuruyla ifa edilmeme: Ajans mazeretsiz olarak gelmezse veya hizmet ağır biçimde ayıplıysa, EventBliss alıcı koruması devreye girer. Olayı, planlanan tarihten itibaren 48 saat içinde kanıtlarla birlikte support@event-bliss.com adresine bildirin — bildirimin haklı bulunması hâlinde bedelin tamamını geri alırsınız."
       },
       "off_platform_bypass": {
         "title": "Atlatma karşıtı koruma",
-        "content": "Ajanslar tüm rezervasyonları platform üzerinden yürütmekle sözleşmesel olarak yükümlüdür. İptalden sonra ajanslar sizinle doğrudan iletişime geçerek platform dışında nakit ödemeli rezervasyon sunamazlar — bu sözleşme ihlalidir. Bu tür teklifleri kabul etmeyin: EventBliss korumasını kaybedersiniz (destek, iade garantisi). Girişimleri compliance@event-bliss.com adresine bildirin — bir sonraki rezervasyonunuzda %20 kredi alırsınız (maks. 200 €, 12 ay)."
+        "content": "EventBliss'teki ajanslar, platform üzerinden başlatılan tüm rezervasyonları yine platform üzerinden gerçekleştirmekle sözleşmesel olarak yükümlüdür. Bu, sizi müşteri olarak korur ve alıcı korumamızın tüm avantajlarından yararlanmanızı sağlar.\n\nİzin VERİLMEYEN davranışlar: Bir ajans — özellikle bir iptalin ardından, ancak daha görüşme aşamasında dahi — platform komisyonunu atlatmak amacıyla platform dışında (ör. WhatsApp, telefon, e-posta, nakit ödeme, doğrudan havale yoluyla) bir rezervasyon ayarlamak için sizinle iletişime GEÇEMEZ. Bu tür girişimler, ajansın EventBliss'e karşı sözleşme ihlali anlamına gelir.\n\nBu tür teklifleri neden reddetmelisiniz: Platformun atlatılması hâlinde EventBliss korumasını tamamen kaybedersiniz:\n\n• Alıcı koruması yok: İfa edilmeme, hasar veya dolandırıcılık hâlinde iade yok.\n• Destek yok: Platform üzerinden kurulmuş bir sözleşme bulunmadığından EventBliss size yardımcı olamaz.\n• Belgelenmiş iletişim yok: Uyuşmazlık hâlinde izlenebilir kanıtınız olmaz.\n• Değerlendirme ve kimlik doğrulaması yok: Platform artık güvenilirliği garanti edemez.\n• Vergisel açıdan sakıncalı: Usulüne uygun fatura olmaksızın nakit ödeme, her iki taraf için de sorun yaratabilir.\n\nAtlatma girişimlerinin bildirilmesi: Bir ajans sizinle doğrudan iletişime geçer ve platform dışında bir rezervasyon teklif ederse (ör. \"Bana 200 € nakit öde, komisyondan kurtulalım\"), lütfen bunu derhâl compliance@event-bliss.com adresine bildirin. Yararlı olacaklar: mesajın ekran görüntüsü, rezervasyon/hizmet kimliği (ID), iletişimin zamanı.\n\nTeşekkür kredisi: Bildiriminize teşekkür olarak, olayın incelenmesi ve doğrulanmasının ardından EventBliss'teki bir sonraki rezervasyonunuz için %20 indirim tanımlarız (en fazla 200 € kredi değeri, 12 ay içinde kullanılabilir).\n\nGizlilik: Bildiriminizi gizli tutarız. İlgili ajans, kendisini kimin bildirdiğini öğrenmez."
       },
       "prohibited": {
         "title": "Yasaklanan",
-        "content": "Yasadışı faaliyetler için kullanamazsınız."
+        "content": "Platformu yasa dışı, hileli veya zarar verici amaçlarla kullanmamayı taahhüt edersiniz. Özellikle aşağıdakiler yasaktır:\n\n• Ödeme yöntemlerinin kötüye kullanılması (ör. çevrimiçi ifa edilmiş hizmetlerde haksız ters ibrazlar, yerinde ödemeli rezervasyonlarda ödemenin reddi).\n• Ajanslara veya çalışanlara yönelik hakaret içeren, ayrımcı veya tehditkâr davranışlar.\n• Değerlendirmelerin manipülasyonu (ör. sahte yorumlar, kötü değerlendirme tehdidiyle şantaj).\n• Rezervasyonda yanlış beyanda bulunulması (ör. sahte kimlik, sahte ödeme araçları).\n• Platformun yasa dışı içerik, hizmet veya ürünlerin aracılığı için kullanılması.\n• EventBliss üzerinden kurulan ilk temasın ardından platformun bizzat atlatılması (bkz. \"Atlatma karşıtı koruma\" bölümü)."
       },
       "liability": {
         "title": "Sorumluluk Sınırlaması",
-        "content": "Hasarlardan sorumlu değiliz."
+        "content": "EventBliss, platform işletmecisi olarak yalnızca kasıt veya ağır ihmale dayanan zararlardan ve yasal hükümler uyarınca yaşamın, vücut bütünlüğünün ve sağlığın ihlalinden sorumludur.\n\nRezerve edilen hizmetin kalitesinden, zamanında ifasından ve sözleşmeye uygunluğundan münhasıran ilgili ajans sorumludur — EventBliss hizmeti ifa eden taraf değildir.\n\nBununla birlikte EventBliss, çevrimiçi ödemelerde gönüllü olarak alıcı koruması sağlar (bkz. \"İptal ve iade\") ve uyuşmazlık hâlinde yerinde ödemeli rezervasyonlarda dahi arabuluculuk yapar."
       },
       "changes": {
         "title": "Değişiklikler",
-        "content": "Bu şartları güncelleyebiliriz."
+        "content": "Bu koşulları, yasal değişikliklere veya yeni özelliklere uyarlamak amacıyla güncelleyebiliriz. Esaslı değişiklikler, yürürlüğe girmeden en az 30 gün önce e-posta yoluyla size duyurulur. Yürürlüğe girdikten sonra platformu kullanmaya devam etmeniz, değişiklikleri kabul ettiğiniz anlamına gelir."
       },
       "governingLaw": {
         "title": "Geçerli Hukuk",
-        "content": "Uygulanacak hukuk: Platform, Kıbrıs Cumhuriyeti'nde kayıtlı MYFAMBLISS GROUP LTD tarafından işletilir. CISG hariç Kıbrıs hukuku uygulanır. Mutad mesken devletinin emredici tüketici koruma hükümleri (örn. Almanya'da § 312g BGB) saklıdır (Roma I md. 6(2)). AB çevrimiçi uyuşmazlık çözüm platformu: https://ec.europa.eu/consumers/odr"
+        "content": "\"EventBliss\", MYFAMBLISS GROUP LTD'nin (Gladstonos 12-14, 8046 Paphos, Kıbrıs) bir markası ve ürünüdür. Bu koşullara, BM Satım Sözleşmesi (CISG) hariç olmak üzere Kıbrıs Cumhuriyeti hukuku uygulanır. Bu hukuk seçimi, mutat meskeni Avrupa Birliği'nde bulunan tüketiciler bakımından, yalnızca tüketicinin mutat meskeninin bulunduğu devletin emredici tüketici koruma hükümlerine aykırı düşmediği ölçüde geçerlidir (Roma I Tüzüğü md. 6 f. 2). Emredici tüketici hakları — özellikle Almanya'da yerleşik tüketiciler için § 312g BGB uyarınca cayma hakkı — saklıdır.\n\nYetkili mahkeme: Tüketiciler bakımından yasal yetki kuralları, özellikle tüketicinin yerleşim yeri mahkemesinin yetkisi geçerlidir. Tacirlere karşı münhasır yetkili mahkeme, MYFAMBLISS GROUP LTD'nin Kıbrıs Cumhuriyeti'ndeki merkezidir.\n\nMahkeme dışı uyuşmazlık çözümü: (AB) 524/2013 sayılı Tüzük uyarınca kurulan AB çevrimiçi uyuşmazlık çözüm platformu (ODR platformu), 20 Temmuz 2025 tarihinde kapatılmıştır ((AB) 2024/3228 sayılı Tüzük). Bir tüketici hakem heyeti önündeki uyuşmazlık çözüm süreçlerine katılmakla yükümlü değiliz ve buna istekli de değiliz; ancak sorunları support@event-bliss.com üzerinden doğrudan çözmeye gayret ederiz."
       },
       "meta": {
         "title": "Hizmet Şartları | EventBliss",
@@ -2055,15 +2061,15 @@
         "leadIn": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun.",
         "period": {
           "title": "Münhasırlık süresi",
-          "content": "18 ay — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Platform üzerinden yönlendirilen her müşteri, ilk temastan itibaren 18 ay boyunca münhasıran EventBliss aracılığıyla yönlendirilmiş sayılır. Bu süre boyunca Ajans; yönlendirilen müşteriyle rezervasyonları, takip rezervasyonlarını ve her türlü diğer ücretli hizmeti münhasıran Platform üzerinden gerçekleştirmek zorundadır.\n\nİlk temas, talebin bir rezervasyonla sonuçlanıp sonuçlanmadığına veya iptal edilip edilmediğine bakılmaksızın, müşterinin Ajansa Platform üzerinden ilettiği ilk rezervasyon talebinin anı sayılır. Bu münhasırlık; 18 aylık süre içinde bir rezervasyona yol açan takip etkinlikleri, yıllık sözleşmeler veya müşterinin belirttiği üçüncü kişilere yapılan tavsiyeler gibi türev iş ilişkileri için de geçerlidir."
         },
         "prohibition": {
           "title": "Atlatma yasağı",
-          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Ajansa aşağıdakiler açıkça yasaktır:\n\n(a) Platform üzerinden kurulmuş veya talep edilmiş bir rezervasyonun iptalinden sonra, ilgili müşteriye içerik bakımından benzer bir hizmeti Platform dışında sunmak;\n\n(b) hizmet Platformda çevrimiçi ödeme (Stripe) olarak listelenmişken müşteriden yerinde nakit ödeme talep etmek;\n\n(c) Platform üzerinden yönlendirilen müşterilerin iletişim bilgilerini üçüncü kişilere aktarmak, satmak veya kendi reklam amaçları için kullanmak;\n\n(d) devam eden bir Platform rezervasyonuna paralel olarak işlemin kendi kanalları (web sitesi, WhatsApp, e-posta, telefon) üzerinden yürütülmesini önermek veya gerçekleştirmek;\n\n(e) müşteriyi, eşdeğer bir hizmeti platform dışında sipariş etmek amacıyla mevcut bir Platform rezervasyonunu iptal etmeye yöneltmek.\n\nBu atlatma yasağı, girişimin kimden geldiğine bakılmaksızın geçerlidir — müşteri 18 aylık münhasırlık süresi içinde olduğu sürece, müşteriden gelen bir talep dahi Ajansı rezervasyonu Platform üzerinden gerçekleştirme yükümlülüğünden kurtarmaz."
         },
         "dataPurpose": {
           "title": "Veri amaç sınırlaması",
-          "content": "Art. 5 GDPR — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Bir Platform rezervasyonu kapsamında Ajansa iletilen müşteri verileri (ad, e-posta, telefon numarası, adres), GDPR Madde 5(1)(b) uyarınca katı bir amaçla sınırlılık ilkesine tabidir. Ajans, bu verileri münhasıran somut olarak rezerve edilen hizmetin ifası için kullanabilir.\n\nÖzellikle aşağıdakiler yasaktır:\n\n• Platform iletişim verileri kullanılarak kendi müşteri listelerinin veya CRM kayıtlarının oluşturulması;\n\n• iletişim verilerinin somut rezervasyonun dışında pazarlama amaçları, bültenler, reklam yazıları veya ek satış (upselling) kampanyaları için kullanılması;\n\n• iletişim verilerinin, hizmetin ifası ve yasal saklama yükümlülükleri için gerekli olan ölçünün ötesinde saklanması;\n\n• hizmetin ifası için zorunlu olarak gerekli olmadıkça verilerin üçüncü kişilere aktarılması.\n\nHizmetin tamamlanması ve yasal saklama sürelerinin dolmasının ardından Ajans, iletişim verilerini silmek zorundadır. Buna ilişkin kanıt, talep üzerine EventBliss'e sunulmalıdır."
         },
         "penalty": {
           "title": "Cezai şart",
@@ -2071,7 +2077,7 @@
         },
         "audit": {
           "title": "Denetim hakkı",
-          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Madde 6.1 ila 6.3'e aykırılık yönünde haklı bir şüphe bulunması hâlinde EventBliss, uygun kanıtların sunulmasını talep etme hakkına sahiptir. Ajans, yazılı talep üzerine 14 gün içinde aşağıdaki belgeleri sunmayı taahhüt eder:\n\n• Platform üzerindeki ilk temas anından itibaren Ajans ile ilgili müşteri arasındaki iletişim geçmişi;\n\n• ilgili döneme ilişkin olarak müşteriyle bağlantılı ödeme belgeleri, faturalar ve rezervasyon onayları;\n\n• ilgili müşteriyi ilgilendirdiği ölçüde Ajansın takviminden ve rezervasyon yönetiminden alıntılar.\n\nİlgisiz üçüncü kişilerin kişisel verileri, iletilmeden önce karartılmalıdır. Denetim hakkı, dürüstlük kuralına uygun olarak ve Ajansın meşru ticari sırları korunarak kullanılır.\n\nAjans kanıt sunmayı reddeder veya belgeleri süresi içinde sunmazsa, ihlal gerçekleşmiş sayılır. Bu durumda ihlal bulunmadığını ispat yükü Ajansa aittir."
         }
       },
       "cancellationRates": {
@@ -2087,32 +2093,32 @@
         },
         "suspension": {
           "title": "Askıya alma (%20)",
-          "content": "> 20% — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Ajans kaynaklı iptal oranının 30 günlük kayan dönemde %20'yi aşması hâlinde EventBliss, 7 günlük önceden yazılı bildirim süresinin ardından aşağıdaki önlemlerden birini veya birkaçını alma hakkını saklı tutar:\n\n• Ajansın münferit listelemelerinin askıya alınması;\n\n• yeni rezervasyon kabul edilememesi sonucunu doğuracak şekilde Ajans profilinin tamamen askıya alınması;\n\n• tekrarlanan veya kalıcı aşım hâlinde, profilin silinmesi dâhil olmak üzere Ajansın Platformdan tamamen çıkarılması.\n\nİptal oranı, takip eden 30 günlük dönemde yeniden %15'in altına düştüğünde önlem kaldırılır."
         },
         "exceptions": {
           "title": "İstisnalar",
-          "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+          "content": "Ajansın ilgili kanıtları sunması koşuluyla, aşağıdaki nedenlere dayanan iptaller iptal oranına dâhil edilmez:\n\n• mücbir sebep (doğa olayları, resmî yasaklar, görevlendirilen personelin doktor raporuyla belgelenen ağır hastalığı);\n\n• müşterinin rezervasyon sırasında kanıtlanmış yanlış bilgilendirmesi (ör. gerçeğe aykırı katılımcı sayısı, listelemeden farklı etkinlik türü);\n\n• Platform tarafından belgelenmiş ihtara rağmen müşterinin çevrimiçi ödemede temerrüde düşmesi;\n\n• ancak rezervasyon onayından sonra öğrenilen, güvenliğe veya hijyen mevzuatına ilişkin haklı endişeler.\n\nAjans, istisna nedenini en geç iptal sırasında kontrol panelinde (Dashboard) işaretlemek ve EventBliss'in talebi üzerine kanıt sunmak zorundadır. Zamanında işaretleme ve kanıt olmaksızın iptal, orana dâhil edilir."
         }
       },
       "qualityCriteria": {
         "title": "Kalite ve listeleme",
-        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        "content": "Ajans, aşağıdaki asgari kalite standartlarına uymayı taahhüt eder:\n\n• Yanıt süresi: Talepler, iş günlerinde 24 saat içinde yanıtlanmalıdır.\n\n• Asgari değerlendirme: Son 20 rezervasyona ilişkin ortalama müşteri puanı 5,0 üzerinden 4,0'ın altına düşmemelidir. Altına düşülmesi hâlinde, iptal oranındakine benzer bir aşamalı yaptırım süreci uygulanır.\n\n• Profil eksiksizliği: Her listeleme en az bir açıklama, üç fotoğraf, fiyat bilgisi ve müsaitlik durumu içermelidir.\n\n• Hukuken bağlayıcı fiyatlar: Belirtilen tüm fiyatlar, Ajansın KDV mükellefi olması hâlinde, § 1 PAngV uyarınca yasal KDV dâhil nihai fiyatlardır. Ek maliyetler şeffaf biçimde gösterilmelidir.\n\n• Görsel hakları: Ajans, kullanılan tüm görseller üzerinde gerekli kullanım haklarına sahip olduğunu garanti eder ve EventBliss'i üçüncü kişilerin ileri sürebileceği taleplerden ari tutar.\n\nEventBliss, kalite kriterlerine uymayan listelemeleri reddetme veya bunlarda değişiklik talep etme hakkını saklı tutar."
       },
       "liability": {
         "title": "Sorumluluk",
-        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        "content": "Ajans; rezerve edilen hizmetin usulüne uygun ifasından, buna bağlı tüm riskler dâhil olmak üzere — özellikle etkinlik yerindeki kişi ve eşya zararları, alan güvenliğini sağlama yükümlülüğünün ihlalleri ile kalite kusurları — tek başına ve tam kapsamlı olarak sorumludur.\n\nEventBliss, münhasıran Platformun kullanılabilirliğinden ve piyasada olağan kullanılabilirlik standartları çerçevesindeki teknik işlevselliğinden sorumludur. Hizmetin Ajans tarafından ifası sırasındaki olaylardan, belirli rezervasyonların gerçekleşmesinden veya müşterilerin davranışlarından sorumluluk hariç tutulmuştur.\n\nAjans; hizmetin ayıplı veya sözleşmeye aykırı ifasından kaynaklanan üçüncü kişi taleplerinin tamamından, makul hukuki savunma masrafları dâhil olmak üzere, ilk talepte EventBliss'i ari tutar.\n\nAjans, sözleşme süresi boyunca kişi zararları için en az 1.000.000,00 EUR ve eşya zararları için en az 500.000,00 EUR teminat tutarlı bir işletme sorumluluk sigortası bulundurmak ve bunu talep üzerine kanıtlamakla yükümlüdür."
       },
       "dataProtection": {
         "title": "Veri koruma",
-        "content": "GDPR Art. 28 — Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        "content": "EventBliss'in somut rezervasyonların ifası için Ajansa müşterilere ait kişisel veriler iletmesi hâlinde, her iki taraf da kendi işleme amacı bakımından GDPR Madde 4(7) anlamında bağımsız veri sorumlusu olarak hareket eder.\n\nEventBliss'in Ajans adına veri işlediği hâllerde (ör. ajans profillerinin ve rezervasyon geçmişinin saklanması), bu sözleşmenin ayrılmaz parçası olan ve GDPR Madde 28 uyarınca akdedilen ayrı veri işleme sözleşmesi geçerlidir. Orada yer alan teknik ve organizasyonel önlemlere ve alt işleyenler listesine atıf yapılır.\n\nAjans, kendi adına GDPR'ın, BDSG'nin ve tamamlayıcı veri koruma mevzuatının tüm gerekliliklerine uymayı taahhüt eder; bu özellikle Madde 6.3'teki amaçla sınırlılığı, veri minimizasyonu ve saklamanın sınırlandırılması ilkelerini ve ilgili kişi haklarının gözetilmesini kapsar.\n\nPlatform müşterilerini etkileyen veri ihlallerinde EventBliss derhâl, en geç ihlalin öğrenilmesinden itibaren 24 saat içinde bilgilendirilmelidir."
       },
       "termTermination": {
         "title": "Süre ve fesih",
-        "content": "Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        "content": "Bu sözleşme belirsiz süreli olarak akdedilir ve Ajans profilinin Platformda etkinleştirilmesiyle başlar.\n\nOlağan fesih: Her iki taraf da sözleşmeyi, ay sonuna etkili olmak üzere 30 takvim günü önceden metin formunda bildirimle olağan şekilde feshedebilir. Devam eden ve hâlihazırda onaylanmış rezervasyonlar fesihten etkilenmez; eksiksiz ve sözleşmeye uygun biçimde tamamlanmaları gerekir.\n\nEventBliss tarafından olağanüstü fesih: EventBliss, özellikle aşağıdaki hâllerde sözleşmeyi derhâl feshetme hakkına sahiptir:\n\n• Madde 6'ya (münhasırlık ve atlatma karşıtı koruma) kanıtlanmış aykırılık;\n\n• Madde 7'de düzenlenen iptal oranının art arda üç 30 günlük dönemde aşılması;\n\n• ihtara rağmen Ajansın platform komisyonlarında 30 günü aşan önemli ödeme temerrüdü;\n\n• kalite kriterlerinin, veri koruma hükümlerinin veya yasal gerekliliklerin tekrarlanan ihlali;\n\n• Ajansın malvarlığı hakkında iflas takibatının açılması veya masraf yetersizliği nedeniyle açılmasının reddi.\n\nSözleşmenin sona ermesiyle Ajansın kontrol paneline (Dashboard) erişimi sona erer; muaccel platform komisyonları ödenmeye devam eder. Madde 6.1'deki münhasırlık düzenlemesi, ilk teması sözleşme süresi içinde gerçekleşen müşteriler bakımından, ilgili 18 aylık süre boyunca sözleşmenin sona ermesinden sonra da geçerliliğini korur."
       },
       "finalProvisions": {
         "title": "Son hükümler",
-        "content": "Cyprus law + Tam bağlayıcı metin için lütfen Almanca sürüme başvurun."
+        "content": "Uygulanacak hukuk: Bu sözleşmeye ve bu sözleşmeden doğan veya bu sözleşmeyle bağlantılı tüm hukuki ilişkilere, BM Satım Sözleşmesi (CISG) ve başka bir hukukun uygulanmasına yol açacak kanunlar ihtilafı kuralları hariç olmak üzere, münhasıran Kıbrıs Cumhuriyeti hukuku uygulanır. Nihai müşterinin mutat meskeninin bulunduğu devletin emredici tüketici koruma hükümleri, Ajans ile nihai müşteri arasındaki ilişki bakımından saklıdır.\n\nMünhasır yetkili mahkeme: Bu sözleşmeden doğan veya bu sözleşmeyle bağlantılı tüm uyuşmazlıklarda, yasaların izin verdiği ölçüde, MYFAMBLISS GROUP LTD'nin Kıbrıs Cumhuriyeti'ndeki merkezinde bulunan görevli mahkemeler münhasıran yetkilidir. Bununla birlikte EventBliss, Ajansa karşı Ajansın genel iş merkezinde de dava açma hakkına sahiptir.\n\nAlternatif uyuşmazlık çözümü: Taraflar, yargı yoluna başvurmadan önce dostane bir çözüm aramayı taahhüt eder. Taraflardan birinin talebi üzerine, ertelenemez önlemler gerekli olmadıkça, Cyprus Eurasia Dispute Resolution Centre veya benzer bir kurumun kuralları uyarınca yapılandırılmış bir uyuşmazlık çözüm süreci (arabuluculuk) yürütülür.\n\nBölünebilirlik kaydı: Bu sözleşmenin herhangi bir hükmünün geçersiz veya uygulanamaz olması ya da sonradan bu hâle gelmesi, diğer hükümlerin geçerliliğini etkilemez. Geçersiz hükmün yerine, ekonomik olarak amaçlanana en yakın olan ve Kıbrıs hukukuna göre geçerli ve uygulanabilir bir düzenleme geçer.\n\nMetin formu şartı: Bu sözleşmedeki değişiklik ve ekler metin formunda yapılmalıdır. Bu, metin formu şartının kaldırılması için de geçerlidir.\n\nDeğişiklik kaydı: EventBliss, değişikliklerin Ajans için makul ölçüde katlanılabilir olması koşuluyla, 30 takvim günü önceden metin formunda bildirimde bulunarak bu sözleşmeyi değiştirme hakkına sahiptir. Ajans, değişikliğe süresi içinde metin formunda itiraz etmezse değişiklik kabul edilmiş sayılır. Ajansın itiraz etmesi hâlinde EventBliss, sözleşme ilişkisini planlanan değişikliğin yürürlük tarihi itibarıyla olağan şekilde sona erdirme hakkına sahiptir.\n\nDevredilebilirlik: Bu sözleşmeden doğan hak ve yükümlülükler, diğer tarafın önceden yazılı onayı olmaksızın üçüncü kişilere devredilemez. EventBliss ile bağlı şirketlere yapılan devirler bu kuralın dışındadır.\n\nSözleşme dili: Bu sözleşmenin Almanca metni esastır. Diğer dillere yapılan çeviriler yalnızca bilgilendirme amaçlıdır."
       },
       "compliance": {
         "title": "Uyum iletişimi",

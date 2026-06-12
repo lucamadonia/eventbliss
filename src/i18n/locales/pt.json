@@ -1809,6 +1809,12 @@
             "purpose": "Chatbot de apoio no site; trata as mensagens que introduzes no chat",
             "location": "EUA",
             "safeguards": "DPA, CCT"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "Envio de e-mails transacionais e de notificação (p. ex. confirmações de reserva, confirmação da newsletter)",
+            "location": "UE (Alemanha)",
+            "safeguards": "Contrato de subcontratação (art. 28.º do RGPD)"
           }
         }
       },
@@ -1876,7 +1882,7 @@
           },
           "portability": {
             "label": "Direito de portabilidade dos dados (art. 20.º do RGPD)",
-            "desc": "Podes receber os dados que forneceste num formato estruturado, de uso corrente e de leitura automática. Pede uma exportação por e-mail para support@event-bliss.com."
+            "desc": "Podes receber os dados que forneceste num formato estruturado, de uso corrente e de leitura automática. Descarrega-os diretamente na app em Perfil → Definições → «Exportar os meus dados» ou pede a exportação por e-mail para support@event-bliss.com."
           },
           "objection": {
             "label": "Direito de oposição (art. 21.º do RGPD)",
@@ -1917,43 +1923,43 @@
       },
       "services": {
         "title": "Os Nossos Serviços",
-        "content": "EventBliss fornece ferramentas de planeamento."
+        "content": "A EventBliss opera um marketplace online onde agências de eventos independentes oferecem os seus serviços (p. ex. DJs, fotógrafos, catering, decoração, espaços para eventos).\n\nImportante: a EventBliss atua como intermediária e NÃO é parte contratante do serviço reservado. O contrato de prestação de serviços é celebrado exclusivamente entre ti (cliente) e a respetiva agência. A EventBliss disponibiliza a infraestrutura técnica, o processamento de pagamentos, a comunicação, o apoio ao cliente e a resolução de litígios."
       },
       "booking_process": {
         "title": "Processo de reserva",
-        "content": "O contrato de serviço é celebrado com a agência, não com a EventBliss. A EventBliss atua como intermediária. Para pagamento online, a confirmação ocorre após pagamento Stripe bem-sucedido. Para pagamento no local, a agência confirma manualmente. Os consumidores têm direito de retratação nos termos do § 312g BGB (14 dias), com exceções para serviços em data fixa."
+        "content": "1. Pedido: escolhes uma agência/serviço e envias um pedido de reserva com a data, os detalhes e os teus dados de contacto.\n\n2. Confirmação: o contrato com a agência é celebrado quando (a) o pagamento online via Stripe é concluído com êxito (confirmação automática) ou (b) a agência confirma manualmente o teu pedido (no caso de reservas com pagamento no local).\n\n3. Prestação do serviço: a agência presta o serviço na data acordada. A EventBliss não participa na prestação em si, mas coordena a comunicação através da plataforma.\n\nDireito de livre resolução em contratos à distância (§§ 312g, 355 do BGB): enquanto consumidor, dispões, em regra, de um direito de livre resolução de 14 dias. Exceção: nos serviços de lazer com data marcada (§ 312g, n.º 2, ponto 9 do BGB) — o que abrange praticamente todos os serviços de eventos com data fixa — o direito legal de livre resolução não se aplica. A política de cancelamento específica do serviço (ver secção «Cancelamento e reembolso») aplica-se adicionalmente e é mais favorável ao cliente.\n\nToda a comunicação com a agência decorre através do chat da plataforma. Mantém a comunicação aí, para que fique documentada em caso de litígio."
       },
       "payment_methods": {
         "title": "Formas de pagamento",
-        "content": "Duas opções: (1) Pagamento online via Stripe — cartão, Apple/Google Pay, SEPA. (2) Pagamento no local — diretamente à agência no momento do serviço. Em ambos os casos, o preço exibido é final e inclui a taxa de plataforma de 10%."
+        "content": "A EventBliss suporta duas formas de pagamento. A disponibilidade é decidida por cada agência, serviço a serviço:\n\n• Pagamento online (Stripe): cartão de crédito (Visa, Mastercard, Amex), Apple Pay, Google Pay, débito direto SEPA e outros métodos específicos de cada país. O pagamento é imediato e está protegido pela Stripe enquanto prestador de serviços de pagamento em conformidade com a norma PCI-DSS. Após o pagamento bem-sucedido, recebes por e-mail uma confirmação de reserva automática e um comprovativo.\n\n• Pagamento no local (on_site): pagas o preço diretamente à agência no dia do evento (ou conforme acordado), em numerário ou através de um método acordado. O preço indicado é vinculativo — a agência não pode exigir um valor superior ao indicado na reserva. A reserva é confirmada por confirmação manual da agência através da plataforma.\n\nPreço total e taxa de plataforma: todos os preços na EventBliss são preços finais, incluindo o IVA aplicável (quando a agência está sujeita a IVA) e a taxa de plataforma de 10 %. Esta taxa é liquidada internamente entre a agência e a EventBliss; tu pagas apenas o preço total apresentado.\n\nProblemas de pagamento: em caso de problemas com pagamentos online (p. ex. cobranças falhadas, chargebacks) ou pagamentos no local (p. ex. divergências de preço), contacta support@event-bliss.com. A EventBliss medeia em qualquer dos casos — incluindo nas reservas com pagamento no local."
       },
       "payment": {
         "title": "Pagamento",
-        "content": "Funcionalidades básicas são gratuitas."
+        "content": "Nos pagamentos online, o valor total é debitado imediatamente no momento da reserva. A libertação do valor à agência ocorre após a prestação do serviço, de acordo com o plano de pagamentos (normalmente 24–72 horas após o evento), para permitir reembolsos em caso de litígio.\n\nNos pagamentos no local, não é debitado qualquer valor antecipadamente. O pagamento é efetuado diretamente à agência.\n\nComprovativos e faturas: nos pagamentos online recebes automaticamente uma confirmação de pagamento da Stripe e — se disponibilizada pela agência — uma fatura na tua área de reservas. Nos pagamentos no local, a agência é obrigada a emitir um recibo/fatura.\n\nOs juros de mora e demais custos por atraso no pagamento regem-se pelas disposições legais (§§ 286, 288 do BGB)."
       },
       "cancellation_refund": {
         "title": "Cancelamento e reembolso",
-        "content": "A política de cancelamento (flexível / moderada / rigorosa) é indicada por serviço. Os reembolsos são processados para a forma de pagamento original no prazo de 14 dias. Para reservas com pagamento no local, os cancelamentos são tratados diretamente com a agência; a EventBliss medeia em caso de litígio."
+        "content": "Cada agência define uma política de cancelamento por serviço. Esta é apresentada de forma transparente antes de concluíres a reserva. Existem três níveis:\n\n• flexível: reembolso integral até 7 dias antes do evento; depois disso, 50 %.\n• moderada: reembolso integral até 14 dias antes do evento; 50 % até 7 dias; depois disso, sem reembolso.\n• rigorosa: reembolso de 50 % até 30 dias antes do evento; depois disso, sem reembolso.\n\nForma de reembolso: nos pagamentos online, o reembolso é devolvido automaticamente ao teu meio de pagamento original. Consoante o banco ou o emissor do cartão, o crédito surge no prazo de 5 a 14 dias.\n\nReservas com pagamento no local: como nenhum valor passou pela EventBliss, os cancelamentos são tratados diretamente com a agência. A política de cancelamento acordada mantém-se, ainda assim, vinculativa. Em caso de desacordo, a EventBliss medeia; contacta support@event-bliss.com indicando o número da reserva.\n\nForça maior e casos especiais: se a agência ficar impossibilitada de prestar o serviço (p. ex. doença, restrições impostas pelas autoridades), o valor é integralmente reembolsado, independentemente do nível de cancelamento.\n\nIncumprimento imputável à agência: se a agência não comparecer ou prestar um serviço com defeitos graves, aplica-se a proteção do comprador da EventBliss. Comunica o incidente no prazo de 48 horas após a data prevista, com elementos de prova, para support@event-bliss.com — se a reclamação for fundamentada, recebes o reembolso integral."
       },
       "off_platform_bypass": {
         "title": "Proteção contra contorno",
-        "content": "As agências estão contratualmente obrigadas a processar todas as reservas através da plataforma. Após um cancelamento, as agências NÃO podem contactá-lo/a diretamente para oferecer uma reserva fora da plataforma com pagamento em dinheiro — isto constitui incumprimento contratual. Não aceite tais ofertas: perderia a proteção da EventBliss (suporte, garantia de reembolso). Denuncie tentativas a compliance@event-bliss.com — receberá um crédito de 20% na próxima reserva (máx. 200 €, 12 meses)."
+        "content": "As agências na EventBliss estão contratualmente obrigadas a processar através da plataforma TODAS as reservas com origem na plataforma. Isto protege-te enquanto cliente e garante que beneficias de todas as vantagens da proteção do comprador.\n\nO que NÃO é permitido: uma agência NÃO pode contactar-te — em particular após um cancelamento, mas também logo durante o contacto inicial — para combinar uma reserva fora da plataforma (p. ex. via WhatsApp, telefone, e-mail, pagamento em numerário, transferência bancária direta) com o objetivo de evitar a taxa de plataforma. Tais tentativas constituem um incumprimento contratual da agência perante a EventBliss.\n\nPorque deves recusar essas ofertas: ao contornares a plataforma perdes todas as proteções da EventBliss:\n\n• Sem proteção do comprador: nenhum reembolso em caso de incumprimento, danos ou fraude.\n• Sem apoio: a EventBliss não te pode ajudar, porque nenhum contrato passa pela plataforma.\n• Sem comunicação documentada: nenhuma prova rastreável em caso de litígio.\n• Sem verificação de avaliações e de identidade: a plataforma deixa de poder garantir a fiabilidade.\n• Riscos fiscais: o pagamento em numerário sem fatura adequada pode causar problemas a ambas as partes.\n\nComunicar tentativas de contorno: se uma agência te contactar diretamente e te propuser uma reserva fora da plataforma (p. ex. «Paga-me 200 € em numerário e poupamos a taxa»), comunica-o de imediato a compliance@event-bliss.com. Elementos úteis: captura de ecrã da mensagem, ID da reserva/do serviço, momento do contacto.\n\nCrédito de agradecimento: como agradecimento, após verificação do incidente, creditamos-te 20 % de desconto na tua próxima reserva EventBliss (valor máximo de 200 €, utilizável no prazo de 12 meses).\n\nConfidencialidade: a tua comunicação é tratada de forma confidencial. A agência denunciada não fica a saber quem apresentou a denúncia."
       },
       "prohibited": {
         "title": "Atividades Proibidas",
-        "content": "Não podes usar para atividades ilegais."
+        "content": "Comprometes-te a não utilizar a plataforma para fins ilegais, fraudulentos ou lesivos. É proibido, em particular:\n\n• o uso abusivo dos métodos de pagamento (p. ex. chargebacks injustificados após a prestação do serviço pago online, recusa de pagamento em reservas com pagamento no local);\n• comportamento abusivo, discriminatório ou ameaçador para com agências ou colaboradores;\n• a manipulação de avaliações (p. ex. avaliações falsas, chantagem com avaliações negativas);\n• a prestação de informações falsas nas reservas (p. ex. identidade falsa, meios de pagamento fraudulentos);\n• a utilização da plataforma para intermediar conteúdos, serviços ou produtos ilegais;\n• contornares tu próprio a plataforma após o primeiro contacto através da EventBliss (ver secção «Proteção contra contorno»)."
       },
       "liability": {
         "title": "Limitação de Responsabilidade",
-        "content": "Não somos responsáveis por danos."
+        "content": "Enquanto operadora da plataforma, a EventBliss responde apenas por danos resultantes de dolo ou negligência grosseira, bem como por danos à vida, à integridade física e à saúde, nos termos das disposições legais.\n\nA qualidade, a pontualidade e a conformidade contratual do serviço reservado são da exclusiva responsabilidade da respetiva agência — a EventBliss não é a prestadora do serviço.\n\nNão obstante, a EventBliss concede voluntariamente proteção do comprador nos pagamentos online (ver secção «Cancelamento e reembolso») e medeia em caso de litígio, também nas reservas com pagamento no local."
       },
       "changes": {
         "title": "Alterações",
-        "content": "Podemos atualizar estes termos."
+        "content": "Podemos atualizar estes Termos para refletir alterações legais ou novas funcionalidades. As alterações relevantes ser-te-ão comunicadas por e-mail com, pelo menos, 30 dias de antecedência relativamente à sua entrada em vigor. A utilização continuada após a entrada em vigor vale como aceitação."
       },
       "governingLaw": {
         "title": "Lei Aplicável",
-        "content": "Lei aplicável: A plataforma é operada pela MYFAMBLISS GROUP LTD com sede na República de Chipre. Aplica-se a lei cipriota com exclusão da CISG. Os direitos imperativos de proteção do consumidor da residência habitual (p. ex. § 312g BGB na Alemanha) permanecem inalterados (Art. 6(2) Roma I). Plataforma de resolução de litígios da UE: https://ec.europa.eu/consumers/odr"
+        "content": "«EventBliss» é uma marca e um produto da MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Chipre. Estes Termos regem-se pelo direito da República de Chipre, com exclusão da Convenção das Nações Unidas sobre os Contratos de Compra e Venda Internacional de Mercadorias. Para os consumidores com residência habitual na União Europeia, esta escolha de lei aplica-se apenas na medida em que não prive o consumidor da proteção conferida pelas disposições imperativas de defesa do consumidor do Estado da sua residência habitual (art. 6.º, n.º 2, do Regulamento Roma I). Os direitos imperativos dos consumidores — em particular o direito de livre resolução nos termos do § 312g do Código Civil alemão (BGB) para consumidores residentes na Alemanha — permanecem inalterados.\n\nForo competente: para os consumidores aplicam-se as regras legais de competência judicial, em particular o foro do domicílio do consumidor. Perante empresários, o foro exclusivo é o da sede da MYFAMBLISS GROUP LTD na República de Chipre.\n\nResolução extrajudicial de litígios: a plataforma europeia de resolução de litígios em linha (RLL) prevista no Regulamento (UE) n.º 524/2013 foi descontinuada em 20 de julho de 2025 (Regulamento (UE) 2024/3228). Não estamos obrigados nem dispostos a participar em procedimentos de resolução de litígios perante uma entidade de resolução alternativa de litígios de consumo, mas procuramos sempre resolver as questões diretamente através de support@event-bliss.com."
       },
       "meta": {
         "title": "Termos de Serviço | EventBliss",
@@ -2055,15 +2061,15 @@
         "leadIn": "Consulte a versão alemã para o texto vinculativo completo.",
         "period": {
           "title": "Período de exclusividade",
-          "content": "18 meses — Consulte a versão alemã para o texto vinculativo completo."
+          "content": "Qualquer cliente angariado através da Plataforma fica em regime de exclusividade com a EventBliss durante 18 meses a contar do primeiro contacto, incluindo reservas subsequentes e negócios derivados conexos."
         },
         "prohibition": {
           "title": "Proibição de contorno",
-          "content": "Consulte a versão alemã para o texto vinculativo completo."
+          "content": "Após um cancelamento, a Agência não pode oferecer um serviço comparável fora da plataforma. A Agência não pode incentivar o pagamento em numerário no local quando o anúncio está configurado para pagamento online, partilhar contactos de clientes com terceiros, processar reservas paralelas através de canais próprios, nem induzir clientes a cancelar reservas na plataforma em favor de acordos fora da plataforma."
         },
         "dataPurpose": {
           "title": "Limitação de finalidade dos dados",
-          "content": "Art. 5 GDPR — Consulte a versão alemã para o texto vinculativo completo."
+          "content": "Os dados de contacto de clientes recebidos da Plataforma estão sujeitos a uma estrita limitação de finalidade nos termos do art. 5.º, n.º 1, alínea b), do RGPD. A utilização limita-se à execução da reserva concreta; são proibidos a criação de listas de clientes próprias, o marketing, as newsletters e o upselling para além da reserva."
         },
         "penalty": {
           "title": "Cláusula penal",
@@ -2071,7 +2077,7 @@
         },
         "audit": {
           "title": "Direito de auditoria",
-          "content": "Consulte a versão alemã para o texto vinculativo completo."
+          "content": "Em caso de suspeita fundamentada, a EventBliss pode exigir registos de comunicação, comprovativos de pagamento e extratos do calendário de reservas, a apresentar no prazo de 14 dias. A recusa ou a entrega tardia gera uma presunção ilidível de incumprimento."
         }
       },
       "cancellationRates": {
@@ -2087,32 +2093,32 @@
         },
         "suspension": {
           "title": "Suspensão (20%)",
-          "content": "> 20% — Consulte a versão alemã para o texto vinculativo completo."
+          "content": "Acima de 20 %, a EventBliss pode — mediante pré-aviso escrito de 7 dias — suspender anúncios individuais, suspender o perfil completo ou remover a Agência da Plataforma. As medidas são levantadas assim que a taxa descer abaixo de 15 %."
         },
         "exceptions": {
           "title": "Exceções",
-          "content": "Consulte a versão alemã para o texto vinculativo completo."
+          "content": "A força maior, as informações incorretas prestadas pelo cliente, a mora do cliente no pagamento e as preocupações legítimas de segurança ou de higiene ficam excluídas do cálculo, desde que documentadas atempadamente e comprovadas."
         }
       },
       "qualityCriteria": {
         "title": "Qualidade e listagem",
-        "content": "Consulte a versão alemã para o texto vinculativo completo."
+        "content": "Tempo de resposta inferior a 24 horas em dias úteis, classificação média mínima de 4,0/5,0 nas últimas 20 reservas, perfis completos, preços juridicamente vinculativos nos termos do PAngV (regulamento alemão de indicação de preços) e direitos de utilização válidos sobre todas as imagens."
       },
       "liability": {
         "title": "Responsabilidade",
-        "content": "Consulte a versão alemã para o texto vinculativo completo."
+        "content": "A Agência é a única responsável pela prestação do serviço e pelos incidentes no local do evento. A EventBliss responde apenas pela disponibilidade da plataforma dentro dos padrões habituais de mercado. A Agência indemniza e exonera a EventBliss de quaisquer reclamações de terceiros decorrentes da prestação defeituosa do serviço e deve manter um seguro de responsabilidade civil de exploração de, pelo menos, 1.000.000 EUR (danos pessoais) e 500.000 EUR (danos materiais)."
       },
       "dataProtection": {
         "title": "Proteção de dados",
-        "content": "GDPR Art. 28 — Consulte a versão alemã para o texto vinculativo completo."
+        "content": "Cada parte atua como responsável pelo tratamento autónomo para os seus próprios fins de tratamento. Quando a EventBliss trata dados por conta da Agência, aplica-se o acordo de subcontratação separado nos termos do art. 28.º do RGPD. As violações de dados pessoais que envolvam clientes da plataforma devem ser comunicadas à EventBliss no prazo de 24 horas após a sua deteção."
       },
       "termTermination": {
         "title": "Duração e rescisão",
-        "content": "Consulte a versão alemã para o texto vinculativo completo."
+        "content": "O contrato vigora por tempo indeterminado. Qualquer das partes pode denunciá-lo livremente mediante pré-aviso escrito de 30 dias, com efeitos no final do mês. A EventBliss pode resolver o contrato com efeito imediato em caso de violação da cláusula 6, de violações reiteradas da taxa de cancelamento, de mora substancial no pagamento ou de insolvência. A exclusividade de 18 meses prevista na cláusula 6.1 mantém-se após a cessação do contrato."
       },
       "finalProvisions": {
         "title": "Disposições finais",
-        "content": "Cyprus law + Consulte a versão alemã para o texto vinculativo completo."
+        "content": "Lei aplicável: o presente contrato rege-se exclusivamente pelo direito da República de Chipre, com exclusão da Convenção das Nações Unidas sobre os Contratos de Compra e Venda Internacional de Mercadorias (CISG) e de quaisquer normas de conflitos de leis que conduzam à aplicação de outra ordem jurídica. As normas imperativas de defesa do consumidor do Estado da residência habitual do cliente permanecem inalteradas na relação entre a Agência e o Cliente.\n\nForo exclusivo: para todos os litígios emergentes deste contrato ou com ele relacionados são exclusivamente competentes, na medida do legalmente admissível, os tribunais competentes da sede da MYFAMBLISS GROUP LTD na República de Chipre. A EventBliss reserva-se o direito de demandar a Agência também no foro do seu estabelecimento principal.\n\nResolução alternativa de litígios: antes de instaurarem um processo judicial, as partes procurarão uma resolução amigável. A pedido, será conduzido um procedimento estruturado de mediação segundo as regras de uma instituição reconhecida sediada em Chipre.\n\nA cláusula de salvaguarda, os requisitos de forma, os direitos de alteração e as restrições à cessão aplicam-se conforme estabelecido na versão alemã. A versão vinculativa é o original alemão."
       },
       "compliance": {
         "title": "Contacto Compliance",

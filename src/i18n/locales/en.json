@@ -1739,6 +1739,12 @@
             "purpose": "Support chatbot on the website; processes the messages you enter in the chat",
             "location": "USA",
             "safeguards": "DPA, SCCs"
+          },
+          "allinkl": {
+            "name": "ALL-INKL.COM (SMTP)",
+            "purpose": "Delivery of transactional and notification emails (e.g. booking confirmations, newsletter confirmation)",
+            "location": "EU (Germany)",
+            "safeguards": "DPA (Art. 28 GDPR)"
           }
         }
       },
@@ -1806,7 +1812,7 @@
           },
           "portability": {
             "label": "Right to data portability (Art. 20 GDPR)",
-            "desc": "You can receive the data you provided in a structured, commonly used, machine-readable format. Request an export by email to support@event-bliss.com."
+            "desc": "You can receive the data you provided in a structured, commonly used, machine-readable format. Download it directly in the app under Profile → Settings → “Export my data”, or request the export by email to support@event-bliss.com."
           },
           "objection": {
             "label": "Right to object (Art. 21 GDPR)",
@@ -1883,7 +1889,7 @@
       },
       "governingLaw": {
         "title": "Governing Law & Jurisdiction",
-        "content": "\"EventBliss\" is a brand and product of MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. These Terms are governed by the law of the Republic of Cyprus, excluding the UN Convention on Contracts for the International Sale of Goods. For consumers habitually resident in the European Union, this choice of law applies only to the extent it does not deprive the consumer of the protection of mandatory consumer-protection provisions of the state of their habitual residence (Article 6(2) Rome I Regulation). Mandatory consumer rights — in particular the right of withdrawal under § 312g German Civil Code for consumers resident in Germany — remain unaffected.\n\nJurisdiction: For consumers, the statutory rules on jurisdiction apply, in particular the consumer's place of residence. Against entrepreneurs, exclusive jurisdiction lies at the registered seat of MYFAMBLISS GROUP LTD in the Republic of Cyprus.\n\nOut-of-court dispute resolution: The EU Commission provides an online dispute resolution platform: https://ec.europa.eu/consumers/odr. We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board, but strive for direct resolution via support@event-bliss.com."
+        "content": "\"EventBliss\" is a brand and product of MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. These Terms are governed by the law of the Republic of Cyprus, excluding the UN Convention on Contracts for the International Sale of Goods. For consumers habitually resident in the European Union, this choice of law applies only to the extent it does not deprive the consumer of the protection of mandatory consumer-protection provisions of the state of their habitual residence (Article 6(2) Rome I Regulation). Mandatory consumer rights — in particular the right of withdrawal under § 312g German Civil Code for consumers resident in Germany — remain unaffected.\n\nJurisdiction: For consumers, the statutory rules on jurisdiction apply, in particular the consumer's place of residence. Against entrepreneurs, exclusive jurisdiction lies at the registered seat of MYFAMBLISS GROUP LTD in the Republic of Cyprus.\n\nOut-of-court dispute resolution: The EU online dispute resolution (ODR) platform under Regulation (EU) No 524/2013 was discontinued on 20 July 2025 (Regulation (EU) 2024/3228). We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board, but we always aim to resolve issues directly via support@event-bliss.com."
       },
       "meta": {
         "title": "Terms of Service | EventBliss",
