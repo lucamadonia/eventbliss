@@ -47,3 +47,42 @@ export function isGamePremium(gameId: string): boolean {
   const tier = getGameTier(gameId);
   return tier?.tier === 'premium';
 }
+
+// ---- Daily free-round counter (localStorage, date-scoped key) ----
+// Single source of truth used by usePremiumGate AND GamesHub.
+
+function freePlaysKey(gameId: string): string {
+  const date = new Date().toISOString().split('T')[0];
+  return `free_plays_${gameId}_${date}`;
+}
+
+/** Free plays already used today for this game. 0 if unavailable. */
+export function getFreePlaysUsed(gameId: string): number {
+  try {
+    return Number(localStorage.getItem(freePlaysKey(gameId)) || '0');
+  } catch {
+    return 0;
+  }
+}
+
+/** Free plays remaining today for this game (limit only applies to premium games). */
+export function getFreePlaysLeft(gameId: string): number {
+  const limit = getGameTier(gameId)?.freeRoundsLimit ?? 2;
+  return Math.max(0, limit - getFreePlaysUsed(gameId));
+}
+
+/**
+ * Record one free play for today. No-ops for non-premium games and for
+ * users with (effective) premium access — those never consume free rounds.
+ */
+export function recordFreePlay(gameId: string, effectivePremium = false): void {
+  if (effectivePremium) return;
+  if (getGameTier(gameId)?.tier !== 'premium') return;
+  try {
+    const key = freePlaysKey(gameId);
+    const current = Number(localStorage.getItem(key) || '0');
+    localStorage.setItem(key, String(current + 1));
+  } catch {
+    // localStorage unavailable — silently ignore
+  }
+}

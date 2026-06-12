@@ -1,9 +1,9 @@
-import { lazy, Suspense, useState, useMemo, useCallback, useEffect } from "react";
+import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
-import { GAME_TIERS, isGamePremium } from "@/games/premium/gameConfig";
+import { GAME_TIERS, isGamePremium, getFreePlaysUsed, recordFreePlay } from "@/games/premium/gameConfig";
 import { TVBroadcastProvider, useTVContext } from "@/contexts/TVBroadcastContext";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "@/games/ui/GameRulesModal";
 import { GameTitleBar } from "@/games/ui/GameTitleBar";
@@ -216,14 +216,10 @@ function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData
   );
 }
 
-function getFreePlaysForGame(gameId: string): number {
-  try {
-    const date = new Date().toISOString().split("T")[0];
-    return Number(localStorage.getItem(`free_plays_${gameId}_${date}`) || "0");
-  } catch {
-    return 0;
-  }
-}
+// Marks a game entry whose free play was already counted in handleGameClick,
+// so the direct-entry effect below never double-counts after navigate().
+// Module-scoped: survives a potential remount between /games and /games/:gameId.
+let clickCountedGameId: string | null = null;
 
 const GamesHubInner = () => {
   const navigate = useNavigate();
@@ -275,7 +271,10 @@ const GamesHubInner = () => {
   const [onlinePlayerName] = useState(() => {
     try { return localStorage.getItem("eventbliss_player_name") || "Spieler"; } catch { return "Spieler"; }
   });
-  const { isPremium } = usePremium();
+  const { isPremium, loading: premiumLoading } = usePremium();
+  // Bumped after recordFreePlay so freePlaysLeft on the cards reflects the new count
+  // (the counters live in localStorage, outside React state).
+  const [freePlaysVersion, setFreePlaysVersion] = useState(0);
 
   // Sync ?lobby= URL param to onlineGameId (used by native GameRoomSheet)
   useEffect(() => {
@@ -285,30 +284,73 @@ const GamesHubInner = () => {
   }, [lobbyParam]);
 
   const premiumInfoMap = useMemo(() => {
+    // freePlaysVersion is a dep so the map recomputes after recordFreePlay
+    void freePlaysVersion;
     const map: Record<string, { isLocked: boolean; freePlaysLeft: number; isPremium: boolean }> = {};
     for (const tier of GAME_TIERS) {
       if (tier.tier === "premium") {
-        const used = getFreePlaysForGame(tier.gameId);
+        const used = getFreePlaysUsed(tier.gameId);
         const limit = tier.freeRoundsLimit ?? 2;
         const left = Math.max(0, limit - used);
         map[tier.gameId] = {
-          isLocked: !isPremium && left <= 0,
+          // While the premium status is still resolving, never show cards as
+          // locked — premium customers must not see a lock flash.
+          isLocked: !premiumLoading && !isPremium && left <= 0,
           freePlaysLeft: left,
           isPremium,
         };
       }
     }
     return map;
-  }, [isPremium]);
+  }, [isPremium, premiumLoading, freePlaysVersion]);
 
   const handleGameClick = useCallback((game: GameCardData) => {
     const info = premiumInfoMap[game.id];
     if (info?.isLocked) {
       setPaywallGame(game);
-    } else {
-      navigate(`/games/${game.id}`);
+      return;
     }
-  }, [premiumInfoMap, navigate]);
+    // Non-premium user actually enters a premium game → consume one free round.
+    // While premium status is loading we don't count here; the direct-entry
+    // effect counts once the status resolves to non-premium.
+    if (isGamePremium(game.id) && !premiumLoading && !isPremium) {
+      recordFreePlay(game.id);
+      clickCountedGameId = game.id;
+      setFreePlaysVersion((v) => v + 1);
+    }
+    navigate(`/games/${game.id}`);
+  }, [premiumInfoMap, isPremium, premiumLoading, navigate]);
+
+  // ---- Free-play counting for direct entries (deep link, reload, quick start) ----
+  // Guards: counted at most ONCE per game entry (useRef), and never again when
+  // handleGameClick already counted before navigate() (clickCountedGameId).
+  const countedEntryRef = useRef<string | null>(null);
+
+  // Reset the per-entry guard when leaving or switching games.
+  useEffect(() => {
+    return () => {
+      countedEntryRef.current = null;
+    };
+  }, [gameId]);
+
+  useEffect(() => {
+    if (!gameId || roomCode) return; // multiplayer rooms handle premium via roomHasPremium
+    if (!isGamePremium(gameId)) return;
+    if (clickCountedGameId === gameId) {
+      // Already counted by handleGameClick — just adopt the entry marker.
+      countedEntryRef.current = gameId;
+      clickCountedGameId = null;
+      return;
+    }
+    if (countedEntryRef.current === gameId) return; // already counted this entry
+    if (premiumLoading || isPremium) return; // unknown or premium → never count
+    const tierConfig = GAME_TIERS.find((t) => t.gameId === gameId);
+    const left = Math.max(0, (tierConfig?.freeRoundsLimit ?? 2) - getFreePlaysUsed(gameId));
+    if (left <= 0) return; // gate shows the paywall — no play started
+    recordFreePlay(gameId);
+    countedEntryRef.current = gameId;
+    setFreePlaysVersion((v) => v + 1);
+  }, [gameId, roomCode, premiumLoading, isPremium]);
 
   const handleQuickStart = () => {
     const playable = allGames;
@@ -404,7 +446,10 @@ const GamesHubInner = () => {
   if (gameId && !roomCode) {
     const tierConfig = GAME_TIERS.find((t) => t.gameId === gameId);
     if (tierConfig?.tier === "premium" && !isPremium) {
-      const used = getFreePlaysForGame(gameId);
+      // Status still resolving → show the loader, never flash the paywall
+      // at premium customers.
+      if (premiumLoading) return GameFallback;
+      const used = getFreePlaysUsed(gameId);
       const limit = tierConfig.freeRoundsLimit ?? 2;
       const left = Math.max(0, limit - used);
       if (left <= 0) {

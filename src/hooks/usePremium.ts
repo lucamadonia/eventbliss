@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { isNative } from "@/lib/platform";
+import { hasPremiumEntitlement } from "@/lib/revenuecat";
 
 type PlanType = "free" | "monthly" | "yearly" | "lifetime";
 
@@ -35,9 +37,26 @@ export function usePremium(): UsePremiumResult {
   const [plan, setPlan] = useState("free");
   const [planType, setPlanType] = useState<PlanType>("free");
   const [cancelAtPeriodEnd, setCancelAtPeriodEnd] = useState(false);
+  // Native only: local RevenueCat entitlement. Bridges the gap right after an
+  // in-app purchase while the webhook → subscriptions-table sync is still
+  // catching up. Always false on web (hasPremiumEntitlement is a no-op there).
+  const [rcPremium, setRcPremium] = useState(false);
+
+  const refreshRcEntitlement = useCallback(async () => {
+    if (!isNative() || !user?.id) {
+      setRcPremium(false);
+      return;
+    }
+    try {
+      setRcPremium(await hasPremiumEntitlement());
+    } catch {
+      /* keep previous value */
+    }
+  }, [user?.id]);
 
   const checkSubscription = useCallback(async () => {
     if (!user?.id) {
+      setRcPremium(false);
       setIsPremium(false);
       setSubscription(null);
       setSubscriptionEnd(null);
@@ -50,7 +69,10 @@ export function usePremium(): UsePremiumResult {
 
     try {
       setLoading(true);
-      
+
+      // In parallel: refresh the local RevenueCat entitlement (native only)
+      void refreshRcEntitlement();
+
       // Call the check-subscription edge function
       const { data, error } = await supabase.functions.invoke("check-subscription");
       
@@ -74,7 +96,7 @@ export function usePremium(): UsePremiumResult {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, refreshRcEntitlement]);
 
   const fetchFromDatabase = async () => {
     if (!user?.id) {
@@ -160,9 +182,10 @@ export function usePremium(): UsePremiumResult {
     }
 
     setLoading(true);
+    void refreshRcEntitlement();
     await fetchFromDatabase();
     setLoading(false);
-  }, [user?.id]);
+  }, [user?.id, refreshRcEntitlement]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -178,6 +201,7 @@ export function usePremium(): UsePremiumResult {
           // Immediately check subscription status on login
           checkSubscription();
         } else if (event === "SIGNED_OUT") {
+          setRcPremium(false);
           setIsPremium(false);
           setSubscription(null);
           setSubscriptionEnd(null);
@@ -199,7 +223,7 @@ export function usePremium(): UsePremiumResult {
   }, [user?.id, checkSubscription]);
 
   return {
-    isPremium,
+    isPremium: isPremium || rcPremium,
     loading: loading || authLoading,
     subscription,
     subscriptionEnd,
