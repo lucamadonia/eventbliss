@@ -34,7 +34,6 @@ import { AuroraText } from "@/components/ui/AuroraText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { CookieBanner } from "@/components/landing/CookieBanner";
 import { HeroSection } from "@/components/landing/sections/HeroSection";
 import { FeaturesBento } from "@/components/landing/sections/FeaturesBento";
 import { HowItWorksTimeline } from "@/components/landing/sections/HowItWorksTimeline";
@@ -680,7 +679,6 @@ const Landing = () => {
       </section>
 
       <LandingFooter />
-      <CookieBanner />
     </AnimatedBackground>
   );
 };

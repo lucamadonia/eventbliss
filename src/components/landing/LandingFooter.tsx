@@ -32,11 +32,6 @@ export function LandingFooter() {
     { label: t("landing.footer.privacy"), href: "/legal/privacy" },
     { label: t("landing.footer.terms"), href: "/legal/terms" },
     { label: t("landing.footer.disclaimer"), href: "/legal/disclaimer" },
-    {
-      label: t("landing.footer.cookieSettings", "Cookie-Einstellungen verwalten"),
-      href: "#cookie-settings",
-      onClick: () => window.dispatchEvent(new Event("eventbliss:open-cookie-settings")),
-    },
   ];
 
   return (
@@ -122,22 +117,12 @@ export function LandingFooter() {
             <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.href}>
-                  {link.onClick ? (
-                    <button
-                      type="button"
-                      onClick={link.onClick}
-                      className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                    >
-                      {link.label}
-                    </button>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -3,7 +3,7 @@
  * and links to the legal pages. This is the page App Store Connect's
  * per-locale support URLs point to (`/support`, `/de/support`, …).
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Clock, LifeBuoy, Mail, MessageCircle } from "lucide-react";
@@ -53,6 +53,7 @@ const LEGAL_LINKS: { page: StaticPage; titleKey: string }[] = [
 
 const Support = () => {
   const { t, i18n } = useTranslation();
+  const [chatLoaded, setChatLoaded] = useState(false);
   const { lang: urlLang, invalid } = useUrlLanguage();
   const effectiveLang = urlLang ?? toSeoLang(i18n.language) ?? "en";
 
@@ -146,17 +147,33 @@ const Support = () => {
             <h2 className="text-2xl font-semibold">{t("support.chat.title")}</h2>
           </div>
           <p className="text-sm text-muted-foreground mb-5">{t("support.chat.subtitle")}</p>
-          <div className="rounded-2xl border border-border/50 overflow-hidden bg-card/50 backdrop-blur-sm">
-            <iframe
-              src="https://www.chatbase.co/chatbot-iframe/-tb0zOeB5bTQRv79MIEPy"
-              title={t("support.chat.title")}
-              width="100%"
-              style={{ height: "100%", minHeight: 700 }}
-              frameBorder="0"
-              loading="lazy"
-              allow="microphone"
-            />
-          </div>
+          {/* Two-click embed: the third-party iframe (Chatbase, USA) only loads
+              after an explicit user action — no third-party requests before. */}
+          {chatLoaded ? (
+            <div className="rounded-2xl border border-border/50 overflow-hidden bg-card/50 backdrop-blur-sm">
+              <iframe
+                src="https://www.chatbase.co/chatbot-iframe/-tb0zOeB5bTQRv79MIEPy"
+                title={t("support.chat.title")}
+                width="100%"
+                style={{ height: "100%", minHeight: 700 }}
+                frameBorder="0"
+                allow="microphone"
+              />
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border/60 bg-card/30 p-8 flex flex-col items-center text-center gap-4">
+              <Button onClick={() => setChatLoaded(true)} className="gap-2">
+                <MessageCircle className="w-4 h-4" />
+                {t("support.chat.load")}
+              </Button>
+              <p className="text-xs text-muted-foreground max-w-md">
+                {t("support.chat.privacyHint")}{" "}
+                <Link to={staticPagePath("privacy", urlLang)} className="underline hover:text-primary">
+                  {t("legal.privacy.title")}
+                </Link>
+              </p>
+            </div>
+          )}
         </section>
       )}
 
