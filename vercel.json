@@ -1,4 +1,4 @@
-﻿{
+{
   "rewrites": [
     { "source": "/((?!assets/|images/|icons/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/app.html" }
   ],

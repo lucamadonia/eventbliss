@@ -105,6 +105,11 @@ export const i18nInitPromise = (async () => {
       },
       react: {
         useSuspense: true,
+        // Re-render translations when a lazily loaded locale bundle arrives —
+        // without bindI18nStore the 'added' event is ignored and pages stay
+        // on the English fallback after i18n.changeLanguage().
+        bindI18n: 'languageChanged loaded',
+        bindI18nStore: 'added removed',
       },
     });
 
