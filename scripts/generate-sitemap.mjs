@@ -113,9 +113,30 @@ const core = [
   plainUrl(`${SITE}/games`, "0.8", "weekly"),
   plainUrl(`${SITE}/marketplace`, "0.8", "weekly"),
   plainUrl(`${SITE}/agency/pricing`, "0.6", "monthly"),
+  plainUrl(`${SITE}/support`, "0.5", "monthly"),
   ...["imprint", "privacy", "terms", "disclaimer", "agency-agreement"].map((p) =>
     plainUrl(`${SITE}/legal/${p}`, "0.3", "yearly")),
 ];
+
+// Language-prefixed legal & support pages (constant English path segments,
+// only the language prefix varies — mirrors src/lib/legal-routes.ts):
+// 6 hreflang clusters × 10 languages; x-default → the unprefixed URL.
+const STATIC_LANGS = ["de", "en", "es", "fr", "it", "nl", "pt", "pl", "tr", "ar"];
+const STATIC_PAGES = [
+  { base: "/legal/privacy", priority: "0.3", changefreq: "yearly" },
+  { base: "/legal/terms", priority: "0.3", changefreq: "yearly" },
+  { base: "/legal/disclaimer", priority: "0.3", changefreq: "yearly" },
+  { base: "/legal/imprint", priority: "0.3", changefreq: "yearly" },
+  { base: "/legal/agency-agreement", priority: "0.3", changefreq: "yearly" },
+  { base: "/support", priority: "0.5", changefreq: "monthly" },
+];
+for (const p of STATIC_PAGES) {
+  const alternates = STATIC_LANGS.map((l) => ({ lang: l, href: `${SITE}/${l}${p.base}` }));
+  alternates.push({ lang: "x-default", href: `${SITE}${p.base}` });
+  for (const l of STATIC_LANGS) {
+    core.push(altUrl(`${SITE}/${l}${p.base}`, alternates, p.priority, p.changefreq));
+  }
+}
 writeFileSync(join(ROOT, "public", "sitemap-core.xml"), wrap(core));
 
 // ── 2. i18n landing families (city × langs, calc, activities) ──────────

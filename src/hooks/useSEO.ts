@@ -20,12 +20,15 @@ export interface SeoConfig {
   dir?: "rtl" | "ltr";
   /** robots meta override, e.g. "noindex,follow" for thin/transactional pages. */
   robots?: string;
+  /** hreflang alternates (<link rel="alternate" hreflang …>). Cleaned up on unmount. */
+  hreflangs?: { hreflang: string; href: string }[];
 }
 
 const DEFAULT_ROBOTS = "index, follow, max-image-preview:large";
 
 const META_TAG_ID = "data-managed-seo";
 const JSON_LD_ID = "managed-seo-jsonld";
+const HREFLANG_ATTR = "data-managed-hreflang";
 
 function setMeta(selector: string, attr: "content", value: string, createIf: () => HTMLMetaElement) {
   let el = document.head.querySelector<HTMLMetaElement>(selector);
@@ -79,6 +82,24 @@ function removeJsonLd() {
   script?.remove();
 }
 
+function removeHreflangs() {
+  document.head
+    .querySelectorAll(`link[${HREFLANG_ATTR}]`)
+    .forEach((el) => el.remove());
+}
+
+function setHreflangs(items: { hreflang: string; href: string }[]) {
+  removeHreflangs();
+  for (const { hreflang, href } of items) {
+    const link = document.createElement("link");
+    link.setAttribute("rel", "alternate");
+    link.setAttribute("hreflang", hreflang);
+    link.setAttribute("href", href);
+    link.setAttribute(HREFLANG_ATTR, "true");
+    document.head.appendChild(link);
+  }
+}
+
 export function useSEO(config: SeoConfig) {
   useEffect(() => {
     const previousTitle = document.title;
@@ -123,6 +144,12 @@ export function useSEO(config: SeoConfig) {
       removeJsonLd();
     }
 
+    if (config.hreflangs?.length) {
+      setHreflangs(config.hreflangs);
+    } else {
+      removeHreflangs();
+    }
+
     return () => {
       document.title = previousTitle;
       if (config.htmlLang) docEl.lang = previousLang;
@@ -132,6 +159,7 @@ export function useSEO(config: SeoConfig) {
       }
       if (config.robots) setMetaByName("robots", DEFAULT_ROBOTS);
       removeJsonLd();
+      removeHreflangs();
     };
   }, [
     config.title,
@@ -145,5 +173,6 @@ export function useSEO(config: SeoConfig) {
     config.htmlLang,
     config.dir,
     config.robots,
+    config.hreflangs,
   ]);
 }

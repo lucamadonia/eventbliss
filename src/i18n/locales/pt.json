@@ -1622,39 +1622,282 @@
       "contact": "Contacto",
       "responsibleContent": "Responsável pelo Conteúdo",
       "disputeResolution": "Resolução de Litígios UE",
-      "disputeText": "A Comissão Europeia fornece uma plataforma para resolução de litígios online."
+      "disputeText": "A Comissão Europeia fornece uma plataforma para resolução de litígios online.",
+      "meta": {
+        "title": "Aviso Legal | EventBliss",
+        "description": "Informações legais da EventBliss — operada pela MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Pafos, Chipre. N.º de registo HE 473088, n.º de IVA CY60165018Q."
+      },
+      "toc": "Índice",
+      "brandNote": "EventBliss é uma marca e um produto da MYFAMBLISS GROUP LTD.",
+      "regNoLabel": "N.º de registo comercial",
+      "vatLabel": "N.º de IVA",
+      "responsiblePerson": "Responsável pelos conteúdos deste website e da app EventBliss: a gerência da MYFAMBLISS GROUP LTD.",
+      "odrText": "A plataforma da UE de resolução de litígios em linha (plataforma RLL), prevista no Regulamento (UE) n.º 524/2013, foi descontinuada em 20 de julho de 2025. Não estamos obrigados nem dispostos a participar em procedimentos de resolução de litígios perante uma entidade de resolução alternativa de litígios de consumo. Em caso de reclamação, contacta-nos diretamente — procuramos resolver todas as questões através de support@event-bliss.com.",
+      "supportLink": "Tens questões sobre a app, as tuas reservas ou a tua conta? A nossa página de suporte tem respostas às perguntas mais frequentes e uma linha direta para a nossa equipa."
     },
     "privacy": {
       "title": "Política de Privacidade",
-      "lastUpdated": "Última atualização",
-      "intro": "A tua privacidade é importante. Esta política explica como protegemos os teus dados.",
-      "dataCollection": {
-        "title": "Recolha de Dados",
-        "content": "Recolhemos informações que forneces diretamente."
+      "meta": {
+        "title": "Política de Privacidade | EventBliss",
+        "description": "Como a EventBliss (MYFAMBLISS GROUP LTD) trata os teus dados pessoais ao abrigo do RGPD — destinatários, fundamentos jurídicos, prazos de conservação e os teus direitos."
       },
-      "dataUsage": {
-        "title": "Uso de Dados",
-        "content": "Os teus dados são usados para fornecer os nossos serviços."
+      "lastUpdated": "Última atualização",
+      "lastUpdatedDate": "Junho de 2026",
+      "toc": "Índice",
+      "intro": "Esta Política de Privacidade explica como nós — a MYFAMBLISS GROUP LTD, operadora da EventBliss — recolhemos, utilizamos, partilhamos e protegemos os teus dados pessoais quando utilizas a nossa app (iOS e Android), o nosso website event-bliss.com e o marketplace EventBliss. Explica ainda os teus direitos ao abrigo do Regulamento Geral sobre a Proteção de Dados da UE (RGPD). A EventBliss foi concebida para respeitar a tua privacidade: tratamos apenas os dados necessários ao funcionamento do serviço, não vendemos os teus dados e não apresentamos publicidade de terceiros.",
+      "summary": {
+        "title": "Em resumo",
+        "items": [
+          "Tratamos apenas os dados necessários ao funcionamento da EventBliss — a tua conta, os teus eventos e, se comprares o Premium, os dados da tua compra.",
+          "A nossa base de dados, a autenticação e o armazenamento de ficheiros funcionam na Supabase, na UE (Frankfurt, Alemanha).",
+          "Os pagamentos são processados pela Apple, pela Google e pela Stripe — nunca vemos nem guardamos os dados completos do teu cartão.",
+          "As funcionalidades de IA (leitor de recibos, assistente de planeamento, leitura em voz alta) só transmitem dados enquanto as utilizas ativamente — e nunca para fins publicitários.",
+          "Não vendemos dados pessoais e não utilizamos redes de publicidade ou de rastreamento de terceiros.",
+          "Podes eliminar a tua conta a qualquer momento na app (Perfil → Definições → Eliminar conta) — consulta a secção «Eliminação da conta»."
+        ]
+      },
+      "controller": {
+        "title": "Responsável pelo tratamento",
+        "content": "O responsável pelo tratamento, na aceção do art. 4.º, n.º 7, do RGPD, relativamente a todas as operações de tratamento descritas nesta política, é:\n\nA MYFAMBLISS GROUP LTD é uma sociedade registada na República de Chipre. «EventBliss» é uma marca e um produto da MYFAMBLISS GROUP LTD. Não designámos um encarregado de proteção de dados, por não estarmos legalmente obrigados a fazê-lo; para qualquer questão de privacidade podes contactar diretamente a nossa equipa através dos dados de contacto indicados abaixo."
+      },
+      "dataCategories": {
+        "title": "Que dados tratamos",
+        "intro": "Consoante a forma como utilizas a EventBliss, tratamos as seguintes categorias de dados pessoais. Recolhemo-los diretamente junto de ti, a partir do teu dispositivo, ou resultam da tua utilização do serviço:",
+        "items": {
+          "account": {
+            "label": "Dados da conta",
+            "desc": "Nome apresentado, endereço de e-mail, palavra-passe (guardada apenas como hash criptográfico com salt pelo nosso fornecedor de autenticação), fotografia de perfil, idioma e preferências de notificações. Se iniciares sessão com a Apple ou a Google, recebemos desse fornecedor o teu nome (ou um pseudónimo), o teu endereço de e-mail (de reencaminhamento) e um identificador técnico de conta."
+          },
+          "content": {
+            "label": "Conteúdos dos eventos",
+            "desc": "Tudo o que tu e os teus convidados criam dentro de um evento: nome do evento, tipo, datas, local, lista de convidados, tarefas, programas, sondagens e votações, mensagens de chat, fotografias carregadas na galeria, registos de despesas e resultados de jogos. Os conteúdos do evento são visíveis para os restantes participantes desse evento."
+          },
+          "payment": {
+            "label": "Dados de compra e pagamento",
+            "desc": "O estado da tua subscrição (Free, Premium, Lifetime), identificadores de produtos, tokens de transação e de compra da Apple ou da Google e — nas compras feitas no website — os dados tratados através da Stripe (montante, moeda, tipo de método de pagamento, últimos quatro dígitos do cartão). Os números de cartão completos são tratados exclusivamente pelos prestadores de serviços de pagamento e nunca chegam aos nossos servidores."
+          },
+          "receipts": {
+            "label": "Fotografias de recibos (leitor de despesas)",
+            "desc": "Se utilizares o leitor de recibos na funcionalidade de despesas, a fotografia que tiras e os dados reconhecidos (comerciante, montante, data) são tratados para pré-preencher o registo da despesa. Consulta «Destinatários e subcontratantes» para conheceres o fornecedor de OCR envolvido."
+          },
+          "usage": {
+            "label": "Dados de utilização",
+            "desc": "Que funcionalidades utilizas e eventos básicos de interação (p. ex., evento criado, jogo iniciado), relatórios de falhas e diagnósticos de desempenho. Utilizamos estes dados para manter a app estável e para a melhorar — não para criar perfis publicitários."
+          },
+          "device": {
+            "label": "Dados do dispositivo e registos",
+            "desc": "Endereço IP, modelo do dispositivo, sistema operativo e versão, versão da app, tipo de navegador, datas e horas dos pedidos e — se ativares as notificações — o teu token push. Os registos do servidor são conservados por motivos de segurança e de resolução de problemas."
+          },
+          "location": {
+            "label": "Dados de localização (opcional)",
+            "desc": "Apenas quando utilizas funcionalidades de mapas (p. ex., escolher o local de um evento): a secção do mapa que visualizas e, se concederes a permissão do sistema, a localização aproximada do teu dispositivo para centrar o mapa. Não criamos perfis de movimento nem rastreamos a tua localização em segundo plano."
+          },
+          "voice": {
+            "label": "Leitura em voz alta / áudio (opcional)",
+            "desc": "Quando utilizas a funcionalidade de leitura em voz alta (texto para voz), o texto a ler é transmitido ao nosso fornecedor de síntese de voz para gerar o áudio. Não acedemos ao teu microfone nem fazemos gravações para esta funcionalidade."
+          }
+        }
+      },
+      "purposes": {
+        "title": "Finalidades e fundamentos jurídicos (art. 6.º do RGPD)",
+        "intro": "Tratamos os teus dados apenas para as seguintes finalidades e exclusivamente com base nos seguintes fundamentos jurídicos:",
+        "items": {
+          "service": {
+            "purpose": "Prestação do serviço EventBliss: a tua conta, o planeamento de eventos e a colaboração, a sincronização entre dispositivos, as reservas no marketplace e o apoio ao cliente.",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea b), do RGPD — execução do contrato (os nossos Termos de Serviço)."
+          },
+          "payments": {
+            "purpose": "Processamento de compras e subscrições (Premium, Lifetime, reservas no marketplace), emissão de recibos e prevenção de fraude nos pagamentos.",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea b), do RGPD; para efeitos de conservação fiscal e contabilística, adicionalmente o art. 6.º, n.º 1, alínea c), do RGPD."
+          },
+          "ai": {
+            "purpose": "Funcionalidades assistidas por IA: reconhecimento de texto em recibos (OCR), o assistente de planeamento com IA e a conversão de texto em voz. Os dados só são transmitidos aos fornecedores indicados em «Destinatários e subcontratantes» no momento em que utilizas ativamente a funcionalidade.",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea b), do RGPD — a funcionalidade faz parte do serviço que solicitas. Quando exigido, pedimos adicionalmente o teu consentimento (art. 6.º, n.º 1, alínea a), do RGPD)."
+          },
+          "push": {
+            "purpose": "Notificações push sobre os teus eventos (p. ex., novas mensagens, tarefas ou alterações ao programa).",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea a), do RGPD — o teu consentimento através do diálogo de permissão do sistema; revogável a qualquer momento nas definições do teu dispositivo."
+          },
+          "security": {
+            "purpose": "Segurança e prevenção de abusos: registos do servidor, limitação do número de pedidos (rate limiting), deteção de fraude, defesa contra ataques e aplicação dos nossos Termos.",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea f), do RGPD — o nosso interesse legítimo numa plataforma segura e fiável."
+          },
+          "legal": {
+            "purpose": "Cumprimento de obrigações legais, em especial os prazos legais de conservação de registos de transações e de contabilidade.",
+            "basis": "Fundamento jurídico: art. 6.º, n.º 1, alínea c), do RGPD."
+          }
+        }
+      },
+      "processors": {
+        "title": "Destinatários e subcontratantes",
+        "intro": "Só partilhamos dados pessoais com os destinatários indicados abaixo, apenas na medida do necessário e — quando atuam como nossos subcontratantes — com base em contratos de subcontratação nos termos do art. 28.º do RGPD. A Apple, a Google, a Stripe e o Spotify atuam (em parte) como responsáveis pelo tratamento independentes relativamente aos seus próprios serviços.",
+        "cols": {
+          "name": "Fornecedor",
+          "purpose": "Finalidade",
+          "location": "Localização",
+          "safeguards": "Garantias"
+        },
+        "rows": {
+          "supabase": {
+            "name": "Supabase",
+            "purpose": "Base de dados, autenticação e armazenamento de ficheiros — a espinha dorsal técnica da app",
+            "location": "UE (Frankfurt, Alemanha)",
+            "safeguards": "Subcontratante; contrato de subcontratação nos termos do art. 28.º do RGPD; dados alojados na UE"
+          },
+          "vercel": {
+            "name": "Vercel",
+            "purpose": "Alojamento e distribuição de conteúdos do website event-bliss.com",
+            "location": "EUA / rede edge global",
+            "safeguards": "Contrato de subcontratação com Cláusulas Contratuais-Tipo da UE (CCT); EU-U.S. Data Privacy Framework"
+          },
+          "stripe": {
+            "name": "Stripe",
+            "purpose": "Processamento de pagamentos das compras no website (cartões, Apple Pay, Google Pay, SEPA)",
+            "location": "UE / EUA",
+            "safeguards": "Contrato de subcontratação com CCT; certificada ao abrigo do EU-U.S. Data Privacy Framework"
+          },
+          "apple": {
+            "name": "Apple",
+            "purpose": "Compras na app em iOS, Sign in with Apple, notificações push (APNs)",
+            "location": "EUA",
+            "safeguards": "Responsável pelo tratamento independente para as compras; EU-U.S. Data Privacy Framework"
+          },
+          "google": {
+            "name": "Google",
+            "purpose": "Compras na app em Android (Play Billing), Google Sign-In, notificações push (FCM), Google Maps",
+            "location": "EUA",
+            "safeguards": "Responsável pelo tratamento independente para as compras; CCT; EU-U.S. Data Privacy Framework"
+          },
+          "revenuecat": {
+            "name": "RevenueCat",
+            "purpose": "Gestão de subscrições e validação das compras na app (recebe um ID de utilizador pseudonimizado e tokens de compra)",
+            "location": "EUA",
+            "safeguards": "Subcontratante; contrato de subcontratação com CCT"
+          },
+          "openai": {
+            "name": "OpenAI",
+            "purpose": "OCR de recibos — as fotografias de recibos são transmitidas para reconhecimento de texto quando utilizas o leitor de despesas",
+            "location": "EUA",
+            "safeguards": "Subcontratante; contrato de subcontratação com CCT; os dados da API não são utilizados para treinar modelos"
+          },
+          "openrouter": {
+            "name": "OpenRouter",
+            "purpose": "Assistente de IA — o texto que introduzes é transmitido para gerar sugestões de planeamento",
+            "location": "EUA",
+            "safeguards": "Subcontratante; contrato de subcontratação com CCT"
+          },
+          "mistral": {
+            "name": "Mistral AI",
+            "purpose": "Texto para voz — gera o áudio da funcionalidade de leitura em voz alta",
+            "location": "UE (França)",
+            "safeguards": "Subcontratante; contrato de subcontratação nos termos do art. 28.º do RGPD"
+          },
+          "spotify": {
+            "name": "Spotify",
+            "purpose": "SDK de reprodução de música — apenas se utilizares o jogo de música OHRWURM e ligares a tua própria conta Spotify",
+            "location": "UE (Suécia)",
+            "safeguards": "Responsável pelo tratamento independente; aplica-se a política de privacidade do próprio Spotify"
+          },
+          "mapbox": {
+            "name": "Mapbox / Google Maps",
+            "purpose": "Apresentação de mapas — o teu endereço IP e os mosaicos de mapa pedidos são transmitidos quando um mapa é carregado",
+            "location": "EUA",
+            "safeguards": "Contrato de subcontratação com CCT; EU-U.S. Data Privacy Framework (Google)"
+          }
+        }
+      },
+      "transfers": {
+        "title": "Transferências internacionais de dados",
+        "content": "Quando os destinatários se encontram fora do Espaço Económico Europeu (em particular nos EUA), asseguramos um nível de proteção de dados adequado através de: (a) a decisão de adequação da Comissão Europeia relativa ao EU-U.S. Data Privacy Framework (art. 45.º do RGPD) para os fornecedores certificados, e (b) as Cláusulas Contratuais-Tipo da UE (art. 46.º, n.º 2, alínea c), do RGPD), incluindo medidas suplementares quando necessário. Cópias das garantias relevantes estão disponíveis mediante pedido através dos dados de contacto abaixo."
+      },
+      "retention": {
+        "title": "Prazos de conservação",
+        "intro": "Só conservamos dados pessoais durante o tempo necessário à respetiva finalidade ou enquanto a lei o exigir:",
+        "items": {
+          "account": {
+            "label": "Dados da conta",
+            "desc": "Conservados enquanto a tua conta existir e eliminados quando eliminares a tua conta."
+          },
+          "events": {
+            "label": "Conteúdos dos eventos",
+            "desc": "Eliminados quando eliminares o evento ou a tua conta; as cópias residuais são removidas das cópias de segurança encriptadas no prazo de 30 dias."
+          },
+          "payments": {
+            "label": "Registos de pagamentos e transações",
+            "desc": "Conservados durante 6 anos após o fim do exercício financeiro relevante, conforme exigido pela Lei das Sociedades de Chipre e pela legislação fiscal."
+          },
+          "logs": {
+            "label": "Registos do servidor e de segurança",
+            "desc": "Eliminados ou anonimizados automaticamente após 30 dias, salvo se um incidente de segurança concreto exigir uma conservação mais longa."
+          }
+        }
       },
       "cookies": {
-        "title": "Cookies",
-        "content": "Usamos cookies para melhorar a experiência."
+        "title": "Cookies e armazenamento local",
+        "content": "A EventBliss utiliza apenas cookies e entradas de armazenamento local tecnicamente necessários: a tua sessão de início de sessão, a tua seleção de idioma e as preferências da interface (p. ex., o tema). Fundamento jurídico: art. 6.º, n.º 1, alínea f), do RGPD ou — para o armazenamento abrangido pelas regras de ePrivacy — a estrita necessidade de prestar o serviço que solicitas. Não utilizamos cookies de publicidade de terceiros nem de rastreamento entre sites. Caso venha a ser introduzida no futuro uma tecnologia opcional não essencial, pediremos primeiro o teu consentimento (art. 6.º, n.º 1, alínea a), do RGPD)."
       },
-      "dataSecurity": {
-        "title": "Segurança",
-        "content": "Implementamos medidas de segurança padrão."
+      "push": {
+        "title": "Notificações push",
+        "content": "Só enviamos notificações push (p. ex., novas mensagens de chat, tarefas ou alterações ao programa dos teus eventos) se as autorizares no diálogo de permissão do sistema. A entrega é feita pela Apple (APNs) no iOS e pela Google (FCM) no Android, que recebem um token push técnico do teu dispositivo. Podes revogar o teu consentimento a qualquer momento: no iOS em Definições → Notificações → EventBliss, no Android em Definições → Aplicações → EventBliss → Notificações — ou simplesmente desativar tipos de notificação individuais diretamente na app."
       },
-      "userRights": {
-        "title": "Os teus Direitos",
-        "content": "Tens direito a aceder ou eliminar os teus dados."
+      "purchases": {
+        "title": "Compras, subscrições e dados de pagamento",
+        "content": "Compras na app (iOS/Android): as subscrições Premium e a compra Lifetime são processadas pela Apple (App Store) ou pela Google (Google Play) enquanto responsáveis pelo tratamento independentes. Recebemos a confirmação da compra e dados de transação pseudonimizados, mas nenhum dado de pagamento. A RevenueCat valida as compras e gere o estado da subscrição em nosso nome.\n\nCompras no website: em event-bliss.com, os pagamentos são processados pela Stripe. A Stripe trata os teus dados de pagamento em conformidade com a regulamentação dos serviços de pagamento; recebemos apenas o resultado, o montante e uma referência.\n\nNunca guardamos números de cartão completos; aos registos de transações aplicam-se os deveres legais de conservação (ver «Prazos de conservação»)."
       },
-      "thirdParty": {
-        "title": "Terceiros",
-        "content": "Podemos partilhar dados com parceiros de confiança."
+      "deletion": {
+        "title": "Eliminação da conta",
+        "content": "Podes eliminar a tua conta diretamente na app, a qualquer momento: Perfil → Definições → Eliminar conta. Esta ação elimina de forma permanente os dados da tua conta e os eventos de que és proprietário; as cópias existentes em cópias de segurança encriptadas são removidas no prazo de 30 dias. Os dados sujeitos a deveres legais de conservação (p. ex., registos de pagamento, ver «Prazos de conservação») ficam bloqueados para qualquer outra utilização e são eliminados quando o prazo de conservação terminar. Em alternativa, podes pedir a eliminação enviando um e-mail para support@event-bliss.com a partir do endereço de e-mail da tua conta. Nota: as subscrições compradas através da Apple ou da Google têm de ser canceladas separadamente nas definições de subscrições da App Store / do Google Play — a eliminação da conta não as cancela automaticamente."
+      },
+      "rights": {
+        "title": "Os teus direitos (arts. 15.º a 21.º do RGPD)",
+        "intro": "Tens os seguintes direitos relativamente aos teus dados pessoais. Para os exercer basta um e-mail informal — respondemos, o mais tardar, no prazo de um mês (art. 12.º, n.º 3, do RGPD):",
+        "items": {
+          "access": {
+            "label": "Direito de acesso (art. 15.º do RGPD)",
+            "desc": "Podes pedir a confirmação de se tratamos dados sobre ti e quais, bem como obter uma cópia desses dados juntamente com as informações enumeradas no art. 15.º."
+          },
+          "rectification": {
+            "label": "Direito de retificação (art. 16.º do RGPD)",
+            "desc": "Podes obter a retificação de dados inexatos e o completamento de dados incompletos — a maioria dos dados da conta pode ser editada diretamente na app."
+          },
+          "erasure": {
+            "label": "Direito ao apagamento (art. 17.º do RGPD)",
+            "desc": "Podes pedir o apagamento dos teus dados; a forma mais simples é a eliminação da conta na app (ver «Eliminação da conta»)."
+          },
+          "restriction": {
+            "label": "Direito à limitação do tratamento (art. 18.º do RGPD)",
+            "desc": "Nos casos previstos no art. 18.º (p. ex., enquanto se verifica a exatidão de dados contestados), podes exigir que limitemos o tratamento."
+          },
+          "portability": {
+            "label": "Direito de portabilidade dos dados (art. 20.º do RGPD)",
+            "desc": "Podes receber os dados que forneceste num formato estruturado, de uso corrente e de leitura automática. Pede uma exportação por e-mail para support@event-bliss.com."
+          },
+          "objection": {
+            "label": "Direito de oposição (art. 21.º do RGPD)",
+            "desc": "Podes opor-te a qualquer momento, por motivos relacionados com a tua situação particular, ao tratamento baseado no art. 6.º, n.º 1, alínea f), do RGPD. Cessaremos então o tratamento, salvo se prevalecerem motivos legítimos imperiosos."
+          },
+          "withdraw": {
+            "label": "Direito de retirar o consentimento (art. 7.º, n.º 3, do RGPD)",
+            "desc": "Quando o tratamento se baseia no teu consentimento (p. ex., notificações push), podes retirá-lo a qualquer momento, com efeitos para o futuro."
+          }
+        },
+        "complaint": "Direito de apresentar reclamação (art. 77.º do RGPD): podes reclamar junto de uma autoridade de controlo da proteção de dados, em particular no Estado-Membro da UE da tua residência habitual ou do teu local de trabalho. A autoridade competente para nós é o Comissário para a Proteção de Dados Pessoais da República de Chipre, 1 Iasonos Street, 1082 Nicósia, Chipre — dataprotection.gov.cy."
+      },
+      "children": {
+        "title": "Crianças e menores",
+        "content": "A EventBliss não se dirige a crianças. A criação de uma conta exige uma idade mínima de 16 anos (ou a idade inferior que o teu Estado-Membro tenha fixado para os serviços da sociedade da informação, mas nunca inferior a 13 anos). Não recolhemos conscientemente dados pessoais de crianças abaixo desta idade. Se acreditas que uma criança nos forneceu dados pessoais, contacta-nos e eliminá-los-emos prontamente."
+      },
+      "security": {
+        "title": "Segurança dos dados",
+        "content": "Protegemos os teus dados com medidas técnicas e organizativas nos termos do art. 32.º do RGPD: encriptação TLS de todos os dados em trânsito, encriptação em repouso da base de dados e do armazenamento de ficheiros, segurança ao nível das linhas (row-level security) para que cada utilizador só aceda aos seus próprios eventos, controlos de acesso baseados em funções para a nossa equipa, o princípio do menor privilégio para as chaves de serviço e a revisão regular das nossas medidas de segurança. Nenhum sistema é 100 % seguro, mas trabalhamos continuamente para manter o risco tão baixo quanto possível."
+      },
+      "changes": {
+        "title": "Alterações a esta Política de Privacidade",
+        "content": "Atualizamos esta política sempre que o nosso serviço, os nossos fornecedores ou o enquadramento legal mudam. Aplica-se sempre a versão atual, com a data indicada acima; as alterações relevantes serão anunciadas na app ou por e-mail. As versões anteriores estão disponíveis mediante pedido."
       },
       "contact": {
         "title": "Contacto",
-        "content": "Para questões de privacidade:"
+        "content": "Para qualquer questão de privacidade ou para exercer os teus direitos, contacta-nos através de:"
       }
     },
     "terms": {
@@ -1705,31 +1948,74 @@
       "governingLaw": {
         "title": "Lei Aplicável",
         "content": "Lei aplicável: A plataforma é operada pela MYFAMBLISS GROUP LTD com sede na República de Chipre. Aplica-se a lei cipriota com exclusão da CISG. Os direitos imperativos de proteção do consumidor da residência habitual (p. ex. § 312g BGB na Alemanha) permanecem inalterados (Art. 6(2) Roma I). Plataforma de resolução de litígios da UE: https://ec.europa.eu/consumers/odr"
+      },
+      "meta": {
+        "title": "Termos de Serviço | EventBliss",
+        "description": "Os termos que regem a tua utilização da EventBliss: reservas no marketplace, pagamentos, subscrições Premium e compras na app, direito de livre resolução na UE e responsabilidade."
+      },
+      "toc": "Índice",
+      "inAppPurchases": {
+        "title": "Premium, subscrições e compras na app",
+        "content": "A EventBliss oferece planos pagos opcionais (Premium como subscrição com renovação automática, Lifetime como compra única). Podem ser adquiridos como compras na app através da Apple App Store ou do Google Play, ou em event-bliss.com através do nosso prestador de pagamentos Stripe.\n\nRenovação automática: as subscrições renovam-se automaticamente no fim de cada período, ao preço indicado no momento da compra, salvo se cancelares pelo menos 24 horas antes do fim do período atual.\n\nCancelar compras feitas nas lojas: as subscrições compradas na app são geridas exclusivamente através da tua conta da Apple App Store ou do Google Play (iOS: Definições → [o teu nome] → Subscrições; Android: Google Play → Pagamentos e subscrições). A EventBliss não pode cancelar subscrições das lojas em teu nome. Após o cancelamento, o Premium permanece ativo até ao fim do período pago; os reembolsos proporcionais regem-se pelos termos da respetiva loja.\n\nSubscrições no website: as subscrições compradas no website podem ser canceladas a qualquer momento, com efeitos a partir do fim do período de faturação atual, através da tua conta ou enviando um e-mail para support@event-bliss.com.\n\nLifetime: a opção Lifetime é uma compra única, sem encargos recorrentes. Concede acesso às funcionalidades Premium durante o tempo de vida operacional da EventBliss; não constitui uma garantia de funcionamento perpétuo do serviço.\n\nAlterações de preços: as alterações de preços das subscrições aplicam-se apenas aos períodos subsequentes e serão anunciadas com antecedência; nas compras feitas nas lojas aplicam-se os procedimentos de notificação e de consentimento da Apple/Google."
+      },
+      "withdrawal": {
+        "title": "Direito de livre resolução (consumidores da UE)",
+        "content": "Conteúdos digitais e Premium (compra no nosso website): enquanto consumidor na UE, dispões, em regra, de um direito legal de livre resolução de 14 dias. Nas compras de conteúdos digitais / serviços digitais em event-bliss.com, o direito de livre resolução extingue-se quando iniciamos a execução imediatamente após a compra, com o teu consentimento prévio e expresso e o teu reconhecimento de que perdes assim o direito de livre resolução (art. 16.º, alínea m), da Diretiva 2011/83/UE; na Alemanha, § 356, n.º 5, do Código Civil alemão (BGB)). Dás este consentimento durante o processo de compra; o Premium é ativado de imediato.\n\nCompras na app: nas compras efetuadas através da Apple App Store ou do Google Play aplicam-se os procedimentos de reembolso e de resolução da Apple ou da Google; os pedidos devem ser dirigidos à respetiva loja.\n\nServiços do marketplace: ao reservares serviços para eventos dispões igualmente, em regra, de um direito de livre resolução de 14 dias. Exceção: nos serviços relacionados com atividades de lazer com uma data ou um período de execução específicos — o que abrange praticamente todos os serviços de eventos reservados para uma data fixa — o direito de livre resolução está excluído nos termos do art. 16.º, alínea l), da Diretiva 2011/83/UE (transposta na Alemanha no § 312g, n.º 2, ponto 9, do BGB). Independentemente do direito legal de livre resolução, aplica-se a política de cancelamento específica do serviço (ver «Cancelamento e reembolso») — que é, em muitos casos, mais generosa.\n\nExercício: quando exista um direito de livre resolução, podes declará-lo de forma informal no prazo de 14 dias a contar da celebração do contrato (p. ex., por e-mail para support@event-bliss.com)."
+      },
+      "userContent": {
+        "title": "Os teus conteúdos e licença",
+        "content": "Manténs todos os direitos sobre os conteúdos que carregas na EventBliss (p. ex., fotografias, textos, detalhes de eventos, mensagens de chat). Concedes-nos uma licença não exclusiva, mundial e isenta de royalties para alojar, armazenar, reproduzir e apresentar esses conteúdos, exclusivamente na medida do necessário ao funcionamento do serviço (p. ex., mostrar fotografias aos restantes participantes do teu evento, criar cópias de segurança). Esta licença termina quando eliminas os conteúdos ou a tua conta, com exceção das cópias residuais nas cópias de segurança (removidas no prazo de 30 dias) e dos conteúdos que partilhaste com outros utilizadores e que estes conservam legitimamente.\n\nGarantes que dispões dos direitos necessários sobre todos os conteúdos que carregas e que estes não violam direitos de terceiros (direitos de autor, direitos de personalidade — obtém o consentimento das pessoas que aparecem nas fotografias) nem a lei aplicável. São proibidos, em particular, conteúdos ilícitos, difamatórios, discriminatórios, pornográficos ou que glorifiquem a violência.\n\nPodemos remover conteúdos que violem estes Termos ou a lei aplicável e informar-te-emos da remoção quando tal for legalmente exigido (ver também os procedimentos de notificação e ação previstos no Regulamento dos Serviços Digitais)."
+      },
+      "marketplaceCancellation": {
+        "title": "Cancelamento de reservas do marketplace",
+        "content": "Os cancelamentos de serviços de eventos reservados regem-se pela política de cancelamento específica do serviço (flexível, moderada ou rigorosa) que a agência atribui ao seu serviço e que é apresentada de forma transparente antes de concluíres a reserva. Os detalhes — prazos, percentagens de reembolso, forma de reembolso, força maior e incumprimento imputável à agência — constam da secção «Cancelamento e reembolso» acima. A exclusão legal do direito de livre resolução para serviços de lazer com data marcada (ver «Direito de livre resolução») não afeta esta política de cancelamento contratual — ela aplica-se a teu favor, em acréscimo aos direitos imperativos dos consumidores."
+      },
+      "availability_sla": {
+        "title": "Disponibilidade do serviço",
+        "content": "Procuramos manter a EventBliss disponível com elevada fiabilidade, mas não garantimos um nível de disponibilidade específico (sem SLA) para a oferta gratuita ou paga destinada a consumidores. O serviço pode estar temporariamente indisponível devido a manutenção, atualizações, força maior ou falhas de fornecedores terceiros (p. ex., serviços de alojamento, pagamento, música ou mapas). Sempre que possível, realizamos a manutenção planeada em períodos de baixa utilização. Os pedidos de indemnização por indisponibilidade regem-se exclusivamente pela secção «Limitação de Responsabilidade»; os teus direitos legais permanecem inalterados."
       }
     },
     "disclaimer": {
       "title": "Aviso",
       "lastUpdated": "Última atualização",
-      "intro": "Lê este aviso antes de usar EventBliss.",
+      "intro": "Lê atentamente este aviso antes de utilizares a EventBliss. Ele complementa os nossos Termos de Serviço e clarifica os limites da nossa responsabilidade enquanto operadores da plataforma.",
       "general": {
         "title": "Aviso Geral",
-        "content": "Informações são apenas para propósitos gerais."
+        "content": "A EventBliss é uma plataforma de planeamento e um marketplace. As informações disponibilizadas na plataforma (incluindo ideias de atividades, guias de cidades, estimativas de orçamento e sugestões de planeamento) destinam-se apenas a fins de informação geral e não constituem aconselhamento jurídico, financeiro ou outro aconselhamento profissional. Embora preparemos os conteúdos com cuidado, não damos qualquer garantia quanto à sua exatidão, completude ou atualidade. Os preços, os horários de funcionamento e a disponibilidade das ofertas de terceiros podem mudar a qualquer momento — confirma os detalhes críticos junto do respetivo fornecedor antes de confiares neles."
       },
       "externalLinks": {
         "title": "Links Externos",
-        "content": "Não somos responsáveis por conteúdo de terceiros."
+        "content": "A EventBliss contém ligações para websites externos de terceiros (p. ex., sites de fornecedores, lojas de bilhetes, páginas informativas). Não temos qualquer influência sobre os seus conteúdos e, por isso, não assumimos qualquer responsabilidade por eles; pelas páginas ligadas é sempre responsável o respetivo fornecedor ou operador. As páginas ligadas foram verificadas quanto a possíveis violações legais no momento da criação da ligação; não foram identificados conteúdos ilícitos nessa altura. Um controlo permanente das páginas ligadas não é exigível sem indícios concretos de uma infração — logo que tomemos conhecimento de violações, removeremos prontamente essas ligações."
       },
       "availability": {
         "title": "Disponibilidade",
-        "content": "Visamos 99,9% de uptime."
+        "content": "Esforçamo-nos por manter a EventBliss disponível com elevada fiabilidade. No entanto, não podemos garantir uma disponibilidade ininterrupta: janelas de manutenção, atualizações, força maior, ataques à infraestrutura ou falhas de fornecedores terceiros podem causar restrições temporárias. Não existe um direito à disponibilidade ininterrupta do serviço gratuito. Os detalhes constam da secção «Disponibilidade do serviço» dos nossos Termos de Serviço."
       },
       "limitation": {
         "title": "Limitação",
-        "content": "Não somos responsáveis por danos indiretos."
+        "content": "Respondemos sem limitações por dolo e negligência grosseira, bem como por danos à vida, ao corpo ou à saúde. Em caso de negligência leve, respondemos apenas pela violação de obrigações contratuais essenciais (obrigações cujo cumprimento torna possível, desde logo, a execução adequada do contrato e em cuja observância podes regularmente confiar), com o limite do dano previsível e típico do contrato. A responsabilidade por danos indiretos, danos consequentes e lucros cessantes está excluída na medida do legalmente permitido. A responsabilidade legal imperativa (p. ex., ao abrigo do direito da responsabilidade do produtor) permanece inalterada. Pelos serviços reservados no marketplace é responsável a respetiva agência (ver Termos de Serviço)."
       },
       "contact": {
         "title": "Contacto",
-        "content": "Para questões, contacta-nos."
+        "content": "Se tiveres questões sobre este aviso ou quiseres denunciar conteúdos, contacta-nos:"
+      },
+      "meta": {
+        "title": "Aviso de Isenção de Responsabilidade | EventBliss",
+        "description": "Aviso de isenção de responsabilidade da plataforma EventBliss: papel da plataforma, serviços de terceiros, eventos organizados por utilizadores, conteúdos gerados por IA e ligações externas."
+      },
+      "toc": "Índice",
+      "lastUpdatedDate": "Junho de 2026",
+      "thirdPartyServices": {
+        "title": "Serviços de terceiros",
+        "content": "A EventBliss integra serviços de terceiros, p. ex., Spotify (reprodução de música no jogo OHRWURM), Google Maps e Mapbox (mapas), prestadores de serviços de pagamento e serviços de IA. Estes serviços são prestados pelos respetivos operadores nos seus próprios termos; não temos influência sobre a sua disponibilidade, funcionalidade ou conteúdos. Funcionalidades individuais podem ficar limitadas ou indisponíveis se um serviço de terceiros sofrer perturbações, for descontinuado ou alterar as suas condições (p. ex., a reprodução completa de música requer uma conta Spotify Premium). A indisponibilidade temporária de uma integração de terceiros não constitui um defeito da EventBliss."
+      },
+      "userEvents": {
+        "title": "Eventos e atividades organizados por utilizadores",
+        "content": "Os eventos que os utilizadores planeiam ou realizam com a EventBliss (p. ex., despedidas de solteiro, aniversários, viagens) são organizados exclusivamente pelos próprios utilizadores. A EventBliss é uma ferramenta de planeamento e — nas reservas do marketplace — uma intermediária, não a organizadora desses eventos. Não assumimos qualquer responsabilidade pela condução, segurança ou legalidade dos eventos organizados por utilizadores, pelos atos dos participantes, nem por danos, acidentes ou perdas ocorridos nesses eventos. Os participantes são eles próprios responsáveis pelo cumprimento da lei aplicável (p. ex., proteção de menores, ordem pública, consumo de álcool) e pela contratação de seguros adequados, quando aconselhável."
+      },
+      "aiContent": {
+        "title": "Conteúdos gerados por IA",
+        "content": "Algumas funcionalidades da EventBliss utilizam inteligência artificial, p. ex., o assistente de planeamento, as sugestões de atividades e o leitor de recibos (reconhecimento de texto). Apesar de uma configuração cuidadosa, os resultados gerados por IA podem ser incorretos, incompletos ou inadequados à tua situação específica. São disponibilizados sem qualquer garantia e não substituem o teu próprio juízo: verifica as sugestões da IA (p. ex., montantes de recibos reconhecidos, programas, recomendações) antes de confiares nelas. Não respondemos por decisões tomadas com base em conteúdos gerados por IA, salvo nos casos previstos na secção «Limitação de Responsabilidade»."
       }
     },
     "agency_agreement": {
@@ -1894,6 +2180,71 @@
         "tocTermTermination": "Term & termination",
         "tocFinalProvisions": "Final provisions"
       }
+    }
+  },
+  "support": {
+    "meta": {
+      "title": "Ajuda e Suporte | EventBliss",
+      "description": "Obtém ajuda com a EventBliss: contacta a nossa equipa de suporte e encontra respostas sobre eventos, subscrições Premium, cancelamentos, eliminação de conta e reservas."
+    },
+    "title": "Ajuda e Suporte",
+    "subtitle": "Encontra abaixo respostas rápidas sobre a EventBliss — ou contacta diretamente a nossa equipa. Teremos todo o gosto em ajudar com os teus eventos, o Premium, as reservas e a tua conta.",
+    "contact": {
+      "title": "Contacta-nos",
+      "emailCard": {
+        "title": "Suporte por e-mail",
+        "desc": "A forma mais rápida de nos contactares. Indica, por favor, o endereço de e-mail da tua conta EventBliss — e o número da reserva, no caso de reservas no marketplace.",
+        "cta": "Escreve-nos"
+      },
+      "responseTime": "Normalmente respondemos em 24–48 horas, em dias úteis."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "items": {
+        "createEvent": {
+          "q": "Como crio um evento?",
+          "a": "Toca no botão de mais (Criar evento) no ecrã inicial, escolhe o tipo de evento (p. ex., despedida de solteiro, aniversário, casamento), define um nome e uma data — e está feito. Como organizador, podes depois convidar pessoas, criar tarefas, montar um programa, lançar sondagens e gerir o orçamento. Criar eventos é gratuito."
+        },
+        "joinCode": {
+          "q": "Como me junto a um evento com um código de convite?",
+          "a": "Abre a app e escolhe «Juntar-me a um evento», depois introduz o código de convite de 6 carateres — ou toca simplesmente na ligação de convite que recebeste. Serás adicionado ao evento de imediato. Se o código não funcionar, pede ao organizador uma nova ligação — os códigos podem expirar quando o organizador os repõe."
+        },
+        "premiumBuy": {
+          "q": "Como obtenho o EventBliss Premium?",
+          "a": "Podes comprar o Premium de duas formas:\n\n• Na app: abre a página Premium e conclui a compra através da App Store (iOS) ou do Google Play (Android). As subscrições renovam-se automaticamente; a opção Lifetime é uma compra única.\n• No website: inicia sessão em event-bliss.com e compra através do nosso prestador de pagamentos Stripe (cartão de crédito, Apple Pay, Google Pay e outros).\n\nO Premium desbloqueia eventos ilimitados, todos os jogos de festa, funcionalidades de IA e muito mais."
+        },
+        "premiumRestore": {
+          "q": "Comprei o Premium mas não está ativo — como restauro a minha compra?",
+          "a": "Abre a página Premium na app e toca em «Restaurar compras». Certifica-te de que tens sessão iniciada com o mesmo Apple ID / a mesma conta Google que usaste na compra original — e com a mesma conta EventBliss. Se compraste o Premium no website, inicia sessão na app com a mesma conta EventBliss; a sincronização é automática. Continua sem funcionar? Envia um e-mail para support@event-bliss.com e anexa o comprovativo da compra."
+        },
+        "premiumCancelApp": {
+          "q": "Como cancelo uma subscrição comprada na app (App Store / Google Play)?",
+          "a": "As subscrições compradas na app são geridas exclusivamente pela Apple ou pela Google — a EventBliss não as pode cancelar por ti:\n\n• iPhone/iPad: Definições → [o teu nome] → Subscrições → EventBliss → Cancelar subscrição.\n• Android: app Google Play → ícone de perfil → Pagamentos e subscrições → Subscrições → EventBliss → Cancelar.\n\nCancela pelo menos 24 horas antes do fim do período atual, caso contrário a subscrição renova-se automaticamente. Depois do cancelamento, o Premium permanece ativo até ao fim do período pago. Eliminar a app NÃO cancela uma subscrição."
+        },
+        "premiumCancelWeb": {
+          "q": "Como cancelo uma subscrição comprada no website?",
+          "a": "As subscrições compradas em event-bliss.com (através da Stripe) podem ser canceladas na tua conta no website — ou envia simplesmente um e-mail para support@event-bliss.com a partir do endereço de e-mail da tua conta e cancelamo-la por ti. O cancelamento produz efeitos no fim do período de faturação atual; até lá manténs o Premium."
+        },
+        "deleteAccount": {
+          "q": "Como elimino a minha conta?",
+          "a": "Na app: Perfil → Definições → Eliminar conta. Esta ação elimina permanentemente a tua conta e os teus eventos (as cópias de segurança são removidas no prazo de 30 dias; os registos de pagamento sujeitos a conservação legal são mantidos pelo prazo prescrito). Importante: uma subscrição ativa da App Store / do Google Play NÃO é cancelada com a eliminação da conta — cancela-a primeiro nas definições de subscrições da tua loja."
+        },
+        "exportData": {
+          "q": "Posso obter uma cópia dos meus dados (exportação de dados)?",
+          "a": "Sim. Ao abrigo do art. 20.º do RGPD, podes receber os dados que forneceste num formato de leitura automática. Envia um e-mail para support@event-bliss.com a partir do endereço de e-mail da tua conta EventBliss e pede uma exportação de dados — enviamo-la, o mais tardar, em 30 dias, normalmente muito mais depressa."
+        },
+        "bookings": {
+          "q": "Tenho uma questão ou um problema com uma reserva do marketplace — quem devo contactar?",
+          "a": "O teu contrato de prestação de serviços é celebrado diretamente com a agência, por isso contacta primeiro a agência através do chat da reserva na app — assim fica tudo documentado. Se não chegarem a acordo ou se a agência não responder, envia um e-mail para support@event-bliss.com com o número da reserva: a EventBliss medeia em todos os casos e a proteção do comprador aplica-se aos pagamentos online."
+        },
+        "games": {
+          "q": "Um jogo de festa ou o jogo de música (OHRWURM) não funciona — o que posso fazer?",
+          "a": "Verifica primeiro a tua ligação à internet e certifica-te de que a app está atualizada. No jogo de música OHRWURM: a reprodução completa das músicas requer uma conta Spotify Premium ligada no jogo; sem ela, são reproduzidos excertos de pré-visualização mais curtos. Se um jogo não arrancar ou bloquear, fecha completamente a app e volta a abri-la. Continua sem resolver? Envia um e-mail para support@event-bliss.com com o modelo do teu dispositivo e uma breve descrição."
+        }
+      }
+    },
+    "legalLinks": {
+      "title": "Informação legal"
     }
   },
   "createEvent": {

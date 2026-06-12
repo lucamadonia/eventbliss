@@ -163,7 +163,7 @@ export default function ProfileScreen() {
       } as Item] : []),
     ] : []),
     { icon: Shield, label: t('native.profile.privacy'), onClick: () => go("/legal/privacy") },
-    { icon: HelpCircle, label: t('native.profile.helpSupport'), onClick: () => go("/legal/imprint") },
+    { icon: HelpCircle, label: t('native.profile.helpSupport'), onClick: () => go("/support") },
     { icon: LogOut, label: t('native.profile.logout'), onClick: handleLogout, destructive: true },
   ];
 

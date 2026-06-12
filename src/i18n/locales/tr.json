@@ -1622,39 +1622,282 @@
       "contact": "İletişim",
       "responsibleContent": "İçerik Sorumlusu",
       "disputeResolution": "AB Uyuşmazlık Çözümü",
-      "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar."
+      "disputeText": "Avrupa Komisyonu çevrimiçi uyuşmazlık çözüm platformu sağlar.",
+      "meta": {
+        "title": "Künye | EventBliss",
+        "description": "EventBliss yasal bilgileri — işletmeci: MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Baf (Paphos), Kıbrıs. Sicil No. HE 473088, KDV Kimlik No. CY60165018Q."
+      },
+      "toc": "İçindekiler",
+      "brandNote": "EventBliss, MYFAMBLISS GROUP LTD'nin bir markası ve ürünüdür.",
+      "regNoLabel": "Şirket Sicil No.",
+      "vatLabel": "KDV Kimlik No.",
+      "responsiblePerson": "Bu web sitesinin ve EventBliss uygulamasının içeriğinden sorumlu: MYFAMBLISS GROUP LTD yönetimi.",
+      "odrText": "AB'nin 524/2013 (AB) sayılı Tüzük kapsamındaki çevrimiçi uyuşmazlık çözüm platformu (ODR platformu), 20 Temmuz 2025 tarihinde kapatılmıştır. Bir tüketici hakem heyeti önündeki uyuşmazlık çözüm süreçlerine katılmakla yükümlü değiliz ve buna istekli de değiliz. Her türlü şikâyet için lütfen doğrudan bizimle iletişime geçin — her sorunu support@event-bliss.com üzerinden çözmeyi hedefliyoruz.",
+      "supportLink": "Uygulama, rezervasyonlarınız veya hesabınızla ilgili sorularınız mı var? Destek sayfamızda en sık sorulan soruların yanıtlarını ve ekibimize doğrudan ulaşma imkânını bulabilirsiniz."
     },
     "privacy": {
       "title": "Gizlilik Politikası",
-      "lastUpdated": "Son güncelleme",
-      "intro": "Gizliliğiniz bizim için önemlidir.",
-      "dataCollection": {
-        "title": "Veri Toplama",
-        "content": "Doğrudan sağladığınız bilgileri topluyoruz."
+      "meta": {
+        "title": "Gizlilik Politikası | EventBliss",
+        "description": "EventBliss (MYFAMBLISS GROUP LTD) kişisel verilerinizi GDPR kapsamında nasıl işler — alıcılar, hukuki dayanaklar, saklama süreleri ve haklarınız."
       },
-      "dataUsage": {
-        "title": "Veri Kullanımı",
-        "content": "Verileriniz hizmet sunmak için kullanılır."
+      "lastUpdated": "Son güncelleme",
+      "lastUpdatedDate": "Haziran 2026",
+      "toc": "İçindekiler",
+      "intro": "Bu Gizlilik Politikası, EventBliss'in işletmecisi olan biz MYFAMBLISS GROUP LTD'nin, uygulamamızı (iOS ve Android), event-bliss.com web sitemizi ve EventBliss pazaryerini kullandığınızda kişisel verilerinizi nasıl topladığımızı, kullandığımızı, paylaştığımızı ve koruduğumuzu açıklar. Ayrıca AB Genel Veri Koruma Tüzüğü (GDPR) kapsamındaki haklarınız hakkında sizi bilgilendirir. EventBliss gizlilik dostu olarak tasarlanmıştır: yalnızca hizmetin işletilmesi için gerekli olan verileri işleriz, verilerinizi satmayız ve üçüncü taraf reklamları göstermeyiz.",
+      "summary": {
+        "title": "Bir Bakışta",
+        "items": [
+          "Yalnızca EventBliss'in işletilmesi için gerekli verileri işleriz — hesabınız, etkinlikleriniz ve Premium satın almanız hâlinde satın alma verileriniz.",
+          "Veritabanımız, kimlik doğrulama ve dosya depolama, AB'de (Frankfurt, Almanya) Supabase üzerinde çalışır.",
+          "Ödemeler Apple, Google ve Stripe tarafından gerçekleştirilir — tam kart bilgilerinizi hiçbir zaman görmez ve saklamayız.",
+          "Yapay zekâ özellikleri (fiş tarayıcı, planlama asistanı, sesli okuma) verileri yalnızca siz bunları aktif olarak kullanırken iletir — ve asla reklam amacıyla kullanmaz.",
+          "Kişisel verileri satmayız; üçüncü taraf reklam veya izleme ağları kullanmayız.",
+          "Hesabınızı uygulama içinde istediğiniz zaman silebilirsiniz (Profil → Ayarlar → Hesabı sil) — bkz. 'Hesap Silme'."
+        ]
+      },
+      "controller": {
+        "title": "Veri Sorumlusu",
+        "content": "Bu politikada açıklanan tüm veri işleme faaliyetleri bakımından GDPR Madde 4(7) anlamında veri sorumlusu:\n\nMYFAMBLISS GROUP LTD, Kıbrıs Cumhuriyeti'nde kayıtlı bir şirkettir. \"EventBliss\", MYFAMBLISS GROUP LTD'nin bir markası ve ürünüdür. Yasal bir zorunluluk bulunmadığından bir veri koruma görevlisi atanmamıştır; gizlilikle ilgili tüm konularda aşağıdaki iletişim bilgileri üzerinden doğrudan ekibimize ulaşabilirsiniz."
+      },
+      "dataCategories": {
+        "title": "Hangi Verileri İşliyoruz",
+        "intro": "EventBliss'i nasıl kullandığınıza bağlı olarak aşağıdaki kişisel veri kategorilerini işleriz. Bu verileri doğrudan sizden veya cihazınızdan toplarız ya da hizmeti kullanımınız sırasında oluşurlar:",
+        "items": {
+          "account": {
+            "label": "Hesap verileri",
+            "desc": "Görünen ad, e-posta adresi, parola (kimlik doğrulama sağlayıcımızda yalnızca tuzlanmış kriptografik özet (hash) olarak saklanır), profil fotoğrafı, dil ve bildirim tercihleri. Apple veya Google ile oturum açarsanız, bu sağlayıcıdan adınızı (veya bir takma adı), (relay) e-posta adresinizi ve teknik bir hesap tanımlayıcısını alırız."
+          },
+          "content": {
+            "label": "Etkinlik içerikleri",
+            "desc": "Sizin ve misafirlerinizin bir etkinlik içinde oluşturduğu her şey: etkinlik adı, türü, tarihler, konum, misafir listesi, görevler, zaman planları, anketler ve oylamalar, sohbet mesajları, fotoğraf galerisi yüklemeleri, harcama kayıtları ve oyun sonuçları. Etkinlik içerikleri, o etkinliğin diğer katılımcıları tarafından görülebilir."
+          },
+          "payment": {
+            "label": "Satın alma ve ödeme verileri",
+            "desc": "Abonelik durumunuz (Free, Premium, Lifetime), ürün tanımlayıcıları, Apple veya Google'dan gelen işlem ve satın alma token'ları ve — web üzerinden satın almalarda — Stripe aracılığıyla işlenen veriler (tutar, para birimi, ödeme yöntemi türü, kartın son dört hanesi). Tam kart numaraları yalnızca ödeme sağlayıcıları tarafından işlenir ve hiçbir zaman sunucularımıza ulaşmaz."
+          },
+          "receipts": {
+            "label": "Fiş fotoğrafları (harcama tarayıcısı)",
+            "desc": "Harcama özelliğindeki fiş tarayıcısını kullanırsanız, çektiğiniz fotoğraf ve tanınan veriler (satıcı, tutar, tarih), harcama kaydını önceden doldurmak için işlenir. İlgili OCR sağlayıcısı için bkz. 'Alıcılar ve Veri İşleyenler'."
+          },
+          "usage": {
+            "label": "Kullanım verileri",
+            "desc": "Hangi özellikleri kullandığınız ve temel etkileşim olayları (örn. etkinlik oluşturuldu, oyun başlatıldı), çökme raporları ve performans tanılamaları. Bunları uygulamayı kararlı tutmak ve geliştirmek için kullanırız — reklam profilleri oluşturmak için değil."
+          },
+          "device": {
+            "label": "Cihaz ve günlük (log) verileri",
+            "desc": "IP adresi, cihaz modeli, işletim sistemi ve sürümü, uygulama sürümü, tarayıcı türü, isteklerin zaman damgaları ve — bildirimleri etkinleştirirseniz — push token'ınız. Sunucu günlükleri güvenlik ve hata analizi amacıyla tutulur."
+          },
+          "location": {
+            "label": "Konum verileri (isteğe bağlı)",
+            "desc": "Yalnızca harita özelliklerini kullandığınızda (örn. etkinlik konumu seçerken): görüntülediğiniz harita bölümü ve — sistem izni vermeniz hâlinde — haritayı ortalamak için cihazınızın yaklaşık konumu. Hareket profilleri oluşturmayız ve konumunuzu arka planda izlemeyiz."
+          },
+          "voice": {
+            "label": "Sesli okuma / ses (isteğe bağlı)",
+            "desc": "Sesli okuma (text-to-speech) özelliğini kullandığınızda, seslendirilecek metin, ses çıktısını oluşturmak üzere konuşma sağlayıcımıza iletilir. Bu özellik için mikrofonunuza erişmez ve kayıt yapmayız."
+          }
+        }
+      },
+      "purposes": {
+        "title": "Amaçlar ve Hukuki Dayanaklar (GDPR Madde 6)",
+        "intro": "Verilerinizi yalnızca aşağıdaki amaçlarla ve yalnızca şu hukuki dayanaklara dayanarak işleriz:",
+        "items": {
+          "service": {
+            "purpose": "EventBliss hizmetinin sunulması: hesabınız, etkinlik planlama ve iş birliği, cihazlar arası senkronizasyon, pazaryeri rezervasyonları ve müşteri desteği.",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(b) — sözleşmenin ifası (Hizmet Şartlarımız)."
+          },
+          "payments": {
+            "purpose": "Satın almaların ve aboneliklerin işlenmesi (Premium, Lifetime, pazaryeri rezervasyonları), makbuz düzenlenmesi ve ödeme dolandırıcılığının önlenmesi.",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(b); vergi ve ticari kayıt yükümlülükleri için ayrıca GDPR Madde 6(1)(c)."
+          },
+          "ai": {
+            "purpose": "Yapay zekâ destekli özellikler: fiş metni tanıma (OCR), yapay zekâ planlama asistanı ve sesli okuma çıktısı. Veriler, 'Alıcılar ve Veri İşleyenler' bölümünde belirtilen sağlayıcılara yalnızca özelliği aktif olarak kullandığınız anda iletilir.",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(b) — özellik, talep ettiğiniz hizmetin bir parçasıdır. Gerekli olduğu durumlarda ayrıca rızanızı isteriz (GDPR Madde 6(1)(a))."
+          },
+          "push": {
+            "purpose": "Etkinliklerinizle ilgili push bildirimleri (örn. yeni mesajlar, görevler veya zaman planı değişiklikleri).",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(a) — sistem izin penceresi üzerinden verdiğiniz rıza; cihaz ayarlarınızdan istediğiniz zaman geri alınabilir."
+          },
+          "security": {
+            "purpose": "Güvenlik ve kötüye kullanımın önlenmesi: sunucu günlükleri, hız sınırlama (rate limiting), dolandırıcılık tespiti, saldırılara karşı savunma ve Şartlarımızın uygulanması.",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(f) — güvenli ve güvenilir bir platforma ilişkin meşru menfaatimiz."
+          },
+          "legal": {
+            "purpose": "Yasal yükümlülüklerin yerine getirilmesi, özellikle işlem ve muhasebe kayıtları için geçerli yasal saklama süreleri.",
+            "basis": "Hukuki dayanak: GDPR Madde 6(1)(c)."
+          }
+        }
+      },
+      "processors": {
+        "title": "Alıcılar ve Veri İşleyenler",
+        "intro": "Kişisel verileri yalnızca aşağıdaki alıcılarla, yalnızca gerekli olduğu ölçüde ve — bizim adımıza veri işleyen sıfatıyla hareket ettikleri durumlarda — GDPR Madde 28 uyarınca akdedilmiş veri işleme sözleşmeleri temelinde paylaşırız. Apple, Google, Stripe ve Spotify, kendi hizmetleri bakımından (kısmen) bağımsız veri sorumlusu olarak hareket eder.",
+        "cols": {
+          "name": "Sağlayıcı",
+          "purpose": "Amaç",
+          "location": "Konum",
+          "safeguards": "Güvenceler"
+        },
+        "rows": {
+          "supabase": {
+            "name": "Supabase",
+            "purpose": "Veritabanı, kimlik doğrulama ve dosya depolama — uygulamanın teknik omurgası",
+            "location": "AB (Frankfurt, Almanya)",
+            "safeguards": "Veri işleyen; GDPR Madde 28 uyarınca veri işleme sözleşmesi; veriler AB'de barındırılır"
+          },
+          "vercel": {
+            "name": "Vercel",
+            "purpose": "event-bliss.com web sitesinin barındırılması ve içerik dağıtımı",
+            "location": "ABD / küresel edge ağı",
+            "safeguards": "AB Standart Sözleşme Maddeleri (SCC'ler) içeren veri işleme sözleşmesi; AB-ABD Veri Gizliliği Çerçevesi"
+          },
+          "stripe": {
+            "name": "Stripe",
+            "purpose": "Web sitesindeki satın almalar için ödeme işleme (kartlar, Apple Pay, Google Pay, SEPA)",
+            "location": "AB / ABD",
+            "safeguards": "SCC'ler içeren veri işleme sözleşmesi; AB-ABD Veri Gizliliği Çerçevesi kapsamında sertifikalı"
+          },
+          "apple": {
+            "name": "Apple",
+            "purpose": "iOS'ta uygulama içi satın almalar, Sign in with Apple, push bildirimleri (APNs)",
+            "location": "ABD",
+            "safeguards": "Satın almalar bakımından bağımsız veri sorumlusu; AB-ABD Veri Gizliliği Çerçevesi"
+          },
+          "google": {
+            "name": "Google",
+            "purpose": "Android'de uygulama içi satın almalar (Play Billing), Google Sign-In, push bildirimleri (FCM), Google Maps",
+            "location": "ABD",
+            "safeguards": "Satın almalar bakımından bağımsız veri sorumlusu; SCC'ler; AB-ABD Veri Gizliliği Çerçevesi"
+          },
+          "revenuecat": {
+            "name": "RevenueCat",
+            "purpose": "Abonelik yönetimi ve uygulama içi satın almaların doğrulanması (takma adlı bir kullanıcı kimliği ve satın alma token'ları alır)",
+            "location": "ABD",
+            "safeguards": "Veri işleyen; SCC'ler içeren veri işleme sözleşmesi"
+          },
+          "openai": {
+            "name": "OpenAI",
+            "purpose": "Fiş OCR — harcama tarayıcısını kullandığınızda fiş fotoğrafları metin tanıma için iletilir",
+            "location": "ABD",
+            "safeguards": "Veri işleyen; SCC'ler içeren veri işleme sözleşmesi; API verileri model eğitiminde kullanılmaz"
+          },
+          "openrouter": {
+            "name": "OpenRouter",
+            "purpose": "Yapay zekâ asistanı — planlama önerileri oluşturmak için girdiğiniz metinler iletilir",
+            "location": "ABD",
+            "safeguards": "Veri işleyen; SCC'ler içeren veri işleme sözleşmesi"
+          },
+          "mistral": {
+            "name": "Mistral AI",
+            "purpose": "Metin okuma (text-to-speech) — sesli okuma özelliğinin ses çıktısını oluşturur",
+            "location": "AB (Fransa)",
+            "safeguards": "Veri işleyen; GDPR Madde 28 uyarınca veri işleme sözleşmesi"
+          },
+          "spotify": {
+            "name": "Spotify",
+            "purpose": "Müzik çalma SDK'sı — yalnızca OHRWURM müzik oyununu kullanır ve kendi Spotify hesabınızı bağlarsanız",
+            "location": "AB (İsveç)",
+            "safeguards": "Bağımsız veri sorumlusu; Spotify'ın kendi gizlilik politikası geçerlidir"
+          },
+          "mapbox": {
+            "name": "Mapbox / Google Maps",
+            "purpose": "Harita görüntüleme — bir harita yüklendiğinde IP adresiniz ve istenen harita karoları iletilir",
+            "location": "ABD",
+            "safeguards": "SCC'ler içeren veri işleme sözleşmesi; AB-ABD Veri Gizliliği Çerçevesi (Google)"
+          }
+        }
+      },
+      "transfers": {
+        "title": "Uluslararası Veri Aktarımları",
+        "content": "Alıcıların Avrupa Ekonomik Alanı dışında (özellikle ABD'de) bulunması hâlinde, yeterli bir veri koruma düzeyini şu yollarla sağlarız: (a) sertifikalı sağlayıcılar için AB Komisyonu'nun AB-ABD Veri Gizliliği Çerçevesi'ne ilişkin yeterlilik kararı (GDPR Madde 45) ve (b) gerektiğinde ek tedbirlerle birlikte AB Standart Sözleşme Maddeleri (GDPR Madde 46(2)(c)). İlgili güvencelerin kopyaları, aşağıdaki iletişim bilgileri üzerinden talep edilebilir."
+      },
+      "retention": {
+        "title": "Saklama Süreleri",
+        "intro": "Kişisel verileri yalnızca ilgili amaç için gerekli olduğu sürece veya yasaların gerektirdiği süre boyunca saklarız:",
+        "items": {
+          "account": {
+            "label": "Hesap verileri",
+            "desc": "Hesabınız var olduğu sürece saklanır; hesabınızı sildiğinizde silinir."
+          },
+          "events": {
+            "label": "Etkinlik içerikleri",
+            "desc": "Etkinliği veya hesabınızı sildiğinizde silinir; şifreli yedeklerdeki artık kopyalar 30 gün içinde kaldırılır."
+          },
+          "payments": {
+            "label": "Ödeme ve işlem kayıtları",
+            "desc": "Kıbrıs Şirketler Kanunu (Companies Law) ve vergi mevzuatı uyarınca, ilgili mali yılın sonundan itibaren 6 yıl saklanır."
+          },
+          "logs": {
+            "label": "Sunucu ve güvenlik günlükleri",
+            "desc": "Belirli bir güvenlik olayı daha uzun saklamayı gerektirmedikçe, 30 gün sonra otomatik olarak silinir veya anonimleştirilir."
+          }
+        }
       },
       "cookies": {
-        "title": "Çerezler",
-        "content": "Deneyiminizi geliştirmek için çerez kullanıyoruz."
+        "title": "Çerezler ve Yerel Depolama",
+        "content": "EventBliss yalnızca teknik olarak gerekli çerezleri ve yerel depolama (local storage) kayıtlarını kullanır: oturum bilgileriniz, dil seçiminiz ve arayüz tercihleriniz (örn. tema). Hukuki dayanak: GDPR Madde 6(1)(f) veya — ePrivacy kurallarının kapsamına giren depolama için — talep ettiğiniz hizmetin sunulması bakımından mutlak gereklilik. Üçüncü taraf reklam veya siteler arası izleme çerezleri kullanmayız. Gelecekte isteğe bağlı, zorunlu olmayan bir teknoloji kullanılacak olursa, önce rızanızı isteriz (GDPR Madde 6(1)(a))."
       },
-      "dataSecurity": {
-        "title": "Güvenlik",
-        "content": "Standart güvenlik önlemleri uyguluyoruz."
+      "push": {
+        "title": "Push Bildirimleri",
+        "content": "Push bildirimlerini (örn. etkinliklerinizdeki yeni sohbet mesajları, görevler veya zaman planı değişiklikleri) yalnızca sistem izin penceresinde izin vermeniz hâlinde göndeririz. Teslimat, iOS'ta Apple (APNs) ve Android'de Google (FCM) tarafından gerçekleştirilir; bu sağlayıcılar cihazınıza ait teknik bir push token'ı alır. Rızanızı istediğiniz zaman geri alabilirsiniz: iOS'ta Ayarlar → Bildirimler → EventBliss, Android'de Ayarlar → Uygulamalar → EventBliss → Bildirimler altında — veya tek tek bildirim türlerini doğrudan uygulama içinde devre dışı bırakabilirsiniz."
       },
-      "userRights": {
-        "title": "Haklarınız",
-        "content": "Verilerinize erişme ve silme hakkınız var."
+      "purchases": {
+        "title": "Satın Almalar, Abonelikler ve Ödeme Verileri",
+        "content": "Uygulama içi satın almalar (iOS/Android): Premium abonelikleri ve Lifetime satın alımı, bağımsız veri sorumluları olarak Apple (App Store) veya Google (Google Play) tarafından gerçekleştirilir. Biz satın alma onayını ve takma adlı işlem verilerini alırız, ancak ödeme bilgilerini almayız. RevenueCat, satın almaları doğrular ve abonelik durumunu bizim adımıza yönetir.\n\nWeb satın almaları: event-bliss.com üzerindeki ödemeler Stripe tarafından işlenir. Stripe, ödeme bilgilerinizi ödeme mevzuatına uygun olarak işler; biz yalnızca sonucu, tutarı ve bir referansı alırız.\n\nTam kart numaralarını hiçbir zaman saklamayız; işlem kayıtları için yasal saklama yükümlülükleri geçerlidir (bkz. 'Saklama Süreleri')."
       },
-      "thirdParty": {
-        "title": "Üçüncü Taraflar",
-        "content": "Güvenilir ortaklarla veri paylaşabiliriz."
+      "deletion": {
+        "title": "Hesap Silme",
+        "content": "Hesabınızı istediğiniz zaman doğrudan uygulama içinden silebilirsiniz: Profil → Ayarlar → Hesabı sil. Bu işlem, hesap verilerinizi ve sahibi olduğunuz etkinlikleri kalıcı olarak siler; şifreli yedeklerdeki kopyalar 30 gün içinde temizlenir. Yasal saklama yükümlülüklerine tabi veriler (örn. ödeme kayıtları, bkz. 'Saklama Süreleri') diğer her türlü kullanım için bloke edilir ve saklama süresi dolduğunda silinir. Alternatif olarak, hesabınıza bağlı e-posta adresinizden support@event-bliss.com adresine e-posta göndererek silme talebinde bulunabilirsiniz. Not: Apple veya Google üzerinden satın alınan abonelikler, App Store / Google Play abonelik ayarlarınızdan ayrıca iptal edilmelidir — hesabınızı silmek bunları otomatik olarak iptal etmez."
+      },
+      "rights": {
+        "title": "Haklarınız (GDPR Madde 15–21)",
+        "intro": "Kişisel verilerinizle ilgili olarak aşağıdaki haklara sahipsiniz. Bunları kullanmak için gayriresmî bir e-posta yeterlidir — en geç bir ay içinde yanıt veririz (GDPR Madde 12(3)):",
+        "items": {
+          "access": {
+            "label": "Erişim hakkı (GDPR Madde 15)",
+            "desc": "Hakkınızda veri işleyip işlemediğimizi ve hangi verileri işlediğimizi teyit etmemizi isteyebilir; bu verilerin bir kopyasını, Madde 15'te sayılan bilgilerle birlikte alabilirsiniz."
+          },
+          "rectification": {
+            "label": "Düzeltme hakkı (GDPR Madde 16)",
+            "desc": "Yanlış verilerin düzeltilmesini, eksik verilerin tamamlanmasını isteyebilirsiniz — hesap verilerinin çoğunu doğrudan uygulama içinde düzenleyebilirsiniz."
+          },
+          "erasure": {
+            "label": "Silme hakkı (GDPR Madde 17)",
+            "desc": "Verilerinizin silinmesini talep edebilirsiniz; en kolay yol, uygulama içi hesap silmedir (bkz. 'Hesap Silme')."
+          },
+          "restriction": {
+            "label": "İşlemenin kısıtlanması hakkı (GDPR Madde 18)",
+            "desc": "Madde 18'de sayılan durumlarda (örn. itiraz ettiğiniz verilerin doğruluğu incelenirken) işlemenin kısıtlanmasını talep edebilirsiniz."
+          },
+          "portability": {
+            "label": "Veri taşınabilirliği hakkı (GDPR Madde 20)",
+            "desc": "Sağladığınız verileri yapılandırılmış, yaygın olarak kullanılan ve makine tarafından okunabilir bir formatta alabilirsiniz. Dışa aktarım için support@event-bliss.com adresine e-posta gönderin."
+          },
+          "objection": {
+            "label": "İtiraz hakkı (GDPR Madde 21)",
+            "desc": "Özel durumunuzdan kaynaklanan nedenlerle, GDPR Madde 6(1)(f)'ye dayanan işlemelere istediğiniz zaman itiraz edebilirsiniz. Ağır basan zorlayıcı meşru nedenler bulunmadıkça işlemeyi durdururuz."
+          },
+          "withdraw": {
+            "label": "Rızayı geri alma hakkı (GDPR Madde 7(3))",
+            "desc": "İşleme rızanıza dayanıyorsa (örn. push bildirimleri), rızanızı ileriye dönük olarak istediğiniz zaman geri alabilirsiniz."
+          }
+        },
+        "complaint": "Şikâyet hakkı (GDPR Madde 77): Özellikle mutad meskeninizin veya iş yerinizin bulunduğu AB üye devletindeki bir veri koruma denetim makamına şikâyette bulunabilirsiniz. Bizim için yetkili makam, Kıbrıs Cumhuriyeti Kişisel Verilerin Korunması Komiseri'dir (Commissioner for Personal Data Protection): 1 Iasonos Street, 1082 Lefkoşa (Nicosia), Kıbrıs — dataprotection.gov.cy."
+      },
+      "children": {
+        "title": "Çocuklar ve Reşit Olmayanlar",
+        "content": "EventBliss çocuklara yönelik değildir. Hesap oluşturmak için en az 16 yaş şartı geçerlidir (veya üye devletinizin bilgi toplumu hizmetleri için belirlediği daha düşük yaş sınırı; ancak hiçbir durumda 13 yaşın altında değil). Bu yaşın altındaki çocuklardan bilerek kişisel veri toplamayız. Bir çocuğun bize kişisel veri sağladığını düşünüyorsanız lütfen bizimle iletişime geçin — verileri derhâl sileriz."
+      },
+      "security": {
+        "title": "Veri Güvenliği",
+        "content": "Verilerinizi GDPR Madde 32 uyarınca teknik ve organizasyonel tedbirlerle koruruz: aktarım hâlindeki tüm veriler için TLS şifrelemesi, veritabanı ve dosya depolaması için bekleme hâlinde (at rest) şifreleme, her kullanıcının yalnızca kendi etkinliklerine erişebilmesini sağlayan satır düzeyinde güvenlik (row-level security), ekibimiz için rol tabanlı erişim kontrolleri, servis anahtarları için en az yetki ilkesi ve güvenlik tedbirlerimizin düzenli olarak gözden geçirilmesi. Hiçbir sistem %100 güvenli değildir; ancak riski mümkün olduğunca düşük tutmak için sürekli çalışıyoruz."
+      },
+      "changes": {
+        "title": "Bu Gizlilik Politikasındaki Değişiklikler",
+        "content": "Hizmetimiz, sağlayıcılarımız veya hukuki durum değiştiğinde bu politikayı güncelleriz. Her zaman, yukarıda belirtilen tarihi taşıyan güncel sürüm geçerlidir; önemli değişiklikler uygulama içinde veya e-posta yoluyla duyurulur. Önceki sürümler talep üzerine temin edilebilir."
       },
       "contact": {
         "title": "İletişim",
-        "content": "Gizlilik soruları için:"
+        "content": "Gizlilikle ilgili her türlü soru veya haklarınızı kullanmak için bize şu adresten ulaşabilirsiniz:"
       }
     },
     "terms": {
@@ -1705,31 +1948,74 @@
       "governingLaw": {
         "title": "Geçerli Hukuk",
         "content": "Uygulanacak hukuk: Platform, Kıbrıs Cumhuriyeti'nde kayıtlı MYFAMBLISS GROUP LTD tarafından işletilir. CISG hariç Kıbrıs hukuku uygulanır. Mutad mesken devletinin emredici tüketici koruma hükümleri (örn. Almanya'da § 312g BGB) saklıdır (Roma I md. 6(2)). AB çevrimiçi uyuşmazlık çözüm platformu: https://ec.europa.eu/consumers/odr"
+      },
+      "meta": {
+        "title": "Hizmet Şartları | EventBliss",
+        "description": "EventBliss kullanımınızı düzenleyen şartlar: pazaryeri rezervasyonları, ödemeler, Premium abonelikler ve uygulama içi satın almalar, AB cayma hakları ve sorumluluk."
+      },
+      "toc": "İçindekiler",
+      "inAppPurchases": {
+        "title": "Premium, Abonelikler ve Uygulama İçi Satın Almalar",
+        "content": "EventBliss isteğe bağlı ücretli planlar sunar (otomatik yenilenen abonelik olarak Premium, tek seferlik satın alma olarak Lifetime). Bunlar Apple App Store veya Google Play üzerinden uygulama içi satın alma olarak ya da event-bliss.com üzerinde ödeme sağlayıcımız Stripe aracılığıyla satın alınabilir.\n\nOtomatik yenileme: Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal etmediğiniz sürece, her dönemin sonunda satın alma sırasında gösterilen fiyat üzerinden otomatik olarak yenilenir.\n\nMağaza satın almalarının iptali: Uygulamada satın alınan abonelikler yalnızca Apple App Store veya Google Play hesabınız üzerinden yönetilir (iOS: Ayarlar → [adınız] → Abonelikler; Android: Google Play → Ödemeler ve abonelikler). EventBliss, mağaza aboneliklerini sizin adınıza iptal edemez. İptalden sonra Premium, ödenen dönemin sonuna kadar etkin kalır; kısmi iadeler ilgili mağazanın koşullarına tabidir.\n\nWeb abonelikleri: Web sitesinden satın alınan abonelikler, hesabınız üzerinden veya support@event-bliss.com adresine e-posta göndererek, mevcut fatura döneminin sonunda geçerli olmak üzere istediğiniz zaman iptal edilebilir.\n\nLifetime: Lifetime seçeneği, yinelenen ücret içermeyen tek seferlik bir satın almadır. EventBliss'in işletildiği süre boyunca Premium özelliklere erişim sağlar; hizmetin süresiz olarak işletileceğine dair bir garanti değildir.\n\nFiyat değişiklikleri: Abonelik fiyat değişiklikleri yalnızca sonraki dönemler için geçerlidir ve önceden duyurulur; mağaza satın almalarında Apple/Google'ın bilgilendirme ve onay prosedürleri geçerlidir."
+      },
+      "withdrawal": {
+        "title": "Cayma Hakkı (AB Tüketicileri)",
+        "content": "Dijital içerikler ve Premium (web sitemizden satın alma): AB'de tüketici olarak kural olarak 14 günlük yasal cayma hakkına sahipsiniz. event-bliss.com üzerinden dijital içerik / dijital hizmet satın alımlarında cayma hakkı, açık onayınızla satın almanın hemen ardından ifaya başlamamız ve bu suretle cayma hakkınızı kaybettiğinizi bildiğinizi teyit etmeniz hâlinde sona erer (2011/83/EU sayılı Direktif Madde 16(m); Almanya'da BGB § 356(5)). Bu onayı ödeme sürecinde verirsiniz; Premium derhâl etkinleştirilir.\n\nUygulama içi satın almalar: Apple App Store veya Google Play üzerinden yapılan satın almalarda Apple veya Google'ın iade ve cayma prosedürleri geçerlidir; talepler ilgili mağazaya yöneltilmelidir.\n\nPazaryeri hizmetleri: Etkinlik hizmeti rezervasyonlarında da kural olarak 14 günlük cayma hakkı bulunur. İstisna: Belirli bir tarih veya ifa dönemi öngören boş zaman etkinlikleriyle bağlantılı hizmetlerde — yani sabit bir tarih için rezerve edilen neredeyse tüm etkinlik hizmetlerinde — cayma hakkı, 2011/83/EU sayılı Direktif Madde 16(l) uyarınca (Almanya'da BGB § 312g(2) No. 9 ile iç hukuka aktarılmıştır) hariç tutulmuştur. Yasal cayma hakkından bağımsız olarak, hizmete özgü iptal politikası geçerlidir (bkz. 'İptal ve İade') — bu politika birçok durumda daha elverişlidir.\n\nKullanım: Cayma hakkının bulunduğu durumlarda, caymayı sözleşmenin kurulmasından itibaren 14 gün içinde herhangi bir şekle bağlı olmaksızın beyan edebilirsiniz (örn. support@event-bliss.com adresine e-posta ile)."
+      },
+      "userContent": {
+        "title": "İçerikleriniz ve Lisans",
+        "content": "EventBliss'e yüklediğiniz içeriklere (örn. fotoğraflar, metinler, etkinlik ayrıntıları, sohbet mesajları) ilişkin tüm haklar sizde kalır. Bize, bu içerikleri yalnızca hizmetin işletilmesi için gerekli olduğu ölçüde barındırmak, depolamak, çoğaltmak ve görüntülemek üzere (örn. fotoğrafların etkinliğinizin diğer katılımcılarına gösterilmesi, yedeklerin oluşturulması) münhasır olmayan, dünya çapında geçerli ve bedelsiz bir lisans verirsiniz. Bu lisans, içerikleri veya hesabınızı sildiğinizde sona erer; yedeklerdeki artık kopyalar (30 gün içinde temizlenir) ile diğer kullanıcılarla paylaştığınız ve onların meşru olarak elinde tuttuğu içerikler bunun dışındadır.\n\nYüklediğiniz tüm içerikler üzerinde gerekli haklara sahip olduğunuzu ve bunların üçüncü kişilerin haklarını (telif hakkı, kişilik hakları — fotoğraflarda görünen kişilerin rızasını alın) veya geçerli hukuku ihlal etmediğini taahhüt edersiniz. Özellikle hukuka aykırı, hakaret içeren, ayrımcı, pornografik veya şiddeti yücelten içerikler yasaktır.\n\nBu Şartları veya geçerli hukuku ihlal eden içerikleri kaldırabiliriz ve yasal olarak gerekli olduğu ölçüde kaldırma hakkında sizi bilgilendiririz (ayrıca bkz. Dijital Hizmetler Yasası (Digital Services Act) kapsamındaki bildirim ve müdahale prosedürleri)."
+      },
+      "marketplaceCancellation": {
+        "title": "Pazaryeri Rezervasyonlarının İptali",
+        "content": "Rezerve edilen etkinlik hizmetlerinin iptali, ajansın hizmetine atadığı ve rezervasyonu tamamlamadan önce size şeffaf biçimde gösterilen hizmete özgü iptal politikasına (esnek, orta veya katı) tabidir. Ayrıntılar — süreler, iade oranları, iade yöntemi, mücbir sebep ve ajanstan kaynaklanan ifa etmeme — yukarıdaki 'İptal ve İade' bölümünde düzenlenmiştir. Tarihe bağlı boş zaman hizmetlerinde cayma hakkının yasal olarak hariç tutulması (bkz. 'Cayma Hakkı'), bu sözleşmesel iptal politikasını etkilemez — politika, emredici tüketici haklarına ek olarak sizin lehinize uygulanır."
+      },
+      "availability_sla": {
+        "title": "Hizmetin Kullanılabilirliği",
+        "content": "EventBliss'i yüksek güvenilirlikle erişilebilir tutmayı hedefleriz; ancak ücretsiz veya ücretli tüketici teklifi için belirli bir kullanılabilirlik düzeyi garanti etmeyiz (SLA yoktur). Hizmet; bakım, güncellemeler, mücbir sebep veya üçüncü taraf sağlayıcıların (örn. barındırma, ödeme, müzik veya harita hizmetleri) kesintileri nedeniyle geçici olarak kullanılamayabilir. Planlı bakımları, mümkün olduğunca düşük kullanım saatlerinde gerçekleştiririz. Kullanılamamadan doğan tazminat talepleri yalnızca 'Sorumluluk Sınırlaması' bölümüne tabidir; yasal haklarınız saklıdır."
       }
     },
     "disclaimer": {
       "title": "Sorumluluk Reddi",
       "lastUpdated": "Son güncelleme",
-      "intro": "Kullanmadan önce okuyun.",
+      "intro": "EventBliss'i kullanmadan önce lütfen bu sorumluluk reddini dikkatle okuyun. Bu metin, Hizmet Şartlarımızı tamamlar ve platform işletmecisi olarak sorumluluğumuzun sınırlarını açıklığa kavuşturur.",
       "general": {
         "title": "Genel",
-        "content": "Bilgiler yalnızca genel amaçlıdır."
+        "content": "EventBliss bir planlama ve pazaryeri platformudur. Platformda sunulan bilgiler (etkinlik fikirleri, şehir rehberleri, bütçe tahminleri ve planlama önerileri dâhil) yalnızca genel bilgilendirme amaçlıdır ve hukuki, mali veya başka türlü profesyonel danışmanlık teşkil etmez. İçerikleri özenle hazırlamamıza rağmen, doğrulukları, eksiksizlikleri veya güncellikleri konusunda hiçbir garanti vermeyiz. Üçüncü taraf tekliflerinin fiyatları, açılış saatleri ve müsaitlik durumları her an değişebilir — lütfen kritik bilgileri, bunlara güvenmeden önce ilgili sağlayıcı nezdinde doğrulayın."
       },
       "externalLinks": {
         "title": "Harici Linkler",
-        "content": "Üçüncü taraf içeriklerinden sorumlu değiliz."
+        "content": "EventBliss, üçüncü taraflara ait harici web sitelerine bağlantılar içerir (örn. sağlayıcı sayfaları, bilet mağazaları, bilgilendirme sayfaları). Bu sitelerin içerikleri üzerinde hiçbir etkimiz yoktur ve bu nedenle bunlar için sorumluluk üstlenmeyiz; bağlantı verilen sayfalardan her zaman ilgili sağlayıcı veya işletmeci sorumludur. Bağlantı verilen sayfalar, bağlantının oluşturulduğu tarihte olası hukuk ihlalleri bakımından kontrol edilmiştir; hukuka aykırı içerik tespit edilmemiştir. Somut bir ihlal emaresi olmaksızın bağlantı verilen sayfaların sürekli denetlenmesi makul olarak beklenemez — ihlallerden haberdar olduğumuzda ilgili bağlantıları derhâl kaldırırız."
       },
       "availability": {
         "title": "Kullanılabilirlik",
-        "content": "%99,9 çalışma süresi hedefliyoruz."
+        "content": "EventBliss'i yüksek güvenilirlikle erişilebilir tutmaya çalışırız. Ancak kesintisiz kullanılabilirliği garanti edemeyiz: bakım pencereleri, güncellemeler, mücbir sebep, altyapıya yönelik saldırılar veya üçüncü taraf sağlayıcıların kesintileri geçici kısıtlamalara yol açabilir. Ücretsiz hizmetin kesintisiz kullanılabilirliğine ilişkin bir hak iddiası söz konusu değildir. Ayrıntılar, Hizmet Şartlarımızın 'Hizmetin Kullanılabilirliği' bölümünde düzenlenmiştir."
       },
       "limitation": {
         "title": "Sınırlama",
-        "content": "Dolaylı zararlardan sorumlu değiliz."
+        "content": "Kast ve ağır ihmal ile yaşamın, bedenin veya sağlığın zarar görmesi hâllerinde sınırsız olarak sorumluyuz. Hafif ihmal hâlinde yalnızca esaslı sözleşme yükümlülüklerinin (yerine getirilmesi sözleşmenin gereği gibi ifasını mümkün kılan ve uyulmasına düzenli olarak güvenebileceğiniz yükümlülükler) ihlalinden, sözleşmeye özgü öngörülebilir zararla sınırlı olarak sorumluyuz. Dolaylı zararlar, dolaylı netice zararları ve kâr kaybı için sorumluluk, yasal olarak izin verilen ölçüde hariç tutulmuştur. Emredici yasal sorumluluk (örn. ürün sorumluluğu hukuku kapsamında) saklıdır. Rezerve edilen pazaryeri hizmetlerinden ilgili ajans sorumludur (bkz. Hizmet Şartları)."
       },
       "contact": {
         "title": "İletişim",
-        "content": "Sorular için bize ulaşın."
+        "content": "Bu sorumluluk reddiyle ilgili sorularınız varsa veya bir içerik bildirmek istiyorsanız, lütfen bizimle iletişime geçin:"
+      },
+      "meta": {
+        "title": "Sorumluluk Reddi | EventBliss",
+        "description": "EventBliss platformunun sorumluluk reddi: platform rolü, üçüncü taraf hizmetleri, kullanıcıların düzenlediği etkinlikler, yapay zekâ tarafından oluşturulan içerikler ve harici bağlantılar."
+      },
+      "toc": "İçindekiler",
+      "lastUpdatedDate": "Haziran 2026",
+      "thirdPartyServices": {
+        "title": "Üçüncü Taraf Hizmetleri",
+        "content": "EventBliss; örneğin Spotify (OHRWURM oyununda müzik çalma), Google Maps ve Mapbox (haritalar), ödeme sağlayıcıları ve yapay zekâ hizmetleri gibi üçüncü taraf hizmetlerini entegre eder. Bu hizmetler, işletmecileri tarafından kendi koşulları çerçevesinde sunulur; kullanılabilirlikleri, işleyişleri veya içerikleri üzerinde hiçbir etkimiz yoktur. Bir üçüncü taraf hizmeti kesintiye uğrarsa, sonlandırılırsa veya koşullarını değiştirirse, tek tek özellikler kısıtlanabilir veya kullanılamayabilir (örn. şarkıların tam olarak çalınması bir Spotify Premium hesabı gerektirir). Bir üçüncü taraf entegrasyonunun geçici olarak kullanılamaması, EventBliss'in bir ayıbı sayılmaz."
+      },
+      "userEvents": {
+        "title": "Kullanıcılar Tarafından Düzenlenen Etkinlikler ve Aktiviteler",
+        "content": "Kullanıcıların EventBliss ile planladığı veya gerçekleştirdiği etkinlikler (örn. bekârlığa veda partileri, doğum günleri, geziler), yalnızca kullanıcıların kendileri tarafından düzenlenir. EventBliss bir planlama aracıdır ve — pazaryeri rezervasyonlarında — aracıdır; bu tür etkinliklerin organizatörü değildir. Kullanıcılar tarafından düzenlenen etkinliklerin yürütülmesi, güvenliği veya hukuka uygunluğu, katılımcıların davranışları ya da bu etkinliklerde meydana gelen zararlar, kazalar veya kayıplar için hiçbir sorumluluk üstlenmeyiz. Katılımcılar, geçerli hukuka uymaktan (örn. gençlerin korunması, kamu düzeni, alkol tüketimi) ve tavsiye edilen hâllerde uygun sigortaları yaptırmaktan bizzat sorumludur."
+      },
+      "aiContent": {
+        "title": "Yapay Zekâ Tarafından Oluşturulan İçerikler",
+        "content": "EventBliss'in bazı özellikleri yapay zekâ kullanır; örn. planlama asistanı, etkinlik önerileri ve fiş tarayıcısı (metin tanıma). Özenli yapılandırmaya rağmen, yapay zekâ tarafından oluşturulan çıktılar hatalı, eksik veya somut durumunuz için uygunsuz olabilir. Bu çıktılar hiçbir garanti verilmeksizin sunulur ve kendi değerlendirmenizin yerini tutmaz: lütfen yapay zekâ önerilerini (örn. tanınan fiş tutarları, zaman planları, tavsiyeler) bunlara güvenmeden önce doğrulayın. 'Sorumluluk Sınırlaması' bölümünde düzenlenen hâller dışında, yapay zekâ tarafından oluşturulan içeriklere dayanarak alınan kararlardan sorumlu değiliz."
       }
     },
     "agency_agreement": {
@@ -1894,6 +2180,71 @@
         "tocTermTermination": "Term & termination",
         "tocFinalProvisions": "Final provisions"
       }
+    }
+  },
+  "support": {
+    "meta": {
+      "title": "Yardım ve Destek | EventBliss",
+      "description": "EventBliss için yardım alın: destek ekibimizle iletişime geçin; etkinlikler, Premium abonelikler, iptaller, hesap silme ve rezervasyonlar hakkında yanıtlar bulun."
+    },
+    "title": "Yardım ve Destek",
+    "subtitle": "EventBliss ile ilgili hızlı yanıtları aşağıda bulabilir — veya doğrudan ekibimizle iletişime geçebilirsiniz. Etkinlikleriniz, Premium, rezervasyonlarınız ve hesabınız konusunda yardımcı olmaktan memnuniyet duyarız.",
+    "contact": {
+      "title": "Bize ulaşın",
+      "emailCard": {
+        "title": "E-posta desteği",
+        "desc": "Bize ulaşmanın en hızlı yolu. Lütfen EventBliss hesabınızın e-posta adresini — pazaryeri rezervasyonları için ayrıca rezervasyon numaranızı — belirtin.",
+        "cta": "Bize yazın"
+      },
+      "responseTime": "Genellikle iş günlerinde 24–48 saat içinde yanıt veriyoruz."
+    },
+    "faq": {
+      "title": "Sık Sorulan Sorular",
+      "items": {
+        "createEvent": {
+          "q": "Nasıl etkinlik oluştururum?",
+          "a": "Ana ekrandaki artı düğmesine (Etkinlik oluştur) dokunun, etkinlik türünü seçin (örn. bekârlığa veda, doğum günü, düğün), bir ad ve tarih belirleyin — hepsi bu. Organizatör olarak ardından misafir davet edebilir, görevler oluşturabilir, bir zaman planı hazırlayabilir, anketler başlatabilir ve bütçeyi yönetebilirsiniz. Etkinlik oluşturmak ücretsizdir."
+        },
+        "joinCode": {
+          "q": "Davet koduyla bir etkinliğe nasıl katılırım?",
+          "a": "Uygulamayı açın ve 'Etkinliğe katıl' seçeneğini seçin, ardından 6 karakterlik davet kodunu girin — veya size gönderilen davet bağlantısına dokunmanız yeterli. Hemen etkinliğe eklenirsiniz. Kod çalışmıyorsa organizatörden yeni bir bağlantı isteyin — organizatör kodları sıfırladığında kodların süresi dolabilir."
+        },
+        "premiumBuy": {
+          "q": "EventBliss Premium'u nasıl satın alırım?",
+          "a": "Premium'u iki şekilde satın alabilirsiniz:\n\n• Uygulamada: Premium sayfasını açın ve satın almayı App Store (iOS) veya Google Play (Android) üzerinden tamamlayın. Abonelikler otomatik olarak yenilenir; Lifetime seçeneği tek seferlik bir satın almadır.\n• Web sitesinde: event-bliss.com'da oturum açın ve ödeme sağlayıcımız Stripe üzerinden satın alın (kredi kartı, Apple Pay, Google Pay ve daha fazlası).\n\nPremium; sınırsız etkinlik, tüm parti oyunları, yapay zekâ özellikleri ve daha fazlasının kilidini açar."
+        },
+        "premiumRestore": {
+          "q": "Premium satın aldım ama etkin değil — satın almamı nasıl geri yüklerim?",
+          "a": "Uygulamada Premium sayfasını açın ve 'Satın almaları geri yükle' seçeneğine dokunun. Orijinal satın almada kullandığınız Apple Kimliği / Google hesabıyla — ve aynı EventBliss hesabıyla — oturum açtığınızdan emin olun. Premium'u web sitesinden satın aldıysanız, uygulamada aynı EventBliss hesabıyla oturum açın; senkronizasyon otomatiktir. Hâlâ çalışmıyor mu? support@event-bliss.com adresine e-posta gönderin ve satın alma makbuzunuzu ekleyin."
+        },
+        "premiumCancelApp": {
+          "q": "Uygulamada satın alınan bir aboneliği (App Store / Google Play) nasıl iptal ederim?",
+          "a": "Uygulamada satın alınan abonelikler yalnızca Apple veya Google tarafından yönetilir — EventBliss bunları sizin adınıza iptal edemez:\n\n• iPhone/iPad: Ayarlar → [adınız] → Abonelikler → EventBliss → Aboneliği iptal et.\n• Android: Google Play uygulaması → profil simgesi → Ödemeler ve abonelikler → Abonelikler → EventBliss → İptal et.\n\nMevcut dönemin bitiminden en az 24 saat önce iptal edin; aksi takdirde abonelik otomatik olarak yenilenir. İptalden sonra Premium, ödenen dönemin sonuna kadar etkin kalır. Uygulamayı silmek aboneliği iptal ETMEZ."
+        },
+        "premiumCancelWeb": {
+          "q": "Web sitesinden satın alınan bir aboneliği nasıl iptal ederim?",
+          "a": "event-bliss.com üzerinden (Stripe ile) satın alınan abonelikleri web sitesindeki hesabınızdan iptal edebilirsiniz — veya hesabınıza bağlı e-posta adresinizden support@event-bliss.com adresine e-posta göndermeniz yeterlidir; iptali sizin için biz gerçekleştiririz. İptal, mevcut fatura döneminin sonunda yürürlüğe girer; o zamana kadar Premium'u kullanmaya devam edersiniz."
+        },
+        "deleteAccount": {
+          "q": "Hesabımı nasıl silerim?",
+          "a": "Uygulamada: Profil → Ayarlar → Hesabı sil. Bu işlem, hesabınızı ve etkinliklerinizi kalıcı olarak siler (yedek kopyalar 30 gün içinde temizlenir; yasal saklama yükümlülüğüne tabi ödeme kayıtları öngörülen süre boyunca saklanır). Önemli: Etkin bir App Store / Google Play aboneliği, hesabınızı silmekle iptal EDİLMEZ — önce mağazanızın abonelik ayarlarından iptal edin."
+        },
+        "exportData": {
+          "q": "Verilerimin bir kopyasını alabilir miyim (veri dışa aktarımı)?",
+          "a": "Evet. GDPR Madde 20 uyarınca, sağladığınız verileri makine tarafından okunabilir bir formatta alabilirsiniz. EventBliss hesabınızın e-posta adresinden support@event-bliss.com adresine e-posta göndererek bir veri dışa aktarımı talep edin — en geç 30 gün içinde, genellikle çok daha hızlı göndeririz."
+        },
+        "bookings": {
+          "q": "Bir pazaryeri rezervasyonuyla ilgili sorum veya sorunum var — kime başvurmalıyım?",
+          "a": "Hizmet sözleşmeniz doğrudan ajansla kurulur; bu nedenle önce uygulamadaki rezervasyon sohbeti üzerinden ajansla iletişime geçin — böylece her şey belgelenmiş olur. Anlaşmaya varamazsanız veya ajans yanıt vermezse, rezervasyon numaranızla birlikte support@event-bliss.com adresine e-posta gönderin: EventBliss her durumda arabuluculuk yapar ve çevrimiçi ödemelerde alıcı koruması geçerlidir."
+        },
+        "games": {
+          "q": "Bir parti oyunu veya müzik oyunu (OHRWURM) çalışmıyor — ne yapabilirim?",
+          "a": "Önce internet bağlantınızı kontrol edin ve uygulamanın güncel olduğundan emin olun. OHRWURM müzik oyunu için: şarkıların tam olarak çalınması, oyunda bağlanmış bir Spotify Premium hesabı gerektirir; bu olmadan daha kısa önizleme klipleri çalınır. Bir oyun başlamıyor veya donuyorsa, uygulamayı tamamen kapatıp yeniden açın. Sorun devam ediyor mu? Cihaz modeliniz ve kısa bir açıklamayla support@event-bliss.com adresine e-posta gönderin."
+        }
+      }
+    },
+    "legalLinks": {
+      "title": "Yasal"
     }
   },
   "createEvent": {

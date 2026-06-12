@@ -1622,39 +1622,282 @@
       "contact": "Contact",
       "responsibleContent": "Verantwoordelijk voor Inhoud",
       "disputeResolution": "EU Geschillenbeslechting",
-      "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting."
+      "disputeText": "De Europese Commissie biedt een platform voor online geschillenbeslechting.",
+      "meta": {
+        "title": "Impressum | EventBliss",
+        "description": "Juridische informatie over EventBliss — geëxploiteerd door MYFAMBLISS GROUP LTD, Gladstonos 12-14, 8046 Paphos, Cyprus. Reg.nr. HE 473088, btw-id CY60165018Q."
+      },
+      "toc": "Inhoud",
+      "brandNote": "EventBliss is een merk en product van MYFAMBLISS GROUP LTD.",
+      "regNoLabel": "Handelsregisternummer",
+      "vatLabel": "Btw-id",
+      "responsiblePerson": "Verantwoordelijk voor de inhoud van deze website en de EventBliss-app: de directie van MYFAMBLISS GROUP LTD.",
+      "odrText": "Het EU-platform voor onlinegeschillenbeslechting (ODR-platform) op grond van Verordening (EU) nr. 524/2013 is per 20 juli 2025 stopgezet. We zijn niet verplicht en niet bereid deel te nemen aan geschillenbeslechtingsprocedures voor een consumentengeschillencommissie. Neem bij klachten rechtstreeks contact met ons op — we proberen elk probleem op te lossen via support@event-bliss.com.",
+      "supportLink": "Vragen over de app, je boekingen of je account? Onze supportpagina biedt antwoorden op de meestgestelde vragen en een directe lijn naar ons team."
     },
     "privacy": {
       "title": "Privacybeleid",
-      "lastUpdated": "Laatst bijgewerkt",
-      "intro": "Je privacy is belangrijk voor ons. Dit beleid legt uit hoe we je gegevens verzamelen en beschermen.",
-      "dataCollection": {
-        "title": "Gegevensverzameling",
-        "content": "We verzamelen informatie die je direct verstrekt."
+      "meta": {
+        "title": "Privacybeleid | EventBliss",
+        "description": "Hoe EventBliss (MYFAMBLISS GROUP LTD) je persoonsgegevens verwerkt volgens de AVG — ontvangers, rechtsgronden, bewaartermijnen en je rechten."
       },
-      "dataUsage": {
-        "title": "Gegevensgebruik",
-        "content": "Je gegevens worden gebruikt om onze diensten te leveren en te verbeteren."
+      "lastUpdated": "Laatst bijgewerkt",
+      "lastUpdatedDate": "Juni 2026",
+      "toc": "Inhoud",
+      "intro": "Dit privacybeleid legt uit hoe wij — MYFAMBLISS GROUP LTD, de exploitant van EventBliss — je persoonsgegevens verzamelen, gebruiken, delen en beschermen wanneer je onze app (iOS en Android), onze website event-bliss.com en de EventBliss-marketplace gebruikt. Ook lees je hier welke rechten je hebt op grond van de Algemene Verordening Gegevensbescherming (AVG). EventBliss is privacyvriendelijk opgezet: we verwerken alleen wat nodig is om de dienst te leveren, we verkopen je gegevens niet en we tonen geen advertenties van derden.",
+      "summary": {
+        "title": "In het kort",
+        "items": [
+          "We verwerken alleen de gegevens die nodig zijn om EventBliss te laten draaien — je account, je evenementen en, als je Premium koopt, je aankoopgegevens.",
+          "Onze database, authenticatie en bestandsopslag draaien op Supabase in de EU (Frankfurt, Duitsland).",
+          "Betalingen worden afgehandeld door Apple, Google en Stripe — wij zien of bewaren nooit je volledige kaartgegevens.",
+          "AI-functies (bonnenscanner, planningsassistent, voorleesfunctie) versturen alleen gegevens terwijl je ze actief gebruikt — en nooit voor reclamedoeleinden.",
+          "We verkopen geen persoonsgegevens en gebruiken geen advertentie- of trackingnetwerken van derden.",
+          "Je kunt je account op elk moment in de app verwijderen (Profiel → Instellingen → Account verwijderen) — zie 'Account verwijderen'."
+        ]
+      },
+      "controller": {
+        "title": "Verwerkingsverantwoordelijke",
+        "content": "Verwerkingsverantwoordelijke in de zin van art. 4 lid 7 AVG voor alle in dit beleid beschreven verwerkingen is:\n\nMYFAMBLISS GROUP LTD is een in de Republiek Cyprus geregistreerde vennootschap. 'EventBliss' is een merk en product van MYFAMBLISS GROUP LTD. We hebben geen functionaris voor gegevensbescherming aangesteld, omdat we daartoe wettelijk niet verplicht zijn; voor alle privacyvragen kun je ons team rechtstreeks bereiken via de onderstaande contactgegevens."
+      },
+      "dataCategories": {
+        "title": "Welke gegevens we verwerken",
+        "intro": "Afhankelijk van hoe je EventBliss gebruikt, verwerken we de volgende categorieën persoonsgegevens. We verzamelen ze rechtstreeks bij jou, via je apparaat, of ze ontstaan door je gebruik van de dienst:",
+        "items": {
+          "account": {
+            "label": "Accountgegevens",
+            "desc": "Weergavenaam, e-mailadres, wachtwoord (door onze authenticatieprovider uitsluitend opgeslagen als gezouten cryptografische hash), profielfoto, taal- en notificatievoorkeuren. Als je inlogt met Apple of Google, ontvangen we van die aanbieder je naam (of een pseudoniem), je (relay-)e-mailadres en een technische account-ID."
+          },
+          "content": {
+            "label": "Evenementinhoud",
+            "desc": "Alles wat jij en je gasten binnen een evenement aanmaken: naam van het evenement, type, data, locatie, gastenlijst, taken, programma's, polls en stemmen, chatberichten, uploads naar de fotogalerij, uitgaven en spelresultaten. Evenementinhoud is zichtbaar voor de andere deelnemers van dat evenement."
+          },
+          "payment": {
+            "label": "Aankoop- en betaalgegevens",
+            "desc": "Je abonnementsstatus (Free, Premium, Lifetime), product-ID's, transactie- en aankooptokens van Apple of Google en — bij aankopen via de website — de via Stripe verwerkte gegevens (bedrag, valuta, type betaalmethode, laatste vier cijfers van de kaart). Volledige kaartnummers worden uitsluitend door de betaaldienstverleners verwerkt en bereiken onze servers nooit."
+          },
+          "receipts": {
+            "label": "Bonfoto's (uitgavenscanner)",
+            "desc": "Als je de bonnenscanner in de uitgavenfunctie gebruikt, worden de foto die je maakt en de herkende gegevens (winkel, bedrag, datum) verwerkt om de uitgave vooraf in te vullen. Zie 'Ontvangers en verwerkers' voor de betrokken OCR-aanbieder."
+          },
+          "usage": {
+            "label": "Gebruiksgegevens",
+            "desc": "Welke functies je gebruikt en basale interactiegebeurtenissen (bijv. evenement aangemaakt, spel gestart), crashrapporten en prestatiediagnostiek. We gebruiken dit om de app stabiel te houden en te verbeteren — niet om advertentieprofielen op te bouwen."
+          },
+          "device": {
+            "label": "Apparaat- en loggegevens",
+            "desc": "IP-adres, apparaatmodel, besturingssysteem en versie, app-versie, browsertype, tijdstempels van verzoeken en — als je notificaties inschakelt — je pushtoken. Serverlogs worden bewaard voor beveiliging en probleemoplossing."
+          },
+          "location": {
+            "label": "Locatiegegevens (optioneel)",
+            "desc": "Alleen wanneer je kaartfuncties gebruikt (bijv. een evenementlocatie kiezen): het kaartgedeelte dat je bekijkt en, als je de systeemtoestemming geeft, de geschatte locatie van je apparaat om de kaart te centreren. We maken geen bewegingsprofielen en volgen je locatie niet op de achtergrond."
+          },
+          "voice": {
+            "label": "Voorlezen / audio (optioneel)",
+            "desc": "Wanneer je de voorleesfunctie (tekst-naar-spraak) gebruikt, wordt de voor te lezen tekst naar onze spraakprovider verzonden om de audio te genereren. We gebruiken hiervoor je microfoon niet en maken geen opnames."
+          }
+        }
+      },
+      "purposes": {
+        "title": "Doeleinden en rechtsgronden (art. 6 AVG)",
+        "intro": "We verwerken je gegevens uitsluitend voor de volgende doeleinden en alleen op deze rechtsgronden:",
+        "items": {
+          "service": {
+            "purpose": "Het leveren van de EventBliss-dienst: je account, evenementplanning en samenwerking, synchronisatie tussen apparaten, marketplace-boekingen en klantenservice.",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub b AVG — uitvoering van de overeenkomst (onze Servicevoorwaarden)."
+          },
+          "payments": {
+            "purpose": "Het verwerken van aankopen en abonnementen (Premium, Lifetime, marketplace-boekingen), het verstrekken van betaalbewijzen en het voorkomen van betaalfraude.",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub b AVG; voor fiscale en commerciële bewaarplichten aanvullend art. 6 lid 1 sub c AVG."
+          },
+          "ai": {
+            "purpose": "AI-ondersteunde functies: tekstherkenning van bonnen (OCR), de AI-planningsassistent en tekst-naar-spraak. Gegevens worden alleen op het moment dat je de functie actief gebruikt verzonden naar de aanbieders genoemd onder 'Ontvangers en verwerkers'.",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub b AVG — de functie maakt deel uit van de dienst die je aanvraagt. Waar vereist vragen we daarnaast om je toestemming (art. 6 lid 1 sub a AVG)."
+          },
+          "push": {
+            "purpose": "Pushmeldingen over je evenementen (bijv. nieuwe berichten, taken of programmawijzigingen).",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub a AVG — je toestemming via de systeemdialoog; op elk moment intrekbaar in je apparaatinstellingen."
+          },
+          "security": {
+            "purpose": "Beveiliging en misbruikpreventie: serverlogs, rate limiting, fraudedetectie, afweer van aanvallen en handhaving van onze voorwaarden.",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub f AVG — ons gerechtvaardigd belang bij een veilig, betrouwbaar platform."
+          },
+          "legal": {
+            "purpose": "Naleving van wettelijke verplichtingen, met name wettelijke bewaartermijnen voor transactie- en boekhoudgegevens.",
+            "basis": "Rechtsgrond: art. 6 lid 1 sub c AVG."
+          }
+        }
+      },
+      "processors": {
+        "title": "Ontvangers en verwerkers",
+        "intro": "We delen persoonsgegevens uitsluitend met de volgende ontvangers, alleen voor zover noodzakelijk en — waar zij als onze verwerkers optreden — op basis van verwerkersovereenkomsten conform art. 28 AVG. Apple, Google, Stripe en Spotify treden (deels) op als zelfstandige verwerkingsverantwoordelijken voor hun eigen diensten.",
+        "cols": {
+          "name": "Aanbieder",
+          "purpose": "Doel",
+          "location": "Locatie",
+          "safeguards": "Waarborgen"
+        },
+        "rows": {
+          "supabase": {
+            "name": "Supabase",
+            "purpose": "Database, authenticatie en bestandsopslag — de technische ruggengraat van de app",
+            "location": "EU (Frankfurt, Duitsland)",
+            "safeguards": "Verwerker; verwerkersovereenkomst conform art. 28 AVG; gegevens gehost in de EU"
+          },
+          "vercel": {
+            "name": "Vercel",
+            "purpose": "Hosting en contentlevering van de website event-bliss.com",
+            "location": "VS / wereldwijd edge-netwerk",
+            "safeguards": "Verwerkersovereenkomst met EU-standaardcontractbepalingen (SCC's); EU-VS Data Privacy Framework"
+          },
+          "stripe": {
+            "name": "Stripe",
+            "purpose": "Betalingsverwerking voor aankopen op de website (kaarten, Apple Pay, Google Pay, SEPA)",
+            "location": "EU / VS",
+            "safeguards": "Verwerkersovereenkomst met SCC's; gecertificeerd onder het EU-VS Data Privacy Framework"
+          },
+          "apple": {
+            "name": "Apple",
+            "purpose": "In-app-aankopen op iOS, Sign in with Apple, pushmeldingen (APNs)",
+            "location": "VS",
+            "safeguards": "Zelfstandige verwerkingsverantwoordelijke voor aankopen; EU-VS Data Privacy Framework"
+          },
+          "google": {
+            "name": "Google",
+            "purpose": "In-app-aankopen op Android (Play Billing), Google Sign-In, pushmeldingen (FCM), Google Maps",
+            "location": "VS",
+            "safeguards": "Zelfstandige verwerkingsverantwoordelijke voor aankopen; SCC's; EU-VS Data Privacy Framework"
+          },
+          "revenuecat": {
+            "name": "RevenueCat",
+            "purpose": "Abonnementsbeheer en validatie van in-app-aankopen (ontvangt een pseudonieme gebruikers-ID en aankooptokens)",
+            "location": "VS",
+            "safeguards": "Verwerker; verwerkersovereenkomst met SCC's"
+          },
+          "openai": {
+            "name": "OpenAI",
+            "purpose": "Bonnen-OCR — bonfoto's worden voor tekstherkenning verzonden wanneer je de uitgavenscanner gebruikt",
+            "location": "VS",
+            "safeguards": "Verwerker; verwerkersovereenkomst met SCC's; API-gegevens worden niet gebruikt om modellen te trainen"
+          },
+          "openrouter": {
+            "name": "OpenRouter",
+            "purpose": "AI-assistent — je ingevoerde tekst wordt verzonden om planningssuggesties te genereren",
+            "location": "VS",
+            "safeguards": "Verwerker; verwerkersovereenkomst met SCC's"
+          },
+          "mistral": {
+            "name": "Mistral AI",
+            "purpose": "Tekst-naar-spraak — genereert de audio voor de voorleesfunctie",
+            "location": "EU (Frankrijk)",
+            "safeguards": "Verwerker; verwerkersovereenkomst conform art. 28 AVG"
+          },
+          "spotify": {
+            "name": "Spotify",
+            "purpose": "SDK voor muziekweergave — alleen als je het OHRWURM-muziekspel gebruikt en je eigen Spotify-account koppelt",
+            "location": "EU (Zweden)",
+            "safeguards": "Zelfstandige verwerkingsverantwoordelijke; het eigen privacybeleid van Spotify is van toepassing"
+          },
+          "mapbox": {
+            "name": "Mapbox / Google Maps",
+            "purpose": "Kaartweergave — je IP-adres en de opgevraagde kaarttegels worden verzonden wanneer een kaart laadt",
+            "location": "VS",
+            "safeguards": "Verwerkersovereenkomst met SCC's; EU-VS Data Privacy Framework (Google)"
+          }
+        }
+      },
+      "transfers": {
+        "title": "Internationale gegevensdoorgiften",
+        "content": "Wanneer ontvangers zich buiten de Europese Economische Ruimte bevinden (met name in de VS), waarborgen we een passend gegevensbeschermingsniveau door: (a) het adequaatheidsbesluit van de Europese Commissie voor het EU-VS Data Privacy Framework (art. 45 AVG) voor gecertificeerde aanbieders, en (b) de EU-standaardcontractbepalingen (art. 46 lid 2 sub c AVG), waar nodig aangevuld met aanvullende maatregelen. Kopieën van de relevante waarborgen zijn op verzoek verkrijgbaar via de onderstaande contactgegevens."
+      },
+      "retention": {
+        "title": "Bewaartermijnen",
+        "intro": "We bewaren persoonsgegevens slechts zolang dat voor het betreffende doel noodzakelijk is of wettelijk vereist:",
+        "items": {
+          "account": {
+            "label": "Accountgegevens",
+            "desc": "Bewaard zolang je account bestaat en verwijderd wanneer je je account verwijdert."
+          },
+          "events": {
+            "label": "Evenementinhoud",
+            "desc": "Verwijderd wanneer je het evenement of je account verwijdert; restkopieën worden binnen 30 dagen uit versleutelde back-ups verwijderd."
+          },
+          "payments": {
+            "label": "Betaal- en transactiegegevens",
+            "desc": "Bewaard gedurende 6 jaar na afloop van het betreffende boekjaar, zoals vereist door het Cypriotische vennootschapsrecht en de belastingwetgeving."
+          },
+          "logs": {
+            "label": "Server- en beveiligingslogs",
+            "desc": "Na 30 dagen automatisch verwijderd of geanonimiseerd, tenzij een concreet beveiligingsincident langere bewaring vereist."
+          }
+        }
       },
       "cookies": {
-        "title": "Cookies",
-        "content": "We gebruiken cookies om je ervaring te verbeteren."
+        "title": "Cookies en lokale opslag",
+        "content": "EventBliss gebruikt uitsluitend technisch noodzakelijke cookies en lokale-opslagvermeldingen: je inlogsessie, je taalkeuze en interfacevoorkeuren (bijv. thema). Rechtsgrond: art. 6 lid 1 sub f AVG of — voor opslag die onder de ePrivacy-regels valt — strikte noodzakelijkheid om de door jou gevraagde dienst te leveren. We gebruiken geen advertentiecookies van derden of cross-site-trackingcookies. Mocht in de toekomst een optionele, niet-essentiële technologie worden ingevoerd, dan vragen we eerst om je toestemming (art. 6 lid 1 sub a AVG)."
       },
-      "dataSecurity": {
+      "push": {
+        "title": "Pushmeldingen",
+        "content": "We sturen alleen pushmeldingen (bijv. nieuwe chatberichten, taken of programmawijzigingen in je evenementen) als je dat toestaat in de systeemdialoog. De bezorging verloopt via Apple (APNs) op iOS en Google (FCM) op Android, die daarvoor een technisch pushtoken van je apparaat ontvangen. Je kunt je toestemming op elk moment intrekken: op iOS via Instellingen → Meldingen → EventBliss, op Android via Instellingen → Apps → EventBliss → Meldingen — of schakel afzonderlijke meldingstypen gewoon rechtstreeks in de app uit."
+      },
+      "purchases": {
+        "title": "Aankopen, abonnementen en betaalgegevens",
+        "content": "In-app-aankopen (iOS/Android): Premium-abonnementen en de Lifetime-aankoop worden verwerkt door Apple (App Store) of Google (Google Play) als zelfstandige verwerkingsverantwoordelijken. Wij ontvangen een bevestiging van de aankoop en pseudonieme transactiegegevens, maar geen betaalgegevens. RevenueCat valideert aankopen en beheert namens ons de abonnementsstatus.\n\nAankopen via de website: op event-bliss.com worden betalingen verwerkt door Stripe. Stripe verwerkt je betaalgegevens in overeenstemming met de betaalregelgeving; wij ontvangen alleen het resultaat, het bedrag en een referentie.\n\nWe slaan nooit volledige kaartnummers op; voor transactiegegevens gelden wettelijke bewaarplichten (zie 'Bewaartermijnen')."
+      },
+      "deletion": {
+        "title": "Account verwijderen",
+        "content": "Je kunt je account op elk moment rechtstreeks in de app verwijderen: Profiel → Instellingen → Account verwijderen. Hiermee worden je accountgegevens en de evenementen waarvan je eigenaar bent permanent verwijderd; kopieën in versleutelde back-ups worden binnen 30 dagen gewist. Gegevens waarvoor wettelijke bewaarplichten gelden (bijv. betaalgegevens, zie 'Bewaartermijnen') worden voor elk ander gebruik geblokkeerd en verwijderd zodra de bewaartermijn afloopt. Je kunt verwijdering ook aanvragen door een e-mail te sturen naar support@event-bliss.com vanaf het e-mailadres van je account. Let op: abonnementen die via Apple of Google zijn gekocht, moet je apart opzeggen in de abonnementsinstellingen van de App Store / Google Play — het verwijderen van je account zegt ze niet automatisch op."
+      },
+      "rights": {
+        "title": "Je rechten (art. 15–21 AVG)",
+        "intro": "Je hebt de volgende rechten met betrekking tot je persoonsgegevens. Om ze uit te oefenen volstaat een informele e-mail — we reageren uiterlijk binnen één maand (art. 12 lid 3 AVG):",
+        "items": {
+          "access": {
+            "label": "Recht van inzage (art. 15 AVG)",
+            "desc": "Je kunt bevestiging vragen of en welke gegevens we over je verwerken, en een kopie van die gegevens ontvangen samen met de in art. 15 genoemde informatie."
+          },
+          "rectification": {
+            "label": "Recht op rectificatie (art. 16 AVG)",
+            "desc": "Je kunt onjuiste gegevens laten corrigeren en onvolledige gegevens laten aanvullen — de meeste accountgegevens kun je rechtstreeks in de app bewerken."
+          },
+          "erasure": {
+            "label": "Recht op gegevenswissing (art. 17 AVG)",
+            "desc": "Je kunt verwijdering van je gegevens verzoeken; het eenvoudigst is de accountverwijdering in de app (zie 'Account verwijderen')."
+          },
+          "restriction": {
+            "label": "Recht op beperking van de verwerking (art. 18 AVG)",
+            "desc": "In de in art. 18 genoemde gevallen (bijv. terwijl de juistheid van betwiste gegevens wordt gecontroleerd) kun je van ons verlangen dat we de verwerking beperken."
+          },
+          "portability": {
+            "label": "Recht op overdraagbaarheid van gegevens (art. 20 AVG)",
+            "desc": "Je kunt de gegevens die je hebt verstrekt ontvangen in een gestructureerd, gangbaar en machineleesbaar formaat. Vraag een export aan per e-mail aan support@event-bliss.com."
+          },
+          "objection": {
+            "label": "Recht van bezwaar (art. 21 AVG)",
+            "desc": "Je kunt op elk moment, om redenen die verband houden met jouw specifieke situatie, bezwaar maken tegen verwerking op basis van art. 6 lid 1 sub f AVG. We staken de verwerking dan, tenzij dwingende gerechtvaardigde gronden zwaarder wegen."
+          },
+          "withdraw": {
+            "label": "Recht om toestemming in te trekken (art. 7 lid 3 AVG)",
+            "desc": "Waar de verwerking op je toestemming berust (bijv. pushmeldingen), kun je die op elk moment intrekken met werking voor de toekomst."
+          }
+        },
+        "complaint": "Recht om een klacht in te dienen (art. 77 AVG): je kunt een klacht indienen bij een toezichthoudende autoriteit voor gegevensbescherming, met name in de EU-lidstaat van je gewone verblijfplaats of je werkplek. De voor ons bevoegde autoriteit is de Commissioner for Personal Data Protection van de Republiek Cyprus, 1 Iasonos Street, 1082 Nicosia, Cyprus — dataprotection.gov.cy."
+      },
+      "children": {
+        "title": "Kinderen en minderjarigen",
+        "content": "EventBliss is niet gericht op kinderen. Voor het aanmaken van een account geldt een minimumleeftijd van 16 jaar (of de lagere leeftijd die jouw lidstaat voor diensten van de informatiemaatschappij heeft vastgesteld, maar nooit lager dan 13). We verzamelen niet bewust persoonsgegevens van kinderen onder deze leeftijd. Denk je dat een kind ons persoonsgegevens heeft verstrekt, neem dan contact met ons op; we verwijderen ze dan onmiddellijk."
+      },
+      "security": {
         "title": "Gegevensbeveiliging",
-        "content": "We implementeren industriestandaard beveiligingsmaatregelen."
+        "content": "We beschermen je gegevens met technische en organisatorische maatregelen conform art. 32 AVG: TLS-versleuteling voor alle gegevens tijdens de overdracht, versleuteling in rust voor de database en bestandsopslag, row-level security zodat elke gebruiker alleen zijn eigen evenementen kan benaderen, rolgebaseerde toegangscontroles voor ons team, het least-privilege-principe voor servicesleutels en regelmatige toetsing van onze beveiligingsmaatregelen. Geen enkel systeem is 100% veilig, maar we werken er voortdurend aan het risico zo klein mogelijk te houden."
       },
-      "userRights": {
-        "title": "Jouw Rechten",
-        "content": "Je hebt het recht om je gegevens in te zien, te corrigeren of te verwijderen."
-      },
-      "thirdParty": {
-        "title": "Derden",
-        "content": "We kunnen gegevens delen met vertrouwde partners."
+      "changes": {
+        "title": "Wijzigingen van dit privacybeleid",
+        "content": "We actualiseren dit beleid wanneer onze dienst, onze aanbieders of de juridische situatie verandert. Steeds geldt de actuele versie met de hierboven vermelde datum; wezenlijke wijzigingen kondigen we aan in de app of per e-mail. Eerdere versies zijn op verzoek beschikbaar."
       },
       "contact": {
         "title": "Contact",
-        "content": "Voor privacyvragen, neem contact op via:"
+        "content": "Voor alle privacyvragen of om je rechten uit te oefenen kun je ons bereiken via:"
       }
     },
     "terms": {
@@ -1705,31 +1948,74 @@
       "governingLaw": {
         "title": "Toepasselijk Recht",
         "content": "Toepasselijk recht: Het platform wordt beheerd door MYFAMBLISS GROUP LTD met statutaire zetel in de Republiek Cyprus. Cypriotisch recht is van toepassing, met uitsluiting van het Weens Koopverdrag. Dwingende consumentenbeschermingsregels van uw gewone verblijfplaats (bv. § 312g BGB in Duitsland) blijven onaangetast (Art. 6(2) Rome I). EU-platform voor geschillenbeslechting: https://ec.europa.eu/consumers/odr"
+      },
+      "meta": {
+        "title": "Servicevoorwaarden | EventBliss",
+        "description": "De voorwaarden voor je gebruik van EventBliss: marketplace-boekingen, betalingen, Premium-abonnementen en in-app-aankopen, EU-herroepingsrechten en aansprakelijkheid."
+      },
+      "toc": "Inhoud",
+      "inAppPurchases": {
+        "title": "Premium, abonnementen & in-app-aankopen",
+        "content": "EventBliss biedt optionele betaalde plannen (Premium als automatisch verlengend abonnement, Lifetime als eenmalige aankoop). Ze zijn te koop als in-app-aankoop via de Apple App Store of Google Play, of op event-bliss.com via onze betaalprovider Stripe.\n\nAutomatische verlenging: abonnementen verlengen automatisch aan het einde van elke periode tegen de bij aankoop getoonde prijs, tenzij je minimaal 24 uur vóór het einde van de lopende periode opzegt.\n\nStore-aankopen opzeggen: abonnementen die in de app zijn gekocht, beheer je uitsluitend via je Apple App Store- of Google Play-account (iOS: Instellingen → [je naam] → Abonnementen; Android: Google Play → Betalingen en abonnementen). EventBliss kan store-abonnementen niet namens jou opzeggen. Na opzegging blijft Premium actief tot het einde van de betaalde periode; terugbetalingen naar rato worden geregeld door de voorwaarden van de betreffende store.\n\nWebabonnementen: abonnementen die op de website zijn gekocht, kun je op elk moment opzeggen met ingang van het einde van de lopende factureringsperiode, via je account of per e-mail aan support@event-bliss.com.\n\nLifetime: de Lifetime-optie is een eenmalige aankoop zonder terugkerende kosten. Hij geeft toegang tot de Premium-functies gedurende de operationele levensduur van EventBliss; het is geen garantie dat de dienst eeuwig blijft bestaan.\n\nPrijswijzigingen: prijswijzigingen voor abonnementen gelden alleen voor volgende periodes en worden vooraf aangekondigd; voor store-aankopen gelden de notificatie- en toestemmingsprocedures van Apple/Google."
+      },
+      "withdrawal": {
+        "title": "Herroepingsrecht (EU-consumenten)",
+        "content": "Digitale inhoud & Premium (aankoop op onze website): als consument in de EU heb je in beginsel een wettelijk herroepingsrecht van 14 dagen. Bij de aankoop van digitale inhoud / digitale diensten op event-bliss.com vervalt het herroepingsrecht wanneer wij direct na aankoop met de uitvoering beginnen met jouw uitdrukkelijke toestemming en jouw bevestiging dat je daarmee je herroepingsrecht verliest (art. 16 sub m van Richtlijn 2011/83/EU; in Duitsland § 356 lid 5 BGB). Deze toestemming geef je tijdens het bestelproces; Premium wordt direct geactiveerd.\n\nIn-app-aankopen: voor aankopen via de Apple App Store of Google Play gelden de terugbetalings- en herroepingsprocedures van Apple of Google; verzoeken moeten aan de betreffende store worden gericht.\n\nMarketplace-diensten: bij het boeken van evenementdiensten heb je in beginsel eveneens een herroepingsrecht van 14 dagen. Uitzondering: voor diensten met betrekking tot vrijetijdsbesteding met een specifieke datum of uitvoeringsperiode — wat geldt voor vrijwel alle evenementdiensten die voor een vaste datum worden geboekt — is het herroepingsrecht uitgesloten op grond van art. 16 sub l van Richtlijn 2011/83/EU (in Duitsland omgezet in § 312g lid 2 nr. 9 BGB). Los van het wettelijke herroepingsrecht geldt het dienstspecifieke annuleringsbeleid (zie 'Annulering en terugbetaling') — dat is in veel gevallen ruimhartiger.\n\nUitoefening: waar een herroepingsrecht bestaat, kun je de herroeping binnen 14 dagen na het sluiten van de overeenkomst vormvrij verklaren (bijv. per e-mail aan support@event-bliss.com)."
+      },
+      "userContent": {
+        "title": "Jouw content & licentie",
+        "content": "Je behoudt alle rechten op de content die je naar EventBliss uploadt (bijv. foto's, teksten, evenementdetails, chatberichten). Je verleent ons een niet-exclusieve, wereldwijde, royaltyvrije licentie om deze content te hosten, op te slaan, te verveelvoudigen en weer te geven, uitsluitend voor zover dat nodig is om de dienst te exploiteren (bijv. foto's tonen aan de andere deelnemers van je evenement, back-ups maken). Deze licentie eindigt wanneer je de content of je account verwijdert, met uitzondering van restkopieën in back-ups (binnen 30 dagen gewist) en content die je met andere gebruikers hebt gedeeld en die zij rechtmatig behouden.\n\nJe staat ervoor in dat je over de benodigde rechten op alle geüploade content beschikt en dat deze geen rechten van derden schendt (auteursrecht, persoonlijkheidsrechten — vraag toestemming aan personen die op foto's te zien zijn) en niet in strijd is met toepasselijk recht. Verboden zijn met name onrechtmatige, lasterlijke, discriminerende, pornografische of geweldverheerlijkende inhoud.\n\nWe mogen content verwijderen die in strijd is met deze voorwaarden of met toepasselijk recht en informeren je over de verwijdering waar dat wettelijk vereist is (zie ook de notice-and-action-procedures onder de Digital Services Act)."
+      },
+      "marketplaceCancellation": {
+        "title": "Annulering van marketplace-boekingen",
+        "content": "Annuleringen van geboekte evenementdiensten worden geregeld door het dienstspecifieke annuleringsbeleid (flexibel, gematigd of strikt) dat het bureau aan zijn dienst toekent en dat transparant wordt getoond voordat je de boeking afrondt. De details — termijnen, terugbetalingspercentages, wijze van terugbetaling, overmacht en niet-nakoming door het bureau — staan in de sectie 'Annulering en terugbetaling' hierboven. De wettelijke uitsluiting van herroeping voor datumgebonden vrijetijdsdiensten (zie 'Herroepingsrecht') laat dit contractuele annuleringsbeleid onverlet — het geldt in jouw voordeel, in aanvulling op dwingende consumentenrechten."
+      },
+      "availability_sla": {
+        "title": "Beschikbaarheid van de dienst",
+        "content": "We streven ernaar EventBliss met hoge betrouwbaarheid beschikbaar te houden, maar we garanderen geen specifiek beschikbaarheidsniveau (geen SLA) voor het gratis of betaalde consumentenaanbod. De dienst kan tijdelijk onbeschikbaar zijn door onderhoud, updates, overmacht of storingen bij externe aanbieders (bijv. hosting-, betaal-, muziek- of kaartdiensten). Waar mogelijk voeren we gepland onderhoud uit op momenten met weinig gebruik. Schadeclaims wegens onbeschikbaarheid worden uitsluitend geregeld door de sectie 'Beperking van Aansprakelijkheid'; je wettelijke rechten blijven onaangetast."
       }
     },
     "disclaimer": {
       "title": "Disclaimer",
       "lastUpdated": "Laatst bijgewerkt",
-      "intro": "Lees deze disclaimer voordat je EventBliss gebruikt.",
+      "intro": "Lees deze disclaimer zorgvuldig door voordat je EventBliss gebruikt. Hij vult onze Servicevoorwaarden aan en verduidelijkt de grenzen van onze verantwoordelijkheid als platformexploitant.",
       "general": {
         "title": "Algemene Disclaimer",
-        "content": "Informatie op EventBliss is alleen voor algemene doeleinden."
+        "content": "EventBliss is een plannings- en marketplaceplatform. De op het platform aangeboden informatie (waaronder activiteitenideeën, stadsgidsen, budgetramingen en planningssuggesties) dient uitsluitend ter algemene informatie en vormt geen juridisch, financieel of ander professioneel advies. Hoewel we content zorgvuldig samenstellen, geven we geen garantie voor de juistheid, volledigheid of actualiteit ervan. Prijzen, openingstijden en de beschikbaarheid van aanbiedingen van derden kunnen op elk moment veranderen — controleer kritieke details bij de betreffende aanbieder voordat je erop vertrouwt."
       },
       "externalLinks": {
         "title": "Externe Links",
-        "content": "We zijn niet verantwoordelijk voor content van derden."
+        "content": "EventBliss bevat links naar externe websites van derden (bijv. aanbiederswebsites, ticketshops, informatiepagina's). We hebben geen invloed op de inhoud daarvan en aanvaarden er daarom geen verantwoordelijkheid voor; voor gelinkte pagina's is steeds de betreffende aanbieder of exploitant verantwoordelijk. De gelinkte pagina's zijn op het moment van linken gecontroleerd op mogelijke rechtsschendingen; onrechtmatige inhoud was daarbij niet herkenbaar. Permanente controle van gelinkte pagina's is zonder concrete aanwijzingen van een schending redelijkerwijs niet te vergen — zodra we kennisnemen van schendingen, verwijderen we dergelijke links onmiddellijk."
       },
       "availability": {
         "title": "Beschikbaarheid",
-        "content": "We streven naar 99,9% uptime maar kunnen geen ononderbroken service garanderen."
+        "content": "We streven ernaar EventBliss met hoge betrouwbaarheid beschikbaar te houden. We kunnen echter geen ononderbroken beschikbaarheid garanderen: onderhoudsvensters, updates, overmacht, aanvallen op de infrastructuur of storingen bij externe aanbieders kunnen tot tijdelijke beperkingen leiden. Er bestaat geen aanspraak op ononderbroken beschikbaarheid van de gratis dienst. Details staan in de sectie 'Beschikbaarheid van de dienst' van onze Servicevoorwaarden."
       },
       "limitation": {
         "title": "Beperking",
-        "content": "We zijn niet aansprakelijk voor indirecte schade."
+        "content": "We zijn onbeperkt aansprakelijk voor opzet en grove nalatigheid en voor letsel aan leven, lichaam of gezondheid. Bij lichte nalatigheid zijn we alleen aansprakelijk voor de schending van wezenlijke contractuele verplichtingen (verplichtingen waarvan de nakoming de behoorlijke uitvoering van de overeenkomst überhaupt mogelijk maakt en op de naleving waarvan je regelmatig mag vertrouwen), beperkt tot de voorzienbare, voor de overeenkomst typische schade. Aansprakelijkheid voor indirecte schade, gevolgschade en gederfde winst is uitgesloten voor zover wettelijk toegestaan. Dwingende wettelijke aansprakelijkheid (bijv. op grond van het productaansprakelijkheidsrecht) blijft onaangetast. Voor geboekte marketplace-diensten is het betreffende bureau verantwoordelijk (zie Servicevoorwaarden)."
       },
       "contact": {
         "title": "Contact",
-        "content": "Voor vragen over deze disclaimer, neem contact op."
+        "content": "Heb je vragen over deze disclaimer of wil je content melden, neem dan contact met ons op:"
+      },
+      "meta": {
+        "title": "Disclaimer | EventBliss",
+        "description": "Aansprakelijkheidsdisclaimer voor het EventBliss-platform: platformrol, diensten van derden, door gebruikers georganiseerde evenementen, AI-gegenereerde content en externe links."
+      },
+      "toc": "Inhoud",
+      "lastUpdatedDate": "Juni 2026",
+      "thirdPartyServices": {
+        "title": "Diensten van derden",
+        "content": "EventBliss integreert diensten van derden, bijv. Spotify (muziekweergave in het OHRWURM-spel), Google Maps en Mapbox (kaarten), betaalproviders en AI-diensten. Deze diensten worden door hun exploitanten onder hun eigen voorwaarden geleverd; we hebben geen invloed op hun beschikbaarheid, functionaliteit of inhoud. Afzonderlijke functies kunnen beperkt of onbeschikbaar zijn als een dienst van derden verstoord is, wordt stopgezet of zijn voorwaarden wijzigt (bijv. volledige muziekweergave vereist een Spotify Premium-account). De tijdelijke onbeschikbaarheid van een integratie van derden vormt geen gebrek van EventBliss."
+      },
+      "userEvents": {
+        "title": "Door gebruikers georganiseerde evenementen en activiteiten",
+        "content": "Evenementen die gebruikers met EventBliss plannen of uitvoeren (bijv. vrijgezellenfeesten, verjaardagen, reizen) worden uitsluitend door de gebruikers zelf georganiseerd. EventBliss is een planningstool en — bij marketplace-boekingen — een bemiddelaar, niet de organisator van zulke evenementen. We aanvaarden geen aansprakelijkheid voor het verloop, de veiligheid of de rechtmatigheid van door gebruikers georganiseerde evenementen, voor het gedrag van deelnemers, of voor schade, ongevallen of verliezen tijdens zulke evenementen. Deelnemers zijn zelf verantwoordelijk voor de naleving van toepasselijk recht (bijv. jeugdbescherming, openbare orde, alcoholgebruik) en voor het afsluiten van passende verzekeringen waar dat raadzaam is."
+      },
+      "aiContent": {
+        "title": "AI-gegenereerde content",
+        "content": "Sommige functies van EventBliss maken gebruik van kunstmatige intelligentie, bijv. de planningsassistent, activiteitensuggesties en de bonnenscanner (tekstherkenning). Ondanks zorgvuldige configuratie kan AI-gegenereerde output onjuist, onvolledig of ongeschikt voor jouw specifieke situatie zijn. Hij wordt zonder enige garantie geleverd en vervangt je eigen oordeel niet: controleer AI-suggesties (bijv. herkende bonbedragen, programma's, aanbevelingen) voordat je erop vertrouwt. We zijn niet aansprakelijk voor beslissingen die op basis van AI-gegenereerde content worden genomen, behalve in de gevallen genoemd in de sectie 'Beperking van Aansprakelijkheid'."
       }
     },
     "agency_agreement": {
@@ -1894,6 +2180,71 @@
         "tocTermTermination": "Term & termination",
         "tocFinalProvisions": "Final provisions"
       }
+    }
+  },
+  "support": {
+    "meta": {
+      "title": "Hulp & Support | EventBliss",
+      "description": "Krijg hulp bij EventBliss: neem contact op met ons supportteam en vind antwoorden over evenementen, Premium-abonnementen, opzeggingen, accountverwijdering en boekingen."
+    },
+    "title": "Hulp & Support",
+    "subtitle": "Vind hieronder snelle antwoorden over EventBliss — of neem rechtstreeks contact op met ons team. We helpen je graag met je evenementen, Premium, boekingen en je account.",
+    "contact": {
+      "title": "Neem contact op",
+      "emailCard": {
+        "title": "E-mailsupport",
+        "desc": "De snelste manier om ons te bereiken. Vermeld het e-mailadres van je EventBliss-account — en bij marketplace-boekingen je boekingsnummer.",
+        "cta": "Schrijf ons"
+      },
+      "responseTime": "We reageren doorgaans binnen 24–48 uur op werkdagen."
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "items": {
+        "createEvent": {
+          "q": "Hoe maak ik een evenement aan?",
+          "a": "Tik op de plusknop (Evenement aanmaken) op het startscherm, kies het type evenement (bijv. vrijgezellenfeest, verjaardag, bruiloft), stel een naam en datum in — klaar. Als organisator kun je daarna gasten uitnodigen, taken aanmaken, een programma samenstellen, polls starten en het budget beheren. Evenementen aanmaken is gratis."
+        },
+        "joinCode": {
+          "q": "Hoe neem ik deel aan een evenement met een uitnodigingscode?",
+          "a": "Open de app en kies 'Deelnemen aan evenement', voer dan de uitnodigingscode van 6 tekens in — of tik gewoon op de uitnodigingslink die je hebt ontvangen. Je wordt direct aan het evenement toegevoegd. Werkt de code niet, vraag de organisator dan om een nieuwe link — codes kunnen verlopen wanneer de organisator ze opnieuw instelt."
+        },
+        "premiumBuy": {
+          "q": "Hoe krijg ik EventBliss Premium?",
+          "a": "Je kunt Premium op twee manieren kopen:\n\n• In de app: open de Premium-pagina en rond de aankoop af via de App Store (iOS) of Google Play (Android). Abonnementen verlengen automatisch; de Lifetime-optie is een eenmalige aankoop.\n• Op de website: log in op event-bliss.com en koop via onze betaalprovider Stripe (creditcard, Apple Pay, Google Pay en meer).\n\nPremium ontgrendelt onbeperkte evenementen, alle partyspellen, AI-functies en meer."
+        },
+        "premiumRestore": {
+          "q": "Ik heb Premium gekocht maar het is niet actief — hoe herstel ik mijn aankoop?",
+          "a": "Open de Premium-pagina in de app en tik op 'Aankopen herstellen'. Zorg dat je bent ingelogd met dezelfde Apple ID / hetzelfde Google-account als bij de oorspronkelijke aankoop — en met hetzelfde EventBliss-account. Heb je Premium op de website gekocht, log dan in de app in met hetzelfde EventBliss-account; het synchroniseert automatisch. Werkt het nog steeds niet? Mail naar support@event-bliss.com en voeg je aankoopbewijs toe."
+        },
+        "premiumCancelApp": {
+          "q": "Hoe zeg ik een in de app gekocht abonnement op (App Store / Google Play)?",
+          "a": "Abonnementen die in de app zijn gekocht, worden uitsluitend beheerd door Apple of Google — EventBliss kan ze niet voor je opzeggen:\n\n• iPhone/iPad: Instellingen → [je naam] → Abonnementen → EventBliss → Abonnement opzeggen.\n• Android: Google Play-app → profielpictogram → Betalingen en abonnementen → Abonnementen → EventBliss → Opzeggen.\n\nZeg minimaal 24 uur vóór het einde van de lopende periode op, anders wordt het automatisch verlengd. Na opzegging blijft Premium actief tot het einde van de betaalde periode. De app verwijderen zegt een abonnement NIET op."
+        },
+        "premiumCancelWeb": {
+          "q": "Hoe zeg ik een op de website gekocht abonnement op?",
+          "a": "Abonnementen die op event-bliss.com zijn gekocht (via Stripe) kun je opzeggen in je account op de website — of stuur gewoon een e-mail naar support@event-bliss.com vanaf het e-mailadres van je account en wij zeggen het voor je op. De opzegging gaat in aan het einde van de lopende factureringsperiode; tot dan behoud je Premium."
+        },
+        "deleteAccount": {
+          "q": "Hoe verwijder ik mijn account?",
+          "a": "In de app: Profiel → Instellingen → Account verwijderen. Hiermee worden je account en je evenementen permanent verwijderd (back-upkopieën worden binnen 30 dagen gewist; betaalgegevens met een wettelijke bewaarplicht worden gedurende de voorgeschreven termijn bewaard). Belangrijk: een actief App Store-/Google Play-abonnement wordt NIET opgezegd door je account te verwijderen — zeg het eerst op in de abonnementsinstellingen van je store."
+        },
+        "exportData": {
+          "q": "Kan ik een kopie van mijn gegevens krijgen (gegevensexport)?",
+          "a": "Ja. Op grond van art. 20 AVG kun je de gegevens die je hebt verstrekt in een machineleesbaar formaat ontvangen. Mail naar support@event-bliss.com vanaf het e-mailadres van je EventBliss-account en vraag een gegevensexport aan — we sturen die uiterlijk binnen 30 dagen, meestal veel sneller."
+        },
+        "bookings": {
+          "q": "Ik heb een vraag of probleem met een marketplace-boeking — met wie neem ik contact op?",
+          "a": "Je dienstverleningsovereenkomst sluit je rechtstreeks met het bureau, dus neem eerst via de boekingschat in de app contact op met het bureau — zo blijft alles gedocumenteerd. Kom je er samen niet uit of reageert het bureau niet, mail dan naar support@event-bliss.com met je boekingsnummer: EventBliss bemiddelt in elk geval, en voor onlinebetalingen geldt kopersbescherming."
+        },
+        "games": {
+          "q": "Een partyspel of het muziekspel (OHRWURM) werkt niet — wat kan ik doen?",
+          "a": "Controleer eerst je internetverbinding en zorg dat de app up-to-date is. Voor het OHRWURM-muziekspel: voor het afspelen van volledige nummers is een in het spel gekoppeld Spotify Premium-account vereist; zonder dat worden kortere previewfragmenten afgespeeld. Start een spel niet of loopt het vast, sluit de app dan volledig af en open hem opnieuw. Lukt het nog steeds niet? Mail naar support@event-bliss.com met je apparaatmodel en een korte beschrijving."
+        }
+      }
+    },
+    "legalLinks": {
+      "title": "Juridisch"
     }
   },
   "createEvent": {

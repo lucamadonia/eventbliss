@@ -14,7 +14,13 @@ import { Button } from "@/components/ui/button";
 import { useAgency } from "@/hooks/useAgency";
 import { useAuth } from "@/hooks/useAuth";
 import { useSEO } from "@/hooks/useSEO";
+import { useUrlLanguage } from "@/hooks/useUrlLanguage";
+import { SITE_URL, staticPagePath, staticHreflangs } from "@/lib/legal-routes";
+import { HTML_LANG_BY_LANG, LOCALE_BY_LANG, isRtl, toSeoLang } from "@/lib/seo-routes";
+import NotFound from "@/pages/NotFound";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
+
+const HREFLANGS = staticHreflangs("agency-agreement");
 
 // ---------------------------------------------------------------------------
 // Agency party — data sources (in order): logged-in user's agency → URL query
@@ -88,14 +94,26 @@ function useAgencyParty(): { party: PartyData | null; source: "session" | "query
 // ---------------------------------------------------------------------------
 
 const AgencyAgreement = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { lang: urlLang, invalid } = useUrlLanguage();
+  const effectiveLang = urlLang ?? toSeoLang(i18n.language) ?? "en";
   useSEO({
     title: "Agency Partner Agreement | EventBliss",
     description: "Partnership agreement terms for agencies joining the EventBliss marketplace.",
-    canonical: "https://event-bliss.com/legal/agency-agreement",
+    canonical: `${SITE_URL}${staticPagePath("agency-agreement", urlLang)}`,
+    locale: LOCALE_BY_LANG[effectiveLang],
+    hreflangs: HREFLANGS,
+    ...(urlLang
+      ? {
+          htmlLang: HTML_LANG_BY_LANG[urlLang],
+          dir: isRtl(urlLang) ? ("rtl" as const) : ("ltr" as const),
+        }
+      : {}),
   });
   const ui = (k: string) => t(`legal.agency_agreement.ui.${k}`);
   const { party: agencyParty, source: agencySource } = useAgencyParty();
+
+  if (invalid) return <NotFound />;
 
   const today = new Date().toLocaleDateString("de-DE", {
     day: "2-digit",

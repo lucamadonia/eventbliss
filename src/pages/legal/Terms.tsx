@@ -1,107 +1,104 @@
+/**
+ * Terms of Service — marketplace terms plus app-specific sections (in-app
+ * purchases, EU withdrawal, user content, availability). Content lives in
+ * `legal.terms.*`. Available unprefixed (UI language) and language-prefixed.
+ */
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { ArrowLeft, FileText, CheckCircle2, XCircle, CreditCard, Scale, Bell, Calendar, Wallet, RotateCcw, ShieldAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  Activity,
+  Bell,
+  Calendar,
+  CalendarX,
+  CheckCircle2,
+  Copyright,
+  CreditCard,
+  FileText,
+  Gavel,
+  RotateCcw,
+  Scale,
+  ShieldAlert,
+  Smartphone,
+  Undo2,
+  Wallet,
+  XCircle,
+} from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
-import eventBlissLogo from "@/assets/eventbliss-logo.png";
+import { useUrlLanguage } from "@/hooks/useUrlLanguage";
+import { LegalLayout, LegalSectionCard, type LegalIcon } from "@/components/legal/LegalLayout";
+import { SITE_URL, staticPagePath, staticHreflangs } from "@/lib/legal-routes";
+import { HTML_LANG_BY_LANG, LOCALE_BY_LANG, isRtl, toSeoLang } from "@/lib/seo-routes";
+import NotFound from "@/pages/NotFound";
+
+const GRADIENT = "from-emerald-500 to-cyan-500";
+const HREFLANGS = staticHreflangs("terms");
+
+const SECTIONS: { key: string; icon: LegalIcon; accent?: boolean }[] = [
+  { key: "acceptance", icon: CheckCircle2 },
+  { key: "services", icon: FileText },
+  { key: "booking_process", icon: Calendar },
+  { key: "payment_methods", icon: Wallet },
+  { key: "payment", icon: CreditCard },
+  { key: "inAppPurchases", icon: Smartphone },
+  { key: "withdrawal", icon: Undo2 },
+  { key: "cancellation_refund", icon: RotateCcw },
+  { key: "marketplaceCancellation", icon: CalendarX },
+  { key: "off_platform_bypass", icon: ShieldAlert },
+  { key: "userContent", icon: Copyright },
+  { key: "prohibited", icon: XCircle },
+  { key: "availability_sla", icon: Activity },
+  { key: "liability", icon: Scale },
+  { key: "changes", icon: Bell },
+  { key: "governingLaw", icon: Gavel, accent: true },
+];
 
 const Terms = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { lang: urlLang, invalid } = useUrlLanguage();
+  const effectiveLang = urlLang ?? toSeoLang(i18n.language) ?? "en";
+
   useSEO({
-    title: "Terms of Service | EventBliss",
-    description: "The terms and conditions governing your use of EventBliss — accounts, services, payments and responsibilities.",
-    canonical: "https://event-bliss.com/legal/terms",
+    title: t("legal.terms.meta.title"),
+    description: t("legal.terms.meta.description"),
+    canonical: `${SITE_URL}${staticPagePath("terms", urlLang)}`,
+    locale: LOCALE_BY_LANG[effectiveLang],
+    hreflangs: HREFLANGS,
+    ...(urlLang
+      ? {
+          htmlLang: HTML_LANG_BY_LANG[urlLang],
+          dir: isRtl(urlLang) ? ("rtl" as const) : ("ltr" as const),
+        }
+      : {}),
   });
 
-  const sections = [
-    { icon: CheckCircle2, key: "acceptance" },
-    { icon: FileText, key: "services" },
-    { icon: Calendar, key: "booking_process" },
-    { icon: Wallet, key: "payment_methods" },
-    { icon: CreditCard, key: "payment" },
-    { icon: RotateCcw, key: "cancellation_refund" },
-    { icon: ShieldAlert, key: "off_platform_bypass" },
-    { icon: XCircle, key: "prohibited" },
-    { icon: Scale, key: "liability" },
-    { icon: Bell, key: "changes" },
-  ];
+  if (invalid) return <NotFound />;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-card/30 backdrop-blur-sm">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={eventBlissLogo} alt="EventBliss Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
-              EventBliss
-            </span>
-          </Link>
-          <Button variant="ghost" asChild>
-            <Link to="/" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              {t("common.back")}
-            </Link>
-          </Button>
-        </nav>
-      </header>
-
-      <main className="container mx-auto px-4 py-16 max-w-3xl">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
-            <FileText className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
-              {t("legal.terms.title")}
-            </h1>
-            <p className="text-muted-foreground">{t("legal.terms.lastUpdated")}: {t("legal.terms.lastUpdatedDate")}</p>
-          </div>
-        </div>
-
-        <div className="prose prose-invert max-w-none">
-          <p className="text-lg text-muted-foreground mb-8">
-            {t("legal.terms.intro")}
+    <LegalLayout
+      title={t("legal.terms.title")}
+      icon={FileText}
+      gradient={GRADIENT}
+      lastUpdatedLabel={t("legal.terms.lastUpdated")}
+      lastUpdatedDate={t("legal.terms.lastUpdatedDate")}
+      intro={t("legal.terms.intro")}
+      tocTitle={t("legal.terms.toc")}
+      toc={SECTIONS.map((s) => ({ id: s.key, label: t(`legal.terms.${s.key}.title`) }))}
+    >
+      {SECTIONS.map((section, index) => (
+        <LegalSectionCard
+          key={section.key}
+          id={section.key}
+          index={index + 1}
+          icon={section.icon}
+          title={t(`legal.terms.${section.key}.title`)}
+          gradient={GRADIENT}
+          variant={section.accent ? "accent" : "default"}
+        >
+          <p className="text-muted-foreground whitespace-pre-line">
+            {t(`legal.terms.${section.key}.content`)}
           </p>
-
-          <div className="space-y-8">
-            {sections.map((section, index) => (
-              <section key={section.key} className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
-                    <section.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <h2 className="text-xl font-semibold">
-                    {index + 1}. {t(`legal.terms.${section.key}.title`)}
-                  </h2>
-                </div>
-                <p className="text-muted-foreground whitespace-pre-line">
-                  {t(`legal.terms.${section.key}.content`)}
-                </p>
-              </section>
-            ))}
-
-            {/* Governing Law */}
-            <section className="p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
-              <div className="flex items-center gap-3 mb-4">
-                <Scale className="w-6 h-6 text-emerald-400" />
-                <h2 className="text-xl font-semibold">{t("legal.terms.governingLaw.title")}</h2>
-              </div>
-              <p className="text-muted-foreground">
-                {t("legal.terms.governingLaw.content")}
-              </p>
-            </section>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border/40 bg-card/30 py-8 mt-16">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 MYFAMBLISS GROUP LTD. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+        </LegalSectionCard>
+      ))}
+    </LegalLayout>
   );
 };
 

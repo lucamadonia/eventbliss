@@ -93,6 +93,20 @@ function writeRoute(routePath, html) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "index.html"), html);
 }
+/** Set <html lang="…"> (and dir="rtl" for RTL languages) on the shell. */
+function setHtmlLang(h, langAttr, rtl = false) {
+  return h.replace(/<html\b[^>]*>/i, (tag) => {
+    let t = /\slang="[^"]*"/.test(tag)
+      ? tag.replace(/\slang="[^"]*"/, ` lang="${attr(langAttr)}"`)
+      : tag.replace("<html", `<html lang="${attr(langAttr)}"`);
+    if (rtl) {
+      t = /\sdir="[^"]*"/.test(t)
+        ? t.replace(/\sdir="[^"]*"/, ' dir="rtl"')
+        : t.replace("<html", '<html dir="rtl"');
+    }
+    return t;
+  });
+}
 
 // ── TIER 2: head-meta for all templated landing pages (no browser) ────
 async function headMeta() {
@@ -254,8 +268,68 @@ const STATIC = {
   "/legal/terms": { title: "Terms of Service | EventBliss", description: "The terms and conditions governing your use of EventBliss — accounts, services, payments and responsibilities." },
   "/legal/disclaimer": { title: "Disclaimer | EventBliss", description: "Liability, content and external-link disclaimer for the EventBliss platform." },
   "/legal/agency-agreement": { title: "Agency Partner Agreement | EventBliss", description: "Partnership agreement terms for agencies joining the EventBliss marketplace." },
+  "/support": { title: "Help & Support | EventBliss", description: "Get help with EventBliss: contact our support team and find answers about events, Premium subscriptions, cancellations, account deletion and bookings." },
 };
 const HOME = { title: "EventBliss — Smart Event & Party Planning App | Bachelor Parties, Birthdays & Trips", description: "Plan bachelor parties, bachelorette celebrations, birthdays and group trips effortlessly — AI suggestions, automatic cost splitting, 24+ party games and real-time collaboration. 100% free." };
+
+// ── TIER 2b: language-prefixed legal & support pages (head-meta only) ──
+// 6 pages × 10 languages = 60 routes: /{lang}/legal/{page} and /{lang}/support.
+// Constant English path segments, only the language prefix varies (mirrors
+// src/lib/legal-routes.ts). Meta comes straight from the locale JSONs with an
+// en fallback; hreflang cluster = 10 languages + x-default → unprefixed URL.
+const HTML_LANG = {
+  de: "de-DE", en: "en-GB", es: "es-ES", fr: "fr-FR", it: "it-IT",
+  pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ar: "ar",
+};
+// page slug → unprefixed base path (i18n key = slug with "-" → "_", under "legal";
+// "support" lives at the i18n root).
+const STATIC_I18N_PAGES = {
+  privacy: "/legal/privacy",
+  terms: "/legal/terms",
+  disclaimer: "/legal/disclaimer",
+  imprint: "/legal/imprint",
+  "agency-agreement": "/legal/agency-agreement",
+  support: "/support",
+};
+function legalSupportMeta() {
+  let n = 0;
+  try {
+    const locales = {};
+    for (const lang of LANGS) {
+      try { locales[lang] = JSON.parse(readFileSync(join(ROOT, "src", "i18n", "locales", `${lang}.json`), "utf8")); }
+      catch { locales[lang] = null; }
+    }
+    const metaOf = (lang, page) => {
+      const root = locales[lang];
+      const m = page === "support"
+        ? root?.support?.meta
+        : root?.legal?.[page.replace(/-/g, "_")]?.meta;
+      return m?.title && m?.description ? m : null;
+    };
+    for (const [page, base] of Object.entries(STATIC_I18N_PAGES)) {
+      const hreflangs = LANGS.map((l) => ({ hreflang: l, href: `${SITE}/${l}${base}` }));
+      hreflangs.push({ hreflang: "x-default", href: `${SITE}${base}` });
+      const fallback = metaOf("en", page) ?? STATIC[base] ?? { title: "EventBliss", description: "" };
+      for (const lang of LANGS) {
+        const m = metaOf(lang, page) ?? fallback;
+        const path = `/${lang}${base}`;
+        let html = buildHtml({
+          title: m.title,
+          description: m.description,
+          canonical: SITE + path,
+          hreflangs,
+          ogType: base.startsWith("/legal") ? "article" : "website",
+        });
+        html = setHtmlLang(html, HTML_LANG[lang] ?? lang, lang === "ar");
+        writeRoute(path, html);
+        n++;
+      }
+    }
+    console.log(`prerender: head-meta written for ${n} legal/support language pages.`);
+  } catch (e) {
+    console.warn(`prerender: legal/support language pages failed (${e?.message ?? e}) — they stay client-rendered.`);
+  }
+}
 
 async function startBrowser() {
   let puppeteer;
@@ -334,5 +408,6 @@ async function bodyTier() {
 
 // ── run ────────────────────────────────────────────────────────────────
 await headMeta();
+legalSupportMeta();
 await bodyTier();
 process.exit(0);

@@ -27,6 +27,7 @@ export function LandingFooter() {
   ];
 
   const legalLinks = [
+    { label: t("support.title"), href: "/support" },
     { label: t("landing.footer.imprint"), href: "/legal/imprint" },
     { label: t("landing.footer.privacy"), href: "/legal/privacy" },
     { label: t("landing.footer.terms"), href: "/legal/terms" },

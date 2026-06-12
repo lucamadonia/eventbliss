@@ -57,6 +57,7 @@ const Imprint = lazy(() => import("@/pages/legal/Imprint"));
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
 const Terms = lazy(() => import("@/pages/legal/Terms"));
 const Disclaimer = lazy(() => import("@/pages/legal/Disclaimer"));
+const Support = lazy(() => import("@/pages/Support"));
 const ClaimInvite = lazy(() => import("@/pages/ClaimInvite"));
 const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
 const GameProfilePage = lazy(() => import("@/games/social/GameProfilePage").then(m => ({ default: m.GameProfilePage })));
@@ -252,6 +253,7 @@ export function NativeApp() {
               <Route path="/legal/privacy" element={wrap(<Privacy />, "Datenschutz")} />
               <Route path="/legal/terms" element={wrap(<Terms />, "AGB")} />
               <Route path="/legal/disclaimer" element={wrap(<Disclaimer />, "Haftung")} />
+              <Route path="/support" element={wrap(<Support />, "Support")} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

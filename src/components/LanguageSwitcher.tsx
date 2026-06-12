@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { languages } from '@/i18n';
 import { mapSeoRoute } from '@/lib/seo-routes';
+import { mapStaticRoute } from '@/lib/legal-routes';
 import {
   Select,
   SelectContent,
@@ -18,9 +19,12 @@ export const LanguageSwitcher = () => {
   const handleChange = (value: string) => {
     try { localStorage.setItem("eb.langManual", "1"); } catch { /* noop */ }
     void i18n.changeLanguage(value);
-    // SEO landing pages derive their language from the URL — navigate to the
-    // equivalent localized page so the content actually switches language.
-    const mapped = mapSeoRoute(location.pathname, value);
+    // SEO landing pages and language-prefixed legal/support pages derive
+    // their language from the URL — navigate to the equivalent localized
+    // page so the content actually switches language.
+    const mapped =
+      mapSeoRoute(location.pathname, value) ??
+      mapStaticRoute(location.pathname, value);
     if (mapped && mapped !== location.pathname) {
       navigate(mapped + location.search + location.hash);
     }

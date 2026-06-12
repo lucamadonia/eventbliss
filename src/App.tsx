@@ -22,6 +22,7 @@ const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 const AgencyAgreement = lazy(() => import("./pages/legal/AgencyAgreement"));
+const Support = lazy(() => import("./pages/Support"));
 
 // User Pages (lazy loaded)
 const MyEvents = lazy(() => import("./pages/MyEvents"));
@@ -208,12 +209,21 @@ const AppContent = () => {
           <Route path="/my-bookings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyBookings /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/booking-success" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><BookingSuccess /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/booking/:number" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><PublicBooking /></Suspense></ErrorBoundary>} />
-          {/* Legal Pages */}
+          {/* Legal & support pages — unprefixed (follow the UI language) */}
           <Route path="/legal/imprint" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Imprint /></Suspense></ErrorBoundary>} />
           <Route path="/legal/privacy" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Privacy /></Suspense></ErrorBoundary>} />
           <Route path="/legal/terms" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Terms /></Suspense></ErrorBoundary>} />
           <Route path="/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
           <Route path="/legal/agency-agreement" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyAgreement /></Suspense></ErrorBoundary>} />
+          <Route path="/support" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Support /></Suspense></ErrorBoundary>} />
+          {/* Legal & support pages — language-prefixed (/de/legal/privacy, /fr/support …).
+              Page language derives from :lang via useUrlLanguage; invalid langs render NotFound. */}
+          <Route path="/:lang/legal/imprint" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Imprint /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/legal/privacy" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Privacy /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/legal/terms" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Terms /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/legal/agency-agreement" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyAgreement /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/support" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Support /></Suspense></ErrorBoundary>} />
           <Route path="*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><NotFound /></Suspense></ErrorBoundary>} />
         </Routes>
       </BrowserRouter>

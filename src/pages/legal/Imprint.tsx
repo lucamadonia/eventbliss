@@ -1,150 +1,190 @@
+/**
+ * Imprint — company details for MYFAMBLISS GROUP LTD (language-invariant data
+ * hardcoded by design, labels via `legal.imprint.*`). Available unprefixed
+ * (UI language) and language-prefixed.
+ */
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Building2, MapPin, Phone, Mail, Globe, FileBadge } from "lucide-react";
+import {
+  Building2,
+  FileBadge,
+  Globe,
+  LifeBuoy,
+  Mail,
+  MapPin,
+  Phone,
+  Scale,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
-import eventBlissLogo from "@/assets/eventbliss-logo.png";
+import { useUrlLanguage } from "@/hooks/useUrlLanguage";
+import { LegalLayout, LegalSectionCard } from "@/components/legal/LegalLayout";
+import { SITE_URL, staticPagePath, staticHreflangs } from "@/lib/legal-routes";
+import { HTML_LANG_BY_LANG, LOCALE_BY_LANG, isRtl, toSeoLang } from "@/lib/seo-routes";
+import NotFound from "@/pages/NotFound";
+
+const GRADIENT = "from-blue-500 to-indigo-500";
+const HREFLANGS = staticHreflangs("imprint");
 
 const Imprint = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { lang: urlLang, invalid } = useUrlLanguage();
+  const effectiveLang = urlLang ?? toSeoLang(i18n.language) ?? "en";
+
   useSEO({
-    title: "Imprint | EventBliss",
-    description: "Legal information and company details for EventBliss — operated by MYFAMBLISS GROUP LTD, Paphos, Cyprus.",
-    canonical: "https://event-bliss.com/legal/imprint",
+    title: t("legal.imprint.meta.title"),
+    description: t("legal.imprint.meta.description"),
+    canonical: `${SITE_URL}${staticPagePath("imprint", urlLang)}`,
+    locale: LOCALE_BY_LANG[effectiveLang],
+    hreflangs: HREFLANGS,
+    ...(urlLang
+      ? {
+          htmlLang: HTML_LANG_BY_LANG[urlLang],
+          dir: isRtl(urlLang) ? ("rtl" as const) : ("ltr" as const),
+        }
+      : {}),
   });
 
+  if (invalid) return <NotFound />;
+
+  const toc = [
+    { id: "company", label: t("legal.imprint.company") },
+    { id: "address", label: t("legal.imprint.address") },
+    { id: "contact", label: t("legal.imprint.contact") },
+    { id: "responsible", label: t("legal.imprint.responsibleContent") },
+    { id: "dispute", label: t("legal.imprint.disputeResolution") },
+    { id: "support", label: t("support.title") },
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-card/30 backdrop-blur-sm">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={eventBlissLogo} alt="EventBliss Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
-              EventBliss
-            </span>
-          </Link>
-          <Button variant="ghost" asChild>
-            <Link to="/" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              {t("common.back")}
-            </Link>
-          </Button>
-        </nav>
-      </header>
+    <LegalLayout
+      title={t("legal.imprint.title")}
+      icon={Building2}
+      gradient={GRADIENT}
+      tocTitle={t("legal.imprint.toc")}
+      toc={toc}
+    >
+      {/* Company Information */}
+      <LegalSectionCard
+        id="company"
+        icon={Building2}
+        title={t("legal.imprint.company")}
+        gradient={GRADIENT}
+      >
+        <p className="text-lg font-medium mb-2">MYFAMBLISS GROUP LTD</p>
+        <p className="text-sm text-muted-foreground mb-4">{t("legal.imprint.brandNote")}</p>
+        <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+          <div>
+            <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
+              {t("legal.imprint.regNoLabel")}
+            </dt>
+            <dd className="text-foreground font-mono">HE 473088</dd>
+          </div>
+          <div>
+            <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
+              {t("legal.imprint.vatLabel")}
+            </dt>
+            <dd className="text-foreground font-mono">CY60165018Q</dd>
+          </div>
+        </dl>
+        <p className="text-muted-foreground mt-4">{t("legal.imprint.registeredCompany")}</p>
+      </LegalSectionCard>
 
-      <main className="container mx-auto px-4 py-16 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
-          {t("legal.imprint.title")}
-        </h1>
+      {/* Address */}
+      <LegalSectionCard
+        id="address"
+        icon={MapPin}
+        title={t("legal.imprint.address")}
+        gradient={GRADIENT}
+      >
+        <address className="not-italic text-muted-foreground">
+          <p>Gladstonos 12-14</p>
+          <p>8046 Paphos</p>
+          <p>Cyprus</p>
+        </address>
+      </LegalSectionCard>
 
-        <div className="space-y-8">
-          {/* Company Information */}
-          <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="flex items-center gap-3 mb-4">
-              <Building2 className="w-6 h-6 text-primary" />
-              <h2 className="text-xl font-semibold">{t("legal.imprint.company")}</h2>
-            </div>
-            <p className="text-lg font-medium mb-2">MYFAMBLISS GROUP LTD</p>
-            <p className="text-sm text-muted-foreground mb-4">
-              EventBliss ist eine Marke und ein Produkt der MYFAMBLISS GROUP LTD.
-            </p>
-            <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
-                  Company Registration No.
-                </dt>
-                <dd className="text-foreground font-mono">HE 473088</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold">
-                  VAT ID
-                </dt>
-                <dd className="text-foreground font-mono">CY60165018Q</dd>
-              </div>
-            </dl>
-            <p className="text-muted-foreground mt-4">
-              {t("legal.imprint.registeredCompany")}
-            </p>
-          </section>
-
-          {/* Address */}
-          <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="flex items-center gap-3 mb-4">
-              <MapPin className="w-6 h-6 text-primary" />
-              <h2 className="text-xl font-semibold">{t("legal.imprint.address")}</h2>
-            </div>
-            <address className="not-italic text-muted-foreground">
-              <p>Gladstonos 12-14</p>
-              <p>8046 Paphos</p>
-              <p>Cyprus</p>
-            </address>
-          </section>
-
-          {/* Contact */}
-          <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-            <div className="flex items-center gap-3 mb-4">
-              <Phone className="w-6 h-6 text-primary" />
-              <h2 className="text-xl font-semibold">{t("legal.imprint.contact")}</h2>
-            </div>
-            <div className="space-y-2 text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                <a href="tel:+35799980583" className="hover:text-foreground transition-colors">
-                  +357 99 980 583
-                </a>
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                <a href="mailto:info@event-bliss.com" className="hover:text-foreground transition-colors">
-                  info@event-bliss.com
-                </a>
-              </p>
-              <p className="flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                <a href="https://www.mfg.cy" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-                  www.mfg.cy
-                </a>
-              </p>
-            </div>
-          </section>
-
-          {/* Responsible for Content */}
-          <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-            <h2 className="text-xl font-semibold mb-4">{t("legal.imprint.responsibleContent")}</h2>
-            <p className="text-muted-foreground">MYFAMBLISS GROUP LTD</p>
-            <p className="text-muted-foreground">Gladstonos 12-14, 8046 Paphos, Cyprus</p>
-            <p className="text-xs text-muted-foreground/80 font-mono mt-1 flex items-center gap-1.5">
-              <FileBadge className="w-3 h-3" />
-              HE 473088 · VAT ID CY60165018Q
-            </p>
-          </section>
-
-          {/* EU Dispute Resolution */}
-          <section className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
-            <h2 className="text-xl font-semibold mb-4">{t("legal.imprint.disputeResolution")}</h2>
-            <p className="text-muted-foreground mb-4">
-              {t("legal.imprint.disputeText")}
-            </p>
-            <a 
-              href="https://ec.europa.eu/consumers/odr" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              https://ec.europa.eu/consumers/odr
+      {/* Contact */}
+      <LegalSectionCard
+        id="contact"
+        icon={Phone}
+        title={t("legal.imprint.contact")}
+        gradient={GRADIENT}
+      >
+        <div className="space-y-2 text-muted-foreground">
+          <p className="flex items-center gap-2">
+            <Phone className="w-4 h-4" />
+            <a href="tel:+35799980583" className="hover:text-foreground transition-colors">
+              +357 99 980 583
             </a>
-          </section>
+          </p>
+          <p className="flex items-center gap-2">
+            <Mail className="w-4 h-4" />
+            <a
+              href="mailto:info@event-bliss.com"
+              className="hover:text-foreground transition-colors"
+            >
+              info@event-bliss.com
+            </a>
+          </p>
+          <p className="flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            <a
+              href="https://www.mfg.cy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              www.mfg.cy
+            </a>
+          </p>
         </div>
-      </main>
+      </LegalSectionCard>
 
-      {/* Footer */}
-      <footer className="border-t border-border/40 bg-card/30 py-8 mt-16">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 MYFAMBLISS GROUP LTD. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+      {/* Responsible for Content */}
+      <LegalSectionCard
+        id="responsible"
+        icon={UserCheck}
+        title={t("legal.imprint.responsibleContent")}
+        gradient={GRADIENT}
+      >
+        <p className="text-muted-foreground mb-3">{t("legal.imprint.responsiblePerson")}</p>
+        <p className="text-muted-foreground">MYFAMBLISS GROUP LTD</p>
+        <p className="text-muted-foreground">Gladstonos 12-14, 8046 Paphos, Cyprus</p>
+        <p className="text-xs text-muted-foreground/80 font-mono mt-1 flex items-center gap-1.5">
+          <FileBadge className="w-3 h-3" />
+          HE 473088 · VAT ID CY60165018Q
+        </p>
+      </LegalSectionCard>
+
+      {/* Dispute Resolution */}
+      <LegalSectionCard
+        id="dispute"
+        icon={Scale}
+        title={t("legal.imprint.disputeResolution")}
+        gradient={GRADIENT}
+      >
+        <p className="text-muted-foreground whitespace-pre-line">{t("legal.imprint.odrText")}</p>
+      </LegalSectionCard>
+
+      {/* Help & Support */}
+      <LegalSectionCard
+        id="support"
+        icon={LifeBuoy}
+        title={t("support.title")}
+        gradient={GRADIENT}
+        variant="accent"
+      >
+        <p className="text-muted-foreground mb-4">{t("legal.imprint.supportLink")}</p>
+        <Button asChild variant="outline" className="print:hidden">
+          <Link to={staticPagePath("support", urlLang)} className="flex items-center gap-2">
+            <LifeBuoy className="w-4 h-4" />
+            {t("support.title")}
+          </Link>
+        </Button>
+      </LegalSectionCard>
+    </LegalLayout>
   );
 };
 
