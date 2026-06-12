@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useMyBookings, useCancelBooking, type MarketplaceBooking } from "@/hooks/useMarketplaceBookings";
+import BookingActionsMenu from "@/components/bookings/BookingActionsMenu";
 import { toast } from "sonner";
 import { derivePaymentState, usePayBookingNow } from "@/lib/bookingPayment";
 
@@ -30,6 +31,8 @@ interface Booking {
   totalPrice: number;
   status: BookingStatus;
   paymentMethod?: string | null;
+  /** Raw row — needed by BookingActionsMenu (calendar export, share, …) */
+  raw: MarketplaceBooking;
 }
 
 function mapBooking(b: MarketplaceBooking): Booking {
@@ -68,6 +71,7 @@ function mapBooking(b: MarketplaceBooking): Booking {
     totalPrice: b.total_price_cents / 100,
     status,
     paymentMethod: (b as any).payment_method ?? null,
+    raw: b,
   };
 }
 
@@ -256,7 +260,8 @@ export default function MyBookings() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: i * 0.04, duration: 0.3 }}
-                  className="bg-[#1f1f29] border border-white/[0.06] rounded-2xl p-5 sm:p-6 hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.06)] transition-all duration-300 group"
+                  onClick={() => navigate(`/booking/${booking.bookingNumber}`)}
+                  className="bg-[#1f1f29] border border-white/[0.06] rounded-2xl p-5 sm:p-6 hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.06)] transition-all duration-300 group cursor-pointer"
                 >
                   {/* Top Row: Booking Number + Status */}
                   <div className="flex items-center justify-between mb-4 gap-2">
@@ -286,6 +291,7 @@ export default function MyBookings() {
                         )}
                         {t(`myBookings.status.${statusConfig[booking.status].key}`, statusConfig[booking.status].key)}
                       </Badge>
+                      <BookingActionsMenu booking={booking.raw} />
                     </div>
                   </div>
 
@@ -320,7 +326,10 @@ export default function MyBookings() {
                     {booking.status === "unpaid" && (
                       <Button
                         size="sm"
-                        onClick={() => payNow.mutate(booking.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          payNow.mutate(booking.id);
+                        }}
                         disabled={payNow.isPending}
                         className="bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold cursor-pointer text-xs h-9 min-h-[44px] sm:min-h-0 px-4"
                       >
@@ -334,7 +343,10 @@ export default function MyBookings() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/marketplace/service/${booking.serviceSlug}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/marketplace/service/${booking.serviceSlug}`);
+                        }}
                         className="border-white/[0.1] text-slate-300 hover:bg-white/[0.04] cursor-pointer text-xs h-8 px-3"
                       >
                         {t("myBookings.details", "Details")}
@@ -345,7 +357,10 @@ export default function MyBookings() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleCancel(booking.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCancel(booking.id);
+                        }}
                         disabled={cancelBooking.isPending}
                         className="border-red-500/20 text-red-400 hover:bg-red-500/10 cursor-pointer text-xs h-8 px-3"
                       >
@@ -356,6 +371,7 @@ export default function MyBookings() {
                     {booking.status === "completed" && (
                       <Button
                         size="sm"
+                        onClick={(e) => e.stopPropagation()}
                         className="bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border border-amber-500/20 cursor-pointer text-xs h-8 px-3"
                       >
                         <Star className="w-3.5 h-3.5 mr-1.5" />

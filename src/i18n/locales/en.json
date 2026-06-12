@@ -6752,6 +6752,14 @@
     "backToMarketplace": "Back to Marketplace"
   },
   "myBookings": {
+    "actions": {
+      "view": "View booking",
+      "calendar": "Add to calendar",
+      "share": "Share…",
+      "whatsapp": "Send via WhatsApp",
+      "print": "Print / PDF",
+      "shareText": "My booking: {{service}} with {{agency}} 🎉"
+    },
     "title": "My Bookings",
     "totalBookings": "{{count}} bookings total",
     "loading": "Loading bookings...",

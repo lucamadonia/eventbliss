@@ -6825,6 +6825,14 @@
     "othersByProvider": "Otros servicios de este proveedor"
   },
   "myBookings": {
+    "actions": {
+      "view": "Ver reserva",
+      "calendar": "Añadir al calendario",
+      "share": "Compartir…",
+      "whatsapp": "Enviar por WhatsApp",
+      "print": "Imprimir / PDF",
+      "shareText": "Mi reserva: {{service}} con {{agency}} 🎉"
+    },
     "title": "Mis reservas",
     "totalBookings": "{{count}} reservas en total",
     "loading": "Cargando reservas...",

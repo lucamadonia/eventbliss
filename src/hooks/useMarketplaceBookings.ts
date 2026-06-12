@@ -38,6 +38,7 @@ export interface MarketplaceBooking {
   service_title?: string;
   service_slug?: string;
   agency_name?: string;
+  agency_city?: string | null;
 }
 
 export type CancellationReasonCode =
@@ -61,7 +62,7 @@ export function useMyBookings() {
       if (!user) return [];
 
       const { data, error } = await (supabase.from as any)("marketplace_bookings")
-        .select("*, marketplace_services(slug), agencies(name)")
+        .select("*, marketplace_services(slug), agencies(name, city)")
         .eq("customer_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -70,6 +71,7 @@ export function useMyBookings() {
         ...b,
         service_slug: b.marketplace_services?.slug,
         agency_name: b.agencies?.name,
+        agency_city: b.agencies?.city ?? null,
       }));
     },
   });

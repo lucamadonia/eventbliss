@@ -6752,6 +6752,14 @@
     "backToMarketplace": "Zum Marketplace"
   },
   "myBookings": {
+    "actions": {
+      "view": "Buchung ansehen",
+      "calendar": "Zum Kalender hinzufügen",
+      "share": "Teilen…",
+      "whatsapp": "Per WhatsApp senden",
+      "print": "Drucken / PDF",
+      "shareText": "Meine Buchung: {{service}} bei {{agency}} 🎉"
+    },
     "title": "Meine Buchungen",
     "totalBookings": "{{count}} Buchungen insgesamt",
     "loading": "Buchungen werden geladen...",

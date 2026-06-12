@@ -6826,6 +6826,14 @@
     "backToMarketplace": "Naar Marketplace"
   },
   "myBookings": {
+    "actions": {
+      "view": "Boeking bekijken",
+      "calendar": "Toevoegen aan agenda",
+      "share": "Delen…",
+      "whatsapp": "Via WhatsApp versturen",
+      "print": "Afdrukken / PDF",
+      "shareText": "Mijn boeking: {{service}} bij {{agency}} 🎉"
+    },
     "title": "Mijn boekingen",
     "totalBookings": "{{count}} boekingen totaal",
     "loading": "Boekingen worden geladen...",

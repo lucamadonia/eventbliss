@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { isNative, getBaseUrl } from "@/lib/platform";
+import { isNative } from "@/lib/platform";
+import { exportBookingToCalendar, shareBooking } from "@/lib/booking-actions";
 import {
   motion,
   AnimatePresence,
@@ -36,7 +37,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { derivePaymentState, usePayBookingNow, verifyBookingPayment } from "@/lib/bookingPayment";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -681,31 +681,6 @@ function formatLongDate(iso: string): string {
   }
 }
 
-function buildIcsFile(b: BookingDetails): string {
-  const dt = new Date(`${b.booking_date}T${b.booking_time || "10:00"}`);
-  const dtStart = dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-  const dtEnd = new Date(dt.getTime() + 2 * 60 * 60 * 1000) // +2h default
-    .toISOString()
-    .replace(/[-:]/g, "")
-    .split(".")[0] + "Z";
-  return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//EventBliss//Marketplace//DE",
-    "BEGIN:VEVENT",
-    `UID:${b.id}@event-bliss.com`,
-    `DTSTAMP:${dtStart}`,
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
-    `SUMMARY:${b.service_title ?? "EventBliss Buchung"}`,
-    `DESCRIPTION:Buchung ${b.booking_number} bei ${b.agency_name ?? "EventBliss"} — Wir freuen uns auf dich!`,
-    `LOCATION:${b.agency_city ?? ""}`,
-    "STATUS:CONFIRMED",
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ].join("\r\n");
-}
-
 // -------------------------------------------------------------------
 // Page
 // -------------------------------------------------------------------
@@ -814,67 +789,15 @@ export default function BookingSuccess() {
 
   const handleDownloadIcs = async () => {
     if (!booking) return;
-    const ics = buildIcsFile(booking);
-    if (isNative()) {
-      // WKWebView has no download manager — write the ICS to the app cache
-      // and hand it to the native share sheet (offers "Add to Calendar").
-      try {
-        const [{ Filesystem, Directory, Encoding }, { Share }] = await Promise.all([
-          import("@capacitor/filesystem"),
-          import("@capacitor/share"),
-        ]);
-        const file = await Filesystem.writeFile({
-          path: `eventbliss-${booking.booking_number}.ics`,
-          data: ics,
-          directory: Directory.Cache,
-          encoding: Encoding.UTF8,
-        });
-        await Share.share({ title: "EventBliss Buchung", files: [file.uri] });
-      } catch (err) {
-        if (!String(err).toLowerCase().includes("cancel")) {
-          toast.error("Kalender-Export fehlgeschlagen");
-        }
-      }
-      return;
-    }
-    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `eventbliss-${booking.booking_number}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Kalender-Datei heruntergeladen");
+    await exportBookingToCalendar(booking);
   };
 
   const handleShare = async () => {
     if (!booking) return;
-    // window.location.origin would be capacitor://localhost in the app
-    const shareUrl = `${getBaseUrl()}/booking/${booking.booking_number}`;
-    const text = `Ich hab grade ${booking.service_title} bei ${booking.agency_name} gebucht! 🎉`;
-    if (isNative()) {
-      try {
-        const { Share } = await import("@capacitor/share");
-        await Share.share({ title: "Meine EventBliss Buchung", text, url: shareUrl });
-      } catch {
-        /* user cancelled */
-      }
-      return;
-    }
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Meine EventBliss Buchung",
-          text,
-          url: shareUrl,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Link kopiert: " + shareUrl);
-      }
-    } catch {
-      /* user cancelled */
-    }
+    await shareBooking(
+      booking,
+      `Ich hab grade ${booking.service_title} bei ${booking.agency_name} gebucht! 🎉`,
+    );
   };
 
   // Scroll-reveal ref for timeline

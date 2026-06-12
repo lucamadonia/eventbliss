@@ -6776,6 +6776,14 @@
     "backToMarketplace": "Torna al Marketplace"
   },
   "myBookings": {
+    "actions": {
+      "view": "Vedi prenotazione",
+      "calendar": "Aggiungi al calendario",
+      "share": "Condividi…",
+      "whatsapp": "Invia su WhatsApp",
+      "print": "Stampa / PDF",
+      "shareText": "La mia prenotazione: {{service}} da {{agency}} 🎉"
+    },
     "title": "Le mie prenotazioni",
     "totalBookings": "{{count}} prenotazioni totali",
     "loading": "Caricamento prenotazioni...",

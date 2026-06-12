@@ -6826,6 +6826,14 @@
     "backToMarketplace": "Voltar ao Marketplace"
   },
   "myBookings": {
+    "actions": {
+      "view": "Ver reserva",
+      "calendar": "Adicionar ao calendário",
+      "share": "Partilhar…",
+      "whatsapp": "Enviar por WhatsApp",
+      "print": "Imprimir / PDF",
+      "shareText": "A minha reserva: {{service}} com {{agency}} 🎉"
+    },
     "title": "Minhas reservas",
     "totalBookings": "{{count}} reservas no total",
     "loading": "A carregar reservas...",

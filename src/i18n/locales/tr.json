@@ -6826,6 +6826,14 @@
     "backToMarketplace": "Marketplace'e dön"
   },
   "myBookings": {
+    "actions": {
+      "view": "Rezervasyonu görüntüle",
+      "calendar": "Takvime ekle",
+      "share": "Paylaş…",
+      "whatsapp": "WhatsApp ile gönder",
+      "print": "Yazdır / PDF",
+      "shareText": "Rezervasyonum: {{service}} – {{agency}} 🎉"
+    },
     "title": "Rezervasyonlarım",
     "totalBookings": "Toplam {{count}} rezervasyon",
     "loading": "Rezervasyonlar yükleniyor...",

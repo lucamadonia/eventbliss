@@ -30,7 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { exportBookingToCalendar, shareBooking } from "@/lib/booking-actions";
 
 interface PublicBooking {
   booking_number: string;
@@ -85,31 +85,6 @@ function formatLongDate(iso: string): string {
   } catch {
     return iso;
   }
-}
-
-function buildIcs(b: PublicBooking): string {
-  const dt = new Date(`${b.booking_date}T${b.booking_time || "10:00"}`);
-  const dtStart = dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-  const dtEnd = new Date(dt.getTime() + 2 * 60 * 60 * 1000)
-    .toISOString()
-    .replace(/[-:]/g, "")
-    .split(".")[0] + "Z";
-  return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//EventBliss//Marketplace//DE",
-    "BEGIN:VEVENT",
-    `UID:${b.booking_number}@event-bliss.com`,
-    `DTSTAMP:${dtStart}`,
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
-    `SUMMARY:${b.service_title}`,
-    `DESCRIPTION:Buchung ${b.booking_number} bei ${b.agency_name}`,
-    `LOCATION:${b.agency_city ?? ""}`,
-    "STATUS:CONFIRMED",
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ].join("\r\n");
 }
 
 type StatusMeta = {
@@ -592,31 +567,18 @@ export default function PublicBookingPage() {
 
   const handleDownloadIcs = () => {
     if (!booking) return;
-    const ics = buildIcs(booking);
-    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `eventbliss-${booking.booking_number}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Kalender-Datei heruntergeladen");
+    // The public RPC payload has no booking id — the booking number is a
+    // stable unique value, good enough for the ICS UID.
+    void exportBookingToCalendar({ ...booking, id: booking.booking_number });
   };
 
   const handleShare = async () => {
     if (!booking) return;
-    const url = window.location.href;
-    const text = `${booking.customer_first_name} hat ${booking.service_title} bei ${booking.agency_name} gebucht — sei dabei!`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "EventBliss Buchung", text, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        toast.success("Link kopiert");
-      }
-    } catch {
-      /* cancelled */
-    }
+    await shareBooking(
+      { ...booking, id: booking.booking_number },
+      `${booking.customer_first_name} hat ${booking.service_title} bei ${booking.agency_name} gebucht — sei dabei!`,
+      "EventBliss Buchung",
+    );
   };
 
   // Tilt motion values for the hero ticket

@@ -5859,6 +5859,14 @@
     "notFoundHint": "هذه الخدمة غير متوفرة أو تم إزالتها."
   },
   "myBookings": {
+    "actions": {
+      "view": "عرض الحجز",
+      "calendar": "إضافة إلى التقويم",
+      "share": "مشاركة…",
+      "whatsapp": "إرسال عبر واتساب",
+      "print": "طباعة / PDF",
+      "shareText": "حجزي: {{service}} لدى {{agency}} 🎉"
+    },
     "title": "حجوزاتي",
     "totalBookings": "{{count}} حجز إجمالاً",
     "loading": "جارٍ تحميل الحجوزات...",
