@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { isNative, getBaseUrl } from "@/lib/platform";
 import {
   motion,
   AnimatePresence,
@@ -811,9 +812,31 @@ export default function BookingSuccess() {
     };
   }, [reduced]);
 
-  const handleDownloadIcs = () => {
+  const handleDownloadIcs = async () => {
     if (!booking) return;
     const ics = buildIcsFile(booking);
+    if (isNative()) {
+      // WKWebView has no download manager — write the ICS to the app cache
+      // and hand it to the native share sheet (offers "Add to Calendar").
+      try {
+        const [{ Filesystem, Directory, Encoding }, { Share }] = await Promise.all([
+          import("@capacitor/filesystem"),
+          import("@capacitor/share"),
+        ]);
+        const file = await Filesystem.writeFile({
+          path: `eventbliss-${booking.booking_number}.ics`,
+          data: ics,
+          directory: Directory.Cache,
+          encoding: Encoding.UTF8,
+        });
+        await Share.share({ title: "EventBliss Buchung", files: [file.uri] });
+      } catch (err) {
+        if (!String(err).toLowerCase().includes("cancel")) {
+          toast.error("Kalender-Export fehlgeschlagen");
+        }
+      }
+      return;
+    }
     const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -826,8 +849,18 @@ export default function BookingSuccess() {
 
   const handleShare = async () => {
     if (!booking) return;
-    const shareUrl = `${window.location.origin}/booking/${booking.booking_number}`;
+    // window.location.origin would be capacitor://localhost in the app
+    const shareUrl = `${getBaseUrl()}/booking/${booking.booking_number}`;
     const text = `Ich hab grade ${booking.service_title} bei ${booking.agency_name} gebucht! 🎉`;
+    if (isNative()) {
+      try {
+        const { Share } = await import("@capacitor/share");
+        await Share.share({ title: "Meine EventBliss Buchung", text, url: shareUrl });
+      } catch {
+        /* user cancelled */
+      }
+      return;
+    }
     try {
       if (navigator.share) {
         await navigator.share({
@@ -1262,7 +1295,7 @@ export default function BookingSuccess() {
 
         {/* Action buttons */}
         <motion.div
-          className="grid grid-cols-3 gap-3 mb-4 print:hidden"
+          className={`grid ${isNative() ? "grid-cols-2" : "grid-cols-3"} gap-3 mb-4 print:hidden`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: reduced ? 0 : 1.9 }}
@@ -1275,14 +1308,17 @@ export default function BookingSuccess() {
             <CalendarPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Kalender</span>
           </Button>
-          <Button
-            onClick={() => window.print()}
-            variant="outline"
-            className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08] hover:text-white h-11 gap-2"
-          >
-            <Printer className="w-4 h-4" />
-            <span className="hidden sm:inline">PDF</span>
-          </Button>
+          {/* window.print() is a no-op inside the Capacitor WKWebView */}
+          {!isNative() && (
+            <Button
+              onClick={() => window.print()}
+              variant="outline"
+              className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08] hover:text-white h-11 gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              <span className="hidden sm:inline">PDF</span>
+            </Button>
+          )}
           <Button
             onClick={handleShare}
             variant="outline"
