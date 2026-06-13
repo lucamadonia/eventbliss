@@ -47,6 +47,7 @@ import { useQueryClient } from "@tanstack/react-query";
 interface BookingDetails {
   id: string;
   booking_number: string;
+  public_token?: string;
   status: string;
   booking_date: string;
   booking_time: string;

@@ -260,7 +260,13 @@ export default function MyBookings() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: i * 0.04, duration: 0.3 }}
-                  onClick={() => navigate(`/booking/${booking.bookingNumber}`)}
+                  onClick={() =>
+                    navigate(
+                      `/booking/${booking.bookingNumber}${
+                        booking.raw.public_token ? `?t=${booking.raw.public_token}` : ""
+                      }`,
+                    )
+                  }
                   className="bg-[#1f1f29] border border-white/[0.06] rounded-2xl p-5 sm:p-6 hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.06)] transition-all duration-300 group cursor-pointer"
                 >
                   {/* Top Row: Booking Number + Status */}

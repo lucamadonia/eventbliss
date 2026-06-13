@@ -12,6 +12,8 @@ import { isNative, getBaseUrl } from "@/lib/platform";
 export interface IcsBooking {
   id: string;
   booking_number: string;
+  /** Secret capability token — appended as ?t= so foreign/shared opens work. */
+  public_token?: string;
   service_title?: string;
   agency_name?: string;
   agency_city?: string | null;
@@ -19,9 +21,19 @@ export interface IcsBooking {
   booking_time?: string | null;
 }
 
-/** Public ticket page URL for a booking (production URL on native). */
-export function getBookingShareUrl(b: Pick<IcsBooking, "booking_number">): string {
-  return `${getBaseUrl()}/booking/${b.booking_number}`;
+/**
+ * Public ticket page URL for a booking (production URL on native).
+ * Appends the secret `?t=` token so the recipient (anon / non-owner) can
+ * actually open the page — booking_number alone is enumerable. A
+ * `tokenOverride` wins over `b.public_token` (used by PublicBooking, whose
+ * RPC payload intentionally omits the token).
+ */
+export function getBookingShareUrl(
+  b: Pick<IcsBooking, "booking_number" | "public_token">,
+  tokenOverride?: string,
+): string {
+  const token = tokenOverride ?? b.public_token;
+  return `${getBaseUrl()}/booking/${b.booking_number}${token ? `?t=${token}` : ""}`;
 }
 
 export function buildIcsFile(b: IcsBooking): string {
@@ -93,9 +105,10 @@ export async function shareBooking(
   b: IcsBooking,
   text?: string,
   title = "Meine EventBliss Buchung",
+  tokenOverride?: string,
 ): Promise<void> {
   // window.location.origin would be capacitor://localhost in the app
-  const shareUrl = getBookingShareUrl(b);
+  const shareUrl = getBookingShareUrl(b, tokenOverride);
   const shareText =
     text ??
     `Ich hab grade ${b.service_title ?? "ein Event"} bei ${b.agency_name ?? "EventBliss"} gebucht! 🎉`;
@@ -124,8 +137,12 @@ export async function shareBooking(
  * Direct WhatsApp share via wa.me deep link. On native this opens the
  * WhatsApp app (external URL leaves the WebView), on web WhatsApp Web.
  */
-export function shareBookingViaWhatsApp(b: IcsBooking, text: string): void {
-  const shareUrl = getBookingShareUrl(b);
+export function shareBookingViaWhatsApp(
+  b: IcsBooking,
+  text: string,
+  tokenOverride?: string,
+): void {
+  const shareUrl = getBookingShareUrl(b, tokenOverride);
   const waUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${shareUrl}`)}`;
   window.open(waUrl, "_blank");
 }

@@ -6043,7 +6043,11 @@
       "call": "Zadzwoń",
       "email": "E-mail",
       "website": "Strona",
-      "empty": "Brak agencji partnerskich dla tego miasta"
+      "empty": "Brak agencji partnerskich dla tego miasta",
+      "allCountries": "Wszystkie kraje",
+      "allCities": "Wszystkie miasta",
+      "country": "Kraj",
+      "city": "Miasto"
     },
     "title": "Marketplace",
     "subtitle": "Odkryj doświadczenia, usługodawców i pakiety na Twoje następne wydarzenie",

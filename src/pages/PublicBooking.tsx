@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   motion,
@@ -50,14 +50,15 @@ interface PublicBooking {
   created_at: string;
 }
 
-function usePublicBooking(bookingNumber: string | undefined) {
+function usePublicBooking(bookingNumber: string | undefined, token: string | null) {
   return useQuery({
-    queryKey: ["public-booking", bookingNumber],
+    queryKey: ["public-booking", bookingNumber, token],
     enabled: !!bookingNumber,
     queryFn: async (): Promise<PublicBooking | null> => {
       if (!bookingNumber) return null;
       const { data, error } = await (supabase as any).rpc("get_public_booking", {
         p_booking_number: bookingNumber,
+        p_token: token,
       });
       if (error) throw error;
       return (data as PublicBooking) || null;
@@ -547,7 +548,9 @@ function Perforation() {
 export default function PublicBookingPage() {
   const { number } = useParams<{ number: string }>();
   const navigate = useNavigate();
-  const { data: booking, isLoading, error } = usePublicBooking(number);
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("t");
+  const { data: booking, isLoading, error } = usePublicBooking(number, token);
   const [now, setNow] = useState(Date.now());
   const reduced = !!useReducedMotion();
 
@@ -578,6 +581,9 @@ export default function PublicBookingPage() {
       { ...booking, id: booking.booking_number },
       `${booking.customer_first_name} hat ${booking.service_title} bei ${booking.agency_name} gebucht — sei dabei!`,
       "EventBliss Buchung",
+      // The public RPC payload omits public_token; carry the URL token forward
+      // so the shared link stays openable by the next (anon) recipient.
+      token ?? undefined,
     );
   };
 

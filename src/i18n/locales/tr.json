@@ -6043,7 +6043,11 @@
       "call": "Ara",
       "email": "E-posta",
       "website": "Web sitesi",
-      "empty": "Bu şehir için partner ajans bulunamadı"
+      "empty": "Bu şehir için partner ajans bulunamadı",
+      "allCountries": "Tüm ülkeler",
+      "allCities": "Tüm şehirler",
+      "country": "Ülke",
+      "city": "Şehir"
     },
     "title": "Marketplace",
     "subtitle": "Bir sonraki etkinliğiniz için deneyimler, hizmet sağlayıcılar ve paketler keşfedin",

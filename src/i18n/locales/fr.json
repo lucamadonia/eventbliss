@@ -5993,7 +5993,11 @@
       "call": "Appeler",
       "email": "E-mail",
       "website": "Site web",
-      "empty": "Aucune agence partenaire pour cette ville"
+      "empty": "Aucune agence partenaire pour cette ville",
+      "allCountries": "Tous les pays",
+      "allCities": "Toutes les villes",
+      "country": "Pays",
+      "city": "Ville"
     },
     "title": "Marketplace",
     "subtitle": "Découvrez des expériences, prestataires et forfaits pour votre prochain événement",

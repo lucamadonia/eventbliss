@@ -6043,7 +6043,11 @@
       "call": "Bellen",
       "email": "E-mail",
       "website": "Website",
-      "empty": "Geen partnerbureaus voor deze stad"
+      "empty": "Geen partnerbureaus voor deze stad",
+      "allCountries": "Alle landen",
+      "allCities": "Alle steden",
+      "country": "Land",
+      "city": "Stad"
     },
     "title": "Marketplace",
     "subtitle": "Ontdek ervaringen, dienstverleners en pakketten voor je volgende evenement",

@@ -221,12 +221,48 @@ function AgencyRow({ agency }: { agency: PartnerAgency }) {
   );
 }
 
+// ─── Filter chips (same look as the marketplace category pills) ──
+const CHIP_BASE = "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all";
+const CHIP_ACTIVE = "bg-primary/20 text-primary border border-primary/40";
+const CHIP_INACTIVE = "bg-foreground/[0.06] text-muted-foreground border border-transparent";
+
 // ─── Section ─────────────────────────────────────────────────────
 export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const haptics = useHaptics();
   const [open, setOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const { data: dbAgencies } = usePartnerDbAgencies();
+
+  // Localized country names via Intl.DisplayNames; falls back to English,
+  // then to the raw data value (old WebViews without DisplayNames support).
+  const countryName = useMemo(() => {
+    let primary: Intl.DisplayNames | null = null;
+    let english: Intl.DisplayNames | null = null;
+    try {
+      primary = new Intl.DisplayNames([i18n.language], { type: "region" });
+    } catch {
+      primary = null;
+    }
+    try {
+      english = new Intl.DisplayNames(["en"], { type: "region" });
+    } catch {
+      english = null;
+    }
+    return (code: string, fallback: string): string => {
+      if (!/^[A-Z]{2}$/.test(code)) return fallback;
+      try {
+        const name = primary?.of(code);
+        if (name && name !== code) return name;
+      } catch { /* unsupported code */ }
+      try {
+        const name = english?.of(code);
+        if (name && name !== code) return name;
+      } catch { /* unsupported code */ }
+      return fallback;
+    };
+  }, [i18n.language]);
 
   const agencies = useMemo<PartnerAgency[]>(() => {
     const db = dbAgencies ?? [];
@@ -255,10 +291,52 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
     return all;
   }, [dbAgencies, cityFilter]);
 
+  // Country chips: every country present, sorted by agency count desc
+  const countryChips = useMemo(() => {
+    const counts = new Map<string, { code: string; fallback: string; count: number }>();
+    for (const a of agencies) {
+      const existing = counts.get(a.countryCode);
+      if (existing) existing.count++;
+      else counts.set(a.countryCode, { code: a.countryCode, fallback: a.country, count: 1 });
+    }
+    return [...counts.values()]
+      .map((c) => ({ code: c.code, count: c.count, label: countryName(c.code, c.fallback) }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  }, [agencies, countryName]);
+
+  // City chips: cities of the selected country only, alphabetical
+  const cityChips = useMemo(() => {
+    if (!selectedCountry) return [];
+    const cities = new Set<string>();
+    for (const a of agencies) {
+      if (a.countryCode === selectedCountry && a.city) cities.add(a.city);
+    }
+    return [...cities].sort((a, b) => a.localeCompare(b));
+  }, [agencies, selectedCountry]);
+
+  const selectCountry = (code: string | null) => {
+    haptics.select();
+    setSelectedCountry(code);
+    setSelectedCity(null); // country change resets the city selection
+  };
+
+  const selectCity = (city: string | null) => {
+    haptics.select();
+    setSelectedCity(city);
+  };
+
+  // Cascade filter (applied on top of the screen-wide cityFilter prefilter)
+  const visibleAgencies = useMemo(() => {
+    let list = agencies;
+    if (selectedCountry) list = list.filter((a) => a.countryCode === selectedCountry);
+    if (selectedCity) list = list.filter((a) => a.city === selectedCity);
+    return list;
+  }, [agencies, selectedCountry, selectedCity]);
+
   // Group by country, bookable agencies first within each group
   const groups = useMemo(() => {
     const byCountry = new Map<string, { code: string; name: string; agencies: PartnerAgency[] }>();
-    for (const a of agencies) {
+    for (const a of visibleAgencies) {
       const existing = byCountry.get(a.countryCode);
       if (existing) existing.agencies.push(a);
       else byCountry.set(a.countryCode, { code: a.countryCode, name: a.country, agencies: [a] });
@@ -271,7 +349,7 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
       );
     }
     return list;
-  }, [agencies]);
+  }, [visibleAgencies]);
 
   return (
     <motion.div
@@ -308,6 +386,64 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
+            {/* Country → city filter cascade */}
+            {countryChips.length > 0 && (
+              <div
+                role="group"
+                aria-label={t("marketplace.partnerAgencies.country", "Land")}
+                className="flex gap-2 overflow-x-auto pt-3 pb-1 no-scrollbar"
+              >
+                <button
+                  onClick={() => selectCountry(null)}
+                  className={cn(CHIP_BASE, selectedCountry === null ? CHIP_ACTIVE : CHIP_INACTIVE)}
+                >
+                  {t("marketplace.partnerAgencies.allCountries", "Alle Länder")}
+                </button>
+                {countryChips.map((c) => (
+                  <button
+                    key={c.code}
+                    onClick={() => selectCountry(c.code)}
+                    className={cn(CHIP_BASE, selectedCountry === c.code ? CHIP_ACTIVE : CHIP_INACTIVE)}
+                  >
+                    {flagEmoji(c.code)} {c.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <AnimatePresence initial={false}>
+              {selectedCountry && cityChips.length > 0 && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div
+                    role="group"
+                    aria-label={t("marketplace.partnerAgencies.city", "Stadt")}
+                    className="flex gap-2 overflow-x-auto pt-2 pb-1 no-scrollbar"
+                  >
+                    <button
+                      onClick={() => selectCity(null)}
+                      className={cn(CHIP_BASE, selectedCity === null ? CHIP_ACTIVE : CHIP_INACTIVE)}
+                    >
+                      {t("marketplace.partnerAgencies.allCities", "Alle Städte")}
+                    </button>
+                    {cityChips.map((city) => (
+                      <button
+                        key={city}
+                        onClick={() => selectCity(city)}
+                        className={cn(CHIP_BASE, selectedCity === city ? CHIP_ACTIVE : CHIP_INACTIVE)}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {groups.length === 0 ? (
               <p className="text-[11px] text-muted-foreground text-center py-4">
                 {t("marketplace.partnerAgencies.empty", "Keine Partner-Agenturen für diese Stadt")}
@@ -318,7 +454,9 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
                   <div key={group.code}>
                     <div className="flex items-center gap-1.5 px-1 pt-3 pb-1.5">
                       <span className="text-sm leading-none">{flagEmoji(group.code)}</span>
-                      <span className="text-[11px] font-semibold text-muted-foreground">{group.name}</span>
+                      <span className="text-[11px] font-semibold text-muted-foreground">
+                        {countryName(group.code, group.name)}
+                      </span>
                       <span className="text-[10px] text-muted-foreground/60 tabular-nums">
                         ({group.agencies.length})
                       </span>

@@ -63,12 +63,18 @@ export default function BookingActionsMenu({ booking }: BookingActionsMenuProps)
   const icsBooking: IcsBooking = {
     id: booking.id,
     booking_number: booking.booking_number,
+    public_token: booking.public_token,
     service_title: booking.service_title,
     agency_name: booking.agency_name,
     agency_city: booking.agency_city ?? null,
     booking_date: booking.booking_date,
     booking_time: booking.booking_time,
   };
+
+  // Detail-page path incl. the secret token so the owner's own deep link
+  // also carries it (harmless for the owner, required once shared).
+  const tokenQuery = booking.public_token ? `?t=${booking.public_token}` : "";
+  const detailPath = `/booking/${booking.booking_number}${tokenQuery}`;
 
   const shareText = t(
     "myBookings.actions.shareText",
@@ -84,7 +90,7 @@ export default function BookingActionsMenu({ booking }: BookingActionsMenuProps)
       id: "view",
       label: t("myBookings.actions.view", "Buchung ansehen"),
       icon: Ticket,
-      run: () => navigate(`/booking/${booking.booking_number}`),
+      run: () => navigate(detailPath),
     },
     {
       id: "calendar",
@@ -117,7 +123,7 @@ export default function BookingActionsMenu({ booking }: BookingActionsMenuProps)
           id: "print",
           label: t("myBookings.actions.print", "Drucken / PDF"),
           icon: Printer,
-          run: () => navigate(`/booking/${booking.booking_number}`),
+          run: () => navigate(detailPath),
         },
       ];
 

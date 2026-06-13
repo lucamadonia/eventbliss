@@ -9,6 +9,8 @@ import { toast } from "sonner";
 export interface MarketplaceBooking {
   id: string;
   booking_number: string;
+  /** Secret capability token for /booking share links (omitted from public RPC). */
+  public_token?: string;
   service_id: string;
   agency_id: string;
   customer_id: string;

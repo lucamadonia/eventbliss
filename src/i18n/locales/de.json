@@ -5969,7 +5969,11 @@
       "call": "Anrufen",
       "email": "E-Mail",
       "website": "Website",
-      "empty": "Keine Partner-Agenturen für diese Stadt"
+      "empty": "Keine Partner-Agenturen für diese Stadt",
+      "allCountries": "Alle Länder",
+      "allCities": "Alle Städte",
+      "country": "Land",
+      "city": "Stadt"
     },
     "title": "Marketplace",
     "subtitle": "Entdecke Erlebnisse, Dienstleister & Pakete für dein nächstes Event",
