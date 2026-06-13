@@ -1199,6 +1199,7 @@ export type Database = {
           event_id: string | null
           id: string
           is_manual: boolean
+          language: string | null
           participant_count: number
           payment_method: string
           platform_fee_cents: number
@@ -1238,6 +1239,7 @@ export type Database = {
           event_id?: string | null
           id?: string
           is_manual?: boolean
+          language?: string | null
           participant_count: number
           payment_method?: string
           platform_fee_cents: number
@@ -1277,6 +1279,7 @@ export type Database = {
           event_id?: string | null
           id?: string
           is_manual?: boolean
+          language?: string | null
           participant_count?: number
           payment_method?: string
           platform_fee_cents?: number
@@ -1679,6 +1682,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          language: string | null
           must_change_password: boolean | null
           updated_at: string | null
         }
@@ -1687,6 +1691,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          language?: string | null
           must_change_password?: boolean | null
           updated_at?: string | null
         }
@@ -1695,6 +1700,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          language?: string | null
           must_change_password?: boolean | null
           updated_at?: string | null
         }

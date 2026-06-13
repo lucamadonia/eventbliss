@@ -61,13 +61,19 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id });
 
     // Parse request body
-    const { booking_id } = await req.json();
+    const { booking_id, locale } = await req.json();
     if (!booking_id) {
       return new Response(JSON.stringify({ error: "booking_id ist erforderlich" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Persist the UI language used at checkout so booking-notify (incl. the
+    // cron-driven reminder, which has no request context) can localise mails.
+    // 2-char code, best-effort — never block checkout on this.
+    const bookingLanguage =
+      typeof locale === "string" && locale.length >= 2 ? locale.slice(0, 2).toLowerCase() : null;
 
     // Fetch the booking
     const { data: booking, error: bookingError } = await supabaseAdmin
@@ -181,10 +187,13 @@ serve(async (req) => {
 
     logStep("Checkout session created", { sessionId: session.id });
 
-    // Update booking with checkout session ID
+    // Update booking with checkout session ID (and the UI language if known —
+    // don't overwrite an already-stored language with null).
+    const bookingUpdate: Record<string, unknown> = { stripe_checkout_session_id: session.id };
+    if (bookingLanguage) bookingUpdate.language = bookingLanguage;
     const { error: updateError } = await supabaseAdmin
       .from("marketplace_bookings")
-      .update({ stripe_checkout_session_id: session.id })
+      .update(bookingUpdate)
       .eq("id", booking_id);
 
     if (updateError) {

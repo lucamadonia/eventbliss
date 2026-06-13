@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -361,6 +362,10 @@ export function useCreateBooking() {
 
       const isInitiallyConfirmed = status === "confirmed";
 
+      // UI language at booking time — used to localise the confirmation +
+      // 24h reminder emails (the reminder cron reads it back from this row).
+      const locale = (i18n.language || "de").slice(0, 2).toLowerCase();
+
       const { data, error } = await (supabase.from as any)("marketplace_bookings")
         .insert({
           service_id: input.serviceId,
@@ -381,6 +386,7 @@ export function useCreateBooking() {
           customer_phone: input.customerPhone || null,
           customer_notes: input.customerNotes || null,
           payment_method: paymentMethod,
+          language: locale,
           confirmed_at: isInitiallyConfirmed ? new Date().toISOString() : null,
         })
         .select("id, booking_number")
@@ -396,7 +402,7 @@ export function useCreateBooking() {
         try {
           const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
             "marketplace-checkout",
-            { body: { booking_id: booking.id } },
+            { body: { booking_id: booking.id, locale } },
           );
           if (!checkoutError && checkoutData?.url) {
             checkoutUrl = checkoutData.url as string;
@@ -406,8 +412,8 @@ export function useCreateBooking() {
         }
       }
 
-      // Fire booking confirmation email (fire-and-forget, never blocks checkout)
-      const locale = typeof navigator !== "undefined" ? (navigator.language || "de").slice(0, 2) : "de";
+      // Fire booking confirmation email (fire-and-forget, never blocks checkout).
+      // booking-notify prefers the language logged on the row; locale is a fallback.
       try {
         await supabase.functions.invoke("booking-notify", {
           body: {

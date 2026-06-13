@@ -121,10 +121,23 @@ serve(async (req) => {
       },
     });
 
+    // Always supply a plaintext alternative so denomailer builds a clean
+    // multipart/alternative; otherwise some SMTP relays surface raw MIME.
+    const text = html
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<head[\s\S]*?<\/head>/gi, "")
+      .replace(/<\/(p|div|tr|h1|h2|h3|li)>/gi, "\n")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
     await client.send({
       from: `${fromName} <${fromEmail}>`,
       to: recipient,
       subject,
+      content: text,
       html,
     });
 

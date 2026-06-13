@@ -1,5 +1,6 @@
 import { createContext, useContext, ReactNode, useState, useEffect, useMemo, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
+import i18n from "@/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { usePremium } from "@/hooks/usePremium";
 import { supabase } from "@/integrations/supabase/client";
@@ -87,6 +88,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkPasswordRequirement();
   }, [auth.user, auth.isLoading]);
+
+  // Backfill profiles.language from the current UI language once per signed-in
+  // user, but only when it's still empty (minimal-invasive — never overwrites a
+  // language the user explicitly set, and never blocks rendering). This keeps
+  // transactional emails localised even for accounts created before signup
+  // started storing language in auth metadata.
+  const languageSyncedRef = useRef<string | null>(null);
+  useEffect(() => {
+    const userId = auth.user?.id;
+    if (!userId || auth.isLoading) return;
+    if (languageSyncedRef.current === userId) return;
+    languageSyncedRef.current = userId;
+
+    const syncLanguage = async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("language")
+          .eq("id", userId)
+          .maybeSingle();
+        if (data && !data.language) {
+          const lang = (i18n.language || "de").slice(0, 2).toLowerCase();
+          await supabase.from("profiles").update({ language: lang }).eq("id", userId);
+        }
+      } catch {
+        // Non-blocking: language backfill must never disrupt the auth flow.
+      }
+    };
+    void syncLanguage();
+  }, [auth.user?.id, auth.isLoading]);
 
   const handlePasswordChanged = () => {
     setMustChangePassword(false);

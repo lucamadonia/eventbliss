@@ -143,6 +143,27 @@ function interpolate(template: string, vars: Record<string, string>): string {
 // SMTP sender
 // ---------------------------------------------------------------------------
 
+// Rough HTML→text for the plaintext alternative. Always supplying a text part
+// makes denomailer build a clean multipart/alternative instead of a bare HTML
+// body, so SMTP relays (ALL-INKL/Kasserver) never leak raw MIME headers.
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<head[\s\S]*?<\/head>/gi, "")
+    .replace(/<\/(p|div|tr|h1|h2|h3|li)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\n{3,}/g, "\n\n")
+    .split("\n")
+    .map((l) => l.trim())
+    .join("\n")
+    .trim();
+}
+
 async function sendOutreachEmail(
   to: string,
   subject: string,
@@ -182,6 +203,7 @@ async function sendOutreachEmail(
     from: `${senderName} <${senderEmail}>`,
     to,
     subject,
+    content: htmlToPlainText(html),
     html,
   });
 
