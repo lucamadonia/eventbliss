@@ -5642,7 +5642,12 @@
       "medium": "Gemiddeld",
       "hard": "Moeilijk",
       "startGame": "Start Spel!",
-      "minPlayers": "Minimaal {{count}} spelers nodig"
+      "minPlayers": "Minimaal {{count}} spelers nodig",
+      "importFromEvent": "Uit evenement overnemen",
+      "addEntity": "{{label}} toevoegen",
+      "onlinePlayer": "Online speler",
+      "onlineRoom": "Online ruimte",
+      "title": "Spel instellen"
     },
     "play": {
       "round": "Ronde",
@@ -5715,6 +5720,19 @@
         "rapidFire": "Snelvuur",
         "letterLock": "Letterslot"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Kies evenement",
+      "selectParticipants": "Kies deelnemers",
+      "back": "Terug",
+      "close": "Sluiten",
+      "confirm": "{{count}} overnemen",
+      "noEvents": "Je hebt nog geen eigen evenementen.",
+      "noParticipants": "Dit evenement heeft nog geen deelnemers met naam.",
+      "loginRequired": "Log eerst in om je evenementen te zien.",
+      "errEvents": "Kon evenementen niet laden.",
+      "errParticipants": "Kon deelnemers niet laden.",
+      "eventFallback": "Evenement"
     }
   },
   "native": {

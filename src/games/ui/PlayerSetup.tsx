@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Plus, Minus, User, Globe, CalendarPlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useHaptics } from '@/hooks/useHaptics';
 import { getPlayerColor, getPlayerInitial } from './PlayerAvatars';
@@ -55,6 +56,7 @@ export function PlayerSetup({
   maxNameLength = 20,
   onImportNames,
 }: PlayerSetupProps) {
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const reduce = useReducedMotion();
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -128,14 +130,14 @@ export function PlayerSetup({
                 {/* Trailing slot: Online-Badge / Entfernen / Platzhalter (Breite stabil) */}
                 {player.readOnly ? (
                   <div className="shrink-0 grid place-items-center w-11 h-11 rounded-xl bg-[var(--accent)]/10"
-                    title="Online-Spieler" aria-label="Online-Spieler">
+                    title={t('games.setup.onlinePlayer')} aria-label={t('games.setup.onlinePlayer')}>
                     <Globe className="w-4 h-4 text-[var(--accent)]" />
                   </div>
                 ) : showRemove ? (
                   <button
                     type="button"
                     onClick={() => handleRemove(player.id)}
-                    aria-label={`${label} ${i + 1} entfernen`}
+                    aria-label={`${t('games.setup.removePlayer')}: ${label} ${i + 1}`}
                     className="shrink-0 grid place-items-center w-11 h-11 rounded-xl bg-red-500/10 text-red-400 transition-colors duration-150 hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 active:scale-95"
                   >
                     <Minus className="w-4 h-4" />
@@ -163,7 +165,7 @@ export function PlayerSetup({
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 text-sm font-medium transition-colors duration-150 hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45"
             >
               <Plus className="w-4 h-4" />
-              {label} hinzufügen
+              {t('games.setup.addEntity', { label })}
             </motion.button>
           )}
         </AnimatePresence>
@@ -176,7 +178,7 @@ export function PlayerSetup({
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-[var(--accent)] bg-[var(--accent)]/10 border border-[var(--accent)]/25 transition-colors hover:bg-[var(--accent)]/15"
           >
             <CalendarPlus className="w-4 h-4" />
-            Aus Event übernehmen
+            {t('games.setup.importFromEvent')}
           </button>
         )}
       </div>

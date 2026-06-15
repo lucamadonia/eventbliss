@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Play, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
@@ -57,12 +58,13 @@ export function GameSetup({
   modes,
   settings,
   onStart,
-  title = "Spiel einrichten",
+  title,
   gameId = "",
   minPlayers = 2,
   maxPlayers = 20,
   onlinePlayers,
 }: GameSetupProps) {
+  const { t } = useTranslation();
   const { showRules, openRules, closeRules } = useAutoShowRules(gameId);
 
   // Auto-detect players: only use online/party players when explicitly provided
@@ -171,7 +173,7 @@ export function GameSetup({
         {/* Header with rules button */}
         <div className="flex items-center justify-between">
           <div className="w-10" /> {/* spacer */}
-          <h1 className="text-2xl font-extrabold text-white text-center font-game tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-extrabold text-white text-center font-game tracking-tight">{title ?? t('games.setup.title')}</h1>
           {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
         </div>
 
@@ -188,7 +190,7 @@ export function GameSetup({
           hint={hasOnline ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
               <Wifi className="w-3 h-3 text-[#df8eff]" />
-              <span className="text-[10px] font-bold text-[#df8eff] uppercase tracking-wider">Online Room</span>
+              <span className="text-[10px] font-bold text-[#df8eff] uppercase tracking-wider">{t('games.setup.onlineRoom')}</span>
             </div>
           ) : undefined}
         />
@@ -196,7 +198,7 @@ export function GameSetup({
         {/* Mode selection */}
         {modes.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Modus</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('games.setup.selectMode')}</h2>
             <div className="grid grid-cols-2 gap-3">
               {modes.map((mode) => (
                 <motion.button
@@ -222,7 +224,7 @@ export function GameSetup({
         {/* Settings sliders */}
         <section className="space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-            Einstellungen
+            {t('games.setup.settings')}
           </h2>
           <SliderSetting
             label={settings.timer.label}
@@ -257,7 +259,7 @@ export function GameSetup({
           whileTap={canStart ? { scale: 0.97 } : {}}
         >
           <Play className="w-5 h-5" />
-          Spiel starten!
+          {t('games.setup.startGame')}
         </motion.button>
       </div>
 

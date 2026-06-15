@@ -5568,7 +5568,12 @@
       "medium": "Medium",
       "hard": "Hard",
       "startGame": "Start Game!",
-      "minPlayers": "Minimum {{count}} players needed"
+      "minPlayers": "Minimum {{count}} players needed",
+      "importFromEvent": "Import from event",
+      "addEntity": "Add {{label}}",
+      "onlinePlayer": "Online player",
+      "onlineRoom": "Online Room",
+      "title": "Set up game"
     },
     "play": {
       "round": "Round",
@@ -5641,6 +5646,19 @@
         "rapidFire": "Rapid Fire",
         "letterLock": "Letter Lock"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Choose event",
+      "selectParticipants": "Choose participants",
+      "back": "Back",
+      "close": "Close",
+      "confirm": "Add {{count}}",
+      "noEvents": "You don't have any events yet.",
+      "noParticipants": "This event has no named participants yet.",
+      "loginRequired": "Please log in first to see your events.",
+      "errEvents": "Couldn't load events.",
+      "errParticipants": "Couldn't load participants.",
+      "eventFallback": "Event"
     }
   },
   "native": {

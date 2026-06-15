@@ -124,7 +124,11 @@
         "description": "أنشئ استبيانات وتصويتات مخصصة لفعاليتك"
       },
       "showcaseTitle": "ميزات قوية، تصميم جميل",
-      "showcaseSubtitle": "كل ما تحتاجه لفعالية المجموعة المثالية"
+      "showcaseSubtitle": "كل ما تحتاجه لفعالية المجموعة المثالية",
+      "planner": {
+        "title": "مخطط الأنشطة",
+        "description": "خطط ونظم جميع الأنشطة مع عرض التقويم والفترات الزمنية وتصدير iCal/PDF تلقائياً"
+      }
     },
     "howItWorks": {
       "title": "كيف يعمل",
@@ -1598,7 +1602,15 @@
         "previewDescription": "هكذا ستظهر أسئلتك الخاصة في الاستبيان",
         "previewReadOnly": "معاينة للقراءة فقط",
         "untitledQuestion": "سؤال بدون عنوان",
-        "selectPlaceholder": "اختر خيارًا..."
+        "selectPlaceholder": "اختر خيارًا...",
+        "types": {
+          "text": "نص قصير",
+          "textarea": "نص طويل",
+          "select": "قائمة منسدلة",
+          "radio": "اختيار واحد",
+          "checkbox": "اختيار متعدد",
+          "toggle": "نعم / لا"
+        }
       },
       "questionEnabled": "السؤال مفعل",
       "questionDisabled": "السؤال معطل",
@@ -2056,6 +2068,26 @@
         "title": "قائمة الحقائب",
         "description": "ما يجب أن يحضره الجميع",
         "template": "🎒 قائمة الحقائب لحفلة {{honoree}} 🎒\n\n📅 {{eventDate}}\n📍 [الوجهة]\n\n✅ الضروريات:\n• بطاقة الهوية\n• نقد (حوالي {{cashAmount}}€)\n• [ملابس خاصة]\n• مزاج جيد! 😄\n\n👕 قواعد اللباس:\n[أدخل قواعد اللباس]\n\n❌ لا تنسوا:\n• [عنصر مهم]\n• [شيء مهم آخر]\n\nأسئلة؟ أخبروني!\n\nاستعدوا لفعالية رائعة! 🚀"
+      },
+      "welcome": {
+        "title": "مرحباً",
+        "description": "رسالة ترحيب للمشاركين الجدد",
+        "template": "أهلاً وسهلاً بالفريق! 🙌\n\nيسعدنا وجودك في حفلة {{honoree}}!\n\nإليك أهم المعلومات:\n\n📋 الاستبيان: {{surveyLink}}\n🔑 الرمز: {{accessCode}}\n\nإن لم تردّ بعد، يُرجى فعل ذلك في أقرب وقت!\n\nأي أسئلة، لا تتردد في التواصل. ستكون ليلة لا تُنسى! 🚀"
+      },
+      "locationShare": {
+        "title": "نقطة اللقاء",
+        "description": "مشاركة نقطة اللقاء والعنوان",
+        "template": "📍 نقطة اللقاء لحفلة {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ خرائط Google: [أدرج الرابط]\n\nيُرجى الحضور في الوقت المحدد! إذا تأخرت اكتب للمجموعة.\n\nإلى اللقاء! 🚗"
+      },
+      "finalDetails": {
+        "title": "التفاصيل النهائية",
+        "description": "آخر المعلومات قبل الحدث",
+        "template": "🎊 حان الوقت! 🎊\n\nحفلة {{honoree}} على الأبواب!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ مهم:\n• كن في نقطة اللقاء في الوقت المحدد\n• هاتفك مشحون\n• احضر معك روح المرح! 😄\n\n🤫 سرية تامة:\n{{honoree}} يجب ألا يعلم بشيء!\n\nأسئلة؟ اتصل، لا تكتب في المجموعة!\n\nاستعد لحدث لا يُنسى! 🔥"
+      },
+      "thankYou": {
+        "title": "شكراً",
+        "description": "رسالة شكر بعد الحدث",
+        "template": "🙏 شكراً للجميع! 🙏\n\nحفلة {{honoree}} كانت ناجحة بامتياز! 🎉\n\nشكراً لكل واحد منكم على:\n• الأجواء الرائعة\n• مساعدتكم في التخطيط\n• اللحظات التي لن تُنسى\n\n📸 شاركوا الصور والفيديوهات في المجموعة!\n\n💰 تسوية التكاليف ستصلكم خلال الأيام القادمة.\n\nكان شرفاً تنظيم هذا الحدث معكم! 🙌\n\nإلى المغامرة القادمة! 🚀"
       }
     },
     "quickActions": {
@@ -2350,7 +2382,13 @@
       "time": "الوقت",
       "endTime": "النهاية",
       "legend": "وسيلة الإيضاح",
-      "helpText": "انقر على فترة زمنية أو اسحب لإنشاء أنشطة جديدة. اسحب الأنشطة الحالية لنقلها."
+      "helpText": "انقر على فترة زمنية أو اسحب لإنشاء أنشطة جديدة. اسحب الأنشطة الحالية لنقلها.",
+      "listView": "عرض القائمة",
+      "calendarView": "عرض التقويم",
+      "dragHint": "اسحب الأنشطة لتحريكها",
+      "clickToAdd": "انقر لإضافة نشاط جديد",
+      "mobileHint": "انقر على نشاط للتعديل. اسحب يساراً/يميناً لتغيير الأيام.",
+      "tapToEdit": "انقر للتعديل"
     }
   },
   "cookie": {
@@ -2443,7 +2481,8 @@
       "custom_questions": "أسئلة مخصصة",
       "unlimitedOptions": "خيارات غير محدودة",
       "max_options": "خيارات غير محدودة",
-      "prioritySupport": "دعم أولوية"
+      "prioritySupport": "دعم أولوية",
+      "unlimitedEvents": "أحداث غير محدودة"
     },
     "paywall": {
       "title": "ميزة بريميوم",
@@ -4720,6 +4759,56 @@
         "name": "Sports Day",
         "description": "أولمبياد ومنافسات رياضية مثيرة",
         "tips": "قمصان رياضية وميداليات وملاعب وسناكات الرياضيين!"
+      },
+      "dirndl_lederhosen": {
+        "name": "Dirndl & Lederhosen",
+        "description": "التراث البافاري مع الكعك المقرمش وأكواب البيرة",
+        "tips": "مقاعد البيرة، موسيقى أوكتوبرفست، الكعك المقرمش والأكواب الكبيرة!"
+      },
+      "wellness_retreat": {
+        "name": "Wellness Retreat",
+        "description": "استرخاء تام — سبا واعتناء بالنفس",
+        "tips": "شموع، موسيقى هادئة، أقنعة للوجه، شاي ومستلزمات العناية!"
+      },
+      "masquerade": {
+        "name": "حفلة التنكر",
+        "description": "غامض خلف الأقنعة الفينيسية",
+        "tips": "الأقنعة إلزامية، شموع، موسيقى درامية وديكور فاخر!"
+      },
+      "caribbean": {
+        "name": "الكاريبي",
+        "description": "ريغي وشاطئ وشمس",
+        "tips": "Bob Marley، كوكتيلات ملونة، ديكور الشاطئ والشباشب!"
+      },
+      "under_stars": {
+        "name": "تحت النجوم",
+        "description": "رومانسي تحت السماء المفتوحة",
+        "tips": "بطاطين للنزهة، أضواء خيالية، تلسكوب وموسيقى رومانسية!"
+      },
+      "vintage_tea": {
+        "name": "Vintage Tea Party",
+        "description": "شاي العصر الراقي على الطريقة القديمة",
+        "tips": "أواني خزفية كلاسيكية، زهور، مقبلات صغيرة وموسيقى كلاسيكية!"
+      },
+      "minimalist": {
+        "name": "مينيماليست حديث",
+        "description": "الأقل هو الأكثر — خطوط نظيفة",
+        "tips": "أبيض وأسود، أشكال واضحة، ديكور بسيط!"
+      },
+      "bohemian": {
+        "name": "بوهيمي",
+        "description": "ملون وحر وإبداعي",
+        "tips": "أقمشة ملونة، نباتات، أضواء وموسيقى عالمية!"
+      },
+      "industrial": {
+        "name": "Industrial Chic",
+        "description": "جماليات خام بالمعدن والخرسانة",
+        "tips": "معدن، مصابيح Edison، طوب مكشوف وأصوات المدينة!"
+      },
+      "italian_dolce": {
+        "name": "Italian Dolce Vita",
+        "description": "La dolce vita — الحياة الحلوة",
+        "tips": "ليمون، Aperol Spritz، بيتزا وموسيقى إيطالية!"
       }
     },
     "tts": {
@@ -4731,7 +4820,13 @@
       "selectVoice": "اختيار الصوت",
       "firstTimeDownload": "التشغيل الأول: جارٍ تحميل صوت عالي الجودة (~50 ميغابايت)",
       "loadingVoice": "جارٍ تحميل نموذج الصوت...",
-      "nextSection": "القسم التالي"
+      "nextSection": "القسم التالي",
+      "start": "قراءة",
+      "pause": "إيقاف مؤقت",
+      "stop": "إيقاف",
+      "downloadRequired": "يلزم تنزيل النموذج (~50MB)",
+      "download": "تنزيل",
+      "downloading": "جارٍ التنزيل..."
     },
     "copied": "تم النسخ!",
     "removedFromFavorites": "تمت الإزالة من المفضلة",
@@ -4743,7 +4838,10 @@
       "custom": "دقيقة",
       "pause": "إيقاف مؤقت",
       "start": "بدء",
-      "reset": "إعادة تعيين"
+      "reset": "إعادة تعيين",
+      "sound": "صوت",
+      "notification": "إشعار",
+      "fullscreen": "ملء الشاشة"
     },
     "back": "رجوع",
     "random": "عشوائي",
@@ -4760,7 +4858,17 @@
     "themesCount": "ثيمات تم العثور عليها",
     "noThemesFound": "لم يتم العثور على ثيمات.",
     "showing": "عرض {{count}}",
-    "loadMore": "تحميل {{count}} المزيد"
+    "loadMore": "تحميل {{count}} المزيد",
+    "themeCategories": {
+      "retro": "ريترو",
+      "elegant": "أنيق",
+      "casual": "عفوي",
+      "adventure": "مغامرة",
+      "cultural": "ثقافي",
+      "seasonal": "موسمي",
+      "costume": "أزياء تنكرية",
+      "relaxation": "استرخاء"
+    }
   },
   "ideasHub": {
     "title": "الألعاب والأفكار",
@@ -5242,7 +5350,33 @@
       "iframeHint": "ما عليك سوى النسخ واللصق في موقعك الإلكتروني — مثلاً في WordPress كمكوّن HTML.",
       "scriptLabel": "مقتطف برمجي (Vanilla JS)",
       "tipTitle": "نصيحة احترافية",
-      "tipBody": "بالنسبة إلى WordPress، يوجد إضافة \"Advanced iframe\". وبالنسبة إلى Webflow/Framer/Wix، استخدم مكوّنات التضمين الخاصة بها. وإذا كان لديك موقع React/Next.js خاص بك، فاستخدم المقتطف البرمجي — عندها يتم تحميل الـ iframe بشكل كسول عند التمرير."
+      "tipBody": "بالنسبة إلى WordPress، يوجد إضافة \"Advanced iframe\". وبالنسبة إلى Webflow/Framer/Wix، استخدم مكوّنات التضمين الخاصة بها. وإذا كان لديك موقع React/Next.js خاص بك، فاستخدم المقتطف البرمجي — عندها يتم تحميل الـ iframe بشكل كسول عند التمرير.",
+      "themes": {
+        "dark": {
+          "label": "داكن · ألعاب",
+          "tagline": "مظهر ألعاب نيون بألوان البنفسجي والسماوي"
+        },
+        "light": {
+          "label": "حديث · فاتح",
+          "tagline": "نظيف، مينيماليست، جاهز للأعمال"
+        },
+        "classic": {
+          "label": "كلاسيكي · أنيق",
+          "tagline": "خالد بخطوط مع رنين الشامبانيا"
+        },
+        "epic": {
+          "label": "ملحمي · سينمائي",
+          "tagline": "أجواء درامية بالذهب والبنفسجي لليالي الاحتفالية"
+        },
+        "party": {
+          "label": "حفلة · نيون",
+          "tagline": "نيون صاخب لليالي والاحتفالات"
+        },
+        "adventure": {
+          "label": "مغامرة · خارجي",
+          "tagline": "أجواء طبيعية للمهرجانات وفعاليات الهواء الطلق"
+        }
+      }
     },
     "earnings": {
       "pending": "طلبات جديدة",
@@ -5300,7 +5434,12 @@
       "medium": "متوسط",
       "hard": "صعب",
       "startGame": "!ابدأ اللعبة",
-      "minPlayers": "مطلوب {{count}} لاعبين على الأقل"
+      "minPlayers": "مطلوب {{count}} لاعبين على الأقل",
+      "importFromEvent": "استيراد من الفعالية",
+      "addEntity": "إضافة {{label}}",
+      "onlinePlayer": "لاعب عبر الإنترنت",
+      "onlineRoom": "غرفة عبر الإنترنت",
+      "title": "إعداد اللعبة"
     },
     "play": {
       "round": "جولة",
@@ -5373,6 +5512,19 @@
         "rapidFire": "نار سريعة",
         "letterLock": "قفل الحروف"
       }
+    },
+    "importPicker": {
+      "selectEvent": "اختر الفعالية",
+      "selectParticipants": "اختر المشاركين",
+      "back": "رجوع",
+      "close": "إغلاق",
+      "confirm": "إضافة {{count}}",
+      "noEvents": "ليس لديك أي فعاليات بعد.",
+      "noParticipants": "لا يوجد مشاركون بأسماء في هذه الفعالية بعد.",
+      "loginRequired": "يرجى تسجيل الدخول أولاً لرؤية فعالياتك.",
+      "errEvents": "تعذّر تحميل الفعاليات.",
+      "errParticipants": "تعذّر تحميل المشاركين.",
+      "eventFallback": "فعالية"
     }
   },
   "native": {
@@ -5430,7 +5582,8 @@
       "geteiltGequizzt": "مسابقة مشتركة",
       "storyBuilder": "Story Builder",
       "woIstWas": "أين هذا؟",
-      "drueckDasWort": "اضغط الكلمة"
+      "drueckDasWort": "اضغط الكلمة",
+      "ohrwurm": "Ohrwurm"
     },
     "gameDescs": {
       "bomb": "عند من تنفجر؟",
@@ -5449,7 +5602,8 @@
       "geteiltGequizzt": "مسابقة تعاونية",
       "storyBuilder": "قصص مجنونة",
       "woIstWas": "اعثر على المكان",
-      "drueckDasWort": "اكتب بسرعة، فكّر بسرعة"
+      "drueckDasWort": "اكتب بسرعة، فكّر بسرعة",
+      "ohrwurm": "استمع للأغنية، ضعها في العام الصحيح"
     },
     "events": {
       "title": "الأحداث",
@@ -5860,7 +6014,8 @@
     "booking": "احجز الآن",
     "selectDateAndTime": "يرجى اختيار التاريخ والوقت.",
     "notFound": "الخدمة غير موجودة",
-    "notFoundHint": "هذه الخدمة غير متوفرة أو تم إزالتها."
+    "notFoundHint": "هذه الخدمة غير متوفرة أو تم إزالتها.",
+    "backToMarketplace": "العودة إلى السوق"
   },
   "myBookings": {
     "actions": {
@@ -6024,7 +6179,17 @@
       "confirmed": "المؤكدة فقط",
       "guide": "خاص بالمرشد"
     },
-    "copy": "نسخ"
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "openOutlook": "فتح في Outlook",
+    "openGoogle": "تقويم Google",
+    "openApple": "تقويم Apple",
+    "regenerate": "تجديد الرمز",
+    "regenerateConfirm": "إبطال الرمز القديم وإنشاء رمز جديد؟",
+    "createToken": "إنشاء رمز جديد",
+    "lastSync": "آخر مزامنة",
+    "never": "لم تتم بعد",
+    "noTokens": "لم يتم إنشاء رموز تقويم بعد"
   },
   "availabilityEditor": {
     "title": "تعديل التوفر",
@@ -6218,6 +6383,16 @@
       "step3": "Correct? Next word! Wrong? Points deducted!",
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    },
+    "ohrwurm": {
+      "title": "Ohrwurm",
+      "tagline": "استمع للأغنية وضعها في العام الصحيح — من يبني أطول جدول زمني للأغاني أولاً؟",
+      "step1": "تُعزف الأغنية مباشرةً في التطبيق (30 ثانية، العنوان والسنة مخفيان). لديك 60 ثانية لتحديد موضعها — وإلا تفقد البطاقة.",
+      "step2": "إن كنت تعرف العنوان والفنان، أعلنهما قبل الكشف — هذه فرصتك للمكافأة.",
+      "step3": "ضع الأغنية في جدولك الزمني الخاص: بين أي عامين تنتمي؟",
+      "step4": "المواجهة: يمكن للآخرين الذين لديهم 🎣 واحد على الأقل تحديك قبل الكشف. إن أخطأت وكان المتحدي محقاً، يسرق بطاقتك ويستعيد 🎣 — وإلا يخسر 🎣 المستخدم.",
+      "step5": "المكافأة: فز بالبطاقة وأعلن العنوان والفنان بشكل صحيح ← +1 🎣. افعل كل ذلك (تحديد صحيح + إعلان) في أقل من 10 ثوانٍ ← +2 🎣 (مكافأة السرعة). أول من يجمع 6/10/15 بطاقة يفوز.",
+      "tip": "🎣 الخطاطيف هي أوراقك الرابحة: المواجهة (تحدّ واسرق)، التبديل (1 🎣 مقابل بطاقة جديدة) والمكافأة/السرعة (العنوان + الفنان، بسرعة فائقة). يبدأ الجميع بـ 3 🎣، والحد الأقصى 5."
     }
   },
   "woIstWas": {
@@ -6709,7 +6884,8 @@
       "title": "تم إرسال الطلب!",
       "description": "شكرًا لاهتمامك بالشراكة.",
       "nextSteps": "سنراجع طلبك ونعاود التواصل معك خلال 48 ساعة.",
-      "goToDashboard": "إلى لوحة تحكم الوكالة"
+      "goToDashboard": "إلى لوحة تحكم الوكالة",
+      "backToHome": "العودة إلى الرئيسية"
     },
     "hero": {
       "badge": "شراكة الوكالات",
@@ -6756,7 +6932,9 @@
     "inactive": "غير نشط",
     "createGuide": "إنشاء مرشد",
     "editGuide": "تعديل المرشد",
-    "deleteGuide": "حذف المرشد"
+    "deleteGuide": "حذف المرشد",
+    "title": "مدير الأدلة",
+    "deleteConfirm": "هل تريد حذف الدليل \"{{name}}\" فعلاً؟"
   },
   "myEvents": {
     "editFolder": "تعديل المجلد",
@@ -6784,7 +6962,12 @@
     "archived": "مؤرشف",
     "deleted": "محذوف",
     "noArchivedEvents": "لا توجد فعاليات مؤرشفة",
-    "noDeletedEvents": "لا توجد فعاليات محذوفة"
+    "noDeletedEvents": "لا توجد فعاليات محذوفة",
+    "folders": "المجلدات",
+    "deleteFolder": "حذف المجلد",
+    "deleteFolderConfirm": "حذف هذا المجلد؟ ستصبح الأحداث بداخله غير مصنّفة.",
+    "archiveEventDescription": "سيتم نقل هذا الحدث إلى أرشيفك. يمكنك استعادته في أي وقت.",
+    "permanentlyDelete": "حذف نهائي"
   },
   "profile": {
     "account": "الحساب",
@@ -6819,7 +7002,8 @@
       "lifetimeInfo": "وصولك مدى الحياة مفعّل بشكل دائم.",
       "manage": "إدارة الاشتراك",
       "noSubscription": "ليس لديك اشتراك نشط.",
-      "upgradeNow": "الترقية إلى بريميوم الآن"
+      "upgradeNow": "الترقية إلى بريميوم الآن",
+      "cancel": "إلغاء الاشتراك"
     },
     "invoices": {
       "paid": "مدفوعة",
@@ -6852,7 +7036,9 @@
     "deleteAccount": "حذف الحساب",
     "deleteAccountTitle": "هل تريد حقاً حذف الحساب؟",
     "deleteAccountWarning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع فعالياتك وبياناتك نهائياً.",
-    "typeDeleteToConfirm": "اكتب DELETE للتأكيد"
+    "typeDeleteToConfirm": "اكتب DELETE للتأكيد",
+    "comingSoon": "قريباً",
+    "accountDeleteRequested": "تم طلب حذف الحساب."
   },
   "nativeFab": {
     "createEvent": "إنشاء فعالية",
@@ -6920,7 +7106,8 @@
       "inviteGuests": "دعوة الضيوف",
       "planActivity": "تخطيط نشاط",
       "addExpense": "تسجيل مصروف",
-      "browseMarketplace": "المتجر"
+      "browseMarketplace": "المتجر",
+      "aiAssistant": "المساعد الذكي"
     },
     "honoree": "ضيف الشرف",
     "noDate": "لا يوجد تاريخ",
@@ -6936,7 +7123,17 @@
     "recentActivity": "أحدث الأنشطة",
     "noActivity": "لا توجد أنشطة بعد",
     "tabs": {
-      "marketplace": "المتجر"
+      "marketplace": "المتجر",
+      "overview": "نظرة عامة",
+      "guests": "الضيوف",
+      "schedule": "الجدول الزمني",
+      "expenses": "المصاريف",
+      "services": "الخدمات",
+      "form": "النموذج",
+      "responses": "الردود",
+      "messages": "الرسائل",
+      "ai": "الذكاء الاصطناعي",
+      "settings": "الإعدادات"
     },
     "services": {
       "openMarketplaceSub": "اكتشف واحجز خدمات لفعاليتك",
@@ -6944,7 +7141,11 @@
       "bookedServices": "الخدمات المحجوزة",
       "noBookings": "لم يتم حجز أي خدمات بعد",
       "details": "التفاصيل",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "statusPending": "في الانتظار",
+      "statusConfirmed": "مؤكد",
+      "statusCompleted": "مكتمل",
+      "statusCancelled": "ملغى"
     },
     "status": {
       "active": "نشط",
@@ -6954,7 +7155,23 @@
     "loading": "جارٍ تحميل لوحة التحكم...",
     "notFound": "لم يتم العثور على الفعالية",
     "notFoundDesc": "تعذّر تحميل الفعالية.",
-    "back": "رجوع"
+    "back": "رجوع",
+    "eventTypes": {
+      "bachelor": "حفلة العزوبية",
+      "bachelorette": "حفلة العروس",
+      "birthday": "عيد ميلاد",
+      "wedding": "زفاف",
+      "other": "حدث"
+    },
+    "activity": {
+      "rsvpConfirmed": "{{name}} وافق على الحضور",
+      "rsvpDeclined": "{{name}} اعتذر عن الحضور",
+      "surveyResponse": "{{name}} صوّت",
+      "expenseCreated": "مصروف: {{title}}",
+      "budgetUpdated": "تم تحديث الميزانية",
+      "guestInvited": "تمت دعوة {{name}}",
+      "scheduleUpdated": "تم تحديث الجدول الزمني"
+    }
   },
   "nativeGuests": {
     "organizer": "المنظِّم",
@@ -6962,11 +7179,20 @@
     "status": {
       "confirmed": "تأكيد الحضور",
       "maybe": "ربما",
-      "declined": "اعتذار"
+      "declined": "اعتذار",
+      "invited": "مدعو"
     },
     "searchPlaceholder": "البحث عن الضيوف...",
     "inviteLink": "رابط الدعوة",
-    "eventCode": "رمز الفعالية"
+    "eventCode": "رمز الفعالية",
+    "noGuests": "لا ضيوف بعد",
+    "noGuestsDesc": "ادعُ أصدقاءك وعائلتك لتخطيط الحدث معاً.",
+    "noResults": "لا نتائج",
+    "noResultsFor": "لا يوجد ضيف يطابق \"{{query}}\"",
+    "inviteGuests": "دعوة ضيوف",
+    "copied": "تم النسخ!",
+    "copyLink": "نسخ الرابط",
+    "host": "المضيف"
   },
   "nativeSchedule": {
     "noActivities": "لم يتم تخطيط أي أنشطة بعد",
@@ -6976,8 +7202,25 @@
       "time": "الوقت",
       "category": "الفئة",
       "notes": "ملاحظات",
-      "add": "إضافة"
-    }
+      "add": "إضافة",
+      "location": "الموقع",
+      "duration": "المدة",
+      "cost": "التكلفة",
+      "responsible": "المسؤول",
+      "titlePlaceholder": "مثال: إفطار في الفندق"
+    },
+    "categories": {
+      "food": "طعام ومشروبات",
+      "activity": "نشاط",
+      "transport": "مواصلات",
+      "party": "حفلة",
+      "sightseeing": "جولة سياحية",
+      "accommodation": "إقامة",
+      "relaxation": "استرخاء",
+      "other": "أخرى"
+    },
+    "noActivitiesDesc": "خطط للبرنامج المثالي لحدثك",
+    "day": "اليوم {{num}}"
   },
   "whoami": {
     "setup": {
@@ -7005,5 +7248,116 @@
     "policyModerate": "معتدل",
     "policyStrict": "صارم",
     "chooseTime": "اختر الوقت..."
+  },
+  "nativeTabs": {
+    "home": "الرئيسية",
+    "events": "الأحداث",
+    "play": "العب",
+    "ideas": "أفكار",
+    "market": "السوق",
+    "profile": "الملف الشخصي"
+  },
+  "nativeDrinks": {
+    "title": "إحصاءات الحفلة",
+    "yourRank": "مرتبتك في الحفلة الليلة",
+    "nextRank": "المرتبة التالية",
+    "waterReminder": "لا تنسَ الماء!",
+    "waterReminderDesc": "اشرب كوب ماء على الأقل مع كل مشروب — جسمك سيشكرك.",
+    "resetSession": "إعادة تعيين الجلسة",
+    "confirmReset": "نعم، أعد التعيين",
+    "cancel": "إلغاء",
+    "ranks": {
+      "legend": "أسطورة",
+      "champion": "بطل",
+      "partyAnimal": "روح الحفلة",
+      "pro": "محترف",
+      "enthusiast": "متحمس",
+      "beginner": "مبتدئ",
+      "sober": "صاحٍ"
+    }
+  },
+  "nativeAdmin": {
+    "title": "لوحة الإدارة",
+    "areas": "{{count}} قسم",
+    "cards": {
+      "stats": {
+        "label": "لوحة التحكم",
+        "desc": "المستخدمون، الأحداث، الإيرادات"
+      },
+      "games": {
+        "label": "محتوى الألعاب",
+        "desc": "الأسئلة والمحتوى"
+      },
+      "users": {
+        "label": "المستخدمون",
+        "desc": "الأدوار وكلمات المرور"
+      },
+      "credits": {
+        "label": "رصيد الذكاء الاصطناعي",
+        "desc": "الحدود والتعديلات"
+      },
+      "subscriptions": {
+        "label": "الاشتراكات",
+        "desc": "إدارة الخطط"
+      },
+      "vouchers": {
+        "label": "القسائم",
+        "desc": "الرموز والخصومات"
+      },
+      "affiliates": {
+        "label": "الشركاء",
+        "desc": "برنامج الشراكة"
+      },
+      "commissions": {
+        "label": "العمولات",
+        "desc": "الحالة والسداد"
+      },
+      "payouts": {
+        "label": "المدفوعات",
+        "desc": "المعلقة والسجل"
+      },
+      "analytics": {
+        "label": "تحليلات الوكالة",
+        "desc": "التفاعلات"
+      },
+      "agencies": {
+        "label": "شركاء الوكالة",
+        "desc": "متعدد الوكالات"
+      },
+      "settings": {
+        "label": "إعدادات الخطة",
+        "desc": "الميزات والأسعار"
+      }
+    }
+  },
+  "responseValues": {
+    "destination": {
+      "deCity": "مدينة ألمانية",
+      "barcelona": "برشلونة",
+      "lisbon": "لشبونة",
+      "prague": "براغ",
+      "budapest": "بودابست",
+      "london": "لندن",
+      "rome": "روما",
+      "scotland": "اسكتلندا",
+      "naples": "نابولي"
+    },
+    "duration": {
+      "day": "رحلة يومية",
+      "weekend": "عطلة نهاية الأسبوع"
+    },
+    "travel": {
+      "daytrip": "رحلة يومية",
+      "oneNight": "ليلة واحدة",
+      "twoNights": "ليلتان"
+    },
+    "fitness": {
+      "chill": "هادئ",
+      "normal": "عادي",
+      "sporty": "رياضي"
+    },
+    "either": "كلاهما مناسب",
+    "yes": "نعم",
+    "no": "لا"
   }
 }

@@ -178,6 +178,20 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
 
   const canStart = players.length >= 1 && players.every(p => p.trim().length > 0);
 
+  const isOnlineOrParty = onlinePlayerNames.length >= 2;
+  const handleImportNames = (imported: string[]) => {
+    setPlayers((prev) => {
+      const kept = prev.filter((n) => n.trim() && !/^Spieler \d+$/.test(n.trim()));
+      const merged = [...kept];
+      for (const n of imported) {
+        if (merged.length >= 8) break;
+        merged.push(n);
+      }
+      while (merged.length < 1) merged.push('');
+      return merged;
+    });
+  };
+
   const handleStart = () => {
     if (!canStart) return;
     const ps: PlayerState[] = players.map(name => ({
@@ -209,6 +223,7 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
           onAdd={() => setPlayers([...players, ''])}
           onRemove={(id) => setPlayers(players.filter((_, idx) => idx !== Number(id)))}
           onRename={(id, name) => { const next = [...players]; next[Number(id)] = name; setPlayers(next); }}
+          onImportNames={isOnlineOrParty ? undefined : handleImportNames}
           min={1}
           max={8}
           accent="#df8eff"

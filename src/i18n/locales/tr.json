@@ -5642,7 +5642,12 @@
       "medium": "Orta",
       "hard": "Zor",
       "startGame": "Oyunu Başlat!",
-      "minPlayers": "En az {{count}} oyuncu gerekli"
+      "minPlayers": "En az {{count}} oyuncu gerekli",
+      "importFromEvent": "Etkinlikten al",
+      "addEntity": "{{label}} ekle",
+      "onlinePlayer": "Çevrimiçi oyuncu",
+      "onlineRoom": "Çevrimiçi oda",
+      "title": "Oyunu ayarla"
     },
     "play": {
       "round": "Tur",
@@ -5715,6 +5720,19 @@
         "rapidFire": "Hızlı Atış",
         "letterLock": "Harf Kilidi"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Etkinlik seç",
+      "selectParticipants": "Katılımcıları seç",
+      "back": "Geri",
+      "close": "Kapat",
+      "confirm": "{{count}} kişi al",
+      "noEvents": "Henüz kendi etkinliğin yok.",
+      "noParticipants": "Bu etkinlikte henüz isimli katılımcı yok.",
+      "loginRequired": "Etkinliklerini görmek için önce giriş yap.",
+      "errEvents": "Etkinlikler yüklenemedi.",
+      "errParticipants": "Katılımcılar yüklenemedi.",
+      "eventFallback": "Etkinlik"
     }
   },
   "native": {

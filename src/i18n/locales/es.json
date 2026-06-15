@@ -5592,7 +5592,12 @@
       "medium": "Medio",
       "hard": "Difícil",
       "startGame": "¡Empezar!",
-      "minPlayers": "Se necesitan mínimo {{count}} jugadores"
+      "minPlayers": "Se necesitan mínimo {{count}} jugadores",
+      "importFromEvent": "Importar del evento",
+      "addEntity": "Añadir {{label}}",
+      "onlinePlayer": "Jugador en línea",
+      "onlineRoom": "Sala en línea",
+      "title": "Configurar juego"
     },
     "play": {
       "round": "Ronda",
@@ -5665,6 +5670,19 @@
         "rapidFire": "Fuego Rápido",
         "letterLock": "Bloqueo de Letra"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Elegir evento",
+      "selectParticipants": "Elegir participantes",
+      "back": "Atrás",
+      "close": "Cerrar",
+      "confirm": "Añadir {{count}}",
+      "noEvents": "Aún no tienes eventos propios.",
+      "noParticipants": "Este evento aún no tiene participantes con nombre.",
+      "loginRequired": "Inicia sesión para ver tus eventos.",
+      "errEvents": "No se pudieron cargar los eventos.",
+      "errParticipants": "No se pudieron cargar los participantes.",
+      "eventFallback": "Evento"
     }
   },
   "native": {

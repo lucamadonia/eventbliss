@@ -5592,7 +5592,12 @@
       "medium": "Medio",
       "hard": "Difficile",
       "startGame": "Inizia!",
-      "minPlayers": "Servono almeno {{count}} giocatori"
+      "minPlayers": "Servono almeno {{count}} giocatori",
+      "importFromEvent": "Importa dall'evento",
+      "addEntity": "Aggiungi {{label}}",
+      "onlinePlayer": "Giocatore online",
+      "onlineRoom": "Stanza online",
+      "title": "Imposta gioco"
     },
     "play": {
       "round": "Turno",
@@ -5665,6 +5670,19 @@
         "rapidFire": "Fuoco Rapido",
         "letterLock": "Blocco Lettera"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Scegli evento",
+      "selectParticipants": "Scegli partecipanti",
+      "back": "Indietro",
+      "close": "Chiudi",
+      "confirm": "Aggiungi {{count}}",
+      "noEvents": "Non hai ancora eventi.",
+      "noParticipants": "Questo evento non ha ancora partecipanti con nome.",
+      "loginRequired": "Accedi per vedere i tuoi eventi.",
+      "errEvents": "Impossibile caricare gli eventi.",
+      "errParticipants": "Impossibile caricare i partecipanti.",
+      "eventFallback": "Evento"
     }
   },
   "native": {

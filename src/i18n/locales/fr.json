@@ -5592,7 +5592,12 @@
       "medium": "Moyen",
       "hard": "Difficile",
       "startGame": "Commencer !",
-      "minPlayers": "Minimum {{count}} joueurs requis"
+      "minPlayers": "Minimum {{count}} joueurs requis",
+      "importFromEvent": "Importer depuis l'événement",
+      "addEntity": "Ajouter {{label}}",
+      "onlinePlayer": "Joueur en ligne",
+      "onlineRoom": "Salon en ligne",
+      "title": "Configurer le jeu"
     },
     "play": {
       "round": "Manche",
@@ -5665,6 +5670,19 @@
         "rapidFire": "Tir Rapide",
         "letterLock": "Lettre Bloquée"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Choisir un événement",
+      "selectParticipants": "Choisir les participants",
+      "back": "Retour",
+      "close": "Fermer",
+      "confirm": "Ajouter {{count}}",
+      "noEvents": "Vous n'avez pas encore d'événements.",
+      "noParticipants": "Cet événement n'a pas encore de participants nommés.",
+      "loginRequired": "Connectez-vous pour voir vos événements.",
+      "errEvents": "Impossible de charger les événements.",
+      "errParticipants": "Impossible de charger les participants.",
+      "eventFallback": "Événement"
     }
   },
   "native": {

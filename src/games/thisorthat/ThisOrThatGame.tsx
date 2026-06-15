@@ -870,6 +870,28 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
     ));
   };
 
+  const handleImportNames = (names: string[]) => {
+    if (isOnline) return;
+    setPlayers((prev) => {
+      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()) && p.name !== 'Du');
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= MAX) break;
+        merged.push({
+          id: `p-${Date.now()}-${merged.length}`,
+          name: n,
+          color: PLAYER_COLORS[merged.length % PLAYER_COLORS.length],
+          avatar: n.slice(0, 1).toUpperCase() || '?',
+        });
+      }
+      while (merged.length < MIN) {
+        const idx = merged.length;
+        merged.push({ id: `p-${Date.now()}-${idx}`, name: `Spieler ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
+      }
+      return merged;
+    });
+  };
+
   const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
   const handleStart = () => {
     if (!canStart) return;
@@ -925,6 +947,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
             onAdd={addPlayer}
             onRemove={removePlayer}
             onRename={renamePlayer}
+            onImportNames={isOnline ? undefined : handleImportNames}
             min={MIN}
             max={isOnline ? players.length : MAX}
             accent="#df8eff"

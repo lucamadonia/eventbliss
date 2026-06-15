@@ -5568,7 +5568,12 @@
       "medium": "Mittel",
       "hard": "Schwer",
       "startGame": "Spiel starten!",
-      "minPlayers": "Mindestens {{count}} Spieler benötigt"
+      "minPlayers": "Mindestens {{count}} Spieler benötigt",
+      "importFromEvent": "Aus Event übernehmen",
+      "addEntity": "{{label}} hinzufügen",
+      "onlinePlayer": "Online-Spieler",
+      "onlineRoom": "Online Room",
+      "title": "Spiel einrichten"
     },
     "play": {
       "round": "Runde",
@@ -5641,6 +5646,19 @@
         "rapidFire": "Schnellfeuer",
         "letterLock": "Buchstabensperre"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Event wählen",
+      "selectParticipants": "Teilnehmer wählen",
+      "back": "Zurück",
+      "close": "Schließen",
+      "confirm": "{{count}} übernehmen",
+      "noEvents": "Du hast noch keine eigenen Events.",
+      "noParticipants": "Dieses Event hat noch keine Teilnehmer mit Namen.",
+      "loginRequired": "Bitte zuerst einloggen, um deine Events zu sehen.",
+      "errEvents": "Events konnten nicht geladen werden.",
+      "errParticipants": "Teilnehmer konnten nicht geladen werden.",
+      "eventFallback": "Event"
     }
   },
   "native": {

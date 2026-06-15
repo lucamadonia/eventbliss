@@ -79,6 +79,19 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
+  const isOnlineOrParty = onlinePlayerNames.length >= 2 || partyPlayerNames.length >= 2;
+  const handleImportNames = (names: string[]) => {
+    setPlayerNames(prev => {
+      const kept = prev.filter(n => n.trim() && !/^Spieler \d+$/.test(n.trim()));
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= 12) break;
+        merged.push(n);
+      }
+      while (merged.length < 2) merged.push('');
+      return merged;
+    });
+  };
   const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);
   const [wordQueue, setWordQueue] = useState<string[]>([]);
@@ -267,6 +280,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 onAdd={() => setPlayerNames([...playerNames, ''])}
                 onRemove={(id) => setPlayerNames(playerNames.filter((_, j) => j !== Number(id)))}
                 onRename={(id, name) => { const n = [...playerNames]; n[Number(id)] = name; setPlayerNames(n); }}
+                onImportNames={isOnlineOrParty ? undefined : handleImportNames}
                 min={2}
                 max={12}
                 accent="#df8eff"

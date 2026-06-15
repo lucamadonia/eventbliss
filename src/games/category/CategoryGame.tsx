@@ -148,6 +148,19 @@ function SetupScreen({
   const addPlayer = () => setNames((prev) => [...prev, ""]);
   const removePlayer = (i: number) => setNames((prev) => prev.filter((_, idx) => idx !== i));
   const updateName = (i: number, v: string) => setNames((prev) => prev.map((n, idx) => (idx === i ? v : n)));
+  const isOnlineOrParty = onlinePlayerNames.length >= 2;
+  const handleImportNames = (imported: string[]) => {
+    setNames((prev) => {
+      const kept = prev.filter((n) => n.trim() && !/^Spieler \d+$/.test(n.trim()));
+      const merged = [...kept];
+      for (const n of imported) {
+        if (merged.length >= 15) break;
+        merged.push(n);
+      }
+      while (merged.length < 2) merged.push("");
+      return merged;
+    });
+  };
 
   const canStart = names.filter((n) => n.trim()).length >= 2;
 
@@ -166,6 +179,7 @@ function SetupScreen({
         onAdd={addPlayer}
         onRemove={(id) => removePlayer(Number(id))}
         onRename={(id, name) => updateName(Number(id), name)}
+        onImportNames={isOnlineOrParty ? undefined : handleImportNames}
         min={2}
         max={15}
         accent="#df8eff"

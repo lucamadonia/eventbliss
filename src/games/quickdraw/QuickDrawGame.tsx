@@ -118,6 +118,19 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const addPlayer = () => { if (players.length >= 10) return; const i = players.length; setPlayers(p => [...p, { id: `p${nextId.current++}`, name: `Spieler ${i + 1}`, color: getPlayerColor(i), score: 0 }]); };
   const removePlayer = (id: string) => { if (players.length <= 2) return; setPlayers(p => p.filter(x => x.id !== id)); };
   const updateName = (id: string, name: string) => setPlayers(p => p.map(x => x.id === id ? { ...x, name } : x));
+  const isOnlineOrParty = resolvedNames.length >= 2;
+  const handleImportNames = (names: string[]) => {
+    setPlayers(prev => {
+      const kept = prev.filter(p => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= 10) break;
+        merged.push({ id: `p${nextId.current++}`, name: n, color: getPlayerColor(merged.length), score: 0 });
+      }
+      while (merged.length < 2) merged.push({ id: `p${nextId.current++}`, name: `Spieler ${merged.length + 1}`, color: getPlayerColor(merged.length), score: 0 });
+      return merged;
+    });
+  };
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
 
@@ -312,6 +325,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               onAdd={addPlayer}
               onRemove={removePlayer}
               onRename={updateName}
+              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
               min={2}
               max={10}
               accent="#ff6b98"

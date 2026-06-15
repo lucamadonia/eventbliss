@@ -5642,7 +5642,12 @@
       "medium": "Średni",
       "hard": "Trudny",
       "startGame": "Rozpocznij Grę!",
-      "minPlayers": "Wymaganych minimum {{count}} graczy"
+      "minPlayers": "Wymaganych minimum {{count}} graczy",
+      "importFromEvent": "Importuj z wydarzenia",
+      "addEntity": "Dodaj: {{label}}",
+      "onlinePlayer": "Gracz online",
+      "onlineRoom": "Pokój online",
+      "title": "Ustaw grę"
     },
     "play": {
       "round": "Runda",
@@ -5715,6 +5720,19 @@
         "rapidFire": "Szybki Ogień",
         "letterLock": "Blokada Liter"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Wybierz wydarzenie",
+      "selectParticipants": "Wybierz uczestników",
+      "back": "Wstecz",
+      "close": "Zamknij",
+      "confirm": "Dodaj {{count}}",
+      "noEvents": "Nie masz jeszcze własnych wydarzeń.",
+      "noParticipants": "To wydarzenie nie ma jeszcze nazwanych uczestników.",
+      "loginRequired": "Zaloguj się, aby zobaczyć swoje wydarzenia.",
+      "errEvents": "Nie udało się załadować wydarzeń.",
+      "errParticipants": "Nie udało się załadować uczestników.",
+      "eventFallback": "Wydarzenie"
     }
   },
   "native": {

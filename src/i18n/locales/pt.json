@@ -5642,7 +5642,12 @@
       "medium": "Médio",
       "hard": "Difícil",
       "startGame": "Começar!",
-      "minPlayers": "Mínimo de {{count}} jogadores necessários"
+      "minPlayers": "Mínimo de {{count}} jogadores necessários",
+      "importFromEvent": "Importar do evento",
+      "addEntity": "Adicionar {{label}}",
+      "onlinePlayer": "Jogador online",
+      "onlineRoom": "Sala online",
+      "title": "Configurar jogo"
     },
     "play": {
       "round": "Rodada",
@@ -5715,6 +5720,19 @@
         "rapidFire": "Fogo Rápido",
         "letterLock": "Bloqueio de Letra"
       }
+    },
+    "importPicker": {
+      "selectEvent": "Escolher evento",
+      "selectParticipants": "Escolher participantes",
+      "back": "Voltar",
+      "close": "Fechar",
+      "confirm": "Adicionar {{count}}",
+      "noEvents": "Você ainda não tem eventos.",
+      "noParticipants": "Este evento ainda não tem participantes com nome.",
+      "loginRequired": "Faça login para ver seus eventos.",
+      "errEvents": "Não foi possível carregar os eventos.",
+      "errParticipants": "Não foi possível carregar os participantes.",
+      "eventFallback": "Evento"
     }
   },
   "native": {

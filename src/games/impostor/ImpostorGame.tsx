@@ -319,6 +319,20 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
+  const isOnlineOrParty = resolvedNames.length >= 4;
+  const handleImportNames = useCallback((names: string[]) => {
+    setPlayers((prev) => {
+      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= 15) break;
+        merged.push(createPlayer(n));
+      }
+      while (merged.length < 4) merged.push(createPlayer(`Spieler ${merged.length + 1}`));
+      return merged;
+    });
+  }, []);
+
   // --- Start game ---
   const startGame = useCallback(() => {
     const wordSet = pickRandom(getWordSets());
@@ -569,6 +583,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             onAdd={addPlayer}
             onRemove={removePlayer}
             onRename={updateName}
+            onImportNames={isOnlineOrParty ? undefined : handleImportNames}
             min={4}
             max={15}
             accent="#df8eff"

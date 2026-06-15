@@ -115,6 +115,19 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const updateName = (id: string, name: string) => {
     setPlayers(p => p.map(x => x.id === id ? { ...x, name } : x));
   };
+  const isOnlineOrParty = resolvedNames.length >= 3;
+  const handleImportNames = (names: string[]) => {
+    setPlayers(prev => {
+      const kept = prev.filter(p => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
+      const merged = [...kept];
+      for (const n of names) {
+        if (merged.length >= 10) break;
+        merged.push({ id: `p${nextId.current++}`, name: n, color: getPlayerColor(merged.length), score: 0 });
+      }
+      while (merged.length < 3) merged.push({ id: `p${nextId.current++}`, name: `Spieler ${merged.length + 1}`, color: getPlayerColor(merged.length), score: 0 });
+      return merged;
+    });
+  };
 
   /* ---- Draw question ---- */
   function drawQuestion(): SharedQuizQuestion {
@@ -258,6 +271,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
               onAdd={addPlayer}
               onRemove={removePlayer}
               onRename={updateName}
+              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
               min={3}
               max={10}
               accent="#8ff5ff"

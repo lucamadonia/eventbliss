@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Users, Check, Loader2, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/components/auth/AuthProvider';
@@ -26,6 +27,7 @@ export function EventParticipantPicker({
   onSelect: (names: string[]) => void;
   accent?: string;
 }) {
+  const { t } = useTranslation();
   const { user } = useAuthContext();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -42,7 +44,7 @@ export function EventParticipantPicker({
     setParticipants([]);
     setChecked(new Set());
     setError(null);
-    if (!user?.id) { setError('Bitte zuerst einloggen, um deine Events zu sehen.'); return; }
+    if (!user?.id) { setError(t('games.importPicker.loginRequired')); return; }
     setLoadingEvents(true);
     (async () => {
       const { data, error } = await supabase
@@ -51,7 +53,7 @@ export function EventParticipantPicker({
         .eq('created_by', user.id)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
-      if (error) { setError('Events konnten nicht geladen werden.'); setLoadingEvents(false); return; }
+      if (error) { setError(t('games.importPicker.errEvents')); setLoadingEvents(false); return; }
       setEvents((data ?? []) as EventRow[]);
       setLoadingEvents(false);
     })();
@@ -65,7 +67,7 @@ export function EventParticipantPicker({
       .from('participants')
       .select('id, name')
       .eq('event_id', ev.id);
-    if (error) { setError('Teilnehmer konnten nicht geladen werden.'); setLoadingParts(false); return; }
+    if (error) { setError(t('games.importPicker.errParticipants')); setLoadingParts(false); return; }
     const rows = ((data ?? []) as ParticipantRow[]).filter((p) => p.name && p.name.trim().length > 0);
     setParticipants(rows);
     setChecked(new Set(rows.map((p) => p.id))); // default: all selected
@@ -91,7 +93,7 @@ export function EventParticipantPicker({
       {open && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-6"
+          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-6"
           style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
           onClick={onClose}
         >
@@ -107,10 +109,10 @@ export function EventParticipantPicker({
               <div className="flex items-center gap-2">
                 {selectedEvent ? <Users className="w-5 h-5 text-[var(--accent)]" /> : <Calendar className="w-5 h-5 text-[var(--accent)]" />}
                 <h3 className="text-base font-bold text-white">
-                  {selectedEvent ? 'Teilnehmer wählen' : 'Event wählen'}
+                  {selectedEvent ? t('games.importPicker.selectParticipants') : t('games.importPicker.selectEvent')}
                 </h3>
               </div>
-              <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5" aria-label="Schließen">
+              <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5" aria-label={t('games.importPicker.close')}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -123,13 +125,13 @@ export function EventParticipantPicker({
                 loadingEvents ? (
                   <div className="flex items-center justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-[var(--accent)]" /></div>
                 ) : events.length === 0 ? (
-                  <p className="text-sm text-center text-gray-400 py-10">Du hast noch keine eigenen Events.</p>
+                  <p className="text-sm text-center text-gray-400 py-10">{t('games.importPicker.noEvents')}</p>
                 ) : (
                   events.map((ev) => (
                     <button key={ev.id} onClick={() => pickEvent(ev)}
                       className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left bg-white/[0.04] border border-white/10 hover:border-[var(--accent)]/50 transition-colors">
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-white truncate">{ev.name || ev.honoree_name || 'Event'}</p>
+                        <p className="font-semibold text-white truncate">{ev.name || ev.honoree_name || t('games.importPicker.eventFallback')}</p>
                         {ev.event_type && <p className="text-xs text-gray-400 capitalize">{ev.event_type}</p>}
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
@@ -142,7 +144,7 @@ export function EventParticipantPicker({
                 loadingParts ? (
                   <div className="flex items-center justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-[var(--accent)]" /></div>
                 ) : participants.length === 0 ? (
-                  <p className="text-sm text-center text-gray-400 py-10">Dieses Event hat noch keine Teilnehmer mit Namen.</p>
+                  <p className="text-sm text-center text-gray-400 py-10">{t('games.importPicker.noParticipants')}</p>
                 ) : (
                   participants.map((p) => {
                     const on = checked.has(p.id);
@@ -161,16 +163,20 @@ export function EventParticipantPicker({
               )}
             </div>
 
-            {/* Footer */}
+            {/* Footer — pb clears the iOS home indicator / Android system nav bar so the
+                confirm button stays tappable in portrait (previously only reachable in landscape). */}
             {selectedEvent && participants.length > 0 && (
-              <div className="flex items-center gap-3 px-4 py-3 border-t border-white/10">
+              <div
+                className="flex items-center gap-3 px-4 pt-3 border-t border-white/10"
+                style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+              >
                 <button onClick={() => setSelectedEvent(null)} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-300 bg-white/5">
-                  Zurück
+                  {t('games.importPicker.back')}
                 </button>
                 <button onClick={confirm} disabled={checked.size === 0}
                   className="flex-1 py-2.5 rounded-xl font-bold text-white disabled:opacity-40"
                   style={{ background: accent }}>
-                  {checked.size} übernehmen
+                  {t('games.importPicker.confirm', { count: checked.size })}
                 </button>
               </div>
             )}

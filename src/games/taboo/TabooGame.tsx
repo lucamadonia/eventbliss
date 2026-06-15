@@ -134,6 +134,20 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setTeams(buildTeams(next));
   }
 
+  const isOnlineOrParty = onlinePlayerNames.length >= 2 || partyPlayerNames.length >= 2;
+  function handleImportNames(names: string[]) {
+    // Drop empty/placeholder names, keep custom ones, append imports, then
+    // rebuild the two teams (buildTeams re-splits the full roster).
+    const kept = playerNames.filter(n => n.trim() && !/^Spieler \d+$/.test(n.trim()));
+    const merged = [...kept];
+    for (const n of names) {
+      if (merged.length >= 20) break;
+      merged.push(n);
+    }
+    setPlayerNames(merged);
+    setTeams(buildTeams(merged));
+  }
+
   const canStart = teams[0].players.length >= 1 && teams[1].players.length >= 1;
 
   function drawCard(): TabooCard {
@@ -335,6 +349,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
               onAdd={addPlayer}
               onRemove={(id) => removePlayer(Number(id))}
               onRename={(id, name) => renamePlayer(Number(id), name)}
+              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
               min={2}
               max={20}
               accent="#df8eff"

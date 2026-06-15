@@ -331,6 +331,23 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setTeamB(prev => ({ ...prev, players: prev.players.map(p => p === oldName ? name : p) }));
   }
 
+  const isOnlineOrParty = onlinePlayerNames.length >= 4 || partyPlayerNames.length >= 4;
+  function handleImportNames(names: string[]) {
+    // Drop default "Spieler N" placeholders, keep custom names, append imports,
+    // then re-balance everyone evenly across the two teams.
+    const kept = playerNames.filter(n => n.trim() && !/^Spieler \d+$/.test(n.trim()));
+    const merged = [...kept];
+    for (const n of names) {
+      if (merged.length >= 30) break;
+      merged.push(n);
+    }
+    while (merged.length < 4) merged.push(`Spieler ${merged.length + 1}`);
+    setPlayerNames(merged);
+    const mid = Math.ceil(merged.length / 2);
+    setTeamA(prev => ({ ...prev, players: merged.slice(0, mid) }));
+    setTeamB(prev => ({ ...prev, players: merged.slice(mid) }));
+  }
+
   /* ---- Drag player between teams ---- */
   function movePlayer(playerName: string, fromTeam: 'A' | 'B') {
     if (fromTeam === 'A') {
@@ -511,6 +528,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             onAdd={addPlayer}
             onRemove={(id) => removePlayer(Number(id))}
             onRename={(id, name) => updatePlayerName(Number(id), name)}
+            onImportNames={isOnlineOrParty ? undefined : handleImportNames}
             min={4}
             max={30}
             accent="#df8eff"
