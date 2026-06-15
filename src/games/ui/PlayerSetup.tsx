@@ -170,12 +170,14 @@ export function PlayerSetup({
           )}
         </AnimatePresence>
 
-        {/* Aus Event übernehmen — Teilnehmer eines eigenen Events laden */}
-        {onImportNames && !atMax && (
+        {/* Aus Event übernehmen — Teilnehmer eines eigenen Events laden.
+            Bewusst prominent (gefüllter Akzent + Glow), damit die Funktion in
+            jedem Spiel klar erkennbar ist. */}
+        {onImportNames && (
           <button
             type="button"
             onClick={() => { void haptics.light(); setPickerOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-[var(--accent)] bg-[var(--accent)]/10 border border-[var(--accent)]/25 transition-colors hover:bg-[var(--accent)]/15"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white bg-[var(--accent)] shadow-[0_6px_20px_-6px_var(--accent)] transition-transform duration-150 hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/60"
           >
             <CalendarPlus className="w-4 h-4" />
             {t('games.setup.importFromEvent')}

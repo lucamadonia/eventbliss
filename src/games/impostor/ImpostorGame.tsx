@@ -209,6 +209,9 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   );
   const [impostorCount, setImpostorCount] = useState(1);
   const [timerDuration, setTimerDuration] = useState(90);
+  // Hard mode: hide the category everywhere it would normally appear as a clue
+  // (reveal cards + discussion timer + bonus guess) so the impostor flies blind.
+  const [hideCategory, setHideCategory] = useState(false);
 
   // --- Game state ---
   const [phase, setPhase] = useState<Phase>('setup');
@@ -242,11 +245,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
       const payload = {
         players: JSON.parse(JSON.stringify(players)),
         phase, currentWordSet, revealIndex, wordVisible, timeLeft,
-        currentSpeaker, votingPlayer, countdownNum, round,
+        currentSpeaker, votingPlayer, countdownNum, round, hideCategory,
       };
       online.broadcast('impostor-state', payload);
     }
-  }, [online, phase, revealIndex, wordVisible, currentSpeaker, votingPlayer, countdownNum, round]);
+  }, [online, phase, revealIndex, wordVisible, currentSpeaker, votingPlayer, countdownNum, round, hideCategory]);
 
   useEffect(() => {
     if (!online || online.isHost) return;
@@ -259,6 +262,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
       if (data.currentSpeaker !== undefined) setCurrentSpeaker(data.currentSpeaker as number);
       if (data.votingPlayer !== undefined) setVotingPlayer(data.votingPlayer as number);
       if (data.round !== undefined) setRound(data.round as number);
+      if (data.hideCategory !== undefined) setHideCategory(data.hideCategory as boolean);
     });
     return unsub;
   }, [online]);
@@ -638,6 +642,46 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             </div>
           </section>
 
+          {/* Difficulty: hide category */}
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#a8abb3]">
+              Schwierigkeit
+            </h2>
+            <button
+              type="button"
+              onClick={() => setHideCategory((v) => !v)}
+              aria-pressed={hideCategory}
+              className={cn(
+                'w-full flex items-center gap-3 py-3 px-4 rounded-2xl border-2 text-left transition-colors',
+                hideCategory
+                  ? 'border-[#ff6b98] bg-[#ff6b98]/10'
+                  : 'border-[#44484f] bg-[#151a21]/40 hover:border-[#44484f]/60'
+              )}
+            >
+              <div className="flex-1 min-w-0">
+                <p className={cn('text-sm font-semibold', hideCategory ? 'text-[#ff6b98]' : 'text-[#f1f3fc]')}>
+                  Kategorie verbergen
+                </p>
+                <p className="text-xs text-[#a8abb3] mt-0.5">
+                  Niemand sieht die Kategorie — der Hochstapler hat keinen Anhaltspunkt.
+                </p>
+              </div>
+              <span
+                className={cn(
+                  'shrink-0 w-12 h-7 rounded-full p-0.5 transition-colors',
+                  hideCategory ? 'bg-[#ff6b98]' : 'bg-[#44484f]'
+                )}
+              >
+                <span
+                  className={cn(
+                    'block w-6 h-6 rounded-full bg-white transition-transform',
+                    hideCategory ? 'translate-x-5' : 'translate-x-0'
+                  )}
+                />
+              </span>
+            </button>
+          </section>
+
           {/* Start */}
           <motion.button
             onClick={startGame}
@@ -915,10 +959,12 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                           <p className="relative text-sm text-[#a8abb3]">
                             Du kennst das Wort nicht.<br />Bluff dich durch und falle nicht auf.
                           </p>
-                          <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff6e84]/10 border border-[#ff6e84]/30 text-[11px] font-bold uppercase tracking-widest text-[#ff6e84]">
-                            <Zap className="w-3 h-3" />
-                            Kategorie · {currentWordSet?.category}
-                          </div>
+                          {!hideCategory && (
+                            <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff6e84]/10 border border-[#ff6e84]/30 text-[11px] font-bold uppercase tracking-widest text-[#ff6e84]">
+                              <Zap className="w-3 h-3" />
+                              Kategorie · {currentWordSet?.category}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="relative space-y-4">
@@ -957,9 +1003,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                           >
                             Dein Wort
                           </motion.span>
-                          <p className="relative text-[11px] font-semibold uppercase tracking-[0.25em] text-[#a8abb3]">
-                            {currentWordSet?.category}
-                          </p>
+                          {!hideCategory && (
+                            <p className="relative text-[11px] font-semibold uppercase tracking-[0.25em] text-[#a8abb3]">
+                              {currentWordSet?.category}
+                            </p>
+                          )}
                           {/* Letter-by-letter reveal of the word */}
                           <motion.p
                             className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
@@ -1111,9 +1159,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               )}>
                 {formatTime(timeLeft)}
               </p>
-              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0e14]/60 border border-[#44484f]/40 text-[11px] text-[#a8abb3]">
-                Kategorie · <span className="text-[#df8eff] font-semibold">{currentWordSet?.category}</span>
-              </div>
+              {!hideCategory && (
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0e14]/60 border border-[#44484f]/40 text-[11px] text-[#a8abb3]">
+                  Kategorie · <span className="text-[#df8eff] font-semibold">{currentWordSet?.category}</span>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -1435,9 +1485,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             <p className="text-[#a8abb3] text-sm">
               {impostors.map((i) => i.name).join(' & ')}: Könnt ihr das Wort erraten?
             </p>
-            <p className="text-[#df8eff] text-xs">
-              Kategorie: {currentWordSet?.category}
-            </p>
+            {!hideCategory && (
+              <p className="text-[#df8eff] text-xs">
+                Kategorie: {currentWordSet?.category}
+              </p>
+            )}
           </motion.div>
 
           {bonusResult === null ? (
