@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Compass } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -16,21 +17,6 @@ interface WorldFinderSetupProps {
 // Region cards data
 // ---------------------------------------------------------------------------
 
-const REGIONS = [
-  { id: 'welt', label: 'Weltweit', icon: '\u{1F30D}', gradient: 'from-[#df8eff]/30 via-[#0a0e14] to-[#8ff5ff]/20' },
-  { id: 'europa', label: 'Europa', icon: '\u{1F3F0}', gradient: 'from-[#ff6b98]/20 to-[#151a21]' },
-  { id: 'asien', label: 'Asien', icon: '\u{1F3EF}', gradient: 'from-[#8ff5ff]/20 to-[#151a21]' },
-  { id: 'deutschland', label: 'DACH', icon: '\u{1F3DB}\uFE0F', gradient: 'from-[#fbbf24]/20 to-[#151a21]' },
-] as const;
-
-const ROUND_OPTIONS = [
-  { value: 5, label: 'Kurzer Trip', sub: '5 Runden' },
-  { value: 10, label: 'Abenteuer', sub: '10 Runden' },
-  { value: 15, label: 'Weltreise', sub: '15 Runden' },
-] as const;
-
-const DIFF_LABELS = ['Leicht', 'Normalmodus', 'Schwer'] as const;
-const DIFF_SUB = ['Hauptstaedte', 'Bekannte Orte', 'Insider-Tipps'] as const;
 
 // ---------------------------------------------------------------------------
 // Stagger variants
@@ -50,15 +36,33 @@ const sectionVariants = {
 // ---------------------------------------------------------------------------
 
 export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupProps) {
+  const { t } = useTranslation();
   const [region, setRegion] = useState('welt');
   const [difficulty, setDifficulty] = useState(1);
   const [rounds, setRounds] = useState(10);
   const [timer, setTimer] = useState(30);
+
+  const REGIONS = [
+    { id: 'welt', label: t('games.findit.wfsRegionWelt'), icon: '\u{1F30D}', gradient: 'from-[#df8eff]/30 via-[#0a0e14] to-[#8ff5ff]/20' },
+    { id: 'europa', label: t('games.findit.wfsRegionEuropa'), icon: '\u{1F3F0}', gradient: 'from-[#ff6b98]/20 to-[#151a21]' },
+    { id: 'asien', label: t('games.findit.wfsRegionAsien'), icon: '\u{1F3EF}', gradient: 'from-[#8ff5ff]/20 to-[#151a21]' },
+    { id: 'deutschland', label: t('games.findit.wfsRegionDach'), icon: '\u{1F3DB}️', gradient: 'from-[#fbbf24]/20 to-[#151a21]' },
+  ];
+
+  const ROUND_OPTIONS = [
+    { value: 5, label: t('games.findit.wfsRoundShortTrip'), sub: t('games.findit.wfsRounds5') },
+    { value: 10, label: t('games.findit.wfsRoundAdventure'), sub: t('games.findit.wfsRounds10') },
+    { value: 15, label: t('games.findit.wfsRoundWorldTrip'), sub: t('games.findit.wfsRounds15') },
+  ];
+
+  const DIFF_LABELS = [t('games.findit.wfsDiffEasy'), t('games.findit.wfsDiffNormal'), t('games.findit.wfsDiffHard')];
+  const DIFF_SUB = [t('games.findit.wfsDiffSubCapitals'), t('games.findit.wfsDiffSubKnown'), t('games.findit.wfsDiffSubInsider')];
+
   const TIMER_OPTIONS = [
-    { value: 15, label: '15s', desc: 'Blitz' },
-    { value: 30, label: '30s', desc: 'Normal' },
-    { value: 60, label: '60s', desc: 'Entspannt' },
-    { value: 120, label: '120s', desc: 'Explorer' },
+    { value: 15, label: '15s', desc: t('games.findit.timerBlitz') },
+    { value: 30, label: '30s', desc: t('games.findit.timerNormal') },
+    { value: 60, label: '60s', desc: t('games.findit.timerRelaxed') },
+    { value: 120, label: '120s', desc: t('games.findit.timerExplorer') },
   ];
 
   return (
@@ -97,7 +101,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
 
         {/* ── REGION SECTION ─────────────────────────────── */}
         <motion.section custom={0} variants={sectionVariants} initial="hidden" animate="visible">
-          <SectionHeader color="#df8eff" title="REGION WAEHLEN" />
+          <SectionHeader color="#df8eff" title={t('games.findit.wfsRegionLabel')} />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {REGIONS.map((r) => {
               const active = region === r.id;
@@ -124,7 +128,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
                     <p className="text-sm font-bold text-white">{r.label}</p>
                     {active && (
                       <span className="mt-1 inline-block rounded-full bg-[#df8eff]/20 px-2 py-0.5 text-[10px] font-semibold text-[#df8eff]">
-                        Aktiviert
+                        {t('games.findit.wfsActivated')}
                       </span>
                     )}
                   </div>
@@ -136,12 +140,12 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
 
         {/* ── DIFFICULTY SECTION ──────────────────────────── */}
         <motion.section custom={1} variants={sectionVariants} initial="hidden" animate="visible" className="mt-8">
-          <SectionHeader color="#8ff5ff" title="SCHWIERIGKEIT" />
+          <SectionHeader color="#8ff5ff" title={t('games.findit.wfsDifficultyLabel')} />
           <div className="mt-4 rounded-xl bg-[#151a21] p-6">
             {/* Labels */}
             <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-              <span>Stufe 1</span>
-              <span>Stufe 3</span>
+              <span>{t('games.findit.wfsDiffLevel1')}</span>
+              <span>{t('games.findit.wfsDiffLevel3')}</span>
             </div>
             {/* Slider */}
             <input
@@ -165,7 +169,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
 
         {/* ── ROUNDS SECTION ──────────────────────────────── */}
         <motion.section custom={2} variants={sectionVariants} initial="hidden" animate="visible" className="mt-8">
-          <SectionHeader color="#ff6b98" title="RUNDENANZAHL" />
+          <SectionHeader color="#ff6b98" title={t('games.findit.wfsRoundsLabel')} />
           <div className="mt-4 flex flex-col gap-3">
             {ROUND_OPTIONS.map((opt) => {
               const active = rounds === opt.value;
@@ -212,7 +216,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
         <motion.section variants={sectionVariants} initial="hidden" animate="visible" custom={4} className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-8 w-1 rounded-full bg-[#8ff5ff]" />
-            <h2 className="text-sm font-black uppercase tracking-[0.15em] text-[#a8abb3]">Zeit pro Runde</h2>
+            <h2 className="text-sm font-black uppercase tracking-[0.15em] text-[#a8abb3]">{t('games.findit.wfsTimePerRound')}</h2>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {TIMER_OPTIONS.map(opt => {
@@ -249,7 +253,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
             animate={{ opacity: [0, 0.15, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <span className="relative z-10">SPIEL STARTEN</span>
+          <span className="relative z-10">{t('games.findit.wfsStartBtn')}</span>
         </motion.button>
       </div>
 

@@ -93,7 +93,6 @@ export function PlayerSetup({
           {players.map((player, i) => {
             const color = player.color ?? getPlayerColor(i);
             const initial = player.avatar ?? (player.name ? getPlayerInitial(player.name) : null);
-            const showRemove = canRemove && !player.readOnly;
             return (
               <motion.div key={player.id} {...rowMotion} className="flex items-center gap-3">
                 {/* Avatar */}
@@ -133,17 +132,25 @@ export function PlayerSetup({
                     title={t('games.setup.onlinePlayer')} aria-label={t('games.setup.onlinePlayer')}>
                     <Globe className="w-4 h-4 text-[var(--accent)]" />
                   </div>
-                ) : showRemove ? (
+                ) : (
+                  // Always show the remove button so it's discoverable; disable it at
+                  // the minimum (previously it was hidden entirely, so users had to add
+                  // a player just to reveal the minus on the others).
                   <button
                     type="button"
-                    onClick={() => handleRemove(player.id)}
+                    onClick={() => { if (canRemove) handleRemove(player.id); }}
+                    disabled={!canRemove}
                     aria-label={`${t('games.setup.removePlayer')}: ${label} ${i + 1}`}
-                    className="shrink-0 grid place-items-center w-11 h-11 rounded-xl bg-red-500/10 text-red-400 transition-colors duration-150 hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 active:scale-95"
+                    title={!canRemove ? t('games.setup.minPlayers', { count: min }) : undefined}
+                    className={cn(
+                      'shrink-0 grid place-items-center w-11 h-11 rounded-xl transition-colors duration-150',
+                      canRemove
+                        ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 active:scale-95'
+                        : 'bg-white/[0.03] text-gray-600 cursor-not-allowed',
+                    )}
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                ) : (
-                  <div className="w-11 h-11 shrink-0" aria-hidden="true" />
                 )}
               </motion.div>
             );

@@ -5,6 +5,7 @@ import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTranslation } from 'react-i18next';
 
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
@@ -71,6 +72,7 @@ function StreetViewPano({ lat, lng }: { lat: number; lng: number }) {
 }
 
 export default function StreetViewRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: Props) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>('explore');
   const [playerIdx, setPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<{ playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[]>([]);
@@ -257,13 +259,13 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
             </div>
             <div className="absolute top-4 right-4 z-10">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
-                <span className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold">{roundNumber}/{totalRounds}</span>
+                <span className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
             </div>
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
               <div className="glass-panel px-4 py-2 rounded-full border border-[#8ff5ff]/20 flex items-center gap-2">
                 <Eye className="w-4 h-4 text-[#8ff5ff]" />
-                <span className="text-sm font-bold text-[#8ff5ff]">Schau dich um!</span>
+                <span className="text-sm font-bold text-[#8ff5ff]">{t('games.findit.svLookAround')}</span>
                 <span className="text-lg font-black text-white tabular-nums">{exploreTime}s</span>
               </div>
             </div>
@@ -273,7 +275,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                 whileTap={{ scale: 0.95 }}>
                 <span className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-[#4f006d]" />
-                  <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">RATEN</span>
+                  <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{t('games.findit.svGuessBtn')}</span>
                 </span>
               </motion.button>
             </div>
@@ -301,11 +303,11 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">
                 <div className="flex items-center justify-between pl-5 pr-2 py-2">
                   <div>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Wo warst du?</span>
-                    <h2 className="text-base font-extrabold tracking-tight text-[#f1f3fc] uppercase">SETZE DEINEN PIN!</h2>
+                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.svWhereWereYou')}</span>
+                    <h2 className="text-base font-extrabold tracking-tight text-[#f1f3fc] uppercase">{t('games.findit.svSetPin')}</h2>
                   </div>
                   <div className="bg-[#ff6b98] p-2.5 rounded-full flex flex-col items-center min-w-[60px] shadow-[0_0_20px_rgba(255,107,152,0.4)]">
-                    <span className="text-[8px] font-black uppercase text-white/80 leading-none mb-0.5">Zeit</span>
+                    <span className="text-[8px] font-black uppercase text-white/80 leading-none mb-0.5">{t('games.findit.mapTimeLabel')}</span>
                     <span className="text-lg font-black text-white leading-none tabular-nums">{countdown}</span>
                   </div>
                 </div>
@@ -314,14 +316,14 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
             {pinPos && !waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#df8eff]/30">
-                  <p className="text-xs font-bold text-[#df8eff] tracking-wide">PIN POSITIONIERT</p>
+                  <p className="text-xs font-bold text-[#df8eff] tracking-wide">{t('games.findit.mapPinPlaced')}</p>
                 </div>
               </div>
             )}
             {waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-5 py-3 rounded-xl border border-[#8ff5ff]/30">
-                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">Warte auf andere Spieler...</p>
+                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">{t('games.findit.mapWaitingPlayers')}</p>
                 </div>
               </div>
             )}
@@ -331,7 +333,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
                 whileTap={pinPos ? { scale: 0.95 } : undefined}>
                 <span className="flex items-center gap-3">
-                  <span className="text-xl font-black tracking-[0.15em] text-[#4f006d]">SETZEN</span>
+                  <span className="text-xl font-black tracking-[0.15em] text-[#4f006d]">{t('games.findit.mapConfirmBtn')}</span>
                   <Check className="w-6 h-6 text-[#4f006d]" />
                 </span>
               </motion.button>
@@ -345,12 +347,12 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
           <motion.div className="absolute inset-0 z-10 overflow-y-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-8">
               <div className="flex items-center justify-between mb-6">
-                <button onClick={onExit} className="text-[#a8abb3]/60 text-sm">Beenden</button>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{roundNumber}/{totalRounds}</span>
+                <button onClick={onExit} className="text-[#a8abb3]/60 text-sm">{t('games.findit.mapExitBtn')}</button>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
               {winner && (
                 <div className="text-center mb-4">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#ff6b98] font-bold mb-2">Street View Runde</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#ff6b98] font-bold mb-2">{t('games.findit.svRoundLabel')}</p>
                   <h1 className="text-4xl font-black italic text-[#df8eff] text-glow-primary">{location.city}, {location.country}</h1>
                 </div>
               )}
@@ -371,14 +373,14 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                   <div className="col-span-2 bg-[#151a21]/60 rounded-xl p-5 border border-white/5">
                     <div className="flex items-center gap-2 mb-2">
                       <Crosshair className="w-4 h-4 text-[#8ff5ff]" />
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Naechster Treffer</span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.svNearestHit')}</span>
                     </div>
                     <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm)}</p>
                   </div>
                 )}
                 {winner && (
                   <div className="col-span-2 bg-gradient-to-br from-[#df8eff]/10 to-transparent rounded-xl p-4 border border-[#df8eff]/20">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Punkte</span>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapPointsLabel')}</span>
                     <p className="text-2xl font-bold text-[#df8eff] mt-1">+{Math.max(0, Math.round(1000 * Math.exp(-winner.distanceKm / 2000)))}</p>
                   </div>
                 )}
@@ -397,7 +399,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
               <motion.button onClick={() => onRoundComplete(guesses.map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm })))}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
-                <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? 'ERGEBNISSE' : 'NAECHSTE RUNDE'}</span>
+                <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? t('games.findit.mapResults') : t('games.findit.mapNextRound')}</span>
               </motion.button>
             </div>
           </motion.div>

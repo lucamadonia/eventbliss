@@ -666,7 +666,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
         modes={getGameModes(t)}
         settings={getSetupSettings(t)}
         onStart={handleSetupStart}
-        title="Wo ist was?"
+        title={t('games.findit.gameOverTitle')}
         minPlayers={1}
         maxPlayers={10}
         onlinePlayers={online?.players}
@@ -703,7 +703,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="text-center">
-            <p className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Runde {round + 1}/{totalRounds}</p>
+            <p className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">{t('games.findit.roundLabel', { current: round + 1, total: totalRounds })}</p>
             <p className="text-white font-bold text-sm">{currentScene?.name ?? currentDiff?.name ?? ''}</p>
           </div>
           <div className="flex items-center gap-1">
@@ -722,7 +722,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
           className="text-center"
         >
           <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{ backgroundColor: `${currentPlayer?.color}30`, color: currentPlayer?.color }}>
-            {currentPlayer?.name} ist dran
+            {t('games.findit.playerTurn', { name: currentPlayer?.name })}
           </span>
         </motion.div>
 
@@ -737,7 +737,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               className="space-y-4"
             >
               <div className="text-center space-y-1">
-                <p className="text-cyan-300 font-bold text-lg">Merke dir alles!</p>
+                <p className="text-cyan-300 font-bold text-lg">{t('games.findit.studyMemorize')}</p>
                 <motion.p
                   className="text-4xl font-black text-white"
                   key={studyCountdown}
@@ -761,8 +761,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               {/* Emoji Grid */}
               {mode === 'unterschiede' && parsedDiffA && parsedDiffB ? (
                 <div className="grid grid-cols-2 gap-3">
-                  <EmojiGrid grid={parsedDiffA} label="Bild A" pulsing />
-                  <EmojiGrid grid={parsedDiffB} label="Bild B" pulsing />
+                  <EmojiGrid grid={parsedDiffA} label={t('games.findit.imgA')} pulsing />
+                  <EmojiGrid grid={parsedDiffB} label={t('games.findit.imgB')} pulsing />
                 </div>
               ) : parsedGrid ? (
                 <EmojiGrid grid={parsedGrid} pulsing />
@@ -799,7 +799,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
               {/* Question */}
               <div className="bg-gray-800/60 backdrop-blur border border-cyan-500/20 rounded-2xl p-5 text-center">
-                <p className="text-xs text-cyan-400 mb-1 font-semibold">Frage {questionIdx + 1}/{currentScene.questions.length}</p>
+                <p className="text-xs text-cyan-400 mb-1 font-semibold">{t('games.findit.questionLabel', { current: questionIdx + 1, total: currentScene.questions.length })}</p>
                 <p className="text-white font-bold text-lg leading-tight">{currentScene.questions[questionIdx].q}</p>
               </div>
 
@@ -849,7 +849,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                       answerCorrect ? 'text-green-400' : 'text-red-400'
                     )}
                   >
-                    {answerCorrect ? 'Richtig! 🎯' : 'Leider falsch!'}
+                    {answerCorrect ? t('games.findit.feedbackCorrect') : t('games.findit.feedbackWrong')}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -866,8 +866,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               className="space-y-4"
             >
               <div className="text-center">
-                <p className="text-cyan-300 font-bold">Finde {currentDiff.diffs.length} Unterschiede!</p>
-                <p className="text-gray-400 text-xs">Tippe auf die Unterschiede im rechten Bild</p>
+                <p className="text-cyan-300 font-bold">{t('games.findit.diffFindTitle', { count: currentDiff.diffs.length })}</p>
+                <p className="text-gray-400 text-xs">{t('games.findit.diffFindHint')}</p>
               </div>
 
               {/* Timer */}
@@ -882,8 +882,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <EmojiGrid grid={parsedDiffA} label="Original" small />
-                <DiffGrid grid={parsedDiffB} label="Verändert" diffs={currentDiff.diffs} found={foundDiffs} onTap={handleDiffTap} />
+                <EmojiGrid grid={parsedDiffA} label={t('games.findit.imgOriginal')} small />
+                <DiffGrid grid={parsedDiffB} label={t('games.findit.imgChanged')} diffs={currentDiff.diffs} found={foundDiffs} onTap={handleDiffTap} />
               </div>
 
               <div className="flex justify-center gap-2">
@@ -914,7 +914,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               className="text-center py-8 space-y-3"
             >
               <Target className="w-10 h-10 text-cyan-400 mx-auto" />
-              <p className="text-white font-bold text-xl">Nächster Spieler!</p>
+              <p className="text-white font-bold text-xl">{t('games.findit.roundEndNext')}</p>
               <div className="flex justify-center gap-3">
                 {players.map((p, i) => (
                   <div key={p.id} className="text-center">
@@ -1088,6 +1088,7 @@ const confettiColors = [
 function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
   players: Player[]; onRestart: () => void; onBack: () => void; totalRounds: number;
 }) {
+  const { t } = useTranslation();
   const winner = players[0];
   const totalCorrect = players.reduce((s, p) => s + p.correct, 0);
   const bestStreak = Math.max(...players.map(p => p.bestStreak), 0);
@@ -1128,7 +1129,7 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
 
         {/* Winner */}
         <motion.div className="text-center space-y-1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-          <p className="text-sm text-gray-400 uppercase tracking-wider">Wo ist was?</p>
+          <p className="text-sm text-gray-400 uppercase tracking-wider">{t('games.findit.gameOverTitle')}</p>
           <div className="flex items-center justify-center gap-3">
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
@@ -1138,14 +1139,14 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white">{winner?.name}</h2>
-              <p className="text-cyan-400 font-semibold">{winner?.score} Punkte</p>
+              <p className="text-cyan-400 font-semibold">{t('games.findit.points', { score: winner?.score })}</p>
             </div>
           </div>
         </motion.div>
 
         {/* Leaderboard */}
         <motion.section className="space-y-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Rangliste</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('games.findit.leaderboard')}</h3>
           <div className="space-y-2">
             {players.map((player, i) => (
               <motion.div
@@ -1166,7 +1167,7 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-white font-medium text-sm truncate block">{player.name}</span>
-                  <span className="text-[10px] text-gray-400">{player.correct} richtig &middot; {player.wrong} falsch</span>
+                  <span className="text-[10px] text-gray-400">{t('games.findit.correctOf', { correct: player.correct, wrong: player.wrong })}</span>
                 </div>
                 {player.bestStreak >= 3 && (
                   <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-semibold">
@@ -1182,9 +1183,9 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
         {/* Stats */}
         <motion.section className="grid grid-cols-3 gap-3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
           {[
-            { label: 'Runden', value: totalRounds },
-            { label: 'Richtig gesamt', value: totalCorrect },
-            { label: 'Bester Streak', value: bestStreak },
+            { label: t('games.findit.statsRounds'), value: totalRounds },
+            { label: t('games.findit.statsCorrect'), value: totalCorrect },
+            { label: t('games.findit.statsBestStreak'), value: bestStreak },
           ].map((stat) => (
             <div key={stat.label} className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-3 text-center">
               <p className="text-lg font-bold text-white">{stat.value}</p>
@@ -1201,7 +1202,7 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
             whileTap={{ scale: 0.97 }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Anderes Spiel
+            {t('games.findit.btnOtherGame')}
           </motion.button>
           <motion.button
             onClick={onRestart}
@@ -1210,7 +1211,7 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
             whileTap={{ scale: 0.97 }}
           >
             <RotateCcw className="w-4 h-4" />
-            Nochmal spielen
+            {t('games.findit.btnPlayAgain')}
           </motion.button>
         </motion.div>
       </div>

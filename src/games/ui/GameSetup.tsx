@@ -128,16 +128,12 @@ export function GameSetup({
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
-  // Import participant names from one of the user's events. Replaces the
-  // default "Spieler N" placeholders, keeps already-named players, caps at max.
+  // Import participant names from one of the user's events. REPLACES the whole
+  // roster with the imported names (so the "Spieler 1/2" placeholders don't
+  // linger), capped at max and padded up to min.
   const handleImportNames = useCallback((names: string[]) => {
-    setPlayers((prev) => {
-      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
-      const merged = [...kept];
-      for (const n of names) {
-        if (merged.length >= maxPlayers) break;
-        merged.push(createPlayer(n));
-      }
+    setPlayers(() => {
+      const merged = names.slice(0, maxPlayers).map((n) => createPlayer(n));
       while (merged.length < minPlayers) merged.push(createPlayer(`Spieler ${merged.length + 1}`));
       return merged;
     });

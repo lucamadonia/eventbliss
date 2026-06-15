@@ -33,16 +33,20 @@ interface Player {
 const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 
 const GAME_MODES: GameMode[] = [
-  { id: 'classic', name: 'Classic', desc: 'Alle Kategorien gemischt', icon: <Sparkles className="w-6 h-6" /> },
-  { id: 'eskalation', name: 'Eskalation', desc: 'Wird jede Runde wilder', icon: <Flame className="w-6 h-6" /> },
-  { id: 'nur-wahrheit', name: 'Nur Wahrheit', desc: 'Nur Fragen, keine Pflicht', icon: <Heart className="w-6 h-6" /> },
-  { id: 'nur-pflicht', name: 'Nur Pflicht', desc: 'Nur Aufgaben, keine Fragen', icon: <Shield className="w-6 h-6" /> },
+  { id: 'classic', name: 'Classic', desc: 'All categories mixed', icon: <Sparkles className="w-6 h-6" /> },
+  { id: 'eskalation', name: 'Escalation', desc: 'Gets wilder every round!', icon: <Flame className="w-6 h-6" /> },
+  { id: 'nur-wahrheit', name: 'Truth Only', desc: 'Only questions, no dares', icon: <Heart className="w-6 h-6" /> },
+  { id: 'nur-pflicht', name: 'Dare Only', desc: 'Only challenges, no questions', icon: <Shield className="w-6 h-6" /> },
 ];
 
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 10, max: 120, default: 60, step: 5, label: 'Pflicht-Timer (Sek.)' },
-  rounds: { min: 5, max: 30, default: 15, step: 1, label: 'Runden' },
-};
+type TFn = (key: string, fallback?: string) => string;
+
+function getSetupSettings(t: TFn): SettingsConfig {
+  return {
+    timer: { min: 10, max: 120, default: 60, step: 5, label: t('games.truthdare.timerLabel', 'Dare Timer (Sec.)') },
+    rounds: { min: 5, max: 30, default: 15, step: 1, label: t('games.setup.rounds', 'Rounds') },
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -304,9 +308,9 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
       <GameSetup
         gameId="truthdare"
         modes={getTranslatedModes('truthdare', GAME_MODES, t)}
-        settings={SETUP_SETTINGS}
+        settings={getSetupSettings(t)}
         onStart={handleStart}
-        title="Wahrheit oder Pflicht 2.0"
+        title={t('games.truthdare.gameTitle', 'Truth or Dare 2.0')}
         minPlayers={2}
         maxPlayers={20}
         onlinePlayers={online?.players}
@@ -326,7 +330,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
-          Runde {currentRound}/{totalRounds}
+          {t('games.truthdare.roundHeader', { current: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#df8eff]">
           {mode === 'eskalation' ? <Flame className="w-4 h-4 inline" /> : null} {mode}
@@ -338,7 +342,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         {phase === 'spin' && (
           <motion.div key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
-            <h2 className="text-2xl font-extrabold text-white neon-glow">Wer ist dran?</h2>
+            <h2 className="text-2xl font-extrabold text-white neon-glow">{t('games.truthdare.whosNext')}</h2>
             {/* Wheel */}
             <div className="relative w-52 h-52">
               <motion.div
@@ -366,7 +370,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={doSpin}
               className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-              <Zap className="w-5 h-5" /> Drehen!
+              <Zap className="w-5 h-5" /> {t('games.truthdare.spin')}
             </motion.button>
           </motion.div>
         )}
@@ -385,9 +389,9 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               style={{ backgroundColor: activePlayer.color }}>
               {activePlayer.avatar}
             </div>
-            <h2 className="text-2xl font-extrabold">{activePlayer.name} ist dran!</h2>
+            <h2 className="text-2xl font-extrabold">{t('games.truthdare.playersTurn', { name: activePlayer.name })}</h2>
             <p className="text-white/40 text-sm">
-              {isDrinkingMode ? 'Waehle — oder trink!' : 'Waehle Wahrheit oder Pflicht'}
+              {isDrinkingMode ? t('games.truthdare.chooseOrDrink') : t('games.truthdare.choosePrompt')}
             </p>
             <div className="flex gap-4 w-full max-w-sm">
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('truth')}
@@ -395,14 +399,14 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-pflicht' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
                   'bg-gradient-to-br from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)]')}>
-                <Heart className="w-6 h-6 mx-auto mb-1" /> Wahrheit
+                <Heart className="w-6 h-6 mx-auto mb-1" /> {t('games.truthdare.truth')}
               </motion.button>
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('dare')}
                 disabled={mode === 'nur-wahrheit'}
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-wahrheit' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
                   'bg-gradient-to-br from-[#ff6b98] to-[#ff6b98]/80 text-white shadow-[0_0_20px_rgba(255,107,152,0.3)]')}>
-                <Flame className="w-6 h-6 mx-auto mb-1" /> Pflicht
+                <Flame className="w-6 h-6 mx-auto mb-1" /> {t('games.truthdare.dare')}
               </motion.button>
             </div>
             {isDrinkingMode && (
@@ -424,7 +428,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 }}
                 className="w-full max-w-sm py-4 rounded-2xl font-extrabold text-lg bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
               >
-                {"\uD83C\uDF7A"} Dann trinkst du!
+                {"\uD83C\uDF7A"} {t('games.truthdare.drinkInstead')}
               </motion.button>
             )}
 
@@ -441,7 +445,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   <span className="text-2xl">{disclaimer.emoji}</span>
                   <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
                   <p className="text-[10px] text-amber-300/50 mt-1">
-                    Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+                    {t('games.truthdare.drinkCount', { count: drinkingMode.drinkCount })} · {t('games.truthdare.drinkResponsibly')}
                   </p>
                 </motion.div>
               )}
@@ -491,7 +495,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                     </span>
                   </motion.div>
                   <span className={cn('text-[10px] font-bold uppercase tracking-[0.25em] mt-2', urgent ? 'text-[#ff6e84]' : 'text-[#ff6b98]')}>
-                    {urgent ? 'Letzte Sekunden!' : 'Beeil dich!'}
+                    {urgent ? t('games.truthdare.lastSeconds') : t('games.truthdare.hurryUp')}
                   </span>
                 </motion.div>
               )}
@@ -525,7 +529,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                       className="font-black px-5 py-1.5 rounded-bl-2xl uppercase tracking-widest text-[11px] shadow-lg"
                       style={{ background: tone.main, color: tone.onChip }}
                     >
-                      {isTruth ? 'Wahrheit' : 'Pflicht'}
+                      {isTruth ? t('games.truthdare.truth') : t('games.truthdare.dare')}
                     </div>
                   </div>
 
@@ -554,7 +558,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                       }
                     </motion.div>
                     <span className="text-[#8ff5ff] text-[10px] font-black uppercase tracking-[0.3em]">
-                      Deine Aufgabe
+                      {t('games.truthdare.yourTask')}
                     </span>
                   </div>
 
@@ -597,8 +601,8 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                       </div>
                       <span className="text-[#a8abb3] text-[11px] font-medium">
                         {others.length > 3
-                          ? `+${others.length - 3} warten auf dich`
-                          : 'warten auf dich'}
+                          ? t('games.truthdare.waitingForYouExtra', { extra: others.length - 3 })
+                          : t('games.truthdare.waitingForYou')}
                       </span>
                     </div>
                   )}
@@ -616,7 +620,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                         }}
                       >
                         <Check className="w-5 h-5" />
-                        Erledigt
+                        {t('games.truthdare.done')}
                       </motion.button>
                     ) : (
                       <motion.button
@@ -630,7 +634,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                         }}
                       >
                         <Check className="w-5 h-5" />
-                        Erledigt
+                        {t('games.truthdare.done')}
                       </motion.button>
                     )}
 
@@ -640,7 +644,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                       className="w-full h-12 rounded-full flex items-center justify-center gap-2 bg-[#20262f]/50 border border-[#44484f]/30 text-[#a8abb3] font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#262c36] transition-colors"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
-                      Neue Aufgabe
+                      {t('games.truthdare.reroll')}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -652,7 +656,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 className="mt-8 opacity-40 hover:opacity-100 transition-opacity flex items-center gap-2 text-[#a8abb3] cursor-pointer"
               >
                 <Info className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em]">Regeln anzeigen</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em]">{t('games.truthdare.showRules')}</span>
               </button>
             </motion.div>
           );
@@ -670,14 +674,14 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 <>
                   <h2 className="text-xl font-extrabold">
                     {isDrinkingMode
-                      ? `Hat ${activePlayer.name} es geschafft? Sonst: \uD83C\uDF7A`
-                      : `Hat ${activePlayer.name} es geschafft?`}
+                      ? t('games.truthdare.voteTitleDrinking', { name: activePlayer.name })
+                      : t('games.truthdare.voteTitle', { name: activePlayer.name })}
                   </h2>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
                     style={{ backgroundColor: voter.color }}>
                     {voter.avatar}
                   </div>
-                  <p className="text-white/60">{voter.name} stimmt ab</p>
+                  <p className="text-white/60">{t('games.truthdare.voting', { name: voter.name })}</p>
                   <div className="flex gap-4">
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => castVote(true)}
                       className="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
@@ -710,9 +714,9 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               </div>
             </motion.div>
             <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
-              Spielende!
+              {t('games.truthdare.gameOver')}
             </h2>
-            <div className="text-lg font-bold text-[#df8eff]">{winner.name} gewinnt!</div>
+            <div className="text-lg font-bold text-[#df8eff]">{t('games.truthdare.wins', { name: winner.name })}</div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
                 <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
@@ -720,18 +724,18 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#df8eff] font-bold">{p.score} Pkt.</span>
+                  <span className="text-[#df8eff] font-bold">{t('games.truthdare.points', { count: p.score })}</span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-                <RotateCcw className="w-4 h-4" /> Nochmal
+                <RotateCcw className="w-4 h-4" /> {t('games.truthdare.playAgain')}
               </motion.button>
               <button onClick={() => navigate('/games')}
                 className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                Anderes Spiel
+                {t('games.truthdare.otherGame')}
               </button>
             </div>
           </motion.div>

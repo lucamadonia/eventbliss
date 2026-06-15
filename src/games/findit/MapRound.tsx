@@ -5,6 +5,7 @@ import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
 import type { GeoLocation } from './geo-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useTranslation } from 'react-i18next';
 
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
@@ -50,6 +51,7 @@ function MapStyler() {
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
 
 export default function MapRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: MapRoundProps) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<MapPhase>('showing');
   const [guessingPlayerIdx, setGuessingPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<PlayerGuess[]>([]);
@@ -205,17 +207,17 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
         {phase === 'showing' && (
           <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="absolute top-6 right-6 px-3 py-1.5 rounded-full bg-[#151a21]/60 border border-white/5">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Runde {roundNumber}/{totalRounds}</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
             </div>
-            <button onClick={onExit} className="absolute top-6 left-6 text-[#a8abb3]/60 hover:text-[#a8abb3] text-sm">Beenden</button>
+            <button onClick={onExit} className="absolute top-6 left-6 text-[#a8abb3]/60 hover:text-[#a8abb3] text-sm">{t('games.findit.mapExitBtn')}</button>
             <motion.div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#df8eff] to-[#8ff5ff] flex items-center justify-center mb-8"
               animate={{ rotate: [0, -3, 3, -3, 0] }} transition={{ repeat: Infinity, duration: 2.5 }}>
               <MapPin className="w-10 h-10 text-white" />
             </motion.div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold mb-3">Aktuelle Mission</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold mb-3">{t('games.findit.mapCurrentMission')}</p>
             <h1 className="text-5xl font-black italic tracking-tighter text-[#df8eff] text-glow-primary uppercase text-center">{location.name}</h1>
             <div className="mt-4 px-4 py-1.5 rounded-full bg-[#ff6b98]/10 border border-[#ff6b98]/20">
-              <span className="text-[11px] uppercase tracking-[0.15em] text-[#ff6b98] font-bold">{location.type === 'country' ? 'Land' : 'Stadt'}</span>
+              <span className="text-[11px] uppercase tracking-[0.15em] text-[#ff6b98] font-bold">{location.type === 'country' ? t('games.findit.mapLocationType.country') : t('games.findit.mapLocationType.city')}</span>
             </div>
           </motion.div>
         )}
@@ -241,18 +243,18 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
             </div>
             <div className="absolute top-4 right-4 z-[10]">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
-                <span className="text-[10px] uppercase tracking-[0.15em] text-[#a8abb3] font-bold">{roundNumber}/{totalRounds}</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
             </div>
             <div className="absolute top-16 left-0 right-0 z-[10] px-4 mt-2">
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">
                 <div className="flex items-center justify-between pl-5 pr-2 py-2">
                   <div>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Aktuelle Mission</span>
-                    <h2 className="text-base font-extrabold tracking-tight text-[#f1f3fc] uppercase">WO IST: {location.name}?</h2>
+                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapCurrentMission')}</span>
+                    <h2 className="text-base font-extrabold tracking-tight text-[#f1f3fc] uppercase">{t('games.findit.mapWhere', { name: location.name })}</h2>
                   </div>
                   <div className="bg-[#ff6b98] p-2.5 rounded-full flex flex-col items-center min-w-[60px] shadow-[0_0_20px_rgba(255,107,152,0.4)]">
-                    <span className="text-[8px] font-black uppercase text-white/80 leading-none mb-0.5">Zeit</span>
+                    <span className="text-[8px] font-black uppercase text-white/80 leading-none mb-0.5">{t('games.findit.mapTimeLabel')}</span>
                     <span className="text-lg font-black text-white leading-none tabular-nums">{countdown}</span>
                   </div>
                 </div>
@@ -261,14 +263,14 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
             {pinPos && !waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[10]">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#df8eff]/30">
-                  <p className="text-xs font-bold text-[#df8eff] tracking-wide">PIN POSITIONIERT</p>
+                  <p className="text-xs font-bold text-[#df8eff] tracking-wide">{t('games.findit.mapPinPlaced')}</p>
                 </div>
               </div>
             )}
             {waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[10]">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-5 py-3 rounded-xl border border-[#8ff5ff]/30">
-                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">Warte auf andere Spieler...</p>
+                  <p className="text-sm font-bold text-[#8ff5ff] tracking-wide">{t('games.findit.mapWaitingPlayers')}</p>
                 </div>
               </div>
             )}
@@ -278,7 +280,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
                 whileTap={pinPos ? { scale: 0.95 } : undefined}>
                 <span className="flex items-center gap-3">
-                  <span className="text-xl font-black tracking-[0.15em] text-[#4f006d]">SETZEN</span>
+                  <span className="text-xl font-black tracking-[0.15em] text-[#4f006d]">{t('games.findit.mapConfirmBtn')}</span>
                   <Check className="w-6 h-6 text-[#4f006d]" />
                 </span>
               </motion.button>
@@ -294,12 +296,12 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
               style={{ background: handoffPlayer.color, boxShadow: `0 0 30px ${handoffPlayer.color}88` }}>
               {handoffPlayer.name.charAt(0).toUpperCase()}
             </div>
-            <p className="text-[#a8abb3] text-sm mb-2">Gib das Geraet an</p>
+            <p className="text-[#a8abb3] text-sm mb-2">{t('games.findit.mapHandoffTo')}</p>
             <h2 className="text-3xl font-black text-[#df8eff] text-glow-primary mb-10">{handoffPlayer.name}</h2>
             <motion.button onClick={handleHandoffReady}
               className="px-10 py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
               whileTap={{ scale: 0.95 }}>
-              <span className="text-lg font-black tracking-[0.15em] text-[#4f006d]">BEREIT</span>
+              <span className="text-lg font-black tracking-[0.15em] text-[#4f006d]">{t('games.findit.mapReadyBtn')}</span>
             </motion.button>
           </motion.div>
         )}
@@ -309,13 +311,13 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
           <motion.div className="absolute inset-0 z-10 overflow-y-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-8">
               <div className="flex items-center justify-between mb-6">
-                <button onClick={onExit} className="text-[#a8abb3]/60 text-sm">Beenden</button>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{roundNumber}/{totalRounds}</span>
+                <button onClick={onExit} className="text-[#a8abb3]/60 text-sm">{t('games.findit.mapExitBtn')}</button>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
               {winner && (
                 <div className="text-center mb-6">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#ff6b98] font-bold mb-2">Level abgeschlossen</p>
-                  <h1 className="text-5xl font-black italic text-[#df8eff] text-glow-primary">GEWONNEN!</h1>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#ff6b98] font-bold mb-2">{t('games.findit.mapLevelComplete')}</p>
+                  <h1 className="text-5xl font-black italic text-[#df8eff] text-glow-primary">{t('games.findit.mapWon')}</h1>
                 </div>
               )}
 
@@ -340,18 +342,18 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                   <div className="col-span-2 bg-[#151a21]/60 backdrop-blur-md rounded-xl p-5 border border-white/5">
                     <div className="flex items-center gap-2 mb-2">
                       <Crosshair className="w-4 h-4 text-[#8ff5ff]" />
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Entfernung</span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapDistance')}</span>
                     </div>
                     <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm)}</p>
                   </div>
                 )}
                 <div className="bg-[#151a21]/60 rounded-xl p-4 border border-white/5">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Reaktionszeit</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapReactionTime')}</span>
                   <p className="text-2xl font-bold text-[#f1f3fc] mt-1">{timerSeconds}s</p>
                 </div>
                 {winner && (
                   <div className="bg-gradient-to-br from-[#df8eff]/10 to-transparent rounded-xl p-4 border border-[#df8eff]/20">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">Punkte</span>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapPointsLabel')}</span>
                     <p className="text-2xl font-bold text-[#df8eff] mt-1">+{Math.max(0, Math.round(1000 * Math.exp(-winner.distanceKm / 2000)))}</p>
                   </div>
                 )}
@@ -372,7 +374,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
               <motion.button onClick={handleNextRound}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
-                <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? 'ERGEBNISSE' : 'NAECHSTE RUNDE'}</span>
+                <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? t('games.findit.mapResults') : t('games.findit.mapNextRound')}</span>
               </motion.button>
             </div>
           </motion.div>

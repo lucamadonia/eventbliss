@@ -75,7 +75,7 @@ interface SetupPlayer { id: string; name: string; color: string; avatar: string;
 export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
   const haptics = useHaptics();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
 
@@ -242,7 +242,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     if (cfg.playback === 'spotify') {
       setSpotifyStatus('connecting');
       void getSpotifyBridge().then(({ bridge, reason }) => {
-        if (!bridge) { setSpotifyStatus('preview:' + reason); flash('Spotify: ' + reason + ' — 30s-Vorschau'); return; }
+        if (!bridge) { setSpotifyStatus('preview:' + reason); flash(t('games.ohrwurm.spotifyFallback', { reason })); return; }
         spotifyBridgeRef.current = bridge;
         setSpotifyStatus('ok');
       });
@@ -262,7 +262,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     stopAudio();
     setListening(false);
     void haptics.error();
-    flash('⏱ Zeit abgelaufen — Karte verfällt');
+    flash(t('games.ohrwurm.timeoutCardForfeited'));
     const nextIdx = (turn + 1) % participants.length;
     const newDeck = [song, ...deck]; // verfallene Karte zurück nach unten
     window.setTimeout(() => beginTurn(participants, newDeck, nextIdx), 650);
@@ -306,7 +306,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     if (!card.spotifyUri && spotifyModeRef.current) {
       void resolveSpotifyUri(card).then((uri) => { if (drawIdRef.current === myDraw) setSpotifyUri(uri); });
     }
-    flash('Karte getauscht — 1 🎣 abgegeben');
+    flash(t('games.ohrwurm.cardSwapped'));
   }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
 
   // --- Phase 2: Einordnen -------------------------------------------------
@@ -397,7 +397,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       void haptics.success();
       setParticipants((prev) => prev.map((p, i) =>
         i === turn ? { ...p, hooks: Math.min(MAX_HOOKS, p.hooks + amount) } : p));
-      flash(speedEligible ? '⚡ Blitz-Bonus! +2 🎣' : '+1 🎣 Bonus!');
+      flash(speedEligible ? t('games.ohrwurm.flashSpeedBonus') : t('games.ohrwurm.flashBonus'));
     }
   }, [active, turn, haptics, flash, speedEligible]);
 
@@ -635,7 +635,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-        <button onClick={() => navigate('/games')} className="p-2 -ml-2" style={{ color: OW.dim }} aria-label="Zurück">
+        <button onClick={() => navigate('/games')} className="p-2 -ml-2" style={{ color: OW.dim }} aria-label={t('games.ohrwurm.back')}>
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2">
@@ -643,7 +643,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           <span className="text-sm font-black tracking-[0.2em] uppercase ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</span>
         </div>
         <div className="px-3 py-1 rounded-full text-[11px] font-bold" style={{ background: OW.surface, color: OW.accent }}>
-          Ziel {winTarget}
+          {t('games.ohrwurm.target', { count: winTarget })}
         </div>
       </div>
 
@@ -665,10 +665,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
             }>
             <span className="flex items-center gap-1.5">
               {ok
-                ? '✓ Spotify · voller Song nach Auflösung (im Spiel: Vorschau)'
+                ? t('games.ohrwurm.spotifyOk')
                 : connecting
-                  ? '⏳ Spotify…'
-                  : '⚠ Spotify: ' + (reason || 'nicht verfügbar') + ' — nur Vorschau'}
+                  ? t('games.ohrwurm.spotifyConnecting')
+                  : t('games.ohrwurm.spotifyPreviewOnly', { reason: reason || t('games.ohrwurm.spotifyUnavailable') })}
             </span>
           </div>
         );
@@ -705,8 +705,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           return (
             <div className="absolute inset-0 z-30 flex items-center justify-center" style={{ background: 'rgba(22,16,31,0.55)', backdropFilter: 'blur(1px)' }}>
               <div className="px-5 py-3 rounded-2xl text-center" style={{ background: OW.surface, border: `1px solid ${OW.primary}` }}>
-                <p className="text-sm font-bold" style={{ color: OW.text }}>{active ? `${active.name} ist dran…` : 'Warten…'}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{tvConnected ? 'Schau auf den TV' : 'Gleich bist du dran'}</p>
+                <p className="text-sm font-bold" style={{ color: OW.text }}>{active ? t('games.ohrwurm.activePlayerTurn', { name: active.name }) : t('games.ohrwurm.waiting')}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{tvConnected ? t('games.ohrwurm.watchTV') : t('games.ohrwurm.yourTurnSoon')}</p>
               </div>
             </div>
           );
@@ -718,9 +718,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
               className="flex-1 flex flex-col items-center justify-center gap-6 py-4">
               <PhaseBanner
                 tone="primary"
-                kicker={`${active.name} ist dran`}
-                title="Anhören & einordnen"
-                sub="Song läuft verborgen — 60s Zeit. In den ersten 10s + Titel & Interpret = Speed-Bonus."
+                kicker={t('games.ohrwurm.kickerPlayerTurn', { name: active.name })}
+                title={t('games.ohrwurm.listenAndPlace')}
+                sub={t('games.ohrwurm.drawSub')}
               />
 
               {(previewLoading || previewUrl || spotifyUri) ? (
@@ -741,12 +741,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   {!listening ? (
                     <>
                       <p className="text-sm max-w-xs" style={{ color: OW.dim }}>
-                        Kein Hörclip verfügbar — Jahr schätzen oder Karte tauschen.
+                        {t('games.ohrwurm.noClipAvailable')}
                       </p>
                       <button onClick={() => act('listen', {}, beginListening)}
                         className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
                         style={{ background: OW.primary, color: OW.bg }}>
-                        60s starten
+                        {t('games.ohrwurm.start60s')}
                       </button>
                     </>
                   ) : (
@@ -762,25 +762,25 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
               {listening && (
                 <div className="flex flex-col gap-3 w-full max-w-sm">
                   {/* Sekundär-Aktionen — filigrane Chips, OBERHALB des Primär-Buttons */}
-                  <div role="group" aria-label="Aktionen" className="flex items-stretch gap-2 w-full">
+                  <div role="group" aria-label={t('games.ohrwurm.actionsGroup')} className="flex items-stretch gap-2 w-full">
                     <ActionChip
-                      icon={RotateCcw} label="Nochmal"
-                      ariaLabel="Song noch einmal von vorn hören"
+                      icon={RotateCcw} label={t('games.ohrwurm.replay')}
+                      ariaLabel={t('games.ohrwurm.replayAria')}
                       onClick={replayAudio}
                     />
                     <ActionChip
-                      icon={Sparkles} label={bonusClaimed ? 'Bonus ✓' : 'Bonus'} tone="accent" toggle active={bonusClaimed}
-                      ariaLabel="Titel und Interpret ansagen für Bonus"
+                      icon={Sparkles} label={bonusClaimed ? t('games.ohrwurm.bonusClaimed') : t('games.ohrwurm.bonus')} tone="accent" toggle active={bonusClaimed}
+                      ariaLabel={t('games.ohrwurm.bonusAria')}
                       onClick={() => { void haptics.select(); act('toggleBonus', {}, () => setBonusClaimed((v) => !v)); }}
                     />
                     <ActionChip
-                      icon={Repeat} label={swapUsed ? 'Getauscht' : 'Tauschen'} tone="secondary"
+                      icon={Repeat} label={swapUsed ? t('games.ohrwurm.swapped') : t('games.ohrwurm.swap')} tone="secondary"
                       cost={swapUsed ? undefined : '1 🎣'}
                       disabled={swapUsed || active.hooks < 1}
-                      ariaLabel={swapUsed ? 'Tausch bereits genutzt' : active.hooks < 1 ? 'Tauschen nicht möglich — kein 🎣 übrig' : 'Song unbekannt — Karte tauschen für 1 🎣'}
+                      ariaLabel={swapUsed ? t('games.ohrwurm.swapUsedAria') : active.hooks < 1 ? t('games.ohrwurm.swapNoHooksAria') : t('games.ohrwurm.swapAria')}
                       onClick={() => {
-                        if (swapUsed) { flash('Tausch verbraucht'); return; }
-                        if (active.hooks < 1) { flash('Kein 🎣 — kannst nicht tauschen'); return; }
+                        if (swapUsed) { flash(t('games.ohrwurm.flashSwapUsed')); return; }
+                        if (active.hooks < 1) { flash(t('games.ohrwurm.flashNoHooks')); return; }
                         act('swap', {}, handleSwap);
                       }}
                     />
@@ -789,7 +789,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   <motion.button whileTap={{ scale: 0.97 }} onClick={() => { void haptics.light(); act('toPlace', {}, () => setPhase('place')); }}
                     className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
                     style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
-                    In Timeline einordnen <ChevronRight className="w-5 h-5" />
+                    {t('games.ohrwurm.placeInTimeline')} <ChevronRight className="w-5 h-5" />
                   </motion.button>
                 </div>
               )}
@@ -800,8 +800,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           {phase === 'place' && song && active && (
             <motion.div key="place" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex-1 flex flex-col gap-5 py-4">
-              <PhaseBanner tone="accent" kicker={`${active.name}s Timeline`} title="Wohin gehört der Song?"
-                sub="Tippe die Lücke, in der das Erscheinungsjahr liegt." />
+              <PhaseBanner tone="accent" kicker={t('games.ohrwurm.playerTimeline', { name: active.name })} title={t('games.ohrwurm.whereDoesItBelong')}
+                sub={t('games.ohrwurm.tapTheGap')} />
               <div className="flex items-center justify-center gap-3">
                 <MysteryChip />
                 {listening && (
@@ -823,8 +823,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           {phase === 'counter' && active && (
             <motion.div key="counter" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex-1 flex flex-col gap-5 py-4">
-              <PhaseBanner tone="secondary" kicker="Konter-Fenster" title="Wer will kontern?"
-                sub={`${active.name} hat platziert. Mit 1 🎣 kannst du anfechten und die Karte ggf. klauen.`} />
+              <PhaseBanner tone="secondary" kicker={t('games.ohrwurm.counterWindow')} title={t('games.ohrwurm.whoWantsToCounter')}
+                sub={t('games.ohrwurm.counterSub', { name: active.name })} />
               <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
                 {participants.map((p, i) => {
                   if (i === turn) return null;
@@ -846,7 +846,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
               <button onClick={() => act('noCounter', {}, handleNoCounter)}
                 className="mx-auto mt-2 px-8 py-3 rounded-2xl font-bold text-sm"
                 style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>
-                Niemand kontert — auflösen
+                {t('games.ohrwurm.noCounterReveal')}
               </button>
             </motion.div>
           )}
@@ -856,9 +856,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
             <motion.div key="cplace" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex-1 flex flex-col gap-5 py-4">
               <PhaseBanner tone="secondary"
-                kicker={`${participants.find((p) => p.id === counteringId)?.name} kontert`}
-                title="Karte neu platzieren"
-                sub={`In ${active.name}s Timeline — wo gehört der Song wirklich hin?`} />
+                kicker={t('games.ohrwurm.countering', { name: participants.find((p) => p.id === counteringId)?.name })}
+                title={t('games.ohrwurm.replaceCard')}
+                sub={t('games.ohrwurm.counterPlaceSub', { name: active.name })} />
               <MysteryChip />
               <TimelinePlacer timeline={active.timeline} onSelect={(slot) => act('commitCounter', { slot }, () => handleCommitCounter(slot))}
                 accent={participants.find((p) => p.id === counteringId)?.color ?? OW.secondary} />
@@ -876,11 +876,11 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
               {/* Aktionen NACH der Auflösung — filigrane Chip-Leiste über „Weiter".
                   QR immer; „Volle Länge" öffnet den Track DIREKT in Spotify (Deep-Link),
                   sobald eine URI vorliegt; Like/Playlist nur bei autorisierter Bridge. */}
-              <div role="group" aria-label="Aktionen" className="flex items-stretch gap-2 w-full max-w-sm">
+              <div role="group" aria-label={t('games.ohrwurm.actionsGroup')} className="flex items-stretch gap-2 w-full max-w-sm">
                 {spotifyUri && (
                   <ActionChip
-                    icon={ExternalLink} label="Volle Länge" tone="spotify"
-                    ariaLabel="Ganzen Song direkt in Spotify öffnen"
+                    icon={ExternalLink} label={t('games.ohrwurm.fullLength')} tone="spotify"
+                    ariaLabel={t('games.ohrwurm.fullLengthAria')}
                     onClick={() => {
                       void haptics.light();
                       const deep = spotifyTrackDeepLink(spotifyUri);
@@ -892,36 +892,36 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 {spotifyBridgeRef.current && spotifyUri && (
                   <>
                   <ActionChip
-                    icon={Heart} label="Like" busy={likeBusy}
-                    ariaLabel="Song zu Lieblingssongs hinzufügen"
+                    icon={Heart} label={t('games.ohrwurm.like')} busy={likeBusy}
+                    ariaLabel={t('games.ohrwurm.likeAria')}
                     onClick={() => {
                       if (likeBusy) return;
                       void haptics.light(); setLikeBusy(true);
                       // Promise.resolve fängt den Fall ab, dass die Methode fehlt
                       // (?. → undefined) — sonst würde .then werfen und busy hängenbleiben.
                       Promise.resolve(spotifyBridgeRef.current?.saveTrack?.(spotifyUri))
-                        .then((r) => flash(r?.ok ? '❤️ Zu Lieblingssongs' : 'Like fehlgeschlagen' + (r ? ' (' + r.detail + ')' : '')))
-                        .catch(() => flash('Like fehlgeschlagen'))
+                        .then((r) => flash(r?.ok ? t('games.ohrwurm.flashLiked') : t('games.ohrwurm.flashLikeFailed') + (r ? ' (' + r.detail + ')' : '')))
+                        .catch(() => flash(t('games.ohrwurm.flashLikeFailed')))
                         .finally(() => setLikeBusy(false));
                     }}
                   />
                   <ActionChip
-                    icon={Plus} label="Playlist" tone="spotify" busy={playlistBusy}
-                    ariaLabel="Song zur OHRWURM-Playlist hinzufügen"
+                    icon={Plus} label={t('games.ohrwurm.playlist')} tone="spotify" busy={playlistBusy}
+                    ariaLabel={t('games.ohrwurm.playlistAria')}
                     onClick={() => {
                       if (playlistBusy) return;
                       void haptics.light(); setPlaylistBusy(true);
                       Promise.resolve(spotifyBridgeRef.current?.addToPlaylist?.(spotifyUri))
-                        .then((r) => flash(r?.ok ? '🎵 In OHRWURM-Playlist' : 'Playlist fehlgeschlagen' + (r ? ' (' + r.detail + ')' : '')))
-                        .catch(() => flash('Playlist fehlgeschlagen'))
+                        .then((r) => flash(r?.ok ? t('games.ohrwurm.flashPlaylistAdded') : t('games.ohrwurm.flashPlaylistFailed') + (r ? ' (' + r.detail + ')' : '')))
+                        .catch(() => flash(t('games.ohrwurm.flashPlaylistFailed')))
                         .finally(() => setPlaylistBusy(false));
                     }}
                   />
                   </>
                 )}
                 <ActionChip
-                  icon={QrCode} label="QR-Code"
-                  ariaLabel="QR-Code zum Scannen anzeigen"
+                  icon={QrCode} label={t('games.ohrwurm.qrCode')}
+                  ariaLabel={t('games.ohrwurm.qrCodeAria')}
                   onClick={() => { void haptics.light(); setQrOpen(true); }}
                 />
               </div>
@@ -930,32 +930,32 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   style={{ background: OW.surface, border: `1px solid ${OW.accent}`, boxShadow: speedEligible ? `0 0 26px ${OW.accent}55` : 'none' }}>
                   <p className="text-sm font-bold text-center" style={{ color: OW.accent }}>
                     {speedEligible ? <Zap className="inline w-4 h-4 mr-1" fill={OW.accent} /> : <Sparkles className="inline w-4 h-4 mr-1" />}
-                    {speedEligible && <span className="font-black">BLITZ! </span>}
-                    Hat {active.name} Titel <span className="opacity-70">&</span> Interpret richtig angesagt?
+                    {speedEligible && <span className="font-black">{t('games.ohrwurm.blitz')} </span>}
+                    {t('games.ohrwurm.bonusConfirmQuestion', { name: active.name })}
                   </p>
                   <p className="text-[11px] text-center -mt-1" style={{ color: OW.dim }}>
                     {speedEligible
-                      ? 'Innerhalb 10s platziert — beides korrekt = +2 🎣 Speed-Bonus!'
-                      : 'Auflösung steht oben — die Gruppe bestätigt. Beides korrekt = +1 🎣 Bonus.'}
+                      ? t('games.ohrwurm.bonusSpeedDesc')
+                      : t('games.ohrwurm.bonusNormalDesc')}
                   </p>
                   <div className="flex gap-3">
                     <button onClick={() => act('bonus', { earned: true }, () => handleBonus(true))} className="flex-1 h-12 rounded-xl font-black" style={{ background: OW.accent, color: OW.bg }}>
-                      Ja · +{speedEligible ? 2 : 1} 🎣
+                      {t('games.ohrwurm.bonusYes', { count: speedEligible ? 2 : 1 })}
                     </button>
-                    <button onClick={() => act('bonus', { earned: false }, () => handleBonus(false))} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>Nein</button>
+                    <button onClick={() => act('bonus', { earned: false }, () => handleBonus(false))} className="flex-1 h-12 rounded-xl font-bold" style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>{t('games.ohrwurm.bonusNo')}</button>
                   </div>
                 </div>
               ) : (
                 <>
                   {bonusForfeited && (
                     <p className="text-[11px] text-center -mt-2" style={{ color: OW.dim }}>
-                      Bonus verfällt — Karte nicht gewonnen.
+                      {t('games.ohrwurm.bonusForfeited')}
                     </p>
                   )}
                   <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('continue', {}, handleContinue)}
                     className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
                     style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
-                    Weiter <ArrowRight className="w-5 h-5" />
+                    {t('games.ohrwurm.next')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </>
               )}
@@ -973,15 +973,15 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   <Trophy className="w-8 h-8" style={{ color: OW.accent }} />
                 </div>
               </motion.div>
-              <h2 className="text-3xl font-black ow-glow-pink" style={{ color: OW.primary }}>Spielende!</h2>
-              <div className="text-lg font-bold" style={{ color: OW.secondary }}>{winner.name} gewinnt mit {winner.timeline.length} Hits! 🎉</div>
+              <h2 className="text-3xl font-black ow-glow-pink" style={{ color: OW.primary }}>{t('games.ohrwurm.gameOver')}</h2>
+              <div className="text-lg font-bold" style={{ color: OW.secondary }}>{t('games.ohrwurm.winnerAnnounce', { name: winner.name, count: winner.timeline.length })}</div>
               <div className="w-full space-y-2">
                 {[...participants].sort((a, b) => b.timeline.length - a.timeline.length).map((p, i) => (
                   <div key={p.id} className="flex items-center gap-3 rounded-2xl px-4 py-3" style={{ background: OW.surface }}>
                     <span className="text-sm font-bold w-5" style={{ color: OW.dim }}>#{i + 1}</span>
                     <Avatar p={p} />
                     <span className="flex-1 font-semibold truncate">{p.name}</span>
-                    <span className="font-bold" style={{ color: OW.secondary }}>{p.timeline.length} Hits</span>
+                    <span className="font-bold" style={{ color: OW.secondary }}>{t('games.ohrwurm.hitsCount', { count: p.timeline.length })}</span>
                     <span className="text-sm font-mono" style={{ color: OW.accent }}>{p.hooks} 🎣</span>
                   </div>
                 ))}
@@ -990,10 +990,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
                   className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl h-14 font-black"
                   style={{ background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg }}>
-                  <RotateCcw className="w-4 h-4" /> Nochmal
+                  <RotateCcw className="w-4 h-4" /> {t('games.ohrwurm.playAgain')}
                 </motion.button>
                 <button onClick={() => navigate('/games')} className="w-full py-3.5 rounded-2xl text-sm font-semibold" style={{ border: '1px solid rgba(255,255,255,0.1)', color: OW.dim }}>
-                  Anderes Spiel
+                  {t('games.ohrwurm.otherGame')}
                 </button>
               </div>
             </motion.div>
@@ -1033,7 +1033,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 className="px-6 py-2.5 rounded-full text-sm font-bold"
                 style={{ background: OW.surface, color: OW.text, border: '1px solid rgba(255,255,255,0.12)' }}
               >
-                Schließen
+                {t('games.ohrwurm.close')}
               </button>
             </motion.div>
           </motion.div>
@@ -1166,18 +1166,20 @@ function ActionChip({
 
 /** Mystery-Chip — repräsentiert die unbekannte (noch nicht aufgedeckte) Karte. */
 function MysteryChip() {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto flex items-center gap-2 px-4 py-2 rounded-full"
       style={{ background: OW.surface, border: `1px dashed ${OW.primary}` }}>
       <Music2 className="w-4 h-4" style={{ color: OW.primary }} />
       <span className="font-black text-lg" style={{ color: OW.primary }}>?</span>
-      <span className="text-xs font-bold" style={{ color: OW.dim }}>Jahr unbekannt</span>
+      <span className="text-xs font-bold" style={{ color: OW.dim }}>{t('games.ohrwurm.yearUnknown')}</span>
     </div>
   );
 }
 
 /** Vorderseite der Karte: QR-Code + Logo (Spec §2.2). */
 function QrCard({ song }: { song: Song }) {
+  const { t } = useTranslation();
   return (
     <div className="relative">
       <div className="absolute inset-0 rounded-[20px] blur-2xl opacity-40" style={{ background: OW.primary }} />
@@ -1192,7 +1194,7 @@ function QrCard({ song }: { song: Song }) {
         </div>
         <a href={song.qrPayload} target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: OW.secondary }}>
-          <ExternalLink className="w-3.5 h-3.5" /> Auf Spotify öffnen
+          <ExternalLink className="w-3.5 h-3.5" /> {t('games.ohrwurm.openOnSpotify')}
         </a>
       </div>
     </div>
@@ -1201,6 +1203,7 @@ function QrCard({ song }: { song: Song }) {
 
 /** Auflösungs-Karte: Jahr groß + Titel + Künstler + Flagge (Spec §2.2). */
 function RevealCard({ song, flipped }: { song: Song; flipped: boolean }) {
+  const { t } = useTranslation();
   return (
     <div style={{ perspective: 1000 }}>
       <motion.div
@@ -1212,7 +1215,7 @@ function RevealCard({ song, flipped }: { song: Song; flipped: boolean }) {
         {/* Rückseite (sichtbar nach Flip) */}
         <div className="ow-card-face absolute inset-0 rounded-[20px] p-6 flex flex-col items-center justify-center text-center gap-3"
           style={{ background: `linear-gradient(160deg, ${OW.elevated}, ${OW.surface})`, border: `1px solid ${OW.primary}`, boxShadow: '0 18px 50px rgba(0,0,0,.5)' }}>
-          <span className="text-[11px] font-black tracking-[0.25em] uppercase" style={{ color: OW.dim }}>Erscheinungsjahr</span>
+          <span className="text-[11px] font-black tracking-[0.25em] uppercase" style={{ color: OW.dim }}>{t('games.ohrwurm.releaseYear')}</span>
           <span className="text-6xl font-black ow-glow-pink leading-none" style={{ color: OW.primary }}>{song.year}</span>
           <div className="mt-2">
             <h3 className="text-xl font-black leading-tight">{song.title}</h3>
@@ -1251,6 +1254,7 @@ function eraColor(year: number): string {
  * Premium-Karten und magnetische Drop-Zonen. `prefers-reduced-motion`-aware.
  */
 function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[]; onSelect: (slot: number) => void; accent: string }) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
 
   const itemVar = {
@@ -1318,11 +1322,11 @@ function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[]; onSe
   };
 
   const items: React.ReactNode[] = [];
-  items.push(slot(0, timeline.length ? 'früher' : 'hier'));
+  items.push(slot(0, timeline.length ? t('games.ohrwurm.slotEarlier') : t('games.ohrwurm.slotHere')));
   timeline.forEach((s, i) => {
     items.push(card(s));
     const isLast = i === timeline.length - 1;
-    items.push(slot(i + 1, isLast ? 'später' : 'dazwischen'));
+    items.push(slot(i + 1, isLast ? t('games.ohrwurm.slotLater') : t('games.ohrwurm.slotBetween')));
   });
 
   return (
@@ -1343,6 +1347,7 @@ function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[]; onSe
 function ResolutionSummary({ resolution, active, counter, participants }: {
   resolution: RoundResolution; active: Participant; counter: PendingCounter | null; participants: Participant[];
 }) {
+  const { t } = useTranslation();
   const winnerName = resolution.winnerId
     ? participants.find((p) => p.id === resolution.winnerId)?.name ?? '—'
     : null;
@@ -1351,15 +1356,15 @@ function ResolutionSummary({ resolution, active, counter, participants }: {
   let headline: string;
   let tone: string;
   if (!resolution.winnerId) {
-    headline = 'Daneben — Karte zurück auf den Stapel ✗';
+    headline = t('games.ohrwurm.resolutionMissed');
     tone = OW.primary;
   } else if (resolution.winnerId === active.id) {
     headline = counter && !resolution.activeCorrect
-      ? `${active.name} behält die Karte ✓`
-      : `${active.name} lag richtig ✓`;
+      ? t('games.ohrwurm.resolutionKeepsCard', { name: active.name })
+      : t('games.ohrwurm.resolutionCorrect', { name: active.name });
     tone = OW.secondary;
   } else {
-    headline = `${winnerName} kontert erfolgreich — klaut die Karte und bekommt den 🎣 zurück`;
+    headline = t('games.ohrwurm.resolutionCounterWins', { name: winnerName });
     tone = OW.secondary;
   }
 
@@ -1367,9 +1372,9 @@ function ResolutionSummary({ resolution, active, counter, participants }: {
     <div className="w-full max-w-sm rounded-2xl px-4 py-3 text-center" style={{ background: OW.surface }}>
       <p className="font-black" style={{ color: tone }}>{headline}</p>
       <div className="mt-1.5 flex items-center justify-center gap-3 text-xs" style={{ color: OW.dim }}>
-        <span>{active.name}: {resolution.activeCorrect ? 'richtig' : 'falsch'}</span>
+        <span>{active.name}: {resolution.activeCorrect ? t('games.ohrwurm.correct') : t('games.ohrwurm.wrong')}</span>
         {counter && counterName && (
-          <span>· {counterName}: {resolution.counterCorrect ? 'richtig' : 'falsch'}</span>
+          <span>· {counterName}: {resolution.counterCorrect ? t('games.ohrwurm.correct') : t('games.ohrwurm.wrong')}</span>
         )}
       </div>
     </div>
@@ -1389,6 +1394,7 @@ interface SetupProps {
 
 function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: SetupProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'solo' | 'group'>('solo');
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
@@ -1397,8 +1403,8 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
     initialPlayers && initialPlayers.length >= 2
       ? initialPlayers
       : [
-          { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
-          { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
+          { id: 'p-1', name: t('games.ohrwurm.defaultPlayerYou'), color: PLAYER_COLORS[0], avatar: t('games.ohrwurm.defaultPlayerYouAvatar') },
+          { id: 'p-2', name: t('games.ohrwurm.defaultPlayer', { n: 2 }), color: PLAYER_COLORS[1], avatar: '2' },
         ],
   );
   // Tastatur-Sichtbarkeit (Native): fixe Start-CTA ausblenden, damit das
@@ -1416,7 +1422,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
     const idx = players.length;
     void haptics.select();
     const id = `p-${idx + 1}-${Date.now()}`;
-    setPlayers((prev) => [...prev, { id, name: `${mode === 'group' ? 'Gruppe' : 'Spieler'} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) }]);
+    setPlayers((prev) => [...prev, { id, name: `${mode === 'group' ? t('games.ohrwurm.group') : t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) }]);
   };
   const removePlayer = (id: string) => setPlayers((prev) => (prev.length > MIN ? prev.filter((p) => p.id !== id) : prev));
   const renamePlayer = (id: string, name: string) =>
@@ -1424,7 +1430,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
   const importNames = (names: string[]) => {
     setPlayers((prev) => {
-      const kept = prev.filter((p) => p.name.trim() && !/^(Spieler|Gruppe) \d+$/.test(p.name.trim()) && p.name.trim() !== 'Du');
+      const kept = prev.filter((p) => p.name.trim() && !/^(Spieler|Gruppe|Player|Group) \d+$/.test(p.name.trim()) && p.name.trim() !== 'Du' && p.name.trim() !== 'You');
       const merged = [...kept];
       for (const n of names) {
         if (merged.length >= MAX) break;
@@ -1433,7 +1439,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
       }
       while (merged.length < MIN) {
         const idx = merged.length;
-        merged.push({ id: `p-${idx + 1}`, name: `Spieler ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
+        merged.push({ id: `p-${idx + 1}`, name: `${t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
       }
       return merged;
     });
@@ -1447,9 +1453,9 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
   };
 
   const TARGETS = [
-    { v: 6, label: 'Schnell', desc: '6 Hits' },
-    { v: 10, label: 'Klassik', desc: '10 Hits' },
-    { v: 15, label: 'Marathon', desc: '15 Hits' },
+    { v: 6, label: t('games.ohrwurm.targetFast'), desc: t('games.ohrwurm.targetHits', { count: 6 }) },
+    { v: 10, label: t('games.ohrwurm.targetClassic'), desc: t('games.ohrwurm.targetHits', { count: 10 }) },
+    { v: 15, label: t('games.ohrwurm.targetMarathon'), desc: t('games.ohrwurm.targetHits', { count: 15 }) },
   ];
 
   return (
@@ -1462,15 +1468,15 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
       <main className="relative z-10 pt-10 px-6 max-w-2xl mx-auto">
         <button onClick={() => navigate('/games')} className="mb-6 inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: OW.dim }}>
-          <ArrowLeft className="w-3.5 h-3.5" /> Zurück
+          <ArrowLeft className="w-3.5 h-3.5" /> {t('games.ohrwurm.back')}
         </button>
 
         {/* Hero */}
         <section className="mb-9">
-          <p className="font-black tracking-[0.25em] text-[11px] uppercase mb-2" style={{ color: OW.secondary }}>Musik-Quiz</p>
+          <p className="font-black tracking-[0.25em] text-[11px] uppercase mb-2" style={{ color: OW.secondary }}>{t('games.ohrwurm.musicQuiz')}</p>
           <h1 className="text-5xl font-black tracking-tighter leading-[0.95] mb-3 ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</h1>
           <p className="text-sm max-w-[320px]" style={{ color: OW.dim }}>
-            QR scannen, Song hören, ins richtige Jahr einordnen. Wer zuerst {winTarget} Hits sammelt, gewinnt. 🎣 sind deine Joker.
+            {t('games.ohrwurm.setupHeroDesc', { count: winTarget })}
           </p>
         </section>
 
@@ -1485,18 +1491,18 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
             min={lockRoster ? players.length : MIN}
             max={lockRoster ? players.length : MAX}
             accent={OW.primary}
-            label={lockRoster ? 'Im Raum' : (mode === 'group' ? 'Gruppen' : 'Spieler')}
+            label={lockRoster ? t('games.ohrwurm.inRoom') : (mode === 'group' ? t('games.ohrwurm.groups') : t('games.ohrwurm.players'))}
             maxNameLength={16}
           />
         </section>
 
         {/* Modus */}
         <section className="mb-8">
-          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Modus</h3>
+          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionMode')}</h3>
           <div className="grid grid-cols-2 gap-3">
             {([
-              { id: 'solo', label: 'Einzeln', desc: 'Jeder für sich', icon: <User className="w-5 h-5" /> },
-              { id: 'group', label: 'Gruppen', desc: 'Generationen-Teams', icon: <Users className="w-5 h-5" /> },
+              { id: 'solo', label: t('games.ohrwurm.modeSoloLabel'), desc: t('games.ohrwurm.modeSoloDesc'), icon: <User className="w-5 h-5" /> },
+              { id: 'group', label: t('games.ohrwurm.modeGroupLabel'), desc: t('games.ohrwurm.modeGroupDesc'), icon: <Users className="w-5 h-5" /> },
             ] as const).map((m) => {
               const activeMode = mode === m.id;
               return (
@@ -1514,16 +1520,16 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
         {/* Spielziel */}
         <section className="mb-8">
-          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Spielziel</h3>
+          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionTarget')}</h3>
           <div className="grid grid-cols-3 gap-3">
-            {TARGETS.map((t) => {
-              const activeT = winTarget === t.v;
+            {TARGETS.map((tgt) => {
+              const activeT = winTarget === tgt.v;
               return (
-                <button key={t.v} onClick={() => { void haptics.select(); setWinTarget(t.v); }}
+                <button key={tgt.v} onClick={() => { void haptics.select(); setWinTarget(tgt.v); }}
                   className="rounded-2xl p-4 text-center transition-all active:scale-[0.98]"
                   style={{ background: OW.surface, border: `2px solid ${activeT ? OW.accent : 'transparent'}` }}>
-                  <div className="text-2xl font-black" style={{ color: activeT ? OW.accent : OW.text }}>{t.v}</div>
-                  <div className="text-[11px] font-bold mt-0.5">{t.label}</div>
+                  <div className="text-2xl font-black" style={{ color: activeT ? OW.accent : OW.text }}>{tgt.v}</div>
+                  <div className="text-[11px] font-bold mt-0.5">{tgt.label}</div>
                 </button>
               );
             })}
@@ -1532,9 +1538,9 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
         {/* Genre-Filter */}
         <section className="mb-8">
-          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Genre <span className="opacity-50 normal-case tracking-normal">(optional)</span></h3>
+          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionGenre')} <span className="opacity-50 normal-case tracking-normal">({t('games.ohrwurm.optional')})</span></h3>
           <div className="flex flex-wrap gap-2">
-            <GenrePill label="Alle" active={genre === null} onClick={() => { void haptics.select(); setGenre(null); }} />
+            <GenrePill label={t('games.ohrwurm.genreAll')} active={genre === null} onClick={() => { void haptics.select(); setGenre(null); }} />
             {OHRWURM_GENRES.map((g) => (
               <GenrePill key={g} label={g} active={genre === g} onClick={() => { void haptics.select(); setGenre(g); }} />
             ))}
@@ -1543,11 +1549,11 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
         {/* Wiedergabe */}
         <section className="mb-8">
-          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>Wiedergabe</h3>
+          <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionPlayback')}</h3>
           <div className="grid grid-cols-2 gap-3">
             {([
-              { id: 'preview', label: 'Vorschau', desc: '30s, verdeckt — überall' },
-              { id: 'spotify', label: 'Spotify Premium', desc: 'Vollversion, verdeckt — App + Premium' },
+              { id: 'preview', label: t('games.ohrwurm.playbackPreviewLabel'), desc: t('games.ohrwurm.playbackPreviewDesc') },
+              { id: 'spotify', label: t('games.ohrwurm.playbackSpotifyLabel'), desc: t('games.ohrwurm.playbackSpotifyDesc') },
             ] as const).map((m) => {
               const activeP = playback === m.id;
               const dimmed = m.id === 'spotify' && !spotifyModePossible();
@@ -1557,14 +1563,14 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
                   className="rounded-2xl p-4 text-left transition-all active:scale-[0.98] disabled:cursor-not-allowed"
                   style={{ background: OW.surface, border: `2px solid ${activeP ? OW.secondary : 'transparent'}`, opacity: dimmed ? 0.5 : 1 }}>
                   <div className="font-black" style={{ color: activeP ? OW.secondary : OW.text }}>{m.label}</div>
-                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{dimmed ? 'Nur in der App' : m.desc}</div>
+                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{dimmed ? t('games.ohrwurm.appOnly') : m.desc}</div>
                 </button>
               );
             })}
           </div>
           {playback === 'spotify' && (
             <p className="text-[11px] mt-2" style={{ color: OW.dim }}>
-              Braucht Spotify Premium + installierte Spotify-App (nur native). Sonst läuft automatisch die 30s-Vorschau.
+              {t('games.ohrwurm.spotifyNote')}
             </p>
           )}
         </section>
@@ -1579,7 +1585,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
             style={canStart
               ? { background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg, boxShadow: `0 20px 40px ${OW.primary}40` }
               : { background: OW.surface, color: OW.dim }}>
-            {canStart ? <>Spiel starten <Crown className="w-5 h-5" /></> : `Mindestens ${MIN} ${mode === 'group' ? 'Gruppen' : 'Spieler'}`}
+            {canStart ? <>{t('games.ohrwurm.startGame')} <Crown className="w-5 h-5" /></> : t('games.ohrwurm.minPlayers', { count: MIN, label: mode === 'group' ? t('games.ohrwurm.groups') : t('games.ohrwurm.players') })}
           </motion.button>
         </div>
       )}
@@ -1599,6 +1605,7 @@ function GenrePill({ label, active, onClick }: { label: string; active: boolean;
 
 /** Online guests wait here until the host starts the game (first state arrives). */
 function OhrwurmWaiting({ roomCode }: { roomCode: string }) {
+  const { t } = useTranslation();
   return (
     <div className="relative min-h-[100dvh] flex flex-col items-center justify-center gap-5 px-8 text-center font-game" style={{ background: OW.bg, color: OW.text }}>
       <style>{OW_STYLE}</style>
@@ -1611,10 +1618,10 @@ function OhrwurmWaiting({ roomCode }: { roomCode: string }) {
       </div>
       <h1 className="relative text-3xl font-black ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</h1>
       <div className="relative flex items-center gap-2 text-sm font-bold" style={{ color: OW.secondary }}>
-        <Loader2 className="w-4 h-4 animate-spin" /> Warte auf den Host…
+        <Loader2 className="w-4 h-4 animate-spin" /> {t('games.ohrwurm.waitingForHost')}
       </div>
       <p className="relative text-xs" style={{ color: OW.dim }}>
-        Raum <span className="font-mono font-black tracking-widest" style={{ color: OW.accent }}>{roomCode}</span> · das Spiel startet gleich
+        {t('games.ohrwurm.waitingRoom', { code: roomCode })}
       </p>
     </div>
   );

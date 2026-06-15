@@ -23,6 +23,9 @@ interface Player {
 const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 const MAX_QUESTIONS = 20;
 
+// Internal sentinel key for the first default player; NOT shown to users directly
+const DEFAULT_PLAYER_SENTINEL = 'Du';
+
 const MODE_TO_CATEGORY: Record<string, string> = {
   prominente: 'Prominente',
   tiere: 'Tiere',
@@ -317,10 +320,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-widest text-white/40">
-          Runde {currentRound}/{totalRounds}
+          {t('games.whoami.round', { round: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-bold text-[#df8eff]">
-          {MODE_TO_CATEGORY[mode]}
+          {t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode])}
         </div>
       </div>
 
@@ -331,10 +334,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <Users className="w-8 h-8 text-[#df8eff]" />
             <h2 className="text-xl font-extrabold text-center">
-              Gebt das Handy an alle AUSSER {players[revealIdx]?.name}!
+              {t('games.whoami.assign.passPhone', { name: players[revealIdx]?.name })}
             </h2>
             <p className="text-white/40 text-sm text-center">
-              {players[revealIdx]?.name} darf NICHT hinschauen!
+              {t('games.whoami.assign.dontLook', { name: players[revealIdx]?.name })}
             </p>
             {/* Tap-to-reveal card — character is HIDDEN until tapped */}
             <motion.button
@@ -349,7 +352,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   {players[revealIdx]?.avatar}
                 </div>
               </div>
-              <div className="text-white/40 text-sm mb-2">{players[revealIdx]?.name} ist:</div>
+              <div className="text-white/40 text-sm mb-2">
+                {t('games.whoami.assign.playerIs', { name: players[revealIdx]?.name })}
+              </div>
               <AnimatePresence mode="wait">
                 {characterRevealed ? (
                   <motion.div key="revealed" initial={{ rotateY: 90, opacity: 0 }} animate={{ rotateY: 0, opacity: 1 }} transition={{ duration: 0.4 }}>
@@ -358,8 +363,12 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 ) : (
                   <motion.div key="hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <div className="text-5xl mb-2">❓</div>
-                    <div className="text-sm text-[#8ff5ff] font-bold animate-pulse">Tippe um aufzudecken</div>
-                    <div className="text-xs text-white/30 mt-1">Stelle sicher, dass {players[revealIdx]?.name} NICHT auf das Handy schaut!</div>
+                    <div className="text-sm text-[#8ff5ff] font-bold animate-pulse">
+                      {t('games.whoami.assign.tapToReveal')}
+                    </div>
+                    <div className="text-xs text-white/30 mt-1">
+                      {t('games.whoami.assign.ensureNotWatching', { name: players[revealIdx]?.name })}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -368,7 +377,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             {characterRevealed && (
               <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.97 }} onClick={nextReveal}
                 className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-                {revealIdx + 1 >= players.length ? <><Play className="w-5 h-5" /> Spiel starten</> : <>Weiter <ArrowRight className="w-5 h-5" /></>}
+                {revealIdx + 1 >= players.length
+                  ? <><Play className="w-5 h-5" /> {t('games.whoami.assign.startGame')}</>
+                  : <>{t('games.whoami.assign.next')} <ArrowRight className="w-5 h-5" /></>}
               </motion.button>
             )}
           </motion.div>
@@ -385,15 +396,15 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             <div className="w-full max-w-sm flex items-center justify-between text-xs">
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#a8abb3]">
-                  Runde {currentRound}/{totalRounds}
+                  {t('games.whoami.round', { round: currentRound, total: totalRounds })}
                 </span>
                 <span className="text-[#df8eff] font-black text-sm mt-0.5">
-                  {MODE_TO_CATEGORY[mode]}
+                  {t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode])}
                 </span>
               </div>
               <div className="flex flex-col items-end">
                 <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#a8abb3]">
-                  Am Zug
+                  {t('games.whoami.asking.yourTurn')}
                 </span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
@@ -428,7 +439,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   {/* Top-fold visual — the "tape" */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-2 bg-[#8ff5ff] rounded-b-full shadow-[0_4px_14px_rgba(143,245,255,0.6)]" />
                   <span className="text-[#00deec] font-bold tracking-[0.2em] text-[11px] uppercase mb-4">
-                    Deine Identität
+                    {t('games.whoami.asking.yourIdentity')}
                   </span>
                   <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-white break-words px-2">
                     {activePlayer.character}
@@ -441,10 +452,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             {/* Sub-instruction */}
             <div className="text-center space-y-1 my-2">
               <p className="text-[#a8abb3] font-medium text-sm">
-                Nur für die Mitspieler sichtbar
+                {t('games.whoami.asking.visibleToOthers')}
               </p>
               <p className="text-[#72757d] text-xs">
-                Halte das Handy vor deine Stirn — die anderen geben dir Tipps.
+                {t('games.whoami.asking.holdPhone')}
               </p>
             </div>
 
@@ -456,7 +467,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 className="h-14 rounded-full bg-[#0f141a] border border-[#44484f]/60 flex items-center justify-center gap-2 font-black tracking-[0.15em] uppercase text-[#a8abb3] hover:bg-[#20262f] transition-colors"
               >
                 <ArrowRight className="w-4 h-4" />
-                Skip
+                {t('games.whoami.asking.skip')}
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
@@ -465,7 +476,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 style={{ background: 'linear-gradient(135deg, #8ff5ff, #00eefc)' }}
               >
                 <Check className="w-4 h-4" />
-                Gelöst
+                {t('games.whoami.asking.solved')}
               </motion.button>
             </div>
           </motion.div>
@@ -481,30 +492,40 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               if (!voter) return null;
               return (
                 <>
-                  <div className="text-white/40 text-sm">{activePlayer.name} fragt:</div>
+                  <div className="text-white/40 text-sm">
+                    {t('games.whoami.answerVote.asks', { name: activePlayer.name })}
+                  </div>
                   <div className="w-full max-w-sm rounded-2xl bg-[#1b2028] border border-[#44484f]/20 p-5 text-center">
                     <p className="text-lg font-bold text-white">"{currentQuestion}"</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
                       style={{ backgroundColor: voter.color }}>{voter.avatar}</div>
-                    <span className="text-white/60">{voter.name} antwortet</span>
+                    <span className="text-white/60">
+                      {t('games.whoami.answerVote.answers', { name: voter.name })}
+                    </span>
                   </div>
                   <div className="flex gap-3">
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('yes')}
                       className="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex flex-col items-center justify-center gap-1">
                       <Check className="w-7 h-7 text-emerald-400" />
-                      <span className="text-xs text-emerald-400 font-bold">Ja</span>
+                      <span className="text-xs text-emerald-400 font-bold">
+                        {t('games.whoami.answerVote.yes')}
+                      </span>
                     </motion.button>
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('no')}
                       className="w-20 h-20 rounded-2xl bg-red-500/20 border border-red-500/30 flex flex-col items-center justify-center gap-1">
                       <X className="w-7 h-7 text-red-400" />
-                      <span className="text-xs text-red-400 font-bold">Nein</span>
+                      <span className="text-xs text-red-400 font-bold">
+                        {t('games.whoami.answerVote.no')}
+                      </span>
                     </motion.button>
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('maybe')}
                       className="w-20 h-20 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex flex-col items-center justify-center gap-1">
                       <Minus className="w-7 h-7 text-amber-400" />
-                      <span className="text-xs text-amber-400 font-bold">Vllt.</span>
+                      <span className="text-xs text-amber-400 font-bold">
+                        {t('games.whoami.answerVote.maybe')}
+                      </span>
                     </motion.button>
                   </div>
                   <div className="flex gap-1">
@@ -524,9 +545,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           <motion.div key="guessing" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <Sparkles className="w-8 h-8 text-amber-400" />
-            <h2 className="text-xl font-extrabold">{activePlayer.name} raet!</h2>
+            <h2 className="text-xl font-extrabold">
+              {t('games.whoami.guessing.playerGuesses', { name: activePlayer.name })}
+            </h2>
             <input type="text" value={guessAttempt} onChange={(e) => setGuessAttempt(e.target.value)}
-              placeholder="Wer bin ich?"
+              placeholder={t('games.whoami.guessing.placeholder')}
               className="w-full max-w-sm bg-[#1b2028] border border-[#df8eff]/20 rounded-2xl px-4 py-3 text-white text-center text-lg font-bold placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50" />
             <motion.button whileTap={{ scale: 0.97 }} onClick={tryGuess}
               disabled={!guessAttempt.trim()}
@@ -534,7 +557,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 guessAttempt.trim()
                   ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]'
                   : 'bg-white/5 text-white/20 cursor-not-allowed')}>
-              Raten!
+              {t('games.whoami.guessing.guess')}
             </motion.button>
           </motion.div>
         )}
@@ -561,14 +584,16 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                       <Sparkles className="w-6 h-6 text-[#8ff5ff]" />
                     </motion.div>
                   </div>
-                  <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase">Glückwunsch!</p>
+                  <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase">
+                    {t('games.whoami.result.congrats')}
+                  </p>
                   <motion.h2
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', bounce: 0.4 }}
                     className="text-4xl sm:text-5xl font-black tracking-tight leading-none drop-shadow-[0_0_15px_rgba(223,142,255,0.5)]"
                   >
-                    RICHTIG GERATEN!
+                    {t('games.whoami.result.correct')}
                   </motion.h2>
                 </div>
 
@@ -596,7 +621,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     <div>
                       <h3 className="text-3xl font-black">{activePlayer.character}</h3>
                       <p className="text-[#a8abb3] font-medium text-sm mt-1">
-                        Kategorie · {MODE_TO_CATEGORY[mode]}
+                        {t('games.whoami.result.category', { category: t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode]) })}
                       </p>
                     </div>
                   </div>
@@ -609,7 +634,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                       <HelpCircle className="w-5 h-5 text-[#8ff5ff]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">Fragen benötigt</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">
+                        {t('games.whoami.result.questionsNeeded')}
+                      </p>
                       <p className="text-2xl font-black text-white">{activePlayer.questionsAsked + 1}</p>
                     </div>
                   </div>
@@ -618,7 +645,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                       <Star className="w-5 h-5 text-[#df8eff]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">Punkte</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">
+                        {t('games.whoami.result.points')}
+                      </p>
                       <p className="text-2xl font-black text-white">{activePlayer.score}</p>
                     </div>
                   </div>
@@ -635,9 +664,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     </div>
                     <div>
                       <p className="text-lg font-extrabold text-white">
-                        +{Math.min(10, Math.max(1, maxQ - (activePlayer.questionsAsked + 1) + 1))} Punkte
+                        {t('games.whoami.result.pointsEarned', { count: Math.min(10, Math.max(1, maxQ - (activePlayer.questionsAsked + 1) + 1)) })}
                       </p>
-                      <p className="text-xs text-[#a8abb3]">Belohnung für Runde</p>
+                      <p className="text-xs text-[#a8abb3]">
+                        {t('games.whoami.result.roundReward')}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -651,7 +682,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
                   >
                     <Play className="w-5 h-5" />
-                    Nächster Spieler
+                    {t('games.whoami.result.nextPlayer')}
                   </motion.button>
                 </div>
               </div>
@@ -663,9 +694,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     <X className="w-12 h-12 text-[#ff6e84]" />
                   </div>
                 </motion.div>
-                <h2 className="text-2xl font-extrabold text-[#ff6e84]">Übersprungen</h2>
+                <h2 className="text-2xl font-extrabold text-[#ff6e84]">
+                  {t('games.whoami.result.skipped')}
+                </h2>
                 <div className="text-[#a8abb3] text-sm text-center">
-                  {activePlayer.name} war <span className="text-white font-bold">{activePlayer.character}</span>
+                  {t('games.whoami.result.wasCharacter', { name: activePlayer.name, character: activePlayer.character })}
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.97 }}
@@ -673,7 +706,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   className="flex items-center gap-2 px-8 py-3.5 rounded-full h-14 font-extrabold text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]"
                   style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
                 >
-                  Weiter <ArrowRight className="w-5 h-5" />
+                  {t('games.whoami.assign.next')} <ArrowRight className="w-5 h-5" />
                 </motion.button>
               </div>
             )}
@@ -691,9 +724,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               </div>
             </motion.div>
             <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
-              Spielende!
+              {t('games.whoami.gameOver.title')}
             </h2>
-            <div className="text-lg font-bold text-[#df8eff]">{winner.name} gewinnt!</div>
+            <div className="text-lg font-bold text-[#df8eff]">
+              {t('games.whoami.gameOver.winner', { name: winner.name })}
+            </div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
                 <div key={p.id} className={cn("flex items-center gap-3 bg-[#1b2028] border rounded-2xl px-4 py-3",
@@ -703,20 +738,26 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <div className="flex-1 min-w-0">
                     <div className="text-white/80 font-semibold truncate">{p.name}</div>
-                    <div className="text-xs text-white/30">{p.character} {p.guessedCorrectly ? '(erraten!)' : '(nicht erraten)'}</div>
+                    <div className="text-xs text-white/30">
+                      {p.character} {p.guessedCorrectly
+                        ? t('games.whoami.gameOver.guessed')
+                        : t('games.whoami.gameOver.notGuessed')}
+                    </div>
                   </div>
-                  <span className="text-[#df8eff] font-bold">{p.score} Pkt.</span>
+                  <span className="text-[#df8eff] font-bold">
+                    {t('games.whoami.gameOver.pts', { score: p.score })}
+                  </span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
-                <RotateCcw className="w-4 h-4" /> Nochmal
+                <RotateCcw className="w-4 h-4" /> {t('games.whoami.gameOver.playAgain')}
               </motion.button>
               <button onClick={() => navigate('/games')}
                 className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                Anderes Spiel
+                {t('games.whoami.gameOver.anotherGame')}
               </button>
             </div>
           </motion.div>
@@ -737,21 +778,20 @@ interface WhoAmISetupProps {
     settings: { timer: number; rounds: number },
   ) => void;
   onlinePlayers?: { id: string; name: string; color?: string; avatar?: string }[];
-  t: (key: string, fallback?: string) => string;
+  t: (key: string, options?: Record<string, unknown> | string) => string;
   haptics: ReturnType<typeof useHaptics>;
 }
 
-const SETUP_CATEGORIES: Array<{
+// SETUP_CATEGORIES uses i18n keys; labels/descs are rendered via t() in JSX below.
+const SETUP_CATEGORY_IDS: Array<{
   id: string;
-  label: string;
-  desc: string;
   icon: React.ReactNode;
   tone: 'primary' | 'secondary' | 'tertiary' | 'accent';
 }> = [
-  { id: 'prominente', label: 'Prominente', desc: 'Hollywood-Stars, Musiker und Pop-Kultur-Ikonen.', icon: <Star className="w-6 h-6" />, tone: 'primary' },
-  { id: 'filme',      label: 'Filmhelden', desc: 'Von Klassiker-Ikonen bis Blockbuster-Legenden.', icon: <Film className="w-6 h-6" />, tone: 'primary' },
-  { id: 'tiere',      label: 'Tiere',      desc: 'Vom Dschungel bis zum Ozean — rate das Tier!', icon: <PawPrint className="w-6 h-6" />, tone: 'tertiary' },
-  { id: 'berufe',     label: 'Berufe',     desc: 'Welchen Job übst du gerade aus?',                icon: <Briefcase className="w-6 h-6" />, tone: 'secondary' },
+  { id: 'prominente', icon: <Star className="w-6 h-6" />, tone: 'primary' },
+  { id: 'filme',      icon: <Film className="w-6 h-6" />, tone: 'primary' },
+  { id: 'tiere',      icon: <PawPrint className="w-6 h-6" />, tone: 'tertiary' },
+  { id: 'berufe',     icon: <Briefcase className="w-6 h-6" />, tone: 'secondary' },
 ];
 
 const TONE_CLASSES: Record<'primary' | 'secondary' | 'tertiary' | 'accent', { ring: string; glow: string; iconBg: string; iconFg: string; text: string }> = {
@@ -773,8 +813,11 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
       }));
     }
     return [
-      { id: 'p-1', name: 'Du', color: PLAYER_COLORS[0], avatar: 'D' },
-      { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
+      // Internal sentinel 'Du' is kept as the name; display is handled by PlayerSetup
+      // which will show t('games.whoami.setup.defaultPlayerName') as the placeholder/label.
+      // The sentinel is compared in handleImportNames to detect the default slot.
+      { id: 'p-1', name: DEFAULT_PLAYER_SENTINEL, color: PLAYER_COLORS[0], avatar: 'D' },
+      { id: 'p-2', name: t('games.whoami.setup.playerN', { n: 2 }), color: PLAYER_COLORS[1], avatar: '2' },
     ];
   });
   const [categoryId, setCategoryId] = useState('prominente');
@@ -786,7 +829,8 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
     const nextIdx = players.length;
     const id = `p-${Date.now()}-${nextIdx}`;
     setPlayers((prev) => [...prev, {
-      id, name: `Spieler ${nextIdx + 1}`,
+      id,
+      name: t('games.whoami.setup.playerN', { n: nextIdx + 1 }),
       color: PLAYER_COLORS[nextIdx % PLAYER_COLORS.length],
       avatar: String(nextIdx + 1),
     }]);
@@ -800,24 +844,30 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
     setPlayers((prev) => prev.map((p) => p.id === id ? { ...p, name, avatar: name.slice(0, 1).toUpperCase() || '?' } : p));
   };
 
+  // REPLACE roster with imported names, dropping all placeholders/defaults.
+  // Pad to MIN with generated names if needed.
   const handleImportNames = (names: string[]) => {
-    setPlayers((prev) => {
-      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()) && p.name !== 'Du');
-      const merged = [...kept];
+    setPlayers(() => {
+      const imported: { id: string; name: string; color: string; avatar: string }[] = [];
       for (const n of names) {
-        if (merged.length >= MAX) break;
-        merged.push({
-          id: `p-${Date.now()}-${merged.length}`,
+        if (imported.length >= MAX) break;
+        imported.push({
+          id: `p-${Date.now()}-${imported.length}`,
           name: n,
-          color: PLAYER_COLORS[merged.length % PLAYER_COLORS.length],
+          color: PLAYER_COLORS[imported.length % PLAYER_COLORS.length],
           avatar: n.slice(0, 1).toUpperCase() || '?',
         });
       }
-      while (merged.length < MIN) {
-        const idx = merged.length;
-        merged.push({ id: `p-${Date.now()}-${idx}`, name: `Spieler ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
+      while (imported.length < MIN) {
+        const idx = imported.length;
+        imported.push({
+          id: `p-${Date.now()}-${idx}`,
+          name: t('games.whoami.setup.playerN', { n: idx + 1 }),
+          color: PLAYER_COLORS[idx % PLAYER_COLORS.length],
+          avatar: String(idx + 1),
+        });
       }
-      return merged;
+      return imported;
     });
   };
 
@@ -840,12 +890,14 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
       <main className="pt-10 pb-40 px-6 max-w-2xl mx-auto">
         {/* Hero */}
         <div className="relative mb-10">
-          <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">Spielvorbereitung</p>
+          <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">
+            {t('games.whoami.setup.heading')}
+          </p>
           <h2 className="text-4xl font-extrabold tracking-tight leading-tight drop-shadow-[0_0_8px_rgba(223,142,255,0.35)]">
-            Wer wirst du heute sein?
+            {t('games.whoami.setup.title')}
           </h2>
           <p className="text-[#a8abb3] text-sm mt-2 max-w-md">
-            Wähle deine Mitspieler und eine Kategorie — der Rest passiert im Spiel.
+            {t('games.whoami.setup.subtitle')}
           </p>
         </div>
 
@@ -860,7 +912,7 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
             min={MIN}
             max={isOnline ? players.length : MAX}
             accent="#df8eff"
-            label="Spieler"
+            label={t('games.whoami.setup.playerLabel')}
             maxNameLength={14}
           />
         </section>
@@ -869,10 +921,12 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
         <section className="mb-16">
           <div className="flex items-center gap-2 mb-5">
             <Sparkles className="w-4 h-4 text-[#8ff5ff]" />
-            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3]">Wähle ein Thema</h3>
+            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3]">
+              {t('games.whoami.setup.pickTheme')}
+            </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {SETUP_CATEGORIES.map((cat) => {
+            {SETUP_CATEGORY_IDS.map((cat) => {
               const active = categoryId === cat.id;
               const tone = TONE_CLASSES[cat.tone];
               return (
@@ -909,12 +963,14 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
                       'text-base font-extrabold mb-1',
                       active ? tone.text : 'text-white group-hover:' + tone.text,
                     )}>
-                      {cat.label}
+                      {t(`games.whoami.setup.cat.${cat.id}.label`)}
                     </h4>
-                    <p className="text-xs text-[#a8abb3] leading-relaxed">{cat.desc}</p>
+                    <p className="text-xs text-[#a8abb3] leading-relaxed">
+                      {t(`games.whoami.setup.cat.${cat.id}.desc`)}
+                    </p>
                     {active && (
                       <div className={cn('mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest', tone.text)}>
-                        <Check className="w-3 h-3" /> Ausgewählt
+                        <Check className="w-3 h-3" /> {t('games.whoami.setup.selected')}
                       </div>
                     )}
                   </div>
@@ -942,11 +998,11 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
         >
           {canStart ? (
             <>
-              SPIEL STARTEN
+              {t('games.whoami.setup.startGame')}
               <Play className="w-5 h-5" />
             </>
           ) : (
-            'Mindestens 2 Spieler'
+            t('games.whoami.setup.minPlayers')
           )}
         </motion.button>
       </div>

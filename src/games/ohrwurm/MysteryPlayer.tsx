@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Play, Pause, Zap, Loader2, Music2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // OHRWURM — „Mystery Player": spielt die 30s-Vorschau ab, OHNE Titel/Interpret
 // zu zeigen. Dreht eine Vinyl, animiert Equalizer-Bars und zeigt einen
@@ -35,6 +36,7 @@ export interface MysteryPlayerProps {
 export function MysteryPlayer({
   loading, hasPreview, isPlaying, started, timeLeft, total, speedActive, onPlay,
 }: MysteryPlayerProps) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
 
   const SIZE = 224;
@@ -71,7 +73,7 @@ export function MysteryPlayer({
         }
       >
         <Zap className="w-3.5 h-3.5" fill={speedActive ? C.accent : 'none'} />
-        {speedActive ? 'Speed-Bonus aktiv · +2 🎣' : 'Speed-Bonus (erste 10s)'}
+        {speedActive ? t('games.ohrwurm.speedBonusActive') : t('games.ohrwurm.speedBonusHint')}
       </div>
 
       {/* Disc + Ring */}
@@ -108,7 +110,7 @@ export function MysteryPlayer({
           type="button"
           onClick={onPlay}
           disabled={loading}
-          aria-label={isPlaying ? 'Pause' : 'Song abspielen'}
+          aria-label={isPlaying ? t('games.ohrwurm.pause') : t('games.ohrwurm.playSong')}
           className="absolute rounded-full flex items-center justify-center cursor-pointer disabled:cursor-wait"
           style={{ inset: STROKE + 10 }}
           whileTap={{ scale: 0.96 }}
@@ -174,12 +176,12 @@ export function MysteryPlayer({
               {timeLeft}s
             </span>
             <p className="text-[11px] font-bold" style={{ color: C.dim }}>
-              {danger ? 'Schnell — gleich verfällt die Karte!' : 'Zeit zum Einordnen'}
+              {danger ? t('games.ohrwurm.hurryCardExpires') : t('games.ohrwurm.timeToPlace')}
             </p>
           </div>
         ) : (
           <p className="text-sm font-bold text-center" style={{ color: C.dim }}>
-            {loading ? 'Song wird geladen …' : hasPreview ? 'Tippen zum Abspielen — Titel bleibt geheim' : 'Antippen & los'}
+            {loading ? t('games.ohrwurm.songLoading') : hasPreview ? t('games.ohrwurm.tapToPlayHidden') : t('games.ohrwurm.tapAndGo')}
           </p>
         )}
       </div>
