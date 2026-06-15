@@ -1,34 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 interface BombTutorialProps {
   onDismiss: () => void;
 }
 
-const STEPS = [
-  {
-    icon: '\ud83d\udccb',
-    text: 'Kategorie + Buchstabe wird angezeigt',
-  },
-  {
-    icon: '\u2705',
-    text: '"Geschafft" wenn du eine Antwort hast',
-  },
-  {
-    icon: '\u274c',
-    text: '"Weiss nicht" = 1 Strafpunkt',
-  },
-  {
-    icon: '\ud83d\udca3',
-    text: 'Bei wem die Bombe explodiert = 2 Strafpunkte',
-  },
-  {
-    icon: '\u26a1',
-    text: 'Antworten duerfen sich nicht wiederholen!',
-  },
-];
+const STEP_ICONS = ['\ud83d\udccb', '\u2705', '\u274c', '\ud83d\udca3', '\u26a1'];
 
 export default function BombTutorial({ onDismiss }: BombTutorialProps) {
+  const { t } = useTranslation();
+  const STEPS = [
+    { icon: STEP_ICONS[0], text: t('games.bomb.tutorialStep1') },
+    { icon: STEP_ICONS[1], text: t('games.bomb.tutorialStep2') },
+    { icon: STEP_ICONS[2], text: t('games.bomb.tutorialStep3') },
+    { icon: STEP_ICONS[3], text: t('games.bomb.tutorialStep4') },
+    { icon: STEP_ICONS[4], text: t('games.bomb.tutorialStep5') },
+  ];
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -82,10 +70,10 @@ export default function BombTutorial({ onDismiss }: BombTutorialProps) {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              ALLE ANTWORTEN
+              {t('gameModes.bomb.alle.name').toUpperCase()}
             </h2>
             <p className="text-white/50 text-sm mt-2">
-              Jeder muss eine Antwort geben!
+              {t('games.bomb.tutorialSubtitle')}
             </p>
           </motion.div>
 
@@ -120,7 +108,7 @@ export default function BombTutorial({ onDismiss }: BombTutorialProps) {
             transition={{ delay: 0.55 }}
             whileTap={{ scale: 0.97 }}
           >
-            VERSTANDEN!
+            {t('games.bomb.tutorialDismiss')}
           </motion.button>
         </div>
       </motion.div>

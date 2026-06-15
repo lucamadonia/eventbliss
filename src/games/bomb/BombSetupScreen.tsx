@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Bomb, Users, Zap, Brain, Timer, Hash, Shuffle } from 'lucide-react';
 import { PlayerSetup } from '../ui/PlayerSetup';
@@ -10,15 +11,16 @@ interface SetupScreenProps {
   onStart: () => void;
 }
 
-const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode }[] = [
-  { key: 'kategorie', label: 'Kategorie', desc: 'Nenne etwas aus einer Kategorie', icon: <Brain className="w-4 h-4" /> },
-  { key: 'quiz', label: 'Quiz', desc: 'Multiple-Choice Fragen', icon: <Zap className="w-4 h-4" /> },
-  { key: 'speed', label: 'Speed', desc: 'Timer wird jede Runde kuerzer', icon: <Timer className="w-4 h-4" /> },
-  { key: 'alle', label: 'Alle antworten', desc: 'Jeder muss eine Antwort geben!', icon: <Users className="w-4 h-4" /> },
-];
-
 export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScreenProps) {
+  const { t } = useTranslation();
   const canStart = state.players.length >= 2 && state.players.every((p) => p.name.trim().length > 0);
+
+  const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode }[] = [
+    { key: 'kategorie', label: t('gameModes.bomb.kategorie.name'), desc: t('gameModes.bomb.kategorie.desc'), icon: <Brain className="w-4 h-4" /> },
+    { key: 'quiz', label: t('gameModes.bomb.quiz.name'), desc: t('gameModes.bomb.quiz.desc'), icon: <Zap className="w-4 h-4" /> },
+    { key: 'speed', label: t('gameModes.bomb.speed.name'), desc: t('gameModes.bomb.speed.desc'), icon: <Timer className="w-4 h-4" /> },
+    { key: 'alle', label: t('gameModes.bomb.alle.name'), desc: t('gameModes.bomb.alle.desc'), icon: <Users className="w-4 h-4" /> },
+  ];
 
   const addPlayer = () => {
     if (state.players.length >= 20) return;
@@ -37,11 +39,11 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
   };
 
   const importNames = (names: string[]) => {
-    const kept = state.players.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
-    const merged = [...kept];
-    for (const n of names) { if (merged.length >= 20) break; merged.push({ name: n, penalties: 0 }); }
-    while (merged.length < 2) merged.push({ name: '', penalties: 0 });
-    onUpdate({ players: merged });
+    // Replace entire roster with imported names; drop all existing (incl. placeholders)
+    const fresh: { name: string; penalties: number }[] = [];
+    for (const n of names) { if (fresh.length >= 20) break; fresh.push({ name: n, penalties: 0 }); }
+    while (fresh.length < 2) fresh.push({ name: '', penalties: 0 });
+    onUpdate({ players: fresh });
   };
 
   return (
@@ -70,10 +72,10 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             <Bomb className="w-10 h-10 text-white" />
           </motion.div>
           <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Tickende Bombe
+            {t('games.bomb.name')}
           </h1>
           <p className="text-white/50 text-sm max-w-[280px] mx-auto">
-            Schaffst du es, die Bombe rechtzeitig weiterzugeben?
+            {t('games.bomb.subtitle')}
           </p>
         </motion.div>
 
@@ -106,7 +108,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
         >
           {/* Spielmodus Card */}
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
-            <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">Spielmodus</h2>
+            <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">{t('games.bomb.labelMode')}</h2>
             <div className="flex gap-2">
               {modes.map((m) => (
                 <button
@@ -130,7 +132,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             {/* Rundenanzahl */}
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">Runden</h2>
+                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelRounds')}</h2>
                 <span className="text-[#cf96ff] text-sm font-bold">{state.totalRounds}</span>
               </div>
               <input
@@ -149,9 +151,9 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             {/* Timer */}
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">Timer</h2>
+                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelTimer')}</h2>
                 {state.randomTimer ? (
-                  <span className="text-[#ff7350] text-sm font-bold">??? Random</span>
+                  <span className="text-[#ff7350] text-sm font-bold">{t('games.bomb.timerRandom')}</span>
                 ) : (
                   <span className="text-[#00e3fd] text-sm font-bold">{state.timerMin}–{state.timerMax}s</span>
                 )}
@@ -166,7 +168,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
                 }`}
               >
                 <Shuffle className="w-3.5 h-3.5" />
-                {state.randomTimer ? 'Random aktiv (15–90s)' : 'Random Timer aktivieren'}
+                {state.randomTimer ? t('games.bomb.randomActive') : t('games.bomb.randomActivate')}
               </button>
               {/* Sliders only when not random */}
               {!state.randomTimer && (
@@ -202,7 +204,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           {(state.mode === 'kategorie' || state.mode === 'alle') && (
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">Kategorie</h2>
+                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelCategory')}</h2>
               </div>
               <button
                 onClick={() => onUpdate({ sameCategory: !state.sameCategory })}
@@ -213,10 +215,10 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
                 }`}
               >
                 <Hash className="w-3.5 h-3.5" />
-                {state.sameCategory ? 'Gleiche Kategorie pro Runde' : 'Wechselnde Kategorien'}
+                {state.sameCategory ? t('games.bomb.sameCategoryOn') : t('games.bomb.sameCategoryOff')}
               </button>
               <p className="text-white/20 text-[10px] mt-2 text-center">
-                {state.sameCategory ? 'Alle Spieler beantworten die gleiche Kategorie' : 'Jeder Spieler bekommt eine neue Kategorie'}
+                {state.sameCategory ? t('games.bomb.sameCategoryHintOn') : t('games.bomb.sameCategoryHintOff')}
               </p>
             </div>
           )}
@@ -242,7 +244,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
             whileTap={canStart ? { scale: 0.97 } : undefined}
           >
             <Bomb className="w-5 h-5" />
-            SPIEL STARTEN
+            {t('games.bomb.startGame')}
           </motion.button>
         </div>
       </div>

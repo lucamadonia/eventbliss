@@ -25,10 +25,6 @@ const GAME_MODES: GameMode[] = [
   { id: 'fragen', name: 'Mit Fragen', desc: 'Flasche + Fragen & Aufgaben', icon: <MessageCircle className="w-6 h-6" /> },
   { id: 'nur-flasche', name: 'Nur Flasche', desc: 'Reines Flaschendrehen', icon: <Wine className="w-6 h-6" /> },
 ];
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 15, max: 60, default: 30, step: 5, label: 'Aufgaben-Timer (Sek.)' },
-  rounds: { min: 5, max: 50, default: 15, step: 1, label: 'Runden' },
-};
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -69,6 +65,10 @@ const neonStyles = `
 export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const setupSettings: SettingsConfig = useMemo(() => ({
+    timer: { min: 15, max: 60, default: 30, step: 5, label: t('games.bottlespin.setupTimerLabel') },
+    rounds: { min: 5, max: 50, default: 15, step: 1, label: t('games.bottlespin.setupRoundsLabel') },
+  }), [t]);
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
@@ -222,8 +222,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
 
   if (phase === 'setup') {
     return (
-      <GameSetup gameId="bottlespin" modes={getTranslatedModes('bottlespin', GAME_MODES, t)} settings={SETUP_SETTINGS} onStart={handleStart}
-        title="Flaschendrehen" minPlayers={2} maxPlayers={12} onlinePlayers={online?.players} />
+      <GameSetup gameId="bottlespin" modes={getTranslatedModes('bottlespin', GAME_MODES, t)} settings={setupSettings} onStart={handleStart}
+        title={t('gameNames.flaschendrehen')} minPlayers={2} maxPlayers={12} onlinePlayers={online?.players} />
     );
   }
 
@@ -244,10 +244,10 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ff5ff]/60">
-          Runde {currentRound}/{totalRounds}
+          {t('games.bottlespin.roundCounter', { current: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full glass-panel text-sm font-bold text-[#df8eff]">
-          {mode === 'fragen' ? 'Fragen' : 'Flasche'}
+          {mode === 'fragen' ? t('gameModes.bottlespin.fragen.name') : t('gameModes.bottlespin.nur-flasche.name')}
         </div>
       </div>
 
@@ -262,7 +262,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                   className="neon-text-purple text-[#df8eff]">
                   {selectedPlayer.name}!
                 </motion.span>
-              ) : <span className="text-white/60">Wer wird es sein?</span>}
+              ) : <span className="text-white/60">{t('games.bottlespin.whoWillItBe')}</span>}
             </h2>
 
             {/* Player circle + bottle */}
@@ -344,7 +344,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               mode === 'nur-flasche' ? (
                 <motion.button whileTap={{ scale: 0.97 }} onClick={nextRoundBottleOnly}
                   className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base btn-glow">
-                  <Sparkles className="w-5 h-5" /> Naechste Runde
+                  <Sparkles className="w-5 h-5" /> {t('games.bottlespin.nextRound')}
                 </motion.button>
               ) : null
             ) : (
@@ -352,7 +352,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                 className={cn('flex items-center gap-2 px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base transition-all',
                   isSpinning ? 'glass-panel text-white/30 cursor-not-allowed'
                     : 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white btn-glow')}>
-                <Zap className="w-5 h-5" /> {isSpinning ? 'Dreht...' : 'Drehen!'}
+                <Zap className="w-5 h-5" /> {isSpinning ? t('games.bottlespin.spinning') : t('games.bottlespin.spin')}
               </motion.button>
             )}
           </motion.div>
@@ -381,7 +381,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                 style={{ backgroundColor: selectedPlayer.color, boxShadow: `0 0 12px ${selectedPlayer.color}44` }}>
                 {selectedPlayer.avatar}
               </div>
-              <span className="text-sm font-bold text-white/80">{selectedPlayer.name}s Aufgabe</span>
+              <span className="text-sm font-bold text-white/80">{t('games.bottlespin.playerChallenge', { name: selectedPlayer.name })}</span>
             </motion.div>
 
             {/* Glowing card */}
@@ -403,7 +403,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                   {/* Type label */}
                   <h3 className={cn('text-5xl font-black tracking-tight',
                     currentCard.type === 'frage' ? 'text-[#8ff5ff] neon-text-cyan' : 'text-[#ff6b98] neon-text')}>
-                    {currentCard.type === 'frage' ? 'FRAGE' : 'AUFGABE'}
+                    {currentCard.type === 'frage' ? t('games.bottlespin.cardTypeQuestion') : t('games.bottlespin.cardTypeChallenge')}
                   </h3>
                   {/* Divider */}
                   <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#44484f] to-transparent" />
@@ -422,21 +422,21 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <div className="flex flex-col gap-3 w-full max-w-sm">
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleAccept}
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
-                  <ThumbsUp className="w-5 h-5" /> {currentCard.type === 'aufgabe' ? 'Erledigt' : 'Annehmen'}
+                  <ThumbsUp className="w-5 h-5" /> {currentCard.type === 'aufgabe' ? t('games.bottlespin.done') : t('games.bottlespin.accept')}
                 </motion.button>
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleDecline}
                   className="w-full flex items-center justify-center gap-2 bg-transparent border border-[#ff6e84]/30 text-[#ff6e84]/70 px-6 py-3.5 rounded-2xl font-bold hover:border-[#ff6e84]/50 hover:text-[#ff6e84] transition-all">
-                  Ablehnen
+                  {t('games.bottlespin.decline')}
                 </motion.button>
               </div>
             ) : (
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                className="text-[#ff6e84] font-bold text-sm neon-text">-1 Punkt</motion.div>
+                className="text-[#ff6e84] font-bold text-sm neon-text">{t('games.bottlespin.penaltyPoint')}</motion.div>
             )}
 
             {/* Footer */}
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-[10px] text-white/20 uppercase tracking-widest">Runde {currentRound}/{totalRounds}</span>
+              <span className="text-[10px] text-white/20 uppercase tracking-widest">{t('games.bottlespin.roundCounter', { current: currentRound, total: totalRounds })}</span>
               <div className="flex gap-1">
                 {Array.from({ length: Math.min(totalRounds, 12) }).map((_, i) => (
                   <div key={i} className={cn('w-1.5 h-1.5 rounded-full',
@@ -457,7 +457,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
             <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4">
               <h2 className="text-xl font-extrabold neon-text-purple text-[#df8eff]">
-                Hat {selectedPlayer.name} es geschafft?
+                {t('games.bottlespin.voteQuestion', { name: selectedPlayer.name })}
               </h2>
               <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}
                 className="relative">
@@ -467,7 +467,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                   {voter.avatar}
                 </div>
               </motion.div>
-              <p className="text-white/50 font-semibold">{voter.name} stimmt ab</p>
+              <p className="text-white/50 font-semibold">{t('games.bottlespin.voting', { name: voter.name })}</p>
               <div className="flex gap-5">
                 <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => castVote(true)}
                   className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-emerald-500/20 hover:border-emerald-500/40 transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
@@ -502,11 +502,11 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               </div>
             </motion.div>
             <h2 className="text-3xl font-black neon-text bg-gradient-to-r from-amber-400 via-[#ff6b98] to-[#df8eff] bg-clip-text text-transparent">
-              Spielende!
+              {t('games.bottlespin.gameOver')}
             </h2>
             {mode === 'fragen' && winner && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="text-lg font-bold text-[#df8eff] neon-text-purple">{winner.name} gewinnt!</motion.div>
+                className="text-lg font-bold text-[#df8eff] neon-text-purple">{t('games.bottlespin.wins', { name: winner.name })}</motion.div>
             )}
             {mode === 'fragen' && (
               <div className="w-full space-y-2.5 max-h-64 overflow-y-auto">
@@ -519,22 +519,22 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ring-2 ring-white/[0.08]"
                       style={{ backgroundColor: p.color }}>{p.avatar}</div>
                     <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                    <span className="text-[#df8eff] font-bold">{p.score} Pkt.</span>
+                    <span className="text-[#df8eff] font-bold">{t('games.bottlespin.scorePoints', { score: p.score })}</span>
                   </motion.div>
                 ))}
               </div>
             )}
             {mode === 'nur-flasche' && (
-              <p className="text-white/30 text-center text-sm">{totalRounds} Runden gespielt. Das war lustig!</p>
+              <p className="text-white/30 text-center text-sm">{t('games.bottlespin.roundsPlayed', { rounds: totalRounds })}</p>
             )}
             <div className="w-full space-y-3 mt-3">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
-                <RotateCcw className="w-4 h-4" /> Nochmal
+                <RotateCcw className="w-4 h-4" /> {t('games.bottlespin.playAgain')}
               </motion.button>
               <button onClick={() => navigate('/games')}
                 className="w-full py-3.5 rounded-2xl border border-[#df8eff]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#df8eff]/20 transition-all">
-                Anderes Spiel
+                {t('games.bottlespin.otherGame')}
               </button>
             </div>
           </motion.div>

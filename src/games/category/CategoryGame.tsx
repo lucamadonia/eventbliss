@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from "framer-motion";
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
@@ -54,10 +54,10 @@ interface RoundResult {
 // Constants
 // ---------------------------------------------------------------------------
 
-const MODE_INFO: Record<GameMode, { label: string; desc: string; icon: React.ElementType; timer: number }> = {
-  classic: { label: "Klassisch", desc: "30s pro Spieler, gleiche Kategorie", icon: Clock, timer: 30 },
-  rapid: { label: "Rapid Fire", desc: "10s pro Spieler, neue Kategorie", icon: Zap, timer: 10 },
-  letter: { label: "Buchstaben-Lock", desc: "Nur Worte mit bestimmtem Buchstaben", icon: Type, timer: 20 },
+const MODE_INFO: Record<GameMode, { icon: React.ElementType; timer: number }> = {
+  classic: { icon: Clock, timer: 30 },
+  rapid:   { icon: Zap,   timer: 10 },
+  letter:  { icon: Type,  timer: 20 },
 };
 
 const AVATARS = ["🎉", "🎈", "🎊", "🎶", "🎵", "🎸", "🎤", "🎭", "🎬", "🌟", "💫", "🔥", "⚡", "🎯", "🏆"];
@@ -133,6 +133,7 @@ function SetupScreen({
   onStart: (players: CategoryPlayer[], mode: GameMode, rounds: number, timer: number) => void;
   onlinePlayerNames?: string[];
 }) {
+  const { t } = useTranslation();
   const [names, setNames] = useState<string[]>(
     onlinePlayerNames.length >= 2 ? onlinePlayerNames : ["", ""]
   );
@@ -149,17 +150,11 @@ function SetupScreen({
   const removePlayer = (i: number) => setNames((prev) => prev.filter((_, idx) => idx !== i));
   const updateName = (i: number, v: string) => setNames((prev) => prev.map((n, idx) => (idx === i ? v : n)));
   const isOnlineOrParty = onlinePlayerNames.length >= 2;
+
   const handleImportNames = (imported: string[]) => {
-    setNames((prev) => {
-      const kept = prev.filter((n) => n.trim() && !/^Spieler \d+$/.test(n.trim()));
-      const merged = [...kept];
-      for (const n of imported) {
-        if (merged.length >= 15) break;
-        merged.push(n);
-      }
-      while (merged.length < 2) merged.push("");
-      return merged;
-    });
+    const next = imported.slice(0, 15);
+    while (next.length < 2) next.push("");
+    setNames(next);
   };
 
   const canStart = names.filter((n) => n.trim()).length >= 2;
@@ -183,12 +178,14 @@ function SetupScreen({
         min={2}
         max={15}
         accent="#df8eff"
-        label="Spieler"
+        label={t('games.setup.players')}
       />
 
       {/* Mode Selection Cards */}
       <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-4">
-        <h2 className="text-base font-extrabold font-[Plus_Jakarta_Sans] text-white">Spielmodus</h2>
+        <h2 className="text-base font-extrabold font-[Plus_Jakarta_Sans] text-white">
+          {t('games.category.gameMode')}
+        </h2>
         <div className="grid grid-cols-1 gap-3">
           {(Object.keys(MODE_INFO) as GameMode[]).map((m) => {
             const info = MODE_INFO[m];
@@ -211,8 +208,12 @@ function SetupScreen({
                   <Icon className={`h-5 w-5 ${active ? "text-[#df8eff]" : "text-white/30"}`} />
                 </div>
                 <div>
-                  <span className={`font-semibold ${active ? "text-[#df8eff]" : "text-white/70"}`}>{info.label}</span>
-                  <p className="text-xs text-white/30">{info.desc}</p>
+                  <span className={`font-semibold ${active ? "text-[#df8eff]" : "text-white/70"}`}>
+                    {t(`gameModes.category.${m}.name`)}
+                  </span>
+                  <p className="text-xs text-white/30">
+                    {t(`gameModes.category.${m}.desc`)}
+                  </p>
                 </div>
               </button>
             );
@@ -224,7 +225,9 @@ function SetupScreen({
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">Timer</span>
+            <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+              {t('games.setup.timer')}
+            </span>
             <span className="text-sm font-bold text-[#df8eff]">{timerVal}s</span>
           </div>
           <input
@@ -239,7 +242,9 @@ function SetupScreen({
         </div>
         <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">Runden</span>
+            <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">
+              {t('games.setup.rounds')}
+            </span>
             <span className="text-sm font-bold text-[#df8eff]">{rounds}</span>
           </div>
           <input
@@ -265,7 +270,7 @@ function SetupScreen({
             className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] transition-opacity disabled:opacity-30 flex items-center justify-center gap-2"
           >
             <Play className="w-5 h-5" />
-            Spiel starten
+            {t('games.setup.startGame')}
           </motion.button>
         </div>
       </div>
@@ -288,6 +293,7 @@ function CategoryRevealScreen({
   mode: GameMode;
   onReady: () => void;
 }) {
+  const { t } = useTranslation();
   const [count, setCount] = useState(3);
 
   useEffect(() => {
@@ -295,8 +301,8 @@ function CategoryRevealScreen({
       onReady();
       return;
     }
-    const t = setTimeout(() => setCount((c) => c - 1), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setCount((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
   }, [count, onReady]);
 
   return (
@@ -307,7 +313,7 @@ function CategoryRevealScreen({
       className="flex flex-col items-center justify-center gap-6 py-20"
     >
       <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#df8eff]/60">
-        Kategorie
+        {t('games.category.categoryLabel')}
       </span>
 
       {/* Glass card for category */}
@@ -331,7 +337,9 @@ function CategoryRevealScreen({
           className="flex items-center gap-2 rounded-full border border-[#df8eff]/20 bg-[#df8eff]/[0.08] px-5 py-2"
         >
           <Type className="h-4 w-4 text-[#df8eff]" />
-          <span className="text-sm font-bold text-[#df8eff]">Nur mit "{letter}"</span>
+          <span className="text-sm font-bold text-[#df8eff]">
+            {t('games.category.onlyWithLetter', { letter })}
+          </span>
         </motion.div>
       )}
 
@@ -342,7 +350,7 @@ function CategoryRevealScreen({
         exit={{ opacity: 0, scale: 0.5 }}
         className="mt-8 text-7xl font-black text-[#df8eff] drop-shadow-[0_0_20px_rgba(223,142,255,0.4)]"
       >
-        {count > 0 ? count : "Los!"}
+        {count > 0 ? count : t('games.category.go')}
       </motion.span>
     </motion.div>
   );
@@ -373,6 +381,7 @@ function PlayingScreen({
   onWordSaid: (word: string) => "ok" | "duplicate" | "wrong_letter";
   onTimerExpire: () => void;
 }) {
+  const { t } = useTranslation();
   const [inputVal, setInputVal] = useState("");
   const [flash, setFlash] = useState<"duplicate" | "wrong_letter" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -416,7 +425,7 @@ function PlayingScreen({
           <span className="text-sm font-semibold text-white/70">{currentPlayer.name}</span>
         </div>
         <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-          <span className="text-xs text-white/30">Runde </span>
+          <span className="text-xs text-white/30">{t('games.play.round')} </span>
           <span className="text-xs font-bold text-[#df8eff]">{words.length + 1}</span>
         </div>
       </div>
@@ -428,7 +437,9 @@ function PlayingScreen({
           {category}
         </h2>
         {mode === "letter" && letter && (
-          <span className="text-sm font-bold text-[#df8eff]/60 mt-1 block">Buchstabe: {letter}</span>
+          <span className="text-sm font-bold text-[#df8eff]/60 mt-1 block">
+            {t('games.category.letterPrefix', { letter })}
+          </span>
         )}
       </div>
 
@@ -465,7 +476,7 @@ function PlayingScreen({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="Wort eingeben..."
+            placeholder={t('games.category.wordPlaceholder')}
             className={`flex-1 rounded-[1rem] border px-4 py-3 text-white placeholder:text-white/20 outline-none transition-colors bg-[#151a21] ${
               flash === "duplicate" ? "border-red-500 bg-red-500/[0.08]" : flash === "wrong_letter" ? "border-orange-500 bg-orange-500/[0.08]" : "border-[#44484f]/20 focus:border-[#df8eff]/30"
             }`}
@@ -474,6 +485,7 @@ function PlayingScreen({
             whileTap={{ scale: 0.9 }}
             onClick={handleSubmit}
             className="rounded-[1rem] bg-[#df8eff]/15 border border-[#df8eff]/20 px-4 text-[#df8eff] font-semibold hover:bg-[#df8eff]/25 transition-colors"
+            aria-label={t('games.category.submitWord')}
           >
             <Check className="h-5 w-5" />
           </motion.button>
@@ -483,17 +495,17 @@ function PlayingScreen({
           onClick={handleGesagt}
           className="w-full rounded-full border border-[#df8eff]/15 bg-[#df8eff]/[0.06] py-3 text-sm font-bold text-[#df8eff] hover:bg-[#df8eff]/10 transition-colors"
         >
-          Gesagt! (verbal)
+          {t('games.category.saidVerbal')}
         </motion.button>
         <AnimatePresence>
           {flash === "duplicate" && (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1 text-sm text-red-400 font-medium">
-              <AlertTriangle className="h-4 w-4" /> Duplikat! Schon gesagt.
+              <AlertTriangle className="h-4 w-4" /> {t('games.category.duplicate')}
             </motion.p>
           )}
           {flash === "wrong_letter" && (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1 text-sm text-orange-400 font-medium">
-              <AlertTriangle className="h-4 w-4" /> Muss mit "{letter}" anfangen!
+              <AlertTriangle className="h-4 w-4" /> {t('games.category.wrongLetter', { letter })}
             </motion.p>
           )}
         </AnimatePresence>
@@ -502,7 +514,9 @@ function PlayingScreen({
       {/* Said Words as glass pills */}
       {words.length > 0 && (
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-white/25 uppercase tracking-widest">Gesagte Worter ({words.length})</span>
+          <span className="text-xs font-semibold text-white/25 uppercase tracking-widest">
+            {t('games.category.wordsHeard', { count: words.length })}
+          </span>
           <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
             {words.map((w, i) => (
               <WordChip key={`${w.word}-${i}`} word={w.word === "__verbal__" ? `[${players.find(p => p.id === w.playerId)?.name}]` : w.word} isNew={i === words.length - 1} />
@@ -531,6 +545,7 @@ function RoundEndScreen({
   maxRounds: number;
   onNext: () => void;
 }) {
+  const { t } = useTranslation();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
   const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
@@ -554,7 +569,9 @@ function RoundEndScreen({
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
       <div className="text-center">
         <div className="px-4 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 inline-block mb-3">
-          <span className="text-xs text-white/30 uppercase tracking-widest">Runde {round} / {maxRounds}</span>
+          <span className="text-xs text-white/30 uppercase tracking-widest">
+            {t('games.category.roundOf', { round, maxRounds })}
+          </span>
         </div>
         <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{result.category}</h2>
       </div>
@@ -566,13 +583,13 @@ function RoundEndScreen({
           className={`rounded-[1rem] border-l-4 bg-[#1b2028] p-4 text-center ${isDrinkingMode ? 'border-amber-400' : 'border-[#ff6b98]'}`}
         >
           {isDrinkingMode ? (
-            <span className="block text-3xl mb-2">{"\uD83C\uDF7A"}</span>
+            <span className="block text-3xl mb-2">{"🍺"}</span>
           ) : (
             <Timer className="mx-auto h-8 w-8 text-[#ff6b98] mb-2" />
           )}
           <p className={`text-lg font-bold ${isDrinkingMode ? 'text-amber-300' : 'text-[#ff6b98]'}`}>{loser.name}</p>
           <p className={`text-sm ${isDrinkingMode ? 'text-amber-400/70 font-semibold' : 'text-white/30'}`}>
-            {isDrinkingMode ? '\uD83C\uDF7A Trinken!' : 'Zeit abgelaufen!'}
+            {isDrinkingMode ? t('games.category.drink') : t('games.category.timeUp')}
           </p>
         </motion.div>
       )}
@@ -590,7 +607,7 @@ function RoundEndScreen({
             <span className="text-2xl">{disclaimer.emoji}</span>
             <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
             <p className="text-[10px] text-amber-300/50 mt-1">
-              Drink #{drinkingMode.drinkCount} · Bitte trinkt verantwortungsvoll
+              {t('games.category.drinkResponsibly', { count: drinkingMode.drinkCount })}
             </p>
           </motion.div>
         )}
@@ -598,20 +615,26 @@ function RoundEndScreen({
 
       {/* Words as pills */}
       <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-3">
-        <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">Genannte Worter ({result.words.length})</span>
+        <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">
+          {t('games.category.wordsSaid', { count: result.words.length })}
+        </span>
         <div className="flex flex-wrap gap-2">
           {result.words.map((w, i) => (
             <span key={i} className="inline-block rounded-full border border-[#44484f]/20 bg-[#151a21]/80 backdrop-blur-xl px-3.5 py-1.5 text-sm text-white/60">
               {w.word === "__verbal__" ? `[${players.find(p => p.id === w.playerId)?.name}]` : w.word}
             </span>
           ))}
-          {result.words.length === 0 && <span className="text-sm text-white/20">Keine Worter genannt</span>}
+          {result.words.length === 0 && (
+            <span className="text-sm text-white/20">{t('games.category.noWords')}</span>
+          )}
         </div>
       </div>
 
       {/* Leaderboard */}
       <div className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5 space-y-2">
-        <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">Punktestand</span>
+        <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">
+          {t('games.category.scoreboard')}
+        </span>
         {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
           <div key={p.id} className={`flex items-center justify-between rounded-[0.75rem] px-3 py-2.5 ${
             p.id === result.loserId ? "bg-[#ff6b98]/[0.06] border border-[#ff6b98]/10" : i === 0 ? "bg-[#df8eff]/[0.06] border border-[#df8eff]/10" : ""
@@ -620,7 +643,7 @@ function RoundEndScreen({
               {i === 0 && <Crown className="h-4 w-4 text-[#df8eff]" />}
               <span className={`font-medium ${p.id === result.loserId ? "text-[#ff6b98]" : "text-white/70"}`}>{p.name}</span>
             </div>
-            <span className="font-bold text-[#df8eff]">{p.score} Pkt</span>
+            <span className="font-bold text-[#df8eff]">{t('games.category.scorePoints', { score: p.score })}</span>
           </div>
         ))}
       </div>
@@ -630,7 +653,7 @@ function RoundEndScreen({
         onClick={onNext}
         className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2"
       >
-        {round < maxRounds ? "Nachste Runde" : "Ergebnisse"}
+        {round < maxRounds ? t('games.category.nextRound') : t('games.category.results')}
       </motion.button>
     </motion.div>
   );
@@ -641,6 +664,7 @@ function RoundEndScreen({
 // ---------------------------------------------------------------------------
 
 function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onRestart: () => void }) {
+  const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
@@ -657,7 +681,7 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
           </div>
         </motion.div>
         <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
-          Endergebnis
+          {t('games.category.finalResults')}
         </h2>
       </div>
 
@@ -685,7 +709,9 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
                 <span className={`font-bold ${i === 0 ? "text-[#df8eff]" : "text-white/70"}`}>
                   {p.name}
                 </span>
-                <p className="text-xs text-white/30">{p.losses} Runde{p.losses !== 1 ? "n" : ""} verloren</p>
+                <p className="text-xs text-white/30">
+                  {t('games.category.roundsLost', { count: p.losses })}
+                </p>
               </div>
             </div>
             <span className={`text-xl font-black ${i === 0 ? "text-[#df8eff]" : "text-white/50"}`}>
@@ -702,13 +728,13 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
           onClick={onRestart}
           className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2"
         >
-          <RotateCcw className="h-5 w-5" /> Nochmal
+          <RotateCcw className="h-5 w-5" /> {t('games.category.playAgain')}
         </motion.button>
         <button
           onClick={onRestart}
           className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
         >
-          Anderes Spiel
+          {t('games.category.otherGame')}
         </button>
       </div>
     </motion.div>
@@ -720,6 +746,7 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
 // ---------------------------------------------------------------------------
 
 export default function CategoryGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
@@ -895,16 +922,19 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
             <button
               onClick={() => (phase === "setup" ? navigate("/games") : handleRestart())}
               className="flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors"
+              aria-label={phase === "setup" ? t('common.back') : t('games.category.quit')}
             >
               <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm font-medium">{phase === "setup" ? "Zuruck" : "Beenden"}</span>
+              <span className="text-sm font-medium">
+                {phase === "setup" ? t('common.back') : t('games.category.quit')}
+              </span>
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-[0.5rem] bg-[#1b2028] border border-[#df8eff]/20 flex items-center justify-center">
                 <Timer className="h-4 w-4 text-[#df8eff]" />
               </div>
               <span className="text-lg font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
-                Zeit-Kategorie
+                {t('games.category.title')}
               </span>
             </div>
           </div>

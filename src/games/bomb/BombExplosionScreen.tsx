@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bomb } from 'lucide-react';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
@@ -14,6 +15,7 @@ function triggerExplosionVibration() {
 }
 
 export default function BombExplosionScreen({ playerName, onNext }: ExplosionScreenProps) {
+  const { t } = useTranslation();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
   const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
@@ -99,7 +101,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
         animate={{ scale: [0, 1.4, 1], opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        BOOM!
+        {t('games.bomb.boom')}
       </motion.h1>
 
       {/* Player name */}
@@ -109,7 +111,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        <span className="text-[#ff6e84] font-bold">{playerName}</span> wurde erwischt!
+        <span className="text-[#ff6e84] font-bold">{playerName}</span> {t('games.bomb.gotHit')}
       </motion.p>
 
       {/* Drinking mode message */}
@@ -121,7 +123,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
           transition={{ delay: 0.9, type: "spring", bounce: 0.4 }}
         >
           <span className="text-2xl font-black text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">
-            {"\uD83C\uDF7A"} Prost, du trinkst!
+            {"\uD83C\uDF7A"} {t('games.bomb.drinkingModeMsg')}
           </span>
         </motion.div>
       )}
@@ -141,7 +143,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
               {disclaimer.message}
             </p>
             <p className="text-[10px] text-amber-300/50 mt-1">
-              Runde {drinkingMode.drinkCount} · Trinkt verantwortungsvoll
+              {t('games.bomb.drinkRound', { count: drinkingMode.drinkCount })}
             </p>
           </motion.div>
         )}
@@ -159,7 +161,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
           className="h-12 px-10 rounded-xl font-bold text-sm text-white bg-[#1f1f29] border border-white/10 hover:bg-[#262630] transition-colors"
           whileTap={{ scale: 0.97 }}
         >
-          Naechste Runde
+          {t('games.bomb.nextRound')}
         </motion.button>
       </motion.div>
     </motion.div>

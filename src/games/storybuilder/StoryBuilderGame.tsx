@@ -62,15 +62,10 @@ function shuffle<T>(arr: T[]): T[] {
 // ---------------------------------------------------------------------------
 
 const GAME_MODES: GameMode[] = [
-  { id: 'classic', name: 'Klassisch', desc: 'Freier Text', icon: <Pen className="w-6 h-6" /> },
-  { id: 'vorgabe', name: 'Vorgabe', desc: 'Mit Satzanfaengen', icon: <BookOpen className="w-6 h-6" /> },
-  { id: 'reimzeit', name: 'Reimzeit', desc: 'Saetze muessen reimen', icon: <Music className="w-6 h-6" /> },
+  { id: 'classic', name: 'Classic', desc: 'Free text', icon: <Pen className="w-6 h-6" /> },
+  { id: 'vorgabe', name: 'Prompt', desc: 'With sentence starters', icon: <BookOpen className="w-6 h-6" /> },
+  { id: 'reimzeit', name: 'Rhyme Time', desc: 'Sentences must rhyme', icon: <Music className="w-6 h-6" /> },
 ];
-
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 1, max: 3, default: 1, step: 1, label: 'Saetze pro Spieler' },
-  rounds: { min: 1, max: 5, default: 2, step: 1, label: 'Runden (Durchlaeufe)' },
-};
 
 // ---------------------------------------------------------------------------
 // Component
@@ -79,6 +74,11 @@ const SETUP_SETTINGS: SettingsConfig = {
 export default function StoryBuilderGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const setupSettings: SettingsConfig = useMemo(() => ({
+    timer: { min: 1, max: 3, default: 1, step: 1, label: t('games.storybuilder.setupTimerLabel') },
+    rounds: { min: 1, max: 5, default: 2, step: 1, label: t('games.storybuilder.setupRoundsLabel') },
+  }), [t]);
 
   // Setup
   const [phase, setPhase] = useState<Phase>('setup');
@@ -150,14 +150,14 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
         startersPos.current = 1;
         setCurrentPrompt(starter);
       } else if (selectedMode === 'reimzeit') {
-        setCurrentPrompt('Schreibe einen Satz, der sich reimt!');
+        setCurrentPrompt(t('games.storybuilder.rhymeMustRhyme'));
       } else {
         setCurrentPrompt('');
       }
 
       setPhase('writing');
     },
-    [],
+    [t],
   );
 
   // ---------------------------------------------------------------------------
@@ -175,7 +175,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       return prompt;
     }
     if (mode === 'reimzeit') {
-      return 'Dein Satz muss sich reimen!';
+      return t('games.storybuilder.rhymeMustRhyme');
     }
     return '';
   }
@@ -297,7 +297,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       <GameSetup
         gameId="storybuilder"
         modes={getTranslatedModes('storybuilder', GAME_MODES, t)}
-        settings={SETUP_SETTINGS}
+        settings={setupSettings}
         onStart={handleStart}
         title="Story Builder"
         onlinePlayers={online?.players}
@@ -349,7 +349,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
             {lastSentence && (
               <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4">
                 <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">
-                  Letzter Satz von {lastSentence.playerName}
+                  {t('games.storybuilder.lastSentenceBy', { name: lastSentence.playerName })}
                 </div>
                 <p className="text-sm text-white/60 italic leading-relaxed">
                   "{lastSentence.text}"
@@ -368,7 +368,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
             {mode === 'reimzeit' && (
               <div className="flex items-center gap-2 text-[#8ff5ff] text-sm font-semibold">
                 <Music className="w-4 h-4" />
-                <span>Dein Satz muss sich reimen!</span>
+                <span>{t('games.storybuilder.rhymeMustRhyme')}</span>
               </div>
             )}
 
@@ -379,7 +379,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                 onChange={e => {
                   if (e.target.value.length <= MAX_CHARS) setInputText(e.target.value);
                 }}
-                placeholder="Schreibe deinen Satz..."
+                placeholder={t('games.storybuilder.inputPlaceholder')}
                 rows={3}
                 className="w-full bg-[#151a21] border-0 text-white rounded-xl px-4 py-3 text-sm placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/40 resize-none"
               />
@@ -400,7 +400,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                   : 'bg-[#1b2028] text-white/20 cursor-not-allowed',
               )}
             >
-              <Pen className="w-4 h-4" /> Abschicken
+              <Pen className="w-4 h-4" /> {t('games.storybuilder.submitBtn')}
             </motion.button>
           </div>
         </motion.div>
@@ -421,7 +421,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
             <ArrowRight className="w-8 h-8 text-[#df8eff]" />
           </motion.div>
           <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">
-            Geraet weitergeben!
+            {t('games.storybuilder.passDevice')}
           </h2>
           {players[currentPlayerIdx] && (
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1b2028] border border-[#44484f]/20">
@@ -431,7 +431,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
               >
                 {players[currentPlayerIdx].avatar}
               </div>
-              <span className="text-sm text-white/70">{players[currentPlayerIdx].name} ist dran</span>
+              <span className="text-sm text-white/70">{t('games.storybuilder.playerIsNext', { name: players[currentPlayerIdx].name })}</span>
             </div>
           )}
 
@@ -440,7 +440,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
             onClick={confirmPass}
             className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
-            <Play className="w-5 h-5" /> Bereit!
+            <Play className="w-5 h-5" /> {t('games.storybuilder.readyBtn')}
           </motion.button>
         </motion.div>
       )}
@@ -458,7 +458,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
               <BookOpen className="w-6 h-6 text-[#df8eff]" />
             </div>
             <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
-              Eure Geschichte
+              {t('games.storybuilder.ourStory')}
             </h2>
           </div>
 
@@ -507,7 +507,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                   onClick={() => setRevealIdx(sentences.length - 1)}
                   className="w-full flex items-center justify-center gap-2 bg-[#1b2028] border border-[#44484f]/20 text-white/60 py-3 rounded-full font-semibold text-sm"
                 >
-                  <Eye className="w-4 h-4" /> Alles zeigen
+                  <Eye className="w-4 h-4" /> {t('games.storybuilder.showAll')}
                 </motion.button>
               ) : (
                 <div className="space-y-3">
@@ -516,13 +516,13 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                     onClick={resetGame}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
                   >
-                    <RotateCcw className="w-4 h-4" /> Nochmal
+                    <RotateCcw className="w-4 h-4" /> {t('games.storybuilder.playAgain')}
                   </motion.button>
                   <button
                     onClick={() => navigate('/games')}
                     className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
                   >
-                    Anderes Spiel
+                    {t('games.storybuilder.otherGame')}
                   </button>
                 </div>
               )}

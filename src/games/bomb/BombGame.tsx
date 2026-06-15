@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import i18next from 'i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { generateCategoryPrompt } from '../content/categories';
 import { getRandomQuestion, resetQuestions, type QuizQuestion } from '../content/questions';
 import BombSetupScreen from './BombSetupScreen';
@@ -142,10 +142,10 @@ function generateTask(mode: GameMode): { task: string; quiz: QuizQuestion | null
   }
   if (mode === 'alle') {
     const { category, letter } = generateCategoryPrompt();
-    return { task: `Nenne: ${category} mit "${letter}"`, quiz: null };
+    return { task: i18next.t('games.bomb.taskAllePrompt', { category, letter }), quiz: null };
   }
   const { category, letter } = generateCategoryPrompt();
-  return { task: `Nenne ein/eine ${category} mit "${letter}"!`, quiz: null };
+  return { task: i18next.t('games.bomb.taskKategoriePrompt', { category, letter }), quiz: null };
 }
 
 const defaultState: GameState = {

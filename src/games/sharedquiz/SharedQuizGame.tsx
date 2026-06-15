@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import {
   Play, Trophy, RotateCcw, ArrowRight,
   Users, Eye, MessageCircle, Lightbulb, HelpCircle, Check, X,
@@ -62,6 +61,7 @@ const ANSWER_LABELS = ['A', 'B', 'C', 'D'];
 /* ------------------------------------------------------------------ */
 
 export default function SharedQuizGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
@@ -76,9 +76,9 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const initialPlayers: Player[] = resolvedNames.length >= 3
     ? resolvedNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
     : [
-        { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
-        { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
-        { id: 'p3', name: 'Spieler 3', color: getPlayerColor(2), score: 0 },
+        { id: 'p1', name: t('games.sharedquiz.defaultPlayer', { n: 1 }), color: getPlayerColor(0), score: 0 },
+        { id: 'p2', name: t('games.sharedquiz.defaultPlayer', { n: 2 }), color: getPlayerColor(1), score: 0 },
+        { id: 'p3', name: t('games.sharedquiz.defaultPlayer', { n: 3 }), color: getPlayerColor(2), score: 0 },
       ];
   /* ---- Setup ---- */
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
@@ -106,7 +106,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const addPlayer = () => {
     if (players.length >= 10) return;
     const i = players.length;
-    setPlayers(p => [...p, { id: `p${nextId.current++}`, name: `Spieler ${i + 1}`, color: getPlayerColor(i), score: 0 }]);
+    setPlayers(p => [...p, { id: `p${nextId.current++}`, name: t('games.sharedquiz.defaultPlayer', { n: i + 1 }), color: getPlayerColor(i), score: 0 }]);
   };
   const removePlayer = (id: string) => {
     if (players.length <= 3) return;
@@ -117,16 +117,18 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   };
   const isOnlineOrParty = resolvedNames.length >= 3;
   const handleImportNames = (names: string[]) => {
-    setPlayers(prev => {
-      const kept = prev.filter(p => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
-      const merged = [...kept];
-      for (const n of names) {
-        if (merged.length >= 10) break;
-        merged.push({ id: `p${nextId.current++}`, name: n, color: getPlayerColor(merged.length), score: 0 });
-      }
-      while (merged.length < 3) merged.push({ id: `p${nextId.current++}`, name: `Spieler ${merged.length + 1}`, color: getPlayerColor(merged.length), score: 0 });
-      return merged;
-    });
+    const capped = names.slice(0, 10);
+    const roster: Player[] = capped.map((n, i) => ({
+      id: `p${nextId.current++}`,
+      name: n,
+      color: getPlayerColor(i),
+      score: 0,
+    }));
+    while (roster.length < 3) {
+      const i = roster.length;
+      roster.push({ id: `p${nextId.current++}`, name: t('games.sharedquiz.defaultPlayer', { n: i + 1 }), color: getPlayerColor(i), score: 0 });
+    }
+    setPlayers(roster);
   };
 
   /* ---- Draw question ---- */
@@ -199,9 +201,9 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   /* ---- Mode info ---- */
   const modes: { id: Mode; name: string; desc: string; icon: React.ReactNode }[] = [
-    { id: 'trio', name: 'Trio-Challenge', desc: 'Frage, Antworten & Hinweis verteilt', icon: <Users className="w-6 h-6" /> },
-    { id: 'chain', name: 'Ketten-Quiz', desc: 'Hinweis-Kette von Spieler zu Spieler', icon: <Link className="w-6 h-6" /> },
-    { id: 'allornothing', name: 'Alle oder Keiner', desc: 'Nur Punkte wenn alle richtig liegen', icon: <Crown className="w-6 h-6" /> },
+    { id: 'trio', name: t('gameModes.sharedquiz.trio.name'), desc: t('gameModes.sharedquiz.trio.desc'), icon: <Users className="w-6 h-6" /> },
+    { id: 'chain', name: t('gameModes.sharedquiz.chain.name'), desc: t('gameModes.sharedquiz.chain.desc'), icon: <Link className="w-6 h-6" /> },
+    { id: 'allornothing', name: t('gameModes.sharedquiz.allornothing.name'), desc: t('gameModes.sharedquiz.allornothing.desc'), icon: <Crown className="w-6 h-6" /> },
   ];
 
   const isCorrect = currentQ && selectedAnswer === currentQ.correctIndex;
@@ -257,10 +259,10 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
               <Users className="w-8 h-8 text-[#8ff5ff]" />
             </div>
             <h1 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#8ff5ff] to-[#8ff5ff]/60 bg-clip-text text-transparent">
-              Geteilt & Gequizzt
+              {t('games.sharedquiz.title')}
             </h1>
             <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">
-              Wissen ist aufgeteilt — nur gemeinsam kommt ihr zur Loesung!
+              {t('games.sharedquiz.subtitle')}
             </p>
           </div>
 
@@ -275,13 +277,13 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
               min={3}
               max={10}
               accent="#8ff5ff"
-              label="Spieler"
+              label={t('games.sharedquiz.playerLabel')}
             />
           </div>
 
           {/* Mode */}
           <section className="space-y-3 mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">Modus</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">{t('games.sharedquiz.modeLabel')}</h2>
             <div className="space-y-2">
               {modes.map(m => (
                 <button key={m.id} onClick={() => setMode(m.id)}
@@ -298,7 +300,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           <section className="mb-6">
             <div className="bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] p-4">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/40">Runden</span>
+                <span className="text-white/40">{t('games.setup.rounds')}</span>
                 <span className="text-white font-bold">{totalRounds}</span>
               </div>
               <input type="range" min={3} max={20} step={1} value={totalRounds}
@@ -312,9 +314,9 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
             <div className="max-w-lg mx-auto space-y-3">
               <motion.button whileTap={{ scale: 0.97 }} onClick={startGame}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] text-base font-extrabold font-[Plus_Jakarta_Sans] uppercase tracking-wide shadow-[0_0_20px_rgba(143,245,255,0.3)] flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Spiel starten
+                <Play className="w-5 h-5" /> {t('games.setup.startGame')}
               </motion.button>
-              <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">Zurueck</button>
+              <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">{t('games.sharedquiz.back')}</button>
             </div>
           </div>
         </motion.div>
@@ -325,27 +327,27 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
           <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#8ff5ff]">Runde {round} / {totalRounds}</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8ff5ff]">{t('games.sharedquiz.roundLabel', { round, total: totalRounds })}</span>
           </div>
-          <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">Rollenverteilung</h2>
+          <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">{t('games.sharedquiz.roleDistribution')}</h2>
           <div className="w-full max-w-sm space-y-3">
-            <RoleBadge icon={<HelpCircle className="w-5 h-5" />} label="Frage" player={playerA} />
-            <RoleBadge icon={<MessageCircle className="w-5 h-5" />} label="Antworten" player={playerB} />
-            <RoleBadge icon={<Lightbulb className="w-5 h-5" />} label="Hinweis & Antwort" player={playerC} />
+            <RoleBadge icon={<HelpCircle className="w-5 h-5" />} label={t('games.sharedquiz.roleQuestion')} player={playerA} />
+            <RoleBadge icon={<MessageCircle className="w-5 h-5" />} label={t('games.sharedquiz.roleAnswers')} player={playerB} />
+            <RoleBadge icon={<Lightbulb className="w-5 h-5" />} label={t('games.sharedquiz.roleHint')} player={playerC} />
           </div>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => setPhase('playerA')}
             className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-lg shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-            Los geht's! <ArrowRight className="w-5 h-5" />
+            {t('games.sharedquiz.letsGo')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
 
       {/* ---- PLAYER A: Question ---- */}
       {phase === 'playerA' && currentQ && (
-        <PlayerScreen name={playerA.name} color={playerA.color} instruction="Lies die Frage laut vor!"
+        <PlayerScreen name={playerA.name} color={playerA.color} instruction={t('games.sharedquiz.readQuestion')}
           onNext={() => setPhase('handoffAB')}>
           <div className="text-center">
-            <div className="text-xs font-bold text-[#8ff5ff] uppercase tracking-widest mb-3">Frage</div>
+            <div className="text-xs font-bold text-[#8ff5ff] uppercase tracking-widest mb-3">{t('games.sharedquiz.roleQuestion')}</div>
             <div className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white leading-tight">{currentQ.question}</div>
           </div>
         </PlayerScreen>
@@ -359,10 +361,10 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
       {/* ---- PLAYER B: Answers ---- */}
       {phase === 'playerB' && currentQ && (
-        <PlayerScreen name={playerB.name} color={playerB.color} instruction="Lies die Antworten laut vor!"
+        <PlayerScreen name={playerB.name} color={playerB.color} instruction={t('games.sharedquiz.readAnswers')}
           onNext={() => setPhase('handoffBC')}>
           <div>
-            <div className="text-xs font-bold text-[#8ff5ff] uppercase tracking-widest mb-3 text-center">Antworten</div>
+            <div className="text-xs font-bold text-[#8ff5ff] uppercase tracking-widest mb-3 text-center">{t('games.sharedquiz.roleAnswers')}</div>
             <div className="space-y-2">
               {currentQ.answers.map((a, i) => (
                 <div key={i} className="flex items-center gap-3 bg-white/[0.04] border border-[#44484f]/20 rounded-[1rem] px-4 py-3">
@@ -393,11 +395,11 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           <div className="w-full rounded-[1rem] bg-[#151a21]/80 backdrop-blur-xl border border-[#44484f]/20 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Lightbulb className="w-5 h-5 text-amber-400" />
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Hinweis</span>
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">{t('games.sharedquiz.hintLabel')}</span>
             </div>
             <p className="text-white/80 text-base leading-relaxed">{currentQ.hint}</p>
           </div>
-          <p className="text-white/40 text-sm">Lies den Hinweis vor und waehle die Antwort!</p>
+          <p className="text-white/40 text-sm">{t('games.sharedquiz.readHintAndAnswer')}</p>
           <div className="w-full space-y-2">
             {currentQ.answers.map((a, i) => (
               <motion.button key={i} whileTap={{ scale: 0.97 }} onClick={() => handleAnswer(i)}
@@ -422,11 +424,11 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           </motion.div>
           <h2 className={cn('text-2xl font-extrabold font-[Plus_Jakarta_Sans]',
             isCorrect ? 'text-emerald-400' : 'text-red-400')}>
-            {isCorrect ? 'Richtig!' : 'Falsch!'}
+            {isCorrect ? t('games.play.correct') : t('games.play.wrong')}
           </h2>
 
           <div className="w-full rounded-[1rem] bg-[#151a21]/80 border border-[#44484f]/20 p-5 space-y-4">
-            <div><div className="text-xs text-white/40 uppercase tracking-widest mb-1">Frage</div>
+            <div><div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t('games.sharedquiz.roleQuestion')}</div>
               <div className="text-white font-bold">{currentQ.question}</div></div>
             <div className="space-y-1.5">
               {currentQ.answers.map((a, i) => (
@@ -448,7 +450,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
           <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
             className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-            {round >= totalRounds ? 'Ergebnis' : 'Weiter'} <ArrowRight className="w-5 h-5" />
+            {round >= totalRounds ? t('games.sharedquiz.resultBtn') : t('games.play.next')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
@@ -464,7 +466,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
             </div>
           </motion.div>
           <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#8ff5ff] neon-glow-cyan">
-            Spielende!
+            {t('games.results.gameOver')}
           </h2>
           <div className="w-full space-y-2">
             {sorted.map((p, i) => (
@@ -482,11 +484,11 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           <div className="w-full space-y-3 mt-2">
             <motion.button whileTap={{ scale: 0.97 }} onClick={() => { setPhase('setup'); }}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-              <RotateCcw className="w-4 h-4" /> Nochmal
+              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>
             <button onClick={() => navigate('/games')}
               className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-              Anderes Spiel
+              {t('games.results.otherGame')}
             </button>
           </div>
         </motion.div>
@@ -516,6 +518,7 @@ function RoleBadge({ icon, label, player }: { icon: React.ReactNode; label: stri
 function PlayerScreen({ name, color, instruction, onNext, children }: {
   name: string; color: string; instruction: string; onNext: () => void; children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
       className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
@@ -530,7 +533,7 @@ function PlayerScreen({ name, color, instruction, onNext, children }: {
       <p className="text-[#8ff5ff] text-sm font-semibold">{instruction}</p>
       <motion.button whileTap={{ scale: 0.97 }} onClick={onNext}
         className="flex items-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-        Weiter <ChevronRight className="w-5 h-5" />
+        {t('games.play.next')} <ChevronRight className="w-5 h-5" />
       </motion.button>
     </motion.div>
   );
@@ -539,6 +542,7 @@ function PlayerScreen({ name, color, instruction, onNext, children }: {
 function HandoffScreen({ from, to, toColor, onContinue }: {
   from: string; to: string; toColor: string; onContinue: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
       className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
@@ -546,12 +550,12 @@ function HandoffScreen({ from, to, toColor, onContinue }: {
         className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl"
         style={{ backgroundColor: toColor }}>{getPlayerInitial(to)}</motion.div>
       <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">
-        Gib an {to}
+        {t('games.sharedquiz.handoffTo', { name: to })}
       </h2>
-      <p className="text-white/40 text-sm">Andere bitte nicht auf den Bildschirm schauen!</p>
+      <p className="text-white/40 text-sm">{t('games.sharedquiz.nopeek')}</p>
       <motion.button whileTap={{ scale: 0.97 }} onClick={onContinue}
         className="mt-4 flex items-center gap-2 bg-[#1b2028] border border-[#44484f]/20 text-white px-8 py-3 rounded-full font-bold text-base hover:bg-white/[0.06] transition-colors">
-        <Eye className="w-5 h-5" /> Bereit
+        <Eye className="w-5 h-5" /> {t('games.sharedquiz.ready')}
       </motion.button>
     </motion.div>
   );

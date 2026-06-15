@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import {
   Play, Trophy, RotateCcw, ArrowRight,
   Pencil, Eraser, Trash2, Undo2, Check, X,
@@ -55,11 +54,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const MODE_TIMERS: Record<Mode, number> = { classic: 60, speed: 30, blind: 60 };
-const MODES: { id: Mode; name: string; desc: string }[] = [
-  { id: 'classic', name: 'Klassisch', desc: '60 Sekunden zum Zeichnen' },
-  { id: 'speed', name: 'Speed', desc: 'Nur 30 Sekunden!' },
-  { id: 'blind', name: 'Blind', desc: 'Zeichnung nach 5s unsichtbar' },
-];
+const MODE_IDS: Mode[] = ['classic', 'speed', 'blind'];
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -67,6 +62,7 @@ const MODES: { id: Mode; name: string; desc: string }[] = [
 
 export default function QuickDrawGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
@@ -78,8 +74,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const initialPlayers: Player[] = resolvedNames.length >= 2
     ? resolvedNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
     : [
-        { id: 'p1', name: 'Spieler 1', color: getPlayerColor(0), score: 0 },
-        { id: 'p2', name: 'Spieler 2', color: getPlayerColor(1), score: 0 },
+        { id: 'p1', name: t('games.quickdraw.defaultPlayer', { n: 1 }), color: getPlayerColor(0), score: 0 },
+        { id: 'p2', name: t('games.quickdraw.defaultPlayer', { n: 2 }), color: getPlayerColor(1), score: 0 },
       ];
   /* ---- Setup ---- */
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
@@ -115,20 +111,19 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Player management ---- */
   const nextId = useRef(3);
-  const addPlayer = () => { if (players.length >= 10) return; const i = players.length; setPlayers(p => [...p, { id: `p${nextId.current++}`, name: `Spieler ${i + 1}`, color: getPlayerColor(i), score: 0 }]); };
+  const addPlayer = () => { if (players.length >= 10) return; const i = players.length; setPlayers(p => [...p, { id: `p${nextId.current++}`, name: t('games.quickdraw.defaultPlayer', { n: i + 1 }), color: getPlayerColor(i), score: 0 }]); };
   const removePlayer = (id: string) => { if (players.length <= 2) return; setPlayers(p => p.filter(x => x.id !== id)); };
   const updateName = (id: string, name: string) => setPlayers(p => p.map(x => x.id === id ? { ...x, name } : x));
   const isOnlineOrParty = resolvedNames.length >= 2;
   const handleImportNames = (names: string[]) => {
-    setPlayers(prev => {
-      const kept = prev.filter(p => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()));
-      const merged = [...kept];
+    setPlayers(() => {
+      const roster: Player[] = [];
       for (const n of names) {
-        if (merged.length >= 10) break;
-        merged.push({ id: `p${nextId.current++}`, name: n, color: getPlayerColor(merged.length), score: 0 });
+        if (roster.length >= 10) break;
+        roster.push({ id: `p${nextId.current++}`, name: n, color: getPlayerColor(roster.length), score: 0 });
       }
-      while (merged.length < 2) merged.push({ id: `p${nextId.current++}`, name: `Spieler ${merged.length + 1}`, color: getPlayerColor(merged.length), score: 0 });
-      return merged;
+      while (roster.length < 2) roster.push({ id: `p${nextId.current++}`, name: t('games.quickdraw.defaultPlayer', { n: roster.length + 1 }), color: getPlayerColor(roster.length), score: 0 });
+      return roster;
     });
   };
   const drawer = players[drawerIdx % players.length];
@@ -313,9 +308,9 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               <Pencil className="w-8 h-8 text-[#ff6b98]" />
             </div>
             <h1 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#ff6b98] to-[#ff6b98]/60 bg-clip-text text-transparent">
-              Schnellzeichner
+              {t('gameRules.quickdraw.title')}
             </h1>
-            <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">Zeichne schnell — die anderen raten!</p>
+            <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">{t('games.quickdraw.tagline')}</p>
           </div>
 
           {/* Players */}
@@ -329,20 +324,23 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               min={2}
               max={10}
               accent="#ff6b98"
-              label="Spieler"
+              label={t('games.quickdraw.playerLabel')}
             />
           </div>
 
           {/* Mode */}
           <section className="space-y-3 mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">Modus</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">{t('games.quickdraw.modeLabel')}</h2>
             <div className="space-y-2">
-              {MODES.map(m => (
-                <button key={m.id} onClick={() => setMode(m.id)}
+              {MODE_IDS.map(id => (
+                <button key={id} onClick={() => setMode(id)}
                   className={cn('w-full flex items-center gap-3 p-4 rounded-[1rem] border-2 transition-colors text-left',
-                    mode === m.id ? 'border-[#ff6b98] bg-[#ff6b98]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
-                  <Pencil className={cn('w-5 h-5', mode === m.id ? 'text-[#ff6b98]' : 'text-white/30')} />
-                  <div><div className="text-sm font-semibold">{m.name}</div><div className="text-xs text-white/40">{m.desc}</div></div>
+                    mode === id ? 'border-[#ff6b98] bg-[#ff6b98]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
+                  <Pencil className={cn('w-5 h-5', mode === id ? 'text-[#ff6b98]' : 'text-white/30')} />
+                  <div>
+                    <div className="text-sm font-semibold">{t(`gameModes.quickdraw.${id}.name`)}</div>
+                    <div className="text-xs text-white/40">{t(`gameModes.quickdraw.${id}.desc`)}</div>
+                  </div>
                 </button>
               ))}
             </div>
@@ -352,7 +350,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           <section className="mb-6">
             <div className="bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] p-4">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/40">Runden</span><span className="text-white font-bold">{totalRounds}</span>
+                <span className="text-white/40">{t('games.setup.rounds')}</span><span className="text-white font-bold">{totalRounds}</span>
               </div>
               <input type="range" min={3} max={20} step={1} value={totalRounds}
                 onChange={e => setTotalRounds(Number(e.target.value))}
@@ -364,8 +362,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
             <div className="max-w-lg mx-auto space-y-3">
               <motion.button whileTap={{ scale: 0.97 }} onClick={startGame}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white text-base font-extrabold font-[Plus_Jakarta_Sans] uppercase tracking-wide shadow-[0_0_20px_rgba(255,107,152,0.3)] flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Spiel starten</motion.button>
-              <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">Zurueck</button>
+                <Play className="w-5 h-5" /> {t('games.setup.startGame')}</motion.button>
+              <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">{t('games.quickdraw.back')}</button>
             </div>
           </div>
         </motion.div>
@@ -378,24 +376,24 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           <ActivePlayerBanner
             playerName={drawer.name}
             playerColor={drawer.color}
-            subtitle="zeichnet!"
+            subtitle={t('games.quickdraw.draws')}
             hidden={false}
           />
           <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">Runde {round} / {totalRounds}</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">{t('games.quickdraw.roundOf', { round, total: totalRounds })}</span>
           </div>
           <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl"
             style={{ backgroundColor: drawer.color }}>{getPlayerInitial(drawer.name)}</div>
-          <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{drawer.name} zeichnet!</h2>
-          <p className="text-white/40 text-sm">Alle anderen: NICHT hinschauen!</p>
+          <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{t('games.quickdraw.drawerTitle', { name: drawer.name })}</h2>
+          <p className="text-white/40 text-sm">{t('games.quickdraw.dontLook')}</p>
           <div className="rounded-[1rem] bg-[#151a21]/80 backdrop-blur-xl border border-[#ff6b98]/30 p-6 shadow-2xl text-center">
-            <div className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest mb-2">Dein Wort</div>
+            <div className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest mb-2">{t('games.quickdraw.yourWord')}</div>
             <div className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{currentWord.word}</div>
-            <div className="mt-2 text-xs text-white/30">{currentWord.category} — Schwierigkeit {'★'.repeat(currentWord.difficulty)}</div>
+            <div className="mt-2 text-xs text-white/30">{t('games.quickdraw.difficultyHint', { category: currentWord.category, stars: '★'.repeat(currentWord.difficulty) })}</div>
           </div>
           <motion.button whileTap={{ scale: 0.97 }} onClick={startDrawing}
             className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white px-8 py-3 rounded-full font-extrabold text-lg shadow-[0_0_20px_rgba(255,107,152,0.3)]">
-            <Pencil className="w-5 h-5" /> Zeichnen starten
+            <Pencil className="w-5 h-5" /> {t('games.quickdraw.startDrawing')}
           </motion.button>
         </motion.div>
       )}
@@ -409,7 +407,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               style={{ width: `${(timeLeft / MODE_TIMERS[mode]) * 100}%` }} />
           </div>
           <div className="flex items-center justify-between px-4 py-2">
-            <span className="text-sm font-bold text-white/60">{drawer.name} zeichnet</span>
+            <span className="text-sm font-bold text-white/60">{t('games.quickdraw.drawerDraws', { name: drawer.name })}</span>
             <div className={cn('px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-lg font-mono font-bold',
               timeLeft <= 10 ? 'text-red-400 animate-pulse' : 'text-white/80')}>{timeLeft}s</div>
           </div>
@@ -420,7 +418,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               canvasHidden ? 'bg-[#1b2028]' : 'bg-white')}>
               {canvasHidden && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <span className="text-white/40 font-bold text-lg">Blind-Modus aktiv!</span>
+                  <span className="text-white/40 font-bold text-lg">{t('games.quickdraw.blindActive')}</span>
                 </div>
               )}
               <canvas ref={canvasRef} width={400} height={400}
@@ -456,7 +454,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           <div className="px-4 pb-4">
             <motion.button whileTap={{ scale: 0.97 }} onClick={finishDrawing}
               className="w-full py-3 rounded-full bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white font-bold shadow-[0_0_20px_rgba(255,107,152,0.2)]">
-              Fertig gezeichnet
+              {t('games.quickdraw.doneDrawing')}
             </motion.button>
           </div>
         </div>
@@ -467,22 +465,22 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col items-center gap-5 px-4 py-6 max-w-lg mx-auto w-full">
           <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">Raten</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#ff6b98]">{t('games.quickdraw.guessingPhase')}</span>
           </div>
           {drawingDataURL && (
             <div className="w-full max-w-sm aspect-square rounded-2xl border border-[#44484f]/20 overflow-hidden bg-white">
-              <img src={drawingDataURL} alt="Zeichnung" className="w-full h-full object-contain" />
+              <img src={drawingDataURL} alt={t('games.quickdraw.drawingAlt')} className="w-full h-full object-contain" />
             </div>
           )}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
               style={{ backgroundColor: guessers[currentGuesser]?.color }}>{getPlayerInitial(guessers[currentGuesser]?.name ?? '')}</div>
-            <span className="text-white font-bold">{guessers[currentGuesser]?.name} raet</span>
+            <span className="text-white font-bold">{t('games.quickdraw.playerGuesses', { name: guessers[currentGuesser]?.name })}</span>
           </div>
           <div className="w-full flex gap-2">
             <input type="text" value={guessInput} onChange={e => setGuessInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submitGuess()}
-              placeholder="Was ist das?" className="flex-1 bg-[#1b2028] border border-[#44484f]/20 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#ff6b98]/50" />
+              placeholder={t('games.quickdraw.guessPlaceholder')} className="flex-1 bg-[#1b2028] border border-[#44484f]/20 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#ff6b98]/50" />
             <motion.button whileTap={{ scale: 0.95 }} onClick={submitGuess}
               className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white font-bold">OK</motion.button>
           </div>
@@ -501,18 +499,18 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
             </div>
           </motion.div>
           <div className="text-center">
-            <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Das Wort war</div>
+            <div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t('games.quickdraw.theWordWas')}</div>
             <div className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-white">{currentWord.word}</div>
           </div>
           {drawingDataURL && (
             <div className="w-full max-w-xs aspect-square rounded-2xl border border-[#44484f]/20 overflow-hidden bg-white">
-              <img src={drawingDataURL} alt="Zeichnung" className="w-full h-full object-contain" />
+              <img src={drawingDataURL} alt={t('games.quickdraw.drawingAlt')} className="w-full h-full object-contain" />
             </div>
           )}
           <GuessList guesses={guesses} players={players} />
           <motion.button whileTap={{ scale: 0.97 }} onClick={nextRound}
             className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(255,107,152,0.3)]">
-            {round >= totalRounds ? 'Ergebnis' : 'Weiter'} <ArrowRight className="w-5 h-5" />
+            {round >= totalRounds ? t('games.quickdraw.showResults') : t('games.play.next')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
@@ -526,7 +524,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
               <Trophy className="w-8 h-8 text-amber-400" /></div>
           </motion.div>
-          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#ff6b98] neon-glow-pink">Spielende!</h2>
+          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#ff6b98] neon-glow-pink">{t('games.results.gameOver')}</h2>
           <div className="w-full space-y-2">
             {sorted.map((p, i) => (
               <div key={p.id} className={cn('flex items-center gap-3 rounded-[1rem] px-4 py-3 border',
@@ -543,9 +541,9 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           <div className="w-full space-y-3 mt-2">
             <motion.button whileTap={{ scale: 0.97 }} onClick={() => setPhase('setup')}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(255,107,152,0.3)]">
-              <RotateCcw className="w-4 h-4" /> Nochmal</motion.button>
+              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}</motion.button>
             <button onClick={() => navigate('/games')}
-              className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">Anderes Spiel</button>
+              className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">{t('games.results.otherGame')}</button>
           </div>
         </motion.div>
       )}

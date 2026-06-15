@@ -34,22 +34,25 @@ interface RoundVote {
 
 const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 
+// Sentinel used internally so import logic doesn't depend on the displayed name.
+const DEFAULT_PLAYER_SENTINEL = '__DEFAULT__';
+
 // Mode cards for the bento setup grid. `size` controls the grid span,
 // `tone` selects the accent color family used for border/chip/icon.
 type ModeCard = {
   id: string;
-  label: string;
-  tag?: string;
-  desc: string;
+  labelKey: string;
+  tagKey?: string;
+  descKey: string;
   icon: React.ReactNode;
   size: 'large' | 'medium' | 'small';
   tone: 'primary' | 'secondary' | 'tertiary';
 };
 const MODE_CARDS: ModeCard[] = [
-  { id: 'classic', label: 'Classic', tag: 'Beliebt', desc: 'Kein Zeitdruck — die Gruppe stimmt gemeinsam ab.', icon: <Shuffle className="w-6 h-6" />, size: 'large',  tone: 'primary'  },
-  { id: 'speed',   label: 'Speed',                    desc: '5s pro Person — Bauchgefühl gewinnt.',          icon: <Zap className="w-6 h-6" />,      size: 'small',  tone: 'tertiary' },
-  { id: 'debatte', label: 'Debatte',                  desc: 'Nach dem Voting: 30s Diskussion.',              icon: <MessageSquare className="w-6 h-6" />, size: 'medium', tone: 'secondary' },
-  { id: 'chaos',   label: 'Chaos',                    desc: 'Schnellere Runden + mehr Cards.',               icon: <Flame className="w-6 h-6" />,    size: 'medium', tone: 'primary'  },
+  { id: 'classic', labelKey: 'gameModes.thisorthat.classic.name', tagKey: 'games.thisorthat.modeTagPopular', descKey: 'gameModes.thisorthat.classic.desc', icon: <Shuffle className="w-6 h-6" />, size: 'large',  tone: 'primary'  },
+  { id: 'speed',   labelKey: 'gameModes.thisorthat.speed.name',                                               descKey: 'gameModes.thisorthat.speed.desc',   icon: <Zap className="w-6 h-6" />,      size: 'small',  tone: 'tertiary' },
+  { id: 'debatte', labelKey: 'gameModes.thisorthat.debatte.name',                                             descKey: 'gameModes.thisorthat.debatte.desc', icon: <MessageSquare className="w-6 h-6" />, size: 'medium', tone: 'secondary' },
+  { id: 'chaos',   labelKey: 'games.thisorthat.modeChaosLabel',                                               descKey: 'games.thisorthat.modeChaosDesc',    icon: <Flame className="w-6 h-6" />,    size: 'medium', tone: 'primary'  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -346,6 +349,11 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     );
   }
 
+  // Sentiment strings for the reveal phase
+  const sentimentLandslide = t('games.thisorthat.sentimentLandslide');
+  const sentimentMajority  = t('games.thisorthat.sentimentMajority');
+  const sentimentClose     = t('games.thisorthat.sentimentClose');
+
   return (
     <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
@@ -354,11 +362,15 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
-        <button onClick={() => navigate('/games')} className="p-2 text-[#a8abb3] hover:text-white">
+        <button
+          onClick={() => navigate('/games')}
+          className="p-2 text-[#a8abb3] hover:text-white"
+          aria-label={t('common.back')}
+        >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
-          Runde {currentRound}/{totalRounds}
+          {t('games.thisorthat.roundIndicator', { current: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-xs font-bold text-[#8ff5ff]">
           {currentPair?.category}
@@ -407,8 +419,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 {online ? (
                   <span className="text-[#a8abb3] text-xs font-semibold">
                     {iAlreadyVoted
-                      ? `Warte auf andere · ${votedCount}/${players.length}`
-                      : 'Deine Wahl'}
+                      ? t('games.thisorthat.waitingForOthers', { voted: votedCount, total: players.length })
+                      : t('games.thisorthat.yourChoice')}
                   </span>
                 ) : (
                   <>
@@ -419,7 +431,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                       {players[voterIdx]?.avatar}
                     </div>
                     <span className="text-[#a8abb3] text-xs font-semibold">
-                      <span className="text-white font-bold">{players[voterIdx]?.name}</span> wählt
+                      <span className="text-white font-bold">{players[voterIdx]?.name}</span>{' '}
+                      {t('games.thisorthat.playerChooses')}
                     </span>
                   </>
                 )}
@@ -448,6 +461,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   whileTap={iAlreadyVoted ? {} : { scale: 0.97 }}
                   onClick={() => tap('A')}
                   disabled={iAlreadyVoted}
+                  aria-label={t('games.thisorthat.chooseOption', { option: currentPair.optionA })}
                   className={cn(
                     "group relative flex-1 rounded-2xl overflow-hidden text-left shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all",
                     iAlreadyVoted ? 'opacity-60 cursor-default' : 'hover:shadow-[0_30px_60px_rgba(255,107,152,0.25)]',
@@ -458,14 +472,14 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   <div className="relative h-full min-h-[200px] sm:min-h-[440px] flex flex-col justify-end p-6 sm:p-8">
                     <span className="text-[#ffc1ce] font-black text-[10px] tracking-[0.3em] uppercase mb-1">
-                      Option A
+                      {t('games.thisorthat.optionA')}
                     </span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-[1.05] break-words">
                       {currentPair.optionA}
                     </h3>
                     {!iAlreadyVoted && (
                       <div className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#ff6b98] text-[#47001d] font-black text-[11px] tracking-wider uppercase w-fit opacity-90 group-hover:opacity-100">
-                        Wählen <Check className="w-3.5 h-3.5" />
+                        {t('games.thisorthat.choose')} <Check className="w-3.5 h-3.5" />
                       </div>
                     )}
                   </div>
@@ -504,6 +518,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   whileTap={iAlreadyVoted ? {} : { scale: 0.97 }}
                   onClick={() => tap('B')}
                   disabled={iAlreadyVoted}
+                  aria-label={t('games.thisorthat.chooseOption', { option: currentPair.optionB })}
                   className={cn(
                     "group relative flex-1 rounded-2xl overflow-hidden text-left shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all",
                     iAlreadyVoted ? 'opacity-60 cursor-default' : 'hover:shadow-[0_30px_60px_rgba(143,245,255,0.25)]',
@@ -514,14 +529,14 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   <div className="relative h-full min-h-[200px] sm:min-h-[440px] flex flex-col justify-end p-6 sm:p-8">
                     <span className="text-[#8ff5ff] font-black text-[10px] tracking-[0.3em] uppercase mb-1">
-                      Option B
+                      {t('games.thisorthat.optionB')}
                     </span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-[1.05] break-words">
                       {currentPair.optionB}
                     </h3>
                     {!iAlreadyVoted && (
                       <div className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8ff5ff] text-[#003f43] font-black text-[11px] tracking-wider uppercase w-fit opacity-90 group-hover:opacity-100">
-                        Wählen <Check className="w-3.5 h-3.5" />
+                        {t('games.thisorthat.choose')} <Check className="w-3.5 h-3.5" />
                       </div>
                     )}
                   </div>
@@ -552,8 +567,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
           <motion.div key="debate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <MessageSquare className="w-10 h-10 text-[#ff6b98]" />
-            <h2 className="text-2xl font-extrabold">Debatte!</h2>
-            <p className="text-white/40 text-sm text-center">Diskutiert 30 Sekunden ueber eure Wahl</p>
+            <h2 className="text-2xl font-extrabold">{t('games.thisorthat.debateTitle')}</h2>
+            <p className="text-white/40 text-sm text-center">{t('games.thisorthat.debateHint')}</p>
             <div className="text-4xl font-mono font-black text-[#ff6b98]">{debateTimer.timeLeft}s</div>
             <div className="flex gap-4 w-full max-w-sm">
               <div className="flex-1 rounded-2xl bg-[#df8eff]/10 border border-[#df8eff]/20 p-4 text-center">
@@ -566,7 +581,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={endDebate}
               className="mt-4 px-8 py-3 rounded-2xl bg-white/10 border border-white/10 text-white/60 font-bold text-sm">
-              Ueberspringen
+              {t('games.thisorthat.debateSkip')}
             </motion.button>
           </motion.div>
         )}
@@ -584,10 +599,10 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
           const loserVoters  = players.filter((p) => roundVotes[p.id] === (aIsWinner ? 'B' : 'A'));
           const landslide = winnerPct >= 75;
           const sentiment = landslide
-            ? 'Eindeutige Entscheidung — eure Gruppe ist sich einig.'
+            ? sentimentLandslide
             : winnerPct >= 60
-              ? 'Klare Mehrheit, aber Raum für Debatte.'
-              : 'Knappes Rennen — das wird spannend.';
+              ? sentimentMajority
+              : sentimentClose;
 
           return (
             <motion.div
@@ -598,18 +613,22 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               {/* Hero header */}
               <div className="relative mb-8 text-center">
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#df8eff]/10 rounded-full blur-[80px] pointer-events-none" />
-                <p className="text-[#8ff5ff] font-bold tracking-[0.25em] uppercase text-[11px] mb-2">Runde {currentRound} · Ergebnis</p>
+                <p className="text-[#8ff5ff] font-bold tracking-[0.25em] uppercase text-[11px] mb-2">
+                  {t('games.thisorthat.roundResult', { round: currentRound })}
+                </p>
                 <motion.h2
                   initial={{ scale: 0.92, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', bounce: 0.35 }}
                   className="text-4xl sm:text-5xl font-black tracking-tight italic drop-shadow-[0_0_12px_rgba(223,142,255,0.45)]"
                 >
-                  DAS VERDIKT
+                  {t('games.thisorthat.verdictTitle')}
                 </motion.h2>
                 <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#20262f] border border-[#44484f]/40 text-xs">
                   <Users className="w-3.5 h-3.5 text-[#ff6b98]" />
-                  <span className="font-bold">{voteStats.total} Stimmen</span>
+                  <span className="font-bold">
+                    {t('games.thisorthat.voteCount', { count: voteStats.total })}
+                  </span>
                 </div>
               </div>
 
@@ -651,7 +670,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                       >
                         {winnerPct}%
                       </motion.span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">Winner</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">
+                        {t('games.thisorthat.winnerLabel')}
+                      </span>
                     </div>
                   </div>
                   <h3 className="text-xl font-black tracking-tight mb-2 break-words">{winnerLabel}</h3>
@@ -663,7 +684,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                       className="h-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_0_10px_rgba(223,142,255,0.5)]"
                     />
                   </div>
-                  <p className="text-[11px] text-[#a8abb3] font-medium">{winnerVotes} {winnerVotes === 1 ? 'Stimme' : 'Stimmen'}</p>
+                  <p className="text-[11px] text-[#a8abb3] font-medium">
+                    {t('games.thisorthat.votes', { count: winnerVotes })}
+                  </p>
                   {/* Voter avatars */}
                   <div className="flex flex-wrap justify-center gap-1 mt-3">
                     {winnerVoters.slice(0, 8).map((p) => (
@@ -688,7 +711,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   <div className="relative mb-4">
                     <div className="w-24 h-24 rounded-full bg-[#20262f] border-4 border-[#ff6b98]/20 flex flex-col items-center justify-center">
                       <span className="text-2xl font-black text-white/80">{loserPct}%</span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">Runner-up</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">
+                        {t('games.thisorthat.runnerUpLabel')}
+                      </span>
                     </div>
                   </div>
                   <h3 className="text-lg font-black tracking-tight text-white/80 mb-2 break-words">{loserLabel}</h3>
@@ -700,7 +725,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                       className="h-full rounded-full bg-gradient-to-r from-[#ff6b98]/60 to-[#e4006c]/50 opacity-70"
                     />
                   </div>
-                  <p className="text-[11px] text-[#a8abb3] font-medium">{loserVotes} {loserVotes === 1 ? 'Stimme' : 'Stimmen'}</p>
+                  <p className="text-[11px] text-[#a8abb3] font-medium">
+                    {t('games.thisorthat.votes', { count: loserVotes })}
+                  </p>
                   <div className="flex flex-wrap justify-center gap-1 mt-3">
                     {loserVoters.slice(0, 8).map((p) => (
                       <div
@@ -723,7 +750,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 className="rounded-2xl bg-[#0f141a] border border-[#44484f]/20 p-5 mb-6"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-[10px] font-black text-[#ff6b98] uppercase tracking-[0.25em]">Gruppen-Stimmung</span>
+                  <span className="text-[10px] font-black text-[#ff6b98] uppercase tracking-[0.25em]">
+                    {t('games.thisorthat.groupMood')}
+                  </span>
                   <div className="flex -space-x-1.5">
                     {players.slice(0, 4).map((p) => (
                       <div
@@ -742,7 +771,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   </div>
                 </div>
                 <p className="text-sm text-[#a8abb3]">
-                  {sentiment} <span className="text-white font-bold">{winnerLabel}</span>{landslide ? ' gewinnt im Erdrutsch.' : '.'}
+                  {sentiment}{' '}
+                  <span className="text-white font-bold">{winnerLabel}</span>
+                  {landslide ? t('games.thisorthat.winsLandslide') : '.'}
                 </p>
               </motion.div>
 
@@ -753,7 +784,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 className="w-full h-14 rounded-full flex items-center justify-center gap-2 text-[#0a0e14] font-black tracking-tight text-base shadow-[0_12px_24px_-8px_rgba(223,142,255,0.4)]"
                 style={{ background: 'linear-gradient(135deg, #df8eff, #d779ff)' }}
               >
-                Nächste Runde <ArrowRight className="w-5 h-5" />
+                {t('games.thisorthat.nextRound')} <ArrowRight className="w-5 h-5" />
               </motion.button>
             </motion.div>
           );
@@ -770,9 +801,11 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               </div>
             </motion.div>
             <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
-              Spielende!
+              {t('games.results.gameOver')}
             </h2>
-            <div className="text-lg font-bold text-[#8ff5ff]">{winner.name} gewinnt!</div>
+            <div className="text-lg font-bold text-[#8ff5ff]">
+              {t('games.thisorthat.playerWins', { name: winner.name })}
+            </div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
                 <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
@@ -780,18 +813,20 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#8ff5ff] font-bold">{p.score} Pkt.</span>
+                  <span className="text-[#8ff5ff] font-bold">
+                    {t('games.thisorthat.scorePoints', { score: p.score })}
+                  </span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
               <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
-                <RotateCcw className="w-4 h-4" /> Nochmal
+                <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
               </motion.button>
               <button onClick={() => navigate('/games')}
                 className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                Anderes Spiel
+                {t('games.results.otherGame')}
               </button>
             </div>
           </motion.div>
@@ -827,6 +862,7 @@ const TONE_STYLE: Record<'primary' | 'secondary' | 'tertiary', {
 };
 
 function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isOnline = (onlinePlayers?.length ?? 0) > 0;
 
@@ -841,10 +877,19 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
       }));
     }
     return [
-      { id: 'p-1', name: 'Du',        color: PLAYER_COLORS[0], avatar: 'D' },
-      { id: 'p-2', name: 'Spieler 2', color: PLAYER_COLORS[1], avatar: '2' },
+      { id: 'p-1', name: DEFAULT_PLAYER_SENTINEL, color: PLAYER_COLORS[0], avatar: 'P' },
+      { id: 'p-2', name: DEFAULT_PLAYER_SENTINEL, color: PLAYER_COLORS[1], avatar: '2' },
     ];
   });
+
+  // Resolve the display name: sentinel → translated default, otherwise use stored name
+  const resolveDisplayName = (name: string, idx: number): string => {
+    if (name === DEFAULT_PLAYER_SENTINEL) {
+      return idx === 0 ? t('games.thisorthat.defaultPlayer1') : t('games.thisorthat.defaultPlayerN', { n: idx + 1 });
+    }
+    return name;
+  };
+
   const MIN = 2, MAX = 20;
   const addPlayer = () => {
     if (isOnline) return; // Online: Spielerliste ist fix (Remote-Geräte)
@@ -854,7 +899,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
     void haptics.select();
     setPlayers((prev) => [...prev, {
       id,
-      name: `Spieler ${idx + 1}`,
+      name: DEFAULT_PLAYER_SENTINEL,
       color: PLAYER_COLORS[idx % PLAYER_COLORS.length],
       avatar: String(idx + 1),
     }]);
@@ -870,34 +915,48 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
     ));
   };
 
+  // Replace entire roster with imported names; drop all existing players incl. sentinels/placeholders.
+  // Pad to MIN with sentinel placeholders if fewer than MIN names are imported.
   const handleImportNames = (names: string[]) => {
     if (isOnline) return;
-    setPlayers((prev) => {
-      const kept = prev.filter((p) => p.name.trim() && !/^Spieler \d+$/.test(p.name.trim()) && p.name !== 'Du');
-      const merged = [...kept];
-      for (const n of names) {
-        if (merged.length >= MAX) break;
-        merged.push({
-          id: `p-${Date.now()}-${merged.length}`,
-          name: n,
-          color: PLAYER_COLORS[merged.length % PLAYER_COLORS.length],
-          avatar: n.slice(0, 1).toUpperCase() || '?',
-        });
-      }
-      while (merged.length < MIN) {
-        const idx = merged.length;
-        merged.push({ id: `p-${Date.now()}-${idx}`, name: `Spieler ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: String(idx + 1) });
-      }
-      return merged;
-    });
+    const fresh: { id: string; name: string; color: string; avatar: string }[] = [];
+    for (const n of names) {
+      if (fresh.length >= MAX) break;
+      const trimmed = n.trim();
+      if (!trimmed) continue;
+      fresh.push({
+        id: `p-${Date.now()}-${fresh.length}`,
+        name: trimmed,
+        color: PLAYER_COLORS[fresh.length % PLAYER_COLORS.length],
+        avatar: trimmed.slice(0, 1).toUpperCase() || '?',
+      });
+    }
+    while (fresh.length < MIN) {
+      const idx = fresh.length;
+      fresh.push({
+        id: `p-${Date.now()}-${idx}`,
+        name: DEFAULT_PLAYER_SENTINEL,
+        color: PLAYER_COLORS[idx % PLAYER_COLORS.length],
+        avatar: String(idx + 1),
+      });
+    }
+    setPlayers(fresh);
   };
 
   const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
   const handleStart = () => {
     if (!canStart) return;
     void haptics.celebrate();
+    // Resolve sentinel display names before passing to game
+    const resolved = players.map((p, i) => ({
+      ...p,
+      name: resolveDisplayName(p.name, i),
+      avatar: p.name === DEFAULT_PLAYER_SENTINEL
+        ? (i === 0 ? t('games.thisorthat.defaultPlayer1').slice(0, 1).toUpperCase() : String(i + 1))
+        : p.avatar,
+    }));
     onStart(
-      players,
+      resolved,
       modeId === 'chaos' ? 'speed' : modeId, // chaos routes to speed with tighter rounds
       { timer: modeId === 'chaos' ? 3 : 5, rounds },
     );
@@ -926,27 +985,36 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
         <button
           onClick={() => navigate('/games')}
           className="mb-6 inline-flex items-center gap-1.5 text-xs font-bold text-[#a8abb3] hover:text-white transition-colors"
+          aria-label={t('common.back')}
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Zurück
+          <ArrowLeft className="w-3.5 h-3.5" /> {t('common.back')}
         </button>
 
         <section className="relative mb-10">
-          <p className="text-[#8ff5ff] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">Social Challenge</p>
+          <p className="text-[#8ff5ff] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">
+            {t('games.thisorthat.socialChallenge')}
+          </p>
           <h2 className="text-5xl font-black tracking-tighter leading-[0.95] mb-3">
-            This <span className="text-[#df8eff] italic drop-shadow-[0_0_10px_rgba(223,142,255,0.5)]">oder</span> That
+            This <span className="text-[#df8eff] italic drop-shadow-[0_0_10px_rgba(223,142,255,0.5)]">{t('games.thisorthat.orWord')}</span> That
           </h2>
           <p className="text-[#a8abb3] text-sm max-w-[300px]">
-            Wähl deinen Modus und startet den Präferenz-Battle.
+            {t('games.thisorthat.setupSubtitle')}
           </p>
         </section>
 
-        {/* Spieler — einheitlicher Block, IMMER ganz oben (1. Sektion) */}
+        {/* Player setup — always first section */}
         <section className="mb-10">
           <PlayerSetup
-            players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, readOnly: isOnline }))}
+            players={players.map((p, i) => ({
+              id: p.id,
+              name: resolveDisplayName(p.name, i),
+              color: p.color,
+              avatar: p.avatar,
+              readOnly: isOnline,
+            }))}
             onAdd={addPlayer}
             onRemove={removePlayer}
-            onRename={renamePlayer}
+            onRename={(id, name) => renamePlayer(id, name)}
             onImportNames={isOnline ? undefined : handleImportNames}
             min={MIN}
             max={isOnline ? players.length : MAX}
@@ -958,7 +1026,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
         {/* Mode bento grid */}
         <section className="mb-10">
           <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3] mb-4 flex items-center gap-2">
-            Modus wählen
+            {t('games.setup.selectMode')}
             <span className="w-1.5 h-1.5 bg-[#ff6b98] rounded-full animate-pulse" />
           </h3>
           <div className="grid grid-cols-6 gap-3">
@@ -970,6 +1038,8 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
                   key={m.id}
                   type="button"
                   onClick={() => { void haptics.select(); setModeId(m.id); }}
+                  aria-pressed={active}
+                  aria-label={t(m.labelKey)}
                   className={cn(
                     'relative rounded-2xl overflow-hidden group text-left transition-all active:scale-[0.98]',
                     bentoClasses[m.size],
@@ -996,9 +1066,9 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
                   {/* Content */}
                   <div className="relative h-full p-4 flex flex-col justify-between">
                     <div className="flex items-start justify-between">
-                      {m.tag && (
+                      {m.tagKey && (
                         <span className={cn('inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest backdrop-blur-md', tone.chip)}>
-                          {m.tag}
+                          {t(m.tagKey)}
                         </span>
                       )}
                       {active && (
@@ -1010,10 +1080,10 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
                     <div>
                       <div className={cn('mb-1.5', tone.icon)}>{m.icon}</div>
                       <h4 className={cn('text-lg font-extrabold leading-none mb-1', active ? tone.text : 'text-white')}>
-                        {m.label}
+                        {t(m.labelKey)}
                       </h4>
                       {m.size !== 'small' && (
-                        <p className="text-[10px] text-[#a8abb3] leading-snug line-clamp-2">{m.desc}</p>
+                        <p className="text-[10px] text-[#a8abb3] leading-snug line-clamp-2">{t(m.descKey)}</p>
                       )}
                     </div>
                   </div>
@@ -1026,7 +1096,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
         {/* Rounds slider */}
         <section className="rounded-2xl bg-[#0f141a] border-l-4 border-[#df8eff] p-5 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[#a8abb3] font-medium text-sm">Rundenanzahl</span>
+            <span className="text-[#a8abb3] font-medium text-sm">{t('games.setup.rounds')}</span>
             <span className="text-[#8ff5ff] font-black text-lg tabular-nums">{rounds}</span>
           </div>
           <input
@@ -1036,6 +1106,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
             step={1}
             value={rounds}
             onChange={(e) => setRounds(Number(e.target.value))}
+            aria-label={t('games.setup.rounds')}
             className="w-full h-2 rounded-full appearance-none cursor-pointer accent-[#df8eff]"
             style={{
               background: `linear-gradient(to right, #df8eff 0%, #ff6b98 ${((rounds - 5) / 25) * 100}%, #20262f ${((rounds - 5) / 25) * 100}%)`,
@@ -1066,11 +1137,11 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
         >
           {canStart ? (
             <>
-              Start Game
+              {t('games.thisorthat.startGame')}
               <Zap className="w-5 h-5" />
             </>
           ) : (
-            'Mindestens 2 Spieler'
+            t('games.setup.minPlayers', { count: MIN })
           )}
         </motion.button>
       </div>

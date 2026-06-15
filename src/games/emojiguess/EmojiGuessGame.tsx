@@ -59,11 +59,6 @@ const GAME_MODES: GameMode[] = [
   { id: 'team', name: 'Team', desc: 'Teams wechseln sich ab', icon: <Crown className="w-6 h-6" /> },
 ];
 
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 5, max: 60, default: 30, step: 5, label: 'Timer' },
-  rounds: { min: 5, max: 30, default: 10, step: 1, label: 'Runden' },
-};
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -71,6 +66,11 @@ const SETUP_SETTINGS: SettingsConfig = {
 export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const SETUP_SETTINGS: SettingsConfig = {
+    timer: { min: 5, max: 60, default: 30, step: 5, label: t('games.setup.timer') },
+    rounds: { min: 5, max: 30, default: 10, step: 1, label: t('games.setup.rounds') },
+  };
 
   // Setup state
   const [phase, setPhase] = useState<Phase>('setup');
@@ -281,7 +281,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
         modes={getTranslatedModes('emojiguess', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
-        title="Emoji-Raten"
+        title={t('games.emojiguess.title')}
         onlinePlayers={online?.players}
       />
     );
@@ -322,7 +322,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
               <span className="text-sm text-white/60">{currentPlayer?.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-white/40">Runde {currentRound}/{totalRounds}</span>
+              <span className="text-xs text-white/40">{t('games.findit.roundLabel', { current: currentRound, total: totalRounds })}</span>
               <div className={cn(
                 'px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-lg font-mono font-bold',
                 timer.timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-white/80',
@@ -358,7 +358,8 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
 
               {/* Points available */}
               <div className="text-sm text-white/40 mb-3">
-                <span className="text-[#8ff5ff] font-bold">{pointsAvailable}</span> Punkte moeglich
+                <span className="text-[#8ff5ff] font-bold">{pointsAvailable}</span>{' '}
+                {t('games.emojiguess.pointsAvailable')}
               </div>
 
               {/* Hint */}
@@ -371,7 +372,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
                     className="flex items-center justify-center gap-2 text-sm text-[#ff6b98]"
                   >
                     <Lightbulb className="w-4 h-4" />
-                    <span>Beginnt mit: <strong>{currentPuzzle.answer.charAt(0)}</strong></span>
+                    <span>{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -387,7 +388,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
               className="w-full flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold border border-[#df8eff]/30 text-[#df8eff] bg-[#df8eff]/5"
             >
               <Eye className="w-4 h-4" />
-              {showAnswer ? currentPuzzle.answer : 'Antwort anzeigen'}
+              {showAnswer ? currentPuzzle.answer : t('games.emojiguess.showAnswer')}
             </motion.button>
 
             <div className="flex items-center gap-3">
@@ -396,7 +397,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
                 onClick={() => { setShowAnswer(false); handleCorrectGuess(); }}
                 className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
               >
-                Erraten!
+                {t('games.emojiguess.guessed')}
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
@@ -435,7 +436,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
             onClick={advanceRound}
             className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
-            Weiter <ArrowRight className="w-5 h-5" />
+            {t('games.play.next')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
@@ -458,7 +459,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
             </div>
           </motion.div>
           <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#df8eff] neon-glow">
-            Spielende!
+            {t('games.results.gameOver')}
           </h2>
 
           {sortedPlayers[0] && (
@@ -471,7 +472,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
               </div>
               <div>
                 <div className="font-bold text-white">{sortedPlayers[0].name}</div>
-                <div className="text-amber-400 text-sm font-semibold">{sortedPlayers[0].score} Punkte</div>
+                <div className="text-amber-400 text-sm font-semibold">{t('games.findit.points', { score: sortedPlayers[0].score })}</div>
               </div>
             </div>
           )}
@@ -511,13 +512,13 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
               onClick={resetGame}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
-              <RotateCcw className="w-4 h-4" /> Nochmal
+              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>
             <button
               onClick={() => navigate('/games')}
               className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
             >
-              Anderes Spiel
+              {t('games.results.otherGame')}
             </button>
           </div>
         </motion.div>

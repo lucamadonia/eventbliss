@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { Smartphone, RotateCcw, ChevronRight, Trophy, Check, X, Play, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import { Haptics } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
@@ -68,29 +68,23 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
+  const { t } = useTranslation();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
   const initialPlayers = onlinePlayerNames.length >= 2
     ? onlinePlayerNames
     : partyPlayerNames.length >= 2
       ? partyPlayerNames
-      : ['Spieler 1', 'Spieler 2'];
+      : [t('games.headup.playerFallback', { n: 1 }), t('games.headup.playerFallback', { n: 2 })];
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
   const [timerDuration, setTimerDuration] = useState(60);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
   const isOnlineOrParty = onlinePlayerNames.length >= 2 || partyPlayerNames.length >= 2;
   const handleImportNames = (names: string[]) => {
-    setPlayerNames(prev => {
-      const kept = prev.filter(n => n.trim() && !/^Spieler \d+$/.test(n.trim()));
-      const merged = [...kept];
-      for (const n of names) {
-        if (merged.length >= 12) break;
-        merged.push(n);
-      }
-      while (merged.length < 2) merged.push('');
-      return merged;
-    });
+    const roster = [...names];
+    while (roster.length < 2) roster.push('');
+    setPlayerNames(roster.slice(0, 12));
   };
   const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);
@@ -139,7 +133,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         online.broadcast('tv-state', {
           game: 'headup', phase: 'playing',
           word: wordQueue[0] || '',
-          currentPlayer: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+          currentPlayer: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
           correct: 0, skipped: 0, timeLeft: timerDuration,
           round: currentRound, totalRounds,
           category: selectedCategory?.name || '',
@@ -147,8 +141,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       }
       return;
     }
-    const t = setTimeout(() => setCountdown(countdown - 1), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    return () => clearTimeout(timer);
   }, [countdown, timerDuration, resetTimer, startTimer]);
 
   const currentWord = wordQueue[currentWordIndex] ?? '';
@@ -171,7 +165,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         online.broadcast('tv-state', {
           game: 'headup', phase: 'playing',
           word: nextWord,
-          currentPlayer: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+          currentPlayer: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
           correct: newCorrect, skipped: newSkipped,
           timeLeft, round: currentRound, totalRounds,
           category: selectedCategory?.name || '',
@@ -214,7 +208,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   }, [screen, advanceWord]);
 
   const handleNextRound = useCallback(() => {
-    const name = playerNames[currentRound - 1] || `Spieler ${currentRound}`;
+    const name = playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound });
     setAllRounds((prev) => [...prev, { playerName: name, correct: correctCount, skipped: skippedCount, words: [...roundWords] }]);
     if (currentRound >= totalRounds) setScreen('gameOver');
     else { setCurrentRound((r) => r + 1); handleStartRound(); }
@@ -233,7 +227,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (!online?.isHost) return;
     online.broadcast('game-state', {
       screen, currentWord, currentRound, totalRounds, correctCount, skippedCount,
-      timeLeft, playerName: playerNames[currentRound - 1] || `Spieler ${currentRound}`,
+      timeLeft, playerName: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
     });
   }, [screen, currentWord, currentRound, correctCount, skippedCount, timeLeft, online]);
 
@@ -252,7 +246,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   }, []);
 
   const finalRounds = screen === 'gameOver'
-    ? [...allRounds, { playerName: `Spieler ${currentRound}`, correct: correctCount, skipped: skippedCount, words: [...roundWords] }]
+    ? [...allRounds, { playerName: t('games.headup.playerFallback', { n: currentRound }), correct: correctCount, skipped: skippedCount, words: [...roundWords] }]
     : allRounds;
   const totalCorrect = finalRounds.reduce((s, r) => s + r.correct, 0);
   const bestRound = finalRounds.reduce((b, r) => (r.correct > b.correct ? r : b), finalRounds[0] ?? { playerName: '', correct: 0, skipped: 0, words: [] });
@@ -269,7 +263,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         {screen === 'setup' && (
           <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 pb-36 max-w-lg mx-auto">
             <div className="text-center mb-8 pt-6">
-              <h1 className="text-4xl font-extrabold tracking-tighter text-[#f1f3fc]">Stirnraten</h1>
+              <h1 className="text-4xl font-extrabold tracking-tighter text-[#f1f3fc]">{t('games.headup.gameTitle')}</h1>
               <span className="inline-block mt-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#ff6b98]/15 text-[#ff6b98] border border-[#ff6b98]/20">Party Game</span>
             </div>
 
@@ -284,7 +278,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 min={2}
                 max={12}
                 accent="#df8eff"
-                label="Spieler"
+                label={t('games.headup.playerLabel')}
               />
             </div>
 
@@ -298,11 +292,11 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <div className="flex gap-2 mb-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#df8eff]/20 text-[#df8eff]">Featured</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#8ff5ff]/15 text-[#8ff5ff]">Top Pick</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#df8eff]/20 text-[#df8eff]">{t('games.headup.featuredBadge')}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#8ff5ff]/15 text-[#8ff5ff]">{t('games.headup.topPickBadge')}</span>
                   </div>
                   <h3 className="text-4xl font-black italic text-[#f1f3fc] tracking-tight">{featured.name}</h3>
-                  <p className="text-[#a8abb3] text-sm mt-1">{featured.words.length} Begriffe</p>
+                  <p className="text-[#a8abb3] text-sm mt-1">{t('games.headup.wordCount', { count: featured.words.length })}</p>
                 </div>
                 <div className="absolute right-4 bottom-4 w-12 h-12 rounded-full neon-btn flex items-center justify-center">
                   <Play className="w-5 h-5 text-white ml-0.5" />
@@ -311,7 +305,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             )}
 
             {/* Category Grid */}
-            <h2 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">Kategorien</h2>
+            <h2 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">{t('games.headup.categoriesLabel')}</h2>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {gridCats.map((cat) => (
                 <motion.button key={cat.id} whileTap={{ scale: 0.97 }} onClick={() => setSelectedCategory(cat)}
@@ -320,7 +314,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   }`}>
                   <span className="text-3xl block mb-2">{cat.emoji}</span>
                   <span className="text-sm font-bold text-[#f1f3fc]">{cat.name}</span>
-                  <span className="text-xs text-[#a8abb3] block mt-0.5">{cat.words.length} Begriffe</span>
+                  <span className="text-xs text-[#a8abb3] block mt-0.5">{t('games.headup.wordCount', { count: cat.words.length })}</span>
                   {selectedCategory?.id === cat.id && <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#df8eff] to-transparent rounded-t-xl" />}
                 </motion.button>
               ))}
@@ -328,9 +322,9 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
             {/* Settings */}
             <div className="glass-card rounded-2xl p-5 border border-[#20262f] mb-6">
-              <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-4">Einstellungen</h3>
+              <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-4">{t('games.headup.settingsLabel')}</h3>
               <div>
-                <label className="text-xs text-[#a8abb3] mb-2 block">Zeit: <span className="text-[#df8eff] font-bold">{timerDuration}s</span></label>
+                <label className="text-xs text-[#a8abb3] mb-2 block">{t('games.headup.timerLabel', { duration: timerDuration })}</label>
                 <input type="range" min={15} max={120} step={5} value={timerDuration} onChange={(e) => setTimerDuration(+e.target.value)}
                   className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#df8eff]" />
               </div>
@@ -343,9 +337,9 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   className={`w-full py-4 rounded-full text-base font-extrabold uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${
                     selectedCategory ? 'neon-btn text-white' : 'bg-[#1b2028] text-[#a8abb3]/40 cursor-not-allowed'
                   }`}>
-                  <Play className="w-5 h-5" /> Spiel starten
+                  <Play className="w-5 h-5" /> {t('games.headup.startGame')}
                 </motion.button>
-                <p className="text-[10px] text-[#a8abb3] mt-2 uppercase tracking-widest">Smartphone an die Stirn halten</p>
+                <p className="text-[10px] text-[#a8abb3] mt-2 uppercase tracking-widest">{t('games.headup.holdToForehead')}</p>
               </div>
             </div>
           </motion.div>
@@ -356,37 +350,37 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
           <motion.div key="ready" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col items-center justify-center min-h-[100dvh] p-8 pulse-bg">
             <ActivePlayerBanner
-              playerName={playerNames[currentRound - 1] || `Spieler ${currentRound}`}
+              playerName={playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound })}
               hidden={false}
             />
             {/* Current player name */}
             <div className="mb-4 px-4 py-2 rounded-full bg-[#df8eff]/15 border border-[#df8eff]/25">
-              <span className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1] || `Spieler ${currentRound}`}</span>
-              <span className="text-xs text-[#a8abb3] ml-2">ist dran</span>
+              <span className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound })}</span>
+              <span className="text-xs text-[#a8abb3] ml-2">{t('games.headup.playerTurn')}</span>
             </div>
             <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }} className="mb-8">
               <div className="w-24 h-40 rounded-2xl border-2 border-[#df8eff]/40 bg-[#151a21]/80 backdrop-blur-xl flex items-center justify-center shadow-[0_0_40px_rgba(223,142,255,.15)]">
                 <Smartphone className="w-12 h-12 text-[#df8eff]" />
               </div>
             </motion.div>
-            <p className="text-xl font-extrabold text-center mb-3">Halte das Handy an deine Stirn</p>
+            <p className="text-xl font-extrabold text-center mb-3">{t('games.headup.holdToForehead')}</p>
             <div className="flex flex-col gap-2 mb-6 w-full max-w-xs">
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#8ff5ff]/10 border border-[#8ff5ff]/25">
                 <ChevronDown className="w-6 h-6 text-[#8ff5ff] shrink-0" />
-                <span className="text-sm font-bold text-[#8ff5ff]">Nach <span className="underline">unten</span> kippen = <span className="text-white">RICHTIG</span></span>
+                <span className="text-sm font-bold text-[#8ff5ff]">{t('games.headup.tiltDownCorrect')}</span>
               </div>
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#ff6e84]/10 border border-[#ff6e84]/25">
                 <ChevronUp className="w-6 h-6 text-[#ff6e84] shrink-0" />
-                <span className="text-sm font-bold text-[#ff6e84]">Nach <span className="underline">oben</span> kippen = <span className="text-white">SKIP</span></span>
+                <span className="text-sm font-bold text-[#ff6e84]">{t('games.headup.tiltUpSkip')}</span>
               </div>
-              <p className="text-[10px] text-center text-[#a8abb3] mt-1">Nach jeder Neigung kurz flach halten</p>
+              <p className="text-[10px] text-center text-[#a8abb3] mt-1">{t('games.headup.tiltNeutralHint')}</p>
             </div>
             {countdown !== null && (
               <motion.div key={countdown} initial={{ scale: 2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }}
-                className="text-7xl font-black text-[#df8eff] neon-glow">{countdown === 0 ? 'LOS!' : countdown}</motion.div>
+                className="text-7xl font-black text-[#df8eff] neon-glow">{countdown === 0 ? t('games.headup.go') : countdown}</motion.div>
             )}
             <div className="mt-8 flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-[#20262f]">
-              <span className="text-xs text-[#a8abb3]">Runde {currentRound}/{totalRounds}</span>
+              <span className="text-xs text-[#a8abb3]">{t('games.headup.roundLabel', { current: currentRound, total: totalRounds })}</span>
               <span className="text-[#20262f]">|</span>
               <span className="text-xs text-[#a8abb3]">{selectedCategory?.emoji} {selectedCategory?.name}</span>
             </div>
@@ -411,7 +405,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             {/* Timer top-right */}
             <div className="flex justify-between items-center px-4 pt-3 pb-1 z-10">
               <div className="px-3 py-1 rounded-full glass-card border border-[#20262f] flex items-center gap-1.5">
-                <span className="text-[10px] text-[#a8abb3]">Runde</span>
+                <span className="text-[10px] text-[#a8abb3]">{t('games.headup.roundShort')}</span>
                 <span className="text-xs font-bold text-[#df8eff]">{currentRound}/{totalRounds}</span>
               </div>
               <TimerCircle timeLeft={timeLeft} percent={percentLeft} warn={timeLeft <= 10} />
@@ -422,12 +416,12 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
               {/* Left tilt indicator */}
               <div className="absolute left-0 inset-y-0 w-16 flex flex-col items-center justify-center bg-gradient-to-r from-[#ff6e84]/10 to-transparent pointer-events-none">
                 <ChevronUp className="w-5 h-5 text-[#ff6e84]/50 mb-2" />
-                <span className="tilt-text-left text-[10px] font-bold uppercase tracking-widest text-[#ff6e84]/40">Skip</span>
+                <span className="tilt-text-left text-[10px] font-bold uppercase tracking-widest text-[#ff6e84]/40">{t('games.headup.skip')}</span>
               </div>
               {/* Right tilt indicator */}
               <div className="absolute right-0 inset-y-0 w-16 flex flex-col items-center justify-center bg-gradient-to-l from-[#8ff5ff]/10 to-transparent pointer-events-none">
                 <ChevronDown className="w-5 h-5 text-[#8ff5ff]/50 mb-2" />
-                <span className="tilt-text-right text-[10px] font-bold uppercase tracking-widest text-[#8ff5ff]/40">Richtig</span>
+                <span className="tilt-text-right text-[10px] font-bold uppercase tracking-widest text-[#8ff5ff]/40">{t('games.headup.correct')}</span>
               </div>
 
               {/* Active word */}
@@ -435,7 +429,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 <AnimatePresence mode="wait">
                   <motion.div key={currentWord} initial={{ x: 80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -80, opacity: 0 }}
                     transition={{ duration: 0.2 }} className="text-center" style={{ transform: 'rotate(180deg)' }}>
-                    <span className="block text-[10px] uppercase tracking-[0.3em] text-[#8ff5ff]/60 mb-2 font-semibold">Aktuelles Wort</span>
+                    <span className="block text-[10px] uppercase tracking-[0.3em] text-[#8ff5ff]/60 mb-2 font-semibold">{t('games.headup.currentWord')}</span>
                     <span className="text-5xl md:text-8xl font-black tracking-tighter italic text-[#df8eff] neon-glow leading-none">{currentWord}</span>
                   </motion.div>
                 </AnimatePresence>
@@ -448,16 +442,16 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 style={isArmed
                   ? { background: 'rgba(143,245,255,0.12)', color: '#8ff5ff', border: '1px solid rgba(143,245,255,0.30)' }
                   : { background: 'rgba(255,210,63,0.10)', color: '#ffd23f', border: '1px solid rgba(255,210,63,0.25)' }}>
-                {isArmed ? '● Bereit — jetzt kippen' : '↺ kurz flach halten …'}
+                {isArmed ? t('games.headup.armed') : t('games.headup.holdFlat')}
               </div>
             </div>
 
             {/* Score pill */}
             <div className="flex justify-center pb-3 z-10">
               <div className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full glass-card border border-[#20262f]">
-                <div className="flex items-center gap-1.5"><Check className="w-4 h-4 text-[#8ff5ff]" /><span className="text-sm font-bold text-[#8ff5ff]">{correctCount}</span><span className="text-[10px] text-[#a8abb3]">Richtig</span></div>
+                <div className="flex items-center gap-1.5"><Check className="w-4 h-4 text-[#8ff5ff]" /><span className="text-sm font-bold text-[#8ff5ff]">{correctCount}</span><span className="text-[10px] text-[#a8abb3]">{t('games.headup.correct')}</span></div>
                 <div className="w-px h-4 bg-[#20262f]" />
-                <div className="flex items-center gap-1.5"><X className="w-4 h-4 text-[#ff6e84]" /><span className="text-sm font-bold text-[#ff6e84]">{skippedCount}</span><span className="text-[10px] text-[#a8abb3]">Skip</span></div>
+                <div className="flex items-center gap-1.5"><X className="w-4 h-4 text-[#ff6e84]" /><span className="text-sm font-bold text-[#ff6e84]">{skippedCount}</span><span className="text-[10px] text-[#a8abb3]">{t('games.headup.skip')}</span></div>
               </div>
             </div>
 
@@ -465,11 +459,11 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             <div className="flex gap-3 px-4 pb-4 z-10">
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => advanceWord(false)}
                 className="flex-1 py-3.5 rounded-full bg-[#1b2028] border border-[#ff6e84]/20 text-[#ff6e84] font-semibold text-sm flex items-center justify-center gap-2">
-                <X className="w-4 h-4" /> Skip
+                <X className="w-4 h-4" /> {t('games.headup.skip')}
               </motion.button>
               <motion.button whileTap={{ scale: 0.95 }} onClick={() => advanceWord(true)}
                 className="flex-1 py-3.5 rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#00eefc] text-[#0a0e14] font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(143,245,255,.2)]">
-                <Check className="w-4 h-4" /> Richtig!
+                <Check className="w-4 h-4" /> {t('games.headup.correct')}!
               </motion.button>
             </div>
 
@@ -483,17 +477,17 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
           <motion.div key="roundResult" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}
             className="p-4 pb-8 max-w-lg mx-auto min-h-[100dvh] flex flex-col">
             <div className="text-center pt-8 mb-6">
-              <h2 className="text-2xl font-extrabold text-[#f1f3fc] mb-1">Runde {currentRound} vorbei!</h2>
+              <h2 className="text-2xl font-extrabold text-[#f1f3fc] mb-1">{t('games.headup.roundOver', { round: currentRound })}</h2>
               <p className="text-[#a8abb3] text-sm">{selectedCategory?.emoji} {selectedCategory?.name}</p>
             </div>
             <div className="flex gap-3 mb-6">
               <div className="flex-1 p-4 rounded-2xl bg-[#151a21] border-l-4 border-[#8ff5ff] text-center">
                 <div className="text-3xl font-black text-[#8ff5ff] neon-glow">{correctCount}</div>
-                <div className="text-xs text-[#a8abb3] mt-1">Richtig</div>
+                <div className="text-xs text-[#a8abb3] mt-1">{t('games.headup.correct')}</div>
               </div>
               <div className="flex-1 p-4 rounded-2xl bg-[#151a21] border-l-4 border-[#ff6e84] text-center">
                 <div className="text-3xl font-black text-[#ff6e84]">{skippedCount}</div>
-                <div className="text-xs text-[#a8abb3] mt-1">Uebersprungen</div>
+                <div className="text-xs text-[#a8abb3] mt-1">{t('games.headup.skipped')}</div>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto space-y-2 mb-6">
@@ -509,7 +503,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             </div>
             <motion.button whileTap={{ scale: 0.97 }} onClick={handleNextRound}
               className="w-full py-4 rounded-full neon-btn text-white text-base font-extrabold uppercase tracking-wide flex items-center justify-center gap-2">
-              {currentRound >= totalRounds ? <><Trophy className="w-5 h-5" /> Ergebnisse</> : <>Naechster Spieler <ChevronRight className="w-5 h-5" /></>}
+              {currentRound >= totalRounds ? <><Trophy className="w-5 h-5" /> {t('games.headup.results')}</> : <>{t('games.headup.nextPlayer')} <ChevronRight className="w-5 h-5" /></>}
             </motion.button>
           </motion.div>
         )}
@@ -525,25 +519,25 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   <Trophy className="w-10 h-10 text-[#df8eff]" />
                 </div>
               </motion.div>
-              <h2 className="text-3xl font-extrabold neon-glow text-[#df8eff]">Spiel vorbei!</h2>
+              <h2 className="text-3xl font-extrabold neon-glow text-[#df8eff]">{t('games.headup.gameOver')}</h2>
               <p className="text-6xl font-black text-[#f1f3fc] mt-2 neon-glow">{totalCorrect}</p>
-              <p className="text-[#a8abb3] text-sm mt-1">Woerter erraten</p>
+              <p className="text-[#a8abb3] text-sm mt-1">{t('games.headup.wordsGuessedLabel')}</p>
             </div>
             <div className="flex gap-3 mb-6">
               <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
                 <div className="text-2xl font-black text-[#8ff5ff]">{totalCorrect}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">Gesamt</div>
+                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.total')}</div>
               </div>
               <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
                 <div className="text-2xl font-black text-[#df8eff]">{finalRounds.length}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">Runden</div>
+                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.rounds')}</div>
               </div>
               <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
                 <div className="text-2xl font-black text-[#ff6b98]">{bestRound?.correct ?? 0}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">Beste</div>
+                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.best')}</div>
               </div>
             </div>
-            <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">Ergebnisse pro Runde</h3>
+            <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">{t('games.headup.resultsPerRound')}</h3>
             <div className="flex-1 overflow-y-auto space-y-2 mb-6">
               {finalRounds.map((round, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
@@ -554,7 +548,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold truncate text-[#f1f3fc]">{round.playerName}</div>
-                    <div className="text-xs text-[#a8abb3]">{round.words.length} Begriffe</div>
+                    <div className="text-xs text-[#a8abb3]">{t('games.headup.wordCount', { count: round.words.length })}</div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <span className="text-[#8ff5ff] font-bold text-sm">{round.correct}</span>
@@ -567,11 +561,11 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             <div className="space-y-3">
               <motion.button whileTap={{ scale: 0.97 }} onClick={handleRestart}
                 className="w-full py-4 rounded-full neon-btn text-white text-base font-extrabold uppercase tracking-wide flex items-center justify-center gap-2">
-                <RotateCcw className="w-5 h-5" /> Nochmal
+                <RotateCcw className="w-5 h-5" /> {t('games.headup.playAgain')}
               </motion.button>
               <button onClick={handleRestart}
                 className="w-full py-3.5 rounded-full border border-[#df8eff]/20 text-[#df8eff]/70 text-sm font-semibold hover:bg-[#df8eff]/5 transition-colors">
-                Zurueck
+                {t('games.headup.back')}
               </button>
             </div>
           </motion.div>

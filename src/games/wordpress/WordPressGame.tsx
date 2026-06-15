@@ -162,31 +162,27 @@ interface SetupProps {
 }
 
 function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
+  const { t } = useTranslation();
   const [players, setPlayers] = useState<string[]>(
-    onlinePlayerNames.length >= 2 ? onlinePlayerNames : ['Spieler 1', 'Spieler 2']
+    onlinePlayerNames.length >= 2 ? onlinePlayerNames : [t('games.wordpress.defaultPlayer1'), t('games.wordpress.defaultPlayer2')]
   );
   const [mode, setMode] = useState<GameMode>('kategorie');
   const [speed, setSpeed] = useState<Speed>('medium');
   const [rounds, setRounds] = useState(5);
 
   const modes: { key: GameMode; label: string; desc: string; icon: React.ReactNode }[] = [
-    { key: 'kategorie', label: 'Kategorie-Filter', desc: 'Tippe nur TIERE!', icon: <Target className="w-5 h-5" /> },
-    { key: 'stroop', label: 'Farb-Wort-Chaos', desc: 'Farbe muss zum Wort passen', icon: <Palette className="w-5 h-5" /> },
-    { key: 'verboten', label: 'Verbotenes Wort', desc: 'Tippe alles AUSSER dem verbotenen Wort', icon: <Ban className="w-5 h-5" /> },
-    { key: 'speed-rush', label: 'Speed Rush', desc: 'Woerter werden immer schneller!', icon: <Gauge className="w-5 h-5" /> },
+    { key: 'kategorie', label: t('gameModes.wordpress.kategorie.name'), desc: t('gameModes.wordpress.kategorie.desc'), icon: <Target className="w-5 h-5" /> },
+    { key: 'stroop', label: t('gameModes.wordpress.stroop.name'), desc: t('gameModes.wordpress.stroop.desc'), icon: <Palette className="w-5 h-5" /> },
+    { key: 'verboten', label: t('gameModes.wordpress.verboten.name'), desc: t('gameModes.wordpress.verboten.desc'), icon: <Ban className="w-5 h-5" /> },
+    { key: 'speed-rush', label: t('gameModes.wordpress.speed-rush.name'), desc: t('gameModes.wordpress.speed-rush.desc'), icon: <Gauge className="w-5 h-5" /> },
   ];
 
   const canStart = players.length >= 1 && players.every(p => p.trim().length > 0);
 
   const isOnlineOrParty = onlinePlayerNames.length >= 2;
   const handleImportNames = (imported: string[]) => {
-    setPlayers((prev) => {
-      const kept = prev.filter((n) => n.trim() && !/^Spieler \d+$/.test(n.trim()));
-      const merged = [...kept];
-      for (const n of imported) {
-        if (merged.length >= 8) break;
-        merged.push(n);
-      }
+    setPlayers(() => {
+      const merged = imported.slice(0, 8);
       while (merged.length < 1) merged.push('');
       return merged;
     });
@@ -213,8 +209,8 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
             <Type className="w-16 h-16 mx-auto text-[#df8eff]" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-white">Drueck das Wort</h1>
-          <p className="text-[#df8eff]/60 text-sm">Schnell tippen, schnell denken!</p>
+          <h1 className="text-3xl font-bold text-white">{t('games.wordpress.title')}</h1>
+          <p className="text-[#df8eff]/60 text-sm">{t('games.wordpress.tagline')}</p>
         </div>
 
         {/* Players */}
@@ -227,12 +223,12 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
           min={1}
           max={8}
           accent="#df8eff"
-          label="Spieler"
+          label={t('games.wordpress.playerLabel')}
         />
 
         {/* Mode */}
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
-          <h2 className="text-white font-semibold text-lg">Spielmodus</h2>
+          <h2 className="text-white font-semibold text-lg">{t('games.wordpress.modeHeading')}</h2>
           <div className="grid grid-cols-2 gap-2">
             {modes.map(m => (
               <button key={m.key} onClick={() => setMode(m.key)}
@@ -253,9 +249,9 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
 
         {/* Speed & Rounds */}
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-4">
-          <h2 className="text-white font-semibold text-lg">Einstellungen</h2>
+          <h2 className="text-white font-semibold text-lg">{t('games.wordpress.settingsHeading')}</h2>
           <div>
-            <label className="text-[#f1f3fc]/70 text-sm block mb-2">Geschwindigkeit</label>
+            <label className="text-[#f1f3fc]/70 text-sm block mb-2">{t('games.wordpress.speedLabel')}</label>
             <div className="flex gap-2">
               {(['slow', 'medium', 'fast'] as Speed[]).map(s => (
                 <button key={s} onClick={() => setSpeed(s)}
@@ -264,13 +260,13 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
                       ? 'bg-[#df8eff] text-white'
                       : 'bg-white/10 text-[#a8abb3] hover:bg-white/15'
                   }`}>
-                  {s === 'slow' ? 'Langsam' : s === 'medium' ? 'Mittel' : 'Schnell'}
+                  {s === 'slow' ? t('games.wordpress.speedSlow') : s === 'medium' ? t('games.wordpress.speedMedium') : t('games.wordpress.speedFast')}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className="text-[#f1f3fc]/70 text-sm block mb-1">Runden: {rounds}</label>
+            <label className="text-[#f1f3fc]/70 text-sm block mb-1">{t('games.wordpress.roundsLabel', { count: rounds })}</label>
             <input type="range" min={3} max={15} step={1} value={rounds}
               onChange={e => setRounds(Number(e.target.value))}
               className="w-full h-2 rounded-full appearance-none bg-[#20262f] accent-[#df8eff] cursor-pointer" />
@@ -279,6 +275,7 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
 
         {/* Start */}
         <motion.button onClick={handleStart} disabled={!canStart}
+          aria-label={t('games.wordpress.startAriaLabel')}
           className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
             canStart
               ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] hover:shadow-[0_0_30px_rgba(223,142,255,0.4)]'
@@ -286,7 +283,7 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
           }`}
           whileHover={canStart ? { scale: 1.02 } : {}}
           whileTap={canStart ? { scale: 0.98 } : {}}>
-          <Zap className="w-5 h-5" /> Spiel starten!
+          <Zap className="w-5 h-5" /> {t('games.setup.startGame')}
         </motion.button>
       </motion.div>
     </motion.div>
@@ -312,6 +309,7 @@ const WORDS_PER_TURN = 12;
 const FORBIDDEN_WORDS = ['Hund', 'Pizza', 'Blau', 'Lampe', 'Katze', 'Apfel', 'Rot', 'Stern'];
 
 function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone, onWordChange }: PlayingProps) {
+  const { t } = useTranslation();
   const player = players[currentPlayerIndex];
   const [wordIndex, setWordIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<WordItem | null>(null);
@@ -333,12 +331,12 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
 
   const modeLabel = useMemo(() => {
     switch (mode) {
-      case 'kategorie': return 'Tippe nur TIERE!';
-      case 'stroop': return 'Tippe wenn Farbe = Wort!';
-      case 'verboten': return `Tippe alles AUSSER "${forbiddenWord.current}"!`;
-      case 'speed-rush': return 'Tippe nur TIERE! (immer schneller)';
+      case 'kategorie': return t('games.wordpress.promptKategorie');
+      case 'stroop': return t('games.wordpress.promptStroop');
+      case 'verboten': return t('games.wordpress.promptVerboten', { word: forbiddenWord.current });
+      case 'speed-rush': return t('games.wordpress.promptSpeedRush');
     }
-  }, [mode]);
+  }, [mode, t]);
 
   const showNextWord = useCallback(() => {
     setWordIndex(prev => {
@@ -464,7 +462,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       {/* HUD */}
       <div className="flex items-center justify-between px-4 py-3 relative z-10">
         <div className="text-white text-sm">
-          <span className="text-[#df8eff]/60">Runde</span>{' '}
+          <span className="text-[#df8eff]/60">{t('games.play.round')}</span>{' '}
           <span className="font-bold">{round}/{totalRounds}</span>
         </div>
         <div className="text-[#df8eff]/80 text-xs font-medium px-3 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
@@ -519,7 +517,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
         {wordIndex > WORDS_PER_TURN && (
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
             className="text-[#df8eff] text-2xl font-bold">
-            Fertig!
+            {t('games.wordpress.done')}
           </motion.div>
         )}
       </div>
@@ -527,7 +525,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       {/* Bottom HUD */}
       <div className="flex items-center justify-between px-6 py-4 relative z-10">
         <div className="text-center">
-          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">Punkte</div>
+          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">{t('games.play.score')}</div>
           <motion.div className="text-white text-2xl font-bold"
             key={score} animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.2 }}>
             {score}
@@ -549,12 +547,12 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
                 {combo}x
               </motion.span>
             </div>
-            <div className="text-orange-400/60 text-[10px] uppercase tracking-wider">Combo</div>
+            <div className="text-orange-400/60 text-[10px] uppercase tracking-wider">{t('games.wordpress.comboLabel')}</div>
           </motion.div>
         )}
 
         <div className="text-center">
-          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">Wort</div>
+          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">{t('games.wordpress.wordLabel')}</div>
           <div className="text-white text-lg font-bold">
             {Math.min(wordIndex, WORDS_PER_TURN)}/{WORDS_PER_TURN}
           </div>
@@ -576,6 +574,7 @@ interface RoundEndProps {
 }
 
 function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndProps) {
+  const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
@@ -585,8 +584,8 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
       <motion.div className="w-full max-w-md space-y-6 relative z-10"
         initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">Runde {round} von {totalRounds}</h2>
-          <p className="text-[#df8eff]/60 text-sm mt-1">Zwischenstand</p>
+          <h2 className="text-2xl font-bold text-white">{t('games.wordpress.roundHeading', { round, total: totalRounds })}</h2>
+          <p className="text-[#df8eff]/60 text-sm mt-1">{t('games.wordpress.interimStandings')}</p>
         </div>
 
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
@@ -602,7 +601,7 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
                 <div className="flex-1">
                   <div className="text-white font-semibold">{p.name}</div>
                   <div className="text-[#a8abb3] text-xs">
-                    {accuracy}% Genauigkeit | Max Combo: {p.maxCombo}x
+                    {t('games.wordpress.accuracyCombo', { accuracy, maxCombo: p.maxCombo })}
                   </div>
                 </div>
                 <span className="text-[#df8eff] font-bold text-lg">{p.score}</span>
@@ -615,7 +614,7 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
           className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <ChevronRight className="w-5 h-5" />
-          {round < totalRounds ? 'Naechste Runde' : 'Ergebnisse'}
+          {round < totalRounds ? t('games.wordpress.nextRound') : t('games.wordpress.showResults')}
         </motion.button>
       </motion.div>
     </motion.div>
@@ -632,6 +631,7 @@ interface GameOverProps {
 }
 
 function GameOverScreen({ players, onRestart }: GameOverProps) {
+  const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
@@ -667,11 +667,11 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
             transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}>
             <Trophy className="w-16 h-16 mx-auto text-[#df8eff]" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-white">Spielende!</h1>
+          <h1 className="text-3xl font-bold text-white">{t('games.wordpress.gameOver')}</h1>
           {sorted.length > 0 && (
             <p className="text-[#df8eff]">
               <Crown className="w-4 h-4 inline mr-1" />
-              {sorted[0].name} gewinnt mit {sorted[0].score} Punkten!
+              {t('games.wordpress.winnerAnnounce', { name: sorted[0].name, score: sorted[0].score })}
             </p>
           )}
         </div>
@@ -679,7 +679,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
         {/* Leaderboard */}
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-[#df8eff]" /> Rangliste
+            <Trophy className="w-5 h-5 text-[#df8eff]" /> {t('games.results.leaderboard')}
           </h2>
           {sorted.map((p, i) => {
             const total = p.correct + p.wrong + p.missed;
@@ -694,9 +694,9 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
                 <div className="flex-1">
                   <div className="text-white font-semibold">{p.name}</div>
                   <div className="text-[#a8abb3] text-xs flex gap-3">
-                    <span>{accuracy}% Genauigkeit</span>
-                    <span>Combo: {p.maxCombo}x</span>
-                    <span>{p.correct} richtig</span>
+                    <span>{t('games.wordpress.accuracyPct', { accuracy })}</span>
+                    <span>{t('games.wordpress.comboStat', { maxCombo: p.maxCombo })}</span>
+                    <span>{t('games.wordpress.correctStat', { count: p.correct })}</span>
                   </div>
                 </div>
                 <span className="text-[#df8eff] font-bold text-xl">{p.score}</span>
@@ -708,7 +708,7 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
         <motion.button onClick={onRestart}
           className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <RotateCcw className="w-5 h-5" /> Nochmal spielen
+          <RotateCcw className="w-5 h-5" /> {t('games.results.playAgain')}
         </motion.button>
       </motion.div>
     </motion.div>

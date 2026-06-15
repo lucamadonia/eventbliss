@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Trophy, Crown, RotateCcw, Gamepad2, Share2, Bomb, Zap, Globe } from 'lucide-react';
 import type { GameState } from './BombGame';
@@ -16,6 +17,7 @@ export function BombRoundEndScreen({
   state: GameState;
   onNext: () => void;
 }) {
+  const { t } = useTranslation();
   const sorted = [...state.players].sort((a, b) => a.penalties - b.penalties);
 
   return (
@@ -31,7 +33,7 @@ export function BombRoundEndScreen({
           className="text-2xl font-bold text-white text-center"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
-          Zwischenstand
+          {t('games.bomb.interimStandings')}
         </h2>
 
         <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06] space-y-2">
@@ -51,7 +53,7 @@ export function BombRoundEndScreen({
                 {Array.from({ length: p.penalties }).map((_, j) => (
                   <Bomb key={j} className="w-3.5 h-3.5 text-[#ff7350]" />
                 ))}
-                {p.penalties === 0 && <span className="text-[#34d399] text-xs font-medium">Sicher!</span>}
+                {p.penalties === 0 && <span className="text-[#34d399] text-xs font-medium">{t('games.bomb.safe')}</span>}
               </div>
             </motion.div>
           ))}
@@ -66,7 +68,7 @@ export function BombRoundEndScreen({
           }}
           whileTap={{ scale: 0.97 }}
         >
-          Runde {state.round + 1} starten
+          {t('games.bomb.startRound', { round: state.round + 1 })}
         </motion.button>
       </div>
     </motion.div>
@@ -74,14 +76,16 @@ export function BombRoundEndScreen({
 }
 
 export default function BombResultsScreen({ state, onRestart, onExit }: ResultsScreenProps) {
+  const { t } = useTranslation();
   const sorted = [...state.players].sort((a, b) => a.penalties - b.penalties);
   const winner = sorted[0];
   const bestReaction = sorted[0]?.name ?? '---';
 
   const handleShare = () => {
-    const text = `Tickende Bombe - Ergebnis:\n${sorted.map((p, i) => `${i + 1}. ${p.name}: ${p.penalties} Treffer`).join('\n')}`;
+    const title = t('games.bomb.name');
+    const text = `${title}:\n${sorted.map((p, i) => `${i + 1}. ${p.name}: ${p.penalties} ${t('games.bomb.hits')}`).join('\n')}`;
     if (navigator.share) {
-      navigator.share({ title: 'Tickende Bombe', text });
+      navigator.share({ title, text });
     } else {
       navigator.clipboard?.writeText(text);
     }
@@ -114,10 +118,10 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
             className="text-2xl font-bold text-white"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Herzlichen Glueckwunsch!
+            {t('games.bomb.congrats')}
           </h1>
           <p className="text-white/40 text-sm">
-            <span className="text-[#cf96ff] font-semibold">{winner?.name}</span> hat gewonnen!
+            <span className="text-[#cf96ff] font-semibold">{winner?.name}</span> {t('games.bomb.hasWon')}
           </p>
         </motion.div>
 
@@ -131,17 +135,17 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06] border-l-2 border-l-[#cf96ff]">
             <Zap className="w-5 h-5 text-[#cf96ff] mb-2" />
             <p className="text-white text-sm font-bold">{bestReaction}</p>
-            <p className="text-white/30 text-[10px] mt-1">Beste Reaktion</p>
+            <p className="text-white/30 text-[10px] mt-1">{t('games.bomb.bestReaction')}</p>
           </div>
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06] border-l-2 border-l-[#00e3fd]">
             <Crown className="w-5 h-5 text-[#00e3fd] mb-2" />
             <p className="text-white text-sm font-bold">{state.totalRounds}</p>
-            <p className="text-white/30 text-[10px] mt-1">Runden gespielt</p>
+            <p className="text-white/30 text-[10px] mt-1">{t('games.bomb.roundsPlayed')}</p>
           </div>
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06] border-l-2 border-l-[#ff7350]">
             <Globe className="w-5 h-5 text-[#ff7350] mb-2" />
             <p className="text-white text-sm font-bold">{state.players.length}</p>
-            <p className="text-white/30 text-[10px] mt-1">Spieler</p>
+            <p className="text-white/30 text-[10px] mt-1">{t('games.bomb.players')}</p>
           </div>
         </motion.div>
 
@@ -152,7 +156,7 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">Rangliste</h3>
+          <h3 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">{t('games.results.leaderboard')}</h3>
           {sorted.map((p, i) => (
             <motion.div
               key={p.name}
@@ -180,7 +184,7 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
                 </span>
               </div>
               <span className={`text-xs font-mono ${p.penalties === 0 ? 'text-[#34d399]' : 'text-[#ff6e84]'}`}>
-                {p.penalties} {p.penalties === 1 ? 'Treffer' : 'Treffer'}
+                {p.penalties} {t('games.bomb.hits')}
               </span>
             </motion.div>
           ))}
@@ -203,7 +207,7 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
             whileTap={{ scale: 0.97 }}
           >
             <RotateCcw className="w-4 h-4" />
-            Nochmal spielen
+            {t('games.results.playAgain')}
           </motion.button>
           <motion.button
             onClick={onExit}
@@ -211,7 +215,7 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
             whileTap={{ scale: 0.97 }}
           >
             <Gamepad2 className="w-4 h-4" />
-            Anderes Spiel
+            {t('games.results.otherGame')}
           </motion.button>
           <motion.button
             onClick={handleShare}

@@ -57,11 +57,6 @@ const GAME_MODES: GameMode[] = [
   { id: 'three', name: 'Zwei Luegen', desc: 'Finde die Wahrheit', icon: <HelpCircle className="w-6 h-6" /> },
 ];
 
-const SETUP_SETTINGS: SettingsConfig = {
-  timer: { min: 5, max: 30, default: 15, step: 5, label: 'Abstimmzeit (Sek.)' },
-  rounds: { min: 5, max: 25, default: 10, step: 1, label: 'Runden' },
-};
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -69,6 +64,11 @@ const SETUP_SETTINGS: SettingsConfig = {
 export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const SETUP_SETTINGS: SettingsConfig = {
+    timer: { min: 5, max: 30, default: 15, step: 5, label: t('games.fakeorfact.timerLabel') },
+    rounds: { min: 5, max: 25, default: 10, step: 1, label: t('games.fakeorfact.roundsLabel') },
+  };
 
   // Setup
   const [phase, setPhase] = useState<Phase>('setup');
@@ -268,7 +268,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
         modes={getTranslatedModes('fakeorfact', GAME_MODES, t)}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
-        title="Luegner — Fake or Fact"
+        title={t('games.fakeorfact.title')}
         onlinePlayers={online?.players}
       />
     );
@@ -303,7 +303,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
               <span className="text-sm text-white/60">{currentPlayer?.name}</span>
             </div>
             <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
-              Runde {currentRound}/{totalRounds}
+              {t('games.fakeorfact.round', { current: currentRound, total: totalRounds })}
             </span>
           </div>
 
@@ -332,14 +332,14 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
               onClick={() => handleClassicVote(true)}
               className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
             >
-              <Check className="w-5 h-5" /> WAHR
+              <Check className="w-5 h-5" /> {t('games.fakeorfact.btnTrue')}
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => handleClassicVote(false)}
               className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
             >
-              <X className="w-5 h-5" /> FALSCH
+              <X className="w-5 h-5" /> {t('games.fakeorfact.btnFalse')}
             </motion.button>
           </div>
         </motion.div>
@@ -364,13 +364,13 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
               <span className="text-sm text-white/60">{currentPlayer?.name}</span>
             </div>
             <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
-              Runde {currentRound}/{totalRounds}
+              {t('games.fakeorfact.round', { current: currentRound, total: totalRounds })}
             </span>
           </div>
 
           <div className="text-center px-4 mb-2">
             <span className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest">
-              Welche Aussage ist WAHR?
+              {t('games.fakeorfact.whichIsTrue')}
             </span>
           </div>
 
@@ -412,21 +412,21 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
                   {wasCorrect ? <Check className="w-10 h-10 text-emerald-400" /> : <X className="w-10 h-10 text-red-400" />}
                 </motion.div>
                 <h2 className={cn('text-3xl font-extrabold', wasCorrect ? 'text-emerald-400' : 'text-red-400')}>
-                  {wasCorrect ? 'Richtig!' : 'Leider falsch!'}
+                  {wasCorrect ? t('games.fakeorfact.correct') : t('games.fakeorfact.wrong')}
                 </h2>
 
                 {/* What you said vs what it is */}
                 <div className="w-full flex gap-3">
                   <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
-                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">Deine Antwort</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">{t('games.fakeorfact.yourAnswer')}</p>
                     <p className={cn('text-lg font-bold', playerVote ? 'text-emerald-400' : 'text-red-400')}>
-                      {playerVote ? 'WAHR' : 'FALSCH'}
+                      {playerVote ? t('games.fakeorfact.btnTrue') : t('games.fakeorfact.btnFalse')}
                     </p>
                   </div>
                   <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
-                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">Tatsaechlich</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">{t('games.fakeorfact.actualAnswer')}</p>
                     <p className={cn('text-lg font-bold', currentFact.isTrue ? 'text-emerald-400' : 'text-red-400')}>
-                      {currentFact.isTrue ? 'WAHR' : 'FALSCH'}
+                      {currentFact.isTrue ? t('games.fakeorfact.btnTrue') : t('games.fakeorfact.btnFalse')}
                     </p>
                   </div>
                 </div>
@@ -442,7 +442,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
           {mode === 'three' && currentThree && (
             <>
               <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-[#8ff5ff]">
-                Die Wahrheit ist...
+                {t('games.fakeorfact.theTruthIs')}
               </h2>
               <div className="w-full space-y-2">
                 {currentThree.statements.map((stmt, idx) => (
@@ -469,8 +469,8 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
           {/* Vote results bar */}
           <div className="w-full">
             <div className="flex justify-between text-xs text-white/40 mb-1.5">
-              <span>Richtig: {correctPct}%</span>
-              <span>Falsch: {100 - correctPct}%</span>
+              <span>{t('games.fakeorfact.correctPct', { pct: correctPct })}</span>
+              <span>{t('games.fakeorfact.incorrectPct', { pct: 100 - correctPct })}</span>
             </div>
             <div className="w-full h-3 rounded-full bg-[#1b2028] overflow-hidden">
               <motion.div
@@ -487,7 +487,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
             onClick={advanceRound}
             className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
           >
-            Weiter <ArrowRight className="w-5 h-5" />
+            {t('games.fakeorfact.continue')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
@@ -510,7 +510,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
             </div>
           </motion.div>
           <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#df8eff] neon-glow">
-            Spielende!
+            {t('games.results.gameOver')}
           </h2>
 
           <div className="w-full space-y-2">
@@ -541,13 +541,13 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
               onClick={resetGame}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
-              <RotateCcw className="w-4 h-4" /> Nochmal
+              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>
             <button
               onClick={() => navigate('/games')}
               className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
             >
-              Anderes Spiel
+              {t('games.results.otherGame')}
             </button>
           </div>
         </motion.div>

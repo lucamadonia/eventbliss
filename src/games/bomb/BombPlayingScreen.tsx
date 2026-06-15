@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Bomb, CheckCircle2, XCircle } from 'lucide-react';
 import type { GameState } from './BombGame';
@@ -20,6 +21,7 @@ function triggerVibration(intensity: number) {
 }
 
 export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAnswer, onAlleAnswer }: PlayingScreenProps) {
+  const { t } = useTranslation();
   const player = state.players[state.currentPlayerIndex];
   const isRandom = state.randomTimer;
   const timerSeconds = Math.max(0, Math.round((1 - progress) * ((state.timerMin + state.timerMax) / 2)));
@@ -56,7 +58,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
           <span className="text-white font-semibold text-sm">{player.name}</span>
         </div>
         <div className="px-3 py-1 rounded-full bg-[#1f1f29] border border-white/[0.06]">
-          <span className="text-white/60 text-xs font-medium">RUNDE {state.round}/{state.totalRounds}</span>
+          <span className="text-white/60 text-xs font-medium">{t('games.bomb.roundLabel', { round: state.round, total: state.totalRounds })}</span>
         </div>
       </div>
 
@@ -76,7 +78,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
             borderImage: 'linear-gradient(90deg, #cf96ff, #00e3fd) 1',
           }}
         >
-          <span className="text-[#cf96ff] text-xs font-semibold uppercase tracking-wider">Die Challenge</span>
+          <span className="text-[#cf96ff] text-xs font-semibold uppercase tracking-wider">{t('games.bomb.theChallenge')}</span>
           <p className="text-white text-lg font-semibold mt-2 leading-relaxed">{state.currentTask}</p>
         </div>
       </motion.div>
@@ -138,7 +140,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
                   >
                     ???
                   </span>
-                  <span className="text-white/30 text-[10px] uppercase tracking-wider">Random</span>
+                  <span className="text-white/30 text-[10px] uppercase tracking-wider">{t('games.bomb.random')}</span>
                 </>
               ) : (
                 <>
@@ -148,7 +150,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
                   >
                     {timerSeconds}
                   </span>
-                  <span className="text-white/30 text-[10px] uppercase tracking-wider">Sekunden</span>
+                  <span className="text-white/30 text-[10px] uppercase tracking-wider">{t('games.bomb.seconds')}</span>
                 </>
               )}
             </div>
@@ -174,7 +176,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
               </motion.button>
             ))}
           </div>
-          <p className="text-white/25 text-[10px] text-center mt-2">Falsche Antwort = Bombe tickt schneller</p>
+          <p className="text-white/25 text-[10px] text-center mt-2">{t('games.bomb.wrongAnswerHint')}</p>
         </div>
       )}
 
@@ -197,7 +199,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
       {state.mode === 'alle' && onAlleAnswer && (
         <div className="relative z-10 w-full max-w-md mx-auto px-4 pb-6 space-y-2">
           <p className="text-center text-white/40 text-xs font-medium tracking-wide">
-            Keine Wiederholungen erlaubt!
+            {t('games.bomb.noRepeat')}
           </p>
           <div className="flex gap-3">
             <motion.button
@@ -210,7 +212,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
               whileTap={{ scale: 0.95 }}
             >
               <CheckCircle2 className="w-5 h-5" />
-              GESCHAFFT!
+              {t('games.bomb.btnDone')}
             </motion.button>
             <motion.button
               onClick={() => onAlleAnswer(false)}
@@ -222,7 +224,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
               whileTap={{ scale: 0.95 }}
             >
               <XCircle className="w-5 h-5" />
-              WEISS NICHT
+              {t('games.bomb.btnDontKnow')}
             </motion.button>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function BombPlayingScreen({ state, progress, onWeiter, onQuizAns
             whileTap={{ scale: 0.97 }}
           >
             <CheckCircle2 className="w-5 h-5" />
-            GELOEST!
+            {t('games.bomb.btnSolved')}
           </motion.button>
         </div>
       )}
