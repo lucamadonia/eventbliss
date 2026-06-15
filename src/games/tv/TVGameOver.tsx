@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import type { TVScore } from './useTVConnection';
 
 const CONFETTI_COLORS = ['#df8eff', '#ff6b98', '#8ff5ff', '#fbbf24', '#00deec', '#d779ff', '#ff7675', '#55efc4'];
@@ -178,6 +179,7 @@ function ScreenFlash() {
 
 /* ─── Main TVGameOver ─── */
 export default function TVGameOver({ scores }: { scores: TVScore[] }) {
+  const { t } = useTranslation();
   const sorted = [...scores].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
   const [stage, setStage] = useState<Stage>('drumroll');
@@ -236,7 +238,7 @@ export default function TVGameOver({ scores }: { scores: TVScore[] }) {
               transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
               style={{ textShadow: '0 0 30px rgba(223,142,255,0.3)' }}
             >
-              Und der Gewinner ist
+              {t('tv.andTheWinnerIs')}
               <AnimatedDots />
             </motion.h2>
           </motion.div>
@@ -294,7 +296,7 @@ export default function TVGameOver({ scores }: { scores: TVScore[] }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {winnerScore.toLocaleString('de-DE')} Punkte
+              {winnerScore.toLocaleString()} {t('tv.points')}
             </motion.p>
           </motion.div>
         )}
@@ -346,7 +348,7 @@ export default function TVGameOver({ scores }: { scores: TVScore[] }) {
 
                     {/* Score */}
                     <span className="text-lg font-bold mb-3" style={{ color: meta.color }}>
-                      {entry.score.toLocaleString('de-DE')} Punkte
+                      {entry.score.toLocaleString()} {t('tv.points')}
                     </span>
 
                     {/* Podium block */}

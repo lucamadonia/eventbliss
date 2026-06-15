@@ -8036,5 +8036,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Flaschendrehen"
+  },
+  "tv": {
+    "connected": "VERBUNDEN",
+    "error": "FEHLER",
+    "connecting": "VERBINDE...",
+    "roomCode": "Raumcode",
+    "goTo": "Gehe zu",
+    "andTheWinnerIs": "Und der Gewinner ist",
+    "points": "Punkte",
+    "enterCode": "Gib den Room-Code ein, um das Spiel anzuzeigen",
+    "connect": "VERBINDEN",
+    "round": "Runde",
+    "ready": "Bereit?",
+    "waitingForPlayers": "Warte auf Spieler",
+    "playersCount": "{{count}} Spieler"
   }
 }

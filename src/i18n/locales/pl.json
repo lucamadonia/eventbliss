@@ -8110,5 +8110,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Butelka"
+  },
+  "tv": {
+    "connected": "POŁĄCZONO",
+    "error": "BŁĄD",
+    "connecting": "ŁĄCZENIE...",
+    "roomCode": "Kod pokoju",
+    "goTo": "Przejdź do",
+    "andTheWinnerIs": "A zwycięzcą jest",
+    "points": "punkty",
+    "enterCode": "Wpisz kod pokoju, aby wyświetlić grę",
+    "connect": "POŁĄCZ",
+    "round": "Runda",
+    "ready": "Gotowy?",
+    "waitingForPlayers": "Czekam na graczy",
+    "playersCount": "{{count}} graczy"
   }
 }

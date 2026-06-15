@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Maximize, Wifi, Gamepad2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getBaseUrl } from '@/lib/platform';
 import type { TVPlayer } from './useTVConnection';
 
@@ -66,6 +67,7 @@ function WaitingDots() {
 }
 
 export default function TVLobby({ roomCode, players, isConnected, error }: { roomCode: string; players: TVPlayer[]; isConnected: boolean; error?: string | null }) {
+  const { t } = useTranslation();
   const joinUrl = `${getBaseUrl().replace(/^https?:\/\//, '')}/tv/${roomCode}`;
 
   return (
@@ -80,7 +82,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
       {/* Connection indicator */}
       <div className="absolute top-6 left-8 flex items-center gap-2 z-10">
         <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-[#8ff5ff] shadow-[0_0_12px_#8ff5ff]' : 'bg-[#ff6e84]'} animate-pulse`} />
-        <span className="text-sm font-bold text-[#a8abb3] tracking-wider">{isConnected ? 'VERBUNDEN' : error ? 'FEHLER' : 'VERBINDE...'}</span>
+        <span className="text-sm font-bold text-[#a8abb3] tracking-wider">{isConnected ? t('tv.connected') : error ? t('tv.error') : t('tv.connecting')}</span>
       </div>
 
       {/* Error message */}
@@ -98,7 +100,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
 
       {/* ROOM CODE — massive with shimmer */}
       <motion.div className="text-center mb-12 relative z-10" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...spring, delay: 0.2 }}>
-        <p className="text-lg font-bold text-[#a8abb3] uppercase tracking-[0.3em] mb-4">Room Code</p>
+        <p className="text-lg font-bold text-[#a8abb3] uppercase tracking-[0.3em] mb-4">{t('tv.roomCode')}</p>
         <div className="relative inline-block">
           <h1 className="text-[10rem] md:text-[14rem] font-black italic leading-none tracking-[0.2em] relative"
             style={{
@@ -125,7 +127,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
 
       {/* Join URL */}
       <motion.div className="mb-16 text-center relative z-10" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-        <p className="text-[#a8abb3] text-xl tracking-wide">Gehe zu</p>
+        <p className="text-[#a8abb3] text-xl tracking-wide">{t('tv.goTo')}</p>
         <p className="text-2xl font-bold text-[#8ff5ff] mt-1 tracking-wide" style={{ textShadow: '0 0 20px rgba(143,245,255,0.4)' }}>{joinUrl}</p>
       </motion.div>
 
@@ -178,7 +180,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
       >
         <Wifi className="w-5 h-5 text-[#df8eff]" />
         <span className="text-xl text-[#a8abb3] font-medium tracking-wider">
-          Warte auf Spieler<WaitingDots />
+          {t('tv.waitingForPlayers')}<WaitingDots />
         </span>
       </motion.div>
 

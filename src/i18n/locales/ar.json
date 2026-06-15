@@ -8110,5 +8110,20 @@
   },
   "gameNames": {
     "flaschendrehen": "لفّ الزجاجة"
+  },
+  "tv": {
+    "connected": "متصل",
+    "error": "خطأ",
+    "connecting": "جارٍ الاتصال...",
+    "roomCode": "رمز الغرفة",
+    "goTo": "اذهب إلى",
+    "andTheWinnerIs": "والفائز هو",
+    "points": "نقطة",
+    "enterCode": "أدخل رمز الغرفة لعرض اللعبة",
+    "connect": "اتصال",
+    "round": "جولة",
+    "ready": "جاهز؟",
+    "waitingForPlayers": "في انتظار اللاعبين",
+    "playersCount": "{{count}} لاعبين"
   }
 }

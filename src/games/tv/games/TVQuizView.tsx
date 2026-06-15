@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TILE_COLORS = ['#e63946', '#3b82f6', '#10b981', '#f59e0b'];
 const TILE_SHAPES = ['\u25B2', '\u25C6', '\u25CF', '\u25A0'];
 const TILE_LABELS = ['A', 'B', 'C', 'D'];
 
 export default function TVQuizView({ gameState }: { gameState: any }) {
+  const { t } = useTranslation();
   const question = gameState?.question || gameState?.currentTask || gameState?.statement || '';
   const answers = gameState?.answers || [];
   const category = gameState?.category || '';
@@ -67,7 +69,7 @@ export default function TVQuizView({ gameState }: { gameState: any }) {
         {/* Round counter + progress */}
         <div className="flex items-center gap-4">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-bold text-[#a8abb3] tracking-widest uppercase">Runde</span>
+            <span className="text-sm font-bold text-[#a8abb3] tracking-widest uppercase">{t('tv.round')}</span>
             <div className="flex items-center gap-3">
               <span className="text-3xl font-black text-[#f1f3fc]">{round}<span className="text-[#a8abb3]">/{total}</span></span>
               <div className="w-32 h-2 rounded-full bg-[#1b2028] overflow-hidden">
@@ -216,7 +218,7 @@ export default function TVQuizView({ gameState }: { gameState: any }) {
             >
               <span className="text-5xl font-black text-[#fbbf24]"
                 style={{ textShadow: '0 0 30px rgba(251,191,36,0.6)' }}>
-                +{points} Punkte
+                +{points} {t('tv.points')}
               </span>
             </motion.div>
           )}

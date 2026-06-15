@@ -8060,5 +8060,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Tourne-bouteille"
+  },
+  "tv": {
+    "connected": "CONNECTÉ",
+    "error": "ERREUR",
+    "connecting": "CONNEXION...",
+    "roomCode": "Code du salon",
+    "goTo": "Allez sur",
+    "andTheWinnerIs": "Et le gagnant est",
+    "points": "points",
+    "enterCode": "Saisis le code du salon pour afficher le jeu",
+    "connect": "CONNECTER",
+    "round": "Manche",
+    "ready": "Prêt ?",
+    "waitingForPlayers": "En attente des joueurs",
+    "playersCount": "{{count}} joueurs"
   }
 }

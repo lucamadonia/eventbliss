@@ -8060,5 +8060,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Gira la bottiglia"
+  },
+  "tv": {
+    "connected": "CONNESSO",
+    "error": "ERRORE",
+    "connecting": "CONNESSIONE...",
+    "roomCode": "Codice stanza",
+    "goTo": "Vai a",
+    "andTheWinnerIs": "E il vincitore è",
+    "points": "punti",
+    "enterCode": "Inserisci il codice stanza per mostrare il gioco",
+    "connect": "CONNETTI",
+    "round": "Round",
+    "ready": "Pronto?",
+    "waitingForPlayers": "In attesa dei giocatori",
+    "playersCount": "{{count}} giocatori"
   }
 }

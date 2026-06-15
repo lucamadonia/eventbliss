@@ -8036,5 +8036,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Spin the Bottle"
+  },
+  "tv": {
+    "connected": "CONNECTED",
+    "error": "ERROR",
+    "connecting": "CONNECTING...",
+    "roomCode": "Room Code",
+    "goTo": "Go to",
+    "andTheWinnerIs": "And the winner is",
+    "points": "points",
+    "enterCode": "Enter the room code to display the game",
+    "connect": "CONNECT",
+    "round": "Round",
+    "ready": "Ready?",
+    "waitingForPlayers": "Waiting for players",
+    "playersCount": "{{count}} players"
   }
 }

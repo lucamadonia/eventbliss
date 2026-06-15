@@ -8110,5 +8110,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Flesje draaien"
+  },
+  "tv": {
+    "connected": "VERBONDEN",
+    "error": "FOUT",
+    "connecting": "VERBINDEN...",
+    "roomCode": "Kamercode",
+    "goTo": "Ga naar",
+    "andTheWinnerIs": "En de winnaar is",
+    "points": "punten",
+    "enterCode": "Voer de kamercode in om het spel te tonen",
+    "connect": "VERBINDEN",
+    "round": "Ronde",
+    "ready": "Klaar?",
+    "waitingForPlayers": "Wachten op spelers",
+    "playersCount": "{{count}} spelers"
   }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 /**
  * TVOhrwurmView — big-screen view for the Ohrwurm music-timeline game.
@@ -13,6 +14,7 @@ const OW = { primary: '#FF2E88', secondary: '#26E0C4', accent: '#FFD23F', text: 
 interface TVPlayer { id: string; name: string; color: string; score: number; hooks: number }
 
 export default function TVOhrwurmView({ gameState }: { gameState: any }) {
+  const { t } = useTranslation();
   const phase: string = gameState?.phase || 'draw';
   const players: TVPlayer[] = gameState?.players || [];
   const activeName: string = gameState?.activeName || '';
@@ -96,7 +98,7 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
             </div>
 
             <div className="text-7xl font-black tabular-nums" style={{ color: timeLeft <= 10 ? '#ff5d73' : OW.text }}>
-              {listening ? `${timeLeft}s` : 'Bereit?'}
+              {listening ? `${timeLeft}s` : t('tv.ready')}
             </div>
             {/* Timer bar */}
             <div className="w-[420px] h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>

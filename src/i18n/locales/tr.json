@@ -8110,5 +8110,20 @@
   },
   "gameNames": {
     "flaschendrehen": "Şişe Çevirmece"
+  },
+  "tv": {
+    "connected": "BAĞLANDI",
+    "error": "HATA",
+    "connecting": "BAĞLANIYOR...",
+    "roomCode": "Oda kodu",
+    "goTo": "Şuraya git",
+    "andTheWinnerIs": "Ve kazanan",
+    "points": "puan",
+    "enterCode": "Oyunu görüntülemek için oda kodunu gir",
+    "connect": "BAĞLAN",
+    "round": "Tur",
+    "ready": "Hazır?",
+    "waitingForPlayers": "Oyuncular bekleniyor",
+    "playersCount": "{{count}} oyuncu"
   }
 }

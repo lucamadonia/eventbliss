@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   gameState: { game: string; phase: string; [key: string]: unknown };
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export default function TVTabooView({ gameState }: Props) {
+  const { t } = useTranslation();
   const phase = (gameState?.phase || 'playing') as string;
   const currentRound = (gameState?.currentRound || 1) as number;
   const teams = (gameState?.teams || []) as any[];
@@ -165,7 +167,7 @@ function TeamCard({ team, isActive, side }: { team: any; isActive: boolean; side
             </span>
           ))
         ) : (
-          <span className="text-lg text-[#a8abb3]">{players.length} Spieler</span>
+          <span className="text-lg text-[#a8abb3]">{t('tv.playersCount', { count: players.length })}</span>
         )}
       </div>
     </motion.div>

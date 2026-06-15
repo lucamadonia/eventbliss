@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   gameState: { game: string; phase: string; [key: string]: unknown };
@@ -47,6 +48,7 @@ const glass = {
 };
 
 export default function TVSmartFallback({ gameState }: Props) {
+  const { t } = useTranslation();
   const tv = useMemo(() => extractTVState(gameState), [gameState]);
   const displayName = GAME_NAMES[tv.gameName] || tv.gameName.toUpperCase();
   const hasScores = tv.players.some((p: any) => typeof p.score === 'number');
@@ -185,7 +187,7 @@ export default function TVSmartFallback({ gameState }: Props) {
             </motion.div>
           ) : (
             <motion.div key="idle" className="text-3xl text-[#a8abb3]" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2 }}>
-              Warte auf Spieler...
+              {t('tv.waitingForPlayers')}…
             </motion.div>
           )}
         </AnimatePresence>
