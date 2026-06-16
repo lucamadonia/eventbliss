@@ -8,16 +8,18 @@
  * (/marketplace/agency/:slug); all others expand inline with the existing
  * call / email / website contact actions (AgencyCityPanel look).
  */
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Building2, ChevronDown, ChevronRight, Phone, Mail, Globe,
+  Building2, ChevronDown, ChevronRight, Phone, Mail, Globe, Search, List, Map, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENCIES as STATIC_AGENCIES, COUNTRIES as STATIC_COUNTRIES } from "@/lib/agencies-data";
+import { localizeCity, localizeCountry } from "@/lib/geo-i18n";
+import { AgenciesEuropeMap } from "./AgenciesEuropeMap";
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,7 @@ interface PartnerAgency {
   logoUrl: string | null;
   slug: string | null;        // DB agencies only
   bookable: boolean;          // ≥1 approved marketplace service
+  description: string;        // services / specialties (searchable)
 }
 
 // ─── Country helpers ─────────────────────────────────────────────
@@ -108,6 +111,7 @@ function usePartnerDbAgencies() {
             logoUrl: a.logo_url || null,
             slug: a.slug || null,
             bookable: !!a.slug && (approvedCount.get(a.id) ?? 0) > 0,
+            description: a.description || "",
           };
         });
       } catch {
@@ -120,7 +124,7 @@ function usePartnerDbAgencies() {
 
 // ─── Agency row ──────────────────────────────────────────────────
 function AgencyRow({ agency }: { agency: PartnerAgency }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const [expanded, setExpanded] = useState(false);
@@ -155,7 +159,7 @@ function AgencyRow({ agency }: { agency: PartnerAgency }) {
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold text-foreground truncate">{agency.name}</p>
           <p className="text-[11px] text-muted-foreground truncate">
-            {flagEmoji(agency.countryCode)} {agency.city}
+            {flagEmoji(agency.countryCode)} {localizeCity(agency.city, i18n.language)}
           </p>
         </div>
 
@@ -233,36 +237,15 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
   const [open, setOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "map">("list");
   const { data: dbAgencies } = usePartnerDbAgencies();
 
-  // Localized country names via Intl.DisplayNames; falls back to English,
-  // then to the raw data value (old WebViews without DisplayNames support).
-  const countryName = useMemo(() => {
-    let primary: Intl.DisplayNames | null = null;
-    let english: Intl.DisplayNames | null = null;
-    try {
-      primary = new Intl.DisplayNames([i18n.language], { type: "region" });
-    } catch {
-      primary = null;
-    }
-    try {
-      english = new Intl.DisplayNames(["en"], { type: "region" });
-    } catch {
-      english = null;
-    }
-    return (code: string, fallback: string): string => {
-      if (!/^[A-Z]{2}$/.test(code)) return fallback;
-      try {
-        const name = primary?.of(code);
-        if (name && name !== code) return name;
-      } catch { /* unsupported code */ }
-      try {
-        const name = english?.of(code);
-        if (name && name !== code) return name;
-      } catch { /* unsupported code */ }
-      return fallback;
-    };
-  }, [i18n.language]);
+  // Localized country name (shared Intl.DisplayNames helper, with fallbacks).
+  const countryName = useCallback(
+    (code: string, fallback: string) => localizeCountry(code, i18n.language, fallback),
+    [i18n.language],
+  );
 
   const agencies = useMemo<PartnerAgency[]>(() => {
     const db = dbAgencies ?? [];
@@ -281,6 +264,7 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
         logoUrl: null,
         slug: null,
         bookable: false,
+        description: a.description || "",
       }));
 
     let all = [...db, ...statics];
@@ -325,13 +309,38 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
     setSelectedCity(city);
   };
 
-  // Cascade filter (applied on top of the screen-wide cityFilter prefilter)
+  // Agency count per country code (for the map badges) — before cascade.
+  const countsByCode = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const a of agencies) m[a.countryCode] = (m[a.countryCode] ?? 0) + 1;
+    return m;
+  }, [agencies]);
+
+  // Cascade filter (country/city) + free-text search across name, city
+  // (canonical + localized), country and description (= services).
   const visibleAgencies = useMemo(() => {
     let list = agencies;
     if (selectedCountry) list = list.filter((a) => a.countryCode === selectedCountry);
     if (selectedCity) list = list.filter((a) => a.city === selectedCity);
+    const q = search.trim().toLowerCase();
+    if (q) {
+      const lang = i18n.language;
+      list = list.filter((a) =>
+        [
+          a.name,
+          a.city,
+          localizeCity(a.city, lang),
+          a.country,
+          countryName(a.countryCode, a.country),
+          a.description,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q),
+      );
+    }
     return list;
-  }, [agencies, selectedCountry, selectedCity]);
+  }, [agencies, selectedCountry, selectedCity, search, i18n.language, countryName]);
 
   // Group by country, bookable agencies first within each group
   const groups = useMemo(() => {
@@ -386,8 +395,72 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            {/* Country → city filter cascade */}
-            {countryChips.length > 0 && (
+            {/* Search + view toggle */}
+            <div className="flex items-center gap-2 pt-3 pb-1">
+              <div className="relative flex-1 min-w-0">
+                <Search size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t("marketplace.partnerAgencies.searchPlaceholder", "Agentur, Stadt oder Leistung suchen…")}
+                  aria-label={t("marketplace.partnerAgencies.searchPlaceholder", "Agentur, Stadt oder Leistung suchen…")}
+                  className="w-full rounded-full bg-foreground/[0.06] border border-border ps-9 pe-9 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary/50 transition-colors"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    aria-label={t("common.clear", "Löschen")}
+                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-colors"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+              <div className="shrink-0 flex items-center gap-0.5 rounded-full bg-foreground/[0.06] border border-border p-0.5">
+                <button
+                  onClick={() => { setView("list"); haptics.select(); }}
+                  aria-label={t("marketplace.partnerAgencies.viewList", "Liste")}
+                  aria-pressed={view === "list"}
+                  className={cn("p-1.5 rounded-full transition-colors", view === "list" ? "bg-primary/20 text-primary" : "text-muted-foreground")}
+                >
+                  <List size={15} />
+                </button>
+                <button
+                  onClick={() => { setView("map"); haptics.select(); }}
+                  aria-label={t("marketplace.partnerAgencies.viewMap", "Karte")}
+                  aria-pressed={view === "map"}
+                  className={cn("p-1.5 rounded-full transition-colors", view === "map" ? "bg-primary/20 text-primary" : "text-muted-foreground")}
+                >
+                  <Map size={15} />
+                </button>
+              </div>
+            </div>
+
+            {/* Interactive Europe map (map view) */}
+            <AnimatePresence initial={false}>
+              {view === "map" && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-2 pb-1">
+                    <AgenciesEuropeMap
+                      counts={countsByCode}
+                      selectedCountry={selectedCountry}
+                      onSelectCountry={selectCountry}
+                      countryLabel={(code) => countryName(code, STATIC_COUNTRIES[code]?.name || code)}
+                      hint={t("marketplace.partnerAgencies.mapHint", "Tippe ein Land an")}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Country → city filter cascade (list view only — the map drives country selection) */}
+            {view === "list" && countryChips.length > 0 && (
               <div
                 role="group"
                 aria-label={t("marketplace.partnerAgencies.country", "Land")}
@@ -436,7 +509,7 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
                         onClick={() => selectCity(city)}
                         className={cn(CHIP_BASE, selectedCity === city ? CHIP_ACTIVE : CHIP_INACTIVE)}
                       >
-                        {city}
+                        {localizeCity(city, i18n.language)}
                       </button>
                     ))}
                   </div>
@@ -446,7 +519,9 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
 
             {groups.length === 0 ? (
               <p className="text-[11px] text-muted-foreground text-center py-4">
-                {t("marketplace.partnerAgencies.empty", "Keine Partner-Agenturen für diese Stadt")}
+                {search.trim()
+                  ? t("marketplace.partnerAgencies.searchEmpty", "Keine Treffer für deine Suche")
+                  : t("marketplace.partnerAgencies.empty", "Keine Partner-Agenturen für diese Stadt")}
               </p>
             ) : (
               <div className="pb-1">

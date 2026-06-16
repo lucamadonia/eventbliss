@@ -14,11 +14,17 @@ import {
   ArrowRight,
   X,
   Loader2,
+  ScanLine,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem, liquidTap, duration } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { ReceiptAttach } from "@/components/expenses-v2/ReceiptAttach";
+import { useReceiptUpload } from "@/hooks/expenses/useExpenseExtras";
+import type { ReceiptOcrResult } from "@/lib/expenses-v2/types";
+import { takePhoto } from "@/lib/camera";
+import { isNative } from "@/lib/platform";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -110,6 +116,37 @@ function getCategoryEmoji(cat: string | null): string {
   return map[cat || "other"] || "\uD83D\uDCCC";
 }
 
+// Heuristic category suggestion from OCR (no AI): match merchant + line items
+// against keyword buckets. Falls back to "activities" (the form default).
+const CATEGORY_KEYWORDS: Record<Exclude<CategoryKey, "other">, string[]> = {
+  food: ["restaurant", "pizz", "burger", "kebab", "sushi", "caf\u00E9", "cafe", "bistro", "food", "b\u00E4ckerei", "bakery", "diner", "grill", "ristorante", "trattoria", "mcdonald", "imbiss", "lebensmittel", "supermarkt", "rewe", "edeka", "aldi", "lidl", "spar", "carrefour", "mercadona"],
+  drinks: ["bar", "pub", "club", "beer", "bier", "wine", "vino", "cocktail", "brauerei", "brewery", "getr\u00E4nke", "drinks", "lounge", "kneipe"],
+  accommodation: ["hotel", "hostel", "airbnb", "booking", "pension", "apartment", "resort", "\u00FCbernachtung", "zimmer", "lodge", "motel"],
+  transport: ["taxi", "uber", "bolt", "bahn", "train", "flug", "flight", "airline", "ryanair", "easyjet", "lufthansa", "tank", "fuel", "shell", "aral", "esso", "benzin", "parking", "parkhaus", "metro", "bus", "transfer", "mietwagen", "rental"],
+  activities: ["ticket", "escape", "tour", "museum", "kart", "paintball", "bowling", "eintritt", "event", "show", "experience", "aktivit\u00E4t", "rafting", "spa", "golf", "boat", "boot"],
+  gifts: ["gift", "geschenk", "blumen", "flower", "souvenir"],
+};
+
+function suggestCategory(ocr: ReceiptOcrResult | null): CategoryKey {
+  if (!ocr) return "activities";
+  const hay = [ocr.merchant ?? "", ...(ocr.line_items ?? []).map((li) => li.label)]
+    .join(" ")
+    .toLowerCase();
+  if (!hay.trim()) return "activities";
+  for (const [cat, words] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (words.some((w) => hay.includes(w))) return cat as CategoryKey;
+  }
+  return "other";
+}
+
+// Convert a Capacitor camera webPath (or any fetchable URI) into a File for upload.
+async function uriToFile(uri: string): Promise<File> {
+  const res = await fetch(uri);
+  const blob = await res.blob();
+  const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+  return new File([blob], `receipt-${Date.now()}.${ext}`, { type: blob.type || "image/jpeg" });
+}
+
 const FILTER_TABS: { id: FilterTab; label: string }[] = [
   { id: "alle",    label: "Alle" },
   { id: "offen",   label: "Offen" },
@@ -121,7 +158,7 @@ const EMPTY_PARTICIPANTS: { id: string; name: string }[] = [];
 const EMPTY_RAW_EXPENSES: any[] = [];
 
 // Compute simplified settlements from expense data: figure out who owes whom
-function computeSettlements(rawExpenses: any[], pMap: Map<string, string>): Settlement[] {
+function computeSettlements(rawExpenses: any[], pMap: Map<string, string>, guestLabel: string): Settlement[] {
   // Net balance per participant: positive = owed money, negative = owes money
   const balances = new Map<string, number>();
 
@@ -159,8 +196,8 @@ function computeSettlements(rawExpenses: any[], pMap: Map<string, string>): Sett
     const transfer = Math.min(debtors[di].amount, creditors[ci].amount);
     if (transfer > 50) {
       newSettlements.push({
-        from: pMap.get(debtors[di].id) || "Gast",
-        to: pMap.get(creditors[ci].id) || "Gast",
+        from: pMap.get(debtors[di].id) || guestLabel,
+        to: pMap.get(creditors[ci].id) || guestLabel,
         amount: transfer,
         settled: false,
       });
@@ -219,6 +256,7 @@ function AvatarInitial({ name, size = "sm" }: { name: string; size?: "sm" | "md"
 }
 
 function StatusBadge({ status }: { status: ExpenseStatus }) {
+  const { t } = useTranslation();
   const paid = status === "paid";
   return (
     <span
@@ -230,7 +268,7 @@ function StatusBadge({ status }: { status: ExpenseStatus }) {
       )}
     >
       {paid ? <Check className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-      {paid ? "Bezahlt" : "Offen"}
+      {paid ? t("nativeExtra.expenses.statusPaid", "Bezahlt") : t("nativeExtra.expenses.statusOpen", "Offen")}
     </span>
   );
 }
@@ -305,26 +343,26 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
     const sharesCount = e.expense_shares?.length || 1;
     return {
       id: e.id,
-      title: e.description || "Ausgabe",
+      title: e.description || t("nativeExtra.expenses.defaultTitle", "Ausgabe"),
       category: cat,
       amount: Math.round((e.amount || 0) * 100),
-      paidBy: participantMap.get(e.paid_by_participant_id || "") || "Unbekannt",
+      paidBy: participantMap.get(e.paid_by_participant_id || "") || t("nativeExtra.expenses.unknownPayer", "Unbekannt"),
       participants: sharesCount,
       perPerson: Math.round(((e.amount || 0) * 100) / sharesCount),
       status: (e.expense_shares?.every((s: any) => s.is_paid) ? "paid" : "open") as ExpenseStatus,
       emoji: getCategoryEmoji(e.category),
       shares: (e.expense_shares || []).map((s: any) => ({
-        name: participantMap.get(s.participant_id) || "Gast",
+        name: participantMap.get(s.participant_id) || t("nativeExtra.expenses.guest", "Gast"),
         amount: Math.round((s.amount || 0) * 100),
         paid: !!s.is_paid,
       })),
     };
-  }), [rawExpenses, participantMap]);
+  }), [rawExpenses, participantMap, t]);
 
   // Settlements: memoized O(n²) computation over the raw expense data
   const baseSettlements = useMemo(
-    () => computeSettlements(rawExpenses, participantMap),
-    [rawExpenses, participantMap]
+    () => computeSettlements(rawExpenses, participantMap, t("nativeExtra.expenses.guest", "Gast")),
+    [rawExpenses, participantMap, t]
   );
 
   // Reset local "settled" toggles whenever the underlying data changes
@@ -352,14 +390,14 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
     return [...map.entries()]
       .map(([cat, amount]) => ({
         key: cat as CategoryKey,
-        label: CATEGORY_LABELS[cat as CategoryKey]?.label || cat,
+        label: t(`nativeExtra.expenses.cat.${cat}`, CATEGORY_LABELS[cat as CategoryKey]?.label || cat),
         emoji: CATEGORY_LABELS[cat as CategoryKey]?.emoji || getCategoryEmoji(cat),
         amount,
         percentage: totalCents > 0 ? Math.round((amount / totalCents) * 100) : 0,
         ...CATEGORY_COLORS[cat as CategoryKey] || CATEGORY_COLORS.other,
       }))
       .sort((a, b) => b.amount - a.amount);
-  }, [expenses, totalCents]);
+  }, [expenses, totalCents, t]);
 
   // Filtered list
   const filtered = useMemo(() => {
@@ -408,7 +446,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
           <div className="absolute inset-0 bg-white/5 border border-white/10 rounded-2xl" />
           <div className="relative px-5 py-6 flex flex-col items-center gap-3">
             <Loader2 className="w-8 h-8 text-white/60 animate-spin" />
-            <span className="text-sm text-white/50">Ausgaben werden geladen...</span>
+            <span className="text-sm text-white/50">{t("nativeExtra.expenses.loading", "Ausgaben werden geladen...")}</span>
           </div>
         </div>
         {/* Skeleton cards */}
@@ -437,7 +475,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
 
         <div className="relative px-5 py-6 flex flex-col items-center gap-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-white/60">
-            Gesamtausgaben
+            {t("nativeExtra.expenses.totalSpent", "Gesamtausgaben")}
           </span>
           <span
             ref={counterRef}
@@ -446,7 +484,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
             {eurShort(0)}
           </span>
           <span className="text-sm text-white/50 mt-0.5">
-            {eur(perPersonCents)} / Person
+            {eur(perPersonCents)} {t("nativeExtra.expenses.perPerson", "/ Person")}
           </span>
 
           {/* Budget bar */}
@@ -475,11 +513,11 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
       {/* ---- Category Breakdown (horizontal scroll) ---- */}
       <div>
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-3">
-          Kategorien
+          {t("nativeExtra.expenses.categories", "Kategorien")}
         </h2>
         <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1 px-1 -mx-1">
           {categoryTotals.length === 0 ? (
-            <div className="text-sm text-muted-foreground py-4 px-2">Noch keine Ausgaben.</div>
+            <div className="text-sm text-muted-foreground py-4 px-2">{t("nativeExtra.expenses.noneYet", "Noch keine Ausgaben.")}</div>
           ) : categoryTotals.map((cat, i) => (
             <motion.div
               key={cat.key}
@@ -529,7 +567,14 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
                 : "bg-muted/50 text-muted-foreground hover:bg-muted"
             )}
           >
-            {tab.label}
+            {t(
+              tab.id === "alle"
+                ? "nativeExtra.expenses.filterAll"
+                : tab.id === "offen"
+                ? "nativeExtra.expenses.filterOpen"
+                : "nativeExtra.expenses.filterPaid",
+              tab.label,
+            )}
           </button>
         ))}
       </div>
@@ -585,12 +630,12 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
                     <div className="flex items-center gap-1.5 mt-1.5">
                       <AvatarInitial name={expense.paidBy} />
                       <span className="text-xs text-muted-foreground">
-                        Bezahlt von <span className="font-medium text-foreground/80">{expense.paidBy}</span>
+                        {t("nativeExtra.expenses.paidBy", "Bezahlt von")} <span className="font-medium text-foreground/80">{expense.paidBy}</span>
                       </span>
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-xs text-muted-foreground">
-                        {expense.participants} Personen, je {eur(expense.perPerson)}
+                        {t("nativeExtra.expenses.peopleEach", "{{count}} Personen, je {{amount}}", { count: expense.participants, amount: eur(expense.perPerson) })}
                       </span>
                       <StatusBadge status={expense.status} />
                     </div>
@@ -609,7 +654,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
                     >
                       <div className="px-4 pb-4 pt-1 border-t border-border/30">
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                          Aufteilung
+                          {t("nativeExtra.expenses.split", "Aufteilung")}
                         </p>
                         <div className="grid grid-cols-2 gap-y-1.5 gap-x-4">
                           {expense.shares.map((share) => (
@@ -639,7 +684,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
 
         {filtered.length === 0 && (
           <div className="py-12 text-center text-muted-foreground text-sm">
-            Keine Ausgaben gefunden.
+            {t("nativeExtra.expenses.noneFound", "Keine Ausgaben gefunden.")}
           </div>
         )}
       </motion.div>
@@ -648,7 +693,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
       {settlements.length > 0 && (
       <div className="px-1">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-          Wer schuldet wem?
+          {t("nativeExtra.expenses.whoOwes", "Wer schuldet wem?")}
         </h2>
         <div className="flex flex-col gap-2">
           {settlements.map((s, idx) => (
@@ -705,7 +750,7 @@ export default function NativeEventExpenses({ eventSlug }: NativeEventExpensesPr
           className="pointer-events-auto flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white font-semibold text-sm shadow-xl shadow-violet-500/30"
         >
           <Plus className="w-5 h-5" />
-          Ausgabe hinzufügen
+          {t("nativeExtra.expenses.add", "Ausgabe hinzufügen")}
         </motion.button>
       </div>
 
@@ -741,19 +786,79 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
   const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("EUR");
+  const [expenseDate, setExpenseDate] = useState("");
   const [category, setCategory] = useState<CategoryKey>("activities");
   const [paidBy, setPaidBy] = useState(participants[0]?.id || "");
   const [split, setSplit] = useState<"equal" | "custom">("equal");
   const [saving, setSaving] = useState(false);
 
+  // Receipt scanner state
+  const receiptUpload = useReceiptUpload();
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [ocr, setOcr] = useState<ReceiptOcrResult | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [storagePath, setStoragePath] = useState<string | null>(null);
+  // Per-participant amounts for custom split (string inputs in major units)
+  const [customShares, setCustomShares] = useState<Record<string, string>>({});
+
+  // Upload + OCR a chosen/captured receipt image
+  const runScan = async (file: File | null) => {
+    if (!file) {
+      setReceiptPreview(null);
+      setOcr(null);
+      setStoragePath(null);
+      return;
+    }
+    setReceiptPreview(URL.createObjectURL(file));
+    setScanning(true);
+    try {
+      const { storagePath: path, ocr: result } = await receiptUpload.mutateAsync({
+        eventId,
+        file,
+        dispatchOcr: true,
+      });
+      setStoragePath(path);
+      setOcr(result);
+      if (result) applyOcr(result);
+    } catch {
+      // upload/OCR errors surface via the hook's toast; keep manual entry usable
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  // Native (iOS/Android): use the Capacitor camera (camera/gallery prompt)
+  const captureNative = async () => {
+    await haptics.medium();
+    const uri = await takePhoto();
+    if (!uri) return;
+    try {
+      const file = await uriToFile(uri);
+      await runScan(file);
+    } catch {
+      /* ignore — manual entry remains */
+    }
+  };
+
+  // Pre-fill the form from an OCR result (all fields stay editable)
+  const applyOcr = (r: ReceiptOcrResult) => {
+    if (r.merchant) setTitle((prev) => prev || r.merchant!);
+    if (r.total != null) setAmount(String(r.total).replace(".", ","));
+    if (r.currency) setCurrency(r.currency);
+    if (r.date) setExpenseDate(r.date);
+    setCategory(suggestCategory(r));
+    haptics.light();
+  };
+
   const categoryOptions: { key: CategoryKey; emoji: string; label: string }[] = [
-    { key: "transport",     emoji: "\uD83D\uDE97", label: "Transport" },
-    { key: "accommodation", emoji: "\uD83C\uDFE8", label: "Unterkunft" },
-    { key: "activities",    emoji: "\uD83C\uDFAF", label: "Aktivitäten" },
-    { key: "food",          emoji: "\uD83C\uDF7D\uFE0F", label: "Essen" },
-    { key: "drinks",        emoji: "\uD83C\uDF7A", label: "Getränke" },
-    { key: "gifts",         emoji: "\uD83C\uDF81", label: "Geschenke" },
-    { key: "other",         emoji: "\uD83D\uDCCC", label: "Sonstiges" },
+    { key: "transport",     emoji: "\uD83D\uDE97", label: t("nativeExtra.expenses.cat.transport", "Transport") },
+    { key: "accommodation", emoji: "\uD83C\uDFE8", label: t("nativeExtra.expenses.cat.accommodation", "Unterkunft") },
+    { key: "activities",    emoji: "\uD83C\uDFAF", label: t("nativeExtra.expenses.cat.activities", "Aktivitäten") },
+    { key: "food",          emoji: "\uD83C\uDF7D\uFE0F", label: t("nativeExtra.expenses.cat.food", "Essen") },
+    { key: "drinks",        emoji: "\uD83C\uDF7A", label: t("nativeExtra.expenses.cat.drinks", "Getränke") },
+    { key: "gifts",         emoji: "\uD83C\uDF81", label: t("nativeExtra.expenses.cat.gifts", "Geschenke") },
+    { key: "other",         emoji: "\uD83D\uDCCC", label: t("nativeExtra.expenses.cat.other", "Sonstiges") },
   ];
 
   const handleSubmit = async () => {
@@ -775,6 +880,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
       }
     }
 
+    const hasReceipt = !!ocr || !!storagePath;
+    const receiptJson = hasReceipt ? { ...(ocr ?? {}), _storage_path: storagePath } : null;
+
     // Insert expense
     const { data: newExpense, error } = await supabase.from("expenses").insert({
       event_id: eventId,
@@ -783,20 +891,34 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
       category,
       paid_by_participant_id: paidById || null,
       split_type: split,
-      currency: "EUR",
-    }).select("id").single();
+      currency: currency || "EUR",
+      expense_date: expenseDate || null,
+      created_via: hasReceipt ? "camera" : "manual",
+      receipt_ocr_json: receiptJson,
+    } as any).select("id").single();
 
-    // If equal split, create shares for all participants
-    if (!error && newExpense && split === "equal" && participants.length > 0) {
-      const shareAmount = amountNum / participants.length;
-      await supabase.from("expense_shares").insert(
-        participants.map(p => ({
+    // Create shares
+    if (!error && newExpense && participants.length > 0) {
+      let shares: { expense_id: string; participant_id: string; amount: number; is_paid: boolean }[];
+      if (split === "custom") {
+        shares = participants.map(p => ({
+          expense_id: newExpense.id,
+          participant_id: p.id,
+          amount: Math.round((parseFloat((customShares[p.id] ?? "").replace(",", ".")) || 0) * 100) / 100,
+          is_paid: false,
+        })).filter(s => s.amount > 0);
+      } else {
+        const shareAmount = amountNum / participants.length;
+        shares = participants.map(p => ({
           expense_id: newExpense.id,
           participant_id: p.id,
           amount: Math.round(shareAmount * 100) / 100,
           is_paid: false,
-        }))
-      );
+        }));
+      }
+      if (shares.length > 0) {
+        await supabase.from("expense_shares").insert(shares);
+      }
     }
 
     setSaving(false);
@@ -842,16 +964,47 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             </button>
           </div>
 
+          {/* Receipt scanner */}
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {t("nativeExtra.receipt.scanReceipt", "Beleg scannen")}
+            </span>
+            {receiptPreview || scanning ? (
+              <ReceiptAttach
+                previewUrl={receiptPreview}
+                ocr={ocr}
+                isScanning={scanning}
+                onOcr={applyOcr}
+                onFile={runScan}
+                compact
+              />
+            ) : isNative() ? (
+              <motion.button
+                type="button"
+                {...liquidTap}
+                onClick={captureNative}
+                className="h-14 rounded-2xl bg-gradient-to-br from-violet-500/15 to-cyan-500/10 border border-violet-400/25 flex items-center justify-center gap-2"
+              >
+                <ScanLine className="w-4 h-4 text-violet-200" />
+                <span className="text-sm font-semibold text-violet-100">
+                  {t("nativeExtra.receipt.scanReceipt", "Beleg scannen")}
+                </span>
+              </motion.button>
+            ) : (
+              <ReceiptAttach onOcr={applyOcr} onFile={runScan} compact />
+            )}
+          </div>
+
           {/* Title */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Titel
+              {t("nativeExtra.expenses.fieldTitle", "Titel")}
             </span>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="z.B. Escape Room Buchung"
+              placeholder={t("nativeExtra.expenses.titlePlaceholder", "z.B. Escape Room Buchung")}
               className="h-11 rounded-xl bg-muted/40 border border-border/50 px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </label>
@@ -859,7 +1012,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
           {/* Amount */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Betrag (EUR)
+              {t("nativeExtra.expenses.amountLabel", "Betrag")} ({currency})
             </span>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-semibold">
@@ -870,7 +1023,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
                 inputMode="decimal"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0,00"
+                placeholder={t("nativeExtra.expenses.amountPlaceholder", "0,00")}
                 className="h-11 w-full rounded-xl bg-muted/40 border border-border/50 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 tabular-nums"
               />
             </div>
@@ -879,7 +1032,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
           {/* Category */}
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Kategorie
+              {t("nativeExtra.expenses.categoryLabel", "Kategorie")}
             </span>
             <div className="flex flex-wrap gap-2">
               {categoryOptions.map((opt) => (
@@ -903,7 +1056,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
           {/* Paid by */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Bezahlt von
+              {t("nativeExtra.expenses.paidBy", "Bezahlt von")}
             </span>
             <select
               value={paidBy}
@@ -919,7 +1072,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
           {/* Split mode */}
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Aufteilung
+              {t("nativeExtra.expenses.split", "Aufteilung")}
             </span>
             <div className="flex gap-2">
               {(["equal", "custom"] as const).map((mode) => (
@@ -933,10 +1086,54 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
                       : "bg-muted/50 text-muted-foreground"
                   )}
                 >
-                  {mode === "equal" ? "Gleichmäßig" : "Individuell"}
+                  {mode === "equal" ? t("nativeExtra.expenses.splitEqual", "Gleichmäßig") : t("nativeExtra.expenses.splitCustom", "Individuell")}
                 </button>
               ))}
             </div>
+
+            {/* Custom split: per-participant amounts */}
+            <AnimatePresence initial={false}>
+              {split === "custom" && participants.length > 0 && (() => {
+                const total = parseFloat(amount.replace(",", ".")) || 0;
+                const equalShare = total > 0 ? (total / participants.length).toFixed(2) : "";
+                const sum = participants.reduce(
+                  (acc, p) => acc + (parseFloat((customShares[p.id] ?? "").replace(",", ".")) || 0),
+                  0,
+                );
+                const balanced = Math.abs(sum - total) < 0.01;
+                return (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex flex-col gap-2 pt-2">
+                      {participants.map((p) => (
+                        <div key={p.id} className="flex items-center gap-2">
+                          <AvatarInitial name={p.name} />
+                          <span className="flex-1 text-sm text-foreground truncate">{p.name}</span>
+                          <div className="relative w-28 shrink-0">
+                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{"€"}</span>
+                            <input
+                              type="number"
+                              inputMode="decimal"
+                              value={customShares[p.id] ?? ""}
+                              onChange={(e) => setCustomShares((s) => ({ ...s, [p.id]: e.target.value }))}
+                              placeholder={equalShare}
+                              className="h-9 w-full rounded-lg bg-muted/40 border border-border/50 pl-6 pr-2 text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      <span className={cn("text-[11px] tabular-nums", balanced ? "text-emerald-400" : "text-amber-400")}>
+                        {eur(Math.round(sum * 100))} / {eur(Math.round(total * 100))}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
           </div>
 
           {/* Submit */}
@@ -950,7 +1147,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             )}
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            {saving ? "Wird gespeichert..." : "Ausgabe speichern"}
+            {saving ? t("nativeExtra.expenses.saving", "Wird gespeichert...") : t("nativeExtra.expenses.save", "Ausgabe speichern")}
           </motion.button>
         </div>
       </motion.div>

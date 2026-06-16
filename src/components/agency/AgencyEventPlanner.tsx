@@ -54,6 +54,9 @@ interface TaskColumnProps {
 }
 
 function TaskColumn({ title, tasks, color, onMove, onDelete, targetStatuses }: TaskColumnProps) {
+  const { t } = useTranslation();
+  const priorityLabel = (p: string) =>
+    t(`tasks.priority${p.charAt(0).toUpperCase()}${p.slice(1)}`, p);
   return (
     <div className="flex-1 min-w-0 sm:min-w-[250px] w-full">
       <div className="flex items-center gap-2 mb-3">
@@ -76,7 +79,7 @@ function TaskColumn({ title, tasks, color, onMove, onDelete, targetStatuses }: T
                 )}
               </div>
               <div className="flex items-center gap-1">
-                <Badge variant="outline" className={`text-[10px] ${priorityColors[task.priority as keyof typeof priorityColors] || ""}`}>{task.priority}</Badge>
+                <Badge variant="outline" className={`text-[10px] ${priorityColors[task.priority as keyof typeof priorityColors] || ""}`}>{priorityLabel(task.priority)}</Badge>
                 {task.due_date && <span className="text-[10px] text-white/30">{new Date(task.due_date).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}</span>}
               </div>
             </div>
@@ -202,7 +205,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
             {selectedEvent && (
               <div className="flex flex-wrap gap-4 text-sm text-white/50">
                 <span className="flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5" />{"\u20AC"}{budgetSummary.totalActual.toLocaleString("de-DE")} / {"\u20AC"}{budgetSummary.totalPlanned.toLocaleString("de-DE")}</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" />{tasks.done.length} / {tasks.todo.length + tasks.in_progress.length + tasks.done.length} Aufgaben</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" />{tasks.done.length} / {tasks.todo.length + tasks.in_progress.length + tasks.done.length} {t("tasks.countLabel", "Aufgaben")}</span>
               </div>
             )}
           </div>
@@ -215,7 +218,7 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
             {[
-              { value: "tasks", icon: CheckCircle2, label: "Aufgaben" },
+              { value: "tasks", icon: CheckCircle2, label: t("tasks.tabLabel", "Aufgaben") },
               { value: "budget", icon: DollarSign, label: "Budget" },
               { value: "team", icon: Users, label: "Team" },
               { value: "vendors", icon: Briefcase, label: "Vendors" },
@@ -232,29 +235,29 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
             <div className="flex justify-end mb-3">
               <Dialog open={addTaskOpen} onOpenChange={setAddTaskOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white"><Plus className="w-3.5 h-3.5 mr-1" /> Aufgabe</Button>
+                  <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white"><Plus className="w-3.5 h-3.5 mr-1" /> {t("tasks.addTask", "Aufgabe")}</Button>
                 </DialogTrigger>
                 <DialogContent className="bg-[#1a1625] border-white/10 text-white max-w-md">
-                  <DialogHeader><DialogTitle>Neue Aufgabe</DialogTitle></DialogHeader>
+                  <DialogHeader><DialogTitle>{t("tasks.titleNew", "Neue Aufgabe")}</DialogTitle></DialogHeader>
                   <div className="space-y-3 mt-2">
-                    <div><Label className="text-white/60 text-xs">Titel</Label><Input value={newTask.title} onChange={(e) => setNewTask((p) => ({ ...p, title: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Aufgabe..." /></div>
-                    <div><Label className="text-white/60 text-xs">Beschreibung</Label><Textarea value={newTask.description} onChange={(e) => setNewTask((p) => ({ ...p, description: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={2} /></div>
+                    <div><Label className="text-white/60 text-xs">{t("tasks.fieldTitle", "Titel")}</Label><Input value={newTask.title} onChange={(e) => setNewTask((p) => ({ ...p, title: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder={t("tasks.addTask", "Aufgabe")} /></div>
+                    <div><Label className="text-white/60 text-xs">{t("tasks.fieldDescription", "Beschreibung")}</Label><Textarea value={newTask.description} onChange={(e) => setNewTask((p) => ({ ...p, description: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1 resize-none" rows={2} /></div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label className="text-white/60 text-xs">Priorität</Label>
+                      <div><Label className="text-white/60 text-xs">{t("tasks.priority", "Priorität")}</Label>
                         <Select value={newTask.priority} onValueChange={(v) => setNewTask((p) => ({ ...p, priority: v as EventTask["priority"] }))}>
                           <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="low">Niedrig</SelectItem>
-                            <SelectItem value="medium">Mittel</SelectItem>
-                            <SelectItem value="high">Hoch</SelectItem>
-                            <SelectItem value="urgent">Dringend</SelectItem>
+                            <SelectItem value="low">{t("tasks.priorityLow", "Niedrig")}</SelectItem>
+                            <SelectItem value="medium">{t("tasks.priorityMedium", "Mittel")}</SelectItem>
+                            <SelectItem value="high">{t("tasks.priorityHigh", "Hoch")}</SelectItem>
+                            <SelectItem value="urgent">{t("tasks.priorityUrgent", "Dringend")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <div><Label className="text-white/60 text-xs">Zuständig</Label><Input value={newTask.assignee_name} onChange={(e) => setNewTask((p) => ({ ...p, assignee_name: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder="Name" /></div>
+                      <div><Label className="text-white/60 text-xs">{t("tasks.assignee", "Zuständig")}</Label><Input value={newTask.assignee_name} onChange={(e) => setNewTask((p) => ({ ...p, assignee_name: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" placeholder={t("tasks.assigneePlaceholder", "Name")} /></div>
                     </div>
-                    <div><Label className="text-white/60 text-xs">Fällig am</Label><Input type="date" value={newTask.due_date} onChange={(e) => setNewTask((p) => ({ ...p, due_date: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
-                    <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateTask}>Erstellen</Button>
+                    <div><Label className="text-white/60 text-xs">{t("tasks.dueDate", "Fällig am")}</Label><Input type="date" value={newTask.due_date} onChange={(e) => setNewTask((p) => ({ ...p, due_date: e.target.value }))} className="bg-white/5 border-white/10 text-white mt-1" /></div>
+                    <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white" onClick={handleCreateTask}>{t("tasks.create", "Erstellen")}</Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -263,9 +266,9 @@ export function AgencyEventPlanner({ onBack }: AgencyEventPlannerProps) {
               <div className="flex gap-4"><Skeleton className="flex-1 h-48 bg-white/5" /><Skeleton className="flex-1 h-48 bg-white/5" /><Skeleton className="flex-1 h-48 bg-white/5" /></div>
             ) : (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:overflow-x-auto gap-4 pb-4">
-                <TaskColumn title="Zu erledigen" tasks={tasks.todo} color="bg-white/40" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Start", value: "in_progress" }, { label: "Fertig", value: "done" }]} />
-                <TaskColumn title="In Bearbeitung" tasks={tasks.in_progress} color="bg-amber-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurück", value: "todo" }, { label: "Fertig", value: "done" }]} />
-                <TaskColumn title="Erledigt" tasks={tasks.done} color="bg-emerald-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: "Zurück", value: "todo" }]} />
+                <TaskColumn title={t("tasks.colTodo", "Zu erledigen")} tasks={tasks.todo} color="bg-white/40" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: t("tasks.btnStart", "Start"), value: "in_progress" }, { label: t("tasks.btnDone", "Fertig"), value: "done" }]} />
+                <TaskColumn title={t("tasks.colInProgress", "In Bearbeitung")} tasks={tasks.in_progress} color="bg-amber-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: t("tasks.btnBack", "Zurück"), value: "todo" }, { label: t("tasks.btnDone", "Fertig"), value: "done" }]} />
+                <TaskColumn title={t("tasks.colDone", "Erledigt")} tasks={tasks.done} color="bg-emerald-400" onMove={moveTask} onDelete={deleteTask} targetStatuses={[{ label: t("tasks.btnBack", "Zurück"), value: "todo" }]} />
               </motion.div>
             )}
           </TabsContent>

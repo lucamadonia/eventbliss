@@ -761,7 +761,11 @@ export default function Premium() {
               {native ? t("premium.native.securePayment") : t("premium.securePayment")}
             </p>
 
-            {/* Voucher Redemption Section */}
+            {/* Voucher Redemption Section — WEB ONLY.
+                Hidden on native (iOS/Android): redeeming a code to unlock paid
+                content bypasses App Store / Play IAP and the discount path steers
+                to web checkout → Apple Guideline 3.1.1 violation. */}
+            {!native && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -798,8 +802,34 @@ export default function Premium() {
                 </CardContent>
               </Card>
             </motion.div>
+            )}
           </>
         )}
+
+        {/* Legal — required by App Store Review (Guideline 3.1.2):
+            subscription auto-renew disclosure + functional links to EULA & privacy. */}
+        <div className="mt-10 max-w-xl mx-auto text-center space-y-3">
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            {t("premium.legal.autoRenew")}
+          </p>
+          <div className="flex items-center justify-center gap-4 text-xs">
+            <button
+              type="button"
+              onClick={() => navigate("/legal/terms")}
+              className="underline underline-offset-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("premium.legal.terms", "Terms of Use (EULA)")}
+            </button>
+            <span className="text-muted-foreground/40">·</span>
+            <button
+              type="button"
+              onClick={() => navigate("/legal/privacy")}
+              className="underline underline-offset-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("premium.legal.privacy", "Privacy Policy")}
+            </button>
+          </div>
+        </div>
       </main>
 
       {/* Cancel Subscription Dialog */}

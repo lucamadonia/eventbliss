@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Image as ImageIcon, X, Loader2, Sparkles, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ export function ReceiptAttach({
   isScanning,
   compact,
 }: ReceiptAttachProps) {
+  const { t } = useTranslation();
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
   const haptics = useHaptics();
@@ -80,7 +82,7 @@ export function ReceiptAttach({
             className="h-14 rounded-2xl bg-gradient-to-br from-violet-500/15 to-cyan-500/10 border border-violet-400/25 hover:border-violet-400/50 flex items-center justify-center gap-2 cursor-pointer transition-colors"
           >
             <Camera className="w-4 h-4 text-violet-200" />
-            <span className="text-sm font-semibold text-violet-100">Foto aufnehmen</span>
+            <span className="text-sm font-semibold text-violet-100">{t("nativeExtra.receipt.takePhoto", "Foto aufnehmen")}</span>
           </button>
           <button
             type="button"
@@ -88,7 +90,7 @@ export function ReceiptAttach({
             className="h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] flex items-center justify-center gap-2 cursor-pointer transition-colors"
           >
             <ImageIcon className="w-4 h-4 text-slate-300" />
-            <span className="text-sm font-semibold text-slate-200">Aus Galerie</span>
+            <span className="text-sm font-semibold text-slate-200">{t("nativeExtra.receipt.fromGallery", "Aus Galerie")}</span>
           </button>
         </div>
       </div>
@@ -102,7 +104,7 @@ export function ReceiptAttach({
           /* eslint-disable-next-line jsx-a11y/alt-text */
           <img
             src={preview}
-            alt="Beleg"
+            alt={t("nativeExtra.receipt.receiptAlt", "Beleg")}
             className="w-full max-h-64 object-contain bg-black/30"
           />
         )}
@@ -114,7 +116,7 @@ export function ReceiptAttach({
             onFile(null);
           }}
           className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 backdrop-blur border border-white/10 flex items-center justify-center text-white cursor-pointer"
-          aria-label="Beleg entfernen"
+          aria-label={t("nativeExtra.receipt.removeReceipt", "Beleg entfernen")}
         >
           <X className="w-4 h-4" />
         </button>
@@ -131,7 +133,7 @@ export function ReceiptAttach({
             className="px-4 py-3 flex items-center gap-2 text-xs text-violet-200 border-t border-white/[0.06]"
           >
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Beleg wird analysiert …</span>
+            <span>{t("nativeExtra.receipt.analyzing", "Beleg wird analysiert …")}</span>
           </motion.div>
         )}
         {!isScanning && ocr && (
@@ -144,18 +146,18 @@ export function ReceiptAttach({
           >
             <div className="px-4 py-3 flex items-center gap-2 text-[10px] uppercase tracking-widest text-emerald-300 font-bold">
               <Sparkles className="w-3 h-3" />
-              OCR-Ergebnis
+              {t("nativeExtra.receipt.ocrResult", "OCR-Ergebnis")}
               <span className="ml-auto font-mono text-[10px] text-slate-400 normal-case tracking-normal">
-                {Math.round((ocr.confidence ?? 0) * 100)}% sicher
+                {t("nativeExtra.receipt.confident", "{{percent}}% sicher", { percent: Math.round((ocr.confidence ?? 0) * 100) })}
               </span>
             </div>
             <div className="px-4 pb-3 text-xs text-slate-300 space-y-1">
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500">Händler</span>
+                <span className="text-slate-500">{t("nativeExtra.receipt.merchant", "Händler")}</span>
                 <span className="font-medium text-slate-100 truncate">{ocr.merchant ?? "—"}</span>
               </div>
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500">Betrag</span>
+                <span className="text-slate-500">{t("nativeExtra.receipt.amount", "Betrag")}</span>
                 <span className="font-mono font-semibold text-white">
                   {ocr.total != null
                     ? formatMoney(ocr.total, ocr.currency ?? "EUR")
@@ -163,13 +165,13 @@ export function ReceiptAttach({
                 </span>
               </div>
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500">Datum</span>
+                <span className="text-slate-500">{t("nativeExtra.receipt.date", "Datum")}</span>
                 <span className="font-mono text-slate-200">{ocr.date ?? "—"}</span>
               </div>
               {ocr.line_items?.length > 0 && (
                 <details className="mt-2">
                   <summary className="cursor-pointer text-slate-400 text-[11px] hover:text-slate-200">
-                    {ocr.line_items.length} Positionen
+                    {t("nativeExtra.receipt.positions", "{{count}} Positionen", { count: ocr.line_items.length })}
                   </summary>
                   <div className="mt-1.5 space-y-0.5 font-mono text-[11px]">
                     {ocr.line_items.slice(0, 12).map((li, i) => (
@@ -189,7 +191,7 @@ export function ReceiptAttach({
                 className="w-full h-11 bg-gradient-to-r from-emerald-500/20 to-cyan-500/15 border-t border-emerald-500/25 text-emerald-200 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-500/25 transition-colors"
               >
                 <Check className="w-3.5 h-3.5" />
-                Werte ins Formular übernehmen
+                {t("nativeExtra.receipt.applyToForm", "Werte ins Formular übernehmen")}
               </button>
             )}
           </motion.div>

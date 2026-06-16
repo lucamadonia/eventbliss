@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,6 +26,7 @@ interface GroupedTasks {
 }
 
 export function useEventTasks(eventId: string | undefined) {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<EventTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,7 +43,7 @@ export function useEventTasks(eventId: string | undefined) {
       setTasks(data || []);
     } catch (err) {
       console.error("Error fetching tasks:", err);
-      toast.error("Failed to load tasks");
+      toast.error(t("tasks.toastLoadFailed", "Aufgaben konnten nicht geladen werden"));
     } finally {
       setIsLoading(false);
     }
@@ -83,11 +85,11 @@ export function useEventTasks(eventId: string | undefined) {
           sort_order: tasks.length,
         });
         if (error) throw error;
-        toast.success("Task created");
+        toast.success(t("tasks.toastCreated", "Aufgabe erstellt"));
         await fetchTasks();
       } catch (err) {
         console.error("Error creating task:", err);
-        toast.error("Failed to create task");
+        toast.error(t("tasks.toastCreateFailed", "Aufgabe konnte nicht erstellt werden"));
       }
     },
     [eventId, tasks.length, fetchTasks],
@@ -100,11 +102,11 @@ export function useEventTasks(eventId: string | undefined) {
           .update(updates)
           .eq("id", id);
         if (error) throw error;
-        toast.success("Task updated");
+        toast.success(t("tasks.toastUpdated", "Aufgabe aktualisiert"));
         await fetchTasks();
       } catch (err) {
         console.error("Error updating task:", err);
-        toast.error("Failed to update task");
+        toast.error(t("tasks.toastUpdateFailed", "Aufgabe konnte nicht aktualisiert werden"));
       }
     },
     [fetchTasks],
@@ -117,11 +119,11 @@ export function useEventTasks(eventId: string | undefined) {
           .delete()
           .eq("id", id);
         if (error) throw error;
-        toast.success("Task deleted");
+        toast.success(t("tasks.toastDeleted", "Aufgabe gelöscht"));
         await fetchTasks();
       } catch (err) {
         console.error("Error deleting task:", err);
-        toast.error("Failed to delete task");
+        toast.error(t("tasks.toastDeleteFailed", "Aufgabe konnte nicht gelöscht werden"));
       }
     },
     [fetchTasks],
@@ -140,11 +142,11 @@ export function useEventTasks(eventId: string | undefined) {
           .update(updates)
           .eq("id", id);
         if (error) throw error;
-        toast.success(`Task moved to ${newStatus.replace("_", " ")}`);
+        toast.success(t("tasks.toastMoved", "Aufgabe verschoben"));
         await fetchTasks();
       } catch (err) {
         console.error("Error moving task:", err);
-        toast.error("Failed to move task");
+        toast.error(t("tasks.toastMoveFailed", "Aufgabe konnte nicht verschoben werden"));
       }
     },
     [fetchTasks],
