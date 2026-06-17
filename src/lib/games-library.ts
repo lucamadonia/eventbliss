@@ -2438,14 +2438,19 @@ const teamGames: GameItem[] = [
   }
 ];
 
-// Export all games combined
-export const gamesLibrary: GameItem[] = [
+// Full set incl. alcohol-related — internal only.
+const gamesLibraryAll: GameItem[] = [
   ...jgaGames,
   ...familyGames,
   ...weddingGames,
   ...icebreakerGames,
   ...teamGames
 ];
+
+// Public catalog (Ideas hub, search, App Store screenshots): alcohol-related
+// activities are excluded so the app is never perceived as a drinking-game app
+// (App Store Guideline 4.3). Drink Roulette / Beer Pong / etc. no longer appear.
+export const gamesLibrary: GameItem[] = gamesLibraryAll.filter((g) => !g.isAlcoholRelated);
 
 // Helper functions
 export const getGamesByCategory = (category: GameCategory): GameItem[] => {
