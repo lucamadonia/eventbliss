@@ -249,9 +249,10 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
 
   const agencies = useMemo<PartnerAgency[]>(() => {
     const db = dbAgencies ?? [];
-    const dbNames = new Set(db.map((a) => a.name.toLowerCase()));
+    const dbNames: Record<string, true> = {};
+    for (const a of db) dbNames[a.name.toLowerCase()] = true;
     const statics: PartnerAgency[] = STATIC_AGENCIES
-      .filter((a) => !dbNames.has(a.name.toLowerCase()))
+      .filter((a) => !dbNames[a.name.toLowerCase()])
       .map((a) => ({
         key: `static-${a.id}`,
         name: a.name,
@@ -277,13 +278,13 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
 
   // Country chips: every country present, sorted by agency count desc
   const countryChips = useMemo(() => {
-    const counts = new Map<string, { code: string; fallback: string; count: number }>();
+    const counts: Record<string, { code: string; fallback: string; count: number }> = {};
     for (const a of agencies) {
-      const existing = counts.get(a.countryCode);
+      const existing = counts[a.countryCode];
       if (existing) existing.count++;
-      else counts.set(a.countryCode, { code: a.countryCode, fallback: a.country, count: 1 });
+      else counts[a.countryCode] = { code: a.countryCode, fallback: a.country, count: 1 };
     }
-    return [...counts.values()]
+    return Object.values(counts)
       .map((c) => ({ code: c.code, count: c.count, label: countryName(c.code, c.fallback) }))
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
   }, [agencies, countryName]);
@@ -291,11 +292,15 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
   // City chips: cities of the selected country only, alphabetical
   const cityChips = useMemo(() => {
     if (!selectedCountry) return [];
-    const cities = new Set<string>();
+    const seen: Record<string, true> = {};
+    const cities: string[] = [];
     for (const a of agencies) {
-      if (a.countryCode === selectedCountry && a.city) cities.add(a.city);
+      if (a.countryCode === selectedCountry && a.city && !seen[a.city]) {
+        seen[a.city] = true;
+        cities.push(a.city);
+      }
     }
-    return [...cities].sort((a, b) => a.localeCompare(b));
+    return cities.sort((a, b) => a.localeCompare(b));
   }, [agencies, selectedCountry]);
 
   const selectCountry = (code: string | null) => {
@@ -344,13 +349,13 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
 
   // Group by country, bookable agencies first within each group
   const groups = useMemo(() => {
-    const byCountry = new Map<string, { code: string; name: string; agencies: PartnerAgency[] }>();
+    const byCountry: Record<string, { code: string; name: string; agencies: PartnerAgency[] }> = {};
     for (const a of visibleAgencies) {
-      const existing = byCountry.get(a.countryCode);
+      const existing = byCountry[a.countryCode];
       if (existing) existing.agencies.push(a);
-      else byCountry.set(a.countryCode, { code: a.countryCode, name: a.country, agencies: [a] });
+      else byCountry[a.countryCode] = { code: a.countryCode, name: a.country, agencies: [a] };
     }
-    const list = [...byCountry.values()];
+    const list = Object.values(byCountry);
     list.sort((a, b) => a.name.localeCompare(b.name));
     for (const g of list) {
       g.agencies.sort(

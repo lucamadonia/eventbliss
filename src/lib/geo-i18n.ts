@@ -110,17 +110,19 @@ export function localizeCity(city: string, lang: string | undefined): string {
 }
 
 // ─── Country localization via Intl.DisplayNames (primary → English → fallback) ──
-const _regionCache = new Map<string, Intl.DisplayNames | null>();
+const _regionCache: Record<string, Intl.DisplayNames | null> = {};
 
 function regionNames(locale: string): Intl.DisplayNames | null {
-  if (_regionCache.has(locale)) return _regionCache.get(locale)!;
+  if (locale in _regionCache) return _regionCache[locale];
   let dn: Intl.DisplayNames | null = null;
   try {
-    dn = new Intl.DisplayNames([locale], { type: "region" });
+    if (typeof Intl !== "undefined" && typeof Intl.DisplayNames === "function") {
+      dn = new Intl.DisplayNames([locale], { type: "region" });
+    }
   } catch {
     dn = null;
   }
-  _regionCache.set(locale, dn);
+  _regionCache[locale] = dn;
   return dn;
 }
 
