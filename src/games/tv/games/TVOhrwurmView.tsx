@@ -39,6 +39,7 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
   const winTarget: number = gameState?.winTarget ?? 10;
   const previewUrl: string | null = gameState?.previewUrl ?? null;
   const reveal = gameState?.reveal as { year: number; title: string; artist: string; flag?: string; genre?: string } | null;
+  const bonusPending: boolean = !!gameState?.bonusPending;
   const winnerName: string | null = gameState?.winnerName ?? null;
 
   const active = players.find((p) => p.id === activeId);
@@ -116,6 +117,18 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
           <AnimatePresence mode="wait">
             {reveal ? (
               <motion.div key="reveal" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-4 text-center">
+                {bonusPending && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2.5 px-6 py-2.5 rounded-full"
+                    style={{ background: `${OW.accent}1f`, border: `2px solid ${OW.accent}`, color: OW.accent, ...tvActiveRing(OW.accent) }}
+                  >
+                    <span style={{ fontSize: tvType.body }}>🎤</span>
+                    <span className="font-black uppercase tracking-[0.15em]" style={{ fontSize: tvType.label }}>
+                      {t('tv.ohrwurm.bonusCheck', { name: activeName, defaultValue: 'Bonus: {{name}} — Titel + Interpret richtig?' })}
+                    </span>
+                  </motion.div>
+                )}
                 <span className="uppercase tracking-[0.25em] font-black" style={{ fontSize: tvType.label, color: OW.dim }}>{t('tv.ohrwurm.releaseYear', 'Erscheinungsjahr')}</span>
                 <span className="leading-none font-black" style={{ fontSize: tvType.hero, color: OW.primary, textShadow: `0 0 60px ${OW.primary}66` }}>{reveal.year}</span>
                 <h2 className="font-black text-white max-w-[20ch]" style={{ fontSize: tvType.title }}>{reveal.title}</h2>
@@ -141,17 +154,29 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
           </AnimatePresence>
         </div>
 
-        {/* RIGHT — TIMELINE (active player) */}
-        <div className={`${tvPanel} flex flex-col p-[clamp(1rem,1.8vw,2rem)] min-h-0`}>
-          <span className="uppercase tracking-[0.25em] font-bold mb-4" style={{ fontSize: tvType.micro, color: OW.dim }}>
+        {/* RIGHT — TIMELINE (active player). Fits a growing hand: once it would
+            overflow (>6 cards) it switches to a compact 2-column grid, and the
+            list is scroll-contained so it never spills over other panels. */}
+        <div className={`${tvPanel} flex flex-col p-[clamp(1rem,1.8vw,2rem)] min-h-0 overflow-hidden`}>
+          <span className="uppercase tracking-[0.25em] font-bold mb-3 shrink-0" style={{ fontSize: tvType.micro, color: OW.dim }}>
             {t('tv.ohrwurm.timeline', 'Timeline')} · {activeName}
           </span>
-          <div className="flex flex-col gap-2.5 overflow-hidden">
-            <div className="rounded-2xl px-4 py-3 font-black tabular-nums text-center" style={{ fontSize: tvType.body, color: OW.primary, background: `${OW.primary}1a`, border: `2px dashed ${OW.primary}` }}>?</div>
-            {[...timeline].sort((a, b) => b.year - a.year).map((s) => (
-              <div key={s.id} className="rounded-2xl px-4 py-3 font-black tabular-nums text-center" style={{ fontSize: tvType.body, color: OW.text, background: '#1b1430', border: '1px solid rgba(255,255,255,0.08)' }}>{s.year}</div>
-            ))}
-          </div>
+          {(() => {
+            const sorted = [...timeline].sort((a, b) => b.year - a.year);
+            const compact = sorted.length > 6;
+            const itemCls = `font-black tabular-nums text-center ${compact ? 'rounded-xl px-2 py-1.5' : 'rounded-2xl px-4 py-3'}`;
+            const fs = compact ? tvType.label : tvType.body;
+            return (
+              <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
+                <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                  <div className={itemCls} style={{ fontSize: fs, color: OW.primary, background: `${OW.primary}1a`, border: `2px dashed ${OW.primary}` }}>?</div>
+                  {sorted.map((s) => (
+                    <div key={s.id} className={itemCls} style={{ fontSize: fs, color: OW.text, background: '#1b1430', border: '1px solid rgba(255,255,255,0.08)' }}>{s.year}</div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

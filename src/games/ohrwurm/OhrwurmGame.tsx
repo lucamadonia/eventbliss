@@ -174,10 +174,19 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   }, []);
 
   // --- Stapel: oberste Karte ziehen, ggf. neu mischen (Spec §2.6) ---------
+  // Robust gegen „kein Song": ziehe von oben (Ende) und überspringe Karten, die
+  // bereits auf einer Timeline liegen (owned) — auch auf dem Nicht-Leer-Pfad.
+  // Nach einem Konter kann eine zurückgelegte/geklaute Karte sonst doppelt im
+  // Stapel landen; ein ge-„ownter" Top-Card-Treffer würde sonst als Mystery
+  // gezogen, obwohl er schon sichtbar in einer Timeline steht. Ist der Stapel
+  // (nach Filtern) leer, wird frisch gemischt — niemals `undefined` zurückgeben.
   const takeCard = useCallback((d: Song[], owned: Set<string>): { card: Song; rest: Song[] } => {
-    if (d.length > 0) {
-      return { card: d[d.length - 1], rest: d.slice(0, -1) };
+    const rest = d.slice();
+    while (rest.length > 0) {
+      const card = rest.pop()!;
+      if (!owned.has(card.id)) return { card, rest };
     }
+    // Stapel erschöpft (oder nur noch owned) → frisch aufbauen, owned filtern.
     const fresh = buildDeck(genre).filter((s) => !owned.has(s.id));
     return { card: fresh[fresh.length - 1], rest: fresh.slice(0, -1) };
   }, [genre]);
@@ -309,6 +318,50 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     flash(t('games.ohrwurm.cardSwapped'));
   }, [active, song, swapUsed, participants, deck, turn, takeCard, haptics, flash, stopAudio, roundTimer, loadPreview]);
 
+  // --- Phase 4: Auflösung -------------------------------------------------
+  // useCallback mit vollständigen Deps: die Konter-Callbacks (handleCommitCounter
+  // /handleNoCounter) hängen daran und würden sonst eine STALE-Version von
+  // goReveal (mit altem song/active/timeline) einfangen → Konter resolved gegen
+  // den falschen Song, die echte Karte bleibt halb-aufgelöst → nächste Runde
+  // „kein Song". Mit stabilen Deps läuft die Auflösung immer gegen den aktuellen
+  // Zustand. (Vor handlePlace deklariert, damit es in dessen Dep-Array steht.)
+  const goReveal = useCallback((slotIndex: number, ct: PendingCounter | null) => {
+    if (!active || !song) return;
+    const res = resolveRound(active.id, active.timeline, { slotIndex }, ct, song);
+
+    // Erfolgreicher Konter (Konterer gewinnt die Karte): eingesetzten 🎣
+    // zurückgeben (Hitster: nur fehlgeschlagene Token sind verloren).
+    const counterRefund = !!(ct && res.winnerId === ct.participantId);
+
+    if (res.winnerId) {
+      const winnerId = res.winnerId;
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.id === winnerId
+            ? {
+                ...p,
+                timeline: insertSorted(p.timeline, song),
+                hooks: counterRefund ? Math.min(MAX_HOOKS, p.hooks + 1) : p.hooks,
+              }
+            : p,
+        ),
+      );
+    } else {
+      // Niemand gewinnt → Karte zurück nach ganz unten. Den Deck-Mutate AUSSERHALB
+      // des participants-Updaters halten (setState-in-updater kann mehrfach laufen
+      // → song doppelt im Stapel). Idempotent: erst alle Vorkommen entfernen.
+      setDeck((d) => [song, ...d.filter((s) => s.id !== song.id)]);
+    }
+
+    setCounter(ct);
+    setResolution(res);
+    setPhase('reveal');
+    setFlipped(false);
+    // Flip nach kurzem Moment
+    window.setTimeout(() => setFlipped(true), 220);
+    if (res.winnerId) void haptics.success(); else void haptics.warning();
+  }, [active, song, haptics]);
+
   // --- Phase 2: Einordnen -------------------------------------------------
   const handlePlace = useCallback((slotIndex: number) => {
     if (!active) return;
@@ -325,8 +378,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     } else {
       goReveal(slotIndex, null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, participants, turn, haptics, roundTimer, stopAudio]);
+  }, [active, participants, turn, haptics, roundTimer, stopAudio, goReveal]);
 
   // --- Phase 3: Konter ----------------------------------------------------
   const handleChooseCounter = useCallback((pid: string) => {
@@ -341,51 +393,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setParticipants((prev) => prev.map((p) => (p.id === counteringId ? { ...p, hooks: p.hooks - 1 } : p)));
     const ct: PendingCounter = { participantId: counteringId, slotIndex };
     goReveal(placement, ct);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [counteringId, placement, haptics]);
+  }, [counteringId, placement, haptics, goReveal]);
 
   const handleNoCounter = useCallback(() => {
     if (placement === null) return;
     goReveal(placement, null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [placement]);
-
-  // --- Phase 4: Auflösung -------------------------------------------------
-  const goReveal = (slotIndex: number, ct: PendingCounter | null) => {
-    if (!active || !song) return;
-    const res = resolveRound(active.id, active.timeline, { slotIndex }, ct, song);
-
-    // Erfolgreicher Konter (Konterer gewinnt die Karte): eingesetzten 🎣
-    // zurückgeben (Hitster: nur fehlgeschlagene Token sind verloren).
-    const counterRefund = !!(ct && res.winnerId === ct.participantId);
-
-    setParticipants((prev) => {
-      let next = prev;
-      if (res.winnerId) {
-        next = prev.map((p) =>
-          p.id === res.winnerId
-            ? {
-                ...p,
-                timeline: insertSorted(p.timeline, song),
-                hooks: counterRefund ? Math.min(MAX_HOOKS, p.hooks + 1) : p.hooks,
-              }
-            : p,
-        );
-      } else {
-        // zurück auf den Stapel (nach ganz unten)
-        setDeck((d) => [song, ...d]);
-      }
-      return next;
-    });
-
-    setCounter(ct);
-    setResolution(res);
-    setPhase('reveal');
-    setFlipped(false);
-    // Flip nach kurzem Moment
-    window.setTimeout(() => setFlipped(true), 220);
-    if (res.winnerId) void haptics.success(); else void haptics.warning();
-  };
+  }, [placement, goReveal]);
 
   // --- Phase 5: Bonus -----------------------------------------------------
   // Speed-Bonus: innerhalb 10s platziert UND angesagt → +2 statt +1 🎣.
@@ -565,10 +578,13 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       winTarget,
       previewUrl, // TV is the speaker — title stays hidden until reveal
       reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
+      // Bonus verification: active player claimed Title+Artist and the group is
+      // deciding yes/no — surface title+artist big on the TV so everyone checks.
+      bonusPending: phase === 'reveal' && !!resolution?.bonusEligible && bonusClaimed && !bonusDecided,
       winnerName: winner?.name ?? null,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [online, isHost, phase, participants, listening, roundTimer.timeLeft, previewUrl, song, winner]);
+  }, [online, isHost, phase, participants, listening, roundTimer.timeLeft, previewUrl, song, winner, resolution, bonusClaimed, bonusDecided]);
 
   // Non-host → apply incoming snapshots.
   useEffect(() => {
@@ -613,8 +629,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     winTarget,
     previewUrl,
     reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
+    bonusPending: phase === 'reveal' && !!resolution?.bonusEligible && bonusClaimed && !bonusDecided,
     winnerName: winner?.name ?? null,
-  }, [phase, turn, listening, roundTimer.timeLeft, participants]);
+  }, [phase, turn, listening, roundTimer.timeLeft, participants, resolution, bonusClaimed, bonusDecided]);
 
   // =========================================================================
   // Render

@@ -8,7 +8,6 @@ import TVLeaderboard from './TVLeaderboard';
 import TVGameOver from './TVGameOver';
 import TVVFXLayer from './components/TVVFXLayer';
 import TVGlowFrame from './components/TVGlowFrame';
-import TVStatsOverlay from './components/TVStatsOverlay';
 import { useTVConnection } from './useTVConnection';
 import { useTVAudio } from './TVAudioManager';
 
@@ -135,7 +134,9 @@ export default function TVScreen() {
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />
-      <TVStatsOverlay gameState={gameState} visible={showGame} />
+      {/* Floating live-stats overlay removed: every game view now renders its
+          own full TVScoreboard roster, so this only duplicated the standings
+          and covered on-screen content (timelines, cards, etc.). */}
 
       <AnimatePresence mode="wait">
         {showGameOver && (

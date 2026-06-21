@@ -329,11 +329,15 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const [answerCorrect, setAnswerCorrect] = useState<boolean | null>(null);
   const [foundDiffs, setFoundDiffs] = useState<number[]>([]);
 
-  // TV broadcast: rails (round/phase/scoreboard) + mode-appropriate hero. We only
-  // send the question text once the answer is revealed-or-being-answered; the live
-  // study timer and the location name are safe to show. Heavy media (Leaflet map /
-  // street-view iframe) stays phone-only — the TV shows a "look at your device" card.
+  // TV broadcast: the TV is the group's shared screen, so it mirrors the phone's
+  // actual content (FindIt has no per-player secrets — everyone plays along):
+  //   - the emoji GRID + scene name for memory/speed (and both grids for unterschiede)
+  //   - the current QUESTION + its answer OPTIONS (audience guesses along)
+  //   - on the answer phase only: which option is `correct` and the found diffs
+  //     (these are answer-spoiling, so they're gated until the reveal)
+  //   - the target location name/coords for karte/streetview (no live map embed)
   const tvQuestion = currentScene?.questions[questionIdx];
+  const tvRevealed = phase === 'answer' || phase === 'roundEnd';
   useTVGameBridge('findit', {
     phase, round, totalRounds, players, currentPlayerIdx,
     mode,
@@ -341,11 +345,25 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     questionCountdown,
     questionIdx,
     totalQuestions: currentScene?.questions.length ?? 0,
+    sceneName: currentScene?.name ?? currentDiff?.name ?? '',
+    // shared emoji grid (memory/speed) + diff grids (unterschiede)
+    grid: currentScene?.grid ?? '',
+    gridA: currentDiff?.gridA ?? '',
+    gridB: currentDiff?.gridB ?? '',
+    // diff target indices + found cells are answer-spoiling → reveal only
+    diffs: tvRevealed && currentDiff ? currentDiff.diffs : [],
+    foundDiffs,
+    diffCount: currentDiff?.diffs.length ?? 0,
+    // question + options for the audience; the correct index leaks only on reveal
     question: tvQuestion?.q ?? '',
+    options: tvQuestion?.options ?? [],
+    correctOption: tvRevealed ? (tvQuestion?.correct ?? null) : null,
     geoName: currentGeo?.name ?? '',
+    geoLat: currentGeo?.lat ?? null,
+    geoLng: currentGeo?.lng ?? null,
     selectedAnswer,
     answerCorrect,
-  }, [phase, round, currentPlayerIdx, mode, studyCountdown, questionCountdown, questionIdx, tvQuestion?.q, currentGeo?.name, selectedAnswer, answerCorrect]);
+  }, [phase, round, currentPlayerIdx, mode, studyCountdown, questionCountdown, questionIdx, tvQuestion?.q, currentScene?.grid, currentDiff, foundDiffs, currentGeo?.name, selectedAnswer, answerCorrect]);
 
   // Timing
   const questionStartRef = useRef(0);
