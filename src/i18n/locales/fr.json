@@ -8165,18 +8165,152 @@
     "flaschendrehen": "Tourne-bouteille"
   },
   "tv": {
-    "connected": "CONNECTÉ",
-    "error": "ERREUR",
-    "connecting": "CONNEXION...",
-    "roomCode": "Code du salon",
-    "goTo": "Allez sur",
+    "connected": "Connecté",
+    "error": "Erreur",
+    "connecting": "Connexion…",
+    "roomCode": "Code de salon",
+    "goTo": "Va sur",
     "andTheWinnerIs": "Et le gagnant est",
-    "points": "points",
-    "enterCode": "Saisis le code du salon pour afficher le jeu",
-    "connect": "CONNECTER",
+    "points": "Points",
+    "enterCode": "Saisis le code",
+    "connect": "Se connecter",
     "round": "Manche",
-    "ready": "Prêt ?",
-    "waitingForPlayers": "En attente des joueurs",
-    "playersCount": "{{count}} joueurs"
+    "ready": "Prêt",
+    "waitingForPlayers": "En attente des joueurs…",
+    "playersCount": "{{count}} joueurs",
+    "bomb": {
+      "penalties": "{{count}} pénalités",
+      "exploded": "{{name}} a explosé !",
+      "waiting": "En attente d'une tâche..."
+    },
+    "bottle": {
+      "spinning": "ÇA TOURNE",
+      "card": "CARTE",
+      "vote": "VOTE",
+      "question": "Question",
+      "task": "Défi",
+      "spinningHint": "La bouteille tourne..."
+    },
+    "nowPlaying": "À toi de jouer",
+    "category": {
+      "isUp": "à son tour",
+      "category": "Catégorie",
+      "waiting": "En attente de la catégorie...",
+      "named": "Cités",
+      "noWordsYet": "Pas encore de mots"
+    },
+    "nowGuessing": "Devine maintenant",
+    "answer": "Réponse",
+    "emojiguess": {
+      "whatIsIt": "Qu'est-ce que c'est ?"
+    },
+    "findit": {
+      "study": "Mémorise",
+      "question": "Question",
+      "answer": "Réponse",
+      "guess": "Devine",
+      "setup": "Préparation",
+      "roundEnd": "Fin de manche",
+      "memorize": "Mémorise !",
+      "questionN": "Question",
+      "lookAtDevice": "Regarde ton appareil",
+      "correct": "Correct !",
+      "wrong": "Raté",
+      "spotDiff": "Trouve les différences",
+      "location": "Lieu",
+      "guessCity": "Quelle ville est-ce ?",
+      "guessLocation": "Où est-ce ?",
+      "tapOnDevice": "Touche ton appareil pour deviner"
+    },
+    "wins": "gagne !",
+    "leaderboard": "Classement",
+    "headup": {
+      "correctShort": "{{count}} corrects",
+      "gameOver": "FIN DE PARTIE !",
+      "roundOver": "FIN DE MANCHE !",
+      "correct": "Correct",
+      "skipped": "Passés",
+      "describe": "Décris-le !",
+      "getReady": "Prépare-toi...",
+      "skip": "Passer"
+    },
+    "impostor": {
+      "checkPhones": "REGARDEZ VOS TÉLÉPHONES !",
+      "oneWordOneDifferent": "Un mot — mais quelqu'un en a un autre...",
+      "discussion": "DISCUSSION",
+      "whoIsImpostor": "QUI EST L'IMPOSTEUR ?",
+      "voting": "VOTE",
+      "whoIsSuspected": "QUI EST SOUPÇONNÉ ?",
+      "revealIn": "RÉVÉLATION DANS...",
+      "theImpostorIs": "L'IMPOSTEUR EST...",
+      "label": "IMPOSTEUR",
+      "canImpostorGuess": "L'IMPOSTEUR PEUT-IL DEVINER LE MOT ?",
+      "results": "RÉSULTAT",
+      "preparing": "Préparation de la partie..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus : {{name}} — titre + artiste corrects ?",
+      "playingMystery": "joue le morceau mystère",
+      "releaseYear": "Année de sortie",
+      "mysteryRunning": "Morceau mystère en cours",
+      "timeline": "Frise"
+    },
+    "quiz": {
+      "loadingQuestion": "Chargement de la question..."
+    },
+    "fakeorfact": {
+      "true": "Vrai",
+      "false": "Faux",
+      "gotItRight": "Bien deviné",
+      "wrong": "Raté"
+    },
+    "correct": "Correct",
+    "sharedquiz": {
+      "reads": "Lit la question",
+      "options": "Lit les options",
+      "guesses": "Devine"
+    },
+    "story": {
+      "modeVorgabe": "Consigne",
+      "modeReim": "L'heure des rimes",
+      "modeClassic": "Classique",
+      "sentence": "Phrase",
+      "sentences": "Phrases",
+      "writing": "écrit...",
+      "theEnd": "Fin",
+      "storyDone": "Histoire terminée !"
+    },
+    "taboo": {
+      "points": "{{points}} points",
+      "turnOver": "Tour terminé",
+      "correct": "Correct",
+      "taboo": "Tabou",
+      "skipped": "Passer",
+      "waiting": "En attente des équipes...",
+      "explains": "explique"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× V · {{p}}× A",
+      "title": "ACTION OU VÉRITÉ",
+      "isUp": "à son tour",
+      "whosNext": "À qui le tour ?",
+      "chooses": "choisit…",
+      "didComplete": "Réussi ?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} questions",
+      "questionN": "Question {{x}}/{{max}}",
+      "title": "QUI SUIS-JE ?",
+      "assigning": "Attribution des rôles…",
+      "asks": "demande",
+      "askPrompt": "Pose une question par oui ou non",
+      "correct": "Correct !",
+      "wrong": "Faux !"
+    },
+    "wordpress": {
+      "accuracy": "Réussite"
+    },
+    "standings": "Classement provisoire",
+    "tapForSound": "Appuyez pour le son"
   }
 }

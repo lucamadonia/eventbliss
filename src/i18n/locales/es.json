@@ -8343,18 +8343,152 @@
     "flaschendrehen": "Girar la botella"
   },
   "tv": {
-    "connected": "CONECTADO",
-    "error": "ERROR",
-    "connecting": "CONECTANDO...",
+    "connected": "Conectado",
+    "error": "Error",
+    "connecting": "Conectando…",
     "roomCode": "Código de sala",
     "goTo": "Ve a",
     "andTheWinnerIs": "Y el ganador es",
-    "points": "puntos",
-    "enterCode": "Introduce el código de sala para mostrar el juego",
-    "connect": "CONECTAR",
+    "points": "Puntos",
+    "enterCode": "Introduce el código",
+    "connect": "Conectar",
     "round": "Ronda",
-    "ready": "¿Listo?",
-    "waitingForPlayers": "Esperando jugadores",
-    "playersCount": "{{count}} jugadores"
+    "ready": "Listo",
+    "waitingForPlayers": "Esperando jugadores…",
+    "playersCount": "{{count}} jugadores",
+    "bomb": {
+      "penalties": "{{count}} penalizaciones",
+      "exploded": "¡{{name}} ha explotado!",
+      "waiting": "Esperando tarea..."
+    },
+    "bottle": {
+      "spinning": "GIRANDO",
+      "card": "CARTA",
+      "vote": "VOTACIÓN",
+      "question": "Pregunta",
+      "task": "Tarea",
+      "spinningHint": "La botella está girando..."
+    },
+    "nowPlaying": "Le toca a",
+    "category": {
+      "isUp": "le toca",
+      "category": "Categoría",
+      "waiting": "Esperando categoría...",
+      "named": "Dichas",
+      "noWordsYet": "Aún no hay palabras"
+    },
+    "nowGuessing": "Adivina ahora",
+    "answer": "Respuesta",
+    "emojiguess": {
+      "whatIsIt": "¿Qué es?"
+    },
+    "findit": {
+      "study": "Memoriza",
+      "question": "Pregunta",
+      "answer": "Respuesta",
+      "guess": "Adivina",
+      "setup": "Preparación",
+      "roundEnd": "Fin de ronda",
+      "memorize": "¡Memoriza!",
+      "questionN": "Pregunta",
+      "lookAtDevice": "Mira tu dispositivo",
+      "correct": "¡Correcto!",
+      "wrong": "Fallo",
+      "spotDiff": "Encuentra las diferencias",
+      "location": "Ubicación",
+      "guessCity": "¿Qué ciudad es?",
+      "guessLocation": "¿Dónde es esto?",
+      "tapOnDevice": "Toca en tu dispositivo para adivinar"
+    },
+    "wins": "¡gana!",
+    "leaderboard": "Clasificación",
+    "headup": {
+      "correctShort": "{{count}} correctas",
+      "gameOver": "¡FIN DEL JUEGO!",
+      "roundOver": "¡FIN DE RONDA!",
+      "correct": "Correcto",
+      "skipped": "Saltadas",
+      "describe": "¡Descríbelo!",
+      "getReady": "Prepárate...",
+      "skip": "Saltar"
+    },
+    "impostor": {
+      "checkPhones": "¡MIRAD VUESTROS MÓVILES!",
+      "oneWordOneDifferent": "Una palabra — pero alguien tiene otra distinta...",
+      "discussion": "DEBATE",
+      "whoIsImpostor": "¿QUIÉN ES EL IMPOSTOR?",
+      "voting": "VOTACIÓN",
+      "whoIsSuspected": "¿DE QUIÉN SE SOSPECHA?",
+      "revealIn": "REVELACIÓN EN...",
+      "theImpostorIs": "EL IMPOSTOR ES...",
+      "label": "IMPOSTOR",
+      "canImpostorGuess": "¿PUEDE EL IMPOSTOR ADIVINAR LA PALABRA?",
+      "results": "RESULTADO",
+      "preparing": "Preparando el juego..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus: {{name}} — ¿título + artista correctos?",
+      "playingMystery": "reproduce el tema misterioso",
+      "releaseYear": "Año de lanzamiento",
+      "mysteryRunning": "Sonando el tema misterioso",
+      "timeline": "Línea de tiempo"
+    },
+    "quiz": {
+      "loadingQuestion": "Cargando pregunta..."
+    },
+    "fakeorfact": {
+      "true": "Verdadero",
+      "false": "Falso",
+      "gotItRight": "Acertaste",
+      "wrong": "Fallo"
+    },
+    "correct": "Correcto",
+    "sharedquiz": {
+      "reads": "Lee la pregunta",
+      "options": "Lee las opciones",
+      "guesses": "Adivina"
+    },
+    "story": {
+      "modeVorgabe": "Consigna",
+      "modeReim": "Hora de rimar",
+      "modeClassic": "Clásico",
+      "sentence": "Frase",
+      "sentences": "Frases",
+      "writing": "está escribiendo...",
+      "theEnd": "Fin",
+      "storyDone": "¡Historia terminada!"
+    },
+    "taboo": {
+      "points": "{{points}} puntos",
+      "turnOver": "Turno terminado",
+      "correct": "Correcto",
+      "taboo": "Tabú",
+      "skipped": "Saltar",
+      "waiting": "Esperando a los equipos...",
+      "explains": "explica"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× V · {{p}}× R",
+      "title": "VERDAD O RETO",
+      "isUp": "le toca",
+      "whosNext": "¿Quién va ahora?",
+      "chooses": "elige…",
+      "didComplete": "¿Lo hizo?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} preguntas",
+      "questionN": "Pregunta {{x}}/{{max}}",
+      "title": "¿QUIÉN SOY?",
+      "assigning": "Repartiendo roles…",
+      "asks": "pregunta",
+      "askPrompt": "Haz una pregunta de sí/no",
+      "correct": "¡Correcto!",
+      "wrong": "¡Incorrecto!"
+    },
+    "wordpress": {
+      "accuracy": "Aciertos"
+    },
+    "standings": "Clasificación parcial",
+    "tapForSound": "Toca para el sonido"
   }
 }

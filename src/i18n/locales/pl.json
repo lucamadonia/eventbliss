@@ -8215,18 +8215,152 @@
     "flaschendrehen": "Butelka"
   },
   "tv": {
-    "connected": "POŁĄCZONO",
-    "error": "BŁĄD",
-    "connecting": "ŁĄCZENIE...",
+    "connected": "Połączono",
+    "error": "Błąd",
+    "connecting": "Łączenie…",
     "roomCode": "Kod pokoju",
     "goTo": "Przejdź do",
     "andTheWinnerIs": "A zwycięzcą jest",
-    "points": "punkty",
-    "enterCode": "Wpisz kod pokoju, aby wyświetlić grę",
-    "connect": "POŁĄCZ",
+    "points": "Punkty",
+    "enterCode": "Wpisz kod",
+    "connect": "Połącz",
     "round": "Runda",
-    "ready": "Gotowy?",
-    "waitingForPlayers": "Czekam na graczy",
-    "playersCount": "{{count}} graczy"
+    "ready": "Gotowe",
+    "waitingForPlayers": "Czekam na graczy…",
+    "playersCount": "{{count}} graczy",
+    "bomb": {
+      "penalties": "{{count}} kar",
+      "exploded": "{{name}} wybuchł!",
+      "waiting": "Czekam na zadanie..."
+    },
+    "bottle": {
+      "spinning": "KRĘCI",
+      "card": "KARTA",
+      "vote": "GŁOSOWANIE",
+      "question": "Pytanie",
+      "task": "Zadanie",
+      "spinningHint": "Butelka się kręci..."
+    },
+    "nowPlaying": "Teraz kolej",
+    "category": {
+      "isUp": "ma kolej",
+      "category": "Kategoria",
+      "waiting": "Czekam na kategorię...",
+      "named": "Wymienione",
+      "noWordsYet": "Jeszcze brak słów"
+    },
+    "nowGuessing": "Teraz zgaduje",
+    "answer": "Rozwiązanie",
+    "emojiguess": {
+      "whatIsIt": "Co to znaczy?"
+    },
+    "findit": {
+      "study": "Zapamiętaj",
+      "question": "Pytanie",
+      "answer": "Rozwiązanie",
+      "guess": "Zgaduj",
+      "setup": "Przygotowanie",
+      "roundEnd": "Koniec rundy",
+      "memorize": "Zapamiętaj!",
+      "questionN": "Pytanie",
+      "lookAtDevice": "Spójrz na swoje urządzenie",
+      "correct": "Dobrze!",
+      "wrong": "Pudło",
+      "spotDiff": "Znajdź różnice",
+      "location": "Lokalizacja",
+      "guessCity": "Jakie to miasto?",
+      "guessLocation": "Gdzie to jest?",
+      "tapOnDevice": "Dotknij urządzenia, by zgadnąć"
+    },
+    "wins": "wygrywa!",
+    "leaderboard": "Ranking",
+    "headup": {
+      "correctShort": "{{count}} trafień",
+      "gameOver": "KONIEC GRY!",
+      "roundOver": "KONIEC RUNDY!",
+      "correct": "Dobrze",
+      "skipped": "Pominięte",
+      "describe": "Opisz to!",
+      "getReady": "Przygotuj się...",
+      "skip": "Pomiń"
+    },
+    "impostor": {
+      "checkPhones": "SPÓJRZCIE NA TELEFONY!",
+      "oneWordOneDifferent": "Jedno słowo — ale jeden ma inne...",
+      "discussion": "DYSKUSJA",
+      "whoIsImpostor": "KTO JEST OSZUSTEM?",
+      "voting": "GŁOSOWANIE",
+      "whoIsSuspected": "KOGO PODEJRZEWAMY?",
+      "revealIn": "UJAWNIENIE ZA...",
+      "theImpostorIs": "OSZUSTEM JEST...",
+      "label": "OSZUST",
+      "canImpostorGuess": "CZY OSZUST ODGADNIE SŁOWO?",
+      "results": "WYNIK",
+      "preparing": "Przygotowywanie gry..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus: {{name}} — tytuł + wykonawca poprawnie?",
+      "playingMystery": "odtwarza mystery track",
+      "releaseYear": "Rok wydania",
+      "mysteryRunning": "Mystery song gra",
+      "timeline": "Oś czasu"
+    },
+    "quiz": {
+      "loadingQuestion": "Ładowanie pytania..."
+    },
+    "fakeorfact": {
+      "true": "Prawda",
+      "false": "Fałsz",
+      "gotItRight": "Zgadnięte",
+      "wrong": "Pudło"
+    },
+    "correct": "Dobrze",
+    "sharedquiz": {
+      "reads": "Czyta pytanie",
+      "options": "Czyta opcje",
+      "guesses": "Zgaduje"
+    },
+    "story": {
+      "modeVorgabe": "Podpowiedź",
+      "modeReim": "Czas na rymy",
+      "modeClassic": "Klasyczny",
+      "sentence": "Zdanie",
+      "sentences": "Zdania",
+      "writing": "pisze...",
+      "theEnd": "Koniec",
+      "storyDone": "Historia zakończona!"
+    },
+    "taboo": {
+      "points": "{{points}} punktów",
+      "turnOver": "Koniec tury",
+      "correct": "Dobrze",
+      "taboo": "Tabu",
+      "skipped": "Pomiń",
+      "waiting": "Czekam na drużyny...",
+      "explains": "tłumaczy"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× P · {{p}}× W",
+      "title": "PRAWDA CZY WYZWANIE",
+      "isUp": "ma kolej",
+      "whosNext": "Czyja teraz kolej?",
+      "chooses": "wybiera…",
+      "didComplete": "Udało się?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} pytań",
+      "questionN": "Pytanie {{x}}/{{max}}",
+      "title": "KIM JESTEM?",
+      "assigning": "Przydzielanie ról…",
+      "asks": "pyta",
+      "askPrompt": "Zadaj pytanie tak/nie",
+      "correct": "Dobrze!",
+      "wrong": "Źle!"
+    },
+    "wordpress": {
+      "accuracy": "Trafienia"
+    },
+    "standings": "Wyniki pośrednie",
+    "tapForSound": "Dotknij, aby włączyć dźwięk"
   }
 }

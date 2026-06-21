@@ -8215,18 +8215,152 @@
     "flaschendrehen": "Flesje draaien"
   },
   "tv": {
-    "connected": "VERBONDEN",
-    "error": "FOUT",
-    "connecting": "VERBINDEN...",
+    "connected": "Verbonden",
+    "error": "Fout",
+    "connecting": "Verbinden…",
     "roomCode": "Kamercode",
     "goTo": "Ga naar",
     "andTheWinnerIs": "En de winnaar is",
-    "points": "punten",
-    "enterCode": "Voer de kamercode in om het spel te tonen",
-    "connect": "VERBINDEN",
+    "points": "Punten",
+    "enterCode": "Code invoeren",
+    "connect": "Verbinden",
     "round": "Ronde",
-    "ready": "Klaar?",
-    "waitingForPlayers": "Wachten op spelers",
-    "playersCount": "{{count}} spelers"
+    "ready": "Klaar",
+    "waitingForPlayers": "Wachten op spelers…",
+    "playersCount": "{{count}} spelers",
+    "bomb": {
+      "penalties": "{{count}} straffen",
+      "exploded": "{{name}} is ontploft!",
+      "waiting": "Wachten op opdracht..."
+    },
+    "bottle": {
+      "spinning": "DRAAIT",
+      "card": "KAART",
+      "vote": "STEMMING",
+      "question": "Vraag",
+      "task": "Opdracht",
+      "spinningHint": "De fles draait..."
+    },
+    "nowPlaying": "Nu aan de beurt",
+    "category": {
+      "isUp": "is aan de beurt",
+      "category": "Categorie",
+      "waiting": "Wachten op categorie...",
+      "named": "Genoemd",
+      "noWordsYet": "Nog geen woorden"
+    },
+    "nowGuessing": "Raadt nu",
+    "answer": "Oplossing",
+    "emojiguess": {
+      "whatIsIt": "Wat betekent het?"
+    },
+    "findit": {
+      "study": "Inprenten",
+      "question": "Vraag",
+      "answer": "Oplossing",
+      "guess": "Raden",
+      "setup": "Voorbereiding",
+      "roundEnd": "Einde ronde",
+      "memorize": "Inprenten!",
+      "questionN": "Vraag",
+      "lookAtDevice": "Kijk op je apparaat",
+      "correct": "Goed!",
+      "wrong": "Mis",
+      "spotDiff": "Vind de verschillen",
+      "location": "Locatie",
+      "guessCity": "Welke stad is dit?",
+      "guessLocation": "Waar is dit?",
+      "tapOnDevice": "Tik op je apparaat om te raden"
+    },
+    "wins": "wint!",
+    "leaderboard": "Ranglijst",
+    "headup": {
+      "correctShort": "{{count}} goed",
+      "gameOver": "EINDE SPEL!",
+      "roundOver": "RONDE VOORBIJ!",
+      "correct": "Goed",
+      "skipped": "Overgeslagen",
+      "describe": "Beschrijf het!",
+      "getReady": "Klaarstaan...",
+      "skip": "Skip"
+    },
+    "impostor": {
+      "checkPhones": "KIJK OP JE TELEFOON!",
+      "oneWordOneDifferent": "Eén woord — maar één heeft een ander...",
+      "discussion": "DISCUSSIE",
+      "whoIsImpostor": "WIE IS DE BEDRIEGER?",
+      "voting": "STEMMING",
+      "whoIsSuspected": "WIE WORDT VERDACHT?",
+      "revealIn": "ONTHULLING OVER...",
+      "theImpostorIs": "DE BEDRIEGER IS...",
+      "label": "BEDRIEGER",
+      "canImpostorGuess": "KAN DE BEDRIEGER HET WOORD RADEN?",
+      "results": "RESULTAAT",
+      "preparing": "Spel wordt voorbereid..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus: {{name}} — titel + artiest goed?",
+      "playingMystery": "speelt de mystery track",
+      "releaseYear": "Uitgavejaar",
+      "mysteryRunning": "Mystery song speelt",
+      "timeline": "Tijdlijn"
+    },
+    "quiz": {
+      "loadingQuestion": "Vraag wordt geladen..."
+    },
+    "fakeorfact": {
+      "true": "Waar",
+      "false": "Onwaar",
+      "gotItRight": "Goed geraden",
+      "wrong": "Mis"
+    },
+    "correct": "Goed",
+    "sharedquiz": {
+      "reads": "Leest vraag",
+      "options": "Leest opties",
+      "guesses": "Raadt"
+    },
+    "story": {
+      "modeVorgabe": "Aanzet",
+      "modeReim": "Rijmtijd",
+      "modeClassic": "Klassiek",
+      "sentence": "Zin",
+      "sentences": "Zinnen",
+      "writing": "schrijft...",
+      "theEnd": "Einde",
+      "storyDone": "Verhaal afgerond!"
+    },
+    "taboo": {
+      "points": "{{points}} punten",
+      "turnOver": "Beurt voorbij",
+      "correct": "Goed",
+      "taboo": "Taboe",
+      "skipped": "Skip",
+      "waiting": "Wachten op teams...",
+      "explains": "legt uit"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× W · {{p}}× D",
+      "title": "WAARHEID OF DURF",
+      "isUp": "is aan de beurt",
+      "whosNext": "Wie is de volgende?",
+      "chooses": "kiest…",
+      "didComplete": "Gelukt?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} vragen",
+      "questionN": "Vraag {{x}}/{{max}}",
+      "title": "WIE BEN IK?",
+      "assigning": "Rollen worden verdeeld…",
+      "asks": "vraagt",
+      "askPrompt": "Stel een ja/nee-vraag",
+      "correct": "Goed!",
+      "wrong": "Fout!"
+    },
+    "wordpress": {
+      "accuracy": "Treffers"
+    },
+    "standings": "Tussenstand",
+    "tapForSound": "Tik voor geluid"
   }
 }

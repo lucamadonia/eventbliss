@@ -17,6 +17,7 @@ import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useAmbientMotion } from "@/lib/useAmbientMotion";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -145,13 +146,15 @@ function ParticleBurst({
 /**
  * RotatingGlowRing — conic gradient behind the revealed word. Spins
  * slowly while the role is on screen; intensifies for impostor.
+ * The infinite spin is decorative, so it only runs when `ambient` is
+ * true (off on native / reduced-motion); otherwise it renders static.
  */
-function RotatingGlowRing({ impostor }: { impostor: boolean }) {
+function RotatingGlowRing({ impostor, ambient }: { impostor: boolean; ambient: boolean }) {
   return (
     <motion.div
       className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      animate={{ rotate: 360 }}
-      transition={{ repeat: Infinity, duration: impostor ? 4 : 10, ease: 'linear' }}
+      animate={ambient ? { rotate: 360 } : undefined}
+      transition={ambient ? { repeat: Infinity, duration: impostor ? 4 : 10, ease: 'linear' } : undefined}
     >
       <div
         className="w-[140%] h-[140%] rounded-full opacity-30 blur-3xl"
@@ -166,20 +169,21 @@ function RotatingGlowRing({ impostor }: { impostor: boolean }) {
 }
 
 /**
- * DangerScanLine — horizontal red line sweeping top→bottom twice for
- * the impostor reveal. Paired with a red vignette that pulses at the
- * edges of the card.
+ * DangerScanLine — horizontal red line sweeping top→bottom for the
+ * impostor reveal. Animates `transform: translateY` (compositor-only,
+ * NO layout reflow) instead of `top`. Decorative infinite loop, so it
+ * only renders when `ambient` is true.
  */
 function DangerScanLine() {
   return (
     <motion.div
-      className="pointer-events-none absolute inset-x-0 h-[3px]"
+      className="pointer-events-none absolute inset-x-0 top-0 h-[3px] will-change-transform"
       style={{
         background: 'linear-gradient(90deg, transparent, #ff6e84, transparent)',
         boxShadow: '0 0 20px #ff6e84, 0 0 40px #ff6e84',
       }}
-      initial={{ top: -10 }}
-      animate={{ top: ['0%', '100%', '0%'] }}
+      initial={{ y: 0 }}
+      animate={{ y: [0, 360, 0] }}
       transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
     />
   );
@@ -191,6 +195,10 @@ function DangerScanLine() {
 
 export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const { t } = useTranslation();
+  // Decorative infinite loops (rings, sparkles, breathing lock, scan line,
+  // glows) are gated behind this — FALSE on native WebView & reduced-motion,
+  // where endless compositor loops are the main source of jank.
+  const ambient = useAmbientMotion();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
   const resolvedNames = onlinePlayerNames.length >= 4
@@ -746,8 +754,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               {/* Decorative rotating square top-left */}
               <motion.div
                 className="absolute -top-4 -left-4 w-16 h-16 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
-                animate={{ rotate: [12, 45, 12] }}
-                transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+                animate={ambient ? { rotate: [12, 45, 12] } : undefined}
+                transition={ambient ? { duration: 12, repeat: Infinity, ease: 'easeInOut' } : undefined}
               />
 
               <div className="relative z-10 rounded-2xl p-8 flex flex-col items-center text-center space-y-6 shadow-2xl overflow-hidden"
@@ -780,10 +788,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       </div>
                       <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-[#44484f]/40 flex flex-col items-center justify-center overflow-hidden bg-black/40">
                         <div className="absolute inset-0 bg-gradient-to-tr from-[#df8eff]/5 to-[#ff6b98]/5" />
-                        {/* Ambient lock — gently breathes to signal "tap to unlock" */}
+                        {/* Ambient lock — gently breathes to signal "tap to unlock".
+                            Infinite loop → only when ambient (off on native). */}
                         <motion.div
-                          animate={{ scale: [1, 1.06, 1], y: [0, -2, 0] }}
-                          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                          animate={ambient ? { scale: [1, 1.06, 1], y: [0, -2, 0] } : undefined}
+                          transition={ambient ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
                           className="relative"
                         >
                           <Lock className="w-14 h-14 text-[#df8eff]/60 drop-shadow-[0_0_16px_rgba(223,142,255,0.35)]" />
@@ -818,16 +827,20 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       transition={{ duration: 1.1, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1] }}
                       className="relative z-10 w-full min-h-[260px] flex flex-col items-center justify-center"
                     >
-                      {/* Radial flash behind the lock */}
+                      {/* Radial flash behind the lock — opacity/scale only
+                          (transform + opacity, compositor-cheap). Background is
+                          static, not tweened. */}
                       <motion.div
                         className="absolute inset-0 rounded-xl"
+                        style={{
+                          background: currentPlayer.isImpostor
+                            ? 'radial-gradient(circle, rgba(255,110,132,0.55), transparent 65%)'
+                            : 'radial-gradient(circle, rgba(143,245,255,0.55), transparent 65%)',
+                        }}
                         initial={{ opacity: 0, scale: 0.6 }}
                         animate={{
                           opacity: [0, 0.45, 0.3, 0.9, 0],
                           scale:   [0.6, 1, 1.1, 1.6, 2],
-                          background: currentPlayer.isImpostor
-                            ? 'radial-gradient(circle, rgba(255,110,132,0.55), transparent 65%)'
-                            : 'radial-gradient(circle, rgba(143,245,255,0.55), transparent 65%)',
                         }}
                         transition={{ duration: 1.1, ease: 'easeOut' }}
                       />
@@ -867,22 +880,25 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         </motion.div>
                       </motion.div>
 
-                      {/* Sparks at the moment of cracking */}
-                      <motion.div
-                        className="absolute inset-0"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 0, 0, 0, 0.9, 1, 0.4, 0] }}
-                        transition={{ duration: 1.1, times: [0, 0.4, 0.5, 0.55, 0.6, 0.7, 0.85, 1] }}
-                      >
-                        <ParticleBurst
-                          count={18}
-                          color={currentPlayer.isImpostor ? '#ff6e84' : '#8ff5ff'}
-                          radius={140}
-                          size={6}
-                          duration={0.6}
-                          delay={0.55}
-                        />
-                      </motion.div>
+                      {/* Sparks at the moment of cracking — decorative burst,
+                          skipped on native so the crack→reveal stays cheap. */}
+                      {ambient && (
+                        <motion.div
+                          className="absolute inset-0"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0, 0, 0, 0.9, 1, 0.4, 0] }}
+                          transition={{ duration: 1.1, times: [0, 0.4, 0.5, 0.55, 0.6, 0.7, 0.85, 1] }}
+                        >
+                          <ParticleBurst
+                            count={18}
+                            color={currentPlayer.isImpostor ? '#ff6e84' : '#8ff5ff'}
+                            radius={140}
+                            size={6}
+                            duration={0.6}
+                            delay={0.55}
+                          />
+                        </motion.div>
+                      )}
 
                       {/* Tiny "cracking" label */}
                       <motion.span
@@ -907,30 +923,33 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       className="relative z-10 w-full space-y-6"
                     >
                       {/* Rotating background glow ring — role-tinted */}
-                      <RotatingGlowRing impostor={currentPlayer.isImpostor} />
+                      <RotatingGlowRing impostor={currentPlayer.isImpostor} ambient={ambient} />
 
                       {currentPlayer.isImpostor ? (
                         <div className="relative space-y-4">
-                          {/* Danger scan line sweeping the card edges */}
-                          <div className="absolute -inset-x-6 -inset-y-6 pointer-events-none overflow-hidden rounded-2xl">
-                            <DangerScanLine />
-                            {/* Red vignette pulse at the edges */}
-                            <motion.div
-                              className="absolute inset-0 rounded-2xl"
-                              animate={{
-                                boxShadow: [
-                                  'inset 0 0 24px rgba(255,110,132,0.35)',
-                                  'inset 0 0 60px rgba(255,110,132,0.55)',
-                                  'inset 0 0 24px rgba(255,110,132,0.35)',
-                                ],
-                              }}
-                              transition={{ duration: 1.4, repeat: Infinity }}
-                            />
-                          </div>
+                          {/* Danger scan line + red vignette pulse — decorative
+                              infinite loops, only when ambient (off on native). */}
+                          {ambient && (
+                            <div className="absolute -inset-x-6 -inset-y-6 pointer-events-none overflow-hidden rounded-2xl">
+                              <DangerScanLine />
+                              {/* Red vignette pulse at the edges */}
+                              <motion.div
+                                className="absolute inset-0 rounded-2xl"
+                                animate={{
+                                  boxShadow: [
+                                    'inset 0 0 24px rgba(255,110,132,0.35)',
+                                    'inset 0 0 60px rgba(255,110,132,0.55)',
+                                    'inset 0 0 24px rgba(255,110,132,0.35)',
+                                  ],
+                                }}
+                                transition={{ duration: 1.4, repeat: Infinity }}
+                              />
+                            </div>
+                          )}
                           <motion.span
                             className="relative text-[#ff6e84] font-bold tracking-[0.25em] text-[10px] uppercase"
-                            initial={{ opacity: 0, letterSpacing: '0.6em' }}
-                            animate={{ opacity: 1, letterSpacing: '0.25em' }}
+                            initial={ambient ? { opacity: 0, letterSpacing: '0.6em' } : { opacity: 0 }}
+                            animate={ambient ? { opacity: 1, letterSpacing: '0.25em' } : { opacity: 1 }}
                             transition={{ duration: 0.4 }}
                           >
                             {t('games.impostor.roleRevealed')}
@@ -940,16 +959,19 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                             transition={{ duration: 0.6, repeat: 2 }}
                             className="relative flex justify-center"
                           >
-                            {/* Warning icon with radial pulse behind it */}
-                            <motion.div
-                              className="absolute w-24 h-24 rounded-full"
-                              animate={{
-                                scale: [1, 1.6, 1],
-                                opacity: [0.5, 0, 0.5],
-                              }}
-                              transition={{ duration: 1.4, repeat: Infinity }}
-                              style={{ background: 'radial-gradient(circle, rgba(255,110,132,0.4), transparent 70%)' }}
-                            />
+                            {/* Warning icon with radial pulse behind it —
+                                infinite loop, only when ambient. */}
+                            {ambient && (
+                              <motion.div
+                                className="absolute w-24 h-24 rounded-full"
+                                animate={{
+                                  scale: [1, 1.6, 1],
+                                  opacity: [0.5, 0, 0.5],
+                                }}
+                                transition={{ duration: 1.4, repeat: Infinity }}
+                                style={{ background: 'radial-gradient(circle, rgba(255,110,132,0.4), transparent 70%)' }}
+                              />
+                            )}
                             <AlertTriangle className="relative w-16 h-16 text-[#ff6e84] drop-shadow-[0_0_28px_rgba(255,110,132,0.7)]" />
                           </motion.div>
                           <motion.h2
@@ -958,15 +980,18 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                             animate={{ opacity: 1, scale: [0.7, 1.1, 1] }}
                             transition={{ duration: 0.55, ease: 'backOut' }}
                           >
+                            {/* textShadow keyframe loop repaints every frame —
+                                only animate when ambient; else static glow. */}
                             <motion.span
-                              animate={{
+                              animate={ambient ? {
                                 textShadow: [
                                   '0 0 0px #ff6e84',
                                   '0 0 28px #ff6e84, 2px 0 0 #a70138, -2px 0 0 #ffb2b9',
                                   '0 0 12px #ff6e84',
                                 ],
-                              }}
-                              transition={{ duration: 1.8, repeat: Infinity }}
+                              } : undefined}
+                              transition={ambient ? { duration: 1.8, repeat: Infinity } : undefined}
+                              style={ambient ? undefined : { textShadow: '0 0 18px #ff6e84' }}
                             >
                               {t('games.impostor.impostorRole')}
                             </motion.span>
@@ -983,11 +1008,13 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         </div>
                       ) : (
                         <div className="relative space-y-4">
-                          {/* Floating sparkles around the safe word */}
-                          {[0, 1, 2, 3, 4, 5].map((i) => (
+                          {/* Floating sparkles around the safe word — decorative
+                              infinite loops (transform/opacity). Capped to 3 and
+                              only rendered when ambient (none on native). */}
+                          {ambient && [0, 1, 2].map((i) => (
                             <motion.span
                               key={i}
-                              className="absolute"
+                              className="absolute will-change-transform"
                               style={{
                                 top:   `${15 + Math.sin(i) * 30 + i * 8}%`,
                                 left:  `${10 + (i * 83) % 80}%`,
@@ -1023,34 +1050,53 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                               {currentWordSet?.category}
                             </p>
                           )}
-                          {/* Letter-by-letter reveal of the word */}
-                          <motion.p
-                            className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
-                            initial="hidden"
-                            animate="show"
-                            variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}
-                          >
-                            {(currentWordSet?.word ?? '').split('').map((ch, i) => (
-                              <motion.span
-                                key={`${ch}-${i}`}
-                                className="inline-block"
-                                variants={{
-                                  hidden: { opacity: 0, y: 20, rotateX: 80 },
-                                  show:   { opacity: 1, y: 0,  rotateX: 0,  transition: { type: 'spring', stiffness: 280, damping: 14 } },
-                                }}
-                                style={{ whiteSpace: 'pre' }}
-                              >
-                                {ch}
-                              </motion.span>
-                            ))}
-                          </motion.p>
+                          {/* Word reveal. On ambient (desktop) each letter springs
+                              in with a 3D flip. On native/reduced-motion that's
+                              N simultaneous per-letter springs at the exact moment
+                              the WORD appears — the reported hang — so we fall back
+                              to one cheap opacity/translateY fade of the whole word. */}
+                          {ambient ? (
+                            <motion.p
+                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
+                              initial="hidden"
+                              animate="show"
+                              variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}
+                            >
+                              {(currentWordSet?.word ?? '').split('').map((ch, i) => (
+                                <motion.span
+                                  key={`${ch}-${i}`}
+                                  className="inline-block"
+                                  variants={{
+                                    hidden: { opacity: 0, y: 20, rotateX: 80 },
+                                    show:   { opacity: 1, y: 0,  rotateX: 0,  transition: { type: 'spring', stiffness: 280, damping: 14 } },
+                                  }}
+                                  style={{ whiteSpace: 'pre' }}
+                                >
+                                  {ch}
+                                </motion.span>
+                              ))}
+                            </motion.p>
+                          ) : (
+                            <motion.p
+                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
+                              initial={{ opacity: 0, y: 12 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.28 }}
+                            >
+                              {currentWordSet?.word}
+                            </motion.p>
+                          )}
                           <p className="relative text-xs text-[#a8abb3]/80">
                             {t('games.impostor.rememberHint')}
                           </p>
-                          {/* Success particle burst fires once at reveal */}
-                          <div className="relative">
-                            <ParticleBurst count={14} color="#8ff5ff" radius={150} size={5} duration={1.1} delay={0} />
-                          </div>
+                          {/* Success particle burst fires once at reveal —
+                              decorative, skipped on native to keep the word
+                              appearance a cheap transform/opacity reveal. */}
+                          {ambient && (
+                            <div className="relative">
+                              <ParticleBurst count={14} color="#8ff5ff" radius={150} size={5} duration={1.1} delay={0} />
+                            </div>
+                          )}
                         </div>
                       )}
                       <motion.button
@@ -1146,8 +1192,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           <div className="relative group">
             <motion.div
               className="absolute -top-3 -right-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#8ff5ff] to-[#df8eff]"
-              animate={{ rotate: [12, -12, 12] }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+              animate={ambient ? { rotate: [12, -12, 12] } : undefined}
+              transition={ambient ? { duration: 10, repeat: Infinity, ease: 'easeInOut' } : undefined}
             />
             <motion.div
               className={cn(
@@ -1159,8 +1205,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
               }}
-              animate={urgency ? { scale: [1, 1.02, 1] } : {}}
-              transition={urgency ? { repeat: Infinity, duration: 0.6 } : {}}
+              animate={urgency && ambient ? { scale: [1, 1.02, 1] } : {}}
+              transition={urgency && ambient ? { repeat: Infinity, duration: 0.6 } : {}}
             >
               <span className={cn(
                 'text-[10px] font-bold tracking-[0.3em] uppercase',
@@ -1193,9 +1239,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               </span>
             </div>
             <div className="h-1 w-full rounded-full bg-[#20262f] overflow-hidden">
+              {/* Animate scaleX (compositor) instead of width (layout reflow). */}
               <motion.div
-                className="h-full bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#ff6b98]"
-                animate={{ width: `${progress * 100}%` }}
+                className="h-full w-full origin-left bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#ff6b98]"
+                animate={{ scaleX: progress }}
                 transition={{ type: 'spring', stiffness: 140, damping: 22 }}
               />
             </div>
@@ -1207,7 +1254,6 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     key={player.id}
                     onClick={() => !player.hasSpoken && markSpoken(i)}
                     disabled={player.hasSpoken}
-                    layout
                     whileTap={{ scale: player.hasSpoken ? 1 : 0.98 }}
                     className={cn(
                       'w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors overflow-hidden relative',
@@ -1232,8 +1278,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       <CheckCircle2 className="w-5 h-5 text-[#8ff5ff]" />
                     ) : isActive ? (
                       <motion.div
-                        animate={{ x: [0, 3, 0] }}
-                        transition={{ repeat: Infinity, duration: 1.2 }}
+                        animate={ambient ? { x: [0, 3, 0] } : undefined}
+                        transition={ambient ? { repeat: Infinity, duration: 1.2 } : undefined}
                         className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#df8eff]"
                       >
                         {t('games.impostor.yourTurn')}
@@ -1279,8 +1325,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           <div className="relative group">
             <motion.div
               className="absolute -top-3 -left-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
-              animate={{ rotate: [12, 40, 12] }}
-              transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+              animate={ambient ? { rotate: [12, 40, 12] } : undefined}
+              transition={ambient ? { duration: 14, repeat: Infinity, ease: 'easeInOut' } : undefined}
             />
             <div
               className="relative z-10 rounded-2xl p-6 text-center space-y-2 overflow-hidden"

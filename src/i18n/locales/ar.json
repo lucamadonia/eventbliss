@@ -8217,16 +8217,150 @@
   "tv": {
     "connected": "متصل",
     "error": "خطأ",
-    "connecting": "جارٍ الاتصال...",
+    "connecting": "جارٍ الاتصال…",
     "roomCode": "رمز الغرفة",
     "goTo": "اذهب إلى",
     "andTheWinnerIs": "والفائز هو",
-    "points": "نقطة",
-    "enterCode": "أدخل رمز الغرفة لعرض اللعبة",
-    "connect": "اتصال",
+    "points": "نقاط",
+    "enterCode": "أدخل الرمز",
+    "connect": "اتصل",
     "round": "جولة",
-    "ready": "جاهز؟",
-    "waitingForPlayers": "في انتظار اللاعبين",
-    "playersCount": "{{count}} لاعبين"
+    "ready": "جاهز",
+    "waitingForPlayers": "في انتظار اللاعبين…",
+    "playersCount": "{{count}} لاعبين",
+    "bomb": {
+      "penalties": "{{count}} عقوبات",
+      "exploded": "{{name}} انفجر!",
+      "waiting": "في انتظار المهمة..."
+    },
+    "bottle": {
+      "spinning": "تدور",
+      "card": "بطاقة",
+      "vote": "تصويت",
+      "question": "سؤال",
+      "task": "مهمة",
+      "spinningHint": "الزجاجة تدور..."
+    },
+    "nowPlaying": "الدور الآن",
+    "category": {
+      "isUp": "عليه الدور",
+      "category": "الفئة",
+      "waiting": "في انتظار الفئة...",
+      "named": "المذكورة",
+      "noWordsYet": "لا كلمات بعد"
+    },
+    "nowGuessing": "خمّن الآن",
+    "answer": "الإجابة",
+    "emojiguess": {
+      "whatIsIt": "ماذا يعني؟"
+    },
+    "findit": {
+      "study": "احفظ",
+      "question": "سؤال",
+      "answer": "الإجابة",
+      "guess": "خمّن",
+      "setup": "التحضير",
+      "roundEnd": "نهاية الجولة",
+      "memorize": "احفظ!",
+      "questionN": "سؤال",
+      "lookAtDevice": "انظر إلى جهازك",
+      "correct": "صحيح!",
+      "wrong": "خطأ",
+      "spotDiff": "اعثر على الفروقات",
+      "location": "الموقع",
+      "guessCity": "ما هذه المدينة؟",
+      "guessLocation": "أين هذا؟",
+      "tapOnDevice": "انقر على جهازك للتخمين"
+    },
+    "wins": "فائز!",
+    "leaderboard": "الترتيب",
+    "headup": {
+      "correctShort": "{{count}} صحيحة",
+      "gameOver": "انتهت اللعبة!",
+      "roundOver": "انتهت الجولة!",
+      "correct": "صحيح",
+      "skipped": "تم التخطي",
+      "describe": "صِفها!",
+      "getReady": "استعد...",
+      "skip": "تخطٍّ"
+    },
+    "impostor": {
+      "checkPhones": "انظروا إلى هواتفكم!",
+      "oneWordOneDifferent": "كلمة واحدة — لكن أحدكم لديه كلمة مختلفة...",
+      "discussion": "النقاش",
+      "whoIsImpostor": "من المحتال؟",
+      "voting": "التصويت",
+      "whoIsSuspected": "من المشتبه به؟",
+      "revealIn": "الكشف خلال...",
+      "theImpostorIs": "المحتال هو...",
+      "label": "المحتال",
+      "canImpostorGuess": "هل يستطيع المحتال تخمين الكلمة؟",
+      "results": "النتيجة",
+      "preparing": "يتم تحضير اللعبة..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "مكافأة: {{name}} — العنوان + المؤدي صحيحان؟",
+      "playingMystery": "يشغّل المقطع الغامض",
+      "releaseYear": "سنة الإصدار",
+      "mysteryRunning": "الأغنية الغامضة قيد التشغيل",
+      "timeline": "الخط الزمني"
+    },
+    "quiz": {
+      "loadingQuestion": "جارٍ تحميل السؤال..."
+    },
+    "fakeorfact": {
+      "true": "صحيح",
+      "false": "خطأ",
+      "gotItRight": "خمّن صحيحًا",
+      "wrong": "خطأ"
+    },
+    "correct": "صحيح",
+    "sharedquiz": {
+      "reads": "يقرأ السؤال",
+      "options": "يقرأ الخيارات",
+      "guesses": "يخمّن"
+    },
+    "story": {
+      "modeVorgabe": "البداية المحددة",
+      "modeReim": "وقت القافية",
+      "modeClassic": "كلاسيكي",
+      "sentence": "جملة",
+      "sentences": "جمل",
+      "writing": "يكتب...",
+      "theEnd": "النهاية",
+      "storyDone": "انتهت القصة!"
+    },
+    "taboo": {
+      "points": "{{points}} نقاط",
+      "turnOver": "انتهى الدور",
+      "correct": "صحيح",
+      "taboo": "تابو",
+      "skipped": "تخطٍّ",
+      "waiting": "في انتظار الفرق...",
+      "explains": "يشرح"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× ص · {{p}}× ج",
+      "title": "صراحة أم جرأة",
+      "isUp": "عليه الدور",
+      "whosNext": "من التالي؟",
+      "chooses": "يختار…",
+      "didComplete": "هل نجحت؟"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} أسئلة",
+      "questionN": "سؤال {{x}}/{{max}}",
+      "title": "من أنا؟",
+      "assigning": "يتم توزيع الأدوار…",
+      "asks": "يسأل",
+      "askPrompt": "اطرح سؤالاً بنعم/لا",
+      "correct": "صحيح!",
+      "wrong": "خطأ!"
+    },
+    "wordpress": {
+      "accuracy": "الإصابات"
+    },
+    "standings": "النتيجة الحالية",
+    "tapForSound": "اضغط للصوت"
   }
 }

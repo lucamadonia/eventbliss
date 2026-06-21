@@ -8141,18 +8141,152 @@
     "flaschendrehen": "Spin the Bottle"
   },
   "tv": {
-    "connected": "CONNECTED",
-    "error": "ERROR",
-    "connecting": "CONNECTING...",
-    "roomCode": "Room Code",
+    "connected": "Connected",
+    "error": "Error",
+    "connecting": "Connecting…",
+    "roomCode": "Room code",
     "goTo": "Go to",
     "andTheWinnerIs": "And the winner is",
-    "points": "points",
-    "enterCode": "Enter the room code to display the game",
-    "connect": "CONNECT",
+    "points": "Points",
+    "enterCode": "Enter code",
+    "connect": "Connect",
     "round": "Round",
-    "ready": "Ready?",
-    "waitingForPlayers": "Waiting for players",
-    "playersCount": "{{count}} players"
+    "ready": "Ready",
+    "waitingForPlayers": "Waiting for players…",
+    "playersCount": "{{count}} players",
+    "bomb": {
+      "penalties": "{{count}} penalties",
+      "exploded": "{{name}} exploded!",
+      "waiting": "Waiting for task..."
+    },
+    "bottle": {
+      "spinning": "SPINNING",
+      "card": "CARD",
+      "vote": "VOTE",
+      "question": "Question",
+      "task": "Task",
+      "spinningHint": "Bottle is spinning..."
+    },
+    "nowPlaying": "Now up",
+    "category": {
+      "isUp": "is up",
+      "category": "Category",
+      "waiting": "Waiting for category...",
+      "named": "Named",
+      "noWordsYet": "No words yet"
+    },
+    "nowGuessing": "Guessing now",
+    "answer": "Answer",
+    "emojiguess": {
+      "whatIsIt": "What is it?"
+    },
+    "findit": {
+      "study": "Memorize",
+      "question": "Question",
+      "answer": "Answer",
+      "guess": "Guess",
+      "setup": "Setup",
+      "roundEnd": "Round end",
+      "memorize": "Memorize!",
+      "questionN": "Question",
+      "lookAtDevice": "Look at your device",
+      "correct": "Correct!",
+      "wrong": "Wrong",
+      "spotDiff": "Spot the differences",
+      "location": "Location",
+      "guessCity": "Which city is this?",
+      "guessLocation": "Where is this?",
+      "tapOnDevice": "Tap on your device to guess"
+    },
+    "wins": "wins!",
+    "leaderboard": "Leaderboard",
+    "headup": {
+      "correctShort": "{{count}} correct",
+      "gameOver": "GAME OVER!",
+      "roundOver": "ROUND OVER!",
+      "correct": "Correct",
+      "skipped": "Skipped",
+      "describe": "Describe it!",
+      "getReady": "Get ready...",
+      "skip": "Skip"
+    },
+    "impostor": {
+      "checkPhones": "CHECK YOUR PHONES!",
+      "oneWordOneDifferent": "One word — but someone has a different one...",
+      "discussion": "DISCUSSION",
+      "whoIsImpostor": "WHO IS THE IMPOSTOR?",
+      "voting": "VOTING",
+      "whoIsSuspected": "WHO IS SUSPECTED?",
+      "revealIn": "REVEAL IN...",
+      "theImpostorIs": "THE IMPOSTOR IS...",
+      "label": "IMPOSTOR",
+      "canImpostorGuess": "CAN THE IMPOSTOR GUESS THE WORD?",
+      "results": "RESULTS",
+      "preparing": "Preparing game..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus: {{name}} — title + artist correct?",
+      "playingMystery": "is playing the mystery track",
+      "releaseYear": "Release year",
+      "mysteryRunning": "Mystery track playing",
+      "timeline": "Timeline"
+    },
+    "quiz": {
+      "loadingQuestion": "Loading question..."
+    },
+    "fakeorfact": {
+      "true": "True",
+      "false": "False",
+      "gotItRight": "Got it right",
+      "wrong": "Wrong"
+    },
+    "correct": "Correct",
+    "sharedquiz": {
+      "reads": "Reading question",
+      "options": "Reading options",
+      "guesses": "Guessing"
+    },
+    "story": {
+      "modeVorgabe": "Prompt",
+      "modeReim": "Rhyme time",
+      "modeClassic": "Classic",
+      "sentence": "Sentence",
+      "sentences": "Sentences",
+      "writing": "is writing...",
+      "theEnd": "The end",
+      "storyDone": "Story finished!"
+    },
+    "taboo": {
+      "points": "{{points}} points",
+      "turnOver": "Turn over",
+      "correct": "Correct",
+      "taboo": "Taboo",
+      "skipped": "Skip",
+      "waiting": "Waiting for teams...",
+      "explains": "is explaining"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× T · {{p}}× D",
+      "title": "TRUTH OR DARE",
+      "isUp": "is up",
+      "whosNext": "Who's next?",
+      "chooses": "is choosing…",
+      "didComplete": "Did it?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} questions",
+      "questionN": "Question {{x}}/{{max}}",
+      "title": "WHO AM I?",
+      "assigning": "Assigning roles…",
+      "asks": "asks",
+      "askPrompt": "Ask a yes/no question",
+      "correct": "Correct!",
+      "wrong": "Wrong!"
+    },
+    "wordpress": {
+      "accuracy": "Accuracy"
+    },
+    "standings": "Standings",
+    "tapForSound": "Tap for sound"
   }
 }

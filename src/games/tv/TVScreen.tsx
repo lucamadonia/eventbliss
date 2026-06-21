@@ -70,6 +70,7 @@ export default function TVScreen() {
   const { roomCode } = useParams<{ roomCode: string }>();
   const code = roomCode || '';
   const { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error } = useTVConnection(code);
+  const { t } = useTranslation();
 
   const scores = useMemo(() => {
     if (leaderboard.length > 0) return leaderboard;
@@ -127,7 +128,7 @@ export default function TVScreen() {
           onClick={audio.enable}
         >
           <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/90 border border-[#df8eff]/30 backdrop-blur-lg">
-            <span className="text-lg text-[#a8abb3]">🔊 Tap für Sound</span>
+            <span className="text-lg text-[#a8abb3]">🔊 {t('tv.tapForSound', 'Tap für Sound')}</span>
           </div>
         </div>
       )}

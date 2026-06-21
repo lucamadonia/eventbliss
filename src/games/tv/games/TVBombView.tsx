@@ -43,7 +43,14 @@ export default function TVBombView({ gameState }: { gameState: any }) {
   const round: number = gameState?.round || 1;
   const total: number = gameState?.totalRounds || 5;
   const task: string = gameState?.currentTask || gameState?.task || '';
-  const progress: number = gameState?.progress || 0;
+  const timeLeft: number = gameState?.timeLeft ?? -1;
+  const timeTotal: number = gameState?.timeTotal ?? 30;
+  const randomTimer: boolean = !!gameState?.randomTimer;
+  // The host broadcasts the integer countdown (timeLeft), not raw per-frame
+  // progress — derive the fuse fill from it. Random/hidden mode keeps it secret.
+  const progress: number = typeof gameState?.progress === 'number'
+    ? gameState.progress
+    : (!randomTimer && timeLeft >= 0 && timeTotal > 0 ? Math.max(0, Math.min(1, 1 - timeLeft / timeTotal)) : 0);
   const explodedPlayerIndex: number = gameState?.explodedPlayerIndex ?? -1;
 
   const active = players[currentPlayerIndex];
@@ -198,6 +205,16 @@ export default function TVBombView({ gameState }: { gameState: any }) {
             transition={ambient ? { repeat: Infinity, duration: pulseSpeed, ease: 'easeInOut' } : { duration: 0.3 }}
           >
             <span className="text-[clamp(6rem,12vw,8rem)] select-none" style={{ filter: `drop-shadow(0 0 38px rgba(255,115,80,${bombGlow}))` }}>💣</span>
+
+            {/* Live countdown on the fuse (or '???' when the time is hidden) */}
+            {phase === 'playing' && (
+              <span
+                className="absolute font-black tabular-nums"
+                style={{ bottom: '4%', fontSize: tvType.display, lineHeight: 1, color: randomTimer ? BB.primary : ringColor, textShadow: '0 2px 14px rgba(0,0,0,0.7)' }}
+              >
+                {randomTimer || timeLeft < 0 ? '???' : `${timeLeft}`}
+              </span>
+            )}
 
             {/* Fuse spark — opacity/scale only, gated */}
             <motion.div

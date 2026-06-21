@@ -102,6 +102,7 @@ function useBombTimer(
 function useTickSound(active: boolean, progress: number) {
   const ctxRef = useRef<AudioContext | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tockRef = useRef(false);
 
   useEffect(() => {
     if (!active) {
@@ -113,18 +114,32 @@ function useTickSound(active: boolean, progress: number) {
       try {
         if (!ctxRef.current) ctxRef.current = new AudioContext();
         const ctx = ctxRef.current;
+        const now = ctx.currentTime;
+        // Alternate tick/tock for a real clockwork feel.
+        tockRef.current = !tockRef.current;
+        const tock = tockRef.current;
+
         const osc = ctx.createOscillator();
+        const filt = ctx.createBiquadFilter();
         const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 800 + progress * 600;
-        gain.gain.value = 0.08 + progress * 0.12;
-        osc.start();
-        osc.stop(ctx.currentTime + 0.05);
+        osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+
+        // Short, percussive click (square through a lowpass) — not a sine beep.
+        osc.type = 'square';
+        osc.frequency.value = tock ? 230 : 300;            // lower = mechanical
+        filt.type = 'lowpass';
+        filt.frequency.value = 900 + progress * 2600;       // opens up = more urgent
+        // Sharp attack + fast exponential decay = a tight "tick".
+        const peak = 0.16 + progress * 0.22;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(peak, now + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+        osc.start(now);
+        osc.stop(now + 0.07);
       } catch { /* audio not available */ }
     };
 
-    const ms = Math.max(100, 600 - progress * 500);
+    const ms = Math.max(90, 620 - progress * 520);
     intervalRef.current = setInterval(playTick, ms);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [active, Math.round(progress * 10)]);
@@ -191,7 +206,6 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
 
-  useTVGameBridge('bomb', { phase: state.phase, mode: state.mode, players: state.players, currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds, currentTask: state.currentTask, explodedPlayerIndex: state.explodedPlayerIndex }, [state.phase, state.mode, state.round, state.currentPlayerIndex, state.explodedPlayerIndex]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {
@@ -336,6 +350,18 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const { progress } = useBombTimer(timerActive, effectiveTimerMin, effectiveTimerMax, handleExplode);
 
   useTickSound(timerActive, progress);
+
+  // TV bridge — placed AFTER useBombTimer so it can broadcast the live timer.
+  // `timeLeft` is an integer (or -1 in random/hidden mode), so it re-broadcasts
+  // ~once per second instead of per animation frame.
+  const bombAvgSec = (state.timerMin + state.timerMax) / 2;
+  const bombTimeLeft = state.randomTimer ? -1 : Math.max(0, Math.round((1 - progress) * bombAvgSec));
+  useTVGameBridge('bomb', {
+    phase: state.phase, mode: state.mode, players: state.players,
+    currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds,
+    currentTask: state.currentTask, explodedPlayerIndex: state.explodedPlayerIndex,
+    timeLeft: bombTimeLeft, timeTotal: bombAvgSec, randomTimer: state.randomTimer,
+  }, [state.phase, state.mode, state.round, state.currentPlayerIndex, state.explodedPlayerIndex, bombTimeLeft]);
 
   const update = (partial: Partial<GameState>) => setState((prev) => ({ ...prev, ...partial }));
 

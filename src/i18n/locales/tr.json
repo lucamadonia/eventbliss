@@ -8215,18 +8215,152 @@
     "flaschendrehen": "Şişe Çevirmece"
   },
   "tv": {
-    "connected": "BAĞLANDI",
-    "error": "HATA",
-    "connecting": "BAĞLANIYOR...",
+    "connected": "Bağlandı",
+    "error": "Hata",
+    "connecting": "Bağlanıyor…",
     "roomCode": "Oda kodu",
     "goTo": "Şuraya git",
     "andTheWinnerIs": "Ve kazanan",
-    "points": "puan",
-    "enterCode": "Oyunu görüntülemek için oda kodunu gir",
-    "connect": "BAĞLAN",
+    "points": "Puan",
+    "enterCode": "Kodu gir",
+    "connect": "Bağlan",
     "round": "Tur",
-    "ready": "Hazır?",
-    "waitingForPlayers": "Oyuncular bekleniyor",
-    "playersCount": "{{count}} oyuncu"
+    "ready": "Hazır",
+    "waitingForPlayers": "Oyuncular bekleniyor…",
+    "playersCount": "{{count}} oyuncu",
+    "bomb": {
+      "penalties": "{{count}} ceza",
+      "exploded": "{{name}} patladı!",
+      "waiting": "Görev bekleniyor..."
+    },
+    "bottle": {
+      "spinning": "DÖNÜYOR",
+      "card": "KART",
+      "vote": "OYLAMA",
+      "question": "Soru",
+      "task": "Görev",
+      "spinningHint": "Şişe dönüyor..."
+    },
+    "nowPlaying": "Sıra",
+    "category": {
+      "isUp": "sırada",
+      "category": "Kategori",
+      "waiting": "Kategori bekleniyor...",
+      "named": "Söylenenler",
+      "noWordsYet": "Henüz kelime yok"
+    },
+    "nowGuessing": "Şimdi tahmin et",
+    "answer": "Cevap",
+    "emojiguess": {
+      "whatIsIt": "Ne anlama geliyor?"
+    },
+    "findit": {
+      "study": "Ezberle",
+      "question": "Soru",
+      "answer": "Cevap",
+      "guess": "Tahmin",
+      "setup": "Hazırlık",
+      "roundEnd": "Tur sonu",
+      "memorize": "Ezberle!",
+      "questionN": "Soru",
+      "lookAtDevice": "Cihazına bak",
+      "correct": "Doğru!",
+      "wrong": "Yanlış",
+      "spotDiff": "Farkları bul",
+      "location": "Konum",
+      "guessCity": "Bu hangi şehir?",
+      "guessLocation": "Burası neresi?",
+      "tapOnDevice": "Tahmin için cihazına dokun"
+    },
+    "wins": "kazandı!",
+    "leaderboard": "Sıralama",
+    "headup": {
+      "correctShort": "{{count}} doğru",
+      "gameOver": "OYUN BİTTİ!",
+      "roundOver": "TUR BİTTİ!",
+      "correct": "Doğru",
+      "skipped": "Pas geçildi",
+      "describe": "Anlat!",
+      "getReady": "Hazır ol...",
+      "skip": "Pas"
+    },
+    "impostor": {
+      "checkPhones": "TELEFONLARINIZA BAKIN!",
+      "oneWordOneDifferent": "Bir kelime — ama birinde farklı...",
+      "discussion": "TARTIŞMA",
+      "whoIsImpostor": "SAHTEKÂR KİM?",
+      "voting": "OYLAMA",
+      "whoIsSuspected": "KİMDEN ŞÜPHELENİLİYOR?",
+      "revealIn": "AÇIKLANIYOR...",
+      "theImpostorIs": "SAHTEKÂR...",
+      "label": "SAHTEKÂR",
+      "canImpostorGuess": "SAHTEKÂR KELİMEYİ TAHMİN EDEBİLİR Mİ?",
+      "results": "SONUÇ",
+      "preparing": "Oyun hazırlanıyor..."
+    },
+    "ohrwurm": {
+      "bonusCheck": "Bonus: {{name}} — başlık + sanatçı doğru mu?",
+      "playingMystery": "gizemli parçayı çalıyor",
+      "releaseYear": "Çıkış yılı",
+      "mysteryRunning": "Gizemli şarkı çalıyor",
+      "timeline": "Zaman çizelgesi"
+    },
+    "quiz": {
+      "loadingQuestion": "Soru yükleniyor..."
+    },
+    "fakeorfact": {
+      "true": "Doğru",
+      "false": "Yanlış",
+      "gotItRight": "Doğru bildi",
+      "wrong": "Yanlış"
+    },
+    "correct": "Doğru",
+    "sharedquiz": {
+      "reads": "Soruyu okuyor",
+      "options": "Seçenekleri okuyor",
+      "guesses": "Tahmin ediyor"
+    },
+    "story": {
+      "modeVorgabe": "Verilen söz",
+      "modeReim": "Kafiye zamanı",
+      "modeClassic": "Klasik",
+      "sentence": "Cümle",
+      "sentences": "Cümle",
+      "writing": "yazıyor...",
+      "theEnd": "Son",
+      "storyDone": "Hikaye bitti!"
+    },
+    "taboo": {
+      "points": "{{points}} puan",
+      "turnOver": "Sıra bitti",
+      "correct": "Doğru",
+      "taboo": "Tabu",
+      "skipped": "Pas",
+      "waiting": "Takımlar bekleniyor...",
+      "explains": "anlatıyor"
+    },
+    "truthdare": {
+      "wpCount": "{{w}}× D · {{p}}× C",
+      "title": "DOĞRULUK MU CESARET Mİ",
+      "isUp": "sırada",
+      "whosNext": "Sıradaki kim?",
+      "chooses": "seçiyor…",
+      "didComplete": "Başardın mı?"
+    },
+    "whoami": {
+      "questionsCount": "{{n}} soru",
+      "questionN": "Soru {{x}}/{{max}}",
+      "title": "BEN KİMİM?",
+      "assigning": "Roller dağıtılıyor…",
+      "asks": "soruyor",
+      "askPrompt": "Evet/hayır sorusu sor",
+      "correct": "Doğru!",
+      "wrong": "Yanlış!"
+    },
+    "wordpress": {
+      "accuracy": "İsabet"
+    },
+    "standings": "Ara durum",
+    "tapForSound": "Ses için dokun"
   }
 }
