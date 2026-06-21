@@ -100,6 +100,11 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const paths = useRef<ImageData[]>([]);
+  // Cached per stroke so the hot pointermove path never calls
+  // getBoundingClientRect()/getContext() (each forced a synchronous layout
+  // reflow every move — the cause of the heavy drawing lag).
+  const rectRef = useRef<DOMRect | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
   const [penSize, setPenSize] = useState<PenSize>(6);
   const [drawingDataURL, setDrawingDataURL] = useState<string | null>(null);
@@ -129,7 +134,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
 
-  useTVGameBridge('quickdraw', { phase, round, drawerIdx, currentWord: currentWord?.word, players }, [phase, round, drawerIdx]);
+  const tv = useTVGameBridge('quickdraw', { phase, round, drawerIdx, currentWord: currentWord?.word, players }, [phase, round, drawerIdx]);
 
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {
@@ -164,19 +169,25 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Canvas helpers ---- */
   const getCtx = () => canvasRef.current?.getContext('2d') ?? null;
-  const getCanvasPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const c = canvasRef.current!, r = c.getBoundingClientRect();
-    return { x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) };
+  // Uses the rect cached on pointerdown — NOT a live getBoundingClientRect().
+  const posFromRect = (clientX: number, clientY: number) => {
+    const c = canvasRef.current!, r = rectRef.current!;
+    return { x: (clientX - r.left) * (c.width / r.width), y: (clientY - r.top) * (c.height / r.height) };
   };
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    isDrawing.current = true; lastPos.current = getCanvasPos(e);
-    const ctx = getCtx(); if (ctx) paths.current.push(ctx.getImageData(0, 0, canvasRef.current!.width, canvasRef.current!.height));
+    const c = canvasRef.current; if (!c) return;
+    isDrawing.current = true;
+    rectRef.current = c.getBoundingClientRect();          // measure ONCE per stroke
+    const ctx = getCtx(); ctxRef.current = ctx;
+    lastPos.current = posFromRect(e.clientX, e.clientY);
+    if (ctx) {
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      paths.current.push(ctx.getImageData(0, 0, c.width, c.height));
+    }
   };
   const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing.current || !lastPos.current) return;
-    const ctx = getCtx(); if (!ctx) return;
-    const pos = getCanvasPos(e);
-    ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y); ctx.lineTo(pos.x, pos.y);
+    const ctx = ctxRef.current ?? getCtx(); if (!ctx || !rectRef.current) return;
     if (tool === 'eraser') {
       ctx.globalCompositeOperation = 'destination-out';
       ctx.lineWidth = penSize * 3;
@@ -185,12 +196,23 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = penSize;
     }
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+    // Draw every coalesced sample for smooth, gap-free strokes at high input rates.
+    const native = e.nativeEvent;
+    const samples = native.getCoalescedEvents ? native.getCoalescedEvents() : [];
+    const pts = samples.length ? samples.map((s) => posFromRect(s.clientX, s.clientY)) : [posFromRect(e.clientX, e.clientY)];
+    const from = lastPos.current;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    for (const p of pts) { ctx.lineTo(p.x, p.y); }
+    ctx.stroke();
+    const to = pts[pts.length - 1];
     ctx.globalCompositeOperation = 'source-over';
-    if (online?.isHost) {
-      online.broadcast('tv-drawing', { from: lastPos.current, to: pos, size: penSize, tool, color: '#000000' });
-    }
-    lastPos.current = pos;
+    // Mirror the stroke to BOTH the online room AND the party-cast TV channel,
+    // so the drawing shows on the TV in party mode too (not only online MP).
+    const seg = { from, to, size: penSize, tool, color: '#000000' };
+    if (online?.isHost) online.broadcast('tv-drawing', seg);
+    if (tv?.isActive) tv.broadcastTV('tv-drawing', seg);
+    lastPos.current = to;
   };
   const onPointerUp = () => { isDrawing.current = false; lastPos.current = null; };
   const clearCanvas = () => { const ctx = getCtx(); if (!ctx) return; paths.current.push(ctx.getImageData(0, 0, canvasRef.current!.width, canvasRef.current!.height)); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height); };
@@ -213,6 +235,9 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       });
       online.broadcast('tv-drawing', { type: 'clear' });
     }
+    // Party-cast TV: clear its canvas for the new round (the tv-state for the
+    // 'quickdraw' cast view flows through useTVGameBridge above).
+    if (tv?.isActive) tv.broadcastTV('tv-drawing', { type: 'clear' });
   }
   function finishDrawing() {
     stopTimer(); saveDrawing(); setPhase('guessing'); setCurrentGuesser(0);
