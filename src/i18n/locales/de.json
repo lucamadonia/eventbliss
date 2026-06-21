@@ -6559,7 +6559,7 @@
       "logout": "Abmelden",
       "unlockPremium": "Premium freischalten",
       "unlockPremiumSub": "Alle Spiele · Unlimited",
-      "version": "EventBliss · Version 1.0.0",
+      "version": "EventBliss · Version {{version}}",
       "guest": "Gast",
       "themeDark": "Dunkel",
       "themeLight": "Hell",

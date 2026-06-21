@@ -87,7 +87,20 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
 
-  useTVGameBridge('bottlespin', { phase, currentRound, selectedIdx, rotation, players }, [phase, currentRound, selectedIdx]);
+  useTVGameBridge(
+    'bottlespin',
+    {
+      phase, currentRound, selectedIdx, rotation, players, mode, totalRounds,
+      selectedName: selectedIdx >= 0 ? players[selectedIdx]?.name ?? '' : '',
+      // Task text stays hidden until the card phase (and lingers through the vote).
+      task: (phase === 'card' || phase === 'vote') ? (currentCard?.text ?? '') : '',
+      taskType: currentCard?.type ?? '',
+      // Live yes/no tally for the vote-distribution bar (only meaningful in 'vote').
+      voteYes: Object.values(votes).filter(Boolean).length,
+      voteNo: Object.values(votes).filter((v) => !v).length,
+    },
+    [phase, currentRound, selectedIdx, votes],
+  );
 
   const deck = useMemo(() => {
     const filtered = getBOTTLE_CARDS().filter((c) => selectedCategories.includes(c.category));

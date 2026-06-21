@@ -307,8 +307,6 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const gameRecordedRef = useRef(false);
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
 
-  useTVGameBridge('findit', { phase, round, players, currentPlayerIdx }, [phase, round, currentPlayerIdx]);
-
   // Geo state (Karte mode)
   const [geoPool, setGeoPool] = useState<GeoLocation[]>([]);
   const [currentGeo, setCurrentGeo] = useState<GeoLocation | null>(null);
@@ -330,6 +328,24 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answerCorrect, setAnswerCorrect] = useState<boolean | null>(null);
   const [foundDiffs, setFoundDiffs] = useState<number[]>([]);
+
+  // TV broadcast: rails (round/phase/scoreboard) + mode-appropriate hero. We only
+  // send the question text once the answer is revealed-or-being-answered; the live
+  // study timer and the location name are safe to show. Heavy media (Leaflet map /
+  // street-view iframe) stays phone-only — the TV shows a "look at your device" card.
+  const tvQuestion = currentScene?.questions[questionIdx];
+  useTVGameBridge('findit', {
+    phase, round, totalRounds, players, currentPlayerIdx,
+    mode,
+    studyCountdown,
+    questionCountdown,
+    questionIdx,
+    totalQuestions: currentScene?.questions.length ?? 0,
+    question: tvQuestion?.q ?? '',
+    geoName: currentGeo?.name ?? '',
+    selectedAnswer,
+    answerCorrect,
+  }, [phase, round, currentPlayerIdx, mode, studyCountdown, questionCountdown, questionIdx, tvQuestion?.q, currentGeo?.name, selectedAnswer, answerCorrect]);
 
   // Timing
   const questionStartRef = useRef(0);

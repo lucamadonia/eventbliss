@@ -104,10 +104,16 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const activeTeam = teams[activeTeamIdx];
   const explainer = activeTeam.players[explainerIdx[activeTeamIdx]];
 
-  useTVGameBridge('taboo', { phase, currentRound, teams, activeTeamIdx, explainer }, [phase, currentRound, activeTeamIdx]);
-
   const handleTimerExpire = useCallback(() => { setPhase('turnSummary'); }, []);
   const timer = useGameTimer(timerOption, handleTimerExpire);
+
+  useTVGameBridge('taboo', {
+    phase, currentRound, totalRounds, teams, activeTeamIdx, explainer,
+    timeLeft: timer.timeLeft,
+    turnCorrect: turnResults.filter(r => r.result === 'correct').length,
+    turnTaboo: turnResults.filter(r => r.result === 'taboo').length,
+    turnSkipped: turnResults.filter(r => r.result === 'skipped').length,
+  }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length]);
 
   function buildTeams(pls: string[]): [Team, Team] {
     const s = shuffle(pls); const mid = Math.ceil(s.length / 2);

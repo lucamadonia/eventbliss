@@ -74,7 +74,7 @@ export function ActivePlayerBanner({
           {/* Name + subtitle */}
           <div className="text-center min-w-0">
             <motion.p
-              className="text-xl font-display font-bold text-foreground truncate"
+              className="text-xl font-display font-bold text-white truncate"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, ...spring.soft }}
@@ -82,7 +82,7 @@ export function ActivePlayerBanner({
               {playerName}
             </motion.p>
             <motion.p
-              className="text-sm text-muted-foreground font-medium"
+              className="text-sm text-white/70 font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}

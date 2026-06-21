@@ -534,7 +534,7 @@ function GameItemCard({
                   <div className="flex flex-wrap gap-1">
                     {game.materials.map((m) => (
                       <span key={m} className="px-2 py-0.5 rounded-full bg-foreground/5 border border-border text-[11px] text-foreground/80">
-                        {localizeMaterial(m, i18n.language)}
+                        {localizeMaterial(m, language)}
                       </span>
                     ))}
                   </div>

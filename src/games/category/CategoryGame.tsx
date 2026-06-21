@@ -773,7 +773,16 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
   const [currentCategory, setCurrentCategory] = useState("");
   const [currentLetter, setCurrentLetter] = useState<string | undefined>();
 
-  useTVGameBridge('category', { phase, currentRound, currentPlayerIndex, currentCategory, players }, [phase, currentRound, currentPlayerIndex]);
+  useTVGameBridge(
+    'category',
+    {
+      phase, currentRound, currentPlayerIndex, currentCategory, players,
+      currentLetter, roundWords, timerSeconds,
+      // On roundEnd the timed-out player (last result's loser) is highlighted on TV.
+      loserId: roundResults[roundResults.length - 1]?.loserId ?? null,
+    },
+    [phase, currentRound, currentPlayerIndex, currentLetter, roundWords.length, roundResults.length],
+  );
 
   const pickCategory = useCallback(() => {
     const available = getCategories().filter((c) => !usedCategories.has(c));

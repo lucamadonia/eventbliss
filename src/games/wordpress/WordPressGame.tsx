@@ -302,13 +302,14 @@ interface PlayingProps {
   totalRounds: number;
   currentPlayerIndex: number;
   onPlayerDone: (updatedPlayer: PlayerState) => void;
-  onWordChange?: (text: string) => void;
+  /** Live snapshot hoisted to the controller for the TV broadcast. */
+  onLive?: (live: { word: string; wordIndex: number; combo: number; score: number }) => void;
 }
 
 const WORDS_PER_TURN = 12;
 const FORBIDDEN_WORDS = ['Hund', 'Pizza', 'Blau', 'Lampe', 'Katze', 'Apfel', 'Rot', 'Stern'];
 
-function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone, onWordChange }: PlayingProps) {
+function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone, onLive }: PlayingProps) {
   const { t } = useTranslation();
   const player = players[currentPlayerIndex];
   const [wordIndex, setWordIndex] = useState(0);
@@ -354,7 +355,6 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
 
     const word = generateWord(mode, forbiddenWord.current, wordIndex);
     setCurrentWord(word);
-    onWordChange?.(word.text); // TV-Ansicht mit aktuellem Wort versorgen
     tappedRef.current = false;
     setFlyAway(false);
     setFeedback(null);
@@ -388,6 +388,18 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
     };
   }, [wordIndex, mode, showNextWord]);
+
+  // Hoist a live snapshot to the controller so the TV view can show the current
+  // word + this player's live combo/score/progress. Only the visible word leaks —
+  // never which word is the target/forbidden (that stays a phone-only decision).
+  useEffect(() => {
+    onLive?.({
+      word: wordIndex <= WORDS_PER_TURN ? (currentWord?.text ?? '') : '',
+      wordIndex: Math.min(wordIndex, WORDS_PER_TURN),
+      combo,
+      score,
+    });
+  }, [currentWord, wordIndex, combo, score, onLive]);
 
   // Start first word
   useEffect(() => {
@@ -735,17 +747,22 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const [totalRounds, setTotalRounds] = useState(5);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [turnQueue, setTurnQueue] = useState<number[]>([]);
-  // Live-Wort aus PlayingScreen hochgereicht (currentWord lebt dort als State —
-  // ein direkter Verweis hier warf "Can't find variable: currentWord" und
+  // Live-Snapshot aus PlayingScreen hochgereicht (currentWord/combo/score leben
+  // dort als State — ein direkter Verweis hier warf "Can't find variable" und
   // crashte das Spiel). Dient nur der TV-Ansicht.
-  const [liveWord, setLiveWord] = useState('');
+  const [live, setLive] = useState({ word: '', wordIndex: 0, combo: 0, score: 0 });
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
   useTVGameBridge('wordpress', {
     phase, round, currentPlayerIndex, players, totalRounds,
-    currentWord: liveWord,
-  }, [phase, round, currentPlayerIndex, liveWord]);
+    mode,
+    currentWord: live.word,
+    wordIndex: live.wordIndex,
+    wordsPerTurn: WORDS_PER_TURN,
+    liveCombo: live.combo,
+    liveScore: live.score,
+  }, [phase, round, currentPlayerIndex, mode, live]);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     setPlayers(ps);
@@ -851,7 +868,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
             totalRounds={totalRounds}
             currentPlayerIndex={currentPlayerIndex}
             onPlayerDone={handlePlayerDone}
-            onWordChange={setLiveWord}
+            onLive={setLive}
           />
         </motion.div>
       )}

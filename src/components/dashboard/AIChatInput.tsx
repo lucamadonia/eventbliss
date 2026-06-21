@@ -61,7 +61,7 @@ export default function AIChatInput({
     <div className="relative">
       {/* Quick prompt chips */}
       <div className="flex flex-wrap gap-2 mb-3">
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-1">
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mr-1">
           <Sparkles className="w-3 h-3" />
           {t("dashboard.ai.quickPrompts.label", "Quick-Ideen")}
         </span>
@@ -78,8 +78,8 @@ export default function AIChatInput({
               transition={{ delay: i * 0.04 }}
               className={cn(
                 "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full",
-                "bg-white/[0.04] border border-white/10 text-white/70",
-                "hover:bg-white/[0.08] hover:border-white/25 hover:text-white transition-all",
+                "bg-foreground/5 border border-border text-foreground/70",
+                "hover:bg-foreground/10 hover:border-foreground/25 hover:text-foreground transition-all",
                 "disabled:opacity-40 disabled:cursor-not-allowed",
               )}
             >
@@ -101,7 +101,7 @@ export default function AIChatInput({
         <div
           className={cn(
             "relative rounded-2xl border transition-colors",
-            focused ? "border-white/20 bg-black/40" : "border-white/10 bg-white/[0.04]",
+            focused ? "border-foreground/20 bg-foreground/[0.07]" : "border-border bg-foreground/5",
             "backdrop-blur-xl",
           )}
         >
@@ -129,7 +129,7 @@ export default function AIChatInput({
               placeholder={placeholder || t("dashboard.ai.chatPlaceholder", "Frag mich alles — z. B. „Was soll ich abends machen?“")}
               rows={1}
               className={cn(
-                "flex-1 resize-none bg-transparent border-0 outline-none text-sm md:text-base text-white placeholder:text-white/40",
+                "flex-1 resize-none bg-transparent border-0 outline-none text-sm md:text-base text-foreground placeholder:text-muted-foreground",
                 "max-h-40 overflow-y-auto",
                 "disabled:opacity-50",
               )}
@@ -162,7 +162,7 @@ export default function AIChatInput({
           </div>
 
           {/* Footer hint */}
-          <div className="relative px-4 pb-2.5 flex items-center justify-between text-[10px] text-white/35">
+          <div className="relative px-4 pb-2.5 flex items-center justify-between text-[10px] text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Sparkles className="w-2.5 h-2.5" />
               {t("dashboard.ai.creditsFuel", "Credits treiben deinen Planer an")}

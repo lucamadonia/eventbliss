@@ -303,7 +303,7 @@ export function AgencyCityPanel({ city, agencies, onClose }: AgencyCityPanelProp
                             className={cn(
                               "w-full flex items-center justify-between gap-2",
                               "rounded-lg px-2.5 py-1.5 text-left",
-                              "bg-white/[0.03] border border-border/30",
+                              "bg-foreground/5 border border-border/30",
                               "hover:bg-violet-500/10 hover:border-violet-500/20 transition-all",
                             )}
                           >

@@ -101,8 +101,6 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
   const [isArmed, setIsArmed] = useState(false); // sichtbarer „Bereit"-Status
 
-  useTVGameBridge('headup', { phase: screen, currentRound, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length }, [screen, currentRound, currentWordIndex]);
-
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
     armedRef.current = false;
@@ -113,6 +111,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
   const { timeLeft, start: startTimer, reset: resetTimer, percentLeft } =
     useGameTimer(timerDuration, handleTimerExpire);
+
+  useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft]);
 
   const handleStartRound = useCallback(() => {
     if (!selectedCategory) return;

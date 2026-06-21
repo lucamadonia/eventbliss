@@ -311,8 +311,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
               <AlertTriangle className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="font-black text-amber-200">{t('aiCredits.exhausted', 'Credits aufgebraucht')}</p>
-              <p className="text-sm text-amber-100/80">
+              <p className="font-black text-amber-700 dark:text-amber-200">{t('aiCredits.exhausted', 'Credits aufgebraucht')}</p>
+              <p className="text-sm text-amber-700/80 dark:text-amber-100/80">
                 {t('aiCredits.creditsReset', { date: resetDate.toLocaleDateString() })}
               </p>
             </div>
@@ -406,8 +406,8 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
                 whileTap={isLoading || creditsExhausted ? undefined : { scale: 0.97 }}
                 className={cn(
                   "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
-                  "bg-white/[0.05] border border-white/15 text-white/80",
-                  "hover:bg-white/10 hover:border-white/30 hover:text-white",
+                  "bg-foreground/5 border border-border text-foreground/80",
+                  "hover:bg-foreground/10 hover:border-foreground/30 hover:text-foreground",
                   "disabled:opacity-40 disabled:cursor-not-allowed",
                 )}
               >
@@ -466,7 +466,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border border-white/10"
+          className="relative overflow-hidden rounded-2xl border border-border"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10" />
           <div className="relative p-5 flex items-start gap-3">

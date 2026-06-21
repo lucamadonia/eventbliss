@@ -1,433 +1,249 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Crown } from 'lucide-react';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
+import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from './tv-tokens';
 import type { TVScore } from './useTVConnection';
 
-const CONFETTI_COLORS = ['#df8eff', '#ff6b98', '#8ff5ff', '#fbbf24', '#00deec', '#d779ff', '#ff7675', '#55efc4'];
-const spring = { type: 'spring' as const, stiffness: 200, damping: 15 };
-const springBouncy = { type: 'spring' as const, stiffness: 300, damping: 12 };
+/**
+ * TVGameOver — the cinematic final screen on the shared big screen.
+ *
+ * A tasteful winner reveal (spotlight + crown + count-up) followed by the full
+ * ranked board of EVERY player (medals for top 3, rank numerals beyond), each
+ * row staggered in. One short, capped confetti burst on reveal — gated behind
+ * useAmbientMotion so native WebViews stay smooth. Flat-modern, solid panels,
+ * transform/opacity animation only.
+ */
 
-type Stage = 'drumroll' | 'reveal' | 'podium';
+const spring = { type: 'spring' as const, stiffness: 220, damping: 22 };
+const springBouncy = { type: 'spring' as const, stiffness: 280, damping: 16 };
 
-/* ─── Ambient particles ─── */
-function AmbientParticles() {
-  const particles = Array.from({ length: 40 }, (_, i) => ({
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: 2 + Math.random() * 4,
-    duration: 4 + Math.random() * 6,
-    delay: Math.random() * 3,
-    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-  }));
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            opacity: 0.15,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.1, 0.3, 0.1],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+const MEDAL = ['🥇', '🥈', '🥉'];
+const RANK_COLOR = ['#FFD23F', '#cfd3dc', '#e0915b'];
 
-/* ─── Confetti burst (100 particles) ─── */
-function ConfettiExplosion() {
-  const pieces = Array.from({ length: 100 }, (_, i) => {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 200 + Math.random() * 500;
-    return {
-      x: Math.cos(angle) * speed,
-      y: Math.sin(angle) * speed - 200,
-      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-      size: 4 + Math.random() * 10,
-      rotation: Math.random() * 720 - 360,
-      duration: 2 + Math.random() * 2,
-      delay: Math.random() * 0.3,
-      shape: Math.random() > 0.5 ? 'rect' : 'circle',
-    };
-  });
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden flex items-center justify-center">
-      {pieces.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{
-            width: p.shape === 'rect' ? p.size : p.size * 0.7,
-            height: p.shape === 'rect' ? p.size * 0.5 : p.size * 0.7,
-            backgroundColor: p.color,
-            borderRadius: p.shape === 'circle' ? '50%' : 2,
-          }}
-          initial={{ x: 0, y: 0, rotate: 0, opacity: 1, scale: 0 }}
-          animate={{
-            x: p.x,
-            y: p.y,
-            rotate: p.rotation,
-            opacity: [1, 1, 0],
-            scale: [0, 1, 0.5],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Expanding pulsing rings ─── */
-function PulsingRings() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      {[0, 0.4, 0.8].map((delay, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full border-2 border-[#fbbf24]"
-          initial={{ width: 0, height: 0, opacity: 0.8 }}
-          animate={{
-            width: [0, 600],
-            height: [0, 600],
-            opacity: [0.6, 0],
-          }}
-          transition={{
-            duration: 2,
-            delay,
-            repeat: Infinity,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Animated counter hook ─── */
+/* ─── Score count-up (transform-free, just a number tick) ─── */
 function useCountUp(target: number, duration: number, start: boolean) {
   const [value, setValue] = useState(0);
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    if (!start) return;
+    if (!start) {
+      setValue(0);
+      return;
+    }
     const startTime = performance.now();
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / (duration * 1000), 1);
+    const tick = (now: number) => {
+      const progress = Math.min((now - startTime) / (duration * 1000), 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setValue(Math.round(eased * target));
-      if (progress < 1) rafRef.current = requestAnimationFrame(animate);
+      if (progress < 1) rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(animate);
+    rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [target, duration, start]);
 
   return value;
 }
 
-/* ─── Animated dots ─── */
-function AnimatedDots() {
+/* ─── Capped confetti burst — ~26 nodes, stops after one fall, gated ─── */
+const CONFETTI_COLORS = ['#df8eff', '#ff6b98', '#8ff5ff', '#FFD23F', '#26E0C4', '#d779ff'];
+function ConfettiBurst() {
+  const pieces = Array.from({ length: 26 }, (_, i) => {
+    const angle = (i / 26) * Math.PI * 2 + Math.random();
+    const dist = 220 + Math.random() * 360;
+    return {
+      x: Math.cos(angle) * dist,
+      y: Math.sin(angle) * dist - 120,
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      size: 7 + Math.random() * 8,
+      rotate: Math.random() * 540 - 270,
+      duration: 1.6 + Math.random() * 1,
+      delay: Math.random() * 0.2,
+      round: i % 2 === 0,
+    };
+  });
   return (
-    <span className="inline-flex gap-1 ml-2">
-      {[0, 0.2, 0.4].map((delay, i) => (
-        <motion.span
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+      {pieces.map((p, i) => (
+        <motion.div
           key={i}
-          className="text-5xl text-[#a8abb3]"
-          animate={{ opacity: [0.2, 1, 0.2] }}
-          transition={{ duration: 1, delay, repeat: Infinity }}
-        >
-          .
-        </motion.span>
+          className="absolute"
+          style={{
+            width: p.round ? p.size * 0.8 : p.size,
+            height: p.round ? p.size * 0.8 : p.size * 0.45,
+            backgroundColor: p.color,
+            borderRadius: p.round ? '50%' : 2,
+          }}
+          initial={{ x: 0, y: 0, rotate: 0, opacity: 1, scale: 0 }}
+          animate={{ x: p.x, y: p.y, rotate: p.rotate, opacity: [1, 1, 0], scale: [0, 1, 0.6] }}
+          transition={{ duration: p.duration, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
+        />
       ))}
-    </span>
+    </div>
   );
 }
 
-/* ─── Screen flash effect ─── */
-function ScreenFlash() {
+/* ─── Player avatar ─── */
+function Avatar({ name, color, size, glow }: { name: string; color: string; size: string; glow?: boolean }) {
   return (
-    <motion.div
-      className="fixed inset-0 pointer-events-none z-40"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 0.8, 0] }}
-      transition={{ duration: 0.6 }}
+    <div
+      className="rounded-full flex items-center justify-center font-black text-white shrink-0"
       style={{
-        background: 'radial-gradient(circle, #fbbf24, #df8eff)',
+        width: size,
+        height: size,
+        fontSize: `calc(${size} * 0.42)`,
+        background: color,
+        ...(glow ? tvActiveRing(color) : {}),
       }}
-    />
+    >
+      {name?.slice(0, 1).toUpperCase()}
+    </div>
   );
 }
 
 /* ─── Main TVGameOver ─── */
 export default function TVGameOver({ scores }: { scores: TVScore[] }) {
   const { t } = useTranslation();
+  const ambient = useAmbientMotion();
   const sorted = [...scores].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
-  const [stage, setStage] = useState<Stage>('drumroll');
 
+  // Reveal beats: 0 = drumroll, 1 = winner up, 2 = board fills in.
+  const [beat, setBeat] = useState(0);
   useEffect(() => {
-    const t1 = setTimeout(() => setStage('reveal'), 2000);
-    const t2 = setTimeout(() => setStage('podium'), 5000);
+    const t1 = setTimeout(() => setBeat(1), 1100);
+    const t2 = setTimeout(() => setBeat(2), 2400);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
   }, []);
 
-  const winnerScore = useCountUp(winner?.score ?? 0, 1.5, stage === 'reveal' || stage === 'podium');
+  const winnerScore = useCountUp(winner?.score ?? 0, 1.4, beat >= 1);
 
-  // Display order: 2nd(left), 1st(center), 3rd(right)
-  const displayOrder = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
-  const podiumMeta = [
-    { height: 160, color: '#a8abb3', label: '2nd', emoji: '🥈' },
-    { height: 220, color: '#fbbf24', label: '1st', emoji: '👑' },
-    { height: 120, color: '#cd7f32', label: '3rd', emoji: '🥉' },
-  ];
-
-  const remaining = sorted.slice(3);
+  if (!winner) {
+    return <div className="min-h-screen" style={{ backgroundColor: '#060810' }} />;
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden"
-      style={{ backgroundColor: '#060810' }}>
-      <AmbientParticles />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center gap-[clamp(1.5rem,3vh,3rem)] p-[clamp(1.5rem,3vw,3.5rem)] relative overflow-hidden"
+      style={{ backgroundColor: '#060810' }}
+    >
+      {/* Static winner wash (no loop) */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[60rem] h-[40rem] rounded-full blur-[120px] pointer-events-none"
+        style={{ background: `${winner.color}1f` }}
+      />
 
-      {/* Stage 1: Drumroll */}
-      <AnimatePresence mode="wait">
-        {stage === 'drumroll' && (
-          <motion.div
-            key="drumroll"
-            className="text-center z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.4 }}
+      {/* One capped confetti burst when the winner lands */}
+      {beat >= 1 && ambient && <ConfettiBurst />}
+
+      {/* Headline */}
+      <motion.div
+        className="relative text-center"
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={spring}
+      >
+        <span
+          className="uppercase font-black tracking-[0.3em]"
+          style={{ fontSize: tvType.label, color: '#b3a8c9' }}
+        >
+          {t('tv.andTheWinnerIs', 'Und der Gewinner ist')}
+        </span>
+      </motion.div>
+
+      {/* Winner card — spotlight + crown + count-up */}
+      <motion.div
+        className={`${tvPanelRaised} relative flex items-center gap-[clamp(1rem,2vw,2rem)] px-[clamp(1.5rem,3vw,3rem)] py-[clamp(1.25rem,2.4vw,2.5rem)]`}
+        style={beat >= 1 ? tvActiveRing(winner.color) : undefined}
+        initial={{ opacity: 0, scale: 0.85, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ ...springBouncy, delay: 0.1 }}
+      >
+        <motion.div
+          className="absolute -top-[clamp(1.4rem,2.6vw,2.6rem)] left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0, y: 10, scale: 0.6 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ ...springBouncy, delay: 0.35 }}
+        >
+          <Crown
+            style={{
+              width: 'clamp(2.5rem,4vw,4rem)',
+              height: 'clamp(2.5rem,4vw,4rem)',
+              color: '#FFD23F',
+              filter: 'drop-shadow(0 0 14px rgba(255,210,63,0.6))',
+            }}
+          />
+        </motion.div>
+
+        <Avatar name={winner.name} color={winner.color} size="clamp(4.5rem,8vw,8rem)" glow />
+
+        <div className="flex flex-col items-start leading-tight">
+          <span
+            className="font-black text-white"
+            style={{ fontSize: tvType.display, lineHeight: 1 }}
           >
-            {/* Violet glow building */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              animate={{
-                background: [
-                  'radial-gradient(circle at 50% 50%, rgba(223,142,255,0) 0%, transparent 70%)',
-                  'radial-gradient(circle at 50% 50%, rgba(223,142,255,0.15) 0%, transparent 70%)',
-                ],
-              }}
-              transition={{ duration: 2, ease: 'easeIn' }}
-            />
-            <motion.h2
-              className="text-5xl md:text-6xl font-bold text-[#a8abb3] tracking-wide"
-              animate={{ scale: [1, 1.03, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-              style={{ textShadow: '0 0 30px rgba(223,142,255,0.3)' }}
-            >
-              {t('tv.andTheWinnerIs')}
-              <AnimatedDots />
-            </motion.h2>
-          </motion.div>
-        )}
-
-        {/* Stage 2: Winner Reveal */}
-        {stage === 'reveal' && winner && (
-          <motion.div
-            key="reveal"
-            className="text-center z-10 relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -60 }}
-            transition={{ duration: 0.5 }}
+            {winner.name}
+          </span>
+          <span
+            className="font-black tabular-nums"
+            style={{ fontSize: tvType.title, color: winner.color }}
           >
-            <ScreenFlash />
-            <ConfettiExplosion />
-            <PulsingRings />
+            {winnerScore.toLocaleString('de-DE')}{' '}
+            <span className="font-bold" style={{ fontSize: tvType.body, color: '#b3a8c9' }}>
+              {t('tv.points', 'Punkte')}
+            </span>
+          </span>
+        </div>
+      </motion.div>
 
-            {/* Giant avatar */}
+      {/* Full ranked board — every player, staggered */}
+      <motion.div
+        className={`${tvPanel} w-full max-w-[min(54rem,90vw)] p-[clamp(1rem,1.6vw,1.75rem)] flex flex-col gap-2.5 max-h-[42vh] overflow-y-auto`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: beat >= 2 ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        {sorted.map((entry, i) => {
+          const isLeader = i === 0;
+          return (
             <motion.div
-              className="mx-auto mb-8 w-32 h-32 rounded-full flex items-center justify-center text-5xl font-black text-white"
+              key={`${entry.name}-${i}`}
+              className="flex items-center gap-[clamp(0.75rem,1.4vw,1.5rem)] rounded-2xl px-[clamp(0.85rem,1.4vw,1.5rem)] py-[clamp(0.6rem,1vw,1rem)]"
               style={{
-                background: winner.color,
-                boxShadow: `0 0 60px ${winner.color}88, 0 0 120px ${winner.color}44`,
+                background: isLeader ? `linear-gradient(120deg, ${entry.color}1f, #140e24 60%)` : '#140e24',
+                border: `1.5px solid ${isLeader ? `${entry.color}66` : 'rgba(255,255,255,0.08)'}`,
               }}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={springBouncy}
+              initial={{ opacity: 0, x: -24 }}
+              animate={beat >= 2 ? { opacity: 1, x: 0 } : { opacity: 0, x: -24 }}
+              transition={{ ...spring, delay: 0.05 + i * 0.06 }}
             >
-              {winner.name.charAt(0).toUpperCase()}
-            </motion.div>
-
-            {/* Winner name */}
-            <motion.h1
-              className="text-6xl md:text-8xl font-black italic leading-none mb-6"
-              style={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 40%, #fbbf24 60%, #f59e0b 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 40px rgba(251,191,36,0.5))',
-              }}
-              initial={{ scale: 0, rotate: -5 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ ...springBouncy, delay: 0.2 }}
-            >
-              {winner.name}
-            </motion.h1>
-
-            {/* Score counting up */}
-            <motion.p
-              className="text-4xl md:text-5xl font-bold text-[#8ff5ff] tabular-nums"
-              style={{ textShadow: '0 0 30px rgba(143,245,255,0.5)' }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              {winnerScore.toLocaleString()} {t('tv.points')}
-            </motion.p>
-          </motion.div>
-        )}
-
-        {/* Stage 3: Podium */}
-        {stage === 'podium' && (
-          <motion.div
-            key="podium"
-            className="w-full max-w-5xl z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <ConfettiExplosion />
-
-            {/* Podium blocks */}
-            <div className="flex items-end justify-center gap-6 mb-12">
-              {displayOrder.map((entry, i) => {
-                if (!entry) return null;
-                const meta = podiumMeta[i];
-                const actualRank = sorted.indexOf(entry);
-                const gradients: Record<number, string> = {
-                  0: 'linear-gradient(to top, #fbbf2433, #fbbf2410)',
-                  1: 'linear-gradient(to top, #a8abb333, #a8abb310)',
-                  2: 'linear-gradient(to top, #cd7f3233, #cd7f3210)',
-                };
-                return (
-                  <motion.div
-                    key={entry.name}
-                    className="flex flex-col items-center"
-                    initial={{ y: 200, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ ...spring, delay: 0.3 + (2 - i) * 0.3 }}
-                  >
-                    {/* Avatar */}
-                    <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black text-white mb-3"
-                      style={{
-                        background: entry.color,
-                        boxShadow: actualRank === 0
-                          ? `0 0 40px ${entry.color}88, 0 0 80px rgba(251,191,36,0.3)`
-                          : `0 0 20px ${entry.color}44`,
-                      }}
-                    >
-                      {entry.name.charAt(0).toUpperCase()}
-                    </div>
-
-                    {/* Name */}
-                    <span className="text-xl font-bold text-white mb-1">{entry.name}</span>
-
-                    {/* Score */}
-                    <span className="text-lg font-bold mb-3" style={{ color: meta.color }}>
-                      {entry.score.toLocaleString()} {t('tv.points')}
-                    </span>
-
-                    {/* Podium block */}
-                    <motion.div
-                      className="w-36 rounded-t-2xl flex flex-col items-center justify-start pt-5"
-                      style={{
-                        background: gradients[actualRank] ?? gradients[2],
-                        border: `1px solid ${meta.color}44`,
-                        borderBottom: 'none',
-                      }}
-                      initial={{ height: 0 }}
-                      animate={{ height: meta.height }}
-                      transition={{ delay: 0.6 + (2 - i) * 0.3, duration: 0.8, ease: 'easeOut' }}
-                    >
-                      <span className="text-3xl mb-1">{meta.emoji}</span>
-                      <span className="text-2xl font-black" style={{ color: meta.color }}>
-                        #{actualRank + 1}
-                      </span>
-                    </motion.div>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Remaining players */}
-            {remaining.length > 0 && (
-              <motion.div
-                className="max-w-2xl mx-auto space-y-3 mb-10"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2 }}
+              <span
+                className="shrink-0 font-black tabular-nums text-center"
+                style={{ fontSize: tvType.title, width: '1.6em', color: i < 3 ? RANK_COLOR[i] : '#6b6480' }}
               >
-                {remaining.map((entry, i) => (
-                  <div
-                    key={entry.name}
-                    className="flex items-center gap-4 px-6 py-3 rounded-xl"
-                    style={{
-                      background: 'rgba(21,26,33,0.5)',
-                      border: '1px solid rgba(255,255,255,0.05)',
-                    }}
-                  >
-                    <span className="text-2xl font-black text-[#a8abb3]/40 w-10 text-center">
-                      {i + 4}
-                    </span>
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                      style={{ background: entry.color }}
-                    >
-                      {entry.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-lg font-bold text-[#f1f3fc] flex-1">{entry.name}</span>
-                    <span className="text-lg font-bold text-[#a8abb3] tabular-nums">
-                      {entry.score.toLocaleString('de-DE')}
-                    </span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-
-            {/* Nochmal spielen button */}
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.5 }}
-            >
-              <button
-                className="px-10 py-4 rounded-2xl text-xl font-black text-white tracking-wider"
-                style={{
-                  background: 'linear-gradient(135deg, #df8eff, #ff6b98)',
-                  boxShadow: '0 0 30px rgba(223,142,255,0.3), 0 0 60px rgba(223,142,255,0.1)',
-                }}
+                {i < 3 ? MEDAL[i] : i + 1}
+              </span>
+              <Avatar name={entry.name} color={entry.color} size="clamp(2.5rem,3.4vw,3.5rem)" />
+              <span
+                className="flex-1 min-w-0 truncate font-bold text-white"
+                style={{ fontSize: tvType.body }}
               >
-                🎮 NOCHMAL SPIELEN
-              </button>
+                {entry.name}
+              </span>
+              <span
+                className="shrink-0 font-black tabular-nums"
+                style={{ fontSize: tvType.body, color: isLeader ? entry.color : '#b3a8c9' }}
+              >
+                {entry.score.toLocaleString('de-DE')}
+              </span>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          );
+        })}
+      </motion.div>
     </div>
   );
 }

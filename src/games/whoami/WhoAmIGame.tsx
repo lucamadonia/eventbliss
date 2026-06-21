@@ -63,8 +63,6 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   const [activeIdx, setActiveIdx] = useState(0);
   const [revealIdx, setRevealIdx] = useState(0);
 
-  useTVGameBridge('whoami', { phase, currentRound, activeIdx, players }, [phase, currentRound, activeIdx]);
-
   // Asking state
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [voteResults, setVoteResults] = useState<Record<string, 'yes'|'no'|'maybe'>>({});
@@ -153,6 +151,16 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
       maybe: vals.filter((v) => v === 'maybe').length,
     };
   }, [voteResults]);
+
+  useTVGameBridge('whoami', {
+    phase, currentRound, totalRounds, activeIdx, players,
+    // What's being asked + the live aggregate answer tally (never per-voter)
+    currentQuestion,
+    voteTally: voteSummary,
+    maxQuestions: maxQ,
+    // Banner state for the guess result
+    guessCorrect,
+  }, [phase, currentRound, activeIdx, currentQuestion, voteSummary, guessCorrect]);
 
   // ---------------------------------------------------------------------------
   // Guessing

@@ -6583,7 +6583,7 @@
       "logout": "Cerrar sesión",
       "unlockPremium": "Desbloquear Premium",
       "unlockPremiumSub": "Todos los Juegos · Ilimitado",
-      "version": "EventBliss · Versión 1.0.0",
+      "version": "EventBliss · Versión {{version}}",
       "guest": "Invitado",
       "themeDark": "Oscuro",
       "themeLight": "Claro",

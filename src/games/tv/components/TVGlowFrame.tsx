@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
 
 interface TVGlowFrameProps {
   color?: string;
@@ -20,6 +21,11 @@ const toRgba = (hex: string, alpha: number) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
+// Festive cross-fade colors for the game-over "rainbow" glow — each is a static
+// inset shadow layer whose OPACITY is animated (compositor-only), instead of
+// animating `box-shadow` keyframes (a full-viewport repaint every frame).
+const RAINBOW = ['#df8eff', '#ff6b98', '#8ff5ff', '#fbbf24'];
+
 export default function TVGlowFrame({
   color = '#df8eff',
   intensity = 'low',
@@ -27,38 +33,32 @@ export default function TVGlowFrame({
   rainbow = false,
 }: TVGlowFrameProps) {
   const config = GLOW_CONFIG[intensity];
-  const shadow = `inset 0 0 ${config.blur}px ${config.spread}px ${toRgba(color, config.alpha)}`;
+  const ambient = useAmbientMotion();
+  const doPulse = pulse && ambient;
 
   if (rainbow) {
-    const rainbowKeyframes = `
-      @keyframes tv-rainbow-glow {
-        0%, 100% { box-shadow: inset 0 0 ${config.blur}px ${config.spread}px rgba(223,142,255,${config.alpha}); }
-        25% { box-shadow: inset 0 0 ${config.blur}px ${config.spread}px rgba(255,107,152,${config.alpha}); }
-        50% { box-shadow: inset 0 0 ${config.blur}px ${config.spread}px rgba(143,245,255,${config.alpha}); }
-        75% { box-shadow: inset 0 0 ${config.blur}px ${config.spread}px rgba(251,191,36,${config.alpha}); }
-      }
-    `;
     return (
-      <>
-        <style>{rainbowKeyframes}</style>
-        <div
-          className="fixed inset-0 pointer-events-none z-10"
-          style={{ animation: 'tv-rainbow-glow 3s ease-in-out infinite' }}
-        />
-      </>
+      <div className="fixed inset-0 pointer-events-none z-10">
+        {RAINBOW.map((c, i) => (
+          <motion.div
+            key={c}
+            className="absolute inset-0"
+            style={{ boxShadow: `inset 0 0 ${config.blur}px ${config.spread}px ${toRgba(c, config.alpha)}`, willChange: 'opacity' }}
+            initial={{ opacity: i === 0 ? 1 : 0 }}
+            animate={ambient ? { opacity: [0, 1, 0] } : { opacity: 0.6 }}
+            transition={ambient ? { duration: RAINBOW.length * 1.5, times: undefined, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 } : undefined}
+          />
+        ))}
+      </div>
     );
   }
 
   return (
     <motion.div
       className="fixed inset-0 pointer-events-none z-10"
-      style={{ boxShadow: shadow }}
-      animate={pulse ? { opacity: [0.5, 1, 0.5] } : undefined}
-      transition={
-        pulse
-          ? { duration: config.duration, repeat: Infinity, ease: 'easeInOut' }
-          : undefined
-      }
+      style={{ boxShadow: `inset 0 0 ${config.blur}px ${config.spread}px ${toRgba(color, config.alpha)}`, willChange: 'opacity' }}
+      animate={doPulse ? { opacity: [0.5, 1, 0.5] } : { opacity: 1 }}
+      transition={doPulse ? { duration: config.duration, repeat: Infinity, ease: 'easeInOut' } : undefined}
     />
   );
 }

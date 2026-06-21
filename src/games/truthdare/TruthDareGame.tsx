@@ -104,10 +104,18 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   const [voterIdx, setVoterIdx] = useState(0);
 
   useTVGameBridge('truthdare', {
-    phase, currentRound, activeIdx, players,
+    phase, currentRound, totalRounds, activeIdx, players,
     choiceType,
     task: currentItem ? ('question' in currentItem ? currentItem.question : currentItem.challenge) : '',
-  }, [phase, currentRound, activeIdx, choiceType]);
+    // Dare countdown (only meaningful while a dare is being performed)
+    timeLeft: timer.timeLeft,
+    maxTime: timerSec,
+    // Live yes/no tally for the vote phase
+    voteTally: {
+      yes: Object.values(votes).filter(Boolean).length,
+      no: Object.values(votes).filter((v) => !v).length,
+    },
+  }, [phase, currentRound, activeIdx, choiceType, timer.timeLeft, votes]);
 
   const truthDeck = useMemo(() => shuffle(getTRUTH_QUESTIONS()), []);
   const dareDeck = useMemo(() => shuffle(getDARE_CHALLENGES()), []);

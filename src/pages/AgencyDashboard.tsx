@@ -366,7 +366,7 @@ export default function AgencyDashboard() {
   // Loading state
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center">
+      <div className="dark min-h-screen bg-[#0f0a1e] flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -384,7 +384,7 @@ export default function AgencyDashboard() {
   // Not logged in
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center">
+      <div className="dark min-h-screen bg-[#0f0a1e] flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -416,7 +416,7 @@ export default function AgencyDashboard() {
   // If viewing a single event in the event planner
   if (selectedEventId) {
     return (
-      <div className="min-h-screen bg-[#0f0a1e]">
+      <div className="dark min-h-screen bg-[#0f0a1e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <AgencyEventPlanner onBack={() => setSelectedEventId(null)} />
         </div>

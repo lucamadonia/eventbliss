@@ -107,7 +107,21 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   const startersDeck = useRef<string[]>([]);
   const startersPos = useRef(0);
 
-  useTVGameBridge('storybuilder', { phase, currentRound, currentPlayerIdx, players }, [phase, currentRound, currentPlayerIdx]);
+  useTVGameBridge(
+    'storybuilder',
+    {
+      phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
+      // Only finished sentences are broadcast — never the in-progress typed input.
+      sentences: sentences.map((s) => ({
+        text: s.text,
+        player: s.playerName,
+        playerColor: players.find((p) => p.id === s.playerId)?.color,
+      })),
+      // 'vorgabe'/'reimzeit' carry a prompt/constraint line; classic does not.
+      prompt: mode === 'classic' ? '' : currentPrompt,
+    },
+    [phase, currentRound, currentPlayerIdx, sentences.length, currentPrompt],
+  );
 
   // Derived
   const currentPlayer = players[currentPlayerIdx] ?? null;

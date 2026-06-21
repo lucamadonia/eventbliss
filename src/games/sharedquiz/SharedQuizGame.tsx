@@ -95,11 +95,11 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const [roleIndices, setRoleIndices] = useState<[number, number, number]>([0, 1, 2]);
 
   useTVGameBridge('sharedquiz', {
-    phase, round, players, totalRounds,
+    phase, round, players, totalRounds, roleIndices,
     question: currentQ?.question || '',
     answers: currentQ?.answers || [],
     correctAnswer: phase === 'reveal' ? currentQ?.correctIndex ?? -1 : -1,
-  }, [phase, round, selectedAnswer]);
+  }, [phase, round, selectedAnswer, roleIndices]);
 
   /* ---- Player management ---- */
   const nextId = useRef(4);

@@ -6633,7 +6633,7 @@
       "logout": "Çıkış yap",
       "unlockPremium": "Premium Aç",
       "unlockPremiumSub": "Tüm Oyunlar · Sınırsız",
-      "version": "EventBliss · Sürüm 1.0.0",
+      "version": "EventBliss · Sürüm {{version}}",
       "guest": "Misafir",
       "themeDark": "Koyu",
       "themeLight": "Açık",

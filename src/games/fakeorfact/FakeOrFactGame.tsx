@@ -142,10 +142,26 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
   // Game logic
   // ---------------------------------------------------------------------------
 
+  // Share of votes that were correct so far this reveal (for the TV bar).
+  const fofCorrectPct = useMemo(() => {
+    if (votes.length === 0) return 0;
+    return Math.round((votes.filter(v => v.correct).length / votes.length) * 100);
+  }, [votes]);
+
   useTVGameBridge('fakeorfact', {
-    phase, currentRound, currentPlayerIdx, players,
-    statement: currentFact?.statement || currentThree?.statements?.join(' / ') || '',
-    totalRounds,
+    phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
+    statement: currentFact?.statement || '',
+    statements: currentThree?.statements || [],
+    category: currentFact?.category || currentThree?.category || '',
+    // The truth is hidden until reveal: classic → 0=True / 1=False, three → trueIndex.
+    correctAnswer: phase === 'reveal'
+      ? (mode === 'three'
+          ? (currentThree?.trueIndex ?? -1)
+          : (currentFact ? (currentFact.isTrue ? 0 : 1) : -1))
+      : -1,
+    explanation: phase === 'reveal' ? (currentFact?.explanation || '') : '',
+    correctPct: phase === 'reveal' ? fofCorrectPct : -1,
+    votesCount: votes.length,
   }, [phase, currentRound, currentPlayerIdx]);
 
   const currentPlayer = players[currentPlayerIdx] ?? null;

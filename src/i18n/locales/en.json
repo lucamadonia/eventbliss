@@ -6559,7 +6559,7 @@
       "logout": "Log out",
       "unlockPremium": "Unlock Premium",
       "unlockPremiumSub": "All Games · Unlimited",
-      "version": "EventBliss · Version 1.0.0",
+      "version": "EventBliss · Version {{version}}",
       "guest": "Guest",
       "themeDark": "Dark",
       "themeLight": "Light",

@@ -26,7 +26,7 @@ export default function AISpectacleSkeleton({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="relative overflow-hidden rounded-2xl border border-white/10 p-5 md:p-7 bg-gradient-to-br from-purple-600/15 via-pink-600/10 to-amber-500/10"
+        className="relative overflow-hidden rounded-2xl border border-border p-5 md:p-7 bg-gradient-to-br from-purple-600/15 via-pink-600/10 to-amber-500/10"
       >
         <div className="liquid-shimmer absolute inset-0 rounded-2xl pointer-events-none" />
         <div className="relative flex items-center gap-4">
@@ -39,22 +39,22 @@ export default function AISpectacleSkeleton({
             </motion.div>
           </div>
           <div className="flex-1 space-y-2">
-            <div className="h-3 w-24 rounded-full bg-white/15" />
-            <div className="h-5 w-3/4 rounded-full bg-white/20" />
+            <div className="h-3 w-24 rounded-full bg-foreground/15" />
+            <div className="h-5 w-3/4 rounded-full bg-foreground/20" />
           </div>
           <motion.div
             animate={{ y: [0, -2, 0] }}
             transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-bold text-white/80"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground/10 text-[10px] font-bold text-foreground/80"
           >
             <Zap className="w-3 h-3 text-amber-300" />
             {message || t("dashboard.ai.thinking", "Claude plant deinen Tag …")}
           </motion.div>
         </div>
         <div className="relative mt-5 flex gap-2">
-          <div className="h-6 w-24 rounded-full bg-white/10" />
-          <div className="h-6 w-32 rounded-full bg-white/10" />
-          <div className="h-6 w-20 rounded-full bg-white/10 hidden sm:block" />
+          <div className="h-6 w-24 rounded-full bg-foreground/10" />
+          <div className="h-6 w-32 rounded-full bg-foreground/10" />
+          <div className="h-6 w-20 rounded-full bg-foreground/10 hidden sm:block" />
         </div>
       </motion.div>
 
@@ -79,25 +79,25 @@ export default function AISpectacleSkeleton({
                 {i + 1}
               </motion.div>
             </div>
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-foreground/[0.08] to-foreground/5 shadow-xl">
               <div className="liquid-shimmer absolute inset-0 pointer-events-none" />
               <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500" />
               <div className="relative p-5 md:p-6">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-2xl bg-white/10" />
+                  <div className="w-14 h-14 rounded-2xl bg-foreground/10" />
                   <div className="flex-1 space-y-2 pt-1">
-                    <div className="h-3 w-16 rounded-full bg-white/15" />
-                    <div className="h-5 w-3/5 rounded-full bg-white/20" />
+                    <div className="h-3 w-16 rounded-full bg-foreground/15" />
+                    <div className="h-5 w-3/5 rounded-full bg-foreground/20" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-3 w-full rounded-full bg-white/10" />
-                  <div className="h-3 w-11/12 rounded-full bg-white/10" />
-                  <div className="h-3 w-4/5 rounded-full bg-white/10" />
+                  <div className="h-3 w-full rounded-full bg-foreground/10" />
+                  <div className="h-3 w-11/12 rounded-full bg-foreground/10" />
+                  <div className="h-3 w-4/5 rounded-full bg-foreground/10" />
                 </div>
-                <div className="grid sm:grid-cols-2 gap-2 mt-5 pt-5 border-t border-white/10">
-                  <div className="h-14 rounded-xl bg-white/[0.05]" />
-                  <div className="h-14 rounded-xl bg-white/[0.05]" />
+                <div className="grid sm:grid-cols-2 gap-2 mt-5 pt-5 border-t border-border">
+                  <div className="h-14 rounded-xl bg-foreground/5" />
+                  <div className="h-14 rounded-xl bg-foreground/5" />
                 </div>
               </div>
             </div>

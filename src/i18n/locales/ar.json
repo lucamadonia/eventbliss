@@ -6425,7 +6425,7 @@
       "logout": "تسجيل الخروج",
       "unlockPremium": "فتح بريميوم",
       "unlockPremiumSub": "جميع الألعاب · بلا حدود",
-      "version": "EventBliss · الإصدار 1.0.0",
+      "version": "EventBliss · الإصدار {{version}}",
       "guest": "ضيف",
       "themeDark": "داكن",
       "themeLight": "فاتح",

@@ -46,7 +46,6 @@ function ScoreRanking({ players }: { players: any[] }) {
         return (
           <motion.div
             key={p.id ?? p.name ?? i}
-            layout
             className="flex items-center gap-2"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -60,10 +59,11 @@ function ScoreRanking({ players }: { players: any[] }) {
               {p.name}
             </span>
             <div className="flex-1 h-3 rounded-full bg-white/5 overflow-hidden">
+              {/* scaleX (compositor-only) instead of animating width (reflow) */}
               <motion.div
-                className="h-full rounded-full"
+                className="h-full w-full rounded-full origin-left"
                 style={{ backgroundColor: color }}
-                animate={{ width: `${pct}%` }}
+                animate={{ scaleX: Math.max(0, Math.min(1, pct / 100)) }}
                 transition={barTransition}
               />
             </div>
@@ -95,7 +95,6 @@ function StreakSection({ players }: { players: any[] }) {
       {withStreak.map((p, i) => (
         <motion.div
           key={p.id ?? p.name ?? i}
-          layout
           className="flex items-center gap-2"
         >
           <span className="text-sm text-[#f1f3fc] truncate w-20">{p.name}</span>
@@ -304,9 +303,10 @@ export default function TVStatsOverlay({
             rounded-2xl px-4 py-4 flex flex-col gap-3
             border border-white/[0.08] scrollbar-none"
           style={{
-            background: 'rgba(6,8,16,0.85)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
+            // Solid fill on TV — backdrop-blur(24px) re-sampled the whole
+            // screen behind this panel every frame (steady cost vs the
+            // per-second re-render).
+            background: 'rgba(8,10,20,0.94)',
           }}
           variants={panelVariants}
           initial="hidden"
@@ -325,19 +325,18 @@ export default function TVStatsOverlay({
 
           <Divider />
 
-          {/* Dynamic Sections */}
+          {/* Dynamic Sections (no per-section popLayout — it forced layout
+              measurement on every one-per-second re-render) */}
           {sections.map((section, i) => (
-            <AnimatePresence key={section.key} mode="popLayout">
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 30 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                {section}
-                {i < sections.length - 1 && <div className="mt-3"><Divider /></div>}
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              key={section.key}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              {section}
+              {i < sections.length - 1 && <div className="mt-3"><Divider /></div>}
+            </motion.div>
           ))}
         </motion.aside>
       )}

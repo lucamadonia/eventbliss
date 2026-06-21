@@ -99,7 +99,29 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const [roundVotes, setRoundVotes] = useState<Record<string, 'A' | 'B'>>({});
   const [history, setHistory] = useState<RoundVote[]>([]);
 
-  useTVGameBridge('thisorthat', { phase, currentRound, currentPair, players }, [phase, currentRound]);
+  // TV payload — the cast view reads FLAT fields + live vote tallies (ThisOrThat
+  // has no secrets, everything is shareable). Previously only {currentPair} was
+  // sent nested, so the TV showed "Option A/B" placeholders and 50/50 with 0
+  // votes. Compute and broadcast exactly what TVThisOrThatView consumes.
+  const tvVotersA = players.filter((p) => roundVotes[p.id] === 'A');
+  const tvVotersB = players.filter((p) => roundVotes[p.id] === 'B');
+  const tvTotalVotes = tvVotersA.length + tvVotersB.length;
+  const mapVoter = (p: typeof players[number]) => ({ id: p.id, name: p.name, color: p.color, avatar: (p as { avatar?: string }).avatar ?? '' });
+  useTVGameBridge('thisorthat', {
+    phase,
+    round: currentRound,
+    totalRounds,
+    category: currentPair?.category ?? '',
+    optionA: currentPair?.optionA ?? '',
+    optionB: currentPair?.optionB ?? '',
+    votesA: tvVotersA.length,
+    votesB: tvVotersB.length,
+    percentA: tvTotalVotes ? (tvVotersA.length / tvTotalVotes) * 100 : 50,
+    percentB: tvTotalVotes ? (tvVotersB.length / tvTotalVotes) * 100 : 50,
+    votersA: tvVotersA.map(mapVoter),
+    votersB: tvVotersB.map(mapVoter),
+    players,
+  }, [phase, currentRound, roundVotes, players, currentPair]);
 
   const handleDebateExpire = useCallback(() => setPhase('reveal'), []);
   const debateTimer = useGameTimer(30, handleDebateExpire);

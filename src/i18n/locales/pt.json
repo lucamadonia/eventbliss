@@ -6633,7 +6633,7 @@
       "logout": "Terminar sessão",
       "unlockPremium": "Desbloquear Premium",
       "unlockPremiumSub": "Todos os Jogos · Ilimitado",
-      "version": "EventBliss · Versão 1.0.0",
+      "version": "EventBliss · Versão {{version}}",
       "guest": "Convidado",
       "themeDark": "Escuro",
       "themeLight": "Claro",

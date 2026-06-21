@@ -58,9 +58,9 @@ export function AIRequestCard({
       disabled={locked}
       className={cn(
         "group relative overflow-hidden rounded-2xl text-left p-5 min-h-[168px] flex flex-col",
-        "border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02]",
+        "border border-border bg-gradient-to-br from-foreground/[0.08] to-foreground/5",
         "transition-all duration-300",
-        !locked && "hover:border-white/25 cursor-pointer",
+        !locked && "hover:border-foreground/25 cursor-pointer",
         locked && "cursor-not-allowed",
         isLoading && "liquid-shimmer",
       )}
@@ -125,7 +125,7 @@ export function AIRequestCard({
           </span>
         )}
         {disabled && lockedLabel && (
-          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-white/70 bg-white/10 px-2 py-0.5 rounded-full">
+          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-foreground/10 px-2 py-0.5 rounded-full">
             <Lock className="w-2.5 h-2.5" />
             {lockedLabel}
           </span>
@@ -135,20 +135,20 @@ export function AIRequestCard({
       <div className="relative flex-1">
         <div className={cn(
           "font-black text-base md:text-lg leading-tight mb-1.5",
-          disabled ? "text-white/50" : "text-white",
+          disabled ? "text-muted-foreground" : "text-foreground",
         )}>
           {label}
         </div>
         <div className={cn(
           "text-xs md:text-[13px] leading-relaxed",
-          disabled ? "text-white/35" : "text-white/65",
+          disabled ? "text-muted-foreground" : "text-foreground/70",
         )}>
           {description}
         </div>
       </div>
 
       {/* Bottom accent line — fills in on hover */}
-      <div className="relative mt-4 h-[3px] rounded-full bg-white/5 overflow-hidden">
+      <div className="relative mt-4 h-[3px] rounded-full bg-foreground/5 overflow-hidden">
         <div
           aria-hidden
           className={cn(

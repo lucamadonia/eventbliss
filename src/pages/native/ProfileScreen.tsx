@@ -2,7 +2,9 @@
  * ProfileScreen — native "Profile" tab.
  * User avatar, settings links, theme toggle, language, premium, logout.
  */
-import { useState, useRef, useCallback, memo } from "react";
+import { useState, useRef, useCallback, useEffect, memo } from "react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { isNative } from "@/lib/platform";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -142,6 +144,16 @@ export default function ProfileScreen() {
   const [showBeerBurst, setShowBeerBurst] = useState(false);
   const [showAgeConfirm, setShowAgeConfirm] = useState(false);
   const [ageChecked, setAgeChecked] = useState(false);
+  // App version: read the real native build version (CFBundleShortVersionString /
+  // versionName) at runtime so the Settings line never drifts from the store build.
+  // Web fallback only shows when not running inside the native shell.
+  const [appVersion, setAppVersion] = useState("1.3.0");
+  useEffect(() => {
+    if (!isNative()) return;
+    CapacitorApp.getInfo()
+      .then((info) => setAppVersion(info.version))
+      .catch(() => {});
+  }, []);
 
   // Easter Egg: tap version text 5 times within 3 seconds.
   // - First time: opens the 18+ age confirm dialog to UNLOCK the mode.
@@ -401,7 +413,7 @@ export default function ProfileScreen() {
           className="text-center text-xs text-muted-foreground mt-6 mb-4 select-none cursor-default"
           onClick={handleVersionTap}
         >
-          {t('native.profile.version')}
+          {t('native.profile.version', { version: appVersion })}
           {drinkingMode.isDrinkingMode && (
             <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-400/30">
               18+

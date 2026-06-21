@@ -6633,7 +6633,7 @@
       "logout": "Uitloggen",
       "unlockPremium": "Premium ontgrendelen",
       "unlockPremiumSub": "Alle Spellen · Onbeperkt",
-      "version": "EventBliss · Versie 1.0.0",
+      "version": "EventBliss · Versie {{version}}",
       "guest": "Gast",
       "themeDark": "Donker",
       "themeLight": "Licht",

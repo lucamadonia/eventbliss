@@ -1,172 +1,170 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone } from 'lucide-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
+import { tvPanel, tvType } from '../tv-tokens';
+import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
+
+/**
+ * TVHeadUpView — big-screen view for HeadUp (charades-by-tilt).
+ *
+ * The giant rotated word IS the mechanic: the audience reads it and acts it
+ * out while the holder guesses, so the TV deliberately shows it. Around that
+ * hero we rail the round/category/timer, live correct/skip pills, and the
+ * whole-party roster (every player on screen, current guesser ringed).
+ *
+ * Data via useTVGameBridge('headup', …): { phase, currentRound, totalRounds,
+ * currentWord, players, correctCount, skippedCount, timeLeft, category }.
+ */
+const HU = { purple: '#df8eff', cyan: '#8ff5ff', pink: '#ff6b98', green: '#10b981', skip: '#ff6e84', text: '#f1f3fc', dim: '#a8abb3', bg: '#060810' };
+
+const PALETTE = ['#df8eff', '#8ff5ff', '#ffd23f', '#ff6e84', '#7af5a8', '#ffa552', '#a78bfa', '#4dd4ff'];
 
 export default function TVHeadUpView({ gameState }: { gameState: any }) {
-  const word = gameState?.word || gameState?.currentWord || '';
-  const player = gameState?.currentPlayer || gameState?.playerName || '';
-  const playerColor = gameState?.playerColor || '#df8eff';
-  const correct = gameState?.correct ?? 0;
-  const skipped = gameState?.skipped ?? 0;
+  const { t } = useTranslation();
+  const ambient = useAmbientMotion();
+
+  const word: string = gameState?.word || gameState?.currentWord || '';
+  const player: string = gameState?.currentPlayer || gameState?.playerName || '';
+  const playerColor: string = gameState?.playerColor || HU.purple;
+  const correct: number = gameState?.correct ?? gameState?.correctCount ?? 0;
+  const skipped: number = gameState?.skipped ?? gameState?.skippedCount ?? 0;
   const timeLeft = gameState?.timeLeft ?? '';
-  const phase = gameState?.phase || 'playing';
-  const round = gameState?.round || 1;
-  const total = gameState?.totalRounds || '?';
-  const category = gameState?.category || '';
-  const lastAction = gameState?.lastAction || ''; // 'correct' | 'skip' | ''
+  const phase: string = gameState?.phase || 'playing';
+  const round: number = gameState?.round || gameState?.currentRound || 1;
+  const total = gameState?.total || gameState?.totalRounds || '?';
+  const category: string = gameState?.category || '';
+  const lastAction: string = gameState?.lastAction || ''; // 'correct' | 'skip' | ''
+  const playerList: any[] = gameState?.players || [];
+
+  // Whole-party roster (turn order). The guesser for this round is the active
+  // chip; the bridge gives no per-player history, so we surface the running
+  // correct count on whoever is currently up.
+  const activeId = String(Math.max(0, (Number(round) || 1) - 1));
+  const roster: TVScorePlayer[] = useMemo(
+    () => playerList
+      .map((p, i) => ({ raw: p, name: typeof p === 'string' ? p : (p?.name ?? ''), i }))
+      .filter((p) => p.name.trim() !== '')
+      .map(({ raw, name, i }) => {
+        const isActive = String(i) === activeId;
+        return {
+          id: String(i),
+          name,
+          color: (typeof raw === 'object' && raw?.color) || PALETTE[i % PALETTE.length],
+          status: (isActive ? 'active' : 'waiting') as TVScorePlayer['status'],
+          subtitle: isActive ? t('tv.headup.correctShort', { count: correct, defaultValue: `${correct} richtig` }) : undefined,
+        };
+      }),
+    [playerList, activeId, correct, t],
+  );
 
   if (phase === 'roundResult' || phase === 'gameOver') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-12 relative overflow-hidden" style={{ background: '#060810' }}>
-        {/* Ambient glow */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 40%, rgba(223,142,255,0.08) 0%, transparent 70%)' }} />
+      <div className="min-h-screen flex flex-col items-center justify-center p-12 relative overflow-hidden" style={{ background: HU.bg }}>
+        {/* Static brand wash (low blur, no animation) */}
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(223,142,255,0.10)' }} />
 
         <motion.h2
-          className="text-7xl font-black italic mb-10"
-          style={{ color: '#df8eff', textShadow: '0 0 40px rgba(223,142,255,0.5), 0 0 80px rgba(223,142,255,0.2)' }}
+          className="font-black italic mb-10"
+          style={{ fontSize: tvType.display, color: HU.purple, textShadow: `0 0 36px ${HU.purple}88` }}
           initial={{ scale: 0.5, opacity: 0, rotate: -5 }}
           animate={{ scale: 1, opacity: 1, rotate: 0 }}
           transition={{ type: 'spring', damping: 12 }}
         >
-          {phase === 'gameOver' ? 'SPIELENDE!' : 'RUNDE VORBEI!'}
+          {phase === 'gameOver' ? t('tv.headup.gameOver', 'SPIELENDE!') : t('tv.headup.roundOver', 'RUNDE VORBEI!')}
         </motion.h2>
 
         <div className="flex gap-16">
-          <motion.div
-            className="text-center px-10 py-8 rounded-3xl"
-            style={{ background: 'rgba(16,185,129,0.08)', border: '2px solid rgba(16,185,129,0.2)' }}
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3, type: 'spring' }}
-          >
-            <motion.div
-              className="text-8xl font-black text-[#10b981]"
-              style={{ textShadow: '0 0 30px rgba(16,185,129,0.5)' }}
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1.2, 1] }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              {correct}
-            </motion.div>
-            <div className="text-xl text-[#a8abb3] mt-3 font-bold">Richtig</div>
-          </motion.div>
-
-          <motion.div
-            className="text-center px-10 py-8 rounded-3xl"
-            style={{ background: 'rgba(255,110,132,0.08)', border: '2px solid rgba(255,110,132,0.2)' }}
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3, type: 'spring' }}
-          >
-            <motion.div
-              className="text-8xl font-black text-[#ff6e84]"
-              style={{ textShadow: '0 0 30px rgba(255,110,132,0.5)' }}
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1.2, 1] }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
-              {skipped}
-            </motion.div>
-            <div className="text-xl text-[#a8abb3] mt-3 font-bold">Uebersprungen</div>
-          </motion.div>
+          <ResultStat value={correct} label={t('tv.headup.correct', 'Richtig')} color={HU.green} delay={0.3} />
+          <ResultStat value={skipped} label={t('tv.headup.skipped', 'Übersprungen')} color={HU.skip} delay={0.4} />
         </div>
+
+        {roster.length > 0 && (
+          <div className="absolute bottom-[clamp(1rem,2vh,2rem)] left-0 right-0 px-[clamp(1.25rem,2.4vw,3rem)]">
+            <TVScoreboard players={roster.map((p) => ({ ...p, status: 'waiting' as const, subtitle: undefined }))} sort="order" />
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-12 relative overflow-hidden" style={{ background: '#060810' }}>
-      {/* Animated gradient background */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{
-          background: [
-            'radial-gradient(ellipse 80% 60% at 30% 50%, rgba(223,142,255,0.06) 0%, transparent 70%)',
-            'radial-gradient(ellipse 80% 60% at 70% 50%, rgba(143,245,255,0.06) 0%, transparent 70%)',
-            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,107,152,0.06) 0%, transparent 70%)',
-            'radial-gradient(ellipse 80% 60% at 30% 50%, rgba(223,142,255,0.06) 0%, transparent 70%)',
-          ],
-        }}
-        transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-      />
+    <div className="h-screen flex flex-col relative overflow-hidden" style={{ background: HU.bg, color: HU.text }}>
+      {/* Background — gated ambient drift via transform; static wash otherwise */}
+      <div className="absolute -top-24 -left-24 w-[36rem] h-[36rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(223,142,255,0.07)' }} />
+      <div className="absolute -bottom-24 -right-24 w-[36rem] h-[36rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(143,245,255,0.06)' }} />
+      {ambient && (
+        <motion.div
+          className="absolute top-1/3 left-1/3 w-[30rem] h-[30rem] rounded-full blur-[90px] pointer-events-none"
+          style={{ background: 'rgba(255,107,152,0.05)' }}
+          animate={{ x: ['-10%', '20%', '-10%'], y: ['0%', '15%', '0%'] }}
+          transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
+        />
+      )}
 
-      {/* Top bar */}
-      <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-10">
+      {/* Top rail: category · round (left), timer (right) */}
+      <div className="relative flex items-center justify-between px-[clamp(1.25rem,2.4vw,3rem)] pt-[clamp(1rem,2vh,2rem)] z-10">
         <div className="flex items-center gap-3">
           {category && (
-            <div className="px-5 py-2 rounded-full border border-[#df8eff]/30"
-              style={{ background: 'rgba(223,142,255,0.08)', boxShadow: '0 0 20px rgba(223,142,255,0.1)' }}>
-              <span className="text-lg font-bold text-[#df8eff]">{category}</span>
-            </div>
+            <span className="rounded-full px-5 py-1.5 font-bold uppercase tracking-[0.14em]"
+              style={{ fontSize: tvType.micro, color: HU.purple, background: `${HU.purple}14`, border: `1px solid ${HU.purple}55` }}>
+              {category}
+            </span>
           )}
-          <div className="px-4 py-2 rounded-full bg-[#151a21]/80 border border-white/5">
-            <span className="text-xl font-bold text-[#a8abb3]">RUNDE {round}/{total}</span>
-          </div>
+          <span className={`${tvPanel} px-5 py-1.5 font-bold tabular-nums`} style={{ fontSize: tvType.micro, color: HU.dim }}>
+            {t('tv.round', 'Runde')} {round}/{total}
+          </span>
         </div>
         {timeLeft !== '' && (
-          <div className="px-6 py-3 rounded-full bg-[#151a21] border border-white/5">
-            <motion.span
-              className={`text-4xl font-mono font-black ${Number(timeLeft) <= 10 ? 'text-[#ef4444]' : 'text-[#f1f3fc]'}`}
-              animate={Number(timeLeft) <= 5 ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ repeat: Infinity, duration: 0.4 }}
-            >
-              {timeLeft}s
-            </motion.span>
-          </div>
+          <motion.div
+            className={`${tvPanel} px-6 py-2 font-mono font-black tabular-nums`}
+            style={{ fontSize: tvType.title, color: Number(timeLeft) <= 10 ? HU.skip : HU.text }}
+            animate={ambient && Number(timeLeft) <= 5 ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+            transition={ambient && Number(timeLeft) <= 5 ? { repeat: Infinity, duration: 0.4 } : { duration: 0.2 }}
+          >
+            {timeLeft}s
+          </motion.div>
         )}
       </div>
 
-      {/* Player badge */}
-      <motion.div
-        className="mb-4 px-8 py-3 rounded-full flex items-center gap-3"
-        style={{
-          background: `${playerColor}15`,
-          border: `2px solid ${playerColor}55`,
-          boxShadow: `0 0 30px ${playerColor}22`,
-        }}
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-      >
-        <Smartphone className="w-6 h-6" style={{ color: playerColor }} />
-        <span className="text-3xl font-bold" style={{ color: playerColor }}>{player}</span>
-      </motion.div>
+      {/* Player badge + prompt */}
+      <div className="relative flex flex-col items-center gap-3 pt-[clamp(0.5rem,1.5vh,1.5rem)] z-10">
+        <motion.div
+          className="px-8 py-2.5 rounded-full flex items-center gap-3"
+          style={{ background: `${playerColor}15`, border: `2px solid ${playerColor}55` }}
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+        >
+          <Smartphone style={{ width: '1.4em', height: '1.4em', color: playerColor }} />
+          <span className="font-bold" style={{ fontSize: tvType.body, color: playerColor }}>{player}</span>
+        </motion.div>
+        <p style={{ fontSize: tvType.body, color: HU.dim }} className="tracking-wide">{t('tv.headup.describe', 'Beschreibe es!')}</p>
+      </div>
 
-      {/* Subtitle */}
-      <motion.p
-        className="text-xl text-[#a8abb3] mb-6 tracking-wide"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ repeat: Infinity, duration: 2.5 }}
-      >
-        Beschreibe es!
-      </motion.p>
-
-      {/* THE WORD - absolutely massive */}
-      <div className="relative min-h-[200px] flex items-center justify-center">
+      {/* THE WORD — the mechanic, deliberately on screen */}
+      <div className="relative flex-1 flex items-center justify-center min-h-0 z-10 px-8">
         <AnimatePresence mode="wait">
           {word ? (
             <motion.h1
               key={word}
-              className="text-[7rem] md:text-[9rem] font-black italic text-center leading-none max-w-6xl"
+              className="font-black italic text-center leading-none max-w-[18ch]"
               style={{
-                background: 'linear-gradient(135deg, #df8eff 0%, #8ff5ff 50%, #ff6b98 100%)',
-                backgroundSize: '200% 200%',
+                fontSize: tvType.hero,
+                background: `linear-gradient(135deg, ${HU.purple} 0%, ${HU.cyan} 50%, ${HU.pink} 100%)`,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 50px rgba(223,142,255,0.5)) drop-shadow(0 0 100px rgba(143,245,255,0.3))',
+                filter: `drop-shadow(0 0 40px ${HU.purple}66)`,
               }}
               initial={
-                lastAction === 'skip'
-                  ? { x: 200, opacity: 0, scale: 0.9 }
-                  : lastAction === 'correct'
-                    ? { y: -60, opacity: 0, scale: 1.1 }
+                lastAction === 'skip' ? { x: 200, opacity: 0, scale: 0.9 }
+                  : lastAction === 'correct' ? { y: -60, opacity: 0, scale: 1.1 }
                     : { scale: 0.5, opacity: 0 }
               }
               animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
               exit={
-                lastAction === 'skip'
-                  ? { x: -300, opacity: 0 }
-                  : lastAction === 'correct'
-                    ? { y: -80, opacity: 0, scale: 1.1 }
+                lastAction === 'skip' ? { x: -300, opacity: 0 }
+                  : lastAction === 'correct' ? { y: -80, opacity: 0, scale: 1.1 }
                     : { opacity: 0, scale: 0.9 }
               }
               transition={{ type: 'spring', damping: 15, stiffness: 200 }}
@@ -177,16 +175,16 @@ export default function TVHeadUpView({ gameState }: { gameState: any }) {
             <motion.div
               key="waiting"
               className="flex items-center gap-3"
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ repeat: Infinity, duration: 2 }}
+              animate={ambient ? { opacity: [0.3, 1, 0.3] } : { opacity: 0.7 }}
+              transition={ambient ? { repeat: Infinity, duration: 2 } : { duration: 0.3 }}
             >
-              <div className="w-3 h-3 rounded-full bg-[#8ff5ff]" />
-              <span className="text-3xl text-[#a8abb3]">Bereit machen...</span>
+              <div className="w-3 h-3 rounded-full" style={{ background: HU.cyan }} />
+              <span style={{ fontSize: tvType.body, color: HU.dim }}>{t('tv.headup.getReady', 'Bereit machen...')}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Green flash on correct */}
+        {/* Green flash on correct — one-shot */}
         <AnimatePresence>
           {lastAction === 'correct' && (
             <motion.div
@@ -201,47 +199,47 @@ export default function TVHeadUpView({ gameState }: { gameState: any }) {
         </AnimatePresence>
       </div>
 
-      {/* Score counters - bottom */}
-      <div className="absolute bottom-10 flex gap-8">
-        <motion.div
-          className="flex items-center gap-3 px-8 py-4 rounded-2xl"
-          style={{
-            background: 'rgba(16,185,129,0.08)',
-            border: '2px solid rgba(16,185,129,0.2)',
-            boxShadow: '0 0 20px rgba(16,185,129,0.1)',
-          }}
-        >
-          <motion.span
-            key={correct}
-            className="text-5xl font-black text-[#10b981]"
-            initial={{ scale: 1.4 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring' }}
-          >
-            {correct}
-          </motion.span>
-          <span className="text-lg text-[#a8abb3] font-bold">Richtig</span>
-        </motion.div>
-        <motion.div
-          className="flex items-center gap-3 px-8 py-4 rounded-2xl"
-          style={{
-            background: 'rgba(255,110,132,0.08)',
-            border: '2px solid rgba(255,110,132,0.2)',
-            boxShadow: '0 0 20px rgba(255,110,132,0.1)',
-          }}
-        >
-          <motion.span
-            key={skipped}
-            className="text-5xl font-black text-[#ff6e84]"
-            initial={{ scale: 1.4 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring' }}
-          >
-            {skipped}
-          </motion.span>
-          <span className="text-lg text-[#a8abb3] font-bold">Skip</span>
-        </motion.div>
+      {/* Correct / skip pills */}
+      <div className="relative flex gap-6 justify-center pb-4 z-10">
+        <CountPill value={correct} label={t('tv.headup.correct', 'Richtig')} color={HU.green} />
+        <CountPill value={skipped} label={t('tv.headup.skip', 'Skip')} color={HU.skip} />
       </div>
+
+      {/* Whole-party roster — every player on screen, current guesser ringed */}
+      {roster.length > 0 && (
+        <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)] z-10">
+          <TVScoreboard players={roster} sort="order" />
+        </div>
+      )}
     </div>
+  );
+}
+
+function CountPill({ value, label, color }: { value: number; label: string; color: string }) {
+  return (
+    <div className="flex items-center gap-3 px-8 py-3 rounded-2xl" style={{ background: `${color}14`, border: `2px solid ${color}33` }}>
+      <motion.span key={value} className="font-black tabular-nums" style={{ fontSize: tvType.title, color }} initial={{ scale: 1.4 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+        {value}
+      </motion.span>
+      <span className="font-bold" style={{ fontSize: tvType.micro, color: '#a8abb3' }}>{label}</span>
+    </div>
+  );
+}
+
+function ResultStat({ value, label, color, delay }: { value: number; label: string; color: string; delay: number }) {
+  return (
+    <motion.div
+      className="text-center px-10 py-8 rounded-3xl"
+      style={{ background: `${color}14`, border: `2px solid ${color}33` }}
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay, type: 'spring' }}
+    >
+      <motion.div className="font-black tabular-nums" style={{ fontSize: tvType.display, color, textShadow: `0 0 30px ${color}88` }}
+        initial={{ scale: 0 }} animate={{ scale: [0, 1.2, 1] }} transition={{ delay: delay + 0.2, duration: 0.5 }}>
+        {value}
+      </motion.div>
+      <div className="mt-3 font-bold" style={{ fontSize: tvType.body, color: '#a8abb3' }}>{label}</div>
+    </motion.div>
   );
 }

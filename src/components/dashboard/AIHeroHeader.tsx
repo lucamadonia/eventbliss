@@ -7,6 +7,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CreditIndicator } from "@/components/ai/CreditIndicator";
 import { cn } from "@/lib/utils";
+import { useAmbientMotion } from "@/lib/useAmbientMotion";
 
 interface AIHeroHeaderProps {
   eventName?: string;
@@ -62,6 +63,7 @@ export default function AIHeroHeader({
   creditsAnimating = false,
 }: AIHeroHeaderProps) {
   const { t } = useTranslation();
+  const ambient = useAmbientMotion();
   const displayCity = useMemo(() => cleanDestinationLabel(city), [city]);
   const displayEventType = useMemo(
     () => (eventType ? t(`eventTypes.${eventType}`, eventType) : null),
@@ -102,9 +104,9 @@ export default function AIHeroHeader({
         }}
       />
 
-      {/* Drifting particles */}
+      {/* Drifting particles — decoration only, skipped on native/reduced-motion */}
       <div className="absolute inset-0 pointer-events-none">
-        {PARTICLES.map((p) => (
+        {ambient && PARTICLES.map((p) => (
           <motion.span
             key={p.id}
             className="absolute rounded-full bg-white/70"

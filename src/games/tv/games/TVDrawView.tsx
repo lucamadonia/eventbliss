@@ -22,7 +22,9 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
   const round = gameState?.round || 1;
   const total = gameState?.totalRounds || '?';
   const phase = gameState?.phase || 'drawing';
-  const word = gameState?.word || '';
+  // The host broadcasts the word as `currentWord` (party bridge). It is sent
+  // during play too, so the view must mask it until `roundResult` (below).
+  const word = gameState?.currentWord || gameState?.word || '';
   const guessedBy = gameState?.guessedBy || '';
 
   // Timer ring
@@ -216,10 +218,12 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
         </AnimatePresence>
       </motion.div>
 
-      {/* Word to guess - bottom center, shown to audience with blur/reveal */}
+      {/* Word LENGTH hint only — the actual word must stay secret until the
+          round result (guessers watch this same screen). Show one underscore
+          per letter (spaces preserved) + a letter count, never the word. */}
       {word && phase !== 'roundResult' && (
         <motion.div
-          className="mt-6 px-8 py-4 rounded-2xl"
+          className="mt-6 px-8 py-4 rounded-2xl flex flex-col items-center gap-1.5"
           style={{
             background: 'rgba(21,26,33,0.9)',
             border: '2px solid rgba(255,255,255,0.05)',
@@ -229,9 +233,11 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className="text-3xl font-bold text-[#f1f3fc]"
-            style={{ textShadow: '0 0 20px rgba(143,245,255,0.3)' }}>
-            {word}
+          <span className="text-3xl font-black tracking-[0.4em] text-[#f1f3fc]" aria-label="Wortlänge">
+            {word.split('').map((ch: string) => (ch === ' ' ? ' ' : '_')).join('')}
+          </span>
+          <span className="text-sm uppercase tracking-widest text-[#a8abb3]">
+            {word.replace(/\s/g, '').length} Buchstaben
           </span>
         </motion.div>
       )}

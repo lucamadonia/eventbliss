@@ -191,7 +191,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
 
-  useTVGameBridge('bomb', { phase: state.phase, players: state.players, currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds, currentTask: state.currentTask }, [state.phase, state.round, state.currentPlayerIndex]);
+  useTVGameBridge('bomb', { phase: state.phase, mode: state.mode, players: state.players, currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds, currentTask: state.currentTask, explodedPlayerIndex: state.explodedPlayerIndex }, [state.phase, state.mode, state.round, state.currentPlayerIndex, state.explodedPlayerIndex]);
 
   // --- Online sync: host broadcasts state, non-host receives ---
   const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {

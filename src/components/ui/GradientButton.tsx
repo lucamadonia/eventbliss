@@ -36,13 +36,15 @@ const GradientButton = forwardRef<HTMLButtonElement, GradientButtonProps>(
       lg: "px-8 py-4 text-lg",
     };
 
+    // Flat & modern: solid token fills, neutral soft shadows, hairline borders —
+    // no tri-gradient / neon glow.
     const variantClasses = {
       primary:
-        "gradient-primary text-white shadow-neon hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)]",
+        "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
       secondary:
-        "gradient-secondary text-white shadow-md hover:shadow-glow",
+        "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
       outline:
-        "bg-transparent border-2 border-primary text-primary hover:bg-primary/10",
+        "bg-transparent border border-primary text-primary hover:bg-primary/10",
       ghost:
         "bg-transparent text-foreground hover:bg-foreground/10",
     };

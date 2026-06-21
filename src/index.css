@@ -920,9 +920,18 @@ html.capacitor-native .pb-tabbar {
    and keeps the full glassmorphism look.
    ═══════════════════════════════════════════════════════════════════════ */
 :root.capacitor-native {
-  /* Raise glass opacity so surfaces stay legible once the blur is removed. */
-  --glass-bg: 240 15% 11% / 0.94;
+  /* Raise glass opacity so surfaces stay legible once the blur is removed.
+     Per-theme so the native panel tracks the active theme instead of being
+     hardcoded dark — otherwise GlassCards become dark-on-dark in light/rose.
+     This base value is the LIGHT surface; .dark / .rose override below. */
+  --glass-bg: 0 0% 100% / 0.94;
   --glass-blur: 0px;
+}
+:root.capacitor-native.dark {
+  --glass-bg: 240 15% 11% / 0.94;
+}
+:root.capacitor-native.rose {
+  --glass-bg: 340 30% 98% / 0.94;
 }
 
 /* #1 WebView frame-killer: kill every backdrop-filter on native. Covers the
@@ -938,7 +947,9 @@ html.capacitor-native .pb-tabbar {
    solid-ish on native so removing the blur doesn't cause content bleed-through. */
 .capacitor-native [class*="backdrop-blur"].fixed,
 .capacitor-native [class*="backdrop-blur"].sticky {
-  background-color: hsl(240 18% 9% / 0.96);
+  /* Derive from the theme's card token so fixed/sticky bars track light/dark/rose
+     instead of being hardcoded dark (which read as dark-on-light in light/rose). */
+  background-color: hsl(var(--card) / 0.96);
 }
 
 /* Stop ambient infinite CSS animations on native — they never let the

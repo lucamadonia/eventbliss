@@ -808,7 +808,7 @@ export default function BookingSuccess() {
   // Loading
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0612] flex items-center justify-center">
+      <div className="dark min-h-screen bg-[#0a0612] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
@@ -823,7 +823,7 @@ export default function BookingSuccess() {
   // Error / not found
   if (error || !booking) {
     return (
-      <div className="min-h-screen bg-[#0a0612] flex items-center justify-center px-6">
+      <div className="dark min-h-screen bg-[#0a0612] flex items-center justify-center px-6">
         <div className="text-center space-y-4 max-w-md">
           <div className="w-14 h-14 mx-auto rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
             <Sparkles className="w-6 h-6 text-red-400" />
@@ -866,7 +866,7 @@ export default function BookingSuccess() {
   const headlineText = isUnpaid ? "Fast geschafft!" : "Gebucht!";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#0a0612] text-white">
+    <div className="dark relative min-h-screen overflow-x-hidden bg-[#0a0612] text-white">
       {/* Dark vignette fade-in */}
       <motion.div
         className="pointer-events-none fixed inset-0 z-[2] print:hidden"
