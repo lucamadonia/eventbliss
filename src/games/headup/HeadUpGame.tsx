@@ -245,6 +245,18 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     orientationActiveRef.current = false;
   }, []);
 
+  // Rematch: keep the same players AND category, wipe the previous game's
+  // round results, and jump straight back into gameplay (ready countdown) —
+  // never back to the setup screen.
+  const playAgain = useCallback(() => {
+    setCurrentRound(1);
+    setAllRounds([]);
+    setRoundWords([]);
+    orientationActiveRef.current = false;
+    gameRecordedRef.current = false;
+    handleStartRound();
+  }, [handleStartRound]);
+
   const finalRounds = screen === 'gameOver'
     ? [...allRounds, { playerName: t('games.headup.playerFallback', { n: currentRound }), correct: correctCount, skipped: skippedCount, words: [...roundWords] }]
     : allRounds;
@@ -559,7 +571,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
               ))}
             </div>
             <div className="space-y-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={handleRestart}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
                 className="w-full py-4 rounded-full neon-btn text-white text-base font-extrabold uppercase tracking-wide flex items-center justify-center gap-2">
                 <RotateCcw className="w-5 h-5" /> {t('games.headup.playAgain')}
               </motion.button>

@@ -279,6 +279,38 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     setSentences([]);
   }
 
+  // Nochmal spielen: KEEP players + mode + settings; only the story content is
+  // reset. We replicate handleStart's gameplay-entry (fresh decks + first prompt)
+  // and jump straight to 'writing' — never back to 'setup'.
+  function rematch() {
+    if (players.length === 0) { resetGame(); return; }
+    setSentences([]);
+    setInputText('');
+    setCurrentRound(1);
+    setCurrentPlayerIdx(0);
+    setCurrentSentenceNum(1);
+    setRevealIdx(0);
+    setIsRevealing(false);
+    gameRecordedRef.current = false;
+
+    promptsDeck.current = shuffle(getSTORY_PROMPTS());
+    promptsPos.current = 0;
+    startersDeck.current = shuffle(getSTORY_STARTERS());
+    startersPos.current = 0;
+
+    if (mode === 'vorgabe') {
+      const starter = startersDeck.current[0];
+      startersPos.current = 1;
+      setCurrentPrompt(starter);
+    } else if (mode === 'reimzeit') {
+      setCurrentPrompt(t('games.storybuilder.rhymeMustRhyme'));
+    } else {
+      setCurrentPrompt('');
+    }
+
+    setPhase('writing');
+  }
+
   /* ---- Online: host broadcasts game state ---- */
   useEffect(() => {
     if (!online?.isHost) return;
@@ -527,7 +559,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                 <div className="space-y-3">
                   <motion.button
                     whileTap={{ scale: 0.97 }}
-                    onClick={resetGame}
+                    onClick={rematch}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
                   >
                     <RotateCcw className="w-4 h-4" /> {t('games.storybuilder.playAgain')}

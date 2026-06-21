@@ -195,9 +195,17 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  const resetGame = () => {
-    setPhase('setup'); setPlayers([]); setCurrentRound(1); setSelectedIdx(-1);
-    lastSelectedRef.current = -1; timer.reset(timerSec);
+  // Rematch: restart gameplay directly, keeping players AND their scores.
+  // Only per-match/transient state is reset; deck reshuffles on category-deps already.
+  const playAgain = () => {
+    setCurrentRound(1);
+    setSelectedIdx(-1); lastSelectedRef.current = -1;
+    setCurrentCard(null); setDeclined(false);
+    setVotes({}); setVoterIdx(0);
+    deckPos.current = 0;
+    gameRecordedRef.current = false;
+    timer.reset(timerSec);
+    setPhase('spinning');
   };
 
   const winner = useMemo(() => [...players].sort((a, b) => b.score - a.score)[0], [players]);
@@ -541,7 +549,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <p className="text-white/30 text-center text-sm">{t('games.bottlespin.roundsPlayed', { rounds: totalRounds })}</p>
             )}
             <div className="w-full space-y-3 mt-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
                 <RotateCcw className="w-4 h-4" /> {t('games.bottlespin.playAgain')}
               </motion.button>

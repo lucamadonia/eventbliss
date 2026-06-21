@@ -661,6 +661,44 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setRound(0);
   }, []);
 
+  // Nochmal spielen: KEEP players AND their accumulated score/correct/wrong/
+  // bestStreak/fastestMs. Only the per-match streak is reset (a streak shouldn't
+  // bleed across matches). We replicate handleSetupStart's gameplay-entry —
+  // reshuffle pools, restart the first round per mode — and never go to 'setup'.
+  const rematch = useCallback(() => {
+    if (players.length === 0) { handleRestart(); return; }
+    gameRecordedRef.current = false;
+    setPlayers(prev => prev.map(p => ({ ...p, streak: 0 })));
+    setRound(0);
+    setCurrentPlayerIdx(0);
+    setSelectedAnswer(null);
+    setAnswerCorrect(null);
+    setFoundDiffs([]);
+
+    const scenes = shuffleArray([...SCENES]);
+    const diffs = shuffleArray([...DIFF_SCENES]);
+    setScenePool(scenes);
+    setDiffPool(diffs);
+
+    if (mode === 'karte') {
+      const shuffled = shuffleArray(geoPool.length > 0 ? geoPool : [...GEO_LOCATIONS]);
+      setGeoPool(shuffled);
+      setCurrentGeo(shuffled[0]);
+      setPhase('question');
+      return;
+    }
+
+    if (mode === 'streetview') {
+      const locs = getRandomStreetViewLocations(totalRounds);
+      setSvLocations(locs);
+      setSvRound(0);
+      setPhase('streetviewPlay');
+      return;
+    }
+
+    startRound(mode, scenes, diffs, 0, studyTime);
+  }, [players, mode, geoPool, totalRounds, studyTime, startRound, handleRestart]);
+
   // ------- Parsed grid memo -------
   const parsedGrid = useMemo(() => {
     if (currentScene) return parseGrid(currentScene.grid);
@@ -702,7 +740,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     return (
       <>
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-        <GameOverScreen players={sortedPlayers} onRestart={handleRestart} onBack={() => navigate('/games')} totalRounds={totalRounds} />
+        <GameOverScreen players={sortedPlayers} onRestart={rematch} onBack={() => navigate('/games')} totalRounds={totalRounds} />
       </>
     );
   }

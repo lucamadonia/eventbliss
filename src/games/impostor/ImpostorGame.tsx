@@ -506,21 +506,33 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     }
   };
 
-  // --- New round ---
-  const newRound = () => {
+  // --- Play again (rematch): restart gameplay directly (no setup screen),
+  // keeping the same players AND their accumulated scores (carry over). ---
+  const playAgain = () => {
+    gameRecordedRef.current = false;
     setRound((r) => r + 1);
-    setPhase('setup');
+
+    const wordSet = pickRandom(getWordSets());
+    setCurrentWordSet(wordSet);
+
+    const shuffledIndices = shuffle(players.map((_, i) => i));
+    const impostorIndices = new Set(shuffledIndices.slice(0, impostorCount));
+
     setPlayers((prev) =>
-      prev.map((p) => ({
+      prev.map((p, i) => ({
         ...p,
-        isImpostor: false,
+        isImpostor: impostorIndices.has(i),
         hasSpoken: false,
         votedFor: null,
+        // score carried over from prev — not reset.
       }))
     );
-    setCurrentWordSet(null);
+
     setBonusGuess('');
     setBonusResult(null);
+    setRevealIndex(0);
+    setWordVisible(false);
+    setPhase('wordReveal');
   };
 
   useEffect(() => {
@@ -1630,7 +1642,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               {t('games.impostor.resetGame')}
             </motion.button>
             <motion.button
-              onClick={newRound}
+              onClick={playAgain}
               className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}

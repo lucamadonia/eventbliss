@@ -243,9 +243,22 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     if (phase === 'setup') recordedRef.current = false;
   }, [phase]);
 
+  // Return to setup (lets players/teams/settings be changed). Rebuilds teams
+  // from the current roster, which resets scores to 0.
   function resetGame() {
-    setTeams(buildTeams(players)); setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
+    setTeams(buildTeams(playerNames)); setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
     setTurnResults([]); setCurrentCard(null); deck.current = shuffle(getTabooCards()); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
+  }
+
+  // Rematch: restart gameplay directly (no setup screen), keeping the same
+  // teams AND their accumulated scores (carry over — do not zero).
+  function playAgain() {
+    recordedRef.current = false;
+    setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
+    setTurnResults([]); setCurrentCard(null);
+    deck.current = shuffle(getTabooCards()); deckPos.current = 0;
+    timer.reset(timerOption);
+    setPhase('turnStart');
   }
 
   /* ---- Online: host broadcasts game state ---- */
@@ -609,7 +622,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
           </div>
           <div className="text-sm text-[#a8abb3]">{t('games.taboo.gameover.mvpLabel')}: <span className="text-[#f1f3fc] font-semibold">{mvp}</span></div>
           <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] py-4 rounded-full font-black italic text-base shadow-[0_0_25px_rgba(223,142,255,0.3)]">
               <RotateCcw className="w-4 h-4" /> {t('games.taboo.gameover.playAgainBtn')}
             </motion.button>

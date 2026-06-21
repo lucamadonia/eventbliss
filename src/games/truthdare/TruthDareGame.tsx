@@ -269,13 +269,20 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  const resetGame = () => {
-    setPhase('setup');
-    setPlayers([]);
+  // Rematch: jump straight back into gameplay, keeping players AND their
+  // scores/truthCount/dareCount. Only round + transient card/vote state resets.
+  const playAgain = () => {
     setCurrentRound(1);
-    timer.reset(timerSec);
+    setActiveIdx(0);
+    setChoiceType(null);
+    setCurrentItem(null);
+    setVotes({});
+    setVoterIdx(0);
     truthPos.current = 0;
     darePos.current = 0;
+    gameRecordedRef.current = false;
+    timer.reset(timerSec);
+    setPhase('spin');
   };
 
   /* ---- Online: host broadcasts game state ---- */
@@ -737,7 +744,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.truthdare.playAgain')}
               </motion.button>

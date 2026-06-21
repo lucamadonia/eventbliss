@@ -482,6 +482,27 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     timer.reset(20);
   }
 
+  /* ---- Rematch: restart gameplay directly, keeping teams + scores ---- */
+  // Keeps teamA/teamB intact INCLUDING their accumulated score + correctCount
+  // (no reset to 0) and the per-player MVP tallies. Rebuilds a fresh question
+  // deck, resets per-match round/turn state, then jumps straight to handoff
+  // (never back to setup).
+  function playAgain() {
+    gameRecordedRef.current = false;
+    buildDeck();
+    setCurrentRound(1);
+    setActiveTeamIdx(0);
+    setTeamAnswered([false, false]);
+    setSelectedAnswer(null);
+    setCurrentBet(1);
+    setShowBetting(false);
+    timer.reset(20);
+    setPhase('handoff');
+    const q = drawQuestion();
+    setCurrentQuestion(q);
+    setAnswerSplit(computeSplit(q));
+  }
+
   /* ---- Get visible answers for a team (richtige Antwort + 1 Ablenker) ---- */
   function getTeamAnswers(teamIdx: number): number[] {
     return answerSplit[teamIdx] ?? (teamIdx === 0 ? [0, 1] : [2, 3]);
@@ -1157,7 +1178,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
               </motion.button>
             )}
             <motion.button
-              onClick={restart}
+              onClick={playAgain}
               className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}

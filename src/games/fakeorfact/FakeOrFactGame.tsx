@@ -233,6 +233,31 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
     setCurrentPlayerIdx(0);
   }
 
+  // Rematch: restart gameplay directly, keeping the SAME players and their
+  // accumulated scores/streaks. Reshuffles a fresh deck for the current mode,
+  // resets per-match counters/votes, then jumps straight to the first statement.
+  function playAgain() {
+    gameRecordedRef.current = false;
+    setCurrentRound(1);
+    setCurrentPlayerIdx(0);
+    setVotes([]);
+    setPlayerVote(null);
+    setPlayerThreeVote(null);
+
+    if (mode === 'three') {
+      const shuffled = shuffle(getTHREE_STATEMENTS());
+      setThreeDeck(shuffled);
+      setThreeIdx(0);
+      setCurrentThree(shuffled[0]);
+    } else {
+      const shuffled = shuffle(getFACTS());
+      setFactDeck(shuffled);
+      setFactIdx(0);
+      setCurrentFact(shuffled[0]);
+    }
+    setPhase('statement');
+  }
+
   // Percentage correct
   const correctPct = useMemo(() => {
     if (votes.length === 0) return 0;
@@ -554,7 +579,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
           <div className="w-full space-y-3 mt-2">
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={resetGame}
+              onClick={playAgain}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}

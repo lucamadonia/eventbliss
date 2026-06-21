@@ -175,6 +175,18 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
     }
   }
 
+  /* ---- Rematch: restart gameplay directly, keeping players + scores ---- */
+  // Carries over the existing roster AND their accumulated scores (no reset to
+  // 0). Reshuffles a fresh question deck, resets round + role rotation, then
+  // jumps straight to the first roundIntro (never back to setup).
+  function playAgain() {
+    gameRecordedRef.current = false;
+    deck.current = shuffle(getSHARED_QUIZ_QUESTIONS());
+    deckPos.current = 0;
+    setRound(1);
+    startRound([0, 1, 2]);
+  }
+
   /* ---- Next round ---- */
   function nextRound() {
     if (round >= totalRounds) { setPhase('gameOver'); return; }
@@ -482,7 +494,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
             ))}
           </div>
           <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} onClick={() => { setPhase('setup'); }}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>

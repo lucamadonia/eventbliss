@@ -276,6 +276,17 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     setCurrentRound(1);
   };
 
+  // Rematch: restart gameplay directly with the SAME players and their
+  // accumulated scores (no reset to 0). Resets only per-match state (round,
+  // deck position, history) then jumps straight to the first voting round.
+  const playAgain = () => {
+    gameRecordedRef.current = false;
+    setCurrentRound(1);
+    setDeckPos(0);
+    setHistory([]);
+    startRound(0);
+  };
+
   const winner = useMemo(() =>
     [...players].sort((a, b) => b.score - a.score)[0], [players]);
 
@@ -842,7 +853,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
               </motion.button>

@@ -439,6 +439,24 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setSong(null);
   }, [stopAudio, roundTimer]);
 
+  // --- Nochmal spielen -----------------------------------------------------
+  // Rematch: SAME participants carry over with their timelines (= score) AND
+  // hooks intact — play continues from the current standings toward winTarget.
+  // We go straight back into gameplay (beginTurn → 'draw'), never to 'setup'.
+  // The winner check lives in handleContinue, not at turn start, so beginning a
+  // fresh turn is safe even if someone is already at/above winTarget.
+  const rematch = useCallback(() => {
+    if (participants.length === 0) { resetGame(); return; }
+    stopAudio();
+    setWinner(null);
+    recordedRef.current = false;
+    roundTimer.reset(ROUND_SECONDS);
+    void haptics.celebrate();
+    // Fresh deck for the new match (excludes cards already on timelines).
+    const fresh = buildDeck(genre);
+    beginTurn(participants, fresh, 0);
+  }, [participants, genre, beginTurn, stopAudio, roundTimer, haptics, resetGame]);
+
   // Beim Verlassen des Spiels Audio stoppen + Spotify-Verbindung lösen.
   useEffect(() => () => {
     const a = audioRef.current; if (a) a.pause();
@@ -987,7 +1005,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 ))}
               </div>
               <div className="w-full space-y-3 mt-2">
-                <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+                <motion.button whileTap={{ scale: 0.97 }} onClick={rematch}
                   className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl h-14 font-black"
                   style={{ background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg }}>
                   <RotateCcw className="w-4 h-4" /> {t('games.ohrwurm.playAgain')}

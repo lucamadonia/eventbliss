@@ -822,6 +822,19 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     setTurnQueue([]);
   }, []);
 
+  // Nochmal spielen: KEEP players AND their accumulated scores. We replicate
+  // handleStart's gameplay-entry (round 1, rebuilt turn queue) and go straight
+  // to 'playing' — never to 'setup'. PlayingScreen seeds its local score from
+  // each player's carried-over score, so the new match continues the totals.
+  const rematch = useCallback(() => {
+    if (players.length === 0) { handleRestart(); return; }
+    gameRecordedRef.current = false;
+    setRound(1);
+    setCurrentPlayerIndex(0);
+    setTurnQueue(players.map((_, i) => i).slice(1));
+    setPhase('playing');
+  }, [players, handleRestart]);
+
   /* ---- Online: host broadcasts game state ---- */
   useEffect(() => {
     if (!online?.isHost) return;
@@ -885,7 +898,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       {phase === 'gameOver' && (
         <motion.div key="gameOver" exit={{ opacity: 0 }}>
           <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <GameOverScreen players={players} onRestart={handleRestart} />
+          <GameOverScreen players={players} onRestart={rematch} />
         </motion.div>
       )}
     </AnimatePresence>

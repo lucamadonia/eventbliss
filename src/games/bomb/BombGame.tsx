@@ -484,17 +484,31 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const handleRestart = () => {
+    // Rematch: restart gameplay directly (no setup screen), keeping the same
+    // players AND their accumulated penalties (carry over — do not zero).
     speedReductionRef.current = 0;
     resetQuestions();
-    setState((prev) => ({
-      ...defaultState,
-      players: prev.players.map((p) => ({ name: p.name, penalties: 0 })),
-      mode: prev.mode,
-      timerMin: prev.timerMin,
-      timerMax: prev.timerMax,
-      totalRounds: prev.totalRounds,
-    }));
-    setTimerActive(false);
+    recordedRef.current = false;
+    const { task, quiz } = generateTask(state.mode);
+    const newState: GameState = {
+      ...state,
+      phase: 'playing',
+      currentPlayerIndex: 0,
+      round: 1,
+      currentTask: task,
+      currentQuiz: quiz,
+      explodedPlayerIndex: -1,
+      // players (incl. penalties) carried over from `state` via spread.
+    };
+    setState(newState);
+    broadcastState(newState);
+
+    if (state.mode === 'alle' && !sessionStorage.getItem('bomb-alle-tutorial-seen')) {
+      setShowTutorial(true);
+      return;
+    }
+    setTimerKey((k) => k + 1);
+    setTimerActive(true);
   };
 
   const handleExit = () => {

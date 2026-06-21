@@ -663,7 +663,7 @@ function RoundEndScreen({
 // Game Over Screen
 // ---------------------------------------------------------------------------
 
-function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onRestart: () => void }) {
+function GameOverScreen({ players, onPlayAgain, onRestart }: { players: CategoryPlayer[]; onPlayAgain: () => void; onRestart: () => void }) {
   const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
@@ -725,7 +725,7 @@ function GameOverScreen({ players, onRestart }: { players: CategoryPlayer[]; onR
       <div className="space-y-3">
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={onRestart}
+          onClick={onPlayAgain}
           className="w-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] py-4 text-base font-extrabold font-[Plus_Jakarta_Sans] text-[#0a0e14] uppercase tracking-wide shadow-[0_0_20px_rgba(223,142,255,0.3)] flex items-center justify-center gap-2"
         >
           <RotateCcw className="h-5 w-5" /> {t('games.category.playAgain')}
@@ -893,6 +893,28 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
     setUsedCategories(new Set());
   }, []);
 
+  // Rematch: restart gameplay directly (no setup screen), keeping the same
+  // players AND their accumulated score/losses (carry over — do not zero).
+  const handlePlayAgain = useCallback(() => {
+    gameRecordedRef.current = false;
+    setCurrentRound(1);
+    setCurrentPlayerIndex(0);
+    setRoundWords([]);
+    setRoundResults([]);
+    saidWordsRef.current.clear();
+    const available = getCategories();
+    const cat = available[Math.floor(Math.random() * available.length)];
+    setCurrentCategory(cat);
+    setUsedCategories(new Set([cat]));
+    if (mode === "letter") {
+      const prompt = generateCategoryPrompt();
+      setCurrentLetter(prompt.letter);
+    } else {
+      setCurrentLetter(undefined);
+    }
+    setPhase("categoryReveal");
+  }, [mode]);
+
   /* ---- Online: host broadcasts game state ---- */
   useEffect(() => {
     if (!online?.isHost) return;
@@ -994,7 +1016,7 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
             {phase === "gameOver" && (
               <div key="gameOver">
                 <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-                <GameOverScreen players={players} onRestart={handleRestart} />
+                <GameOverScreen players={players} onPlayAgain={handlePlayAgain} onRestart={handleRestart} />
               </div>
             )}
           </AnimatePresence>

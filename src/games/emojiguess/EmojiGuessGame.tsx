@@ -231,6 +231,20 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     setCurrentPlayerIdx(0);
   }
 
+  // Rematch: restart gameplay directly with the SAME players and their
+  // accumulated scores/streaks. Only per-match content is reset (fresh deck,
+  // round/player counters), then we jump straight into the first round.
+  function playAgain() {
+    stopTimers();
+    gameRecordedRef.current = false;
+    deck.current = shuffle(getEMOJI_PUZZLES());
+    deckPos.current = 0;
+    setCurrentRound(1);
+    setCurrentPlayerIdx(0);
+    setShowAnswer(false);
+    startRound();
+  }
+
   // Cleanup
   useEffect(() => {
     return () => {
@@ -511,7 +525,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
           <div className="w-full space-y-3 mt-2">
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={resetGame}
+              onClick={playAgain}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
             >
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}

@@ -268,10 +268,28 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  const resetGame = () => {
-    setPhase('setup');
-    setPlayers([]);
+  // Rematch: keep players AND their scores, but assign fresh characters
+  // (a new game must reveal new secret roles). Reset per-match counts and
+  // go straight into the assign/reveal phase — never back to setup.
+  const playAgain = () => {
+    const category = MODE_TO_CATEGORY[mode] ?? 'Prominente';
+    const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
+    setPlayers((prev) => prev.map((p, i) => ({
+      ...p,
+      character: pool[i % pool.length].name,
+      questionsAsked: 0, guessedCorrectly: false, eliminated: false,
+    })));
     setCurrentRound(1);
+    setRevealIdx(0);
+    setActiveIdx(0);
+    setCharacterRevealed(false);
+    setCurrentQuestion('');
+    setVoteResults({});
+    setVoterIdx(0);
+    setGuessAttempt('');
+    setGuessCorrect(null);
+    gameRecordedRef.current = false;
+    setPhase('assign');
   };
 
   /* ---- Online: host broadcasts game state ---- */
@@ -759,7 +777,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={resetGame}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.whoami.gameOver.playAgain')}
               </motion.button>

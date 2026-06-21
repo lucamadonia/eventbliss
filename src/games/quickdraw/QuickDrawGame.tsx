@@ -200,6 +200,9 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Game flow ---- */
   function startGame() { setPlayers(players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
+  // Rematch: same players, scores carried over (NOT zeroed). Reshuffle deck,
+  // restart from round 1, and go straight into the first drawer reveal.
+  function playAgain() { deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); gameRecordedRef.current = false; beginRound(0); }
   function beginRound(dIdx: number) { setDrawerIdx(dIdx); setCurrentWord(drawWord()); setGuesses([]); setGuessInput(''); setCurrentGuesser(0); setDrawingDataURL(null); setTool('pen'); setPenSize(6); setPhase('drawerReveal'); }
   function startDrawing() {
     setPhase('drawing'); startTimer(MODE_TIMERS[mode]); setTimeout(initCanvas, 50);
@@ -539,7 +542,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
             ))}
           </div>
           <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} onClick={() => setPhase('setup')}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b98] to-[#ff6b98] text-white py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(255,107,152,0.3)]">
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}</motion.button>
             <button onClick={() => navigate('/games')}
