@@ -92,6 +92,7 @@ export function questionsOptionsToSettings(o: QuestionsOptions): Record<string, 
   return {
     date_blocks,
     date_warnings,
+    date_ranges: o.date_range_blocks,
     attendance_options: o.attendance_options,
     duration_options: o.duration_options,
     budget_options: o.budget_options,

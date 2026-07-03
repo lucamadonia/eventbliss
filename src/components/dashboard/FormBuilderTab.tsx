@@ -49,6 +49,7 @@ import {
   DEFAULT_BRANDING,
   DEFAULT_QUESTION_CONFIG,
   mergeWithDefaults,
+  getDateBlocks,
 } from "@/lib/survey-config";
 import { DateRangeBlockEditor, DateRangeBlock } from "./DateRangeBlockEditor";
 import { AdvancedActivitySelector } from "./AdvancedActivitySelector";
@@ -87,16 +88,17 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
     return label;
   };
   
-  // Convert stored date_blocks to DateRangeBlock format
-  const initialDateBlocks: DateRangeBlock[] = useMemo(() => {
-    return Object.entries(settings.date_blocks || {}).map(([key, label]) => ({
-      key,
-      start: '', // We don't have start/end stored separately yet
-      end: '',
-      label,
-      warning: settings.date_warnings?.[key],
-    }));
-  }, [settings.date_blocks, settings.date_warnings]);
+  // Hydrate from real ranges where available (ranges-first, reconciled against
+  // the legacy date_blocks record); legacy-only blocks fall back to empty
+  // start/end.
+  const initialDateBlocks: DateRangeBlock[] = useMemo(
+    () => getDateBlocks({
+      date_blocks: settings.date_blocks,
+      date_warnings: settings.date_warnings,
+      date_ranges: settings.date_ranges,
+    }),
+    [settings.date_blocks, settings.date_warnings, settings.date_ranges],
+  );
 
   // Convert stored activity_options to ActivityItem format
   const initialActivities: ActivityItem[] = useMemo(() => {
@@ -209,6 +211,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         ...settings,
         date_blocks: dateBlocksRecord,
         date_warnings: dateWarningsRecord,
+        date_ranges: dateBlocks,
         budget_options: budgetOptions,
         destination_options: destinationOptions,
         activity_options: activityOptions,
