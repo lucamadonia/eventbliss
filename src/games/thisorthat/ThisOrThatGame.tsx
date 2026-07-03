@@ -16,6 +16,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
 import { PlayerSetup } from '../ui/PlayerSetup';
+import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,6 +83,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
+  const exitGuard = useConfirmExit(() => navigate('/games'));
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -396,7 +398,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
         <button
-          onClick={() => navigate('/games')}
+          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
           className="p-2 text-[#a8abb3] hover:text-white"
           aria-label={t('common.back')}
         >
@@ -865,6 +867,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </div>
   );
 }

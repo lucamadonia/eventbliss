@@ -16,6 +16,7 @@ import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getBOTTLE_CARDS, getCATEGORY_META, type BottleCard, type BottleCategory } from './bottlespin-content';
+import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
@@ -65,6 +66,8 @@ const neonStyles = `
 export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Confirm before leaving mid-round (accidental back tap during active play).
+  const exitGuard = useConfirmExit(() => navigate('/games'));
   const setupSettings: SettingsConfig = useMemo(() => ({
     timer: { min: 15, max: 60, default: 30, step: 5, label: t('games.bottlespin.setupTimerLabel') },
     rounds: { min: 5, max: 50, default: 15, step: 1, label: t('games.bottlespin.setupRoundsLabel') },
@@ -261,7 +264,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-[#df8eff]/[0.06]">
-        <button onClick={() => navigate('/games')} className="p-2 text-white/40 hover:text-[#df8eff] transition-colors">
+        <button onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())} className="p-2 text-white/40 hover:text-[#df8eff] transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ff5ff]/60">
@@ -561,6 +564,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </div>
   );
 }

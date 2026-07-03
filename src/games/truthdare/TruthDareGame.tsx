@@ -18,6 +18,7 @@ import { getTRUTH_QUESTIONS, getDARE_CHALLENGES, type TruthQuestion, type DareCh
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,6 +83,8 @@ const EP_STYLE = `
 export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Confirm-before-quit for the in-game header back button (active play only).
+  const exitGuard = useConfirmExit(() => navigate('/games'));
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
   const [disclaimer, setDisclaimer] = useState<{ message: string; emoji: string } | null>(null);
@@ -341,7 +344,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
-        <button onClick={() => navigate('/games')} className="p-2 text-[#a8abb3] hover:text-white">
+        <button onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())} className="p-2 text-[#a8abb3] hover:text-white">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
@@ -756,6 +759,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
           </motion.div>
         )}
       </AnimatePresence>
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </div>
   );
 }

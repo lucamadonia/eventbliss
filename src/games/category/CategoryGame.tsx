@@ -28,6 +28,7 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -893,6 +894,11 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
     setUsedCategories(new Set());
   }, []);
 
+  // Confirm before leaving mid-round (accidental back tap during active play).
+  // Preserves the existing destination: the back button drops to the setup
+  // screen (handleRestart), just gated behind a "Spiel verlassen?" dialog.
+  const exitGuard = useConfirmExit(handleRestart);
+
   // Rematch: restart gameplay directly (no setup screen), keeping the same
   // players AND their accumulated score/losses (carry over — do not zero).
   const handlePlayAgain = useCallback(() => {
@@ -951,7 +957,13 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <button
-              onClick={() => (phase === "setup" ? navigate("/games") : handleRestart())}
+              onClick={() =>
+                phase === "setup"
+                  ? navigate("/games")
+                  : phase === "gameOver"
+                    ? handleRestart()
+                    : exitGuard.request()
+              }
               className="flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors"
               aria-label={phase === "setup" ? t('common.back') : t('games.category.quit')}
             >
@@ -1022,6 +1034,7 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
           </AnimatePresence>
         </div>
       </div>
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </AnimatedBackground>
   );
 }

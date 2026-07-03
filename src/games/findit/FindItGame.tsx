@@ -14,6 +14,7 @@ import StreetViewRound, { type StreetViewResult } from './StreetViewRound';
 import { getRandomStreetViewLocations, type StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -295,6 +296,7 @@ function getSetupSettings(t: (key: string, fallback?: string) => string): Settin
 export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const exitGuard = useConfirmExit(() => navigate('/games'));
 
   // Core state
   const [phase, setPhase] = useState<Phase>('setup');
@@ -771,7 +773,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
         {/* Header bar */}
         <div className="flex items-center justify-between">
-          <button onClick={() => navigate('/games')} className="text-gray-400 hover:text-white transition-colors">
+          <button onClick={exitGuard.request} className="text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="text-center">
@@ -1033,7 +1035,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                   setCurrentGeo(geoPool[(nextRound) % geoPool.length]);
                 }
               }}
-              onExit={() => navigate('/games')}
+              onExit={exitGuard.request}
             />
           </div>
         )}
@@ -1062,11 +1064,13 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                 if (next >= totalRounds) { setPhase('gameOver'); }
                 else { setSvRound(next); }
               }}
-              onExit={() => navigate('/games')}
+              onExit={exitGuard.request}
             />
           </div>
         )}
       </div>
+
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#06b6d4" />
     </div>
   );
 }
