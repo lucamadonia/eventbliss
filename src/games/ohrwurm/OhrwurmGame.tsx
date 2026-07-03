@@ -99,6 +99,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   }, [i18n.language]);
 
   const [phase, setPhase] = useState<Phase>('setup');
+  const [confirmExit, setConfirmExit] = useState(false); // "Spiel verlassen?"-Sicherheitsabfrage
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [deck, setDeck] = useState<Song[]>([]);
   const [turn, setTurn] = useState(0);
@@ -523,9 +524,24 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       case 'noCounter': handleNoCounter(); break;
       case 'bonus': handleBonus(data.earned as boolean); break;
       case 'continue': handleContinue(); break;
+      // Ein Schritt zurück innerhalb der Runde (noch nichts gewertet).
+      case 'back':
+        if (data.to === 'draw') setPhase('draw');
+        else if (data.to === 'counter') { setCounteringId(null); setPhase('counter'); }
+        break;
       default: break;
     }
   }, [beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue]);
+
+  // Header-Zurück: einen echten Schritt zurück, wo es gefahrlos ist (vor der
+  // Wertung), sonst NICHT sofort das ganze Spiel verlassen, sondern nachfragen.
+  // So wirft ein versehentlicher Tipp dich nicht mehr direkt in die Spieleliste.
+  const handleHeaderBack = useCallback(() => {
+    void haptics.light();
+    if (phase === 'place') { act('back', { to: 'draw' }, () => setPhase('draw')); return; }
+    if (phase === 'counterPlace') { act('back', { to: 'counter' }, () => { setCounteringId(null); setPhase('counter'); }); return; }
+    setConfirmExit(true);
+  }, [phase, act, haptics]);
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -670,7 +686,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-        <button onClick={() => navigate('/games')} className="p-2 -ml-2" style={{ color: OW.dim }} aria-label={t('games.ohrwurm.back')}>
+        <button onClick={handleHeaderBack} className="p-2 -ml-2" style={{ color: OW.dim }} aria-label={t('games.ohrwurm.back')}>
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2">
@@ -681,6 +697,44 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           {t('games.ohrwurm.target', { count: winTarget })}
         </div>
       </div>
+
+      {/* "Spiel verlassen?" — verhindert, dass ein Zurück-Tipp die ganze Runde abbricht */}
+      {confirmExit && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-6"
+          style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setConfirmExit(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-3xl p-5 text-center"
+            style={{ background: OW.surface, border: '1px solid rgba(255,255,255,0.1)' }}
+          >
+            <p className="text-base font-bold mb-1" style={{ color: OW.text }}>
+              {t('games.ohrwurm.leaveTitle', 'Spiel verlassen?')}
+            </p>
+            <p className="text-xs mb-4" style={{ color: OW.dim }}>
+              {t('games.ohrwurm.leaveSub', 'Der aktuelle Spielstand geht dabei verloren.')}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setConfirmExit(false)}
+                className="w-full py-3 rounded-2xl text-sm font-bold"
+                style={{ background: OW.primary, color: '#0a0e14' }}
+              >
+                {t('games.ohrwurm.leaveStay', 'Weiterspielen')}
+              </button>
+              <button
+                onClick={() => { setConfirmExit(false); navigate('/games'); }}
+                className="w-full py-3 rounded-2xl text-sm font-semibold"
+                style={{ border: '1px solid rgba(255,255,255,0.1)', color: OW.dim }}
+              >
+                {t('games.ohrwurm.leaveConfirm', 'Verlassen')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Spotify-Status (sichtbar im Premium-Modus). Autorisierung ist schnell —
           ok = Premium aktiv (Like/Playlist + Volle-Länge-Link nach dem Reveal),
