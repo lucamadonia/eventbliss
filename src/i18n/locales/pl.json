@@ -8215,6 +8215,12 @@
     "flaschendrehen": "Butelka"
   },
   "tv": {
+    "connectTitle": "Połącz TV",
+    "openOnTv": "Otwórz na swoim TV:",
+    "copied": "Skopiowano!",
+    "copyLink": "Kopiuj link",
+    "connectionTimeout": "Połączenie trwało zbyt długo. Odśwież stronę.",
+    "connectionFailed": "Połączenie nie powiodło się. Odśwież stronę.",
     "connected": "Połączono",
     "error": "Błąd",
     "connecting": "Łączenie…",

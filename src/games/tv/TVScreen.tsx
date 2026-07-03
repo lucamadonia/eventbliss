@@ -74,9 +74,17 @@ export default function TVScreen() {
 
   const scores = useMemo(() => {
     if (leaderboard.length > 0) return leaderboard;
-    // Derive from players if available
+    // Offline TV mode has no presence roster — fall back to the players
+    // carried inside the broadcast game state (they include live scores).
+    const statePlayers = gameState?.players as { name?: string; score?: number; color?: string }[] | undefined;
+    if (Array.isArray(statePlayers) && statePlayers.some(p => p && typeof p.name === 'string')) {
+      return statePlayers
+        .filter(p => p && typeof p.name === 'string')
+        .map(p => ({ name: p.name as string, score: typeof p.score === 'number' ? p.score : 0, color: p.color || '#df8eff' }))
+        .sort((a, b) => b.score - a.score);
+    }
     return players.map(p => ({ name: p.name, score: 0, color: p.color }));
-  }, [leaderboard, players]);
+  }, [leaderboard, players, gameState?.players]);
 
   // Determine phase
   const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
@@ -139,30 +147,29 @@ export default function TVScreen() {
           own full TVScoreboard roster, so this only duplicated the standings
           and covered on-screen content (timelines, cards, etc.). */}
 
+      {/* Exactly ONE keyed child — AnimatePresence mode="wait" with several
+          conditional children can wedge (view faded out but the next one
+          never mounted) when the exit animation is interrupted, e.g. while
+          the tab is backgrounded/throttled. A single child keyed by the
+          derived view name cannot get stuck between views. */}
       <AnimatePresence mode="wait">
-        {showGameOver && (
-          <motion.div key="gameover" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div
+          key={showGameOver ? 'gameover' : showLeaderboard ? 'leaderboard' : showGame ? 'game' : 'lobby'}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          {showGameOver ? (
             <TVGameOver scores={scores} />
-          </motion.div>
-        )}
-
-        {showLeaderboard && !showGameOver && (
-          <motion.div key="leaderboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          ) : showLeaderboard ? (
             <TVLeaderboard scores={scores} />
-          </motion.div>
-        )}
-
-        {showGame && !showLeaderboard && !showGameOver && (
-          <motion.div key="game" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          ) : showGame ? (
             <GameView gameState={gameState} drawing={drawing} />
-          </motion.div>
-        )}
-
-        {showLobby && !showGame && !showLeaderboard && !showGameOver && (
-          <motion.div key="lobby" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          ) : (
             <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
-          </motion.div>
-        )}
+          )}
+        </motion.div>
       </AnimatePresence>
     </div>
   );

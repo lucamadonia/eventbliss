@@ -8141,6 +8141,12 @@
     "flaschendrehen": "Flaschendrehen"
   },
   "tv": {
+    "connectTitle": "TV verbinden",
+    "openOnTv": "Öffne auf deinem TV:",
+    "copied": "Kopiert!",
+    "copyLink": "Link kopieren",
+    "connectionTimeout": "Verbindung hat zu lange gedauert. Bitte Seite neu laden.",
+    "connectionFailed": "Verbindung fehlgeschlagen. Bitte Seite neu laden.",
     "connected": "Verbunden",
     "error": "Fehler",
     "connecting": "Verbinde…",

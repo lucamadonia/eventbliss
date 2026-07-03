@@ -8165,6 +8165,12 @@
     "flaschendrehen": "Tourne-bouteille"
   },
   "tv": {
+    "connectTitle": "Connecter la TV",
+    "openOnTv": "Ouvre sur ta TV :",
+    "copied": "Copié !",
+    "copyLink": "Copier le lien",
+    "connectionTimeout": "La connexion a pris trop de temps. Recharge la page.",
+    "connectionFailed": "Échec de la connexion. Recharge la page.",
     "connected": "Connecté",
     "error": "Erreur",
     "connecting": "Connexion…",

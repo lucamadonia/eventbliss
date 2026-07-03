@@ -38,19 +38,27 @@ export function useTVGameBridge(
     });
   }, [tv, gameId, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Broadcast game-start when the game first enters a playing phase
+  // Broadcast game-start when the game first enters a playing phase.
+  // Both refs reset when the game returns to setup/lobby ("Play again"
+  // restarts in-place, so start/end must be able to fire once per run).
   const startedRef = useRef(false);
+  const endedRef = useRef(false);
   useEffect(() => {
     if (!tv?.isActive) return;
     const phase = state.phase as string | undefined;
-    if (phase && phase !== "setup" && phase !== "lobby" && !startedRef.current) {
+    if (phase === "setup" || phase === "lobby") {
+      startedRef.current = false;
+      endedRef.current = false;
+      return;
+    }
+    if (phase && !startedRef.current) {
       startedRef.current = true;
+      endedRef.current = false;
       tv.broadcastTV("game-start", { game: gameId, ...state });
     }
   }, [tv, gameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Broadcast game-end when phase becomes gameOver/result/finished
-  const endedRef = useRef(false);
   useEffect(() => {
     if (!tv?.isActive) return;
     const phase = state.phase as string | undefined;

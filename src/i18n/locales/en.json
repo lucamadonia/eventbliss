@@ -8141,6 +8141,12 @@
     "flaschendrehen": "Spin the Bottle"
   },
   "tv": {
+    "connectTitle": "Connect TV",
+    "openOnTv": "Open on your TV:",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "connectionTimeout": "Connection timed out. Please reload the page.",
+    "connectionFailed": "Connection failed. Please reload the page.",
     "connected": "Connected",
     "error": "Error",
     "connecting": "Connecting…",

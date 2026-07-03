@@ -8215,6 +8215,12 @@
     "flaschendrehen": "Şişe Çevirmece"
   },
   "tv": {
+    "connectTitle": "TV'yi bağla",
+    "openOnTv": "TV'nde aç:",
+    "copied": "Kopyalandı!",
+    "copyLink": "Bağlantıyı kopyala",
+    "connectionTimeout": "Bağlantı çok uzun sürdü. Lütfen sayfayı yenile.",
+    "connectionFailed": "Bağlantı başarısız. Lütfen sayfayı yenile.",
     "connected": "Bağlandı",
     "error": "Hata",
     "connecting": "Bağlanıyor…",

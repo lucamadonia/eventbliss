@@ -8215,6 +8215,12 @@
     "flaschendrehen": "Girar a garrafa"
   },
   "tv": {
+    "connectTitle": "Conectar TV",
+    "openOnTv": "Abre na tua TV:",
+    "copied": "Copiado!",
+    "copyLink": "Copiar link",
+    "connectionTimeout": "A ligação demorou demasiado. Recarrega a página.",
+    "connectionFailed": "Falha na ligação. Recarrega a página.",
     "connected": "Conectado",
     "error": "Erro",
     "connecting": "Conectando…",

@@ -243,7 +243,13 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const [bonusResult, setBonusResult] = useState<boolean | null>(null);
   const [round, setRound] = useState(1);
 
-  useTVGameBridge('impostor', { phase, round, players }, [phase, round]);
+  // Score/speaker/timer changes within a round must reach the TV too — the
+  // deps list is what triggers a re-broadcast, so it carries a score signature.
+  useTVGameBridge(
+    'impostor',
+    { phase, round, players, currentSpeaker, timeLeft },
+    [phase, round, currentSpeaker, timeLeft, players.map((p) => p.score).join(',')],
+  );
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

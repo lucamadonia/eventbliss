@@ -5,6 +5,7 @@
  */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Tv, Copy, Check, X } from "lucide-react";
 import { haptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -49,7 +51,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Tv className="w-4 h-4 text-[#df8eff]" />
-                <span className="text-sm font-semibold text-white">TV verbinden</span>
+                <span className="text-sm font-semibold text-white">{t("tv.connectTitle", "TV verbinden")}</span>
               </div>
               <button onClick={() => { haptics.light(); setExpanded(false); }}>
                 <X className="w-4 h-4 text-white/40" />
@@ -65,7 +67,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
 
             {/* Instructions */}
             <p className="text-[11px] text-white/50 leading-relaxed mb-3">
-              Öffne auf deinem TV:
+              {t("tv.openOnTv", "Öffne auf deinem TV:")}
               <br />
               <span className="text-[#8ff5ff] font-medium">
                 {getBaseUrl()}/tv/{tvCode}
@@ -79,7 +81,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
               className="w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-[#df8eff]/20 border border-[#df8eff]/30 text-[#df8eff] text-sm font-semibold"
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? "Kopiert!" : "Link kopieren"}
+              {copied ? t("tv.copied", "Kopiert!") : t("tv.copyLink", "Link kopieren")}
             </motion.button>
           </motion.div>
         ) : isActive ? (

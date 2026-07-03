@@ -8215,6 +8215,12 @@
     "flaschendrehen": "لفّ الزجاجة"
   },
   "tv": {
+    "connectTitle": "توصيل التلفاز",
+    "openOnTv": "افتح على تلفازك:",
+    "copied": "تم النسخ!",
+    "copyLink": "نسخ الرابط",
+    "connectionTimeout": "استغرق الاتصال وقتاً طويلاً. يرجى إعادة تحميل الصفحة.",
+    "connectionFailed": "فشل الاتصال. يرجى إعادة تحميل الصفحة.",
     "connected": "متصل",
     "error": "خطأ",
     "connecting": "جارٍ الاتصال…",

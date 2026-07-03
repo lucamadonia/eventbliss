@@ -22,7 +22,7 @@ export function TVBroadcastProvider({ children, sessionCode }: Props) {
   return (
     <TVCtx.Provider value={tv}>
       {children}
-      <TVConnectButton tvCode={tv.tvCode} isActive={tv.isActive} onActivate={tv.activate} />
+      <TVConnectButton tvCode={tv.displayCode} isActive={tv.isActive} onActivate={tv.activate} />
     </TVCtx.Provider>
   );
 }

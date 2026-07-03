@@ -8343,6 +8343,12 @@
     "flaschendrehen": "Girar la botella"
   },
   "tv": {
+    "connectTitle": "Conectar TV",
+    "openOnTv": "Abre en tu TV:",
+    "copied": "¡Copiado!",
+    "copyLink": "Copiar enlace",
+    "connectionTimeout": "La conexión tardó demasiado. Recarga la página.",
+    "connectionFailed": "Error de conexión. Recarga la página.",
     "connected": "Conectado",
     "error": "Error",
     "connecting": "Conectando…",

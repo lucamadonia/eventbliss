@@ -37,6 +37,8 @@ function wasActivated(): boolean {
 
 export interface TVBroadcastAPI {
   tvCode: string;
+  /** Code shown to the user — the online room code when in a room, else the session TV code. */
+  displayCode: string;
   isActive: boolean;
   activate: () => void;
   deactivate: () => void;
@@ -48,11 +50,20 @@ export interface TVBroadcastAPI {
 export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   const [tvCode] = useState(() => sessionCode || getSessionTVCode());
   const [isActive, setIsActive] = useState(false);
+  const [onlineCode, setOnlineCode] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const gameChannelRef = useRef<RealtimeChannel | null>(null);
   const onlineChannelRef = useRef<RealtimeChannel | null>(null);
   const lastStateRef = useRef<Record<string, unknown> | null>(null);
+  const lastLeaderboardRef = useRef<Record<string, unknown> | null>(null);
+  /** Buffered drawing segments (QuickDraw) so late-joining TVs don't see a blank canvas. */
+  const drawingBufferRef = useRef<Record<string, unknown>[]>([]);
+  const DRAWING_BUFFER_MAX = 500;
   const activatedRef = useRef(false);
+  // supabase.channel() dedupes by topic and returns the EXISTING instance —
+  // for online rooms that is useGameRoom's channel. We must never remove a
+  // channel we don't own, or we'd kill the multiplayer connection.
+  const onlineChannelOwnedRef = useRef(false);
 
   const handleTVReady = useCallback(() => {
     if (lastStateRef.current) {
@@ -60,6 +71,21 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
       channelRef.current?.send(syncPayload);
       gameChannelRef.current?.send(syncPayload);
       onlineChannelRef.current?.send(syncPayload);
+    }
+    // Late-joining TVs also need the current leaderboard — it is only
+    // broadcast once on game end, so replay it alongside the state.
+    if (lastLeaderboardRef.current) {
+      const lbPayload = { type: "broadcast" as const, event: "tv-leaderboard", payload: lastLeaderboardRef.current };
+      channelRef.current?.send(lbPayload);
+      gameChannelRef.current?.send(lbPayload);
+      onlineChannelRef.current?.send(lbPayload);
+    }
+    // Replay accumulated drawing strokes (QuickDraw) in one batch.
+    if (drawingBufferRef.current.length > 0) {
+      const drawPayload = { type: "broadcast" as const, event: "tv-drawing-sync", payload: { segments: drawingBufferRef.current } };
+      channelRef.current?.send(drawPayload);
+      gameChannelRef.current?.send(drawPayload);
+      onlineChannelRef.current?.send(drawPayload);
     }
   }, []);
 
@@ -85,25 +111,49 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   const deactivate = useCallback(() => {
     if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
     if (gameChannelRef.current) { supabase.removeChannel(gameChannelRef.current); gameChannelRef.current = null; }
-    if (onlineChannelRef.current) { supabase.removeChannel(onlineChannelRef.current); onlineChannelRef.current = null; }
+    if (onlineChannelRef.current) {
+      if (onlineChannelOwnedRef.current) supabase.removeChannel(onlineChannelRef.current);
+      onlineChannelRef.current = null;
+      onlineChannelOwnedRef.current = false;
+    }
     lastStateRef.current = null;
+    lastLeaderboardRef.current = null;
     activatedRef.current = false;
+    setOnlineCode(null);
     setIsActive(false);
     try { sessionStorage.removeItem(TV_ACTIVE_KEY); } catch { /* ok */ }
   }, []);
 
   const setOnlineRoom = useCallback((code: string | null) => {
-    // Remove previous online channel
-    if (onlineChannelRef.current) {
-      supabase.removeChannel(onlineChannelRef.current);
-      onlineChannelRef.current = null;
+    // Same room already attached — keep the channel (avoids re-subscribe churn).
+    if (code && onlineChannelRef.current && (onlineChannelRef.current as unknown as { topic: string }).topic === `realtime:game-room:${code}`) {
+      return;
     }
-    // Add new online channel if code provided and TV is active
-    if (code && activatedRef.current) {
+    // Detach previous online channel (only remove it if we created it)
+    if (onlineChannelRef.current) {
+      if (onlineChannelOwnedRef.current) supabase.removeChannel(onlineChannelRef.current);
+      onlineChannelRef.current = null;
+      onlineChannelOwnedRef.current = false;
+    }
+    // Attach the room channel whenever a room is active — the lobby advertises
+    // /tv/<roomCode>, so broadcasts must flow WITHOUT requiring the user to
+    // separately tap the TV button. isActive follows automatically.
+    if (code) {
+      // supabase.channel() dedupes by topic: if useGameRoom already holds this
+      // room's channel we get that same (joined) instance back and subscribe()
+      // is a no-op. Track ownership so cleanup never removes a shared channel.
+      const topic = `realtime:game-room:${code}`;
+      const existed = supabase.getChannels().some((c) => (c as unknown as { topic: string }).topic === topic);
       const ch = supabase.channel(`game-room:${code}`);
       ch.on("broadcast", { event: "tv-ready" }, handleTVReady);
-      ch.subscribe();
+      if (!existed) ch.subscribe();
       onlineChannelRef.current = ch;
+      onlineChannelOwnedRef.current = !existed;
+      setOnlineCode(code);
+      setIsActive(true);
+    } else {
+      setOnlineCode(null);
+      if (!activatedRef.current) setIsActive(false);
     }
   }, [handleTVReady]);
 
@@ -114,6 +164,18 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     onlineChannelRef.current?.send(msg);
     if (event === "tv-state" || event === "game-start") {
       lastStateRef.current = data;
+      if (event === "game-start") drawingBufferRef.current = [];
+    } else if (event === "tv-leaderboard") {
+      lastLeaderboardRef.current = data;
+    } else if (event === "game-end") {
+      lastStateRef.current = { ...(lastStateRef.current || {}), ...data };
+    } else if (event === "tv-drawing") {
+      if ((data as { type?: string }).type === "clear") {
+        drawingBufferRef.current = [];
+      } else {
+        drawingBufferRef.current.push(data);
+        if (drawingBufferRef.current.length > DRAWING_BUFFER_MAX) drawingBufferRef.current.shift();
+      }
     }
   }, []);
 
@@ -129,9 +191,9 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     return () => {
       if (channelRef.current) supabase.removeChannel(channelRef.current);
       if (gameChannelRef.current) supabase.removeChannel(gameChannelRef.current);
-      if (onlineChannelRef.current) supabase.removeChannel(onlineChannelRef.current);
+      if (onlineChannelRef.current && onlineChannelOwnedRef.current) supabase.removeChannel(onlineChannelRef.current);
     };
   }, []);
 
-  return { tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom };
+  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom };
 }

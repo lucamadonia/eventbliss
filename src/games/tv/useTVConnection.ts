@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import i18n from '@/i18n';
 
 export interface TVPlayer { id: string; name: string; color: string; avatar: string; isReady: boolean; }
 export interface TVState { game: string; phase: string; [key: string]: unknown; }
@@ -68,6 +69,11 @@ export function useTVConnection(roomCode: string) {
       if ((payload as any).type === 'clear') setDrawing([]);
       else setDrawing(prev => [...prev, payload]);
     });
+    // Batched stroke replay for TVs that connected mid-drawing
+    channel.on('broadcast', { event: 'tv-drawing-sync' }, ({ payload }) => {
+      const segments = (payload as { segments?: unknown[] }).segments;
+      if (Array.isArray(segments)) setDrawing(segments);
+    });
     channel.on('broadcast', { event: 'game-start' }, ({ payload }) => {
       markGameStarted(); setGameEnded(false);
       if (payload) setGameState(payload as TVState);
@@ -106,22 +112,16 @@ export function useTVConnection(roomCode: string) {
       }
     });
 
-    channel.subscribe((status) => {
+    const handleStatus = (status: string) => {
       if (status === 'SUBSCRIBED') broadcastTVReady();
       else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
         setError(status === 'TIMED_OUT'
-          ? 'Verbindung hat zu lange gedauert. Bitte Seite neu laden.'
-          : 'Verbindung fehlgeschlagen. Bitte Seite neu laden.');
+          ? i18n.t('tv.connectionTimeout', 'Verbindung hat zu lange gedauert. Bitte Seite neu laden.')
+          : i18n.t('tv.connectionFailed', 'Verbindung fehlgeschlagen. Bitte Seite neu laden.'));
       }
-    });
-    tvChannel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') broadcastTVReady();
-      else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        setError(status === 'TIMED_OUT'
-          ? 'Verbindung hat zu lange gedauert. Bitte Seite neu laden.'
-          : 'Verbindung fehlgeschlagen. Bitte Seite neu laden.');
-      }
-    });
+    };
+    channel.subscribe(handleStatus);
+    tvChannel.subscribe(handleStatus);
     return () => {
       gameStartedRef.current = false;
       supabase.removeChannel(channel);

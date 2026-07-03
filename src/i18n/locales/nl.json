@@ -8215,6 +8215,12 @@
     "flaschendrehen": "Flesje draaien"
   },
   "tv": {
+    "connectTitle": "TV verbinden",
+    "openOnTv": "Open op je tv:",
+    "copied": "Gekopieerd!",
+    "copyLink": "Link kopiëren",
+    "connectionTimeout": "Verbinding duurde te lang. Herlaad de pagina.",
+    "connectionFailed": "Verbinding mislukt. Herlaad de pagina.",
     "connected": "Verbonden",
     "error": "Fout",
     "connecting": "Verbinden…",
