@@ -33,6 +33,9 @@ const PULSE_CSS = `
 .tilt-text-right{writing-mode:vertical-rl}
 `;
 
+// Nur für die einmalige Geräte-Feinjustage der Kipp-Schwellen. Danach auf false.
+const TILT_DEBUG = true;
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -100,10 +103,14 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const orientationActiveRef = useRef(false);
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
   const [isArmed, setIsArmed] = useState(false); // sichtbarer „Bereit"-Status
-  // Kalibrierte Neutral-Halteposition (beta). Auf der Stirn hält niemand exakt
-  // 0° — die Erkennung misst die Neigung RELATIV zu dieser Baseline, sonst wird
-  // eine Richtung (z.B. Skip) unerreichbar, wenn neutral schon leicht gekippt.
+  // Kalibrierte Neutral-Halteposition (Nick-Winkel). Auf der Stirn hält niemand
+  // exakt 0° — die Erkennung misst die Neigung RELATIV zu dieser Baseline, sonst
+  // wird eine Richtung (z.B. Skip) unerreichbar, wenn neutral schon leicht gekippt.
   const baselineRef = useRef<number | null>(null);
+  const smoothRef = useRef<number | null>(null); // EMA-Glättung gegen Ruckel
+  // Live-Debug (nur für die Geräte-Feinjustage; TILT_DEBUG danach auf false).
+  const [tiltDebug, setTiltDebug] = useState<{ pitch: number; delta: number; armed: boolean } | null>(null);
+  const debugTickRef = useRef(0);
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
@@ -132,8 +139,9 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
       armedRef.current = false; setIsArmed(false); // erst flach halten (Neutral), bevor die erste Neigung zählt
-      baselineRef.current = null; // Neu kalibrieren: erste Messung wird zur Neutral-Halteposition
-      setTimeout(() => { orientationActiveRef.current = true; }, 500);
+      baselineRef.current = null; smoothRef.current = null; // Neu kalibrieren
+      // Kurzer Lock (150ms statt 500ms), damit die ERSTE Neigung nicht verschluckt wird.
+      setTimeout(() => { orientationActiveRef.current = true; }, 150);
       if (online?.isHost) {
         online.broadcast('tv-state', {
           game: 'headup', phase: 'playing',
@@ -182,49 +190,61 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setTimeout(() => { cooldownRef.current = false; }, 300);
   }, [currentWord, wordQueue.length, online, correctCount, skippedCount, timeLeft, currentRound, totalRounds, playerNames, selectedCategory, wordQueue]);
 
-  // ── Device Orientation ───────────────────────────────────────────────────────
+  // ── Tilt-Erkennung (Gravitationsvektor, orientierungsunabhängig) ─────────────
+  // Der bisherige Weg über DeviceOrientation.beta war im Querformat mehrdeutig
+  // und nahe der Senkrechten gimbal-instabil → Skip löste praktisch nie aus.
+  // Jetzt: Nick-Winkel aus dem Schwerkraftvektor (accelerationIncludingGravity)
+  // — eindeutig, kein Umschlag, roll-invariant (egal ob Hoch-/Querformat).
   useEffect(() => {
     if (screen !== 'playing') return;
-    // Winkeldifferenz auf [-180,180] normalisieren (fängt den beta-Umschlag ab).
-    const normalize = (a: number) => {
-      let x = a;
-      while (x > 180) x -= 360;
-      while (x < -180) x += 360;
-      return x;
+    const THRESHOLD = 25; // Grad Nick aus der Halteposition → Antwort
+    const REARM = 12;     // wieder scharf, sobald zurück in dieser Zone
+
+    // Winkel der Bildschirm-Normalen (z) gegen die Horizontale. Screen senkrecht ≈ 0°.
+    const pitchFrom = (g: DeviceMotionEventAcceleration) => {
+      const gx = g.x ?? 0, gy = g.y ?? 0, gz = g.z ?? 0;
+      return Math.atan2(gz, Math.hypot(gx, gy)) * (180 / Math.PI);
     };
-    const handle = (e: DeviceOrientationEvent) => {
+
+    const handle = (e: DeviceMotionEvent) => {
       if (!orientationActiveRef.current) return;
-      const beta = e.beta ?? 0;
-      // Erste Messung nach Rundenstart = Neutral-Halteposition (Baseline).
-      if (baselineRef.current === null) { baselineRef.current = beta; }
-      // Neigung RELATIV zur Halteposition — so sind Kippen & Skippen symmetrisch,
-      // egal ob das Handy neutral leicht nach vorn oder hinten gehalten wird.
-      const delta = normalize(beta - baselineRef.current);
-      // Re-Arm: eine Neigung zählt genau einmal. Erst zurück in die Neutralzone
-      // (<15° relativ), dann ist die nächste Neigung wieder scharf.
+      const g = e.accelerationIncludingGravity;
+      if (!g) return;
+      const raw = pitchFrom(g);
+      // EMA-Glättung gegen Ruckel/Jolts.
+      smoothRef.current = smoothRef.current === null ? raw : smoothRef.current * 0.8 + raw * 0.2;
+      const pitch = smoothRef.current;
+      if (baselineRef.current === null) { baselineRef.current = pitch; }
+      const delta = pitch - baselineRef.current;
+
+      if (TILT_DEBUG && (debugTickRef.current++ % 6 === 0)) {
+        setTiltDebug({ pitch: Math.round(pitch), delta: Math.round(delta), armed: armedRef.current });
+      }
+
       if (!armedRef.current) {
-        if (Math.abs(delta) < 15) {
+        if (Math.abs(delta) < REARM) {
           armedRef.current = true; setIsArmed(true);
-          baselineRef.current = beta; // Baseline sanft auf die aktuelle Ruhelage nachführen (Drift)
+          baselineRef.current = pitch; // Ruhelage nachführen (Drift)
         }
         return;
       }
-      if (delta > 30) { armedRef.current = false; setIsArmed(false); advanceWord(true); }
-      else if (delta < -30) { armedRef.current = false; setIsArmed(false); advanceWord(false); }
+      if (delta > THRESHOLD) { armedRef.current = false; setIsArmed(false); advanceWord(true); }   // Nick down = Richtig
+      else if (delta < -THRESHOLD) { armedRef.current = false; setIsArmed(false); advanceWord(false); } // Nick up = Skip
     };
+
     const init = async () => {
       try {
-        const DOE = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> };
-        if (typeof DOE.requestPermission === 'function') {
-          try { if ((await DOE.requestPermission()) !== 'granted') return; } catch { return; }
+        const DME = DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> };
+        if (typeof DME.requestPermission === 'function') {
+          try { if ((await DME.requestPermission()) !== 'granted') return; } catch { return; }
         }
-        window.addEventListener('deviceorientation', handle);
+        window.addEventListener('devicemotion', handle);
       } catch {
-        // Gyroscope unavailable — user can still use manual buttons
+        // Bewegungssensor nicht verfügbar — manuelle Buttons bleiben nutzbar
       }
     };
     init();
-    return () => { window.removeEventListener('deviceorientation', handle); };
+    return () => { window.removeEventListener('devicemotion', handle); };
   }, [screen, advanceWord]);
 
   const handleNextRound = useCallback(() => {
@@ -423,6 +443,12 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         {screen === 'playing' && (
           <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="relative flex flex-col min-h-[100dvh] pulse-bg overflow-hidden">
+            {/* Kipp-Debug (nur während der Feinjustage) */}
+            {TILT_DEBUG && tiltDebug && (
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-3 py-1 rounded-full bg-black/70 border border-white/20 text-[11px] font-mono text-white/90 pointer-events-none">
+                pitch {tiltDebug.pitch}° · Δ {tiltDebug.delta}° · {tiltDebug.armed ? 'armed' : 'wait'}
+              </div>
+            )}
             {/* Ambient blurs */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-[#df8eff]/[0.07] rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#ff6b98]/[0.05] rounded-full blur-[120px] pointer-events-none" />
