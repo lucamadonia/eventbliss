@@ -6,9 +6,9 @@
  * Design: glassmorphism cards, spring animations, haptics,
  * horizontal pill tab navigation with layoutId morphing.
  */
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import NativeEventGuests from "./NativeEventGuests";
 import NativeEventSchedule from "./NativeEventSchedule";
 import NativeEventExpenses from "./NativeEventExpenses";
@@ -151,17 +151,20 @@ interface TabDef {
   icon: typeof LayoutDashboard;
 }
 
+// Ordered along the planning lifecycle: first get people in (form →
+// responses → guests), then plan (schedule, expenses, messages, AI),
+// then book extras (marketplace, services), settings last.
 const TABS: TabDef[] = [
   { id: "uebersicht",    labelKey: "nativeDashboard.tabs.overview",    icon: LayoutDashboard },
+  { id: "formular",     labelKey: "nativeDashboard.tabs.form",         icon: FileEdit },
+  { id: "antworten",    labelKey: "nativeDashboard.tabs.responses",    icon: ClipboardCheck },
   { id: "gaeste",        labelKey: "nativeDashboard.tabs.guests",       icon: Users },
   { id: "zeitplan",      labelKey: "nativeDashboard.tabs.schedule",     icon: Calendar },
   { id: "ausgaben",      labelKey: "nativeDashboard.tabs.expenses",     icon: Wallet },
-  { id: "marketplace",   labelKey: "nativeDashboard.tabs.marketplace",  icon: Store },
-  { id: "dienstleister", labelKey: "nativeDashboard.tabs.services",     icon: ShoppingBag },
-  { id: "formular",     labelKey: "nativeDashboard.tabs.form",         icon: FileEdit },
-  { id: "antworten",    labelKey: "nativeDashboard.tabs.responses",    icon: ClipboardCheck },
   { id: "nachrichten",  labelKey: "nativeDashboard.tabs.messages",     icon: MessageSquare },
   { id: "ki",            labelKey: "nativeDashboard.tabs.ai",           icon: Sparkles },
+  { id: "marketplace",   labelKey: "nativeDashboard.tabs.marketplace",  icon: Store },
+  { id: "dienstleister", labelKey: "nativeDashboard.tabs.services",     icon: ShoppingBag },
   { id: "einstellungen", labelKey: "nativeDashboard.tabs.settings",     icon: Settings },
 ];
 
@@ -218,16 +221,6 @@ function ProgressRing({ progress, size = 72, stroke = 5 }: { progress: number; s
 }
 
 /* ------------------------------------------------------------------ */
-/*  Tab content: slide animation variants                              */
-/* ------------------------------------------------------------------ */
-
-const tabContentVariants = {
-  initial: { opacity: 0, x: 40 },
-  animate: { opacity: 1, x: 0, transition: spring.snappy },
-  exit:    { opacity: 0, x: -40, transition: { duration: 0.15 } },
-};
-
-/* ------------------------------------------------------------------ */
 /*  Overview Tab (inline)                                              */
 /* ------------------------------------------------------------------ */
 
@@ -259,29 +252,39 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
     >
       <motion.div variants={staggerItem}><GuestEventWarning event={event} /></motion.div>
 
-      {/* Event Card */}
+      {/* Event Card — AI-generated hero matching the event type */}
       <motion.div
         variants={staggerItem}
         className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border"
       >
-        {/* Gradient accent bar */}
-        <div className={cn("h-1.5 w-full bg-gradient-to-r", typeMeta.color)} />
+        <img
+          src={`/images/event-heroes/${["bachelor", "bachelorette", "birthday", "trip", "other"].includes(event.event_type) ? event.event_type : "other"}.webp`}
+          alt=""
+          loading="lazy"
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Legibility overlay over the hero image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/60 to-background/30" />
 
-        <div className="p-4 space-y-3">
+        {/* Gradient accent bar */}
+        <div className={cn("relative h-1.5 w-full bg-gradient-to-r", typeMeta.color)} />
+
+        <div className="relative p-4 space-y-3">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <h2 className="text-xl font-display font-bold text-foreground">{event.name}</h2>
-              <p className="text-sm text-muted-foreground">{t("nativeDashboard.honoree")}: {event.honoree_name}</p>
+              <h2 className="text-xl font-display font-bold text-foreground drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">{event.name}</h2>
+              <p className="text-sm text-foreground/70 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">{t("nativeDashboard.honoree")}: {event.honoree_name}</p>
             </div>
-            <span className="text-2xl">{typeMeta.emoji}</span>
+            <span className="text-2xl drop-shadow-[0_0_12px_rgba(0,0,0,0.5)]">{typeMeta.emoji}</span>
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
+          <div className="flex items-center gap-3 text-sm text-foreground/70">
+            <span className="flex items-center gap-1.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
               <Calendar className="w-3.5 h-3.5" />
               {event.event_date ? formatDate(event.event_date) : t("nativeDashboard.noDate")}
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
               <span className="text-xs">{typeMeta.emoji}</span>
               {t(typeMeta.labelKey)}
             </span>
@@ -711,6 +714,10 @@ export default function NativeEventDashboard() {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const [activeTab, setActiveTab] = useState<TabId>("uebersicht");
+  // Keep-alive: once a tab has been visited it stays mounted (display:none),
+  // so switching back is instant — same pattern as the app's main TabsLayer.
+  const visitedTabsRef = useRef<Set<TabId>>(new Set(["uebersicht"]));
+  visitedTabsRef.current.add(activeTab);
   const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
   const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
@@ -761,8 +768,8 @@ export default function NativeEventDashboard() {
     );
   }
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  const renderTabContent = (tabId: TabId) => {
+    switch (tabId) {
       case "uebersicht":
         return event ? <OverviewTab event={event} participants={participants} activities={activities} onSwitchTab={switchTab} /> : null;
       case "gaeste":
@@ -875,20 +882,19 @@ export default function NativeEventDashboard() {
         </div>
       </div>
 
-      {/* Tab Content */}
+      {/* Tab Content — visited tabs stay mounted; switching is a visibility
+          flip (no exit-animation wait, no remount, no re-fetch). */}
       <div className="flex-1 overflow-y-auto native-scroll pb-tabbar">
         <div className="px-5 pt-1 pb-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
+          {TABS.filter((tb) => visitedTabsRef.current.has(tb.id)).map((tb) => (
+            <div
+              key={tb.id}
+              style={{ display: tb.id === activeTab ? undefined : "none" }}
+              aria-hidden={tb.id !== activeTab}
             >
-              {renderTabContent()}
-            </motion.div>
-          </AnimatePresence>
+              {renderTabContent(tb.id)}
+            </div>
+          ))}
         </div>
       </div>
     </div>
