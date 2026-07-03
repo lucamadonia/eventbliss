@@ -57,6 +57,7 @@ import { BrandingEditor } from "./BrandingEditor";
 import { CustomQuestionBuilder } from "./CustomQuestionBuilder";
 import { CustomQuestionPreview } from "./CustomQuestionPreview";
 import { CoreQuestionEditor } from "./CoreQuestionEditor";
+import { CORE_META_BY_KEY } from "@/components/formstudio/questionRegistry";
 import { DesignTemplate, getTemplateById } from "@/lib/design-templates";
 import { ActivityItem, ACTIVITIES_LIBRARY } from "@/lib/activities-library";
 
@@ -397,6 +398,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.attendance}
                       onConfigChange={(c) => updateQuestionConfig('attendance', c)}
+                      allowAddRemove={CORE_META_BY_KEY.attendance.policy.canEditValues}
+                      allowMultiToggle={CORE_META_BY_KEY.attendance.policy.canMultiSelect}
+                      allowDisable={CORE_META_BY_KEY.attendance.policy.canDisable}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
@@ -409,6 +413,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.duration}
                         onConfigChange={(c) => updateQuestionConfig('duration', c)}
+                        allowAddRemove={CORE_META_BY_KEY.duration.policy.canEditValues}
+                        allowMultiToggle={CORE_META_BY_KEY.duration.policy.canMultiSelect}
+                        allowDisable={CORE_META_BY_KEY.duration.policy.canDisable}
                       />
                     </div>
                   </div>
@@ -444,6 +451,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.travel}
                       onConfigChange={(c) => updateQuestionConfig('travel', c)}
+                      allowAddRemove={CORE_META_BY_KEY.travel.policy.canEditValues}
+                      allowMultiToggle={CORE_META_BY_KEY.travel.policy.canMultiSelect}
+                      allowDisable={CORE_META_BY_KEY.travel.policy.canDisable}
                     />
                     <div className="border-t border-border pt-6">
                       <CoreQuestionEditor
@@ -456,6 +466,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.fitness}
                         onConfigChange={(c) => updateQuestionConfig('fitness', c)}
+                        allowAddRemove={CORE_META_BY_KEY.fitness.policy.canEditValues}
+                        allowMultiToggle={CORE_META_BY_KEY.fitness.policy.canMultiSelect}
+                        allowDisable={CORE_META_BY_KEY.fitness.policy.canDisable}
                       />
                     </div>
                     <div className="border-t border-border pt-6">
@@ -469,6 +482,9 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.alcohol}
                         onConfigChange={(c) => updateQuestionConfig('alcohol', c)}
+                        allowAddRemove={CORE_META_BY_KEY.alcohol.policy.canEditValues}
+                        allowMultiToggle={CORE_META_BY_KEY.alcohol.policy.canMultiSelect}
+                        allowDisable={CORE_META_BY_KEY.alcohol.policy.canDisable}
                       />
                     </div>
                   </div>

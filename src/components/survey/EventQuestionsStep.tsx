@@ -32,6 +32,7 @@ import {
   questionConfigForEventType,
 } from "@/lib/survey-config";
 import { CoreQuestionEditor } from "@/components/dashboard/CoreQuestionEditor";
+import { CORE_META_BY_KEY } from "@/components/formstudio/questionRegistry";
 import { DateRangeBlockEditor, type DateRangeBlock } from "@/components/dashboard/DateRangeBlockEditor";
 import {
   CUSTOM_QUESTION_PRESETS,
@@ -250,7 +251,9 @@ export function EventQuestionsStep({
         options={options[optKey] as SelectOption[]}
         onChange={(o) => setOptions(optKey, o)}
         showVisibilityToggle={false}
-        showMultiSelectToggle
+        allowAddRemove={CORE_META_BY_KEY[key].policy.canEditValues}
+        allowMultiToggle={CORE_META_BY_KEY[key].policy.canMultiSelect}
+        allowDisable={CORE_META_BY_KEY[key].policy.canDisable}
         questionConfig={qc[key]}
         onConfigChange={(c) => setConfig(key, c)}
         maxOptions={key === "activities" ? 15 : 8}

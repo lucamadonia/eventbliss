@@ -32,6 +32,19 @@ interface CoreQuestionEditorProps {
   onConfigChange?: (config: QuestionConfig) => void;
   showVisibilityToggle?: boolean;
   showMultiSelectToggle?: boolean;
+  /**
+   * Policy props (default true = fully editable). These encode the renderer/DB
+   * constraints so the legacy editors stop offering edits that break guests:
+   * - allowAddRemove=false locks the option VALUE set (DB CHECK constraints on
+   *   attendance/travel/fitness/alcohol). Add row + delete buttons are hidden
+   *   and a muted footnote is shown; label/emoji edits stay allowed.
+   * - allowMultiToggle=false hides the single/multi toggle (renderer only
+   *   honors multiSelect for duration/budget/destination).
+   * - allowDisable=false hides the visibility toggle (attendance is mandatory).
+   */
+  allowAddRemove?: boolean;
+  allowMultiToggle?: boolean;
+  allowDisable?: boolean;
 }
 
 export const CoreQuestionEditor = ({
@@ -46,6 +59,9 @@ export const CoreQuestionEditor = ({
   onConfigChange,
   showVisibilityToggle = true,
   showMultiSelectToggle = true,
+  allowAddRemove = true,
+  allowMultiToggle = true,
+  allowDisable = true,
 }: CoreQuestionEditorProps) => {
   const { t } = useTranslation();
   const [newLabel, setNewLabel] = useState("");
@@ -126,10 +142,10 @@ export const CoreQuestionEditor = ({
         </div>
         
         {/* Config Toggles */}
-        {(showVisibilityToggle || showMultiSelectToggle) && onConfigChange && questionConfig && (
+        {((showVisibilityToggle && allowDisable) || (showMultiSelectToggle && allowMultiToggle)) && onConfigChange && questionConfig && (
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Multi-Select Toggle */}
-            {showMultiSelectToggle && (
+            {showMultiSelectToggle && allowMultiToggle && (
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -158,7 +174,7 @@ export const CoreQuestionEditor = ({
             )}
 
             {/* Visibility Toggle */}
-            {showVisibilityToggle && (
+            {showVisibilityToggle && allowDisable && (
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -220,22 +236,31 @@ export const CoreQuestionEditor = ({
                 className="flex-1"
               />
               
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeOption(option.value)}
-                className="text-destructive hover:text-destructive h-8 w-8 p-0 opacity-50 group-hover:opacity-100 transition-opacity"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              {allowAddRemove && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeOption(option.value)}
+                  className="text-destructive hover:text-destructive h-8 w-8 p-0 opacity-50 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </Reorder.Item>
           ))}
         </AnimatePresence>
       </Reorder.Group>
 
+      {/* Locked value set (DB CHECK constraints) — labels/emojis stay editable */}
+      {!allowAddRemove && (
+        <p className="text-xs text-muted-foreground">
+          {t('dashboard.form.valuesLocked', 'Antwort-Werte sind bei dieser Frage fest — Text & Emoji kannst du frei anpassen')}
+        </p>
+      )}
+
       {/* Add new option */}
-      {options.length < maxOptions && (
+      {allowAddRemove && options.length < maxOptions && (
         <div className="flex gap-2">
           {showEmoji && (
             <Input

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -30,22 +31,16 @@ import {
 import { makeDynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
 import {
   type EventSettings,
-  type CustomQuestion,
   mergeWithDefaults,
   getDateBlocksArray,
+  getEffectiveQuestionOrder,
+  CUSTOM_ORDER_PREFIX,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  AttendanceQuestion,
-  DurationQuestion,
-  DateBlocksQuestion,
-  BudgetQuestion,
-  DestinationQuestion,
-  TravelQuestion,
-  ActivitiesQuestion,
-  FitnessQuestion,
-  AlcoholQuestion,
+  CORE_QUESTION_RENDERERS,
   CustomQuestionField,
+  type CoreQuestionKey,
 } from "./questions";
 
 interface Participant {
@@ -61,13 +56,23 @@ interface DynamicSurveyFormProps {
   eventId: string;
   settings: EventSettings;
   participants: Participant[];
+  /**
+   * Form Studio live preview. When true: participant select is replaced by a
+   * disabled placeholder, submit is disabled and onSubmit is a no-op (nothing
+   * is written). Absent = zero behavior change from the live guest form.
+   */
+  previewMode?: boolean;
+  /** Overrides `settings` when previewing an unsaved draft. */
+  previewSettings?: EventSettings;
 }
 
 const DynamicSurveyForm = ({
   isLocked = false,
   eventId,
   settings,
-  participants
+  participants,
+  previewMode = false,
+  previewSettings,
 }: DynamicSurveyFormProps) => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
@@ -83,8 +88,8 @@ const DynamicSurveyForm = ({
     return label;
   };
 
-  // Merge settings with defaults
-  const config = mergeWithDefaults(settings);
+  // Merge settings with defaults (previewSettings overrides when previewing a draft)
+  const config = mergeWithDefaults(previewSettings ?? settings);
   const dateBlocks = getDateBlocksArray(config.date_blocks, config.date_warnings);
   const questionConfig = config.question_config;
   // Only require the questions the organizer actually enabled.
@@ -112,6 +117,7 @@ const DynamicSurveyForm = ({
   });
 
   const onSubmit = async (data: DynamicResponseFormData) => {
+    if (previewMode) return; // preview never writes
     setIsSubmitting(true);
 
     try {
@@ -176,6 +182,12 @@ const DynamicSurveyForm = ({
     dateBlocks,
   };
 
+  // Core + custom questions render in the organizer-defined order. For events
+  // without a stored question_order this is the legacy order (core keys first,
+  // then custom questions), so the rendered result is unchanged.
+  const questionOrder = getEffectiveQuestionOrder(config);
+  const customById = new Map((config.custom_questions || []).map((q) => [q.id, q]));
+
   return (
     <section className="container pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto">
@@ -191,59 +203,73 @@ const DynamicSurveyForm = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Participant Selection - Dynamic from DB */}
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="participant"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Wer bist du? *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Deinen Namen auswählen..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {selectableParticipants.map((participant) => (
-                          <SelectItem key={participant.id} value={participant.name}>
-                            {participant.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div data-question-key="participant" className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
+              {previewMode ? (
+                <div className="space-y-2">
+                  <Label className="form-label">Wer bist du? *</Label>
+                  <Input value="Max Mustermann" disabled />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="participant"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="form-label">Wer bist du? *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Deinen Namen auswählen..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {selectableParticipants.map((participant) => (
+                            <SelectItem key={participant.id} value={participant.name}>
+                              {participant.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
-            {/* Attendance - Dynamic options */}
-            <AttendanceQuestion {...coreProps} />
-
-            {/* Duration Preference - Dynamic options (single or multi-select) */}
-            <DurationQuestion {...coreProps} />
-
-            {/* Date Blocks (+ Partial Days) - Dynamic from event settings */}
-            <DateBlocksQuestion {...coreProps} />
-
-            {/* Budget - Dynamic options (single or multi-select) */}
-            <BudgetQuestion {...coreProps} />
-
-            {/* Destination (+ DE City) - Dynamic options (single or multi-select) */}
-            <DestinationQuestion {...coreProps} />
-
-            {/* Travel Preference - Dynamic options */}
-            <TravelQuestion {...coreProps} />
-
-            {/* Activity Preferences - Grouped by Category */}
-            <ActivitiesQuestion {...coreProps} />
-
-            {/* Fitness Level - Dynamic options */}
-            <FitnessQuestion {...coreProps} />
-
-            {/* Alcohol - Dynamic options */}
-            <AlcoholQuestion {...coreProps} />
+            {/* Core + custom questions in organizer-defined order. Each block is
+                wrapped in a div[data-question-key] for the Form Studio peek
+                feature; empty:hidden keeps disabled (null-rendering) core
+                questions from leaving a phantom space-y gap. */}
+            {questionOrder.map((id) => {
+              let content;
+              if (id.startsWith(CUSTOM_ORDER_PREFIX)) {
+                const question = customById.get(id.slice(CUSTOM_ORDER_PREFIX.length));
+                if (!question) return null;
+                content = (
+                  <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
+                    <CustomQuestionField
+                      question={question}
+                      value={customAnswers[question.id]}
+                      onChange={(value) =>
+                        setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
+                      }
+                    />
+                  </div>
+                );
+              } else {
+                const QuestionRenderer = CORE_QUESTION_RENDERERS[id as CoreQuestionKey];
+                if (!QuestionRenderer) return null;
+                content = <QuestionRenderer {...coreProps} />;
+              }
+              return (
+                // space-y-6 keeps the DateBlocks fragment (date_blocks + partial_days)
+                // at the same 24px rhythm the form uses; no-op for single-card blocks.
+                <div key={id} data-question-key={id} className="space-y-6 empty:hidden">
+                  {content}
+                </div>
+              );
+            })}
 
             {/* Restrictions */}
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
@@ -292,25 +318,6 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Custom Questions from Event Settings */}
-            {config.custom_questions && config.custom_questions.length > 0 && (
-              <div className="form-section space-y-6">
-                <div className="border-t border-border pt-6">
-                  <h3 className="font-display font-semibold text-lg mb-4">Weitere Fragen</h3>
-                </div>
-                {config.custom_questions.map((question: CustomQuestion) => (
-                  <CustomQuestionField
-                    key={question.id}
-                    question={question}
-                    value={customAnswers[question.id]}
-                    onChange={(value) =>
-                      setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
-                    }
-                  />
-                ))}
-              </div>
-            )}
-
             {/* Group Code */}
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
               <FormField
@@ -343,9 +350,11 @@ const DynamicSurveyForm = ({
                 type="submit"
                 size="lg"
                 className="w-full gradient-bg hover:opacity-90 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
-                disabled={isSubmitting}
+                disabled={isSubmitting || previewMode}
               >
-                {isSubmitting ? (
+                {previewMode ? (
+                  <>Vorschau — Antworten werden nicht gespeichert</>
+                ) : isSubmitting ? (
                   <>Wird gesendet...</>
                 ) : (
                   <>
