@@ -8,7 +8,7 @@
 import { ReactNode, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { pageVariants, reducedPageVariants, duration as dur, ease } from "@/lib/motion";
+import { pageVariants, reducedPageVariants } from "@/lib/motion";
 import { useNavigationDirection } from "@/hooks/useNavigationDirection";
 import { TABS } from "./BottomTabBar";
 import PageLoader from "@/components/ui/PageLoader";
@@ -39,6 +39,11 @@ export function PageTransition({ children }: Props) {
     ? pageVariants.tab
     : pageVariants.push;
 
+  // Tab roots are NOT rendered here — they live in the always-mounted
+  // TabsLayer beneath this component (keep-alive: switching tabs is a pure
+  // visibility flip, no unmount/remount, no transition needed).
+  const isTabRoot = tabPaths.includes(location.pathname);
+
   return (
     // Concurrent mode (NO mode="wait"): the new page mounts immediately and
     // animates in WHILE the old one animates out. Pages are absolutely
@@ -47,16 +52,18 @@ export function PageTransition({ children }: Props) {
     // load or when tapping tabs quickly this queued/wedged transitions
     // (frozen frames, screens stuck mid-transform, multi-second switches).
     <AnimatePresence initial={false}>
-      <motion.div
-        key={location.pathname}
-        className="absolute inset-0 overflow-hidden bg-background"
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={variants}
-      >
-        <Suspense fallback={<PageLoader />}>{children}</Suspense>
-      </motion.div>
+      {!isTabRoot && (
+        <motion.div
+          key={location.pathname}
+          className="absolute inset-0 z-10 overflow-hidden bg-background"
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={variants}
+        >
+          <Suspense fallback={<PageLoader />}>{children}</Suspense>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }

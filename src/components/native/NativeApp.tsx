@@ -25,22 +25,12 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import PageLoader from "@/components/ui/PageLoader";
 
-// Native-only screens (lazy). The tab-root factories are extracted into
-// named consts so they can be handed BOTH to lazy() and to the idle
-// preloader below — warming the chunks during the splash makes the first
-// tap on every tab hit already-downloaded-and-parsed code.
-const loadHomeScreen = () => import("@/pages/native/HomeScreen");
-const loadEventsScreen = () => import("@/pages/native/EventsScreen");
-const loadGamesScreen = () => import("@/pages/native/GamesScreen");
-const loadIdeasScreen = () => import("@/pages/native/IdeasScreen");
-const loadProfileScreen = () => import("@/pages/native/ProfileScreen");
-const loadCreateEventFlow = () => import("@/pages/native/CreateEventFlow");
+// The five tab-root screens live in TabsLayer (keep-alive, mounted once for
+// the whole session). Their loader factories are re-used here to warm the
+// chunks during the splash animation.
+import { TabsLayer, TAB_SCREEN_LOADERS } from "./TabsLayer";
 
-const HomeScreen = lazy(loadHomeScreen);
-const EventsScreen = lazy(loadEventsScreen);
-const GamesScreen = lazy(loadGamesScreen);
-const IdeasScreen = lazy(loadIdeasScreen);
-const ProfileScreen = lazy(loadProfileScreen);
+const loadCreateEventFlow = () => import("@/pages/native/CreateEventFlow");
 const CreateEventFlow = lazy(loadCreateEventFlow);
 const JoinEventFlow = lazy(() => import("@/pages/native/JoinEventFlow"));
 
@@ -56,14 +46,7 @@ const JoinEventFlow = lazy(() => import("@/pages/native/JoinEventFlow"));
  * Native-only: on the web nothing changes — pure on-demand lazy loading.
  * A failed preload is harmless; lazy() simply fetches again on demand.
  */
-const TAB_SCREEN_LOADERS = [
-  loadHomeScreen,
-  loadEventsScreen,
-  loadGamesScreen,
-  loadIdeasScreen,
-  loadProfileScreen,
-  loadCreateEventFlow,
-];
+const PRELOAD_CHUNKS = [...TAB_SCREEN_LOADERS, loadCreateEventFlow];
 
 let tabPreloadStarted = false;
 
@@ -79,7 +62,7 @@ function preloadTabScreens(): void {
     }
   };
 
-  TAB_SCREEN_LOADERS.forEach((load, i) => {
+  PRELOAD_CHUNKS.forEach((load, i) => {
     setTimeout(() => {
       whenIdle(() => {
         load().catch(() => undefined);
@@ -153,19 +136,14 @@ export function NativeApp() {
       {/* The main shell is always mounted once stage>=ready so transitions work */}
       {stage === "ready" && (
         <NativeShell>
+          {/* Keep-alive tab roots — always mounted, visibility-toggled.
+              Tab paths are NOT routed through PageTransition (it skips
+              them), so switching tabs never unmounts a screen. */}
+          <TabsLayer />
           <PageTransition>
             <Routes>
-              {/* Tab root pages */}
-              <Route path="/" element={<HomeScreen />} />
-              <Route
-                path="/my-events"
-                element={<ProtectedRoute><EventsScreen /></ProtectedRoute>}
-              />
-              <Route path="/games" element={<GamesScreen />} />
-              <Route
-                path="/ideas"
-                element={<ProtectedRoute><IdeasScreen /></ProtectedRoute>}
-              />
+              {/* Tab root pages (/, /my-events, /games, /ideas, /profile)
+                  are handled by TabsLayer above. */}
               <Route
                 path="/marketplace"
                 element={<Suspense fallback={<PageLoader />}><NativeMarketplaceScreen /></Suspense>}
@@ -180,10 +158,6 @@ export function NativeApp() {
                   <Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense>,
                   "Agentur"
                 )}
-              />
-              <Route
-                path="/profile"
-                element={<ProtectedRoute><ProfileScreen /></ProtectedRoute>}
               />
               {/* Settings is a separate stack page (not a tab) */}
               <Route
