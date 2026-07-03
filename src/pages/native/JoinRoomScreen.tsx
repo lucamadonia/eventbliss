@@ -33,7 +33,9 @@ export default function JoinRoomScreen() {
       return;
     }
     haptics.medium();
-    navigate(`/games/bomb?lobby=bomb&room=${normalized}`);
+    // Generic lobby join — the actual game is decided by the host's
+    // game-start broadcast, so never hardcode a specific game here.
+    navigate(`/games?room=${normalized}`);
   };
 
   const handleCodeChange = (value: string) => {

@@ -5,7 +5,7 @@ import {
   Share2, Play, Plus, Wifi, WifiOff, Loader2, Sparkles,
 } from "lucide-react";
 import { useGameRoom, getSavedRoom, getRoomHistory, removeFromRoomHistory, type RoomPlayer } from "./useGameRoom";
-import { useOpenRooms, broadcastRoomCreated } from "./useOpenRooms";
+import { useOpenRooms, broadcastRoomCreated, broadcastRoomClosed, broadcastRoomUpdated } from "./useOpenRooms";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { getBaseUrl } from "@/lib/platform";
@@ -143,6 +143,12 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
   const openRooms = useOpenRooms();
 
+  // Join failed (e.g. room not found) — drop back to the join form instead
+  // of showing an empty lobby.
+  useEffect(() => {
+    if (view === "lobby" && !room && error) setView("join");
+  }, [view, room, error]);
+
   // Sync selectedGame with room's gameId (host may switch game in lobby)
   useEffect(() => {
     if (room?.gameId && room.gameId !== selectedGame && !isHost) {
@@ -195,10 +201,23 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const handleStart = useCallback(() => {
     if (!isHost || !allReady || !room) return;
     startGame(selectedGame);
+    // Remove from public discovery — the room is no longer waiting in lobby.
+    broadcastRoomClosed(room.roomCode);
     onStart(players, room.roomCode, selectedGame);
   }, [isHost, allReady, room, startGame, onStart, players, selectedGame]);
 
-  const handleLeave = useCallback(() => { leaveRoom(); setView("menu"); }, [leaveRoom]);
+  const handleLeave = useCallback(() => {
+    if (isHost && room) broadcastRoomClosed(room.roomCode);
+    leaveRoom();
+    setView("menu");
+  }, [leaveRoom, isHost, room]);
+
+  // Keep the public discovery entry's player count fresh (host only)
+  useEffect(() => {
+    if (isHost && room && room.status === "lobby" && players.length > 0) {
+      broadcastRoomUpdated({ roomCode: room.roomCode, playerCount: players.length });
+    }
+  }, [isHost, room?.roomCode, room?.status, players.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const me = players.find((p) => p.id === myPlayerId);
   const myReady = me?.isReady ?? false;

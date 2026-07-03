@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
+import { QRCodeSVG } from "qrcode.react";
 import { Copy, Check, Share2, QrCode } from "lucide-react";
 import { getBaseUrl } from "@/lib/platform";
 
@@ -17,65 +18,9 @@ interface RoomInviteProps {
   gameName?: string;
 }
 
-// Simple QR code rendered as SVG via canvas data URL
-function useQrDataUrl(text: string): string | null {
-  const [url, setUrl] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    // Simple QR-like visual (a styled code display since full QR encoding is complex)
-    // We create a visual grid pattern as a placeholder that encodes the room code visually
-    const canvas = document.createElement("canvas");
-    canvasRef.current = canvas;
-    const size = 150;
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Dark background
-    ctx.fillStyle = "#0a0e14";
-    ctx.fillRect(0, 0, size, size);
-
-    // Generate a deterministic pattern from the text
-    const cellSize = 6;
-    const gridSize = Math.floor(size / cellSize);
-    const margin = 2;
-
-    for (let y = margin; y < gridSize - margin; y++) {
-      for (let x = margin; x < gridSize - margin; x++) {
-        const charCode = text.charCodeAt((x + y * gridSize) % text.length);
-        const hash = ((charCode * 31 + x * 7 + y * 13) % 100);
-        if (hash < 45) {
-          ctx.fillStyle = "#df8eff";
-          ctx.fillRect(x * cellSize, y * cellSize, cellSize - 1, cellSize - 1);
-        }
-      }
-    }
-
-    // Corner markers (QR-style)
-    const drawCorner = (cx: number, cy: number) => {
-      ctx.fillStyle = "#df8eff";
-      ctx.fillRect(cx, cy, 18, 18);
-      ctx.fillStyle = "#0a0e14";
-      ctx.fillRect(cx + 3, cy + 3, 12, 12);
-      ctx.fillStyle = "#df8eff";
-      ctx.fillRect(cx + 6, cy + 6, 6, 6);
-    };
-    drawCorner(6, 6);
-    drawCorner(size - 24, 6);
-    drawCorner(6, size - 24);
-
-    setUrl(canvas.toDataURL());
-  }, [text]);
-
-  return url;
-}
-
 export default function RoomInvite({ gameId, roomCode, gameName }: RoomInviteProps) {
   const [copied, setCopied] = useState(false);
   const shareUrl = `${getBaseUrl()}/games/${gameId}?room=${roomCode}`;
-  const qrUrl = useQrDataUrl(roomCode + shareUrl);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -129,22 +74,15 @@ export default function RoomInvite({ gameId, roomCode, gameName }: RoomInvitePro
           {roomCode}
         </p>
 
-        {/* QR Code */}
-        {qrUrl && (
-          <div className="mt-4 flex justify-center">
-            <div
-              className="rounded-xl p-2"
-              style={{ backgroundColor: EP.surface2, border: `1px solid ${EP.border}` }}
-            >
-              <img
-                src={qrUrl}
-                alt="QR Code"
-                className="h-24 w-24 rounded-lg"
-                style={{ imageRendering: "pixelated" }}
-              />
-            </div>
+        {/* QR Code — scannable link into the room */}
+        <div className="mt-4 flex justify-center">
+          <div
+            className="rounded-xl p-2 bg-white"
+            style={{ border: `1px solid ${EP.border}` }}
+          >
+            <QRCodeSVG value={shareUrl} size={96} bgColor="#ffffff" fgColor="#0a0e14" />
           </div>
-        )}
+        </div>
 
         {/* Action buttons */}
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">

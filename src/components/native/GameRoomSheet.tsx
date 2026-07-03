@@ -114,7 +114,9 @@ export default function GameRoomSheet({
       return;
     }
     haptics.medium();
-    navigate(`/games/bomb?lobby=bomb&room=${normalized}`);
+    // Generic lobby join — the actual game is decided by the host's
+    // game-start broadcast, so never hardcode a specific game here.
+    navigate(`/games?room=${normalized}`);
     onOpenChange(false);
   };
 

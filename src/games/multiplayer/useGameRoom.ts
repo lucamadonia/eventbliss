@@ -37,7 +37,7 @@ export interface UseGameRoomReturn {
   joinRoom: (code: string, name: string, isPremium?: boolean) => Promise<void>;
   leaveRoom: () => void;
   setReady: (ready: boolean) => void;
-  startGame: () => void;
+  startGame: (gameIdOverride?: string) => void;
   broadcast: (event: string, data: Record<string, unknown>) => void;
   onBroadcast: (event: string, callback: BroadcastCallback) => () => void;
   kickPlayer: (playerId: string) => void;
@@ -55,6 +55,9 @@ const PLAYER_COLORS = [
 ] as const;
 
 const ROOM_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const MAX_PLAYERS = 12;
+/** How long joinRoom waits for another player's presence before declaring the room nonexistent. */
+const JOIN_VALIDATION_MS = 4000;
 
 // ---------------------------------------------------------------------------
 // Saved Room
@@ -137,6 +140,10 @@ let _globalPlayers: RoomPlayer[] = [];
  *  can pick up the room created by GameLobby without re-subscribing. */
 let _globalRoom: GameRoom | null = null;
 let _globalRoomCode: string | null = null;
+/** Last-known own presence payload — used by setReady if the presence entry is missing. */
+let _myInfo: { name: string; color: string; avatar: string; isPremium: boolean } | null = null;
+/** Pending join-validation timer (room-exists check). */
+let _joinCheckTimer: ReturnType<typeof setTimeout> | null = null;
 
 /** Get current online room players (if any room is active). Used by GameSetup auto-detection. */
 export function getOnlineRoomPlayers(): RoomPlayer[] {
@@ -205,7 +212,9 @@ export function useGameRoom(): UseGameRoomReturn {
   // The channel stays open so players remain connected when navigating to a game.
 
   // ---- Resolve presence state into RoomPlayer[] ----
-  // Host is always the player with the earliest joinedAt (first to create/join)
+  // Host = room creator if present, otherwise earliest player. The sort has a
+  // deterministic id tiebreak — client clocks can collide (Date.now skew), and
+  // an unstable sort would elect different hosts on different devices.
   const syncPlayers = useCallback((channel: RealtimeChannel, _hostIdHint: string) => {
     const state = channel.presenceState<{
       id: string;
@@ -214,15 +223,16 @@ export function useGameRoom(): UseGameRoomReturn {
       avatar: string;
       isReady: boolean;
       isPremium: boolean;
+      isCreator?: boolean;
       joinedAt: number;
     }>();
 
     const sorted = Object.values(state)
       .flat()
-      .sort((a, b) => a.joinedAt - b.joinedAt);
+      .sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
 
-    // Host = earliest player (first to join the room)
-    const actualHostId = sorted.length > 0 ? sorted[0].id : _hostIdHint;
+    const creator = sorted.find((p) => p.isCreator);
+    const actualHostId = creator?.id ?? (sorted.length > 0 ? sorted[0].id : _hostIdHint);
 
     const mapped: RoomPlayer[] = sorted.map((p) => ({
       id: p.id,
@@ -251,6 +261,12 @@ export function useGameRoom(): UseGameRoomReturn {
       try {
       const playerId = playerIdRef.current;
       const targetTopic = `realtime:game-room:${roomCode}`;
+      _myInfo = {
+        name: playerName,
+        color: pickColor(colorIndex),
+        avatar: getInitial(playerName),
+        isPremium: playerIsPremium,
+      };
 
       // If already subscribed to the SAME room, reuse the channel — don't destroy it!
       // This is critical: when navigating from GameLobby → Game, the channel must survive.
@@ -332,6 +348,7 @@ export function useGameRoom(): UseGameRoomReturn {
             avatar: getInitial(playerName),
             isReady: playerId === hostId,
             isPremium: playerIsPremium,
+            isCreator: !!hostId && playerId === hostId,
             joinedAt: Date.now(),
           });
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -364,6 +381,25 @@ export function useGameRoom(): UseGameRoomReturn {
   );
 
   // ---- Public API ----
+
+  const leaveRoom = useCallback(() => {
+    if (_joinCheckTimer) {
+      clearTimeout(_joinCheckTimer);
+      _joinCheckTimer = null;
+    }
+    if (channelRef.current) {
+      channelRef.current.untrack();
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+      _globalChannel = null;
+    }
+    setRoomSynced(null);
+    setPlayersSynced([]);
+    setError(null);
+    listenersRef.current.clear();
+    _globalListeners.clear();
+    try { localStorage.removeItem("eventbliss_active_room"); } catch { /* ignore */ }
+  }, [setRoomSynced, setPlayersSynced]);
 
   const createRoom = useCallback(
     async (gameId: string, isPremiumPlayer: boolean = false, hostName: string = "Host"): Promise<string> => {
@@ -408,29 +444,33 @@ export function useGameRoom(): UseGameRoomReturn {
         // Color is randomized to avoid collision with host.
         const colorIndex = Math.floor(Math.random() * PLAYER_COLORS.length);
         subscribe(normalized, "", "", name, colorIndex, isPremiumPlayer);
+
+        // Validate the room actually exists: joining is just subscribing to a
+        // channel, so a mistyped code would silently spawn an empty "room"
+        // where the guest becomes host. If no other player shows up in
+        // presence within the grace period, tear down and report.
+        if (_joinCheckTimer) clearTimeout(_joinCheckTimer);
+        const myId = playerIdRef.current;
+        _joinCheckTimer = setTimeout(() => {
+          _joinCheckTimer = null;
+          if (_globalRoomCode !== normalized) return; // already left / switched rooms
+          const others = _globalPlayers.filter((p) => p.id !== myId);
+          if (others.length === 0) {
+            leaveRoom();
+            setError("Raum nicht gefunden. Prüfe den Code und versuche es erneut.");
+          } else if (others.length >= MAX_PLAYERS) {
+            leaveRoom();
+            setError("Der Raum ist voll.");
+          }
+        }, JOIN_VALIDATION_MS);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unbekannter Fehler";
         console.error("Room join failed:", err);
         setError(`Raum beitreten fehlgeschlagen: ${message}`);
       }
     },
-    [subscribe],
+    [subscribe, leaveRoom],
   );
-
-  const leaveRoom = useCallback(() => {
-    if (channelRef.current) {
-      channelRef.current.untrack();
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-      _globalChannel = null;
-    }
-    setRoomSynced(null);
-    setPlayersSynced([]);
-    setError(null);
-    listenersRef.current.clear();
-    _globalListeners.clear();
-    try { localStorage.removeItem("eventbliss_active_room"); } catch { /* ignore */ }
-  }, []);
 
   const setReady = useCallback(
     (ready: boolean) => {
@@ -441,14 +481,15 @@ export function useGameRoom(): UseGameRoomReturn {
       if (myState) {
         channelRef.current.track({ ...myState, isReady: ready });
       } else {
-        // Fallback: re-track with minimal state if presence entry not found
+        // Fallback: re-track with the last-known own data so a missing
+        // presence entry doesn't overwrite the player's identity.
         channelRef.current.track({
           id: myKey,
-          name: "Spieler",
-          color: pickColor(0),
-          avatar: "?",
+          name: _myInfo?.name ?? "Spieler",
+          color: _myInfo?.color ?? pickColor(0),
+          avatar: _myInfo?.avatar ?? "?",
           isReady: ready,
-          isPremium: false,
+          isPremium: _myInfo?.isPremium ?? false,
           joinedAt: Date.now(),
         });
       }

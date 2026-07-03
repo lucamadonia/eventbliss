@@ -257,12 +257,9 @@ const GamesHubInner = () => {
     }
   }, [gameId, tv]);
 
-  // Clean up stale ?room= param when no game is active
-  useEffect(() => {
-    if (!gameId && roomCode) {
-      navigate('/games', { replace: true });
-    }
-  }, [gameId, roomCode, navigate]);
+  // NOTE: /games?room=CODE (share/invite link without a game) is handled
+  // below by rendering the GameLobby join flow — the param must NOT be
+  // stripped, otherwise shared invite links silently do nothing.
 
   // Auto-show game rules on first play
   const { showRules, openRules, closeRules } = useAutoShowRules(gameId || '');
@@ -386,6 +383,22 @@ const GamesHubInner = () => {
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#cf96ff] border-t-transparent" />
     </div>
   );
+
+  // Share/invite link: /games?room=CODE without a game — open the lobby join
+  // flow with the code prefilled (GameLobby reads ?room= itself). Guests are
+  // navigated into the right game automatically when the host starts.
+  if (roomCode && !gameId) {
+    return (
+      <Suspense fallback={GameFallback}>
+        <GameLobby
+          gameId="bomb"
+          gameName="Online Multiplayer"
+          onStart={handleOnlineStart}
+          onBack={() => navigate('/games', { replace: true })}
+        />
+      </Suspense>
+    );
+  }
 
   // Online game routing — when ?room=XXXXX is present, wrap game in OnlineGameWrapper
   if (roomCode && gameId) {
