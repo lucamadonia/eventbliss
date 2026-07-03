@@ -57,6 +57,9 @@ verify_jwt = false
 [functions.generate-event-template]
 verify_jwt = false
 
+[functions.generate-event-form]
+verify_jwt = false
+
 [functions.get-affiliate-stats]
 verify_jwt = false
 
