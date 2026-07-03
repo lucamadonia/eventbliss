@@ -13,6 +13,7 @@ import { useAddExpenseV2, useExpenseCategories, useReceiptUpload } from "@/hooks
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
 import type { SplitType, ReceiptOcrResult } from "@/lib/expenses-v2/types";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import {
   inferCategory,
@@ -74,6 +75,23 @@ export function AddExpenseSheet({
   const receiptUpload = useReceiptUpload();
   const haptics = useHaptics();
   const voice = useVoiceInput();
+  const keyboardInset = useKeyboardInset();
+  const scrollBodyRef = useRef<HTMLDivElement>(null);
+
+  // Lift the focused field above the on-screen keyboard (the sheet is
+  // position:fixed, so KeyboardResize alone doesn't reveal it).
+  useEffect(() => {
+    const body = scrollBodyRef.current;
+    if (!body) return;
+    const onFocus = (e: FocusEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) {
+        setTimeout(() => t.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
+      }
+    };
+    body.addEventListener("focusin", onFocus);
+    return () => body.removeEventListener("focusin", onFocus);
+  }, []);
   const { data: categories = [] } = useExpenseCategories(eventId);
 
   // Reset on open — prefill split mode & exclusions from last-used memory.
@@ -278,8 +296,13 @@ export function AddExpenseSheet({
           </Button>
         </div>
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Scrollable content — padded by the keyboard height so focused
+            fields (amount, description, notes) scroll above the keyboard. */}
+        <div
+          ref={scrollBodyRef}
+          className="flex-1 overflow-y-auto"
+          style={keyboardInset ? { paddingBottom: keyboardInset + 24 } : undefined}
+        >
           {/* 1) Quick — amount + title */}
           <div className="px-5 py-6">
             {/* Big amount input */}

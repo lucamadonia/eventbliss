@@ -539,7 +539,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
       {/* Fixed bottom action buttons — always visible on mobile */}
       {view === "lobby" && room && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-5 pt-3 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/95 to-transparent">
+        <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/95 to-transparent">
           <div className="max-w-md mx-auto space-y-2">
             <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleReady}
               className="w-full rounded-xl py-3.5 text-sm font-bold transition-all"

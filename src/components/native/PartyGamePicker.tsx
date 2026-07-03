@@ -114,8 +114,8 @@ export function PartyGamePicker({ open, onClose, onSelectGame, playerCount }: Pa
             </div>
           </div>
 
-          {/* Game grid */}
-          <div className="flex-1 overflow-y-auto native-scroll pb-8">
+          {/* Game grid — safe-area padding so the bottom card row clears the home indicator */}
+          <div className="flex-1 overflow-y-auto native-scroll pb-[calc(2rem+env(safe-area-inset-bottom))]">
             <motion.div
               className="px-5 grid grid-cols-2 gap-3"
               variants={stagger}

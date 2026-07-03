@@ -274,8 +274,8 @@ export function ExpenseDetailSheet({
             </dl>
           </Section>
 
-          {/* Danger zone */}
-          <div className="px-5 pb-8 pt-2">
+          {/* Danger zone — safe-area padding so the delete button clears the home indicator */}
+          <div className="px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-2">
             <Button
               onClick={handleDelete}
               variant="ghost"
