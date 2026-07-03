@@ -7,7 +7,7 @@
  *
  * Tab routes (passed in as `tabPaths`) always use 'tab' regardless of history.
  */
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 export type NavDirection = "push" | "pop" | "tab" | "modal" | "initial";
@@ -22,10 +22,15 @@ export function useNavigationDirection({ tabPaths = [], modalPaths = [] }: Optio
   const prevIdxRef = useRef<number | null>(null);
   const prevPathRef = useRef<string | null>(null);
   const directionRef = useRef<NavDirection>("initial");
+  const computedForPathRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    const state = (window.history.state ?? {}) as { idx?: number };
-    const currentIdx = typeof state.idx === "number" ? state.idx : 0;
+  // Compute synchronously on the render where the location changes. Doing
+  // this in an effect delivers the direction one render too late: the NEW
+  // navigation would animate with the PREVIOUS navigation's variants (e.g.
+  // a tab switch sliding in from the side after a push).
+  if (computedForPathRef.current !== location.pathname) {
+    const state = (typeof window !== "undefined" ? window.history.state : null) ?? {} as { idx?: number };
+    const currentIdx = typeof (state as { idx?: number }).idx === "number" ? (state as { idx: number }).idx : 0;
     const prevIdx = prevIdxRef.current;
     const prevPath = prevPathRef.current;
 
@@ -45,7 +50,8 @@ export function useNavigationDirection({ tabPaths = [], modalPaths = [] }: Optio
 
     prevIdxRef.current = currentIdx;
     prevPathRef.current = location.pathname;
-  }, [location.pathname, tabPaths, modalPaths]);
+    computedForPathRef.current = location.pathname;
+  }
 
   return directionRef.current;
 }

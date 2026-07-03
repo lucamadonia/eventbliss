@@ -40,10 +40,16 @@ export function PageTransition({ children }: Props) {
     : pageVariants.push;
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    // Concurrent mode (NO mode="wait"): the new page mounts immediately and
+    // animates in WHILE the old one animates out. Pages are absolutely
+    // positioned, so they overlap instead of shifting layout. mode="wait"
+    // blocked the new page behind the old page's full exit animation — under
+    // load or when tapping tabs quickly this queued/wedged transitions
+    // (frozen frames, screens stuck mid-transform, multi-second switches).
+    <AnimatePresence initial={false}>
       <motion.div
         key={location.pathname}
-        className="absolute inset-0 overflow-hidden"
+        className="absolute inset-0 overflow-hidden bg-background"
         initial="initial"
         animate="animate"
         exit="exit"
