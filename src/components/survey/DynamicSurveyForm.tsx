@@ -4,15 +4,12 @@ import i18n from "i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
-import { Send, AlertCircle, Info, ChevronDown, ChevronUp, Users, Calendar, Clock, Wallet, MapPin, Plane, Sparkles, Dumbbell, Loader2 } from "lucide-react";
+import { Send, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -29,26 +26,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 import { makeDynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
 import {
-  type EventSettings, 
-  type SelectOption,
-  type ActivityOption,
-  type DateBlockOption,
-  type QuestionConfigs,
+  type EventSettings,
   type CustomQuestion,
   mergeWithDefaults,
   getDateBlocksArray,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
-import { Switch } from "@/components/ui/switch";
-import ActivityPreferencesSection from "./ActivityPreferencesSection";
+import {
+  AttendanceQuestion,
+  DurationQuestion,
+  DateBlocksQuestion,
+  BudgetQuestion,
+  DestinationQuestion,
+  TravelQuestion,
+  ActivitiesQuestion,
+  FitnessQuestion,
+  AlcoholQuestion,
+  CustomQuestionField,
+} from "./questions";
 
 interface Participant {
   id: string;
@@ -65,18 +63,18 @@ interface DynamicSurveyFormProps {
   participants: Participant[];
 }
 
-const DynamicSurveyForm = ({ 
-  isLocked = false, 
-  eventId, 
-  settings, 
-  participants 
+const DynamicSurveyForm = ({
+  isLocked = false,
+  eventId,
+  settings,
+  participants
 }: DynamicSurveyFormProps) => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customAnswers, setCustomAnswers] = useState<Record<string, string | boolean>>({});
-  
+
   // Helper to translate template labels
   const translateLabel = (label: string): string => {
     if (label.startsWith('templates.') && i18n.exists(label)) {
@@ -113,10 +111,6 @@ const DynamicSurveyForm = ({
     },
   });
 
-  const watchDestination = form.watch("destination");
-  const showDeCityField = Array.isArray(watchDestination) 
-    ? watchDestination.includes("de_city") 
-    : watchDestination === "de_city";
   const onSubmit = async (data: DynamicResponseFormData) => {
     setIsSubmitting(true);
 
@@ -172,6 +166,16 @@ const DynamicSurveyForm = ({
   // Filter out the honoree from participants (they shouldn't fill out the form)
   const selectableParticipants = participants.filter(p => p.role !== 'honoree');
 
+  // Uniform props shared by every core question renderer.
+  const coreProps = {
+    control: form.control,
+    watch: form.watch,
+    config,
+    questionConfig,
+    translateLabel,
+    dateBlocks,
+  };
+
   return (
     <section className="container pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto">
@@ -215,454 +219,31 @@ const DynamicSurveyForm = ({
             </div>
 
             {/* Attendance - Dynamic options */}
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="attendance"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Bist du dabei? *</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid gap-3"
-                      >
-                        {config.attendance_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`attendance-${option.value}`} />
-                            <Label htmlFor={`attendance-${option.value}`} className="cursor-pointer flex-1">
-                              {translateLabel(option.label)} {option.emoji}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <AttendanceQuestion {...coreProps} />
 
             {/* Duration Preference - Dynamic options (single or multi-select) */}
-            {questionConfig.duration?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="duration_pref"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Bevorzugte Dauer *</FormLabel>
-                    <FormControl>
-                      {questionConfig.duration?.multiSelect ? (
-                        <div className="grid gap-3">
-                          {config.duration_options.map((option) => {
-                            const values = Array.isArray(field.value) ? field.value : [];
-                            const isChecked = values.includes(option.value);
-                            return (
-                              <label
-                                key={option.value}
-                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={(checked) => {
-                                    const newValue = checked
-                                      ? [...values, option.value]
-                                      : values.filter((v) => v !== option.value);
-                                    field.onChange(newValue);
-                                  }}
-                                />
-                                <span className="cursor-pointer flex-1">{translateLabel(option.label)}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={typeof field.value === 'string' ? field.value : ''}
-                          className="grid gap-3"
-                        >
-                          {config.duration_options.map((option) => (
-                            <div
-                              key={option.value}
-                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                              onClick={() => field.onChange(option.value)}
-                            >
-                              <RadioGroupItem value={option.value} id={`duration-${option.value}`} />
-                              <Label htmlFor={`duration-${option.value}`} className="cursor-pointer flex-1">
-                                {translateLabel(option.label)}
-                              </Label>
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      )}
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            )}
+            <DurationQuestion {...coreProps} />
 
-            {/* Date Blocks - Dynamic from event settings */}
-            {questionConfig.date_blocks?.enabled !== false && dateBlocks.length > 0 && (
-              <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-                <FormField
-                  control={form.control}
-                  name="date_blocks"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="form-label">Mögliche Termine *</FormLabel>
-                      <FormDescription className="text-xs flex items-start gap-1.5 mb-3">
-                        <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                        <span>Wähle ALLE Termine, die für dich gehen – nicht nur den Favoriten!</span>
-                      </FormDescription>
-                      <div className="grid gap-3">
-                        {dateBlocks.map((block) => (
-                          <FormField
-                            key={block.key}
-                            control={form.control}
-                            name="date_blocks"
-                            render={({ field }) => (
-                              <FormItem
-                                className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                                  block.warning
-                                    ? "border-warning/50 bg-warning/5"
-                                    : "border-border hover:border-primary/50"
-                                }`}
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(block.key)}
-                                    onCheckedChange={(checked) => {
-                                      const newValue = checked
-                                        ? [...(field.value || []), block.key]
-                                        : field.value?.filter((v) => v !== block.key) || [];
-                                      field.onChange(newValue);
-                                    }}
-                                  />
-                                </FormControl>
-                                <div className="flex-1">
-                                  <Label className="cursor-pointer font-medium">
-                                    Block {block.key}: {block.label}
-                                  </Label>
-                                  {block.warning && (
-                                    <p className="text-xs text-warning mt-1">
-                                      ⚠️ {block.warning}
-                                    </p>
-                                  )}
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
-            {/* Partial Days (Optional) */}
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="partial_days"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Teilweise möglich? (optional)</FormLabel>
-                    <FormDescription className="text-xs mb-2">
-                      Falls du nur an bestimmten Tagen/Uhrzeiten kannst
-                    </FormDescription>
-                    <FormControl>
-                      <Textarea
-                        placeholder="z.B. Block B nur Samstag, ab 14 Uhr..."
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Date Blocks (+ Partial Days) - Dynamic from event settings */}
+            <DateBlocksQuestion {...coreProps} />
 
             {/* Budget - Dynamic options (single or multi-select) */}
-            {questionConfig.budget?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="budget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Dein Budget pro Person *</FormLabel>
-                    <FormControl>
-                      {questionConfig.budget.multiSelect ? (
-                        <div className="grid grid-cols-2 gap-3">
-                          {config.budget_options.map((option) => {
-                            const values = Array.isArray(field.value) ? field.value : [];
-                            const isChecked = values.includes(option.value);
-                            return (
-                              <label
-                                key={option.value}
-                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={(checked) => {
-                                    const newValue = checked
-                                      ? [...values, option.value]
-                                      : values.filter((v) => v !== option.value);
-                                    field.onChange(newValue);
-                                  }}
-                                />
-                                <span className="cursor-pointer">{translateLabel(option.label)}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={typeof field.value === 'string' ? field.value : ''}
-                          className="grid grid-cols-2 gap-3"
-                        >
-                          {config.budget_options.map((option) => (
-                            <div
-                              key={option.value}
-                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                            >
-                              <RadioGroupItem value={option.value} id={`budget-${option.value}`} />
-                              <Label htmlFor={`budget-${option.value}`} className="cursor-pointer">
-                                {translateLabel(option.label)}
-                              </Label>
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      )}
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            )}
+            <BudgetQuestion {...coreProps} />
 
-            {/* Destination - Dynamic options (single or multi-select) */}
-            {questionConfig.destination?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="destination"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Destination *</FormLabel>
-                    <FormControl>
-                      {questionConfig.destination.multiSelect ? (
-                        <div className="grid gap-3">
-                          {config.destination_options.map((option) => {
-                            const values = Array.isArray(field.value) ? field.value : [];
-                            const isChecked = values.includes(option.value);
-                            return (
-                              <label
-                                key={option.value}
-                                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={(checked) => {
-                                    const newValue = checked
-                                      ? [...values, option.value]
-                                      : values.filter((v) => v !== option.value);
-                                    field.onChange(newValue);
-                                  }}
-                                />
-                                <span className="cursor-pointer flex-1">
-                                  {translateLabel(option.label)} {option.emoji}
-                                </span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={typeof field.value === 'string' ? field.value : ''}
-                          className="grid gap-3"
-                        >
-                          {config.destination_options.map((option) => (
-                            <div
-                              key={option.value}
-                              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                            >
-                              <RadioGroupItem value={option.value} id={`dest-${option.value}`} />
-                              <Label htmlFor={`dest-${option.value}`} className="cursor-pointer flex-1">
-                                {translateLabel(option.label)} {option.emoji}
-                              </Label>
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      )}
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* DE City (conditional) */}
-              {showDeCityField && (
-                <FormField
-                  control={form.control}
-                  name="de_city"
-                  render={({ field }) => (
-                    <FormItem className="mt-4">
-                      <FormLabel className="form-label">Wunschstadt in DE (optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="z.B. Berlin, Hamburg, München, Köln..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
-            )}
+            {/* Destination (+ DE City) - Dynamic options (single or multi-select) */}
+            <DestinationQuestion {...coreProps} />
 
             {/* Travel Preference - Dynamic options */}
-            {questionConfig.travel?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="travel_pref"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Reisebereitschaft *</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid gap-3"
-                      >
-                        {config.travel_options.map((option) => (
-                          <div
-                            key={option.value}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={option.value} id={`travel-${option.value}`} />
-                            <Label htmlFor={`travel-${option.value}`} className="cursor-pointer flex-1">
-                              {translateLabel(option.label)}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            )}
+            <TravelQuestion {...coreProps} />
 
             {/* Activity Preferences - Grouped by Category */}
-            {questionConfig.activities?.enabled !== false && (
-            <ActivityPreferencesSection
-              control={form.control}
-              activityOptions={config.activity_options}
-            />
-            )}
+            <ActivitiesQuestion {...coreProps} />
 
             {/* Fitness Level - Dynamic options */}
-            {questionConfig.fitness?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="fitness_level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Fitness-Level *</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid grid-cols-3 gap-3"
-                      >
-                        {config.fitness_options.map((option) => {
-                          const isSelected = field.value === option.value;
-                          return (
-                            <div
-                              key={option.value}
-                              onClick={() => field.onChange(option.value)}
-                              className={`flex flex-col items-center p-3 rounded-lg border transition-colors cursor-pointer text-center ${
-                                isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                              }`}
-                            >
-                              <RadioGroupItem value={option.value} id={`fitness-${option.value}`} className="sr-only" />
-                              <span className="text-2xl block mb-1">{option.emoji}</span>
-                              <span className="text-sm">{translateLabel(option.label)}</span>
-                            </div>
-                          );
-                        })}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            )}
+            <FitnessQuestion {...coreProps} />
 
             {/* Alcohol - Dynamic options */}
-            {questionConfig.alcohol?.enabled !== false && (
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="alcohol"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Alkohol? (optional)</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid grid-cols-3 gap-3"
-                      >
-                        {config.alcohol_options.map((option) => {
-                          const isSelected = field.value === option.value;
-                          return (
-                            <div
-                              key={option.value}
-                              onClick={() => field.onChange(option.value)}
-                              className={`flex items-center justify-center p-3 rounded-lg border transition-colors cursor-pointer ${
-                                isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                              }`}
-                            >
-                              <RadioGroupItem value={option.value} id={`alcohol-${option.value}`} className="sr-only" />
-                              <span className="text-center text-sm">
-                                {translateLabel(option.label)} {option.emoji}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            )}
+            <AlcoholQuestion {...coreProps} />
 
             {/* Restrictions */}
             <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
@@ -718,116 +299,14 @@ const DynamicSurveyForm = ({
                   <h3 className="font-display font-semibold text-lg mb-4">Weitere Fragen</h3>
                 </div>
                 {config.custom_questions.map((question: CustomQuestion) => (
-                  <div key={question.id} className="space-y-2">
-                    <Label className="form-label">
-                      {question.label} {question.required && "*"}
-                    </Label>
-                    
-                    {question.type === "toggle" && (
-                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border">
-                        <Switch
-                          checked={customAnswers[question.id] === true}
-                          onCheckedChange={(checked) => 
-                            setCustomAnswers(prev => ({ ...prev, [question.id]: checked }))
-                          }
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {customAnswers[question.id] ? "Ja" : "Nein"}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {question.type === "textarea" && (
-                      <Textarea
-                        placeholder={question.placeholder || "Deine Antwort..."}
-                        className="resize-none"
-                        value={(customAnswers[question.id] as string) || ""}
-                        onChange={(e) => 
-                          setCustomAnswers(prev => ({ ...prev, [question.id]: e.target.value }))
-                        }
-                      />
-                    )}
-                    
-                    {question.type === "text" && (
-                      <Input
-                        placeholder={question.placeholder || "Deine Antwort..."}
-                        value={(customAnswers[question.id] as string) || ""}
-                        onChange={(e) => 
-                          setCustomAnswers(prev => ({ ...prev, [question.id]: e.target.value }))
-                        }
-                      />
-                    )}
-                    
-                    {question.type === "select" && question.options && (
-                      <Select 
-                        value={(customAnswers[question.id] as string) || ""}
-                        onValueChange={(value) => 
-                          setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Bitte auswählen..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {question.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                    
-                    {question.type === "radio" && question.options && (
-                      <RadioGroup
-                        value={(customAnswers[question.id] as string) || ""}
-                        onValueChange={(value) => 
-                          setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
-                        }
-                        className="grid gap-2"
-                      >
-                        {question.options.map((opt) => (
-                          <div
-                            key={opt}
-                            className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                          >
-                            <RadioGroupItem value={opt} id={`${question.id}-${opt}`} />
-                            <Label htmlFor={`${question.id}-${opt}`} className="cursor-pointer flex-1">
-                              {opt}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    )}
-                    
-                    {question.type === "checkbox" && question.options && (
-                      <div className="grid gap-2">
-                        {question.options.map((opt) => {
-                          const currentValues = (customAnswers[question.id] as string || "").split(",").filter(Boolean);
-                          const isChecked = currentValues.includes(opt);
-                          return (
-                            <label
-                              key={opt}
-                              className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                                isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                              }`}
-                            >
-                              <Checkbox
-                                checked={isChecked}
-                                onCheckedChange={(checked) => {
-                                  const newValues = checked
-                                    ? [...currentValues, opt]
-                                    : currentValues.filter((v) => v !== opt);
-                                  setCustomAnswers(prev => ({ ...prev, [question.id]: newValues.join(",") }));
-                                }}
-                              />
-                              <span className="cursor-pointer flex-1">{opt}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                  <CustomQuestionField
+                    key={question.id}
+                    question={question}
+                    value={customAnswers[question.id]}
+                    onChange={(value) =>
+                      setCustomAnswers(prev => ({ ...prev, [question.id]: value }))
+                    }
+                  />
                 ))}
               </div>
             )}
