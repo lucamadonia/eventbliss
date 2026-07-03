@@ -2852,33 +2852,6 @@
         "defaultWarning": "Possíveis restrições",
         "hintInput": "Introduzir nota..."
       },
-      "customQuestionBuilder": {
-        "quickAdd": "Adicionar rápido:",
-        "presets": {
-          "dietary": "Alimentação",
-          "songWish": "Música desejada",
-          "tshirtSize": "Tamanho de t-shirt",
-          "driversLicense": "Carta de condução",
-          "specialWishes": "Desejos especiais"
-        },
-        "types": {
-          "text": "Texto curto",
-          "textarea": "Texto longo",
-          "select": "Menu suspenso",
-          "radio": "Escolha única",
-          "checkbox": "Escolha múltipla",
-          "toggle": "Sim/Não"
-        },
-        "questionPlaceholder": "Introduzir pergunta...",
-        "placeholderPlaceholder": "Texto de placeholder (opcional)",
-        "options": "Opções:",
-        "addOption": "Adicionar opção",
-        "requiredField": "Campo obrigatório",
-        "noQuestions": "Ainda sem perguntas personalizadas.",
-        "noQuestionsHint": "Usa os botões rápidos acima ou adiciona uma nova pergunta.",
-        "addNew": "Adicionar nova pergunta",
-        "questionsConfigured": "pergunta(s) personalizada(s) configurada(s)"
-      },
       "activitySelector": {
         "searchPlaceholder": "Pesquisar atividades...",
         "selected": "selecionadas",

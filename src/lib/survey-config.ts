@@ -409,14 +409,16 @@ export function sanitizeSettingsForSave(settings: EventSettings): EventSettings 
     }
   }
 
+  // Strip unlabeled custom questions FIRST — the question_order filter below
+  // must not keep 'custom:' ids whose question is being dropped.
+  if (out.custom_questions) {
+    out.custom_questions = out.custom_questions.filter((q) => q.label.trim().length > 0);
+  }
+
   if (out.question_order) {
     const customIds = (out.custom_questions || []).map((q) => `${CUSTOM_ORDER_PREFIX}${q.id}`);
     const known = new Set<string>([...CORE_QUESTION_KEYS, ...customIds]);
     out.question_order = out.question_order.filter((id) => known.has(id));
-  }
-
-  if (out.custom_questions) {
-    out.custom_questions = out.custom_questions.filter((q) => q.label.trim().length > 0);
   }
 
   return out;

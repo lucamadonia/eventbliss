@@ -721,7 +721,10 @@ export default function NativeEventDashboard() {
   const visitedTabsRef = useRef<Set<TabId>>(new Set(["uebersicht"]));
   visitedTabsRef.current.add(activeTab);
   const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
-  const { enabled: formStudioEnabled } = useFeatureFlag("form_studio");
+  // Form Studio is the DEFAULT editor; the flag is a kill-switch (missing
+  // feature_flags row = studio on). Legacy FormBuilderTab stays one flag
+  // away as the emergency fallback.
+  const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
   const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
 
@@ -787,9 +790,9 @@ export default function NativeEventDashboard() {
         return event ? <NativeServicesTab eventId={event.id} eventSlug={slug!} /> : null;
       case "formular":
         return event
-          ? formStudioEnabled
-            ? <FormStudio event={event} onUpdate={refetch} isActive={activeTab === "formular"} />
-            : <FormBuilderTab event={event} onUpdate={refetch} />
+          ? formStudioOff
+            ? <FormBuilderTab event={event} onUpdate={refetch} />
+            : <FormStudio event={event} onUpdate={refetch} isActive={activeTab === "formular"} />
           : null;
       case "antworten":
         return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} customQuestions={mergeWithDefaults(event.settings).custom_questions ?? []} /> : null;

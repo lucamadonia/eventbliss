@@ -2852,33 +2852,6 @@
         "defaultWarning": "Olası kısıtlamalar",
         "hintInput": "Not girin..."
       },
-      "customQuestionBuilder": {
-        "quickAdd": "Hızlı ekle:",
-        "presets": {
-          "dietary": "Beslenme",
-          "songWish": "Şarkı isteği",
-          "tshirtSize": "Tişört bedeni",
-          "driversLicense": "Ehliyet",
-          "specialWishes": "Özel istekler"
-        },
-        "types": {
-          "text": "Kısa metin",
-          "textarea": "Uzun metin",
-          "select": "Açılır menü",
-          "radio": "Tekli seçim",
-          "checkbox": "Çoklu seçim",
-          "toggle": "Evet/Hayır"
-        },
-        "questionPlaceholder": "Soru girin...",
-        "placeholderPlaceholder": "Yer tutucu metin (isteğe bağlı)",
-        "options": "Seçenekler:",
-        "addOption": "Seçenek ekle",
-        "requiredField": "Zorunlu alan",
-        "noQuestions": "Henüz özel soru yok.",
-        "noQuestionsHint": "Yukarıdaki hızlı butonları kullan veya yeni soru ekle.",
-        "addNew": "Yeni soru ekle",
-        "questionsConfigured": "özel soru(lar) yapılandırıldı"
-      },
       "activitySelector": {
         "searchPlaceholder": "Aktivite ara...",
         "selected": "seçildi",

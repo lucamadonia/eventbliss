@@ -1727,33 +1727,6 @@
         "defaultWarning": "قيود محتملة",
         "hintInput": "أدخل الملاحظة..."
       },
-      "customQuestionBuilder": {
-        "quickAdd": "إضافة سريعة:",
-        "presets": {
-          "dietary": "النظام الغذائي",
-          "songWish": "أغنية مرغوبة",
-          "tshirtSize": "مقاس التيشيرت",
-          "driversLicense": "رخصة القيادة",
-          "specialWishes": "أمنيات خاصة"
-        },
-        "types": {
-          "text": "نص قصير",
-          "textarea": "نص طويل",
-          "select": "قائمة منسدلة",
-          "radio": "اختيار واحد",
-          "checkbox": "اختيار متعدد",
-          "toggle": "نعم/لا"
-        },
-        "questionPlaceholder": "أدخل السؤال...",
-        "placeholderPlaceholder": "نص توضيحي (اختياري)",
-        "options": "الخيارات:",
-        "addOption": "إضافة خيار",
-        "requiredField": "حقل مطلوب",
-        "noQuestions": "لا توجد أسئلة مخصصة بعد.",
-        "noQuestionsHint": "استخدم أزرار الإضافة السريعة أعلاه أو أضف سؤالًا جديدًا.",
-        "addNew": "إضافة سؤال جديد",
-        "questionsConfigured": "سؤال/أسئلة مخصصة مُكوَّنة"
-      },
       "activitySelector": {
         "searchPlaceholder": "البحث عن أنشطة...",
         "selected": "مختارة",

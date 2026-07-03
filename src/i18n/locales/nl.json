@@ -2852,33 +2852,6 @@
         "defaultWarning": "Mogelijke beperkingen",
         "hintInput": "Opmerking invoeren..."
       },
-      "customQuestionBuilder": {
-        "quickAdd": "Snel toevoegen:",
-        "presets": {
-          "dietary": "Voeding",
-          "songWish": "Muziekwens",
-          "tshirtSize": "T-shirtmaat",
-          "driversLicense": "Rijbewijs",
-          "specialWishes": "Speciale wensen"
-        },
-        "types": {
-          "text": "Korte tekst",
-          "textarea": "Lange tekst",
-          "select": "Dropdown",
-          "radio": "Enkelvoudige keuze",
-          "checkbox": "Meervoudige keuze",
-          "toggle": "Ja/Nee"
-        },
-        "questionPlaceholder": "Vraag invoeren...",
-        "placeholderPlaceholder": "Placeholder tekst (optioneel)",
-        "options": "Opties:",
-        "addOption": "Optie toevoegen",
-        "requiredField": "Verplicht veld",
-        "noQuestions": "Nog geen aangepaste vragen.",
-        "noQuestionsHint": "Gebruik de snelknoppen hierboven of voeg een nieuwe vraag toe.",
-        "addNew": "Nieuwe vraag toevoegen",
-        "questionsConfigured": "aangepaste vra(a)g(en) geconfigureerd"
-      },
       "activitySelector": {
         "searchPlaceholder": "Activiteiten zoeken...",
         "selected": "geselecteerd",
