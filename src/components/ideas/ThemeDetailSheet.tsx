@@ -107,13 +107,21 @@ export function ThemeDetailSheet({ theme, onClose }: { theme: ThemeItem | null; 
             onClick={(e) => e.stopPropagation()}
             className="absolute inset-x-0 bottom-0 top-[max(env(safe-area-inset-top),12px)] rounded-t-[32px] overflow-hidden bg-background border-t border-x border-border"
           >
-            {/* Palette wash — the theme's own colors set the mood */}
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-[300px]"
-              style={{
-                background: `linear-gradient(160deg, ${tint(theme.colorPalette.primary, 0.28)} 0%, ${tint(theme.colorPalette.secondary, 0.14)} 55%, transparent 100%)`,
-              }}
-            />
+            {/* AI-generated cover + palette wash — the theme sets the mood */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] overflow-hidden">
+              <img
+                src={`/images/themes/${theme.id}.webp`}
+                alt=""
+                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                className="w-full h-full object-cover opacity-70"
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(180deg, ${tint(theme.colorPalette.primary, 0.18)} 0%, rgba(8,8,14,0.35) 45%, hsl(var(--background)) 100%)`,
+                }}
+              />
+            </div>
 
             {/* Close */}
             <button

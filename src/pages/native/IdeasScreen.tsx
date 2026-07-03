@@ -595,34 +595,44 @@ function ThemeItemCard({
       }}
       className="aspect-square rounded-3xl p-3 flex flex-col justify-between items-start text-left border border-border relative overflow-hidden"
       style={{
-        // Each tile carries its theme's own palette as a soft wash
+        // Palette wash doubles as the fallback look if the cover is missing
         background: `linear-gradient(150deg, ${primary}24 0%, ${secondary}14 55%, transparent 100%)`,
       }}
     >
+      {/* AI-generated theme cover + legibility gradient */}
+      <img
+        src={`/images/themes/${theme.id}.webp`}
+        alt=""
+        loading="lazy"
+        onError={(e) => { e.currentTarget.style.display = "none"; }}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(180deg, ${primary}1f 0%, rgba(8,8,14,0.25) 40%, rgba(8,8,14,0.88) 100%)`,
+        }}
+      />
+
       {/* Color palette preview */}
-      <div className="flex gap-1 w-full">
+      <div className="relative flex gap-1 w-full">
         {[primary, secondary, accent].map((c, i) => (
           <div key={i} className="flex-1 h-2 rounded-full" style={{ backgroundColor: c }} />
         ))}
       </div>
 
-      {/* Emoji — glows in the theme's accent color */}
-      <div className="text-4xl mt-2" style={{ filter: `drop-shadow(0 0 14px ${accent}66)` }}>
-        {theme.emoji}
-      </div>
-
       {/* Info */}
-      <div className="mt-auto">
-        <p className="text-sm font-display font-bold text-foreground leading-tight">
+      <div className="relative mt-auto">
+        <p className="text-sm font-display font-bold text-white leading-tight drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
           {t(theme.nameKey)}
         </p>
-        <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">
+        <p className="text-[10px] text-white/70 mt-0.5 line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           {t(theme.descriptionKey)}
         </p>
       </div>
 
       {/* Category badge — translated */}
-      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-background/50 backdrop-blur-sm text-[9px] text-muted-foreground uppercase tracking-wide font-medium">
+      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-background/60 backdrop-blur-sm text-[9px] text-white/80 uppercase tracking-wide font-medium">
         {t(THEME_CAT_LABEL[theme.category])}
       </span>
     </motion.button>
