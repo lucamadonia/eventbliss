@@ -15,6 +15,7 @@ import NativeEventExpenses from "./NativeEventExpenses";
 import EventExpensesV2 from "@/pages/EventExpensesV2";
 import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import NativeResponsesTab from "@/components/native/responses";
+import { mergeWithDefaults } from "@/lib/survey-config";
 import { MessagesTab } from "@/components/dashboard/MessagesTab";
 import {
   ArrowLeft,
@@ -791,7 +792,7 @@ export default function NativeEventDashboard() {
             : <FormBuilderTab event={event} onUpdate={refetch} />
           : null;
       case "antworten":
-        return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} /> : null;
+        return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} customQuestions={mergeWithDefaults(event.settings).custom_questions ?? []} /> : null;
       case "nachrichten":
         return event ? <MessagesTab event={event} /> : null;
       case "ki":

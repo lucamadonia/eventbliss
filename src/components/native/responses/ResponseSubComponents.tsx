@@ -8,8 +8,9 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   ChevronDown, Inbox, Heart, MessageSquare, AlertTriangle,
-  CalendarDays, MapPin, DollarSign, Car, Dumbbell, Wine,
+  CalendarDays, MapPin, DollarSign, Car, Dumbbell, Wine, ListChecks,
 } from "lucide-react";
+import type { CustomQuestion } from "@/lib/survey-config";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -140,9 +141,52 @@ export function DetailPill({ label, value, icon: Icon }: { label: string; value:
   );
 }
 
+// ─── ChoicePills (multi-select answers) ──────────────────────────
+
+export function ChoicePills({ label, icon: Icon, choices }: { label: string; icon: typeof MapPin; choices: string[] }) {
+  return (
+    <div className="rounded-xl bg-foreground/5 px-3 py-2 space-y-1">
+      <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+        <Icon className="w-2.5 h-2.5" /> {label}
+      </p>
+      <div className="flex flex-wrap gap-1">
+        {choices.map((c, i) => (
+          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+            {c}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Renders one custom answer by question type: toggle→Ja/Nein, rating→★ n/5, checkbox→chips, else plain text. */
+function renderCustomAnswerValue(question: CustomQuestion, value: string | boolean) {
+  if (question.type === "toggle") {
+    return <p className="text-xs font-medium text-foreground">{value ? "Ja" : "Nein"}</p>;
+  }
+  if (question.type === "rating") {
+    return <p className="text-xs font-medium text-foreground">★ {String(value)}/5</p>;
+  }
+  if (question.type === "checkbox") {
+    const parts = String(value).split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 0) return null;
+    return (
+      <div className="flex flex-wrap gap-1">
+        {parts.map((p, i) => (
+          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+            {p}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  return <p className="text-xs font-medium text-foreground break-words">{String(value)}</p>;
+}
+
 // ─── ResponseCard ────────────────────────────────────────────────
 
-export function ResponseCard({ response, index }: { response: ResponseRow; index: number }) {
+export function ResponseCard({ response, index, customQuestions }: { response: ResponseRow; index: number; customQuestions?: CustomQuestion[] }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const haptics = useHaptics();
@@ -184,9 +228,21 @@ export function ResponseCard({ response, index }: { response: ResponseRow; index
             exit={{ height: 0, opacity: 0 }} transition={spring.snappy} className="overflow-hidden">
             <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
               <div className="grid grid-cols-2 gap-2.5">
-                <DetailPill label={t("dashboard.responses.columns.budget")} value={response.budget} icon={DollarSign} />
-                <DetailPill label={t("dashboard.responses.columns.destination")} value={translateValue(response.destination, "destination", t)} icon={MapPin} />
-                <DetailPill label={t("dashboard.responses.columns.duration")} value={translateValue(response.duration_pref, "duration_pref", t)} icon={CalendarDays} />
+                {response.meta?.budget_choices && response.meta.budget_choices.length > 1 ? (
+                  <ChoicePills label={t("dashboard.responses.columns.budget")} icon={DollarSign} choices={response.meta.budget_choices} />
+                ) : (
+                  <DetailPill label={t("dashboard.responses.columns.budget")} value={response.budget} icon={DollarSign} />
+                )}
+                {response.meta?.destination_choices && response.meta.destination_choices.length > 1 ? (
+                  <ChoicePills label={t("dashboard.responses.columns.destination")} icon={MapPin} choices={response.meta.destination_choices.map((c) => translateValue(c, "destination", t))} />
+                ) : (
+                  <DetailPill label={t("dashboard.responses.columns.destination")} value={translateValue(response.destination, "destination", t)} icon={MapPin} />
+                )}
+                {response.meta?.duration_choices && response.meta.duration_choices.length > 1 ? (
+                  <ChoicePills label={t("dashboard.responses.columns.duration")} icon={CalendarDays} choices={response.meta.duration_choices.map((c) => translateValue(c, "duration_pref", t))} />
+                ) : (
+                  <DetailPill label={t("dashboard.responses.columns.duration")} value={translateValue(response.duration_pref, "duration_pref", t)} icon={CalendarDays} />
+                )}
                 <DetailPill label={t("dashboard.responses.columns.travel")} value={translateValue(response.travel_pref, "travel_pref", t)} icon={Car} />
                 <DetailPill label={t("dashboard.responses.columns.fitness")} value={translateValue(response.fitness_level, "fitness_level", t)} icon={Dumbbell} />
                 <DetailPill label={t("dashboard.responses.columns.alcohol")} value={translateValue(response.alcohol || "", "alcohol", t) || t("nativeResponses.noAnswer")} icon={Wine} />
@@ -250,6 +306,28 @@ export function ResponseCard({ response, index }: { response: ResponseRow; index
                   <p className="text-xs text-foreground/80 bg-foreground/5 rounded-xl px-3 py-2">{response.partial_days}</p>
                 </div>
               )}
+
+              {response.meta?.custom_answers && customQuestions && customQuestions.length > 0 && (() => {
+                const entries = Object.entries(response.meta.custom_answers)
+                  .map(([id, val]) => ({ question: customQuestions.find((cq) => cq.id === id), val }))
+                  .filter((e): e is { question: CustomQuestion; val: string | boolean } => !!e.question);
+                if (entries.length === 0) return null;
+                return (
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold flex items-center gap-1">
+                      <ListChecks className="w-3 h-3" /> {t("nativeResponses.customAnswers", "Eigene Antworten")}
+                    </p>
+                    <div className="space-y-1.5">
+                      {entries.map(({ question, val }) => (
+                        <div key={question.id} className="rounded-xl bg-foreground/5 px-3 py-2 space-y-0.5">
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{question.label}</p>
+                          {renderCustomAnswerValue(question, val)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </motion.div>
         )}

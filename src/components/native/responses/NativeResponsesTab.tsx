@@ -27,12 +27,14 @@ import {
 import {
   SuggestionsSection, RestrictionsSection, PartialAvailabilitySection,
 } from "./ResponseHighlightSections";
+import type { CustomQuestion } from "@/lib/survey-config";
 
 // ─── Props ───────────────────────────────────────────────────────
 
 interface NativeResponsesTabProps {
   eventId: string;
   participantCount: number;
+  customQuestions?: CustomQuestion[];
 }
 
 // ─── Filter config ───────────────────────────────────────────────
@@ -46,7 +48,7 @@ const FILTER_KEYS: { key: AttendanceFilter; i18nKey: string }[] = [
 
 // ─── Main Component ──────────────────────────────────────────────
 
-export default function NativeResponsesTab({ eventId, participantCount }: NativeResponsesTabProps) {
+export default function NativeResponsesTab({ eventId, participantCount, customQuestions }: NativeResponsesTabProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const [filter, setFilter] = useState<AttendanceFilter>("alle");
@@ -261,7 +263,7 @@ export default function NativeResponsesTab({ eventId, participantCount }: Native
           <motion.div className="space-y-2" variants={stagger} initial="initial" animate="animate"
             key={`${filter}-${searchQuery}`}>
             {filtered.map((r, i) => (
-              <ResponseCard key={r.id} response={r} index={i} />
+              <ResponseCard key={r.id} response={r} index={i} customQuestions={customQuestions} />
             ))}
           </motion.div>
         )}

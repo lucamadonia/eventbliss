@@ -27,6 +27,14 @@ export interface ResponseRow {
   de_city: string | null;
   created_at: string;
   updated_at: string;
+  /** Extra answer data (multi-select choices + custom question answers).
+   *  Null/undefined on legacy rows — always access defensively. */
+  meta?: {
+    budget_choices?: string[];
+    destination_choices?: string[];
+    duration_choices?: string[];
+    custom_answers?: Record<string, string | boolean>;
+  } | null;
 }
 
 export type AttendanceFilter = "alle" | "yes" | "maybe" | "no";
