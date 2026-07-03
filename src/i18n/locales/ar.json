@@ -6400,7 +6400,30 @@
         "familie": "عائلة",
         "hochzeit": "زفاف"
       },
+      "eventTypes": {
+        "bachelor": "توديع العزوبية (له)",
+        "bachelorette": "توديع العزوبية (لها)",
+        "wedding": "زفاف",
+        "birthday": "عيد ميلاد",
+        "family": "عائلة",
+        "team": "فريق",
+        "trip": "رحلة",
+        "other": "أخرى"
+      },
+      "themeDetail": {
+        "palette": "لوحة الألوان",
+        "tip": "نصيحة",
+        "decoration": "أفكار الديكور",
+        "dressCode": "قواعد اللباس",
+        "music": "موسيقى",
+        "activities": "أنشطة مناسبة",
+        "suitableFor": "مثالي لـ",
+        "share": "مشاركة",
+        "copied": "تم النسخ!",
+        "shareText": "فكرة موضوع للحفلة: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "ثقافة",
         "alle": "الكل",
         "retro": "ريترو",
         "elegant": "أنيق",

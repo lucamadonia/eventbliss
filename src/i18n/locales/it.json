@@ -6558,7 +6558,30 @@
         "familie": "Famiglia",
         "hochzeit": "Matrimonio"
       },
+      "eventTypes": {
+        "bachelor": "Addio al celibato",
+        "bachelorette": "Addio al nubilato",
+        "wedding": "Matrimonio",
+        "birthday": "Compleanno",
+        "family": "Famiglia",
+        "team": "Team",
+        "trip": "Viaggio",
+        "other": "Altro"
+      },
+      "themeDetail": {
+        "palette": "Palette colori",
+        "tip": "Consiglio",
+        "decoration": "Idee deco",
+        "dressCode": "Dress code",
+        "music": "Musica",
+        "activities": "Attività abbinate",
+        "suitableFor": "Perfetto per",
+        "share": "Condividi",
+        "copied": "Copiato!",
+        "shareText": "Idea a tema per la festa: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Cultura",
         "alle": "Tutti",
         "retro": "Retrò",
         "elegant": "Elegante",

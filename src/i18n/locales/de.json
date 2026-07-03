@@ -6534,7 +6534,30 @@
         "familie": "Familie",
         "hochzeit": "Hochzeit"
       },
+      "eventTypes": {
+        "bachelor": "JGA (Männer)",
+        "bachelorette": "JGA (Frauen)",
+        "wedding": "Hochzeit",
+        "birthday": "Geburtstag",
+        "family": "Familie",
+        "team": "Team",
+        "trip": "Reise",
+        "other": "Sonstiges"
+      },
+      "themeDetail": {
+        "palette": "Farbpalette",
+        "tip": "Tipp",
+        "decoration": "Deko-Ideen",
+        "dressCode": "Dresscode",
+        "music": "Musik",
+        "activities": "Passende Aktivitäten",
+        "suitableFor": "Perfekt für",
+        "share": "Teilen",
+        "copied": "Kopiert!",
+        "shareText": "Motto-Idee für unsere Party: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Kultur",
         "alle": "Alle",
         "retro": "Retro",
         "elegant": "Elegant",

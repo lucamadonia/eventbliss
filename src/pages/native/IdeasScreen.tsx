@@ -39,6 +39,7 @@ import { themeIdeas, type ThemeItem, type ThemeCategory } from "@/lib/theme-idea
 import { useHaptics } from "@/hooks/useHaptics";
 import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
 import { PlayableGamesShelf } from "@/components/ideas/PlayableGamesShelf";
+import { ThemeDetailSheet } from "@/components/ideas/ThemeDetailSheet";
 import { ideaToPlayable } from "@/lib/playable-games";
 import { spring, staggerItem } from "@/lib/motion";
 
@@ -74,10 +75,23 @@ const THEME_CATS: { id: ThemeCategory | "all"; labelKey: string }[] = [
   { id: "elegant", labelKey: "native.ideas.themeCategories.elegant" },
   { id: "casual", labelKey: "native.ideas.themeCategories.casual" },
   { id: "adventure", labelKey: "native.ideas.themeCategories.abenteuer" },
+  { id: "cultural", labelKey: "native.ideas.themeCategories.kultur" },
   { id: "seasonal", labelKey: "native.ideas.themeCategories.saison" },
   { id: "costume", labelKey: "native.ideas.themeCategories.kostuem" },
   { id: "relaxation", labelKey: "native.ideas.themeCategories.wellness" },
 ];
+
+/** ThemeCategory → translated chip label (shared with the detail sheet). */
+const THEME_CAT_LABEL: Record<ThemeCategory, string> = {
+  retro: "native.ideas.themeCategories.retro",
+  elegant: "native.ideas.themeCategories.elegant",
+  casual: "native.ideas.themeCategories.casual",
+  adventure: "native.ideas.themeCategories.abenteuer",
+  cultural: "native.ideas.themeCategories.kultur",
+  seasonal: "native.ideas.themeCategories.saison",
+  costume: "native.ideas.themeCategories.kostuem",
+  relaxation: "native.ideas.themeCategories.wellness",
+};
 
 const difficultyColor = { easy: "text-emerald-400", medium: "text-amber-400", hard: "text-red-400" };
 const difficultyLabelKey = { easy: "native.ideas.difficulty.easy", medium: "native.ideas.difficulty.medium", hard: "native.ideas.difficulty.hard" };
@@ -106,6 +120,7 @@ export default function IdeasScreen() {
   const [query, setQuery] = useState("");
   const [gameCat, setGameCat] = useState<GameCategory | "all">("all");
   const [themeCat, setThemeCat] = useState<ThemeCategory | "all">("all");
+  const [selectedTheme, setSelectedTheme] = useState<ThemeItem | null>(null);
 
   // Defer the heavy list work (filtering 147 games + mounting ~20 animated
   // cards) past the very first paint: the tab switch immediately shows the
@@ -337,7 +352,13 @@ export default function IdeasScreen() {
               animate="animate"
             >
               {filteredThemes.slice(0, themesPage * PAGE_SIZE).map((theme) => (
-                <ThemeItemCard key={theme.id} theme={theme} t={t} haptics={haptics} />
+                <ThemeItemCard
+                  key={theme.id}
+                  theme={theme}
+                  t={t}
+                  haptics={haptics}
+                  onOpen={() => setSelectedTheme(theme)}
+                />
               ))}
               {filteredThemes.length > themesPage * PAGE_SIZE && (
                 <button
@@ -358,6 +379,9 @@ export default function IdeasScreen() {
         </AnimatePresence>
         )}
       </div>
+
+      {/* Immersive theme detail — dipped in the theme's own palette */}
+      <ThemeDetailSheet theme={selectedTheme} onClose={() => setSelectedTheme(null)} />
     </div>
   );
 }
@@ -552,37 +576,38 @@ function ThemeItemCard({
   theme,
   t,
   haptics,
+  onOpen,
 }: {
   theme: ThemeItem;
   t: (key: string) => string;
   haptics: ReturnType<typeof import("@/hooks/useHaptics").useHaptics>;
+  onOpen: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const { primary, secondary, accent } = theme.colorPalette;
 
   return (
     <motion.button
       variants={staggerItem}
+      whileTap={{ scale: 0.96 }}
       onClick={() => {
         haptics.light();
-        setExpanded((e) => !e);
+        onOpen();
       }}
-      className="aspect-square rounded-3xl p-3 flex flex-col justify-between items-start text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 border border-border relative overflow-hidden"
+      className="aspect-square rounded-3xl p-3 flex flex-col justify-between items-start text-left border border-border relative overflow-hidden"
+      style={{
+        // Each tile carries its theme's own palette as a soft wash
+        background: `linear-gradient(150deg, ${primary}24 0%, ${secondary}14 55%, transparent 100%)`,
+      }}
     >
       {/* Color palette preview */}
       <div className="flex gap-1 w-full">
-        {[theme.colorPalette.primary, theme.colorPalette.secondary, theme.colorPalette.accent].map(
-          (c, i) => (
-            <div
-              key={i}
-              className="flex-1 h-2 rounded-full"
-              style={{ backgroundColor: c }}
-            />
-          )
-        )}
+        {[primary, secondary, accent].map((c, i) => (
+          <div key={i} className="flex-1 h-2 rounded-full" style={{ backgroundColor: c }} />
+        ))}
       </div>
 
-      {/* Emoji */}
-      <div className="text-4xl mt-2 drop-shadow-[0_0_16px_rgba(255,255,255,0.2)]">
+      {/* Emoji — glows in the theme's accent color */}
+      <div className="text-4xl mt-2" style={{ filter: `drop-shadow(0 0 14px ${accent}66)` }}>
         {theme.emoji}
       </div>
 
@@ -596,9 +621,9 @@ function ThemeItemCard({
         </p>
       </div>
 
-      {/* Category badge */}
-      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-foreground/[0.08] text-[9px] text-muted-foreground uppercase tracking-wide font-medium">
-        {theme.category}
+      {/* Category badge — translated */}
+      <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-background/50 backdrop-blur-sm text-[9px] text-muted-foreground uppercase tracking-wide font-medium">
+        {t(THEME_CAT_LABEL[theme.category])}
       </span>
     </motion.button>
   );

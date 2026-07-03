@@ -6608,7 +6608,30 @@
         "familie": "Rodzina",
         "hochzeit": "Ślub"
       },
+      "eventTypes": {
+        "bachelor": "Wieczór kawalerski",
+        "bachelorette": "Wieczór panieński",
+        "wedding": "Wesele",
+        "birthday": "Urodziny",
+        "family": "Rodzina",
+        "team": "Zespół",
+        "trip": "Wyjazd",
+        "other": "Inne"
+      },
+      "themeDetail": {
+        "palette": "Paleta kolorów",
+        "tip": "Wskazówka",
+        "decoration": "Pomysły na dekoracje",
+        "dressCode": "Dress code",
+        "music": "Muzyka",
+        "activities": "Pasujące aktywności",
+        "suitableFor": "Idealne na",
+        "share": "Udostępnij",
+        "copied": "Skopiowano!",
+        "shareText": "Pomysł na motyw imprezy: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Kultura",
         "alle": "Wszystkie",
         "retro": "Retro",
         "elegant": "Elegancki",

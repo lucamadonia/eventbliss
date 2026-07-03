@@ -6534,7 +6534,30 @@
         "familie": "Family",
         "hochzeit": "Wedding"
       },
+      "eventTypes": {
+        "bachelor": "Stag do",
+        "bachelorette": "Hen do",
+        "wedding": "Wedding",
+        "birthday": "Birthday",
+        "family": "Family",
+        "team": "Team",
+        "trip": "Trip",
+        "other": "Other"
+      },
+      "themeDetail": {
+        "palette": "Color palette",
+        "tip": "Tip",
+        "decoration": "Decoration ideas",
+        "dressCode": "Dress code",
+        "music": "Music",
+        "activities": "Matching activities",
+        "suitableFor": "Perfect for",
+        "share": "Share",
+        "copied": "Copied!",
+        "shareText": "Party theme idea: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Culture",
         "alle": "All",
         "retro": "Retro",
         "elegant": "Elegant",

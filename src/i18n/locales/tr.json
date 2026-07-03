@@ -6608,7 +6608,30 @@
         "familie": "Aile",
         "hochzeit": "Düğün"
       },
+      "eventTypes": {
+        "bachelor": "Bekârlığa veda (E)",
+        "bachelorette": "Bekârlığa veda (K)",
+        "wedding": "Düğün",
+        "birthday": "Doğum günü",
+        "family": "Aile",
+        "team": "Ekip",
+        "trip": "Gezi",
+        "other": "Diğer"
+      },
+      "themeDetail": {
+        "palette": "Renk paleti",
+        "tip": "İpucu",
+        "decoration": "Dekorasyon fikirleri",
+        "dressCode": "Kıyafet kodu",
+        "music": "Müzik",
+        "activities": "Uygun aktiviteler",
+        "suitableFor": "Şunlar için mükemmel",
+        "share": "Paylaş",
+        "copied": "Kopyalandı!",
+        "shareText": "Parti teması fikri: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Kültür",
         "alle": "Tümü",
         "retro": "Retro",
         "elegant": "Şık",

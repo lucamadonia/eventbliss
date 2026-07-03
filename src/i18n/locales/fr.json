@@ -6558,7 +6558,30 @@
         "familie": "Famille",
         "hochzeit": "Mariage"
       },
+      "eventTypes": {
+        "bachelor": "EVG",
+        "bachelorette": "EVJF",
+        "wedding": "Mariage",
+        "birthday": "Anniversaire",
+        "family": "Famille",
+        "team": "Équipe",
+        "trip": "Voyage",
+        "other": "Autre"
+      },
+      "themeDetail": {
+        "palette": "Palette de couleurs",
+        "tip": "Conseil",
+        "decoration": "Idées déco",
+        "dressCode": "Dress code",
+        "music": "Musique",
+        "activities": "Activités assorties",
+        "suitableFor": "Parfait pour",
+        "share": "Partager",
+        "copied": "Copié !",
+        "shareText": "Idée de thème pour la fête : {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Culture",
         "alle": "Tous",
         "retro": "Rétro",
         "elegant": "Élégant",

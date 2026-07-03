@@ -6558,7 +6558,30 @@
         "familie": "Familia",
         "hochzeit": "Boda"
       },
+      "eventTypes": {
+        "bachelor": "Despedida (él)",
+        "bachelorette": "Despedida (ella)",
+        "wedding": "Boda",
+        "birthday": "Cumpleaños",
+        "family": "Familia",
+        "team": "Equipo",
+        "trip": "Viaje",
+        "other": "Otros"
+      },
+      "themeDetail": {
+        "palette": "Paleta de colores",
+        "tip": "Consejo",
+        "decoration": "Ideas de decoración",
+        "dressCode": "Código de vestimenta",
+        "music": "Música",
+        "activities": "Actividades a juego",
+        "suitableFor": "Perfecto para",
+        "share": "Compartir",
+        "copied": "¡Copiado!",
+        "shareText": "Idea de temática para la fiesta: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Cultura",
         "alle": "Todos",
         "retro": "Retro",
         "elegant": "Elegante",

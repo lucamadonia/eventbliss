@@ -6608,7 +6608,30 @@
         "familie": "Familie",
         "hochzeit": "Bruiloft"
       },
+      "eventTypes": {
+        "bachelor": "Vrijgezellenfeest (hem)",
+        "bachelorette": "Vrijgezellenfeest (haar)",
+        "wedding": "Bruiloft",
+        "birthday": "Verjaardag",
+        "family": "Familie",
+        "team": "Team",
+        "trip": "Reis",
+        "other": "Overig"
+      },
+      "themeDetail": {
+        "palette": "Kleurenpalet",
+        "tip": "Tip",
+        "decoration": "Decoratie-ideeën",
+        "dressCode": "Dresscode",
+        "music": "Muziek",
+        "activities": "Passende activiteiten",
+        "suitableFor": "Perfect voor",
+        "share": "Delen",
+        "copied": "Gekopieerd!",
+        "shareText": "Thema-idee voor ons feest: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Cultuur",
         "alle": "Alle",
         "retro": "Retro",
         "elegant": "Elegant",

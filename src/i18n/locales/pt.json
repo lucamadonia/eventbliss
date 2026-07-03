@@ -6608,7 +6608,30 @@
         "familie": "Família",
         "hochzeit": "Casamento"
       },
+      "eventTypes": {
+        "bachelor": "Despedida de solteiro",
+        "bachelorette": "Despedida de solteira",
+        "wedding": "Casamento",
+        "birthday": "Aniversário",
+        "family": "Família",
+        "team": "Equipa",
+        "trip": "Viagem",
+        "other": "Outros"
+      },
+      "themeDetail": {
+        "palette": "Paleta de cores",
+        "tip": "Dica",
+        "decoration": "Ideias de decoração",
+        "dressCode": "Código de vestuário",
+        "music": "Música",
+        "activities": "Atividades combinadas",
+        "suitableFor": "Perfeito para",
+        "share": "Partilhar",
+        "copied": "Copiado!",
+        "shareText": "Ideia de tema para a festa: {{name}} — {{description}}"
+      },
       "themeCategories": {
+        "kultur": "Cultura",
         "alle": "Todos",
         "retro": "Retro",
         "elegant": "Elegante",
