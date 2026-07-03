@@ -67,14 +67,23 @@ export function StudioPreview({ eventId, draft, scrollToKey, onEdit }: StudioPre
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="absolute inset-0 z-20 bg-background"
+      // fixed (not absolute): fill the real viewport, not the edit canvas's
+      // height — otherwise a form taller than the canvas can't scroll to its
+      // end. z-50 clears the app chrome (the tab bar is hidden on /dashboard).
+      className="fixed inset-0 z-50 flex flex-col bg-background safe-top"
     >
-      {/* Non-submitting preview banner */}
-      <div className="sticky top-0 z-10 bg-background/80 px-4 py-2 text-center text-xs text-muted-foreground backdrop-blur">
+      {/* Non-submitting preview banner — fixed height, never scrolls */}
+      <div className="shrink-0 bg-background/80 px-4 py-2 text-center text-xs text-muted-foreground backdrop-blur">
         {t("formStudio.previewBanner", "Vorschau — Antworten werden nicht gespeichert")}
       </div>
 
-      <div ref={containerRef} className="h-full overflow-y-auto native-scroll pb-28">
+      {/* Scroll region takes exactly the remaining space (min-h-0 so flex lets
+          it shrink); generous bottom padding clears the floating edit pill and
+          the native tab bar so the last field is fully reachable. */}
+      <div
+        ref={containerRef}
+        className="min-h-0 flex-1 overflow-y-auto native-scroll pb-[calc(10rem+env(safe-area-inset-bottom))]"
+      >
         <PreviewForm
           eventId={eventId}
           settings={draft}

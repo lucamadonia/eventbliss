@@ -7,11 +7,12 @@
  * optional "peek" (eye) button that jumps into the live preview, and a close X.
  * Closing always flushes the draft so nothing is lost on dismiss.
  */
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Eye, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,8 @@ interface StudioSheetProps {
 
 export function StudioSheet({ open, onClose, flush, emoji, title, onPeek, children }: StudioSheetProps) {
   const haptics = useHaptics();
+  const keyboardInset = useKeyboardInset();
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   const handleOpenChange = (next: boolean) => {
     if (!next) {
@@ -36,6 +39,24 @@ export function StudioSheet({ open, onClose, flush, emoji, title, onPeek, childr
       onClose();
     }
   };
+
+  // When a field inside the sheet gains focus, scroll it above the keyboard.
+  // The sheet is position:fixed against the layout viewport, so KeyboardResize
+  // alone doesn't lift it — the padding-bottom below opens the room and this
+  // scrolls the focused input into it.
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const onFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        // Wait for the keyboard height to apply, then center the field.
+        setTimeout(() => target.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
+      }
+    };
+    body.addEventListener("focusin", onFocus);
+    return () => body.removeEventListener("focusin", onFocus);
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -88,8 +109,15 @@ export function StudioSheet({ open, onClose, flush, emoji, title, onPeek, childr
           </motion.button>
         </div>
 
-        {/* Body */}
-        <div className="min-h-0 flex-1 overflow-y-auto native-scroll px-5 pb-8">{children}</div>
+        {/* Body — extra bottom padding equal to the keyboard height so the
+            focused field can scroll above the on-screen keyboard. */}
+        <div
+          ref={bodyRef}
+          className="min-h-0 flex-1 overflow-y-auto native-scroll px-5 pb-8"
+          style={keyboardInset ? { paddingBottom: keyboardInset + 32 } : undefined}
+        >
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   );
