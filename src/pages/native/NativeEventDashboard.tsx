@@ -51,6 +51,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
+import FormStudio from "@/components/formstudio/FormStudio";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useMarketplaceServices } from "@/hooks/useMarketplaceServices";
@@ -719,6 +720,7 @@ export default function NativeEventDashboard() {
   const visitedTabsRef = useRef<Set<TabId>>(new Set(["uebersicht"]));
   visitedTabsRef.current.add(activeTab);
   const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
+  const { enabled: formStudioEnabled } = useFeatureFlag("form_studio");
   const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
 
@@ -783,7 +785,11 @@ export default function NativeEventDashboard() {
       case "dienstleister":
         return event ? <NativeServicesTab eventId={event.id} eventSlug={slug!} /> : null;
       case "formular":
-        return event ? <FormBuilderTab event={event} onUpdate={refetch} /> : null;
+        return event
+          ? formStudioEnabled
+            ? <FormStudio event={event} onUpdate={refetch} isActive={activeTab === "formular"} />
+            : <FormBuilderTab event={event} onUpdate={refetch} />
+          : null;
       case "antworten":
         return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} /> : null;
       case "nachrichten":
