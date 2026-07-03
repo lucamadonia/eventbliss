@@ -132,7 +132,9 @@ export function ThemeDetailSheet({ theme, onClose }: { theme: ThemeItem | null; 
               <X className="w-[18px] h-[18px] text-foreground/80" />
             </button>
 
-            <div className="relative h-full overflow-y-auto native-scroll overscroll-contain pb-10">
+            {/* Bottom padding clears the home indicator so the last element
+                (the share button) sits fully above it and stays tappable. */}
+            <div className="relative h-full overflow-y-auto native-scroll overscroll-contain pb-[calc(3rem+env(safe-area-inset-bottom))]">
               {/* Drag-handle affordance */}
               <div className="sticky top-0 z-10 flex justify-center pt-3 pb-1">
                 <div className="w-10 h-1 rounded-full bg-foreground/20" />
