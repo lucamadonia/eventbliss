@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Eye, Type, AlignLeft, List, CircleDot, CheckSquare, ToggleLeft } from 'lucide-react';
+import { Eye, Type, AlignLeft, List, CircleDot, CheckSquare, ToggleLeft, Star, Hash, Calendar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,6 +37,9 @@ const getQuestionIcon = (type: CustomQuestion['type']) => {
     case 'radio': return CircleDot;
     case 'checkbox': return CheckSquare;
     case 'toggle': return ToggleLeft;
+    case 'rating': return Star;
+    case 'number': return Hash;
+    case 'date': return Calendar;
     default: return Type;
   }
 };
@@ -161,6 +164,31 @@ export function CustomQuestionPreview({ questions }: CustomQuestionPreviewProps)
                         {t('common.yes')} / {t('common.no')}
                       </span>
                     </div>
+                  )}
+
+                  {question.type === 'rating' && (
+                    <div className="flex items-center gap-1.5">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <span key={n} className="text-xl leading-none text-muted-foreground/40">★</span>
+                      ))}
+                    </div>
+                  )}
+
+                  {question.type === 'number' && (
+                    <Input
+                      type="number"
+                      placeholder={question.placeholder || ''}
+                      disabled
+                      className="bg-muted/30"
+                    />
+                  )}
+
+                  {question.type === 'date' && (
+                    <Input
+                      type="date"
+                      disabled
+                      className="bg-muted/30 [color-scheme:dark]"
+                    />
                   )}
                 </div>
               </GlassCard>

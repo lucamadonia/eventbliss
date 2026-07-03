@@ -114,6 +114,50 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
           })}
         </div>
       )}
+
+      {/* TODO i18n guest form — German placeholders kept consistent with the strings above */}
+      {question.type === "rating" && (
+        <div className="flex items-center gap-2">
+          {[1, 2, 3, 4, 5].map((n) => {
+            const current = Number((value as string) || "0");
+            const active = n <= current;
+            return (
+              <button
+                key={n}
+                type="button"
+                onClick={() => onChange(String(n))}
+                aria-label={`${n} von 5`}
+                className={`text-2xl leading-none transition-colors ${
+                  active ? "text-primary" : "text-muted-foreground/40 hover:text-muted-foreground"
+                }`}
+              >
+                ★
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {question.type === "number" && (
+        <Input
+          type="number"
+          inputMode="decimal"
+          placeholder={question.placeholder || "Zahl eingeben..."}
+          min={question.min}
+          max={question.max}
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+
+      {question.type === "date" && (
+        <Input
+          type="date"
+          className="[color-scheme:dark]"
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
     </div>
   );
 };

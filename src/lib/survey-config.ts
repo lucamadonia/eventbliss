@@ -421,3 +421,55 @@ export function sanitizeSettingsForSave(settings: EventSettings): EventSettings 
 
   return out;
 }
+
+/**
+ * Validates + sanitizes guest custom answers before submit.
+ * - Enforces `required` questions are answered (previously not enforced at all).
+ * - Clamps `rating` to 1..5 and `number` to the question's min/max when set.
+ * `firstMissingLabel` names the first unanswered required question (for a toast).
+ * `sanitized` is the answers map to actually submit. Toggles always count as
+ * answered (their off state "Nein" is a valid answer).
+ */
+export function validateCustomAnswers(
+  questions: CustomQuestion[],
+  answers: Record<string, string | boolean>,
+): { ok: boolean; firstMissingLabel?: string; sanitized: Record<string, string | boolean> } {
+  const sanitized: Record<string, string | boolean> = { ...answers };
+
+  for (const q of questions) {
+    let val = sanitized[q.id];
+
+    if (q.type === 'rating' && typeof val === 'string' && val.trim() !== '') {
+      const n = Math.round(Number(val));
+      if (!Number.isNaN(n)) {
+        val = String(Math.min(5, Math.max(1, n)));
+        sanitized[q.id] = val;
+      }
+    }
+
+    if (q.type === 'number' && typeof val === 'string' && val.trim() !== '') {
+      const n = Number(val);
+      if (!Number.isNaN(n)) {
+        let clamped = n;
+        if (typeof q.min === 'number') clamped = Math.max(q.min, clamped);
+        if (typeof q.max === 'number') clamped = Math.min(q.max, clamped);
+        val = String(clamped);
+        sanitized[q.id] = val;
+      }
+    }
+
+    if (q.required) {
+      const answered =
+        q.type === 'toggle'
+          ? true
+          : typeof val === 'string'
+            ? val.trim().length > 0
+            : typeof val === 'boolean';
+      if (!answered) {
+        return { ok: false, firstMissingLabel: q.label, sanitized };
+      }
+    }
+  }
+
+  return { ok: true, sanitized };
+}

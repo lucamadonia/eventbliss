@@ -34,6 +34,7 @@ import {
   mergeWithDefaults,
   getDateBlocksArray,
   getEffectiveQuestionOrder,
+  validateCustomAnswers,
   CUSTOM_ORDER_PREFIX,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,6 +119,14 @@ const DynamicSurveyForm = ({
 
   const onSubmit = async (data: DynamicResponseFormData) => {
     if (previewMode) return; // preview never writes
+
+    // Enforce required custom questions + clamp rating/number before submitting.
+    const validation = validateCustomAnswers(config.custom_questions || [], customAnswers);
+    if (!validation.ok) {
+      toast.error(`Bitte beantworte die Pflichtfrage: „${validation.firstMissingLabel}"`);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -125,7 +134,7 @@ const DynamicSurveyForm = ({
         body: {
           ...data,
           event_id: eventId,
-          custom_answers: customAnswers,
+          custom_answers: validation.sanitized,
         },
       });
 
@@ -318,31 +327,33 @@ const DynamicSurveyForm = ({
               />
             </div>
 
-            {/* Group Code */}
-            <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
-              <FormField
-                control={form.control}
-                name="group_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="form-label">Gruppencode *</FormLabel>
-                    <FormDescription className="text-xs mb-2">
-                      Den Code hast du in der Einladung erhalten
-                    </FormDescription>
-                    <FormControl>
-                      <Input
-                        placeholder="z.B. ABC123"
-                        className="uppercase"
-                        maxLength={10}
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Group Code — skipped in preview (not required there) */}
+            {!previewMode && (
+              <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
+                <FormField
+                  control={form.control}
+                  name="group_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="form-label">Gruppencode *</FormLabel>
+                      <FormDescription className="text-xs mb-2">
+                        Den Code hast du in der Einladung erhalten
+                      </FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="z.B. ABC123"
+                          className="uppercase"
+                          maxLength={10}
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="pt-4">
