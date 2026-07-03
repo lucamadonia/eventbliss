@@ -258,11 +258,20 @@ jobs:
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
           echo "Uploading: $IPA_PATH"
 
+          # altool can exit 0 even when validation fails (run 232: "train
+          # version closed" errors, step still green) — parse the output and
+          # fail the step explicitly on any upload error.
+          set -o pipefail
           xcrun altool --upload-app \
             --type ios \
             --file "$IPA_PATH" \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" 2>&1 | tee altool-output.log
+
+          if grep -qE "UPLOAD FAILED|Validation failed|Failed to upload" altool-output.log; then
+            echo "::error::TestFlight upload failed — see altool output above"
+            exit 1
+          fi
 
       - name: Clean up keychain
         if: always()
