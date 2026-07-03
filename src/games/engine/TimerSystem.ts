@@ -35,42 +35,6 @@ export function useGameTimer(initialSeconds: number, onExpire: () => void) {
   return { timeLeft, isRunning, start, pause, reset, percentLeft };
 }
 
-export function useBombTimer(
-  minSeconds: number,
-  maxSeconds: number,
-  onExplode: () => void
-) {
-  const [hiddenDuration] = useState(
-    () => Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds
-  );
-  const [elapsed, setElapsed] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const onExplodeRef = useRef(onExplode);
-  onExplodeRef.current = onExplode;
-
-  useEffect(() => {
-    if (!isRunning) return;
-
-    const interval = setInterval(() => {
-      setElapsed((prev) => {
-        if (prev + 1 >= hiddenDuration) {
-          setIsRunning(false);
-          onExplodeRef.current();
-          return hiddenDuration;
-        }
-        return prev + 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isRunning, hiddenDuration]);
-
-  const start = useCallback(() => setIsRunning(true), []);
-  const pause = useCallback(() => setIsRunning(false), []);
-  const reset = useCallback(() => {
-    setElapsed(0);
-    setIsRunning(false);
-  }, []);
-
-  return { elapsed, isRunning, start, pause, reset, isTicking: isRunning };
-}
+// NOTE: BombGame has its own useBombTimer (different signature/semantics) in
+// src/games/bomb/BombGame.tsx. The unused engine variant was removed so the
+// two can't be confused.
