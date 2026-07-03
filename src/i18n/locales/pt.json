@@ -6740,6 +6740,7 @@
       "questions": {
         "title": "Quais perguntas?",
         "subtitle": "Escolha o que seu formulário deve perguntar. Pode ser alterado a qualquer momento.",
+        "skipForNow": "Ignorar por agora",
         "smartHint": "Sugestão inteligente ativa",
         "countSuffix": "perguntas",
         "extrasTitle": "Perguntas extras (opcional)",

@@ -6740,6 +6740,7 @@
       "questions": {
         "title": "Welke vragen?",
         "subtitle": "Kies wat je formulier vraagt. Later altijd aanpasbaar.",
+        "skipForNow": "Voorlopig overslaan",
         "smartHint": "Slim voorstel actief",
         "countSuffix": "vragen",
         "extrasTitle": "Extra vragen (optioneel)",

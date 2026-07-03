@@ -6740,6 +6740,7 @@
       "questions": {
         "title": "Hangi Sorular?",
         "subtitle": "Formunun hangi soruları sormasını istediğini seç. İstediğin zaman değiştirebilirsin.",
+        "skipForNow": "Şimdilik atla",
         "smartHint": "Akıllı öneri aktif",
         "countSuffix": "Soru",
         "extrasTitle": "Ek Sorular (isteğe bağlı)",

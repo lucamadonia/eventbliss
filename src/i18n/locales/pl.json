@@ -6740,6 +6740,7 @@
       "questions": {
         "title": "Jakie pytania?",
         "subtitle": "Wybierz, o co ma pytać formularz. Zawsze możesz to zmienić.",
+        "skipForNow": "Na razie pomiń",
         "smartHint": "Aktywna inteligentna sugestia",
         "countSuffix": "pytania",
         "extrasTitle": "Dodatkowe pytania (opcjonalnie)",

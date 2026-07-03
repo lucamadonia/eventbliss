@@ -6666,6 +6666,7 @@
       "questions": {
         "title": "Welche Fragen?",
         "subtitle": "Wähle, was dein Formular fragen soll. Später jederzeit änderbar.",
+        "skipForNow": "Vorerst überspringen",
         "smartHint": "Smart-Vorschlag aktiv",
         "countSuffix": "Fragen",
         "extrasTitle": "Extra-Fragen (optional)",

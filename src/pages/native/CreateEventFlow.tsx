@@ -112,15 +112,14 @@ export default function CreateEventFlow() {
     options: defaultQuestionsOptions(),
   });
 
-  // Guests pick their form questions inline; logged-in users keep the current
-  // flow (link immediately, questions configured later in the dashboard).
+  // Everyone configures the form questions BEFORE the event is created, so
+  // the shared link is immediately invite-ready. The step can be skipped —
+  // then the event-type defaults apply (adjustable later in the dashboard).
   const isGuest = !user;
+  const [skippedQuestions, setSkippedQuestions] = useState(false);
   const stepKeys = useMemo(
-    () =>
-      (isGuest
-        ? ["type", "details", "guests", "questions", "review"]
-        : ["type", "details", "guests", "review"]) as const,
-    [isGuest],
+    () => ["type", "details", "guests", "questions", "review"] as const,
+    [],
   );
 
   const update = <K extends keyof FormData>(key: K, value: FormData[K]) =>
@@ -180,9 +179,10 @@ export default function CreateEventFlow() {
       });
       if (error) throw error;
       if (data?.success) {
-        // Guests pick their questions inline — persist them onto the event so the
-        // public form asks exactly what they chose (no link without a real form).
-        if (isGuest && data.event?.id) {
+        // Persist the questions chosen in the wizard onto the event so the
+        // public form asks exactly that. Skipped → keep the event-type
+        // defaults untouched (configurable later in the dashboard).
+        if (!skippedQuestions && data.event?.id) {
           try {
             await supabase.functions.invoke("update-event-settings", {
               body: {
@@ -197,6 +197,8 @@ export default function CreateEventFlow() {
           } catch (e) {
             console.warn("Could not persist question config:", e);
           }
+        }
+        if (isGuest) {
           // Remember the organizer token so the guest can claim the event after registering.
           savePendingClaim({ slug: data.event.slug, token: data.organizer_token });
         }
@@ -204,7 +206,11 @@ export default function CreateEventFlow() {
         setCreatedEvent({
           slug: data.event.slug,
           access_code: data.event.access_code,
-          share_link: data.share_link || `${getBaseUrl()}/e/${data.event.slug}`,
+          // ALWAYS build the link client-side: the edge function derives its
+          // share_link from the request origin, which inside the native app
+          // is capacitor://localhost — useless for sharing. getBaseUrl()
+          // returns the production domain on native.
+          share_link: `${getBaseUrl()}/e/${data.event.slug}`,
         });
         setDirection(1);
         setStep(stepKeys.length + 1);
@@ -326,8 +332,27 @@ export default function CreateEventFlow() {
       {/* Bottom CTA */}
       {!isSuccess && (
         <div className="safe-bottom px-5 pb-4 pt-2">
+          {/* Questions can be skipped — event-type defaults apply then */}
+          {stepKeys[step - 1] === "questions" && (
+            <button
+              onClick={() => {
+                haptics.light();
+                setSkippedQuestions(true);
+                setDirection(1);
+                setStep((s) => s + 1);
+              }}
+              className="w-full h-10 mb-2 text-sm font-medium text-muted-foreground"
+            >
+              {t('native.create.questions.skipForNow')}
+            </button>
+          )}
           <motion.button
-            onClick={step === stepKeys.length ? handleSubmit : next}
+            onClick={() => {
+              // Proceeding through the questions step normally un-skips it
+              if (stepKeys[step - 1] === "questions") setSkippedQuestions(false);
+              if (step === stepKeys.length) handleSubmit();
+              else next();
+            }}
             disabled={!canProceed() || isSubmitting}
             whileTap={{ scale: canProceed() ? 0.96 : 1 }}
             transition={spring.snappy}
@@ -449,11 +474,14 @@ function StepDetails({
             <Calendar className="w-4 h-4 inline mr-1.5" />
             {t('native.create.stepDetails.date')}
           </label>
+          {/* appearance-none + min-w-0: iOS date inputs have an intrinsic
+              min-width and overflow the viewport unless native styling is
+              disabled. */}
           <input
             type="date"
             value={form.event_date}
             onChange={(e) => update("event_date", e.target.value)}
-            className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base focus:outline-none focus:border-primary/50 [color-scheme:dark]"
+            className="appearance-none block w-full min-w-0 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base text-left focus:outline-none focus:border-primary/50 [color-scheme:dark]"
           />
         </div>
 

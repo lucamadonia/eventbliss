@@ -6666,6 +6666,7 @@
       "questions": {
         "title": "Which questions?",
         "subtitle": "Choose what your form should ask. You can change this anytime.",
+        "skipForNow": "Skip for now",
         "smartHint": "Smart suggestion on",
         "countSuffix": "questions",
         "extrasTitle": "Extra questions (optional)",

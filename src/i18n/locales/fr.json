@@ -6690,6 +6690,7 @@
       "questions": {
         "title": "Quelles questions ?",
         "subtitle": "Choisis ce que ton formulaire doit demander. Modifiable à tout moment.",
+        "skipForNow": "Passer pour l'instant",
         "smartHint": "Suggestion intelligente active",
         "countSuffix": "questions",
         "extrasTitle": "Questions supplémentaires (optionnel)",

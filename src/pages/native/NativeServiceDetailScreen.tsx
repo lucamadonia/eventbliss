@@ -481,7 +481,7 @@ export default function NativeServiceDetailScreen() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:border-primary/40 transition-colors [color-scheme:dark]"
+                className="appearance-none block w-full min-w-0 pl-9 pr-3 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground text-left focus:outline-none focus:border-primary/40 transition-colors [color-scheme:dark]"
               />
             </div>
           </div>

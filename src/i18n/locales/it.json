@@ -6690,6 +6690,7 @@
       "questions": {
         "title": "Quali domande?",
         "subtitle": "Scegli cosa chiedere nel modulo. Modificabile in qualsiasi momento.",
+        "skipForNow": "Salta per ora",
         "smartHint": "Suggerimento smart attivo",
         "countSuffix": "domande",
         "extrasTitle": "Domande extra (facoltative)",
