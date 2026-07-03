@@ -6,6 +6,21 @@ export interface DateBlockOption {
   warning?: string;
 }
 
+/**
+ * A date block with its REAL date range. Canonical home of this interface
+ * (moved from DateRangeBlockEditor, which re-exports it for compat).
+ * Persisted in settings.date_ranges since the Form Studio rebuild — the
+ * legacy settings.date_blocks record only stores the flattened label,
+ * which destroyed start/end on every save round-trip.
+ */
+export interface DateRangeBlock {
+  key: string;
+  start: string; // ISO date string
+  end: string;   // ISO date string
+  label?: string;
+  warning?: string;
+}
+
 export interface SelectOption {
   value: string;
   label: string;
@@ -91,18 +106,43 @@ export interface SurveyConfig {
   
   // Custom questions (future feature)
   custom_questions?: CustomQuestion[];
-  
+
   // Question visibility and multi-select configuration
   question_config?: QuestionConfigs;
+
+  /**
+   * Display order of questions on the guest form. Entries are core question
+   * keys ('budget', …) or 'custom:<id>' for custom questions. Unknown ids
+   * are ignored; missing ids are appended in default order — old events
+   * without this key render exactly as before.
+   */
+  question_order?: string[];
+
+  /**
+   * Date blocks WITH their real start/end dates (see DateRangeBlock).
+   * Always written alongside the legacy date_blocks/date_warnings records
+   * (dual-write) so every legacy reader keeps working.
+   */
+  date_ranges?: DateRangeBlock[];
 }
+
+export type CustomQuestionType =
+  | 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'toggle'
+  // Premium types (Form Studio): answers stored as strings in meta.custom_answers
+  | 'rating'   // "1".."5"
+  | 'number'   // decimal string
+  | 'date';    // yyyy-MM-dd
 
 export interface CustomQuestion {
   id: string;
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'toggle';
+  type: CustomQuestionType;
   label: string;
   required: boolean;
   options?: string[];
   placeholder?: string;
+  /** Optional bounds for type 'number' */
+  min?: number;
+  max?: number;
 }
 
 export const DEFAULT_QUESTION_CONFIG: QuestionConfigs = {
@@ -268,4 +308,116 @@ export function getDateBlocksArray(dateBlocks: Record<string, string>, warnings?
     label,
     warning: warnings?.[key],
   }));
+}
+
+/**
+ * Date blocks with real ranges where available. Prefers settings.date_ranges;
+ * reconciles against the legacy date_blocks record: entries whose key is
+ * missing from date_blocks are dropped (a legacy editor deleted them), and
+ * legacy-only keys are appended with empty start/end. Result is what editors
+ * should hydrate from.
+ */
+export function getDateBlocks(config: Pick<SurveyConfig, 'date_blocks' | 'date_warnings' | 'date_ranges'>): DateRangeBlock[] {
+  const legacyKeys = Object.keys(config.date_blocks || {});
+  const ranges = (config.date_ranges || []).filter((r) => legacyKeys.includes(r.key));
+  const rangeKeys = new Set(ranges.map((r) => r.key));
+  const legacyOnly: DateRangeBlock[] = legacyKeys
+    .filter((key) => !rangeKeys.has(key))
+    .map((key) => ({
+      key,
+      start: '',
+      end: '',
+      label: config.date_blocks[key],
+      warning: config.date_warnings?.[key],
+    }));
+  return [
+    ...ranges.map((r) => ({
+      ...r,
+      label: r.label ?? config.date_blocks[r.key],
+      warning: r.warning ?? config.date_warnings?.[r.key],
+    })),
+    ...legacyOnly,
+  ];
+}
+
+/** Prefix for custom-question ids inside question_order. */
+export const CUSTOM_ORDER_PREFIX = 'custom:';
+
+/**
+ * Effective question order for the guest form: config.question_order filtered
+ * to known ids, with every missing known id appended in default order
+ * (core keys first, then custom questions). Total function — old events
+ * without question_order get exactly the legacy order.
+ */
+export function getEffectiveQuestionOrder(
+  config: Pick<SurveyConfig, 'question_order' | 'custom_questions'>,
+): string[] {
+  const customIds = (config.custom_questions || []).map((q) => `${CUSTOM_ORDER_PREFIX}${q.id}`);
+  const known = new Set<string>([...CORE_QUESTION_KEYS, ...customIds]);
+  const stored = (config.question_order || []).filter((id) => known.has(id));
+  const seen = new Set(stored);
+  const missing = [...CORE_QUESTION_KEYS, ...customIds].filter((id) => !seen.has(id));
+  return [...stored, ...missing];
+}
+
+/** Core questions whose option VALUES are locked by DB CHECK constraints on
+ *  the responses table — add/remove/rename of values would make guest
+ *  submissions fail. Labels and emojis remain freely editable. */
+export const VALUE_LOCKED_QUESTIONS: (keyof QuestionConfigs)[] = [
+  'attendance', 'travel', 'fitness', 'alcohol',
+];
+
+/** Questions whose multiSelect flag is actually honored by the guest renderer. */
+export const MULTI_CAPABLE_QUESTIONS: (keyof QuestionConfigs)[] = [
+  'duration', 'budget', 'destination',
+];
+
+/**
+ * Guardrail pass before persisting settings (used by Form Studio autosave):
+ * - clamps option values of CHECK-constrained questions to their default
+ *   value sets (labels/emojis pass through)
+ * - forces attendance enabled (dashboard evaluation depends on it)
+ * - forces multiSelect=false where the renderer stores scalars
+ * - drops unknown ids from question_order
+ * - strips custom questions without a label
+ */
+export function sanitizeSettingsForSave(settings: EventSettings): EventSettings {
+  const out: EventSettings = { ...settings };
+
+  const clampOptions = (key: 'attendance_options' | 'travel_options' | 'fitness_options' | 'alcohol_options') => {
+    const allowed = new Set(DEFAULT_SURVEY_CONFIG[key].map((o) => o.value));
+    const byValue = new Map((out[key] || []).map((o) => [o.value, o]));
+    // Keep exactly the default value set, in default order, but let edited
+    // labels/emojis pass through.
+    out[key] = DEFAULT_SURVEY_CONFIG[key].map((def) => {
+      const edited = byValue.get(def.value);
+      return edited ? { ...def, label: edited.label, emoji: edited.emoji } : def;
+    });
+    void allowed;
+  };
+  clampOptions('attendance_options');
+  clampOptions('travel_options');
+  clampOptions('fitness_options');
+  clampOptions('alcohol_options');
+
+  if (out.question_config) {
+    out.question_config = { ...out.question_config };
+    out.question_config.attendance = { ...out.question_config.attendance, enabled: true, multiSelect: false };
+    for (const key of VALUE_LOCKED_QUESTIONS) {
+      if (key === 'attendance') continue;
+      out.question_config[key] = { ...out.question_config[key], multiSelect: false };
+    }
+  }
+
+  if (out.question_order) {
+    const customIds = (out.custom_questions || []).map((q) => `${CUSTOM_ORDER_PREFIX}${q.id}`);
+    const known = new Set<string>([...CORE_QUESTION_KEYS, ...customIds]);
+    out.question_order = out.question_order.filter((id) => known.has(id));
+  }
+
+  if (out.custom_questions) {
+    out.custom_questions = out.custom_questions.filter((q) => q.label.trim().length > 0);
+  }
+
+  return out;
 }

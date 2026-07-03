@@ -33,6 +33,11 @@ import {
 } from "@/lib/survey-config";
 import { CoreQuestionEditor } from "@/components/dashboard/CoreQuestionEditor";
 import { DateRangeBlockEditor, type DateRangeBlock } from "@/components/dashboard/DateRangeBlockEditor";
+import {
+  CUSTOM_QUESTION_PRESETS,
+  presetAlreadyAdded,
+  type CustomQuestionPreset,
+} from "@/lib/custom-question-presets";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { cn } from "@/lib/utils";
@@ -115,14 +120,7 @@ const OPT_KEY: Partial<Record<CoreKey, keyof QuestionsOptions>> = {
   alcohol: "alcohol_options", activities: "activity_options",
 };
 
-const CUSTOM_PRESETS: { id: string; emoji: string; q: Omit<CustomQuestion, "id"> }[] = [
-  { id: "dietary",  emoji: "🥗", q: { type: "textarea", label: "Ernährung / Allergien?", required: false, placeholder: "z.B. vegetarisch, Nuss-Allergie" } },
-  { id: "song",     emoji: "🎵", q: { type: "text", label: "Songwunsch?", required: false } },
-  { id: "tshirt",   emoji: "👕", q: { type: "select", label: "T-Shirt-Größe", required: false, options: ["S", "M", "L", "XL", "XXL"] } },
-  { id: "license",  emoji: "🚗", q: { type: "toggle", label: "Führerschein?", required: false } },
-];
-
-const TOTAL_SLOTS = CORE_QUESTION_KEYS.length + CUSTOM_PRESETS.length;
+const TOTAL_SLOTS = CORE_QUESTION_KEYS.length + CUSTOM_QUESTION_PRESETS.length;
 
 const cloneCfg = (c: QuestionConfigs): QuestionConfigs => JSON.parse(JSON.stringify(c));
 const sig = (c: QuestionConfigs) => CORE_QUESTION_KEYS.map((k) => (c[k]?.enabled ? "1" : "0")).join("");
@@ -195,8 +193,9 @@ export function EventQuestionsStep({
   const setOptions = (optKey: keyof QuestionsOptions, arr: SelectOption[] | ActivityOption[] | DateRangeBlock[]) =>
     onChange({ ...value, options: { ...options, [optKey]: arr } });
 
-  const togglePreset = (presetId: string, q: Omit<CustomQuestion, "id">) => {
-    const exists = custom_questions.some((c) => c.id === presetId);
+  const togglePreset = (preset: CustomQuestionPreset) => {
+    const ids = new Set([preset.id, ...preset.aliases]);
+    const exists = custom_questions.some((c) => ids.has(c.id));
     if (!exists && !isPremium && custom_questions.length >= FREE_CUSTOM_LIMIT) {
       void haptics.warning();
       toast.info(t("native.create.questions.premiumHint", "Mehr eigene Fragen mit Premium"));
@@ -206,8 +205,8 @@ export function EventQuestionsStep({
     onChange({
       ...value,
       custom_questions: exists
-        ? custom_questions.filter((c) => c.id !== presetId)
-        : [...custom_questions, { id: presetId, ...q }],
+        ? custom_questions.filter((c) => !ids.has(c.id))
+        : [...custom_questions, { id: preset.id, ...preset.build(t) }],
     });
   };
 
@@ -482,8 +481,8 @@ export function EventQuestionsStep({
           {t("native.create.questions.extrasTitle", "Extra-Fragen (optional)")}
         </h3>
         <div className="flex flex-wrap gap-2">
-          {CUSTOM_PRESETS.map((p) => {
-            const isOn = custom_questions.some((c) => c.id === p.id);
+          {CUSTOM_QUESTION_PRESETS.map((p) => {
+            const isOn = presetAlreadyAdded(p, custom_questions);
             const locked = !isOn && !isPremium && custom_questions.length >= FREE_CUSTOM_LIMIT;
             return (
               <motion.button
@@ -491,7 +490,7 @@ export function EventQuestionsStep({
                 type="button"
                 whileTap={reduce ? undefined : { scale: 0.93 }}
                 transition={SPRING}
-                onClick={() => togglePreset(p.id, p.q)}
+                onClick={() => togglePreset(p)}
                 aria-pressed={isOn}
                 className={cn(
                   "relative inline-flex items-center gap-1.5 overflow-hidden rounded-full border px-3 py-2 text-sm font-medium transition-colors duration-300",
@@ -506,7 +505,7 @@ export function EventQuestionsStep({
                   <motion.span layoutId={`eqs-extra-${p.id}`} className="absolute inset-0 -z-0 bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-[0_6px_20px_-6px_rgba(217,70,239,0.6)]" transition={reduce ? { duration: 0.2 } : SPRING} />
                 )}
                 <span className="relative z-10">{p.emoji}</span>
-                <span className="relative z-10">{t(`native.create.questions.custom.${p.id}`, p.id)}</span>
+                <span className="relative z-10">{t(p.labelKey)}</span>
                 <span className="relative z-10">
                   {isOn ? (
                     <Check className="h-3.5 w-3.5" strokeWidth={3} />

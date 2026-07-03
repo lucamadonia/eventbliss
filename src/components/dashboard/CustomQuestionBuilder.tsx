@@ -29,6 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { cn } from '@/lib/utils';
 import { CustomQuestion } from '@/lib/survey-config';
+import { CUSTOM_QUESTION_PRESETS } from '@/lib/custom-question-presets';
 import { usePremium } from '@/hooks/usePremium';
 import { PaywallOverlay } from '@/components/premium/PaywallOverlay';
 import { toast } from 'sonner';
@@ -70,58 +71,11 @@ export function CustomQuestionBuilder({
     return <PaywallOverlay feature="custom_questions" />;
   }
 
-  // Build presets with translations
-  const QUESTION_PRESETS = [
-    {
-      label: t('dashboard.form.customQuestions.presets.dietary'),
-      question: {
-        id: 'dietary',
-        type: 'text' as const,
-        label: t('dashboard.form.customQuestions.presetQuestions.dietary.label'),
-        placeholder: t('dashboard.form.customQuestions.presetQuestions.dietary.placeholder'),
-        required: false,
-      },
-    },
-    {
-      label: t('dashboard.form.customQuestions.presets.songWish'),
-      question: {
-        id: 'song_wish',
-        type: 'text' as const,
-        label: t('dashboard.form.customQuestions.presetQuestions.songWish.label'),
-        placeholder: t('dashboard.form.customQuestions.presetQuestions.songWish.placeholder'),
-        required: false,
-      },
-    },
-    {
-      label: t('dashboard.form.customQuestions.presets.tshirtSize'),
-      question: {
-        id: 'tshirt_size',
-        type: 'select' as const,
-        label: t('dashboard.form.customQuestions.presetQuestions.tshirtSize.label'),
-        options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-        required: false,
-      },
-    },
-    {
-      label: t('dashboard.form.customQuestions.presets.driversLicense'),
-      question: {
-        id: 'drivers_license',
-        type: 'toggle' as const,
-        label: t('dashboard.form.customQuestions.presetQuestions.driversLicense.label'),
-        required: false,
-      },
-    },
-    {
-      label: t('dashboard.form.customQuestions.presets.specialWishes'),
-      question: {
-        id: 'special_wishes',
-        type: 'textarea' as const,
-        label: t('dashboard.form.customQuestions.presetQuestions.specialWishes.label'),
-        placeholder: t('dashboard.form.customQuestions.presetQuestions.specialWishes.placeholder'),
-        required: false,
-      },
-    },
-  ];
+  // Presets come from the shared lib (single source of truth with the wizard)
+  const QUESTION_PRESETS = CUSTOM_QUESTION_PRESETS.map((p) => ({
+    label: t(p.labelKey),
+    question: { id: p.id, ...p.build(t) },
+  }));
 
   // Build question types with translations
   const QUESTION_TYPES = QUESTION_TYPE_KEYS.map(qt => ({

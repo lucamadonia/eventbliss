@@ -23,13 +23,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export interface DateRangeBlock {
-  key: string;
-  start: string; // ISO date string
-  end: string;   // ISO date string
-  label?: string;
-  warning?: string;
-}
+// Canonical interface lives in survey-config now; re-exported for compat.
+import type { DateRangeBlock } from "@/lib/survey-config";
+export type { DateRangeBlock } from "@/lib/survey-config";
 
 interface DateRangeBlockEditorProps {
   blocks: DateRangeBlock[];
