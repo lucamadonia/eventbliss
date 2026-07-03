@@ -100,6 +100,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const orientationActiveRef = useRef(false);
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
   const [isArmed, setIsArmed] = useState(false); // sichtbarer „Bereit"-Status
+  // Kalibrierte Neutral-Halteposition (beta). Auf der Stirn hält niemand exakt
+  // 0° — die Erkennung misst die Neigung RELATIV zu dieser Baseline, sonst wird
+  // eine Richtung (z.B. Skip) unerreichbar, wenn neutral schon leicht gekippt.
+  const baselineRef = useRef<number | null>(null);
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
@@ -128,6 +132,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
       armedRef.current = false; setIsArmed(false); // erst flach halten (Neutral), bevor die erste Neigung zählt
+      baselineRef.current = null; // Neu kalibrieren: erste Messung wird zur Neutral-Halteposition
       setTimeout(() => { orientationActiveRef.current = true; }, 500);
       if (online?.isHost) {
         online.broadcast('tv-state', {
@@ -180,17 +185,32 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // ── Device Orientation ───────────────────────────────────────────────────────
   useEffect(() => {
     if (screen !== 'playing') return;
+    // Winkeldifferenz auf [-180,180] normalisieren (fängt den beta-Umschlag ab).
+    const normalize = (a: number) => {
+      let x = a;
+      while (x > 180) x -= 360;
+      while (x < -180) x += 360;
+      return x;
+    };
     const handle = (e: DeviceOrientationEvent) => {
       if (!orientationActiveRef.current) return;
       const beta = e.beta ?? 0;
+      // Erste Messung nach Rundenstart = Neutral-Halteposition (Baseline).
+      if (baselineRef.current === null) { baselineRef.current = beta; }
+      // Neigung RELATIV zur Halteposition — so sind Kippen & Skippen symmetrisch,
+      // egal ob das Handy neutral leicht nach vorn oder hinten gehalten wird.
+      const delta = normalize(beta - baselineRef.current);
       // Re-Arm: eine Neigung zählt genau einmal. Erst zurück in die Neutralzone
-      // (<15°), dann ist die nächste Neigung wieder scharf. Verhindert Dauerfeuer.
+      // (<15° relativ), dann ist die nächste Neigung wieder scharf.
       if (!armedRef.current) {
-        if (Math.abs(beta) < 15) { armedRef.current = true; setIsArmed(true); }
+        if (Math.abs(delta) < 15) {
+          armedRef.current = true; setIsArmed(true);
+          baselineRef.current = beta; // Baseline sanft auf die aktuelle Ruhelage nachführen (Drift)
+        }
         return;
       }
-      if (beta > 30) { armedRef.current = false; setIsArmed(false); advanceWord(true); }
-      else if (beta < -30) { armedRef.current = false; setIsArmed(false); advanceWord(false); }
+      if (delta > 30) { armedRef.current = false; setIsArmed(false); advanceWord(true); }
+      else if (delta < -30) { armedRef.current = false; setIsArmed(false); advanceWord(false); }
     };
     const init = async () => {
       try {
