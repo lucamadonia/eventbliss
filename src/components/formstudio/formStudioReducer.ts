@@ -56,6 +56,7 @@ export type FormStudioAction =
   | { type: "SET_BRANDING"; branding: BrandingConfig }
   | { type: "SET_LIST"; key: "no_gos" | "focus_points"; items: string[] }
   | { type: "APPLY_PRESET"; config: QuestionConfigs }
+  | { type: "APPLY_AI_SETTINGS"; settings: Partial<EventSettings> }
   | { type: "UNDO" }
   | { type: "MARK_SAVING" }
   | { type: "MARK_SAVED" }
@@ -153,6 +154,27 @@ export function formStudioReducer(state: FormStudioState, action: FormStudioActi
 
     case "APPLY_PRESET":
       return dirty(state, { ...state.settings, question_config: clone(action.config) }, snapshot(state));
+
+    case "APPLY_AI_SETTINGS": {
+      // Overlay ONLY the keys the AI is allowed to configure onto the current
+      // draft — the four editable option arrays, the question toggles, and the
+      // free-form content. attendance/travel/fitness/alcohol option arrays and
+      // branding are deliberately left untouched. mergeWithDefaults backfills
+      // anything the partial omitted. One snapshot ⇒ a single UNDO reverts the
+      // whole AI generation.
+      const ai = action.settings;
+      const overlay: Partial<EventSettings> = {};
+      if (ai.question_config) overlay.question_config = ai.question_config;
+      if (ai.budget_options) overlay.budget_options = ai.budget_options;
+      if (ai.destination_options) overlay.destination_options = ai.destination_options;
+      if (ai.duration_options) overlay.duration_options = ai.duration_options;
+      if (ai.activity_options) overlay.activity_options = ai.activity_options;
+      if (ai.custom_questions) overlay.custom_questions = ai.custom_questions;
+      if (ai.no_gos) overlay.no_gos = ai.no_gos;
+      if (ai.focus_points) overlay.focus_points = ai.focus_points;
+      const merged = mergeWithDefaults({ ...state.settings, ...overlay });
+      return dirty(state, merged, snapshot(state));
+    }
 
     case "UNDO": {
       if (state.history.length === 0) return state;

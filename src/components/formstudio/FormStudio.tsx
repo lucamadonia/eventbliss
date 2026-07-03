@@ -9,7 +9,7 @@
  */
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight, Palette, Plus, ScrollText } from "lucide-react";
+import { ChevronRight, Palette, Plus, ScrollText, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFormStudio } from "./useFormStudio";
 import { StudioHeader, type StudioMode } from "./StudioHeader";
@@ -20,6 +20,7 @@ import { DateBlocksSheet } from "./DateBlocksSheet";
 import { CustomQuestionSheet } from "./CustomQuestionSheet";
 import { DesignSheet } from "./DesignSheet";
 import { ExtrasSheet } from "./ExtrasSheet";
+import { AIFormSheet } from "./sheets/AIFormSheet";
 import { StudioPreview } from "./StudioPreview";
 import type { CoreKey } from "@/components/formstudio/questionRegistry";
 import {
@@ -28,6 +29,7 @@ import {
   DEFAULT_BRANDING,
 } from "@/lib/survey-config";
 import { getTemplateById } from "@/lib/design-templates";
+import { spring } from "@/lib/motion";
 import { usePremium } from "@/hooks/usePremium";
 import { useHaptics } from "@/hooks/useHaptics";
 
@@ -37,6 +39,7 @@ interface StudioEvent {
   name: string;
   honoree_name?: string;
   event_type?: string;
+  event_date?: string;
   settings: Partial<EventSettings> | null;
 }
 
@@ -46,6 +49,7 @@ type OpenSheet =
   | { type: "custom"; id?: string }
   | { type: "design" }
   | { type: "extras" }
+  | { type: "ai" }
   | null;
 
 interface FormStudioProps {
@@ -119,6 +123,39 @@ export default function FormStudio({ event, onUpdate, isActive }: FormStudioProp
           current={questionConfig}
           onApply={(config) => dispatch({ type: "APPLY_PRESET", config })}
         />
+
+        {/* AI hero — describe the event, let the KI configure the whole form */}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.985 }}
+          transition={spring.snappy}
+          onClick={() => {
+            haptics.medium();
+            setSheet({ type: "ai" });
+          }}
+          className="relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl p-4 text-left"
+        >
+          <span className="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500" />
+          <span className="absolute inset-0 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(255,255,255,0.28),transparent_55%)]" />
+          <motion.span
+            aria-hidden
+            animate={{ x: ["-120%", "220%"] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.4 }}
+            className="pointer-events-none absolute inset-y-0 w-1/3 skew-x-[-18deg] bg-white/20 blur-md"
+          />
+          <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/20 text-white backdrop-blur-sm">
+            <Sparkles className="h-5 w-5" />
+          </span>
+          <span className="relative min-w-0 flex-1">
+            <span className="block text-[15px] font-bold text-white drop-shadow-sm">
+              {t("formStudio.aiEntry", "Mit KI erstellen")}
+            </span>
+            <span className="block truncate text-xs font-medium text-white/85">
+              {t("formStudio.aiEntrySub", "Beschreibe dein Event — die KI baut das Formular")}
+            </span>
+          </span>
+          <ChevronRight className="relative h-5 w-5 shrink-0 text-white/90" />
+        </motion.button>
 
         <QuestionCardStack
           settings={settings}
@@ -266,6 +303,24 @@ export default function FormStudio({ event, onUpdate, isActive }: FormStudioProp
       )}
       {sheet?.type === "extras" && (
         <ExtrasSheet open settings={settings} dispatch={dispatch} onClose={closeSheet} flush={flush} />
+      )}
+      {sheet?.type === "ai" && (
+        <AIFormSheet
+          open
+          event={{
+            event_type: event.event_type,
+            honoree_name: event.honoree_name,
+            event_date: event.event_date,
+          }}
+          isPremium={isPremium}
+          flush={flush}
+          onClose={closeSheet}
+          onApply={(aiSettings) => {
+            dispatch({ type: "APPLY_AI_SETTINGS", settings: aiSettings });
+            flush();
+            haptics.celebrate();
+          }}
+        />
       )}
     </div>
   );
