@@ -38,28 +38,28 @@ const slides: Slide[] = [
     titleKey: "native.onboarding.slide1Title",
     subtitleKey: "native.onboarding.slide1Subtitle",
     gradient: "from-violet-500/30 via-fuchsia-500/20 to-transparent",
-    accent: "text-violet-300",
+    accent: "text-violet-500 dark:text-violet-300",
   },
   {
     icon: Gamepad2,
     titleKey: "native.onboarding.slide2Title",
     subtitleKey: "native.onboarding.slide2Subtitle",
     gradient: "from-fuchsia-500/30 via-pink-500/20 to-transparent",
-    accent: "text-fuchsia-300",
+    accent: "text-fuchsia-500 dark:text-fuchsia-300",
   },
   {
     icon: Wallet,
     titleKey: "native.onboarding.slide3Title",
     subtitleKey: "native.onboarding.slide3Subtitle",
     gradient: "from-cyan-500/30 via-teal-500/20 to-transparent",
-    accent: "text-cyan-300",
+    accent: "text-cyan-500 dark:text-cyan-300",
   },
   {
     icon: Users,
     titleKey: "native.onboarding.slide4Title",
     subtitleKey: "native.onboarding.slide4Subtitle",
     gradient: "from-amber-500/30 via-orange-500/20 to-transparent",
-    accent: "text-amber-300",
+    accent: "text-amber-500 dark:text-amber-300",
   },
 ];
 
@@ -102,8 +102,7 @@ export function OnboardingSlides({ onComplete }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[9998] flex flex-col"
-      style={{ backgroundColor: "#1a1625" }}
+      className="fixed inset-0 z-[9998] flex flex-col bg-card"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.4, ease: ease.out } }}
       exit={{ opacity: 0, transition: { duration: 0.3, ease: ease.in } }}
@@ -112,7 +111,7 @@ export function OnboardingSlides({ onComplete }: Props) {
       <div className="absolute top-0 right-0 z-10 safe-top">
         <button
           onClick={handleSkip}
-          className="m-4 px-4 py-2 text-sm text-white/60 hover:text-white/90 font-medium transition-colors"
+          className="m-4 px-4 py-2 text-sm text-muted-foreground hover:text-foreground font-medium transition-colors"
         >
           {t('native.onboarding.skip')}
         </button>
@@ -154,12 +153,12 @@ export function OnboardingSlides({ onComplete }: Props) {
 
                   {/* Ambient orbit */}
                   <motion.div
-                    className="absolute inset-0 rounded-full border border-white/10"
+                    className="absolute inset-0 rounded-full border border-border"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-2 h-2 rounded-full bg-white/40" />
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-1.5 h-1.5 rounded-full bg-white/30" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-2 h-2 rounded-full bg-foreground/40" />
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-1.5 h-1.5 rounded-full bg-foreground/30" />
                   </motion.div>
                 </div>
 
@@ -173,10 +172,10 @@ export function OnboardingSlides({ onComplete }: Props) {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ ...spring.soft, delay: 0.1 }}
                     >
-                      <h2 className="text-3xl font-display font-bold text-white mb-3 tracking-tight">
+                      <h2 className="text-3xl font-display font-bold text-foreground mb-3 tracking-tight">
                         {t(slide.titleKey)}
                       </h2>
-                      <p className="text-base text-white/70 font-body leading-relaxed">
+                      <p className="text-base text-muted-foreground font-body leading-relaxed">
                         {t(slide.subtitleKey)}
                       </p>
                     </motion.div>
@@ -194,11 +193,11 @@ export function OnboardingSlides({ onComplete }: Props) {
           {slides.map((_, i) => (
             <motion.div
               key={i}
-              className="h-2 rounded-full bg-white/20"
+              className="h-2 rounded-full bg-foreground/20"
               animate={{
                 width: selectedIndex === i ? 32 : 8,
                 backgroundColor:
-                  selectedIndex === i ? "rgba(139, 92, 246, 1)" : "rgba(255, 255, 255, 0.2)",
+                  selectedIndex === i ? "rgba(139, 92, 246, 1)" : "hsl(var(--foreground) / 0.2)",
               }}
               transition={spring.snappy}
             />

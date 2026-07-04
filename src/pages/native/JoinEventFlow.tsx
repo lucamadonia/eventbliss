@@ -88,7 +88,7 @@ export default function JoinEventFlow() {
           transition={spring.soft}
         >
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20 flex items-center justify-center mb-4">
-            <Users className="w-12 h-12 text-violet-300" />
+            <Users className="w-12 h-12 text-violet-500 dark:text-violet-300" />
           </div>
           <h2 className="text-xl font-display font-bold text-foreground text-center">
             {t('native.join.title')}

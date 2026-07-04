@@ -113,7 +113,7 @@ export default function NativeResponsesTab({ eventId, participantCount, customQu
           onClick={handleRefresh} disabled={isRefetching}
           className="w-8 h-8 rounded-xl bg-foreground/5 border border-border flex items-center justify-center">
           {isRefetching
-            ? <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-400" />
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-600 dark:text-violet-400" />
             : <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />}
         </motion.button>
       </motion.div>

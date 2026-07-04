@@ -296,10 +296,10 @@ export default function ProfileScreen() {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-display font-bold text-white truncate">
+            <h2 className="text-xl font-display font-bold text-foreground truncate">
               {displayName}
             </h2>
-            <p className="text-sm text-white/50 truncate">{email}</p>
+            <p className="text-sm text-muted-foreground truncate">{email}</p>
             {isPremium && (
               <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/30">
                 <Crown className="w-3 h-3 text-amber-300" />
@@ -354,7 +354,7 @@ export default function ProfileScreen() {
       {/* Menu list */}
       <div className="flex-1 overflow-y-auto native-scroll pb-tabbar">
         <motion.div
-          className="mx-5 rounded-3xl overflow-hidden bg-white/5 border border-white/10 divide-y divide-white/5"
+          className="mx-5 rounded-3xl overflow-hidden bg-muted border border-border divide-y divide-border"
           variants={stagger}
           initial="initial"
           animate="animate"

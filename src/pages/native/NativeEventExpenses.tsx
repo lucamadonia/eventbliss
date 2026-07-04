@@ -985,8 +985,8 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
                 onClick={captureNative}
                 className="h-14 rounded-2xl bg-gradient-to-br from-violet-500/15 to-cyan-500/10 border border-violet-400/25 flex items-center justify-center gap-2"
               >
-                <ScanLine className="w-4 h-4 text-violet-200" />
-                <span className="text-sm font-semibold text-violet-100">
+                <ScanLine className="w-4 h-4 text-violet-600 dark:text-violet-200" />
+                <span className="text-sm font-semibold text-violet-700 dark:text-violet-100">
                   {t("nativeExtra.receipt.scanReceipt", "Beleg scannen")}
                 </span>
               </motion.button>

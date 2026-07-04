@@ -320,7 +320,7 @@ function JoinTab({
       <AnimatePresence>
         {error && (
           <motion.p
-            className="text-sm text-red-400 text-center"
+            className="text-sm text-red-500 dark:text-red-400 text-center"
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}

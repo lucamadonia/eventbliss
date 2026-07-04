@@ -160,7 +160,7 @@ export default function PartyLobbyScreen() {
               exit={{ opacity: 0, height: 0 }}
             >
               <div className="flex items-center gap-2">
-                <Crown className="w-4 h-4 text-[#f9ca24]" />
+                <Crown className="w-4 h-4 text-amber-500 dark:text-[#f9ca24]" />
                 <span className="text-sm text-foreground">
                   <span className="font-semibold">{lastWinner}</span> hat gewonnen!
                 </span>
@@ -277,7 +277,7 @@ export default function PartyLobbyScreen() {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#df8eff]/20 flex items-center justify-center shrink-0">
-                  <Tv className="w-5 h-5 text-[#df8eff]" />
+                  <Tv className="w-5 h-5 text-violet-500 dark:text-[#df8eff]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{t('nativeExtra.connectTV')}</p>
@@ -286,7 +286,7 @@ export default function PartyLobbyScreen() {
                   </p>
                 </div>
                 <div className="text-center shrink-0">
-                  <p className="text-xl font-display font-black text-[#df8eff] tracking-[0.15em]">
+                  <p className="text-xl font-display font-black text-violet-500 dark:text-[#df8eff] tracking-[0.15em]">
                     {party.tvCode}
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export default function PartyLobbyScreen() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handleCopyTvLink}
-                className="w-full mt-3 h-9 rounded-xl bg-[#df8eff]/10 border border-[#df8eff]/20 text-[#df8eff] text-xs font-semibold"
+                className="w-full mt-3 h-9 rounded-xl bg-[#df8eff]/10 border border-[#df8eff]/20 text-violet-500 dark:text-[#df8eff] text-xs font-semibold"
               >
                 {copied ? "Kopiert!" : "TV-Link kopieren"}
               </motion.button>
@@ -323,8 +323,8 @@ export default function PartyLobbyScreen() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <div className="w-7 flex items-center justify-center shrink-0">
-                    {i === 0 && <Crown className="w-5 h-5 text-[#f9ca24]" />}
-                    {i === 1 && <span className="text-sm font-bold text-gray-400">2</span>}
+                    {i === 0 && <Crown className="w-5 h-5 text-amber-500 dark:text-[#f9ca24]" />}
+                    {i === 1 && <span className="text-sm font-bold text-muted-foreground">2</span>}
                     {i === 2 && <span className="text-sm font-bold text-amber-700">3</span>}
                     {i > 2 && <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>}
                   </div>
@@ -367,7 +367,7 @@ export default function PartyLobbyScreen() {
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold text-foreground">{entry.gameName}</p>
                     <div className="flex items-center gap-1">
-                      <Crown className="w-3.5 h-3.5 text-[#f9ca24]" />
+                      <Crown className="w-3.5 h-3.5 text-amber-500 dark:text-[#f9ca24]" />
                       <span className="text-xs font-medium text-muted-foreground">{entry.winnerName}</span>
                     </div>
                   </div>
@@ -448,7 +448,7 @@ export default function PartyLobbyScreen() {
                 transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
               >
                 <div className="w-20 h-20 rounded-full bg-[#f9ca24]/20 flex items-center justify-center">
-                  <Trophy className="w-10 h-10 text-[#f9ca24]" />
+                  <Trophy className="w-10 h-10 text-amber-500 dark:text-[#f9ca24]" />
                 </div>
               </motion.div>
 
@@ -477,8 +477,8 @@ export default function PartyLobbyScreen() {
                     transition={{ delay: 0.4 + i * 0.1 }}
                   >
                     <div className="w-7 flex items-center justify-center shrink-0">
-                      {i === 0 && <Crown className="w-5 h-5 text-[#f9ca24]" />}
-                      {i === 1 && <span className="text-sm font-bold text-gray-400">2</span>}
+                      {i === 0 && <Crown className="w-5 h-5 text-amber-500 dark:text-[#f9ca24]" />}
+                      {i === 1 && <span className="text-sm font-bold text-muted-foreground">2</span>}
                       {i === 2 && <span className="text-sm font-bold text-amber-700">3</span>}
                       {i > 2 && <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>}
                     </div>

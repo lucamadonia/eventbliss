@@ -258,7 +258,7 @@ export default function CreateEventFlow() {
                 key={i}
                 className="flex-1 h-1 rounded-full"
                 animate={{
-                  backgroundColor: i < step ? "rgb(139, 92, 246)" : "rgba(255,255,255,0.1)",
+                  backgroundColor: i < step ? "rgb(139, 92, 246)" : "hsl(var(--foreground) / 0.12)",
                 }}
                 transition={{ duration: 0.3 }}
               />
@@ -481,7 +481,7 @@ function StepDetails({
             type="date"
             value={form.event_date}
             onChange={(e) => update("event_date", e.target.value)}
-            className="appearance-none block w-full min-w-0 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base text-left focus:outline-none focus:border-primary/50 [color-scheme:dark]"
+            className="appearance-none block w-full min-w-0 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base text-left focus:outline-none focus:border-primary/50 [color-scheme:light] dark:[color-scheme:dark]"
           />
         </div>
 

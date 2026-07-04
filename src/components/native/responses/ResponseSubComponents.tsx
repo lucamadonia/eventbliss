@@ -151,7 +151,7 @@ export function ChoicePills({ label, icon: Icon, choices }: { label: string; ico
       </p>
       <div className="flex flex-wrap gap-1">
         {choices.map((c, i) => (
-          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
             {c}
           </span>
         ))}
@@ -174,7 +174,7 @@ function renderCustomAnswerValue(question: CustomQuestion, value: string | boole
     return (
       <div className="flex flex-wrap gap-1">
         {parts.map((p, i) => (
-          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+          <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
             {p}
           </span>
         ))}
@@ -255,7 +255,7 @@ export function ResponseCard({ response, index, customQuestions }: { response: R
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {response.preferences.map((pref, i) => (
-                      <span key={i} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                      <span key={i} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
                         {pref}
                       </span>
                     ))}
@@ -290,7 +290,7 @@ export function ResponseCard({ response, index, customQuestions }: { response: R
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {response.date_blocks.map((d, i) => (
-                      <span key={i} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                      <span key={i} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
                         {d}
                       </span>
                     ))}
