@@ -43,6 +43,7 @@ import {
   ChevronRight,
   XCircle,
   Search,
+  LayoutGrid,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -53,6 +54,7 @@ import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { FormBuilderTab } from "@/components/dashboard/FormBuilderTab";
 import FormStudio from "@/components/formstudio/FormStudio";
+import { IdeaBoardTab } from "@/components/ideaboard/IdeaBoardTab";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useMarketplaceServices } from "@/hooks/useMarketplaceServices";
@@ -145,7 +147,7 @@ function useEventActivities(eventId: string | undefined, t: (key: string, opts?:
 /*  Tab definitions                                                    */
 /* ------------------------------------------------------------------ */
 
-type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ausgaben" | "marketplace" | "dienstleister" | "formular" | "antworten" | "nachrichten" | "ki" | "einstellungen";
+type TabId = "uebersicht" | "gaeste" | "zeitplan" | "ideenboard" | "ausgaben" | "marketplace" | "dienstleister" | "formular" | "antworten" | "nachrichten" | "ki" | "einstellungen";
 
 interface TabDef {
   id: TabId;
@@ -162,6 +164,7 @@ const TABS: TabDef[] = [
   { id: "antworten",    labelKey: "nativeDashboard.tabs.responses",    icon: ClipboardCheck },
   { id: "gaeste",        labelKey: "nativeDashboard.tabs.guests",       icon: Users },
   { id: "zeitplan",      labelKey: "nativeDashboard.tabs.schedule",     icon: Calendar },
+  { id: "ideenboard",    labelKey: "nativeDashboard.tabs.ideaboard",    icon: LayoutGrid },
   { id: "ausgaben",      labelKey: "nativeDashboard.tabs.expenses",     icon: Wallet },
   { id: "nachrichten",  labelKey: "nativeDashboard.tabs.messages",     icon: MessageSquare },
   { id: "ki",            labelKey: "nativeDashboard.tabs.ai",           icon: Sparkles },
@@ -782,6 +785,8 @@ export default function NativeEventDashboard() {
         return <NativeEventGuests eventSlug={slug!} participants={participants} accessCode={event?.access_code} onRefetch={refetch} />;
       case "zeitplan":
         return <NativeEventSchedule eventSlug={slug!} />;
+      case "ideenboard":
+        return event ? <IdeaBoardTab event={event} /> : null;
       case "ausgaben":
         return useV2Expenses ? <EventExpensesV2 /> : <NativeEventExpenses eventSlug={slug!} />;
       case "marketplace":
