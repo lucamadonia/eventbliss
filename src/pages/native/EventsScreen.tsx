@@ -4,12 +4,14 @@
  */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { PartyPopper, Users, Calendar, Plus, Archive, Search } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { PartyPopper, Users, Calendar, Plus, Archive, ArchiveRestore, Search, MoreVertical, Trash2, Loader2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useMyEvents } from "@/hooks/useMyEvents";
+import { toast } from "sonner";
+import { useMyEvents, type MyEvent } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import { supabase } from "@/integrations/supabase/client";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +27,38 @@ export default function EventsScreen() {
   });
   const [tab, setTab] = useState<Tab>("active");
   const [query, setQuery] = useState("");
+  const [actionFor, setActionFor] = useState<MyEvent | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const setArchived = async (ev: MyEvent, archive: boolean) => {
+    setBusy(true);
+    const { error } = await supabase
+      .from("events")
+      .update({ archived_at: archive ? new Date().toISOString() : null })
+      .eq("id", ev.id);
+    setBusy(false);
+    if (error) { haptics.warning(); toast.error(t("native.events.actionError", "Das hat nicht geklappt.")); return; }
+    haptics.success();
+    toast.success(archive ? t("native.events.archived", "Archiviert") : t("native.events.restored", "Wiederhergestellt"));
+    setActionFor(null);
+    await refetch();
+  };
+
+  const softDelete = async (ev: MyEvent) => {
+    setBusy(true);
+    const { error } = await supabase
+      .from("events")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", ev.id);
+    setBusy(false);
+    if (error) { haptics.warning(); toast.error(t("native.events.actionError", "Das hat nicht geklappt.")); return; }
+    haptics.warning();
+    toast.success(t("native.events.deleted", "Event gelöscht"));
+    setActionFor(null);
+    setConfirmDelete(false);
+    await refetch();
+  };
 
   const source = tab === "active" ? events : archivedEvents;
   const filtered = source.filter((e) =>
@@ -135,16 +169,18 @@ export default function EventsScreen() {
             animate="animate"
           >
             {filtered.map((event) => (
-              <motion.button
+              <motion.div
                 key={event.id}
                 variants={staggerItem}
                 whileTap={{ scale: 0.98 }}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   haptics.light();
                   navigate(`/e/${event.slug}/dashboard`);
                 }}
                 className={cn(
-                  "w-full rounded-2xl p-4 text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border",
+                  "relative w-full rounded-2xl p-4 text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border cursor-pointer",
                   "hover:border-primary/30 transition-colors"
                 )}
               >
@@ -184,11 +220,111 @@ export default function EventsScreen() {
                     </span>
                   )}
                 </div>
-              </motion.button>
+
+                {event.is_organizer && (
+                  <button
+                    type="button"
+                    aria-label={t("native.events.manage", "Verwalten")}
+                    onClick={(e) => { e.stopPropagation(); haptics.light(); setConfirmDelete(false); setActionFor(event); }}
+                    className="absolute top-2 right-2 grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-foreground/10 active:bg-foreground/15"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </button>
+                )}
+              </motion.div>
             ))}
           </motion.div>
         )}
       </div>
+
+      {/* Manage sheet — archive / restore / delete */}
+      <AnimatePresence>
+        {actionFor && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-[80] flex items-end justify-center"
+            style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(3px)" }}
+            onClick={() => { if (!busy) { setActionFor(null); setConfirmDelete(false); } }}
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={spring.snappy}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl border-t border-x border-border bg-card p-5 safe-bottom"
+            >
+              <div className="mb-4 flex items-start gap-3">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20">
+                  <PartyPopper className="h-5 w-5 text-violet-400 dark:text-violet-200" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-base font-bold text-foreground">{actionFor.name}</p>
+                  <p className="text-xs text-muted-foreground">{t("native.events.manageSub", "Event verwalten")}</p>
+                </div>
+                <button type="button" onClick={() => { if (!busy) { setActionFor(null); setConfirmDelete(false); } }} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-foreground/10">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {!confirmDelete ? (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setArchived(actionFor, !actionFor.archived_at)}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/60 p-3.5 text-left active:bg-muted disabled:opacity-50"
+                  >
+                    {actionFor.archived_at
+                      ? <ArchiveRestore className="h-5 w-5 text-foreground" />
+                      : <Archive className="h-5 w-5 text-foreground" />}
+                    <span className="text-sm font-semibold text-foreground">
+                      {actionFor.archived_at ? t("native.events.restore", "Wiederherstellen") : t("native.events.archive", "Archivieren")}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setConfirmDelete(true)}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-3.5 text-left active:bg-red-500/15 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-5 w-5 text-red-500 dark:text-red-400" />
+                    <span className="text-sm font-semibold text-red-600 dark:text-red-400">{t("native.events.delete", "Löschen")}</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t("native.events.deleteConfirm", "Event wirklich löschen? Das kann nicht rückgängig gemacht werden.")}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setConfirmDelete(false)}
+                      className="flex-1 rounded-2xl border border-border bg-muted/60 py-3 text-sm font-semibold text-foreground active:bg-muted disabled:opacity-50"
+                    >
+                      {t("common.cancel", "Abbrechen")}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => softDelete(actionFor)}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-red-500 py-3 text-sm font-bold text-white active:bg-red-600 disabled:opacity-50"
+                    >
+                      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                      {t("native.events.delete", "Löschen")}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

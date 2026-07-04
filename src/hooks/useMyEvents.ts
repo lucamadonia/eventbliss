@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 
-interface EventWithParticipants {
+export interface EventWithParticipants {
   id: string;
   name: string;
   slug: string;
@@ -106,6 +106,8 @@ async function fetchMyEvents(userId: string): Promise<EventWithParticipants[]> {
     throw error;
   }
 }
+
+export type MyEvent = EventWithParticipants;
 
 export function useMyEvents() {
   const { user } = useAuthContext();
