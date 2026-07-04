@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Ja, bin dabei!",
+      "maybe": "Vielleicht / unter Vorbehalt",
+      "no": "Leider nein"
+    },
+    "duration": {
+      "day": "Nur ein Tag",
+      "weekend": "Wochenende (2–3 Tage)",
+      "either": "Egal – beides ok"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Großstadt in Deutschland",
+      "barcelona": "Barcelona",
+      "lisbon": "Lissabon",
+      "prague": "Prag",
+      "budapest": "Budapest",
+      "either": "Egal – Hauptsache cool"
+    },
+    "travel": {
+      "daytrip": "Tagestrip ohne Übernachtung",
+      "one_night": "1 Nacht ist ok",
+      "two_nights": "2 Nächte sind ok",
+      "either": "Egal – flexibel"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Lasertag",
+      "axe_throwing": "Axtwerfen",
+      "vr_simracing": "VR Arena / Sim-Racing",
+      "climbing": "Kletterhalle / Bouldern",
+      "bubble_soccer": "Bubble Soccer",
+      "outdoor": "Outdoor Challenge",
+      "wellness": "Wellness / Sauna",
+      "food": "Food / Dinner Experience",
+      "mixed": "Gemischt – alles ein bisschen"
+    },
+    "fitness": {
+      "chill": "Entspannt",
+      "normal": "Normal",
+      "sporty": "Sportlich"
+    },
+    "alcohol": {
+      "yes": "Mit Alkohol ok",
+      "no": "Lieber alkoholfrei",
+      "either": "Egal"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Hochzeit",
+      "corporate": "Firmenevent",
+      "family": "Familienfeier",
+      "anniversary": "Jubiläum",
+      "babyshower": "Baby Shower",
+      "graduation": "Abschlussfeier",
       "bachelor": "JGA",
       "bachelorette": "JGA",
       "birthday": "Geburtstag",
@@ -2425,6 +2486,12 @@
       "descriptionPlaceholder": "Füge eine Beschreibung oder Notizen für deine Gäste hinzu (optional)"
     },
     "types": {
+      "wedding": "Hochzeit",
+      "corporate": "Firmenevent",
+      "family": "Familienfeier",
+      "anniversary": "Jubiläum",
+      "babyshower": "Baby Shower",
+      "graduation": "Abschlussfeier",
       "bachelor": "Junggesellenabschied",
       "bachelorette": "JGA für die Braut",
       "birthday": "Geburtstag",
@@ -6746,6 +6813,12 @@
       "headerDone": "Fertig!",
       "stepOf": "Schritt {{step}} von {{total}}",
       "stepType": {
+        "wedding": "Hochzeit",
+        "corporate": "Firmenevent",
+        "family": "Familienfeier",
+        "anniversary": "Jubiläum",
+        "babyshower": "Baby Shower",
+        "graduation": "Abschlussfeier",
         "title": "Was feiert ihr?",
         "subtitle": "Wähle den Event-Typ",
         "bachelor": "JGA (Männer)",

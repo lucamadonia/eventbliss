@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Control } from "react-hook-form";
+import { tOption } from "@/lib/survey-config";
 import {
   FormField,
   FormItem,
@@ -152,7 +153,7 @@ const ActivityPreferencesSection = ({ control, activityOptions }: ActivityPrefer
                         <SurveyOptionCard
                           key={option.value}
                           multiSelect
-                          label={translateLabel(option.label)}
+                          label={tOption(t as unknown as Parameters<typeof tOption>[0], "activity", option.value, option.label)}
                           icon={option.emoji}
                           selected={!!field.value?.includes(option.value)}
                           onSelect={() => {

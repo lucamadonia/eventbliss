@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "نعم، أنا معكم!",
+      "maybe": "ربما / حسب الظروف",
+      "no": "للأسف لا"
+    },
+    "duration": {
+      "day": "يوم واحد فقط",
+      "weekend": "عطلة نهاية الأسبوع (2–3 أيام)",
+      "either": "لا يهم – كلاهما مناسب"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "مدينة كبيرة في ألمانيا",
+      "barcelona": "برشلونة",
+      "lisbon": "لشبونة",
+      "prague": "براغ",
+      "budapest": "بودابست",
+      "either": "لا يهم – المهم أن يكون رائعاً"
+    },
+    "travel": {
+      "daytrip": "رحلة نهارية دون مبيت",
+      "one_night": "ليلة واحدة مناسبة",
+      "two_nights": "ليلتان مناسبتان",
+      "either": "لا يهم – مرن"
+    },
+    "activity": {
+      "karting": "كارتينغ",
+      "escape_room": "غرفة الهروب",
+      "lasertag": "الليزر تاغ",
+      "axe_throwing": "رمي الفؤوس",
+      "vr_simracing": "ساحة الواقع الافتراضي / محاكاة السباق",
+      "climbing": "صالة تسلق / تسلق الصخور",
+      "bubble_soccer": "كرة الفقاعات",
+      "outdoor": "تحدٍّ في الهواء الطلق",
+      "wellness": "عافية / ساونا",
+      "food": "تجربة طعام / عشاء",
+      "mixed": "متنوع – القليل من كل شيء"
+    },
+    "fitness": {
+      "chill": "هادئ",
+      "normal": "عادي",
+      "sporty": "رياضي"
+    },
+    "alcohol": {
+      "yes": "لا مانع من الكحول",
+      "no": "أفضّل بدون كحول",
+      "either": "لا يهم"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "حفل زفاف",
+      "corporate": "فعالية شركة",
+      "family": "لقاء عائلي",
+      "anniversary": "ذكرى سنوية",
+      "babyshower": "حفل استقبال المولود",
+      "graduation": "حفل تخرج",
       "bachelor": "حفلة عزوبية",
       "bachelorette": "حفلة عزوبية",
       "birthday": "عيد ميلاد",
@@ -1370,6 +1431,12 @@
       "descriptionPlaceholder": "أضف وصفاً (اختياري)"
     },
     "types": {
+      "wedding": "حفل زفاف",
+      "corporate": "فعالية شركة",
+      "family": "لقاء عائلي",
+      "anniversary": "ذكرى سنوية",
+      "babyshower": "حفل استقبال المولود",
+      "graduation": "حفل تخرج",
       "bachelor": "حفلة وداع العزوبية",
       "bachelorette": "حفلة العروس",
       "birthday": "عيد ميلاد",
@@ -6612,6 +6679,12 @@
       "headerDone": "تم!",
       "stepOf": "الخطوة {{step}} من {{total}}",
       "stepType": {
+        "wedding": "حفل زفاف",
+        "corporate": "فعالية شركة",
+        "family": "لقاء عائلي",
+        "anniversary": "ذكرى سنوية",
+        "babyshower": "حفل استقبال المولود",
+        "graduation": "حفل تخرج",
         "title": "ماذا تحتفل؟",
         "subtitle": "اختر نوع الحدث",
         "bachelor": "حفلة وداع العزوبية",

@@ -169,14 +169,36 @@ export const CORE_QUESTION_KEYS: (keyof QuestionConfigs)[] = [
  * (birthday/other). `attendance` is ALWAYS enabled — the whole RSVP/dashboard
  * evaluation depends on it, so it must never be switched off.
  */
+// Event types that happen at a single local venue (no destination poll / travel
+// question). Only bachelor/bachelorette/trip keep the travel-planning questions.
+const LOCAL_EVENT_TYPES = [
+  'birthday', 'other', 'wedding', 'corporate', 'family', 'anniversary', 'babyshower', 'graduation',
+];
+
 export function questionConfigForEventType(eventType: string): QuestionConfigs {
   const base: QuestionConfigs = JSON.parse(JSON.stringify(DEFAULT_QUESTION_CONFIG));
-  if (eventType === 'birthday' || eventType === 'other') {
+  if (LOCAL_EVENT_TYPES.includes(eventType)) {
     base.destination = { ...base.destination, enabled: false };
     base.travel = { ...base.travel, enabled: false };
   }
   base.attendance.enabled = true;
   return base;
+}
+
+/**
+ * Localized label for a BUILT-IN survey option. Looks up `surveyOptions.<group>.<value>`
+ * and falls back to the stored label — so old events and custom options (unknown
+ * values) still render their saved text, while built-in options translate per the
+ * viewer's language and are no longer frozen in the creator's German. `group` is one
+ * of: attendance, duration, budget, destination, travel, activity, fitness, alcohol.
+ */
+export function tOption(
+  t: (key: string, defaultValue?: string) => string,
+  group: string,
+  value: string,
+  fallback: string,
+): string {
+  return t(`surveyOptions.${group}.${value}`, fallback);
 }
 
 export interface EventSettings extends SurveyConfig {
@@ -220,7 +242,7 @@ export const DEFAULT_SURVEY_CONFIG: SurveyConfig = {
   ],
   
   duration_options: [
-    { value: "day", label: "Tages-JGA (nur Samstag)" },
+    { value: "day", label: "Nur ein Tag" },
     { value: "weekend", label: "Wochenende (2–3 Tage)" },
     { value: "either", label: "Egal – beides ok" },
   ],

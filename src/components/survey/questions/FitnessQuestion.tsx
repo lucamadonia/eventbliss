@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/form";
 import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
 import SurveyOptionCard from "../SurveyOptionCard";
+import { tOption } from "@/lib/survey-config";
 import type { CoreQuestionProps } from "./types";
 
 const FitnessQuestion = ({ control, config, questionConfig, translateLabel }: CoreQuestionProps) => {
@@ -29,7 +30,7 @@ const FitnessQuestion = ({ control, config, questionConfig, translateLabel }: Co
                 {config.fitness_options.map((option) => (
                   <SurveyOptionCard
                     key={option.value}
-                    label={translateLabel(option.label)}
+                    label={tOption(t as unknown as Parameters<typeof tOption>[0], "fitness", option.value, option.label)}
                     icon={option.emoji}
                     selected={field.value === option.value}
                     onSelect={() => field.onChange(option.value)}

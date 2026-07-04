@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Ja, ik ben erbij!",
+      "maybe": "Misschien / onder voorbehoud",
+      "no": "Helaas niet"
+    },
+    "duration": {
+      "day": "Maar één dag",
+      "weekend": "Weekend (2–3 dagen)",
+      "either": "Maakt niet uit – allebei prima"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Een grote stad in Duitsland",
+      "barcelona": "Barcelona",
+      "lisbon": "Lissabon",
+      "prague": "Praag",
+      "budapest": "Budapest",
+      "either": "Maakt niet uit – als het maar cool is"
+    },
+    "travel": {
+      "daytrip": "Dagtrip zonder overnachting",
+      "one_night": "1 nacht is oké",
+      "two_nights": "2 nachten zijn oké",
+      "either": "Maakt niet uit – flexibel"
+    },
+    "activity": {
+      "karting": "Karten",
+      "escape_room": "Escape Room",
+      "lasertag": "Lasergame",
+      "axe_throwing": "Bijlwerpen",
+      "vr_simracing": "VR Arena / Sim Racing",
+      "climbing": "Klimhal / Boulderen",
+      "bubble_soccer": "Bubbelvoetbal",
+      "outdoor": "Outdoor Challenge",
+      "wellness": "Wellness / Sauna",
+      "food": "Food / Diner Experience",
+      "mixed": "Gemengd – van alles een beetje"
+    },
+    "fitness": {
+      "chill": "Ontspannen",
+      "normal": "Normaal",
+      "sporty": "Sportief"
+    },
+    "alcohol": {
+      "yes": "Met alcohol is oké",
+      "no": "Liever alcoholvrij",
+      "either": "Maakt niet uit"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Bruiloft",
+      "corporate": "Bedrijfsevenement",
+      "family": "Familiefeest",
+      "anniversary": "Jubileum",
+      "babyshower": "Babyshower",
+      "graduation": "Diplomafeest",
       "bachelor": "Vrijgezellenfeest",
       "bachelorette": "Vrijgezellenfeest",
       "birthday": "Verjaardag",
@@ -2495,6 +2556,12 @@
       "descriptionPlaceholder": "Voeg een beschrijving toe (optioneel)"
     },
     "types": {
+      "wedding": "Bruiloft",
+      "corporate": "Bedrijfsevenement",
+      "family": "Familiefeest",
+      "anniversary": "Jubileum",
+      "babyshower": "Babyshower",
+      "graduation": "Diplomafeest",
       "bachelor": "Vrijgezellenfeest",
       "bachelorette": "Vrijgezellenfeest (dames)",
       "birthday": "Verjaardag",
@@ -6820,6 +6887,12 @@
       "headerDone": "Klaar!",
       "stepOf": "Stap {{step}} van {{total}}",
       "stepType": {
+        "wedding": "Bruiloft",
+        "corporate": "Bedrijfsevenement",
+        "family": "Familiefeest",
+        "anniversary": "Jubileum",
+        "babyshower": "Babyshower",
+        "graduation": "Diplomafeest",
         "title": "Wat vier je?",
         "subtitle": "Kies het type evenement",
         "bachelor": "Vrijgezellenfeest (man)",

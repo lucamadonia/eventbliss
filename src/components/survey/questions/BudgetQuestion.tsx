@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/form";
 import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
 import SurveyOptionCard from "../SurveyOptionCard";
+import { tOption } from "@/lib/survey-config";
 import type { CoreQuestionProps } from "./types";
 
 const BudgetQuestion = ({ control, config, questionConfig, translateLabel }: CoreQuestionProps) => {
@@ -35,7 +36,7 @@ const BudgetQuestion = ({ control, config, questionConfig, translateLabel }: Cor
                   return (
                     <SurveyOptionCard
                       key={option.value}
-                      label={translateLabel(option.label)}
+                      label={tOption(t as unknown as Parameters<typeof tOption>[0], "budget", option.value, option.label)}
                       multiSelect={multi}
                       selected={selected}
                       onSelect={() => {

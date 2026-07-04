@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "¡Sí, me apunto!",
+      "maybe": "Quizás / por confirmar",
+      "no": "Lamentablemente no"
+    },
+    "duration": {
+      "day": "Solo un día",
+      "weekend": "Fin de semana (2–3 días)",
+      "either": "Da igual – ambos valen"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Una gran ciudad en Alemania",
+      "barcelona": "Barcelona",
+      "lisbon": "Lisboa",
+      "prague": "Praga",
+      "budapest": "Budapest",
+      "either": "Da igual – mientras mole"
+    },
+    "travel": {
+      "daytrip": "Excursión de un día sin pernoctar",
+      "one_night": "1 noche está bien",
+      "two_nights": "2 noches están bien",
+      "either": "Da igual – flexible"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Láser Tag",
+      "axe_throwing": "Lanzamiento de hachas",
+      "vr_simracing": "Arena VR / Sim Racing",
+      "climbing": "Rocódromo / Búlder",
+      "bubble_soccer": "Bubble Soccer",
+      "outdoor": "Desafío al aire libre",
+      "wellness": "Wellness / Sauna",
+      "food": "Experiencia gastronómica / Cena",
+      "mixed": "Mixto – un poco de todo"
+    },
+    "fitness": {
+      "chill": "Relajado",
+      "normal": "Normal",
+      "sporty": "Deportivo"
+    },
+    "alcohol": {
+      "yes": "Con alcohol vale",
+      "no": "Mejor sin alcohol",
+      "either": "Da igual"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Boda",
+      "corporate": "Evento de Empresa",
+      "family": "Reunión Familiar",
+      "anniversary": "Aniversario",
+      "babyshower": "Baby Shower",
+      "graduation": "Fiesta de Graduación",
       "bachelor": "Despedida",
       "bachelorette": "Despedida",
       "birthday": "Cumpleaños",
@@ -2445,6 +2506,12 @@
       "descriptionPlaceholder": "Añade una descripción o notas para tus invitados (opcional)"
     },
     "types": {
+      "wedding": "Boda",
+      "corporate": "Evento de Empresa",
+      "family": "Reunión Familiar",
+      "anniversary": "Aniversario",
+      "babyshower": "Baby Shower",
+      "graduation": "Fiesta de Graduación",
       "bachelor": "Despedida de Soltero",
       "bachelorette": "Despedida de Soltera",
       "birthday": "Cumpleaños",
@@ -6770,6 +6837,12 @@
       "headerDone": "¡Listo!",
       "stepOf": "Paso {{step}} de {{total}}",
       "stepType": {
+        "wedding": "Boda",
+        "corporate": "Evento de Empresa",
+        "family": "Reunión Familiar",
+        "anniversary": "Aniversario",
+        "babyshower": "Baby Shower",
+        "graduation": "Fiesta de Graduación",
         "title": "¿Qué estás celebrando?",
         "subtitle": "Elige el tipo de evento",
         "bachelor": "Despedida de Soltero",

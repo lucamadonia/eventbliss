@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Yes, I'm in!",
+      "maybe": "Maybe / to be confirmed",
+      "no": "Unfortunately no"
+    },
+    "duration": {
+      "day": "Just one day",
+      "weekend": "Weekend (2–3 days)",
+      "either": "Either – both work"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "A big city in Germany",
+      "barcelona": "Barcelona",
+      "lisbon": "Lisbon",
+      "prague": "Prague",
+      "budapest": "Budapest",
+      "either": "Doesn't matter – as long as it's cool"
+    },
+    "travel": {
+      "daytrip": "Day trip, no overnight stay",
+      "one_night": "1 night is fine",
+      "two_nights": "2 nights are fine",
+      "either": "Doesn't matter – flexible"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Laser Tag",
+      "axe_throwing": "Axe Throwing",
+      "vr_simracing": "VR Arena / Sim Racing",
+      "climbing": "Climbing Gym / Bouldering",
+      "bubble_soccer": "Bubble Soccer",
+      "outdoor": "Outdoor Challenge",
+      "wellness": "Wellness / Sauna",
+      "food": "Food / Dinner Experience",
+      "mixed": "Mixed – a bit of everything"
+    },
+    "fitness": {
+      "chill": "Relaxed",
+      "normal": "Normal",
+      "sporty": "Sporty"
+    },
+    "alcohol": {
+      "yes": "Alcohol is fine",
+      "no": "Prefer alcohol-free",
+      "either": "Doesn't matter"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Wedding",
+      "corporate": "Corporate Event",
+      "family": "Family Gathering",
+      "anniversary": "Anniversary",
+      "babyshower": "Baby Shower",
+      "graduation": "Graduation Party",
       "bachelor": "Bachelor Party",
       "bachelorette": "Hen Party",
       "birthday": "Birthday",
@@ -2425,6 +2486,12 @@
       "descriptionPlaceholder": "Add a description or notes for your guests (optional)"
     },
     "types": {
+      "wedding": "Wedding",
+      "corporate": "Corporate Event",
+      "family": "Family Gathering",
+      "anniversary": "Anniversary",
+      "babyshower": "Baby Shower",
+      "graduation": "Graduation Party",
       "bachelor": "Bachelor Party",
       "bachelorette": "Bachelorette Party",
       "birthday": "Birthday",
@@ -6746,6 +6813,12 @@
       "headerDone": "Done!",
       "stepOf": "Step {{step}} of {{total}}",
       "stepType": {
+        "wedding": "Wedding",
+        "corporate": "Corporate Event",
+        "family": "Family Gathering",
+        "anniversary": "Anniversary",
+        "babyshower": "Baby Shower",
+        "graduation": "Graduation Party",
         "title": "What are you celebrating?",
         "subtitle": "Choose the event type",
         "bachelor": "Bachelor Party",

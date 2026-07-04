@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Evet, varım!",
+      "maybe": "Belki / şarta bağlı",
+      "no": "Maalesef hayır"
+    },
+    "duration": {
+      "day": "Sadece bir gün",
+      "weekend": "Hafta sonu (2–3 gün)",
+      "either": "Fark etmez – ikisi de olur"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Almanya'da büyük bir şehir",
+      "barcelona": "Barcelona",
+      "lisbon": "Lizbon",
+      "prague": "Prag",
+      "budapest": "Budapeşte",
+      "either": "Fark etmez – yeter ki havalı olsun"
+    },
+    "travel": {
+      "daytrip": "Konaklamasız günübirlik gezi",
+      "one_night": "1 gece uygun",
+      "two_nights": "2 gece uygun",
+      "either": "Fark etmez – esnek"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Kaçış Odası",
+      "lasertag": "Lazer Tag",
+      "axe_throwing": "Balta Fırlatma",
+      "vr_simracing": "VR Arena / Sim Yarış",
+      "climbing": "Tırmanış Salonu / Boulder",
+      "bubble_soccer": "Balon Futbolu",
+      "outdoor": "Açık Hava Yarışması",
+      "wellness": "Wellness / Sauna",
+      "food": "Yemek / Akşam Yemeği Deneyimi",
+      "mixed": "Karışık – her şeyden biraz"
+    },
+    "fitness": {
+      "chill": "Rahat",
+      "normal": "Normal",
+      "sporty": "Sportif"
+    },
+    "alcohol": {
+      "yes": "Alkollü olur",
+      "no": "Alkolsüz tercih ederim",
+      "either": "Fark etmez"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Düğün",
+      "corporate": "Kurumsal Etkinlik",
+      "family": "Aile Buluşması",
+      "anniversary": "Yıl Dönümü",
+      "babyshower": "Baby Shower",
+      "graduation": "Mezuniyet Partisi",
       "bachelor": "Bekarlığa Veda",
       "bachelorette": "Bekarlığa Veda",
       "birthday": "Doğum Günü",
@@ -2495,6 +2556,12 @@
       "descriptionPlaceholder": "Bir açıklama ekleyin (isteğe bağlı)"
     },
     "types": {
+      "wedding": "Düğün",
+      "corporate": "Kurumsal Etkinlik",
+      "family": "Aile Buluşması",
+      "anniversary": "Yıl Dönümü",
+      "babyshower": "Baby Shower",
+      "graduation": "Mezuniyet Partisi",
       "bachelor": "Bekarlığa Veda",
       "bachelorette": "Kına Gecesi",
       "birthday": "Doğum Günü",
@@ -6820,6 +6887,12 @@
       "headerDone": "Tamam!",
       "stepOf": "Adım {{step}} / {{total}}",
       "stepType": {
+        "wedding": "Düğün",
+        "corporate": "Kurumsal Etkinlik",
+        "family": "Aile Buluşması",
+        "anniversary": "Yıl Dönümü",
+        "babyshower": "Baby Shower",
+        "graduation": "Mezuniyet Partisi",
         "title": "Ne kutluyorsun?",
         "subtitle": "Etkinlik türünü seç",
         "bachelor": "BekArlığa Veda",

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 interface DynamicHeroProps {
   eventName: string;
-  eventType?: 'bachelor' | 'bachelorette' | 'birthday' | 'trip' | 'other';
+  eventType?: string;
   honoreeName?: string;
   branding?: BrandingConfig;
   keyDateLabel?: string;
@@ -17,12 +17,18 @@ interface DynamicHeroProps {
   templateId?: string;
 }
 
-const eventTypeConfig = {
+const eventTypeConfig: Record<string, { emoji: string; icon: typeof PartyPopper; label: string }> = {
   bachelor: { emoji: '🎉', icon: PartyPopper, label: 'JGA' },
   bachelorette: { emoji: '👑', icon: Sparkles, label: 'JGA' },
   birthday: { emoji: '🎂', icon: Cake, label: 'Geburtstag' },
   trip: { emoji: '✈️', icon: Plane, label: 'Reise' },
   other: { emoji: '⭐', icon: Star, label: 'Event' },
+  wedding: { emoji: '💍', icon: Heart, label: 'Hochzeit' },
+  corporate: { emoji: '🏢', icon: Star, label: 'Firmenevent' },
+  family: { emoji: '🎈', icon: PartyPopper, label: 'Familienfeier' },
+  anniversary: { emoji: '🥂', icon: Sparkles, label: 'Jubiläum' },
+  babyshower: { emoji: '🍼', icon: Star, label: 'Baby Shower' },
+  graduation: { emoji: '🎓', icon: Star, label: 'Abschlussfeier' },
 };
 
 const DynamicHero = ({

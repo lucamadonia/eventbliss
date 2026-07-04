@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Tak, jestem!",
+      "maybe": "Może / pod warunkiem",
+      "no": "Niestety nie"
+    },
+    "duration": {
+      "day": "Tylko jeden dzień",
+      "weekend": "Weekend (2–3 dni)",
+      "either": "Wszystko jedno – oba pasują"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Duże miasto w Niemczech",
+      "barcelona": "Barcelona",
+      "lisbon": "Lizbona",
+      "prague": "Praga",
+      "budapest": "Budapeszt",
+      "either": "Wszystko jedno – byle było fajnie"
+    },
+    "travel": {
+      "daytrip": "Wycieczka jednodniowa bez noclegu",
+      "one_night": "1 noc jest ok",
+      "two_nights": "2 noce są ok",
+      "either": "Wszystko jedno – elastycznie"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Laser tag",
+      "axe_throwing": "Rzucanie toporem",
+      "vr_simracing": "Arena VR / Sim Racing",
+      "climbing": "Ścianka wspinaczkowa / Bouldering",
+      "bubble_soccer": "Bubble Soccer",
+      "outdoor": "Wyzwanie na świeżym powietrzu",
+      "wellness": "Wellness / Sauna",
+      "food": "Doświadczenie kulinarne / Kolacja",
+      "mixed": "Mieszane – wszystkiego po trochu"
+    },
+    "fitness": {
+      "chill": "Na luzie",
+      "normal": "Normalnie",
+      "sporty": "Sportowo"
+    },
+    "alcohol": {
+      "yes": "Z alkoholem ok",
+      "no": "Raczej bez alkoholu",
+      "either": "Wszystko jedno"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Ślub",
+      "corporate": "Impreza Firmowa",
+      "family": "Spotkanie Rodzinne",
+      "anniversary": "Jubileusz",
+      "babyshower": "Baby Shower",
+      "graduation": "Impreza Absolwencka",
       "bachelor": "Wieczór kawalerski",
       "bachelorette": "Wieczór panieński",
       "birthday": "Urodziny",
@@ -2495,6 +2556,12 @@
       "descriptionPlaceholder": "Dodaj opis (opcjonalnie)"
     },
     "types": {
+      "wedding": "Ślub",
+      "corporate": "Impreza Firmowa",
+      "family": "Spotkanie Rodzinne",
+      "anniversary": "Jubileusz",
+      "babyshower": "Baby Shower",
+      "graduation": "Impreza Absolwencka",
       "bachelor": "Wieczór Kawalerski",
       "bachelorette": "Wieczór Panieński",
       "birthday": "Urodziny",
@@ -6820,6 +6887,12 @@
       "headerDone": "Gotowe!",
       "stepOf": "Krok {{step}} z {{total}}",
       "stepType": {
+        "wedding": "Ślub",
+        "corporate": "Impreza Firmowa",
+        "family": "Spotkanie Rodzinne",
+        "anniversary": "Jubileusz",
+        "babyshower": "Baby Shower",
+        "graduation": "Impreza Absolwencka",
         "title": "Co świętujesz?",
         "subtitle": "Wybierz typ wydarzenia",
         "bachelor": "Wieczór Kawalerski",

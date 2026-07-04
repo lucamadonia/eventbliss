@@ -77,6 +77,12 @@ const eventTypes = [
   { value: "birthday", labelKey: "createEvent.types.birthday", icon: Cake, emoji: "🎂" },
   { value: "trip", labelKey: "createEvent.types.trip", icon: Plane, emoji: "✈️" },
   { value: "other", labelKey: "createEvent.types.other", icon: Users, emoji: "🎊" },
+  { value: "wedding", labelKey: "createEvent.types.wedding", icon: Sparkles, emoji: "💍" },
+  { value: "corporate", labelKey: "createEvent.types.corporate", icon: Users, emoji: "🏢" },
+  { value: "family", labelKey: "createEvent.types.family", icon: PartyPopper, emoji: "🎈" },
+  { value: "anniversary", labelKey: "createEvent.types.anniversary", icon: Crown, emoji: "🥂" },
+  { value: "babyshower", labelKey: "createEvent.types.babyshower", icon: Sparkles, emoji: "🍼" },
+  { value: "graduation", labelKey: "createEvent.types.graduation", icon: Calendar, emoji: "🎓" },
 ];
 
 // No hardcoded defaults - use empty arrays so backend/InfoCard will use localized translations

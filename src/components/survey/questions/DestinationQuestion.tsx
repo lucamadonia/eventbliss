@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
 import SurveyOptionCard from "../SurveyOptionCard";
+import { tOption } from "@/lib/survey-config";
 import type { CoreQuestionProps } from "./types";
 
 const DestinationQuestion = ({ control, watch, config, questionConfig, translateLabel }: CoreQuestionProps) => {
@@ -41,7 +42,7 @@ const DestinationQuestion = ({ control, watch, config, questionConfig, translate
                   return (
                     <SurveyOptionCard
                       key={option.value}
-                      label={translateLabel(option.label)}
+                      label={tOption(t as unknown as Parameters<typeof tOption>[0], "destination", option.value, option.label)}
                       icon={option.emoji}
                       multiSelect={multi}
                       selected={selected}

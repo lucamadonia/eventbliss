@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Oui, j'en suis !",
+      "maybe": "Peut-être / à confirmer",
+      "no": "Malheureusement non"
+    },
+    "duration": {
+      "day": "Juste une journée",
+      "weekend": "Week-end (2–3 jours)",
+      "either": "Peu importe – les deux vont"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Une grande ville en Allemagne",
+      "barcelona": "Barcelona",
+      "lisbon": "Lisbonne",
+      "prague": "Prague",
+      "budapest": "Budapest",
+      "either": "Peu importe – tant que c'est cool"
+    },
+    "travel": {
+      "daytrip": "Excursion à la journée sans nuitée",
+      "one_night": "1 nuit, c'est ok",
+      "two_nights": "2 nuits, c'est ok",
+      "either": "Peu importe – flexible"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Laser Game",
+      "axe_throwing": "Lancer de hache",
+      "vr_simracing": "Arène VR / Sim Racing",
+      "climbing": "Salle d'escalade / Bloc",
+      "bubble_soccer": "Bubble Foot",
+      "outdoor": "Défi en plein air",
+      "wellness": "Bien-être / Sauna",
+      "food": "Expérience culinaire / Dîner",
+      "mixed": "Mixte – un peu de tout"
+    },
+    "fitness": {
+      "chill": "Détendu",
+      "normal": "Normal",
+      "sporty": "Sportif"
+    },
+    "alcohol": {
+      "yes": "Avec alcool, ça va",
+      "no": "Plutôt sans alcool",
+      "either": "Peu importe"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Mariage",
+      "corporate": "Événement d'Entreprise",
+      "family": "Fête de Famille",
+      "anniversary": "Jubilé",
+      "babyshower": "Baby Shower",
+      "graduation": "Remise de Diplôme",
       "bachelor": "EVG",
       "bachelorette": "EVJF",
       "birthday": "Anniversaire",
@@ -2445,6 +2506,12 @@
       "descriptionPlaceholder": "Ajoutez une description ou des notes pour vos invités (optionnel)"
     },
     "types": {
+      "wedding": "Mariage",
+      "corporate": "Événement d'Entreprise",
+      "family": "Fête de Famille",
+      "anniversary": "Jubilé",
+      "babyshower": "Baby Shower",
+      "graduation": "Remise de Diplôme",
       "bachelor": "Enterrement de Vie de Garçon",
       "bachelorette": "Enterrement de Vie de Jeune Fille",
       "birthday": "Anniversaire",
@@ -6770,6 +6837,12 @@
       "headerDone": "Terminé !",
       "stepOf": "Étape {{step}} sur {{total}}",
       "stepType": {
+        "wedding": "Mariage",
+        "corporate": "Événement d'Entreprise",
+        "family": "Fête de Famille",
+        "anniversary": "Jubilé",
+        "babyshower": "Baby Shower",
+        "graduation": "Remise de Diplôme",
         "title": "Que fêtes-tu ?",
         "subtitle": "Choisis le type d’événement",
         "bachelor": "Enterrement de vie de garçon",

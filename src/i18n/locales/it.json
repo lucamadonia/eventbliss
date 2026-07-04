@@ -1,6 +1,67 @@
 {
+  "surveyOptions": {
+    "attendance": {
+      "yes": "Sì, ci sto!",
+      "maybe": "Forse / da confermare",
+      "no": "Purtroppo no"
+    },
+    "duration": {
+      "day": "Solo un giorno",
+      "weekend": "Weekend (2–3 giorni)",
+      "either": "Indifferente – vanno bene entrambi"
+    },
+    "budget": {
+      "80-150": "80–150 €",
+      "150-250": "150–250 €",
+      "250-400": "250–400 €",
+      "400+": "400 €+"
+    },
+    "destination": {
+      "de_city": "Una grande città in Germania",
+      "barcelona": "Barcelona",
+      "lisbon": "Lisbona",
+      "prague": "Praga",
+      "budapest": "Budapest",
+      "either": "Indifferente – basta che sia figo"
+    },
+    "travel": {
+      "daytrip": "Gita in giornata senza pernottamento",
+      "one_night": "1 notte va bene",
+      "two_nights": "2 notti vanno bene",
+      "either": "Indifferente – flessibile"
+    },
+    "activity": {
+      "karting": "Karting",
+      "escape_room": "Escape Room",
+      "lasertag": "Laser Tag",
+      "axe_throwing": "Lancio dell'ascia",
+      "vr_simracing": "Arena VR / Sim Racing",
+      "climbing": "Palestra d'arrampicata / Boulder",
+      "bubble_soccer": "Bubble Soccer",
+      "outdoor": "Sfida all'aperto",
+      "wellness": "Benessere / Sauna",
+      "food": "Esperienza gastronomica / Cena",
+      "mixed": "Misto – un po' di tutto"
+    },
+    "fitness": {
+      "chill": "Rilassato",
+      "normal": "Normale",
+      "sporty": "Sportivo"
+    },
+    "alcohol": {
+      "yes": "Con alcol va bene",
+      "no": "Meglio analcolico",
+      "either": "Indifferente"
+    }
+  },
   "guestHero": {
     "eventType": {
+      "wedding": "Matrimonio",
+      "corporate": "Evento Aziendale",
+      "family": "Festa di Famiglia",
+      "anniversary": "Anniversario",
+      "babyshower": "Baby Shower",
+      "graduation": "Festa di Laurea",
       "bachelor": "Addio al celibato",
       "bachelorette": "Addio al nubilato",
       "birthday": "Compleanno",
@@ -2445,6 +2506,12 @@
       "descriptionPlaceholder": "Aggiungi una descrizione (opzionale)"
     },
     "types": {
+      "wedding": "Matrimonio",
+      "corporate": "Evento Aziendale",
+      "family": "Festa di Famiglia",
+      "anniversary": "Anniversario",
+      "babyshower": "Baby Shower",
+      "graduation": "Festa di Laurea",
       "bachelor": "Addio al Celibato",
       "bachelorette": "Addio al Nubilato",
       "birthday": "Compleanno",
@@ -6770,6 +6837,12 @@
       "headerDone": "Fatto!",
       "stepOf": "Passo {{step}} di {{total}}",
       "stepType": {
+        "wedding": "Matrimonio",
+        "corporate": "Evento Aziendale",
+        "family": "Festa di Famiglia",
+        "anniversary": "Anniversario",
+        "babyshower": "Baby Shower",
+        "graduation": "Festa di Laurea",
         "title": "Cosa festeggi?",
         "subtitle": "Scegli il tipo di evento",
         "bachelor": "Addio al Celibato",

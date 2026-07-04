@@ -56,7 +56,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.wedding-elegant.name',
     descriptionKey: 'designTemplates.wedding-elegant.desc',
     icon: '💍',
-    eventTypes: ['bachelor', 'bachelorette'],
+    eventTypes: ['bachelor', 'bachelorette', 'wedding', 'anniversary'],
     branding: {
       primary_color: '#B76E79',
       accent_color: '#F7E7CE',
@@ -76,7 +76,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.birthday-fun.name',
     descriptionKey: 'designTemplates.birthday-fun.desc',
     icon: '🎂',
-    eventTypes: ['birthday'],
+    eventTypes: ['birthday', 'family', 'graduation'],
     branding: {
       primary_color: '#F97316',
       accent_color: '#EAB308',
@@ -116,7 +116,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.night-out.name',
     descriptionKey: 'designTemplates.night-out.desc',
     icon: '🌙',
-    eventTypes: ['bachelor', 'bachelorette', 'birthday'],
+    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'corporate', 'graduation'],
     branding: {
       primary_color: '#7C3AED',
       accent_color: '#EC4899',
@@ -137,7 +137,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.modern-minimal.name',
     descriptionKey: 'designTemplates.modern-minimal.desc',
     icon: '⚡',
-    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'trip', 'other'],
+    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'trip', 'other', 'corporate'],
     branding: {
       primary_color: '#1F2937',
       accent_color: '#6B7280',
@@ -176,7 +176,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.royal-purple.name',
     descriptionKey: 'designTemplates.royal-purple.desc',
     icon: '👑',
-    eventTypes: ['bachelor', 'bachelorette', 'birthday'],
+    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'wedding', 'anniversary'],
     branding: {
       primary_color: '#6D28D9',
       accent_color: '#A78BFA',
@@ -196,7 +196,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.sunset-glow.name',
     descriptionKey: 'designTemplates.sunset-glow.desc',
     icon: '🌅',
-    eventTypes: ['bachelor', 'bachelorette', 'trip'],
+    eventTypes: ['bachelor', 'bachelorette', 'trip', 'family', 'babyshower'],
     branding: {
       primary_color: '#F43F5E',
       accent_color: '#FB923C',
@@ -216,7 +216,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.ocean-breeze.name',
     descriptionKey: 'designTemplates.ocean-breeze.desc',
     icon: '🌊',
-    eventTypes: ['trip', 'bachelor'],
+    eventTypes: ['trip', 'bachelor', 'babyshower'],
     branding: {
       primary_color: '#0EA5E9',
       accent_color: '#22D3EE',
@@ -255,7 +255,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.vegas-neon.name',
     descriptionKey: 'designTemplates.vegas-neon.desc',
     icon: '🎰',
-    eventTypes: ['bachelor', 'bachelorette', 'birthday'],
+    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'graduation'],
     branding: {
       primary_color: '#22C55E',
       accent_color: '#F0ABFC',
@@ -316,7 +316,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.festival-vibes.name',
     descriptionKey: 'designTemplates.festival-vibes.desc',
     icon: '🎪',
-    eventTypes: ['bachelor', 'bachelorette', 'birthday'],
+    eventTypes: ['bachelor', 'bachelorette', 'birthday', 'graduation'],
     branding: {
       primary_color: '#E11D48',
       accent_color: '#4ADE80',
@@ -335,7 +335,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.garden-party.name',
     descriptionKey: 'designTemplates.garden-party.desc',
     icon: '🌿',
-    eventTypes: ['birthday', 'bachelorette'],
+    eventTypes: ['birthday', 'bachelorette', 'wedding', 'family', 'babyshower'],
     branding: {
       primary_color: '#15803D',
       accent_color: '#FDE68A',
@@ -374,7 +374,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     nameKey: 'designTemplates.glamour-night.name',
     descriptionKey: 'designTemplates.glamour-night.desc',
     icon: '✨',
-    eventTypes: ['bachelorette', 'birthday'],
+    eventTypes: ['bachelorette', 'birthday', 'corporate', 'anniversary', 'wedding'],
     branding: {
       primary_color: '#B45309',
       accent_color: '#FDE68A',

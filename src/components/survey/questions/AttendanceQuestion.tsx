@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/form";
 import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
 import SurveyOptionCard from "../SurveyOptionCard";
+import { tOption } from "@/lib/survey-config";
 import type { CoreQuestionProps } from "./types";
 
 const AttendanceQuestion = ({ control, config, translateLabel }: CoreQuestionProps) => {
@@ -27,7 +28,7 @@ const AttendanceQuestion = ({ control, config, translateLabel }: CoreQuestionPro
                 {config.attendance_options.map((option) => (
                   <SurveyOptionCard
                     key={option.value}
-                    label={translateLabel(option.label)}
+                    label={tOption(t as unknown as Parameters<typeof tOption>[0], "attendance", option.value, option.label)}
                     icon={option.emoji}
                     selected={field.value === option.value}
                     onSelect={() => field.onChange(option.value)}

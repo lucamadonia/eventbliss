@@ -61,6 +61,12 @@ const EVENT_TYPES = [
   { value: "birthday", labelKey: "native.create.stepType.birthday", emoji: "🎂", gradient: "from-amber-500 to-orange-500" },
   { value: "trip", labelKey: "native.create.stepType.trip", emoji: "✈️", gradient: "from-cyan-500 to-teal-500" },
   { value: "other", labelKey: "native.create.stepType.other", emoji: "🎊", gradient: "from-emerald-500 to-green-500" },
+  { value: "wedding", labelKey: "native.create.stepType.wedding", emoji: "💍", gradient: "from-rose-500 to-pink-500" },
+  { value: "corporate", labelKey: "native.create.stepType.corporate", emoji: "🏢", gradient: "from-slate-500 to-blue-500" },
+  { value: "family", labelKey: "native.create.stepType.family", emoji: "🎈", gradient: "from-amber-500 to-yellow-500" },
+  { value: "anniversary", labelKey: "native.create.stepType.anniversary", emoji: "🥂", gradient: "from-purple-500 to-indigo-500" },
+  { value: "babyshower", labelKey: "native.create.stepType.babyshower", emoji: "🍼", gradient: "from-sky-400 to-cyan-400" },
+  { value: "graduation", labelKey: "native.create.stepType.graduation", emoji: "🎓", gradient: "from-emerald-500 to-teal-500" },
 ];
 
 interface FormData {
