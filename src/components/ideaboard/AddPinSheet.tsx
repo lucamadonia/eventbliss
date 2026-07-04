@@ -9,6 +9,7 @@ import { ImagePlus, Link2, StickyNote, Sparkles, Crown, Loader2, X } from "lucid
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import {
   Sheet,
   SheetContent,
@@ -50,6 +51,7 @@ export function AddPinSheet({
 }: AddPinSheetProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
+  const keyboardInset = useKeyboardInset();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [kind, setKind] = useState<PinKind>("image");
@@ -129,6 +131,7 @@ export function AddPinSheet({
       <SheetContent
         side="bottom"
         className="max-h-[90vh] overflow-y-auto rounded-t-3xl border-white/10 bg-[#0d0a1a]/95 backdrop-blur-2xl"
+        style={keyboardInset ? { paddingBottom: keyboardInset + 24 } : undefined}
       >
         <SheetHeader className="text-left">
           <SheetTitle className="text-white">
@@ -209,7 +212,7 @@ export function AddPinSheet({
                 <SelectContent>
                   {CATEGORY_LIST.map((c) => (
                     <SelectItem key={c.key} value={c.key}>
-                      <span className="mr-1.5">{c.emoji}</span>
+                      <img src={c.icon} alt="" className="mr-1.5 inline-block h-4 w-4 object-contain align-[-3px]" />
                       {t(`ideaBoard.categories.${c.key}`, c.label)}
                     </SelectItem>
                   ))}
@@ -314,7 +317,7 @@ export function AddPinSheet({
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <span>{CATEGORY_META[category].emoji}</span>
+                  <img src={CATEGORY_META[category].icon} alt="" className="h-5 w-5 object-contain" />
                   {t("ideaBoard.save", "Idee speichern")}
                 </>
               )}

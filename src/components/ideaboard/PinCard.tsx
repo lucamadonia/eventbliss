@@ -165,7 +165,7 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
       {/* ---- Footer: category chip + reactions/comments ---- */}
       <div className="flex items-center justify-between gap-2 px-3 py-2.5">
         <span className="inline-flex items-center gap-1 rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-medium text-white/70">
-          <span>{cat.emoji}</span>
+          <img src={cat.icon} alt="" className="h-4 w-4 object-contain" />
           <span className="truncate">{catLabel}</span>
         </span>
 

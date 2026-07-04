@@ -199,6 +199,7 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
             key={c.key}
             active={filter === c.key}
             emoji={c.emoji}
+            icon={c.icon}
             label={t(`ideaBoard.categories.${c.key}`, c.label)}
             onClick={() => {
               haptics.light();
@@ -300,11 +301,13 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
 function FilterChip({
   active,
   emoji,
+  icon,
   label,
   onClick,
 }: {
   active: boolean;
   emoji: string;
+  icon?: string;
   label: string;
   onClick: () => void;
 }) {
@@ -319,7 +322,11 @@ function FilterChip({
           : "bg-white/8 text-white/60 hover:bg-white/15",
       )}
     >
-      <span>{emoji}</span>
+      {icon ? (
+        <img src={icon} alt="" className="h-4 w-4 shrink-0 object-contain" />
+      ) : (
+        <span>{emoji}</span>
+      )}
       {label}
     </button>
   );

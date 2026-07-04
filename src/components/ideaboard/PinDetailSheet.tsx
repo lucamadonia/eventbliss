@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Heart, Send, Loader2, ExternalLink, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import {
   Sheet,
   SheetContent,
@@ -46,6 +47,7 @@ export function PinDetailSheet({
 }: PinDetailSheetProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
+  const keyboardInset = useKeyboardInset();
   const [comments, setComments] = useState<PinComment[]>([]);
   const [loading, setLoading] = useState(false);
   const [draft, setDraft] = useState("");
@@ -96,7 +98,7 @@ export function PinDetailSheet({
           <>
             <SheetHeader className="text-left">
               <SheetTitle className="flex items-center gap-2 text-white">
-                <span>{cat.emoji}</span>
+                <img src={cat.icon} alt="" className="h-6 w-6 object-contain" />
                 {pin.title || t(`ideaBoard.categories.${pin.category}`, cat.label)}
               </SheetTitle>
             </SheetHeader>
@@ -191,8 +193,11 @@ export function PinDetailSheet({
               </div>
             </div>
 
-            {/* Comment composer */}
-            <div className="sticky bottom-0 -mx-6 flex items-center gap-2 border-t border-white/10 bg-[#0d0a1a]/95 px-6 py-3 backdrop-blur-xl">
+            {/* Comment composer — lifted above the on-screen keyboard */}
+            <div
+              className="sticky bottom-0 -mx-6 flex items-center gap-2 border-t border-white/10 bg-[#0d0a1a]/95 px-6 py-3 backdrop-blur-xl"
+              style={keyboardInset ? { bottom: keyboardInset } : undefined}
+            >
               <Input
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
