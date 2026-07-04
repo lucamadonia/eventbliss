@@ -21,14 +21,14 @@ interface SettledListProps {
 }
 
 const METHOD_META: Record<SettlementMethod, { label: string; emoji: string; tint: string }> = {
-  cash: { label: "Bar", emoji: "💶", tint: "text-amber-300 bg-amber-500/15 border-amber-500/25" },
-  bank: { label: "Überweisung", emoji: "🏦", tint: "text-sky-300 bg-sky-500/15 border-sky-500/25" },
-  paypal: { label: "PayPal", emoji: "💙", tint: "text-blue-300 bg-blue-500/15 border-blue-500/25" },
-  revolut: { label: "Revolut", emoji: "🟣", tint: "text-violet-300 bg-violet-500/15 border-violet-500/25" },
-  wise: { label: "Wise", emoji: "🟢", tint: "text-emerald-300 bg-emerald-500/15 border-emerald-500/25" },
-  apple_pay: { label: "Apple Pay", emoji: "", tint: "text-slate-200 bg-white/[0.08] border-white/[0.12]" },
-  google_pay: { label: "Google Pay", emoji: "G", tint: "text-slate-200 bg-white/[0.08] border-white/[0.12]" },
-  other: { label: "Sonstiges", emoji: "↗", tint: "text-slate-300 bg-white/[0.05] border-white/[0.08]" },
+  cash: { label: "Bar", emoji: "💶", tint: "text-amber-600 dark:text-amber-300 bg-amber-500/15 border-amber-500/25" },
+  bank: { label: "Überweisung", emoji: "🏦", tint: "text-sky-600 dark:text-sky-300 bg-sky-500/15 border-sky-500/25" },
+  paypal: { label: "PayPal", emoji: "💙", tint: "text-blue-600 dark:text-blue-300 bg-blue-500/15 border-blue-500/25" },
+  revolut: { label: "Revolut", emoji: "🟣", tint: "text-violet-600 dark:text-violet-300 bg-violet-500/15 border-violet-500/25" },
+  wise: { label: "Wise", emoji: "🟢", tint: "text-emerald-600 dark:text-emerald-300 bg-emerald-500/15 border-emerald-500/25" },
+  apple_pay: { label: "Apple Pay", emoji: "", tint: "text-foreground bg-muted border-border" },
+  google_pay: { label: "Google Pay", emoji: "G", tint: "text-foreground bg-muted border-border" },
+  other: { label: "Sonstiges", emoji: "↗", tint: "text-muted-foreground bg-muted border-border" },
 };
 
 /**
@@ -55,7 +55,7 @@ export function SettledList({
         {[0, 1].map((i) => (
           <div
             key={i}
-            className="h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] animate-pulse"
+            className="h-16 rounded-2xl bg-muted border border-border animate-pulse"
           />
         ))}
       </div>
@@ -64,9 +64,9 @@ export function SettledList({
 
   if (settlements.length === 0) {
     return (
-      <div className="p-6 text-center rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-        <CheckCircle2 className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-        <p className="text-xs text-slate-400">Noch keine Zahlungen erfasst.</p>
+      <div className="p-6 text-center rounded-2xl bg-muted border border-border">
+        <CheckCircle2 className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+        <p className="text-xs text-muted-foreground">Noch keine Zahlungen erfasst.</p>
       </div>
     );
   }
@@ -78,7 +78,7 @@ export function SettledList({
     <div className="space-y-5">
       {pending.length > 0 && (
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-amber-300 font-bold mb-2 px-1 flex items-center gap-1.5">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-amber-600 dark:text-amber-300 font-bold mb-2 px-1 flex items-center gap-1.5">
             <ClockIcon className="w-3 h-3" /> Warten auf Bestätigung ({pending.length})
           </div>
           <div className="space-y-2">
@@ -107,7 +107,7 @@ export function SettledList({
 
       {done.length > 0 && (
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-bold mb-2 px-1 flex items-center gap-1.5">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 font-bold mb-2 px-1 flex items-center gap-1.5">
             <CheckCircle2 className="w-3 h-3" /> Erledigt ({done.length})
           </div>
           <div className="space-y-2">
@@ -156,30 +156,30 @@ function SettlementCardV({
       className={cn(
         "rounded-2xl border p-4 flex flex-col gap-3",
         pending
-          ? "bg-gradient-to-br from-amber-500/[0.06] via-[#14171F] to-[#14171F] border-amber-500/25"
-          : "bg-gradient-to-br from-emerald-500/[0.05] via-[#14171F] to-[#14171F] border-emerald-500/20",
+          ? "bg-gradient-to-br from-amber-500/[0.06] via-card to-card border-amber-500/25"
+          : "bg-gradient-to-br from-emerald-500/[0.05] via-card to-card border-emerald-500/20",
       )}
     >
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div
             className={cn(
-              "w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[10px] font-bold shrink-0",
+              "w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] font-bold shrink-0",
             )}
           >
             {nameOf(s.from_participant_id).slice(0, 1).toUpperCase()}
           </div>
-          <ArrowRight className="w-3 h-3 text-slate-500" />
-          <div className="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-200 flex items-center justify-center text-[10px] font-bold shrink-0">
+          <ArrowRight className="w-3 h-3 text-muted-foreground" />
+          <div className="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-200 flex items-center justify-center text-[10px] font-bold shrink-0">
             {nameOf(s.to_participant_id).slice(0, 1).toUpperCase()}
           </div>
           <div className="min-w-0 ml-1">
-            <div className="text-xs text-slate-300 truncate">
+            <div className="text-xs text-muted-foreground truncate">
               <span className="font-semibold">{nameOf(s.from_participant_id)}</span>
-              <span className="text-slate-500"> → </span>
+              <span className="text-muted-foreground"> → </span>
               <span className="font-semibold">{nameOf(s.to_participant_id)}</span>
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">
+            <div className="text-[10px] text-muted-foreground mt-0.5">
               {new Date(s.created_at).toLocaleDateString("de-DE", {
                 day: "2-digit",
                 month: "short",
@@ -189,7 +189,7 @@ function SettlementCardV({
           </div>
         </div>
         <div className="text-right flex-shrink-0">
-          <div className="text-sm font-bold tabular-nums text-white">
+          <div className="text-sm font-bold tabular-nums text-foreground">
             {formatMoney(s.amount, s.currency ?? currency)}
           </div>
           <div
@@ -205,8 +205,8 @@ function SettlementCardV({
       </div>
 
       {pending && (
-        <div className="flex items-center gap-2 pt-2 border-t border-white/[0.06]">
-          <div className="flex-1 text-[11px] text-amber-300/90 leading-snug">
+        <div className="flex items-center gap-2 pt-2 border-t border-border">
+          <div className="flex-1 text-[11px] text-amber-600 dark:text-amber-300/90 leading-snug">
             {canConfirm
               ? "Du hast das Geld erhalten? Bitte bestätigen."
               : "Warten auf Bestätigung durch Empfänger"}

@@ -8,9 +8,9 @@ import { useMarketplaceServices, type MarketplaceService } from "@/hooks/useMark
 
 // Design tokens
 const C = {
-  surface: "bg-[#0d0d15]",
-  card: "bg-[#1f1f29]",
-  border: "border-[#484750]/10",
+  surface: "bg-background",
+  card: "bg-card",
+  border: "border-border",
   purple: "#cf96ff",
   cyan: "#00e3fd",
   pink: "#ff7350",
@@ -160,20 +160,20 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
       {/* Content */}
       <div className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-game font-semibold text-white text-[15px] leading-tight line-clamp-1 group-hover:text-[#cf96ff] transition-colors">
+          <h3 className="font-game font-semibold text-foreground text-[15px] leading-tight line-clamp-1 group-hover:text-[#cf96ff] transition-colors">
             {service.title}
           </h3>
           <div className="shrink-0 text-right">
-            <span className="text-white font-game font-bold text-[15px]">
+            <span className="text-foreground font-game font-bold text-[15px]">
               {formatPrice(service.price, service.priceType)}
             </span>
-            <span className="block text-[11px] text-white/40 font-['Be_Vietnam_Pro']">
+            <span className="block text-[11px] text-muted-foreground font-['Be_Vietnam_Pro']">
               {priceLabel(service.priceType, t)}
             </span>
           </div>
         </div>
 
-        <p className="text-white/50 text-[13px] font-['Be_Vietnam_Pro'] leading-relaxed line-clamp-2">
+        <p className="text-muted-foreground text-[13px] font-['Be_Vietnam_Pro'] leading-relaxed line-clamp-2">
           {service.shortDesc}
         </p>
 
@@ -182,11 +182,11 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
             {/* Rating */}
             <div className="flex items-center gap-1">
               <Star size={13} className="fill-amber-400 text-amber-400" />
-              <span className="text-white text-xs font-medium font-['Be_Vietnam_Pro']">{service.rating}</span>
-              <span className="text-white/30 text-xs font-['Be_Vietnam_Pro']">({service.reviews})</span>
+              <span className="text-foreground text-xs font-medium font-['Be_Vietnam_Pro']">{service.rating}</span>
+              <span className="text-muted-foreground text-xs font-['Be_Vietnam_Pro']">({service.reviews})</span>
             </div>
             {/* City */}
-            <div className="flex items-center gap-1 text-white/40">
+            <div className="flex items-center gap-1 text-muted-foreground">
               <MapPin size={12} />
               <span className="text-xs font-['Be_Vietnam_Pro']">{service.city}</span>
             </div>
@@ -194,9 +194,9 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
         </div>
 
         {/* Agency + Verified Badge */}
-        <div className="flex items-center justify-between pt-1 border-t border-white/5">
+        <div className="flex items-center justify-between pt-1 border-t border-border">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-white/40 text-xs font-['Be_Vietnam_Pro'] truncate">
+            <span className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] truncate">
               {service.agencyName}
             </span>
             {tier.verified && (
@@ -233,17 +233,17 @@ function ServiceCard({ service, onClick }: { service: ServiceItem; onClick: () =
 function SkeletonCard() {
   return (
     <div className={`${C.card} rounded-2xl ${C.border} border overflow-hidden animate-pulse`}>
-      <div className="h-[200px] bg-white/5" />
+      <div className="h-[200px] bg-muted" />
       <div className="p-4 space-y-3">
         <div className="flex justify-between">
-          <div className="h-4 w-2/3 bg-white/5 rounded" />
-          <div className="h-4 w-16 bg-white/5 rounded" />
+          <div className="h-4 w-2/3 bg-muted rounded" />
+          <div className="h-4 w-16 bg-muted rounded" />
         </div>
-        <div className="h-3 w-full bg-white/5 rounded" />
-        <div className="h-3 w-4/5 bg-white/5 rounded" />
+        <div className="h-3 w-full bg-muted rounded" />
+        <div className="h-3 w-4/5 bg-muted rounded" />
         <div className="flex gap-4 pt-1">
-          <div className="h-3 w-16 bg-white/5 rounded" />
-          <div className="h-3 w-20 bg-white/5 rounded" />
+          <div className="h-3 w-16 bg-muted rounded" />
+          <div className="h-3 w-20 bg-muted rounded" />
         </div>
       </div>
     </div>
@@ -367,8 +367,8 @@ export default function Marketplace() {
       <div className="relative z-10 max-w-6xl mx-auto px-4 pb-20">
         {/* Header */}
         <div className="flex items-center gap-3 pt-6 pb-2">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-            <ArrowLeft size={20} className="text-white/70" />
+          <button onClick={() => navigate(-1)} className="p-2 rounded-xl bg-muted hover:bg-muted/70 transition-colors">
+            <ArrowLeft size={20} className="text-muted-foreground" />
           </button>
         </div>
 
@@ -382,24 +382,24 @@ export default function Marketplace() {
           <h1 className="font-game text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-[#cf96ff] via-[#00e3fd] to-[#ff7350] bg-clip-text text-transparent pb-2">
             {t("marketplace.title", "Marketplace")}
           </h1>
-          <p className="text-white/50 font-['Be_Vietnam_Pro'] text-sm sm:text-base max-w-md mx-auto">
+          <p className="text-muted-foreground font-['Be_Vietnam_Pro'] text-sm sm:text-base max-w-md mx-auto">
             {t("marketplace.subtitle", "Entdecke Erlebnisse, Dienstleister & Pakete für dein nächstes Event")}
           </p>
 
           {/* Search bar */}
           <div className="mt-6 max-w-lg mx-auto relative">
-            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 focus-within:border-[#cf96ff]/40 transition-colors">
-              <Search size={18} className="text-white/30 shrink-0" />
+            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-muted backdrop-blur-xl border border-border focus-within:border-[#cf96ff]/40 transition-colors">
+              <Search size={18} className="text-muted-foreground shrink-0" />
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder={t("marketplace.searchPlaceholder", "Services, Workshops, Erlebnisse suchen...")}
-                className="flex-1 bg-transparent text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/25 outline-none"
+                className="flex-1 bg-transparent text-foreground text-sm font-['Be_Vietnam_Pro'] placeholder:text-muted-foreground outline-none"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="p-0.5 rounded-full hover:bg-white/10">
-                  <X size={14} className="text-white/40" />
+                <button onClick={() => setSearch("")} className="p-0.5 rounded-full hover:bg-muted">
+                  <X size={14} className="text-muted-foreground" />
                 </button>
               )}
             </div>
@@ -421,8 +421,8 @@ export default function Marketplace() {
                 onClick={() => setActiveCategory(cat.filter)}
                 className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium font-['Be_Vietnam_Pro'] transition-all duration-200 ${
                   isActive
-                    ? "bg-gradient-to-r from-[#cf96ff]/20 to-[#00e3fd]/20 text-white border border-[#cf96ff]/40"
-                    : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10 hover:text-white/70"
+                    ? "bg-gradient-to-r from-[#cf96ff]/20 to-[#00e3fd]/20 text-foreground border border-[#cf96ff]/40"
+                    : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70 hover:text-foreground"
                 }`}
               >
                 <span>{cat.emoji}</span>
@@ -441,7 +441,7 @@ export default function Marketplace() {
         >
           <button
             onClick={() => setShowFilters(v => !v)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 text-sm font-['Be_Vietnam_Pro'] transition-colors mb-3"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted hover:bg-muted/70 text-muted-foreground text-sm font-['Be_Vietnam_Pro'] transition-colors mb-3"
           >
             <SlidersHorizontal size={15} />
             <span>{t("marketplace.filters.title", "Filter")}</span>
@@ -457,27 +457,27 @@ export default function Marketplace() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="space-y-3 overflow-hidden bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4"
+              className="space-y-3 overflow-hidden bg-muted border border-border rounded-2xl p-4"
             >
               {/* Row 1: Location */}
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.country", "Land")}
                   </label>
                   <select
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
                   >
-                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.countryAll", "Alle Länder")}</option>
+                    <option value="all" className="bg-popover text-popover-foreground">{t("marketplace.filters.countryAll", "Alle Länder")}</option>
                     {["DE", "AT", "CH", "FR", "ES", "IT", "NL", "PT", "BE", "PL", "TR", "AR"].map((c) => (
-                      <option key={c} value={c} className="bg-[#1a1625]">{c}</option>
+                      <option key={c} value={c} className="bg-popover text-popover-foreground">{c}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.city", "Stadt")}
                   </label>
                   <input
@@ -485,7 +485,7 @@ export default function Marketplace() {
                     value={cityFilter}
                     onChange={(e) => setCityFilter(e.target.value)}
                     placeholder={t("marketplace.filters.cityPlaceholder", "z.B. Berlin")}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/20 outline-none focus:border-[#cf96ff]/40"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] placeholder:text-muted-foreground outline-none focus:border-[#cf96ff]/40"
                   />
                 </div>
               </div>
@@ -493,7 +493,7 @@ export default function Marketplace() {
               {/* Row 2: Price range + sort */}
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.price", "Preis")}
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -504,7 +504,7 @@ export default function Marketplace() {
                         className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
                           activePriceIdx === idx
                             ? "bg-[#cf96ff]/20 text-[#cf96ff] border border-[#cf96ff]/30"
-                            : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                            : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70"
                         }`}
                       >
                         {t(`marketplace.filters.${pf.key}`, pf.key)}
@@ -513,19 +513,19 @@ export default function Marketplace() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.sort", "Sortierung")}
                   </label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
                   >
-                    <option value="popularity" className="bg-[#1a1625]">{t("marketplace.filters.sortPopularity", "Beliebt")}</option>
-                    <option value="rating" className="bg-[#1a1625]">{t("marketplace.filters.sortRating", "Beste Bewertung")}</option>
-                    <option value="price_asc" className="bg-[#1a1625]">{t("marketplace.filters.sortPriceAsc", "Preis aufsteigend")}</option>
-                    <option value="price_desc" className="bg-[#1a1625]">{t("marketplace.filters.sortPriceDesc", "Preis absteigend")}</option>
-                    <option value="newest" className="bg-[#1a1625]">{t("marketplace.filters.sortNewest", "Neueste zuerst")}</option>
+                    <option value="popularity" className="bg-popover text-popover-foreground">{t("marketplace.filters.sortPopularity", "Beliebt")}</option>
+                    <option value="rating" className="bg-popover text-popover-foreground">{t("marketplace.filters.sortRating", "Beste Bewertung")}</option>
+                    <option value="price_asc" className="bg-popover text-popover-foreground">{t("marketplace.filters.sortPriceAsc", "Preis aufsteigend")}</option>
+                    <option value="price_desc" className="bg-popover text-popover-foreground">{t("marketplace.filters.sortPriceDesc", "Preis absteigend")}</option>
+                    <option value="newest" className="bg-popover text-popover-foreground">{t("marketplace.filters.sortNewest", "Neueste zuerst")}</option>
                   </select>
                 </div>
               </div>
@@ -533,7 +533,7 @@ export default function Marketplace() {
               {/* Row 3: Participants + Duration */}
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.participants", "Für mind. X Personen")}
                   </label>
                   <input
@@ -543,11 +543,11 @@ export default function Marketplace() {
                     value={participantsFilter}
                     onChange={(e) => setParticipantsFilter(e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value, 10) || 1))}
                     placeholder={t("marketplace.filters.participantsPlaceholder", "z.B. 10")}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] placeholder:text-white/20 outline-none focus:border-[#cf96ff]/40"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] placeholder:text-muted-foreground outline-none focus:border-[#cf96ff]/40"
                   />
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.duration", "Max. Dauer")}
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -564,7 +564,7 @@ export default function Marketplace() {
                         className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
                           durationMaxFilter === v
                             ? "bg-[#00e3fd]/20 text-[#00e3fd] border border-[#00e3fd]/30"
-                            : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                            : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70"
                         }`}
                       >
                         {l}
@@ -577,45 +577,45 @@ export default function Marketplace() {
               {/* Row 4: Location-type + Price-type */}
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.locationType", "Art des Service")}
                   </label>
                   <select
                     value={locationTypeFilter}
                     onChange={(e) => setLocationTypeFilter(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
                   >
-                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.anyLocation", "Egal")}</option>
-                    <option value="on_site" className="bg-[#1a1625]">{t("marketplace.filters.onSite", "Vor Ort (beim Kunden)")}</option>
-                    <option value="at_agency" className="bg-[#1a1625]">{t("marketplace.filters.atAgency", "Bei der Agentur")}</option>
-                    <option value="online" className="bg-[#1a1625]">{t("marketplace.filters.online", "Online")}</option>
-                    <option value="flexible" className="bg-[#1a1625]">{t("marketplace.filters.flexible", "Flexibel")}</option>
+                    <option value="all" className="bg-popover text-popover-foreground">{t("marketplace.filters.anyLocation", "Egal")}</option>
+                    <option value="on_site" className="bg-popover text-popover-foreground">{t("marketplace.filters.onSite", "Vor Ort (beim Kunden)")}</option>
+                    <option value="at_agency" className="bg-popover text-popover-foreground">{t("marketplace.filters.atAgency", "Bei der Agentur")}</option>
+                    <option value="online" className="bg-popover text-popover-foreground">{t("marketplace.filters.online", "Online")}</option>
+                    <option value="flexible" className="bg-popover text-popover-foreground">{t("marketplace.filters.flexible", "Flexibel")}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-['Be_Vietnam_Pro'] block mb-1">
+                  <label className="text-muted-foreground text-xs font-['Be_Vietnam_Pro'] block mb-1">
                     {t("marketplace.filters.priceType", "Preismodell")}
                   </label>
                   <select
                     value={priceTypeFilter}
                     onChange={(e) => setPriceTypeFilter(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground text-sm font-['Be_Vietnam_Pro'] outline-none focus:border-[#cf96ff]/40 cursor-pointer"
                   >
-                    <option value="all" className="bg-[#1a1625]">{t("marketplace.filters.priceAny", "Alle")}</option>
-                    <option value="per_person" className="bg-[#1a1625]">{t("marketplace.filters.perPerson", "Pro Person")}</option>
-                    <option value="flat_rate" className="bg-[#1a1625]">{t("marketplace.filters.flatRate", "Pauschal")}</option>
-                    <option value="per_hour" className="bg-[#1a1625]">{t("marketplace.filters.perHour", "Pro Stunde")}</option>
-                    <option value="custom" className="bg-[#1a1625]">{t("marketplace.filters.custom", "Individuell")}</option>
+                    <option value="all" className="bg-popover text-popover-foreground">{t("marketplace.filters.priceAny", "Alle")}</option>
+                    <option value="per_person" className="bg-popover text-popover-foreground">{t("marketplace.filters.perPerson", "Pro Person")}</option>
+                    <option value="flat_rate" className="bg-popover text-popover-foreground">{t("marketplace.filters.flatRate", "Pauschal")}</option>
+                    <option value="per_hour" className="bg-popover text-popover-foreground">{t("marketplace.filters.perHour", "Pro Stunde")}</option>
+                    <option value="custom" className="bg-popover text-popover-foreground">{t("marketplace.filters.custom", "Individuell")}</option>
                   </select>
                 </div>
               </div>
 
               {/* Row 5: Quality toggles */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.06]">
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
                 <button
                   onClick={() => setRatingFilter((v) => !v)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    ratingFilter ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                    ratingFilter ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70"
                   }`}
                 >
                   <Star size={12} className={ratingFilter ? "fill-amber-400 text-amber-400" : ""} />
@@ -624,7 +624,7 @@ export default function Marketplace() {
                 <button
                   onClick={() => setFeaturedOnly((v) => !v)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    featuredOnly ? "bg-pink-500/20 text-pink-400 border border-pink-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                    featuredOnly ? "bg-pink-500/20 text-pink-400 border border-pink-500/30" : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70"
                   }`}
                 >
                   ✨ {t("marketplace.filters.featuredOnly", "Nur Featured")}
@@ -632,7 +632,7 @@ export default function Marketplace() {
                 <button
                   onClick={() => setAutoConfirmOnly((v) => !v)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    autoConfirmOnly ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-white/5 text-white/50 border border-transparent hover:bg-white/10"
+                    autoConfirmOnly ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-muted text-muted-foreground border border-transparent hover:bg-muted/70"
                   }`}
                 >
                   ⚡ {t("marketplace.filters.instantBook", "Sofort buchbar")}
@@ -640,7 +640,7 @@ export default function Marketplace() {
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearFilters}
-                    className="ml-auto text-xs text-white/40 hover:text-white/70 font-['Be_Vietnam_Pro'] underline transition-colors"
+                    className="ml-auto text-xs text-muted-foreground hover:text-foreground font-['Be_Vietnam_Pro'] underline transition-colors"
                   >
                     {t("marketplace.filters.resetAll", "Alle zurücksetzen")} ({activeFilterCount})
                   </button>
@@ -652,7 +652,7 @@ export default function Marketplace() {
 
         {/* Results count */}
         <div className="flex items-center justify-between pb-4">
-          <span className="text-white/30 text-xs font-['Be_Vietnam_Pro']">
+          <span className="text-muted-foreground text-xs font-['Be_Vietnam_Pro']">
             {isLoading ? t("marketplace.loading", "Laden...") : (totalResults === 1 ? t("marketplace.results", "{{count}} Ergebnis", { count: totalResults }) : t("marketplace.results_plural", "{{count}} Ergebnisse", { count: totalResults }))}
           </span>
         </div>
@@ -688,13 +688,13 @@ export default function Marketplace() {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
-              <Search size={32} className="text-white/20" />
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+              <Search size={32} className="text-muted-foreground" />
             </div>
-            <h3 className="font-game text-lg font-semibold text-white/60 mb-1">
+            <h3 className="font-game text-lg font-semibold text-foreground mb-1">
               {t("marketplace.noResults", "Keine Ergebnisse")}
             </h3>
-            <p className="text-white/30 text-sm font-['Be_Vietnam_Pro'] max-w-xs">
+            <p className="text-muted-foreground text-sm font-['Be_Vietnam_Pro'] max-w-xs">
               {t("marketplace.noResultsHint", "Versuche andere Filter oder einen anderen Suchbegriff")}
             </p>
             <button
@@ -716,7 +716,7 @@ export default function Marketplace() {
           >
             <button
               onClick={() => setPage(p => p + 1)}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-sm font-medium font-['Be_Vietnam_Pro'] transition-all"
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-muted hover:bg-muted/70 border border-border text-muted-foreground hover:text-foreground text-sm font-medium font-['Be_Vietnam_Pro'] transition-all"
             >
               {t("marketplace.loadMore", "Mehr laden")}
               <ChevronRight size={16} />

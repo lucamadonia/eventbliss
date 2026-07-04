@@ -466,7 +466,7 @@ function StaggerHeadline({ text, reduced }: { text: string; reduced: boolean }) 
   return (
     <h1 className="relative inline-block">
       <span className="sr-only">{text}</span>
-      <span className="relative text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-r from-violet-300 via-pink-300 to-amber-300 bg-clip-text text-transparent" aria-hidden>
+      <span className="relative text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-r from-violet-500 via-pink-500 to-amber-500 bg-clip-text text-transparent" aria-hidden>
         {letters.map((ch, i) => (
           <motion.span
             key={i}
@@ -633,23 +633,23 @@ function MagneticWrap({
 function getStatusMeta(status: string) {
   switch (status) {
     case "confirmed":
-      return { label: "Bestätigt", sub: "Alles fix — deine Buchung ist bestätigt.", colorClass: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30", icon: CheckCircle2 };
+      return { label: "Bestätigt", sub: "Alles fix — deine Buchung ist bestätigt.", colorClass: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-400/30", icon: CheckCircle2 };
     case "pending_payment":
-      return { label: "Zahlung ausstehend", sub: "Die Zahlung ist noch nicht abgeschlossen.", colorClass: "bg-amber-500/20 text-amber-300 border-amber-400/30", icon: AlertCircle };
+      return { label: "Zahlung ausstehend", sub: "Die Zahlung ist noch nicht abgeschlossen.", colorClass: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-400/30", icon: AlertCircle };
     case "pending_confirmation":
-      return { label: "Wartet auf Bestätigung", sub: "Die Agentur bestätigt deine Buchung in Kürze.", colorClass: "bg-amber-500/20 text-amber-300 border-amber-400/30", icon: HourglassIcon };
+      return { label: "Wartet auf Bestätigung", sub: "Die Agentur bestätigt deine Buchung in Kürze.", colorClass: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-400/30", icon: HourglassIcon };
     case "reserved":
-      return { label: "Reserviert", sub: "Dein Slot ist reserviert.", colorClass: "bg-cyan-500/20 text-cyan-300 border-cyan-400/30", icon: AlertCircle };
+      return { label: "Reserviert", sub: "Dein Slot ist reserviert.", colorClass: "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-400/30", icon: AlertCircle };
     case "completed":
-      return { label: "Abgeschlossen", sub: "Event war — schön gewesen!", colorClass: "bg-violet-500/20 text-violet-300 border-violet-400/30", icon: Star };
+      return { label: "Abgeschlossen", sub: "Event war — schön gewesen!", colorClass: "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-400/30", icon: Star };
     case "cancelled_by_customer":
-      return { label: "Storniert", sub: "Du hast diese Buchung storniert.", colorClass: "bg-red-500/20 text-red-300 border-red-400/30", icon: XCircle };
+      return { label: "Storniert", sub: "Du hast diese Buchung storniert.", colorClass: "bg-red-500/20 text-red-700 dark:text-red-300 border-red-400/30", icon: XCircle };
     case "cancelled_by_agency":
-      return { label: "Von Agentur storniert", sub: "Die Agentur hat die Buchung storniert.", colorClass: "bg-red-500/20 text-red-300 border-red-400/30", icon: Ban };
+      return { label: "Von Agentur storniert", sub: "Die Agentur hat die Buchung storniert.", colorClass: "bg-red-500/20 text-red-700 dark:text-red-300 border-red-400/30", icon: Ban };
     case "refunded":
-      return { label: "Erstattet", sub: "Die Buchung wurde erstattet.", colorClass: "bg-slate-500/20 text-slate-300 border-slate-400/30", icon: XCircle };
+      return { label: "Erstattet", sub: "Die Buchung wurde erstattet.", colorClass: "bg-slate-500/20 text-slate-700 dark:text-slate-300 border-slate-400/30", icon: XCircle };
     default:
-      return { label: status, sub: "", colorClass: "bg-white/10 text-slate-300 border-white/20", icon: AlertCircle };
+      return { label: status, sub: "", colorClass: "bg-muted text-muted-foreground border-border", icon: AlertCircle };
   }
 }
 
@@ -808,7 +808,7 @@ export default function BookingSuccess() {
   // Loading
   if (isLoading) {
     return (
-      <div className="dark min-h-screen bg-[#0a0612] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
@@ -823,13 +823,13 @@ export default function BookingSuccess() {
   // Error / not found
   if (error || !booking) {
     return (
-      <div className="dark min-h-screen bg-[#0a0612] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <div className="text-center space-y-4 max-w-md">
           <div className="w-14 h-14 mx-auto rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-red-400" />
+            <Sparkles className="w-6 h-6 text-red-500 dark:text-red-400" />
           </div>
-          <h1 className="text-2xl font-black text-white">Buchung nicht gefunden</h1>
-          <p className="text-slate-400">
+          <h1 className="text-2xl font-black text-foreground">Buchung nicht gefunden</h1>
+          <p className="text-muted-foreground">
             Wir konnten deine Buchung nicht laden. Schau in deinen Buchungen nach.
           </p>
           <Button
@@ -866,7 +866,7 @@ export default function BookingSuccess() {
   const headlineText = isUnpaid ? "Fast geschafft!" : "Gebucht!";
 
   return (
-    <div className="dark relative min-h-screen overflow-x-hidden bg-[#0a0612] text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
       {/* Dark vignette fade-in */}
       <motion.div
         className="pointer-events-none fixed inset-0 z-[2] print:hidden"
@@ -948,7 +948,7 @@ export default function BookingSuccess() {
           animate={{ opacity: 1 }}
           transition={{ delay: reduced ? 0 : 1.8 }}
           onClick={() => navigate("/my-bookings")}
-          className="mb-6 inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors print:hidden"
+          className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors print:hidden"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           Zu meinen Buchungen
@@ -966,7 +966,7 @@ export default function BookingSuccess() {
         >
           <StaggerHeadline text={headlineText} reduced={reduced} />
           <motion.p
-            className="text-slate-300 mt-2"
+            className="text-muted-foreground mt-2"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: reduced ? 0 : 1.1 }}
@@ -983,7 +983,7 @@ export default function BookingSuccess() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: reduced ? 0 : 1.2 }}
         >
-          <Badge className="px-4 py-1.5 bg-white/5 backdrop-blur-xl border border-white/10 text-slate-200 font-mono text-xs shadow-lg">
+          <Badge className="px-4 py-1.5 bg-card backdrop-blur-xl border border-border text-foreground font-mono text-xs shadow-lg">
             Buchung #{booking.booking_number}
           </Badge>
           {(() => {
@@ -1023,8 +1023,8 @@ export default function BookingSuccess() {
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-300 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-sm font-bold text-amber-100 mb-1">Zahlung ausstehend</h3>
-                <p className="text-xs text-amber-200/80 mb-3 leading-relaxed">
+                <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">Zahlung ausstehend</h3>
+                <p className="text-xs text-amber-800 dark:text-amber-200/80 mb-3 leading-relaxed">
                   Deine Buchung ist reserviert, aber die Zahlung ist noch nicht abgeschlossen.
                   Ohne Zahlung wird der Slot nach 24 Stunden freigegeben.
                 </p>
@@ -1050,8 +1050,8 @@ export default function BookingSuccess() {
             <div className="flex items-start gap-3">
               <span aria-hidden className="text-xl leading-none mt-0.5">💶</span>
               <div className="flex-1">
-                <h3 className="text-sm font-bold text-cyan-100 mb-1">Zahlung vor Ort</h3>
-                <p className="text-xs text-cyan-200/80 leading-relaxed">
+                <h3 className="text-sm font-bold text-cyan-900 dark:text-cyan-100 mb-1">Zahlung vor Ort</h3>
+                <p className="text-xs text-cyan-800 dark:text-cyan-200/80 leading-relaxed">
                   Bring das Geld zum Termin mit. Deine Agentur weist dich ggf. nochmal auf den Betrag hin.
                 </p>
               </div>
@@ -1062,7 +1062,7 @@ export default function BookingSuccess() {
         {/* Service hero card — with parallax tilt */}
         <TiltCard reduced={reduced} className="mb-5">
           <motion.div
-            className="relative overflow-hidden rounded-3xl bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl"
+            className="relative overflow-hidden rounded-3xl bg-card backdrop-blur-xl border border-border shadow-2xl"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: reduced ? 0 : 1.25 }}
@@ -1132,7 +1132,7 @@ export default function BookingSuccess() {
 
         {/* Agency card */}
         <motion.div
-          className="rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 p-4 sm:p-5 mb-5 flex items-center gap-4 cursor-pointer hover:border-violet-400/40 transition-colors"
+          className="rounded-2xl bg-card backdrop-blur-xl border border-border p-4 sm:p-5 mb-5 flex items-center gap-4 cursor-pointer hover:border-violet-400/40 transition-colors"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: reduced ? 0 : 1.4 }}
@@ -1145,29 +1145,29 @@ export default function BookingSuccess() {
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-slate-400">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
               Gebucht bei
             </p>
-            <p className="font-bold text-white truncate">{booking.agency_name}</p>
+            <p className="font-bold text-foreground truncate">{booking.agency_name}</p>
             {booking.agency_city && (
-              <p className="text-xs text-slate-400 flex items-center gap-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {booking.agency_city}
               </p>
             )}
           </div>
-          <ArrowRight className="w-4 h-4 text-slate-400" />
+          <ArrowRight className="w-4 h-4 text-muted-foreground" />
         </motion.div>
 
         {/* Next steps timeline (scroll-reveal + line draw) */}
         <motion.div
           ref={timelineRef}
-          className="rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 p-5 mb-5"
+          className="rounded-2xl bg-card backdrop-blur-xl border border-border p-5 mb-5"
           initial={{ opacity: 0, y: 20 }}
           animate={timelineInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-400" />
             Was jetzt passiert
           </h3>
@@ -1227,7 +1227,7 @@ export default function BookingSuccess() {
           <Button
             onClick={handleDownloadIcs}
             variant="outline"
-            className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08] hover:text-white h-11 gap-2"
+            className="bg-muted border-border text-foreground hover:bg-accent hover:text-foreground h-11 gap-2"
           >
             <CalendarPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Kalender</span>
@@ -1237,7 +1237,7 @@ export default function BookingSuccess() {
             <Button
               onClick={() => window.print()}
               variant="outline"
-              className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08] hover:text-white h-11 gap-2"
+              className="bg-muted border-border text-foreground hover:bg-accent hover:text-foreground h-11 gap-2"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">PDF</span>
@@ -1246,7 +1246,7 @@ export default function BookingSuccess() {
           <Button
             onClick={handleShare}
             variant="outline"
-            className="bg-white/[0.04] border-white/10 text-white hover:bg-white/[0.08] hover:text-white h-11 gap-2"
+            className="bg-muted border-border text-foreground hover:bg-accent hover:text-foreground h-11 gap-2"
           >
             <Share2 className="w-4 h-4" />
             <span className="hidden sm:inline">Teilen</span>
@@ -1293,7 +1293,7 @@ export default function BookingSuccess() {
 
         {/* Footer quote */}
         <motion.p
-          className="text-center text-xs text-slate-500 mt-8"
+          className="text-center text-xs text-muted-foreground mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: reduced ? 0 : 2.3 }}
@@ -1325,16 +1325,16 @@ function DetailTile({
       className={`rounded-xl p-3 border ${
         highlight
           ? "bg-amber-500/10 border-amber-400/30"
-          : "bg-white/[0.02] border-white/10"
+          : "bg-muted border-border"
       }`}
     >
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-400 mb-1">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
         <Icon className={`w-3 h-3 ${highlight ? "text-amber-400" : ""}`} />
         {label}
       </div>
       <p
         className={`text-sm font-bold ${
-          highlight ? "text-amber-300" : "text-white"
+          highlight ? "text-amber-700 dark:text-amber-300" : "text-foreground"
         }`}
       >
         {value}
@@ -1404,8 +1404,8 @@ function TimelineStep({
         )}
       </motion.div>
       <div className="flex-1 min-w-0 pt-1">
-        <p className="text-sm font-semibold text-white">{title}</p>
-        <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{desc}</p>
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{desc}</p>
       </div>
     </motion.div>
   );

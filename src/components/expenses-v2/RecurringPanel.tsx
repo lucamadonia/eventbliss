@@ -68,11 +68,11 @@ export function RecurringPanel({
       {/* Header + create button */}
       <div className="flex items-center justify-between px-1">
         <div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <CalendarClock className="w-4 h-4 text-violet-300" />
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+            <CalendarClock className="w-4 h-4 text-violet-600 dark:text-violet-300" />
             Wiederkehrende Ausgaben
           </h2>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5">
             Miete, Groceries, Abos — werden automatisch angelegt
           </p>
         </div>
@@ -94,7 +94,7 @@ export function RecurringPanel({
           {[0, 1].map((i) => (
             <div
               key={i}
-              className="h-24 rounded-2xl bg-white/[0.03] border border-white/[0.06] animate-pulse"
+              className="h-24 rounded-2xl bg-muted border border-border animate-pulse"
             />
           ))}
         </div>
@@ -104,7 +104,7 @@ export function RecurringPanel({
         <>
           {active.length > 0 && (
             <section>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-bold mb-2 px-1">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 font-bold mb-2 px-1">
                 Aktiv ({active.length})
               </div>
               <div className="space-y-2">
@@ -124,7 +124,7 @@ export function RecurringPanel({
           )}
           {paused.length > 0 && (
             <section>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-bold mb-2 px-1">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 px-1">
                 Pausiert ({paused.length})
               </div>
               <div className="space-y-2">
@@ -182,33 +182,33 @@ function TemplateCard({
       className={cn(
         "rounded-2xl border p-4 flex items-center gap-3",
         paused
-          ? "bg-white/[0.02] border-white/[0.06] opacity-60"
-          : "bg-gradient-to-br from-violet-500/[0.06] via-[#14171F] to-[#14171F] border-violet-500/20",
+          ? "bg-muted border-border opacity-60"
+          : "bg-gradient-to-br from-violet-500/[0.06] via-card to-card border-violet-500/20",
       )}
     >
       <div
         className={cn(
           "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border shrink-0",
           paused
-            ? "bg-white/[0.03] border-white/[0.08]"
-            : "bg-white/[0.05] border-white/[0.08]",
+            ? "bg-muted border-border"
+            : "bg-muted border-border",
         )}
       >
         {t.emoji ?? "🔁"}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-white truncate">{t.title}</div>
-        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-0.5">
+        <div className="text-sm font-semibold text-foreground truncate">{t.title}</div>
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
           <span>{freq.emoji}</span>
           <span>{freq.label}</span>
-          <span className="text-slate-600">·</span>
-          <span className="text-slate-500">
+          <span className="text-muted-foreground/60">·</span>
+          <span className="text-muted-foreground">
             Nächste: {new Date(t.next_run_date).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}
           </span>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <div className="text-sm font-bold tabular-nums text-white">
+        <div className="text-sm font-bold tabular-nums text-foreground">
           {formatMoney(t.amount, t.currency ?? currency)}
         </div>
         <button
@@ -217,8 +217,8 @@ function TemplateCard({
           className={cn(
             "w-9 h-9 rounded-full flex items-center justify-center border cursor-pointer transition-colors",
             paused
-              ? "bg-emerald-500/15 border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/25"
-              : "bg-white/[0.05] border-white/[0.08] text-slate-300 hover:bg-white/[0.1]",
+              ? "bg-emerald-500/15 border-emerald-500/25 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25"
+              : "bg-muted border-border text-muted-foreground hover:bg-white/[0.1]",
           )}
           aria-label={paused ? "Aktivieren" : "Pausieren"}
         >
@@ -236,13 +236,13 @@ function EmptyRecurring({ onAdd }: { onAdd: () => void }) {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-8 text-center rounded-3xl bg-gradient-to-br from-violet-500/[0.05] via-[#14171F] to-cyan-500/[0.04] border border-violet-500/15"
+      className="p-8 text-center rounded-3xl bg-gradient-to-br from-violet-500/[0.05] via-card to-cyan-500/[0.04] border border-violet-500/15"
     >
       <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center mb-3 shadow-lg shadow-violet-500/30">
         <CalendarClock className="w-7 h-7 text-white" />
       </div>
-      <h3 className="text-base font-bold text-white mb-1">Noch keine Vorlagen</h3>
-      <p className="text-xs text-slate-400 mb-4 max-w-xs mx-auto leading-relaxed">
+      <h3 className="text-base font-bold text-foreground mb-1">Noch keine Vorlagen</h3>
+      <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto leading-relaxed">
         Leg wiederkehrende Ausgaben wie Miete, Streaming oder Wochenend-Groceries einmal an — der Rest passiert automatisch.
       </p>
       <Button
@@ -319,23 +319,23 @@ function CreateRecurringSheet({
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side="bottom"
-        className="bg-[#0B0D12] border-t border-white/10 text-white p-0 h-[80vh] max-h-[80vh] rounded-t-3xl flex flex-col"
+        className="bg-background border-t border-border text-foreground p-0 h-[80vh] max-h-[80vh] rounded-t-3xl flex flex-col"
       >
         <SheetTitle className="sr-only">Neue wiederkehrende Ausgabe</SheetTitle>
 
         <div className="flex items-center justify-center pt-3 pb-1">
-          <div className="w-10 h-1.5 rounded-full bg-white/20" />
+          <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />
         </div>
 
-        <div className="px-5 py-3 flex items-center justify-between border-b border-white/[0.06]">
+        <div className="px-5 py-3 flex items-center justify-between border-b border-border">
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.1] flex items-center justify-center cursor-pointer"
+            className="w-9 h-9 rounded-full bg-muted hover:bg-white/[0.1] flex items-center justify-center cursor-pointer"
             aria-label="Schließen"
           >
-            <X className="w-4 h-4 text-slate-300" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
-          <h2 className="text-base font-bold text-white">Neue Vorlage</h2>
+          <h2 className="text-base font-bold text-foreground">Neue Vorlage</h2>
           <Button
             onClick={handleSave}
             disabled={!canSave || create.isPending}
@@ -362,7 +362,7 @@ function CreateRecurringSheet({
                 const picks = ["🔁", "🏠", "🛒", "☕", "🎬", "🚗", "💡", "📱", "🎵"];
                 setEmoji(picks[(picks.indexOf(emoji) + 1) % picks.length]);
               }}
-              className="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-2xl cursor-pointer hover:border-violet-400/40"
+              className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-2xl cursor-pointer hover:border-violet-400/40"
               aria-label="Emoji wechseln"
             >
               {emoji}
@@ -371,13 +371,13 @@ function CreateRecurringSheet({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Titel, z. B. Miete"
-              className="flex-1 h-12 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-slate-500"
+              className="flex-1 h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Amount */}
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
               Betrag
             </div>
             <div className="relative">
@@ -387,15 +387,15 @@ function CreateRecurringSheet({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
                 placeholder="0,00"
-                className="w-full h-14 px-4 pr-10 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white text-2xl font-bold placeholder:text-slate-500 tabular-nums focus:outline-none focus:border-violet-400/40"
+                className="w-full h-14 px-4 pr-10 rounded-2xl bg-muted border border-border text-foreground text-2xl font-bold placeholder:text-muted-foreground tabular-nums focus:outline-none focus:border-violet-400/40"
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">€</span>
             </div>
           </div>
 
           {/* Frequency */}
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
               Häufigkeit
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -410,8 +410,8 @@ function CreateRecurringSheet({
                     className={cn(
                       "h-11 px-3 rounded-xl border flex items-center gap-2 text-sm font-medium cursor-pointer transition-colors",
                       active
-                        ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/20 border-violet-400/50 text-white"
-                        : "bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-slate-200",
+                        ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/20 border-violet-400/50 text-foreground"
+                        : "bg-muted border-border text-muted-foreground hover:text-foreground",
                     )}
                   >
                     <span>{cfg.emoji}</span>
@@ -424,7 +424,7 @@ function CreateRecurringSheet({
 
           {/* Next run */}
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
               Start-Datum
             </div>
             <input
@@ -432,13 +432,13 @@ function CreateRecurringSheet({
               value={nextRunDate}
               onChange={(e) => setNextRunDate(e.target.value)}
               min={new Date().toISOString().slice(0, 10)}
-              className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm [color-scheme:dark]"
+              className="w-full h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm [color-scheme:light] dark:[color-scheme:dark]"
             />
           </div>
 
           {/* Payer */}
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
               Gezahlt von
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -452,14 +452,14 @@ function CreateRecurringSheet({
                     className={cn(
                       "flex-shrink-0 h-11 px-4 rounded-full border text-sm font-medium cursor-pointer transition-colors flex items-center gap-2",
                       active
-                        ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-white"
-                        : "bg-white/[0.03] border-white/[0.08] text-slate-400",
+                        ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-foreground"
+                        : "bg-muted border-border text-muted-foreground",
                     )}
                   >
                     <div
                       className={cn(
                         "w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
-                        active ? "bg-white/20" : "bg-white/[0.06]",
+                        active ? "bg-foreground/15" : "bg-muted",
                       )}
                     >
                       {(p.name ?? "?").slice(0, 1).toUpperCase()}
@@ -472,7 +472,7 @@ function CreateRecurringSheet({
           </div>
 
           <div className="px-4 py-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
-            <p className="text-[11px] text-violet-300/80 leading-relaxed flex items-start gap-2">
+            <p className="text-[11px] text-violet-600 dark:text-violet-300/80 leading-relaxed flex items-start gap-2">
               <Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
               <span>
                 Aufteilung: <strong>gleichmäßig</strong> auf alle {participants.length} Teilnehmer.

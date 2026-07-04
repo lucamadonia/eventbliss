@@ -46,31 +46,31 @@ export function BalanceCard({
   const toneClass = {
     up: {
       border: "border-emerald-500/25",
-      bg: "bg-gradient-to-br from-emerald-500/[0.10] via-[#14171F] to-[#14171F]",
-      accent: "text-emerald-300",
-      chip: "bg-emerald-500/15 text-emerald-300",
+      bg: "bg-gradient-to-br from-emerald-500/[0.10] via-card to-card",
+      accent: "text-emerald-600 dark:text-emerald-300",
+      chip: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
       glow: "bg-emerald-500/15",
     },
     down: {
       border: "border-rose-500/25",
-      bg: "bg-gradient-to-br from-rose-500/[0.10] via-[#14171F] to-[#14171F]",
-      accent: "text-rose-300",
-      chip: "bg-rose-500/15 text-rose-300",
+      bg: "bg-gradient-to-br from-rose-500/[0.10] via-card to-card",
+      accent: "text-rose-600 dark:text-rose-300",
+      chip: "bg-rose-500/15 text-rose-600 dark:text-rose-300",
       glow: "bg-rose-500/15",
     },
     settled: {
       border: "border-emerald-500/20",
-      bg: "bg-gradient-to-br from-emerald-500/[0.06] via-[#14171F] to-[#14171F]",
-      accent: "text-emerald-200",
-      chip: "bg-emerald-500/10 text-emerald-300",
+      bg: "bg-gradient-to-br from-emerald-500/[0.06] via-card to-card",
+      accent: "text-emerald-600 dark:text-emerald-200",
+      chip: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
       glow: "bg-emerald-500/10",
     },
     idle: {
-      border: "border-white/[0.08]",
-      bg: "bg-[#14171F]",
-      accent: "text-slate-100",
-      chip: "bg-white/[0.06] text-slate-300",
-      glow: "bg-white/[0.04]",
+      border: "border-border",
+      bg: "bg-card",
+      accent: "text-foreground",
+      chip: "bg-muted text-muted-foreground",
+      glow: "bg-muted",
     },
   }[toneKey];
 
@@ -114,7 +114,7 @@ export function BalanceCard({
             <div className={cn("w-7 h-7 rounded-full flex items-center justify-center", toneClass.chip)}>
               <Icon className="w-3.5 h-3.5" />
             </div>
-            <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-slate-400">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-muted-foreground">
               {label}
             </span>
           </div>
@@ -122,9 +122,9 @@ export function BalanceCard({
             <motion.div
               animate={{ rotate: expanded ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center"
+              className="w-7 h-7 rounded-full bg-muted border border-border flex items-center justify-center"
             >
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </motion.div>
           )}
         </div>
@@ -141,7 +141,7 @@ export function BalanceCard({
           />
         </div>
 
-        <p className="text-xs text-slate-500 mt-1.5">
+        <p className="text-xs text-muted-foreground mt-1.5">
           {allSettled
             ? "Keine offenen Beträge — saubere Sache."
             : me > 0
@@ -161,7 +161,7 @@ export function BalanceCard({
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="overflow-hidden"
         >
-          <div className="mt-5 pt-5 border-t border-white/[0.06] space-y-2.5">
+          <div className="mt-5 pt-5 border-t border-border space-y-2.5">
             {balances
               .slice()
               .sort((a, b) => b.net_balance - a.net_balance)
@@ -184,19 +184,19 @@ export function BalanceCard({
                         "w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shrink-0",
                         b.participant_id === currentParticipantId
                           ? "bg-violet-500/20 border-violet-400/40 text-violet-200"
-                          : "bg-white/[0.05] border-white/[0.08] text-slate-200",
+                          : "bg-muted border-border text-muted-foreground",
                       )}
                     >
                       {name.slice(0, 1).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-slate-200 truncate">
+                      <div className="text-sm text-foreground truncate">
                         {name}
                         {b.participant_id === currentParticipantId && (
                           <span className="ml-1.5 text-[10px] text-violet-300 font-medium">(Du)</span>
                         )}
                       </div>
-                      <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden mt-1">
+                      <div className="h-1 rounded-full bg-muted overflow-hidden mt-1">
                         <motion.div
                           className={cn(
                             "h-full rounded-full",
@@ -204,7 +204,7 @@ export function BalanceCard({
                               ? "bg-gradient-to-r from-emerald-400/80 to-emerald-300/60"
                               : neg
                               ? "bg-gradient-to-r from-rose-400/80 to-rose-300/60"
-                              : "bg-slate-600/50",
+                              : "bg-muted-foreground/40",
                           )}
                           initial={{ width: 0 }}
                           animate={{ width: expanded ? `${width}%` : 0 }}
@@ -215,7 +215,7 @@ export function BalanceCard({
                     <div
                       className={cn(
                         "text-sm font-semibold tabular-nums tracking-tight shrink-0",
-                        pos ? "text-emerald-300" : neg ? "text-rose-300" : "text-slate-500",
+                        pos ? "text-emerald-600 dark:text-emerald-300" : neg ? "text-rose-600 dark:text-rose-300" : "text-muted-foreground",
                       )}
                     >
                       {pos ? "+" : ""}

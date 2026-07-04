@@ -243,7 +243,7 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
 
       <GlassCard
         className={cn(
-          "relative overflow-hidden p-0 border-white/10 hover:border-white/20 transition-all shadow-xl",
+          "relative overflow-hidden p-0 border-border hover:border-foreground/20 transition-all shadow-xl",
           style.glow,
         )}
         onMouseMove={handleMove as any}
@@ -305,7 +305,7 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
 
           {/* Inline services */}
           {services.length > 0 && section.kind !== "budget" && (
-            <div className="mt-5 pt-5 border-t border-white/10">
+            <div className="mt-5 pt-5 border-t border-border">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center">
                   <Sparkles className="w-3 h-3 text-white" />
@@ -326,7 +326,7 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + i * 0.08 }}
                       onClick={() => onBookService(svc.slug)}
-                      className="group/svc relative text-left rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/25 transition-all overflow-hidden"
+                      className="group/svc relative text-left rounded-xl border border-border bg-card hover:bg-muted hover:border-foreground/25 transition-all overflow-hidden"
                     >
                       <div className={cn(
                         "absolute inset-0 opacity-0 group-hover/svc:opacity-[0.08] transition-opacity bg-gradient-to-br",
@@ -700,7 +700,7 @@ export const EpicNarrativeResponse = ({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.35 + i * 0.05 }}
                     onClick={() => handleBookService(svc.slug)}
-                    className="group relative text-left rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 hover:-translate-y-0.5 transition-all overflow-hidden p-4"
+                    className="group relative text-left rounded-xl border border-border bg-card hover:bg-muted hover:border-foreground/30 hover:-translate-y-0.5 transition-all overflow-hidden p-4"
                   >
                     <div className={cn(
                       "absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity bg-gradient-to-br",
@@ -713,7 +713,7 @@ export const EpicNarrativeResponse = ({
                       )}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <Badge className="bg-white/10 text-white/80 text-[10px] border-0">
+                      <Badge className="bg-muted text-muted-foreground text-[10px] border-0">
                         <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400 mr-1" />
                         {svc.rating.toFixed(1)}
                       </Badge>
@@ -721,7 +721,7 @@ export const EpicNarrativeResponse = ({
                     <div className="relative">
                       <div className="font-black text-foreground text-base mb-0.5 truncate">{svc.title}</div>
                       <div className="text-xs text-muted-foreground mb-3 truncate">{svc.agency}</div>
-                      <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                      <div className="flex items-center justify-between pt-2 border-t border-border">
                         <div>
                           <span className="text-xl font-black text-foreground">{svc.pricePerPerson}€</span>
                           <span className="text-xs text-muted-foreground ml-1">

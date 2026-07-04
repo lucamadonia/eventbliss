@@ -274,7 +274,7 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
   const getCategoryLabel = (cat: string) => t(`expenses.categories.${cat}`, cat);
 
   if (isLoading) {
-    return <div className="space-y-4">{[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-2xl bg-white/5 animate-pulse" />)}</div>;
+    return <div className="space-y-4">{[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-2xl bg-muted animate-pulse" />)}</div>;
   }
 
   return (
@@ -293,10 +293,10 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2">
                   <div className={`p-2 rounded-xl bg-${stat.color}-500/20`}><stat.icon className={`h-4 w-4 text-${stat.color}-400`} /></div>
-                  <span className="text-xs text-slate-400 uppercase tracking-wider">{stat.label}</span>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</span>
                 </div>
-                <p className="text-2xl font-bold text-white tabular-nums">{stat.value.toLocaleString("de-DE", { minimumFractionDigits: 2 })} <span className="text-sm text-slate-400">{currency}</span></p>
-                {stat.sub && <p className="text-xs text-slate-500 mt-1">{stat.sub}</p>}
+                <p className="text-2xl font-bold text-foreground tabular-nums">{stat.value.toLocaleString("de-DE", { minimumFractionDigits: 2 })} <span className="text-sm text-muted-foreground">{currency}</span></p>
+                {stat.sub && <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>}
               </div>
             </GlassCard>
           </motion.div>
@@ -307,14 +307,14 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
       {totalExpenses > 0 && (
         <GlassCard className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-slate-300">{t("expenses.paymentProgress", "Payment Progress")}</span>
-            <span className="text-sm font-medium text-slate-200">{paidPercent.toFixed(0)}%</span>
+            <span className="text-sm text-muted-foreground">{t("expenses.paymentProgress", "Payment Progress")}</span>
+            <span className="text-sm font-medium text-foreground">{paidPercent.toFixed(0)}%</span>
           </div>
-          <div className="h-3 rounded-full bg-white/5 overflow-hidden">
+          <div className="h-3 rounded-full bg-muted overflow-hidden">
             <motion.div initial={{ width: 0 }} animate={{ width: `${paidPercent}%` }} transition={{ duration: 1, delay: 0.3 }}
               className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400" />
           </div>
-          <div className="flex justify-between mt-2 text-xs text-slate-500">
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>{t("expenses.paidAmount", "Bezahlt")}: {totalPaid.toFixed(2)} {currency}</span>
             <span>{t("expenses.openAmount", "Offen")}: {totalOpen.toFixed(2)} {currency}</span>
           </div>
@@ -324,8 +324,8 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
       {/* Category Breakdown */}
       {categoryBreakdown.length > 0 && (
         <GlassCard className="p-5">
-          <h3 className="text-sm font-medium text-slate-300 mb-4">{t("expenses.breakdown", "Category Breakdown")}</h3>
-          <div className="h-4 rounded-full overflow-hidden flex bg-white/5 mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground mb-4">{t("expenses.breakdown", "Category Breakdown")}</h3>
+          <div className="h-4 rounded-full overflow-hidden flex bg-muted mb-4">
             {categoryBreakdown.map((cat, i) => {
               const colors = ["bg-violet-500", "bg-cyan-500", "bg-amber-500", "bg-orange-500", "bg-pink-500", "bg-green-500", "bg-slate-500"];
               return (
@@ -342,11 +342,11 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
               const colors = ["bg-violet-500", "bg-cyan-500", "bg-amber-500", "bg-orange-500", "bg-pink-500", "bg-green-500", "bg-slate-500"];
               return (
                 <button key={cat.key} onClick={() => setFilterCategory(filterCategory === cat.key ? "all" : cat.key)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all ${filterCategory === cat.key ? "bg-white/10 ring-1 ring-white/20" : "hover:bg-white/5"}`}>
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all ${filterCategory === cat.key ? "bg-muted ring-1 ring-border" : "hover:bg-muted/50"}`}>
                   <span className={`w-2.5 h-2.5 rounded-full ${colors[i % colors.length]}`} />
-                  <Icon className="h-3 w-3 text-slate-400" />
-                  <span className="text-slate-300">{getCategoryLabel(cat.key)}</span>
-                  <span className="text-slate-500">{cat.total.toFixed(0)} {currency}</span>
+                  <Icon className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">{getCategoryLabel(cat.key)}</span>
+                  <span className="text-muted-foreground">{cat.total.toFixed(0)} {currency}</span>
                 </button>
               );
             })}
@@ -357,19 +357,19 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
       {/* Settlement Transfers — Who Pays Whom */}
       {settlements.length > 0 && (
         <GlassCard className="p-5">
-          <h3 className="text-sm font-medium text-slate-300 mb-4">{t("expenses.settlement", "Ausgleich")}</h3>
+          <h3 className="text-sm font-medium text-muted-foreground mb-4">{t("expenses.settlement", "Ausgleich")}</h3>
           <div className="space-y-3">
             {settlements.map((transfer, i) => (
               <motion.div key={`${transfer.from}-${transfer.to}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all ${transfer.settled ? "bg-green-500/5 border border-green-500/20" : "bg-white/[0.03] border border-white/[0.06]"}`}>
+                className={`flex items-center gap-3 p-3 rounded-xl transition-all ${transfer.settled ? "bg-green-500/5 border border-green-500/20" : "bg-muted border border-border"}`}>
                 {/* From avatar */}
                 <div className="w-9 h-9 rounded-full bg-red-500/20 flex items-center justify-center text-xs font-bold text-red-300 flex-shrink-0">
                   {transfer.fromName.charAt(0)}
                 </div>
                 {/* Arrow */}
                 <div className="flex flex-col items-center flex-shrink-0">
-                  <span className="text-[10px] text-slate-500">{t("expenses.owes", "schuldet")}</span>
-                  <svg width="24" height="12" viewBox="0 0 24 12" className="text-slate-500"><path d="M0 6h20m0 0l-4-4m4 4l-4 4" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
+                  <span className="text-[10px] text-muted-foreground">{t("expenses.owes", "schuldet")}</span>
+                  <svg width="24" height="12" viewBox="0 0 24 12" className="text-muted-foreground"><path d="M0 6h20m0 0l-4-4m4 4l-4 4" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
                 </div>
                 {/* To avatar */}
                 <div className="w-9 h-9 rounded-full bg-green-500/20 flex items-center justify-center text-xs font-bold text-green-300 flex-shrink-0">
@@ -378,11 +378,11 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">
-                    <span className={`font-medium ${transfer.settled ? "text-slate-500 line-through" : "text-slate-200"}`}>{transfer.fromName}</span>
-                    <span className="text-slate-500 mx-1">→</span>
-                    <span className={`font-medium ${transfer.settled ? "text-slate-500 line-through" : "text-slate-200"}`}>{transfer.toName}</span>
+                    <span className={`font-medium ${transfer.settled ? "text-muted-foreground line-through" : "text-foreground"}`}>{transfer.fromName}</span>
+                    <span className="text-muted-foreground mx-1">→</span>
+                    <span className={`font-medium ${transfer.settled ? "text-muted-foreground line-through" : "text-foreground"}`}>{transfer.toName}</span>
                   </p>
-                  <p className={`text-lg font-bold tabular-nums ${transfer.settled ? "text-green-400/60 line-through" : "text-white"}`}>
+                  <p className={`text-lg font-bold tabular-nums ${transfer.settled ? "text-green-400/60 line-through" : "text-foreground"}`}>
                     {transfer.amount.toFixed(2)} {currency}
                   </p>
                 </div>
@@ -419,8 +419,8 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
       {/* Expenses List with Payment Tracking */}
       {filteredExpenses.length === 0 ? (
         <GlassCard className="p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4"><Receipt className="h-8 w-8 text-slate-500" /></div>
-          <p className="text-slate-400 font-medium">{t("expenses.noExpenses", "No expenses yet")}</p>
+          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><Receipt className="h-8 w-8 text-muted-foreground" /></div>
+          <p className="text-muted-foreground font-medium">{t("expenses.noExpenses", "No expenses yet")}</p>
         </GlassCard>
       ) : (
         <div className="space-y-2">
@@ -439,27 +439,27 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
                       <div className={`p-2.5 rounded-xl ${config.bg} flex-shrink-0`}><Icon className={`h-5 w-5 ${config.color}`} /></div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-slate-200 truncate">{expense.description}</span>
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-white/10 text-slate-400">{getCategoryLabel(expense.category)}</Badge>
+                          <span className="font-medium text-foreground truncate">{expense.description}</span>
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border text-muted-foreground">{getCategoryLabel(expense.category)}</Badge>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {getParticipantName(expense.paid_by_participant_id)}
                           {expenseShares.length > 0 && ` · ${paidCount}/${expenseShares.length} ${t("expenses.settled", "bezahlt")}`}
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-lg font-semibold text-white tabular-nums">
+                        <p className="text-lg font-semibold text-foreground tabular-nums">
                           {expense.amount.toLocaleString("de-DE", { minimumFractionDigits: 2 })}
-                          <span className="text-xs text-slate-400 ml-1">{expense.currency}</span>
+                          <span className="text-xs text-muted-foreground ml-1">{expense.currency}</span>
                         </p>
                         {expenseShares.length > 0 && (
-                          <div className="h-1 w-16 rounded-full bg-white/5 mt-1 ml-auto">
+                          <div className="h-1 w-16 rounded-full bg-muted mt-1 ml-auto">
                             <div className="h-full rounded-full bg-green-500/60" style={{ width: `${(paidCount / expenseShares.length) * 100}%` }} />
                           </div>
                         )}
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />}
+                        {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                         {user && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -478,8 +478,8 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
                     <AnimatePresence>
                       {isExpanded && expenseShares.length > 0 && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-                          <div className="border-t border-white/5 px-4 pb-4 pt-3 space-y-2">
-                            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">{t("expenses.paymentStatus", "Payment Status")}</p>
+                          <div className="border-t border-border px-4 pb-4 pt-3 space-y-2">
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">{t("expenses.paymentStatus", "Payment Status")}</p>
                             {expenseShares.map(share => (
                               <div key={share.id} className="flex items-center justify-between py-1.5">
                                 <div className="flex items-center gap-3">
@@ -490,19 +490,19 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
                                   >
                                     {share.is_paid
                                       ? <CheckCircle2 className="h-5 w-5 text-green-400" />
-                                      : <Circle className="h-5 w-5 text-slate-500 hover:text-slate-300" />
+                                      : <Circle className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                                     }
                                   </button>
-                                  <span className={`text-sm ${share.is_paid ? "text-slate-500 line-through" : "text-slate-200"}`}>
+                                  <span className={`text-sm ${share.is_paid ? "text-muted-foreground line-through" : "text-foreground"}`}>
                                     {getParticipantName(share.participant_id)}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className={`text-sm tabular-nums ${share.is_paid ? "text-green-400" : "text-slate-300"}`}>
+                                  <span className={`text-sm tabular-nums ${share.is_paid ? "text-green-400" : "text-muted-foreground"}`}>
                                     {share.amount.toFixed(2)} {currency}
                                   </span>
                                   {share.is_paid && share.paid_at && (
-                                    <span className="text-[10px] text-slate-500">{new Date(share.paid_at).toLocaleDateString("de-DE")}</span>
+                                    <span className="text-[10px] text-muted-foreground">{new Date(share.paid_at).toLocaleDateString("de-DE")}</span>
                                   )}
                                 </div>
                               </div>
@@ -527,16 +527,16 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
           </DialogHeader>
           <div className="space-y-5 py-4">
             <div className="space-y-2">
-              <Label className="text-slate-300">{t("expenses.description", "Description")}</Label>
+              <Label className="text-muted-foreground">{t("expenses.description", "Description")}</Label>
               <Input value={description} onChange={e => setDescription(e.target.value)} placeholder={t("expenses.descriptionPlaceholder", "e.g., Restaurant, Taxi...")} autoFocus />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-slate-300">{t("expenses.amount", "Amount")} ({currency})</Label>
+                <Label className="text-muted-foreground">{t("expenses.amount", "Amount")} ({currency})</Label>
                 <Input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className="tabular-nums" />
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-300">{t("expenses.category", "Category")}</Label>
+                <Label className="text-muted-foreground">{t("expenses.category", "Category")}</Label>
                 <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -549,7 +549,7 @@ export const ExpensesTab = ({ event, participants }: ExpensesTabProps) => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-300">{t("expenses.paidBy", "Paid by")}</Label>
+              <Label className="text-muted-foreground">{t("expenses.paidBy", "Paid by")}</Label>
               <Select value={paidBy} onValueChange={setPaidBy}>
                 <SelectTrigger><SelectValue placeholder={t("expenses.selectPerson", "Select person")} /></SelectTrigger>
                 <SelectContent>{participants.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>

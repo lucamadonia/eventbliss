@@ -240,7 +240,7 @@ export default function AgencyPricing() {
   };
 
   return (
-    <div className="dark min-h-screen bg-[#070012] text-white font-jakarta overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground font-jakarta overflow-x-hidden">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
         .font-jakarta, .font-jakarta * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -348,7 +348,7 @@ export default function AgencyPricing() {
       </section>
 
       {/* ═══════ TRUST MARQUEE ═══════ */}
-      <section className="relative py-10 border-y border-white/5 bg-gradient-to-b from-[#070012] via-[#0a0118] to-[#070012] overflow-hidden">
+      <section className="relative py-10 border-y border-border bg-background overflow-hidden">
         <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
           <div className="flex marquee-track shrink-0">
             {[...TRUST_BAR, ...TRUST_BAR].map((item, i) => {
@@ -356,10 +356,10 @@ export default function AgencyPricing() {
               return (
                 <div key={i} className="flex items-center gap-3 px-8 shrink-0">
                   <Icon className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span className="text-sm font-semibold text-white/70 whitespace-nowrap">
+                  <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
                     {t(`agencyPricing.trustBar.${i % TRUST_BAR.length}`, item.labelDefault)}
                   </span>
-                  <span className="w-1 h-1 rounded-full bg-white/20" />
+                  <span className="w-1 h-1 rounded-full bg-border" />
                 </div>
               );
             })}
@@ -371,12 +371,12 @@ export default function AgencyPricing() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <img src={IMG.viral} alt="" className="w-full h-full object-cover opacity-20 ken-burns" loading="lazy" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070012] via-[#070012]/95 to-[#070012]" />
+          <div className="absolute inset-0 bg-background" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <Reveal>
             <div className="text-center mb-16">
-              <Badge className="mb-5 bg-purple-500/20 border border-purple-500/40 text-purple-200 px-4 py-1 font-bold tracking-wider">
+              <Badge className="mb-5 bg-purple-500/20 border border-purple-500/40 text-purple-700 dark:text-purple-200 px-4 py-1 font-bold tracking-wider">
                 {t("agencyPricing.loops.badge")}
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
@@ -385,7 +385,7 @@ export default function AgencyPricing() {
                   {t("agencyPricing.loops.titleHighlight")}
                 </span>
               </h2>
-              <p className="text-lg text-white/70 max-w-2xl mx-auto">{t("agencyPricing.loops.subtitle")}</p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("agencyPricing.loops.subtitle")}</p>
             </div>
           </Reveal>
           <div className="grid md:grid-cols-3 gap-6">
@@ -393,17 +393,17 @@ export default function AgencyPricing() {
               const Icon = loop.icon;
               return (
                 <Reveal key={loop.key} delay={i * 120}>
-                  <Card className="relative h-full bg-white/5 backdrop-blur-xl border border-white/10 p-8 hover:scale-[1.02] hover:border-pink-400/40 transition-all cursor-default overflow-hidden group">
+                  <Card className="relative h-full bg-card backdrop-blur-xl border border-border p-8 hover:scale-[1.02] hover:border-pink-400/40 transition-all cursor-default overflow-hidden group">
                     <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-transparent blur-3xl rounded-full group-hover:from-pink-500/30 transition-all" />
                     <div className="relative">
                       <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${loop.color} flex items-center justify-center mb-5 shadow-lg shadow-purple-500/20 group-hover:shadow-pink-500/40 transition-shadow`}>
                         <Icon className="w-8 h-8 text-white" />
                       </div>
-                      <Badge className="mb-3 bg-white/10 border border-white/20 text-white text-xs font-mono">
+                      <Badge className="mb-3 bg-muted border border-border text-foreground text-xs font-mono">
                         {t(`agencyPricing.loops.${loop.key}.factor`)}
                       </Badge>
-                      <h3 className="text-2xl font-black mb-3 text-white">{t(`agencyPricing.loops.${loop.key}.title`)}</h3>
-                      <p className="text-white/70 text-sm leading-relaxed">{t(`agencyPricing.loops.${loop.key}.desc`)}</p>
+                      <h3 className="text-2xl font-black mb-3 text-foreground">{t(`agencyPricing.loops.${loop.key}.title`)}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{t(`agencyPricing.loops.${loop.key}.desc`)}</p>
                     </div>
                   </Card>
                 </Reveal>
@@ -418,7 +418,7 @@ export default function AgencyPricing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <Reveal>
             <div className="text-center mb-16">
-              <Badge className="mb-5 bg-amber-500/20 border border-amber-500/40 text-amber-200 px-4 py-1 font-bold tracking-wider">
+              <Badge className="mb-5 bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-200 px-4 py-1 font-bold tracking-wider">
                 {t("agencyPricing.spotlight.badge")}
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
@@ -428,7 +428,7 @@ export default function AgencyPricing() {
                 </span>
                 {t("agencyPricing.spotlight.titleLine2") ? <> {t("agencyPricing.spotlight.titleLine2")}</> : null}
               </h2>
-              <p className="text-lg text-white/70 max-w-2xl mx-auto">{t("agencyPricing.spotlight.subtitle")}</p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("agencyPricing.spotlight.subtitle")}</p>
             </div>
           </Reveal>
 
@@ -439,7 +439,7 @@ export default function AgencyPricing() {
               const bullets = Array.from({ length: feat.bullets }, (_, i) => t(`agencyPricing.spotlight.${feat.key}.b${i + 1}`));
               return (
                 <Reveal key={feat.key} delay={idx * 100}>
-                  <Card className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden relative group hover:border-white/20 transition-all">
+                  <Card className="bg-card backdrop-blur-xl border border-border overflow-hidden relative group hover:border-border transition-all">
                     <div className={`absolute inset-0 bg-gradient-to-br ${feat.gradient} opacity-[0.06] group-hover:opacity-[0.1] transition-opacity pointer-events-none`} />
                     <div className={`relative grid md:grid-cols-2 gap-10 lg:gap-14 p-8 md:p-14 items-center ${reverse ? "md:[&>*:first-child]:order-2" : ""}`}>
                       <div>
@@ -452,15 +452,15 @@ export default function AgencyPricing() {
                           </Badge>
                         </div>
                         <h3 className="text-3xl md:text-4xl font-black mb-2 leading-tight">{t(`agencyPricing.spotlight.${feat.key}.headline`)}</h3>
-                        <p className="text-base md:text-lg text-white/60 mb-5 font-semibold">{t(`agencyPricing.spotlight.${feat.key}.tagline`)}</p>
-                        <p className="text-white/85 leading-relaxed mb-7 text-base md:text-lg">{t(`agencyPricing.spotlight.${feat.key}.desc`)}</p>
+                        <p className="text-base md:text-lg text-muted-foreground mb-5 font-semibold">{t(`agencyPricing.spotlight.${feat.key}.tagline`)}</p>
+                        <p className="text-foreground/85 leading-relaxed mb-7 text-base md:text-lg">{t(`agencyPricing.spotlight.${feat.key}.desc`)}</p>
                         <ul className="space-y-3">
                           {bullets.map((b, i) => (
                             <li key={i} className="flex items-start gap-3">
                               <div className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br ${feat.iconBg} flex items-center justify-center shadow-md`}>
                                 <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                               </div>
-                              <span className="text-white/90 text-sm md:text-base">{b}</span>
+                              <span className="text-foreground text-sm md:text-base">{b}</span>
                             </li>
                           ))}
                         </ul>
@@ -501,12 +501,12 @@ export default function AgencyPricing() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <img src={IMG.awards} alt="" className="w-full h-full object-cover opacity-10" loading="lazy" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070012] via-[#0a0118] to-[#070012]" />
+          <div className="absolute inset-0 bg-background" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <Reveal>
             <div className="text-center mb-16">
-              <Badge className="mb-5 bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 px-4 py-1 font-bold tracking-wider">
+              <Badge className="mb-5 bg-emerald-500/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-200 px-4 py-1 font-bold tracking-wider">
                 {t("agencyPricing.testimonials.badge", "VON AGENTUREN GEWÄHLT")}
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
@@ -516,7 +516,7 @@ export default function AgencyPricing() {
                 </span>{" "}
                 {t("agencyPricing.testimonials.titleLine2", "arbeiten")}
               </h2>
-              <p className="text-lg text-white/70 max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t("agencyPricing.testimonials.subtitle", "Echte Zahlen, echte Stimmen — nach ihrem ersten Quartal mit EventBliss.")}
               </p>
             </div>
@@ -525,9 +525,9 @@ export default function AgencyPricing() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             {testimonials.map((tm, i) => (
               <Reveal key={`${i18n.language}-${i}`} delay={i * 130}>
-                <Card className="relative h-full bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 p-8 hover:border-white/25 hover:-translate-y-1 transition-all overflow-hidden group">
+                <Card className="relative h-full bg-card backdrop-blur-xl border border-border p-8 hover:border-border hover:-translate-y-1 transition-all overflow-hidden group">
                   <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/5 blur-3xl rounded-full opacity-60 group-hover:opacity-100 transition-opacity" />
-                  <Quote className="absolute top-6 right-6 w-10 h-10 text-white/10" strokeWidth={2.5} />
+                  <Quote className="absolute top-6 right-6 w-10 h-10 text-muted-foreground/20" strokeWidth={2.5} />
 
                   {/* Portrait + identity */}
                   <div className="relative flex items-center gap-4 mb-6">
@@ -537,20 +537,20 @@ export default function AgencyPricing() {
                         <img
                           src={tm.image}
                           alt={tm.name}
-                          className="relative w-14 h-14 rounded-full object-cover border-2 border-[#0a0118]"
+                          className="relative w-14 h-14 rounded-full object-cover border-2 border-background"
                           loading="lazy"
                         />
                       ) : (
-                        <div className={`relative w-14 h-14 rounded-full grid place-items-center border-2 border-[#0a0118] bg-gradient-to-br ${tm.tierColor} text-white font-black text-lg`}>
+                        <div className={`relative w-14 h-14 rounded-full grid place-items-center border-2 border-background bg-gradient-to-br ${tm.tierColor} text-white font-black text-lg`}>
                           {initials(tm.name)}
                         </div>
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-black text-white text-base truncate">
+                      <div className="font-black text-foreground text-base truncate">
                         {tm.name}
                       </div>
-                      <div className="text-xs text-white/60 truncate">
+                      <div className="text-xs text-muted-foreground truncate">
                         {tm.role}
                       </div>
                     </div>
@@ -564,17 +564,17 @@ export default function AgencyPricing() {
                   </div>
 
                   {/* Quote */}
-                  <p className="relative text-white/90 text-sm md:text-[15px] leading-relaxed mb-6">
+                  <p className="relative text-foreground text-sm md:text-[15px] leading-relaxed mb-6">
                     "{tm.quote}"
                   </p>
 
                   {/* Metric + tier badge */}
-                  <div className="relative flex items-end justify-between pt-5 border-t border-white/10">
+                  <div className="relative flex items-end justify-between pt-5 border-t border-border">
                     <div>
                       <div className={`text-3xl font-black bg-gradient-to-br ${tm.tierColor} bg-clip-text text-transparent leading-none`}>
                         {tm.metricValue}
                       </div>
-                      <div className="text-[11px] text-white/55 font-semibold mt-1 uppercase tracking-wider">
+                      <div className="text-[11px] text-muted-foreground font-semibold mt-1 uppercase tracking-wider">
                         {tm.metricLabel}
                       </div>
                     </div>
@@ -593,7 +593,7 @@ export default function AgencyPricing() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <img src={IMG.enterprise} alt="" className="w-full h-full object-cover opacity-10 ken-burns" loading="lazy" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070012] via-[#070012]/90 to-[#070012]" />
+          <div className="absolute inset-0 bg-background" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.15),transparent_70%)]" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
@@ -610,10 +610,10 @@ export default function AgencyPricing() {
                 </span>{" "}
                 {t("agencyPricing.enterpriseModules.titleLine2")}
               </h2>
-              <p className="text-lg md:text-xl text-white/75 max-w-3xl mx-auto mb-6">
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
                 {t("agencyPricing.enterpriseModules.subtitle")}
               </p>
-              <Badge className="bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 font-bold px-4 py-1.5">
+              <Badge className="bg-emerald-500/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-200 font-bold px-4 py-1.5">
                 <Wallet className="w-3.5 h-3.5 mr-1.5 inline" />
                 {t("agencyPricing.enterpriseModules.comparison")}
               </Badge>
@@ -625,15 +625,15 @@ export default function AgencyPricing() {
               const Icon = mod.icon;
               return (
                 <Reveal key={mod.key} delay={i * 40}>
-                  <Card className="group relative h-full bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl border border-white/10 p-5 hover:border-amber-400/50 hover:bg-white/10 hover:-translate-y-0.5 transition-all overflow-hidden cursor-default">
+                  <Card className="group relative h-full bg-card backdrop-blur-xl border border-border p-5 hover:border-amber-400/50 hover:bg-muted hover:-translate-y-0.5 transition-all overflow-hidden cursor-default">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/10 to-red-500/5 blur-2xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:from-amber-500/30 transition-all" />
                     <div className="relative flex items-start gap-3">
                       <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 border border-amber-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Icon className="w-5 h-5 text-amber-300" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-white text-base mb-1 truncate">{t(`agencyPricing.enterpriseModules.${mod.key}.title`)}</h4>
-                        <p className="text-white/65 text-xs leading-relaxed">{t(`agencyPricing.enterpriseModules.${mod.key}.desc`)}</p>
+                        <h4 className="font-bold text-foreground text-base mb-1 truncate">{t(`agencyPricing.enterpriseModules.${mod.key}.title`)}</h4>
+                        <p className="text-muted-foreground text-xs leading-relaxed">{t(`agencyPricing.enterpriseModules.${mod.key}.desc`)}</p>
                       </div>
                     </div>
                   </Card>
@@ -658,7 +658,7 @@ export default function AgencyPricing() {
 
           <div className="text-center">
             {native ? (
-              <p className="text-white/70 text-sm max-w-md mx-auto">{t("agencyPricing.nativeNotice")}</p>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto">{t("agencyPricing.nativeNotice")}</p>
             ) : (
               <Button
                 onClick={() => handleSubscribe("enterprise")}
@@ -689,9 +689,9 @@ export default function AgencyPricing() {
                   {t("agencyPricing.pricing.titleHighlight")}
                 </span>
               </h2>
-              <p className="text-lg text-white/70 max-w-2xl mx-auto">{t("agencyPricing.pricing.subtitle")}</p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("agencyPricing.pricing.subtitle")}</p>
               {native && (
-                <p className="mt-6 text-sm text-white/80 max-w-xl mx-auto rounded-xl bg-white/5 border border-white/15 px-5 py-4">
+                <p className="mt-6 text-sm text-foreground max-w-xl mx-auto rounded-xl bg-muted border border-border px-5 py-4">
                   {t("agencyPricing.nativeNotice")}
                 </p>
               )}
@@ -714,7 +714,7 @@ export default function AgencyPricing() {
                         </Badge>
                       </div>
                     )}
-                    <Card className={`relative h-full bg-gradient-to-b from-white/8 to-white/3 backdrop-blur-xl border border-white/10 p-8 overflow-hidden transition-all hover:-translate-y-1 ring-1 ${tier.ringColor} ${tier.highlight ? "shadow-2xl shadow-pink-500/30 scale-[1.04] md:scale-[1.06]" : "hover:shadow-xl hover:shadow-purple-500/20"}`}>
+                    <Card className={`relative h-full bg-card backdrop-blur-xl border border-border p-8 overflow-hidden transition-all hover:-translate-y-1 ring-1 ${tier.ringColor} ${tier.highlight ? "shadow-2xl shadow-pink-500/30 scale-[1.04] md:scale-[1.06]" : "hover:shadow-xl hover:shadow-purple-500/20"}`}>
                       {tier.highlight && (
                         <>
                           <div className="absolute inset-0 bg-gradient-to-br from-purple-600/15 via-pink-600/10 to-amber-500/15 pointer-events-none" />
@@ -726,36 +726,36 @@ export default function AgencyPricing() {
                           <Icon className="w-7 h-7 text-white" />
                         </div>
                         <h3 className="text-2xl md:text-3xl font-black mb-1">{t(`agencyPricing.pricing.tiers.${tier.id}.name`)}</h3>
-                        <p className="text-white/60 text-sm mb-6">{t(`agencyPricing.pricing.tiers.${tier.id}.tagline`)}</p>
+                        <p className="text-muted-foreground text-sm mb-6">{t(`agencyPricing.pricing.tiers.${tier.id}.tagline`)}</p>
 
-                        <div className="mb-6 pb-6 border-b border-white/10">
+                        <div className="mb-6 pb-6 border-b border-border">
                           {tier.originalPrice > 0 && (
                             <div className="flex items-baseline gap-2 mb-1">
-                              <span className="text-white/40 line-through text-xl font-semibold">{tier.originalPrice}€</span>
+                              <span className="text-muted-foreground line-through text-xl font-semibold">{tier.originalPrice}€</span>
                               <Badge className="bg-red-500/25 border border-red-500/50 text-red-200 text-xs font-bold">-50%</Badge>
                             </div>
                           )}
                           <div className="flex items-baseline gap-1">
-                            <span className="text-6xl md:text-7xl font-black bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent leading-none">
+                            <span className="text-6xl md:text-7xl font-black bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent leading-none">
                               {tier.price === 0 ? "0" : tier.price}
                             </span>
-                            <span className="text-3xl font-bold text-white/80">€</span>
+                            <span className="text-3xl font-bold text-foreground/80">€</span>
                           </div>
-                          <div className="text-sm text-white/50 mt-2 font-medium">{t(`agencyPricing.pricing.tiers.${tier.id}.billing`)}</div>
+                          <div className="text-sm text-muted-foreground mt-2 font-medium">{t(`agencyPricing.pricing.tiers.${tier.id}.billing`)}</div>
                         </div>
 
-                        <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                        <div className="mb-6 p-4 rounded-xl bg-muted border border-border flex items-center justify-between">
                           <div>
-                            <div className="text-xs text-white/50 uppercase tracking-wider font-bold">{t("agencyPricing.pricing.commissionLabel")}</div>
-                            <div className="text-xs text-white/50">{t("agencyPricing.pricing.perBooking")}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold">{t("agencyPricing.pricing.commissionLabel")}</div>
+                            <div className="text-xs text-muted-foreground">{t("agencyPricing.pricing.perBooking")}</div>
                           </div>
-                          <div className={`text-3xl font-black ${tier.id === "starter" ? "text-white/90" : "bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"}`}>
+                          <div className={`text-3xl font-black ${tier.id === "starter" ? "text-foreground" : "bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"}`}>
                             {tier.commission}
                           </div>
                         </div>
 
                         {native && tier.id !== "starter" ? (
-                          <p className="w-full mb-6 text-xs text-white/60 text-center rounded-xl border border-white/15 bg-white/5 px-4 py-3">
+                          <p className="w-full mb-6 text-xs text-muted-foreground text-center rounded-xl border border-border bg-muted px-4 py-3">
                             {t("agencyPricing.nativeNotice")}
                           </p>
                         ) : (
@@ -765,7 +765,7 @@ export default function AgencyPricing() {
                             size="lg"
                             className={`w-full mb-6 font-bold h-12 rounded-xl cursor-pointer transition-all ${tier.highlight
                               ? "bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:shadow-[0_12px_32px_rgba(236,72,153,0.55)] hover:scale-[1.02] text-white border-0 shadow-lg shadow-pink-500/40"
-                              : "bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-white/40"
+                              : "bg-muted hover:bg-accent text-foreground border border-border hover:border-border"
                             }`}
                           >
                             {isLoading ? t("agencyPricing.pricing.loading") : (<><span>{t(`agencyPricing.pricing.tiers.${tier.id}.cta`)}</span><ArrowRight className="w-4 h-4 ml-2" /></>)}
@@ -777,10 +777,10 @@ export default function AgencyPricing() {
                             const highlight = i >= features.length - 2;
                             return (
                               <li key={i} className="flex items-start gap-2.5 text-sm">
-                                <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${highlight ? "bg-gradient-to-br from-purple-500 to-pink-500 shadow-md shadow-pink-500/30" : "bg-white/10"}`}>
-                                  <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                                <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${highlight ? "bg-gradient-to-br from-purple-500 to-pink-500 shadow-md shadow-pink-500/30" : "bg-muted"}`}>
+                                  <Check className={`w-3 h-3 ${highlight ? "text-white" : "text-foreground"}`} strokeWidth={3} />
                                 </div>
-                                <span className={highlight ? "text-white font-semibold" : "text-white/85"}>{f}</span>
+                                <span className={highlight ? "text-foreground font-semibold" : "text-muted-foreground"}>{f}</span>
                               </li>
                             );
                           })}
@@ -793,7 +793,7 @@ export default function AgencyPricing() {
             })}
           </div>
           <div className="mt-12 text-center">
-            <p className="text-white/55 text-sm">{t("agencyPricing.pricing.fineprint")}</p>
+            <p className="text-muted-foreground text-sm">{t("agencyPricing.pricing.fineprint")}</p>
           </div>
         </div>
       </section>
@@ -803,7 +803,7 @@ export default function AgencyPricing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <Reveal>
             <div className="text-center mb-16">
-              <Badge className="mb-5 bg-pink-500/20 border border-pink-500/40 text-pink-200 px-4 py-1 font-bold tracking-wider">
+              <Badge className="mb-5 bg-pink-500/20 border border-pink-500/40 text-pink-700 dark:text-pink-200 px-4 py-1 font-bold tracking-wider">
                 {t("agencyPricing.usps.badge")}
               </Badge>
               <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
@@ -818,12 +818,12 @@ export default function AgencyPricing() {
               const Icon = usp.icon;
               return (
                 <Reveal key={usp.key} delay={i * 80}>
-                  <Card className="group h-full bg-white/5 backdrop-blur-xl border border-white/10 p-7 hover:bg-white/10 hover:border-pink-400/30 hover:-translate-y-1 transition-all cursor-default">
+                  <Card className="group h-full bg-card backdrop-blur-xl border border-border p-7 hover:bg-muted hover:border-pink-400/30 hover:-translate-y-1 transition-all cursor-default">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center mb-5 shadow-lg shadow-purple-500/30 group-hover:shadow-pink-500/40 transition-shadow group-hover:scale-110">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-black mb-2">{t(`agencyPricing.usps.${usp.key}.title`)}</h3>
-                    <p className="text-white/70 text-sm leading-relaxed">{t(`agencyPricing.usps.${usp.key}.desc`)}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{t(`agencyPricing.usps.${usp.key}.desc`)}</p>
                   </Card>
                 </Reveal>
               );
@@ -836,7 +836,7 @@ export default function AgencyPricing() {
       <section className="relative py-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <Reveal>
-            <Card className="relative overflow-hidden border border-white/20">
+            <Card className="relative overflow-hidden border border-border">
               <div className="absolute inset-0">
                 <img src={IMG.cta} alt="" className="w-full h-full object-cover ken-burns" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-pink-900/80 to-amber-900/80" />
@@ -888,12 +888,12 @@ export default function AgencyPricing() {
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
               <Reveal key={i} delay={i * 60}>
-                <details className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 open:bg-white/10 open:border-white/20 transition-all">
+                <details className="group bg-card backdrop-blur-xl border border-border rounded-2xl p-6 open:bg-muted open:border-border transition-all">
                   <summary className="flex items-center justify-between cursor-pointer list-none gap-4">
-                    <h4 className="font-bold text-white text-base md:text-lg">{t(`agencyPricing.faq.q${i}`)}</h4>
+                    <h4 className="font-bold text-foreground text-base md:text-lg">{t(`agencyPricing.faq.q${i}`)}</h4>
                     <ChevronRight className="w-5 h-5 text-purple-400 flex-shrink-0 group-open:rotate-90 transition-transform" />
                   </summary>
-                  <p className="text-white/75 text-sm md:text-base leading-relaxed mt-4 pt-4 border-t border-white/10">{t(`agencyPricing.faq.a${i}`)}</p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mt-4 pt-4 border-t border-border">{t(`agencyPricing.faq.a${i}`)}</p>
                 </details>
               </Reveal>
             ))}

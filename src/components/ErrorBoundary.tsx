@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
       const message = error?.message ?? "Unknown error";
 
       return (
-        <div className="dark min-h-screen bg-gradient-to-br from-[#0a0118] via-[#140424] to-[#0a0118] text-white flex items-center justify-center p-4 overflow-hidden relative">
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 overflow-hidden relative">
           {/* Ambient glows */}
           <div className="pointer-events-none absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-violet-600/10 blur-[120px] rounded-full" />
           <div className="pointer-events-none absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-pink-600/10 blur-[120px] rounded-full" />
@@ -79,14 +79,14 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             {/* Card */}
-            <div className="relative bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-black/50 overflow-hidden">
+            <div className="relative bg-card backdrop-blur-2xl border border-border rounded-3xl shadow-2xl shadow-black/50 overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/70 to-transparent" />
 
               <div className="p-8 md:p-10">
                 <h1 className="text-3xl md:text-4xl font-black text-center mb-2 leading-tight">
                   Oops — da ist was schief gelaufen
                 </h1>
-                <p className="text-white/70 text-center mb-8 leading-relaxed">
+                <p className="text-muted-foreground text-center mb-8 leading-relaxed">
                   Ein unerwarteter Fehler hat die Party kurz unterbrochen. Versuch's einmal neu
                   — in fast allen Fällen reicht ein Reload.
                 </p>
@@ -102,7 +102,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   </button>
                   <button
                     onClick={() => (window.location.href = "/")}
-                    className="flex items-center justify-center gap-2 h-12 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition-all text-white font-semibold cursor-pointer"
+                    className="flex items-center justify-center gap-2 h-12 rounded-xl bg-muted hover:bg-accent border border-border hover:border-border transition-all text-foreground font-semibold cursor-pointer"
                   >
                     <Home className="w-4 h-4" />
                     Zur Startseite
@@ -113,7 +113,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <div className="flex items-center justify-center">
                   <button
                     onClick={this.copyDiagnostics}
-                    className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
                     {copied ? (
                       <>
@@ -134,18 +134,18 @@ export class ErrorBoundary extends Component<Props, State> {
                   <div className="mt-6 pt-6 border-t border-white/10">
                     <button
                       onClick={() => this.setState({ detailsOpen: !detailsOpen })}
-                      className="flex items-center gap-2 text-xs text-white/50 hover:text-white/80 transition-colors mx-auto cursor-pointer"
+                      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors mx-auto cursor-pointer"
                     >
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${detailsOpen ? "rotate-180" : ""}`} />
                       <span>Technische Details {detailsOpen ? "ausblenden" : "anzeigen"}</span>
                     </button>
                     {detailsOpen && (
-                      <div className="mt-4 rounded-lg bg-black/30 border border-red-500/20 p-3 font-mono text-[11px] text-red-300 max-h-48 overflow-auto">
-                        <div className="text-white/40 text-[10px] uppercase tracking-widest mb-1">Message</div>
+                      <div className="mt-4 rounded-lg bg-muted border border-red-500/20 p-3 font-mono text-[11px] text-red-600 dark:text-red-300 max-h-48 overflow-auto">
+                        <div className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1">Message</div>
                         <div className="mb-3 whitespace-pre-wrap break-words">{message}</div>
                         {error.stack && (
                           <>
-                            <div className="text-white/40 text-[10px] uppercase tracking-widest mb-1">Stack</div>
+                            <div className="text-muted-foreground text-[10px] uppercase tracking-widest mb-1">Stack</div>
                             <pre className="whitespace-pre-wrap break-words opacity-70">{error.stack.split("\n").slice(0, 6).join("\n")}</pre>
                           </>
                         )}
@@ -155,10 +155,10 @@ export class ErrorBoundary extends Component<Props, State> {
                 )}
               </div>
 
-              <div className="bg-gradient-to-r from-transparent via-white/[0.02] to-transparent px-8 py-4 border-t border-white/5 text-center">
-                <p className="text-[11px] text-white/40">
+              <div className="px-8 py-4 border-t border-border text-center">
+                <p className="text-[11px] text-muted-foreground">
                   Wenn der Fehler wiederholt auftritt, schreib uns an{" "}
-                  <a href="mailto:support@event-bliss.com" className="text-violet-300 hover:text-violet-200 font-semibold">
+                  <a href="mailto:support@event-bliss.com" className="text-violet-600 dark:text-violet-300 hover:text-violet-500 dark:hover:text-violet-200 font-semibold">
                     support@event-bliss.com
                   </a>{" "}
                   — die kopierte Diagnose hilft uns beim schnellen Fix.
@@ -169,7 +169,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="text-center mt-6">
               <a
                 href="/"
-                className="text-xs text-white/30 hover:text-white/60 transition-colors inline-flex items-center gap-1"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
               >
                 EventBliss · event-bliss.com
               </a>

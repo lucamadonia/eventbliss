@@ -160,9 +160,9 @@ const mockEvents = [
 ];
 
 const statusColors: Record<string, string> = {
-  active: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-  planning: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-  completed: "bg-white/10 text-white/50 border-white/20",
+  active: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  planning: "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/30",
+  completed: "bg-muted text-muted-foreground border-border",
 };
 
 const statusLabels: Record<string, string> = {
@@ -180,8 +180,8 @@ function EventsSection({ onSelectEvent }: { onSelectEvent: (id: string) => void 
         className="flex items-center justify-between"
       >
         <div>
-          <h3 className="text-lg font-semibold text-slate-50">Events</h3>
-          <p className="text-sm text-slate-500">{mockEvents.length} Events insgesamt</p>
+          <h3 className="text-lg font-semibold text-foreground">Events</h3>
+          <p className="text-sm text-muted-foreground">{mockEvents.length} Events insgesamt</p>
         </div>
         <Button className="bg-violet-600 hover:bg-violet-700 text-white cursor-pointer">
           <Plus className="w-4 h-4 mr-2" />
@@ -196,26 +196,26 @@ function EventsSection({ onSelectEvent }: { onSelectEvent: (id: string) => void 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04, duration: 0.35 }}
-            className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300 cursor-pointer group"
+            className="bg-card backdrop-blur-xl border border-border rounded-2xl p-5 hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300 cursor-pointer group"
             onClick={() => onSelectEvent(event.id)}
           >
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h4 className="font-semibold text-slate-50 group-hover:text-violet-300 transition-colors">
+                <h4 className="font-semibold text-foreground group-hover:text-violet-500 dark:group-hover:text-violet-300 transition-colors">
                   {event.name}
                 </h4>
-                <p className="text-xs text-slate-500 mt-0.5">{event.date}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{event.date}</p>
               </div>
               <Badge variant="outline" className={cn("text-[10px]", statusColors[event.status])}>
                 {statusLabels[event.status]}
               </Badge>
             </div>
-            <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
               <span>{event.type}</span>
               <span>{event.guests} Gäste</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${event.progress}%` }}
@@ -223,7 +223,7 @@ function EventsSection({ onSelectEvent }: { onSelectEvent: (id: string) => void 
                   className="h-full bg-violet-500 rounded-full"
                 />
               </div>
-              <span className="text-[10px] text-slate-600">{event.progress}%</span>
+              <span className="text-[10px] text-muted-foreground">{event.progress}%</span>
             </div>
             <div className="flex items-center justify-end mt-3 text-xs text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity">
               Details <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
@@ -274,7 +274,7 @@ function QuickCreateFAB({ onNavigate }: { onNavigate: (s: Section) => void }) {
             onClick={() => { onNavigate(action.section); setOpen(false); }}
             className="flex items-center gap-3 cursor-pointer group"
           >
-            <span className="text-xs font-medium text-slate-300 bg-[#1a1625]/90 backdrop-blur-xl px-3 py-1.5 rounded-lg border border-white/[0.08] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <span className="text-xs font-medium text-popover-foreground bg-popover backdrop-blur-xl px-3 py-1.5 rounded-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               {action.label}
             </span>
             <div className={cn(
@@ -313,7 +313,7 @@ function SearchBar({ onNavigate }: { onNavigate: (s: Section) => void }) {
         "relative flex items-center transition-all duration-300",
         focused ? "w-80" : "w-72"
       )}>
-        <Search className="absolute left-3 w-4 h-4 text-slate-500 pointer-events-none" />
+        <Search className="absolute left-3 w-4 h-4 text-muted-foreground pointer-events-none" />
         <Input
           id="agency-search"
           placeholder="Events, Kontakte, Vendors suchen..."
@@ -322,11 +322,11 @@ function SearchBar({ onNavigate }: { onNavigate: (s: Section) => void }) {
           onFocus={() => setFocused(true)}
           onBlur={() => { setFocused(false); setQuery(""); }}
           className={cn(
-            "pl-10 pr-16 h-9 bg-white/[0.04] border-white/[0.08] text-slate-100 text-sm placeholder:text-slate-600 rounded-xl transition-all duration-300",
-            focused && "bg-white/[0.06] border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
+            "pl-10 pr-16 h-9 bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground rounded-xl transition-all duration-300",
+            focused && "bg-accent border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
           )}
         />
-        <kbd className="absolute right-3 flex items-center gap-0.5 text-[10px] text-slate-600 bg-white/[0.04] border border-white/[0.08] rounded px-1.5 py-0.5 pointer-events-none">
+        <kbd className="absolute right-3 flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5 pointer-events-none">
           <Command className="w-2.5 h-2.5" />K
         </kbd>
       </div>
@@ -366,7 +366,7 @@ export default function AgencyDashboard() {
   // Loading state
   if (authLoading) {
     return (
-      <div className="dark min-h-screen bg-[#0f0a1e] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -384,17 +384,17 @@ export default function AgencyDashboard() {
   // Not logged in
   if (!user) {
     return (
-      <div className="dark min-h-screen bg-[#0f0a1e] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-12 text-center max-w-md"
+          className="bg-card backdrop-blur-xl border border-border rounded-2xl p-12 text-center max-w-md"
         >
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-50 mb-3">Anmeldung erforderlich</h1>
-          <p className="text-slate-400 mb-6">
+          <h1 className="text-2xl font-bold text-foreground mb-3">Anmeldung erforderlich</h1>
+          <p className="text-muted-foreground mb-6">
             Bitte melde dich an, um auf das Agency Dashboard zuzugreifen.
           </p>
           <Button
@@ -416,7 +416,7 @@ export default function AgencyDashboard() {
   // If viewing a single event in the event planner
   if (selectedEventId) {
     return (
-      <div className="dark min-h-screen bg-[#0f0a1e]">
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <AgencyEventPlanner onBack={() => setSelectedEventId(null)} />
         </div>
@@ -490,7 +490,7 @@ export default function AgencyDashboard() {
   const userInitial = user.email?.[0]?.toUpperCase() || "A";
 
   return (
-    <div className="min-h-screen bg-[#0f0a1e] flex">
+    <div className="min-h-screen bg-background flex">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -507,13 +507,13 @@ export default function AgencyDashboard() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 bg-[#1a1625]/95 backdrop-blur-xl border-r border-white/[0.05] flex flex-col transition-all duration-300 lg:translate-x-0",
+          "fixed lg:static inset-y-0 left-0 z-50 bg-card backdrop-blur-xl border-r border-border flex flex-col transition-all duration-300 lg:translate-x-0",
           sidebarCollapsed ? "w-[72px]" : "w-64",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Sidebar Header */}
-        <div className={cn("border-b border-white/[0.05]", sidebarCollapsed ? "p-3" : "p-5")}>
+        <div className={cn("border-b border-border", sidebarCollapsed ? "p-3" : "p-5")}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
@@ -532,10 +532,10 @@ export default function AgencyDashboard() {
               </div>
               {!sidebarCollapsed && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <h2 className="text-sm font-bold text-slate-50">{agency?.name || "EventBliss"}</h2>
+                  <h2 className="text-sm font-bold text-foreground">{agency?.name || "EventBliss"}</h2>
                   <div className="flex items-center gap-1.5">
-                    <p className="text-[10px] text-slate-500">Agency Dashboard</p>
-                    <Badge className="text-[8px] px-1 py-0 h-3.5 bg-violet-500/20 text-violet-300 border-violet-500/30 hover:bg-violet-500/20">
+                    <p className="text-[10px] text-muted-foreground">Agency Dashboard</p>
+                    <Badge className="text-[8px] px-1 py-0 h-3.5 bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30 hover:bg-violet-500/20">
                       Agency
                     </Badge>
                   </div>
@@ -545,7 +545,7 @@ export default function AgencyDashboard() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-slate-500 cursor-pointer"
+              className="lg:hidden text-muted-foreground cursor-pointer"
               onClick={() => setSidebarOpen(false)}
             >
               <X className="w-5 h-5" />
@@ -571,8 +571,8 @@ export default function AgencyDashboard() {
                   "w-full flex items-center gap-3 rounded-xl text-sm transition-all duration-200 cursor-pointer relative",
                   sidebarCollapsed ? "px-3 py-2.5 justify-center" : "px-3 py-2.5",
                   isActive
-                    ? "bg-violet-600/15 text-violet-300 font-medium"
-                    : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]"
+                    ? "bg-violet-600/15 text-violet-700 dark:text-violet-300 font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 )}
               >
                 {isActive && (
@@ -599,8 +599,8 @@ export default function AgencyDashboard() {
                         className={cn(
                           "text-[10px] px-1.5 py-0",
                           isActive
-                            ? "border-violet-500/30 text-violet-300"
-                            : "border-white/[0.08] text-slate-600"
+                            ? "border-violet-500/30 text-violet-700 dark:text-violet-300"
+                            : "border-border text-muted-foreground"
                         )}
                       >
                         {item.badge}
@@ -617,10 +617,10 @@ export default function AgencyDashboard() {
         <SidebarUpgradeCard tier={currentTier} collapsed={sidebarCollapsed} />
 
         {/* Collapse Button */}
-        <div className="hidden lg:block px-3 py-2 border-t border-white/[0.05]">
+        <div className="hidden lg:block px-3 py-2 border-t border-border">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-slate-600 hover:text-slate-300 hover:bg-white/[0.04] transition-colors cursor-pointer text-xs"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer text-xs"
           >
             {sidebarCollapsed ? (
               <PanelLeft className="w-4 h-4" />
@@ -634,26 +634,26 @@ export default function AgencyDashboard() {
         </div>
 
         {/* Sidebar Footer */}
-        <div className={cn("border-t border-white/[0.05]", sidebarCollapsed ? "p-2" : "p-4")}>
+        <div className={cn("border-t border-border", sidebarCollapsed ? "p-2" : "p-4")}>
           <button
             className={cn(
-              "flex items-center gap-3 w-full text-left cursor-pointer rounded-xl hover:bg-white/[0.04] transition-colors",
+              "flex items-center gap-3 w-full text-left cursor-pointer rounded-xl hover:bg-accent transition-colors",
               sidebarCollapsed ? "justify-center p-2" : "p-2"
             )}
             onClick={() => navigate("/")}
           >
             <Avatar className="w-8 h-8 shrink-0">
-              <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs">
+              <AvatarFallback className="bg-violet-500/20 text-violet-700 dark:text-violet-300 text-xs">
                 {userInitial}
               </AvatarFallback>
             </Avatar>
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-200 truncate">{userName}</p>
-                <p className="text-[10px] text-slate-600">Zurück zur Startseite</p>
+                <p className="text-xs font-medium text-foreground truncate">{userName}</p>
+                <p className="text-[10px] text-muted-foreground">Zurück zur Startseite</p>
               </div>
             )}
-            {!sidebarCollapsed && <ArrowLeft className="w-3.5 h-3.5 text-slate-600 shrink-0" />}
+            {!sidebarCollapsed && <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
           </button>
         </div>
       </aside>
@@ -661,13 +661,13 @@ export default function AgencyDashboard() {
       {/* Main Content */}
       <main className="flex-1 min-w-0">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-[#0f0a1e]/80 backdrop-blur-2xl border-b border-white/[0.05]">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-2xl border-b border-border">
           <div className="flex items-center gap-4 px-4 sm:px-6 h-14">
             {/* Mobile menu */}
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-slate-500 cursor-pointer"
+              className="lg:hidden text-muted-foreground cursor-pointer"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="w-5 h-5" />
@@ -675,9 +675,9 @@ export default function AgencyDashboard() {
 
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-xs text-slate-600 hidden sm:inline">Agency</span>
-              <ChevronRight className="w-3 h-3 text-slate-700 hidden sm:inline shrink-0" />
-              <h1 className="text-sm font-semibold text-slate-100 truncate">
+              <span className="text-xs text-muted-foreground hidden sm:inline">Agency</span>
+              <ChevronRight className="w-3 h-3 text-muted-foreground hidden sm:inline shrink-0" />
+              <h1 className="text-sm font-semibold text-foreground truncate">
                 {sectionLabels[activeSection]}
               </h1>
             </div>
@@ -691,14 +691,14 @@ export default function AgencyDashboard() {
             {/* User Avatar */}
             <div className="hidden sm:flex items-center gap-2 cursor-pointer group" onClick={() => navigate("/")}>
               <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs group-hover:bg-violet-500/30 transition-colors">
+                <AvatarFallback className="bg-violet-500/20 text-violet-700 dark:text-violet-300 text-xs group-hover:bg-violet-500/30 transition-colors">
                   {userInitial}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden lg:block">
-                <p className="text-xs font-medium text-slate-200 group-hover:text-slate-50 transition-colors">{userName}</p>
+                <p className="text-xs font-medium text-foreground transition-colors">{userName}</p>
               </div>
-              <ChevronDown className="w-3 h-3 text-slate-600 hidden lg:block" />
+              <ChevronDown className="w-3 h-3 text-muted-foreground hidden lg:block" />
             </div>
           </div>
         </header>

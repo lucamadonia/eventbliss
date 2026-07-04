@@ -222,7 +222,7 @@ function BookedServicesSection({
             </div>
           ) : bookings.length === 0 ? (
             <div className="flex flex-col items-center py-8">
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <ShoppingBag className="w-8 h-8 text-muted-foreground/30" />
               </div>
               <p className="font-display font-semibold text-foreground/80">Noch keine Dienstleistungen</p>
@@ -240,7 +240,7 @@ function BookedServicesSection({
                     initial={{ opacity: 0, y: 24, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.35, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="relative flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-foreground/[0.03] backdrop-blur border border-white/[0.06] hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-200"
+                    className="relative flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-foreground/[0.03] backdrop-blur border border-border hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-200"
                   >
                     {/* Timeline dot */}
                     <div className="absolute -left-[1px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] hidden sm:block" />
@@ -283,7 +283,7 @@ function BookedServicesSection({
                         {booking.service_slug && (
                           <button
                             onClick={() => navigate(`/marketplace/service/${booking.service_slug}`)}
-                            className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-foreground/5 border border-white/[0.06] hover:border-[#cf96ff]/30 transition-colors"
+                            className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-foreground/5 border border-border hover:border-[#cf96ff]/30 transition-colors"
                           >
                             Details
                           </button>
@@ -339,7 +339,7 @@ function MarketplaceServiceCard({
       transition={{ duration: 0.35, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
       whileHover={{ y: -4 }}
       className={cn(
-        "rounded-2xl bg-foreground/[0.03] backdrop-blur-xl border border-white/[0.06] overflow-hidden",
+        "rounded-2xl bg-foreground/[0.03] backdrop-blur-xl border border-border overflow-hidden",
         "hover:border-violet-500/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-200 group",
         tierStyle,
       )}
@@ -451,7 +451,7 @@ function BrowseServicesSection({ eventId }: { eventId: string }) {
               placeholder="Service suchen..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-foreground/5 border-white/[0.06] focus:border-[#cf96ff]/40"
+              className="pl-9 bg-foreground/5 border-border focus:border-[#cf96ff]/40"
             />
           </div>
 
@@ -465,7 +465,7 @@ function BrowseServicesSection({ eventId }: { eventId: string }) {
                   "px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all duration-200",
                   category === cat.filter
                     ? "bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] border-transparent shadow-lg shadow-[#cf96ff]/20"
-                    : "bg-foreground/5 border-white/[0.06] text-muted-foreground hover:border-[#cf96ff]/20 hover:text-foreground",
+                    : "bg-foreground/5 border-border text-muted-foreground hover:border-[#cf96ff]/20 hover:text-foreground",
                 )}
               >
                 {cat.emoji} {cat.label}
@@ -480,7 +480,7 @@ function BrowseServicesSection({ eventId }: { eventId: string }) {
             </div>
           ) : services.length === 0 ? (
             <div className="flex flex-col items-center py-10">
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-muted-foreground/30" />
               </div>
               <p className="font-display font-semibold text-foreground/80">Keine Services gefunden</p>
@@ -564,7 +564,7 @@ function RecommendedServicesSection({
                   transition={{ duration: 0.3, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
                   whileHover={{ y: -2 }}
                   onClick={() => navigate(`/marketplace/service/${service.slug}?event_id=${eventId}`)}
-                  className="flex items-center gap-3 p-3 rounded-2xl bg-foreground/[0.03] border border-white/[0.06] hover:border-amber-500/20 hover:shadow-[0_0_20px_rgba(245,158,11,0.06)] transition-all duration-200 cursor-pointer group"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-foreground/[0.03] border border-border hover:border-amber-500/20 hover:shadow-[0_0_20px_rgba(245,158,11,0.06)] transition-all duration-200 cursor-pointer group"
                 >
                   <div className={cn("w-14 h-14 rounded-xl bg-gradient-to-br overflow-hidden shrink-0", coverGradient)}>
                     {service.cover_image_url ? (

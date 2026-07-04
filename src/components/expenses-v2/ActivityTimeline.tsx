@@ -42,7 +42,7 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] animate-pulse"
+            className="h-14 rounded-2xl bg-muted border border-border animate-pulse"
           />
         ))}
       </div>
@@ -51,12 +51,12 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
 
   if (flat.length === 0) {
     return (
-      <div className="p-8 text-center rounded-3xl bg-white/[0.03] border border-white/[0.06]">
+      <div className="p-8 text-center rounded-3xl bg-muted border border-border">
         <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-violet-500/20 to-cyan-500/15 border border-violet-500/20 flex items-center justify-center mb-3">
-          <ArrowRightLeft className="w-5 h-5 text-violet-300" />
+          <ArrowRightLeft className="w-5 h-5 text-violet-600 dark:text-violet-300" />
         </div>
-        <h3 className="text-sm font-semibold text-slate-200 mb-1">Noch nichts passiert</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-sm font-semibold text-foreground mb-1">Noch nichts passiert</h3>
+        <p className="text-xs text-muted-foreground">
           Alle Änderungen an Ausgaben & Zahlungen landen hier im Verlauf.
         </p>
       </div>
@@ -77,12 +77,12 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
     <div className="space-y-6">
       {groups.map(([day, entries]) => (
         <div key={day}>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-bold mb-3 px-1">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3 px-1">
             {formatDayLabel(day)}
           </div>
           <div className="relative space-y-0">
             {/* Timeline line */}
-            <div className="absolute left-[15px] top-2 bottom-2 w-px bg-gradient-to-b from-white/[0.06] via-white/[0.10] to-white/[0.02]" />
+            <div className="absolute left-[15px] top-2 bottom-2 w-px bg-gradient-to-b from-border via-border to-transparent" />
             {entries.map((e, idx) => (
               <ActivityItem
                 key={e.id}
@@ -103,7 +103,7 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
             disabled={isFetching}
             variant="ghost"
             size="sm"
-            className="text-slate-400 hover:text-white"
+            className="text-muted-foreground hover:text-foreground"
           >
             {isFetching ? (
               <>
@@ -157,25 +157,25 @@ function ActivityItem({ entry, participants, currency }: ActivityItemProps) {
       </div>
       {/* Content */}
       <div className="flex-1 min-w-0 pt-0.5">
-        <div className="text-sm text-slate-200 leading-snug">
-          <span className="font-semibold text-white">{actorName}</span>{" "}
-          <span className="text-slate-400">{verbInfo.verb}</span>
+        <div className="text-sm text-foreground leading-snug">
+          <span className="font-semibold text-foreground">{actorName}</span>{" "}
+          <span className="text-muted-foreground">{verbInfo.verb}</span>
           {verbInfo.subject && (
             <>
               {" "}
-              <span className="font-semibold text-white">{verbInfo.subject}</span>
+              <span className="font-semibold text-foreground">{verbInfo.subject}</span>
             </>
           )}
           {verbInfo.amount !== undefined && (
             <>
               {" "}
-              <span className="font-mono tabular-nums text-slate-100">
+              <span className="font-mono tabular-nums text-foreground">
                 ({formatMoney(verbInfo.amount, currency)})
               </span>
             </>
           )}
         </div>
-        <div className="text-[10px] text-slate-500 mt-0.5">{time}</div>
+        <div className="text-[10px] text-muted-foreground mt-0.5">{time}</div>
       </div>
     </motion.div>
   );
@@ -194,7 +194,7 @@ function describeAction(entry: ExpenseActivityEntry) {
         amount: typeof payload.amount === "number" ? payload.amount : undefined,
         bg: "bg-violet-500/15",
         border: "border-violet-500/25",
-        text: "text-violet-300",
+        text: "text-violet-600 dark:text-violet-300",
       };
     case "expense.amount_changed":
       return {
@@ -204,7 +204,7 @@ function describeAction(entry: ExpenseActivityEntry) {
         amount: undefined,
         bg: "bg-amber-500/15",
         border: "border-amber-500/25",
-        text: "text-amber-300",
+        text: "text-amber-600 dark:text-amber-300",
       };
     case "expense.deleted":
       return {
@@ -214,7 +214,7 @@ function describeAction(entry: ExpenseActivityEntry) {
         amount: undefined,
         bg: "bg-rose-500/15",
         border: "border-rose-500/25",
-        text: "text-rose-300",
+        text: "text-rose-600 dark:text-rose-300",
       };
     case "settlement.confirmed":
       return {
@@ -224,7 +224,7 @@ function describeAction(entry: ExpenseActivityEntry) {
         amount: typeof payload.amount === "number" ? payload.amount : undefined,
         bg: "bg-emerald-500/15",
         border: "border-emerald-500/25",
-        text: "text-emerald-300",
+        text: "text-emerald-600 dark:text-emerald-300",
       };
     case "expense.receipt_uploaded":
       return {
@@ -234,7 +234,7 @@ function describeAction(entry: ExpenseActivityEntry) {
         amount: undefined,
         bg: "bg-cyan-500/15",
         border: "border-cyan-500/25",
-        text: "text-cyan-300",
+        text: "text-cyan-600 dark:text-cyan-300",
       };
     default:
       return {
@@ -242,9 +242,9 @@ function describeAction(entry: ExpenseActivityEntry) {
         verb: entry.action,
         subject: undefined,
         amount: undefined,
-        bg: "bg-white/[0.06]",
-        border: "border-white/[0.08]",
-        text: "text-slate-400",
+        bg: "bg-muted",
+        border: "border-border",
+        text: "text-muted-foreground",
       };
   }
 }

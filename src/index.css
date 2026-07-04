@@ -14,31 +14,31 @@
 
 @layer base {
   :root {
-    /* Light mode - clean and modern */
-    --background: 240 10% 98%;
-    --foreground: 240 10% 10%;
+    /* Light — "Studio Daylight": luminous, brand-violet undertone, not sterile grey */
+    --background: 265 30% 98%;
+    --foreground: 250 22% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 250 22% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
+    --popover-foreground: 250 22% 13%;
 
     /* Electric Violet primary */
-    --primary: 262 83% 58%;
+    --primary: 262 83% 56%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - subtle purple tint */
-    --secondary: 240 10% 94%;
-    --secondary-foreground: 240 10% 15%;
+    /* Secondary - subtle violet tint */
+    --secondary: 260 20% 94%;
+    --secondary-foreground: 250 18% 18%;
 
     /* Muted backgrounds */
-    --muted: 240 10% 96%;
-    --muted-foreground: 240 5% 45%;
+    --muted: 260 22% 95%;
+    --muted-foreground: 250 10% 40%;
 
-    /* Accent - neon teal */
-    --accent: 174 72% 56%;
-    --accent-foreground: 240 10% 10%;
+    /* Accent - teal, deepened so it stays legible as text/chip on light */
+    --accent: 174 68% 42%;
+    --accent-foreground: 0 0% 100%;
 
     /* Status colors */
     --destructive: 0 72% 51%;
@@ -57,8 +57,8 @@
     --neon-orange: 25 100% 50%;
 
     /* UI elements */
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
+    --border: 260 16% 89%;
+    --input: 260 16% 89%;
     --ring: 262 83% 58%;
 
     --radius: 1rem;
@@ -173,33 +173,33 @@
     --shadow-neon: 0 0 30px hsl(262 83% 65% / 0.6), 0 0 60px hsl(262 83% 65% / 0.4);
   }
 
-  /* Rosé Blush Theme - Elegant & Feminine */
+  /* Rosé — "Blush Atelier": warm ivory + confident rosé + champagne gold, boutique-elegant */
   .rose {
-    /* Background - warm cream/beige */
-    --background: 30 30% 97%;
-    --foreground: 340 20% 20%;
+    /* Background - warm ivory (not muddy cream) */
+    --background: 35 42% 97%;
+    --foreground: 340 28% 17%;
 
-    --card: 340 30% 98%;
-    --card-foreground: 340 20% 20%;
+    --card: 350 40% 99%;
+    --card-foreground: 340 28% 17%;
 
-    --popover: 340 30% 98%;
-    --popover-foreground: 340 20% 20%;
+    --popover: 350 40% 99%;
+    --popover-foreground: 340 28% 17%;
 
-    /* Primary - Rosé Pink */
-    --primary: 340 65% 55%;
+    /* Primary - confident Rosé */
+    --primary: 342 66% 50%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Soft blush */
-    --secondary: 340 20% 94%;
-    --secondary-foreground: 340 25% 25%;
+    --secondary: 345 26% 93%;
+    --secondary-foreground: 340 28% 22%;
 
-    /* Muted - Light lavender */
-    --muted: 340 15% 94%;
-    --muted-foreground: 340 10% 45%;
+    /* Muted - soft blush-grey */
+    --muted: 345 24% 94%;
+    --muted-foreground: 340 14% 38%;
 
-    /* Accent - Champagne Gold */
-    --accent: 38 50% 55%;
-    --accent-foreground: 340 20% 15%;
+    /* Accent - Champagne Gold, deepened for legibility */
+    --accent: 36 56% 46%;
+    --accent-foreground: 340 28% 15%;
 
     /* Status colors */
     --destructive: 0 65% 50%;
@@ -218,42 +218,42 @@
     --neon-orange: 25 70% 55%;
 
     /* UI elements */
-    --border: 340 20% 88%;
-    --input: 340 20% 90%;
-    --ring: 340 65% 55%;
+    --border: 342 26% 87%;
+    --input: 342 24% 89%;
+    --ring: 342 66% 50%;
 
     --radius: 1rem;
 
     /* Glass effects - rose tinted */
-    --glass-bg: 340 30% 98% / 0.8;
+    --glass-bg: 350 40% 99% / 0.82;
     --glass-border: 340 40% 80% / 0.3;
     --glass-blur: 20px;
 
     /* Sidebar */
-    --sidebar-background: 340 30% 98%;
-    --sidebar-foreground: 340 20% 20%;
-    --sidebar-primary: 340 65% 55%;
+    --sidebar-background: 350 40% 99%;
+    --sidebar-foreground: 340 28% 17%;
+    --sidebar-primary: 342 66% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 340 30% 94%;
-    --sidebar-accent-foreground: 340 25% 25%;
-    --sidebar-border: 340 20% 88%;
-    --sidebar-ring: 340 65% 55%;
+    --sidebar-accent: 345 30% 93%;
+    --sidebar-accent-foreground: 340 28% 22%;
+    --sidebar-border: 342 26% 87%;
+    --sidebar-ring: 342 66% 50%;
 
     /* Gradients - Rose-Gold */
-    --gradient-primary: linear-gradient(135deg, hsl(340 65% 55%), hsl(340 45% 70%));
-    --gradient-secondary: linear-gradient(135deg, hsl(38 50% 55%), hsl(340 65% 55%));
-    --gradient-glow: radial-gradient(ellipse at center, hsl(340 65% 55% / 0.25), transparent 70%);
-    --gradient-mesh: 
-      radial-gradient(at 40% 20%, hsl(340 65% 55% / 0.12) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsl(38 50% 55% / 0.12) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsl(340 45% 70% / 0.12) 0px, transparent 50%);
+    --gradient-primary: linear-gradient(135deg, hsl(342 66% 50%), hsl(340 55% 68%));
+    --gradient-secondary: linear-gradient(135deg, hsl(36 56% 52%), hsl(342 66% 50%));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(342 66% 50% / 0.22), transparent 70%);
+    --gradient-mesh:
+      radial-gradient(at 40% 20%, hsl(342 66% 50% / 0.11) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsl(36 56% 52% / 0.11) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsl(340 55% 68% / 0.11) 0px, transparent 50%);
 
     /* Shadows - soft rose */
-    --shadow-sm: 0 2px 8px -2px hsl(340 30% 50% / 0.1);
-    --shadow-md: 0 8px 24px -4px hsl(340 30% 50% / 0.15);
-    --shadow-lg: 0 16px 48px -8px hsl(340 30% 50% / 0.2);
-    --shadow-glow: 0 0 40px hsl(340 65% 55% / 0.25);
-    --shadow-neon: 0 0 20px hsl(340 65% 55% / 0.4), 0 0 40px hsl(340 65% 55% / 0.25);
+    --shadow-sm: 0 2px 8px -2px hsl(342 40% 45% / 0.12);
+    --shadow-md: 0 8px 24px -4px hsl(342 40% 45% / 0.16);
+    --shadow-lg: 0 16px 48px -8px hsl(342 40% 45% / 0.22);
+    --shadow-glow: 0 0 40px hsl(342 66% 50% / 0.22);
+    --shadow-neon: 0 0 20px hsl(342 66% 50% / 0.4), 0 0 40px hsl(342 66% 50% / 0.22);
 
     /* Typography */
     --font-display: "Space Grotesk", system-ui, sans-serif;
@@ -931,7 +931,7 @@ html.capacitor-native .pb-tabbar {
   --glass-bg: 240 15% 11% / 0.94;
 }
 :root.capacitor-native.rose {
-  --glass-bg: 340 30% 98% / 0.94;
+  --glass-bg: 350 40% 99% / 0.94;
 }
 
 /* #1 WebView frame-killer: kill every backdrop-filter on native. Covers the

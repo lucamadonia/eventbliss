@@ -258,26 +258,26 @@ export function AddExpenseSheet({
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side="bottom"
-        className="bg-[#0B0D12] border-t border-white/10 text-white p-0 h-[92vh] max-h-[92vh] rounded-t-3xl flex flex-col"
+        className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] rounded-t-3xl flex flex-col"
       >
         <SheetTitle className="sr-only">Ausgabe hinzufügen</SheetTitle>
 
         {/* Drag handle */}
         <div className="flex items-center justify-center pt-3 pb-1">
-          <div className="w-10 h-1.5 rounded-full bg-white/20" />
+          <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />
         </div>
 
         {/* Header */}
-        <div className="px-5 py-3 flex items-center justify-between border-b border-white/[0.06]">
+        <div className="px-5 py-3 flex items-center justify-between border-b border-border">
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.1] flex items-center justify-center cursor-pointer transition-colors"
+            className="w-9 h-9 rounded-full bg-muted hover:bg-white/[0.1] flex items-center justify-center cursor-pointer transition-colors"
             aria-label="Schließen"
           >
-            <X className="w-4 h-4 text-slate-300" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
           <div className="flex-1 text-center">
-            <h2 className="text-base font-bold text-white">Neue Ausgabe</h2>
+            <h2 className="text-base font-bold text-foreground">Neue Ausgabe</h2>
           </div>
           <Button
             onClick={handleSave}
@@ -307,7 +307,7 @@ export function AddExpenseSheet({
           <div className="px-5 py-6">
             {/* Big amount input */}
             <div className="text-center mb-6">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-semibold mb-2">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold mb-2">
                 Betrag
               </div>
               <div className="relative inline-flex items-baseline gap-1">
@@ -318,10 +318,10 @@ export function AddExpenseSheet({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
                   placeholder="0,00"
-                  className="w-64 max-w-full text-center text-6xl sm:text-7xl font-black bg-transparent border-0 outline-none text-white placeholder:text-slate-700 tabular-nums tracking-tighter"
+                  className="w-64 max-w-full text-center text-6xl sm:text-7xl font-black bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground tabular-nums tracking-tighter"
                   aria-label="Betrag"
                 />
-                <span className="text-2xl sm:text-3xl font-bold text-slate-500">€</span>
+                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground">€</span>
               </div>
             </div>
 
@@ -336,10 +336,10 @@ export function AddExpenseSheet({
                 }}
                 placeholder={voice.isListening ? "Hört zu …" : "Wofür? z. B. Pizza, Tankstelle, Airbnb"}
                 className={cn(
-                  "w-full h-12 pl-4 pr-12 rounded-2xl bg-white/[0.04] border text-white placeholder:text-slate-500 text-sm focus:outline-none transition-colors",
+                  "w-full h-12 pl-4 pr-12 rounded-2xl bg-muted border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none transition-colors",
                   voice.isListening
                     ? "border-violet-400/60 bg-violet-500/10"
-                    : "border-white/[0.08] focus:border-violet-400/40",
+                    : "border-border focus:border-violet-400/40",
                 )}
               />
               {voice.isSupported && (
@@ -351,7 +351,7 @@ export function AddExpenseSheet({
                     "absolute top-1/2 -translate-y-1/2 right-2 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-colors",
                     voice.isListening
                       ? "bg-violet-500 text-white shadow-[0_0_0_4px_rgba(124,92,255,0.25)] animate-pulse"
-                      : "bg-white/[0.06] text-slate-300 hover:bg-white/[0.12]",
+                      : "bg-muted text-muted-foreground hover:bg-white/[0.12]",
                   )}
                 >
                   <Mic className="w-4 h-4" />
@@ -359,7 +359,7 @@ export function AddExpenseSheet({
               )}
             </div>
             {voice.error && (
-              <p className="mt-1 text-[11px] text-rose-300">{voice.error}</p>
+              <p className="mt-1 text-[11px] text-rose-600 dark:text-rose-300">{voice.error}</p>
             )}
 
             {/* Smart category suggestion */}
@@ -375,12 +375,12 @@ export function AddExpenseSheet({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     onClick={acceptSuggestion}
-                    className="mt-2 w-full h-10 rounded-xl bg-gradient-to-r from-violet-500/15 to-cyan-500/10 border border-violet-400/30 flex items-center gap-2 px-3 text-xs text-violet-100 hover:border-violet-400/60 cursor-pointer transition-colors"
+                    className="mt-2 w-full h-10 rounded-xl bg-gradient-to-r from-violet-500/15 to-cyan-500/10 border border-violet-400/30 flex items-center gap-2 px-3 text-xs text-violet-700 dark:text-violet-100 hover:border-violet-400/60 cursor-pointer transition-colors"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-violet-300" />
+                    <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300" />
                     <span className="opacity-80">Vorschlag:</span>
                     <span className="font-semibold">{c.emoji} {c.name}</span>
-                    <span className="ml-auto text-[10px] uppercase tracking-widest text-violet-300/80">Tippen zum Übernehmen</span>
+                    <span className="ml-auto text-[10px] uppercase tracking-widest text-violet-600 dark:text-violet-300/80">Tippen zum Übernehmen</span>
                   </motion.button>
                 );
               })()}
@@ -388,7 +388,7 @@ export function AddExpenseSheet({
 
             {/* Payer row */}
             <div className="mt-4">
-              <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2">
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
                 Gezahlt von
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
@@ -402,14 +402,14 @@ export function AddExpenseSheet({
                       className={cn(
                         "flex-shrink-0 h-11 px-4 rounded-full border text-sm font-medium cursor-pointer transition-colors flex items-center gap-2",
                         active
-                          ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-white"
-                          : "bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-slate-200",
+                          ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-foreground"
+                          : "bg-muted border-border text-muted-foreground hover:text-foreground",
                       )}
                     >
                       <div
                         className={cn(
                           "w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
-                          active ? "bg-white/20" : "bg-white/[0.06]",
+                          active ? "bg-foreground/15" : "bg-muted",
                         )}
                       >
                         {(p.name ?? "?").slice(0, 1).toUpperCase()}
@@ -433,7 +433,7 @@ export function AddExpenseSheet({
               >
                 {/* Categories */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
                     Kategorie
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -452,8 +452,8 @@ export function AddExpenseSheet({
                           className={cn(
                             "flex-shrink-0 h-10 px-3 rounded-full border text-xs font-medium cursor-pointer transition-colors flex items-center gap-1.5",
                             active
-                              ? "bg-violet-500/20 border-violet-400/50 text-white"
-                              : "bg-white/[0.03] border-white/[0.08] text-slate-400",
+                              ? "bg-violet-500/20 border-violet-400/50 text-foreground"
+                              : "bg-muted border-border text-muted-foreground",
                           )}
                         >
                           <span>{c.emoji}</span>
@@ -466,20 +466,20 @@ export function AddExpenseSheet({
 
                 {/* Date */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
                     <Calendar className="w-3 h-3" /> Datum
                   </div>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm [color-scheme:dark] focus:outline-none focus:border-violet-400/40"
+                    className="w-full h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-violet-400/40"
                   />
                 </div>
 
                 {/* Notes */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
                     <StickyNote className="w-3 h-3" /> Notiz (optional)
                   </div>
                   <textarea
@@ -487,13 +487,13 @@ export function AddExpenseSheet({
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
                     placeholder="Zusatzinfo, z. B. 'Trinkgeld schon drin'"
-                    className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-violet-400/40 resize-none"
+                    className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-violet-400/40 resize-none"
                   />
                 </div>
 
                 {/* Receipt + OCR */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
                     <ReceiptIcon className="w-3 h-3" /> Beleg (optional)
                   </div>
                   <ReceiptAttach
@@ -518,7 +518,7 @@ export function AddExpenseSheet({
                 exit={{ opacity: 0, height: 0 }}
                 className="px-5 pb-4"
               >
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
                   Aufteilung
                 </div>
                 <SplitConfigurator
@@ -539,14 +539,14 @@ export function AddExpenseSheet({
             <button
               type="button"
               onClick={() => setStep(step === "quick" ? "detail" : "quick")}
-              className="w-full h-11 rounded-xl bg-white/[0.03] border border-white/[0.08] text-sm text-slate-300 hover:text-white hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
               {step === "quick" ? "Details hinzufügen" : "Details verbergen"}
             </button>
             <button
               type="button"
               onClick={() => setStep(step === "split" ? "detail" : "split")}
-              className="w-full h-11 rounded-xl bg-white/[0.03] border border-white/[0.08] text-sm text-slate-300 hover:text-white hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
               {step === "split"
                 ? "Aufteilung verbergen"

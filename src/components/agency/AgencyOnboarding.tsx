@@ -79,7 +79,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
   ];
 
   return (
-    <div className="dark min-h-screen bg-[#0f0a1e] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -94,14 +94,14 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                   step >= s.num
                     ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30"
-                    : "bg-white/[0.06] text-slate-600"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
                 {step > s.num ? <Check className="w-4 h-4" /> : s.num}
               </div>
               {s.num < 3 && (
                 <div className={`w-12 h-0.5 rounded-full transition-colors duration-300 ${
-                  step > s.num ? "bg-violet-500" : "bg-white/[0.08]"
+                  step > s.num ? "bg-violet-500" : "bg-muted"
                 }`} />
               )}
             </div>
@@ -109,7 +109,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
         </div>
 
         {/* Card */}
-        <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-8 shadow-2xl shadow-black/20">
+        <div className="bg-card backdrop-blur-2xl border border-border rounded-3xl p-8 shadow-2xl shadow-black/20">
           <AnimatePresence mode="wait">
             {/* Step 1: Create */}
             {step === 1 && (
@@ -118,27 +118,27 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
                     <Building2 className="w-7 h-7 text-white" />
                   </div>
-                  <h2 className="text-xl font-bold text-slate-50">Erstelle deine Agentur</h2>
-                  <p className="text-sm text-slate-500 mt-1">Gib deiner Agentur einen Namen</p>
+                  <h2 className="text-xl font-bold text-foreground">Erstelle deine Agentur</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Gib deiner Agentur einen Namen</p>
                 </motion.div>
                 <motion.div variants={fadeUp} className="space-y-3">
-                  <label className="text-xs font-medium text-slate-400">Agenturname</label>
+                  <label className="text-xs font-medium text-muted-foreground">Agenturname</label>
                   <Input
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="z.B. Traumhochzeiten GmbH"
-                    className="bg-white/[0.04] border-white/[0.1] text-slate-100 placeholder:text-slate-600 h-11 rounded-xl"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground h-11 rounded-xl"
                   />
                 </motion.div>
                 <motion.div variants={fadeUp} className="space-y-3">
-                  <label className="text-xs font-medium text-slate-400">URL-Slug</label>
+                  <label className="text-xs font-medium text-muted-foreground">URL-Slug</label>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-600">event-bliss.com/</span>
+                    <span className="text-xs text-muted-foreground">event-bliss.com/</span>
                     <Input
                       value={slug}
                       onChange={(e) => setSlug(generateSlug(e.target.value))}
                       placeholder="traumhochzeiten"
-                      className="bg-white/[0.04] border-white/[0.1] text-slate-100 placeholder:text-slate-600 h-11 rounded-xl flex-1"
+                      className="bg-muted border-border text-foreground placeholder:text-muted-foreground h-11 rounded-xl flex-1"
                     />
                   </div>
                 </motion.div>
@@ -161,18 +161,18 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center shadow-lg shadow-pink-500/25">
                     <Palette className="w-7 h-7 text-white" />
                   </div>
-                  <h2 className="text-xl font-bold text-slate-50">Anpassen</h2>
-                  <p className="text-sm text-slate-500 mt-1">Wähle deine Markenfarben</p>
+                  <h2 className="text-xl font-bold text-foreground">Anpassen</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Wähle deine Markenfarben</p>
                 </motion.div>
                 <motion.div variants={fadeUp} className="space-y-2">
-                  <label className="text-xs font-medium text-slate-400">Primärfarbe</label>
+                  <label className="text-xs font-medium text-muted-foreground">Primärfarbe</label>
                   <div className="flex items-center gap-2 flex-wrap">
                     {PRIMARY_PRESETS.map((c) => (
                       <button
                         key={c}
                         onClick={() => setPrimaryColor(c)}
                         className={`w-9 h-9 rounded-xl cursor-pointer transition-all duration-200 ${
-                          primaryColor === c ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f0a1e] scale-110" : "hover:scale-105"
+                          primaryColor === c ? "ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110" : "hover:scale-105"
                         }`}
                         style={{ backgroundColor: c }}
                       />
@@ -180,14 +180,14 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   </div>
                 </motion.div>
                 <motion.div variants={fadeUp} className="space-y-2">
-                  <label className="text-xs font-medium text-slate-400">Akzentfarbe</label>
+                  <label className="text-xs font-medium text-muted-foreground">Akzentfarbe</label>
                   <div className="flex items-center gap-2 flex-wrap">
                     {ACCENT_PRESETS.map((c) => (
                       <button
                         key={c}
                         onClick={() => setAccentColor(c)}
                         className={`w-9 h-9 rounded-xl cursor-pointer transition-all duration-200 ${
-                          accentColor === c ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f0a1e] scale-110" : "hover:scale-105"
+                          accentColor === c ? "ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110" : "hover:scale-105"
                         }`}
                         style={{ backgroundColor: c }}
                       />
@@ -195,20 +195,20 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   </div>
                 </motion.div>
                 {/* Preview */}
-                <motion.div variants={fadeUp} className="rounded-xl border border-white/[0.08] p-4 flex items-center gap-3">
+                <motion.div variants={fadeUp} className="rounded-xl border border-border p-4 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})` }}>
                     <Building2 className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-100">{name || "Deine Agentur"}</p>
-                    <p className="text-[10px] text-slate-500">Vorschau</p>
+                    <p className="text-sm font-semibold text-foreground">{name || "Deine Agentur"}</p>
+                    <p className="text-[10px] text-muted-foreground">Vorschau</p>
                   </div>
                 </motion.div>
                 <motion.div variants={fadeUp} className="flex gap-3">
                   <Button
                     variant="ghost"
                     onClick={() => setStep(1)}
-                    className="flex-1 text-slate-400 hover:text-slate-200 h-11 rounded-xl cursor-pointer"
+                    className="flex-1 text-muted-foreground hover:text-foreground h-11 rounded-xl cursor-pointer"
                   >
                     Zurück
                   </Button>
@@ -229,21 +229,21 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
                     <Users className="w-7 h-7 text-white" />
                   </div>
-                  <h2 className="text-xl font-bold text-slate-50">Team einladen</h2>
-                  <p className="text-sm text-slate-500 mt-1">Lade Teammitglieder ein (optional)</p>
+                  <h2 className="text-xl font-bold text-foreground">Team einladen</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Lade Teammitglieder ein (optional)</p>
                 </motion.div>
                 <motion.div variants={fadeUp} className="flex gap-2">
                   <Input
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="email@beispiel.de"
-                    className="bg-white/[0.04] border-white/[0.1] text-slate-100 placeholder:text-slate-600 h-10 rounded-xl flex-1"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground h-10 rounded-xl flex-1"
                     onKeyDown={(e) => e.key === "Enter" && addInvite()}
                   />
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as InviteEntry["role"])}
-                    className="bg-white/[0.04] border border-white/[0.1] text-slate-300 text-xs rounded-xl px-2 h-10 cursor-pointer"
+                    className="bg-muted border border-border text-foreground text-xs rounded-xl px-2 h-10 cursor-pointer"
                   >
                     <option value="admin">Admin</option>
                     <option value="member">Mitglied</option>
@@ -256,12 +256,12 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                 {invites.length > 0 && (
                   <motion.div variants={fadeUp} className="space-y-2 max-h-40 overflow-y-auto">
                     {invites.map((inv, i) => (
-                      <div key={i} className="flex items-center justify-between bg-white/[0.04] rounded-xl px-3 py-2">
+                      <div key={i} className="flex items-center justify-between bg-muted rounded-xl px-3 py-2">
                         <div>
-                          <span className="text-sm text-slate-200">{inv.email}</span>
-                          <span className="text-[10px] text-slate-500 ml-2 capitalize">{inv.role}</span>
+                          <span className="text-sm text-foreground">{inv.email}</span>
+                          <span className="text-[10px] text-muted-foreground ml-2 capitalize">{inv.role}</span>
                         </div>
-                        <button onClick={() => removeInvite(i)} className="text-slate-600 hover:text-red-400 cursor-pointer">
+                        <button onClick={() => removeInvite(i)} className="text-muted-foreground hover:text-red-500 dark:hover:text-red-400 cursor-pointer">
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -272,7 +272,7 @@ export function AgencyOnboarding({ onCreateAgency }: AgencyOnboardingProps) {
                   <Button
                     variant="ghost"
                     onClick={() => setStep(2)}
-                    className="flex-1 text-slate-400 hover:text-slate-200 h-11 rounded-xl cursor-pointer"
+                    className="flex-1 text-muted-foreground hover:text-foreground h-11 rounded-xl cursor-pointer"
                   >
                     Zurück
                   </Button>

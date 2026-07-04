@@ -128,7 +128,7 @@ export default function EventExpensesV2() {
 
   if (eventLoading || !event) {
     return (
-      <div className="min-h-screen bg-[#0B0D12] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
@@ -163,7 +163,7 @@ export default function EventExpensesV2() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0B0D12] text-white">
+    <div className="relative min-h-screen bg-background text-foreground">
       <AmbientBg tone={tone} />
       <Confetti fire={confettiFire} onDone={() => setConfettiFire(false)} />
 
@@ -173,7 +173,7 @@ export default function EventExpensesV2() {
           backdropFilter: `blur(${headerBlur.get()}px)`,
           WebkitBackdropFilter: `blur(${headerBlur.get()}px)`,
         }}
-        className="sticky top-0 z-20 bg-[#0B0D12]/80 border-b border-white/[0.06]"
+        className="sticky top-0 z-20 bg-background/80 border-b border-border"
       >
         <motion.div
           style={{ opacity: headerBorderOpacity }}
@@ -189,22 +189,22 @@ export default function EventExpensesV2() {
               void haptics.light();
               navigate(-1);
             }}
-            className="w-9 h-9 rounded-full bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center cursor-pointer border border-white/[0.06]"
+            className="w-9 h-9 rounded-full bg-muted hover:bg-muted/70 flex items-center justify-center cursor-pointer border border-border"
             aria-label="Zurück"
           >
             <ArrowLeft className="w-4 h-4" />
           </motion.button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base font-bold text-white truncate">Ausgaben</h1>
-            <p className="text-[11px] text-slate-500 truncate">{event.title}</p>
+            <h1 className="text-base font-bold text-foreground truncate">Ausgaben</h1>
+            <p className="text-[11px] text-muted-foreground truncate">{event.title}</p>
           </div>
           <div className="text-right">
-            <div className="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Gesamt</div>
+            <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Gesamt</div>
             <div className="text-sm font-bold tracking-tight">
               <CountUp
                 value={data?.summary.totalAmount ?? 0}
                 currency={currency}
-                className="text-white"
+                className="text-foreground"
               />
             </div>
           </div>
@@ -233,8 +233,8 @@ export default function EventExpensesV2() {
                 className={cn(
                   "relative px-4 h-9 rounded-full text-xs font-semibold cursor-pointer flex-shrink-0 transition-colors flex items-center gap-1.5 overflow-hidden",
                   active
-                    ? "text-white"
-                    : "text-slate-400 hover:text-slate-200 bg-white/[0.03] border border-white/[0.06]",
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground bg-muted border border-border",
                 )}
               >
                 {active && (
@@ -249,7 +249,7 @@ export default function EventExpensesV2() {
                   <span
                     className={cn(
                       "relative min-w-[18px] h-[18px] rounded-full px-1.5 text-[10px] font-black flex items-center justify-center",
-                      active ? "bg-white/25 text-white" : "bg-white/[0.08] text-slate-300",
+                      active ? "bg-foreground/20 text-foreground" : "bg-muted text-muted-foreground",
                     )}
                   >
                     {t.count}
@@ -314,7 +314,7 @@ export default function EventExpensesV2() {
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
-                        className="h-[72px] rounded-2xl bg-white/[0.03] border border-white/[0.06] animate-pulse"
+                        className="h-[72px] rounded-2xl bg-muted border border-border animate-pulse"
                       />
                     ))}
                   </div>
@@ -329,7 +329,7 @@ export default function EventExpensesV2() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: groupIdx * 0.04, duration: 0.3 }}
                       >
-                        <div className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-bold mb-2 px-1">
+                        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 px-1">
                           {formatDateGroup(group.date)}
                         </div>
                         <div className="space-y-2">
@@ -350,7 +350,7 @@ export default function EventExpensesV2() {
                         </div>
                       </motion.div>
                     ))}
-                    <div className="text-center text-[10px] text-slate-600 pt-4">
+                    <div className="text-center text-[10px] text-muted-foreground pt-4">
                       Tipp: Zeile nach links wischen für Aktionen
                     </div>
                   </div>
@@ -375,7 +375,7 @@ export default function EventExpensesV2() {
                       Noch offen ({simplifiedDebts.length})
                     </div>
                     {simplifiedDebts.length > 0 && (
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[10px] text-muted-foreground">
                         Minimale Überweisungen
                       </span>
                     )}
@@ -534,11 +534,11 @@ function KpiTile({
   return (
     <div
       className={cn(
-        "rounded-2xl border p-3 backdrop-blur-sm bg-gradient-to-br to-[#14171F]",
+        "rounded-2xl border p-3 backdrop-blur-sm bg-gradient-to-br to-card",
         accentMap,
       )}
     >
-      <div className="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-1">
+      <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
         {label}
       </div>
       <div className="text-sm font-bold tabular-nums tracking-tight">
@@ -573,7 +573,7 @@ function EmptyList({ onAdd }: { onAdd: () => void }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative p-8 text-center rounded-3xl bg-gradient-to-br from-violet-500/[0.06] via-[#14171F] to-cyan-500/[0.04] border border-violet-500/15 overflow-hidden"
+      className="relative p-8 text-center rounded-3xl bg-gradient-to-br from-violet-500/[0.06] via-card to-cyan-500/[0.04] border border-violet-500/15 overflow-hidden"
     >
       <motion.div
         aria-hidden
@@ -589,10 +589,10 @@ function EmptyList({ onAdd }: { onAdd: () => void }) {
       >
         <ReceiptIcon className="w-8 h-8 text-white" />
       </motion.div>
-      <h3 className="relative text-lg font-black text-white mb-1 tracking-tight">
+      <h3 className="relative text-lg font-black text-foreground mb-1 tracking-tight">
         Noch keine Ausgaben
       </h3>
-      <p className="relative text-sm text-slate-400 mb-5 max-w-xs mx-auto leading-relaxed">
+      <p className="relative text-sm text-muted-foreground mb-5 max-w-xs mx-auto leading-relaxed">
         Trag die erste ein — Splits werden automatisch berechnet, Balance live aktualisiert.
       </p>
       <Button

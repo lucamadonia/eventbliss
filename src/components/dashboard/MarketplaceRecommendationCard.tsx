@@ -42,7 +42,7 @@ function renderStars(rating: number) {
   return (
     <span className="inline-flex items-center gap-0.5">
       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-      <span className="text-xs text-white/70">{rating.toFixed(1)}</span>
+      <span className="text-xs text-muted-foreground">{rating.toFixed(1)}</span>
     </span>
   );
 }
@@ -53,17 +53,17 @@ function renderStars(rating: number) {
 
 function ServiceCardSkeleton() {
   return (
-    <div className="flex-shrink-0 w-52 rounded-xl border border-white/10 bg-white/5 p-3 animate-pulse">
+    <div className="flex-shrink-0 w-52 rounded-xl border border-border bg-card p-3 animate-pulse">
       <div className="flex items-start gap-3">
-        <div className="h-12 w-12 rounded-xl bg-white/10" />
+        <div className="h-12 w-12 rounded-xl bg-muted" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 w-24 rounded bg-white/10" />
-          <div className="h-3 w-16 rounded bg-white/10" />
+          <div className="h-4 w-24 rounded bg-muted" />
+          <div className="h-3 w-16 rounded bg-muted" />
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between">
-        <div className="h-4 w-20 rounded bg-white/10" />
-        <div className="h-7 w-16 rounded-lg bg-white/10" />
+        <div className="h-4 w-20 rounded bg-muted" />
+        <div className="h-7 w-16 rounded-lg bg-muted" />
       </div>
     </div>
   );
@@ -88,7 +88,7 @@ function MiniServiceCard({ service, index, perPersonLabel, bookLabel, onNavigate
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.07 }}
-      className="flex-shrink-0 w-52 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-3 hover:border-purple-500/30 hover:bg-white/[0.07] transition-all duration-200 group snap-start"
+      className="flex-shrink-0 w-52 rounded-xl border border-border bg-card backdrop-blur-sm p-3 hover:border-purple-500/30 hover:bg-muted transition-all duration-200 group snap-start"
     >
       <div className="flex items-start gap-3">
         <div
@@ -100,16 +100,16 @@ function MiniServiceCard({ service, index, perPersonLabel, bookLabel, onNavigate
           <Icon className="h-5 w-5 text-white/95" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-white truncate leading-tight">
+          <p className="text-sm font-bold text-foreground truncate leading-tight">
             {service.title}
           </p>
-          <p className="text-xs text-white/50 truncate mt-0.5">{service.agency}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{service.agency}</p>
           <div className="mt-1">{renderStars(service.rating)}</div>
         </div>
       </div>
 
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-sm font-semibold text-purple-300">
+        <span className="text-sm font-semibold text-purple-600 dark:text-purple-300">
           {formatPrice(service.pricePerPerson, service.priceType, perPersonLabel)}
         </span>
         <button
@@ -194,13 +194,13 @@ export const MarketplaceRecommendationCard = ({
       <div className="p-5">
         <div className="flex items-center gap-2 mb-1">
           <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-gradient-to-br from-purple-600/30 to-cyan-600/30">
-            <Sparkles className="h-4 w-4 text-purple-300" />
+            <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-300" />
           </div>
-          <h3 className="text-base font-bold text-white">
+          <h3 className="text-base font-bold text-foreground">
             {t("dashboard.ai.suggestedFor", "Vorgeschlagen für deinen Plan")}
           </h3>
         </div>
-        <p className="text-xs text-white/50 ml-9 mb-4">
+        <p className="text-xs text-muted-foreground ml-9 mb-4">
           {t("dashboard.ai.bookableHere", "Direkt buchbar")}
         </p>
 
@@ -225,7 +225,7 @@ export const MarketplaceRecommendationCard = ({
 
         <button
           onClick={() => navigate("/marketplace")}
-          className="mt-4 flex items-center gap-1.5 text-sm text-purple-300 hover:text-purple-200 transition-colors group/link"
+          className="mt-4 flex items-center gap-1.5 text-sm text-purple-600 hover:text-purple-700 dark:text-purple-300 dark:hover:text-purple-200 transition-colors group/link"
         >
           <span>{t("dashboard.ai.exploreMore", "Alle Services entdecken")}</span>
           <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />

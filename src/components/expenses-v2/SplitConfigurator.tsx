@@ -120,7 +120,7 @@ export function SplitConfigurator({
   return (
     <div className="space-y-3">
       {/* Mode segmented control */}
-      <div className="relative grid grid-cols-3 gap-1 p-1 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+      <div className="relative grid grid-cols-3 gap-1 p-1 rounded-2xl bg-muted border border-border">
         {MODES.map((m) => {
           const active = localMode === m.value;
           return (
@@ -130,7 +130,7 @@ export function SplitConfigurator({
               onClick={() => setMode(m.value)}
               className={cn(
                 "relative z-10 px-3 py-2 rounded-xl text-center transition-colors cursor-pointer",
-                active ? "text-white" : "text-slate-400 hover:text-slate-200",
+                active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {active && (
@@ -140,7 +140,7 @@ export function SplitConfigurator({
                 />
               )}
               <div className="text-xs font-semibold">{m.label}</div>
-              <div className="text-[10px] text-slate-500 mt-0.5">{m.sub}</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">{m.sub}</div>
             </button>
           );
         })}
@@ -148,8 +148,8 @@ export function SplitConfigurator({
 
       {/* Equal-mode avatar row */}
       {localMode === "equal" && (
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-          <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-3">
+        <div className="p-4 rounded-2xl bg-muted border border-border">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-3">
             Teilnehmer · tap um aus-/einzuschließen
           </div>
           <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
@@ -163,8 +163,8 @@ export function SplitConfigurator({
                   className={cn(
                     "relative w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center font-bold text-sm cursor-pointer transition-all",
                     isExcluded
-                      ? "bg-white/[0.03] border-white/[0.08] text-slate-600 line-through opacity-50"
-                      : "bg-gradient-to-br from-violet-500/30 to-cyan-500/20 border-violet-400/50 text-white shadow-lg shadow-violet-500/10",
+                      ? "bg-muted border-border text-muted-foreground line-through opacity-50"
+                      : "bg-gradient-to-br from-violet-500/30 to-cyan-500/20 border-violet-400/50 text-foreground shadow-lg shadow-violet-500/10",
                   )}
                   aria-pressed={!isExcluded}
                   aria-label={isExcluded ? `${p.name} einschließen` : `${p.name} ausschließen`}
@@ -177,11 +177,11 @@ export function SplitConfigurator({
               );
             })}
           </div>
-          <div className="text-[11px] text-slate-400 mt-3 text-center">
+          <div className="text-[11px] text-muted-foreground mt-3 text-center">
             {value.length > 0 ? (
               <>
                 {value.length}&nbsp;Personen teilen sich {formatMoney(amount, currency)} —&nbsp;
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-foreground">
                   {formatMoney(value[0]?.amount ?? 0, currency)}
                 </span>
                 &nbsp;pro Kopf
@@ -195,17 +195,17 @@ export function SplitConfigurator({
 
       {/* Percentage or Custom rows */}
       {(localMode === "percentage" || localMode === "custom") && (
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-2">
+        <div className="p-4 rounded-2xl bg-muted border border-border space-y-2">
           {participants.map((p) => {
             const row = value.find((v) => v.participant_id === p.id);
             const rowAmount = row?.amount ?? 0;
             const percentage = amount > 0 ? Math.round((rowAmount / amount) * 10000) / 100 : 0;
             return (
               <div key={p.id} className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-xs font-semibold text-slate-200 shrink-0">
+                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-xs font-semibold text-foreground shrink-0">
                   {(p.name ?? "?").slice(0, 1).toUpperCase()}
                 </div>
-                <div className="flex-1 min-w-0 text-sm text-slate-200 truncate">{p.name ?? "—"}</div>
+                <div className="flex-1 min-w-0 text-sm text-foreground truncate">{p.name ?? "—"}</div>
                 {localMode === "percentage" ? (
                   <div className="relative">
                     <input
@@ -215,9 +215,9 @@ export function SplitConfigurator({
                       step="0.1"
                       value={percentage || ""}
                       onChange={(e) => setPercentage(p.id, parseFloat(e.target.value) || 0)}
-                      className="w-20 h-10 px-2 pr-6 rounded-xl bg-white/[0.05] border border-white/[0.08] text-right text-sm text-white font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
+                      className="w-20 h-10 px-2 pr-6 rounded-xl bg-muted border border-border text-right text-sm text-foreground font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                       %
                     </span>
                   </div>
@@ -229,9 +229,9 @@ export function SplitConfigurator({
                       step="0.01"
                       value={rowAmount || ""}
                       onChange={(e) => setCustomAmount(p.id, parseFloat(e.target.value) || 0)}
-                      className="w-24 h-10 px-2 pr-6 rounded-xl bg-white/[0.05] border border-white/[0.08] text-right text-sm text-white font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
+                      className="w-24 h-10 px-2 pr-6 rounded-xl bg-muted border border-border text-right text-sm text-foreground font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                       €
                     </span>
                   </div>
@@ -247,16 +247,16 @@ export function SplitConfigurator({
               valid ? "border-emerald-500/20" : "border-amber-500/20",
             )}
           >
-            <span className="text-slate-400">Summe</span>
+            <span className="text-muted-foreground">Summe</span>
             <span
               className={cn(
                 "font-mono tabular-nums font-semibold",
-                valid ? "text-emerald-300" : "text-amber-300",
+                valid ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300",
               )}
             >
               {formatMoney(sum, currency)}
               {!valid && (
-                <span className="ml-2 text-xs text-amber-300/80">
+                <span className="ml-2 text-xs text-amber-600 dark:text-amber-300/80">
                   ({delta > 0 ? "+" : ""}
                   {formatMoney(delta, currency)})
                 </span>

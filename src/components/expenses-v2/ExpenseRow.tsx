@@ -69,7 +69,7 @@ export function ExpenseRow({
             className="w-12 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center"
             style={{ opacity: editIconOpacity }}
           >
-            <Pencil className="w-4 h-4 text-blue-300" />
+            <Pencil className="w-4 h-4 text-blue-600 dark:text-blue-300" />
           </motion.div>
         )}
         {onDelete && (
@@ -77,7 +77,7 @@ export function ExpenseRow({
             className="w-12 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center"
             style={{ opacity: deleteIconOpacity }}
           >
-            <Trash2 className="w-4 h-4 text-rose-300" />
+            <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-300" />
           </motion.div>
         )}
       </div>
@@ -101,7 +101,7 @@ export function ExpenseRow({
         whileTap={isDragging ? undefined : { scale: 0.98 }}
         className={cn(
           "relative z-10 w-full text-left rounded-2xl p-4 flex items-center gap-3 min-h-[72px] cursor-pointer",
-          "bg-[#14171F] border border-[#2A2E37] hover:border-violet-400/30 hover:bg-[#1A1E28] transition-colors",
+          "bg-card border border-border hover:border-violet-400/30 hover:bg-muted transition-colors",
           "touch-pan-y",
         )}
       >
@@ -111,7 +111,7 @@ export function ExpenseRow({
             "flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-xl relative overflow-hidden",
             expense.is_settled_cached
               ? "bg-emerald-500/10 border border-emerald-500/20"
-              : "bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08]",
+              : "bg-muted border border-border",
           )}
         >
           <span className="relative z-10">{expense.emoji ?? "💰"}</span>
@@ -123,17 +123,17 @@ export function ExpenseRow({
         {/* Main content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <h3 className="text-sm font-semibold text-white truncate">{expense.description}</h3>
+            <h3 className="text-sm font-semibold text-foreground truncate">{expense.description}</h3>
             {expense.receipt_url && (
-              <ReceiptIcon className="w-3 h-3 text-cyan-400 flex-shrink-0" aria-label="Beleg vorhanden" />
+              <ReceiptIcon className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" aria-label="Beleg vorhanden" />
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="truncate">
               {payerName ? `${payerName} zahlte` : "Unbekannter Zahler"}
             </span>
-            <span className="text-slate-600">·</span>
-            <span className="text-slate-500 shrink-0">
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground shrink-0">
               {new Date(expense.expense_date).toLocaleDateString("de-DE", {
                 day: "2-digit",
                 month: "short",
@@ -141,8 +141,8 @@ export function ExpenseRow({
             </span>
             {expense.shares && expense.shares.length > 0 && (
               <>
-                <span className="text-slate-600">·</span>
-                <span className="text-slate-500 shrink-0">
+                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground shrink-0">
                   {expense.shares.length} {expense.shares.length === 1 ? "Person" : "Personen"}
                 </span>
               </>
@@ -152,23 +152,23 @@ export function ExpenseRow({
 
         {/* Amount + my-share badge */}
         <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-          <div className="text-sm font-bold text-white tabular-nums tracking-tight">
+          <div className="text-sm font-bold text-foreground tabular-nums tracking-tight">
             {formatMoney(expense.amount, expense.currency ?? currency)}
           </div>
           {iAmPayer && myAmount > 0 ? (
-            <div className="text-[10px] text-emerald-400 font-semibold tabular-nums">
+            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
               +{formatMoney(expense.amount - myAmount, currency)}
             </div>
           ) : iOwe ? (
-            <div className="text-[10px] text-rose-400 font-semibold tabular-nums">
+            <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold tabular-nums">
               –{formatMoney(myAmount - myPaid, currency)}
             </div>
           ) : expense.is_settled_cached ? (
-            <div className="text-[10px] text-emerald-400 font-semibold flex items-center gap-0.5">
+            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5">
               <CheckCircle2 className="w-2.5 h-2.5" /> beglichen
             </div>
           ) : (
-            <div className="text-[10px] text-slate-500 flex items-center gap-0.5">
+            <div className="text-[10px] text-muted-foreground flex items-center gap-0.5">
               <Circle className="w-2.5 h-2.5" /> offen
             </div>
           )}

@@ -91,12 +91,12 @@ export default function BudgetVisualizer({ body, participantCount }: BudgetVisua
     <div className="space-y-5">
       {/* Header row: total number */}
       <div className="flex items-end justify-between gap-4">
-        <div className="flex items-center gap-2 text-xs font-bold text-white/70 uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
           <Wallet className="w-3.5 h-3.5" />
           {t("dashboard.ai.budgetByDay", "Budget pro Tag")}
         </div>
         <div className="text-right">
-          <div className="text-[10px] font-semibold text-white/50 uppercase tracking-widest mb-0.5">
+          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">
             {t("dashboard.ai.totalEstimate", "Geschätzte Gesamtkosten")}
           </div>
           <motion.div
@@ -108,7 +108,7 @@ export default function BudgetVisualizer({ body, participantCount }: BudgetVisua
             €{total}
           </motion.div>
           {perPerson !== null && (
-            <div className="text-[11px] text-white/55 mt-1">
+            <div className="text-[11px] text-muted-foreground mt-1">
               ≈ €{perPerson} {t("dashboard.ai.perPerson", "pro Person")}
             </div>
           )}
@@ -116,7 +116,7 @@ export default function BudgetVisualizer({ body, participantCount }: BudgetVisua
       </div>
 
       {/* Stacked bar */}
-      <div className="relative h-3 rounded-full overflow-hidden bg-white/5 flex">
+      <div className="relative h-3 rounded-full overflow-hidden bg-muted flex">
         {days.map((d, i) => {
           const width = total > 0 ? (d.amount / total) * 100 : 0;
           return (
@@ -143,7 +143,7 @@ export default function BudgetVisualizer({ body, participantCount }: BudgetVisua
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
-              className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.07] transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-colors"
             >
               <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${d.gradient} flex items-center justify-center text-lg shadow-md`}>
                 {d.emoji}
@@ -166,8 +166,8 @@ export default function BudgetVisualizer({ body, participantCount }: BudgetVisua
       {/* Notes (total line, quick-note, etc) */}
       {notes.length > 0 && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-start gap-2">
-          <TrendingUp className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-          <div className="text-xs text-amber-100/90 leading-relaxed space-y-1">
+          <TrendingUp className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-700 dark:text-amber-100/90 leading-relaxed space-y-1">
             {notes.map((n, i) => <div key={i}>{n}</div>)}
           </div>
         </div>
