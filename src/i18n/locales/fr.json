@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "EVG",
+      "bachelorette": "EVJF",
+      "birthday": "Anniversaire",
+      "trip": "Voyage",
+      "other": "Événement"
+    },
+    "subtitleDefault": "Trouver une date & organiser",
+    "weddingDate": "Mariage",
+    "date": "Date",
+    "forHonoree": "pour"
+  },
+  "guestForm": {
+    "heading": "Ta réponse",
+    "subheading": "Ça ne prend que 2 minutes. Tu peux renvoyer plus tard pour mettre à jour.",
+    "participantLabel": "Qui es-tu ?",
+    "participantPlaceholder": "Sélectionne ton nom...",
+    "restrictionsLabel": "Allergies / restrictions (facultatif)",
+    "restrictionsPlaceholder": "p. ex. vertige, intolérance au lactose, végétarien...",
+    "privacyTitle": "Note de confidentialité :",
+    "privacyBody": "Ne partage ici que les informations que tu souhaites fournir volontairement. En envoyant le formulaire, tu consens expressément, conformément à l'art. 9, §2, a) du RGPD, au traitement de ces données. N'indique des données sensibles de santé ou de religion que si c'est indispensable sur le plan organisationnel.",
+    "privacyMore": "Plus d'infos :",
+    "privacyLinkText": "Politique de confidentialité §10",
+    "suggestionsLabel": "Idées / souhaits (facultatif)",
+    "suggestionsPlaceholder": "Des souhaits ou des idées particulières ?",
+    "groupCodeLabel": "Code de groupe",
+    "groupCodeDescription": "Tu as reçu le code dans ton invitation",
+    "groupCodePlaceholder": "p. ex. ABC123",
+    "submit": "Envoyer",
+    "submitting": "Envoi...",
+    "previewSubmit": "Aperçu — les réponses ne seront pas enregistrées",
+    "savedToast": "Réponse enregistrée !",
+    "submitErrorToast": "Erreur lors de l'envoi. Réessaie.",
+    "requiredCustomToast": "Merci de répondre à la question obligatoire : « {{label}} »",
+    "lockedTitle": "Formulaire fermé",
+    "lockedBody": "La date a déjà été fixée. Les détails suivront par WhatsApp.",
+    "progressAnswered": "{{current}} sur {{total}} répondues",
+    "estimatedTime": "rapide — ~{{minutes}} min.",
+    "successTitle": "Merci beaucoup !",
+    "successSubtitle": "Tes réponses ont été enregistrées",
+    "successForHonoree": "{{event}} · pour {{name}}",
+    "successBack": "Retour à l'accueil",
+    "answerPlaceholder": "Ta réponse...",
+    "yes": "Oui",
+    "no": "Non",
+    "selectPlaceholder": "Sélectionne...",
+    "ratingStar": "{{n}} sur 5",
+    "numberPlaceholder": "Saisis un nombre...",
+    "selectedCount": "{{count}} sélectionnées",
+    "optionCount": "{{count}} options",
+    "q": {
+      "attendance": "Tu es partant ?",
+      "duration": "Durée préférée",
+      "dateBlocks": "Dates possibles",
+      "dateBlocksHint": "Choisis TOUTES les dates qui te conviennent, pas seulement ta préférée !",
+      "blockLabel": "Bloc {{key}} : {{label}}",
+      "partialDays": "Partiellement possible ? (facultatif)",
+      "partialDaysHint": "Si tu n'es dispo que certains jours/horaires",
+      "partialDaysPlaceholder": "p. ex. Bloc B seulement samedi, à partir de 14 h...",
+      "budget": "Ton budget par personne",
+      "destination": "Destination",
+      "deCity": "Ville souhaitée en Allemagne (facultatif)",
+      "deCityPlaceholder": "p. ex. Berlin, Hambourg, Munich, Cologne...",
+      "travel": "Disposition à voyager",
+      "activities": "Activités / préférences",
+      "activitiesHint": "Sélectionne tout ce qui t'intéresse",
+      "fitness": "Niveau de forme",
+      "alcohol": "Alcool ? (facultatif)"
+    },
+    "categories": {
+      "action": "Action et aventure",
+      "outdoor": "Plein air et nature",
+      "food": "Manger et boire",
+      "chill": "Détente",
+      "mixed": "Autres"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Festif et prêt pour la fête avec un dégradé violet-cyan"
+    },
+    "wedding-elegant": {
+      "name": "Mariage Élégant",
+      "desc": "Classique et élégant avec des touches or rose"
+    },
+    "birthday-fun": {
+      "name": "Anniversaire Fun",
+      "desc": "Coloré et joyeux pour les fêtes d’anniversaire"
+    },
+    "beach-vibes": {
+      "name": "Ambiance Plage",
+      "desc": "Détendu et estival pour les escapades à la plage"
+    },
+    "night-out": {
+      "name": "Soirée en Ville",
+      "desc": "Sombre et glamour pour les soirées festives"
+    },
+    "modern-minimal": {
+      "name": "Minimalisme Moderne",
+      "desc": "Épuré et intemporel pour toutes les occasions"
+    },
+    "tropical-paradise": {
+      "name": "Paradis Tropical",
+      "desc": "Exotique et coloré pour les voyages d’aventure"
+    },
+    "royal-purple": {
+      "name": "Violet Royal",
+      "desc": "Royal et luxueux pour les occasions spéciales"
+    },
+    "sunset-glow": {
+      "name": "Lueur du Couchant",
+      "desc": "Chaleureux et romantique comme un coucher de soleil"
+    },
+    "ocean-breeze": {
+      "name": "Brise Océane",
+      "desc": "Frais et maritime pour les amateurs de sports nautiques"
+    },
+    "ladies-night": {
+      "name": "Soirée entre Filles",
+      "desc": "Rose et glamour pour l’EVJF de la mariée"
+    },
+    "vegas-neon": {
+      "name": "Vegas Néon",
+      "desc": "Lumières néon pour des fêtes inoubliables"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bavarois et festif pour les fans de l’Oktoberfest"
+    },
+    "ski-snow": {
+      "name": "Ski et Neige",
+      "desc": "Hivernal et sportif pour les séjours au ski"
+    },
+    "festival-vibes": {
+      "name": "Ambiance Festival",
+      "desc": "Sauvage et coloré pour les amoureux des festivals"
+    },
+    "garden-party": {
+      "name": "Garden Party",
+      "desc": "Naturel et romantique pour les fêtes au jardin"
+    },
+    "road-trip": {
+      "name": "Road Trip",
+      "desc": "Aventureux et libre pour les road trips"
+    },
+    "glamour-night": {
+      "name": "Nuit de Glamour",
+      "desc": "Chic et glamour pour les soirées d’exception"
+    },
+    "sporty-adventure": {
+      "name": "Aventure Sportive",
+      "desc": "Actif et énergique pour les sportifs"
+    },
+    "retro-vintage": {
+      "name": "Rétro Vintage",
+      "desc": "Nostalgique et stylé dans un look vintage"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Jeux EVG/EVJF",

@@ -1,8 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -11,9 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SurveyOptionCard from "../SurveyOptionCard";
 import type { CustomQuestionFieldProps } from "./types";
 
 const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldProps) => {
+  const { t } = useTranslation();
+  const answerPlaceholder = t("guestForm.answerPlaceholder", { defaultValue: "Deine Antwort..." });
+
   return (
     <div className="space-y-2">
       <Label className="form-label">
@@ -21,20 +24,22 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
       </Label>
 
       {question.type === "toggle" && (
-        <div className="flex items-center space-x-3 p-3 rounded-lg border border-border">
+        <div className="flex items-center space-x-3 p-3 rounded-lg border border-white/[0.08]">
           <Switch
             checked={value === true}
             onCheckedChange={(checked) => onChange(checked)}
           />
           <span className="text-sm text-muted-foreground">
-            {value ? "Ja" : "Nein"}
+            {value
+              ? t("guestForm.yes", { defaultValue: "Ja" })
+              : t("guestForm.no", { defaultValue: "Nein" })}
           </span>
         </div>
       )}
 
       {question.type === "textarea" && (
         <Textarea
-          placeholder={question.placeholder || "Deine Antwort..."}
+          placeholder={question.placeholder || answerPlaceholder}
           className="resize-none"
           value={(value as string) || ""}
           onChange={(e) => onChange(e.target.value)}
@@ -43,7 +48,7 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
 
       {question.type === "text" && (
         <Input
-          placeholder={question.placeholder || "Deine Antwort..."}
+          placeholder={question.placeholder || answerPlaceholder}
           value={(value as string) || ""}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -55,7 +60,7 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
           onValueChange={(value) => onChange(value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Bitte auswählen..." />
+            <SelectValue placeholder={t("guestForm.selectPlaceholder", { defaultValue: "Bitte auswählen..." })} />
           </SelectTrigger>
           <SelectContent>
             {question.options.map((opt) => (
@@ -68,54 +73,43 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
       )}
 
       {question.type === "radio" && question.options && (
-        <RadioGroup
-          value={(value as string) || ""}
-          onValueChange={(value) => onChange(value)}
-          className="grid gap-2"
-        >
+        <div className="grid gap-2">
           {question.options.map((opt) => (
-            <div
+            <SurveyOptionCard
               key={opt}
-              className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-            >
-              <RadioGroupItem value={opt} id={`${question.id}-${opt}`} />
-              <Label htmlFor={`${question.id}-${opt}`} className="cursor-pointer flex-1">
-                {opt}
-              </Label>
-            </div>
+              label={opt}
+              selected={(value as string) === opt}
+              onSelect={() => onChange(opt)}
+            />
           ))}
-        </RadioGroup>
+        </div>
       )}
 
       {question.type === "checkbox" && question.options && (
         <div className="grid gap-2">
           {question.options.map((opt) => {
-            const currentValues = (value as string || "").split(",").filter(Boolean);
+            const currentValues = ((value as string) || "").split(",").filter(Boolean);
             const isChecked = currentValues.includes(opt);
             return (
-              <label
+              <SurveyOptionCard
                 key={opt}
-                className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                  isChecked ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                }`}
-              >
-                <Checkbox
-                  checked={isChecked}
-                  onCheckedChange={(checked) => {
-                    const newValues = checked
-                      ? [...currentValues, opt]
-                      : currentValues.filter((v) => v !== opt);
-                    onChange(newValues.join(","));
-                  }}
-                />
-                <span className="cursor-pointer flex-1">{opt}</span>
-              </label>
+                multiSelect
+                label={opt}
+                selected={isChecked}
+                onSelect={() =>
+                  onChange(
+                    (isChecked
+                      ? currentValues.filter((v) => v !== opt)
+                      : [...currentValues, opt]
+                    ).join(",")
+                  )
+                }
+              />
             );
           })}
         </div>
       )}
 
-      {/* TODO i18n guest form — German placeholders kept consistent with the strings above */}
       {question.type === "rating" && (
         <div className="flex items-center gap-2">
           {[1, 2, 3, 4, 5].map((n) => {
@@ -126,10 +120,11 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
                 key={n}
                 type="button"
                 onClick={() => onChange(String(n))}
-                aria-label={`${n} von 5`}
+                aria-label={t("guestForm.ratingStar", { defaultValue: "{{n}} von 5", n })}
                 className={`text-2xl leading-none transition-colors ${
                   active ? "text-primary" : "text-muted-foreground/40 hover:text-muted-foreground"
                 }`}
+                style={active ? { color: "var(--template-primary, hsl(var(--primary)))" } : undefined}
               >
                 ★
               </button>
@@ -142,7 +137,7 @@ const CustomQuestionField = ({ question, value, onChange }: CustomQuestionFieldP
         <Input
           type="number"
           inputMode="decimal"
-          placeholder={question.placeholder || "Zahl eingeben..."}
+          placeholder={question.placeholder || t("guestForm.numberPlaceholder", { defaultValue: "Zahl eingeben..." })}
           min={question.min}
           max={question.max}
           value={(value as string) || ""}

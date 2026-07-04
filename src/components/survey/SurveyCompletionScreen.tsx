@@ -1,9 +1,15 @@
 import { motion, useReducedMotion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, PartyPopper, Sparkles, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SurveyCompletionScreenProps {
   eventName: string;
+  /** The person being celebrated — shown as "für <name>" when present. */
+  honoreeName?: string;
+  /** Event branding colours for the themed heading + particles. */
+  primaryColor?: string;
+  accentColor?: string;
   onGoBack: () => void;
 }
 
@@ -20,23 +26,31 @@ const fadeUp = {
 
 const SurveyCompletionScreen = ({
   eventName,
+  honoreeName,
+  primaryColor,
+  accentColor,
   onGoBack,
 }: SurveyCompletionScreenProps) => {
+  const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const transition = shouldReduceMotion
     ? { duration: 0 }
     : { type: "spring" as const, stiffness: 200, damping: 20 };
 
+  const primary = primaryColor || "hsl(var(--primary))";
+  const accent = accentColor || "hsl(var(--accent))";
+
   return (
     <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
-      {/* CSS-only floating dots */}
+      {/* CSS-only floating dots, tinted to the event primary */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         {[...Array(7)].map((_, i) => (
           <span
             key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-violet-400/30 animate-float-particle"
+            className="absolute w-1.5 h-1.5 rounded-full animate-float-particle"
             style={{
               left: `${12 + i * 13}%`,
+              backgroundColor: `color-mix(in srgb, ${primary} 45%, transparent)`,
               animationDelay: `${i * 0.7}s`,
               animationDuration: `${3 + (i % 3)}s`,
             }}
@@ -61,7 +75,7 @@ const SurveyCompletionScreen = ({
             animate={{ scale: 1 }}
             transition={{ ...transition, delay: 0.1 }}
           >
-            <Sparkles className="w-8 h-8 text-amber-400/80" />
+            <Sparkles className="w-8 h-8" style={{ color: accent }} />
           </motion.span>
           <motion.span
             initial={shouldReduceMotion ? {} : { scale: 0 }}
@@ -75,17 +89,18 @@ const SurveyCompletionScreen = ({
             animate={{ scale: 1, rotate: 0 }}
             transition={{ ...transition, delay: 0.3 }}
           >
-            <PartyPopper className="w-8 h-8 text-violet-400/80" />
+            <PartyPopper className="w-8 h-8" style={{ color: primary }} />
           </motion.span>
         </motion.div>
 
-        {/* Heading */}
+        {/* Heading — themed to branding */}
         <motion.h2
-          className="font-display text-3xl font-bold mb-2 bg-gradient-to-r from-violet-400 to-purple-300 bg-clip-text text-transparent"
+          className="font-display text-3xl font-bold mb-2 bg-clip-text text-transparent"
+          style={{ backgroundImage: `linear-gradient(135deg, ${primary}, ${accent})` }}
           variants={fadeUp}
           transition={transition}
         >
-          Vielen Dank!
+          {t("guestForm.successTitle", { defaultValue: "Vielen Dank!" })}
         </motion.h2>
 
         {/* Subtitle */}
@@ -94,27 +109,31 @@ const SurveyCompletionScreen = ({
           variants={fadeUp}
           transition={transition}
         >
-          Deine Antworten wurden gespeichert
+          {t("guestForm.successSubtitle", {
+            defaultValue: "Deine Antworten wurden gespeichert",
+          })}
         </motion.p>
 
-        {/* Event name */}
+        {/* Event name + honoree */}
         <motion.p
           className="text-sm text-muted-foreground/70 mb-8"
           variants={fadeUp}
           transition={transition}
         >
-          {eventName}
+          {honoreeName
+            ? t("guestForm.successForHonoree", {
+                defaultValue: "{{event}} · für {{name}}",
+                event: eventName,
+                name: honoreeName,
+              })
+            : eventName}
         </motion.p>
 
         {/* Back button */}
         <motion.div variants={fadeUp} transition={transition}>
-          <Button
-            onClick={onGoBack}
-            variant="outline"
-            className="cursor-pointer gap-2"
-          >
+          <Button onClick={onGoBack} variant="outline" className="cursor-pointer gap-2">
             <ArrowLeft className="w-4 h-4" />
-            Zurueck zur Uebersicht
+            {t("guestForm.successBack", { defaultValue: "Zurück zur Startseite" })}
           </Button>
         </motion.div>
       </motion.div>
@@ -128,6 +147,9 @@ const SurveyCompletionScreen = ({
         }
         .animate-float-particle {
           animation: float-particle linear infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-float-particle { animation: none; opacity: 0.4; }
         }
       `}</style>
     </div>

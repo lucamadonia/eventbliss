@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Bekarlığa Veda",
+      "bachelorette": "Bekarlığa Veda",
+      "birthday": "Doğum Günü",
+      "trip": "Gezi",
+      "other": "Etkinlik"
+    },
+    "subtitleDefault": "Tarih bul ve planla",
+    "weddingDate": "Düğün",
+    "date": "Tarih",
+    "forHonoree": "için"
+  },
+  "guestForm": {
+    "heading": "Cevabın",
+    "subheading": "Sadece 2 dakika sürer. Güncellemek için daha sonra tekrar gönderebilirsin.",
+    "participantLabel": "Sen kimsin?",
+    "participantPlaceholder": "Adını seç...",
+    "restrictionsLabel": "Alerjiler / kısıtlamalar (isteğe bağlı)",
+    "restrictionsPlaceholder": "örn. yükseklik korkusu, laktoz intoleransı, vejetaryen...",
+    "privacyTitle": "Gizlilik bilgisi:",
+    "privacyBody": "Lütfen yalnızca gönüllü olarak paylaşmak istediğin bilgileri gir. Formu göndererek, KVKK/GDPR md. 9(2)(a) uyarınca bu verilerin işlenmesine açıkça izin vermiş olursun. Hassas sağlık veya din bilgilerini yalnızca organizasyon açısından zorunluysa gir.",
+    "privacyMore": "Daha fazla bilgi:",
+    "privacyLinkText": "Gizlilik Politikası §10",
+    "suggestionsLabel": "Fikirler / istekler (isteğe bağlı)",
+    "suggestionsPlaceholder": "Özel bir istek veya fikir var mı?",
+    "groupCodeLabel": "Grup kodu",
+    "groupCodeDescription": "Kodu davetiyende aldın",
+    "groupCodePlaceholder": "örn. ABC123",
+    "submit": "Gönder",
+    "submitting": "Gönderiliyor...",
+    "previewSubmit": "Önizleme — cevaplar kaydedilmeyecek",
+    "savedToast": "Cevap kaydedildi!",
+    "submitErrorToast": "Gönderirken hata oluştu. Lütfen tekrar dene.",
+    "requiredCustomToast": "Lütfen zorunlu soruyu yanıtla: \"{{label}}\"",
+    "lockedTitle": "Form kapalı",
+    "lockedBody": "Tarih zaten belirlendi. Ayrıntılar WhatsApp ile gelecek.",
+    "progressAnswered": "{{total}} sorudan {{current}} tanesi yanıtlandı",
+    "estimatedTime": "hızlı — ~{{minutes}} dk.",
+    "successTitle": "Çok teşekkürler!",
+    "successSubtitle": "Cevapların kaydedildi",
+    "successForHonoree": "{{event}} · {{name}} için",
+    "successBack": "Ana sayfaya dön",
+    "answerPlaceholder": "Cevabın...",
+    "yes": "Evet",
+    "no": "Hayır",
+    "selectPlaceholder": "Lütfen seç...",
+    "ratingStar": "5 üzerinden {{n}}",
+    "numberPlaceholder": "Bir sayı gir...",
+    "selectedCount": "{{count}} seçildi",
+    "optionCount": "{{count}} seçenek",
+    "q": {
+      "attendance": "Var mısın?",
+      "duration": "Tercih edilen süre",
+      "dateBlocks": "Uygun tarihler",
+      "dateBlocksHint": "Sadece favorini değil, sana uyan TÜM tarihleri seç!",
+      "blockLabel": "Blok {{key}}: {{label}}",
+      "partialDays": "Kısmen uygun mu? (isteğe bağlı)",
+      "partialDaysHint": "Yalnızca belirli gün/saatlerde müsaitsen",
+      "partialDaysPlaceholder": "örn. Blok B sadece cumartesi, 14.00'ten itibaren...",
+      "budget": "Kişi başı bütçen",
+      "destination": "Varış yeri",
+      "deCity": "Almanya'da tercih edilen şehir (isteğe bağlı)",
+      "deCityPlaceholder": "örn. Berlin, Hamburg, Münih, Köln...",
+      "travel": "Seyahat isteği",
+      "activities": "Aktiviteler / tercihler",
+      "activitiesHint": "İlgini çeken her şeyi seç",
+      "fitness": "Fitness seviyesi",
+      "alcohol": "Alkol? (isteğe bağlı)"
+    },
+    "categories": {
+      "action": "Aksiyon ve macera",
+      "outdoor": "Doğa ve açık hava",
+      "food": "Yeme ve içme",
+      "chill": "Rahatlama",
+      "mixed": "Diğer"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Mor-camgöbeği geçişiyle şenlikli ve partiye hazır"
+    },
+    "wedding-elegant": {
+      "name": "Zarif Düğün",
+      "desc": "Roze altın vurgularıyla klasik ve şık"
+    },
+    "birthday-fun": {
+      "name": "Eğlenceli Doğum Günü",
+      "desc": "Doğum günü partileri için renkli ve neşeli"
+    },
+    "beach-vibes": {
+      "name": "Plaj Havası",
+      "desc": "Plaj gezileri için rahat ve yazlık"
+    },
+    "night-out": {
+      "name": "Gece Eğlencesi",
+      "desc": "Parti geceleri için karanlık ve göz alıcı"
+    },
+    "modern-minimal": {
+      "name": "Modern Minimal",
+      "desc": "Her ortama uygun sade ve zamansız"
+    },
+    "tropical-paradise": {
+      "name": "Tropik Cennet",
+      "desc": "Macera gezileri için egzotik ve renkli"
+    },
+    "royal-purple": {
+      "name": "Kraliyet Moru",
+      "desc": "Özel anlar için asil ve lüks"
+    },
+    "sunset-glow": {
+      "name": "Gün Batımı Işıltısı",
+      "desc": "Gün batımı gibi sıcak ve romantik"
+    },
+    "ocean-breeze": {
+      "name": "Okyanus Esintisi",
+      "desc": "Su sporu tutkunları için ferah ve denizci"
+    },
+    "ladies-night": {
+      "name": "Kızlar Gecesi",
+      "desc": "Gelin partisi için pembe ve göz alıcı"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Unutulmaz partiler için neon ışıklar"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Oktoberfest hayranları için Bavyera usulü ve şenlikli"
+    },
+    "ski-snow": {
+      "name": "Kayak ve Kar",
+      "desc": "Kayak gezileri için kışlık ve sportif"
+    },
+    "festival-vibes": {
+      "name": "Festival Havası",
+      "desc": "Festival tutkunları için çılgın ve renkli"
+    },
+    "garden-party": {
+      "name": "Bahçe Partisi",
+      "desc": "Bahçe partileri için doğal ve romantik"
+    },
+    "road-trip": {
+      "name": "Yol Gezisi",
+      "desc": "Yol gezileri için maceracı ve özgür"
+    },
+    "glamour-night": {
+      "name": "Glamour Gecesi",
+      "desc": "Özel geceler için şık ve göz alıcı"
+    },
+    "sporty-adventure": {
+      "name": "Sportif Macera",
+      "desc": "Sporcular için aktif ve enerjik"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Vintage görünümde nostaljik ve şık"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Bekarlığa Veda Oyunları",

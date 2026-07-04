@@ -1,3 +1,4 @@
+import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
 import ActivityPreferencesSection from "../ActivityPreferencesSection";
 import type { CoreQuestionProps } from "./types";
 
@@ -5,10 +6,12 @@ const ActivitiesQuestion = ({ control, config, questionConfig }: CoreQuestionPro
   if (questionConfig?.activities?.enabled === false) return null;
 
   return (
-    <ActivityPreferencesSection
-      control={control}
-      activityOptions={config.activity_options}
-    />
+    <SurveyQuestionWrapper>
+      <ActivityPreferencesSection
+        control={control}
+        activityOptions={config.activity_options}
+      />
+    </SurveyQuestionWrapper>
   );
 };
 

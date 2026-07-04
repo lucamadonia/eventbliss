@@ -249,7 +249,7 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
           </span>
           {selectedDesignTemplate && (
             <Badge variant="outline" className="text-xs border-violet-500/50 text-violet-500">
-              {selectedDesignTemplate.icon} {selectedDesignTemplate.name}
+              {selectedDesignTemplate.icon} {t(selectedDesignTemplate.nameKey, selectedDesignTemplate.name)}
             </Badge>
           )}
         </div>
@@ -372,6 +372,7 @@ function DesignTemplatePreviewCard({
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useTranslation();
   const patternSvg = template.patternId !== 'none' && PATTERN_SVGS[template.patternId]
     ? PATTERN_SVGS[template.patternId](template.branding.accent_color)
     : '';
@@ -440,10 +441,10 @@ function DesignTemplatePreviewCard({
       <div className="p-2 bg-card/95 backdrop-blur-sm text-left">
         <div className="flex items-center gap-1 mb-0.5">
           <span className="text-sm">{template.icon}</span>
-          <p className="text-[11px] font-semibold text-foreground truncate">{template.name}</p>
+          <p className="text-[11px] font-semibold text-foreground truncate">{t(template.nameKey, template.name)}</p>
         </div>
         <p className="text-[10px] text-muted-foreground line-clamp-1 leading-tight">
-          {template.description}
+          {t(template.descriptionKey, template.description)}
         </p>
       </div>
     </motion.button>

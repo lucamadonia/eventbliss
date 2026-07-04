@@ -112,7 +112,7 @@ export function BrandingEditor({
           className="w-full"
         >
           <RotateCcw className="w-4 h-4 mr-2" />
-          {t('dashboard.form.branding.resetTemplateColors')} ({selectedTemplate.name})
+          {t('dashboard.form.branding.resetTemplateColors')} ({t(selectedTemplate.nameKey, selectedTemplate.name)})
         </Button>
       )}
 

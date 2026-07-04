@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Bachelor Party",
+      "bachelorette": "Hen Party",
+      "birthday": "Birthday",
+      "trip": "Trip",
+      "other": "Event"
+    },
+    "subtitleDefault": "Find a date & plan the fun",
+    "weddingDate": "Wedding",
+    "date": "Date",
+    "forHonoree": "for"
+  },
+  "guestForm": {
+    "heading": "Your response",
+    "subheading": "Takes just 2 minutes. You can submit again later to update.",
+    "participantLabel": "Who are you?",
+    "participantPlaceholder": "Select your name...",
+    "restrictionsLabel": "Allergies / restrictions (optional)",
+    "restrictionsPlaceholder": "e.g. fear of heights, lactose intolerance, vegetarian...",
+    "privacyTitle": "Privacy notice:",
+    "privacyBody": "Please only share information you want to provide voluntarily. By submitting the form you expressly consent, pursuant to Art. 9(2)(a) GDPR, to the processing of this data. Only enter sensitive health or religious details if organizationally essential.",
+    "privacyMore": "More info:",
+    "privacyLinkText": "Privacy Policy §10",
+    "suggestionsLabel": "Ideas / wishes (optional)",
+    "suggestionsPlaceholder": "Any special wishes or ideas?",
+    "groupCodeLabel": "Group code",
+    "groupCodeDescription": "You received the code in your invitation",
+    "groupCodePlaceholder": "e.g. ABC123",
+    "submit": "Submit",
+    "submitting": "Sending...",
+    "previewSubmit": "Preview — answers won't be saved",
+    "savedToast": "Response saved!",
+    "submitErrorToast": "Error submitting. Please try again.",
+    "requiredCustomToast": "Please answer the required question: “{{label}}”",
+    "lockedTitle": "Form closed",
+    "lockedBody": "The date has already been set. Details will follow via WhatsApp.",
+    "progressAnswered": "{{current}} of {{total}} answered",
+    "estimatedTime": "quick — ~{{minutes}} min.",
+    "successTitle": "Thank you!",
+    "successSubtitle": "Your answers have been saved",
+    "successForHonoree": "{{event}} · for {{name}}",
+    "successBack": "Back to home",
+    "answerPlaceholder": "Your answer...",
+    "yes": "Yes",
+    "no": "No",
+    "selectPlaceholder": "Please select...",
+    "ratingStar": "{{n}} of 5",
+    "numberPlaceholder": "Enter a number...",
+    "selectedCount": "{{count}} selected",
+    "optionCount": "{{count}} options",
+    "q": {
+      "attendance": "Are you in?",
+      "duration": "Preferred duration",
+      "dateBlocks": "Possible dates",
+      "dateBlocksHint": "Pick ALL dates that work for you – not just your favorite!",
+      "blockLabel": "Block {{key}}: {{label}}",
+      "partialDays": "Partially available? (optional)",
+      "partialDaysHint": "If you can only make certain days/times",
+      "partialDaysPlaceholder": "e.g. Block B only Saturday, from 2 pm...",
+      "budget": "Your budget per person",
+      "destination": "Destination",
+      "deCity": "Preferred city in Germany (optional)",
+      "deCityPlaceholder": "e.g. Berlin, Hamburg, Munich, Cologne...",
+      "travel": "Willingness to travel",
+      "activities": "Activities / preferences",
+      "activitiesHint": "Select everything that interests you",
+      "fitness": "Fitness level",
+      "alcohol": "Alcohol? (optional)"
+    },
+    "categories": {
+      "action": "Action & Adventure",
+      "outdoor": "Outdoor & Nature",
+      "food": "Food & Drink",
+      "chill": "Relaxation",
+      "mixed": "Other"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Festive & party-ready with a purple-cyan gradient"
+    },
+    "wedding-elegant": {
+      "name": "Wedding Elegant",
+      "desc": "Classic and elegant with rose gold accents"
+    },
+    "birthday-fun": {
+      "name": "Birthday Fun",
+      "desc": "Colorful & cheerful for birthday parties"
+    },
+    "beach-vibes": {
+      "name": "Beach Vibes",
+      "desc": "Relaxed & summery for beach trips"
+    },
+    "night-out": {
+      "name": "Night Out",
+      "desc": "Dark & glamorous for party nights"
+    },
+    "modern-minimal": {
+      "name": "Modern Minimal",
+      "desc": "Clean & timeless for any occasion"
+    },
+    "tropical-paradise": {
+      "name": "Tropical Paradise",
+      "desc": "Exotic & colorful for adventure trips"
+    },
+    "royal-purple": {
+      "name": "Royal Purple",
+      "desc": "Regal & luxurious for special occasions"
+    },
+    "sunset-glow": {
+      "name": "Sunset Glow",
+      "desc": "Warm & romantic like a sunset"
+    },
+    "ocean-breeze": {
+      "name": "Ocean Breeze",
+      "desc": "Fresh & maritime for water-sports fans"
+    },
+    "ladies-night": {
+      "name": "Ladies Night",
+      "desc": "Pink & glamorous for the bride’s party"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Neon lights for unforgettable parties"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bavarian & festive for Oktoberfest fans"
+    },
+    "ski-snow": {
+      "name": "Ski & Snow",
+      "desc": "Wintry & sporty for ski trips"
+    },
+    "festival-vibes": {
+      "name": "Festival Vibes",
+      "desc": "Wild & colorful for festival lovers"
+    },
+    "garden-party": {
+      "name": "Garden Party",
+      "desc": "Natural & romantic for garden parties"
+    },
+    "road-trip": {
+      "name": "Road Trip",
+      "desc": "Adventurous & free for road trips"
+    },
+    "glamour-night": {
+      "name": "Glamour Night",
+      "desc": "Elegant & glamorous for special evenings"
+    },
+    "sporty-adventure": {
+      "name": "Sporty Adventure",
+      "desc": "Active & energetic for athletes"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostalgic & stylish in a vintage look"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Bachelor Party Games",

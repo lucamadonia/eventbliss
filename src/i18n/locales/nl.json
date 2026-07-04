@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Vrijgezellenfeest",
+      "bachelorette": "Vrijgezellenfeest",
+      "birthday": "Verjaardag",
+      "trip": "Reis",
+      "other": "Evenement"
+    },
+    "subtitleDefault": "Datum vinden & plannen",
+    "weddingDate": "Bruiloft",
+    "date": "Datum",
+    "forHonoree": "voor"
+  },
+  "guestForm": {
+    "heading": "Jouw antwoord",
+    "subheading": "Duurt maar 2 minuten. Je kunt later opnieuw versturen om bij te werken.",
+    "participantLabel": "Wie ben jij?",
+    "participantPlaceholder": "Kies je naam...",
+    "restrictionsLabel": "Allergieën / beperkingen (optioneel)",
+    "restrictionsPlaceholder": "bijv. hoogtevrees, lactose-intolerantie, vegetariër...",
+    "privacyTitle": "Privacyverklaring:",
+    "privacyBody": "Deel hier alleen informatie die je vrijwillig wilt geven. Door het formulier te verzenden stem je uitdrukkelijk in, conform art. 9 lid 2 sub a AVG, met de verwerking van deze gegevens. Vul gevoelige gezondheids- of religiegegevens alleen in als dat organisatorisch echt nodig is.",
+    "privacyMore": "Meer info:",
+    "privacyLinkText": "Privacyverklaring §10",
+    "suggestionsLabel": "Ideeën / wensen (optioneel)",
+    "suggestionsPlaceholder": "Speciale wensen of ideeën?",
+    "groupCodeLabel": "Groepscode",
+    "groupCodeDescription": "De code heb je in je uitnodiging gekregen",
+    "groupCodePlaceholder": "bijv. ABC123",
+    "submit": "Versturen",
+    "submitting": "Bezig met verzenden...",
+    "previewSubmit": "Voorbeeld — antwoorden worden niet opgeslagen",
+    "savedToast": "Antwoord opgeslagen!",
+    "submitErrorToast": "Fout bij het verzenden. Probeer het opnieuw.",
+    "requiredCustomToast": "Beantwoord de verplichte vraag: '{{label}}'",
+    "lockedTitle": "Formulier gesloten",
+    "lockedBody": "De datum is al vastgelegd. Details volgen via WhatsApp.",
+    "progressAnswered": "{{current}} van {{total}} beantwoord",
+    "estimatedTime": "snel — ~{{minutes}} min.",
+    "successTitle": "Hartelijk dank!",
+    "successSubtitle": "Je antwoorden zijn opgeslagen",
+    "successForHonoree": "{{event}} · voor {{name}}",
+    "successBack": "Terug naar start",
+    "answerPlaceholder": "Jouw antwoord...",
+    "yes": "Ja",
+    "no": "Nee",
+    "selectPlaceholder": "Maak een keuze...",
+    "ratingStar": "{{n}} van 5",
+    "numberPlaceholder": "Voer een getal in...",
+    "selectedCount": "{{count}} geselecteerd",
+    "optionCount": "{{count}} opties",
+    "q": {
+      "attendance": "Ben je erbij?",
+      "duration": "Voorkeursduur",
+      "dateBlocks": "Mogelijke data",
+      "dateBlocksHint": "Kies ALLE data die jou schikken, niet alleen je favoriet!",
+      "blockLabel": "Blok {{key}}: {{label}}",
+      "partialDays": "Gedeeltelijk mogelijk? (optioneel)",
+      "partialDaysHint": "Als je alleen bepaalde dagen/tijden kunt",
+      "partialDaysPlaceholder": "bijv. Blok B alleen zaterdag, vanaf 14 uur...",
+      "budget": "Je budget per persoon",
+      "destination": "Bestemming",
+      "deCity": "Voorkeursstad in Duitsland (optioneel)",
+      "deCityPlaceholder": "bijv. Berlijn, Hamburg, München, Keulen...",
+      "travel": "Reisbereidheid",
+      "activities": "Activiteiten / voorkeuren",
+      "activitiesHint": "Selecteer alles wat je interesseert",
+      "fitness": "Fitnessniveau",
+      "alcohol": "Alcohol? (optioneel)"
+    },
+    "categories": {
+      "action": "Actie & avontuur",
+      "outdoor": "Outdoor & natuur",
+      "food": "Eten & drinken",
+      "chill": "Ontspanning",
+      "mixed": "Overig"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Feestelijk en klaar voor het feest met paars-cyaan verloop"
+    },
+    "wedding-elegant": {
+      "name": "Elegante Bruiloft",
+      "desc": "Klassiek en elegant met rosé goud accenten"
+    },
+    "birthday-fun": {
+      "name": "Verjaardagspret",
+      "desc": "Kleurrijk en vrolijk voor verjaardagsfeestjes"
+    },
+    "beach-vibes": {
+      "name": "Strandsfeer",
+      "desc": "Ontspannen en zomers voor strandtrips"
+    },
+    "night-out": {
+      "name": "Avondje Uit",
+      "desc": "Donker en glamoureus voor feestavonden"
+    },
+    "modern-minimal": {
+      "name": "Modern Minimaal",
+      "desc": "Strak en tijdloos voor elke gelegenheid"
+    },
+    "tropical-paradise": {
+      "name": "Tropisch Paradijs",
+      "desc": "Exotisch en kleurrijk voor avontuurlijke trips"
+    },
+    "royal-purple": {
+      "name": "Koninklijk Paars",
+      "desc": "Vorstelijk en luxueus voor speciale gelegenheden"
+    },
+    "sunset-glow": {
+      "name": "Zonsonderganggloed",
+      "desc": "Warm en romantisch als een zonsondergang"
+    },
+    "ocean-breeze": {
+      "name": "Oceaanbries",
+      "desc": "Fris en maritiem voor watersportliefhebbers"
+    },
+    "ladies-night": {
+      "name": "Ladies Night",
+      "desc": "Roze en glamoureus voor het vrijgezellenfeest van de bruid"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Neonlichten voor onvergetelijke feesten"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Beiers en gezellig voor Oktoberfest-fans"
+    },
+    "ski-snow": {
+      "name": "Ski en Sneeuw",
+      "desc": "Winters en sportief voor skitrips"
+    },
+    "festival-vibes": {
+      "name": "Festivalsfeer",
+      "desc": "Wild en kleurrijk voor festivalliefhebbers"
+    },
+    "garden-party": {
+      "name": "Tuinfeest",
+      "desc": "Natuurlijk en romantisch voor tuinfeesten"
+    },
+    "road-trip": {
+      "name": "Road Trip",
+      "desc": "Avontuurlijk en vrij voor roadtrips"
+    },
+    "glamour-night": {
+      "name": "Glamouravond",
+      "desc": "Chique en glamoureus voor bijzondere avonden"
+    },
+    "sporty-adventure": {
+      "name": "Sportief Avontuur",
+      "desc": "Actief en energiek voor sporters"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostalgisch en stijlvol in een vintage look"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Vrijgezellenspellen",

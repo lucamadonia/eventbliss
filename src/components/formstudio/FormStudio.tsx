@@ -73,7 +73,8 @@ export default function FormStudio({ event, onUpdate, isActive }: FormStudioProp
   const customCount = settings.custom_questions?.length ?? 0;
   const finePrintCount = (settings.no_gos?.length ?? 0) + (settings.focus_points?.length ?? 0);
   const branding = settings.branding ?? DEFAULT_BRANDING;
-  const templateName = branding.template_id ? getTemplateById(branding.template_id)?.name : undefined;
+  const templateForName = branding.template_id ? getTemplateById(branding.template_id) : undefined;
+  const templateName = templateForName ? t(templateForName.nameKey, templateForName.name) : undefined;
   const eventType = event.event_type || "bachelor";
 
   const closeSheet = () => setSheet(null);

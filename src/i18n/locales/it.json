@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Addio al celibato",
+      "bachelorette": "Addio al nubilato",
+      "birthday": "Compleanno",
+      "trip": "Viaggio",
+      "other": "Evento"
+    },
+    "subtitleDefault": "Trova una data e organizza",
+    "weddingDate": "Matrimonio",
+    "date": "Data",
+    "forHonoree": "per"
+  },
+  "guestForm": {
+    "heading": "La tua risposta",
+    "subheading": "Bastano 2 minuti. Puoi inviarla di nuovo più tardi per aggiornarla.",
+    "participantLabel": "Chi sei?",
+    "participantPlaceholder": "Seleziona il tuo nome...",
+    "restrictionsLabel": "Allergie / restrizioni (facoltativo)",
+    "restrictionsPlaceholder": "es. vertigini, intolleranza al lattosio, vegetariano...",
+    "privacyTitle": "Nota sulla privacy:",
+    "privacyBody": "Condividi qui solo le informazioni che desideri fornire volontariamente. Inviando il modulo acconsenti espressamente, ai sensi dell'art. 9, par. 2, lett. a) del GDPR, al trattamento di questi dati. Inserisci dati sensibili su salute o religione solo se strettamente necessario a livello organizzativo.",
+    "privacyMore": "Maggiori info:",
+    "privacyLinkText": "Informativa sulla privacy §10",
+    "suggestionsLabel": "Idee / desideri (facoltativo)",
+    "suggestionsPlaceholder": "Qualche desiderio o idea particolare?",
+    "groupCodeLabel": "Codice gruppo",
+    "groupCodeDescription": "Hai ricevuto il codice nell'invito",
+    "groupCodePlaceholder": "es. ABC123",
+    "submit": "Invia",
+    "submitting": "Invio in corso...",
+    "previewSubmit": "Anteprima — le risposte non verranno salvate",
+    "savedToast": "Risposta salvata!",
+    "submitErrorToast": "Errore durante l'invio. Riprova.",
+    "requiredCustomToast": "Rispondi alla domanda obbligatoria: «{{label}}»",
+    "lockedTitle": "Modulo chiuso",
+    "lockedBody": "La data è già stata fissata. I dettagli arriveranno via WhatsApp.",
+    "progressAnswered": "{{current}} di {{total}} completate",
+    "estimatedTime": "veloce — ~{{minutes}} min.",
+    "successTitle": "Grazie mille!",
+    "successSubtitle": "Le tue risposte sono state salvate",
+    "successForHonoree": "{{event}} · per {{name}}",
+    "successBack": "Torna alla home",
+    "answerPlaceholder": "La tua risposta...",
+    "yes": "Sì",
+    "no": "No",
+    "selectPlaceholder": "Seleziona...",
+    "ratingStar": "{{n}} di 5",
+    "numberPlaceholder": "Inserisci un numero...",
+    "selectedCount": "{{count}} selezionate",
+    "optionCount": "{{count}} opzioni",
+    "q": {
+      "attendance": "Ci sei?",
+      "duration": "Durata preferita",
+      "dateBlocks": "Date possibili",
+      "dateBlocksHint": "Scegli TUTTE le date che ti vanno bene, non solo la preferita!",
+      "blockLabel": "Blocco {{key}}: {{label}}",
+      "partialDays": "Parzialmente disponibile? (facoltativo)",
+      "partialDaysHint": "Se puoi solo in certi giorni/orari",
+      "partialDaysPlaceholder": "es. Blocco B solo sabato, dalle 14...",
+      "budget": "Il tuo budget a persona",
+      "destination": "Destinazione",
+      "deCity": "Città preferita in Germania (facoltativo)",
+      "deCityPlaceholder": "es. Berlino, Amburgo, Monaco, Colonia...",
+      "travel": "Disponibilità a viaggiare",
+      "activities": "Attività / preferenze",
+      "activitiesHint": "Seleziona tutto ciò che ti interessa",
+      "fitness": "Livello di forma",
+      "alcohol": "Alcol? (facoltativo)"
+    },
+    "categories": {
+      "action": "Azione e avventura",
+      "outdoor": "Outdoor e natura",
+      "food": "Cibo e bevande",
+      "chill": "Relax",
+      "mixed": "Altro"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Festoso e pronto alla festa con gradiente viola-ciano"
+    },
+    "wedding-elegant": {
+      "name": "Matrimonio Elegante",
+      "desc": "Classico ed elegante con accenti oro rosa"
+    },
+    "birthday-fun": {
+      "name": "Compleanno Divertente",
+      "desc": "Colorato e allegro per le feste di compleanno"
+    },
+    "beach-vibes": {
+      "name": "Atmosfera da Spiaggia",
+      "desc": "Rilassato ed estivo per le gite al mare"
+    },
+    "night-out": {
+      "name": "Serata Fuori",
+      "desc": "Scuro e glamour per le notti di festa"
+    },
+    "modern-minimal": {
+      "name": "Minimal Moderno",
+      "desc": "Pulito e senza tempo per ogni occasione"
+    },
+    "tropical-paradise": {
+      "name": "Paradiso Tropicale",
+      "desc": "Esotico e colorato per viaggi d’avventura"
+    },
+    "royal-purple": {
+      "name": "Viola Reale",
+      "desc": "Regale e lussuoso per occasioni speciali"
+    },
+    "sunset-glow": {
+      "name": "Bagliore del Tramonto",
+      "desc": "Caldo e romantico come un tramonto"
+    },
+    "ocean-breeze": {
+      "name": "Brezza Oceanica",
+      "desc": "Fresco e marittimo per gli amanti degli sport acquatici"
+    },
+    "ladies-night": {
+      "name": "Serata tra Ragazze",
+      "desc": "Rosa e glamour per l’addio al nubilato"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Luci al neon per feste indimenticabili"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bavarese e festoso per i fan dell’Oktoberfest"
+    },
+    "ski-snow": {
+      "name": "Sci e Neve",
+      "desc": "Invernale e sportivo per le settimane bianche"
+    },
+    "festival-vibes": {
+      "name": "Atmosfera Festival",
+      "desc": "Selvaggio e colorato per gli amanti dei festival"
+    },
+    "garden-party": {
+      "name": "Festa in Giardino",
+      "desc": "Naturale e romantico per le feste in giardino"
+    },
+    "road-trip": {
+      "name": "Viaggio on the Road",
+      "desc": "Avventuroso e libero per i viaggi on the road"
+    },
+    "glamour-night": {
+      "name": "Notte Glamour",
+      "desc": "Elegante e glamour per le serate speciali"
+    },
+    "sporty-adventure": {
+      "name": "Avventura Sportiva",
+      "desc": "Attivo ed energico per gli sportivi"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostalgico ed elegante in stile vintage"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Giochi Addio Celibato",

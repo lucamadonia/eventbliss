@@ -86,6 +86,7 @@ interface TemplateCardProps {
 }
 
 function TemplateCard({ template, isSelected, isRecommended, onSelect }: TemplateCardProps) {
+  const { t } = useTranslation();
   const patternSvg = template.patternId !== 'none' && PATTERN_SVGS[template.patternId]
     ? PATTERN_SVGS[template.patternId](template.branding.accent_color)
     : '';
@@ -118,6 +119,17 @@ function TemplateCard({ template, isSelected, isRecommended, onSelect }: Templat
           background: template.preview.gradient,
         }}
       >
+        {/* Cinematic cover image (gradient + emoji remain as graceful fallback) */}
+        {template.heroImage && (
+          <img
+            src={template.heroImage}
+            alt=""
+            loading="lazy"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+
         {/* Pattern Overlay */}
         {patternSvg && (
           <div
@@ -177,11 +189,11 @@ function TemplateCard({ template, isSelected, isRecommended, onSelect }: Templat
         <div className="flex items-center gap-1.5 mb-0.5">
           <span className="text-base">{template.icon}</span>
           <p className="text-xs font-semibold text-foreground truncate">
-            {template.name}
+            {t(template.nameKey, template.name)}
           </p>
         </div>
         <p className="text-[10px] text-muted-foreground line-clamp-2 leading-tight">
-          {template.description}
+          {t(template.descriptionKey, template.description)}
         </p>
       </div>
     </motion.button>

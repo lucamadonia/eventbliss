@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTranslation } from "react-i18next";
 import {
   FormControl,
   FormField,
@@ -6,48 +6,42 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import SurveyQuestionWrapper from "../SurveyQuestionWrapper";
+import SurveyOptionCard from "../SurveyOptionCard";
 import type { CoreQuestionProps } from "./types";
 
 const FitnessQuestion = ({ control, config, questionConfig, translateLabel }: CoreQuestionProps) => {
+  const { t } = useTranslation();
   if (questionConfig?.fitness?.enabled === false) return null;
 
   return (
-    <div className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 mb-4">
+    <SurveyQuestionWrapper>
       <FormField
         control={control}
         name="fitness_level"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="form-label">Fitness-Level *</FormLabel>
+            <FormLabel className="form-label">
+              {t("guestForm.q.fitness", { defaultValue: "Fitness-Level" })} *
+            </FormLabel>
             <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                value={field.value}
-                className="grid grid-cols-3 gap-3"
-              >
-                {config.fitness_options.map((option) => {
-                  const isSelected = field.value === option.value;
-                  return (
-                    <div
-                      key={option.value}
-                      onClick={() => field.onChange(option.value)}
-                      className={`flex flex-col items-center p-3 rounded-lg border transition-colors cursor-pointer text-center ${
-                        isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <RadioGroupItem value={option.value} id={`fitness-${option.value}`} className="sr-only" />
-                      <span className="text-2xl block mb-1">{option.emoji}</span>
-                      <span className="text-sm">{translateLabel(option.label)}</span>
-                    </div>
-                  );
-                })}
-              </RadioGroup>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {config.fitness_options.map((option) => (
+                  <SurveyOptionCard
+                    key={option.value}
+                    label={translateLabel(option.label)}
+                    icon={option.emoji}
+                    selected={field.value === option.value}
+                    onSelect={() => field.onChange(option.value)}
+                  />
+                ))}
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-    </div>
+    </SurveyQuestionWrapper>
   );
 };
 

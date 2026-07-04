@@ -3,6 +3,10 @@ export interface DesignTemplate {
   id: string;
   name: string;
   description: string;
+  /** i18n key for the localized template name; `name` is the German fallback. */
+  nameKey: string;
+  /** i18n key for the localized template description; `description` is the German fallback. */
+  descriptionKey: string;
   icon: string;
   eventTypes: string[];
   branding: {
@@ -18,6 +22,10 @@ export interface DesignTemplate {
   // New fields for enhanced differentiation
   patternId: 'confetti' | 'rings' | 'waves' | 'stars' | 'diamonds' | 'dots' | 'stripes' | 'hearts' | 'bubbles' | 'none';
   backgroundIcons: string[];
+  /** Optional cinematic hero image (public/images/form-templates/<id>.webp).
+   *  When present, the guest-form hero renders it as a full cover behind a
+   *  palette scrim; missing files fall back to the gradient via onError. */
+  heroImage?: string;
 }
 
 export const DESIGN_TEMPLATES: DesignTemplate[] = [
@@ -25,6 +33,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'jga-classic',
     name: 'JGA Classic',
     description: 'Festlich & Party-ready mit lila-cyan Gradient',
+    nameKey: 'designTemplates.jga-classic.name',
+    descriptionKey: 'designTemplates.jga-classic.desc',
     icon: '🎉',
     eventTypes: ['bachelor', 'bachelorette'],
     branding: {
@@ -37,11 +47,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'confetti',
     backgroundIcons: ['🎉', '🥂', '🎊'],
+    heroImage: '/images/form-templates/jga-classic.webp',
   },
   {
     id: 'wedding-elegant',
     name: 'Wedding Elegant',
     description: 'Klassisch-elegant mit Rose Gold Akzenten',
+    nameKey: 'designTemplates.wedding-elegant.name',
+    descriptionKey: 'designTemplates.wedding-elegant.desc',
     icon: '💍',
     eventTypes: ['bachelor', 'bachelorette'],
     branding: {
@@ -54,11 +67,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'rings',
     backgroundIcons: ['💍', '💒', '🤍'],
+    heroImage: '/images/form-templates/wedding-elegant.webp',
   },
   {
     id: 'birthday-fun',
     name: 'Birthday Fun',
     description: 'Bunt & fröhlich für Geburtstagspartys',
+    nameKey: 'designTemplates.birthday-fun.name',
+    descriptionKey: 'designTemplates.birthday-fun.desc',
     icon: '🎂',
     eventTypes: ['birthday'],
     branding: {
@@ -71,11 +87,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'confetti',
     backgroundIcons: ['🎂', '🎈', '🎁', '🎊'],
+    heroImage: '/images/form-templates/birthday-fun.webp',
   },
   {
     id: 'beach-vibes',
     name: 'Beach Vibes',
     description: 'Entspannt & sommerlich für Strand-Trips',
+    nameKey: 'designTemplates.beach-vibes.name',
+    descriptionKey: 'designTemplates.beach-vibes.desc',
     icon: '🌴',
     eventTypes: ['trip', 'bachelor', 'bachelorette'],
     branding: {
@@ -88,11 +107,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'waves',
     backgroundIcons: ['🌴', '🏖️', '🍹', '☀️'],
+    heroImage: '/images/form-templates/beach-vibes.webp',
   },
   {
     id: 'night-out',
     name: 'Night Out',
     description: 'Dunkel & glamourös für Party-Nächte',
+    nameKey: 'designTemplates.night-out.name',
+    descriptionKey: 'designTemplates.night-out.desc',
     icon: '🌙',
     eventTypes: ['bachelor', 'bachelorette', 'birthday'],
     branding: {
@@ -106,11 +128,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'stars',
     backgroundIcons: ['🌙', '✨', '🪩', '🍸'],
+    heroImage: '/images/form-templates/night-out.webp',
   },
   {
     id: 'modern-minimal',
     name: 'Modern Minimal',
     description: 'Clean & zeitlos für alle Anlässe',
+    nameKey: 'designTemplates.modern-minimal.name',
+    descriptionKey: 'designTemplates.modern-minimal.desc',
     icon: '⚡',
     eventTypes: ['bachelor', 'bachelorette', 'birthday', 'trip', 'other'],
     branding: {
@@ -128,6 +153,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'tropical-paradise',
     name: 'Tropical Paradise',
     description: 'Exotisch & farbenfroh für Abenteuer-Trips',
+    nameKey: 'designTemplates.tropical-paradise.name',
+    descriptionKey: 'designTemplates.tropical-paradise.desc',
     icon: '🦜',
     eventTypes: ['trip', 'bachelor', 'bachelorette'],
     branding: {
@@ -140,11 +167,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'bubbles',
     backgroundIcons: ['🦜', '🌺', '🍍', '🌿'],
+    heroImage: '/images/form-templates/tropical-paradise.webp',
   },
   {
     id: 'royal-purple',
     name: 'Royal Purple',
     description: 'Königlich & luxuriös für besondere Anlässe',
+    nameKey: 'designTemplates.royal-purple.name',
+    descriptionKey: 'designTemplates.royal-purple.desc',
     icon: '👑',
     eventTypes: ['bachelor', 'bachelorette', 'birthday'],
     branding: {
@@ -157,11 +187,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'diamonds',
     backgroundIcons: ['👑', '💎', '✨'],
+    heroImage: '/images/form-templates/royal-purple.webp',
   },
   {
     id: 'sunset-glow',
     name: 'Sunset Glow',
     description: 'Warm & romantisch wie ein Sonnenuntergang',
+    nameKey: 'designTemplates.sunset-glow.name',
+    descriptionKey: 'designTemplates.sunset-glow.desc',
     icon: '🌅',
     eventTypes: ['bachelor', 'bachelorette', 'trip'],
     branding: {
@@ -174,11 +207,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'stripes',
     backgroundIcons: ['🌅', '🧡', '🔥'],
+    heroImage: '/images/form-templates/sunset-glow.webp',
   },
   {
     id: 'ocean-breeze',
     name: 'Ocean Breeze',
     description: 'Frisch & maritim für Wassersport-Fans',
+    nameKey: 'designTemplates.ocean-breeze.name',
+    descriptionKey: 'designTemplates.ocean-breeze.desc',
     icon: '🌊',
     eventTypes: ['trip', 'bachelor'],
     branding: {
@@ -196,6 +232,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'ladies-night',
     name: 'Ladies Night',
     description: 'Pink & glamourös für JGA der Braut',
+    nameKey: 'designTemplates.ladies-night.name',
+    descriptionKey: 'designTemplates.ladies-night.desc',
     icon: '💅',
     eventTypes: ['bachelorette'],
     branding: {
@@ -208,11 +246,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'hearts',
     backgroundIcons: ['💅', '💋', '👠', '🍾'],
+    heroImage: '/images/form-templates/ladies-night.webp',
   },
   {
     id: 'vegas-neon',
     name: 'Vegas Neon',
     description: 'Neon-Lichter für unvergessliche Partys',
+    nameKey: 'designTemplates.vegas-neon.name',
+    descriptionKey: 'designTemplates.vegas-neon.desc',
     icon: '🎰',
     eventTypes: ['bachelor', 'bachelorette', 'birthday'],
     branding: {
@@ -226,11 +267,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'stripes',
     backgroundIcons: ['🎰', '🃏', '💰', '🎲'],
+    heroImage: '/images/form-templates/vegas-neon.webp',
   },
   {
     id: 'oktoberfest',
     name: 'Oktoberfest',
     description: 'Bayerisch & zünftig für Volksfest-Fans',
+    nameKey: 'designTemplates.oktoberfest.name',
+    descriptionKey: 'designTemplates.oktoberfest.desc',
     icon: '🍺',
     eventTypes: ['bachelor', 'birthday'],
     branding: {
@@ -249,6 +293,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'ski-snow',
     name: 'Ski & Snow',
     description: 'Winterlich & sportlich für Ski-Trips',
+    nameKey: 'designTemplates.ski-snow.name',
+    descriptionKey: 'designTemplates.ski-snow.desc',
     icon: '⛷️',
     eventTypes: ['trip', 'bachelor'],
     branding: {
@@ -261,11 +307,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'diamonds',
     backgroundIcons: ['⛷️', '❄️', '🏔️', '🎿'],
+    heroImage: '/images/form-templates/ski-snow.webp',
   },
   {
     id: 'festival-vibes',
     name: 'Festival Vibes',
     description: 'Wild & bunt für Festival-Liebhaber',
+    nameKey: 'designTemplates.festival-vibes.name',
+    descriptionKey: 'designTemplates.festival-vibes.desc',
     icon: '🎪',
     eventTypes: ['bachelor', 'bachelorette', 'birthday'],
     branding: {
@@ -283,6 +332,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'garden-party',
     name: 'Garden Party',
     description: 'Natürlich & romantisch für Gartenpartys',
+    nameKey: 'designTemplates.garden-party.name',
+    descriptionKey: 'designTemplates.garden-party.desc',
     icon: '🌿',
     eventTypes: ['birthday', 'bachelorette'],
     branding: {
@@ -295,11 +346,14 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     },
     patternId: 'bubbles',
     backgroundIcons: ['🌿', '🌸', '🦋', '🌻'],
+    heroImage: '/images/form-templates/garden-party.webp',
   },
   {
     id: 'road-trip',
     name: 'Road Trip',
     description: 'Abenteuerlich & frei für Roadtrips',
+    nameKey: 'designTemplates.road-trip.name',
+    descriptionKey: 'designTemplates.road-trip.desc',
     icon: '🚗',
     eventTypes: ['trip', 'bachelor'],
     branding: {
@@ -317,6 +371,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'glamour-night',
     name: 'Glamour Night',
     description: 'Edel & glamourös für besondere Abende',
+    nameKey: 'designTemplates.glamour-night.name',
+    descriptionKey: 'designTemplates.glamour-night.desc',
     icon: '✨',
     eventTypes: ['bachelorette', 'birthday'],
     branding: {
@@ -335,6 +391,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'sporty-adventure',
     name: 'Sporty Adventure',
     description: 'Aktiv & energiegeladen für Sportler',
+    nameKey: 'designTemplates.sporty-adventure.name',
+    descriptionKey: 'designTemplates.sporty-adventure.desc',
     icon: '🏃',
     eventTypes: ['bachelor', 'trip'],
     branding: {
@@ -352,6 +410,8 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     id: 'retro-vintage',
     name: 'Retro Vintage',
     description: 'Nostalgisch & stilvoll im Vintage-Look',
+    nameKey: 'designTemplates.retro-vintage.name',
+    descriptionKey: 'designTemplates.retro-vintage.desc',
     icon: '📻',
     eventTypes: ['birthday', 'bachelor', 'bachelorette'],
     branding: {

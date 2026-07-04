@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "حفلة عزوبية",
+      "bachelorette": "حفلة عزوبية",
+      "birthday": "عيد ميلاد",
+      "trip": "رحلة",
+      "other": "فعالية"
+    },
+    "subtitleDefault": "حدد موعداً وخطط",
+    "weddingDate": "زفاف",
+    "date": "التاريخ",
+    "forHonoree": "لـ"
+  },
+  "guestForm": {
+    "heading": "إجابتك",
+    "subheading": "تستغرق دقيقتين فقط. يمكنك إعادة الإرسال لاحقًا للتحديث.",
+    "participantLabel": "من أنت؟",
+    "participantPlaceholder": "اختر اسمك...",
+    "restrictionsLabel": "الحساسية / القيود (اختياري)",
+    "restrictionsPlaceholder": "مثل الخوف من المرتفعات، عدم تحمّل اللاكتوز، نباتي...",
+    "privacyTitle": "ملاحظة الخصوصية:",
+    "privacyBody": "يرجى مشاركة المعلومات التي ترغب في تقديمها طواعية فقط. بإرسال النموذج فإنك توافق صراحةً، وفقًا للمادة 9(2)(أ) من اللائحة العامة لحماية البيانات، على معالجة هذه البيانات. لا تُدخِل بيانات صحية أو دينية حساسة إلا إذا كان ذلك ضروريًا تنظيميًا.",
+    "privacyMore": "مزيد من المعلومات:",
+    "privacyLinkText": "سياسة الخصوصية §10",
+    "suggestionsLabel": "أفكار / رغبات (اختياري)",
+    "suggestionsPlaceholder": "هل لديك رغبات أو أفكار خاصة؟",
+    "groupCodeLabel": "رمز المجموعة",
+    "groupCodeDescription": "لقد استلمت الرمز في دعوتك",
+    "groupCodePlaceholder": "مثل ABC123",
+    "submit": "إرسال",
+    "submitting": "جارٍ الإرسال...",
+    "previewSubmit": "معاينة — لن يتم حفظ الإجابات",
+    "savedToast": "تم حفظ الإجابة!",
+    "submitErrorToast": "حدث خطأ أثناء الإرسال. حاول مرة أخرى.",
+    "requiredCustomToast": "يرجى الإجابة عن السؤال الإلزامي: «{{label}}»",
+    "lockedTitle": "النموذج مغلق",
+    "lockedBody": "تم تحديد الموعد بالفعل. ستصل التفاصيل عبر واتساب.",
+    "progressAnswered": "{{current}} من {{total}} تمت الإجابة عنها",
+    "estimatedTime": "سريع — ~{{minutes}} د.",
+    "successTitle": "شكرًا جزيلاً!",
+    "successSubtitle": "تم حفظ إجاباتك",
+    "successForHonoree": "{{event}} · لأجل {{name}}",
+    "successBack": "العودة إلى الرئيسية",
+    "answerPlaceholder": "إجابتك...",
+    "yes": "نعم",
+    "no": "لا",
+    "selectPlaceholder": "يرجى الاختيار...",
+    "ratingStar": "{{n}} من 5",
+    "numberPlaceholder": "أدخل رقمًا...",
+    "selectedCount": "{{count}} محدد",
+    "optionCount": "{{count}} خيارات",
+    "q": {
+      "attendance": "هل ستنضم؟",
+      "duration": "المدة المفضلة",
+      "dateBlocks": "التواريخ الممكنة",
+      "dateBlocksHint": "اختر كل التواريخ المناسبة لك، وليس المفضلة فقط!",
+      "blockLabel": "المجموعة {{key}}: {{label}}",
+      "partialDays": "متاح جزئيًا؟ (اختياري)",
+      "partialDaysHint": "إذا كنت متاحًا في أيام/أوقات معينة فقط",
+      "partialDaysPlaceholder": "مثل المجموعة B يوم السبت فقط، من الساعة 14...",
+      "budget": "ميزانيتك لكل شخص",
+      "destination": "الوجهة",
+      "deCity": "المدينة المفضلة في ألمانيا (اختياري)",
+      "deCityPlaceholder": "مثل برلين، هامبورغ، ميونخ، كولونيا...",
+      "travel": "الاستعداد للسفر",
+      "activities": "الأنشطة / التفضيلات",
+      "activitiesHint": "اختر كل ما يثير اهتمامك",
+      "fitness": "مستوى اللياقة",
+      "alcohol": "كحول؟ (اختياري)"
+    },
+    "categories": {
+      "action": "إثارة ومغامرة",
+      "outdoor": "الهواء الطلق والطبيعة",
+      "food": "طعام وشراب",
+      "chill": "استرخاء",
+      "mixed": "أخرى"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "احتفالي وجاهز للحفلات بتدرج أرجواني-سماوي"
+    },
+    "wedding-elegant": {
+      "name": "زفاف أنيق",
+      "desc": "كلاسيكي وأنيق بلمسات ذهبية وردية"
+    },
+    "birthday-fun": {
+      "name": "عيد ميلاد ممتع",
+      "desc": "ملوّن ومبهج لحفلات أعياد الميلاد"
+    },
+    "beach-vibes": {
+      "name": "أجواء الشاطئ",
+      "desc": "مريح وصيفي لرحلات الشاطئ"
+    },
+    "night-out": {
+      "name": "سهرة ليلية",
+      "desc": "داكن وفاخر لليالي الحفلات"
+    },
+    "modern-minimal": {
+      "name": "بساطة عصرية",
+      "desc": "أنيق وخالد لكل المناسبات"
+    },
+    "tropical-paradise": {
+      "name": "جنة استوائية",
+      "desc": "غريب وملوّن لرحلات المغامرة"
+    },
+    "royal-purple": {
+      "name": "أرجواني ملكي",
+      "desc": "ملكي وفاخر للمناسبات الخاصة"
+    },
+    "sunset-glow": {
+      "name": "توهج الغروب",
+      "desc": "دافئ ورومانسي كغروب الشمس"
+    },
+    "ocean-breeze": {
+      "name": "نسيم المحيط",
+      "desc": "منعش وبحري لعشاق الرياضات المائية"
+    },
+    "ladies-night": {
+      "name": "ليلة السيدات",
+      "desc": "وردي وفاخر لحفلة توديع العروس"
+    },
+    "vegas-neon": {
+      "name": "نيون فيغاس",
+      "desc": "أضواء نيون لحفلات لا تُنسى"
+    },
+    "oktoberfest": {
+      "name": "أكتوبرفست",
+      "desc": "بافاري واحتفالي لعشاق أكتوبرفست"
+    },
+    "ski-snow": {
+      "name": "تزلج وثلج",
+      "desc": "شتوي ورياضي لرحلات التزلج"
+    },
+    "festival-vibes": {
+      "name": "أجواء المهرجان",
+      "desc": "جامح وملوّن لعشاق المهرجانات"
+    },
+    "garden-party": {
+      "name": "حفلة حديقة",
+      "desc": "طبيعي ورومانسي لحفلات الحديقة"
+    },
+    "road-trip": {
+      "name": "رحلة برية",
+      "desc": "مغامر وحر للرحلات البرية"
+    },
+    "glamour-night": {
+      "name": "ليلة ساحرة",
+      "desc": "أنيق وفاخر للأمسيات الخاصة"
+    },
+    "sporty-adventure": {
+      "name": "مغامرة رياضية",
+      "desc": "نشيط وحيوي للرياضيين"
+    },
+    "retro-vintage": {
+      "name": "ريترو عتيق",
+      "desc": "حنيني وأنيق بطابع عتيق"
+    }
+  },
   "theme": {
     "title": "المظهر",
     "description": "اختر المظهر المفضل لديك",

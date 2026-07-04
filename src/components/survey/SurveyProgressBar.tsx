@@ -3,11 +3,19 @@ import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 
 interface SurveyProgressBarProps {
+  /** Questions the guest has answered so far. */
   currentStep: number;
+  /** Total answerable questions (participant + enabled core + customs). */
   totalSteps: number;
+  /** Event branding colour for the fill (falls back to the theme primary). */
   themeColor?: string;
 }
 
+/**
+ * Sticky guest-completion bar for the immersive survey. Shows the guest's own
+ * progress (answered / total) plus a short time reassurance — distinct from
+ * the event-level ProgressIndicator (which counts other guests' responses).
+ */
 const SurveyProgressBar = ({
   currentStep,
   totalSteps,
@@ -15,13 +23,12 @@ const SurveyProgressBar = ({
 }: SurveyProgressBarProps) => {
   const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
-  const progress = Math.min((currentStep / totalSteps) * 100, 100);
-  const estimatedMinutes = Math.max(1, Math.ceil((totalSteps * 20) / 60));
+  const safeTotal = Math.max(1, totalSteps);
+  const progress = Math.min((currentStep / safeTotal) * 100, 100);
+  const estimatedMinutes = Math.max(1, Math.ceil((safeTotal * 15) / 60));
 
   const gradientStyle = themeColor
-    ? {
-        background: `linear-gradient(90deg, ${themeColor}, ${themeColor}cc)`,
-      }
+    ? { background: `linear-gradient(90deg, ${themeColor}, ${themeColor}cc)` }
     : undefined;
 
   return (
@@ -30,21 +37,24 @@ const SurveyProgressBar = ({
       role="progressbar"
       aria-valuenow={currentStep}
       aria-valuemin={0}
-      aria-valuemax={totalSteps}
+      aria-valuemax={safeTotal}
       aria-live="polite"
     >
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2 text-sm">
           <span className="text-muted-foreground font-medium">
-            {t("survey.stepCounter", {
-              defaultValue: `Schritt ${currentStep} von ${totalSteps}`,
+            {t("guestForm.progressAnswered", {
+              defaultValue: "{{current}} von {{total}} beantwortet",
               current: currentStep,
-              total: totalSteps,
+              total: safeTotal,
             })}
           </span>
           <span className="text-muted-foreground/70 flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5" />
-            ~{estimatedMinutes} Min.
+            {t("guestForm.estimatedTime", {
+              defaultValue: "schnell — ~{{minutes}} Min.",
+              minutes: estimatedMinutes,
+            })}
           </span>
         </div>
         <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">

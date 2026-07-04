@@ -57,8 +57,15 @@ const EventSurvey = () => {
   // Merge settings with defaults for the form
   const settings = mergeWithDefaults(event.settings);
 
+  // Event branding → CSS vars so the branded hero-gradient + form pick up the
+  // organizer's colors across the whole page (fallback handled in CSS).
+  const brandVars = {
+    "--template-primary": settings.branding?.primary_color,
+    "--template-accent": settings.branding?.accent_color,
+  } as React.CSSProperties;
+
   return (
-    <main className="min-h-screen hero-gradient">
+    <main className="min-h-screen hero-gradient" style={brandVars}>
       <div className="absolute top-4 left-4 z-10">
         <button
           onClick={() => navigate("/")}
@@ -82,11 +89,13 @@ const EventSurvey = () => {
       />
       <InfoCard noGos={settings.no_gos} focusPoints={settings.focus_points} />
       <ProgressIndicator responseCount={responseCount} deadline={event.survey_deadline} lockedBlock={lockedBlock} />
-      <DynamicSurveyForm 
-        isLocked={isFormLocked} 
+      <DynamicSurveyForm
+        isLocked={isFormLocked}
         eventId={event.id}
         settings={settings}
         participants={participants}
+        eventName={event.name}
+        honoreeName={event.honoree_name}
       />
     </main>
   );

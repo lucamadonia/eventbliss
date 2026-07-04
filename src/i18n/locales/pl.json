@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Wieczór kawalerski",
+      "bachelorette": "Wieczór panieński",
+      "birthday": "Urodziny",
+      "trip": "Wyjazd",
+      "other": "Wydarzenie"
+    },
+    "subtitleDefault": "Znajdź termin i zaplanuj",
+    "weddingDate": "Ślub",
+    "date": "Data",
+    "forHonoree": "dla"
+  },
+  "guestForm": {
+    "heading": "Twoja odpowiedź",
+    "subheading": "Zajmie tylko 2 minuty. Możesz wysłać ponownie później, aby zaktualizować.",
+    "participantLabel": "Kim jesteś?",
+    "participantPlaceholder": "Wybierz swoje imię...",
+    "restrictionsLabel": "Alergie / ograniczenia (opcjonalnie)",
+    "restrictionsPlaceholder": "np. lęk wysokości, nietolerancja laktozy, wegetarianin...",
+    "privacyTitle": "Informacja o prywatności:",
+    "privacyBody": "Podaj tutaj tylko informacje, które chcesz udostępnić dobrowolnie. Wysyłając formularz wyrażasz wyraźną zgodę, zgodnie z art. 9 ust. 2 lit. a RODO, na przetwarzanie tych danych. Wrażliwe dane o zdrowiu lub religii podawaj tylko, jeśli jest to organizacyjnie konieczne.",
+    "privacyMore": "Więcej informacji:",
+    "privacyLinkText": "Polityka prywatności §10",
+    "suggestionsLabel": "Pomysły / życzenia (opcjonalnie)",
+    "suggestionsPlaceholder": "Jakieś szczególne życzenia lub pomysły?",
+    "groupCodeLabel": "Kod grupy",
+    "groupCodeDescription": "Kod otrzymałeś w zaproszeniu",
+    "groupCodePlaceholder": "np. ABC123",
+    "submit": "Wyślij",
+    "submitting": "Wysyłanie...",
+    "previewSubmit": "Podgląd — odpowiedzi nie zostaną zapisane",
+    "savedToast": "Odpowiedź zapisana!",
+    "submitErrorToast": "Błąd wysyłania. Spróbuj ponownie.",
+    "requiredCustomToast": "Odpowiedz na pytanie obowiązkowe: „{{label}}”",
+    "lockedTitle": "Formularz zamknięty",
+    "lockedBody": "Termin został już ustalony. Szczegóły pojawią się na WhatsAppie.",
+    "progressAnswered": "{{current}} z {{total}} udzielonych",
+    "estimatedTime": "szybko — ~{{minutes}} min.",
+    "successTitle": "Dziękujemy!",
+    "successSubtitle": "Twoje odpowiedzi zostały zapisane",
+    "successForHonoree": "{{event}} · dla {{name}}",
+    "successBack": "Powrót do strony głównej",
+    "answerPlaceholder": "Twoja odpowiedź...",
+    "yes": "Tak",
+    "no": "Nie",
+    "selectPlaceholder": "Wybierz...",
+    "ratingStar": "{{n}} z 5",
+    "numberPlaceholder": "Wpisz liczbę...",
+    "selectedCount": "wybrano {{count}}",
+    "optionCount": "{{count}} opcji",
+    "q": {
+      "attendance": "Jesteś w to?",
+      "duration": "Preferowany czas trwania",
+      "dateBlocks": "Możliwe terminy",
+      "dateBlocksHint": "Zaznacz WSZYSTKIE pasujące terminy, nie tylko ulubiony!",
+      "blockLabel": "Blok {{key}}: {{label}}",
+      "partialDays": "Częściowo możliwe? (opcjonalnie)",
+      "partialDaysHint": "Jeśli możesz tylko w niektóre dni/godziny",
+      "partialDaysPlaceholder": "np. Blok B tylko sobota, od 14:00...",
+      "budget": "Twój budżet na osobę",
+      "destination": "Cel podróży",
+      "deCity": "Preferowane miasto w Niemczech (opcjonalnie)",
+      "deCityPlaceholder": "np. Berlin, Hamburg, Monachium, Kolonia...",
+      "travel": "Gotowość do podróży",
+      "activities": "Aktywności / preferencje",
+      "activitiesHint": "Zaznacz wszystko, co Cię interesuje",
+      "fitness": "Poziom sprawności",
+      "alcohol": "Alkohol? (opcjonalnie)"
+    },
+    "categories": {
+      "action": "Akcja i przygoda",
+      "outdoor": "Outdoor i natura",
+      "food": "Jedzenie i picie",
+      "chill": "Relaks",
+      "mixed": "Inne"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Odświętny i gotowy do imprezy z fioletowo-cyjanowym gradientem"
+    },
+    "wedding-elegant": {
+      "name": "Elegancki Ślub",
+      "desc": "Klasyczny i elegancki z akcentami różowego złota"
+    },
+    "birthday-fun": {
+      "name": "Zabawne Urodziny",
+      "desc": "Kolorowy i wesoły na przyjęcia urodzinowe"
+    },
+    "beach-vibes": {
+      "name": "Klimat Plaży",
+      "desc": "Wyluzowany i letni na wyjazdy nad morze"
+    },
+    "night-out": {
+      "name": "Wieczór w Mieście",
+      "desc": "Ciemny i olśniewający na imprezowe noce"
+    },
+    "modern-minimal": {
+      "name": "Nowoczesny Minimalizm",
+      "desc": "Czysty i ponadczasowy na każdą okazję"
+    },
+    "tropical-paradise": {
+      "name": "Tropikalny Raj",
+      "desc": "Egzotyczny i barwny na wyjazdy pełne przygód"
+    },
+    "royal-purple": {
+      "name": "Królewski Fiolet",
+      "desc": "Królewski i luksusowy na wyjątkowe okazje"
+    },
+    "sunset-glow": {
+      "name": "Blask Zachodu",
+      "desc": "Ciepły i romantyczny jak zachód słońca"
+    },
+    "ocean-breeze": {
+      "name": "Morska Bryza",
+      "desc": "Świeży i morski dla fanów sportów wodnych"
+    },
+    "ladies-night": {
+      "name": "Wieczór Panieński",
+      "desc": "Różowy i olśniewający na wieczór panieński"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Neonowe światła na niezapomniane imprezy"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bawarski i huczny dla fanów Oktoberfest"
+    },
+    "ski-snow": {
+      "name": "Narty i Śnieg",
+      "desc": "Zimowy i sportowy na wyjazdy narciarskie"
+    },
+    "festival-vibes": {
+      "name": "Klimat Festiwalu",
+      "desc": "Dziki i kolorowy dla miłośników festiwali"
+    },
+    "garden-party": {
+      "name": "Przyjęcie w Ogrodzie",
+      "desc": "Naturalny i romantyczny na przyjęcia w ogrodzie"
+    },
+    "road-trip": {
+      "name": "Podróż Autem",
+      "desc": "Pełen przygód i wolności na wyprawy autem"
+    },
+    "glamour-night": {
+      "name": "Noc Glamour",
+      "desc": "Elegancki i olśniewający na wyjątkowe wieczory"
+    },
+    "sporty-adventure": {
+      "name": "Sportowa Przygoda",
+      "desc": "Aktywny i energiczny dla sportowców"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostalgiczny i stylowy w stylu vintage"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Gry na Wieczór Kawalerski",

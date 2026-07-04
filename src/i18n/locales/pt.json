@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "Despedida de solteiro",
+      "bachelorette": "Despedida de solteira",
+      "birthday": "Aniversário",
+      "trip": "Viagem",
+      "other": "Evento"
+    },
+    "subtitleDefault": "Encontrar data e planear",
+    "weddingDate": "Casamento",
+    "date": "Data",
+    "forHonoree": "para"
+  },
+  "guestForm": {
+    "heading": "A tua resposta",
+    "subheading": "Demora só 2 minutos. Podes enviar novamente mais tarde para atualizar.",
+    "participantLabel": "Quem és tu?",
+    "participantPlaceholder": "Seleciona o teu nome...",
+    "restrictionsLabel": "Alergias / restrições (opcional)",
+    "restrictionsPlaceholder": "p. ex. medo de alturas, intolerância à lactose, vegetariano...",
+    "privacyTitle": "Aviso de privacidade:",
+    "privacyBody": "Partilha aqui apenas informações que queiras fornecer voluntariamente. Ao enviar o formulário, consentes expressamente, nos termos do art. 9.º, n.º 2, al. a) do RGPD, o tratamento destes dados. Só indica dados sensíveis de saúde ou religião se for organizacionalmente indispensável.",
+    "privacyMore": "Mais informação:",
+    "privacyLinkText": "Política de Privacidade §10",
+    "suggestionsLabel": "Ideias / desejos (opcional)",
+    "suggestionsPlaceholder": "Algum desejo ou ideia especial?",
+    "groupCodeLabel": "Código de grupo",
+    "groupCodeDescription": "Recebeste o código no teu convite",
+    "groupCodePlaceholder": "p. ex. ABC123",
+    "submit": "Enviar",
+    "submitting": "A enviar...",
+    "previewSubmit": "Pré-visualização — as respostas não serão guardadas",
+    "savedToast": "Resposta guardada!",
+    "submitErrorToast": "Erro ao enviar. Tenta novamente.",
+    "requiredCustomToast": "Responde à pergunta obrigatória: «{{label}}»",
+    "lockedTitle": "Formulário fechado",
+    "lockedBody": "A data já foi definida. Os detalhes seguem por WhatsApp.",
+    "progressAnswered": "{{current}} de {{total}} respondidas",
+    "estimatedTime": "rápido — ~{{minutes}} min.",
+    "successTitle": "Muito obrigado!",
+    "successSubtitle": "As tuas respostas foram guardadas",
+    "successForHonoree": "{{event}} · para {{name}}",
+    "successBack": "Voltar ao início",
+    "answerPlaceholder": "A tua resposta...",
+    "yes": "Sim",
+    "no": "Não",
+    "selectPlaceholder": "Seleciona...",
+    "ratingStar": "{{n}} de 5",
+    "numberPlaceholder": "Insere um número...",
+    "selectedCount": "{{count}} selecionadas",
+    "optionCount": "{{count}} opções",
+    "q": {
+      "attendance": "Estás dentro?",
+      "duration": "Duração preferida",
+      "dateBlocks": "Datas possíveis",
+      "dateBlocksHint": "Escolhe TODAS as datas que te servem, não só a favorita!",
+      "blockLabel": "Bloco {{key}}: {{label}}",
+      "partialDays": "Parcialmente possível? (opcional)",
+      "partialDaysHint": "Se só podes em certos dias/horas",
+      "partialDaysPlaceholder": "p. ex. Bloco B só sábado, a partir das 14h...",
+      "budget": "O teu orçamento por pessoa",
+      "destination": "Destino",
+      "deCity": "Cidade preferida na Alemanha (opcional)",
+      "deCityPlaceholder": "p. ex. Berlim, Hamburgo, Munique, Colónia...",
+      "travel": "Disponibilidade para viajar",
+      "activities": "Atividades / preferências",
+      "activitiesHint": "Seleciona tudo o que te interessa",
+      "fitness": "Nível de forma física",
+      "alcohol": "Álcool? (opcional)"
+    },
+    "categories": {
+      "action": "Ação e aventura",
+      "outdoor": "Ar livre e natureza",
+      "food": "Comida e bebida",
+      "chill": "Relaxamento",
+      "mixed": "Outros"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Festivo e pronto para a festa com gradiente violeta-ciano"
+    },
+    "wedding-elegant": {
+      "name": "Casamento Elegante",
+      "desc": "Clássico e elegante com toques de ouro rosa"
+    },
+    "birthday-fun": {
+      "name": "Aniversário Divertido",
+      "desc": "Colorido e alegre para festas de aniversário"
+    },
+    "beach-vibes": {
+      "name": "Vibe de Praia",
+      "desc": "Relaxado e veraneio para viagens à praia"
+    },
+    "night-out": {
+      "name": "Noitada",
+      "desc": "Escuro e glamouroso para noites de festa"
+    },
+    "modern-minimal": {
+      "name": "Minimalista Moderno",
+      "desc": "Limpo e atemporal para qualquer ocasião"
+    },
+    "tropical-paradise": {
+      "name": "Paraíso Tropical",
+      "desc": "Exótico e colorido para viagens de aventura"
+    },
+    "royal-purple": {
+      "name": "Roxo Real",
+      "desc": "Régio e luxuoso para ocasiões especiais"
+    },
+    "sunset-glow": {
+      "name": "Brilho do Pôr do Sol",
+      "desc": "Quente e romântico como um pôr do sol"
+    },
+    "ocean-breeze": {
+      "name": "Brisa do Oceano",
+      "desc": "Fresco e marítimo para fãs de esportes aquáticos"
+    },
+    "ladies-night": {
+      "name": "Noite das Garotas",
+      "desc": "Rosa e glamouroso para a despedida de solteira"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Luzes de neon para festas inesquecíveis"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bávaro e festivo para fãs da Oktoberfest"
+    },
+    "ski-snow": {
+      "name": "Esqui e Neve",
+      "desc": "Invernal e esportivo para viagens de esqui"
+    },
+    "festival-vibes": {
+      "name": "Vibe de Festival",
+      "desc": "Selvagem e colorido para amantes de festivais"
+    },
+    "garden-party": {
+      "name": "Festa no Jardim",
+      "desc": "Natural e romântico para festas no jardim"
+    },
+    "road-trip": {
+      "name": "Viagem de Carro",
+      "desc": "Aventureiro e livre para viagens de carro"
+    },
+    "glamour-night": {
+      "name": "Noite de Glamour",
+      "desc": "Elegante e glamouroso para noites especiais"
+    },
+    "sporty-adventure": {
+      "name": "Aventura Esportiva",
+      "desc": "Ativo e enérgico para atletas"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostálgico e estiloso num visual vintage"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "Jogos de Despedida",

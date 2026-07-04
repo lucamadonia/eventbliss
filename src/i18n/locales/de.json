@@ -1,4 +1,164 @@
 {
+  "guestHero": {
+    "eventType": {
+      "bachelor": "JGA",
+      "bachelorette": "JGA",
+      "birthday": "Geburtstag",
+      "trip": "Reise",
+      "other": "Event"
+    },
+    "subtitleDefault": "Termin finden & Action planen",
+    "weddingDate": "Hochzeit",
+    "date": "Datum",
+    "forHonoree": "für"
+  },
+  "guestForm": {
+    "heading": "Deine Antwort",
+    "subheading": "Dauert nur 2 Minuten. Du kannst später erneut absenden, um zu aktualisieren.",
+    "participantLabel": "Wer bist du?",
+    "participantPlaceholder": "Deinen Namen auswählen...",
+    "restrictionsLabel": "Allergien / Einschränkungen (optional)",
+    "restrictionsPlaceholder": "z.B. Höhenangst, Laktoseintoleranz, Vegetarier...",
+    "privacyTitle": "Hinweis Datenschutz:",
+    "privacyBody": "Bitte gib hier nur Informationen an, die du freiwillig teilen möchtest. Mit dem Absenden des Formulars willigst du gemäß Art. 9 Abs. 2 lit. a DSGVO ausdrücklich in die Verarbeitung dieser Angaben ein. Sensible Gesundheits- oder Religionsdetails bitte nur eintragen, wenn organisatorisch zwingend nötig.",
+    "privacyMore": "Mehr Info:",
+    "privacyLinkText": "Datenschutzerklärung §10",
+    "suggestionsLabel": "Ideen / Wünsche (optional)",
+    "suggestionsPlaceholder": "Irgendwelche speziellen Wünsche oder Ideen?",
+    "groupCodeLabel": "Gruppencode",
+    "groupCodeDescription": "Den Code hast du in der Einladung erhalten",
+    "groupCodePlaceholder": "z.B. ABC123",
+    "submit": "Absenden",
+    "submitting": "Wird gesendet...",
+    "previewSubmit": "Vorschau — Antworten werden nicht gespeichert",
+    "savedToast": "Antwort gespeichert!",
+    "submitErrorToast": "Fehler beim Absenden. Bitte versuche es erneut.",
+    "requiredCustomToast": "Bitte beantworte die Pflichtfrage: „{{label}}“",
+    "lockedTitle": "Formular geschlossen",
+    "lockedBody": "Der Termin wurde bereits festgelegt. Details folgen per WhatsApp.",
+    "progressAnswered": "{{current}} von {{total}} beantwortet",
+    "estimatedTime": "schnell — ~{{minutes}} Min.",
+    "successTitle": "Vielen Dank!",
+    "successSubtitle": "Deine Antworten wurden gespeichert",
+    "successForHonoree": "{{event}} · für {{name}}",
+    "successBack": "Zurück zur Startseite",
+    "answerPlaceholder": "Deine Antwort...",
+    "yes": "Ja",
+    "no": "Nein",
+    "selectPlaceholder": "Bitte auswählen...",
+    "ratingStar": "{{n}} von 5",
+    "numberPlaceholder": "Zahl eingeben...",
+    "selectedCount": "{{count}} ausgewählt",
+    "optionCount": "{{count}} Optionen",
+    "q": {
+      "attendance": "Bist du dabei?",
+      "duration": "Bevorzugte Dauer",
+      "dateBlocks": "Mögliche Termine",
+      "dateBlocksHint": "Wähle ALLE Termine, die für dich gehen – nicht nur den Favoriten!",
+      "blockLabel": "Block {{key}}: {{label}}",
+      "partialDays": "Teilweise möglich? (optional)",
+      "partialDaysHint": "Falls du nur an bestimmten Tagen/Uhrzeiten kannst",
+      "partialDaysPlaceholder": "z.B. Block B nur Samstag, ab 14 Uhr...",
+      "budget": "Dein Budget pro Person",
+      "destination": "Reiseziel",
+      "deCity": "Wunschstadt in DE (optional)",
+      "deCityPlaceholder": "z.B. Berlin, Hamburg, München, Köln...",
+      "travel": "Reisebereitschaft",
+      "activities": "Aktivitäten / Präferenzen",
+      "activitiesHint": "Wähle alles, was dich interessiert",
+      "fitness": "Fitness-Level",
+      "alcohol": "Alkohol? (optional)"
+    },
+    "categories": {
+      "action": "Action & Abenteuer",
+      "outdoor": "Outdoor & Natur",
+      "food": "Essen & Trinken",
+      "chill": "Entspannung",
+      "mixed": "Sonstiges"
+    }
+  },
+  "designTemplates": {
+    "jga-classic": {
+      "name": "JGA Classic",
+      "desc": "Festlich & Party-ready mit lila-cyan Gradient"
+    },
+    "wedding-elegant": {
+      "name": "Wedding Elegant",
+      "desc": "Klassisch-elegant mit Rose Gold Akzenten"
+    },
+    "birthday-fun": {
+      "name": "Birthday Fun",
+      "desc": "Bunt & fröhlich für Geburtstagspartys"
+    },
+    "beach-vibes": {
+      "name": "Beach Vibes",
+      "desc": "Entspannt & sommerlich für Strand-Trips"
+    },
+    "night-out": {
+      "name": "Night Out",
+      "desc": "Dunkel & glamourös für Party-Nächte"
+    },
+    "modern-minimal": {
+      "name": "Modern Minimal",
+      "desc": "Clean & zeitlos für alle Anlässe"
+    },
+    "tropical-paradise": {
+      "name": "Tropical Paradise",
+      "desc": "Exotisch & farbenfroh für Abenteuer-Trips"
+    },
+    "royal-purple": {
+      "name": "Royal Purple",
+      "desc": "Königlich & luxuriös für besondere Anlässe"
+    },
+    "sunset-glow": {
+      "name": "Sunset Glow",
+      "desc": "Warm & romantisch wie ein Sonnenuntergang"
+    },
+    "ocean-breeze": {
+      "name": "Ocean Breeze",
+      "desc": "Frisch & maritim für Wassersport-Fans"
+    },
+    "ladies-night": {
+      "name": "Ladies Night",
+      "desc": "Pink & glamourös für JGA der Braut"
+    },
+    "vegas-neon": {
+      "name": "Vegas Neon",
+      "desc": "Neon-Lichter für unvergessliche Partys"
+    },
+    "oktoberfest": {
+      "name": "Oktoberfest",
+      "desc": "Bayerisch & zünftig für Volksfest-Fans"
+    },
+    "ski-snow": {
+      "name": "Ski & Snow",
+      "desc": "Winterlich & sportlich für Ski-Trips"
+    },
+    "festival-vibes": {
+      "name": "Festival Vibes",
+      "desc": "Wild & bunt für Festival-Liebhaber"
+    },
+    "garden-party": {
+      "name": "Garden Party",
+      "desc": "Natürlich & romantisch für Gartenpartys"
+    },
+    "road-trip": {
+      "name": "Road Trip",
+      "desc": "Abenteuerlich & frei für Roadtrips"
+    },
+    "glamour-night": {
+      "name": "Glamour Night",
+      "desc": "Edel & glamourös für besondere Abende"
+    },
+    "sporty-adventure": {
+      "name": "Sporty Adventure",
+      "desc": "Aktiv & energiegeladen für Sportler"
+    },
+    "retro-vintage": {
+      "name": "Retro Vintage",
+      "desc": "Nostalgisch & stilvoll im Vintage-Look"
+    }
+  },
   "gamesLibrary": {
     "categories": {
       "jga_games": "JGA-Spiele",

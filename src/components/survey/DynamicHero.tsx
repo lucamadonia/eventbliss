@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Heart, Calendar, PartyPopper, Cake, Plane, Star, Sparkles } from "lucide-react";
 import { type BrandingConfig } from "@/lib/survey-config";
 import { getTemplateById, PATTERN_SVGS } from "@/lib/design-templates";
@@ -35,17 +36,25 @@ const DynamicHero = ({
   logoUrl,
   templateId,
 }: DynamicHeroProps) => {
+  const { t } = useTranslation();
   const config = eventTypeConfig[eventType] || eventTypeConfig.other;
   const IconComponent = config.icon;
+  // Localized event-type label ("JGA"/"Geburtstag"/… were hardcoded German,
+  // so they showed German in every language). German fallback preserved.
+  const typeLabel = t(`guestHero.eventType.${eventType}`, config.label);
   
   // Get template for pattern and background icons
   const template = templateId ? getTemplateById(templateId) : null;
   const patternId = template?.patternId || 'none';
   const backgroundIcons = template?.backgroundIcons || [config.emoji];
+
+  // Cinematic per-template hero image (or an explicit override). A missing file
+  // simply reveals the gradient + pattern underneath (graceful fallback).
+  const heroImage = heroImageUrl || template?.heroImage;
   
   // Custom title from branding or auto-generate
   const title = branding?.hero_title || eventName;
-  const subtitle = branding?.hero_subtitle || "Termin finden & Action planen";
+  const subtitle = branding?.hero_subtitle || t("guestHero.subtitleDefault", "Termin finden & Action planen");
   
   // Dynamic styles based on branding
   const primaryColor = branding?.primary_color || "#8B5CF6";
@@ -99,7 +108,7 @@ const DynamicHero = ({
       {/* Pattern Overlay - more visible when template is active */}
       {patternId !== 'none' && (
         <div
-          className={cn("absolute inset-0 z-0", template ? "opacity-70" : "opacity-50")}
+          className={cn("absolute inset-0 z-0", heroImage ? "opacity-25" : template ? "opacity-70" : "opacity-50")}
           style={{
             backgroundImage: patternDataUrl,
             backgroundRepeat: 'repeat',
@@ -107,17 +116,25 @@ const DynamicHero = ({
         />
       )}
 
-      {/* Hero Background Image (optional) */}
-      {heroImageUrl && (
-        <div 
+      {/* Cinematic hero image — shows through a palette scrim so the photo
+          reads yet the title stays legible; a missing file reveals the
+          gradient + pattern underneath (graceful fallback). */}
+      {heroImage && (
+        <div
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: `url(${heroImageUrl})`,
+            backgroundImage: `url(${heroImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+          {/* legibility scrim: photo visible at top, fades into the themed bg */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-background/45 to-background" />
+          {/* palette tint ties the photo to the event colours */}
+          <div
+            className="absolute inset-0 opacity-40 mix-blend-overlay"
+            style={{ background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})` }}
+          />
         </div>
       )}
 
@@ -130,7 +147,7 @@ const DynamicHero = ({
             top: `${15 + index * 20}%`,
             left: index % 2 === 0 ? '5%' : 'auto',
             right: index % 2 === 1 ? '5%' : 'auto',
-            opacity: template ? 0.22 : 0.15,
+            opacity: heroImage ? 0.1 : template ? 0.22 : 0.15,
           }}
           animate={{ 
             y: [0, -10 - index * 5, 0],
@@ -231,12 +248,12 @@ const DynamicHero = ({
             transition={{ delay: 0.1 }}
           >
             <span className="text-lg">{config.emoji}</span>
-            <span>{config.label}</span>
+            <span>{typeLabel}</span>
           </motion.div>
           
           {/* Main title */}
-          <motion.h1 
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4"
+          <motion.h1
+            className={cn("font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4", heroImage && "[filter:drop-shadow(0_2px_18px_rgba(0,0,0,0.45))]")}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -252,8 +269,8 @@ const DynamicHero = ({
           </motion.h1>
           
           {/* Subtitle */}
-          <motion.p 
-            className="text-xl md:text-2xl text-muted-foreground font-medium mb-6"
+          <motion.p
+            className={cn("text-xl md:text-2xl font-medium mb-6", heroImage ? "text-foreground/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.55)]" : "text-muted-foreground")}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -278,7 +295,9 @@ const DynamicHero = ({
                 <Calendar className="w-4 h-4" style={{ color: primaryColor }} />
               )}
               <span className="text-sm font-medium text-foreground">
-                {keyDateLabel || (eventType === 'bachelor' || eventType === 'bachelorette' ? 'Hochzeit' : 'Datum')}: {keyDate}
+                {keyDateLabel || (eventType === 'bachelor' || eventType === 'bachelorette'
+                  ? t('guestHero.weddingDate', 'Hochzeit')
+                  : t('guestHero.date', 'Datum'))}: {keyDate}
               </span>
               {eventType === 'bachelor' || eventType === 'bachelorette' ? (
                 <Heart className="w-4 h-4 fill-current" style={{ color: primaryColor }} />
@@ -296,7 +315,7 @@ const DynamicHero = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              für <span className="font-semibold text-foreground">{honoreeName}</span>
+              {t('guestHero.forHonoree', 'für')} <span className="font-semibold text-foreground">{honoreeName}</span>
             </motion.p>
           )}
         </motion.div>
