@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Pencil } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import DynamicSurveyForm from "@/components/survey/DynamicSurveyForm";
+import DynamicHero from "@/components/survey/DynamicHero";
 import type { EventSettings } from "@/lib/survey-config";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -31,12 +32,16 @@ const PreviewForm = DynamicSurveyForm as unknown as React.ComponentType<PreviewF
 interface StudioPreviewProps {
   eventId: string;
   draft: EventSettings;
+  /** Guest-hero context so the preview matches the REAL /e/:slug experience. */
+  eventName: string;
+  honoreeName?: string;
+  eventType?: string;
   /** Optional core key / "custom:<id>" to scroll to and pulse on mount. */
   scrollToKey?: string;
   onEdit: () => void;
 }
 
-export function StudioPreview({ eventId, draft, scrollToKey, onEdit }: StudioPreviewProps) {
+export function StudioPreview({ eventId, draft, eventName, honoreeName, eventType, scrollToKey, onEdit }: StudioPreviewProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +89,21 @@ export function StudioPreview({ eventId, draft, scrollToKey, onEdit }: StudioPre
         ref={containerRef}
         className="min-h-0 flex-1 overflow-y-auto native-scroll pb-[calc(10rem+env(safe-area-inset-bottom))]"
       >
+        {/* Cinematic hero — the template's most dramatic surface (image, palette,
+            pattern, title gradient). Without it the preview looked identical for
+            every template. Fed from the same draft branding the guest form uses. */}
+        <DynamicHero
+          eventName={eventName}
+          eventType={(eventType as "bachelor" | "bachelorette" | "birthday" | "trip" | "other") || undefined}
+          honoreeName={honoreeName}
+          branding={draft.branding}
+          keyDateLabel={draft.branding?.key_date_label}
+          keyDate={draft.branding?.key_date}
+          heroImageUrl={draft.branding?.hero_image_url}
+          logoUrl={draft.branding?.logo_url}
+          templateId={draft.branding?.template_id}
+        />
+
         <PreviewForm
           eventId={eventId}
           settings={draft}

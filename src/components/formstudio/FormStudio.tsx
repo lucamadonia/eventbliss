@@ -252,7 +252,15 @@ export default function FormStudio({ event, onUpdate, isActive }: FormStudioProp
       {/* PREVIEW OVERLAY */}
       <AnimatePresence>
         {mode === "preview" && (
-          <StudioPreview eventId={event.id} draft={settings} scrollToKey={scrollToKey} onEdit={openEdit} />
+          <StudioPreview
+            eventId={event.id}
+            draft={settings}
+            eventName={event.name}
+            honoreeName={event.honoree_name}
+            eventType={eventType}
+            scrollToKey={scrollToKey}
+            onEdit={openEdit}
+          />
         )}
       </AnimatePresence>
 
