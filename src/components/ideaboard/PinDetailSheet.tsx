@@ -4,7 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Heart, Send, Loader2, ExternalLink, Link2 } from "lucide-react";
+import { Heart, Send, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { BoardPin } from "@/hooks/useIdeaBoard";
 import { CATEGORY_META } from "./categories";
+import { LinkPreviewCard } from "./LinkPreviewCard";
 
 interface PinComment {
   id: string;
@@ -118,25 +119,10 @@ export function PinDetailSheet({
                 </p>
               )}
               {pin.kind === "link" && pin.url && (
-                <a
-                  href={pin.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3 text-white"
-                >
-                  <Link2 className="h-5 w-5 shrink-0 text-white/60" />
-                  <span className="min-w-0 flex-1 truncate text-sm">{pin.url}</span>
-                  <ExternalLink className="h-4 w-4 shrink-0 text-white/40" />
-                </a>
+                <LinkPreviewCard url={pin.url} title={pin.title} variant="full" />
               )}
-              {pin.kind === "embed" && (pin.embed_html || pin.url) && (
-                <iframe
-                  title={pin.title ?? "embed"}
-                  sandbox="allow-scripts allow-same-origin allow-popups"
-                  {...(pin.embed_html ? { srcDoc: pin.embed_html } : { src: pin.url! })}
-                  className="h-80 w-full rounded-2xl border-0 bg-white"
-                  loading="lazy"
-                />
+              {pin.kind === "embed" && pin.url && (
+                <LinkPreviewCard url={pin.url} title={pin.title} variant="full" />
               )}
 
               {/* Reaction row */}

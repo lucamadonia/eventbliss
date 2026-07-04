@@ -5,13 +5,14 @@
  */
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Heart, MessageCircle, Trash2, ExternalLink, Link2, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, Trash2, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/motion";
 import { useHaptics } from "@/hooks/useHaptics";
 import type { BoardPin } from "@/hooks/useIdeaBoard";
 import { CATEGORY_META } from "./categories";
+import { LinkPreviewCard } from "./LinkPreviewCard";
 
 interface PinCardProps {
   pin: BoardPin;
@@ -20,24 +21,6 @@ interface PinCardProps {
   onOpen: () => void;
   onReact: () => void;
   onDelete: () => Promise<void>;
-}
-
-/** Best-effort favicon for a link pin. */
-function faviconFor(url: string): string | null {
-  try {
-    const host = new URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
-  } catch {
-    return null;
-  }
-}
-
-function hostFor(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
 }
 
 export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: PinCardProps) {
@@ -112,54 +95,11 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
       )}
 
       {pin.kind === "link" && pin.url && (
-        <a
-          href={pin.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center gap-3 px-4 py-4"
-        >
-          {faviconFor(pin.url) ? (
-            <img
-              src={faviconFor(pin.url)!}
-              alt=""
-              className="h-9 w-9 shrink-0 rounded-lg bg-white/10"
-            />
-          ) : (
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10">
-              <Link2 className="h-4 w-4 text-white/70" />
-            </span>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-white">
-              {pin.title || hostFor(pin.url)}
-            </p>
-            <p className="truncate text-xs text-white/50">{hostFor(pin.url)}</p>
-          </div>
-          <ExternalLink className="h-4 w-4 shrink-0 text-white/40" />
-        </a>
+        <LinkPreviewCard url={pin.url} title={pin.title} onClick={(e) => e.stopPropagation()} />
       )}
 
-      {pin.kind === "embed" && (
-        <div className="relative w-full">
-          {pin.embed_html ? (
-            <iframe
-              title={pin.title ?? "embed"}
-              sandbox="allow-scripts allow-same-origin allow-popups"
-              srcDoc={pin.embed_html}
-              className="h-64 w-full border-0 bg-white"
-              loading="lazy"
-            />
-          ) : pin.url ? (
-            <iframe
-              title={pin.title ?? "embed"}
-              sandbox="allow-scripts allow-same-origin allow-popups"
-              src={pin.url}
-              className="h-64 w-full border-0 bg-white"
-              loading="lazy"
-            />
-          ) : null}
-        </div>
+      {pin.kind === "embed" && pin.url && (
+        <LinkPreviewCard url={pin.url} title={pin.title} onClick={(e) => e.stopPropagation()} />
       )}
 
       {/* ---- Footer: category chip + reactions/comments ---- */}

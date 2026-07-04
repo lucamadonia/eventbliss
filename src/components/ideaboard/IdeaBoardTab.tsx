@@ -6,7 +6,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Plus, Settings, Sparkles, FileDown, Loader2, LayoutGrid } from "lucide-react";
+import { Plus, Settings, Sparkles, FileDown, LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/motion";
@@ -19,6 +19,8 @@ import { PinCard } from "./PinCard";
 import { AddPinSheet } from "./AddPinSheet";
 import { PinDetailSheet } from "./PinDetailSheet";
 import { BoardSettingsSheet } from "./BoardSettingsSheet";
+import { AiIdeasSheet } from "./AiIdeasSheet";
+import { MoodboardPrint } from "./MoodboardPrint";
 
 interface IdeaBoardTabProps {
   event: {
@@ -43,7 +45,7 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [detailPin, setDetailPin] = useState<BoardPin | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   const isOrganizer = !!user?.id && event.created_by === user.id;
 
@@ -58,15 +60,10 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
     [detailPin, b.pins],
   );
 
+  // The sheet itself handles the 402 / premium wall gracefully, so we just open it.
   const handleAi = () => {
-    if (!b.isPremium) {
-      toast.error(t("ideaBoard.premiumOnly", "Premium-Funktion"));
-      return;
-    }
-    setAiLoading(true);
     haptics.medium();
-    b.reload().finally(() => setAiLoading(false));
-    toast(t("ideaBoard.aiSoon", "KI-Ideen kommen in Kürze ✨"));
+    setAiOpen(true);
   };
 
   const handleExport = () => {
@@ -75,6 +72,7 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
       return;
     }
     haptics.light();
+    // MoodboardPrint is always mounted (hidden off-print); print it now.
     window.print();
   };
 
@@ -169,7 +167,7 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
             aria-label={t("ideaBoard.aiIdeas", "KI-Ideen")}
             className="shrink-0 bg-white/10 text-white hover:bg-white/20"
           >
-            {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            <Sparkles className="h-4 w-4" />
           </Button>
           <Button
             variant="secondary"
@@ -225,16 +223,28 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
               {t("ideaBoard.emptyBody", "Pinne die erste Inspiration für dein Event!")}
             </p>
           </div>
-          <Button
-            onClick={() => {
-              haptics.medium();
-              setAddOpen(true);
-            }}
-            className="bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white hover:opacity-90"
-          >
-            <Plus className="h-4 w-4" />
-            {t("ideaBoard.addIdea", "Idee hinzufügen")}
-          </Button>
+          <div className="flex flex-col items-center gap-2.5">
+            <Button
+              onClick={() => {
+                haptics.medium();
+                setAddOpen(true);
+              }}
+              className="bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white hover:opacity-90"
+            >
+              <Plus className="h-4 w-4" />
+              {t("ideaBoard.addIdea", "Idee hinzufügen")}
+            </Button>
+            {b.pins.length === 0 && (
+              <Button
+                variant="ghost"
+                onClick={handleAi}
+                className="text-fuchsia-300 hover:bg-white/5 hover:text-fuchsia-200"
+              >
+                <Sparkles className="h-4 w-4" />
+                {t("ideaBoard.aiSeedCta", "Lass dir Ideen vorschlagen")}
+              </Button>
+            )}
+          </div>
         </div>
       ) : (
         <div className="columns-2 gap-4 px-1 sm:columns-3 lg:columns-4">
@@ -292,6 +302,21 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
           onSave={b.updateBoardSettings}
         />
       )}
+
+      <AiIdeasSheet
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        event={event}
+        freePinLimit={b.freePinLimit}
+        onPin={b.addPin}
+        onUpgrade={() => {
+          setAiOpen(false);
+          toast(t("ideaBoard.upgradeSoon", "Premium-Upgrade kommt in Kürze ✨"));
+        }}
+      />
+
+      {/* Hidden off-print; window.print() renders only this as the moodboard PDF. */}
+      <MoodboardPrint title={boardTitle} eventName={event.name} pins={b.pins} />
     </div>
   );
 }
