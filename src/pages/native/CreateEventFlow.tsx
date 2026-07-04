@@ -44,6 +44,10 @@ import {
   questionsOptionsToSettings,
   type QuestionsOptions,
 } from "@/components/survey/EventQuestionsStep";
+import { AIFormSheet } from "@/components/formstudio/sheets/AIFormSheet";
+import { usePremium } from "@/hooks/usePremium";
+import { ChevronRight } from "lucide-react";
+import type { EventSettings } from "@/lib/survey-config";
 import {
   questionConfigForEventType,
   DEFAULT_QUESTION_CONFIG,
@@ -117,6 +121,25 @@ export default function CreateEventFlow() {
   // then the event-type defaults apply (adjustable later in the dashboard).
   const isGuest = !user;
   const [skippedQuestions, setSkippedQuestions] = useState(false);
+  const [showAiSheet, setShowAiSheet] = useState(false);
+  const { isPremium } = usePremium();
+
+  // Apply an AI-generated form to the wizard: overlay only the AI-owned keys
+  // onto the current step value (locked option arrays + date blocks survive).
+  const applyAiSettings = useCallback((ai: Partial<EventSettings>) => {
+    setForm((prev) => ({
+      ...prev,
+      question_config: ai.question_config ?? prev.question_config,
+      custom_questions: ai.custom_questions ?? prev.custom_questions,
+      options: {
+        ...prev.options,
+        ...(ai.budget_options ? { budget_options: ai.budget_options } : {}),
+        ...(ai.destination_options ? { destination_options: ai.destination_options } : {}),
+        ...(ai.duration_options ? { duration_options: ai.duration_options } : {}),
+        ...(ai.activity_options ? { activity_options: ai.activity_options } : {}),
+      },
+    }));
+  }, []);
   const stepKeys = useMemo(
     () => ["type", "details", "guests", "questions", "review"] as const,
     [],
@@ -303,11 +326,43 @@ export default function CreateEventFlow() {
               />
             )}
             {stepKeys[step - 1] === "questions" && (
-              <EventQuestionsStep
-                value={{ question_config: form.question_config, custom_questions: form.custom_questions, options: form.options }}
-                onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
-                eventType={form.event_type}
-              />
+              <div className="space-y-4">
+                {/* AI hero — let the KI configure the whole form from a short description */}
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.985 }}
+                  transition={spring.snappy}
+                  onClick={() => { haptics.medium(); setShowAiSheet(true); }}
+                  className="relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl p-4 text-left"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500" />
+                  <span className="absolute inset-0 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(255,255,255,0.28),transparent_55%)]" />
+                  <motion.span
+                    aria-hidden
+                    animate={{ x: ["-120%", "220%"] }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.4 }}
+                    className="pointer-events-none absolute inset-y-0 w-1/3 skew-x-[-18deg] bg-white/20 blur-md"
+                  />
+                  <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/20 text-white backdrop-blur-sm">
+                    <Sparkles className="h-5 w-5" />
+                  </span>
+                  <span className="relative min-w-0 flex-1">
+                    <span className="block text-[15px] font-bold text-white drop-shadow-sm">
+                      {t("formStudio.aiEntry", "Mit KI erstellen")}
+                    </span>
+                    <span className="block truncate text-xs font-medium text-white/85">
+                      {t("formStudio.aiEntrySub", "Beschreibe dein Event — die KI baut das Formular")}
+                    </span>
+                  </span>
+                  <ChevronRight className="relative h-5 w-5 shrink-0 text-white/90" />
+                </motion.button>
+
+                <EventQuestionsStep
+                  value={{ question_config: form.question_config, custom_questions: form.custom_questions, options: form.options }}
+                  onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
+                  eventType={form.event_type}
+                />
+              </div>
             )}
             {stepKeys[step - 1] === "review" && (
               <StepReview form={form} />
@@ -378,6 +433,21 @@ export default function CreateEventFlow() {
             )}
           </motion.button>
         </div>
+      )}
+
+      {showAiSheet && (
+        <AIFormSheet
+          open
+          event={{
+            event_type: form.event_type,
+            honoree_name: form.honoree_name,
+            guest_count: form.participants.length,
+          }}
+          isPremium={isPremium}
+          flush={() => {}}
+          onClose={() => setShowAiSheet(false)}
+          onApply={(ai) => { applyAiSettings(ai); haptics.celebrate(); }}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type EventSettings } from "@/lib/survey-config";
 
@@ -61,6 +61,11 @@ export function useEvent(slug: string | undefined): UseEventResult {
   const [responseCount, setResponseCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // The full-screen loader may only show on the FIRST load. Refetches (e.g.
+  // Form Studio autosave → onUpdate) must run silently in the background,
+  // otherwise every keystroke re-shows "Dashboard wird geladen…" and the
+  // editor remounts → flicker/refresh loop.
+  const initialLoadDone = useRef(false);
 
   const fetchEvent = async () => {
     if (!slug) {
@@ -76,7 +81,7 @@ export function useEvent(slug: string | undefined): UseEventResult {
       return;
     }
 
-    setIsLoading(true);
+    if (!initialLoadDone.current) setIsLoading(true);
     setError(null);
 
     try {
@@ -109,10 +114,12 @@ export function useEvent(slug: string | undefined): UseEventResult {
       setError(err instanceof Error ? err.message : "Failed to fetch event");
     } finally {
       setIsLoading(false);
+      initialLoadDone.current = true;
     }
   };
 
   useEffect(() => {
+    initialLoadDone.current = false; // new slug → allow the loader once more
     fetchEvent();
   }, [slug]);
 
