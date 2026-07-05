@@ -1,9 +1,64 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Check, Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
 import type { SplitType } from "@/lib/expenses-v2/types";
+
+/**
+ * DecimalInput — phone-friendly money/percent field:
+ * text input with inputMode="decimal" (iOS decimal pad instead of the symbol
+ * keyboard), accepts comma AND dot, keeps a local string while focused (no
+ * caret jumps from parent re-renders), and selects its value on focus so
+ * typing replaces the prefilled amount immediately.
+ */
+export function DecimalInput({
+  value,
+  onCommit,
+  suffix,
+  className,
+  ariaLabel,
+}: {
+  value: number;
+  onCommit: (n: number) => void;
+  suffix: string;
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const [text, setText] = useState("");
+  const [focused, setFocused] = useState(false);
+  const fromNumber = (n: number) => (n ? String(Math.round(n * 100) / 100).replace(".", ",") : "");
+  const display = focused ? text : fromNumber(value);
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        inputMode="decimal"
+        value={display}
+        aria-label={ariaLabel}
+        onFocus={(e) => {
+          setFocused(true);
+          setText(fromNumber(value));
+          const el = e.target;
+          setTimeout(() => el.select(), 0);
+        }}
+        onBlur={() => setFocused(false)}
+        onChange={(e) => {
+          const t = e.target.value.replace(/[^0-9.,]/g, "");
+          setText(t);
+          onCommit(parseFloat(t.replace(",", ".")) || 0);
+        }}
+        className={cn(
+          "w-28 h-11 px-2 pr-7 rounded-xl bg-background border border-border text-right text-base text-foreground font-mono tabular-nums focus:outline-none focus:border-primary/50",
+          className,
+        )}
+      />
+      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+        {suffix}
+      </span>
+    </div>
+  );
+}
 
 interface Participant {
   id: string;
@@ -139,7 +194,15 @@ export function SplitConfigurator({
   const delta = Math.round((amount - sum) * 100) / 100;
   const valid = Math.abs(delta) < 0.005;
 
+  // Rows the user edited by hand — "Rest verteilen" only touches the others.
+  const [touched, setTouched] = useState<Set<string>>(new Set());
+  useEffect(() => setTouched(new Set()), [localMode]);
+
+  const markTouched = (pid: string) =>
+    setTouched((s) => (s.has(pid) ? s : new Set(s).add(pid)));
+
   const setCustomAmount = (pid: string, nextAmount: number) => {
+    markTouched(pid);
     const next = value.map((v) =>
       v.participant_id === pid ? { ...v, amount: Math.max(0, nextAmount) } : v,
     );
@@ -147,6 +210,7 @@ export function SplitConfigurator({
   };
 
   const setPercentage = (pid: string, pct: number) => {
+    markTouched(pid);
     const clamped = Math.max(0, Math.min(100, pct));
     const updated = value.map((v) =>
       v.participant_id === pid
@@ -154,6 +218,29 @@ export function SplitConfigurator({
         : v,
     );
     onChange(updated);
+  };
+
+  /** Distribute the open remainder across all rows the user hasn't edited. */
+  const distributeRest = () => {
+    const allIds = participants.map((p) => p.id);
+    const targetIds = allIds.filter((id) => !touched.has(id));
+    const targets = targetIds.length > 0 ? targetIds : allIds;
+    const fixedSum = value
+      .filter((v) => !targets.includes(v.participant_id))
+      .reduce((s, x) => s + x.amount, 0);
+    const remainingCents = Math.max(0, Math.round((amount - fixedSum) * 100));
+    const per = Math.floor(remainingCents / targets.length);
+    let extra = remainingCents - per * targets.length;
+    onChange(
+      allIds.map((pid) => {
+        if (!targets.includes(pid)) {
+          const row = value.find((v) => v.participant_id === pid);
+          return { participant_id: pid, amount: row?.amount ?? 0 };
+        }
+        const cents = per + (extra-- > 0 ? 1 : 0);
+        return { participant_id: pid, amount: cents / 100 };
+      }),
+    );
   };
 
   return (
@@ -298,34 +385,20 @@ export function SplitConfigurator({
                 </div>
                 <div className="flex-1 min-w-0 text-sm text-foreground truncate">{p.name ?? "—"}</div>
                 {localMode === "percentage" ? (
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      step="0.1"
-                      value={percentage || ""}
-                      onChange={(e) => setPercentage(p.id, parseFloat(e.target.value) || 0)}
-                      className="w-20 h-10 px-2 pr-6 rounded-xl bg-muted border border-border text-right text-sm text-foreground font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                      %
-                    </span>
-                  </div>
+                  <DecimalInput
+                    value={percentage}
+                    onCommit={(n) => setPercentage(p.id, n)}
+                    suffix="%"
+                    className="w-24"
+                    ariaLabel={`Prozent für ${p.name ?? "Person"}`}
+                  />
                 ) : (
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      value={rowAmount || ""}
-                      onChange={(e) => setCustomAmount(p.id, parseFloat(e.target.value) || 0)}
-                      className="w-24 h-10 px-2 pr-6 rounded-xl bg-muted border border-border text-right text-sm text-foreground font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                      €
-                    </span>
-                  </div>
+                  <DecimalInput
+                    value={rowAmount}
+                    onCommit={(n) => setCustomAmount(p.id, n)}
+                    suffix="€"
+                    ariaLabel={`Betrag für ${p.name ?? "Person"}`}
+                  />
                 )}
               </div>
             );
@@ -354,6 +427,18 @@ export function SplitConfigurator({
               )}
             </span>
           </div>
+
+          {/* One-tap fill: spread the open remainder over untouched rows */}
+          {localMode === "custom" && !valid && (
+            <button
+              type="button"
+              onClick={distributeRest}
+              className="mt-1 w-full h-10 rounded-xl border border-primary/30 bg-primary/5 text-sm font-semibold text-primary flex items-center justify-center gap-1.5 cursor-pointer active:bg-primary/10"
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              Rest verteilen ({formatMoney(delta, currency)})
+            </button>
+          )}
         </div>
       )}
     </div>

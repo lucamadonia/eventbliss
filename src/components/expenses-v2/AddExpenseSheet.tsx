@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { SplitConfigurator } from "./SplitConfigurator";
 import { PayerSelector } from "./PayerSelector";
 import { CategoryIcon } from "./CategoryIcon";
+import { categoryDisplayName } from "@/lib/expenses-v2/category-assets";
 import { ReceiptAttach } from "./ReceiptAttach";
 import { useAddExpenseV2, useExpenseCategories, useReceiptUpload } from "@/hooks/expenses";
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
@@ -280,9 +281,11 @@ export function AddExpenseSheet({
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
+      {/* [&>button]:hidden hides Radix's built-in close X (a direct child) —
+          this sheet has its own header with close + save buttons. */}
       <SheetContent
         side="bottom"
-        className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y]"
+        className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y] [&>button]:hidden"
       >
         <SheetTitle className="sr-only">Ausgabe hinzufügen</SheetTitle>
 
@@ -325,7 +328,10 @@ export function AddExpenseSheet({
         <div
           ref={scrollBodyRef}
           className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain [touch-action:pan-y]"
-          style={keyboardInset ? { paddingBottom: keyboardInset + 24 } : undefined}
+          style={{
+            scrollPaddingTop: 16,
+            ...(keyboardInset ? { paddingBottom: keyboardInset + 24 } : {}),
+          }}
         >
           {/* 1) Quick — amount + title */}
           <div className="px-5 py-6">
@@ -404,7 +410,7 @@ export function AddExpenseSheet({
                     <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300" />
                     <span className="opacity-80">Vorschlag:</span>
                     <CategoryIcon category={c} size="row" className="!w-5 !h-5" />
-                    <span className="font-semibold">{c.name}</span>
+                    <span className="font-semibold">{categoryDisplayName(c.name)}</span>
                     <span className="ml-auto text-[10px] uppercase tracking-widest text-violet-600 dark:text-violet-300/80">Tippen zum Übernehmen</span>
                   </motion.button>
                 );
@@ -445,8 +451,8 @@ export function AddExpenseSheet({
                         />
                       )}
                       <CategoryIcon category={c} size="tile" selected={active} className="w-12 h-12 relative z-10" />
-                      <span className="relative z-10 text-[10px] font-medium text-foreground/90 text-center leading-tight truncate max-w-full">
-                        {c.name}
+                      <span className="relative z-10 text-[10px] font-medium text-foreground/90 text-center leading-tight max-w-full break-words">
+                        {categoryDisplayName(c.name)}
                       </span>
                     </motion.button>
                   );
@@ -486,7 +492,7 @@ export function AddExpenseSheet({
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="appearance-none block w-full min-w-0 h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm text-left [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-primary/40"
+                    className="date-input-left appearance-none block w-full min-w-0 h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm text-left [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-primary/40"
                   />
                 </div>
 

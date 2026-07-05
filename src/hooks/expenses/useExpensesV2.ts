@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type {
@@ -99,6 +100,7 @@ function buildSummary(items: Expense[]): ExpensesSummary {
 // ---------------------------------------------------------------------------
 export function useAddExpenseV2() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (input: AddExpenseInput) => {
       // Local session read (no network round-trip).
@@ -197,7 +199,11 @@ export function useAddExpenseV2() {
     },
     onError: (e: Error) => {
       if (e.message?.includes("EXPENSE_LIMIT_FREE_TIER")) {
-        toast.error("Gratis-Limit erreicht — upgrade auf Pro für unbegrenzte Ausgaben.");
+        toast.error("Gratis-Limit erreicht (5 Ausgaben pro Event)", {
+          description: "Mit Premium sind Ausgaben unbegrenzt.",
+          duration: 8000,
+          action: { label: "Premium holen", onClick: () => navigate("/premium") },
+        });
       } else {
         toast.error(`Fehler: ${e.message}`);
       }

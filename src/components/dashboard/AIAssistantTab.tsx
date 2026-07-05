@@ -17,6 +17,8 @@ import AIChatInput from "@/components/dashboard/AIChatInput";
 import AISpectacleSkeleton from "@/components/dashboard/AISpectacleSkeleton";
 import { cn } from "@/lib/utils";
 import type { EventData } from "@/hooks/useEvent";
+import { mergeWithDefaults } from "@/lib/survey-config";
+import { makeOptionLabelResolver } from "@/components/native/responses/responseHelpers";
 import type { ParsedActivity, ParsedTimeBlock, ParsedDay } from "@/lib/ai-response-parser";
 
 interface AIAssistantTabProps {
@@ -111,17 +113,20 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
 
   const getContext = (targetDays?: number) => {
     const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
-    
+    // Resolve raw option slugs (incl. AI-generated ones) to their labels so
+    // the model reasons over "80–150 €" instead of "budget_small".
+    const resolve = makeOptionLabelResolver(mergeWithDefaults(event.settings), t);
+
     // Get top budget
     const budgetEntries = Object.entries(stats?.budgets || {});
-    const topBudget = budgetEntries.length > 0 
-      ? budgetEntries.sort((a, b) => b[1] - a[1])[0][0]
+    const topBudget = budgetEntries.length > 0
+      ? resolve("budget", budgetEntries.sort((a, b) => b[1] - a[1])[0][0])
       : "150-250";
 
     // Get top destination
     const destEntries = Object.entries(stats?.destinations || {});
     const topDestination = destEntries.length > 0
-      ? destEntries.sort((a, b) => b[1] - a[1])[0][0]
+      ? resolve("destination", destEntries.sort((a, b) => b[1] - a[1])[0][0])
       : "either";
 
     // Get top activities
@@ -129,7 +134,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     const topActivities = activityEntries
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
-      .map(([key]) => key);
+      .map(([key]) => resolve("preferences", key));
 
     // Get fitness level
     const fitnessEntries = Object.entries(stats?.fitness_levels || {});

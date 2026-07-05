@@ -15,7 +15,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
-  type ResponseRow, type CategoryDef,
+  type ResponseRow, type CategoryDef, type OptionLabelResolver,
   ATTENDANCE_CONFIG, timeAgo, getInitials, getAvatarColor, countValues, translateValue,
 } from "./responseHelpers";
 
@@ -186,8 +186,10 @@ function renderCustomAnswerValue(question: CustomQuestion, value: string | boole
 
 // ─── ResponseCard ────────────────────────────────────────────────
 
-export function ResponseCard({ response, index, customQuestions }: { response: ResponseRow; index: number; customQuestions?: CustomQuestion[] }) {
+export function ResponseCard({ response, index, customQuestions, resolveLabel }: { response: ResponseRow; index: number; customQuestions?: CustomQuestion[]; resolveLabel?: OptionLabelResolver }) {
   const { t } = useTranslation();
+  // Falls back to the legacy hardcoded map when no resolver is provided.
+  const resolve: OptionLabelResolver = resolveLabel ?? ((field, value) => translateValue(value, field, t));
   const [expanded, setExpanded] = useState(false);
   const haptics = useHaptics();
   const att = ATTENDANCE_CONFIG[response.attendance as keyof typeof ATTENDANCE_CONFIG];
@@ -229,23 +231,23 @@ export function ResponseCard({ response, index, customQuestions }: { response: R
             <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
               <div className="grid grid-cols-2 gap-2.5">
                 {response.meta?.budget_choices && response.meta.budget_choices.length > 1 ? (
-                  <ChoicePills label={t("dashboard.responses.columns.budget")} icon={DollarSign} choices={response.meta.budget_choices} />
+                  <ChoicePills label={t("dashboard.responses.columns.budget")} icon={DollarSign} choices={response.meta.budget_choices.map((c) => resolve("budget", c))} />
                 ) : (
-                  <DetailPill label={t("dashboard.responses.columns.budget")} value={response.budget} icon={DollarSign} />
+                  <DetailPill label={t("dashboard.responses.columns.budget")} value={resolve("budget", response.budget)} icon={DollarSign} />
                 )}
                 {response.meta?.destination_choices && response.meta.destination_choices.length > 1 ? (
-                  <ChoicePills label={t("dashboard.responses.columns.destination")} icon={MapPin} choices={response.meta.destination_choices.map((c) => translateValue(c, "destination", t))} />
+                  <ChoicePills label={t("dashboard.responses.columns.destination")} icon={MapPin} choices={response.meta.destination_choices.map((c) => resolve("destination", c))} />
                 ) : (
-                  <DetailPill label={t("dashboard.responses.columns.destination")} value={translateValue(response.destination, "destination", t)} icon={MapPin} />
+                  <DetailPill label={t("dashboard.responses.columns.destination")} value={resolve("destination", response.destination)} icon={MapPin} />
                 )}
                 {response.meta?.duration_choices && response.meta.duration_choices.length > 1 ? (
-                  <ChoicePills label={t("dashboard.responses.columns.duration")} icon={CalendarDays} choices={response.meta.duration_choices.map((c) => translateValue(c, "duration_pref", t))} />
+                  <ChoicePills label={t("dashboard.responses.columns.duration")} icon={CalendarDays} choices={response.meta.duration_choices.map((c) => resolve("duration_pref", c))} />
                 ) : (
-                  <DetailPill label={t("dashboard.responses.columns.duration")} value={translateValue(response.duration_pref, "duration_pref", t)} icon={CalendarDays} />
+                  <DetailPill label={t("dashboard.responses.columns.duration")} value={resolve("duration_pref", response.duration_pref)} icon={CalendarDays} />
                 )}
-                <DetailPill label={t("dashboard.responses.columns.travel")} value={translateValue(response.travel_pref, "travel_pref", t)} icon={Car} />
-                <DetailPill label={t("dashboard.responses.columns.fitness")} value={translateValue(response.fitness_level, "fitness_level", t)} icon={Dumbbell} />
-                <DetailPill label={t("dashboard.responses.columns.alcohol")} value={translateValue(response.alcohol || "", "alcohol", t) || t("nativeResponses.noAnswer")} icon={Wine} />
+                <DetailPill label={t("dashboard.responses.columns.travel")} value={resolve("travel_pref", response.travel_pref)} icon={Car} />
+                <DetailPill label={t("dashboard.responses.columns.fitness")} value={resolve("fitness_level", response.fitness_level)} icon={Dumbbell} />
+                <DetailPill label={t("dashboard.responses.columns.alcohol")} value={resolve("alcohol", response.alcohol || "") || t("nativeResponses.noAnswer")} icon={Wine} />
               </div>
 
               {response.preferences?.length > 0 && (
@@ -256,7 +258,7 @@ export function ResponseCard({ response, index, customQuestions }: { response: R
                   <div className="flex flex-wrap gap-1.5">
                     {response.preferences.map((pref, i) => (
                       <span key={i} className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">
-                        {pref}
+                        {resolve("preferences", pref)}
                       </span>
                     ))}
                   </div>
@@ -338,15 +340,16 @@ export function ResponseCard({ response, index, customQuestions }: { response: R
 
 // ─── CategoryCard ────────────────────────────────────────────────
 
-export function CategoryCard({ category, responses }: { category: CategoryDef; responses: ResponseRow[] }) {
+export function CategoryCard({ category, responses, resolveLabel }: { category: CategoryDef; responses: ResponseRow[]; resolveLabel?: OptionLabelResolver }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const haptics = useHaptics();
   const Icon = category.icon;
+  const resolve: OptionLabelResolver = resolveLabel ?? ((field, value) => translateValue(value, field, t));
 
   const values = responses.map((r) => {
     const val = r[category.key];
-    return typeof val === "string" ? translateValue(val, category.key, t) : null;
+    return typeof val === "string" ? resolve(category.key, val) : null;
   }).filter(Boolean) as string[];
 
   const counts = countValues(values);
@@ -395,12 +398,12 @@ export function CategoryCard({ category, responses }: { category: CategoryDef; r
 
 // ─── PreferencesChart ────────────────────────────────────────────
 
-export function PreferencesChart({ responses }: { responses: ResponseRow[] }) {
+export function PreferencesChart({ responses, resolveLabel }: { responses: ResponseRow[]; resolveLabel?: OptionLabelResolver }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const haptics = useHaptics();
 
-  const allPrefs = responses.flatMap((r) => r.preferences || []);
+  const allPrefs = responses.flatMap((r) => (r.preferences || []).map((p) => (resolveLabel ? resolveLabel("preferences", p) : p)));
   const counts = countValues(allPrefs);
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value }));
 

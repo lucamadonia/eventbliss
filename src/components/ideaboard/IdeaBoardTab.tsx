@@ -248,7 +248,9 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
         </div>
       ) : (
         <div className="columns-2 gap-4 px-1 sm:columns-3 lg:columns-4">
-          <AnimatePresence mode="popLayout">
+          {/* mode="sync": popLayout pulls exiting cards to position:absolute,
+              which mis-measures inside CSS columns (keys are stable anyway). */}
+          <AnimatePresence mode="sync">
             {filtered.map((pin, i) => (
               <PinCard
                 key={pin.id}

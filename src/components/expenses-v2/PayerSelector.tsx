@@ -8,6 +8,7 @@ import { Users, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/expenses-v2/types";
 import type { PayerConfig } from "@/lib/expenses-v2/types";
+import { DecimalInput } from "./SplitConfigurator";
 
 interface Participant {
   id: string;
@@ -149,19 +150,12 @@ export function PayerSelector({
               </button>
               <div className="flex-1 min-w-0 text-sm text-foreground truncate">{p.name ?? "—"}</div>
               {selected && (
-                <div className="relative">
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={row?.amount || ""}
-                    onChange={(e) => setPayerAmount(p.id, parseFloat(e.target.value) || 0)}
-                    className="w-24 h-10 px-2 pr-6 rounded-xl bg-background border border-border text-right text-sm text-foreground font-mono tabular-nums focus:outline-none focus:border-violet-400/40"
-                  />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                    €
-                  </span>
-                </div>
+                <DecimalInput
+                  value={row?.amount ?? 0}
+                  onCommit={(n) => setPayerAmount(p.id, n)}
+                  suffix="€"
+                  ariaLabel={`Gezahlt von ${p.name ?? "Person"}`}
+                />
               )}
             </div>
           );

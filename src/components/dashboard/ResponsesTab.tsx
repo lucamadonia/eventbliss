@@ -31,6 +31,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { EventData } from "@/hooks/useEvent";
+import { mergeWithDefaults } from "@/lib/survey-config";
+import { makeOptionLabelResolver } from "@/components/native/responses/responseHelpers";
+import { useMemo } from "react";
 
 interface Response {
   id: string;
@@ -60,6 +63,11 @@ export function ResponsesTab({ event, responses, isLoading }: ResponsesTabProps)
   const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  // Resolves raw option values (incl. AI-generated slugs) to display labels.
+  const resolve = useMemo(
+    () => makeOptionLabelResolver(mergeWithDefaults(event.settings), t),
+    [event.settings, t],
+  );
 
   const filteredResponses = responses.filter((r) => {
     if (filter === "all") return true;
@@ -119,12 +127,12 @@ export function ResponsesTab({ event, responses, isLoading }: ResponsesTabProps)
 
     const rows = filteredResponses.map((r) => [
       r.participant,
-      r.attendance,
-      r.duration_pref,
-      r.budget,
-      r.destination,
-      r.fitness_level,
-      r.alcohol || "",
+      resolve("attendance", r.attendance),
+      resolve("duration_pref", r.duration_pref),
+      resolve("budget", r.budget),
+      resolve("destination", r.destination),
+      resolve("fitness_level", r.fitness_level),
+      r.alcohol ? resolve("alcohol", r.alcohol) : "",
       r.restrictions || "",
       r.suggestions || "",
     ]);
@@ -226,10 +234,10 @@ export function ResponsesTab({ event, responses, isLoading }: ResponsesTabProps)
                       >
                         <TableCell className="font-medium">{response.participant}</TableCell>
                         <TableCell>{getAttendanceBadge(response.attendance)}</TableCell>
-                        <TableCell className="hidden md:table-cell">{response.duration_pref}</TableCell>
-                        <TableCell className="hidden md:table-cell">{response.budget}</TableCell>
-                        <TableCell className="hidden lg:table-cell">{response.destination}</TableCell>
-                        <TableCell className="hidden lg:table-cell">{response.fitness_level}</TableCell>
+                        <TableCell className="hidden md:table-cell">{resolve("duration_pref", response.duration_pref)}</TableCell>
+                        <TableCell className="hidden md:table-cell">{resolve("budget", response.budget)}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{resolve("destination", response.destination)}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{resolve("fitness_level", response.fitness_level)}</TableCell>
                         <TableCell>
                           {isExpanded ? (
                             <ChevronUp className="w-4 h-4 text-muted-foreground" />
@@ -246,37 +254,37 @@ export function ResponsesTab({ event, responses, isLoading }: ResponsesTabProps)
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.duration")}:
                                 </span>{" "}
-                                {response.duration_pref}
+                                {resolve("duration_pref", response.duration_pref)}
                               </div>
                               <div>
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.budget")}:
                                 </span>{" "}
-                                {response.budget}
+                                {resolve("budget", response.budget)}
                               </div>
                               <div>
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.destination")}:
                                 </span>{" "}
-                                {response.destination}
+                                {resolve("destination", response.destination)}
                               </div>
                               <div>
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.fitness")}:
                                 </span>{" "}
-                                {response.fitness_level}
+                                {resolve("fitness_level", response.fitness_level)}
                               </div>
                               <div>
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.alcohol")}:
                                 </span>{" "}
-                                {response.alcohol || "-"}
+                                {response.alcohol ? resolve("alcohol", response.alcohol) : "-"}
                               </div>
                               <div>
                                 <span className="font-medium text-muted-foreground">
                                   {t("dashboard.responses.columns.travel")}:
                                 </span>{" "}
-                                {response.travel_pref}
+                                {resolve("travel_pref", response.travel_pref)}
                               </div>
                               {response.preferences && response.preferences.length > 0 && (
                                 <div className="sm:col-span-2 lg:col-span-3">
@@ -286,7 +294,7 @@ export function ResponsesTab({ event, responses, isLoading }: ResponsesTabProps)
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     {response.preferences.map((pref, i) => (
                                       <Badge key={i} variant="secondary" className="text-xs">
-                                        {pref}
+                                        {resolve("preferences", pref)}
                                       </Badge>
                                     ))}
                                   </div>

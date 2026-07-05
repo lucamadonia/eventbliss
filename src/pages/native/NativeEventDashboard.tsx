@@ -807,8 +807,11 @@ export default function NativeEventDashboard() {
             ? <FormBuilderTab event={event} onUpdate={refetch} />
             : <FormStudio event={event} onUpdate={refetch} isActive={activeTab === "formular"} />
           : null;
-      case "antworten":
-        return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} customQuestions={mergeWithDefaults(event.settings).custom_questions ?? []} /> : null;
+      case "antworten": {
+        if (!event) return null;
+        const merged = mergeWithDefaults(event.settings);
+        return <NativeResponsesTab eventId={event.id} participantCount={participants.length} customQuestions={merged.custom_questions ?? []} settings={merged} />;
+      }
       case "nachrichten":
         return event ? <MessagesTab event={event} slug={slug!} participants={participants} responseCount={responseCount} /> : null;
       case "ki":

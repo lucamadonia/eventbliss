@@ -30,3 +30,20 @@ export function categoryKeyFromName(name: string | null | undefined): CategoryAs
   if ((CATEGORY_KEYS as string[]).includes(norm)) return norm as CategoryAssetKey;
   return NAME_ALIASES[norm] ?? null;
 }
+
+// German display labels for the 7 system categories (the DB seeds them with
+// English names). Custom user categories keep their own name.
+const DISPLAY_NAMES_DE: Record<CategoryAssetKey, string> = {
+  transport: "Transport",
+  accommodation: "Unterkunft",
+  activities: "Aktivitäten",
+  food: "Essen",
+  drinks: "Getränke",
+  gifts: "Geschenke",
+  other: "Sonstiges",
+};
+
+export function categoryDisplayName(name: string | null | undefined): string {
+  const key = categoryKeyFromName(name);
+  return key ? DISPLAY_NAMES_DE[key] : (name ?? "");
+}

@@ -1036,3 +1036,9 @@ html.capacitor-native .pb-tabbar {
 .capacitor-native [class*="animate-glow"] {
   animation: none !important;
 }
+
+/* iOS/WebKit centers the value of <input type="date"> via its shadow part —
+   force left alignment where the design expects it (e.g. AddExpenseSheet). */
+input.date-input-left::-webkit-date-and-time-value {
+  text-align: left;
+}

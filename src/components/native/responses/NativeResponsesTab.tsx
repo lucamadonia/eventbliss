@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import {
   type ResponseRow, type AttendanceFilter,
-  ATTENDANCE_CONFIG, CATEGORIES, timeAgo,
+  ATTENDANCE_CONFIG, CATEGORIES, timeAgo, makeOptionLabelResolver,
 } from "./responseHelpers";
 import {
   AnimatedCounter, ResponsesSkeleton, EmptyState,
@@ -27,7 +27,7 @@ import {
 import {
   SuggestionsSection, RestrictionsSection, PartialAvailabilitySection,
 } from "./ResponseHighlightSections";
-import type { CustomQuestion } from "@/lib/survey-config";
+import type { CustomQuestion, EventSettings } from "@/lib/survey-config";
 
 // ─── Props ───────────────────────────────────────────────────────
 
@@ -35,6 +35,8 @@ interface NativeResponsesTabProps {
   eventId: string;
   participantCount: number;
   customQuestions?: CustomQuestion[];
+  /** Merged event settings — source of the human labels for AI/custom options. */
+  settings?: EventSettings | null;
 }
 
 // ─── Filter config ───────────────────────────────────────────────
@@ -48,9 +50,10 @@ const FILTER_KEYS: { key: AttendanceFilter; i18nKey: string }[] = [
 
 // ─── Main Component ──────────────────────────────────────────────
 
-export default function NativeResponsesTab({ eventId, participantCount, customQuestions }: NativeResponsesTabProps) {
+export default function NativeResponsesTab({ eventId, participantCount, customQuestions, settings }: NativeResponsesTabProps) {
   const { t } = useTranslation();
   const haptics = useHaptics();
+  const resolveLabel = useMemo(() => makeOptionLabelResolver(settings, t), [settings, t]);
   const [filter, setFilter] = useState<AttendanceFilter>("alle");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -197,9 +200,9 @@ export default function NativeResponsesTab({ eventId, participantCount, customQu
           {t("nativeResponses.categoryAnalysis")}
         </h3>
         {CATEGORIES.map((cat) => (
-          <CategoryCard key={cat.key} category={cat} responses={responses} />
+          <CategoryCard key={cat.key} category={cat} responses={responses} resolveLabel={resolveLabel} />
         ))}
-        <PreferencesChart responses={responses} />
+        <PreferencesChart responses={responses} resolveLabel={resolveLabel} />
       </motion.div>
 
       {/* Individual Responses */}
@@ -263,7 +266,7 @@ export default function NativeResponsesTab({ eventId, participantCount, customQu
           <motion.div className="space-y-2" variants={stagger} initial="initial" animate="animate"
             key={`${filter}-${searchQuery}`}>
             {filtered.map((r, i) => (
-              <ResponseCard key={r.id} response={r} index={i} customQuestions={customQuestions} />
+              <ResponseCard key={r.id} response={r} index={i} customQuestions={customQuestions} resolveLabel={resolveLabel} />
             ))}
           </motion.div>
         )}

@@ -6,6 +6,7 @@ import {
   CheckCircle, HelpCircle, XCircle, MapPin, DollarSign,
   CalendarDays, Car, Dumbbell, Wine,
 } from "lucide-react";
+import { tOption, type EventSettings } from "@/lib/survey-config";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -163,6 +164,62 @@ export function translateValue(val: string, field: string, t: TFunction): string
   if (!key) return val; // unknown value — show raw
   const translated = t(key);
   return translated === key ? val : translated; // fallback if key not found in locale
+}
+
+// ─── Option-label resolution ─────────────────────────────────────
+//
+// Answers store raw option VALUES (slugs). Built-in slugs translate via
+// i18n (surveyOptions.<group>.<value>); AI-generated/custom options only
+// carry their human label inside event.settings.<group>_options. The
+// resolver chains: i18n → settings label → legacy map → raw value.
+
+/** Response field → settings options array + tOption i18n group. */
+const FIELD_OPTION_SOURCES: Record<
+  string,
+  { optionsKey: keyof EventSettings; group: string }
+> = {
+  budget: { optionsKey: "budget_options", group: "budget" },
+  destination: { optionsKey: "destination_options", group: "destination" },
+  duration_pref: { optionsKey: "duration_options", group: "duration" },
+  travel_pref: { optionsKey: "travel_options", group: "travel" },
+  fitness_level: { optionsKey: "fitness_options", group: "fitness" },
+  alcohol: { optionsKey: "alcohol_options", group: "alcohol" },
+  attendance: { optionsKey: "attendance_options", group: "attendance" },
+  preferences: { optionsKey: "activity_options", group: "activity" },
+};
+
+export type OptionLabelResolver = (field: string, value: string) => string;
+
+/**
+ * Build a resolver bound to this event's (merged) settings. Pass the result
+ * of `mergeWithDefaults(event.settings)` so AI-generated option labels are
+ * available; a null settings object degrades to i18n + legacy resolution.
+ */
+export function makeOptionLabelResolver(
+  settings: EventSettings | null | undefined,
+  t: TFunction,
+): OptionLabelResolver {
+  return (field, value) => {
+    if (!value) return value;
+    const src = FIELD_OPTION_SOURCES[field];
+    if (src) {
+      const options = settings?.[src.optionsKey] as
+        | Array<{ value: string; label: string }>
+        | undefined;
+      const stored = options?.find((o) => o.value === value)?.label;
+      // tOption: i18n wins for built-in slugs; otherwise the stored label.
+      const resolved = tOption(
+        (key: string, defaultValue?: string) => t(key, defaultValue ?? key),
+        src.group,
+        value,
+        stored ?? value,
+      );
+      if (resolved && resolved !== value) return resolved;
+    }
+    // Legacy hardcoded map (old built-in response slugs like de_city/daytrip)
+    const legacy = translateValue(value, field, t);
+    return legacy !== value ? legacy : value;
+  };
 }
 
 export function getInitials(name: string): string {

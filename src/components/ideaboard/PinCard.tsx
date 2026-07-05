@@ -56,9 +56,11 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
     onReact();
   };
 
+  // NO `layout` prop on this motion.div: framer-motion layout projection
+  // mis-measures inside CSS-columns masonry → cards turned invisible while
+  // scrolling (stale transforms), with their column slot still reserved.
   return (
     <motion.div
-      layout
       initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
