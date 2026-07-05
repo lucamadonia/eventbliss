@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/expenses-v2/types";
 import type { Expense } from "@/lib/expenses-v2/types";
 import { useHaptics } from "@/hooks/useHaptics";
+import { CategoryIcon, type CategoryLike } from "./CategoryIcon";
 
 interface Participant {
   id: string;
@@ -14,6 +15,7 @@ interface Participant {
 interface ExpenseRowProps {
   expense: Expense;
   participants: Participant[];
+  category?: CategoryLike | null;
   currentParticipantId?: string;
   currency?: string;
   onTap?: (expenseId: string) => void;
@@ -27,6 +29,7 @@ const EDIT_THRESHOLD = -50;
 export function ExpenseRow({
   expense,
   participants,
+  category,
   currentParticipantId,
   currency = "EUR",
   onTap,
@@ -105,16 +108,20 @@ export function ExpenseRow({
           "touch-pan-y",
         )}
       >
-        {/* Emoji / category badge */}
+        {/* Category icon badge */}
         <div
           className={cn(
-            "flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-xl relative overflow-hidden",
+            "flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden",
             expense.is_settled_cached
               ? "bg-emerald-500/10 border border-emerald-500/20"
               : "bg-muted border border-border",
           )}
         >
-          <span className="relative z-10">{expense.emoji ?? "💰"}</span>
+          <CategoryIcon
+            category={category ?? { name: expense.category, emoji: expense.emoji }}
+            size="tile"
+            className="w-10 h-10 relative z-10"
+          />
           {expense.is_settled_cached && (
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
           )}

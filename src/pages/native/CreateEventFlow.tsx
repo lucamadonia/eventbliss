@@ -79,6 +79,8 @@ interface FormData {
   question_config: QuestionConfigs;
   custom_questions: CustomQuestion[];
   options: QuestionsOptions;
+  no_gos: string[];
+  focus_points: string[];
 }
 
 const stepVariants = {
@@ -120,6 +122,8 @@ export default function CreateEventFlow() {
     question_config: DEFAULT_QUESTION_CONFIG,
     custom_questions: [],
     options: defaultQuestionsOptions(),
+    no_gos: [],
+    focus_points: [],
   });
 
   // Everyone configures the form questions BEFORE the event is created, so
@@ -133,18 +137,33 @@ export default function CreateEventFlow() {
   // Apply an AI-generated form to the wizard: overlay only the AI-owned keys
   // onto the current step value (locked option arrays + date blocks survive).
   const applyAiSettings = useCallback((ai: Partial<EventSettings>) => {
-    setForm((prev) => ({
-      ...prev,
-      question_config: ai.question_config ?? prev.question_config,
-      custom_questions: ai.custom_questions ?? prev.custom_questions,
-      options: {
-        ...prev.options,
-        ...(ai.budget_options ? { budget_options: ai.budget_options } : {}),
-        ...(ai.destination_options ? { destination_options: ai.destination_options } : {}),
-        ...(ai.duration_options ? { duration_options: ai.duration_options } : {}),
-        ...(ai.activity_options ? { activity_options: ai.activity_options } : {}),
-      },
-    }));
+    setForm((prev) => {
+      // AI-supplied answer options are invisible while their question is
+      // disabled — force-enable the matching core question when the AI
+      // delivered options for it.
+      const config: QuestionConfigs = { ...(ai.question_config ?? prev.question_config) };
+      const enableIf = (key: keyof QuestionConfigs, hasOptions: boolean) => {
+        if (hasOptions) config[key] = { multiSelect: false, ...(config[key] ?? {}), enabled: true };
+      };
+      enableIf("budget", !!ai.budget_options?.length);
+      enableIf("destination", !!ai.destination_options?.length);
+      enableIf("duration", !!ai.duration_options?.length);
+      enableIf("activities", !!ai.activity_options?.length);
+      return {
+        ...prev,
+        question_config: config,
+        custom_questions: ai.custom_questions ?? prev.custom_questions,
+        no_gos: ai.no_gos ?? prev.no_gos,
+        focus_points: ai.focus_points ?? prev.focus_points,
+        options: {
+          ...prev.options,
+          ...(ai.budget_options ? { budget_options: ai.budget_options } : {}),
+          ...(ai.destination_options ? { destination_options: ai.destination_options } : {}),
+          ...(ai.duration_options ? { duration_options: ai.duration_options } : {}),
+          ...(ai.activity_options ? { activity_options: ai.activity_options } : {}),
+        },
+      };
+    });
   }, []);
   const stepKeys = useMemo(
     () => ["type", "details", "guests", "questions", "review"] as const,
@@ -202,8 +221,8 @@ export default function CreateEventFlow() {
           organizer_name: form.organizer_name,
           participants: form.participants.map((name) => ({ name })),
           template_id: "flexible",
-          no_gos: [],
-          focus_points: [],
+          no_gos: form.no_gos,
+          focus_points: form.focus_points,
         },
       });
       if (error) throw error;
@@ -530,7 +549,7 @@ function StepDetails({
           <input
             value={form.name}
             onChange={(e) => update("name", e.target.value)}
-            placeholder={t('native.create.stepDetails.eventNamePlaceholder')}
+            placeholder={t(`createEvent.step2.placeholders.${form.event_type || 'other'}.eventName`)}
             className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>
@@ -540,7 +559,7 @@ function StepDetails({
           <input
             value={form.honoree_name}
             onChange={(e) => update("honoree_name", e.target.value)}
-            placeholder={t('native.create.stepDetails.honoreePlaceholder')}
+            placeholder={t(`createEvent.step2.placeholders.${form.event_type || 'other'}.honoreeName`)}
             className="w-full h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-base focus:outline-none focus:border-primary/50"
           />
         </div>

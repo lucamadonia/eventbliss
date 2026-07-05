@@ -2622,6 +2622,30 @@
         "other": {
           "honoreeName": "bijv. Team of Persoon",
           "eventName": "bijv. Zomerfestival 2026"
+        },
+        "wedding": {
+          "honoreeName": "bijv. Anne & Tom",
+          "eventName": "bijv. Bruiloft van Anne & Tom"
+        },
+        "corporate": {
+          "honoreeName": "bijv. Team Marketing",
+          "eventName": "bijv. Zomer-teamuitje 2026"
+        },
+        "family": {
+          "honoreeName": "bijv. Familie De Vries",
+          "eventName": "bijv. Familiereünie 2026"
+        },
+        "anniversary": {
+          "honoreeName": "bijv. Opa & Oma",
+          "eventName": "bijv. Gouden Bruiloft van Opa & Oma"
+        },
+        "babyshower": {
+          "honoreeName": "bijv. Sanne",
+          "eventName": "bijv. Sanne's Babyshower"
+        },
+        "graduation": {
+          "honoreeName": "bijv. Jeroen",
+          "eventName": "bijv. Jeroens Diplomafeest"
         }
       }
     },
@@ -3440,52 +3464,182 @@
       "kickoff": {
         "title": "Kickoff Bericht",
         "description": "Eerste uitnodiging aan alle deelnemers",
-        "template": "Hallo allemaal! 🎉\n\nHet is zover - we plannen het vrijgezellenfeest voor {{honoree}}! 🥳\n\nOm ons te helpen het perfecte evenement te organiseren, hebben we jullie input nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumselectie\n💰 Budgetplanning\n🎯 Activiteitenselectie\n📍 Bestemmingskeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het me weten!\n\nGroeten! 🙌"
+        "template": "Hallo allemaal! 🎉\n\nHet is zover - we plannen {{eventName}}! 🥳\n\nOm het perfecte evenement te organiseren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+        "byType": {
+          "bachelor": "Hallo allemaal! 🎉\n\nHet is zover - we plannen het vrijgezellenfeest voor {{honoree}}! 🥳\n\nOm het perfecte evenement te organiseren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Activiteitenkeuze\n📍 Bestemmingskeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+          "bachelorette": "Hallo dames! 💃\n\nHet is zover - we plannen het vrijgezellenfeest voor {{honoree}}! 👰\n\nOm het perfecte feest te organiseren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Activiteitenkeuze\n📍 Bestemmingskeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+          "birthday": "Hallo allemaal! 🎉\n\nHet is zover - we plannen een verrassingsfeest voor de verjaardag van {{honoree}}! 🥳🎂\n\nOm alles perfect te maken, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+          "trip": "Hallo crew! ✈️\n\nHet is zover - we plannen onze trip! 🥳\n\nOm de perfecte reis te organiseren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Activiteitenkeuze\n📍 Bestemmingskeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+          "other": "Hallo allemaal! 🎉\n\nHet is zover - we plannen {{eventName}}! 🥳\n\nOm het perfecte evenement te organiseren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌",
+          "wedding": "Hallo allemaal! 💍\n\nHet is zover - we plannen de bruiloft van {{honoree}}! 🥂\n\nOm deze bijzondere dag perfect te maken, hebben we jullie hulp nodig.\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programma-invulling\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe mooier de planning wordt! 🌸\n\nVragen? Laat het altijd weten.\n\nHartelijke groet 🙌",
+          "corporate": "Hallo allemaal! 👋\n\nHet is zover - we plannen ons {{honoree}}!\n\nOm het evenement tot een succes te maken, hebben we jullie feedback nodig.\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetkader\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe beter we kunnen plannen.\n\nVragen? Laat het gerust weten.\n\nMet vriendelijke groet",
+          "family": "Hallo lieve familie! 🤗\n\nHet is zover - we plannen onze familiereünie voor {{honoree}}! 🎉\n\nZodat iedereen erbij kan zijn, hebben we jullie hulp nodig.\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen!\n\nVragen? Laat het gewoon weten.\n\nLieve groet 🙌",
+          "anniversary": "Hallo allemaal! 🥂\n\nHet is zover - we plannen het jubileum van {{honoree}}! 🎉\n\nOm deze bijzondere gelegenheid perfect te maken, hebben we jullie hulp nodig.\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programma-invulling\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe mooier het feest wordt! ✨\n\nVragen? Laat het altijd weten.\n\nHartelijke groet 🙌",
+          "babyshower": "Hallo lieverds! 🍼\n\nHet is zover - we plannen een babyshower voor {{honoree}}! 👶🥳\n\nOm alles betoverend te maken, hebben we jullie hulp nodig.\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🌸\n\nVragen? Laat het weten.\n\nLieve groet 🙌",
+          "graduation": "Hallo allemaal! 🎓\n\nHet is zover - we plannen het afstudeerfeest van {{honoree}}! 🥳\n\nOm dit goed te vieren, hebben we jullie hulp nodig!\n\n👉 Vul alsjeblieft deze korte enquête in:\n{{surveyLink}}\n\n🔑 Toegangscode: {{accessCode}}\n\nDe enquête duurt maar 2-3 minuten en helpt ons met:\n📅 Datumkeuze\n💰 Budgetplanning\n🎯 Programmakeuze\n📍 Locatiekeuze\n\nHoe sneller iedereen reageert, hoe sneller we kunnen beginnen! 🚀\n\nVragen? Laat het weten!\n\nGroeten 🙌"
+        }
       },
       "welcome": {
         "title": "Welkom",
         "description": "Begroeting voor nieuwe deelnemers",
-        "template": "Welkom in het team! 🙌\n\nLeuk dat je erbij bent voor {{honoree}}'s vrijgezellenfeest!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het me altijd weten. We kijken uit naar een episch event! 🚀"
+        "template": "Welkom in het team! 🙌\n\nLeuk dat je erbij bent voor {{eventName}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een episch event! 🚀",
+        "byType": {
+          "bachelor": "Welkom in het team! 🙌\n\nLeuk dat je erbij bent voor {{honoree}}'s vrijgezellenfeest!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een episch event! 🚀",
+          "bachelorette": "Welkom in het team! 💃\n\nLeuk dat je erbij bent voor {{honoree}}'s vrijgezellenfeest! 👰\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een episch event! 🚀",
+          "birthday": "Welkom in het team! 🙌\n\nLeuk dat je erbij bent voor de verrassingsparty voor {{honoree}}! 🎂\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een geweldig feest! 🚀",
+          "trip": "Welkom aan boord! ✈️\n\nLeuk dat je meegaat op onze trip!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een epische reis! 🚀",
+          "other": "Welkom in het team! 🙌\n\nLeuk dat je erbij bent voor {{eventName}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een episch event! 🚀",
+          "wedding": "Hartelijk welkom! 💍\n\nLeuk dat je erbij bent op de bruiloft van {{honoree}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel.\n\nVragen? Laat het altijd weten. We kijken uit naar een prachtige dag! 🥂",
+          "corporate": "Welkom aan boord! 👋\n\nLeuk dat je erbij bent voor {{honoree}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel.\n\nVragen? Laat het altijd weten. We kijken uit naar een geslaagd evenement!",
+          "family": "Hartelijk welkom! 🤗\n\nLeuk dat je erbij bent voor {{honoree}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel.\n\nVragen? Laat het altijd weten. We kijken uit naar een mooi feest! 🙌",
+          "anniversary": "Hartelijk welkom! 🥂\n\nLeuk dat je erbij bent op het jubileum van {{honoree}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel.\n\nVragen? Laat het altijd weten. We kijken uit naar een feestelijke viering! ✨",
+          "babyshower": "Hartelijk welkom! 🍼\n\nLeuk dat je erbij bent op de babyshower voor {{honoree}}! 👶\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel.\n\nVragen? Laat het altijd weten. We kijken uit naar een betoverende viering! 🌸",
+          "graduation": "Welkom in het team! 🎓\n\nLeuk dat je erbij bent op het afstudeerfeest van {{honoree}}!\n\nHier nog even de belangrijkste info:\n\n📋 Enquête: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nHeb je nog niet gereageerd? Doe het dan snel!\n\nVragen? Laat het altijd weten. We kijken uit naar een geweldig feest! 🚀"
+        }
       },
       "reminder": {
         "title": "Herinnering",
         "description": "Vriendelijke herinnering voor uitstaande antwoorden",
-        "template": "Hallo! 👋\n\nSnelle herinnering over de enquête voor {{honoree}}'s feest!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️"
+        "template": "Hallo! 👋\n\nSnelle herinnering over de enquête voor {{eventName}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+        "byType": {
+          "bachelor": "Hallo! 👋\n\nSnelle herinnering over de enquête voor {{honoree}}'s vrijgezellenfeest!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "bachelorette": "Hallo dames! 💃\n\nSnelle herinnering over de enquête voor {{honoree}}'s vrijgezellenfeest! 👰\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "birthday": "Hallo! 👋\n\nSnelle herinnering over de enquête voor de verrassingsparty voor {{honoree}}! 🎂\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "trip": "Hallo crew! ✈️\n\nSnelle herinnering over de enquête voor onze trip!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "other": "Hallo! 👋\n\nSnelle herinnering over de enquête voor {{eventName}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "wedding": "Hallo allemaal! 👋\n\nSnelle herinnering over de enquête voor de bruiloft van {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen. 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "corporate": "Hallo allemaal! 👋\n\nSnelle herinnering over de enquête voor {{honoree}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen.\n\nDuurt maar 2 minuten! ⏱️",
+          "family": "Hallo lieve familie! 👋\n\nSnelle herinnering over de enquête voor {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen. 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "anniversary": "Hallo allemaal! 👋\n\nSnelle herinnering over de enquête voor het jubileum van {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen. 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "babyshower": "Hallo lieverds! 🍼\n\nSnelle herinnering over de enquête voor de babyshower voor {{honoree}}! 👶\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen. 🙏\n\nDuurt maar 2 minuten! ⏱️",
+          "graduation": "Hallo! 🎓\n\nSnelle herinnering over de enquête voor het afstudeerfeest van {{honoree}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nTot nu toe hebben {{responseCount}} van de {{totalCount}} gereageerd.\n\nVul hem alsjeblieft in zodat we verder kunnen plannen! 🙏\n\nDuurt maar 2 minuten! ⏱️"
+        }
       },
       "deadline": {
         "title": "Deadline Waarschuwing",
         "description": "Laatste kans voordat de enquête sluit",
-        "template": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor {{honoree}}'s feest sluit op {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert wordt niet meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰"
+        "template": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor {{eventName}} sluit op {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+        "byType": {
+          "bachelor": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor {{honoree}}'s vrijgezellenfeest sluit op {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+          "bachelorette": "⚠️ LAATSTE KANS, DAMES! ⚠️\n\nDe enquête voor {{honoree}}'s vrijgezellenfeest sluit op {{deadline}}! 👰\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+          "birthday": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor de verrassingsparty voor {{honoree}} sluit op {{deadline}}! 🎂\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+          "trip": "⚠️ LAATSTE KANS, CREW! ⚠️\n\nDe enquête voor onze trip sluit op {{deadline}}! ✈️\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+          "other": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor {{eventName}} sluit op {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰",
+          "wedding": "⏳ Laatste herinnering ⏳\n\nDe enquête voor de bruiloft van {{honoree}} sluit op {{deadline}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan helaas niet worden meegenomen in de planning.\n\nVul hem nu alsjeblieft in! ⏰",
+          "corporate": "⏳ Laatste herinnering ⏳\n\nDe enquête voor {{honoree}} sluit op {{deadline}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning.\n\nVul hem nu alsjeblieft in! ⏰",
+          "family": "⏳ Laatste herinnering ⏳\n\nDe enquête voor {{honoree}} sluit op {{deadline}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan helaas niet worden meegenomen in de planning.\n\nVul hem nu alsjeblieft in! ⏰",
+          "anniversary": "⏳ Laatste herinnering ⏳\n\nDe enquête voor het jubileum van {{honoree}} sluit op {{deadline}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan helaas niet worden meegenomen in de planning.\n\nVul hem nu alsjeblieft in! ⏰",
+          "babyshower": "⏳ Laatste herinnering ⏳\n\nDe enquête voor de babyshower voor {{honoree}} sluit op {{deadline}}. 🍼\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan helaas niet worden meegenomen in de planning.\n\nVul hem nu alsjeblieft in! ⏰",
+          "graduation": "⚠️ LAATSTE KANS! ⚠️\n\nDe enquête voor het afstudeerfeest van {{honoree}} sluit op {{deadline}}! 🎓\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWie niet reageert kan niet worden meegenomen in de planning!\n\nVul hem nu alsjeblieft in! ⏰"
+        }
       },
       "dateConfirmed": {
         "title": "Datum Bevestigd!",
         "description": "Aankondiging van de definitieve datum",
-        "template": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{honoree}}'s feest vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het me weten!"
+        "template": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{eventName}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!",
+        "byType": {
+          "bachelor": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{honoree}}'s vrijgezellenfeest vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!",
+          "bachelorette": "🎉 DE DATUM STAAT VAST, DAMES! 🎉\n\n{{honoree}}'s vrijgezellenfeest vindt plaats op: 👰\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!",
+          "birthday": "🎉 DE DATUM STAAT VAST! 🎉\n\nDe verrassingsparty voor {{honoree}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\n🤫 Denk eraan: {{honoree}} mag hier niets van weten!\n\nMeer details volgen binnenkort... 👀",
+          "trip": "🎉 DE DATUM STAAT VAST! 🎉\n\nOnze trip vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij! ✈️\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!",
+          "other": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{eventName}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!",
+          "wedding": "🎉 DE DATUM STAAT VAST! 🎉\n\nDe bruiloft van {{honoree}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 💍\n\nVragen? Laat het altijd weten!",
+          "corporate": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{honoree}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet de datum in de agenda en houd hem vrij.\n\nMeer details volgen binnenkort.\n\nVragen? Laat het gerust weten.",
+          "family": "🎉 DE DATUM STAAT VAST! 🎉\n\n{{honoree}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 🤗\n\nVragen? Laat het gewoon weten!",
+          "anniversary": "🎉 DE DATUM STAAT VAST! 🎉\n\nHet jubileum van {{honoree}} vindt plaats op:\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... ✨\n\nVragen? Laat het weten!",
+          "babyshower": "🎉 DE DATUM STAAT VAST! 🎉\n\nDe babyshower voor {{honoree}} vindt plaats op: 🍼\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👶\n\nVragen? Laat het weten!",
+          "graduation": "🎉 DE DATUM STAAT VAST! 🎉\n\nHet afstudeerfeest van {{honoree}} vindt plaats op: 🎓\n\n📅 {{eventDate}}\n\nZet deze datum alsjeblieft in je agenda en houd hem vrij!\n\nMeer details volgen binnenkort... 👀\n\nVragen? Laat het weten!"
+        }
       },
       "budget": {
         "title": "Budget Info",
         "description": "Kosten en betalingsinformatie",
-        "template": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{honoree}}'s feest:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Activiteit 1]\n• [Activiteit 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het me weten!"
+        "template": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{eventName}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Post 1]\n• [Post 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+        "byType": {
+          "bachelor": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{honoree}}'s vrijgezellenfeest:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Activiteit 1]\n• [Activiteit 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "bachelorette": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{honoree}}'s vrijgezellenfeest: 👰\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Activiteit 1]\n• [Activiteit 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "birthday": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor de verrassingsparty voor {{honoree}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Eten & drinken]\n• [Decoratie & programma]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "trip": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor onze trip: ✈️\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Reis/Vervoer]\n• [Accommodatie]\n• [Activiteiten]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "other": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor {{eventName}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Post 1]\n• [Post 2]\n• [Accommodatie/Vervoer]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "wedding": "💰 BUDGET-INFO 💰\n\nHier zijn de geschatte kosten voor de bruiloft van {{honoree}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Catering]\n• [Muziek & programma]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het altijd weten!",
+          "corporate": "💰 BUDGET-INFO 💰\n\nHier is het kostenkader voor {{honoree}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Catering]\n• [Programma]\n\nMaak alsjeblieft €{{depositAmount}} bijdrage over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het gerust weten.",
+          "family": "💰 BUDGET-INFO 💰\n\nHier zijn de geschatte kosten voor {{honoree}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Eten & drinken]\n• [Programma]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het gewoon weten!",
+          "anniversary": "💰 BUDGET-INFO 💰\n\nHier zijn de geschatte kosten voor het jubileum van {{honoree}}:\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Catering]\n• [Muziek & programma]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "babyshower": "💰 BUDGET-INFO 💰\n\nHier zijn de geschatte kosten voor de babyshower voor {{honoree}}: 🍼\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Eten & drinken]\n• [Decoratie & spelletjes]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!",
+          "graduation": "💰 BUDGET UPDATE 💰\n\nHier zijn de geschatte kosten voor het afstudeerfeest van {{honoree}}: 🎓\n\n📊 Geschatte kosten per persoon: €{{budgetPerPerson}}\n\nDit omvat:\n• [Locatie]\n• [Eten & drinken]\n• [Programma]\n\nMaak alsjeblieft €{{depositAmount}} aanbetaling over vóór {{depositDeadline}}.\n\nBankgegevens:\n[IBAN invoegen]\n\nVragen over het budget? Laat het weten!"
+        }
       },
       "locationShare": {
         "title": "Verzamelpunt",
         "description": "Verzamelpunt en adres delen",
-        "template": "📍 VERZAMELPUNT voor {{honoree}}'s vrijgezellenfeest 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🚗"
+        "template": "📍 VERZAMELPUNT voor {{eventName}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🚗",
+        "byType": {
+          "bachelor": "📍 VERZAMELPUNT voor {{honoree}}'s vrijgezellenfeest 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🚗",
+          "bachelorette": "📍 VERZAMELPUNT voor {{honoree}}'s vrijgezellenfeest 📍 👰\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 💃",
+          "birthday": "📍 VERZAMELPUNT voor de verrassingsparty voor {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd - {{honoree}} moet verrast worden! 🤫\n\nTot snel! 🎂",
+          "trip": "📍 VERZAMELPUNT voor onze trip 📍 ✈️\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🚗",
+          "other": "📍 VERZAMELPUNT voor {{eventName}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🚗",
+          "wedding": "📍 VERZAMELPUNT voor de bruiloft van {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd. Geef bij vertraging even een seintje.\n\nWe kijken naar jullie uit! 💍",
+          "corporate": "📍 VERZAMELPUNT voor {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd. Geef bij vertraging even een seintje.\n\nTot dan!",
+          "family": "📍 VERZAMELPUNT voor {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🤗",
+          "anniversary": "📍 VERZAMELPUNT voor het jubileum van {{honoree}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd. Geef bij vertraging even een seintje.\n\nWe kijken naar jullie uit! ✨",
+          "babyshower": "📍 VERZAMELPUNT voor de babyshower voor {{honoree}} 📍 🍼\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 👶",
+          "graduation": "📍 VERZAMELPUNT voor het afstudeerfeest van {{honoree}} 📍 🎓\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [link invoegen]\n\nWees op tijd! Bij vertraging even een berichtje in de groep.\n\nTot snel! 🎉"
+        }
       },
       "finalDetails": {
         "title": "Laatste details",
         "description": "Laatste info voor het event",
-        "template": "🎊 HET IS ZOVER! 🎊\n\n{{honoree}}'s vrijgezellenfeest staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\n🤫 GEHEIMHOUDING:\n{{honoree}} mag NIETS te weten komen!\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥"
+        "template": "🎊 HET IS ZOVER! 🎊\n\n{{eventName}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥",
+        "byType": {
+          "bachelor": "🎊 HET IS ZOVER! 🎊\n\n{{honoree}}'s vrijgezellenfeest staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\n🤫 GEHEIMHOUDING:\n{{honoree}} mag NIETS te weten komen!\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥",
+          "bachelorette": "🎊 HET IS ZOVER! 🎊\n\n{{honoree}}'s vrijgezellenfeest staat voor de deur! 👰\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 💃\n\n🤫 GEHEIMHOUDING:\n{{honoree}} mag NIETS te weten komen!\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥",
+          "birthday": "🎊 HET IS ZOVER! 🎊\n\nDe verrassingsparty voor {{honoree}} staat voor de deur! 🎂\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\n🤫 GEHEIMHOUDING:\nPsst — {{honoree}} mag niets van de verrassing merken!\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥",
+          "trip": "🎊 HET IS ZOVER! 🎊\n\nOnze trip staat voor de deur! ✈️\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon & reisdocumenten bij je\n• Goed humeur meenemen! 😄\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijke reis! 🔥",
+          "other": "🎊 HET IS ZOVER! 🎊\n\n{{eventName}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd bij het verzamelpunt\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\nVragen? Bellen, NIET in de groep schrijven!\n\nMaak je klaar voor een onvergetelijk event! 🔥",
+          "wedding": "🎊 HET IS ZOVER! 🎊\n\nDe bruiloft van {{honoree}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Vergeet je feestelijke kleding niet\n• Goed humeur meenemen! 😄\n\nVragen? Laat het altijd weten.\n\nMaak je klaar voor een prachtige dag! 💍",
+          "corporate": "🎊 HET IS ZOVER! 🎊\n\n{{honoree}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\nVragen? Laat het gerust weten.\n\nWe kijken uit naar een geslaagd evenement! 🔥",
+          "family": "🎊 HET IS ZOVER! 🎊\n\n{{honoree}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\nVragen? Laat het gewoon weten.\n\nMaak je klaar voor een mooi feest! 🤗",
+          "anniversary": "🎊 HET IS ZOVER! 🎊\n\nHet jubileum van {{honoree}} staat voor de deur!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Vergeet je feestelijke kleding niet\n• Goed humeur meenemen! 😄\n\nVragen? Laat het altijd weten.\n\nMaak je klaar voor een feestelijke viering! ✨",
+          "babyshower": "🎊 HET IS ZOVER! 🎊\n\nDe babyshower voor {{honoree}} staat voor de deur! 🍼\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\n🤫 Als het een verrassing wordt: {{honoree}} mag nog van niets weten!\n\nVragen? Laat het weten.\n\nMaak je klaar voor een betoverende viering! 👶",
+          "graduation": "🎊 HET IS ZOVER! 🎊\n\nHet afstudeerfeest van {{honoree}} staat voor de deur! 🎓\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ BELANGRIJK:\n• Wees op tijd ter plaatse\n• Telefoon opgeladen\n• Goed humeur meenemen! 😄\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig feest! 🔥"
+        }
       },
       "packingList": {
         "title": "Paklijst",
         "description": "Wat iedereen moet meenemen",
-        "template": "🎒 PAKLIJST voor {{honoree}}'s feest 🎒\n\n📅 {{eventDate}}\n📍 [Bestemming]\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Speciale kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het me weten!\n\nMaak je klaar voor een geweldig evenement! 🚀"
+        "template": "🎒 PAKLIJST voor {{eventName}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Passende kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig evenement! 🚀",
+        "byType": {
+          "bachelor": "🎒 PAKLIJST voor {{honoree}}'s vrijgezellenfeest 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Speciale kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig evenement! 🚀",
+          "bachelorette": "🎒 PAKLIJST voor {{honoree}}'s vrijgezellenfeest 🎒 👰\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Speciale kleding]\n• Goed humeur! 💃\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig evenement! 🚀",
+          "birthday": "🎒 PAKLIJST voor de verrassingsparty voor {{honoree}} 🎒 🎂\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. cadeau]\n• [Passende kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig feest! 🚀",
+          "trip": "🎒 PAKLIJST voor onze trip 🎒 ✈️\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID/paspoort\n• Contant geld (ongeveer €{{cashAmount}})\n• Oplader & powerbank\n• [Passende kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldige reis! 🚀",
+          "other": "🎒 PAKLIJST voor {{eventName}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Contant geld (ongeveer €{{cashAmount}})\n• [Passende kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n• [Nog iets belangrijks]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig evenement! 🚀",
+          "wedding": "🎒 PAKLIJST voor de bruiloft van {{honoree}} 🎒 💍\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Feestelijke kleding\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. cadeau]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een prachtige dag! 🥂",
+          "corporate": "🎒 CHECKLIST voor {{honoree}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ GRAAG MEENEMEN:\n• [Passende kleding]\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. documenten]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het gerust weten.",
+          "family": "🎒 CHECKLIST voor {{honoree}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ GRAAG MEENEMEN:\n• [Passende kleding]\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. bijdrage voor het eten]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het gewoon weten!\n\nMaak je klaar voor een mooi feest! 🤗",
+          "anniversary": "🎒 PAKLIJST voor het jubileum van {{honoree}} 🎒 ✨\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Feestelijke kleding\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. cadeau]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een feestelijke viering! 🥂",
+          "babyshower": "🎒 PAKLIJST voor de babyshower voor {{honoree}} 🎒 🍼\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Contant geld (ongeveer €{{cashAmount}})\n• [Evt. cadeau voor de baby]\n• [Passende kleding]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een betoverende viering! 👶",
+          "graduation": "🎒 PAKLIJST voor het afstudeerfeest van {{honoree}} 🎒 🎓\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Contant geld (ongeveer €{{cashAmount}})\n• [Passende kleding]\n• [Evt. cadeau]\n• Goed humeur! 😄\n\n👕 DRESSCODE:\n[Dresscode invoegen]\n\n❌ NIET VERGETEN:\n• [Belangrijk item]\n\nVragen? Laat het weten!\n\nMaak je klaar voor een geweldig feest! 🚀"
+        }
       },
       "thankYou": {
         "title": "Bedankt",
         "description": "Bedankje na het event",
-        "template": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{honoree}}'s vrijgezellenfeest was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot het volgende avontuur! 🚀"
+        "template": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{eventName}} was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot het volgende avontuur! 🚀",
+        "byType": {
+          "bachelor": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{honoree}}'s vrijgezellenfeest was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot het volgende avontuur! 🚀",
+          "bachelorette": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{honoree}}'s vrijgezellenfeest was een groot succes! 👰🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 💃\n\nTot het volgende avontuur! 🚀",
+          "birthday": "🙏 IEDEREEN BEDANKT! 🙏\n\nDe verrassingsparty voor {{honoree}} was een groot succes! 🎂🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot het volgende feest! 🚀",
+          "trip": "🙏 IEDEREEN BEDANKT! 🙏\n\nOnze trip was een groot succes! ✈️🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot de volgende reis! 🚀",
+          "other": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{eventName}} was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nTot het volgende avontuur! 🚀",
+          "wedding": "🙏 IEDEREEN BEDANKT! 🙏\n\nDe bruiloft van {{honoree}} was prachtig! 💍🎉\n\nBedankt aan ieder van jullie voor:\n• De hartelijke sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was ons een eer om dit met jullie te vieren! 🙌\n\nOp nog vele mooie momenten! 🥂",
+          "corporate": "🙏 HEEL ERG BEDANKT ALLEMAAL! 🙏\n\n{{honoree}} was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De fijne samenwerking\n• Jullie hulp bij de organisatie\n• De goede sfeer\n\n📸 Deel foto's/video's gerust in de groep!\n\n💰 De afrekening volgt de komende dagen.\n\nHet was een plezier om dit met jullie te organiseren! 🙌\n\nOp het volgende evenement!",
+          "family": "🙏 IEDEREEN BEDANKT! 🙏\n\n{{honoree}} was een groot succes! 🎉\n\nBedankt aan ieder van jullie voor:\n• De hartelijke sfeer\n• Jullie hulp bij de planning\n• De mooie gezamenlijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was mooi om dit met jullie te vieren! 🤗\n\nTot de volgende familiereünie! 🙌",
+          "anniversary": "🙏 IEDEREEN BEDANKT! 🙏\n\nHet jubileum van {{honoree}} was een groot succes! ✨🎉\n\nBedankt aan ieder van jullie voor:\n• De feestelijke sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was ons een eer om dit met jullie te vieren! 🙌\n\nOp nog vele jaren! 🥂",
+          "babyshower": "🙏 IEDEREEN BEDANKT! 🙏\n\nDe babyshower voor {{honoree}} was betoverend! 🍼👶\n\nBedankt aan ieder van jullie voor:\n• De liefdevolle sfeer\n• Jullie hulp bij de planning\n• De mooie momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was mooi om dit met jullie te vieren! 🙌\n\nWe kijken uit naar de baby! 🌸",
+          "graduation": "🙏 IEDEREEN BEDANKT! 🙏\n\nHet afstudeerfeest van {{honoree}} was een groot succes! 🎓🎉\n\nBedankt aan ieder van jullie voor:\n• De geweldige sfeer\n• Jullie hulp bij de planning\n• De onvergetelijke momenten\n\n📸 Deel foto's/video's in de groep!\n\n💰 De kostenafrekening volgt de komende dagen.\n\nHet was een eer om dit met jullie te organiseren! 🙌\n\nOp de toekomst! 🚀"
+        }
       }
     },
     "ai": {
@@ -4448,6 +4602,8 @@
     "aiPlaceholder": "Beschrijf je evenement in 1-2 zinnen, bijv. 'Relaxed vrijgezellenfeest met wandelen en lekker eten'...",
     "aiDescriptionRequired": "Beschrijf je evenement",
     "aiSuccess": "Sjabloon gemaakt!",
+    "aiLimitReached": "Generatielimiet bereikt",
+    "aiLimitReachedDesc": "Maximaal 5 generaties per sessie.",
     "aiSuccessDescription": "Je aangepaste sjabloon is gegenereerd",
     "aiError": "Fout bij genereren",
     "generating": "Genereren...",
@@ -7034,6 +7190,7 @@
         "smartHint": "Slim voorstel actief",
         "countSuffix": "vragen",
         "extrasTitle": "Extra vragen (optioneel)",
+        "createCustom": "Eigen vraag maken",
         "attendanceAlways": "altijd aanwezig",
         "groups": {
           "basics": "Basics",
@@ -8604,7 +8761,17 @@
     "aiGateBenefit1": "Een hele enquête uit een korte beschrijving",
     "aiGateBenefit2": "Passende activiteiten en eigen vragen automatisch",
     "aiGateBenefit3": "Pas altijd aan — AI doet alleen het begin",
-    "aiGateCta": "Premium halen"
+    "aiGateCta": "Premium halen",
+    "aiPreviewHint": "Tik op elementen om ze uit of weer te selecteren — alleen wat geselecteerd is, wordt overgenomen.",
+    "aiPreviewQuestions": "Actieve vragen",
+    "aiPreviewCustomQs": "Eigen vragen",
+    "aiPreviewActivities": "Activiteiten",
+    "aiPreviewDestination": "Bestemmingen",
+    "aiPreviewBudget": "Budgetopties",
+    "aiPreviewDuration": "Duuropties",
+    "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
+    "aiGenCount": "Generatie {{used}}/{{max}}",
+    "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt"
   },
   "tv": {
     "connectTitle": "TV verbinden",

@@ -36,6 +36,9 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedTemplate, setGeneratedTemplate] = useState<object | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  // Hard cap on full generations per wizard session — each costs 1 credit.
+  const MAX_GENERATIONS = 5;
+  const [genCount, setGenCount] = useState(0);
   const [selectedDesignTemplate, setSelectedDesignTemplate] = useState<DesignTemplate | null>(null);
 
   const templates = getTemplatesForEventType(eventType);
@@ -110,6 +113,7 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
       if (data?.success && data?.template) {
         // Store template and show preview instead of applying directly
         setGeneratedTemplate(data.template);
+        setGenCount((c) => c + 1);
         setShowPreview(true);
         toast({
           title: t('templates.aiSuccess'),
@@ -138,6 +142,14 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
   };
 
   const handleRegenerate = () => {
+    if (genCount >= MAX_GENERATIONS) {
+      toast({
+        title: t('templates.aiLimitReached', 'Generierungs-Limit erreicht'),
+        description: t('templates.aiLimitReachedDesc', 'Maximal {{max}} Generierungen pro Sitzung.', { max: MAX_GENERATIONS }),
+        variant: 'destructive',
+      });
+      return;
+    }
     setShowPreview(false);
     setGeneratedTemplate(null);
     handleAiGenerate();
@@ -176,6 +188,7 @@ export const TemplateSelector = ({ eventType, onSelectTemplate, onSkip }: Templa
         onRegenerate={handleRegenerate}
         onBack={handleBackFromPreview}
         isGenerating={isGenerating}
+        regenLimitReached={genCount >= MAX_GENERATIONS}
       />
     );
   }

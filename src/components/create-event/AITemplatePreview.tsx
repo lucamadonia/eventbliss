@@ -54,6 +54,8 @@ interface AITemplatePreviewProps {
   onRegenerate: () => void;
   onBack: () => void;
   isGenerating?: boolean;
+  /** Session cap on full regenerations reached — disables "regenerate all". */
+  regenLimitReached?: boolean;
 }
 
 type SectionKey = 'budget' | 'destination' | 'activity' | 'duration';
@@ -65,6 +67,7 @@ export function AITemplatePreview({
   onRegenerate,
   onBack,
   isGenerating,
+  regenLimitReached = false,
 }: AITemplatePreviewProps) {
   const { t } = useTranslation();
   const { remaining, limit, loading: creditsLoading, refetch: refetchCredits } = useAICredits();
@@ -399,7 +402,8 @@ export function AITemplatePreview({
         <Button
           variant="outline"
           onClick={onRegenerate}
-          disabled={isGenerating || regeneratingSection !== null || expandingSection !== null || !hasCredits}
+          disabled={isGenerating || regeneratingSection !== null || expandingSection !== null || !hasCredits || regenLimitReached}
+          title={regenLimitReached ? t('templates.aiLimitReachedDesc', 'Maximal 5 Generierungen pro Sitzung.') : undefined}
           className="gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />

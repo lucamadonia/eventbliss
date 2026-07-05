@@ -82,17 +82,21 @@ export function useIdeaBoard(eventId: string | undefined) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const boardIdRef = useRef<string | null>(null);
+  // Monotonic request id: only the newest load() is allowed to write state, so
+  // a slow in-flight load can't resolve late and overwrite a fresh list with a
+  // stale (pin-less) snapshot — the "pin appears then vanishes" race.
+  const loadSeqRef = useRef(0);
+  // Single-flight guard for get-or-create so two concurrent mount loads don't
+  // both INSERT and create duplicate boards for the same event.
+  const boardPromiseRef = useRef<Promise<EventBoard> | null>(null);
 
   const myPinCount = pins.filter((p) => p.created_by === userId && p.source !== "seed").length;
   const canAddPin = isPremium || myPinCount < FREE_PIN_LIMIT;
 
-  /** Load the board (create it lazily on first open) + all pins with counts. */
-  const load = useCallback(async () => {
-    if (!eventId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      // get-or-create the single board for this event
+  /** Get-or-create the single board for this event, de-duplicated. */
+  const getOrCreateBoard = useCallback(async (): Promise<EventBoard> => {
+    if (boardPromiseRef.current) return boardPromiseRef.current;
+    const p = (async () => {
       let { data: b } = await db
         .from("event_boards")
         .select("*")
@@ -100,7 +104,6 @@ export function useIdeaBoard(eventId: string | undefined) {
         .order("created_at", { ascending: true })
         .limit(1)
         .maybeSingle();
-
       if (!b) {
         const { data: created, error: cErr } = await db
           .from("event_boards")
@@ -110,7 +113,27 @@ export function useIdeaBoard(eventId: string | undefined) {
         if (cErr) throw cErr;
         b = created;
       }
-      setBoard(b as EventBoard);
+      return b as EventBoard;
+    })();
+    boardPromiseRef.current = p;
+    try {
+      return await p;
+    } finally {
+      boardPromiseRef.current = null;
+    }
+  }, [eventId, userId]);
+
+  /** Load the board (create it lazily on first open) + all pins with counts. */
+  const load = useCallback(async () => {
+    if (!eventId) return;
+    const seq = ++loadSeqRef.current;
+    const isCurrent = () => seq === loadSeqRef.current;
+    setLoading(true);
+    setError(null);
+    try {
+      const b = await getOrCreateBoard();
+      if (!isCurrent()) return;
+      setBoard(b);
       boardIdRef.current = b.id;
 
       // pins
@@ -141,6 +164,8 @@ export function useIdeaBoard(eventId: string | undefined) {
       const cCount = new Map<string, number>();
       (comments ?? []).forEach((c) => cCount.set(c.pin_id, (cCount.get(c.pin_id) ?? 0) + 1));
 
+      // A newer load started while we were fetching → discard this stale result.
+      if (!isCurrent()) return;
       setPins(
         (pinRows ?? []).map((p) => ({
           ...(p as BoardPin),
@@ -151,11 +176,11 @@ export function useIdeaBoard(eventId: string | undefined) {
         })),
       );
     } catch (e) {
-      setError((e as Error).message);
+      if (isCurrent()) setError((e as Error).message);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
-  }, [eventId, userId]);
+  }, [eventId, userId, getOrCreateBoard]);
 
   useEffect(() => {
     load();
@@ -189,20 +214,42 @@ export function useIdeaBoard(eventId: string | undefined) {
         if (upErr) throw upErr;
         image_path = path;
       }
-      const { error: insErr } = await db.from("board_pins").insert({
-        board_id: board.id,
-        event_id: eventId,
-        kind: input.kind,
-        category: input.category,
-        title: input.title ?? null,
-        note: input.note ?? null,
-        url: input.url ?? null,
-        embed_html: input.embed_html ?? null,
-        image_path,
-        source: input.source ?? "user",
-        created_by: userId,
-      });
+      const { data: inserted, error: insErr } = await db
+        .from("board_pins")
+        .insert({
+          board_id: board.id,
+          event_id: eventId,
+          kind: input.kind,
+          category: input.category,
+          title: input.title ?? null,
+          note: input.note ?? null,
+          url: input.url ?? null,
+          embed_html: input.embed_html ?? null,
+          image_path,
+          source: input.source ?? "user",
+          created_by: userId,
+        })
+        .select("*")
+        .single();
       if (insErr) throw insErr;
+      // Optimistic: show the new pin immediately (guarded load() reconciles
+      // counts; the concurrency guard prevents a stale load from removing it).
+      if (inserted) {
+        setPins((prev) =>
+          prev.some((p) => p.id === inserted.id)
+            ? prev
+            : [
+                {
+                  ...(inserted as BoardPin),
+                  imageUrl: publicImageUrl(inserted.image_path),
+                  reactionCount: 0,
+                  myReaction: false,
+                  commentCount: 0,
+                },
+                ...prev,
+              ],
+        );
+      }
       await load();
     },
     [board, eventId, isPremium, myPinCount, userId, load],

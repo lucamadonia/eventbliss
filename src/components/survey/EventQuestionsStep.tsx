@@ -30,9 +30,12 @@ import {
   DEFAULT_QUESTION_CONFIG,
   CORE_QUESTION_KEYS,
   questionConfigForEventType,
+  mergeWithDefaults,
 } from "@/lib/survey-config";
 import { CoreQuestionEditor } from "@/components/dashboard/CoreQuestionEditor";
 import { CORE_META_BY_KEY } from "@/components/formstudio/questionRegistry";
+import { CustomQuestionSheet } from "@/components/formstudio/CustomQuestionSheet";
+import type { FormStudioAction } from "@/components/formstudio/formStudioReducer";
 import { DateRangeBlockEditor, type DateRangeBlock } from "@/components/dashboard/DateRangeBlockEditor";
 import {
   CUSTOM_QUESTION_PRESETS,
@@ -144,6 +147,9 @@ export function EventQuestionsStep({
   const { question_config: qc, custom_questions, options } = value;
 
   const [expanded, setExpanded] = useState<Set<CoreKey>>(new Set());
+  // Free-form custom-question builder (reuses the Form Studio sheet).
+  const [showCustomSheet, setShowCustomSheet] = useState(false);
+  const [editingCustomId, setEditingCustomId] = useState<string | null>(null);
 
   const enabledCount = useMemo(
     () => CORE_QUESTION_KEYS.filter((k) => qc[k]?.enabled).length + custom_questions.length,
@@ -194,6 +200,28 @@ export function EventQuestionsStep({
 
   const setOptions = (optKey: keyof QuestionsOptions, arr: SelectOption[] | ActivityOption[] | DateRangeBlock[]) =>
     onChange({ ...value, options: { ...options, [optKey]: arr } });
+
+  // Custom questions built free-form via the sheet (i.e. not one of the presets).
+  const presetIds = useMemo(
+    () => new Set(CUSTOM_QUESTION_PRESETS.flatMap((p) => [p.id, ...p.aliases])),
+    [],
+  );
+  const freeformQuestions = custom_questions.filter((q) => !presetIds.has(q.id));
+
+  /** Adapter: route the Form Studio sheet's reducer actions into wizard state. */
+  const sheetDispatch = (action: FormStudioAction) => {
+    if (action.type === "UPSERT_CUSTOM_QUESTION") {
+      const exists = custom_questions.some((q) => q.id === action.question.id);
+      onChange({
+        ...value,
+        custom_questions: exists
+          ? custom_questions.map((q) => (q.id === action.question.id ? action.question : q))
+          : [...custom_questions, action.question],
+      });
+    } else if (action.type === "DELETE_CUSTOM_QUESTION") {
+      onChange({ ...value, custom_questions: custom_questions.filter((q) => q.id !== action.id) });
+    }
+  };
 
   const togglePreset = (preset: CustomQuestionPreset) => {
     const ids = new Set([preset.id, ...preset.aliases]);
@@ -525,8 +553,59 @@ export function EventQuestionsStep({
               </motion.button>
             );
           })}
+
+          {/* Free-form custom questions created via the builder sheet */}
+          {freeformQuestions.map((q) => (
+            <motion.button
+              key={q.id}
+              type="button"
+              whileTap={reduce ? undefined : { scale: 0.93 }}
+              transition={SPRING}
+              onClick={() => {
+                haptics.select();
+                setEditingCustomId(q.id);
+                setShowCustomSheet(true);
+              }}
+              className="relative inline-flex items-center gap-1.5 overflow-hidden rounded-full border border-transparent bg-gradient-to-br from-violet-500 to-fuchsia-500 px-3 py-2 text-sm font-medium text-white shadow-[0_6px_20px_-6px_rgba(217,70,239,0.6)]"
+            >
+              <span>💬</span>
+              <span className="max-w-[180px] truncate">{q.label}</span>
+              <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            </motion.button>
+          ))}
+
+          {/* Create a brand-new question (the sheet gates the free limit itself) */}
+          <motion.button
+            type="button"
+            whileTap={reduce ? undefined : { scale: 0.93 }}
+            transition={SPRING}
+            onClick={() => {
+              haptics.select();
+              setEditingCustomId(null);
+              setShowCustomSheet(true);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-3 py-2 text-sm font-medium text-primary active:bg-primary/10"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {t("native.create.questions.createCustom", "Eigene Frage erstellen")}
+          </motion.button>
         </div>
       </motion.div>
+
+      {showCustomSheet && (
+        <CustomQuestionSheet
+          open
+          editingId={editingCustomId}
+          settings={{ ...mergeWithDefaults(null), custom_questions }}
+          isPremium={isPremium}
+          dispatch={sheetDispatch}
+          onClose={() => {
+            setShowCustomSheet(false);
+            setEditingCustomId(null);
+          }}
+          flush={() => {}}
+        />
+      )}
     </motion.div>
   );
 }

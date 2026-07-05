@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { prefetchExpensesV2 } from "@/hooks/expenses";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -100,7 +102,13 @@ const EventDashboard = () => {
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const { user } = useAuthContext();
   const { allowedTabs } = useParticipantPermissions(event, participants);
-  const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
+  const { enabled: expensesV2Off } = useFeatureFlag("expenses_v2_off");
+  const qc = useQueryClient();
+  // Warm the expenses caches as soon as the event id is known so the tab and
+  // the category picker open with no spinner.
+  useEffect(() => {
+    if (!expensesV2Off && event?.id) void prefetchExpensesV2(qc, event.id);
+  }, [expensesV2Off, event?.id, qc]);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState<ResponseStats | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
@@ -193,12 +201,12 @@ const EventDashboard = () => {
           />
         );
       case "expenses":
-        // Feature flag `expenses_v2` swaps the tab body between the
-        // current stable page and the v2 rebuild. Wrapper undoes the
+        // v2 is the default expenses experience; the `expenses_v2_off`
+        // kill-switch falls back to the legacy page. Wrapper undoes the
         // dashboard's outer padding so the inner page fills the frame.
         return (
           <div className="-m-6 sm:-m-8 [&>div]:min-h-0">
-            {useV2Expenses ? <EventExpensesV2 /> : <EventExpenses />}
+            {expensesV2Off ? <EventExpenses /> : <EventExpensesV2 />}
           </div>
         );
       case "responses":

@@ -7,8 +7,10 @@
  * horizontal pill tab navigation with layoutId morphing.
  */
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { prefetchExpensesV2 } from "@/hooks/expenses";
 import NativeEventGuests from "./NativeEventGuests";
 import NativeEventSchedule from "./NativeEventSchedule";
 import NativeEventExpenses from "./NativeEventExpenses";
@@ -723,13 +725,19 @@ export default function NativeEventDashboard() {
   // so switching back is instant — same pattern as the app's main TabsLayer.
   const visitedTabsRef = useRef<Set<TabId>>(new Set(["uebersicht"]));
   visitedTabsRef.current.add(activeTab);
-  const { enabled: useV2Expenses } = useFeatureFlag("expenses_v2");
+  const { enabled: expensesV2Off } = useFeatureFlag("expenses_v2_off");
+  const qc = useQueryClient();
   // Form Studio is the DEFAULT editor; the flag is a kill-switch (missing
   // feature_flags row = studio on). Legacy FormBuilderTab stays one flag
   // away as the emergency fallback.
   const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
   const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
+
+  // Warm expenses caches once the event id is known (instant tab + picker).
+  useEffect(() => {
+    if (!expensesV2Off && event?.id) void prefetchExpensesV2(qc, event.id);
+  }, [expensesV2Off, event?.id, qc]);
 
   // Build stats from responses — for now pass null, AI will work with basic context
   const stats = null;
@@ -788,7 +796,7 @@ export default function NativeEventDashboard() {
       case "ideenboard":
         return event ? <IdeaBoardTab event={event} /> : null;
       case "ausgaben":
-        return useV2Expenses ? <EventExpensesV2 /> : <NativeEventExpenses eventSlug={slug!} />;
+        return expensesV2Off ? <NativeEventExpenses eventSlug={slug!} /> : <EventExpensesV2 event={event} participants={participants} />;
       case "marketplace":
         return event ? <NativeMarketplaceEmbed eventId={event.id} /> : null;
       case "dienstleister":
@@ -802,7 +810,7 @@ export default function NativeEventDashboard() {
       case "antworten":
         return event ? <NativeResponsesTab eventId={event.id} participantCount={participants.length} customQuestions={mergeWithDefaults(event.settings).custom_questions ?? []} /> : null;
       case "nachrichten":
-        return event ? <MessagesTab event={event} /> : null;
+        return event ? <MessagesTab event={event} slug={slug!} participants={participants} responseCount={responseCount} /> : null;
       case "ki":
         return event ? <AIAssistantTab event={event} stats={stats} /> : null;
       case "einstellungen":

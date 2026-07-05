@@ -176,7 +176,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   const [isEnhancing, setIsEnhancing] = useState(false);
 
   const currentLocale = localeMap[i18n.language] || de;
-  const surveyLink = `${getBaseUrl()}/e/${slug}`;
+  const surveyLink = `${getBaseUrl()}/e/${slug || event.slug}`;
   const accessCode = event.access_code || "STAG2025";
   const totalCount = participants.length;
 
@@ -216,7 +216,11 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
     : t('messages.placeholders.deadlineNotSet');
 
   const getTemplateText = (templateKey: string) => {
-    return t(templateKey, {
+    // Prefer the event-type-specific variant ("...byType.<event_type>") over
+    // the neutral "...template" text when the locale provides one.
+    const byTypeKey = templateKey.replace(/\.template$/, `.byType.${event.event_type}`);
+    const resolvedKey = byTypeKey !== templateKey && i18n.exists(byTypeKey) ? byTypeKey : templateKey;
+    return t(resolvedKey, {
       honoree: event.honoree_name,
       surveyLink,
       accessCode,
@@ -244,6 +248,7 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
       // Replace placeholders in DB template
       return dbTemplate.content_template
         .replace(/\{\{honoree\}\}/g, event.honoree_name)
+        .replace(/\{\{honoree_name\}\}/g, event.honoree_name)
         .replace(/\{\{link\}\}/g, surveyLink)
         .replace(/\{\{code\}\}/g, accessCode)
         .replace(/\{\{eventDate\}\}/g, formattedEventDate)

@@ -31,9 +31,12 @@ function bucketFor(userId: string | null | undefined, flagKey: string): number {
  *
  * A flag counts as ENABLED when:
  *   - row exists, `is_enabled = true`, AND
- *   - user's deterministic bucket < rollout_percentage
+ *   - rollout_percentage >= 100 (everyone, incl. logged-out) OR
+ *     the user's deterministic bucket < rollout_percentage
  *
- * Not-logged-in users are never in the rollout.
+ * A full (>=100) rollout intentionally includes logged-out users too — this is
+ * what lets a kill-switch flag (e.g. `expenses_v2_off`) reach guests. Partial
+ * rollouts still exclude logged-out users (their bucket is 100).
  */
 export function useFeatureFlag(flagKey: string): { enabled: boolean; isLoading: boolean } {
   const { user } = useAuth();
@@ -58,6 +61,8 @@ export function useFeatureFlag(flagKey: string): { enabled: boolean; isLoading: 
   if (isLoading) return { enabled: false, isLoading: true };
   if (!data || !data.is_enabled) return { enabled: false, isLoading: false };
 
+  const rollout = data.rollout_percentage ?? 0;
+  if (rollout >= 100) return { enabled: true, isLoading: false };
   const bucket = bucketFor(user?.id, flagKey);
-  return { enabled: bucket < (data.rollout_percentage ?? 0), isLoading: false };
+  return { enabled: bucket < rollout, isLoading: false };
 }

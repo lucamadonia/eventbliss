@@ -2552,6 +2552,30 @@
         "other": {
           "honoreeName": "e.g., Team or Person",
           "eventName": "e.g., Summer Festival 2026"
+        },
+        "wedding": {
+          "honoreeName": "e.g., Anna & Tom",
+          "eventName": "e.g., Anna & Tom's Wedding"
+        },
+        "corporate": {
+          "honoreeName": "e.g., Marketing Team",
+          "eventName": "e.g., Summer Team Event 2026"
+        },
+        "family": {
+          "honoreeName": "e.g., The Millers",
+          "eventName": "e.g., Family Reunion 2026"
+        },
+        "anniversary": {
+          "honoreeName": "e.g., Grandma & Grandpa",
+          "eventName": "e.g., Golden Wedding Anniversary"
+        },
+        "babyshower": {
+          "honoreeName": "e.g., Sarah",
+          "eventName": "e.g., Sarah's Baby Shower"
+        },
+        "graduation": {
+          "honoreeName": "e.g., Jonas",
+          "eventName": "e.g., Jonas' Graduation Party"
         }
       }
     },
@@ -3366,56 +3390,186 @@
       "title": "Pro Tip",
       "description": "Copy the messages and share them directly via WhatsApp or other messengers for best results."
     },
-    "templates": {
+    "templates":     {
       "kickoff": {
         "title": "Kickoff Message",
         "description": "First invitation to all participants",
-        "template": "Hey everyone! 🎉\n\nIt's happening - we're planning the party for {{honoree}}! 🥳\n\nTo help us organize the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌"
+        "template": "Hey everyone! 🎉\n\nIt's happening - we're planning {{eventName}}! 🥳\n\nTo help us organize the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Location choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+        "byType": {
+          "bachelor": "Hey everyone! 🎉\n\nIt's happening - we're planning the bachelor party for {{honoree}}! 🍻\n\nTo help us organize the perfect send-off, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+          "bachelorette": "Hey everyone! 🎉\n\nIt's happening - we're planning the bachelorette party for {{honoree}}! 👰💃\n\nTo help us organize the perfect celebration, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+          "birthday": "Hey everyone! 🎉\n\nIt's happening - we're planning a surprise birthday party for {{honoree}}! 🎂🤫\n\nTo help us organize the perfect celebration, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Location choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+          "trip": "Hey everyone! 🎉\n\nIt's happening - we're planning the group trip for {{honoree}}! ✈️\n\nTo help us organize the perfect getaway, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Travel dates\n💰 Budget planning\n🎯 Activity selection\n📍 Destination choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+          "other": "Hey everyone! 🎉\n\nIt's happening - we're planning {{eventName}}! 🥳\n\nTo help us organize the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Location choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌",
+          "wedding": "Hello everyone! 💍\n\nThe countdown is on - we're planning the wedding celebration for {{honoree}}! 💐\n\nTo help us make this day truly special, we'd love your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date coordination\n💰 Budget planning\n🎯 Program ideas\n📍 Venue choice\n\nThe sooner everyone responds, the sooner we can bring it all together! ✨\n\nQuestions? Just reach out!\n\nWarm wishes 🤍",
+          "corporate": "Hi team! 👋\n\nWe're starting to plan {{eventName}}, and we'd love to hear from you.\n\nTo help us shape the perfect event, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Program & activities\n📍 Venue choice\n\nThe sooner everyone responds, the sooner we can finalize the details.\n\nAny questions? Just let me know!\n\nThanks 🙌",
+          "family": "Hello everyone! 🌿\n\nIt's time - we're planning our family gathering for {{honoree}}! 🏡\n\nTo help us organize a lovely day for all of us, we'd love your input!\n\n👉 Please fill out this short survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nIt only takes 2-3 minutes and helps us with:\n📅 Choosing a date\n💰 Sharing the costs\n🎯 Planning activities\n📍 Picking a place\n\nThe sooner everyone answers, the sooner we can get started! 💛\n\nAny questions? Just call me!\n\nWith love 🤗",
+          "anniversary": "Hello everyone! 🥂\n\nWe're planning the anniversary celebration for {{honoree}}! ✨\n\nTo help us make this milestone unforgettable, we'd love your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Program ideas\n📍 Venue choice\n\nThe sooner everyone responds, the sooner we can get started! 🎉\n\nQuestions? Let me know!\n\nWarm wishes 🙌",
+          "babyshower": "Hello everyone! 🍼\n\nWe're planning a baby shower for {{honoree}}! 👶💕\n\nTo help us organize a lovely celebration, we'd love your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Games & activities\n📍 Location choice\n\nThe sooner everyone responds, the sooner we can get started! 🎉\n\nQuestions? Let me know!\n\nWith love 🤍",
+          "graduation": "Hey everyone! 🎓\n\nIt's time to celebrate - we're planning the graduation party for {{honoree}}! 🎉\n\nTo help us organize the perfect celebration, we need your input!\n\n👉 Please fill out this quick survey:\n{{surveyLink}}\n\n🔑 Access code: {{accessCode}}\n\nThe survey only takes 2-3 minutes and helps us with:\n📅 Date selection\n💰 Budget planning\n🎯 Activity selection\n📍 Location choice\n\nThe sooner everyone responds, the sooner we can get started! 🚀\n\nQuestions? Let me know!\n\nCheers 🙌"
+        }
       },
       "welcome": {
         "title": "Welcome",
         "description": "Welcome message for new participants",
-        "template": "Welcome to the team! 🙌\n\nGreat to have you on board for {{honoree}}'s party!\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. We're going to have an epic time! 🚀"
+        "template": "Welcome to the team! 🙌\n\nGreat to have you on board for {{eventName}}!\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. It's going to be great! 🚀",
+        "byType": {
+          "bachelor": "Welcome to the crew! 🙌\n\nGreat to have you on board for {{honoree}}'s bachelor party! 🍻\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. We're going to have an epic time! 🚀",
+          "bachelorette": "Welcome to the crew! 🙌\n\nGreat to have you on board for {{honoree}}'s bachelorette party! 👰💃\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. We're going to have an epic time! 🚀",
+          "birthday": "Welcome aboard! 🙌\n\nGreat to have you in on {{honoree}}'s surprise birthday party! 🎂🤫\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. It's going to be unforgettable! 🚀",
+          "trip": "Welcome to the crew! 🙌\n\nGreat to have you on board for {{honoree}}'s group trip! ✈️\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. This adventure is going to be amazing! 🚀",
+          "other": "Welcome to the team! 🙌\n\nGreat to have you on board for {{eventName}}!\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. It's going to be great! 🚀",
+          "wedding": "Welcome, and so glad you're here! 🤍\n\nWe're delighted to have you on board for {{honoree}}'s wedding celebration! 💍\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, we'd love your reply soon!\n\nAny questions, just reach out. It's going to be a beautiful day! 💐",
+          "corporate": "Welcome aboard! 🙌\n\nGlad to have you involved in {{eventName}}.\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so as soon as you can.\n\nAny questions, just reach out. Looking forward to a great event! 🙌",
+          "family": "Welcome! 🤗\n\nSo happy you're joining us for {{honoree}}'s family gathering! 🏡\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't answered yet, please do when you get a moment!\n\nAny questions, just call me. It's going to be a wonderful day together! 💛",
+          "anniversary": "Welcome, and so glad you're here! 🥂\n\nWonderful to have you on board for {{honoree}}'s anniversary celebration! ✨\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so soon!\n\nAny questions, just reach out. It's going to be a lovely celebration! 🙌",
+          "babyshower": "Welcome! 🍼\n\nSo happy to have you on board for {{honoree}}'s baby shower! 👶💕\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so soon!\n\nAny questions, just reach out. It's going to be so sweet! 🤍",
+          "graduation": "Welcome aboard! 🙌\n\nGreat to have you in on {{honoree}}'s graduation party! 🎓\n\nHere's the key info:\n\n📋 Survey: {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nIf you haven't responded yet, please do so ASAP!\n\nAny questions, just reach out. Let's celebrate this milestone! 🎉"
+        }
       },
       "reminder": {
         "title": "Reminder",
         "description": "Gentle reminder for pending responses",
-        "template": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s party!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️"
+        "template": "Hey! 👋\n\nQuick reminder about the survey for {{eventName}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+        "byType": {
+          "bachelor": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s bachelor party! 🍻\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "bachelorette": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s bachelorette party! 👰💃\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "birthday": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s surprise birthday party! 🎂🤫\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "trip": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s group trip! ✈️\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "other": "Hey! 👋\n\nQuick reminder about the survey for {{eventName}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "wedding": "Hello! 👋\n\nA gentle reminder about the survey for {{honoree}}'s wedding celebration! 💍\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nWe'd love your reply so we can keep planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "corporate": "Hi! 👋\n\nA quick reminder about the survey for {{eventName}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning.\n\nOnly takes 2 minutes! ⏱️",
+          "family": "Hi everyone! 👋\n\nJust a gentle reminder about the survey for {{honoree}}'s family gathering! 🏡\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have answered.\n\nPlease fill it out so we can keep planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "anniversary": "Hello! 👋\n\nA gentle reminder about the survey for {{honoree}}'s anniversary celebration! 🥂\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "babyshower": "Hello! 👋\n\nA gentle reminder about the survey for {{honoree}}'s baby shower! 🍼\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️",
+          "graduation": "Hey! 👋\n\nQuick reminder about the survey for {{honoree}}'s graduation party! 🎓\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nSo far {{responseCount}} of {{totalCount}} have responded.\n\nPlease fill it out so we can continue planning! 🙏\n\nOnly takes 2 minutes! ⏱️"
+        }
       },
       "deadline": {
         "title": "Deadline Warning",
         "description": "Last chance before survey closes",
-        "template": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s party closes on {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰"
+        "template": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{eventName}} closes on {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+        "byType": {
+          "bachelor": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s bachelor party closes on {{deadline}}! 🍻\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "bachelorette": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s bachelorette party closes on {{deadline}}! 👰💃\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "birthday": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s surprise birthday party closes on {{deadline}}! 🎂🤫\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "trip": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s group trip closes on {{deadline}}! ✈️\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "other": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{eventName}} closes on {{deadline}}!\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "wedding": "⏳ FINAL REMINDER ⏳\n\nThe survey for {{honoree}}'s wedding celebration closes on {{deadline}}! 💍\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWe can only include your wishes if you respond in time!\n\nPlease fill it out today! ⏰",
+          "corporate": "⏳ FINAL REMINDER ⏳\n\nThe survey for {{eventName}} closes on {{deadline}}.\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nResponses received after the deadline can't be included in the planning.\n\nPlease take a moment to fill it out now! ⏰",
+          "family": "⏳ LAST CHANCE! ⏳\n\nThe survey for {{honoree}}'s family gathering closes on {{deadline}}! 🏡\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nWe can only plan around you if you answer in time!\n\nPlease fill it out today! ⏰",
+          "anniversary": "⏳ FINAL REMINDER ⏳\n\nThe survey for {{honoree}}'s anniversary celebration closes on {{deadline}}! 🥂\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "babyshower": "⏳ FINAL REMINDER ⏳\n\nThe survey for {{honoree}}'s baby shower closes on {{deadline}}! 🍼\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰",
+          "graduation": "⚠️ LAST CHANCE! ⚠️\n\nThe survey for {{honoree}}'s graduation party closes on {{deadline}}! 🎓\n\n🔗 {{surveyLink}}\n🔑 Code: {{accessCode}}\n\nAnyone who doesn't respond won't be considered in the planning!\n\nPlease fill it out now! ⏰"
+        }
       },
       "dateConfirmed": {
         "title": "Date Confirmed!",
         "description": "Announcement of the final date",
-        "template": "🎉 THE DATE IS SET! 🎉\n\n{{honoree}}'s party will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know!"
+        "template": "🎉 THE DATE IS SET! 🎉\n\n{{eventName}} will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know!",
+        "byType": {
+          "bachelor": "🎉 THE DATE IS SET! 🎉\n\n{{honoree}}'s bachelor party will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know! 🍻",
+          "bachelorette": "🎉 THE DATE IS SET! 🎉\n\n{{honoree}}'s bachelorette party will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know! 👰💃",
+          "birthday": "🎉 THE DATE IS SET! 🎉\n\n{{honoree}}'s surprise birthday party will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know! 🎂🤫",
+          "trip": "🎉 THE DATES ARE SET! 🎉\n\n{{honoree}}'s group trip will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep these dates free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know! ✈️",
+          "other": "🎉 THE DATE IS SET! 🎉\n\n{{eventName}} will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know!",
+          "wedding": "💍 THE DATE IS SET! 💍\n\n{{honoree}}'s wedding celebration will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this special day free!\n\nMore beautiful details coming soon... 💐\n\nQuestions? Just reach out!",
+          "corporate": "📅 THE DATE IS CONFIRMED 📅\n\n{{eventName}} will take place on:\n\n📅 {{eventDate}}\n\nPlease save the date and keep it free in your calendar.\n\nMore details to follow soon.\n\nQuestions? Just let me know!",
+          "family": "🎉 THE DATE IS SET! 🎉\n\n{{honoree}}'s family gathering will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this day free!\n\nMore details coming soon... 👀\n\nAny questions? Just call me! 💛",
+          "anniversary": "🥂 THE DATE IS SET! 🥂\n\n{{honoree}}'s anniversary celebration will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this special date free!\n\nMore details coming soon... ✨\n\nQuestions? Let me know!",
+          "babyshower": "🍼 THE DATE IS SET! 🍼\n\n{{honoree}}'s baby shower will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore sweet details coming soon... 👶\n\nQuestions? Let me know! 💕",
+          "graduation": "🎓 THE DATE IS SET! 🎓\n\n{{honoree}}'s graduation party will be on:\n\n📅 {{eventDate}}\n\nPlease mark your calendars and keep this date free!\n\nMore details coming soon... 👀\n\nQuestions? Let me know! 🎉"
+        }
       },
       "budget": {
         "title": "Budget Info",
         "description": "Costs and payment information",
-        "template": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Activity 1]\n• [Activity 2]\n• [Accommodation/Transport]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know!"
+        "template": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{eventName}}:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Activity 1]\n• [Activity 2]\n• [Accommodation/Transport]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know!",
+        "byType": {
+          "bachelor": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s bachelor party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Activity 1]\n• [Activity 2]\n• [Accommodation/Transport]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know! 🍻",
+          "bachelorette": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s bachelorette party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Activity 1]\n• [Activity 2]\n• [Accommodation/Transport]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know! 👰💃",
+          "birthday": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s surprise birthday party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Venue/Decorations]\n• [Food & Drinks]\n• [Cake & Gift]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know! 🎂",
+          "trip": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s group trip:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Travel/Transport]\n• [Accommodation]\n• [Activities]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know! ✈️",
+          "other": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{eventName}}:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Item 1]\n• [Item 2]\n• [Item 3]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know!",
+          "wedding": "💰 BUDGET UPDATE 💰\n\nHere's the estimated contribution for {{honoree}}'s wedding celebration:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis helps cover:\n• [Venue]\n• [Catering]\n• [Music & Decor]\n\nPlease transfer €{{depositAmount}} by {{depositDeadline}} to secure your spot.\n\nBank details:\n[Insert IBAN]\n\nAny questions about the budget? Just reach out! 💐",
+          "corporate": "💰 BUDGET UPDATE 💰\n\nHere's the estimated budget for {{eventName}}:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis covers:\n• [Venue]\n• [Catering]\n• [Program/Activities]\n\nIf a contribution applies, please transfer €{{depositAmount}} by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nAny questions about the budget? Just let me know!",
+          "family": "💰 BUDGET UPDATE 💰\n\nHere's how we'll share the costs for {{honoree}}'s family gathering:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis helps cover:\n• [Food & Drinks]\n• [Location]\n• [Extras]\n\nPlease chip in €{{depositAmount}} by {{depositDeadline}} if you can.\n\nBank details:\n[Insert IBAN]\n\nAny questions? Just call me! 💛",
+          "anniversary": "💰 BUDGET UPDATE 💰\n\nHere's the estimated contribution for {{honoree}}'s anniversary celebration:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis helps cover:\n• [Venue]\n• [Catering]\n• [Music & Decor]\n\nPlease transfer €{{depositAmount}} by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nAny questions about the budget? Let me know! 🥂",
+          "babyshower": "💰 BUDGET UPDATE 💰\n\nHere's the estimated contribution for {{honoree}}'s baby shower:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis helps cover:\n• [Decorations]\n• [Food & Drinks]\n• [Games & Gifts]\n\nPlease transfer €{{depositAmount}} by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nAny questions about the budget? Let me know! 🍼",
+          "graduation": "💰 BUDGET UPDATE 💰\n\nHere are the estimated costs for {{honoree}}'s graduation party:\n\n📊 Estimated cost per person: €{{budgetPerPerson}}\n\nThis includes:\n• [Venue/Decorations]\n• [Food & Drinks]\n• [Extras]\n\nPlease transfer €{{depositAmount}} deposit by {{depositDeadline}}.\n\nBank details:\n[Insert IBAN]\n\nQuestions about the budget? Let me know! 🎓"
+        }
       },
       "locationShare": {
         "title": "Meeting Point",
         "description": "Share meeting point and address",
-        "template": "📍 MEETING POINT for {{honoree}}'s party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🚗"
+        "template": "📍 MEETING POINT for {{eventName}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🚗",
+        "byType": {
+          "bachelor": "📍 MEETING POINT for {{honoree}}'s bachelor party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🍻",
+          "bachelorette": "📍 MEETING POINT for {{honoree}}'s bachelorette party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 👰💃",
+          "birthday": "📍 MEETING POINT for {{honoree}}'s surprise birthday party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time so we're all in place before {{honoree}} arrives! If you're running late, message the group (not {{honoree}}!).\n\nSee you soon! 🎂🤫",
+          "trip": "📍 MEETING POINT for {{honoree}}'s group trip 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time - we don't want to miss our departure! If you're running late, message the group.\n\nSee you soon! ✈️",
+          "other": "📍 MEETING POINT for {{eventName}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🚗",
+          "wedding": "📍 MEETING POINT for {{honoree}}'s wedding celebration 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease arrive on time so we can all be seated before the ceremony begins. If you're running late, message the group.\n\nSee you there! 💐",
+          "corporate": "📍 MEETING POINT for {{eventName}} 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease arrive on time. If you're running late, let the group know.\n\nSee you there! 🙌",
+          "family": "📍 MEETING POINT for {{honoree}}'s family gathering 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease try to be on time! If you're running late, just message the group.\n\nSee you soon! 💛",
+          "anniversary": "📍 MEETING POINT for {{honoree}}'s anniversary celebration 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you there! 🥂",
+          "babyshower": "📍 MEETING POINT for {{honoree}}'s baby shower 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🍼",
+          "graduation": "📍 MEETING POINT for {{honoree}}'s graduation party 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [Insert link]\n\nPlease be on time! If you're running late, message the group.\n\nSee you soon! 🎓"
+        }
       },
       "finalDetails": {
         "title": "Final Details",
         "description": "Last info before the event",
-        "template": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\n🤫 SECRECY:\n{{honoree}} must NOT find out anything!\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🔥"
+        "template": "🎊 IT'S TIME! 🎊\n\n{{eventName}} is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🔥",
+        "byType": {
+          "bachelor": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s bachelor party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\n🤫 SECRECY:\n{{honoree}} must NOT find out anything!\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🔥",
+          "bachelorette": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s bachelorette party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\n🤫 SECRECY:\n{{honoree}} must NOT find out anything!\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 👰💃",
+          "birthday": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s surprise birthday party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\n🤫 SECRECY:\nPsst — {{honoree}} must not find out about the surprise!\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🎂",
+          "trip": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s group trip is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Passport/ID packed\n• Bring good vibes! 😄\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable adventure! ✈️",
+          "other": "🎊 IT'S TIME! 🎊\n\n{{eventName}} is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\nQuestions? Call, DON'T message in the group!\n\nGet ready for an unforgettable event! 🔥",
+          "wedding": "🎊 IT'S ALMOST HERE! 🎊\n\n{{honoree}}'s wedding celebration is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n💐 GOOD TO KNOW:\n• Please arrive on time\n• Dress code as agreed\n• Bring your warmest wishes! 🤍\n\nAny questions? Just give me a call.\n\nGet ready for a truly beautiful day! ✨",
+          "corporate": "🎊 IT'S ALMOST HERE! 🎊\n\n{{eventName}} is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ GOOD TO KNOW:\n• Please arrive on time\n• Bring your badge/ID if needed\n• Bring good energy! 🙌\n\nAny questions? Just reach out directly.\n\nLooking forward to a great event together!",
+          "family": "🎊 IT'S ALMOST HERE! 🎊\n\n{{honoree}}'s family gathering is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n💛 GOOD TO KNOW:\n• Please arrive on time\n• Bring anything you offered to\n• Bring your smiles! 😄\n\nAny questions? Just give me a call.\n\nCan't wait to see you all! 🤗",
+          "anniversary": "🎊 IT'S ALMOST HERE! 🎊\n\n{{honoree}}'s anniversary celebration is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✨ GOOD TO KNOW:\n• Please arrive on time\n• Dress code as agreed\n• Bring your warmest wishes! 🥂\n\nAny questions? Just give me a call.\n\nGet ready for a wonderful celebration! 🎉",
+          "babyshower": "🎊 IT'S ALMOST HERE! 🎊\n\n{{honoree}}'s baby shower is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n💕 GOOD TO KNOW:\n• Please arrive on time\n• Bring your gift if you have one\n• Bring lots of love! 🤍\n\n🤫 SECRECY:\nPsst — {{honoree}} doesn't know yet, let's keep the surprise!\n\nAny questions? Just call me.\n\nGet ready for a sweet celebration! 🍼",
+          "graduation": "🎊 IT'S TIME! 🎊\n\n{{honoree}}'s graduation party is just around the corner!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ IMPORTANT:\n• Be on time at the meeting point\n• Phone charged\n• Bring good vibes! 😄\n\nQuestions? Call, DON'T message in the group!\n\nGet ready to celebrate this milestone! 🎓"
+        }
       },
       "packingList": {
         "title": "Packing List",
         "description": "What everyone should bring",
-        "template": "🎒 PACKING LIST for {{honoree}}'s party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🚀"
+        "template": "🎒 PACKING LIST for {{eventName}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🚀",
+        "byType": {
+          "bachelor": "🎒 PACKING LIST for {{honoree}}'s bachelor party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🍻",
+          "bachelorette": "🎒 PACKING LIST for {{honoree}}'s bachelorette party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 👰💃",
+          "birthday": "🎒 WHAT TO BRING for {{honoree}}'s surprise birthday party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Your gift (if any)\n• Cash for shared costs (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• Keep the secret! 🤫\n\nQuestions? Let me know!\n\nGet ready for an amazing celebration! 🎂",
+          "trip": "🎒 PACKING LIST for {{honoree}}'s group trip 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Passport/ID\n• Cash (approx. €{{cashAmount}})\n• Weather-appropriate clothing\n• Charger & adapter\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• Toiletries\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing adventure! ✈️",
+          "other": "🎒 PACKING LIST for {{eventName}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• ID\n• Cash (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready for an amazing event! 🚀",
+          "wedding": "🎒 WHAT TO BRING for {{honoree}}'s wedding celebration 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Your invitation\n• Cash for a gift/toast (approx. €{{cashAmount}})\n• Comfortable shoes for dancing\n• Your warmest wishes! 🤍\n\n👗 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• A tissue or two! 🥹\n\nQuestions? Just reach out!\n\nGet ready for a beautiful day! 💐",
+          "corporate": "🎒 WHAT TO BRING for {{eventName}} 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Badge/ID if required\n• Cash for extras (approx. €{{cashAmount}})\n• [Any materials needed]\n• Good energy! 🙌\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Just let me know!\n\nLooking forward to a great event!",
+          "family": "🎒 WHAT TO BRING for {{honoree}}'s family gathering 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Anything you offered to bring\n• Cash for shared costs (approx. €{{cashAmount}})\n• [Warm clothing if outdoors]\n• Your smiles! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• Old photos to share! 📸\n\nAny questions? Just call me!\n\nCan't wait to see you all! 💛",
+          "anniversary": "🎒 WHAT TO BRING for {{honoree}}'s anniversary celebration 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Your gift or card (if any)\n• Cash for shared costs (approx. €{{cashAmount}})\n• [Special clothing]\n• Your warmest wishes! 🥂\n\n👗 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• A favorite memory to share! 💬\n\nQuestions? Let me know!\n\nGet ready for a wonderful celebration! ✨",
+          "babyshower": "🎒 WHAT TO BRING for {{honoree}}'s baby shower 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Your gift (if any)\n• Cash for shared costs (approx. €{{cashAmount}})\n• [Special clothing]\n• Lots of love! 🤍\n\n👗 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• A note or wish for the little one! 💕\n\nQuestions? Let me know!\n\nGet ready for a sweet celebration! 🍼",
+          "graduation": "🎒 WHAT TO BRING for {{honoree}}'s graduation party 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ MUST-HAVES:\n• Your gift or card (if any)\n• Cash for shared costs (approx. €{{cashAmount}})\n• [Special clothing]\n• Good vibes! 😄\n\n👕 DRESS CODE:\n[Insert dress code]\n\n❌ DON'T FORGET:\n• [Important item]\n• [Another important thing]\n\nQuestions? Let me know!\n\nGet ready to celebrate this milestone! 🎓"
+        }
       },
       "thankYou": {
         "title": "Thank You",
         "description": "Thanks after the event",
-        "template": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s party was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next adventure! 🚀"
+        "template": "🙏 THANK YOU EVERYONE! 🙏\n\n{{eventName}} was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next one! 🚀",
+        "byType": {
+          "bachelor": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s bachelor party was a huge success! 🍻\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next adventure! 🚀",
+          "bachelorette": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s bachelorette party was a huge success! 👰💃\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next adventure! 🚀",
+          "birthday": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s surprise birthday party was a huge success - and we pulled it off! 🎂🎉\n\nThanks to each and every one of you for:\n• Keeping the secret\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next one! 🚀",
+          "trip": "🙏 THANK YOU EVERYONE! 🙏\n\n{{honoree}}'s group trip was a huge success! ✈️\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor traveling with you! 🙌\n\nUntil the next adventure! 🚀",
+          "other": "🙏 THANK YOU EVERYONE! 🙏\n\n{{eventName}} was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor organizing this with you! 🙌\n\nUntil the next one! 🚀",
+          "wedding": "🤍 THANK YOU, EVERYONE! 🤍\n\n{{honoree}}'s wedding celebration was truly beautiful! 💐\n\nThank you all so much for:\n• Sharing this special day\n• Your help along the way\n• The unforgettable memories\n\n📸 Please share your photos/videos in the group!\n\n💰 Any cost details will follow in the next few days.\n\nIt meant the world to celebrate with you! ✨\n\nWith love and gratitude 💍",
+          "corporate": "🙏 THANK YOU, EVERYONE! 🙏\n\n{{eventName}} was a great success!\n\nThank you all for:\n• Your energy and participation\n• Your help with the planning\n• Making it a memorable day\n\n📸 Feel free to share photos in the group!\n\n💰 Any cost details will follow shortly.\n\nIt was a pleasure organizing this with you. 🙌\n\nUntil the next one!",
+          "family": "🙏 THANK YOU, EVERYONE! 🙏\n\n{{honoree}}'s family gathering was wonderful! 🏡\n\nThank you all so much for:\n• The warmth and laughter\n• Your help with everything\n• The precious moments together\n\n📸 Please share your photos/videos in the group!\n\n💰 Any shared costs will follow in the next few days.\n\nIt was so special to bring everyone together! 🤗\n\nUntil we meet again! 💛",
+          "anniversary": "🥂 THANK YOU, EVERYONE! 🥂\n\n{{honoree}}'s anniversary celebration was unforgettable! ✨\n\nThank you all so much for:\n• Sharing this special milestone\n• Your help with the planning\n• The beautiful memories\n\n📸 Please share your photos/videos in the group!\n\n💰 Any cost details will follow in the next few days.\n\nIt was an honor celebrating with you! 🙌\n\nUntil the next celebration! 🎉",
+          "babyshower": "🤍 THANK YOU, EVERYONE! 🤍\n\n{{honoree}}'s baby shower was so lovely! 🍼\n\nThank you all so much for:\n• The love and the smiles\n• Your help with the planning\n• The sweet memories\n\n📸 Please share your photos/videos in the group!\n\n💰 Any shared costs will follow in the next few days.\n\nIt was a joy celebrating with you! 👶\n\nUntil the next celebration! 💕",
+          "graduation": "🎓 THANK YOU, EVERYONE! 🎓\n\n{{honoree}}'s graduation party was a huge success! 🎉\n\nThanks to each and every one of you for:\n• The amazing vibes\n• Your help with the planning\n• The unforgettable moments\n\n📸 Please share photos/videos in the group!\n\n💰 Cost breakdown coming in the next few days.\n\nIt was an honor celebrating this milestone with you! 🙌\n\nOn to what's next! 🚀"
+        }
       }
     },
     "ai": {
@@ -4374,6 +4528,8 @@
     "aiPlaceholder": "Describe your event in 1-2 sentences, e.g. 'Relaxed bachelor party with hiking and good food, no embarrassing tasks'...",
     "aiDescriptionRequired": "Please describe your event",
     "aiSuccess": "Template created!",
+    "aiLimitReached": "Generation limit reached",
+    "aiLimitReachedDesc": "Maximum 5 generations per session.",
     "aiSuccessDescription": "Your custom template has been generated",
     "aiError": "Error generating template",
     "generating": "Generating...",
@@ -6960,6 +7116,7 @@
         "smartHint": "Smart suggestion on",
         "countSuffix": "questions",
         "extrasTitle": "Extra questions (optional)",
+        "createCustom": "Create your own question",
         "attendanceAlways": "always on",
         "groups": {
           "basics": "Basics",
@@ -8530,7 +8687,17 @@
     "aiGateBenefit1": "A whole survey from a short description",
     "aiGateBenefit2": "Matching activities & custom questions automatically",
     "aiGateBenefit3": "Adjust anytime — AI just gets you started",
-    "aiGateCta": "Get Premium"
+    "aiGateCta": "Get Premium",
+    "aiPreviewHint": "Tap items to deselect or reselect them — only what's selected gets applied.",
+    "aiPreviewQuestions": "Active questions",
+    "aiPreviewCustomQs": "Custom questions",
+    "aiPreviewActivities": "Activities",
+    "aiPreviewDestination": "Destinations",
+    "aiPreviewBudget": "Budget options",
+    "aiPreviewDuration": "Duration options",
+    "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
+    "aiGenCount": "Generation {{used}}/{{max}}",
+    "aiLimitReached": "Maximum of {{max}} generations per session reached"
   },
   "tv": {
     "connectTitle": "Connect TV",

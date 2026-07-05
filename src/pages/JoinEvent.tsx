@@ -135,7 +135,7 @@ const JoinEvent = () => {
                       onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === "Enter" && handleLookup()}
                       className="bg-background/50 border-border/50 text-center font-mono text-2xl tracking-wider uppercase mt-2"
-                      maxLength={6}
+                      maxLength={10}
                     />
                   </div>
 

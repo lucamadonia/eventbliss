@@ -27,7 +27,27 @@ export function useExpenseCategories(eventId: string | undefined) {
       if (error) throw error;
       return (data as ExpenseCategory[]) ?? [];
     },
-    staleTime: 5 * 60_000,
+    // 7 near-static system rows — cache hard so the picker opens instantly.
+    staleTime: 30 * 60_000,
+    gcTime: 60 * 60_000,
+  });
+}
+
+/** Warm the expenses caches (categories + list) so the tab/picker open instantly. */
+export async function prefetchExpensesV2(
+  qc: import("@tanstack/react-query").QueryClient,
+  eventId: string,
+) {
+  void qc.prefetchQuery({
+    queryKey: expenseKeys.categories(eventId),
+    queryFn: async (): Promise<ExpenseCategory[]> => {
+      const { data } = await (supabase.from as any)("expense_categories")
+        .select("*")
+        .or(`event_id.is.null,event_id.eq.${eventId}`)
+        .order("sort_order", { ascending: true });
+      return (data as ExpenseCategory[]) ?? [];
+    },
+    staleTime: 30 * 60_000,
   });
 }
 
@@ -55,7 +75,8 @@ export function useCreateRecurringTemplate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: NewRecurringInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       const { data, error } = await (supabase.from as any)("expense_recurring_templates")
         .insert({
           event_id: input.eventId,

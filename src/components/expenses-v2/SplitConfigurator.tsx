@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Lock, Unlock, Check } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
 import type { SplitType } from "@/lib/expenses-v2/types";
@@ -18,12 +18,16 @@ interface SplitConfiguratorProps {
   onChange: (shares: Array<{ participant_id: string; amount: number }>) => void;
   mode?: SplitType;
   onModeChange?: (mode: SplitType) => void;
+  /** Weights per participant for the "shares" mode (persisted as split_meta). */
+  weights?: Record<string, number>;
+  onWeightsChange?: (weights: Record<string, number>) => void;
 }
 
 const MODES: Array<{ value: SplitType; label: string; sub: string }> = [
-  { value: "equal", label: "Gleichmäßig", sub: "alle gleich" },
-  { value: "percentage", label: "Prozent", sub: "% pro Person" },
-  { value: "custom", label: "Beträge", sub: "€ pro Person" },
+  { value: "equal", label: "Gleich", sub: "alle gleich" },
+  { value: "shares", label: "Anteile", sub: "1×/2×" },
+  { value: "percentage", label: "Prozent", sub: "%/Person" },
+  { value: "custom", label: "Beträge", sub: "€/Person" },
 ];
 
 /**
@@ -41,9 +45,33 @@ export function SplitConfigurator({
   onChange,
   mode = "equal",
   onModeChange,
+  weights,
+  onWeightsChange,
 }: SplitConfiguratorProps) {
   const [localMode, setLocalMode] = useState<SplitType>(mode);
   useEffect(() => setLocalMode(mode), [mode]);
+
+  // Weights for "shares" mode; default 1× each. Seeded from a passed-in map.
+  const [localWeights, setLocalWeights] = useState<Record<string, number>>(() => {
+    const w: Record<string, number> = {};
+    participants.forEach((p) => (w[p.id] = weights?.[p.id] ?? 1));
+    return w;
+  });
+
+  const applyShares = (nextWeights: Record<string, number>) => {
+    setLocalWeights(nextWeights);
+    onWeightsChange?.(nextWeights);
+    onChange(
+      computeShares(amount, participants.map((p) => p.id), {
+        type: "shares",
+        shares: participants.map((p) => ({ participant_id: p.id, weight: nextWeights[p.id] ?? 0 })),
+      }),
+    );
+  };
+
+  const setWeight = (pid: string, next: number) => {
+    applyShares({ ...localWeights, [pid]: Math.max(0, next) });
+  };
 
   const setMode = (m: SplitType) => {
     setLocalMode(m);
@@ -52,6 +80,10 @@ export function SplitConfigurator({
     if (m === "equal") {
       const allIds = participants.map((p) => p.id);
       onChange(computeShares(amount, allIds, { type: "equal" }));
+    } else if (m === "shares") {
+      const w: Record<string, number> = {};
+      participants.forEach((p) => (w[p.id] = localWeights[p.id] ?? 1));
+      applyShares(w);
     } else if (m === "percentage") {
       const split = 100 / Math.max(1, participants.length);
       onChange(
@@ -86,11 +118,18 @@ export function SplitConfigurator({
     onChange(computeShares(amount, allIds, { type: "equal", exclude: nextExcluded }));
   };
 
-  // Re-compute equal split if amount changes
+  // Re-compute equal/shares split if amount changes
   useEffect(() => {
     if (localMode === "equal") {
       const allIds = participants.map((p) => p.id);
       onChange(computeShares(amount, allIds, { type: "equal", exclude: excluded }));
+    } else if (localMode === "shares") {
+      onChange(
+        computeShares(amount, participants.map((p) => p.id), {
+          type: "shares",
+          shares: participants.map((p) => ({ participant_id: p.id, weight: localWeights[p.id] ?? 0 })),
+        }),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, localMode]);
@@ -120,7 +159,7 @@ export function SplitConfigurator({
   return (
     <div className="space-y-3">
       {/* Mode segmented control */}
-      <div className="relative grid grid-cols-3 gap-1 p-1 rounded-2xl bg-muted border border-border">
+      <div className="relative grid grid-cols-4 gap-1 p-1 rounded-2xl bg-muted border border-border">
         {MODES.map((m) => {
           const active = localMode === m.value;
           return (
@@ -189,6 +228,58 @@ export function SplitConfigurator({
             ) : (
               "Mindestens eine Person muss beteiligt sein"
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Shares (weights) rows */}
+      {localMode === "shares" && (
+        <div className="p-4 rounded-2xl bg-muted border border-border space-y-2">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
+            Anteile · z. B. 2× zahlt doppelt
+          </div>
+          {participants.map((p) => {
+            const row = value.find((v) => v.participant_id === p.id);
+            const w = localWeights[p.id] ?? 0;
+            return (
+              <div key={p.id} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-xs font-semibold text-foreground shrink-0">
+                  {(p.name ?? "?").slice(0, 1).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0 text-sm text-foreground truncate">{p.name ?? "—"}</div>
+                <div className="text-xs font-mono tabular-nums text-muted-foreground w-16 text-right">
+                  {formatMoney(row?.amount ?? 0, currency)}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setWeight(p.id, w - 1)}
+                    disabled={w <= 0}
+                    className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground disabled:opacity-30 cursor-pointer hover:bg-white/[0.06]"
+                    aria-label="Anteil verringern"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="w-8 text-center text-sm font-bold tabular-nums text-foreground">
+                    {w}×
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setWeight(p.id, w + 1)}
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/25 to-cyan-500/20 border border-violet-400/40 flex items-center justify-center text-foreground cursor-pointer hover:from-violet-500/35"
+                    aria-label="Anteil erhöhen"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+          <div className="flex items-center justify-between pt-3 mt-2 border-t border-border text-sm">
+            <span className="text-muted-foreground">Summe</span>
+            <span className="font-mono tabular-nums font-semibold text-foreground">
+              {formatMoney(sum, currency)}
+            </span>
           </div>
         </div>
       )}

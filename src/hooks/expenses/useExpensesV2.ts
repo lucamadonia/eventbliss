@@ -101,7 +101,9 @@ export function useAddExpenseV2() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: AddExpenseInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Local session read (no network round-trip).
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Nicht angemeldet");
 
       // 1) Optional receipt upload (before expense insert so we can store URL)
@@ -139,6 +141,7 @@ export function useAddExpenseV2() {
           notes: input.notes ?? null,
           tags: input.tags ?? [],
           split_type: input.splitType ?? "equal",
+          split_meta: input.splitMeta ?? null,
           created_via: input.createdVia ?? "manual",
           created_by_user_id: user.id,
           receipt_url: receiptPublicUrl,
@@ -279,7 +282,8 @@ export function useDeleteExpenseV2(eventId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       const { error } = await (supabase.from as any)("expenses")
         .update({
           deleted_at: new Date().toISOString(),

@@ -70,8 +70,7 @@ const CreateEvent = lazy(() => import("./pages/CreateEvent"));
 const JoinEvent = lazy(() => import("./pages/JoinEvent"));
 const EventSurvey = lazy(() => import("./pages/EventSurvey"));
 const EventDashboard = lazy(() => import("./pages/EventDashboard"));
-const EventExpenses = lazy(() => import("./pages/EventExpenses"));
-const EventExpensesV2 = lazy(() => import("./pages/EventExpensesV2"));
+const ExpensesGate = lazy(() => import("./components/expenses-v2/ExpensesGate"));
 const Danke = lazy(() => import("./pages/Danke"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ClaimInvite = lazy(() => import("./pages/ClaimInvite"));
@@ -138,8 +137,8 @@ const AppContent = () => {
           <Route path="/auth" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Auth /></Suspense></ErrorBoundary>} />
           <Route path="/e/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventSurvey /></Suspense></ErrorBoundary>} />
           <Route path="/e/:slug/dashboard" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventDashboard /></Suspense></ErrorBoundary>} />
-          <Route path="/e/:slug/expenses" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventExpenses /></Suspense></ErrorBoundary>} />
-          <Route path="/e/:slug/expenses-v2" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EventExpensesV2 /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/expenses" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ExpensesGate /></Suspense></ErrorBoundary>} />
+          <Route path="/e/:slug/expenses-v2" element={<Navigate to="../expenses" replace />} />
           <Route path="/e/:slug/claim/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClaimInvite /></Suspense></ErrorBoundary>} />
           <Route path="/client/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ClientPortal /></Suspense></ErrorBoundary>} />
           <Route path="/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GamesHub /></Suspense></ErrorBoundary>} />

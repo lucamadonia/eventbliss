@@ -2622,6 +2622,30 @@
         "other": {
           "honoreeName": "örn. Takım veya Kişi",
           "eventName": "örn. Yaz Festivali 2026"
+        },
+        "wedding": {
+          "honoreeName": "örn. Ayşe & Mehmet",
+          "eventName": "örn. Ayşe & Mehmet'in Düğünü"
+        },
+        "corporate": {
+          "honoreeName": "örn. Pazarlama Ekibi",
+          "eventName": "örn. Yaz Ekip Etkinliği 2026"
+        },
+        "family": {
+          "honoreeName": "örn. Yılmaz Ailesi",
+          "eventName": "örn. Aile Buluşması 2026"
+        },
+        "anniversary": {
+          "honoreeName": "örn. Anne & Baba",
+          "eventName": "örn. Anne & Baba'nın 50. Yıl Dönümü"
+        },
+        "babyshower": {
+          "honoreeName": "örn. Zeynep",
+          "eventName": "örn. Zeynep'in Baby Shower'ı"
+        },
+        "graduation": {
+          "honoreeName": "örn. Emre",
+          "eventName": "örn. Emre'nin Mezuniyet Partisi"
         }
       }
     },
@@ -3440,52 +3464,182 @@
       "kickoff": {
         "title": "Başlangıç Mesajı",
         "description": "Tüm katılımcılara ilk davet",
-        "template": "Herkese merhaba! 🎉\n\nBu an geldi - {{honoree}} için bekarlığa veda partisi planlıyoruz! 🥳\n\nMükemmel etkinliği organize etmemize yardım etmek için görüşlerinize ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Aktivite seçimi\n📍 Hedef seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌"
+        "template": "Herkese merhaba! 🎉\n\nBu an geldi - {{eventName}} planlıyoruz! 🥳\n\nMükemmel etkinliği organize edebilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Yer seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+        "byType": {
+          "bachelor": "Herkese merhaba! 🎉\n\nBu an geldi - {{honoree}} için bekarlığa veda partisi planlıyoruz! 🥳\n\nMükemmel etkinliği organize edebilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Aktivite seçimi\n📍 Hedef seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+          "bachelorette": "Merhaba hanımlar! 💃\n\nBu an geldi - {{honoree}} için bekarlığa veda partisi planlıyoruz! 👰\n\nMükemmel kutlamayı organize edebilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Aktivite seçimi\n📍 Hedef seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+          "birthday": "Herkese merhaba! 🎉\n\nBu an geldi - {{honoree}} için sürpriz bir doğum günü partisi planlıyoruz! 🥳🎂\n\nHer şeyin mükemmel olması için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+          "trip": "Merhaba ekip! ✈️\n\nBu an geldi - gezimizi planlıyoruz! 🥳\n\nMükemmel yolculuğu organize edebilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Aktivite seçimi\n📍 Hedef seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+          "other": "Herkese merhaba! 🎉\n\nBu an geldi - {{eventName}} planlıyoruz! 🥳\n\nMükemmel etkinliği organize edebilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Yer seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌",
+          "wedding": "Herkese merhaba! 💍\n\nBu an geldi - {{honoree}}'nin düğününü planlıyoruz! 🥂\n\nBu özel günün mükemmel olması için yardımınıza ihtiyacımız var.\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program tasarımı\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, planlama o kadar güzel olur! 🌸\n\nSorularınız için her zaman bize ulaşın.\n\nSevgiler 🙌",
+          "corporate": "Herkese merhaba! 👋\n\nBu an geldi - {{honoree}} etkinliğimizi planlıyoruz!\n\nEtkinliğin başarılı olması için geri bildiriminize ihtiyacımız var.\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe çerçevesi\n🎯 Program seçimi\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar iyi planlayabiliriz.\n\nSorularınız için bize ulaşabilirsiniz.\n\nSaygılarımızla",
+          "family": "Sevgili aile! 🤗\n\nBu an geldi - {{honoree}} için aile buluşmamızı planlıyoruz! 🎉\n\nHerkesin katılabilmesi için yardımınıza ihtiyacımız var.\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Yer seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz!\n\nSorularınız olursa bize ulaşın.\n\nSevgiler 🙌",
+          "anniversary": "Herkese merhaba! 🥂\n\nBu an geldi - {{honoree}}'nin yıl dönümünü planlıyoruz! 🎉\n\nBu özel anın mükemmel olması için yardımınıza ihtiyacımız var.\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program tasarımı\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, kutlama o kadar güzel olur! ✨\n\nSorularınız için her zaman bize ulaşın.\n\nSevgiler 🙌",
+          "babyshower": "Sevgili dostlar! 🍼\n\nBu an geldi - {{honoree}} için bir baby shower planlıyoruz! 👶🥳\n\nHer şeyin büyülü olması için yardımınıza ihtiyacımız var.\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🌸\n\nSorularınız olursa bize ulaşın.\n\nSevgiler 🙌",
+          "graduation": "Herkese merhaba! 🎓\n\nBu an geldi - {{honoree}}'nin mezuniyet partisini planlıyoruz! 🥳\n\nHakkıyla kutlayabilmemiz için yardımınıza ihtiyacımız var!\n\n👉 Lütfen bu kısa anketi doldurun:\n{{surveyLink}}\n\n🔑 Erişim kodu: {{accessCode}}\n\nAnket sadece 2-3 dakika sürer ve bize şunlarda yardımcı olur:\n📅 Tarih seçimi\n💰 Bütçe planlaması\n🎯 Program seçimi\n📍 Mekan seçimi\n\nHerkes ne kadar çabuk cevap verirse, o kadar çabuk başlayabiliriz! 🚀\n\nSorularınız mı var? Bana bildirin!\n\nSelamlar! 🙌"
+        }
       },
       "welcome": {
         "title": "Hoş geldin",
         "description": "Yeni katılımcılar için karşılama",
-        "template": "Ekibe hoş geldin! 🙌\n\n{{honoree}} için bekarlığa veda partisinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen yap!\n\nSoruların olursa her zaman yazabilirsin. Epik bir etkinlik bizi bekliyor! 🚀"
+        "template": "Ekibe hoş geldin! 🙌\n\n{{eventName}} etkinliğinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Epik bir etkinlik bizi bekliyor! 🚀",
+        "byType": {
+          "bachelor": "Ekibe hoş geldin! 🙌\n\n{{honoree}} için bekarlığa veda partisinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Epik bir etkinlik bizi bekliyor! 🚀",
+          "bachelorette": "Ekibe hoş geldin! 💃\n\n{{honoree}} için bekarlığa veda partisinde aramızda olman harika! 👰\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Epik bir etkinlik bizi bekliyor! 🚀",
+          "birthday": "Ekibe hoş geldin! 🙌\n\n{{honoree}} için sürpriz partide aramızda olman harika! 🎂\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Harika bir kutlama bizi bekliyor! 🚀",
+          "trip": "Aramıza hoş geldin! ✈️\n\nGezimizde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Epik bir yolculuk bizi bekliyor! 🚀",
+          "other": "Ekibe hoş geldin! 🙌\n\n{{eventName}} etkinliğinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Epik bir etkinlik bizi bekliyor! 🚀",
+          "wedding": "Hoş geldin! 💍\n\n{{honoree}}'nin düğününde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla.\n\nSoruların olursa her zaman yazabilirsin. Muhteşem bir gün bizi bekliyor! 🥂",
+          "corporate": "Aramıza hoş geldin! 👋\n\n{{honoree}} etkinliğinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla.\n\nSoruların olursa her zaman yazabilirsin. Başarılı bir etkinlik bizi bekliyor!",
+          "family": "Hoş geldin! 🤗\n\n{{honoree}} etkinliğinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla.\n\nSoruların olursa her zaman yazabilirsin. Güzel bir kutlama bizi bekliyor! 🙌",
+          "anniversary": "Hoş geldin! 🥂\n\n{{honoree}}'nin yıl dönümünde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla.\n\nSoruların olursa her zaman yazabilirsin. Şölen gibi bir kutlama bizi bekliyor! ✨",
+          "babyshower": "Hoş geldin! 🍼\n\n{{honoree}} için baby shower'da aramızda olman harika! 👶\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla.\n\nSoruların olursa her zaman yazabilirsin. Büyülü bir kutlama bizi bekliyor! 🌸",
+          "graduation": "Ekibe hoş geldin! 🎓\n\n{{honoree}}'nin mezuniyet partisinde aramızda olman harika!\n\nİşte en önemli bilgiler bir kez daha:\n\n📋 Anket: {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nHenüz yanıtlamadıysan lütfen hemen tamamla!\n\nSoruların olursa her zaman yazabilirsin. Harika bir kutlama bizi bekliyor! 🚀"
+        }
       },
       "reminder": {
         "title": "Hatırlatma",
         "description": "Bekleyen cevaplar için nazik hatırlatma",
-        "template": "Merhaba! 👋\n\n{{honoree}}'nin partisi için anketi hızlıca hatırlatma!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️"
+        "template": "Merhaba! 👋\n\n{{eventName}} için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+        "byType": {
+          "bachelor": "Merhaba! 👋\n\n{{honoree}} için bekarlığa veda partisi anketini kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "bachelorette": "Merhaba hanımlar! 💃\n\n{{honoree}} için bekarlığa veda partisi anketini kısaca hatırlatmak istedim! 👰\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "birthday": "Merhaba! 👋\n\n{{honoree}} için sürpriz parti anketini kısaca hatırlatmak istedim! 🎂\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "trip": "Merhaba ekip! ✈️\n\nGezimiz için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "other": "Merhaba! 👋\n\n{{eventName}} için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "wedding": "Herkese merhaba! 👋\n\n{{honoree}}'nin düğünü için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun. 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "corporate": "Herkese merhaba! 👋\n\n{{honoree}} anketini kısaca hatırlatmak istedim.\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun.\n\nSadece 2 dakika sürer! ⏱️",
+          "family": "Sevgili aile! 👋\n\n{{honoree}} için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun. 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "anniversary": "Herkese merhaba! 👋\n\n{{honoree}}'nin yıl dönümü için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun. 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "babyshower": "Sevgili dostlar! 🍼\n\n{{honoree}} için baby shower anketini kısaca hatırlatmak istedim! 👶\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun. 🙏\n\nSadece 2 dakika sürer! ⏱️",
+          "graduation": "Merhaba! 🎓\n\n{{honoree}}'nin mezuniyet partisi için anketi kısaca hatırlatmak istedim!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nŞu ana kadar {{totalCount}} kişiden {{responseCount}} kişi cevap verdi.\n\nPlanlamaya devam edebilmemiz için lütfen doldurun! 🙏\n\nSadece 2 dakika sürer! ⏱️"
+        }
       },
       "deadline": {
         "title": "Son Tarih Uyarısı",
         "description": "Anket kapanmadan son şans",
-        "template": "⚠️ SON ŞANS! ⚠️\n\n{{honoree}}'nin partisi için anket {{deadline}} tarihinde kapanıyor!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınmayacak!\n\nLütfen şimdi doldurun! ⏰"
+        "template": "⚠️ SON ŞANS! ⚠️\n\n{{eventName}} için anket {{deadline}} tarihinde kapanıyor!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+        "byType": {
+          "bachelor": "⚠️ SON ŞANS! ⚠️\n\n{{honoree}} için bekarlığa veda partisi anketi {{deadline}} tarihinde kapanıyor!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+          "bachelorette": "⚠️ SON ŞANS HANIMLAR! ⚠️\n\n{{honoree}} için bekarlığa veda partisi anketi {{deadline}} tarihinde kapanıyor! 👰\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+          "birthday": "⚠️ SON ŞANS! ⚠️\n\n{{honoree}} için sürpriz parti anketi {{deadline}} tarihinde kapanıyor! 🎂\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+          "trip": "⚠️ SON ŞANS EKİP! ⚠️\n\nGezimiz için anket {{deadline}} tarihinde kapanıyor! ✈️\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+          "other": "⚠️ SON ŞANS! ⚠️\n\n{{eventName}} için anket {{deadline}} tarihinde kapanıyor!\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰",
+          "wedding": "⏳ Son Hatırlatma ⏳\n\n{{honoree}}'nin düğünü için anket {{deadline}} tarihinde kapanıyor.\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler ne yazık ki planlamada dikkate alınamaz.\n\nLütfen şimdi doldurun! ⏰",
+          "corporate": "⏳ Son Hatırlatma ⏳\n\n{{honoree}} anketi {{deadline}} tarihinde kapanıyor.\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz.\n\nLütfen şimdi doldurun! ⏰",
+          "family": "⏳ Son Hatırlatma ⏳\n\n{{honoree}} için anket {{deadline}} tarihinde kapanıyor.\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler ne yazık ki planlamada dikkate alınamaz.\n\nLütfen şimdi doldurun! ⏰",
+          "anniversary": "⏳ Son Hatırlatma ⏳\n\n{{honoree}}'nin yıl dönümü için anket {{deadline}} tarihinde kapanıyor.\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler ne yazık ki planlamada dikkate alınamaz.\n\nLütfen şimdi doldurun! ⏰",
+          "babyshower": "⏳ Son Hatırlatma ⏳\n\n{{honoree}} için baby shower anketi {{deadline}} tarihinde kapanıyor. 🍼\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler ne yazık ki planlamada dikkate alınamaz.\n\nLütfen şimdi doldurun! ⏰",
+          "graduation": "⚠️ SON ŞANS! ⚠️\n\n{{honoree}}'nin mezuniyet partisi anketi {{deadline}} tarihinde kapanıyor! 🎓\n\n🔗 {{surveyLink}}\n🔑 Kod: {{accessCode}}\n\nCevap vermeyenler planlamada dikkate alınamaz!\n\nLütfen şimdi doldurun! ⏰"
+        }
       },
       "dateConfirmed": {
         "title": "Tarih Onaylandı!",
         "description": "Kesin tarihin duyurusu",
-        "template": "🎉 TARİH BELİRLENDİ! 🎉\n\n{{honoree}}'nin partisi şu tarihte olacak:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takvimlerinize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!"
+        "template": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{eventName}} şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!",
+        "byType": {
+          "bachelor": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}} için bekarlığa veda partisi şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!",
+          "bachelorette": "🎉 TARİH BELLİ OLDU HANIMLAR! 🎉\n\n{{honoree}} için bekarlığa veda partisi şu tarihte gerçekleşecek: 👰\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!",
+          "birthday": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}} için sürpriz parti şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\n🤫 Unutmayın: {{honoree}} hiçbir şey öğrenmemeli!\n\nDaha fazla detay yakında... 👀",
+          "trip": "🎉 TARİH BELLİ OLDU! 🎉\n\nGezimiz şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun! ✈️\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!",
+          "other": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{eventName}} şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!",
+          "wedding": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}}'nin düğünü şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 💍\n\nSorularınız için her zaman bize ulaşın!",
+          "corporate": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}} şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun.\n\nDaha fazla detay çok yakında.\n\nSorularınız için bize ulaşabilirsiniz.",
+          "family": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}} şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 🤗\n\nSorularınız mı var? Bize ulaşın!",
+          "anniversary": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}}'nin yıl dönümü şu tarihte gerçekleşecek:\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... ✨\n\nSorularınız mı var? Bana bildirin!",
+          "babyshower": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}} için baby shower şu tarihte gerçekleşecek: 🍼\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👶\n\nSorularınız mı var? Bana bildirin!",
+          "graduation": "🎉 TARİH BELLİ OLDU! 🎉\n\n{{honoree}}'nin mezuniyet partisi şu tarihte gerçekleşecek: 🎓\n\n📅 {{eventDate}}\n\nLütfen bu tarihi takviminize işaretleyin ve boş tutun!\n\nDaha fazla detay yakında... 👀\n\nSorularınız mı var? Bana bildirin!"
+        }
       },
       "budget": {
         "title": "Bütçe Bilgisi",
         "description": "Maliyetler ve ödeme bilgileri",
-        "template": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\nİşte {{honoree}}'nin partisi için tahmini maliyetler:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Aktivite 1]\n• [Aktivite 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito transferi yapın.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!"
+        "template": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{eventName}} için tahmini maliyetler:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Kalem 1]\n• [Kalem 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+        "byType": {
+          "bachelor": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{honoree}} için bekarlığa veda partisinin tahmini maliyetleri:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Aktivite 1]\n• [Aktivite 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "bachelorette": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{honoree}} için bekarlığa veda partisinin tahmini maliyetleri: 👰\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Aktivite 1]\n• [Aktivite 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "birthday": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{honoree}} için sürpriz partinin tahmini maliyetleri:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Yiyecek & İçecek]\n• [Dekorasyon & Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "trip": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\nGezimizin tahmini maliyetleri: ✈️\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Ulaşım]\n• [Konaklama]\n• [Aktiviteler]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "other": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{eventName}} için tahmini maliyetler:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Kalem 1]\n• [Kalem 2]\n• [Konaklama/Ulaşım]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "wedding": "💰 BÜTÇE BİLGİSİ 💰\n\n{{honoree}}'nin düğününün tahmini maliyetleri:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Catering]\n• [Müzik & Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Her zaman bize ulaşın!",
+          "corporate": "💰 BÜTÇE BİLGİSİ 💰\n\n{{honoree}} için maliyet çerçevesi:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [İkram]\n• [Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ pay gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız için bize ulaşın.",
+          "family": "💰 BÜTÇE BİLGİSİ 💰\n\n{{honoree}} için tahmini maliyetler:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Yiyecek & İçecek]\n• [Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bize ulaşın!",
+          "anniversary": "💰 BÜTÇE BİLGİSİ 💰\n\n{{honoree}}'nin yıl dönümünün tahmini maliyetleri:\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Catering]\n• [Müzik & Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "babyshower": "💰 BÜTÇE BİLGİSİ 💰\n\n{{honoree}} için baby shower'ın tahmini maliyetleri: 🍼\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Yiyecek & İçecek]\n• [Dekorasyon & Oyunlar]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!",
+          "graduation": "💰 BÜTÇE GÜNCELLEMESİ 💰\n\n{{honoree}}'nin mezuniyet partisinin tahmini maliyetleri: 🎓\n\n📊 Kişi başı tahmini maliyet: {{budgetPerPerson}}€\n\nBu şunları içerir:\n• [Mekan]\n• [Yiyecek & İçecek]\n• [Program]\n\nLütfen {{depositDeadline}} tarihine kadar {{depositAmount}}€ depozito gönderin.\n\nBanka bilgileri:\n[IBAN ekle]\n\nBütçe hakkında sorularınız mı var? Bana bildirin!"
+        }
       },
       "locationShare": {
         "title": "Buluşma noktası",
         "description": "Buluşma noktasını ve adresi paylaş",
-        "template": "📍 {{honoree}}'nin partisi için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🚗"
+        "template": "📍 {{eventName}} için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🚗",
+        "byType": {
+          "bachelor": "📍 {{honoree}} için bekarlığa veda partisi BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🚗",
+          "bachelorette": "📍 {{honoree}} için bekarlığa veda partisi BULUŞMA NOKTASI 📍 👰\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 💃",
+          "birthday": "📍 {{honoree}} için sürpriz parti BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin - {{honoree}} sürpriz olmalı! 🤫\n\nGörüşürüz! 🎂",
+          "trip": "📍 Gezimiz için BULUŞMA NOKTASI 📍 ✈️\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🚗",
+          "other": "📍 {{eventName}} için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🚗",
+          "wedding": "📍 {{honoree}}'nin düğünü için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin. Gecikme olursa kısaca haber verin.\n\nSizi bekliyoruz! 💍",
+          "corporate": "📍 {{honoree}} için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin. Gecikme olursa kısaca haber verin.\n\nGörüşmek üzere!",
+          "family": "📍 {{honoree}} için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🤗",
+          "anniversary": "📍 {{honoree}}'nin yıl dönümü için BULUŞMA NOKTASI 📍\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin. Gecikme olursa kısaca haber verin.\n\nSizi bekliyoruz! ✨",
+          "babyshower": "📍 {{honoree}} için baby shower BULUŞMA NOKTASI 📍 🍼\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 👶",
+          "graduation": "📍 {{honoree}}'nin mezuniyet partisi için BULUŞMA NOKTASI 📍 🎓\n\n📅 {{eventDate}}\n⏰ {{meetingTime}}\n📍 {{meetingPoint}}\n\n🗺️ Google Maps: [bağlantı ekle]\n\nLütfen zamanında gelin! Gecikme olursa gruba kısa bir mesaj yazın.\n\nGörüşürüz! 🎉"
+        }
       },
       "finalDetails": {
         "title": "Son detaylar",
         "description": "Etkinlik öncesi son bilgiler",
-        "template": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}}'nin partisi kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\n🤫 GİZLİLİK:\n{{honoree}} HİÇBİR ŞEY öğrenmemeli!\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥"
+        "template": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{eventName}} kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥",
+        "byType": {
+          "bachelor": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} için bekarlığa veda partisi kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\n🤫 GİZLİLİK:\n{{honoree}} HİÇBİR ŞEY öğrenmemeli!\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥",
+          "bachelorette": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} için bekarlığa veda partisi kapıda! 👰\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 💃\n\n🤫 GİZLİLİK:\n{{honoree}} HİÇBİR ŞEY öğrenmemeli!\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥",
+          "birthday": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} için sürpriz parti kapıda! 🎂\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\n🤫 GİZLİLİK:\nPsst — {{honoree}} sürprizden haberdar olmamalı!\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥",
+          "trip": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\nGezimiz kapıda! ✈️\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefon ve seyahat belgeleriniz yanınızda olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir yolculuğa hazır olun! 🔥",
+          "other": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{eventName}} kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Buluşma noktasına zamanında gelin\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için: Arayın, gruba YAZMAYIN!\n\nUnutulmaz bir etkinliğe hazır olun! 🔥",
+          "wedding": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}}'nin düğünü kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Şık kıyafetinizi unutmayın\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için her zaman bize ulaşın.\n\nMuhteşem bir güne hazır olun! 💍",
+          "corporate": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için bize ulaşın.\n\nBaşarılı bir etkinliğe hazır olun! 🔥",
+          "family": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız olursa bize ulaşın.\n\nGüzel bir kutlamaya hazır olun! 🤗",
+          "anniversary": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}}'nin yıl dönümü kapıda!\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Şık kıyafetinizi unutmayın\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için her zaman bize ulaşın.\n\nŞölen gibi bir kutlamaya hazır olun! ✨",
+          "babyshower": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}} için baby shower kapıda! 🍼\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\n🤫 Sürpriz olacaksa: {{honoree}} henüz bir şey sezmesin!\n\nSorularınız olursa bize ulaşın.\n\nBüyülü bir kutlamaya hazır olun! 👶",
+          "graduation": "🎊 BÜYÜK GÜN GELDİ! 🎊\n\n{{honoree}}'nin mezuniyet partisi kapıda! 🎓\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n⚠️ ÖNEMLİ:\n• Zamanında orada olun\n• Telefonunuz şarjlı olsun\n• Keyfinizi yanınızda getirin! 😄\n\nSorularınız için: Bize ulaşın!\n\nHarika bir kutlamaya hazır olun! 🔥"
+        }
       },
       "packingList": {
         "title": "Bavul Listesi",
         "description": "Herkesin getirmesi gerekenler",
-        "template": "🎒 {{honoree}}'nin partisi için BAVUL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 [Hedef]\n\n✅ OLMASI GEREKENLER:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Özel kıyafetler]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinlik için hazırlanın! 🚀"
+        "template": "🎒 {{eventName}} için BAVUL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Uygun kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinliğe hazır olun! 🚀",
+        "byType": {
+          "bachelor": "🎒 {{honoree}} için bekarlığa veda partisi BAVUL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Özel kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinliğe hazır olun! 🚀",
+          "bachelorette": "🎒 {{honoree}} için bekarlığa veda partisi BAVUL LİSTESİ 🎒 👰\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Özel kıyafet]\n• İyi ruh hali! 💃\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinliğe hazır olun! 🚀",
+          "birthday": "🎒 {{honoree}} için sürpriz parti BAVUL LİSTESİ 🎒 🎂\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa hediye]\n• [Uygun kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir kutlamaya hazır olun! 🚀",
+          "trip": "🎒 Gezimiz için BAVUL LİSTESİ 🎒 ✈️\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Kimlik/Pasaport\n• Nakit (yaklaşık {{cashAmount}}€)\n• Şarj aleti & powerbank\n• [Uygun kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir yolculuğa hazır olun! 🚀",
+          "other": "🎒 {{eventName}} için BAVUL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Kimlik\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Uygun kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n• [Başka önemli bir şey]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir etkinliğe hazır olun! 🚀",
+          "wedding": "🎒 {{honoree}}'nin düğünü için BAVUL LİSTESİ 🎒 💍\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Şık kıyafet\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa hediye]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bana bildirin!\n\nMuhteşem bir güne hazır olun! 🥂",
+          "corporate": "🎒 {{honoree}} için KONTROL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ LÜTFEN GETİRİN:\n• [Uygun kıyafet]\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa evraklar]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız için bize ulaşın.",
+          "family": "🎒 {{honoree}} için KONTROL LİSTESİ 🎒\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ LÜTFEN GETİRİN:\n• [Uygun kıyafet]\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa yemek katkısı]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bize ulaşın!\n\nGüzel bir kutlamaya hazır olun! 🤗",
+          "anniversary": "🎒 {{honoree}}'nin yıl dönümü için BAVUL LİSTESİ 🎒 ✨\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Şık kıyafet\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa hediye]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bana bildirin!\n\nŞölen gibi bir kutlamaya hazır olun! 🥂",
+          "babyshower": "🎒 {{honoree}} için baby shower BAVUL LİSTESİ 🎒 🍼\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Varsa bebek için hediye]\n• [Uygun kıyafet]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bana bildirin!\n\nBüyülü bir kutlamaya hazır olun! 👶",
+          "graduation": "🎒 {{honoree}}'nin mezuniyet partisi için BAVUL LİSTESİ 🎒 🎓\n\n📅 {{eventDate}}\n📍 {{destination}}\n\n✅ OLMAZSA OLMAZLAR:\n• Nakit (yaklaşık {{cashAmount}}€)\n• [Uygun kıyafet]\n• [Varsa hediye]\n• İyi ruh hali! 😄\n\n👕 KIYAFET KODU:\n[Kıyafet kodunu buraya ekle]\n\n❌ UNUTMAYIN:\n• [Önemli eşya]\n\nSorularınız mı var? Bana bildirin!\n\nHarika bir kutlamaya hazır olun! 🚀"
+        }
       },
       "thankYou": {
         "title": "Teşekkürler",
         "description": "Etkinlik sonrası teşekkür",
-        "template": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}}'nin partisi tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki destekleriniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki maceraya kadar! 🚀"
+        "template": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{eventName}} tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki maceraya kadar! 🚀",
+        "byType": {
+          "bachelor": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}} için bekarlığa veda partisi tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki maceraya kadar! 🚀",
+          "bachelorette": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}} için bekarlığa veda partisi tam bir başarıydı! 👰🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 💃\n\nBir sonraki maceraya kadar! 🚀",
+          "birthday": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}} için sürpriz parti tam bir başarıydı! 🎂🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki kutlamaya kadar! 🚀",
+          "trip": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\nGezimiz tam bir başarıydı! ✈️🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki yolculuğa kadar! 🚀",
+          "other": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{eventName}} tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nBir sonraki maceraya kadar! 🚀",
+          "wedding": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}}'nin düğünü muhteşemdi! 💍🎉\n\nHer birinize teşekkürler:\n• Sıcacık atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle kutlamak bizim için bir onurdu! 🙌\n\nNice güzel anlara! 🥂",
+          "corporate": "🙏 HERKESE ÇOK TEŞEKKÜRLER! 🙏\n\n{{honoree}} tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Güzel beraberlik için\n• Organizasyondaki desteğiniz için\n• İyi atmosfer için\n\n📸 Fotoğraf/videoları grupta paylaşabilirsiniz!\n\n💰 Hesaplaşma önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir keyifti! 🙌\n\nBir sonraki etkinlikte görüşmek üzere!",
+          "family": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}} tam bir başarıydı! 🎉\n\nHer birinize teşekkürler:\n• Sıcacık atmosfer için\n• Planlamadaki desteğiniz için\n• Güzel ortak anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle kutlamak çok güzeldi! 🤗\n\nBir sonraki aile buluşmasına kadar! 🙌",
+          "anniversary": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}}'nin yıl dönümü tam bir başarıydı! ✨🎉\n\nHer birinize teşekkürler:\n• Şölen gibi atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle kutlamak bizim için bir onurdu! 🙌\n\nNice yıllara! 🥂",
+          "babyshower": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}} için baby shower büyüleyiciydi! 🍼👶\n\nHer birinize teşekkürler:\n• Sevgi dolu atmosfer için\n• Planlamadaki desteğiniz için\n• Güzel anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle kutlamak çok güzeldi! 🙌\n\nBebeği sabırsızlıkla bekliyoruz! 🌸",
+          "graduation": "🙏 HERKESE TEŞEKKÜRLER! 🙏\n\n{{honoree}}'nin mezuniyet partisi tam bir başarıydı! 🎓🎉\n\nHer birinize teşekkürler:\n• Harika atmosfer için\n• Planlamadaki desteğiniz için\n• Unutulmaz anlar için\n\n📸 Fotoğraf/videoları lütfen grupta paylaşın!\n\n💰 Masraf hesaplaşması önümüzdeki günlerde gelecek.\n\nBunu sizinle organize etmek bir onurdu! 🙌\n\nGeleceğe! 🚀"
+        }
       }
     },
     "ai": {
@@ -4448,6 +4602,8 @@
     "aiPlaceholder": "Etkinliğini 1-2 cümleyle tanımla...",
     "aiDescriptionRequired": "Lütfen etkinliğini tanımla",
     "aiSuccess": "Şablon oluşturuldu!",
+    "aiLimitReached": "Oluşturma limitine ulaşıldı",
+    "aiLimitReachedDesc": "Oturum başına en fazla 5 oluşturma.",
     "aiSuccessDescription": "Özel şablonun oluşturuldu",
     "aiError": "Oluşturma hatası",
     "generating": "Oluşturuluyor...",
@@ -7034,6 +7190,7 @@
         "smartHint": "Akıllı öneri aktif",
         "countSuffix": "Soru",
         "extrasTitle": "Ek Sorular (isteğe bağlı)",
+        "createCustom": "Kendi sorunu oluştur",
         "attendanceAlways": "her zaman dahil",
         "groups": {
           "basics": "Temel Bilgiler",
@@ -8604,7 +8761,17 @@
     "aiGateBenefit1": "Kısa bir açıklamadan koca bir anket",
     "aiGateBenefit2": "Uygun etkinlikler ve özel sorular otomatik olarak",
     "aiGateBenefit3": "İstediğin zaman düzenle — yapay zekâ sadece başlangıcı yapar",
-    "aiGateCta": "Premium'a geç"
+    "aiGateCta": "Premium'a geç",
+    "aiPreviewHint": "Öğeleri seçmek veya seçimini kaldırmak için üzerlerine dokun — yalnızca seçili olanlar uygulanır.",
+    "aiPreviewQuestions": "Aktif sorular",
+    "aiPreviewCustomQs": "Özel sorular",
+    "aiPreviewActivities": "Aktiviteler",
+    "aiPreviewDestination": "Hedefler",
+    "aiPreviewBudget": "Bütçe seçenekleri",
+    "aiPreviewDuration": "Süre seçenekleri",
+    "aiCreditsBadge": "{{remaining}}/{{limit}} kredi",
+    "aiGenCount": "Oluşturma {{used}}/{{max}}",
+    "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı"
   },
   "tv": {
     "connectTitle": "TV'yi bağla",

@@ -17,6 +17,7 @@ export {
 } from "./useSettlements";
 export {
   useExpenseCategories,
+  prefetchExpensesV2,
   useRecurringTemplates,
   useCreateRecurringTemplate,
   useToggleRecurringTemplate,

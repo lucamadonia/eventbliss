@@ -17,6 +17,7 @@ import { formatMoney } from "@/lib/expenses-v2/types";
 import { useDeleteExpenseV2 } from "@/hooks/expenses";
 import { useHaptics } from "@/hooks/useHaptics";
 import type { Expense } from "@/lib/expenses-v2/types";
+import { CategoryIcon, type CategoryLike } from "./CategoryIcon";
 
 interface Participant {
   id: string;
@@ -28,6 +29,7 @@ interface ExpenseDetailSheetProps {
   onClose: () => void;
   expense: Expense | null;
   participants: Participant[];
+  category?: CategoryLike | null;
   currentParticipantId?: string;
   currency?: string;
 }
@@ -43,6 +45,7 @@ export function ExpenseDetailSheet({
   onClose,
   expense,
   participants,
+  category,
   currentParticipantId,
   currency = "EUR",
 }: ExpenseDetailSheetProps) {
@@ -97,8 +100,12 @@ export function ExpenseDetailSheet({
         <div className="flex-1 overflow-y-auto">
           {/* Hero */}
           <div className="px-5 pt-6 pb-8 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-muted border border-border flex items-center justify-center text-3xl mb-3">
-              {expense.emoji ?? "💰"}
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-muted border border-border flex items-center justify-center overflow-hidden mb-3">
+              <CategoryIcon
+                category={category ?? { name: expense.category, emoji: expense.emoji }}
+                size="tile"
+                className="w-14 h-14"
+              />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight mb-1">
               {expense.description}

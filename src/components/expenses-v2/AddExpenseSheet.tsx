@@ -8,10 +8,12 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SplitConfigurator } from "./SplitConfigurator";
+import { PayerSelector } from "./PayerSelector";
+import { CategoryIcon } from "./CategoryIcon";
 import { ReceiptAttach } from "./ReceiptAttach";
 import { useAddExpenseV2, useExpenseCategories, useReceiptUpload } from "@/hooks/expenses";
 import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
-import type { SplitType, ReceiptOcrResult } from "@/lib/expenses-v2/types";
+import type { SplitType, ReceiptOcrResult, PayerConfig } from "@/lib/expenses-v2/types";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -55,7 +57,8 @@ export function AddExpenseSheet({
 }: AddExpenseSheetProps) {
   const [amount, setAmount] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [payerId, setPayerId] = useState<string>(defaultPayerId ?? "");
+  const [payers, setPayers] = useState<PayerConfig[]>([]);
+  const [multiPayer, setMultiPayer] = useState(false);
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -63,6 +66,7 @@ export function AddExpenseSheet({
   const [splitMode, setSplitMode] = useState<SplitType>("equal");
   const [excludedIds, setExcludedIds] = useState<string[]>([]);
   const [shares, setShares] = useState<Array<{ participant_id: string; amount: number }>>([]);
+  const [weights, setWeights] = useState<Record<string, number>>({});
   const [step, setStep] = useState<"quick" | "detail" | "split">("quick");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
@@ -94,23 +98,31 @@ export function AddExpenseSheet({
   }, []);
   const { data: categories = [] } = useExpenseCategories(eventId);
 
-  // Reset on open — prefill split mode & exclusions from last-used memory.
+  // Reset only when the sheet transitions closed → open. Deliberately NOT
+  // dependent on `participants` (a fresh inline array each parent render would
+  // otherwise wipe the form while the user is typing).
+  const prevOpenRef = useRef(false);
   useEffect(() => {
-    if (!open) return;
+    const justOpened = open && !prevOpenRef.current;
+    prevOpenRef.current = open;
+    if (!justOpened) return;
     setAmount("");
     setDescription("");
-    setPayerId(defaultPayerId ?? (participants[0]?.id ?? ""));
+    setPayers(defaultPayerId ? [] : []); // seeded below once amount is known
+    setMultiPayer(false);
+    const firstPayer = defaultPayerId ?? (participants[0]?.id ?? "");
+    setPayers(firstPayer ? [{ participant_id: firstPayer, amount: 0 }] : []);
     setDate(new Date().toISOString().slice(0, 10));
     setNotes("");
     setCategoryId(null);
     setEmoji(null);
     const recent = recallRecentSplit(eventId);
-    // Only restore memory if the remembered participants still exist.
     const validExcludes = recent
       ? recent.excludeParticipantIds.filter((id) => participants.some((p) => p.id === id))
       : [];
     setSplitMode(recent?.mode ?? "equal");
     setExcludedIds(validExcludes);
+    setWeights({});
     setStep("quick");
     setShares([]);
     setReceiptFile(null);
@@ -121,7 +133,7 @@ export function AddExpenseSheet({
     setSuggestedCategoryId(null);
     voice.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, defaultPayerId, participants, eventId]);
+  }, [open]);
 
   // Pipe voice transcript into description (append final chunks only).
   const lastTranscriptRef = useRef<string>("");
@@ -219,7 +231,18 @@ export function AddExpenseSheet({
     }
   }, [amountNum, splitMode, participants, excludedIds]);
 
-  const canSave = amountNum > 0 && description.trim().length > 0 && payerId;
+  // Single payer always covers the full amount.
+  useEffect(() => {
+    if (!multiPayer) {
+      setPayers((prev) =>
+        prev.length ? [{ participant_id: prev[0].participant_id, amount: amountNum }] : prev,
+      );
+    }
+  }, [amountNum, multiPayer]);
+
+  const payerSum = payers.reduce((s, p) => s + p.amount, 0);
+  const payersValid = payers.length > 0 && Math.abs(payerSum - amountNum) < 0.01;
+  const canSave = amountNum > 0 && description.trim().length > 0 && payersValid;
   const sumShares = shares.reduce((s, x) => s + x.amount, 0);
   const splitValid = Math.abs(sumShares - amountNum) < 0.01;
 
@@ -235,7 +258,8 @@ export function AddExpenseSheet({
       categoryId,
       emoji,
       splitType: splitMode,
-      payers: [{ participant_id: payerId, amount: amountNum }],
+      splitMeta: splitMode === "shares" ? { weights } : null,
+      payers,
       shares,
       createdVia: voice.transcript ? "voice" : "manual",
     });
@@ -258,7 +282,7 @@ export function AddExpenseSheet({
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side="bottom"
-        className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] rounded-t-3xl flex flex-col"
+        className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y]"
       >
         <SheetTitle className="sr-only">Ausgabe hinzufügen</SheetTitle>
 
@@ -283,7 +307,7 @@ export function AddExpenseSheet({
             onClick={handleSave}
             disabled={!canSave || !splitValid || addExpense.isPending}
             size="sm"
-            className="bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-400 hover:to-cyan-400 text-white font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             {addExpense.isPending ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -300,7 +324,7 @@ export function AddExpenseSheet({
             fields (amount, description, notes) scroll above the keyboard. */}
         <div
           ref={scrollBodyRef}
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain [touch-action:pan-y]"
           style={keyboardInset ? { paddingBottom: keyboardInset + 24 } : undefined}
         >
           {/* 1) Quick — amount + title */}
@@ -379,46 +403,68 @@ export function AddExpenseSheet({
                   >
                     <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300" />
                     <span className="opacity-80">Vorschlag:</span>
-                    <span className="font-semibold">{c.emoji} {c.name}</span>
+                    <CategoryIcon category={c} size="row" className="!w-5 !h-5" />
+                    <span className="font-semibold">{c.name}</span>
                     <span className="ml-auto text-[10px] uppercase tracking-widest text-violet-600 dark:text-violet-300/80">Tippen zum Übernehmen</span>
                   </motion.button>
                 );
               })()}
             </AnimatePresence>
 
-            {/* Payer row */}
+            {/* Category picker — always visible image-tile grid */}
             <div className="mt-4">
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                Gezahlt von
+                Kategorie
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
-                {participants.map((p) => {
-                  const active = payerId === p.id;
+              <div className="grid grid-cols-4 gap-2">
+                {categories.map((c) => {
+                  const active = categoryId === c.id;
                   return (
-                    <button
-                      key={p.id}
+                    <motion.button
+                      key={c.id}
                       type="button"
-                      onClick={() => setPayerId(p.id)}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => {
+                        setCategoryId(active ? null : c.id);
+                        setEmoji(active ? null : c.emoji ?? null);
+                        setCategoryPickedManually(true);
+                        setSuggestedCategoryId(null);
+                        void haptics.select();
+                      }}
                       className={cn(
-                        "flex-shrink-0 h-11 px-4 rounded-full border text-sm font-medium cursor-pointer transition-colors flex items-center gap-2",
+                        "relative flex flex-col items-center gap-1 rounded-2xl border p-2 cursor-pointer transition-colors",
                         active
-                          ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-foreground"
-                          : "bg-muted border-border text-muted-foreground hover:text-foreground",
+                          ? "bg-gradient-to-br from-violet-500/20 to-cyan-500/10 border-violet-400/50"
+                          : "bg-muted border-border hover:border-violet-400/30",
                       )}
                     >
-                      <div
-                        className={cn(
-                          "w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
-                          active ? "bg-foreground/15" : "bg-muted",
-                        )}
-                      >
-                        {(p.name ?? "?").slice(0, 1).toUpperCase()}
-                      </div>
-                      {p.name}
-                    </button>
+                      {active && (
+                        <motion.span
+                          layoutId="add-expense-cat-glow"
+                          className="absolute inset-0 rounded-2xl ring-2 ring-violet-400/60 -z-0"
+                        />
+                      )}
+                      <CategoryIcon category={c} size="tile" selected={active} className="w-12 h-12 relative z-10" />
+                      <span className="relative z-10 text-[10px] font-medium text-foreground/90 text-center leading-tight truncate max-w-full">
+                        {c.name}
+                      </span>
+                    </motion.button>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Payer selector (single / multi) */}
+            <div className="mt-4">
+              <PayerSelector
+                participants={participants}
+                amount={amountNum}
+                currency={currency}
+                value={payers}
+                onChange={setPayers}
+                multi={multiPayer}
+                onMultiChange={setMultiPayer}
+              />
             </div>
           </div>
 
@@ -431,39 +477,6 @@ export function AddExpenseSheet({
                 exit={{ opacity: 0, height: 0 }}
                 className="px-5 pb-4 space-y-4"
               >
-                {/* Categories */}
-                <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                    Kategorie
-                  </div>
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                    {categories.map((c) => {
-                      const active = categoryId === c.id;
-                      return (
-                        <button
-                          key={c.id}
-                          type="button"
-                          onClick={() => {
-                            setCategoryId(active ? null : c.id);
-                            setEmoji(active ? null : c.emoji ?? null);
-                            setCategoryPickedManually(true);
-                            setSuggestedCategoryId(null);
-                          }}
-                          className={cn(
-                            "flex-shrink-0 h-10 px-3 rounded-full border text-xs font-medium cursor-pointer transition-colors flex items-center gap-1.5",
-                            active
-                              ? "bg-violet-500/20 border-violet-400/50 text-foreground"
-                              : "bg-muted border-border text-muted-foreground",
-                          )}
-                        >
-                          <span>{c.emoji}</span>
-                          {c.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 {/* Date */}
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
@@ -473,7 +486,7 @@ export function AddExpenseSheet({
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-violet-400/40"
+                    className="appearance-none block w-full min-w-0 h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm text-left [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-primary/40"
                   />
                 </div>
 
@@ -529,6 +542,8 @@ export function AddExpenseSheet({
                   onChange={setShares}
                   mode={splitMode}
                   onModeChange={setSplitMode}
+                  weights={weights}
+                  onWeightsChange={setWeights}
                 />
               </motion.div>
             )}

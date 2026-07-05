@@ -113,14 +113,13 @@ function wrap(node: JSX.Element, title?: string, opts?: { fullscreen?: boolean; 
 }
 
 /**
- * Picks between the stable EventExpenses page and the new v2 rebuild
- * based on the `expenses_v2` feature flag. Kept near the routes so
- * there's only one branch point across the entire native shell.
+ * Renders the v2 expenses experience by default; the `expenses_v2_off`
+ * kill-switch flag falls back to the legacy v1 page. No loading gate: while
+ * the flag fetches, `off` is false → v2 renders immediately (no v1 flash).
  */
 function ExpensesGate() {
-  const { enabled, isLoading } = useFeatureFlag("expenses_v2");
-  if (isLoading) return <PageLoader />;
-  return enabled ? <EventExpensesV2 /> : <EventExpenses />;
+  const { enabled: off } = useFeatureFlag("expenses_v2_off");
+  return off ? <EventExpenses /> : <EventExpensesV2 />;
 }
 
 export function NativeApp() {
@@ -203,9 +202,10 @@ export function NativeApp() {
                 path="/e/:slug/expenses"
                 element={wrap(<ExpensesGate />, "Expenses")}
               />
+              {/* Legacy deep link — v2 is now the canonical /expenses page. */}
               <Route
                 path="/e/:slug/expenses-v2"
-                element={wrap(<Suspense fallback={<PageLoader />}><EventExpensesV2 /></Suspense>, "Expenses")}
+                element={<Navigate to="../expenses" replace />}
               />
 
               {/* Booking flow — mirrors App.tsx so users don't bounce out of

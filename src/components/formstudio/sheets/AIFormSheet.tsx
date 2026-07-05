@@ -12,9 +12,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Check,
+  Coins,
   Crown,
-  ListChecks,
-  MessageSquarePlus,
+  Lock,
   RefreshCw,
   ShieldAlert,
   Sparkles,
@@ -25,9 +26,18 @@ import { useTranslation } from "react-i18next";
 import { StudioSheet } from "../StudioSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useAICredits } from "@/hooks/useAICredits";
 import { spring } from "@/lib/motion";
-import { type EventSettings, type QuestionConfigs } from "@/lib/survey-config";
+import {
+  CORE_QUESTION_KEYS,
+  type CustomQuestion,
+  type EventSettings,
+  type QuestionConfigs,
+} from "@/lib/survey-config";
 import { cn } from "@/lib/utils";
+
+/** Hard per-sheet-session cap on (re)generations — each one costs 1 credit. */
+const MAX_GENERATIONS = 5;
 
 interface AIFormEvent {
   event_type?: string;
@@ -75,7 +85,9 @@ export function AIFormSheet({ open, onClose, flush, event, isPremium, onApply }:
   const [phase, setPhase] = useState<Phase>(isPremium ? "describe" : "gate");
   const [description, setDescription] = useState("");
   const [result, setResult] = useState<Partial<EventSettings> | null>(null);
+  const [genCount, setGenCount] = useState(0);
   const lastDescription = useRef("");
+  const credits = useAICredits();
 
   const examples = useMemo(() => {
     const raw = t("formStudio.aiExamples", { returnObjects: true }) as unknown;
@@ -97,6 +109,7 @@ export function AIFormSheet({ open, onClose, flush, event, isPremium, onApply }:
       setPhase("gate");
       return;
     }
+    if (genCount >= MAX_GENERATIONS) return;
     const clean = prompt.trim();
     if (!clean) return;
     lastDescription.current = clean;
@@ -120,6 +133,9 @@ export function AIFormSheet({ open, onClose, flush, event, isPremium, onApply }:
 
       if (data?.success && data.settings) {
         setResult(data.settings as Partial<EventSettings>);
+        setGenCount((c) => c + 1);
+        // The server just burned 1 credit — sync the badge.
+        void credits.refetch();
         setPhase("result");
         haptics.success();
         return;
@@ -133,9 +149,8 @@ export function AIFormSheet({ open, onClose, flush, event, isPremium, onApply }:
     }
   };
 
-  const handleApply = () => {
-    if (!result) return;
-    onApply(result);
+  const handleApply = (filtered: Partial<EventSettings>) => {
+    onApply(filtered);
     haptics.celebrate();
     onClose();
   };
@@ -173,6 +188,11 @@ export function AIFormSheet({ open, onClose, flush, event, isPremium, onApply }:
             settings={result}
             onApply={handleApply}
             onRegenerate={() => runGenerate(lastDescription.current)}
+            genCount={genCount}
+            maxGenerations={MAX_GENERATIONS}
+            creditsRemaining={credits.remaining}
+            creditsLimit={credits.limit}
+            creditsLoading={credits.loading}
           />
         )}
 
@@ -398,32 +418,151 @@ function GeneratingStep() {
 }
 
 /* ------------------------------------------------------------------ */
-/* RESULT — compact preview + apply / regenerate                       */
+/* RESULT — full preview: every generated element listed & toggleable   */
+/* before applying. Regenerate is capped per sheet session.             */
 /* ------------------------------------------------------------------ */
+
+const QUESTION_EMOJI: Record<string, string> = {
+  attendance: "🎉", duration: "🗓️", date_blocks: "📅", budget: "💶",
+  destination: "📍", travel: "🧳", activities: "🎯", fitness: "💪", alcohol: "🍻",
+};
+
+/** Pill that can be tapped off/on before applying. */
+function ToggleChip({
+  active,
+  locked,
+  onToggle,
+  children,
+}: {
+  active: boolean;
+  locked?: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.button
+      type="button"
+      whileTap={locked ? undefined : { scale: 0.94 }}
+      transition={spring.snappy}
+      onClick={locked ? undefined : onToggle}
+      aria-pressed={active}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        active
+          ? "border-primary/40 bg-gradient-to-r from-violet-500/15 to-fuchsia-500/15 text-foreground"
+          : "border-border bg-foreground/[0.03] text-muted-foreground/60 line-through",
+      )}
+    >
+      {children}
+      {locked ? (
+        <Lock className="h-3 w-3 shrink-0 text-primary" />
+      ) : active ? (
+        <Check className="h-3 w-3 shrink-0 text-primary" strokeWidth={3} />
+      ) : null}
+    </motion.button>
+  );
+}
+
+function PreviewSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">{label}</p>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
 function ResultStep({
   settings,
   onApply,
   onRegenerate,
+  genCount,
+  maxGenerations,
+  creditsRemaining,
+  creditsLimit,
+  creditsLoading,
 }: {
   settings: Partial<EventSettings>;
-  onApply: () => void;
+  onApply: (filtered: Partial<EventSettings>) => void;
   onRegenerate: () => void;
+  genCount: number;
+  maxGenerations: number;
+  creditsRemaining: number;
+  creditsLimit: number;
+  creditsLoading: boolean;
 }) {
   const { t } = useTranslation();
 
-  const activeQuestions = settings.question_config
-    ? Object.values(settings.question_config as QuestionConfigs).filter((c) => c?.enabled).length
-    : 0;
-  const activityCount = settings.activity_options?.length ?? 0;
-  const customCount = settings.custom_questions?.length ?? 0;
+  // Deselection state — everything starts selected.
+  const [offQuestions, setOffQuestions] = useState<Set<string>>(new Set());
+  const [offCustom, setOffCustom] = useState<Set<string>>(new Set());
+  const [offOptions, setOffOptions] = useState<Set<string>>(new Set()); // "<group>:<value>"
+
+  const toggleIn = (set: Set<string>, key: string, setter: (s: Set<string>) => void) => {
+    const next = new Set(set);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setter(next);
+  };
+
+  const enabledQuestions = settings.question_config
+    ? CORE_QUESTION_KEYS.filter((k) => (settings.question_config as QuestionConfigs)[k]?.enabled)
+    : [];
+  const customQuestions: CustomQuestion[] = settings.custom_questions ?? [];
+  const optionGroups = [
+    {
+      group: "activities",
+      label: t("formStudio.aiPreviewActivities", "Aktivitäten"),
+      items: (settings.activity_options ?? []).map((o) => ({ value: o.value, text: `${o.emoji ? `${o.emoji} ` : ""}${o.label}` })),
+    },
+    {
+      group: "destination",
+      label: t("formStudio.aiPreviewDestination", "Reiseziele"),
+      items: (settings.destination_options ?? []).map((o) => ({ value: o.value, text: `${o.emoji ? `${o.emoji} ` : ""}${o.label}` })),
+    },
+    {
+      group: "budget",
+      label: t("formStudio.aiPreviewBudget", "Budget-Optionen"),
+      items: (settings.budget_options ?? []).map((o) => ({ value: o.value, text: o.label })),
+    },
+    {
+      group: "duration",
+      label: t("formStudio.aiPreviewDuration", "Dauer-Optionen"),
+      items: (settings.duration_options ?? []).map((o) => ({ value: o.value, text: o.label })),
+    },
+  ].filter((g) => g.items.length > 0);
+
   const noGos = settings.no_gos ?? [];
   const focus = settings.focus_points ?? [];
 
-  const stats = [
-    { icon: ListChecks, value: activeQuestions, label: t("formStudio.aiStatQuestions", "Fragen aktiv") },
-    { icon: Sparkles, value: activityCount, label: t("formStudio.aiStatActivities", "Aktivitäten") },
-    { icon: MessageSquarePlus, value: customCount, label: t("formStudio.aiStatCustom", "Eigene Fragen") },
-  ];
+  const limitReached = genCount >= maxGenerations;
+  const outOfCredits = !creditsLoading && creditsRemaining <= 0;
+  const canRegenerate = !limitReached && !outOfCredits;
+
+  /** Apply only what is still selected. */
+  const buildFiltered = (): Partial<EventSettings> => {
+    const out: Partial<EventSettings> = { ...settings };
+    if (settings.question_config) {
+      const qc = JSON.parse(JSON.stringify(settings.question_config)) as QuestionConfigs;
+      offQuestions.forEach((k) => {
+        const cfg = qc[k as keyof QuestionConfigs];
+        if (cfg) cfg.enabled = false;
+      });
+      out.question_config = qc;
+    }
+    out.custom_questions = customQuestions.filter((q) => !offCustom.has(q.id));
+    const filterOpts = <T extends { value: string }>(group: string, arr?: T[]): T[] | undefined => {
+      if (!arr) return undefined;
+      const kept = arr.filter((o) => !offOptions.has(`${group}:${o.value}`));
+      // Fully deselected → drop the key so the wizard keeps its current options.
+      return kept.length > 0 ? kept : undefined;
+    };
+    out.activity_options = filterOpts("activities", settings.activity_options);
+    out.destination_options = filterOpts("destination", settings.destination_options);
+    out.budget_options = filterOpts("budget", settings.budget_options);
+    out.duration_options = filterOpts("duration", settings.duration_options);
+    return out;
+  };
 
   return (
     <motion.div
@@ -431,79 +570,141 @@ function ResultStep({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={spring.soft}
-      className="space-y-4 pt-1"
+      className="space-y-3.5 pt-1"
     >
-      {/* Stat tiles */}
-      <div className="grid grid-cols-3 gap-2">
-        {stats.map((s, i) => {
-          const Icon = s.icon;
-          return (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...spring.bouncy, delay: 0.06 * i }}
-              className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-gradient-to-b from-foreground/[0.05] to-foreground/[0.02] p-3 text-center"
-            >
-              <Icon className="h-4 w-4 text-primary" />
-              <span className="text-xl font-black text-foreground">{s.value}</span>
-              <span className="text-[10px] leading-tight text-muted-foreground">{s.label}</span>
-            </motion.div>
-          );
-        })}
+      {/* Credits + generation counter */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground/[0.05] px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+          <Coins className="h-3 w-3 text-amber-400" />
+          {creditsLoading
+            ? "…"
+            : t("formStudio.aiCreditsBadge", {
+                defaultValue: "{{remaining}}/{{limit}} Credits",
+                remaining: creditsRemaining,
+                limit: creditsLimit,
+              })}
+        </span>
+        <span className="rounded-full bg-foreground/[0.05] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-muted-foreground">
+          {t("formStudio.aiGenCount", {
+            defaultValue: "Generierung {{used}}/{{max}}",
+            used: genCount,
+            max: maxGenerations,
+          })}
+        </span>
       </div>
 
-      {(noGos.length > 0 || focus.length > 0) && (
-        <div className="space-y-2.5 rounded-2xl border border-border bg-foreground/[0.02] p-3.5">
-          {focus.length > 0 && (
-            <div>
-              <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-primary/80">
-                {t("formStudio.aiFocusLabel", "Fokus")}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {focus.slice(0, 6).map((f) => (
-                  <span
-                    key={f}
-                    className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground/85"
-                  >
-                    {f}
-                  </span>
-                ))}
-              </div>
+      <p className="text-xs text-muted-foreground">
+        {t(
+          "formStudio.aiPreviewHint",
+          "Tippe Elemente an, um sie ab- oder wieder anzuwählen — übernommen wird nur, was ausgewählt ist.",
+        )}
+      </p>
+
+      {/* Full generated content, scrollable */}
+      <div className="max-h-[42vh] space-y-3.5 overflow-y-auto rounded-2xl border border-border bg-foreground/[0.02] p-3.5">
+        {enabledQuestions.length > 0 && (
+          <PreviewSection label={t("formStudio.aiPreviewQuestions", "Aktive Fragen")}>
+            {enabledQuestions.map((k) => (
+              <ToggleChip
+                key={k}
+                active={!offQuestions.has(k)}
+                locked={k === "attendance"}
+                onToggle={() => toggleIn(offQuestions, k, setOffQuestions)}
+              >
+                <span>{QUESTION_EMOJI[k]}</span>
+                <span>{t(`native.create.questions.q.${k}.title`, k)}</span>
+              </ToggleChip>
+            ))}
+          </PreviewSection>
+        )}
+
+        {customQuestions.length > 0 && (
+          <PreviewSection label={t("formStudio.aiPreviewCustomQs", "Eigene Fragen")}>
+            {customQuestions.map((q) => (
+              <ToggleChip
+                key={q.id}
+                active={!offCustom.has(q.id)}
+                onToggle={() => toggleIn(offCustom, q.id, setOffCustom)}
+              >
+                <span>💬</span>
+                <span className="max-w-[220px] truncate">{q.label}</span>
+              </ToggleChip>
+            ))}
+          </PreviewSection>
+        )}
+
+        {optionGroups.map((g) => (
+          <PreviewSection key={g.group} label={g.label}>
+            {g.items.map((it) => (
+              <ToggleChip
+                key={it.value}
+                active={!offOptions.has(`${g.group}:${it.value}`)}
+                onToggle={() => toggleIn(offOptions, `${g.group}:${it.value}`, setOffOptions)}
+              >
+                <span className="max-w-[180px] truncate">{it.text}</span>
+              </ToggleChip>
+            ))}
+          </PreviewSection>
+        ))}
+
+        {focus.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-primary/80">
+              {t("formStudio.aiFocusLabel", "Fokus")}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {focus.slice(0, 6).map((f) => (
+                <span key={f} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground/85">
+                  {f}
+                </span>
+              ))}
             </div>
-          )}
-          {noGos.length > 0 && (
-            <div>
-              <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-400/90">
-                {t("formStudio.aiNoGosLabel", "No-Gos")}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {noGos.slice(0, 6).map((n) => (
-                  <span
-                    key={n}
-                    className="rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-medium text-foreground/85"
-                  >
-                    {n}
-                  </span>
-                ))}
-              </div>
+          </div>
+        )}
+        {noGos.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-400/90">
+              {t("formStudio.aiNoGosLabel", "No-Gos")}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {noGos.slice(0, 6).map((n) => (
+                <span key={n} className="rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-medium text-foreground/85">
+                  {n}
+                </span>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
+
+      {limitReached && (
+        <p className="text-center text-xs font-medium text-amber-500">
+          {t("formStudio.aiLimitReached", {
+            defaultValue: "Maximal {{max}} Generierungen pro Sitzung erreicht",
+            max: maxGenerations,
+          })}
+        </p>
       )}
 
       <div className="flex gap-2 pt-1">
         <motion.button
           type="button"
-          whileTap={{ scale: 0.96 }}
+          whileTap={canRegenerate ? { scale: 0.96 } : undefined}
           transition={spring.snappy}
-          onClick={onRegenerate}
-          className="flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-foreground/[0.04] px-4 py-3.5 text-sm font-semibold text-foreground/80 active:bg-foreground/[0.08]"
+          onClick={canRegenerate ? onRegenerate : undefined}
+          disabled={!canRegenerate}
+          className={cn(
+            "flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-foreground/[0.04] px-4 py-3.5 text-sm font-semibold text-foreground/80 active:bg-foreground/[0.08]",
+            !canRegenerate && "cursor-not-allowed opacity-45",
+          )}
         >
           <RefreshCw className="h-4 w-4" />
           {t("formStudio.aiRegenerate", "Nochmal")}
+          <span className="ml-0.5 inline-flex items-center gap-0.5 rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-500">
+            <Coins className="h-2.5 w-2.5" />1
+          </span>
         </motion.button>
-        <GradientCTA icon={<Sparkles className="h-4 w-4" />} onClick={onApply} className="flex-1">
+        <GradientCTA icon={<Sparkles className="h-4 w-4" />} onClick={() => onApply(buildFiltered())} className="flex-1">
           {t("formStudio.aiApply", "Übernehmen")}
         </GradientCTA>
       </div>

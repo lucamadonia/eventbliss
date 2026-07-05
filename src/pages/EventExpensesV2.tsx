@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   ArrowLeft,
@@ -22,7 +22,10 @@ import {
   useSimplifiedDebts,
   useDeleteExpenseV2,
   useRestoreExpenseV2,
+  useExpenseCategories,
 } from "@/hooks/expenses";
+import type { EventData, Participant } from "@/hooks/useEvent";
+import type { ExpenseCategory } from "@/lib/expenses-v2/types";
 import { BalanceCard } from "@/components/expenses-v2/BalanceCard";
 import { AddExpenseSheet } from "@/components/expenses-v2/AddExpenseSheet";
 import { ExpenseRow } from "@/components/expenses-v2/ExpenseRow";
@@ -38,15 +41,40 @@ import { formatMoney } from "@/lib/expenses-v2/types";
 
 type Tab = "list" | "settle" | "timeline" | "recurring";
 
-export default function EventExpensesV2() {
+interface EventExpensesV2Props {
+  /** When embedded in a dashboard, the parent passes already-loaded data so
+      we skip a redundant get-event round-trip. Standalone route omits these. */
+  event?: EventData | null;
+  participants?: Participant[];
+}
+
+export default function EventExpensesV2({ event: eventProp, participants: participantsProp }: EventExpensesV2Props = {}) {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { user } = useAuth();
-  const { event, participants, isLoading: eventLoading } = useEvent(slug);
+  // Only fetch when the parent didn't already provide the event (deep-link route).
+  const fetched = useEvent(eventProp ? undefined : slug);
+  const event = eventProp ?? fetched.event;
+  const participants = participantsProp ?? fetched.participants;
+  const eventLoading = eventProp ? false : fetched.isLoading;
 
   const eventId = event?.id;
   const currency = event?.currency ?? "EUR";
+
+  const { data: categories = [] } = useExpenseCategories(eventId);
+  const categoriesById = useMemo(() => {
+    const m = new Map<string, ExpenseCategory>();
+    categories.forEach((c) => m.set(c.id, c));
+    return m;
+  }, [categories]);
+
+  // Single mapped-participants identity so child sheets don't reset on every
+  // parent re-render (a fresh inline array would wipe the add-expense form).
+  const mappedParticipants = useMemo(
+    () => (participants ?? []).map((p) => ({ id: p.id, name: p.name ?? undefined })),
+    [participants],
+  );
 
   const { data, isLoading: expensesLoading } = useExpensesV2(eventId);
   const { data: balances = [] } = useBalances(eventId);
@@ -63,11 +91,6 @@ export default function EventExpensesV2() {
   const detailExpense = detailExpenseId
     ? data?.items.find((e) => e.id === detailExpenseId) ?? null
     : null;
-
-  // Scroll-aware header
-  const { scrollY } = useScroll();
-  const headerBlur = useTransform(scrollY, [0, 100], [8, 24]);
-  const headerBorderOpacity = useTransform(scrollY, [0, 100], [0, 0.1]);
 
   const currentParticipantId = useMemo(
     () => participants?.find((p) => p.user_id === user?.id)?.id,
@@ -167,18 +190,8 @@ export default function EventExpensesV2() {
       <AmbientBg tone={tone} />
       <Confetti fire={confettiFire} onDone={() => setConfettiFire(false)} />
 
-      {/* Header */}
-      <motion.header
-        style={{
-          backdropFilter: `blur(${headerBlur.get()}px)`,
-          WebkitBackdropFilter: `blur(${headerBlur.get()}px)`,
-        }}
-        className="sticky top-0 z-20 bg-background/80 border-b border-border"
-      >
-        <motion.div
-          style={{ opacity: headerBorderOpacity }}
-          className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"
-        />
+      {/* Header — static blur (scroll-driven blur was janky on mobile) */}
+      <header className="sticky top-0 z-20 bg-background/90 backdrop-blur-md border-b border-border">
         <div
           className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3"
           style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
@@ -259,7 +272,7 @@ export default function EventExpensesV2() {
             );
           })}
         </div>
-      </motion.header>
+      </header>
 
       {/* Content */}
       <main
@@ -269,7 +282,7 @@ export default function EventExpensesV2() {
         {/* Balance card */}
         <BalanceCard
           balances={balances}
-          participants={(participants ?? []).map((p) => ({ id: p.id, name: p.name ?? undefined }))}
+          participants={mappedParticipants}
           currentParticipantId={currentParticipantId}
           currency={currency}
           expanded={balanceExpanded}
@@ -337,10 +350,11 @@ export default function EventExpensesV2() {
                             <ExpenseRow
                               key={expense.id}
                               expense={expense}
-                              participants={(participants ?? []).map((p) => ({
-                                id: p.id,
-                                name: p.name ?? undefined,
-                              }))}
+                              participants={mappedParticipants}
+                              category={
+                                (expense.category_id && categoriesById.get(expense.category_id)) ||
+                                { name: expense.category, emoji: expense.emoji }
+                              }
                               currentParticipantId={currentParticipantId}
                               currency={currency}
                               onTap={(id) => setDetailExpenseId(id)}
@@ -383,10 +397,7 @@ export default function EventExpensesV2() {
                   <SettlementFlow
                     eventId={eventId}
                     debts={simplifiedDebts}
-                    participants={(participants ?? []).map((p) => ({
-                      id: p.id,
-                      name: p.name ?? undefined,
-                    }))}
+                    participants={mappedParticipants}
                     currentParticipantId={currentParticipantId}
                     currency={currency}
                     onSettled={() => {
@@ -463,18 +474,11 @@ export default function EventExpensesV2() {
             await haptics.medium();
             setAddOpen(true);
           }}
-          className="fixed z-30 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 shadow-[0_8px_40px_-8px_rgba(124,92,255,0.7)] flex items-center justify-center cursor-pointer"
+          className="fixed z-30 right-6 w-16 h-16 rounded-full bg-primary shadow-lg shadow-black/20 flex items-center justify-center cursor-pointer"
           aria-label="Ausgabe hinzufügen"
           style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
         >
-          {/* Pulse ring */}
-          <motion.span
-            aria-hidden
-            className="absolute inset-0 rounded-full bg-violet-500/30"
-            animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-          />
-          <Plus className="w-6 h-6 text-white relative" />
+          <Plus className="w-6 h-6 text-primary-foreground relative" />
         </motion.button>
       )}
 
@@ -483,10 +487,7 @@ export default function EventExpensesV2() {
           open={addOpen}
           onClose={() => setAddOpen(false)}
           eventId={eventId}
-          participants={(participants ?? []).map((p) => ({
-            id: p.id,
-            name: p.name ?? undefined,
-          }))}
+          participants={mappedParticipants}
           currency={currency}
           defaultPayerId={currentParticipantId}
         />
@@ -497,10 +498,13 @@ export default function EventExpensesV2() {
         open={!!detailExpenseId}
         onClose={() => setDetailExpenseId(null)}
         expense={detailExpense}
-        participants={(participants ?? []).map((p) => ({
-          id: p.id,
-          name: p.name ?? undefined,
-        }))}
+        participants={mappedParticipants}
+        category={
+          detailExpense
+            ? (detailExpense.category_id && categoriesById.get(detailExpense.category_id)) ||
+              { name: detailExpense.category, emoji: detailExpense.emoji }
+            : null
+        }
         currentParticipantId={currentParticipantId}
         currency={currency}
       />

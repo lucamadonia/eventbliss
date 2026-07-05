@@ -68,7 +68,8 @@ export function useSettleDebt() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: SettleDebtInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Nicht angemeldet");
 
       // Insert with payer-side confirmation timestamp. Payee confirms in a

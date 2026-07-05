@@ -104,7 +104,7 @@ HARD RULES:
 - Do NOT output option arrays for attendance/travel/fitness/alcohol — their answers are fixed; you only decide their enabled flag.
 - budget/destination/duration: give 3-6 options, short lowercase "value" slugs (a-z, 0-9, _), human "label" in the target language, emoji optional.
 - activity_options: choose 8-12 items whose "value" is EXACTLY one of these real slugs (do not invent): ${[...ACTIVITY_SLUGS].join(", ")}. category ∈ action|chill|food|outdoor|other.
-- custom_questions: 0-3 only. Add one ONLY if the description clearly implies it (e.g. dietary needs → textarea, song wishes → text, t-shirt size → select). "id" = short slug. "type" ∈ text|textarea|select|radio|checkbox|toggle|rating|number|date. select/radio/checkbox need "options": ["…"].
+- custom_questions: 0-5. Add fitting extra questions the core questions do NOT cover (e.g. dietary needs → textarea, song wishes → text, t-shirt size → select, allergies, room sharing, dress code). Never duplicate a core question. "id" = short slug. "type" ∈ text|textarea|select|radio|checkbox|toggle|rating|number|date. select/radio/checkbox need "options": ["…"].
 - Keep it tasteful and specific to the description — no filler.`;
 
     const userPrompt = `Event type: ${event_type}
@@ -200,7 +200,7 @@ function sanitizeOutput(raw: Record<string, unknown>) {
 
   const custom_questions = (Array.isArray(raw.custom_questions) ? raw.custom_questions : [])
     .filter((q): q is Record<string, unknown> => !!q && typeof (q as { label?: unknown }).label === "string" && String((q as { label: unknown }).label).trim().length > 0)
-    .slice(0, 3)
+    .slice(0, 5)
     .map((q, i) => {
       const type = CUSTOM_TYPES.has(String(q.type)) ? String(q.type) : "text";
       const base = {

@@ -3,7 +3,7 @@
 
 export type ExpenseCreatedVia = "manual" | "camera" | "voice" | "import" | "template";
 export type DisputeStatus = "none" | "disputed" | "resolved";
-export type SplitType = "equal" | "custom" | "percentage";
+export type SplitType = "equal" | "custom" | "percentage" | "shares";
 export type SettlementMethod =
   | "cash" | "bank" | "paypal" | "revolut" | "wise" | "apple_pay" | "google_pay" | "other";
 export type RecurringFrequency = "daily" | "weekly" | "biweekly" | "monthly";
@@ -99,7 +99,8 @@ export interface ExpenseRecurringTemplate {
 export type SplitConfig =
   | { type: "equal"; exclude?: string[] }
   | { type: "custom"; shares: Array<{ participant_id: string; amount: number }> }
-  | { type: "percentage"; shares: Array<{ participant_id: string; percentage: number }> };
+  | { type: "percentage"; shares: Array<{ participant_id: string; percentage: number }> }
+  | { type: "shares"; shares: Array<{ participant_id: string; weight: number }> };
 
 export interface PayerConfig {
   participant_id: string;
@@ -182,6 +183,8 @@ export interface AddExpenseInput {
   payers: PayerConfig[];
   shares: Array<{ participant_id: string; amount: number }>;
   splitType?: SplitType;
+  /** Extra split configuration to persist (e.g. shares-mode weights). */
+  splitMeta?: Record<string, unknown> | null;
   receiptFile?: File | Blob | null;
   dispatchOcr?: boolean;
 }
@@ -247,6 +250,26 @@ export function computeShares(
   }
   if (config.type === "custom") {
     return config.shares.map((s) => ({ participant_id: s.participant_id, amount: s.amount }));
+  }
+  if (config.type === "shares") {
+    // Weighted split: amount * weight / totalWeight, with the rounding
+    // remainder distributed one cent at a time to the largest fractional
+    // parts (largest-remainder method) so the shares always sum exactly.
+    const weighted = config.shares.filter((s) => s.weight > 0);
+    const totalWeight = weighted.reduce((s, x) => s + x.weight, 0);
+    if (totalWeight <= 0) return [];
+    const totalCents = Math.round(amount * 100);
+    const raw = weighted.map((s) => (totalCents * s.weight) / totalWeight);
+    const floors = raw.map((r) => Math.floor(r));
+    let remaining = totalCents - floors.reduce((s, x) => s + x, 0);
+    const order = raw
+      .map((r, i) => ({ i, frac: r - Math.floor(r) }))
+      .sort((a, b) => b.frac - a.frac);
+    const cents = [...floors];
+    for (let k = 0; k < order.length && remaining > 0; k++, remaining--) {
+      cents[order[k].i] += 1;
+    }
+    return weighted.map((s, i) => ({ participant_id: s.participant_id, amount: cents[i] / 100 }));
   }
   // percentage
   return config.shares.map((s) => ({
