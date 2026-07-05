@@ -14,6 +14,8 @@
     "og:png": "node scripts/convert-og-png.mjs",
     "og:all": "npm run og:svg && npm run og:png",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "android:prepare": "node scripts/fetch-spotify-android-aar.mjs",
+    "android:release": "npm run android:prepare && cd android && gradlew bundleRelease",
     "cap:build": "cross-env CAPACITOR_BUILD=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:build && npx cap open ios",
     "cap:android": "npm run cap:build && npx cap open android",
