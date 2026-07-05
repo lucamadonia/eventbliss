@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -39,7 +39,10 @@ import { CountUp } from "@/components/expenses-v2/CountUp";
 import { Confetti } from "@/components/expenses-v2/Confetti";
 import { formatMoney } from "@/lib/expenses-v2/types";
 
-type Tab = "list" | "settle" | "timeline" | "recurring";
+type Tab = "list" | "settle" | "stats" | "timeline" | "recurring";
+
+// Lazy: recharts is heavy — load the stats panel only when the tab opens.
+const ExpenseStats = lazy(() => import("@/components/expenses-v2/ExpenseStats"));
 
 interface EventExpensesV2Props {
   /** When embedded in a dashboard, the parent passes already-loaded data so
@@ -229,6 +232,7 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
             [
               { id: "list", label: "Ledger", count: data?.summary.count ?? 0 },
               { id: "settle", label: "Begleichen", count: simplifiedDebts.length },
+              { id: "stats", label: "Statistik" },
               { id: "recurring", label: "Wiederkehrend" },
               { id: "timeline", label: "Verlauf" },
             ] as const
@@ -421,6 +425,37 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
                     currency={currency}
                   />
                 </section>
+              </motion.div>
+            )}
+
+            {tab === "stats" && eventId && (
+              <motion.div
+                key="stats"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Suspense
+                  fallback={
+                    <div className="space-y-3">
+                      {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-56 rounded-2xl bg-muted border border-border animate-pulse" />
+                      ))}
+                    </div>
+                  }
+                >
+                  <ExpenseStats
+                    items={data?.items ?? []}
+                    summary={data?.summary ?? { totalAmount: 0, settledAmount: 0, openAmount: 0, byCategoryId: {}, byPayerId: {}, count: 0 }}
+                    participants={mappedParticipants}
+                    categoriesById={categoriesById}
+                    currency={currency}
+                    budget={typeof (event?.settings as Record<string, unknown> | null)?.budget === "number"
+                      ? ((event?.settings as Record<string, unknown>).budget as number)
+                      : null}
+                  />
+                </Suspense>
               </motion.div>
             )}
 
