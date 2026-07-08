@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { serviceClient, getUserId, isEventMember, isEventOrganizer, eventTabIsPublic, unauthorized } from "../_shared/authz.ts";
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
@@ -20,10 +20,18 @@ serve(async (req) => {
       );
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabase = serviceClient();
+
+    // AuthZ: raw responses contain PII — members/organizer, OR anyone only if
+    // the organizer explicitly made the responses tab public.
+    const userId = await getUserId(req, supabase);
+    const _ok =
+      (await isEventMember(supabase, eventId, userId)) ||
+      (await isEventOrganizer(supabase, eventId, userId)) ||
+      (await eventTabIsPublic(supabase, eventId, ["responses"]));
+    if (!_ok) {
+      return unauthorized(corsHeaders);
+    }
 
     // Fetch all responses for the event
     const { data: responses, error: responsesError } = await supabase

@@ -41,6 +41,7 @@ import EventExpensesV2 from "@/pages/EventExpensesV2";
 import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { FileEdit, Building2, LogIn } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { edgeHeaders } from "@/lib/edge";
 import { GuestEventWarning } from "@/components/dashboard/GuestEventWarning";
 import {
   Dialog,
@@ -139,11 +140,7 @@ const EventDashboard = () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-responses?event_id=${event.id}`,
-          {
-            headers: {
-              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
-          }
+          { headers: await edgeHeaders() }
         );
         const data = await res.json();
         if (data.success) {

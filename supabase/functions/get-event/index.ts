@@ -165,7 +165,9 @@ serve(async (req) => {
           id: event.id,
           slug: event.slug,
           name: event.name,
-          access_code: event.access_code,
+          // The access code is the secret gate for join/submit — only reveal it
+          // to authorized callers (organizer/members), never to a public slug lookup.
+          access_code: isAuthorized ? event.access_code : null,
           honoree_name: event.honoree_name,
           event_type: event.event_type,
           event_date: event.event_date,

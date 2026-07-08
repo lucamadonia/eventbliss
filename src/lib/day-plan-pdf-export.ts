@@ -1,4 +1,5 @@
 // Day Plan PDF Export - Premium formatted export for AI-generated day plans
+import { escapeHtml } from "@/lib/html-escape";
 import { format } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import { 
@@ -300,15 +301,15 @@ function renderTimePeriod(
         <div class="time-block-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span class="time-badge" style="background: ${color.primary}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; font-family: monospace;">${block.time}</span>
           <span style="font-size: 14pt;">${block.emoji}</span>
-          <span style="font-weight: 600; font-size: 10pt;">${block.title}</span>
+          <span style="font-weight: 600; font-size: 10pt;">${escapeHtml(block.title)}</span>
         </div>
         <div class="block-details" style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 9pt; color: #4b5563;">
-          ${block.location ? `<span>📍 ${block.location}</span>` : ''}
+          ${block.location ? `<span>📍 ${escapeHtml(block.location)}</span>` : ''}
           ${block.transport ? `<span>🚗 ${block.transport}</span>` : ''}
           ${block.cost ? `<span>💰 ${block.cost}</span>` : ''}
           ${block.duration ? `<span>⏱️ ${block.duration}</span>` : ''}
         </div>
-        ${block.description ? `<div style="font-size: 9pt; color: #6b7280; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6;">${block.description.replace(/\n/g, '<br>')}</div>` : ''}
+        ${block.description ? `<div style="font-size: 9pt; color: #6b7280; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6;">${escapeHtml(block.description).replace(/\n/g, '<br>')}</div>` : ''}
         ${block.tips.map(tip => `<div style="display: flex; align-items: flex-start; gap: 6px; background: #fef3c7; padding: 6px 10px; border-radius: 4px; margin-top: 8px; font-size: 8.5pt; border-left: 2px solid #f59e0b;"><span>💡</span><span>${tip}</span></div>`).join('')}
         ${block.warnings.map(warning => `<div style="display: flex; align-items: flex-start; gap: 6px; background: #fee2e2; padding: 6px 10px; border-radius: 4px; margin-top: 8px; font-size: 8.5pt; border-left: 2px solid #ef4444;"><span>⚠️</span><span>${warning}</span></div>`).join('')}
       </div>
@@ -337,7 +338,7 @@ export function generateDayPlanHTML(
     <html lang="${locale}" dir="${isRTL ? 'rtl' : 'ltr'}">
     <head>
       <meta charset="utf-8">
-      <title>${eventInfo.name} - ${t('dayPlan')}</title>
+      <title>${escapeHtml(eventInfo.name)} - ${t('dayPlan')}</title>
       <style>
         @page { 
           size: A4; 
@@ -513,7 +514,7 @@ export function generateDayPlanHTML(
     <body>
       <div class="container">
         <div class="header">
-          <h1>📋 ${eventInfo.name}</h1>
+          <h1>📋 ${escapeHtml(eventInfo.name)}</h1>
           <div class="subtitle">${t('dayPlan')}</div>
           <div class="meta">
             <span>📅 ${dayPlan.days.length} ${t('days')}</span>
@@ -545,7 +546,7 @@ export function generateDayPlanHTML(
             <div class="day-number">${t('tag')} ${tagNumber}</div>
             <div class="day-info">
               <div class="day-name">${day.dayName}</div>
-              <div class="day-title">${day.title} • ${day.timeBlocks.length} ${t('activities')}</div>
+              <div class="day-title">${escapeHtml(day.title)} • ${day.timeBlocks.length} ${t('activities')}</div>
             </div>
             <div class="day-emoji">${day.emoji}</div>
           </div>

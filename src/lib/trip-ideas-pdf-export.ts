@@ -1,4 +1,5 @@
 // Trip Ideas PDF Export - Premium formatted export for AI-generated trip ideas
+import { escapeHtml } from "@/lib/html-escape";
 import { format } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import { type ParsedTripIdeasResponse, type ParsedTripIdea } from "./ai-response-parser";
@@ -73,7 +74,7 @@ export function generateTripIdeasHTML(
     <html lang="${locale}">
     <head>
       <meta charset="utf-8">
-      <title>${eventInfo.name} - ${t('tripIdeas')}</title>
+      <title>${escapeHtml(eventInfo.name)} - ${t('tripIdeas')}</title>
       <style>
         @page { size: A4; margin: 15mm 20mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -208,7 +209,7 @@ export function generateTripIdeasHTML(
     <body>
       <div class="container">
         <div class="header">
-          <h1>🌍 ${eventInfo.name}</h1>
+          <h1>🌍 ${escapeHtml(eventInfo.name)}</h1>
           <div class="subtitle">${t('tripIdeas')}</div>
           <div class="meta">
             <span>✈️ ${tripIdeasData.ideas.length} ${t('tripIdeas')}</span>
@@ -231,7 +232,7 @@ export function generateTripIdeasHTML(
             <div class="idea-number">${t('idea')} ${index + 1}</div>
             <div class="idea-info">
               <div class="idea-title">
-                ${idea.title}
+                ${escapeHtml(idea.title)}
                 ${isTopPick ? `<span class="top-pick-badge">⭐ ${t('topPick')}</span>` : ''}
               </div>
               <div class="idea-destination">📍 ${idea.destination}</div>
@@ -243,7 +244,7 @@ export function generateTripIdeasHTML(
               ${idea.cost ? `<span class="meta-badge">💰 ${idea.cost}</span>` : ''}
               ${idea.travelTime ? `<span class="meta-badge">🗓️ ${idea.travelTime}</span>` : ''}
             </div>
-            ${idea.description ? `<div class="idea-description">${idea.description}</div>` : ''}
+            ${idea.description ? `<div class="idea-description">${escapeHtml(idea.description)}</div>` : ''}
             ${idea.whyPerfect && idea.whyPerfect.length > 0 ? `
               <div class="why-perfect-box">
                 <div class="why-perfect-title">💡 ${t('whyPerfect')}</div>

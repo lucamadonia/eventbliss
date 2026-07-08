@@ -1,4 +1,5 @@
 // Activities PDF Export - Premium formatted export for AI-generated activities
+import { escapeHtml } from "@/lib/html-escape";
 import { format } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 import { type ParsedActivitiesResponse, type ParsedActivityExtended } from "./ai-response-parser";
@@ -94,7 +95,7 @@ export function generateActivitiesHTML(
     <html lang="${locale}">
     <head>
       <meta charset="utf-8">
-      <title>${eventInfo.name} - ${t('activities')}</title>
+      <title>${escapeHtml(eventInfo.name)} - ${t('activities')}</title>
       <style>
         @page { size: A4; margin: 15mm 20mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -206,7 +207,7 @@ export function generateActivitiesHTML(
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎯 ${eventInfo.name}</h1>
+          <h1>🎯 ${escapeHtml(eventInfo.name)}</h1>
           <div class="subtitle">${t('activities')}</div>
           <div class="meta">
             <span>🎲 ${activitiesData.activities.length} ${t('activities')}</span>
@@ -228,7 +229,7 @@ export function generateActivitiesHTML(
         <div class="activity-card">
           <div class="activity-header" style="background: linear-gradient(135deg, ${color.primary} 0%, ${color.secondary} 100%);">
             <div class="activity-number">${t('activity')} ${index + 1}</div>
-            <div class="activity-title">${activity.title}</div>
+            <div class="activity-title">${escapeHtml(activity.title)}</div>
             <div class="activity-emoji">${activity.emoji}</div>
           </div>
           <div class="activity-body">
@@ -236,9 +237,9 @@ export function generateActivitiesHTML(
               ${activity.duration ? `<span class="meta-badge" style="background: #f3f4f6; color: #374151;">⏱️ ${activity.duration}</span>` : ''}
               ${activity.cost ? `<span class="meta-badge" style="background: #f3f4f6; color: #374151;">💰 ${activity.cost}</span>` : ''}
               <span class="meta-badge" style="background: ${fitnessColor}20; color: ${fitnessColor};">💪 ${getFitnessLabel(activity.fitness)}</span>
-              ${activity.location ? `<span class="meta-badge" style="background: #f3f4f6; color: #374151;">📍 ${activity.location}</span>` : ''}
+              ${activity.location ? `<span class="meta-badge" style="background: #f3f4f6; color: #374151;">📍 ${escapeHtml(activity.location)}</span>` : ''}
             </div>
-            ${activity.description ? `<div class="activity-description">${activity.description}</div>` : ''}
+            ${activity.description ? `<div class="activity-description">${escapeHtml(activity.description)}</div>` : ''}
             ${activity.highlights && activity.highlights.length > 0 ? `
               <div class="highlights-box">
                 <div class="highlights-title">✅ ${t('highlights')}</div>

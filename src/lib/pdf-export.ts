@@ -1,4 +1,5 @@
 // PDF export for agenda - client-side generation
+import { escapeHtml } from "@/lib/html-escape";
 import { format, parseISO } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
 
@@ -76,7 +77,7 @@ export function generatePrintableAgenda(
     <html>
     <head>
       <meta charset="utf-8">
-      <title>${event.name} - Agenda</title>
+      <title>${escapeHtml(event.name)} - Agenda</title>
       <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -185,7 +186,7 @@ export function generatePrintableAgenda(
     </head>
     <body>
       <div class="header">
-        <h1>📋 ${event.name}</h1>
+        <h1>📋 ${escapeHtml(event.name)}</h1>
         <p class="subtitle">Event Agenda</p>
       </div>
   `;
@@ -221,13 +222,13 @@ export function generatePrintableAgenda(
           <div class="activity-header">
             <div class="activity-title">
               <span>${emoji}</span>
-              <span>${activity.title}</span>
+              <span>${escapeHtml(activity.title)}</span>
             </div>
             <span class="activity-time">${timeDisplay}</span>
           </div>
           <div class="activity-details">
-            ${activity.description ? `<p>${activity.description}</p>` : ''}
-            ${activity.location ? `<p>📍 ${activity.location}</p>` : ''}
+            ${activity.description ? `<p>${escapeHtml(activity.description)}</p>` : ''}
+            ${activity.location ? `<p>📍 ${escapeHtml(activity.location)}</p>` : ''}
             ${activity.estimated_cost ? `<p class="activity-cost">💰 ${activity.estimated_cost.toFixed(2)} ${activity.currency || 'EUR'}</p>` : ''}
           </div>
         </div>

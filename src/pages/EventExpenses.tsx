@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { edgeHeaders } from "@/lib/edge";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -116,10 +117,7 @@ const EventExpenses = () => {
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-expenses?event_id=${event.id}`,
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
+            headers: await edgeHeaders({ "Content-Type": "application/json" }),
           }
         );
 

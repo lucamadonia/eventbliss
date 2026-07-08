@@ -226,6 +226,8 @@ const CreateEvent = () => {
             await supabase.functions.invoke("update-event-settings", {
               body: {
                 event_id: data.event.id,
+                // Guest has no JWT yet — authorize via the organizer token.
+                organizer_token: data.organizer_token,
                 settings: {
                   question_config: formData.question_config,
                   custom_questions: formData.custom_questions,

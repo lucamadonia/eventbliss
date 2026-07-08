@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { serviceClient, getUserId, isEventOrganizer, organizerTokenValid, unauthorized } from "../_shared/authz.ts";
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
@@ -10,19 +10,27 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabase = serviceClient();
 
     const body = await req.json();
-    const { event_id, settings, survey_deadline, status, locked_block, currency } = body;
+    const { event_id, settings, survey_deadline, status, locked_block, currency, organizer_token } = body;
 
     if (!event_id) {
       return new Response(
         JSON.stringify({ success: false, error: "Event ID is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // AuthZ: the caller must be the event's organizer — proven either by a JWT
+    // (logged-in organizer editing settings) OR by the organizer_token that
+    // create-event returned (the guest creation flow, which has no JWT yet).
+    const userId = await getUserId(req, supabase);
+    const authorized =
+      (await isEventOrganizer(supabase, event_id, userId)) ||
+      (await organizerTokenValid(supabase, event_id, organizer_token));
+    if (!authorized) {
+      return unauthorized(corsHeaders);
     }
 
     console.log("Updating event settings for:", event_id);

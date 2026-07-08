@@ -92,9 +92,22 @@ export function AddPinSheet({
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 
+  // Only http(s) links — reject javascript:/data:/other schemes that could
+  // execute or spoof when the pin is opened.
+  const isSafeHttpUrl = (raw: string): boolean => {
+    const v = raw.trim();
+    if (v.length <= 3) return false;
+    try {
+      const parsed = new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
   const canSubmit = (() => {
     if (kind === "image") return !!imageFile;
-    if (kind === "link" || kind === "embed") return url.trim().length > 3;
+    if (kind === "link" || kind === "embed") return isSafeHttpUrl(url);
     if (kind === "note") return note.trim().length > 0 || title.trim().length > 0;
     return false;
   })();

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { edgeHeaders } from "@/lib/edge";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -234,10 +235,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-event-settings`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
+          headers: await edgeHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({
             event_id: event.id,
             settings: updatedSettings,

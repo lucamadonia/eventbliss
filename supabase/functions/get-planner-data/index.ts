@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { serviceClient, getUserId, isEventMember, isEventOrganizer, eventTabIsPublic, unauthorized } from "../_shared/authz.ts";
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
@@ -10,9 +10,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = serviceClient();
 
     const url = new URL(req.url);
     const eventId = url.searchParams.get("event_id");
@@ -35,6 +33,17 @@ serve(async (req) => {
         JSON.stringify({ error: "Event not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // AuthZ: members/organizer, OR anyone if the organizer made the schedule
+    // publicly visible (opt-in share).
+    const userId = await getUserId(req, supabase);
+    const _ok =
+      (await isEventMember(supabase, eventId, userId)) ||
+      (await isEventOrganizer(supabase, eventId, userId)) ||
+      (await eventTabIsPublic(supabase, eventId, ["planner", "schedule"]));
+    if (!_ok) {
+      return unauthorized(corsHeaders);
     }
 
     const { data: activities, error: activitiesError } = await supabase

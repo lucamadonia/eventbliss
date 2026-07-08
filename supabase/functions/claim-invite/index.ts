@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getUserId } from "../_shared/authz.ts";
 
 interface ClaimRequest {
   token: string;
-  user_id: string;
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -20,12 +20,16 @@ serve(async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { token, user_id }: ClaimRequest = await req.json();
+    const { token }: ClaimRequest = await req.json();
+
+    // Bind the claim to the AUTHENTICATED caller — never trust a user_id from
+    // the body (that let anyone bind an invite seat to an arbitrary account).
+    const user_id = await getUserId(req, supabase);
 
     if (!token || !user_id) {
       return new Response(
-        JSON.stringify({ success: false, error: "Token und User ID sind erforderlich" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, error: !user_id ? "Anmeldung erforderlich" : "Token ist erforderlich" }),
+        { status: !user_id ? 401 : 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

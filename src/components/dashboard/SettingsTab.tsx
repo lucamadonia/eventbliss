@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { edgeHeaders } from "@/lib/edge";
 import { Settings, Calendar, Lock, Unlock, Save, Clock, Loader2, Coins, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -64,10 +65,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-event-settings`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
+          headers: await edgeHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({
             event_id: event.id,
             settings: {
@@ -107,10 +105,7 @@ export const SettingsTab = ({ event, participants, onUpdate }: SettingsTabProps)
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-event-settings`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
+          headers: await edgeHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({
             event_id: event.id,
             locked_block: block,

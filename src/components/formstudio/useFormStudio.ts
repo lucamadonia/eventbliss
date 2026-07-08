@@ -18,6 +18,7 @@
  *    last saved — never clobbers a dirty draft, never loops on our own echo
  */
 import { useCallback, useEffect, useReducer, useRef } from "react";
+import { edgeHeaders } from "@/lib/edge";
 import { type EventSettings, mergeWithDefaults, sanitizeSettingsForSave } from "@/lib/survey-config";
 import {
   formStudioReducer,
@@ -106,10 +107,7 @@ export function useFormStudio(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-event-settings`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
+          headers: await edgeHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({ event_id: event.id, settings: payload }),
         },
       );

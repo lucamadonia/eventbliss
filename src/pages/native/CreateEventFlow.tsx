@@ -235,6 +235,8 @@ export default function CreateEventFlow() {
             await supabase.functions.invoke("update-event-settings", {
               body: {
                 event_id: data.event.id,
+                // Guest has no JWT yet — authorize via the organizer token.
+                organizer_token: data.organizer_token,
                 settings: {
                   question_config: form.question_config,
                   custom_questions: form.custom_questions,

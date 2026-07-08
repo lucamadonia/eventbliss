@@ -1687,6 +1687,17 @@ serve(async (req) => {
     
     console.log("AI request - userId present:", !!userId);
 
+    // AuthZ: this is a premium feature and calls paid LLM/TTS providers.
+    // Anonymous callers previously skipped BOTH the rate limit and the credit
+    // gate (they sit inside `if (userId)`), enabling unbounded cost abuse.
+    // Require a valid authenticated user.
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Parse and validate request body
     let body: unknown;
     try {

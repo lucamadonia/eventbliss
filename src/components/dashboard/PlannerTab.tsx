@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { edgeHeaders } from "@/lib/edge";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO, addDays, isValid } from "date-fns";
@@ -188,11 +189,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-planner-data?event_id=${event.id}`,
-        {
-          headers: {
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-        }
+        { headers: await edgeHeaders() }
       );
 
       if (!response.ok) {
