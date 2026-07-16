@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { NewsletterForm } from "./NewsletterForm";
 import { JGA_CITIES } from "@/lib/jga-cities";
 import { localizedJgaCityPath, localizedCalculatorPath } from "@/lib/seo-routes";
+import { localizedCityName } from "@/lib/city-names-i18n";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 export function LandingFooter() {
@@ -49,7 +50,7 @@ export function LandingFooter() {
                 to={localizedJgaCityPath(c.slug, lang)}
                 className="px-3 py-1.5 rounded-full text-sm bg-card/40 border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
               >
-                {c.name}
+                {localizedCityName(c, lang)}
               </Link>
             ))}
           </div>

@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "de" }], "destination": "/de", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "en" }], "destination": "/en", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "es" }], "destination": "/es", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "fr" }], "destination": "/fr", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "it" }], "destination": "/it", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "nl" }], "destination": "/nl", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "pt" }], "destination": "/pt", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "pl" }], "destination": "/pl", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "tr" }], "destination": "/tr", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lng", "value": "ar" }], "destination": "/ar", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/((?!assets/|images/|icons/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/app.html" }
   ],

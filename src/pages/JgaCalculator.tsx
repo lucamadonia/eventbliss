@@ -42,6 +42,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { useSEO } from "@/hooks/useSEO";
 import { JGA_CITIES } from "@/lib/jga-cities";
+import { localizedCityName, localizedCountryName } from "@/lib/city-names-i18n";
 
 const SITE_URL = "https://event-bliss.com";
 
@@ -869,7 +870,7 @@ export default function JgaCalculator() {
                         </div>
                         {dachCities.map((c) => (
                           <SelectItem key={c.slug} value={c.slug}>
-                            {c.name} ({c.countryName})
+                            {localizedCityName(c, lang)} ({localizedCountryName(c.country, lang)})
                           </SelectItem>
                         ))}
                         <div className="px-2 py-1.5 mt-2 text-xs font-semibold text-muted-foreground uppercase">
@@ -877,7 +878,7 @@ export default function JgaCalculator() {
                         </div>
                         {intlCities.map((c) => (
                           <SelectItem key={c.slug} value={c.slug}>
-                            {c.name} ({c.countryName})
+                            {localizedCityName(c, lang)} ({localizedCountryName(c.country, lang)})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -974,7 +975,7 @@ export default function JgaCalculator() {
                 <GlassCard padding="lg" variant="glow">
                   <div className="text-center mb-6">
                     <p className="text-sm text-muted-foreground mb-1">
-                      {t.resultPrefix} {selectedCity.name} · {people}
+                      {t.resultPrefix} {localizedCityName(selectedCity, lang)} · {people}
                     </p>
                     <p className="text-5xl font-display font-bold mb-2">
                       <AuroraText>{fmt(result.perPerson)}</AuroraText>
