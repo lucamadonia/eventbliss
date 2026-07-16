@@ -233,6 +233,11 @@ const AppContent = () => {
           <Route path="/:lang/legal/disclaimer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Disclaimer /></Suspense></ErrorBoundary>} />
           <Route path="/:lang/legal/agency-agreement" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyAgreement /></Suspense></ErrorBoundary>} />
           <Route path="/:lang/support" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Support /></Suspense></ErrorBoundary>} />
+          {/* Language-prefixed marketing homepage (/de, /en … /ar). Page language
+              derives from :lang via useUrlLanguage; invalid langs render NotFound.
+              Kept last so it never shadows the specific single-segment routes above
+              (/games, /tv, /create …), which React Router matches with priority. */}
+          <Route path="/:lang" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Landing /></Suspense></ErrorBoundary>} />
           <Route path="*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><NotFound /></Suspense></ErrorBoundary>} />
         </Routes>
       </BrowserRouter>

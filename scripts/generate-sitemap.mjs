@@ -108,8 +108,14 @@ ${urls.join("\n")}
 `;
 
 // ── 1. CORE (static public pages) ─────────────────────────────────────
+// Homepage language cluster: unprefixed "/" (x-default) + /de … /ar, all sharing
+// one hreflang set (mirrors src/lib/home-routes.ts).
+const HOME_LANGS = ["de", "en", "es", "fr", "it", "nl", "pt", "pl", "tr", "ar"];
+const homeAlt = HOME_LANGS.map((l) => ({ lang: l, href: `${SITE}/${l}` }));
+homeAlt.push({ lang: "x-default", href: `${SITE}/` });
 const core = [
-  plainUrl(`${SITE}/`, "1.0", "weekly"),
+  altUrl(`${SITE}/`, homeAlt, "1.0", "weekly"),
+  ...HOME_LANGS.map((l) => altUrl(`${SITE}/${l}`, homeAlt, "1.0", "weekly")),
   plainUrl(`${SITE}/games`, "0.8", "weekly"),
   plainUrl(`${SITE}/marketplace`, "0.8", "weekly"),
   plainUrl(`${SITE}/agency/pricing`, "0.6", "monthly"),

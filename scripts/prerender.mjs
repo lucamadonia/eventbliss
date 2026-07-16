@@ -63,7 +63,7 @@ function setCanonical(h, href) {
 }
 const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-function buildHtml({ title, description, canonical, ogImage = OG, ogType = "article", hreflangs = [], body = "" }) {
+function buildHtml({ title, description, canonical, ogImage = OG, ogType = "article", hreflangs = [], body = "", htmlLang, rtl = false, ogLocale, jsonLd = [] }) {
   let h = shell;
   h = setTitle(h, title);
   h = setMeta(h, "name", "title", title);
@@ -73,15 +73,29 @@ function buildHtml({ title, description, canonical, ogImage = OG, ogType = "arti
   h = setMeta(h, "property", "og:type", ogType);
   h = setMeta(h, "property", "og:url", canonical);
   h = setMeta(h, "property", "og:image", ogImage);
+  // Per-language OG locale (shell ships en_US; override so social/AI signals
+  // match the page language). Falls back to the shell value when unset.
+  if (ogLocale) h = setMeta(h, "property", "og:locale", ogLocale);
   h = setMeta(h, "name", "twitter:title", title);
   if (description) h = setMeta(h, "name", "twitter:description", description);
   h = setMeta(h, "name", "twitter:image", ogImage);
   h = setCanonical(h, canonical);
+  // Per-language <html lang="…"> (+ dir="rtl" for Arabic). Without this the
+  // static shell keeps lang="en" on every page, mislabelling non-EN landing
+  // pages (and dropping RTL on Arabic) for non-JS crawlers and first paint.
+  if (htmlLang) h = setHtmlLang(h, htmlLang, rtl);
   if (hreflangs.length) {
     const links = hreflangs
       .map((a) => `    <link rel="alternate" hreflang="${a.hreflang}" href="${attr(a.href)}" />`)
       .join("\n");
     h = h.replace("</head>", `${links}\n  </head>`);
+  }
+  // Page-specific JSON-LD for non-JS AI crawlers. Uses the same element id the
+  // runtime `useSEO` hook manages, so on hydration the SPA REPLACES this block
+  // with its (richer) per-page schema instead of duplicating it.
+  if (jsonLd.length) {
+    const json = JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd).replace(/</g, "\\u003c");
+    h = h.replace("</head>", `    <script type="application/ld+json" id="managed-seo-jsonld">${json}</script>\n  </head>`);
   }
   // Inject static, crawlable body content (read by non-JS AI crawlers; the SPA
   // replaces #root on mount for real users). No-op if body is empty.
@@ -173,6 +187,25 @@ async function headMeta() {
     const ACTIVITY_LANG_META = actIntl.ACTIVITY_LANG_META;
     const enOf = seo.enSlugFromDe || henMod.enSlugFromDe;
 
+    // ── Structured data (baked for non-JS AI crawlers; useSEO replaces at runtime) ──
+    const crumbLd = (items) => ({
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: it.url })),
+    });
+    const faqLd = (faqs) => ({
+      "@context": "https://schema.org", "@type": "FAQPage",
+      mainEntity: (faqs || []).map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    });
+    // FAQ Q/A for an activity page (same framework source as activityBody).
+    const activityFaqs = (lang, a, label) => {
+      try {
+        const fw = lang === "de" ? CF_DE[a.category] : lang === "en" ? CF_EN[a.category] : CF_INTL[lang][a.category];
+        if (!fw) return [];
+        return (fw.faqs({ ...a, label }) || []).map((f) => ({ q: f.q, a: f.a }));
+      } catch { return []; }
+    };
+    const homeCrumb = (name, url) => crumbLd([{ name: "EventBliss", url: `${SITE}/` }, { name, url }]);
+
     const jgaTitle = (lang, c) =>
       lang === "de" ? `JGA ${c.name} — Ideen, Aktivitäten & Planung | EventBliss`
         : lang === "en" ? `Stag Do in ${c.name} — Activities, Bars & Budget | EventBliss`
@@ -208,7 +241,7 @@ async function headMeta() {
         const slug = lang === "de" ? c.slug : enOf(c.slug);
         const path = `${JGA_PATH[lang]}${slug}`;
         const t = jgaTitle(lang, c), d = jgaDesc(lang, c);
-        writeRoute(path, buildHtml({ title: t, description: d, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), d, c.topActivitySlugs) }));
+        writeRoute(path, buildHtml({ title: t, description: d, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), d, c.topActivitySlugs), htmlLang: seo.HTML_LANG_BY_LANG[lang], rtl: seo.isRtl(lang), ogLocale: seo.LOCALE_BY_LANG[lang], jsonLd: [homeCrumb(strip(t), SITE + path)] }));
         n++;
       }
     }
@@ -222,7 +255,7 @@ async function headMeta() {
         const slug = lang === "de" ? deSlug : enOf(deSlug);
         const path = `${HEN_PATH[lang]}${slug}`;
         const t = henTitle(lang, name), desc = henDesc(lang, name, loc);
-        writeRoute(path, buildHtml({ title: t, description: desc, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), desc, d.city.topActivitySlugs) }));
+        writeRoute(path, buildHtml({ title: t, description: desc, canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: cityBody(lang, strip(t), desc, d.city.topActivitySlugs), htmlLang: seo.HTML_LANG_BY_LANG[lang], rtl: seo.isRtl(lang), ogLocale: seo.LOCALE_BY_LANG[lang], jsonLd: [homeCrumb(strip(t), SITE + path)] }));
         n++;
       }
     }
@@ -234,7 +267,8 @@ async function headMeta() {
       for (const lang of LANGS) {
         const path = `${ACT_PATH[lang]}${a.value}`;
         const lbl = labelOf(lang, a);
-        writeRoute(path, buildHtml({ title: actTitle(lang, lbl), description: actDesc(lang, lbl), canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: activityBody(lang, a, lbl) }));
+        const faqs = activityFaqs(lang, a, lbl);
+        writeRoute(path, buildHtml({ title: actTitle(lang, lbl), description: actDesc(lang, lbl), canonical: SITE + path, ogImage: ogImg, hreflangs: hl, body: activityBody(lang, a, lbl), htmlLang: seo.HTML_LANG_BY_LANG[lang], rtl: seo.isRtl(lang), ogLocale: seo.LOCALE_BY_LANG[lang], jsonLd: [homeCrumb(lbl, SITE + path), ...(faqs.length ? [faqLd(faqs)] : [])] }));
         n++;
       }
     }
@@ -281,6 +315,11 @@ const HTML_LANG = {
   de: "de-DE", en: "en-GB", es: "es-ES", fr: "fr-FR", it: "it-IT",
   pt: "pt-PT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ar: "ar",
 };
+// OG locale per language (mirrors LOCALE_BY_LANG in src/lib/seo-routes.ts).
+const OG_LOCALE = {
+  de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", it: "it_IT",
+  pt: "pt_PT", nl: "nl_NL", pl: "pl_PL", tr: "tr_TR", ar: "ar_AR",
+};
 // page slug → unprefixed base path (i18n key = slug with "-" → "_", under "legal";
 // "support" lives at the i18n root).
 const STATIC_I18N_PAGES = {
@@ -313,14 +352,16 @@ function legalSupportMeta() {
       for (const lang of LANGS) {
         const m = metaOf(lang, page) ?? fallback;
         const path = `/${lang}${base}`;
-        let html = buildHtml({
+        const html = buildHtml({
           title: m.title,
           description: m.description,
           canonical: SITE + path,
           hreflangs,
           ogType: base.startsWith("/legal") ? "article" : "website",
+          htmlLang: HTML_LANG[lang] ?? lang,
+          rtl: lang === "ar",
+          ogLocale: OG_LOCALE[lang],
         });
-        html = setHtmlLang(html, HTML_LANG[lang] ?? lang, lang === "ar");
         writeRoute(path, html);
         n++;
       }
@@ -380,9 +421,26 @@ async function renderFull(browser, route) {
 async function bodyTier() {
   const ctx = await startBrowser().catch(() => null);
   let full = 0, meta = 0;
-  // route → {out, fallback{title,description,ogType}}
+  // Homepage hreflang cluster: /de … /ar + x-default → the unprefixed "/".
+  const homeHl = LANGS.map((l) => ({ hreflang: l, href: `${SITE}/${l}` }));
+  homeHl.push({ hreflang: "x-default", href: `${SITE}/` });
+  // Localized home meta from the hero copy (same keys Landing.tsx uses at runtime).
+  const homeLocales = {};
+  for (const lang of LANGS) {
+    try { homeLocales[lang] = JSON.parse(readFileSync(join(ROOT, "src", "i18n", "locales", `${lang}.json`), "utf8")); }
+    catch { homeLocales[lang] = null; }
+  }
+
+  // route → {out, fallback{title,description,ogType,hreflangs,htmlLang,rtl,ogLocale}}
   const jobs = [];
-  jobs.push({ route: "/", out: "__index__", fb: { ...HOME, ogType: "website" } });
+  jobs.push({ route: "/", out: "__index__", fb: { ...HOME, ogType: "website", hreflangs: homeHl } });
+  // Per-language homepage (/de … /ar) — the real fix for the previously single-URL home.
+  for (const lang of LANGS) {
+    const hero = homeLocales[lang]?.landing?.hero;
+    const title = hero?.title ? `${hero.title} | EventBliss` : HOME.title;
+    const description = hero?.subtitle || HOME.description;
+    jobs.push({ route: `/${lang}`, out: `/${lang}`, fb: { title, description, ogType: "website", hreflangs: homeHl, htmlLang: HTML_LANG[lang] ?? lang, rtl: lang === "ar", ogLocale: OG_LOCALE[lang] } });
+  }
   for (const [route, t] of Object.entries(CALC)) jobs.push({ route, out: route, fb: { title: t, description: t, ogType: "website" } });
   for (const [route, m] of Object.entries(STATIC)) jobs.push({ route, out: route, fb: { ...m, ogType: route.startsWith("/legal") ? "article" : "website" } });
 
@@ -393,7 +451,7 @@ async function bodyTier() {
       catch (e) { console.warn(`prerender ✗ body ${job.route}: ${e?.message ?? e} — meta fallback.`); html = null; }
     }
     if (!html) {
-      html = buildHtml({ title: job.fb.title, description: job.fb.description, canonical: `${SITE}${job.route === "/" ? "/" : job.route}`, ogType: job.fb.ogType });
+      html = buildHtml({ title: job.fb.title, description: job.fb.description, canonical: `${SITE}${job.route === "/" ? "/" : job.route}`, ogType: job.fb.ogType, hreflangs: job.fb.hreflangs ?? [], htmlLang: job.fb.htmlLang, rtl: job.fb.rtl, ogLocale: job.fb.ogLocale });
       meta++;
     }
     if (job.out === "__index__") { writeFileSync(join(DIST, "index.html"), html); }

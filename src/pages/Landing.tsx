@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSEO } from "@/hooks/useSEO";
+import { useUrlLanguage } from "@/hooks/useUrlLanguage";
+import { homePath, homeHreflangs, SITE_URL } from "@/lib/home-routes";
+import { HTML_LANG_BY_LANG, LOCALE_BY_LANG, isRtl, toSeoLang } from "@/lib/seo-routes";
+import NotFound from "@/pages/NotFound";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -89,16 +93,35 @@ const demoFeatures = [
 
 const AUTO_ROTATE_INTERVAL = 4000;
 
+// hreflang cluster is language-invariant → compute once.
+const HOME_HREFLANGS = homeHreflangs();
+// English x-default meta for the unprefixed "/" (matches the prerendered home).
+const DEFAULT_TITLE =
+  "EventBliss — Smart Event & Party Planning App | Bachelor Parties, Birthdays & Trips";
+const DEFAULT_DESCRIPTION =
+  "Plan bachelor parties, bachelorette celebrations, birthdays and group trips effortlessly — AI suggestions, automatic cost splitting, 24+ party games and real-time collaboration. 100% free.";
+
 const Landing = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { lang: urlLang, invalid } = useUrlLanguage();
+  const effectiveLang = urlLang ?? toSeoLang(i18n.language) ?? "de";
   useSEO({
-    title: "EventBliss — Smart Event & Party Planning App | Bachelor Parties, Birthdays & Trips",
-    description: "Plan bachelor parties, bachelorette celebrations, birthdays and group trips effortlessly — AI suggestions, automatic cost splitting, 24+ party games and real-time collaboration. 100% free.",
-    canonical: "https://event-bliss.com/",
+    // Prefixed routes (/de …) use the natively-translated hero copy; the
+    // unprefixed "/" keeps the English x-default meta of the prerendered home.
+    title: urlLang ? `${t("landing.hero.title")} | EventBliss` : DEFAULT_TITLE,
+    description: urlLang ? t("landing.hero.subtitle") : DEFAULT_DESCRIPTION,
+    canonical: `${SITE_URL}${homePath(urlLang)}`,
     ogImage: "https://event-bliss.com/og-image.png",
     ogType: "website",
-    locale: "en_US",
+    locale: LOCALE_BY_LANG[effectiveLang],
+    hreflangs: HOME_HREFLANGS,
+    ...(urlLang
+      ? {
+          htmlLang: HTML_LANG_BY_LANG[urlLang],
+          dir: isRtl(urlLang) ? ("rtl" as const) : ("ltr" as const),
+        }
+      : {}),
   });
 
   const [activeDemo, setActiveDemo] = useState(0);
@@ -167,6 +190,10 @@ const Landing = () => {
     { icon: MessageSquare, text: t("landing.premium.features.messages") },
     { icon: Crown, text: t("landing.premium.features.priority") },
   ];
+
+  // Unknown single-segment path matched by "/:lang" (e.g. /xyz) → 404, not a
+  // soft-404 homepage clone. Placed after all hooks to respect the hooks rules.
+  if (invalid) return <NotFound />;
 
   return (
     <AnimatedBackground>
