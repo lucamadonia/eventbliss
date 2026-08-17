@@ -1343,6 +1343,10 @@ const PACKED = `
 
 let _base: Song[] | null = null;
 let _extra: Song[] = [];
+// Basissongs aus der Datenbank. Sobald gesetzt, ERSETZEN sie die statische
+// Liste — sonst stünde jeder Song doppelt im Stapel. Der gepackte Code-Bestand
+// bleibt Fallback, wenn die Datenbank nicht erreichbar ist.
+let _dbBase: Song[] | null = null;
 
 function parseBase(): Song[] {
   const lines = PACKED.trim().split(/\r?\n/);
@@ -1421,12 +1425,32 @@ export function isMarketRelevant(flag: string, lang: string): boolean {
  */
 export function getAllSongs(): Song[] {
   if (!_base) _base = parseBase();
+  // Datenbank schlägt Code: dort sind Songs einzeln abschaltbar.
+  const source = _dbBase ?? _base;
   const lang = i18n.language?.split('-')[0] || 'de';
-  const relevant = _base.filter((s) => isMarketRelevant(s.flag, lang));
+  const relevant = source.filter((s) => isMarketRelevant(s.flag, lang));
   // Sicherheitsnetz: liefe die Liste je leer, lieber alles anbieten als ein
   // Spiel ohne Karten.
-  const base = relevant.length > 0 ? relevant : _base;
+  const base = relevant.length > 0 ? relevant : source;
   return _extra.length ? [...base, ..._extra] : base;
+}
+
+/**
+ * Basissongs aus der Datenbank übernehmen. `null` schaltet zurück auf den
+ * gepackten Code-Bestand (Offline-Fallback).
+ *
+ * Bewusst ersetzend, nicht ergänzend: die DB-Zeilen sind über `base_id` exakt
+ * dieselben Songs. Würden sie zusätzlich geladen, hätte jeder Song zwei Karten
+ * im Stapel.
+ */
+export function setBaseSongs(songs: Song[] | null): void {
+  _dbBase = songs && songs.length > 0 ? songs : null;
+}
+
+/** Nur für Diagnose/Admin: wie viele Songs stecken im Code-Bestand? */
+export function getPackedSongCount(): number {
+  if (!_base) _base = parseBase();
+  return _base.length;
 }
 
 /**

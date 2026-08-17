@@ -21,6 +21,8 @@ const LANGS = [
 
 interface SongRow {
   id: string;
+  /** Gesetzt bei den 1281 importierten Grundsongs ("ow-0001"). */
+  base_id: string | null;
   year: number;
   artist: string;
   title: string;
@@ -30,6 +32,10 @@ interface SongRow {
   spotify_uri: string | null;
   is_active: boolean;
 }
+
+/** Wie viele Zeilen auf einmal gerendert werden — 1281 Karten gleichzeitig
+ *  machen die Seite spürbar zäh. */
+const PAGE = 120;
 
 const EMPTY: Omit<SongRow, 'id'> = {
   year: 2020,
@@ -44,6 +50,11 @@ export default function OhrwurmSongs() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterLang, setFilterLang] = useState('');
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterState, setFilterState] = useState<'all' | 'active' | 'inactive'>('all');
+  const [filterOrigin, setFilterOrigin] = useState<'all' | 'base' | 'custom'>('all');
+  const [page, setPage] = useState(1);
+  const [bulkBusy, setBulkBusy] = useState(false);
   const [modal, setModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<SongRow, 'id'>>(EMPTY);
@@ -51,7 +62,12 @@ export default function OhrwurmSongs() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await db().select('*').order('created_at', { ascending: false });
+    // .limit() ist hier PFLICHT: Supabase deckelt ein ungefiltertes select()
+    // bei 1000 Zeilen — von den 1281 Grundsongs würden sonst still 281 fehlen.
+    const { data, error } = await db()
+      .select('*')
+      .order('year', { ascending: true })
+      .limit(5000);
     if (error) toast.error('Laden fehlgeschlagen: ' + error.message);
     setRows((data ?? []) as SongRow[]);
     setLoading(false);
@@ -61,11 +77,51 @@ export default function OhrwurmSongs() {
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
-    return rows.filter((r) =>
-      (!filterLang || r.language === filterLang) &&
-      (!s || r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s)),
-    );
-  }, [rows, search, filterLang]);
+    return rows.filter((r) => {
+      if (filterLang && r.language !== filterLang) return false;
+      if (filterCountry && r.country !== filterCountry) return false;
+      if (filterState === 'active' && !r.is_active) return false;
+      if (filterState === 'inactive' && r.is_active) return false;
+      if (filterOrigin === 'base' && !r.base_id) return false;
+      if (filterOrigin === 'custom' && r.base_id) return false;
+      if (!s) return true;
+      return r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s);
+    });
+  }, [rows, search, filterLang, filterCountry, filterState, filterOrigin]);
+
+  // Länder nach Häufigkeit — so stehen die relevanten Märkte vorn und der
+  // Eurovision-Schwanz hinten, den man abschalten will.
+  const countries = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const r of rows) c[r.country] = (c[r.country] ?? 0) + 1;
+    return Object.entries(c).sort((a, b) => b[1] - a[1]);
+  }, [rows]);
+
+  const visible = useMemo(() => filtered.slice(0, page * PAGE), [filtered, page]);
+
+  // Beim Ändern eines Filters wieder oben anfangen.
+  useEffect(() => { setPage(1); }, [search, filterLang, filterCountry, filterState, filterOrigin]);
+
+  /**
+   * Alle GEFILTERTEN Songs auf einmal an- oder abschalten. Das ist der
+   * eigentliche Arbeitsschritt für die Marktpflege: Land wählen, abschalten,
+   * fertig — statt 25 Songs einzeln anzuklicken.
+   */
+  const bulkSetActive = async (active: boolean) => {
+    const ids = filtered.filter((r) => r.is_active !== active).map((r) => r.id);
+    if (ids.length === 0) { toast.info('Nichts zu ändern'); return; }
+    if (!confirm(`${ids.length} Songs ${active ? 'aktivieren' : 'deaktivieren'}?`)) return;
+    setBulkBusy(true);
+    // In Blöcken, damit die URL-Länge des IN-Filters nicht überläuft.
+    for (let i = 0; i < ids.length; i += 200) {
+      const chunk = ids.slice(i, i + 200);
+      const { error } = await db().update({ is_active: active }).in('id', chunk);
+      if (error) { toast.error('Fehlgeschlagen: ' + error.message); break; }
+    }
+    setBulkBusy(false);
+    toast.success(`${ids.length} Songs ${active ? 'aktiviert' : 'deaktiviert'}`);
+    void load();
+  };
 
   const openAdd = () => { setEditId(null); setForm(EMPTY); setModal(true); };
   const openEdit = (r: SongRow) => {
@@ -118,9 +174,12 @@ export default function OhrwurmSongs() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <Music2 className="w-6 h-6 text-[#FF2E88]" />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold">OHRWURM — Songs</h1>
-            <p className="text-xs text-[#a8abb3]">Eigene Songs pro Sprache pflegen (ergänzen die 1281 fixen Songs)</p>
+            <p className="text-xs text-[#a8abb3]">
+              {rows.length} Songs · {rows.filter((r) => r.is_active).length} aktiv ·{' '}
+              {rows.filter((r) => r.base_id).length} Grundbestand
+            </p>
           </div>
           <button onClick={openAdd} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-[#FF2E88] to-[#d779ff]">
             <Plus className="w-4 h-4" /> Song
@@ -135,12 +194,53 @@ export default function OhrwurmSongs() {
               className="bg-transparent flex-1 text-sm focus:outline-none" />
           </div>
           <select value={filterLang} onChange={(e) => setFilterLang(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm">
+            aria-label="Nach Sprache filtern"
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
             <option value="">Alle Sprachen</option>
+            <option value="*">🌐 Alle Sprachfassungen</option>
             {LANGS.map((l) => <option key={l.code} value={l.code}>{l.flag} {l.name}</option>)}
+          </select>
+          <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)}
+            aria-label="Nach Herkunftsland filtern"
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            <option value="">Alle Länder</option>
+            {countries.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
+          </select>
+          <select value={filterState} onChange={(e) => setFilterState(e.target.value as typeof filterState)}
+            aria-label="Nach Status filtern"
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            <option value="all">Alle</option>
+            <option value="active">Nur aktive</option>
+            <option value="inactive">Nur inaktive</option>
+          </select>
+          <select value={filterOrigin} onChange={(e) => setFilterOrigin(e.target.value as typeof filterOrigin)}
+            aria-label="Nach Herkunft filtern"
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            <option value="all">Grundbestand + eigene</option>
+            <option value="base">Nur Grundbestand</option>
+            <option value="custom">Nur eigene</option>
           </select>
           <span className="px-3 py-2 text-xs text-[#a8abb3] self-center">{filtered.length} / {rows.length}</span>
         </div>
+
+        {/* Sammelaktion — der eigentliche Arbeitsschritt für die Marktpflege:
+            Land wählen, alles davon abschalten. */}
+        {filtered.length > 0 && filtered.length < rows.length && (
+          <div className="flex flex-wrap items-center gap-2 px-3 py-2.5 rounded-xl bg-[#FFD23F]/5 border border-[#FFD23F]/20">
+            <span className="text-xs text-[#a8abb3] flex-1 min-w-[180px]">
+              {filtered.length} Songs in dieser Auswahl
+              {filterCountry && <> aus {filterCountry}</>}
+            </span>
+            <button onClick={() => void bulkSetActive(true)} disabled={bulkBusy}
+              className="min-h-[36px] px-3 rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:border-white/20 transition-colors duration-200 cursor-pointer disabled:opacity-50">
+              Alle aktivieren
+            </button>
+            <button onClick={() => void bulkSetActive(false)} disabled={bulkBusy}
+              className="min-h-[36px] px-3 rounded-lg text-xs font-bold bg-[#ff6e84]/15 border border-[#ff6e84]/30 text-[#ff6e84] hover:border-[#ff6e84]/50 transition-colors duration-200 cursor-pointer disabled:opacity-50">
+              Alle deaktivieren
+            </button>
+          </div>
+        )}
 
         {/* Liste */}
         {loading ? (
@@ -149,13 +249,16 @@ export default function OhrwurmSongs() {
           <p className="text-center text-[#a8abb3] py-10">Noch keine Songs. Mit „+ Song" anlegen.</p>
         ) : (
           <div className="space-y-2">
-            {filtered.map((r) => (
+            {visible.map((r) => (
               <div key={r.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${r.is_active ? 'bg-white/5 border-white/10' : 'bg-white/[0.02] border-white/5 opacity-50'}`}>
                 <span className="text-lg w-8 text-center">{r.country}</span>
                 <span className="text-sm font-mono font-bold text-[#FFD23F] w-12">{r.year}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold truncate">{r.title}</div>
-                  <div className="text-xs text-[#a8abb3] truncate">{r.artist} · {r.genre} · {LANGS.find((l) => l.code === r.language)?.flag ?? r.language}</div>
+                  <div className="text-xs text-[#a8abb3] truncate">
+                    {r.artist} · {r.genre} · {r.language === '*' ? '🌐' : (LANGS.find((l) => l.code === r.language)?.flag ?? r.language)}
+                    {r.base_id && <span className="ml-1.5 text-[10px] text-[#5c6270]">Grundbestand</span>}
+                  </div>
                 </div>
                 {r.spotify_uri
                   ? <span title={r.spotify_uri} className="text-[10px] px-2 py-1 rounded-full bg-[#1DB954]/20 text-[#1DB954] font-bold">Spotify ✓</span>
@@ -165,6 +268,13 @@ export default function OhrwurmSongs() {
                 <button onClick={() => remove(r)} className="p-1.5 rounded-lg hover:bg-white/10 text-[#ff6e84]"><Trash2 className="w-4 h-4" /></button>
               </div>
             ))}
+            {visible.length < filtered.length && (
+              <button onClick={() => setPage((p) => p + 1)}
+                className="w-full min-h-[44px] rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:border-white/20 transition-colors duration-200 cursor-pointer">
+                Weitere {Math.min(PAGE, filtered.length - visible.length)} laden
+                <span className="text-[#a8abb3] font-normal"> · {visible.length} von {filtered.length}</span>
+              </button>
+            )}
           </div>
         )}
       </div>
