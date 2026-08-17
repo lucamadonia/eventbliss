@@ -6381,6 +6381,7 @@
       "listenAndPlace": "Anhören & einordnen",
       "drawSub": "Song läuft verborgen — 60s Zeit. In den ersten 10s + Titel & Interpret = Speed-Bonus.",
       "noClipAvailable": "Kein Hörclip verfügbar — Jahr schätzen oder Karte tauschen.",
+      "previewFailed": "Hörclip konnte nicht geladen werden — bitte Karte tauschen oder Jahr schätzen.",
       "start60s": "60s starten",
       "actionsGroup": "Aktionen",
       "replay": "Nochmal",

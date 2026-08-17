@@ -2,6 +2,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { App } from '@capacitor/app';
 import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import { isNative, isIOS } from './platform';
+import { runBackGuards } from './back-guard';
 
 export async function initNativeSetup(): Promise<void> {
   if (!isNative()) return;
@@ -38,12 +39,12 @@ export async function initNativeSetup(): Promise<void> {
   });
 
   App.addListener('backButton', ({ canGoBack }) => {
-    // If a modal/sheet is open, let it handle back first
-    const modalStack = (window as unknown as { __modalStack?: (() => boolean)[] }).__modalStack;
-    if (modalStack && modalStack.length > 0) {
-      const lastClose = modalStack[modalStack.length - 1];
-      if (lastClose()) return;
-    }
+    // If a modal/sheet or a running game claims back, let it handle it first.
+    // This used to read window.__modalStack inline, but nothing ever wrote to
+    // that list — so the guard was dead code and hardware-back always popped
+    // the route, killing an in-progress game. runBackGuards() walks the same
+    // stack, which useBackGuard() now actually fills.
+    if (runBackGuards()) return;
 
     if (canGoBack) {
       window.history.back();

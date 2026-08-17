@@ -26,9 +26,31 @@ import { loadExtraSongs } from './ohrwurm-extra-songs';
 import { useTranslation } from 'react-i18next';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
+import { useBackGuard } from '@/lib/back-guard';
+import { loadSnapshot, saveSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
+import { TV_STALE_MS } from '../tv/useTVConnection';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
+const PREVIEW_TIMEOUT_MS = 8_000; // Vorschau-Lookup abbrechen, statt ewig zu laden
+const PREVIEW_RETRY_MS = 700;     // Backoff vor dem einzigen Retry
+
+// Session-Cache für aufgelöste Vorschau-URLs (songId → URL oder null).
+// Bewusst modul-global: überlebt Rematch/Remount innerhalb derselben Seite und
+// spart iTunes-Aufrufe (deren IP-Limit von ~20/min teilen sich ALLE Nutzer über
+// die gemeinsame Supabase-Egress-IP — die Hauptursache stummer Runden).
+const previewCache = new Map<string, string | null>();
+
+/** Promise mit harter Zeitgrenze — verhindert hängendes `previewLoading`. */
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const id = window.setTimeout(() => reject(new Error('timeout')), ms);
+    p.then(
+      (v) => { window.clearTimeout(id); resolve(v); },
+      (e) => { window.clearTimeout(id); reject(e); },
+    );
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Design-Tokens (Spec §6) — als lokale Konstanten, damit das Corporate-Design
@@ -121,6 +143,13 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const drawIdRef = useRef(0);
   const playStartedAtRef = useRef<number | null>(null);
+  // Welche Vorschau-URL wurde bereits automatisch angespielt (siehe Nachzieh-Effect).
+  const autoPlayedUrlRef = useRef<string | null>(null);
+  // Zugriff auf die Rundenuhr aus Callbacks, die VOR ihrer Deklaration stehen
+  // (beginTurn → handleTimeout → useGameTimer bilden einen Zirkel).
+  const roundTimerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
+  // Wann hat sich der TV zuletzt gemeldet? Treibt den Verfall von tvConnected.
+  const tvSeenAtRef = useRef(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -158,21 +187,67 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   }, []);
 
   // Vorschau für die gezogene Karte server-seitig (iTunes) auflösen.
+  //
+  // Robustheit ist hier kritisch: ohne Clip läuft die Runde stumm, der Spieler
+  // muss blind raten und verliert die Karte. Deshalb:
+  //  - Session-Cache (gleicher Song bei Tausch/Rematch → kein zweiter Call,
+  //    entlastet zusätzlich das iTunes-IP-Limit von ~20 Anfragen/Minute),
+  //  - `error` von functions.invoke wirklich auswerten (invoke wirft NICHT bei
+  //    Non-2xx — der frühere catch-Block war für HTTP-Fehler toter Code),
+  //  - EIN Retry mit kurzem Backoff bei transienten Fehlern (401/429/5xx),
+  //  - Timeout, damit previewLoading nie hängen bleibt.
   const loadPreview = useCallback(async (s: Song, myDraw: number) => {
+    const cached = previewCache.get(s.id);
+    if (cached !== undefined) {
+      setPreviewUrl(cached);
+      setPreviewLoading(false);
+      return;
+    }
     setPreviewLoading(true);
     setPreviewUrl(null);
-    try {
-      const { data } = await supabase.functions.invoke('ohrwurm-preview', {
-        body: { artist: s.artist, title: s.title },
-      });
-      if (drawIdRef.current !== myDraw) return; // veraltete Antwort verwerfen
-      setPreviewUrl((data as { previewUrl?: string | null } | null)?.previewUrl ?? null);
-    } catch {
-      if (drawIdRef.current === myDraw) setPreviewUrl(null);
-    } finally {
-      if (drawIdRef.current === myDraw) setPreviewLoading(false);
+
+    let transient = false;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt > 0) {
+        await new Promise((r) => window.setTimeout(r, PREVIEW_RETRY_MS));
+        if (drawIdRef.current !== myDraw) return; // Runde ist weitergelaufen
+      }
+      try {
+        const res = await withTimeout(
+          supabase.functions.invoke('ohrwurm-preview', {
+            body: { artist: s.artist, title: s.title },
+          }),
+          PREVIEW_TIMEOUT_MS,
+        );
+        if (drawIdRef.current !== myDraw) return; // veraltete Antwort verwerfen
+        const data = res.data as { previewUrl?: string | null; reason?: string } | null;
+        if (res.error) { transient = true; continue; }
+        const url = data?.previewUrl ?? null;
+        if (url) {
+          previewCache.set(s.id, url);
+          setPreviewUrl(url);
+          setPreviewLoading(false);
+          return;
+        }
+        // Kein Treffer: `reason` heißt "Upstream-Problem" (Drossel/Ausfall) →
+        // retryfähig und NICHT cachen. Ohne reason ist der Song echt nicht
+        // auffindbar → negativ cachen, damit wir es nicht erneut versuchen.
+        if (data?.reason) { transient = true; continue; }
+        previewCache.set(s.id, null);
+        setPreviewUrl(null);
+        setPreviewLoading(false);
+        return;
+      } catch {
+        if (drawIdRef.current !== myDraw) return;
+        transient = true;
+      }
     }
-  }, []);
+
+    if (drawIdRef.current !== myDraw) return;
+    setPreviewUrl(null);
+    setPreviewLoading(false);
+    if (transient) flash(t('games.ohrwurm.previewFailed'));
+  }, [flash, t]);
 
   // --- Stapel: oberste Karte ziehen, ggf. neu mischen (Spec §2.6) ---------
   // Robust gegen „kein Song": ziehe von oben (Ende) und überspringe Karten, die
@@ -188,8 +263,15 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       if (!owned.has(card.id)) return { card, rest };
     }
     // Stapel erschöpft (oder nur noch owned) → frisch aufbauen, owned filtern.
-    const fresh = buildDeck(genre).filter((s) => !owned.has(s.id));
-    return { card: fresh[fresh.length - 1], rest: fresh.slice(0, -1) };
+    // Sind ALLE Songs des Genres bereits vergeben (kleine Genres haben nur ~15-18
+    // Songs, bei winTarget 10 und mehreren Spielern schnell erreicht), wäre die
+    // gefilterte Liste leer und `fresh[fresh.length - 1]` === undefined →
+    // beginTurn wirft beim Zugriff auf card.spotifyUri und der Draw-Screen bleibt
+    // leer. Dann lieber ohne owned-Filter weiterspielen (Karte darf erneut kommen).
+    let pool = buildDeck(genre).filter((s) => !owned.has(s.id));
+    if (pool.length === 0) pool = buildDeck(genre);
+    if (pool.length === 0) pool = buildDeck(null);
+    return { card: pool[pool.length - 1], rest: pool.slice(0, -1) };
   }, [genre]);
 
   // --- Neue Runde starten -------------------------------------------------
@@ -213,6 +295,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setListening(false);
     setPlaceElapsedMs(null);
     playStartedAtRef.current = null;
+    // Uhr explizit zurücksetzen (handleSwap/resetGame/rematch tun das schon;
+    // beim regulären Zugwechsel fehlte es und die Restzeit der Vorrunde blieb
+    // sichtbar, bis beginListening sie überschrieb). Über die Ref, weil
+    // `roundTimer` erst weiter unten deklariert wird (useGameTimer braucht
+    // handleTimeout, das wiederum beginTurn braucht).
+    roundTimerRef.current?.reset(ROUND_SECONDS);
     const myDraw = ++drawIdRef.current;
     void loadPreview(card, myDraw);
     // Spotify-Premium aktiv? Track-URI parallel auflösen (Bridge spielt sie ab).
@@ -279,6 +367,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   }, [song, stopAudio, haptics, flash, turn, participants, deck, beginTurn]);
 
   const roundTimer = useGameTimer(ROUND_SECONDS, handleTimeout);
+  // Ref nachziehen, damit beginTurn (steht weiter oben) die Uhr zurücksetzen kann.
+  roundTimerRef.current = roundTimer;
 
   const replayAudio = useCallback(() => {
     const a = audioRef.current;
@@ -503,13 +593,31 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // Press "play": start the shared clock + (only on the audio device) play sound.
   const pressPlay = useCallback(() => {
+    // Die 60s-Uhr NIE ohne Ton starten. Vorher lief sie bedingungslos an und der
+    // `!previewUrl`-Abbruch kam erst danach → Timer lief, Spieler hörte nichts,
+    // musste blind raten und verlor die Karte über handleTimeout.
+    // Spielt der TV den Ton (audioDevice=false), hat dieses Gerät bewusst keine
+    // eigene Quelle — dann darf der Start natürlich trotzdem durch.
+    if (audioDevice && !previewUrl) return;
     act('listen', {}, beginListening);
     if (!audioDevice) return;
     const a = audioRef.current;
-    if (!a || !previewUrl) return;
+    if (!a) return;
     if (a.paused) a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
     else { a.pause(); setIsAudioPlaying(false); }
   }, [act, beginListening, audioDevice, previewUrl]);
+
+  // Kommt die Vorschau-URL erst NACH dem Start an (langsames Netz, Retry, oder
+  // Start über den „60s starten"-Fallback-Button), spielt sie automatisch an.
+  // Pro URL nur einmal — sonst würde ein bewusstes Pausieren sofort überschrieben.
+  useEffect(() => {
+    if (phase !== 'draw' || !listening || !audioDevice || !previewUrl) return;
+    if (autoPlayedUrlRef.current === previewUrl) return;
+    autoPlayedUrlRef.current = previewUrl;
+    const a = audioRef.current;
+    if (!a || !a.paused) return;
+    a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
+  }, [phase, listening, audioDevice, previewUrl]);
 
   // Host applies actions coming from remote clients.
   const applyAction = useCallback((data: Record<string, unknown>) => {
@@ -527,6 +635,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       // Ein Schritt zurück innerhalb der Runde (noch nichts gewertet).
       case 'back':
         if (data.to === 'draw') setPhase('draw');
+        else if (data.to === 'place') { setPlacement(null); setPhase('place'); }
         else if (data.to === 'counter') { setCounteringId(null); setPhase('counter'); }
         break;
       default: break;
@@ -538,10 +647,37 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // So wirft ein versehentlicher Tipp dich nicht mehr direkt in die Spieleliste.
   const handleHeaderBack = useCallback(() => {
     void haptics.light();
+    // draw ← place: der häufigste Fall — man ist schon am Einordnen und merkt,
+    // dass man vorher noch einen 🎣 einsetzen wollte (Tausch gibt es nur in
+    // 'draw'). Die Uhr läuft hier noch, also nichts wiederherzustellen.
     if (phase === 'place') { act('back', { to: 'draw' }, () => setPhase('draw')); return; }
+    // place ← counter: Platzierung zurücknehmen und neu einordnen. Gefahrlos,
+    // weil goReveal noch nicht gelaufen ist. handlePlace hatte die Uhr
+    // pausiert — die muss wieder laufen, sonst hat die Runde keinen Zeitdruck.
+    if (phase === 'counter') {
+      act('back', { to: 'place' }, () => {
+        setPlacement(null);
+        setPhase('place');
+        if (listening) roundTimer.start();
+      });
+      return;
+    }
     if (phase === 'counterPlace') { act('back', { to: 'counter' }, () => { setCounteringId(null); setPhase('counter'); }); return; }
+    // Ab 'reveal' bewusst gesperrt: ein Rückschritt würde die Auflösung verraten.
     setConfirmExit(true);
-  }, [phase, act, haptics]);
+  }, [phase, act, haptics, listening, roundTimer]);
+
+  // Die native Zurück-Taste und der Floating-Button liegen ÜBER unserem eigenen
+  // Pfeil — ohne diesen Guard verwarfen sie die komplette Partie, statt einen
+  // Schritt zurückzugehen. Im Setup lassen wir sie bewusst durch: dort gibt es
+  // noch nichts zu verlieren.
+  useBackGuard(() => {
+    if (phase === 'setup') return false;
+    if (qrOpen) { setQrOpen(false); return true; }
+    if (confirmExit) { setConfirmExit(false); return true; }
+    handleHeaderBack();
+    return true;
+  });
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -551,8 +687,24 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // Host learns a TV joined the room (TV broadcasts 'tv-ready' on connect).
   useEffect(() => {
     if (!online) return;
-    return online.onBroadcast('tv-ready', () => setTvConnected(true));
+    return online.onBroadcast('tv-ready', () => {
+      tvSeenAtRef.current = Date.now();
+      setTvConnected(true);
+    });
   }, [online]);
+
+  // Der TV meldet sich im Takt von TV_HEARTBEAT_MS. Bleibt er zu lange still,
+  // ist er weg — und die Telefone müssen den Ton ZURÜCKBEKOMMEN. Ohne das war
+  // `tvConnected` eine Einwegsperre: einmal true, unterdrückte `audioDevice`
+  // auf jedem Telefon dauerhaft die Wiedergabe, während die Oberfläche
+  // unverändert aussah.
+  useEffect(() => {
+    if (!isOnline || !tvConnected) return;
+    const id = window.setInterval(() => {
+      if (Date.now() - tvSeenAtRef.current > TV_STALE_MS) setTvConnected(false);
+    }, 5_000);
+    return () => window.clearInterval(id);
+  }, [isOnline, tvConnected]);
 
   // Non-host: mirror the host's clock locally for display only (host owns timeout).
   useEffect(() => {
@@ -602,12 +754,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [online, isHost, phase, participants, listening, roundTimer.timeLeft, previewUrl, song, winner, resolution, bonusClaimed, bonusDecided]);
 
-  // Non-host → apply incoming snapshots.
-  useEffect(() => {
-    if (!online || isHost) return;
-    return online.onBroadcast('ohrwurm-state', (data) => {
-      const s = (data as { snapshot?: Record<string, unknown> }).snapshot;
-      if (!s) return;
+  // Einen Snapshot in den lokalen State übernehmen. Zwei Aufrufer: der
+  // Online-Client (Host-Broadcast) und die Wiederherstellung nach Navigation.
+  const applySnapshot = useCallback((s: Record<string, unknown>) => {
       setPhase(s.phase as Phase);
       setParticipants(s.participants as Participant[]);
       setTurn(s.turn as number);
@@ -628,8 +777,52 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       setListening(s.listening as boolean);
       setPlaceElapsedMs(s.placeElapsedMs as number | null);
       setTvConnected(s.tvConnected as boolean);
+      // Nur im gespeicherten Stand enthalten: der Stapel. Der Online-Snapshot
+      // lässt ihn bewusst weg (Host zieht die Karten, Clients brauchen ihn
+      // nicht) — beim Fortsetzen offline ist er dagegen zwingend, sonst kann
+      // die nächste Runde keine Karte mehr ziehen.
+      if (Array.isArray(s.deck)) setDeck(s.deck as Song[]);
+  }, []);
+
+  // Non-host → apply incoming snapshots.
+  useEffect(() => {
+    if (!online || isHost) return;
+    return online.onBroadcast('ohrwurm-state', (data) => {
+      const s = (data as { snapshot?: Record<string, unknown> }).snapshot;
+      if (!s) return;
+      applySnapshot(s);
     });
-  }, [online, isHost]);
+  }, [online, isHost, applySnapshot]);
+
+  // --- Spielstand über Navigation hinweg retten --------------------------
+  // Nur offline: online besitzt der Host die Wahrheit, ein lokal gespeicherter
+  // Stand würde beim Wiedereintritt gegen den Host-Snapshot arbeiten.
+  const restoredRef = useRef(false);
+
+  useEffect(() => {
+    if (isOnline || restoredRef.current) return;
+    restoredRef.current = true;
+    const snap = loadSnapshot<Record<string, unknown>>('ohrwurm');
+    // Nur eine wirklich laufende Partie zurückholen — ein gespeichertes 'setup'
+    // oder 'gameOver' hat keinen Wert.
+    if (snap && snap.phase && snap.phase !== 'setup' && snap.phase !== 'gameOver') {
+      applySnapshot(snap);
+    }
+  }, [isOnline, applySnapshot]);
+
+  useEffect(() => {
+    if (isOnline) return;
+    if (phase === 'setup' || phase === 'gameOver') { clearSnapshot('ohrwurm'); return; }
+    if (!restoredRef.current) return; // vor der Wiederherstellung nichts überschreiben
+    saveSnapshot('ohrwurm', {
+      phase, participants, turn, song, placement, counter, counteringId, resolution,
+      flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner,
+      previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
+      deck, // offline zwingend — siehe applySnapshot
+    });
+  }, [isOnline, phase, participants, turn, song, placement, counter, counteringId,
+      resolution, flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre,
+      winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, deck]);
 
   // Offline TV bridge (party mode / TV-room channel). Online TV uses the
   // 'tv-state' broadcast above on the game-room channel.
@@ -725,7 +918,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 {t('games.ohrwurm.leaveStay', 'Weiterspielen')}
               </button>
               <button
-                onClick={() => { setConfirmExit(false); navigate('/games'); }}
+                onClick={() => { clearSnapshot('ohrwurm'); setConfirmExit(false); navigate('/games'); }}
                 className="w-full py-3 rounded-2xl text-sm font-semibold"
                 style={{ border: '1px solid rgba(255,255,255,0.1)', color: OW.dim }}
               >
@@ -775,6 +968,15 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
         onPlay={() => setIsAudioPlaying(true)}
         onPause={() => setIsAudioPlaying(false)}
         onEnded={() => setIsAudioPlaying(false)}
+        onError={() => {
+          // Abgelaufene iTunes-CDN-URL oder Decode-Fehler: vorher passierte
+          // hier gar nichts und die Runde blieb wortlos stumm. Jetzt in den
+          // ehrlichen Fallback wechseln, damit der Spieler es merkt.
+          if (!previewUrl) return;
+          setIsAudioPlaying(false);
+          setPreviewUrl(null);
+          flash(t('games.ohrwurm.previewFailed'));
+        }}
         className="hidden"
         aria-hidden="true"
       />
@@ -812,10 +1014,16 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                 sub={t('games.ohrwurm.drawSub')}
               />
 
-              {(previewLoading || previewUrl || spotifyUri) ? (
+              {/* WICHTIG: `spotifyUri` darf hier NICHT mitentscheiden. Seit die
+                  App-Remote-Vollwiedergabe entfernt wurde (playback.ts), wird die
+                  URI im Spiel nie abgespielt — sie dient nur QR/Deep-Link im
+                  Reveal. Nahm man sie in die Bedingung auf, rendert für die ~646
+                  Songs mit gebackener URI ein voll aussehender Player, der beim
+                  Tippen nur die Uhr startet und stumm bleibt. */}
+              {(previewLoading || previewUrl) ? (
                 <MysteryPlayer
-                  loading={previewLoading && !spotifyUri}
-                  hasPreview={!!previewUrl || !!spotifyUri}
+                  loading={previewLoading}
+                  hasPreview={!!previewUrl}
                   isPlaying={isAudioPlaying}
                   started={listening}
                   timeLeft={roundTimer.timeLeft}
@@ -824,8 +1032,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   onPlay={pressPlay}
                 />
               ) : (
-                /* Fallback: kein Clip & keine Spotify-URI → manueller Start, KEIN QR
-                   (QR würde beim Raten den Titel verraten — gibt es erst im Reveal). */
+                /* Fallback: kein Hörclip → manueller Start, KEIN QR
+                   (QR würde beim Raten den Titel verraten — gibt es erst im Reveal).
+                   Hier startet der Spieler die Uhr bewusst, im Wissen, dass er
+                   ohne Ton schätzen muss — anders als beim früheren stummen Player. */
                 <div className="flex flex-col items-center gap-4 text-center">
                   {!listening ? (
                     <>

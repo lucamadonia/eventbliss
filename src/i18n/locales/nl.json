@@ -6455,6 +6455,7 @@
       "listenAndPlace": "Luisteren en plaatsen",
       "drawSub": "Nummer speelt verborgen — 60s. Noem titel & artiest in de eerste 10s voor speedbonus.",
       "noClipAvailable": "Geen audioclip beschikbaar — raad het jaar of wissel de kaart.",
+      "previewFailed": "Audioclip kon niet worden geladen — wissel de kaart of raad het jaar.",
       "start60s": "Start 60s",
       "actionsGroup": "Acties",
       "replay": "Opnieuw",

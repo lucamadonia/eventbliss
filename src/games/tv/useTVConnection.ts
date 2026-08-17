@@ -2,6 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n';
 
+/** Takt, in dem der TV seine Anwesenheit erneut meldet (siehe Heartbeat unten). */
+export const TV_HEARTBEAT_MS = 15_000;
+/** Nach so langer Stille gilt der TV als weg. Bewusst ein Vielfaches des
+ *  Heartbeats, damit ein einzelnes verlorenes Paket ihn nicht abmeldet. */
+export const TV_STALE_MS = 45_000;
+
 export interface TVPlayer { id: string; name: string; color: string; avatar: string; isReady: boolean; }
 export interface TVState { game: string; phase: string; [key: string]: unknown; }
 export interface TVScore { name: string; score: number; color: string; }
@@ -122,8 +128,20 @@ export function useTVConnection(roomCode: string) {
     };
     channel.subscribe(handleStatus);
     tvChannel.subscribe(handleStatus);
+
+    // Lebenszeichen. Ohne das erfährt das Telefon NIE, dass ein TV wieder weg
+    // ist: es setzt tvConnected einmalig auf true und übergibt dem TV dauerhaft
+    // die Ausgabe (bei OHRWURM den Ton). Verschwindet der TV, blieb die Partie
+    // stumm, ohne dass sich sichtbar etwas geändert hätte.
+    const heartbeat = window.setInterval(() => {
+      const readyPayload = { tvReady: true, ts: Date.now() };
+      channel.send({ type: 'broadcast', event: 'tv-ready', payload: readyPayload });
+      tvChannel.send({ type: 'broadcast', event: 'tv-ready', payload: readyPayload });
+    }, TV_HEARTBEAT_MS);
+
     return () => {
       gameStartedRef.current = false;
+      window.clearInterval(heartbeat);
       supabase.removeChannel(channel);
       supabase.removeChannel(tvChannel);
     };

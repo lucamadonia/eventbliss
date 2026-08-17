@@ -6381,6 +6381,7 @@
       "listenAndPlace": "Listen & place",
       "drawSub": "Song plays hidden — 60s to place. Call title & artist in the first 10s for a speed bonus.",
       "noClipAvailable": "No audio clip available — guess the year or swap the card.",
+      "previewFailed": "Audio clip couldn't be loaded — swap the card or guess the year.",
       "start60s": "Start 60s",
       "actionsGroup": "Actions",
       "replay": "Replay",

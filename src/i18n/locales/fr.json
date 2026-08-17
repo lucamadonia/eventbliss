@@ -6405,6 +6405,7 @@
       "listenAndPlace": "Écouter et placer",
       "drawSub": "La chanson joue en secret — 60s. Annonce le titre et l'artiste dans les 10 premières secondes pour le bonus de vitesse.",
       "noClipAvailable": "Aucun clip audio disponible — devine l'année ou échange la carte.",
+      "previewFailed": "Le clip audio n'a pas pu être chargé — échange la carte ou devine l'année.",
       "start60s": "Démarrer 60s",
       "actionsGroup": "Actions",
       "replay": "Rejouer",

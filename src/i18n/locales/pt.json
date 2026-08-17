@@ -6455,6 +6455,7 @@
       "listenAndPlace": "Ouvir e posicionar",
       "drawSub": "A música toca escondida — 60s. Diga título e artista nos primeiros 10s para o bônus de velocidade.",
       "noClipAvailable": "Nenhum clipe disponível — adivinhe o ano ou troque a carta.",
+      "previewFailed": "Não foi possível carregar o clipe — troque a carta ou adivinhe o ano.",
       "start60s": "Iniciar 60s",
       "actionsGroup": "Ações",
       "replay": "Repetir",

@@ -107,3 +107,14 @@ verify_jwt = false
 
 [functions.agency-outreach]
 verify_jwt = false
+
+# OHRWURM: beide Endpunkte sind öffentliche Spiel-Hilfsdienste (iTunes-Vorschau
+# bzw. Spotify-Track-Suche) und brauchen keinen Login. Ohne diese Einträge gilt
+# der Default verify_jwt = true — dann wird das User-Access-Token statt des
+# Anon-Keys geprüft, und ein abgelaufenes Token (Handy war während der Party
+# gesperrt) liefert genau eine 401-Runde ohne Ton, bis autoRefreshToken greift.
+[functions.ohrwurm-preview]
+verify_jwt = false
+
+[functions.ohrwurm-spotify-track]
+verify_jwt = false

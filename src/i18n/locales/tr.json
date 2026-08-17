@@ -6455,6 +6455,7 @@
       "listenAndPlace": "Dinle ve yerleştir",
       "drawSub": "Şarkı gizli çalıyor — 60s. İlk 10s'de şarkı adı ve sanatçıyı söyle ve hız bonusu kazan.",
       "noClipAvailable": "Ses klibi yok — yılı tahmin et veya kartı değiştir.",
+      "previewFailed": "Ses klibi yüklenemedi — kartı değiştir veya yılı tahmin et.",
       "start60s": "60s başlat",
       "actionsGroup": "Eylemler",
       "replay": "Tekrar",

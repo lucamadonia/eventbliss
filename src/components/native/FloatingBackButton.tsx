@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
+import { runBackGuards } from "@/lib/back-guard";
 
 interface Props {
   onClick?: () => void;
@@ -22,6 +23,12 @@ export function FloatingBackButton({ onClick, label }: Props) {
 
   const handleBack = () => {
     haptics.light();
+    // Dieser Button liegt bei Fullscreen-Seiten optisch ÜBER dem Zurück-Pfeil
+    // der Seite selbst (z-[60], top-left). Ohne diese Abfrage hat ein Tipp
+    // darauf mitten im Spiel die Route gewechselt und die laufende Partie
+    // gelöscht. Hat sich jemand registriert (z. B. „einen Schritt zurück" oder
+    // „Spiel wirklich verlassen?"), gehört das Zurück ihm.
+    if (runBackGuards()) return;
     if (onClick) onClick();
     else navigate(-1);
   };

@@ -6455,6 +6455,7 @@
       "listenAndPlace": "Posłuchaj i umieść",
       "drawSub": "Piosenka gra ukryta — 60s. Podaj tytuł i wykonawcę w pierwszych 10s, by zdobyć bonus szybkości.",
       "noClipAvailable": "Brak klipu audio — zgadnij rok lub wymień kartę.",
+      "previewFailed": "Nie udało się wczytać klipu audio — wymień kartę lub zgadnij rok.",
       "start60s": "Start 60s",
       "actionsGroup": "Akcje",
       "replay": "Odtwórz",

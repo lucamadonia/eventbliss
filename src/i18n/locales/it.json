@@ -6405,6 +6405,7 @@
       "listenAndPlace": "Ascolta e posiziona",
       "drawSub": "La canzone suona nascosta — 60s. Dì titolo e artista nei primi 10s per il bonus velocità.",
       "noClipAvailable": "Nessun clip audio disponibile — indovina l'anno o scambia la carta.",
+      "previewFailed": "Impossibile caricare il clip audio — scambia la carta o indovina l'anno.",
       "start60s": "Inizia 60s",
       "actionsGroup": "Azioni",
       "replay": "Riascolta",

@@ -55,10 +55,24 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
     else a.pause();
   }, [shouldPlay, previewUrl]);
 
+  // Autoplay-Freigabe. Früher standen die Listener auf { once: true } — ein Tipp,
+  // der ankam während gerade nichts zu spielen war, verbrauchte die Freigabe
+  // wirkungslos. Auf einem Fernseher folgt danach keine weitere Interaktion
+  // mehr, also blieb der Ton für den Rest des Abends weg (und .catch(()=>{})
+  // verbarg es). Jetzt bleiben die Listener, bis ein play() wirklich geklappt hat.
   useEffect(() => {
-    const unlock = () => { if (shouldPlay) audioRef.current?.play().catch(() => {}); };
-    window.addEventListener('pointerdown', unlock, { once: true });
-    window.addEventListener('keydown', unlock, { once: true });
+    let done = false;
+    const unlock = () => {
+      const a = audioRef.current;
+      if (done || !a || !shouldPlay) return;
+      a.play().then(() => {
+        done = true;
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('keydown', unlock);
+      }).catch(() => {});
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
     return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
   }, [shouldPlay]);
 

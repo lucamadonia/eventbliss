@@ -6405,6 +6405,7 @@
       "listenAndPlace": "Escuchar y colocar",
       "drawSub": "La canción suena oculta — 60s de tiempo. Di el título y el artista en los primeros 10s para el bono de velocidad.",
       "noClipAvailable": "Sin clip de audio disponible — adivina el año o intercambia la carta.",
+      "previewFailed": "No se pudo cargar el clip de audio — intercambia la carta o adivina el año.",
       "start60s": "Iniciar 60s",
       "actionsGroup": "Acciones",
       "replay": "Repetir",
