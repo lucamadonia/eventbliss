@@ -7,6 +7,7 @@
 
 // Vorab aufgelöste Spotify-Track-URIs (id → "spotify:track:…"), befüllt durch
 // scripts/resolve-spotify-uris.mjs. Leer = es greift der Laufzeit-Resolver.
+import i18n from 'i18next';
 import SPOTIFY_URIS from './spotify-uris.json';
 
 export interface Song {
@@ -1363,10 +1364,69 @@ function parseBase(): Song[] {
   });
 }
 
-/** Alle Songs (statische 1281er-Liste + ggf. zur Laufzeit zugeschaltete DB-Songs). */
+// ---------------------------------------------------------------------------
+// Marktrelevanz
+//
+// Die 1281 Basissongs verteilen sich auf 52 Herkunftsländer. Ein großer Teil
+// davon sind reine Eurovision-Beiträge (Rumänien, Ungarn, Kroatien, Slowenien,
+// Estland, Litauen, Malta, Zypern, Moldau, Färöer …), die außerhalb ihres
+// Heimatlands niemand kennt — in einer deutschen Runde sind sie nicht ratbar
+// und verderben die Partie.
+//
+// WICHTIG: `flag` ist die HERKUNFT des Künstlers, nicht die Chart-Relevanz.
+// Ein naiver Filter „nur deutsche Flagge" würde ausgerechnet ABBA (🇸🇪),
+// a-ha (🇳🇴) oder Roxette (🇸🇪) entfernen — also die Songs, die hier am besten
+// funktionieren. Deshalb ein KERN aus Ländern mit internationaler
+// Chart-Präsenz, den alle Sprachen sehen, plus sprachspezifische Ergänzungen:
+// für polnische Spieler sind polnische Songs selbstverständlich relevant.
+//
+// Bewusst grob. Die Feinabstimmung passiert später pro Song im Adminbereich.
+export const CORE_MARKET_FLAGS: ReadonlySet<string> = new Set([
+  // Anglophoner Kern
+  '🇺🇸', '🇬🇧', '🇮🇪', '🇨🇦', '🇦🇺', '🇳🇿',
+  // Deutschsprachig
+  '🇩🇪', '🇦🇹', '🇨🇭',
+  // Nordeuropa — traditionell stark in den deutschen Charts
+  '🇸🇪', '🇳🇴', '🇩🇰', '🇫🇮', '🇮🇸',
+  // Westeuropa
+  '🇳🇱', '🇧🇪', '🇫🇷', '🇮🇹', '🇪🇸',
+  // Latin/Karibik — Ricky Martin, Shakira, Rihanna, Bob Marley …
+  '🇵🇷', '🇨🇴', '🇲🇽', '🇨🇺', '🇦🇷', '🇯🇲', '🇧🇧',
+  // Weitere mit klaren Welthits
+  '🇿🇦', '🇳🇬', '🇰🇷', '🇯🇵',
+]);
+
+/** Länder, die zusätzlich zum Kern gelten, wenn die App in dieser Sprache läuft. */
+const EXTRA_FLAGS_BY_LANG: Record<string, readonly string[]> = {
+  pl: ['🇵🇱'],
+  pt: ['🇵🇹'],
+  it: ['🇮🇹'],
+  es: ['🇪🇸'],
+  fr: ['🇫🇷'],
+  nl: ['🇳🇱', '🇧🇪'],
+};
+
+/** Ist ein Song für die aktuelle Sprachfassung überhaupt sinnvoll ratbar? */
+export function isMarketRelevant(flag: string, lang: string): boolean {
+  if (CORE_MARKET_FLAGS.has(flag)) return true;
+  return (EXTRA_FLAGS_BY_LANG[lang] ?? []).includes(flag);
+}
+
+/**
+ * Alle spielbaren Songs.
+ *
+ * Die statische Liste wird nach Marktrelevanz gefiltert (siehe oben). Die
+ * Admin-/DB-Songs NICHT: die sind bereits pro Sprache gepflegt, ein zweiter
+ * Filter würde bewusst eingetragene Songs wieder entfernen.
+ */
 export function getAllSongs(): Song[] {
   if (!_base) _base = parseBase();
-  return _extra.length ? [..._base, ..._extra] : _base;
+  const lang = i18n.language?.split('-')[0] || 'de';
+  const relevant = _base.filter((s) => isMarketRelevant(s.flag, lang));
+  // Sicherheitsnetz: liefe die Liste je leer, lieber alles anbieten als ein
+  // Spiel ohne Karten.
+  const base = relevant.length > 0 ? relevant : _base;
+  return _extra.length ? [...base, ..._extra] : base;
 }
 
 /**
