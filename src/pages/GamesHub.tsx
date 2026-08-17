@@ -14,7 +14,7 @@ import {
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
   HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
   Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
-  Wine, Globe, X, Music2,
+  Wine, Globe, X, Music2, Eye,
 } from "lucide-react";
 
 const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
@@ -38,6 +38,7 @@ const FakeOrFactGame = lazy(() => import("@/games/fakeorfact/FakeOrFactGame"));
 const StoryBuilderGame = lazy(() => import("@/games/storybuilder/StoryBuilderGame"));
 const BottleSpinGame = lazy(() => import("@/games/bottlespin/BottleSpinGame"));
 const OhrwurmGame = lazy(() => import("@/games/ohrwurm/OhrwurmGame"));
+const PixeljagdGame = lazy(() => import("@/games/pixeljagd/PixeljagdGame"));
 
 // Design tokens
 const C = {
@@ -82,6 +83,7 @@ const allGames: GameCardData[] = [
   { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
   { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
   { id: "ohrwurm", name: "Ohrwurm", desc: "Song hören, ins richtige Jahr einordnen — Musik-Quiz mit QR & Spotify", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", players: "2-4", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
+  { id: "pixeljagd", name: "Pixeljagd", desc: "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", players: "2-8", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
 ];
 
 const categories = [
@@ -115,6 +117,7 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   "story-builder": ["kreativ", "wort"],
   "flaschendrehen": ["party", "social"],
   "ohrwurm": ["party", "quiz"],
+  "pixeljagd": ["quiz", "reaktion"],
 };
 
 const recentGames = [
@@ -421,6 +424,7 @@ const GamesHubInner = () => {
       if (gameId === "story-builder") return <StoryBuilderGame online={onlineProps} />;
       if (gameId === "flaschendrehen") return <BottleSpinGame online={onlineProps} />;
       if (gameId === "ohrwurm") return <OhrwurmGame online={onlineProps} />;
+      if (gameId === "pixeljagd") return <PixeljagdGame online={onlineProps} />;
       return null;
     };
 
@@ -506,6 +510,7 @@ const GamesHubInner = () => {
   if (gameId === "story-builder") return <>{rulesOverlay}<Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></>;
   if (gameId === "flaschendrehen") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></>;
   if (gameId === "ohrwurm") return <>{rulesOverlay}<Suspense fallback={GameFallback}><OhrwurmGame /></Suspense></>;
+  if (gameId === "pixeljagd") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PixeljagdGame /></Suspense></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {

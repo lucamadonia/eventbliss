@@ -5982,6 +5982,55 @@
     }
   },
   "games": {
+    "pixeljagd": {
+      "title": "Pixel Hunt",
+      "tagline": "The picture sharpens second by second — guess first, score highest.",
+      "backToGames": "Back to games",
+      "mode": "Game mode",
+      "answerMode": "Answering",
+      "modeBuzzer": "Buzzer",
+      "modeBuzzerDesc": "Hit it, say it out loud, group decides",
+      "modeText": "Free text",
+      "modeTextDesc": "Everyone types on their own device",
+      "modeTextOnlineOnly": "Online room only",
+      "categoriesLabel": "Categories",
+      "allCategories": "All categories",
+      "available": "{{count}} images available",
+      "rounds": "Rounds",
+      "start": "Start game",
+      "playerN": "Player {{n}}",
+      "noImages": "No images available.",
+      "noImagesSetup": "No images yet. Upload some in the admin area under \"Pixel Hunt — Images\".",
+      "imageFailed": "Image could not be loaded — next round.",
+      "roundOf": "Round {{round}} / {{total}}",
+      "leave": "Back",
+      "leaveTitle": "Leave the game?",
+      "leaveBody": "The current score will be lost.",
+      "leaveStay": "Keep playing",
+      "leaveGo": "Leave",
+      "solution": "Answer",
+      "roundWinner": "{{name}} got it",
+      "nobody": "Nobody got it",
+      "credit": "Image credit",
+      "next": "Next round",
+      "buzzedSay": "{{name}} — say it out loud!",
+      "groupDecides": "The group decides: right or wrong?",
+      "wrong": "Wrong",
+      "correct": "Correct",
+      "wrongToast": "Wrong — {{points}} points off, locked out this round.",
+      "buzzHint": "Know it? Hit your buzzer.",
+      "typeGuess": "Type your answer …",
+      "lockedOut": "Locked out this round",
+      "send": "Send",
+      "categories": {
+        "tiere": "Animals",
+        "stars": "Celebrities",
+        "filme": "Movies & Series",
+        "essen": "Food & Drink",
+        "orte": "Places",
+        "marken": "Brands"
+      }
+    },
     "hub": {
       "title": "EventBliss Games",
       "subtitle": "Party games for every occasion",
@@ -6894,6 +6943,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixel Hunt",
       "bomb": "Ticking Bomb",
       "headup": "Heads Up",
       "taboo": "Word Ban",
@@ -6914,6 +6964,7 @@
       "ohrwurm": "Ohrwurm"
     },
     "gameDescs": {
+      "pixeljagd": "The picture sharpens second by second — guess first to win",
       "bomb": "Who gets the bang?",
       "headup": "Guess with forehead power",
       "taboo": "Explain without taboo words",
@@ -7301,6 +7352,11 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": { "name": "Classic", "desc": "30 sec, −25 if wrong" },
+      "blitz": { "name": "Blitz", "desc": "15 sec, −15 if wrong" },
+      "profi": { "name": "Pro", "desc": "45 sec, very coarse, −40" }
+    },
     "bomb": {
       "kategorie": {
         "name": "Category",
@@ -7668,6 +7724,15 @@
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixel Hunt",
+      "tagline": "First a blur of colour, then a picture — but waiting costs you points.",
+      "step1": "An image appears heavily pixelated and sharpens second by second.",
+      "step2": "Spot it? Hit the buzzer — in an online room you type it instead.",
+      "step3": "The earlier you are right, the more points: from 100 down to 10.",
+      "step4": "A wrong guess costs points and locks you out for that round.",
+      "tip": "Guessing too early is expensive, too late as well — that is the whole game."
+    },
     "howToPlay": "How to Play",
     "understood": "Got it — let's go!",
     "bomb": {

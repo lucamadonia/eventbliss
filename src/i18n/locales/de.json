@@ -5982,6 +5982,55 @@
     }
   },
   "games": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Das Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, bekommt die meisten Punkte.",
+      "backToGames": "Zu den Spielen",
+      "mode": "Spielmodus",
+      "answerMode": "Antworten",
+      "modeBuzzer": "Buzzer",
+      "modeBuzzerDesc": "Drücken, laut sagen, Gruppe entscheidet",
+      "modeText": "Freitext",
+      "modeTextDesc": "Jeder tippt auf seinem Gerät",
+      "modeTextOnlineOnly": "Nur im Online-Raum",
+      "categoriesLabel": "Kategorien",
+      "allCategories": "Alle Kategorien",
+      "available": "{{count}} Motive verfügbar",
+      "rounds": "Runden",
+      "start": "Spiel starten",
+      "playerN": "Spieler {{n}}",
+      "noImages": "Keine Bilder verfügbar.",
+      "noImagesSetup": "Es sind noch keine Bilder hinterlegt. Im Adminbereich unter „Pixeljagd — Bilder\" kannst du welche hochladen.",
+      "imageFailed": "Bild konnte nicht geladen werden — nächste Runde.",
+      "roundOf": "Runde {{round}} / {{total}}",
+      "leave": "Zurück",
+      "leaveTitle": "Spiel verlassen?",
+      "leaveBody": "Der aktuelle Punktestand geht verloren.",
+      "leaveStay": "Weiterspielen",
+      "leaveGo": "Verlassen",
+      "solution": "Auflösung",
+      "roundWinner": "{{name}} hat es erraten",
+      "nobody": "Niemand hat es erraten",
+      "credit": "Bildnachweis",
+      "next": "Nächste Runde",
+      "buzzedSay": "{{name}} — jetzt laut sagen!",
+      "groupDecides": "Die Gruppe entscheidet: richtig oder falsch?",
+      "wrong": "Falsch",
+      "correct": "Richtig",
+      "wrongToast": "Leider falsch — {{points}} Punkte Abzug, diese Runde gesperrt.",
+      "buzzHint": "Wer die Lösung kennt, drückt seinen Buzzer.",
+      "typeGuess": "Antwort eintippen …",
+      "lockedOut": "Diese Runde gesperrt",
+      "send": "Senden",
+      "categories": {
+        "tiere": "Tiere",
+        "stars": "Stars",
+        "filme": "Filme & Serien",
+        "essen": "Essen & Trinken",
+        "orte": "Orte",
+        "marken": "Marken"
+      }
+    },
     "hub": {
       "title": "EventBliss Spiele",
       "subtitle": "Partyspiele für jeden Anlass",
@@ -6894,6 +6943,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "Tickende Bombe",
       "headup": "Stirnraten",
       "taboo": "Wortverbot",
@@ -6914,6 +6964,7 @@
       "ohrwurm": "Ohrwurm"
     },
     "gameDescs": {
+      "pixeljagd": "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt",
       "bomb": "Bei wem knallt's?",
       "headup": "Erraten mit Stirn-Power",
       "taboo": "Ohne Tabu-Wörter erklären",
@@ -7301,6 +7352,11 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": { "name": "Klassisch", "desc": "30 Sek., −25 bei falsch" },
+      "blitz": { "name": "Blitz", "desc": "15 Sek., −15 bei falsch" },
+      "profi": { "name": "Profi", "desc": "45 Sek., sehr grob, −40" }
+    },
     "bomb": {
       "kategorie": {
         "name": "Kategorie",
@@ -7668,6 +7724,15 @@
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Erst ein Farbklecks, dann ein Bild — aber wer wartet, bekommt weniger Punkte.",
+      "step1": "Ein Bild erscheint extrem verpixelt und wird Sekunde für Sekunde schärfer.",
+      "step2": "Wer die Lösung erkennt, drückt den Buzzer — im Online-Raum wird sie stattdessen eingetippt.",
+      "step3": "Je früher du richtig liegst, desto mehr Punkte: von 100 herunter bis 10.",
+      "step4": "Falsch geraten kostet Punkte und sperrt dich für diese Runde.",
+      "tip": "Zu früh raten ist teuer, zu spät auch — genau darin liegt das Spiel."
+    },
     "howToPlay": "So geht's",
     "understood": "Verstanden — los geht's!",
     "bomb": {
