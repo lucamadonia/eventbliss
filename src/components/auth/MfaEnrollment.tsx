@@ -10,11 +10,20 @@
  *   3. User scans in authenticator app + enters a 6-digit code
  *   4. We call verify() → if OK, factor is enabled
  *   5. List enrolled factors with option to unenroll
+ *
+ * WICHTIG — Step-up (das hat vorher gefehlt):
+ * Sobald EIN Faktor verifiziert ist, verlangt Supabase für jede weitere
+ * MFA-Operation (enroll, unenroll) eine Sitzung auf AAL2. Der Login läuft aber
+ * über signInWithPassword ohne MFA-Abfrage, jede Sitzung startet also auf AAL1.
+ * Ohne einen Weg, den BESTEHENDEN Faktor einzugeben, entstand eine Sackgasse:
+ * „AAL2 required to enroll a new factor", dazu kein Admin-Zugang (AdminRoute
+ * verlangt AAL2) und keine Möglichkeit, das aufzulösen. Deshalb prüfen wir hier
+ * das Assurance-Level und bieten die Verifizierung des vorhandenen Faktors an.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, ShieldOff, Loader2, Smartphone, Copy, Check } from "lucide-react";
+import { ShieldCheck, ShieldOff, Loader2, Smartphone, Copy, Check, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +41,11 @@ interface MfaFactor {
 
 export function MfaEnrollment() {
   const [factors, setFactors] = useState<MfaFactor[]>([]);
+  const [allFactors, setAllFactors] = useState<MfaFactor[]>([]);
+  const [aal, setAal] = useState<{ current: string | null; next: string | null }>({
+    current: null,
+    next: null,
+  });
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [enrollData, setEnrollData] = useState<{
@@ -42,28 +56,81 @@ export function MfaEnrollment() {
   const [verifyCode, setVerifyCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [secretCopied, setSecretCopied] = useState(false);
+  // Step-up: Code für den BEREITS vorhandenen Faktor.
+  const [stepUpCode, setStepUpCode] = useState("");
+  const [steppingUp, setSteppingUp] = useState(false);
 
-  async function loadFactors() {
+  const loadFactors = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) throw error;
-      const totp = (data?.totp ?? []) as MfaFactor[];
-      setFactors(totp);
+      // `totp` enthält in supabase-js nur VERIFIZIERTE Faktoren. Unverifizierte
+      // Reste früherer Versuche stehen ausschließlich in `all` — die brauchen
+      // wir, um sie aufräumen zu können.
+      setFactors((data?.totp ?? []) as MfaFactor[]);
+      setAllFactors((data?.all ?? []) as MfaFactor[]);
     } catch (err) {
       console.error("[mfa] listFactors", err);
+    }
+    try {
+      const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      setAal({ current: data?.currentLevel ?? null, next: data?.nextLevel ?? null });
+    } catch (err) {
+      console.warn("[mfa] getAuthenticatorAssuranceLevel", err);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    loadFactors();
-  }, []);
+    void loadFactors();
+  }, [loadFactors]);
+
+  /**
+   * Hebt die Sitzung auf AAL2, indem der bestehende Faktor abgefragt wird.
+   * Das ist der Ausweg aus der Sackgasse: ohne AAL2 lehnt Supabase sowohl
+   * enroll als auch unenroll ab.
+   */
+  async function stepUp() {
+    const target = factors[0];
+    if (!target || stepUpCode.length !== 6) return;
+    setSteppingUp(true);
+    try {
+      const { data: challenge, error: chErr } = await supabase.auth.mfa.challenge({
+        factorId: target.id,
+      });
+      if (chErr) throw chErr;
+      const { error: verErr } = await supabase.auth.mfa.verify({
+        factorId: target.id,
+        challengeId: challenge.id,
+        code: stepUpCode,
+      });
+      if (verErr) throw verErr;
+      toast.success("Sitzung verifiziert ✅");
+      setStepUpCode("");
+      await loadFactors();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Code ungültig — bitte erneut versuchen.";
+      toast.error(message);
+    } finally {
+      setSteppingUp(false);
+    }
+  }
 
   async function startEnrollment() {
     setEnrolling(true);
     try {
+      // Reste aus abgebrochenen Versuchen entfernen. Jeder Klick auf
+      // „MFA aktivieren" legt serverseitig einen Faktor an; bricht man vor der
+      // Code-Eingabe ab, bleibt er unverifiziert liegen und zählt gegen das
+      // Faktor-Limit des Kontos.
+      const stale = allFactors.filter((f) => f.status !== "verified");
+      for (const f of stale) {
+        await supabase.auth.mfa.unenroll({ factorId: f.id }).catch(() => {});
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
         friendlyName: `EventBliss-${new Date().toISOString().slice(0, 10)}`,
@@ -141,6 +208,9 @@ export function MfaEnrollment() {
   }
 
   const verified = factors.filter((f) => f.status === "verified");
+  // Sitzung darf und muss angehoben werden: es gibt einen Faktor, aber die
+  // Anmeldung lief ohne MFA-Abfrage. Genau hier scheiterten enroll/unenroll.
+  const needsStepUp = aal.current === "aal1" && aal.next === "aal2";
 
   return (
     <GlassCard padding="md">
@@ -164,6 +234,48 @@ export function MfaEnrollment() {
         </div>
       </div>
 
+      {needsStepUp && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-4 rounded-xl border border-primary/40 bg-primary/5 space-y-3"
+        >
+          <div className="flex items-start gap-3">
+            <KeyRound className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-sm">Diese Sitzung ist noch nicht verifiziert</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Du hast MFA aktiv, aber angemeldet hast du dich nur mit Passwort. Solange das so
+                ist, lehnt Supabase Änderungen an deinen Faktoren ab („AAL2 required") und der
+                Admin-Bereich bleibt gesperrt. Gib einmal den Code aus deiner Authenticator-App
+                ein.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              autoComplete="one-time-code"
+              value={stepUpCode}
+              onChange={(e) => setStepUpCode(e.target.value.replace(/\D/g, ""))}
+              placeholder="123456"
+              className="font-mono text-lg tracking-widest text-center"
+            />
+            <GradientButton
+              size="md"
+              onClick={stepUp}
+              disabled={stepUpCode.length !== 6 || steppingUp}
+            >
+              {steppingUp && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Verifizieren
+            </GradientButton>
+          </div>
+        </motion.div>
+      )}
+
       {verified.length > 0 && (
         <div className="space-y-2 mb-4">
           {verified.map((f) => (
@@ -175,7 +287,13 @@ export function MfaEnrollment() {
                 <Smartphone className="w-4 h-4 text-primary" />
                 <span className="font-medium">{f.friendly_name ?? "Authenticator-App"}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => unenroll(f.id)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => unenroll(f.id)}
+                disabled={needsStepUp}
+                title={needsStepUp ? "Erst Sitzung verifizieren" : undefined}
+              >
                 Entfernen
               </Button>
             </div>
@@ -183,7 +301,7 @@ export function MfaEnrollment() {
         </div>
       )}
 
-      {!enrollData && (
+      {!enrollData && !needsStepUp && (
         <GradientButton
           variant={verified.length > 0 ? "outline" : "primary"}
           size="md"
