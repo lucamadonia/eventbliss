@@ -23,6 +23,7 @@ const TVTabooView = lazy(() => import('./games/TVTabooView'));
 const TVCategoryView = lazy(() => import('./games/TVCategoryView'));
 const TVImpostorView = lazy(() => import('./games/TVImpostorView'));
 const TVOhrwurmView = lazy(() => import('./games/TVOhrwurmView'));
+const TVPixeljagdView = lazy(() => import('./games/TVPixeljagdView'));
 const TVEmojiGuessView = lazy(() => import('./games/TVEmojiGuessView'));
 const TVTruthDareView = lazy(() => import('./games/TVTruthDareView'));
 const TVWhoAmIView = lazy(() => import('./games/TVWhoAmIView'));
@@ -53,13 +54,14 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'category' && <TVCategoryView {...props} />}
       {game === 'impostor' && <TVImpostorView {...props} />}
       {game === 'ohrwurm' && <TVOhrwurmView {...props} />}
+      {game === 'pixeljagd' && <TVPixeljagdView {...props} />}
       {game === 'emojiguess' && <TVEmojiGuessView {...props} />}
       {game === 'truthdare' && <TVTruthDareView {...props} />}
       {game === 'whoami' && <TVWhoAmIView {...props} />}
       {game === 'wordpress' && <TVWordPressView {...props} />}
       {game === 'findit' && <TVFindItView {...props} />}
       {/* Smart fallback for games without specific TV view */}
-      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
+      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'pixeljagd', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
         <TVSmartFallback gameState={gameState} />
       )}
     </Suspense>

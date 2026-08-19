@@ -83,6 +83,9 @@ export default function PixelImages() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  // Alternative zum Hochladen: direkte Bild-Adresse.
+  const [mode, setMode] = useState<'upload' | 'url'>('upload');
+  const [imageUrl, setImageUrl] = useState('');
   const [touched, setTouched] = useState(false);
   const [filter, setFilter] = useState<PixelCategory | 'alle'>('alle');
   const [query, setQuery] = useState('');
@@ -103,20 +106,25 @@ export default function PixelImages() {
 
   // Object-URL sauber freigeben, sonst leckt jeder Dateiwechsel Speicher.
   useEffect(() => {
+    if (mode === 'url') { setPreview(imageUrl.trim() || null); return; }
     if (!file) { setPreview(null); return; }
     const url = URL.createObjectURL(file);
     setPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [file]);
+  }, [file, mode, imageUrl]);
 
   // --- Validierung ---------------------------------------------------------
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
-    if (!file) e.file = 'Bitte ein Bild auswählen.';
+    if (mode === 'url') {
+      if (!/^https?:\/\/\S+$/i.test(imageUrl.trim())) e.file = 'Bitte eine vollständige Bild-Adresse eintragen.';
+    } else if (!file) {
+      e.file = 'Bitte ein Bild auswählen.';
+    }
     if (!form.answerDe.trim()) e.answerDe = 'Die deutsche Antwort wird zum Raten gebraucht.';
     if (!form.credit.trim()) e.credit = 'Ohne Nachweis geht es nicht — er wird im Spiel angezeigt.';
     return e;
-  }, [file, form.answerDe, form.credit]);
+  }, [file, mode, imageUrl, form.answerDe, form.credit]);
 
   const valid = Object.keys(errors).length === 0;
 
@@ -137,14 +145,20 @@ export default function PixelImages() {
   // --- Aktionen ------------------------------------------------------------
   const add = useCallback(async () => {
     setTouched(true);
-    if (!valid || !file) return;
+    if (!valid) return;
+    if (mode === 'upload' && !file) return;
     setBusy(true);
     setBanner(null);
     try {
-      const ext = (file.name.split('.').pop() || 'webp').toLowerCase();
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const up = await supabase.storage.from('game-images').upload(path, file, { upsert: false });
-      if (up.error) { setBanner({ kind: 'err', text: `Upload fehlgeschlagen: ${up.error.message}` }); return; }
+      // Im URL-Modus wird nichts hochgeladen — die Adresse wandert direkt in
+      // image_path. resolveImageUrl() reicht alles durch, was mit http beginnt.
+      let path = imageUrl.trim();
+      if (mode === 'upload') {
+        const ext = (file!.name.split('.').pop() || 'webp').toLowerCase();
+        path = `${crypto.randomUUID()}.${ext}`;
+        const up = await supabase.storage.from('game-images').upload(path, file!, { upsert: false });
+        if (up.error) { setBanner({ kind: 'err', text: `Upload fehlgeschlagen: ${up.error.message}` }); return; }
+      }
 
       const answers: Record<string, string> = { de: form.answerDe.trim() };
       if (form.answerEn.trim()) answers.en = form.answerEn.trim();
@@ -161,7 +175,7 @@ export default function PixelImages() {
       });
       if (error) {
         // Verwaiste Datei wieder entfernen, sonst sammelt sich Müll im Bucket.
-        await supabase.storage.from('game-images').remove([path]).catch(() => {});
+        if (mode === 'upload') await supabase.storage.from('game-images').remove([path]).catch(() => {});
         setBanner({ kind: 'err', text: `Speichern fehlgeschlagen: ${error.message ?? ''}` });
         return;
       }
@@ -169,6 +183,7 @@ export default function PixelImages() {
       // Kategorie beibehalten — man pflegt meist mehrere Motive am Stück.
       setForm({ ...EMPTY, category: form.category });
       setFile(null);
+      setImageUrl('');
       setTouched(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
       await load();
@@ -176,7 +191,7 @@ export default function PixelImages() {
     } finally {
       setBusy(false);
     }
-  }, [valid, file, form, load]);
+  }, [valid, file, mode, imageUrl, form, load]);
 
   const toggle = useCallback(async (r: Row) => {
     setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, is_active: !x.is_active } : x)));
@@ -259,10 +274,40 @@ export default function PixelImages() {
           <div className="p-5 space-y-5">
             {/* Ablagefläche */}
             <div>
-              <label htmlFor="pj-file" className="block text-xs font-semibold text-[#a8abb3] mb-2">
-                Bild <span className="text-[#ff6b98]" aria-hidden="true">*</span>
-              </label>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <label htmlFor="pj-file" className="block text-xs font-semibold text-[#a8abb3]">
+                  Bild <span className="text-[#ff6b98]" aria-hidden="true">*</span>
+                </label>
+                <div className="flex gap-1" role="group" aria-label="Bildquelle wählen">
+                  {(['upload', 'url'] as const).map((m) => (
+                    <button key={m} type="button" onClick={() => setMode(m)} aria-pressed={mode === m}
+                      className={`px-2.5 h-7 rounded-lg text-[11px] font-bold transition-colors duration-200 cursor-pointer ${
+                        mode === m ? 'bg-[#38BDF8] text-[#0a0e14]' : 'bg-[#12161d] text-[#a8abb3] hover:text-[#f1f3fc]'
+                      }`}>
+                      {m === 'upload' ? 'Hochladen' : 'Adresse'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {mode === 'url' && (
+                <div className="mb-2">
+                  <input
+                    type="url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://example.com/bild.jpg"
+                    aria-label="Bild-Adresse"
+                    className={`${fieldBase} ${touched && errors.file ? 'border-[#ff6b98]' : 'border-white/10'}`}
+                  />
+                  <p className="text-[11px] text-[#5c6270] mt-1 leading-snug">
+                    Das Bild bleibt beim fremden Anbieter liegen. Verschwindet es dort, ist es auch
+                    hier weg — die Runde überspringt es dann. Hochgeladene Bilder sind dauerhaft.
+                  </p>
+                </div>
+              )}
               <div
+                hidden={mode === 'url'}
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={(e) => { e.preventDefault(); setDragging(false); acceptFile(e.dataTransfer.files?.[0] ?? null); }}
@@ -304,6 +349,20 @@ export default function PixelImages() {
                   </div>
                 )}
               </div>
+              {mode === 'url' && preview && (
+                <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-[#12161d] border border-white/10">
+                  <figure className="space-y-1">
+                    <PixelCanvas src={preview} step={8} width={320} height={240}
+                      className="w-full h-auto rounded-lg block" />
+                    <figcaption className="text-[10px] text-[#a8abb3] text-center">So startet die Runde</figcaption>
+                  </figure>
+                  <figure className="space-y-1">
+                    <img src={preview} alt="Vorschau des Motivs"
+                      className="w-full aspect-[4/3] object-cover rounded-lg" />
+                    <figcaption className="text-[10px] text-[#a8abb3] text-center">Auflösung</figcaption>
+                  </figure>
+                </div>
+              )}
               {touched && errors.file && (
                 <p id="pj-file-err" role="alert" className="text-[11px] text-[#ff6b98] mt-1.5 flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" aria-hidden="true" /> {errors.file}
