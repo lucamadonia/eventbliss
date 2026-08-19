@@ -29,6 +29,8 @@ interface SongRow {
   country: string;
   genre: string;
   language: string;
+  /** Sprachfassungen, in denen der Song erscheint. ['*'] = alle zehn. */
+  languages: string[];
   spotify_uri: string | null;
   is_active: boolean;
 }
@@ -39,7 +41,10 @@ const PAGE = 120;
 
 const EMPTY: Omit<SongRow, 'id'> = {
   year: 2020,
-  artist: '', title: '', country: '🌍', genre: 'Pop', language: 'de', spotify_uri: '', is_active: true,
+  artist: '', title: '', country: '🌍', genre: 'Pop', language: 'de',
+  // Vorgabe: überall sichtbar. Einschränken ist der bewusste Schritt.
+  languages: ['*'],
+  spotify_uri: '', is_active: true,
 };
 
 const db = () => (supabase.from as never as (t: string) => any)('ohrwurm_songs');
@@ -55,6 +60,8 @@ export default function OhrwurmSongs() {
   const [filterOrigin, setFilterOrigin] = useState<'all' | 'base' | 'custom'>('all');
   const [page, setPage] = useState(1);
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkLangOpen, setBulkLangOpen] = useState(false);
+  const [bulkLangs, setBulkLangs] = useState<string[]>(['*']);
   const [modal, setModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<SongRow, 'id'>>(EMPTY);
@@ -86,12 +93,11 @@ export default function OhrwurmSongs() {
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     return rows.filter((r) => {
-      // '*' heißt „gilt für alle Sprachfassungen" — solche Songs müssen bei
-      // JEDER Sprachauswahl erscheinen. Ein reiner Gleichheitsvergleich ließ
-      // beim Filter auf „Deutsch" nichts übrig, weil die 1281 Grundsongs alle
-      // auf '*' stehen.
-      if (filterLang && filterLang !== '*' && r.language !== filterLang && r.language !== '*') return false;
-      if (filterLang === '*' && r.language !== '*') return false;
+      // Sprachzuordnung ist ein Array. '*' heißt „alle zehn Sprachfassungen"
+      // und muss deshalb bei JEDER Sprachauswahl erscheinen.
+      const langs = r.languages?.length ? r.languages : [r.language || '*'];
+      if (filterLang === '*') { if (!langs.includes('*')) return false; }
+      else if (filterLang && !langs.includes(filterLang) && !langs.includes('*')) return false;
       if (filterCountry && r.country !== filterCountry) return false;
       if (filterState === 'active' && !r.is_active) return false;
       if (filterState === 'inactive' && r.is_active) return false;
@@ -136,10 +142,42 @@ export default function OhrwurmSongs() {
     void load();
   };
 
+  /**
+   * Sprachzuordnung für ALLE gefilterten Songs auf einmal setzen.
+   *
+   * Das ist bei 1281 Songs der entscheidende Handgriff: Land „Polen" filtern,
+   * „nur PL" zuweisen — fertig. Einzeln wären das 25 Dialoge.
+   */
+  const bulkSetLanguages = async (languages: string[]) => {
+    const ids = filtered.map((r) => r.id);
+    if (ids.length === 0) return;
+    const label = languages.includes('*')
+      ? 'alle Sprachfassungen'
+      : languages.length === 0
+        ? 'keine Sprache (nirgends sichtbar)'
+        : languages.join(', ');
+    if (!confirm(`${ids.length} Songs auf „${label}" setzen?`)) return;
+    setBulkBusy(true);
+    for (let i = 0; i < ids.length; i += 200) {
+      const { error } = await db().update({ languages }).in('id', ids.slice(i, i + 200));
+      if (error) { toast.error('Fehlgeschlagen: ' + error.message); break; }
+    }
+    setBulkBusy(false);
+    setBulkLangOpen(false);
+    toast.success(`${ids.length} Songs aktualisiert`);
+    void load();
+  };
+
   const openAdd = () => { setEditId(null); setForm(EMPTY); setModal(true); };
   const openEdit = (r: SongRow) => {
     setEditId(r.id);
-    setForm({ year: r.year, artist: r.artist, title: r.title, country: r.country, genre: r.genre, language: r.language, spotify_uri: r.spotify_uri ?? '', is_active: r.is_active });
+    setForm({
+      year: r.year, artist: r.artist, title: r.title, country: r.country, genre: r.genre,
+      language: r.language,
+      // Altbestand ohne Array: den früheren Einzelwert übernehmen.
+      languages: r.languages?.length ? r.languages : [r.language || '*'],
+      spotify_uri: r.spotify_uri ?? '', is_active: r.is_active,
+    });
     setModal(true);
   };
 
@@ -252,6 +290,32 @@ export default function OhrwurmSongs() {
               className="min-h-[36px] px-3 rounded-lg text-xs font-bold bg-[#ff6e84]/15 border border-[#ff6e84]/30 text-[#ff6e84] hover:border-[#ff6e84]/50 transition-colors duration-200 cursor-pointer disabled:opacity-50">
               Alle deaktivieren
             </button>
+            <button onClick={() => setBulkLangOpen((v) => !v)} disabled={bulkBusy}
+              aria-expanded={bulkLangOpen}
+              className="min-h-[36px] px-3 rounded-lg text-xs font-bold bg-[#8ff5ff]/10 border border-[#8ff5ff]/30 text-[#8ff5ff] hover:border-[#8ff5ff]/50 transition-colors duration-200 cursor-pointer disabled:opacity-50">
+              Sprachen zuweisen
+            </button>
+          </div>
+        )}
+
+        {/* Sammelzuweisung der Sprachen fuer die aktuelle Auswahl */}
+        {bulkLangOpen && filtered.length > 0 && (
+          <div className="rounded-xl border border-[#8ff5ff]/25 bg-[#8ff5ff]/[0.04] p-3 space-y-3">
+            <p className="text-xs text-[#a8abb3]">
+              Zuordnung fuer <strong className="text-white">{filtered.length} Songs</strong> dieser Auswahl setzen.
+              Das ueberschreibt die bisherige Zuordnung dieser Songs.
+            </p>
+            <LanguagePicker value={bulkLangs} onChange={setBulkLangs} />
+            <div className="flex gap-2">
+              <button onClick={() => setBulkLangOpen(false)}
+                className="flex-1 min-h-[40px] rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:border-white/20 transition-colors duration-200 cursor-pointer">
+                Abbrechen
+              </button>
+              <button onClick={() => void bulkSetLanguages(bulkLangs)} disabled={bulkBusy}
+                className="flex-1 min-h-[40px] rounded-lg text-xs font-bold bg-gradient-to-r from-[#FF2E88] to-[#d779ff] text-white disabled:opacity-50 cursor-pointer">
+                {bulkBusy ? 'Wird gesetzt...' : `${filtered.length} Songs zuweisen`}
+              </button>
+            </div>
           </div>
         )}
 
@@ -269,7 +333,12 @@ export default function OhrwurmSongs() {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold truncate">{r.title}</div>
                   <div className="text-xs text-[#a8abb3] truncate">
-                    {r.artist} · {r.genre} · {r.language === '*' ? '🌐' : (LANGS.find((l) => l.code === r.language)?.flag ?? r.language)}
+                    {r.artist} · {r.genre} · {(() => {
+                      const ls = r.languages?.length ? r.languages : [r.language || '*'];
+                      if (ls.includes('*')) return '🌐';
+                      if (ls.length === 0) return '∅';
+                      return ls.map((c) => LANGS.find((l) => l.code === c)?.flag ?? c).join('');
+                    })()}
                     {r.base_id && <span className="ml-1.5 text-[10px] text-[#5c6270]">Grundbestand</span>}
                   </div>
                 </div>
@@ -310,13 +379,21 @@ export default function OhrwurmSongs() {
                 <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} maxLength={4}
                   className="mt-1 w-full px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white text-center" />
               </label>
-              <label className="text-xs text-[#a8abb3] col-span-1">Sprache
-                <select value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}
+              <label className="text-xs text-[#a8abb3] col-span-1">Genre
+                <select value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })}
                   className="mt-1 w-full px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
-                  {LANGS.map((l) => <option key={l.code} value={l.code}>{l.flag} {l.code}</option>)}
+                  {OHRWURM_GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
                 </select>
               </label>
             </div>
+
+            {/* Sprachzuordnung — der eigentliche Grund für diesen Dialog.
+                Ein Song ist selten nur in einem Markt bekannt und selten in
+                allen zehn, deshalb Mehrfachauswahl statt Dropdown. */}
+            <LanguagePicker
+              value={form.languages}
+              onChange={(languages) => setForm({ ...form, languages })}
+            />
 
             <label className="text-xs text-[#a8abb3] block">Interpret
               <input value={form.artist} onChange={(e) => setForm({ ...form, artist: e.target.value })}
@@ -326,7 +403,7 @@ export default function OhrwurmSongs() {
               <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white" />
             </label>
-            <label className="text-xs text-[#a8abb3] block">Genre
+            <label className="hidden">Genre
               <select value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })}
                 className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
                 {OHRWURM_GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
@@ -355,6 +432,58 @@ export default function OhrwurmSongs() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Sprachzuordnung als Flaggen-Raster.
+ *
+ * „Alle" ist bewusst ein eigener Zustand (Array `['*']`) und nicht „alle zehn
+ * angehakt": ein Song, der überall laufen soll, bleibt so automatisch dabei,
+ * wenn später eine elfte Sprache dazukommt.
+ */
+function LanguagePicker({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const all = value.includes('*');
+  const toggle = (code: string) => {
+    if (all) { onChange([code]); return; }            // aus „alle" heraus gezielt auf eine
+    const next = value.includes(code) ? value.filter((c) => c !== code) : [...value, code];
+    onChange(next);
+  };
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="text-xs font-semibold text-[#a8abb3]">In welchen Sprachfassungen?</span>
+        <button type="button" onClick={() => onChange(all ? [] : ['*'])}
+          aria-pressed={all}
+          className={`px-2.5 h-7 rounded-lg text-[11px] font-bold transition-colors duration-200 cursor-pointer ${
+            all ? 'bg-[#FF2E88] text-[#16101f]' : 'bg-white/5 text-[#a8abb3] hover:text-white'
+          }`}>
+          Alle 10
+        </button>
+      </div>
+      <div className="grid grid-cols-5 gap-1.5">
+        {LANGS.map((l) => {
+          const on = all || value.includes(l.code);
+          return (
+            <button key={l.code} type="button" onClick={() => toggle(l.code)}
+              aria-pressed={on} title={l.name}
+              className={`h-11 rounded-lg text-[11px] font-bold flex flex-col items-center justify-center gap-0.5 transition-colors duration-200 cursor-pointer ${
+                on ? 'bg-white/15 text-white ring-1 ring-[#FF2E88]/60' : 'bg-white/[0.04] text-[#5c6270] hover:text-[#a8abb3]'
+              } ${all ? 'opacity-60' : ''}`}>
+              <span className="text-base leading-none">{l.flag}</span>
+              <span className="uppercase">{l.code}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-[#5c6270] mt-2 leading-snug">
+        {all
+          ? 'Läuft in allen Sprachfassungen — auch in künftig ergänzten.'
+          : value.length === 0
+            ? 'Keine Sprache gewählt — der Song erscheint nirgends.'
+            : `Nur in: ${value.map((c) => LANGS.find((l) => l.code === c)?.name ?? c).join(', ')}`}
+      </p>
     </div>
   );
 }

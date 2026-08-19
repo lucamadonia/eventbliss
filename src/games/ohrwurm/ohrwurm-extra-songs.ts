@@ -14,6 +14,8 @@ interface Row {
   country: string | null;
   genre: string | null;
   language: string;
+  /** Sprachfassungen, in denen der Song erscheint. ['*'] = alle zehn. */
+  languages: string[] | null;
   spotify_uri: string | null;
 }
 
@@ -34,9 +36,10 @@ export async function loadExtraSongs(language?: string): Promise<number> {
         .select('*')
         .eq('is_active', true)
         .range(from, from + PAGE - 1);
-      // '*' heißt „gilt für alle Sprachfassungen" (so sind die Basissongs
-      // eingetragen); dazu die Songs der aktuellen Sprache.
-      if (language) q = q.in('language', [language, '*']);
+      // Mehrfachzuordnung: ein Song kann mehreren der zehn Sprachfassungen
+      // zugewiesen sein. `&&` (overlaps) trifft, sobald sich das gepflegte
+      // Array mit [aktuelle Sprache, '*'] überschneidet. '*' = überall.
+      if (language) q = q.overlaps('languages', [language, '*']);
       const { data, error } = await q;
       if (error || !data) break;
       rows.push(...(data as Row[]));
