@@ -62,7 +62,7 @@ export function songKey(artist, title) {
  * Interpreten; ein falscher Song ist schlimmer als gar keiner, weil er eine
  * falsche Jahreszahl ins Spiel trägt.
  */
-function artistMatches(want, got) {
+export function artistMatches(want, got) {
   const a = norm(want);
   const b = norm(got);
   if (!a || !b) return false;
