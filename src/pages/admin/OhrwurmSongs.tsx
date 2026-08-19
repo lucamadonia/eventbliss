@@ -62,14 +62,22 @@ export default function OhrwurmSongs() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    // .limit() ist hier PFLICHT: Supabase deckelt ein ungefiltertes select()
-    // bei 1000 Zeilen — von den 1281 Grundsongs würden sonst still 281 fehlen.
-    const { data, error } = await db()
-      .select('*')
-      .order('year', { ascending: true })
-      .limit(5000);
-    if (error) toast.error('Laden fehlgeschlagen: ' + error.message);
-    setRows((data ?? []) as SongRow[]);
+    // Seitenweise laden. `.limit()` reicht NICHT: Supabase deckelt die REST-API
+    // projektweit bei max-rows (Standard 1000). Von den 1281 Grundsongs fehlten
+    // sonst still 281 — ohne Fehlermeldung, man sah nur "1000 / 1000".
+    const PAGE = 1000;
+    const all: SongRow[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await db()
+        .select('*')
+        .order('year', { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error) { toast.error('Laden fehlgeschlagen: ' + error.message); break; }
+      const chunk = (data ?? []) as SongRow[];
+      all.push(...chunk);
+      if (chunk.length < PAGE) break;
+    }
+    setRows(all);
     setLoading(false);
   }, []);
 
@@ -78,7 +86,12 @@ export default function OhrwurmSongs() {
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     return rows.filter((r) => {
-      if (filterLang && r.language !== filterLang) return false;
+      // '*' heißt „gilt für alle Sprachfassungen" — solche Songs müssen bei
+      // JEDER Sprachauswahl erscheinen. Ein reiner Gleichheitsvergleich ließ
+      // beim Filter auf „Deutsch" nichts übrig, weil die 1281 Grundsongs alle
+      // auf '*' stehen.
+      if (filterLang && filterLang !== '*' && r.language !== filterLang && r.language !== '*') return false;
+      if (filterLang === '*' && r.language !== '*') return false;
       if (filterCountry && r.country !== filterCountry) return false;
       if (filterState === 'active' && !r.is_active) return false;
       if (filterState === 'inactive' && r.is_active) return false;
@@ -195,27 +208,27 @@ export default function OhrwurmSongs() {
           </div>
           <select value={filterLang} onChange={(e) => setFilterLang(e.target.value)}
             aria-label="Nach Sprache filtern"
-            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
             <option value="">Alle Sprachen</option>
             <option value="*">🌐 Alle Sprachfassungen</option>
             {LANGS.map((l) => <option key={l.code} value={l.code}>{l.flag} {l.name}</option>)}
           </select>
           <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)}
             aria-label="Nach Herkunftsland filtern"
-            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
             <option value="">Alle Länder</option>
             {countries.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
           </select>
           <select value={filterState} onChange={(e) => setFilterState(e.target.value as typeof filterState)}
             aria-label="Nach Status filtern"
-            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
             <option value="all">Alle</option>
             <option value="active">Nur aktive</option>
             <option value="inactive">Nur inaktive</option>
           </select>
           <select value={filterOrigin} onChange={(e) => setFilterOrigin(e.target.value as typeof filterOrigin)}
             aria-label="Nach Herkunft filtern"
-            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer">
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm cursor-pointer [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
             <option value="all">Grundbestand + eigene</option>
             <option value="base">Nur Grundbestand</option>
             <option value="custom">Nur eigene</option>
@@ -299,7 +312,7 @@ export default function OhrwurmSongs() {
               </label>
               <label className="text-xs text-[#a8abb3] col-span-1">Sprache
                 <select value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}
-                  className="mt-1 w-full px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
+                  className="mt-1 w-full px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
                   {LANGS.map((l) => <option key={l.code} value={l.code}>{l.flag} {l.code}</option>)}
                 </select>
               </label>
@@ -315,7 +328,7 @@ export default function OhrwurmSongs() {
             </label>
             <label className="text-xs text-[#a8abb3] block">Genre
               <select value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })}
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
+                className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white [color-scheme:dark] [&>option]:bg-[#12161d] [&>option]:text-[#f1f3fc]">
                 {OHRWURM_GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
             </label>

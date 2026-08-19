@@ -25,16 +25,20 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
   errorRef.current = onError;
   const [ready, setReady] = useState(false);
 
-  // Bild laden. crossOrigin='anonymous' ist Pflicht: ohne den Header gilt der
-  // Canvas als getaint, und dann wirft jeder spätere getImageData()-Zugriff.
-  // Deshalb dürfen hier nur same-origin- oder Supabase-URLs ankommen.
+  // Bild laden.
+  //
+  // Bewusst OHNE crossOrigin: ein fremdgehostetes Bild „taintet" damit zwar den
+  // Canvas, aber das blockiert ausschließlich das ZURÜCKLESEN von Pixeln
+  // (getImageData/toBlob/toDataURL) — und das passiert hier nirgends, es wird
+  // nur gezeichnet. Mit crossOrigin='anonymous' würde der Browser das Laden
+  // dagegen komplett verweigern, sobald der fremde Server keine CORS-Header
+  // schickt. Genau das hätte Bild-URLs ohne Not unmöglich gemacht.
   useEffect(() => {
     setReady(false);
     imgRef.current = null;
     if (!src) return;
     let cancelled = false;
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.decoding = 'async';
     img.onload = () => {
       if (cancelled) return;

@@ -24,17 +24,24 @@ interface Row {
  */
 export async function loadExtraSongs(language?: string): Promise<number> {
   try {
-    let q = (supabase.from as never as (t: string) => any)('ohrwurm_songs')
-      .select('*')
-      .eq('is_active', true)
-      // Supabase deckelt ein ungefiltertes select() bei 1000 Zeilen — mit den
-      // 1281 importierten Basissongs würden sonst still ~280 fehlen.
-      .limit(5000);
-    // '*' heißt „gilt für alle Sprachfassungen" (so sind die Basissongs
-    // eingetragen); dazu die Songs der aktuellen Sprache.
-    if (language) q = q.in('language', [language, '*']);
-    const { data } = await q;
-    const rows = (data ?? []) as Row[];
+    // Seitenweise laden. `.limit()` allein reicht NICHT: Supabase deckelt die
+    // REST-API projektweit bei max-rows (Standard 1000). Mit 1281 Basissongs
+    // fehlten sonst still ~280 — unbemerkt, weil dabei kein Fehler entsteht.
+    const PAGE = 1000;
+    const rows: Row[] = [];
+    for (let from = 0; ; from += PAGE) {
+      let q = (supabase.from as never as (t: string) => any)('ohrwurm_songs')
+        .select('*')
+        .eq('is_active', true)
+        .range(from, from + PAGE - 1);
+      // '*' heißt „gilt für alle Sprachfassungen" (so sind die Basissongs
+      // eingetragen); dazu die Songs der aktuellen Sprache.
+      if (language) q = q.in('language', [language, '*']);
+      const { data, error } = await q;
+      if (error || !data) break;
+      rows.push(...(data as Row[]));
+      if (data.length < PAGE) break;
+    }
 
     const toSong = (r: Row, id: string): Song => ({
       id,
