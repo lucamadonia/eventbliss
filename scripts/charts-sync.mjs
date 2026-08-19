@@ -15,15 +15,19 @@
  * Datenbankzugang: Service-Role-Key aus EB_SERVICE_KEY (umgeht RLS).
  * Der Key steht NICHT im Repository.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
-import { lookupBatch, songKey } from './lib/itunes.mjs';
+import { lookupBatch, enrich, songKey, sleep, ITUNES_DELAY_MS } from './lib/itunes.mjs';
+import { collectWikipedia, WIKI_MARKETS } from './lib/wikipedia-charts.mjs';
 import { collectAllAppleCharts, langsForMarkets, flagFor, MARKETS } from './lib/charts-sources.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PROGRESS = join(ROOT, 'scripts', '_charts-progress.json');
+// Zwischenspeicher der iTunes-Einzeltreffer. Ohne ihn müsste ein abgebrochener
+// Backfill komplett von vorn laufen — bei 3 s je Anfrage wären das Stunden.
+const CACHE = join(ROOT, 'scripts', '_charts-enriched.json');
 
 const argv = process.argv.slice(2);
 const has = (f) => argv.includes(f);
@@ -33,6 +37,10 @@ const val = (f, d) => {
 };
 
 const DRY = has('--dry-run');
+// Historischer Backfill statt laufender Charts.
+const HISTORY = has('--history');
+const FROM_YEAR = Number(val('--from', '2000'));
+const TO_YEAR = Number(val('--to', String(new Date().getFullYear() - 1)));
 const LIMIT = Number(val('--limit', '100'));
 const MARKET_LIST = val('--markets', '')
   ? val('--markets', '').split(',').map((m) => m.trim().toUpperCase())
@@ -91,6 +99,8 @@ async function loadExisting() {
 async function main() {
   log(`OHRWURM Chart-Sync${DRY ? ' (Trockenlauf — es wird nichts geschrieben)' : ''}`);
   log(`Märkte: ${MARKET_LIST.length} · je ${LIMIT} Titel\n`);
+
+  if (HISTORY) return runHistory();
 
   // --- Phase 1: Sammeln ---------------------------------------------------
   const raw = await collectAllAppleCharts(MARKET_LIST, LIMIT, (m, n) =>
@@ -184,6 +194,129 @@ async function main() {
     if (error) { console.error('\nSchreiben fehlgeschlagen:', error.message); break; }
     written += chunk.length;
     writeFileSync(PROGRESS, JSON.stringify({ at: new Date().toISOString(), written }, null, 2));
+    process.stdout.write(`\r  geschrieben: ${written}/${rows.length}`);
+  }
+  log(`\n\nFertig. ${written} Datensätze geschrieben.`);
+}
+
+/**
+ * Historischer Backfill aus Wikipedia.
+ *
+ * Anders als bei Apples Feeds gibt es hier KEINE Track-ID — jeder Kandidat
+ * braucht eine iTunes-Einzelsuche. Bei ~3 s Pause und mehreren tausend
+ * Kandidaten läuft das Stunden, deshalb sind Zwischenspeicher und
+ * Wiederaufnahme keine Kür, sondern Voraussetzung.
+ */
+async function runHistory() {
+  log(`Historischer Backfill ${FROM_YEAR}–${TO_YEAR}`);
+  log(`Märkte mit Jahresseiten: ${WIKI_MARKETS.join(', ')}\n`);
+
+  const candidates = await collectWikipedia(FROM_YEAR, TO_YEAR, WIKI_MARKETS, (m, n) =>
+    log(`  ${m}: ${n} Kandidaten`),
+  );
+  log(`\nPhase 1: ${candidates.length} Kandidaten gesammelt`);
+
+  // Über Märkte und Jahre hinweg verdichten — die Marktmenge ist die Grundlage
+  // der Sprachzuordnung.
+  const byName = new Map();
+  for (const c of candidates) {
+    const k = songKey(c.artist, c.title);
+    const g = byName.get(k);
+    if (g) { g.markets.add(c.market); g.year = Math.min(g.year, c.year); }
+    else byName.set(k, { ...c, markets: new Set([c.market]) });
+  }
+  log(`Phase 3: ${byName.size} eindeutige Titel`);
+
+  // Zwischenspeicher laden.
+  let cache = {};
+  if (existsSync(CACHE)) {
+    try { cache = JSON.parse(readFileSync(CACHE, 'utf8')); } catch { cache = {}; }
+  }
+  const cachedCount = Object.keys(cache).length;
+  if (cachedCount) log(`Zwischenspeicher: ${cachedCount} bereits aufgelöst`);
+
+  const { byTrack, byKey, manual } = await loadExisting();
+  log(`Bestand: ${byKey.size} Titel\n`);
+
+  // --- Phase 2: Anreichern (Einzelsuche) ----------------------------------
+  const todo = [...byName.entries()].filter(([k]) => !(k in cache));
+  log(`Phase 2: ${todo.length} noch aufzulösen (~${Math.round((todo.length * ITUNES_DELAY_MS) / 60000)} min)`);
+
+  let done = 0;
+  for (const [k, c] of todo) {
+    const hit = await enrich({ artist: c.artist, title: c.title, market: c.market });
+    cache[k] = hit ?? null; // auch Fehltreffer merken, sonst sucht man ewig neu
+    done++;
+    if (done % 25 === 0) {
+      writeFileSync(CACHE, JSON.stringify(cache));
+      process.stdout.write(`\r  aufgelöst: ${done}/${todo.length}`);
+    }
+    await sleep(ITUNES_DELAY_MS);
+  }
+  writeFileSync(CACHE, JSON.stringify(cache));
+  log(`\r  aufgelöst: ${done}/${todo.length}          `);
+
+  // --- Phase 4: Zuordnen --------------------------------------------------
+  const rows = [];
+  let noHit = 0, dupe = 0, skippedManual = 0, globalHits = 0;
+  const usedTrackIds = new Set();
+
+  for (const [k, c] of byName) {
+    const it = cache[k];
+    if (!it) { noHit++; continue; }
+    // Verschiedene Wikipedia-Schreibweisen können auf denselben Track zeigen.
+    if (usedTrackIds.has(it.itunesTrackId)) { dupe++; continue; }
+    const dbKey = songKey(it.artist, it.title);
+    if (manual.has(dbKey)) { skippedManual++; continue; }
+    if (!byTrack.has(it.itunesTrackId) && byKey.has(dbKey)) { dupe++; continue; }
+    usedTrackIds.add(it.itunesTrackId);
+
+    const markets = [...c.markets].sort();
+    const languages = langsForMarkets(markets);
+    if (languages[0] === '*') globalHits++;
+
+    rows.push({
+      itunes_track_id: it.itunesTrackId,
+      artist: it.artist,
+      title: it.title,
+      // Das Chartjahr ist verlässlicher als iTunes: dort trägt eine spätere
+      // Neuveröffentlichung das Datum der Wiederveröffentlichung.
+      year: c.year ?? it.year,
+      release_date: it.releaseDate,
+      country: flagFor(markets[0]),
+      genre: it.genre || 'Pop',
+      language: 'de',
+      languages,
+      chart_markets: markets,
+      preview_url: it.previewUrl,
+      artwork_url: it.artworkUrl,
+      source: 'wikipedia',
+      is_active: true,
+    });
+  }
+
+  log(`\nPhase 4: ${rows.length} Datensätze bereit`);
+  log(`  Welthits (alle Sprachen): ${globalHits}`);
+  log(`  nicht bei iTunes: ${noHit}`);
+  log(`  Dubletten übersprungen: ${dupe}`);
+  log(`  von Hand gepflegt, unangetastet: ${skippedManual}`);
+  log(`  ohne Vorschau: ${rows.filter((r) => !r.preview_url).length}`);
+
+  if (DRY) {
+    log('\nBeispiele:');
+    for (const r of rows.slice(0, 10)) {
+      log(`  ${r.year}  ${r.artist} — ${r.title}   [${r.chart_markets.join(',')} → ${r.languages.join(',')}]`);
+    }
+    log('\nTrockenlauf beendet, nichts geschrieben.');
+    return;
+  }
+
+  let written = 0;
+  for (let i = 0; i < rows.length; i += 200) {
+    const chunk = rows.slice(i, i + 200);
+    const { error } = await sb.from('ohrwurm_songs').upsert(chunk, { onConflict: 'itunes_track_id' });
+    if (error) { console.error('\nSchreiben fehlgeschlagen:', error.message); break; }
+    written += chunk.length;
     process.stdout.write(`\r  geschrieben: ${written}/${rows.length}`);
   }
   log(`\n\nFertig. ${written} Datensätze geschrieben.`);
