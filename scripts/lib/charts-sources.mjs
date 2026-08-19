@@ -61,7 +61,14 @@ export function langsForMarkets(markets) {
   }
   // Wer breit charted, ist ein Welthit — dann alle Sprachfassungen, auch
   // künftige. Das ist der Kern: Bekanntheit wird gemessen, nicht geraten.
-  if (set.size >= GLOBAL_THRESHOLD) return ['*'];
+  //
+  // Gezählt werden MÄRKTE, nicht Sprachen. Der Trockenlauf zeigte, warum: die
+  // historischen Quellen decken nur drei Sprachen ab (US→en, DE/AT/CH→de,
+  // FR→fr), eine Schwelle von vier SPRACHEN wäre dort unerreichbar gewesen —
+  // „Love the Way You Lie" stand in fünf Ländern und wäre trotzdem nicht als
+  // Welthit erkannt worden. Polnische und türkische Spieler hätten aus 25
+  // Jahren Chartgeschichte praktisch nichts gesehen.
+  if (markets.length >= GLOBAL_THRESHOLD || set.size >= GLOBAL_THRESHOLD) return ['*'];
   return [...set].sort();
 }
 
