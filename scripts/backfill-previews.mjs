@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
-import { enrich, sleep, ITUNES_DELAY_MS, setThrottleReporter } from './lib/itunes.mjs';
+import { enrich, sleep, ITUNES_DELAY_MS, setThrottleReporter, ThrottleError } from './lib/itunes.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = join(ROOT, 'scripts', '_preview-backfill.json');
@@ -76,11 +76,12 @@ async function main() {
   if (resumed) console.log(`Wiederaufnahme: ${resumed} bereits aufgelöst\n`);
 
   setThrottleReporter((ms) =>
-    process.stdout.write(`
+    console.log(`
   iTunes drosselt — warte ${Math.round(ms / 1000)}s …
 `),
   );
 
+  let delay = ITUNES_DELAY_MS;
   let found = 0;
   let missing = 0;
   let done = 0;
@@ -92,7 +93,31 @@ async function main() {
       continue;
     }
 
-    const hit = await enrich({ artist: r.artist, title: r.title, market: 'DE' });
+    // Drosselung ist KEIN Fehltreffer. Bei Gegenwind langsamer werden und den
+    // Song erneut versuchen; erst wenn das dreimal nichts hilft, sauber
+    // anhalten — die Fortschrittsdatei traegt den Rest beim naechsten Lauf.
+    let hit = null;
+    let resolved = false;
+    for (let tries = 0; tries < 3 && !resolved; tries++) {
+      try {
+        hit = await enrich({ artist: r.artist, title: r.title, market: 'DE' });
+        resolved = true;
+      } catch (e) {
+        if (!(e instanceof ThrottleError)) throw e;
+        delay = Math.min(delay + 3000, 15000);
+        console.log(`
+  Drosselung — Tempo auf ${delay / 1000}s pro Song, Pause 2 Minuten …`);
+        await sleep(120000);
+      }
+    }
+    if (!resolved) {
+      writeFileSync(CACHE, JSON.stringify(cache));
+      console.log(`
+  iTunes drosselt anhaltend. Sauber angehalten bei ${done}/${rows.length}.`);
+      console.log('  Nichts verloren — spaeter denselben Befehl erneut ausfuehren.');
+      break;
+    }
+
     if (hit?.previewUrl) {
       const patch = {
         preview_url: hit.previewUrl,
@@ -110,14 +135,17 @@ async function main() {
     }
 
     done++;
-    if (done % 25 === 0) {
-      writeFileSync(CACHE, JSON.stringify(cache));
-      process.stdout.write(`\r  ${done}/${rows.length} · gefunden ${found} · ohne Treffer ${missing}`);
+    // Mit Zeilenumbruch ausgeben statt per Wagenruecklauf zu ueberschreiben:
+    // Die PowerShell-Konsole stellte die ueberschriebene Zeile nicht dar, der
+    // Lauf sah dort tot aus, obwohl er arbeitete.
+    if (done % 10 === 0 || done === rows.length) {
+      console.log(`  ${done}/${rows.length} · gefunden ${found} · ohne Treffer ${missing}`);
     }
-    await sleep(ITUNES_DELAY_MS);
+    if (done % 25 === 0) writeFileSync(CACHE, JSON.stringify(cache));
+    await sleep(delay);
   }
   writeFileSync(CACHE, JSON.stringify(cache));
-  console.log(`\r  ${done}/${rows.length} · gefunden ${found} · ohne Treffer ${missing}          \n`);
+  console.log(`  ${done}/${rows.length} · gefunden ${found} · ohne Treffer ${missing}\n`);
 
   if (DRY) { console.log('Trockenlauf — nichts geschrieben.'); return; }
 
@@ -129,9 +157,9 @@ async function main() {
     const { error } = await sb.from('ohrwurm_songs').update(patch).eq('id', id);
     if (error) { console.error('\nSchreiben fehlgeschlagen:', error.message); break; }
     written++;
-    if (written % 50 === 0) process.stdout.write(`\r  geschrieben: ${written}/${updates.length}`);
+    if (written % 50 === 0) console.log(`  geschrieben: ${written}/${updates.length}`);
   }
-  console.log(`\r  geschrieben: ${written}/${updates.length}          `);
+  console.log(`  geschrieben: ${written}/${updates.length}`);
   console.log(`\nFertig. ${written} Songs haben jetzt eine gespeicherte Vorschau.`);
   console.log(`Verbleibend ohne Vorschau: ${missing} (bei iTunes nicht auffindbar).`);
 }

@@ -22,6 +22,18 @@ export const ITUNES_DELAY_MS = Number(process.env.ITUNES_DELAY || 3000);
 export let onThrottle = null;
 export function setThrottleReporter(fn) { onThrottle = fn; }
 
+/**
+ * Anhaltende Drosselung durch iTunes.
+ *
+ * Bewusst ein Fehler und kein `null`: Ein Aufrufer, der beides nicht
+ * unterscheidet, merkt sich einen gedrosselten Song als "gibt es nicht" und
+ * fragt ihn nie wieder ab. Das ist stiller Datenverlust — der Lauf meldet
+ * Erfolg und hat in Wahrheit Songs verbrannt.
+ */
+export class ThrottleError extends Error {
+  constructor() { super('iTunes drosselt anhaltend'); this.name = 'ThrottleError'; }
+}
+
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
@@ -74,7 +86,7 @@ async function query(params, attempt = 0, endpoint = 'search') {
   }
   // 403 ist bei iTunes das Drossel-Signal.
   if (res.status === 403 || res.status === 429) {
-    if (attempt >= 5) return null;
+    if (attempt >= 5) throw new ThrottleError();
     const wait = 30000 + attempt * 15000;
     // Sichtbar machen, sonst ist eine Drosselung von einem Absturz nicht zu
     // unterscheiden — der Aufrufer sieht in beiden Faellen nur Stillstand.
