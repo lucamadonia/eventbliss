@@ -197,6 +197,16 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   //  - EIN Retry mit kurzem Backoff bei transienten Fehlern (401/429/5xx),
   //  - Timeout, damit previewLoading nie hängen bleibt.
   const loadPreview = useCallback(async (s: Song, myDraw: number) => {
+    // Kommt die Vorschau schon aus der Datenbank (Chart-Pipeline), gibt es
+    // nichts zu holen. Das ist der eigentliche Fix gegen stumme Runden: kein
+    // iTunes-Aufruf pro Runde, also auch keine Drossel bei ~20 Anfragen/Minute
+    // auf der geteilten Egress-IP.
+    if (s.previewUrl) {
+      previewCache.set(s.id, s.previewUrl);
+      setPreviewUrl(s.previewUrl);
+      setPreviewLoading(false);
+      return;
+    }
     const cached = previewCache.get(s.id);
     if (cached !== undefined) {
       setPreviewUrl(cached);

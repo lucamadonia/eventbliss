@@ -26,6 +26,14 @@ export interface Song {
    * (spotify-uris.json). Fehlt sie → Laufzeit-Resolver → 30s-Vorschau.
    */
   spotifyUri?: string;
+  /**
+   * Vorab aufgelöste iTunes-Vorschau aus der Datenbank.
+   *
+   * Ist sie gesetzt, entfällt der Netzaufruf pro Runde — genau die Stelle, an
+   * der die stummen Runden entstanden, weil iTunes bei ~20 Anfragen/Minute pro
+   * IP drosselt und alle Nutzer sich die Egress-IP teilen.
+   */
+  previewUrl?: string;
 }
 
 /** Spotify-Such-URL bauen — Fallback-QR-Inhalt, wenn keine Track-URI vorliegt. */

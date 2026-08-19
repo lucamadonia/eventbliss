@@ -17,6 +17,8 @@ interface Row {
   /** Sprachfassungen, in denen der Song erscheint. ['*'] = alle zehn. */
   languages: string[] | null;
   spotify_uri: string | null;
+  /** Vorab aufgelöste iTunes-Vorschau (Chart-Pipeline). */
+  preview_url: string | null;
 }
 
 /**
@@ -56,6 +58,7 @@ export async function loadExtraSongs(language?: string): Promise<number> {
       // Mit hinterlegter URI → Track direkt öffnen; sonst Such-Fallback.
       qrPayload: r.spotify_uri ? spotifyTrackUrl(r.spotify_uri) : spotifySearchUrl(r.artist, r.title),
       spotifyUri: r.spotify_uri || undefined,
+      previewUrl: r.preview_url || undefined,
     });
 
     // Zeilen mit base_id sind die importierten Grundsongs — sie ERSETZEN die

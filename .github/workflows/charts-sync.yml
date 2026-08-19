@@ -1,0 +1,53 @@
+name: OHRWURM — Charts synchronisieren
+
+# Holt monatlich die aktuellen Länder-Charts und ergänzt neue Titel.
+#
+# Bewusst hier und NICHT als Supabase-Cron: der Runner hat eine eigene IP.
+# Ein Cron in einer Edge Function würde die iTunes-Drossel (~20 Anfragen pro
+# Minute und IP) auf der geteilten Egress-IP auslösen und damit die stummen
+# Runden zurückbringen, die gerade erst behoben wurden.
+
+on:
+  schedule:
+    # Am 1. jeden Monats um 04:00 UTC — außerhalb der Partyzeiten.
+    - cron: '0 4 1 * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Nur anzeigen, nichts schreiben'
+        type: boolean
+        default: false
+      limit:
+        description: 'Titel je Markt'
+        default: '100'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Abhängigkeiten installieren
+        run: pnpm install --frozen-lockfile
+
+      - name: .env für das Skript bereitstellen
+        # Das Skript liest die Projekt-URL aus .env; der Service-Key kommt
+        # ausschließlich aus der Umgebung und wird nie in eine Datei geschrieben.
+        run: |
+          echo 'VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}' > .env
+          echo 'VITE_SUPABASE_PUBLISHABLE_KEY=${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}' >> .env
+
+      - name: Charts synchronisieren
+        env:
+          EB_SERVICE_KEY: ${{ secrets.EB_SERVICE_KEY }}
+        run: |
+          node scripts/charts-sync.mjs \
+            ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }} \
+            --limit ${{ inputs.limit || '100' }}
