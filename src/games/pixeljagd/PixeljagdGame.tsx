@@ -89,6 +89,9 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const [deck, setDeck] = useState<PixelPuzzle[]>([]);
   const [puzzle, setPuzzle] = useState<PixelPuzzle | null>(null);
   const [buzzedBy, setBuzzedBy] = useState<string | null>(null);
+  // Die Loesung bleibt bis zum bewussten Aufdecken verdeckt — sonst koennte die
+  // Gruppe nicht urteilen, ohne die Antwort vorher zu verraten.
+  const [solutionShown, setSolutionShown] = useState(false);
   const [frozenPoints, setFrozenPoints] = useState<number | null>(null);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -181,6 +184,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     if (remaining.length === 0) { setPhase('roundEnd'); return; }
     roundTimerRef.current?.start();
   }, [modeDef.penalty, haptics, flash, t, players]);
+
+  useEffect(() => { setSolutionShown(false); }, [buzzedBy, round]);
 
   const doJudge = useCallback((correct: boolean) => {
     if (!buzzedBy) return;
@@ -466,7 +471,35 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
               <p className="text-sm font-bold">
                 {t('games.pixeljagd.buzzedSay', { name: players.find((p) => p.id === buzzedBy)?.name ?? '' })}
               </p>
-              <p className="text-[11px] mt-1" style={{ color: PJ.dim }}>{t('games.pixeljagd.groupDecides')}</p>
+              {/* Zweistufig, und das ist der Kern des Spiels:
+                  Wer gebuzzert hat, sagt die Antwort LAUT. Erst danach deckt
+                  die Gruppe die Loesung auf und vergleicht.
+                  Vorher standen hier sofort "Falsch"/"Richtig" — die Gruppe
+                  sollte also etwas beurteilen, das sie selbst nicht wusste.
+                  Das war unspielbar. */}
+              {!solutionShown ? (
+                <>
+                  <p className="text-[11px] mt-1" style={{ color: PJ.dim }}>
+                    {t('games.pixeljagd.sayThenReveal')}
+                  </p>
+                  <button
+                    onClick={() => setSolutionShown(true)}
+                    className="w-full h-12 rounded-2xl font-black mt-4 cursor-pointer transition-colors"
+                    style={{ background: PJ.accent, color: PJ.bg }}>
+                    {t('games.pixeljagd.revealSolution')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-[11px] mt-3" style={{ color: PJ.dim }}>
+                    {t('games.pixeljagd.solution')}
+                  </p>
+                  <p className="text-xl font-black mt-1" style={{ color: PJ.accent }}>
+                    {puzzle?.answer}
+                  </p>
+                  <p className="text-[11px] mt-2" style={{ color: PJ.dim }}>
+                    {t('games.pixeljagd.groupDecides')}
+                  </p>
               <div className="flex gap-2 mt-4">
                 <button onClick={() => act('judge', { correct: false }, () => doJudge(false))}
                   className="flex-1 h-12 rounded-2xl font-black flex items-center justify-center gap-1"
@@ -479,6 +512,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                   <Check className="w-4 h-4" /> {t('games.pixeljagd.correct')}
                 </button>
               </div>
+                </>
+              )}
             </div>
           ) : answerMode === 'text' && isOnline ? (
             <form

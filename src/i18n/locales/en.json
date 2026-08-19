@@ -6031,7 +6031,9 @@
         "marken": "Brands",
         "mix": "Random"
       },
-      "modified": "shown pixelated"
+      "modified": "shown pixelated",
+      "sayThenReveal": "Say it out loud first — then reveal.",
+      "revealSolution": "Reveal answer"
     },
     "hub": {
       "title": "EventBliss Games",

@@ -6031,7 +6031,9 @@
         "marken": "Marken",
         "mix": "Zufall"
       },
-      "modified": "verpixelt dargestellt"
+      "modified": "verpixelt dargestellt",
+      "sayThenReveal": "Erst laut sagen — dann auflösen.",
+      "revealSolution": "Auflösung zeigen"
     },
     "hub": {
       "title": "EventBliss Spiele",
