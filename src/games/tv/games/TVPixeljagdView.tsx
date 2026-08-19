@@ -111,7 +111,7 @@ export default function TVPixeljagdView({ gameState }: Props) {
                 {/* Bildnachweis — im Spiel Pflicht, also auch hier. */}
                 {reveal.credit && (
                   <p className="mt-[1vh]" style={{ fontSize: tvType.micro, color: PJ.dim }}>
-                    Bildnachweis: {reveal.credit}
+                    Bildnachweis: {reveal.credit} · verpixelt dargestellt
                   </p>
                 )}
               </motion.div>

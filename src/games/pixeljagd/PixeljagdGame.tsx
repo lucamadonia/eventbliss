@@ -442,6 +442,11 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                     {puzzle.credit}
                   </a>
                 ) : puzzle.credit}
+                {/* Aenderungshinweis ist Lizenzpflicht, nicht Hoeflichkeit:
+                    CC-BY verlangt, Bearbeitungen kenntlich zu machen — und die
+                    Verpixelung IST eine Bearbeitung. Ohne diesen Zusatz nutzen
+                    wir die Bilder ausserhalb ihrer Lizenz. */}
+                {' · '}{t('games.pixeljagd.modified')}
               </p>
               <button onClick={() => act('next', {}, nextRound)}
                 className="mt-4 w-full h-12 rounded-2xl font-black flex items-center justify-center gap-2"
