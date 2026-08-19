@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
-import { enrich, sleep, ITUNES_DELAY_MS } from './lib/itunes.mjs';
+import { enrich, sleep, ITUNES_DELAY_MS, setThrottleReporter } from './lib/itunes.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = join(ROOT, 'scripts', '_preview-backfill.json');
@@ -74,6 +74,12 @@ async function main() {
   }
   const resumed = Object.keys(cache).length;
   if (resumed) console.log(`Wiederaufnahme: ${resumed} bereits aufgelöst\n`);
+
+  setThrottleReporter((ms) =>
+    process.stdout.write(`
+  iTunes drosselt — warte ${Math.round(ms / 1000)}s …
+`),
+  );
 
   let found = 0;
   let missing = 0;

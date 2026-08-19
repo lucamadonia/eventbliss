@@ -18,6 +18,10 @@ const LOOKUP = 'https://itunes.apple.com/lookup';
 /** Pause zwischen Anfragen. 3 s hält uns sicher unter ~20/min. */
 export const ITUNES_DELAY_MS = Number(process.env.ITUNES_DELAY || 3000);
 
+/** Wird bei jeder Drosselung gerufen. Setzt der Aufrufer, um Wartezeit zu zeigen. */
+export let onThrottle = null;
+export function setThrottleReporter(fn) { onThrottle = fn; }
+
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
@@ -57,7 +61,12 @@ async function query(params, attempt = 0, endpoint = 'search') {
   const url = `${endpoint === 'lookup' ? LOOKUP : BASE}?${new URLSearchParams(params)}`;
   let res;
   try {
-    res = await fetch(url, { headers: { 'User-Agent': 'eventbliss-ohrwurm-charts' } });
+    // Zeitlimit ist Pflicht: ohne AbortSignal wartet fetch unbegrenzt, und ein
+    // einziger haengender Aufruf legt einen Lauf ueber tausende Songs still.
+    res = await fetch(url, {
+      headers: { 'User-Agent': 'eventbliss-ohrwurm-charts' },
+      signal: AbortSignal.timeout(15000),
+    });
   } catch {
     if (attempt >= 5) return null;
     await sleep(5000 + attempt * 5000);
@@ -66,7 +75,11 @@ async function query(params, attempt = 0, endpoint = 'search') {
   // 403 ist bei iTunes das Drossel-Signal.
   if (res.status === 403 || res.status === 429) {
     if (attempt >= 5) return null;
-    await sleep(30000 + attempt * 15000);
+    const wait = 30000 + attempt * 15000;
+    // Sichtbar machen, sonst ist eine Drosselung von einem Absturz nicht zu
+    // unterscheiden — der Aufrufer sieht in beiden Faellen nur Stillstand.
+    onThrottle?.(wait);
+    await sleep(wait);
     return query(params, attempt + 1, endpoint);
   }
   if (!res.ok) return null;
