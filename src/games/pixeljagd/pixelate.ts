@@ -41,7 +41,7 @@ export function drawPixelated(
     // Endstufe: unverfälscht und geglättet zeichnen.
     ctx.imageSmoothingEnabled = true;
     ctx.clearRect(0, 0, w, h);
-    drawCover(ctx, source, srcWidth, srcHeight, w, h);
+    drawContain(ctx, source, srcWidth, srcHeight, w, h);
     return;
   }
 
@@ -54,15 +54,23 @@ export function drawPixelated(
   if (!tctx) return;
 
   tctx.imageSmoothingEnabled = true; // beim Verkleinern mitteln — sonst Aliasing
-  drawCover(tctx, source, srcWidth, srcHeight, tmp.width, tmp.height);
+  drawContain(tctx, source, srcWidth, srcHeight, tmp.width, tmp.height);
 
   ctx.imageSmoothingEnabled = false; // beim Vergrößern NICHT interpolieren
   ctx.clearRect(0, 0, w, h);
   ctx.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, w, h);
 }
 
-/** `object-fit: cover` von Hand — das Bild soll die Fläche immer ausfüllen. */
-function drawCover(
+/**
+ * `object-fit: contain` von Hand — das GANZE Bild muss sichtbar sein.
+ *
+ * Vorher stand hier `cover` (Math.max), also formatfüllend mit Beschnitt. Bei
+ * einem Ratespiel ist das genau falsch herum: Weggeschnitten wird regelmäßig
+ * der Teil, an dem man das Motiv erkennt — bei einem Hochformat-Porträt der
+ * Kopf, bei einem Logo die Ränder. Lieber Balken am Rand als ein Motiv, das
+ * niemand erraten kann.
+ */
+function drawContain(
   ctx: CanvasRenderingContext2D,
   source: CanvasImageSource,
   sw: number,
@@ -70,7 +78,7 @@ function drawCover(
   dw: number,
   dh: number,
 ): void {
-  const scale = Math.max(dw / sw, dh / sh);
+  const scale = Math.min(dw / sw, dh / sh);
   const w = sw * scale;
   const h = sh * scale;
   ctx.drawImage(source, (dw - w) / 2, (dh - h) / 2, w, h);
