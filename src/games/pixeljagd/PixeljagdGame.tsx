@@ -662,12 +662,27 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
           {t('games.pixeljagd.categoriesLabel')}
         </p>
         <div className="flex flex-wrap gap-2">
+          {/* Zufall zuerst und als Voreinstellung: Eine leere Auswahl bedeutet
+              in getPixelPuzzles() bereits "alle Kategorien" — bisher war das
+              nur unsichtbar. Als Schaltflaeche ist es auffindbar, und der
+              Rueckweg zur Mischung braucht nicht das Abwaehlen aller Chips. */}
+          <button
+            onClick={() => setCats([])}
+            aria-pressed={cats.length === 0}
+            className="px-3 py-2 rounded-full text-xs font-bold cursor-pointer transition-colors"
+            style={{
+              background: cats.length === 0 ? PJ.primary : PJ.surface,
+              color: cats.length === 0 ? PJ.bg : PJ.text,
+            }}>
+            {t('games.pixeljagd.categories.mix')}
+          </button>
           {PIXEL_CATEGORIES.map((c) => {
             const on = cats.includes(c);
             return (
               <button key={c}
                 onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
-                className="px-3 py-2 rounded-full text-xs font-bold"
+                aria-pressed={on}
+                className="px-3 py-2 rounded-full text-xs font-bold cursor-pointer transition-colors"
                 style={{ background: on ? PJ.accent : PJ.surface, color: on ? PJ.bg : PJ.text }}>
                 {t(categoryLabelKey(c))}
               </button>

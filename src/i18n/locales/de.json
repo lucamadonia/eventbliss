@@ -6028,7 +6028,8 @@
         "filme": "Filme & Serien",
         "essen": "Essen & Trinken",
         "orte": "Orte",
-        "marken": "Marken"
+        "marken": "Marken",
+        "mix": "Zufall"
       }
     },
     "hub": {
@@ -7353,9 +7354,18 @@
   },
   "gameModes": {
     "pixeljagd": {
-      "klassisch": { "name": "Klassisch", "desc": "30 Sek., −25 bei falsch" },
-      "blitz": { "name": "Blitz", "desc": "15 Sek., −15 bei falsch" },
-      "profi": { "name": "Profi", "desc": "45 Sek., sehr grob, −40" }
+      "klassisch": {
+        "name": "Klassisch",
+        "desc": "30 Sek., −25 bei falsch"
+      },
+      "blitz": {
+        "name": "Blitz",
+        "desc": "15 Sek., −15 bei falsch"
+      },
+      "profi": {
+        "name": "Profi",
+        "desc": "45 Sek., sehr grob, −40"
+      }
     },
     "bomb": {
       "kategorie": {

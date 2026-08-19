@@ -3390,7 +3390,7 @@
       "title": "Pro Tip",
       "description": "Copy the messages and share them directly via WhatsApp or other messengers for best results."
     },
-    "templates":     {
+    "templates": {
       "kickoff": {
         "title": "Kickoff Message",
         "description": "First invitation to all participants",
@@ -6028,7 +6028,8 @@
         "filme": "Movies & Series",
         "essen": "Food & Drink",
         "orte": "Places",
-        "marken": "Brands"
+        "marken": "Brands",
+        "mix": "Random"
       }
     },
     "hub": {
@@ -7353,9 +7354,18 @@
   },
   "gameModes": {
     "pixeljagd": {
-      "klassisch": { "name": "Classic", "desc": "30 sec, −25 if wrong" },
-      "blitz": { "name": "Blitz", "desc": "15 sec, −15 if wrong" },
-      "profi": { "name": "Pro", "desc": "45 sec, very coarse, −40" }
+      "klassisch": {
+        "name": "Classic",
+        "desc": "30 sec, −25 if wrong"
+      },
+      "blitz": {
+        "name": "Blitz",
+        "desc": "15 sec, −15 if wrong"
+      },
+      "profi": {
+        "name": "Pro",
+        "desc": "45 sec, very coarse, −40"
+      }
     },
     "bomb": {
       "kategorie": {
