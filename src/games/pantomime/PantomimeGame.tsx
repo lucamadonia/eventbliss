@@ -29,7 +29,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Drama, Check, ChevronRight, SkipForward, Clock, Trophy, Sparkles } from 'lucide-react';
+import {
+  Drama,
+  Check,
+  ChevronRight,
+  SkipForward,
+  Clock,
+  Trophy,
+  Sparkles,
+  Shuffle,
+} from 'lucide-react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { useGameTimer } from '../engine/TimerSystem';
@@ -47,6 +56,15 @@ import {
   type PantomimeCategoryId,
 } from '../content/pantomime-words';
 import { drawExtra, scoreTurn, FETCH_SECONDS, type Extra } from './pantomime-extras';
+import {
+  assignTeams,
+  shuffleTeams,
+  flipTeam,
+  canPlay,
+  splitByTeam,
+  teamSizes,
+  type TeamMap,
+} from './pantomime-teams';
 
 /**
  * Farbwelt Bühne: tiefes Aubergine als Saal, Scheinwerfergold für den
@@ -120,6 +138,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
   const [mode, setMode] = useState<ModeId>('klassisch');
   const [categories, setCategories] = useState<PantomimeCategoryId[]>([]);
   const [extrasEnabled, setExtrasEnabled] = useState(true);
+  /** Wie oft je Zug uebersprungen werden darf. `null` = unbegrenzt. */
+  const [skipLimit, setSkipLimit] = useState<number | null>(3);
+  const [skipsUsed, setSkipsUsed] = useState(0);
   const [totalRounds, setTotalRounds] = useState(5);
   const [round, setRound] = useState(1);
 
@@ -194,6 +215,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
 
   const beginTurn = useCallback(() => {
     setTurnResults([]);
+    setSkipsUsed(0);
     setExtraAccepted(false);
     setFetchLeft(FETCH_SECONDS);
     if (extrasEnabled) {
@@ -252,12 +274,20 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     drawWord();
   }, [phase, word, haptics, drawWord]);
 
+  /** Wie viele Uebersprünge noch übrig sind. `Infinity` = unbegrenzt. */
+  const skipsLeft = skipLimit === null ? Infinity : Math.max(0, skipLimit - skipsUsed);
+
   const doSkip = useCallback(() => {
     if (phase !== 'playing' || !word) return;
+    // Die Grenze wird HIER geprüft und nicht nur am Knopf: Online kommt das
+    // Ueberspringen als Nachricht herein, und eine Oberflaeche, die den Knopf
+    // ausgraut, haelt niemanden davon ab, die Nachricht trotzdem zu schicken.
+    if (skipLimit !== null && skipsUsed >= skipLimit) return;
     void haptics.light();
+    setSkipsUsed((n) => n + 1);
     setTurnResults((prev) => [...prev, { word, result: 'skipped' }]);
     drawWord();
-  }, [phase, word, haptics, drawWord]);
+  }, [phase, word, haptics, drawWord, skipLimit, skipsUsed]);
 
   const turnPoints = useMemo(
     () => scoreTurn(turnResults.filter((r) => r.result === 'correct').length, extraAccepted),
@@ -350,6 +380,8 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
           mode,
           categories,
           extrasEnabled,
+          skipLimit,
+          skipsUsed,
           extra,
           extraAccepted,
           fetchLeft,
@@ -374,6 +406,8 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     mode,
     categories,
     extrasEnabled,
+    skipLimit,
+    skipsUsed,
     extra,
     extraAccepted,
     fetchLeft,
@@ -397,6 +431,8 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       setMode(s.mode as ModeId);
       setCategories(s.categories as PantomimeCategoryId[]);
       setExtrasEnabled(s.extrasEnabled as boolean);
+      setSkipLimit((s.skipLimit as number | null) ?? null);
+      setSkipsUsed((s.skipsUsed as number) ?? 0);
       setExtra((s.extra as Extra | null) ?? null);
       setExtraAccepted(s.extraAccepted as boolean);
       setFetchLeft(s.fetchLeft as number);
@@ -446,6 +482,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       // dort leer, waehrend am Tisch die Punkte verkuendet werden.
       turnPoints,
       extraAccepted,
+      skipsLeft: Number.isFinite(skipsLeft) ? skipsLeft : null,
       // Die Herausforderung MUSS auf den Fernseher: Nur so sieht die Gruppe,
       // ob der Kochlöffel wirklich benutzt wurde.
       extra: extraAccepted && extra ? { text: extraText, kind: extra.kind } : null,
@@ -464,6 +501,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       turnResults,
       turnPoints,
       extraAccepted,
+      skipsLeft,
       extra,
       extraText,
       fetchLeft,
@@ -502,6 +540,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       setMode(s.mode as ModeId);
       setCategories(s.categories as PantomimeCategoryId[]);
       setExtrasEnabled(s.extrasEnabled as boolean);
+      setSkipLimit((s.skipLimit as number | null) ?? 3);
       setDeck(s.deck as string[]);
       setDeckPos(s.deckPos as number);
       deckPosRef.current = (s.deckPos as number) ?? 0;
@@ -528,6 +567,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       mode,
       categories,
       extrasEnabled,
+      skipLimit,
       deck,
       deckPos,
     });
@@ -542,6 +582,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     mode,
     categories,
     extrasEnabled,
+    skipLimit,
     deck,
     deckPos,
   ]);
@@ -559,35 +600,30 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
   // --- Start ---------------------------------------------------------------
   const handleStart = useCallback(
     (cfg: {
-      players: TeamPlayer[];
+      teamA: TeamPlayer[];
+      teamB: TeamPlayer[];
       mode: ModeId;
       categories: PantomimeCategoryId[];
       rounds: number;
       extras: boolean;
+      skipLimit: number | null;
     }) => {
       const words = shuffle(getPantomimeWords(cfg.categories, drinkingMode.isActivated));
       if (words.length === 0) return;
 
-      const mixed = shuffle(cfg.players);
-      const half = Math.ceil(mixed.length / 2);
+      // NICHT mehr neu mischen: Die Aufstellung steht in der Einrichtung und
+      // ist dort auch zu sehen. Sie hier noch einmal zu wuerfeln hiesse, dass
+      // die angezeigte Aufstellung eine Luege war.
       setTeams([
-        {
-          name: t('games.pantomime.teamA'),
-          color: PM.teamA,
-          players: mixed.slice(0, half),
-          score: 0,
-        },
-        {
-          name: t('games.pantomime.teamB'),
-          color: PM.teamB,
-          players: mixed.slice(half),
-          score: 0,
-        },
+        { name: t('games.pantomime.teamA'), color: PM.teamA, players: cfg.teamA, score: 0 },
+        { name: t('games.pantomime.teamB'), color: PM.teamB, players: cfg.teamB, score: 0 },
       ]);
       setMode(cfg.mode);
       setCategories(cfg.categories);
       setTotalRounds(cfg.rounds);
       setExtrasEnabled(cfg.extras);
+      setSkipLimit(cfg.skipLimit);
+      setSkipsUsed(0);
       setDeck(words);
       setDeckPos(0);
       deckPosRef.current = 0;
@@ -841,10 +877,21 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
                   </button>
                   <button
                     onClick={() => act('skip', {}, doSkip)}
-                    className="h-12 rounded-2xl font-bold flex items-center justify-center gap-2"
+                    disabled={skipsLeft <= 0}
+                    className="h-12 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-40"
                     style={{ background: PM.surface, color: PM.dim }}
                   >
                     <SkipForward className="w-4 h-4" /> {t('games.pantomime.skip')}
+                    {/* Die Restzahl gehoert AUF den Knopf: Wer sie erst merkt,
+                        wenn nichts mehr geht, hat sie verschwendet. */}
+                    {skipLimit !== null && (
+                      <span style={{ color: skipsLeft > 0 ? PM.gold : PM.bad }}>
+                        ·{' '}
+                        {skipsLeft > 0
+                          ? t('games.pantomime.skipsLeft', { count: skipsLeft })
+                          : t('games.pantomime.skipsNone')}
+                      </span>
+                    )}
                   </button>
                 </div>
               </>
@@ -1032,11 +1079,13 @@ function PantomimeSetup({
   adultUnlocked,
 }: {
   onStart: (cfg: {
-    players: TeamPlayer[];
+    teamA: TeamPlayer[];
+    teamB: TeamPlayer[];
     mode: ModeId;
     categories: PantomimeCategoryId[];
     rounds: number;
     extras: boolean;
+    skipLimit: number | null;
   }) => void;
   onlinePlayers?: { id: string; name: string }[];
   categories: PantomimeCategory[];
@@ -1060,11 +1109,39 @@ function PantomimeSetup({
   const [cats, setCats] = useState<PantomimeCategoryId[]>([]);
   const [rounds, setRounds] = useState(5);
   const [extras, setExtras] = useState(true);
+  const [skipLimit, setSkipLimit] = useState<number | null>(3);
+  /** Wer in welchem Team steht. Sichtbar, bevor gestartet wird. */
+  const [teamOf, setTeamOf] = useState<TeamMap>({});
 
   const named: TeamPlayer[] = list.map((p, i) => ({
     id: p.id,
     name: p.name.trim() || t('games.pantomime.playerN', { n: i + 1 }),
   }));
+
+  /*
+    Die Aufstellung an die Spielerliste anpassen, ohne sie neu zu wuerfeln.
+    Wer schon in einem Team steht, bleibt dort — sonst sortierte sich die
+    Aufstellung bei jedem getippten Buchstaben neu.
+  */
+  useEffect(() => {
+    const ids = list.map((p) => p.id);
+    setTeamOf((prev) => {
+      const next = assignTeams(ids, prev);
+      const same =
+        Object.keys(next).length === Object.keys(prev).length &&
+        ids.every((id) => next[id] === prev[id]);
+      return same ? prev : next;
+    });
+  }, [list]);
+
+  const [idsA, idsB] = splitByTeam(
+    named.map((p) => p.id),
+    teamOf,
+  );
+  const byId = (id: string) => named.find((p) => p.id === id);
+  const teamAPlayers = idsA.map(byId).filter(Boolean) as TeamPlayer[];
+  const teamBPlayers = idsB.map(byId).filter(Boolean) as TeamPlayer[];
+  const [sizeA, sizeB] = teamSizes(teamOf);
 
   const available = useMemo(() => {
     const chosen = cats.length > 0 ? categories.filter((c) => cats.includes(c.id)) : categories;
@@ -1072,7 +1149,8 @@ function PantomimeSetup({
   }, [categories, cats]);
 
   // Vier Leute sind das Minimum für zwei Teams, in denen jemand rät.
-  const canStart = contentReady && available > 0 && named.length >= 4;
+  // Zwei je Team ist das Minimum: einer stellt dar, mindestens einer raet.
+  const canStart = contentReady && available > 0 && canPlay(teamOf);
 
   return (
     <div className="min-h-[100dvh]" style={{ background: PM.bg, color: PM.text }}>
@@ -1129,6 +1207,75 @@ function PantomimeSetup({
           />
         </div>
 
+        {/*
+          Die Aufstellung. Ohne sie gibt man vier Namen ein und weiß nicht, wer
+          mit wem spielt — die Teams entstanden bisher unsichtbar erst beim
+          Start.
+        */}
+        <div className="mt-7 flex items-center justify-between">
+          <p className="text-xs font-black uppercase tracking-wide" style={{ color: PM.dim }}>
+            {t('games.pantomime.teamsTitle')}
+          </p>
+          <button
+            onClick={() => setTeamOf(shuffleTeams(list.map((p) => p.id)))}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
+            style={{ background: PM.surface, color: PM.text }}
+          >
+            <Shuffle className="w-3.5 h-3.5" /> {t('games.pantomime.reshuffle')}
+          </button>
+        </div>
+
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {(
+            [
+              {
+                players: teamAPlayers,
+                color: PM.teamA,
+                name: t('games.pantomime.teamA'),
+                size: sizeA,
+              },
+              {
+                players: teamBPlayers,
+                color: PM.teamB,
+                name: t('games.pantomime.teamB'),
+                size: sizeB,
+              },
+            ] as const
+          ).map((tm) => (
+            <div key={tm.name} className="rounded-2xl p-3" style={{ background: PM.surface }}>
+              <p className="text-xs font-black" style={{ color: tm.color }}>
+                {tm.name}
+              </p>
+              <div className="mt-2 flex flex-col gap-1">
+                {tm.players.length === 0 && (
+                  <span className="text-[11px]" style={{ color: PM.dim }}>
+                    —
+                  </span>
+                )}
+                {tm.players.map((pl) => (
+                  <button
+                    key={pl.id}
+                    onClick={() => setTeamOf((prev) => flipTeam(prev, pl.id))}
+                    className="text-left text-sm font-bold px-2 py-1.5 rounded-lg truncate"
+                    style={{ background: PM.elevated, color: PM.text }}
+                  >
+                    {pl.name}
+                  </button>
+                ))}
+              </div>
+              {/* Zwei je Team sind Pflicht — einer stellt dar, einer rät. */}
+              {tm.size < 2 && (
+                <p className="mt-2 text-[10px] font-bold" style={{ color: PM.bad }}>
+                  {t('games.pantomime.needTwoPerTeam')}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="mt-1.5 text-[11px]" style={{ color: PM.dim }}>
+          {t('games.pantomime.tapToSwap')}
+        </p>
+
         {/* Herausforderungen */}
         <p
           className="mt-7 mb-2 text-xs font-black uppercase tracking-wide"
@@ -1177,6 +1324,30 @@ function PantomimeSetup({
               <span className="block text-[11px] opacity-80">
                 {t(`gameModes.pantomime.${m.id}.desc`)}
               </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Wie oft darf übersprungen werden? */}
+        <p
+          className="mt-7 mb-2 text-xs font-black uppercase tracking-wide"
+          style={{ color: PM.dim }}
+        >
+          {t('games.pantomime.skipsLabel')}
+        </p>
+        <div className="grid grid-cols-4 gap-2">
+          {[1, 2, 3, null].map((n) => (
+            <button
+              key={String(n)}
+              onClick={() => setSkipLimit(n)}
+              aria-pressed={skipLimit === n}
+              className="h-11 rounded-2xl text-sm font-black"
+              style={{
+                background: skipLimit === n ? PM.gold : PM.surface,
+                color: skipLimit === n ? PM.bg : PM.text,
+              }}
+            >
+              {n === null ? t('games.pantomime.skipsUnlimited') : n}
             </button>
           ))}
         </div>
@@ -1253,15 +1424,25 @@ function PantomimeSetup({
 
         <button
           disabled={!canStart}
-          onClick={() => onStart({ players: named, mode, categories: cats, rounds, extras })}
+          onClick={() =>
+            onStart({
+              teamA: teamAPlayers,
+              teamB: teamBPlayers,
+              mode,
+              categories: cats,
+              rounds,
+              extras,
+              skipLimit,
+            })
+          }
           className="mt-8 w-full h-14 rounded-2xl font-black disabled:opacity-40"
           style={{ background: PM.gold, color: PM.bg }}
         >
           {t('games.pantomime.start')}
         </button>
-        {!canStart && named.length < 4 && (
+        {!canStart && !canPlay(teamOf) && (
           <p className="mt-2 text-center text-[11px]" style={{ color: PM.dim }}>
-            {t('games.pantomime.needFour')}
+            {t('games.pantomime.needTwoPerTeam')}
           </p>
         )}
       </main>

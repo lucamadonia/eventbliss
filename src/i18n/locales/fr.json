@@ -7276,7 +7276,15 @@
         "gabel": "une fourchette",
         "kerze": "une bougie",
         "pfanne": "une poêle"
-      }
+      },
+      "teamsTitle": "Qui joue avec qui ?",
+      "reshuffle": "Remélanger",
+      "tapToSwap": "Touche un nom pour le passer dans l’autre équipe.",
+      "needTwoPerTeam": "Chaque équipe a besoin d’au moins deux personnes : une mime, une devine.",
+      "skipsLabel": "Passer",
+      "skipsUnlimited": "Illimité",
+      "skipsLeft": "{{count}} restant",
+      "skipsNone": "aucun restant"
     }
   },
   "native": {

@@ -7276,7 +7276,15 @@
         "gabel": "un tenedor",
         "kerze": "una vela",
         "pfanne": "una sartén"
-      }
+      },
+      "teamsTitle": "¿Quién juega con quién?",
+      "reshuffle": "Volver a mezclar",
+      "tapToSwap": "Toca un nombre para moverlo al otro equipo.",
+      "needTwoPerTeam": "Cada equipo necesita al menos dos personas: una representa, otra adivina.",
+      "skipsLabel": "Saltar",
+      "skipsUnlimited": "Libre",
+      "skipsLeft": "quedan {{count}}",
+      "skipsNone": "sin saltos"
     }
   },
   "native": {

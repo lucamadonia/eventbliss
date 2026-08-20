@@ -42,6 +42,8 @@ const REQUIRED = [
   'extraAccept', 'extraDecline', 'fetchTitle', 'fetchGo', 'guessed', 'skip',
   'watching', 'wordsSoFar', 'summaryTitle', 'summaryDoubled', 'summaryEmpty',
   'next', 'finish', 'winner', 'draw', 'playAgain',
+  'teamsTitle', 'reshuffle', 'tapToSwap', 'needTwoPerTeam',
+  'skipsLabel', 'skipsUnlimited', 'skipsLeft', 'skipsNone',
 ];
 
 describe('OHNE WORTE — Sprachbestand', () => {

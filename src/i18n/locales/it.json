@@ -7276,7 +7276,15 @@
         "gabel": "una forchetta",
         "kerze": "una candela",
         "pfanne": "una padella"
-      }
+      },
+      "teamsTitle": "Chi gioca con chi?",
+      "reshuffle": "Rimescola",
+      "tapToSwap": "Tocca un nome per spostarlo nell’altra squadra.",
+      "needTwoPerTeam": "Ogni squadra ha bisogno di almeno due persone: una mima, una indovina.",
+      "skipsLabel": "Salta",
+      "skipsUnlimited": "Libero",
+      "skipsLeft": "{{count}} rimasti",
+      "skipsNone": "nessuno rimasto"
     }
   },
   "native": {

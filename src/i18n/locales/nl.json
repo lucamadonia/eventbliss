@@ -7326,7 +7326,15 @@
         "gabel": "een vork",
         "kerze": "een kaars",
         "pfanne": "een koekenpan"
-      }
+      },
+      "teamsTitle": "Wie speelt met wie?",
+      "reshuffle": "Opnieuw verdelen",
+      "tapToSwap": "Tik op een naam om die naar het andere team te verplaatsen.",
+      "needTwoPerTeam": "Elk team heeft minstens twee mensen nodig — één speelt, één raadt.",
+      "skipsLabel": "Overslaan",
+      "skipsUnlimited": "Vrij",
+      "skipsLeft": "{{count}} over",
+      "skipsNone": "geen over"
     }
   },
   "native": {

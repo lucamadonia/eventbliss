@@ -7326,7 +7326,15 @@
         "gabel": "çatal",
         "kerze": "mum",
         "pfanne": "tava"
-      }
+      },
+      "teamsTitle": "Kim kiminle oynuyor?",
+      "reshuffle": "Yeniden karıştır",
+      "tapToSwap": "Bir ismi diğer takıma taşımak için dokun.",
+      "needTwoPerTeam": "Her takımda en az iki kişi olmalı — biri canlandırır, biri tahmin eder.",
+      "skipsLabel": "Pas geçme",
+      "skipsUnlimited": "Sınırsız",
+      "skipsLeft": "{{count}} kaldı",
+      "skipsNone": "kalmadı"
     }
   },
   "native": {

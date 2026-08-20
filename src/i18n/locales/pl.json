@@ -7350,7 +7350,15 @@
         "gabel": "widelec",
         "kerze": "świeczka",
         "pfanne": "patelnia"
-      }
+      },
+      "teamsTitle": "Kto gra z kim?",
+      "reshuffle": "Przetasuj",
+      "tapToSwap": "Dotknij imienia, aby przenieść je do drugiej drużyny.",
+      "needTwoPerTeam": "Każda drużyna potrzebuje co najmniej dwóch osób — jedna pokazuje, druga zgaduje.",
+      "skipsLabel": "Pomijanie",
+      "skipsUnlimited": "Bez limitu",
+      "skipsLeft": "zostało {{count}}",
+      "skipsNone": "brak"
     }
   },
   "native": {

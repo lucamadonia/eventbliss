@@ -7252,7 +7252,15 @@
         "gabel": "a fork",
         "kerze": "a candle",
         "pfanne": "a frying pan"
-      }
+      },
+      "teamsTitle": "Who plays with whom?",
+      "reshuffle": "Reshuffle",
+      "tapToSwap": "Tap a name to move it to the other team.",
+      "needTwoPerTeam": "Each team needs at least two people — one acts, one guesses.",
+      "skipsLabel": "Skipping",
+      "skipsUnlimited": "Free",
+      "skipsLeft": "{{count}} left",
+      "skipsNone": "none left"
     }
   },
   "native": {

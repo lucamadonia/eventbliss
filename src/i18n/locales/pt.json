@@ -7326,7 +7326,15 @@
         "gabel": "um garfo",
         "kerze": "uma vela",
         "pfanne": "uma frigideira"
-      }
+      },
+      "teamsTitle": "Quem joga com quem?",
+      "reshuffle": "Baralhar de novo",
+      "tapToSwap": "Toca num nome para o mover para a outra equipa.",
+      "needTwoPerTeam": "Cada equipa precisa de pelo menos duas pessoas — uma mima, outra adivinha.",
+      "skipsLabel": "Saltar",
+      "skipsUnlimited": "Livre",
+      "skipsLeft": "faltam {{count}}",
+      "skipsNone": "nenhum"
     }
   },
   "native": {

@@ -7166,7 +7166,15 @@
         "gabel": "شوكة",
         "kerze": "شمعة",
         "pfanne": "مقلاة"
-      }
+      },
+      "teamsTitle": "من يلعب مع من؟",
+      "reshuffle": "أعد التوزيع",
+      "tapToSwap": "المس اسمًا لنقله إلى الفريق الآخر.",
+      "needTwoPerTeam": "يحتاج كل فريق إلى شخصين على الأقل — واحد يمثّل وآخر يخمّن.",
+      "skipsLabel": "التخطي",
+      "skipsUnlimited": "بلا حد",
+      "skipsLeft": "بقي {{count}}",
+      "skipsNone": "لم يتبق شيء"
     }
   },
   "native": {

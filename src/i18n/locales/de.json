@@ -7252,7 +7252,15 @@
         "gabel": "einer Gabel",
         "kerze": "einer Kerze",
         "pfanne": "einer Pfanne"
-      }
+      },
+      "teamsTitle": "Wer spielt mit wem?",
+      "reshuffle": "Neu mischen",
+      "tapToSwap": "Tippe auf einen Namen, um ihn ins andere Team zu schieben.",
+      "needTwoPerTeam": "Jedes Team braucht mindestens zwei Leute — einer stellt dar, einer rät.",
+      "skipsLabel": "Überspringen",
+      "skipsUnlimited": "Frei",
+      "skipsLeft": "{{count}} übrig",
+      "skipsNone": "keine übrig"
     }
   },
   "native": {
