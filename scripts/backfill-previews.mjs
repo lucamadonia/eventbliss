@@ -154,10 +154,31 @@ async function main() {
   // Einzeln aktualisieren: ein Upsert würde die übrigen Spalten überschreiben,
   // und genau das darf hier nicht passieren.
   let written = 0;
+  let failed = 0;
+  let withoutId = 0;
   for (const u of updates) {
     const { id, ...patch } = u;
-    const { error } = await sb.from('ohrwurm_songs').update(patch).eq('id', id);
-    if (error) { console.error('Schreiben fehlgeschlagen:', error.message); break; }
+    let { error } = await sb.from('ohrwurm_songs').update(patch).eq('id', id);
+
+    // 23505 = die iTunes-Nummer gibt es schon. Zwei Altbestandssongs koennen
+    // auf dieselbe Aufnahme aufloesen — dieselbe Nummer zweimal verbietet der
+    // UNIQUE-Index. Die Nummer ist aber nur ein Nebenprodukt; worauf es
+    // ankommt, ist die Vorschau-Adresse. Also ohne sie erneut versuchen.
+    if (error && String(error.code) === '23505' && 'itunes_track_id' in patch) {
+      const rest = { ...patch };
+      delete rest.itunes_track_id;
+      ({ error } = await sb.from('ohrwurm_songs').update(rest).eq('id', id));
+      if (!error) withoutId++;
+    }
+
+    // NIE abbrechen. Vorher riss eine einzige Kollision die restlichen tausend
+    // Songs mit, obwohl mit denen alles in Ordnung war.
+    if (error) {
+      failed++;
+      if (failed <= 3) console.error(`  Zeile ${id}: ${error.message}`);
+      else if (failed === 4) console.error('  … weitere Fehler werden nur gezaehlt');
+      continue;
+    }
     written++;
     if (written % 100 === 0) console.log(`  geschrieben: ${written}/${updates.length}`);
   }
