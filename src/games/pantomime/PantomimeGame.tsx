@@ -631,20 +631,20 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       </div>
 
       {/*
-        BEWUSST OHNE `AnimatePresence` — wie in `TabooGame.tsx`, dem Vorbild
-        dieses Spiels.
+        Ohne `AnimatePresence`, wie in `TabooGame.tsx`, dem Vorbild dieses
+        Spiels: Die Bildschirme ziehen einzeln ein (`initial`/`animate`), gehen
+        aber ohne Ausblendung.
 
-        Mit `AnimatePresence` blieb der Wechsel von `turnStart` nach `extra`
-        haengen: Der Zustand war laengst gesetzt und die Herausforderung
-        gezogen, aber der alte Bildschirm blendete nie aus — und solange das
-        Ausblenden laeuft, haelt `AnimatePresence` das alte Kind im Baum.
-        Beide Ansichten standen dann uebereinander und kein Knopf reagierte
-        mehr. Mit `mode="wait"` war es noch schlimmer; dieselbe Falle steht in
-        `src/components/native/PageTransition.tsx` beschrieben.
+        Der Unterschied ist nicht nur Geschmack. Ein Ausblenden laeuft ueber
+        `requestAnimationFrame`, und solange es laeuft, haelt
+        `AnimatePresence` den alten Bildschirm im Baum. Steht rAF still —
+        Browsertab im Hintergrund, App auf dem Handy weggewischt —, endet das
+        Ausblenden nie: Der alte Bildschirm bleibt stehen, der neue kommt bei
+        `mode="wait"` gar nicht erst. Genau das ist mir beim Durchspielen in
+        einem unsichtbaren Tab passiert (0 Bilder/Sekunde), und auf einem
+        Handy, das aus der Tasche kommt, ist derselbe Zustand denkbar.
 
-        Die Bildschirme ziehen weiterhin einzeln ein (`initial`/`animate`),
-        nur eben ohne Ausblendung — und ohne die Moeglichkeit, sich
-        gegenseitig zu blockieren.
+        Ohne Ausblendung haengt der Phasenwechsel an nichts als am Zustand.
       */}
         {/* ---------------------------------------------------------------- */}
         {phase === 'turnStart' && (
