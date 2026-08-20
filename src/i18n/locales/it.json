@@ -6929,7 +6929,254 @@
         "marken": "Marchi",
         "mix": "Casuale"
       },
-      "modified": "mostrata pixelata"
+      "modified": "mostrata pixelata",
+      "teamMode": "Chi gioca?",
+      "teamModeSolo": "Singoli",
+      "teamModeGroups": "A squadre",
+      "playersLabel": "Giocatori",
+      "groupsLabel": "Squadre",
+      "teamN": "Squadra {{n}}"
+    },
+    "closeenough": {
+      "title": "Quasi Quasi",
+      "tagline": "Una domanda, un numero: vince chi si avvicina di più.",
+      "backToGames": "Torna ai giochi",
+      "playerN": "Giocatore {{n}}",
+      "teamN": "Squadra {{n}}",
+      "playersLabel": "Giocatori",
+      "groupsLabel": "Squadre",
+      "teamMode": "Chi gioca?",
+      "teamModeSolo": "Singoli",
+      "teamModeGroups": "A squadre",
+      "mode": "Tempo per pensare",
+      "rounds": "Round",
+      "categoriesLabel": "Temi",
+      "allCategories": "Tutti i temi — {{count}} domande",
+      "available": "{{count}} domande disponibili",
+      "loading": "Caricamento delle domande …",
+      "start": "Si comincia",
+      "noQuestions": "Non ci sono domande per questa selezione.",
+      "noQuestionsSetup": "Per questi temi al momento non ci sono domande attive. Scegli altri temi o gioca il mix.",
+      "wordFormHint": "Il tuo numero viene riletto mentre scrivi: 2500000 diventa {{example}}.",
+      "roundOf": "Round {{round}} di {{total}}",
+      "leave": "Esci",
+      "leaveTitle": "Uscire dalla partita?",
+      "leaveBody": "I punti di questo round andranno persi.",
+      "leaveStay": "Continua",
+      "leaveGo": "Esci",
+      "submit": "Conferma",
+      "submitWith": "Conferma · {{value}}",
+      "submitted": "Risposta inviata!",
+      "waitingOthers": "{{done}} su {{total}} hanno risposto",
+      "passTo": "Passa il dispositivo a",
+      "passReady": "Sono pronto",
+      "padSign": "Cambia segno",
+      "padDecimal": "Virgola",
+      "padDelete": "Cancella l'ultima cifra",
+      "showHint": "Mostra un aiuto",
+      "yourGuess": "La tua risposta",
+      "exactHit": "Centro! Dentro il margine.",
+      "offBy": "{{percent}} % di scarto",
+      "noGuess": "Nessuna risposta inviata",
+      "points": "punti",
+      "roundWinner": "Il più vicino: {{name}}",
+      "nobody": "Questa volta non ha risposto nessuno.",
+      "next": "Domanda successiva",
+      "finish": "Vedi la classifica finale",
+      "source": "Fonte",
+      "asOf": "(dati {{year}})",
+      "roundIntro": "Round {{round}}",
+      "getReady": "Preparatevi",
+      "categories": {
+        "mix": "Mix variato",
+        "laender": "Paesi e città",
+        "bauwerke": "Edifici",
+        "natur": "Natura",
+        "tierwelt": "Animali",
+        "sport": "Sport",
+        "technik": "Tecnologia",
+        "alltag": "Vita quotidiana"
+      },
+      "units": {
+        "m": {
+          "symbol": "m"
+        },
+        "km": {
+          "symbol": "km"
+        },
+        "cm": {
+          "symbol": "cm"
+        },
+        "km2": {
+          "symbol": "km²"
+        },
+        "kg": {
+          "symbol": "kg"
+        },
+        "t": {
+          "symbol": "t"
+        },
+        "kmh": {
+          "symbol": "km/h"
+        },
+        "m3s": {
+          "symbol": "m³/s"
+        },
+        "volt": {
+          "symbol": "V"
+        },
+        "percent": {
+          "symbol": "%"
+        },
+        "liter": {
+          "symbol": "l"
+        },
+        "usd": {
+          "symbol": "USD"
+        },
+        "mrd_usd": {
+          "symbol": "mld USD"
+        },
+        "mio_eur": {
+          "symbol": "mln EUR"
+        },
+        "people": {
+          "one": "persona",
+          "other": "persone"
+        },
+        "seats": {
+          "one": "posto",
+          "other": "posti"
+        },
+        "floors": {
+          "one": "piano",
+          "other": "piani"
+        },
+        "pieces": {
+          "one": "esemplare",
+          "other": "esemplari"
+        },
+        "members": {
+          "one": "socio",
+          "other": "soci"
+        },
+        "goals": {
+          "one": "gol",
+          "other": "gol"
+        },
+        "matches": {
+          "one": "partita",
+          "other": "partite"
+        },
+        "years": {
+          "one": "anno",
+          "other": "anni"
+        },
+        "steps": {
+          "one": "passo",
+          "other": "passi"
+        },
+        "beats": {
+          "one": "battito",
+          "other": "battiti"
+        },
+        "times": {
+          "one": "volta",
+          "other": "volte"
+        },
+        "count": {
+          "one": "pezzo",
+          "other": "pezzi"
+        }
+      },
+      "frames": {
+        "population": "Quanti abitanti ha {{name}}?",
+        "area": "Che superficie ha {{name}}?",
+        "gdp": "Qual è il prodotto interno lordo di {{name}}?",
+        "gdp_per_capita": "Qual è il PIL pro capite di {{name}}?",
+        "life_expectancy": "Qual è la speranza di vita in {{name}}?",
+        "speakers": "Quante persone parlano {{name}}?",
+        "mains_voltage": "Quanti volt escono da una presa in {{name}}?",
+        "unemployment": "Qual è il tasso di disoccupazione in {{name}}?",
+        "height_structure": "Quanto è alta la costruzione {{name}}?",
+        "built_year": "In che anno è stata completata la costruzione {{name}}?",
+        "floors": "Quanti piani ha l’edificio {{name}}?",
+        "visitors_year": "Quante persone visitano il sito {{name}} ogni anno?",
+        "cost_project": "Quanto è costato il progetto {{name}}?",
+        "length_object": "Quanto è lunga la costruzione {{name}}?",
+        "diameter": "Che diametro ha la costruzione {{name}}?",
+        "height_mountain": "Quanto è alto il monte {{name}}?",
+        "length_river": "Quanto è lungo il fiume {{name}}?",
+        "discharge": "Quanta acqua porta il fiume {{name}} al secondo?",
+        "basin_area": "Che superficie ha il bacino del fiume {{name}}?",
+        "height_waterfall": "Che salto hanno le cascate {{name}}?",
+        "depth": "Qual è la profondità massima del lago {{name}}?",
+        "mass_animal": "Quanto pesa la specie {{name}}?",
+        "length_animal": "Quanto è lunga la specie {{name}}?",
+        "height_animal": "Che altezza al garrese ha la specie {{name}}?",
+        "wingspan_animal": "Che apertura alare ha la specie {{name}}?",
+        "speed_animal": "Quanto è veloce la specie {{name}}?",
+        "capacity_seats": "Quanti posti ha lo stadio {{name}}?",
+        "founded_year": "In che anno è stato fondato {{name}}?",
+        "members": "Quanti soci ha {{name}}?",
+        "goals": "Quanti gol ha segnato {{name}}?",
+        "matches": "Quante partite ha giocato {{name}}?",
+        "body_height": "Quanto è alto {{name}}?",
+        "track_length": "Quanto è lungo il circuito {{name}}?",
+        "participants": "Quante persone partecipano a {{name}}?",
+        "released_year": "In che anno è uscito {{name}}?",
+        "units_produced": "Quanti esemplari di {{name}} sono stati prodotti?",
+        "speed_vehicle": "Quanto è veloce {{name}}?",
+        "range": "Che autonomia ha {{name}}?",
+        "mass_object": "Quanto pesa {{name}}?",
+        "wingspan_aircraft": "Che apertura alare ha {{name}}?",
+        "employees": "Quante persone lavorano in {{name}}?",
+        "revenue": "Qual è il fatturato di {{name}}?"
+      },
+      "anchors": {
+        "population": "Monaco di Baviera ha circa 1,5 milioni di abitanti.",
+        "area": "Il Lussemburgo copre circa 2.600 km².",
+        "gdp": "L'Austria produce circa 480 miliardi di USD all'anno.",
+        "gdp_per_capita": "In Polonia il PIL pro capite è di circa 22.000 USD.",
+        "life_expectancy": "In Giappone si vive in media 84 anni.",
+        "speakers": "Circa 25 milioni di persone parlano olandese.",
+        "mains_voltage": "Le prese tedesche erogano 230 volt.",
+        "unemployment": "La disoccupazione in Spagna è intorno al 12 %.",
+        "height_structure": "Una casa è alta circa 10 metri.",
+        "built_year": "Il duomo di Colonia fu completato nel 1880.",
+        "floors": "Un condominio ha circa 5 piani.",
+        "visitors_year": "Il duomo di Colonia riceve circa 6 milioni di visitatori all'anno.",
+        "cost_project": "L'Elbphilharmonie è costata circa 870 milioni di euro.",
+        "length_object": "Un campo da calcio è lungo 105 metri.",
+        "diameter": "Uno pneumatico d'auto ha circa 0,6 metri di diametro.",
+        "height_mountain": "Il Brocken è alto 1.141 metri.",
+        "length_river": "Il Meno è lungo 527 chilometri.",
+        "discharge": "Il Reno porta circa 2.300 m³ al secondo.",
+        "basin_area": "Il bacino dell'Elba misura circa 148.000 km².",
+        "height_waterfall": "Le cascate del Reno hanno un salto di 23 metri.",
+        "depth": "Il lago di Costanza raggiunge 251 metri di profondità.",
+        "mass_animal": "Un maiale pesa circa 120 chilogrammi.",
+        "length_animal": "Un gatto domestico è lungo circa 50 centimetri.",
+        "height_animal": "Un pastore tedesco è alto circa 60 centimetri al garrese.",
+        "wingspan_animal": "Un piccione ha un'apertura alare di circa 65 centimetri.",
+        "speed_animal": "Una persona corre a circa 20 km/h.",
+        "capacity_seats": "Lo stadio olimpico di Berlino ha 74.000 posti.",
+        "founded_year": "Il Bayern Monaco è stato fondato nel 1900.",
+        "members": "L'ADAC ha circa 21 milioni di soci.",
+        "goals": "Un buon attaccante segna circa 15 gol a stagione.",
+        "matches": "Un professionista gioca circa 40 partite ufficiali a stagione.",
+        "body_height": "Un uomo adulto è alto circa 180 centimetri.",
+        "track_length": "Una pista di atletica misura 400 metri.",
+        "participants": "In una sala cinematografica entrano circa 200 persone.",
+        "released_year": "Il primo iPhone è uscito nel 2007.",
+        "units_produced": "Sono stati prodotti circa 21 milioni di VW Maggiolino.",
+        "speed_vehicle": "Un treno ad alta velocità arriva a 300 km/h.",
+        "range": "Un'auto percorre circa 700 chilometri con un pieno.",
+        "mass_object": "Un'auto piccola pesa circa 1 tonnellata.",
+        "wingspan_aircraft": "Un Airbus A320 ha 36 metri di apertura alare.",
+        "employees": "Volkswagen impiega circa 680.000 persone.",
+        "revenue": "Apple fattura circa 390 miliardi di USD all'anno."
+      }
     }
   },
   "native": {
@@ -6988,7 +7235,8 @@
       "storyBuilder": "Story Builder",
       "woIstWas": "Dov'è?",
       "drueckDasWort": "Premi la Parola",
-      "ohrwurm": "Ohrwurm"
+      "ohrwurm": "Ohrwurm",
+      "closeenough": "Quasi Quasi"
     },
     "gameDescs": {
       "bomb": "A chi esplode?",
@@ -7008,7 +7256,8 @@
       "storyBuilder": "Storie pazze",
       "woIstWas": "Trova il posto",
       "drueckDasWort": "Digita veloce, pensa veloce",
-      "ohrwurm": "Ascolta il brano, indovina l'anno"
+      "ohrwurm": "Ascolta il brano, indovina l'anno",
+      "closeenough": "Domande di stima con un numero per risposta: vince chi si avvicina di più"
     },
     "events": {
       "title": "Eventi",
@@ -7553,6 +7802,20 @@
         "name": "Speed Rush",
         "desc": "Words get faster and faster!"
       }
+    },
+    "closeenough": {
+      "entspannt": {
+        "name": "Rilassato",
+        "desc": "60 s a domanda"
+      },
+      "klassisch": {
+        "name": "Classico",
+        "desc": "40 s a domanda"
+      },
+      "blitz": {
+        "name": "Lampo",
+        "desc": "20 s — a istinto"
+      }
     }
   },
   "woIstWas": {
@@ -7914,6 +8177,15 @@
       "step3": "Correct? Next word! Wrong? Points deducted!",
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    },
+    "closeenough": {
+      "title": "Quasi Quasi",
+      "tagline": "Nessuno sa la risposta. Vince chi sbaglia di meno.",
+      "step1": "Ogni round pone una domanda la cui risposta è un numero.",
+      "step2": "Tutti scrivono la loro stima: gli altri vedono solo che hai confermato, mai cosa.",
+      "step3": "Poi tutte le risposte finiscono su un asse e la verità sale: 10 punti al più vicino, poi 6, poi 3.",
+      "step4": "Chi resta dentro il margine prende cinque punti in più.",
+      "tip": "Il pulsante dell'aiuto ti dà un valore di riferimento: è gratis e trasforma il caso in un calcolo."
     }
   },
   "nativeAdmin": {

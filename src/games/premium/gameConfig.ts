@@ -16,6 +16,7 @@ export const GAME_TIERS: GameTier[] = [
   // Bewusst frei: ohne selbst gepflegte Bilder ist ohnehin nichts spielbar,
   // eine Paywall auf einem leeren Spiel wäre sinnlos.
   { gameId: 'pixeljagd', tier: 'free' },
+  { gameId: 'closeenough', tier: 'free' },
 
   // PREMIUM GAMES (locked for free users after 2 rounds per day)
   { gameId: 'hochstapler', tier: 'premium', freeRoundsLimit: 2 },

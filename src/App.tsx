@@ -16,6 +16,7 @@ const GameProfilePage = lazy(() => import("./games/social/GameProfilePage").then
 const AdminGames = lazy(() => import("./pages/AdminGames"));
 const OhrwurmSongs = lazy(() => import("./pages/admin/OhrwurmSongs"));
 const PixelImages = lazy(() => import("./pages/admin/PixelImages"));
+const CloseEnoughQuestions = lazy(() => import("./pages/admin/CloseEnoughQuestions"));
 
 // Legal Pages (lazy loaded)
 const Imprint = lazy(() => import("./pages/legal/Imprint"));
@@ -150,6 +151,7 @@ const AppContent = () => {
           <Route path="/admin/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AdminGames /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/admin/ohrwurm-songs" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><OhrwurmSongs /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/admin/pixel-images" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PixelImages /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/closeenough-questions" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><CloseEnoughQuestions /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/marketplace" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Marketplace /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/service/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceService /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense></ErrorBoundary>} />

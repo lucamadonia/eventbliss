@@ -6979,7 +6979,254 @@
         "marken": "Merken",
         "mix": "Willekeurig"
       },
-      "modified": "gepixeld weergegeven"
+      "modified": "gepixeld weergegeven",
+      "teamMode": "Wie speelt er?",
+      "teamModeSolo": "Apart",
+      "teamModeGroups": "In teams",
+      "playersLabel": "Spelers",
+      "groupsLabel": "Teams",
+      "teamN": "Team {{n}}"
+    },
+    "closeenough": {
+      "title": "Bijna Raak",
+      "tagline": "Één vraag, één getal — wie het dichtst zit, wint.",
+      "backToGames": "Terug naar de spellen",
+      "playerN": "Speler {{n}}",
+      "teamN": "Team {{n}}",
+      "playersLabel": "Spelers",
+      "groupsLabel": "Teams",
+      "teamMode": "Wie speelt er?",
+      "teamModeSolo": "Apart",
+      "teamModeGroups": "In teams",
+      "mode": "Bedenktijd",
+      "rounds": "Rondes",
+      "categoriesLabel": "Thema's",
+      "allCategories": "Alle thema's — {{count}} vragen",
+      "available": "{{count}} vragen beschikbaar",
+      "loading": "Vragen worden geladen …",
+      "start": "Beginnen met raden",
+      "noQuestions": "Voor deze keuze zijn er geen vragen.",
+      "noQuestionsSetup": "Voor deze thema's staan nu geen vragen klaar. Kies andere thema's of speel de mix.",
+      "wordFormHint": "Je getal wordt tijdens het typen meegelezen: 2500000 wordt {{example}}.",
+      "roundOf": "Ronde {{round}} van {{total}}",
+      "leave": "Stoppen",
+      "leaveTitle": "Het spel verlaten?",
+      "leaveBody": "De punten van deze ronde gaan verloren.",
+      "leaveStay": "Doorspelen",
+      "leaveGo": "Stoppen",
+      "submit": "Inleveren",
+      "submitWith": "Inleveren · {{value}}",
+      "submitted": "Antwoord is binnen!",
+      "waitingOthers": "{{done}} van de {{total}} hebben geraden",
+      "passTo": "Geef het apparaat door aan",
+      "passReady": "Ik ben klaar",
+      "padSign": "Teken wisselen",
+      "padDecimal": "Komma",
+      "padDelete": "Laatste cijfer wissen",
+      "showHint": "Hint tonen",
+      "yourGuess": "Jouw antwoord",
+      "exactHit": "Voltreffer! Binnen de marge.",
+      "offBy": "{{percent}} % ernaast",
+      "noGuess": "Geen antwoord ingeleverd",
+      "points": "punten",
+      "roundWinner": "Het dichtst erbij: {{name}}",
+      "nobody": "Deze keer heeft niemand geraden.",
+      "next": "Volgende vraag",
+      "finish": "Eindstand bekijken",
+      "source": "Bron",
+      "asOf": "(stand {{year}})",
+      "roundIntro": "Ronde {{round}}",
+      "getReady": "Maak je klaar",
+      "categories": {
+        "mix": "Bonte mix",
+        "laender": "Landen en steden",
+        "bauwerke": "Bouwwerken",
+        "natur": "Natuur",
+        "tierwelt": "Dieren",
+        "sport": "Sport",
+        "technik": "Techniek",
+        "alltag": "Dagelijks leven"
+      },
+      "units": {
+        "m": {
+          "symbol": "m"
+        },
+        "km": {
+          "symbol": "km"
+        },
+        "cm": {
+          "symbol": "cm"
+        },
+        "km2": {
+          "symbol": "km²"
+        },
+        "kg": {
+          "symbol": "kg"
+        },
+        "t": {
+          "symbol": "t"
+        },
+        "kmh": {
+          "symbol": "km/u"
+        },
+        "m3s": {
+          "symbol": "m³/s"
+        },
+        "volt": {
+          "symbol": "V"
+        },
+        "percent": {
+          "symbol": "%"
+        },
+        "liter": {
+          "symbol": "l"
+        },
+        "usd": {
+          "symbol": "USD"
+        },
+        "mrd_usd": {
+          "symbol": "mld USD"
+        },
+        "mio_eur": {
+          "symbol": "mln EUR"
+        },
+        "people": {
+          "one": "persoon",
+          "other": "mensen"
+        },
+        "seats": {
+          "one": "plaats",
+          "other": "plaatsen"
+        },
+        "floors": {
+          "one": "verdieping",
+          "other": "verdiepingen"
+        },
+        "pieces": {
+          "one": "exemplaar",
+          "other": "exemplaren"
+        },
+        "members": {
+          "one": "lid",
+          "other": "leden"
+        },
+        "goals": {
+          "one": "doelpunt",
+          "other": "doelpunten"
+        },
+        "matches": {
+          "one": "wedstrijd",
+          "other": "wedstrijden"
+        },
+        "years": {
+          "one": "jaar",
+          "other": "jaar"
+        },
+        "steps": {
+          "one": "stap",
+          "other": "stappen"
+        },
+        "beats": {
+          "one": "slag",
+          "other": "slagen"
+        },
+        "times": {
+          "one": "keer",
+          "other": "keer"
+        },
+        "count": {
+          "one": "stuk",
+          "other": "stuks"
+        }
+      },
+      "frames": {
+        "population": "Hoeveel inwoners heeft {{name}}?",
+        "area": "Hoe groot is {{name}}?",
+        "gdp": "Hoe hoog is het bruto binnenlands product van {{name}}?",
+        "gdp_per_capita": "Hoe hoog is het bbp per hoofd in {{name}}?",
+        "life_expectancy": "Hoe hoog is de levensverwachting in {{name}}?",
+        "speakers": "Hoeveel mensen spreken {{name}}?",
+        "mains_voltage": "Hoeveel volt komt er in {{name}} uit het stopcontact?",
+        "unemployment": "Hoe hoog is de werkloosheid in {{name}}?",
+        "height_structure": "Hoe hoog is het bouwwerk {{name}}?",
+        "built_year": "In welk jaar werd het bouwwerk {{name}} voltooid?",
+        "floors": "Hoeveel verdiepingen heeft het gebouw {{name}}?",
+        "visitors_year": "Hoeveel mensen bezoeken de locatie {{name}} per jaar?",
+        "cost_project": "Hoeveel heeft het project {{name}} gekost?",
+        "length_object": "Hoe lang is het bouwwerk {{name}}?",
+        "diameter": "Welke diameter heeft het bouwwerk {{name}}?",
+        "height_mountain": "Hoe hoog is de berg {{name}}?",
+        "length_river": "Hoe lang is de rivier {{name}}?",
+        "discharge": "Hoeveel water voert de rivier {{name}} per seconde af?",
+        "basin_area": "Hoe groot is het stroomgebied van de rivier {{name}}?",
+        "height_waterfall": "Hoe diep valt de waterval {{name}}?",
+        "depth": "Hoe diep is het meer {{name}} op het diepste punt?",
+        "mass_animal": "Hoeveel weegt de diersoort {{name}}?",
+        "length_animal": "Hoe lang is de diersoort {{name}}?",
+        "height_animal": "Welke schofthoogte heeft de diersoort {{name}}?",
+        "wingspan_animal": "Welke spanwijdte heeft de diersoort {{name}}?",
+        "speed_animal": "Hoe snel is de diersoort {{name}}?",
+        "capacity_seats": "Hoeveel plaatsen heeft het stadion {{name}}?",
+        "founded_year": "In welk jaar werd {{name}} opgericht?",
+        "members": "Hoeveel leden heeft {{name}}?",
+        "goals": "Hoeveel doelpunten heeft {{name}} gemaakt?",
+        "matches": "Hoeveel wedstrijden heeft {{name}} gespeeld?",
+        "body_height": "Hoe lang is {{name}}?",
+        "track_length": "Hoe lang is het circuit {{name}}?",
+        "participants": "Hoeveel mensen doen mee aan {{name}}?",
+        "released_year": "In welk jaar kwam {{name}} uit?",
+        "units_produced": "Hoeveel exemplaren van {{name}} zijn er gebouwd?",
+        "speed_vehicle": "Hoe snel is {{name}}?",
+        "range": "Welk bereik heeft {{name}}?",
+        "mass_object": "Hoe zwaar is {{name}}?",
+        "wingspan_aircraft": "Welke spanwijdte heeft {{name}}?",
+        "employees": "Hoeveel mensen werken er bij {{name}}?",
+        "revenue": "Hoe hoog is de omzet van {{name}}?"
+      },
+      "anchors": {
+        "population": "München heeft ongeveer 1,5 miljoen inwoners.",
+        "area": "Luxemburg beslaat ongeveer 2.600 km².",
+        "gdp": "Oostenrijk produceert ongeveer 480 miljard USD per jaar.",
+        "gdp_per_capita": "In Polen ligt het bbp per hoofd rond 22.000 USD.",
+        "life_expectancy": "In Japan worden mensen gemiddeld 84 jaar.",
+        "speakers": "Ongeveer 25 miljoen mensen spreken Nederlands.",
+        "mains_voltage": "Uit een Duits stopcontact komt 230 volt.",
+        "unemployment": "De werkloosheid in Spanje ligt rond 12 %.",
+        "height_structure": "Een woonhuis is ongeveer 10 meter hoog.",
+        "built_year": "De Dom van Keulen werd in 1880 voltooid.",
+        "floors": "Een flatgebouw heeft ongeveer 5 verdiepingen.",
+        "visitors_year": "De Dom van Keulen trekt ongeveer 6 miljoen bezoekers per jaar.",
+        "cost_project": "De Elbphilharmonie kostte ongeveer 870 miljoen euro.",
+        "length_object": "Een voetbalveld is 105 meter lang.",
+        "diameter": "Een autoband heeft ongeveer 0,6 meter diameter.",
+        "height_mountain": "De Brocken is 1.141 meter hoog.",
+        "length_river": "De Main is 527 kilometer lang.",
+        "discharge": "De Rijn voert ongeveer 2.300 m³ per seconde af.",
+        "basin_area": "Het stroomgebied van de Elbe meet ongeveer 148.000 km².",
+        "height_waterfall": "De Rijnval valt 23 meter naar beneden.",
+        "depth": "De Bodensee is op het diepste punt 251 meter diep.",
+        "mass_animal": "Een varken weegt ongeveer 120 kilogram.",
+        "length_animal": "Een huiskat is ongeveer 50 centimeter lang.",
+        "height_animal": "Een Duitse herder heeft ongeveer 60 centimeter schofthoogte.",
+        "wingspan_animal": "Een duif heeft ongeveer 65 centimeter spanwijdte.",
+        "speed_animal": "Een mens rent ongeveer 20 km/u.",
+        "capacity_seats": "Het Olympisch Stadion in Berlijn heeft 74.000 plaatsen.",
+        "founded_year": "Bayern München werd in 1900 opgericht.",
+        "members": "De ADAC heeft ongeveer 21 miljoen leden.",
+        "goals": "Een goede spits maakt ongeveer 15 doelpunten per seizoen.",
+        "matches": "Een prof speelt ongeveer 40 officiële wedstrijden per seizoen.",
+        "body_height": "Een volwassen man is ongeveer 180 centimeter lang.",
+        "track_length": "Een atletiekbaan meet 400 meter.",
+        "participants": "In een bioscoopzaal passen ongeveer 200 mensen.",
+        "released_year": "De eerste iPhone kwam in 2007 uit.",
+        "units_produced": "Er werden ongeveer 21 miljoen VW Kevers gebouwd.",
+        "speed_vehicle": "Een hogesnelheidstrein rijdt tot 300 km/u.",
+        "range": "Een auto rijdt ongeveer 700 kilometer op één tank.",
+        "mass_object": "Een kleine auto weegt ongeveer 1 ton.",
+        "wingspan_aircraft": "Een Airbus A320 heeft 36 meter spanwijdte.",
+        "employees": "Volkswagen heeft ongeveer 680.000 medewerkers.",
+        "revenue": "Apple zet ongeveer 390 miljard USD per jaar om."
+      }
     }
   },
   "native": {
@@ -7038,7 +7285,8 @@
       "storyBuilder": "Story Builder",
       "woIstWas": "Waar is het?",
       "drueckDasWort": "Druk het Woord",
-      "ohrwurm": "Ohrwurm"
+      "ohrwurm": "Ohrwurm",
+      "closeenough": "Bijna Raak"
     },
     "gameDescs": {
       "bomb": "Bij wie knalt het?",
@@ -7058,7 +7306,8 @@
       "storyBuilder": "Gekke verhalen",
       "woIstWas": "Vind de plek",
       "drueckDasWort": "Typ snel, denk snel",
-      "ohrwurm": "Luister naar de song, plaats het jaar"
+      "ohrwurm": "Luister naar de song, plaats het jaar",
+      "closeenough": "Schattingsvragen met een getal als antwoord — wie het dichtst zit, wint"
     },
     "events": {
       "title": "Evenementen",
@@ -7603,6 +7852,20 @@
         "name": "Speed Rush",
         "desc": "Words get faster and faster!"
       }
+    },
+    "closeenough": {
+      "entspannt": {
+        "name": "Ontspannen",
+        "desc": "60 sec. per vraag"
+      },
+      "klassisch": {
+        "name": "Klassiek",
+        "desc": "40 sec. per vraag"
+      },
+      "blitz": {
+        "name": "Bliksem",
+        "desc": "20 sec. — op gevoel"
+      }
     }
   },
   "woIstWas": {
@@ -7964,6 +8227,15 @@
       "step3": "Correct? Next word! Wrong? Points deducted!",
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    },
+    "closeenough": {
+      "title": "Bijna Raak",
+      "tagline": "Niemand weet het antwoord. Wie er het minst naast zit, wint.",
+      "step1": "Elke ronde stelt een vraag waarvan het antwoord een getal is.",
+      "step2": "Iedereen typt een schatting — de anderen zien alleen dát je hebt ingeleverd, nooit wat.",
+      "step3": "Daarna landen alle antwoorden op één as en komt de waarheid omhoog: 10 punten voor de dichtstbijzijnde, dan 6, dan 3.",
+      "step4": "Wie binnen de marge blijft, krijgt er vijf punten bij.",
+      "tip": "De hintknop geeft je een vergelijkingswaarde — hij kost niets en maakt van wild gokken een rekensom."
     }
   },
   "nativeAdmin": {

@@ -6033,7 +6033,13 @@
       },
       "modified": "verpixelt dargestellt",
       "sayThenReveal": "Erst laut sagen — dann auflösen.",
-      "revealSolution": "Auflösung zeigen"
+      "revealSolution": "Auflösung zeigen",
+      "teamMode": "Wer spielt?",
+      "teamModeSolo": "Einzeln",
+      "teamModeGroups": "In Gruppen",
+      "playersLabel": "Spieler",
+      "groupsLabel": "Gruppen",
+      "teamN": "Gruppe {{n}}"
     },
     "hub": {
       "title": "EventBliss Spiele",
@@ -6952,7 +6958,201 @@
         "employees": "Bei Volkswagen arbeiten rund 680.000 Menschen.",
         "revenue": "Apple setzt rund 390 Milliarden USD im Jahr um."
       },
-      "showHint": "Tipp einblenden"
+      "showHint": "Tipp einblenden",
+      "title": "Nah Dran",
+      "tagline": "Eine Frage, eine Zahl — wer am nächsten dran liegt, gewinnt.",
+      "backToGames": "Zu den Spielen",
+      "playerN": "Spieler {{n}}",
+      "teamN": "Gruppe {{n}}",
+      "playersLabel": "Spieler",
+      "groupsLabel": "Gruppen",
+      "teamMode": "Wer spielt?",
+      "teamModeSolo": "Einzeln",
+      "teamModeGroups": "In Gruppen",
+      "mode": "Bedenkzeit",
+      "rounds": "Runden",
+      "categoriesLabel": "Themen",
+      "allCategories": "Alle Themen — {{count}} Fragen",
+      "available": "{{count}} Fragen verfügbar",
+      "loading": "Fragen werden geladen …",
+      "start": "Losraten",
+      "noQuestions": "Für diese Auswahl gibt es keine Fragen.",
+      "noQuestionsSetup": "Zu diesen Themen sind gerade keine Fragen freigeschaltet. Wähle andere Themen oder spiele die Mischung.",
+      "wordFormHint": "Deine Zahl wird beim Tippen mitgelesen — aus 2500000 wird {{example}}.",
+      "roundOf": "Runde {{round}} von {{total}}",
+      "leave": "Verlassen",
+      "leaveTitle": "Partie verlassen?",
+      "leaveBody": "Der Punktestand dieser Runde geht verloren.",
+      "leaveStay": "Weiterspielen",
+      "leaveGo": "Verlassen",
+      "submit": "Abgeben",
+      "submitWith": "Abgeben · {{value}}",
+      "submitted": "Tipp ist raus!",
+      "waitingOthers": "{{done}} von {{total}} haben getippt",
+      "passTo": "Gib das Gerät weiter an",
+      "passReady": "Bin bereit",
+      "padSign": "Vorzeichen wechseln",
+      "padDecimal": "Komma",
+      "padDelete": "Letzte Ziffer löschen",
+      "yourGuess": "Dein Tipp",
+      "exactHit": "Volltreffer! Innerhalb der Toleranz.",
+      "offBy": "{{percent}} % daneben",
+      "noGuess": "Kein Tipp abgegeben",
+      "points": "Punkte",
+      "roundWinner": "Am nächsten dran: {{name}}",
+      "nobody": "Diesmal hat niemand getippt.",
+      "next": "Nächste Frage",
+      "finish": "Endstand ansehen",
+      "source": "Quelle",
+      "asOf": "(Stand: {{year}})",
+      "roundIntro": "Runde {{round}}",
+      "getReady": "Achtung, gleich geht es los",
+      "categories": {
+        "mix": "Bunte Mischung",
+        "laender": "Länder & Städte",
+        "bauwerke": "Bauwerke",
+        "natur": "Natur",
+        "tierwelt": "Tierwelt",
+        "sport": "Sport",
+        "technik": "Technik",
+        "alltag": "Alltag"
+      },
+      "units": {
+        "m": {
+          "symbol": "m"
+        },
+        "km": {
+          "symbol": "km"
+        },
+        "cm": {
+          "symbol": "cm"
+        },
+        "km2": {
+          "symbol": "km²"
+        },
+        "kg": {
+          "symbol": "kg"
+        },
+        "t": {
+          "symbol": "t"
+        },
+        "kmh": {
+          "symbol": "km/h"
+        },
+        "m3s": {
+          "symbol": "m³/s"
+        },
+        "volt": {
+          "symbol": "V"
+        },
+        "percent": {
+          "symbol": "%"
+        },
+        "liter": {
+          "symbol": "l"
+        },
+        "usd": {
+          "symbol": "USD"
+        },
+        "mrd_usd": {
+          "symbol": "Mrd. USD"
+        },
+        "mio_eur": {
+          "symbol": "Mio. €"
+        },
+        "people": {
+          "one": "Mensch",
+          "other": "Menschen"
+        },
+        "seats": {
+          "one": "Platz",
+          "other": "Plätze"
+        },
+        "floors": {
+          "one": "Stockwerk",
+          "other": "Stockwerke"
+        },
+        "pieces": {
+          "one": "Exemplar",
+          "other": "Exemplare"
+        },
+        "members": {
+          "one": "Mitglied",
+          "other": "Mitglieder"
+        },
+        "goals": {
+          "one": "Tor",
+          "other": "Tore"
+        },
+        "matches": {
+          "one": "Spiel",
+          "other": "Spiele"
+        },
+        "years": {
+          "one": "Jahr",
+          "other": "Jahre"
+        },
+        "steps": {
+          "one": "Schritt",
+          "other": "Schritte"
+        },
+        "beats": {
+          "one": "Schlag",
+          "other": "Schläge"
+        },
+        "times": {
+          "one": "Mal",
+          "other": "Mal"
+        },
+        "count": {
+          "one": "Stück",
+          "other": "Stück"
+        }
+      },
+      "frames": {
+        "population": "Wie viele Einwohner hat {{name}}?",
+        "area": "Wie groß ist {{name}}?",
+        "gdp": "Wie hoch ist das Bruttoinlandsprodukt von {{name}}?",
+        "gdp_per_capita": "Wie hoch ist das Bruttoinlandsprodukt pro Kopf in {{name}}?",
+        "life_expectancy": "Wie hoch ist die Lebenserwartung in {{name}}?",
+        "speakers": "Wie viele Menschen sprechen {{name}}?",
+        "mains_voltage": "Wie viel Volt kommen in {{name}} aus der Steckdose?",
+        "unemployment": "Wie hoch ist die Arbeitslosenquote in {{name}}?",
+        "height_structure": "Wie hoch ist das Bauwerk {{name}}?",
+        "built_year": "In welchem Jahr wurde das Bauwerk {{name}} fertiggestellt?",
+        "floors": "Wie viele Stockwerke hat das Bauwerk {{name}}?",
+        "visitors_year": "Wie viele Menschen besuchen das Bauwerk {{name}} im Jahr?",
+        "cost_project": "Wie viel hat das Bauwerk {{name}} gekostet?",
+        "length_object": "Wie lang ist das Bauwerk {{name}}?",
+        "diameter": "Welchen Durchmesser hat das Bauwerk {{name}}?",
+        "height_mountain": "Wie hoch ist der Berg {{name}}?",
+        "length_river": "Wie lang ist der Fluss {{name}}?",
+        "discharge": "Wie viel Wasser führt der Fluss {{name}} pro Sekunde?",
+        "basin_area": "Wie groß ist das Einzugsgebiet vom Fluss {{name}}?",
+        "height_waterfall": "Wie tief stürzt der Wasserfall {{name}} hinab?",
+        "depth": "Wie tief ist der See {{name}} an der tiefsten Stelle?",
+        "mass_animal": "Wie viel wiegt die Tierart {{name}}?",
+        "length_animal": "Wie lang ist die Tierart {{name}}?",
+        "height_animal": "Welche Schulterhöhe hat die Tierart {{name}}?",
+        "wingspan_animal": "Welche Flügelspannweite hat die Tierart {{name}}?",
+        "speed_animal": "Wie schnell ist die Tierart {{name}}?",
+        "capacity_seats": "Wie viele Plätze hat das Stadion {{name}}?",
+        "founded_year": "In welchem Jahr wurde {{name}} gegründet?",
+        "members": "Wie viele Mitglieder hat {{name}}?",
+        "goals": "Wie viele Tore hat {{name}} erzielt?",
+        "matches": "Wie viele Spiele hat {{name}} bestritten?",
+        "body_height": "Wie groß ist {{name}}?",
+        "track_length": "Wie lang ist die Rennstrecke {{name}}?",
+        "participants": "Wie viele Menschen nehmen an {{name}} teil?",
+        "released_year": "In welchem Jahr kam {{name}} heraus?",
+        "units_produced": "Wie viele Exemplare von {{name}} wurden gebaut?",
+        "speed_vehicle": "Wie schnell ist {{name}}?",
+        "range": "Welche Reichweite hat {{name}}?",
+        "mass_object": "Wie schwer ist {{name}}?",
+        "wingspan_aircraft": "Welche Spannweite hat {{name}}?",
+        "employees": "Wie viele Menschen arbeiten bei {{name}}?",
+        "revenue": "Wie hoch ist der Umsatz von {{name}}?"
+      }
     }
   },
   "native": {
@@ -7012,7 +7212,8 @@
       "storyBuilder": "Story Builder",
       "woIstWas": "Wo ist was?",
       "drueckDasWort": "Drück das Wort",
-      "ohrwurm": "Ohrwurm"
+      "ohrwurm": "Ohrwurm",
+      "closeenough": "Nah Dran"
     },
     "gameDescs": {
       "pixeljagd": "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt",
@@ -7033,7 +7234,8 @@
       "storyBuilder": "Verrückte Geschichten",
       "woIstWas": "Finde den Ort",
       "drueckDasWort": "Schnell tippen, schnell denken",
-      "ohrwurm": "Song hören, Jahr einordnen"
+      "ohrwurm": "Song hören, Jahr einordnen",
+      "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt"
     },
     "events": {
       "title": "Events",
@@ -7592,6 +7794,20 @@
         "name": "Speed Rush",
         "desc": "Wörter werden immer schneller!"
       }
+    },
+    "closeenough": {
+      "entspannt": {
+        "name": "Entspannt",
+        "desc": "60 Sek. pro Frage"
+      },
+      "klassisch": {
+        "name": "Klassisch",
+        "desc": "40 Sek. pro Frage"
+      },
+      "blitz": {
+        "name": "Blitz",
+        "desc": "20 Sek. — Bauchgefühl"
+      }
     }
   },
   "woIstWas": {
@@ -7962,6 +8178,15 @@
       "step3": "Richtig? Nächstes Wort! Falsch? Punktabzug!",
       "step4": "Wer am Ende die meisten richtigen Wörter hat, gewinnt",
       "tip": "Nicht hektisch tippen — ein falscher Klick kostet mehr als eine Sekunde Nachdenken!"
+    },
+    "closeenough": {
+      "title": "Nah Dran",
+      "tagline": "Niemand weiß die Antwort. Es gewinnt, wer am wenigsten daneben liegt.",
+      "step1": "Jede Runde stellt eine Frage, deren Antwort eine Zahl ist.",
+      "step2": "Alle tippen ihre Schätzung ein — die anderen sehen nur, dass du abgegeben hast, nie was.",
+      "step3": "Danach fliegen alle Tipps auf eine Achse und die Wahrheit fährt hoch: 10 Punkte für den nächsten Tipp, dann 6, dann 3.",
+      "step4": "Wer innerhalb der Toleranz landet, bekommt fünf Punkte obendrauf.",
+      "tip": "Der Tipp-Knopf verrät dir einen Vergleichswert — er kostet nichts und macht aus wildem Raten eine Rechnung."
     }
   },
   "nativeAdmin": {

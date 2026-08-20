@@ -63,7 +63,15 @@ function detectInitial(): string {
   return 'en';
 }
 
-async function loadLocale(code: string): Promise<void> {
+/**
+ * Eine Sprachfassung nachladen.
+ *
+ * Exportiert, weil die CLOSE-ENOUGH-Adminseite die Frage in ALLEN zehn
+ * Sprachen als Vorschau zeigt. Ohne das Nachladen liefert `getFixedT` fuer
+ * jede noch nicht geladene Sprache still den englischen Text — man pflegt
+ * dann blind und merkt den Fehler erst im Spiel.
+ */
+export async function loadLocale(code: string): Promise<void> {
   if (code === 'en' || i18n.hasResourceBundle(code, 'translation')) return;
   const loader = loaders[code];
   if (!loader) return;

@@ -42,7 +42,11 @@ export function parseNumber(input: string, lang = 'de'): number | null {
 
   // Leerzeichen aller Art raus, auch das schmale geschützte, das
   // Intl.NumberFormat im Französischen als Tausendertrenner setzt.
-  s = s.replace(/[\s   ']/g, '').trim();
+  // Die drei unsichtbaren Zeichen stehen als Fluchtfolge da und nicht als
+  // Zeichen selbst: \u00a0 geschütztes, \u202f schmales geschütztes und
+  // \u2009 schmales Leerzeichen. Direkt eingetippt sieht man sie im
+  // Quelltext nicht und löscht sie beim nächsten Anfassen versehentlich.
+  s = s.replace(/[\s\u00a0\u202f\u2009']/g, '').trim();
   if (!s) return null;
 
   const dec = decimalSeparator(lang);
@@ -66,6 +70,24 @@ export function parseNumber(input: string, lang = 'de'): number | null {
 
   const n = Number(s) * (negative ? -1 : 1);
   return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Jahreszahlen ohne Tausendergruppierung.
+ *
+ * `formatNumber(1515)` liefert „1.515" — als Jahresangabe ist das schlicht
+ * falsch, niemand schreibt das Gruendungsjahr einer Stadt mit Punkt. Der
+ * Fehler faellt nur auf, wenn man ihn sieht: Die Wertung stimmt, es liest sich
+ * nur wie eine Menge statt wie ein Jahr.
+ */
+export function formatYear(value: number, lang = 'de'): string {
+  try {
+    return new Intl.NumberFormat(lang, { useGrouping: false, maximumFractionDigits: 0 }).format(
+      value,
+    );
+  } catch {
+    return String(Math.round(value));
+  }
 }
 
 /** Zahl in der Sprache des Spielers ausgeben. */
@@ -110,4 +132,24 @@ export function formatWhileTyping(input: string, lang = 'de'): string {
  */
 export function relativeError(guess: number, truth: number): number {
   return Math.abs(guess - truth) / Math.max(Math.abs(truth), 1);
+}
+
+/** Zahl als Wort: „2,5 Millionen". Leer, wenn die Sprache das nicht kann. */
+export function compactWords(value: number, lang: string): string {
+  try {
+    return new Intl.NumberFormat(lang, {
+      notation: 'compact',
+      compactDisplay: 'long',
+      maximumFractionDigits: 1,
+    }).format(value);
+  } catch {
+    return '';
+  }
+}
+
+/** Rohwert in eine Zahl wandeln. `null`, solange nichts Verwertbares dasteht. */
+export function parseRaw(raw: string): number | null {
+  if (!raw || raw === '-' || raw === '.' || raw === '-.') return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
 }

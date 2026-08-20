@@ -37,6 +37,7 @@ const GAME_LIST = [
   { id: "story-builder", name: "Story Builder", icon: "📖" },
   { id: "ohrwurm", name: "Ohrwurm", icon: "🎵" },
   { id: "pixeljagd", name: "Pixeljagd", icon: "🔍" },
+  { id: "closeenough", name: "Nah Dran", icon: "🎯" },
 ];
 
 interface GameLobbyProps {

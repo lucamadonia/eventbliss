@@ -360,6 +360,10 @@ export default function AdminGames() {
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#38BDF8] to-[#A78BFA] text-[#0B1120]">
               🔍 PIXELJAGD Bilder
             </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/closeenough-questions')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#FBBF24] to-[#34D399] text-[#0B1120]">
+              🎯 NAH DRAN Fragen
+            </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={handleDownloadTemplate}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-[#1b2028] border border-white/5 text-[#a8abb3] hover:border-white/10">
               <Layers className="w-3.5 h-3.5" /> Vorlage

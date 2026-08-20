@@ -81,7 +81,7 @@ export const ANCHOR_SUBJECTS: Record<string, string> = {
 };
 
 const normalise = (s: string) =>
-  s.toLowerCase().replace(/[.,'"„“()\-]/g, ' ').replace(/\s+/g, ' ').trim();
+  s.toLowerCase().replace(/[.,'"„“()-]/g, ' ').replace(/\s+/g, ' ').trim();
 
 /**
  * i18n-Schlüssel des Ankers — oder `null`, wenn es keinen gibt oder er die

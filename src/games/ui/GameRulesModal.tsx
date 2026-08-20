@@ -21,6 +21,7 @@ const GAME_ICONS: Record<string, string> = {
   "schnellzeichner": "🎨", "split-quiz": "🧩",
   ohrwurm: "🎵",
   pixeljagd: "🔍",
+  closeenough: "🎯",
 };
 
 const GAME_GRADIENTS: Record<string, string> = {
@@ -35,6 +36,7 @@ const GAME_GRADIENTS: Record<string, string> = {
   flaschendrehen: "from-green-500 to-emerald-500",
   ohrwurm: "from-[#FF2E88] to-[#26E0C4]",
   pixeljagd: "from-[#38BDF8] to-[#A78BFA]",
+  closeenough: "from-[#FBBF24] to-[#34D399]",
 };
 
 const STEP_COLORS = [

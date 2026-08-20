@@ -6979,7 +6979,254 @@
         "marken": "Markalar",
         "mix": "Rastgele"
       },
-      "modified": "pikselli gösteriliyor"
+      "modified": "pikselli gösteriliyor",
+      "teamMode": "Kim oynuyor?",
+      "teamModeSolo": "Tek tek",
+      "teamModeGroups": "Takım hâlinde",
+      "playersLabel": "Oyuncular",
+      "groupsLabel": "Takımlar",
+      "teamN": "Takım {{n}}"
+    },
+    "closeenough": {
+      "title": "Yaklaştın",
+      "tagline": "Bir soru, bir sayı — en yakın tahmin kazanır.",
+      "backToGames": "Oyunlara dön",
+      "playerN": "Oyuncu {{n}}",
+      "teamN": "Takım {{n}}",
+      "playersLabel": "Oyuncular",
+      "groupsLabel": "Takımlar",
+      "teamMode": "Kim oynuyor?",
+      "teamModeSolo": "Tek tek",
+      "teamModeGroups": "Takım hâlinde",
+      "mode": "Düşünme süresi",
+      "rounds": "Tur",
+      "categoriesLabel": "Konular",
+      "allCategories": "Tüm konular — {{count}} soru",
+      "available": "{{count}} soru mevcut",
+      "loading": "Sorular yükleniyor …",
+      "start": "Tahmine başla",
+      "noQuestions": "Bu seçim için soru yok.",
+      "noQuestionsSetup": "Bu konularda şu anda açık soru yok. Başka konu seç ya da karışık oyna.",
+      "wordFormHint": "Sayın yazarken geri okunur: 2500000 şuna dönüşür: {{example}}.",
+      "roundOf": "{{total}} turdan {{round}}. tur",
+      "leave": "Çık",
+      "leaveTitle": "Oyundan çıkılsın mı?",
+      "leaveBody": "Bu turun puanları kaybolur.",
+      "leaveStay": "Devam et",
+      "leaveGo": "Çık",
+      "submit": "Gönder",
+      "submitWith": "Gönder · {{value}}",
+      "submitted": "Tahmin gitti!",
+      "waitingOthers": "{{total}} kişiden {{done}} tahmin etti",
+      "passTo": "Cihazı şuna ver",
+      "passReady": "Hazırım",
+      "padSign": "İşareti değiştir",
+      "padDecimal": "Virgül",
+      "padDelete": "Son rakamı sil",
+      "showHint": "İpucu göster",
+      "yourGuess": "Senin tahminin",
+      "exactHit": "Tam isabet! Tolerans içinde.",
+      "offBy": "%{{percent}} sapma",
+      "noGuess": "Tahmin gönderilmedi",
+      "points": "puan",
+      "roundWinner": "En yakın: {{name}}",
+      "nobody": "Bu sefer kimse tahmin etmedi.",
+      "next": "Sonraki soru",
+      "finish": "Sonuçları gör",
+      "source": "Kaynak",
+      "asOf": "({{year}} verisi)",
+      "roundIntro": "{{round}}. tur",
+      "getReady": "Hazır olun",
+      "categories": {
+        "mix": "Karışık",
+        "laender": "Ülkeler ve şehirler",
+        "bauwerke": "Yapılar",
+        "natur": "Doğa",
+        "tierwelt": "Hayvanlar",
+        "sport": "Spor",
+        "technik": "Teknoloji",
+        "alltag": "Günlük hayat"
+      },
+      "units": {
+        "m": {
+          "symbol": "m"
+        },
+        "km": {
+          "symbol": "km"
+        },
+        "cm": {
+          "symbol": "cm"
+        },
+        "km2": {
+          "symbol": "km²"
+        },
+        "kg": {
+          "symbol": "kg"
+        },
+        "t": {
+          "symbol": "t"
+        },
+        "kmh": {
+          "symbol": "km/sa"
+        },
+        "m3s": {
+          "symbol": "m³/sn"
+        },
+        "volt": {
+          "symbol": "V"
+        },
+        "percent": {
+          "symbol": "%"
+        },
+        "liter": {
+          "symbol": "l"
+        },
+        "usd": {
+          "symbol": "USD"
+        },
+        "mrd_usd": {
+          "symbol": "milyar USD"
+        },
+        "mio_eur": {
+          "symbol": "milyon EUR"
+        },
+        "people": {
+          "one": "kişi",
+          "other": "kişi"
+        },
+        "seats": {
+          "one": "koltuk",
+          "other": "koltuk"
+        },
+        "floors": {
+          "one": "kat",
+          "other": "kat"
+        },
+        "pieces": {
+          "one": "adet",
+          "other": "adet"
+        },
+        "members": {
+          "one": "üye",
+          "other": "üye"
+        },
+        "goals": {
+          "one": "gol",
+          "other": "gol"
+        },
+        "matches": {
+          "one": "maç",
+          "other": "maç"
+        },
+        "years": {
+          "one": "yıl",
+          "other": "yıl"
+        },
+        "steps": {
+          "one": "adım",
+          "other": "adım"
+        },
+        "beats": {
+          "one": "vuruş",
+          "other": "vuruş"
+        },
+        "times": {
+          "one": "kez",
+          "other": "kez"
+        },
+        "count": {
+          "one": "tane",
+          "other": "tane"
+        }
+      },
+      "frames": {
+        "population": "{{name}} kaç nüfusa sahip?",
+        "area": "{{name}} ne kadar geniş?",
+        "gdp": "{{name}} için gayrisafi yurt içi hasıla ne kadar?",
+        "gdp_per_capita": "{{name}} için kişi başına düşen millî gelir ne kadar?",
+        "life_expectancy": "{{name}} için ortalama yaşam süresi kaç?",
+        "speakers": "{{name}} dilini kaç kişi konuşuyor?",
+        "mains_voltage": "{{name}} için prizden kaç volt gelir?",
+        "unemployment": "{{name}} için işsizlik oranı yüzde kaç?",
+        "height_structure": "{{name}} yapısı ne kadar yüksek?",
+        "built_year": "{{name}} yapısı hangi yılda tamamlandı?",
+        "floors": "{{name}} binası kaç katlı?",
+        "visitors_year": "{{name}} yapısını yılda kaç kişi ziyaret ediyor?",
+        "cost_project": "{{name}} projesi ne kadara mal oldu?",
+        "length_object": "{{name}} yapısı ne kadar uzun?",
+        "diameter": "{{name}} yapısının çapı ne kadar?",
+        "height_mountain": "{{name}} dağı kaç metre yüksekliğinde?",
+        "length_river": "{{name}} nehri ne kadar uzun?",
+        "discharge": "{{name}} nehri saniyede ne kadar su taşıyor?",
+        "basin_area": "{{name}} nehrinin havza alanı ne kadar?",
+        "height_waterfall": "{{name}} şelalesi kaç metre yükseklikten dökülüyor?",
+        "depth": "{{name}} gölü en derin yerinde kaç metre?",
+        "mass_animal": "{{name}} türü ne kadar ağır?",
+        "length_animal": "{{name}} türü ne kadar uzun?",
+        "height_animal": "{{name}} türünün omuz yüksekliği ne kadar?",
+        "wingspan_animal": "{{name}} türünün kanat açıklığı ne kadar?",
+        "speed_animal": "{{name}} türü ne kadar hızlı?",
+        "capacity_seats": "{{name}} stadı kaç kişilik?",
+        "founded_year": "{{name}} hangi yılda kuruldu?",
+        "members": "{{name}} kaç üyeye sahip?",
+        "goals": "{{name}} kaç gol attı?",
+        "matches": "{{name}} kaç maça çıktı?",
+        "body_height": "{{name}} kaç santim boyunda?",
+        "track_length": "{{name}} pisti ne kadar uzun?",
+        "participants": "{{name}} etkinliğine kaç kişi katılıyor?",
+        "released_year": "{{name}} hangi yılda çıktı?",
+        "units_produced": "{{name}} kaç adet üretildi?",
+        "speed_vehicle": "{{name}} ne kadar hızlı?",
+        "range": "{{name}} için menzil ne kadar?",
+        "mass_object": "{{name}} ne kadar ağır?",
+        "wingspan_aircraft": "{{name}} için kanat açıklığı ne kadar?",
+        "employees": "{{name}} şirketinde kaç kişi çalışıyor?",
+        "revenue": "{{name}} için yıllık ciro ne kadar?"
+      },
+      "anchors": {
+        "population": "Münih'in nüfusu yaklaşık 1,5 milyondur.",
+        "area": "Lüksemburg yaklaşık 2.600 km² yüzölçümüne sahiptir.",
+        "gdp": "Avusturya yılda yaklaşık 480 milyar USD üretir.",
+        "gdp_per_capita": "Polonya'da kişi başına gelir yaklaşık 22.000 USD'dir.",
+        "life_expectancy": "Japonya'da insanlar ortalama 84 yıl yaşar.",
+        "speakers": "Felemenkçeyi yaklaşık 25 milyon kişi konuşur.",
+        "mains_voltage": "Almanya'da prizden 230 volt gelir.",
+        "unemployment": "İspanya'da işsizlik yaklaşık %12'dir.",
+        "height_structure": "Bir ev yaklaşık 10 metre yüksekliğindedir.",
+        "built_year": "Köln Katedrali 1880'de tamamlandı.",
+        "floors": "Bir apartman yaklaşık 5 katlıdır.",
+        "visitors_year": "Köln Katedrali'ni yılda yaklaşık 6 milyon kişi ziyaret eder.",
+        "cost_project": "Elbphilharmonie yaklaşık 870 milyon euroya mal oldu.",
+        "length_object": "Bir futbol sahası 105 metre uzunluğundadır.",
+        "diameter": "Bir otomobil lastiğinin çapı yaklaşık 0,6 metredir.",
+        "height_mountain": "Brocken 1.141 metre yüksekliğindedir.",
+        "length_river": "Main nehri 527 kilometre uzunluğundadır.",
+        "discharge": "Ren saniyede yaklaşık 2.300 m³ su taşır.",
+        "basin_area": "Elbe'nin havzası yaklaşık 148.000 km²'dir.",
+        "height_waterfall": "Ren Şelalesi 23 metre yükseklikten dökülür.",
+        "depth": "Konstanz Gölü en derin yerinde 251 metredir.",
+        "mass_animal": "Bir domuz yaklaşık 120 kilogram gelir.",
+        "length_animal": "Bir ev kedisi yaklaşık 50 santim uzunluğundadır.",
+        "height_animal": "Bir Alman kurdunun omuz yüksekliği yaklaşık 60 santimdir.",
+        "wingspan_animal": "Bir güvercinin kanat açıklığı yaklaşık 65 santimdir.",
+        "speed_animal": "Bir insan yaklaşık 20 km/sa hızla koşar.",
+        "capacity_seats": "Berlin Olimpiyat Stadı 74.000 kişiliktir.",
+        "founded_year": "Bayern Münih 1900'de kuruldu.",
+        "members": "ADAC'ın yaklaşık 21 milyon üyesi vardır.",
+        "goals": "İyi bir forvet sezonda yaklaşık 15 gol atar.",
+        "matches": "Bir profesyonel sezonda yaklaşık 40 resmî maça çıkar.",
+        "body_height": "Yetişkin bir erkek yaklaşık 180 santim boyundadır.",
+        "track_length": "Bir atletizm pisti 400 metredir.",
+        "participants": "Bir sinema salonuna yaklaşık 200 kişi sığar.",
+        "released_year": "İlk iPhone 2007'de çıktı.",
+        "units_produced": "Yaklaşık 21 milyon VW Kaplumbağa üretildi.",
+        "speed_vehicle": "Yüksek hızlı tren 300 km/sa'e kadar çıkar.",
+        "range": "Bir otomobil tek depoyla yaklaşık 700 kilometre gider.",
+        "mass_object": "Küçük bir otomobil yaklaşık 1 ton gelir.",
+        "wingspan_aircraft": "Airbus A320'nin kanat açıklığı 36 metredir.",
+        "employees": "Volkswagen'de yaklaşık 680.000 kişi çalışır.",
+        "revenue": "Apple yılda yaklaşık 390 milyar USD ciro yapar."
+      }
     }
   },
   "native": {
@@ -7038,7 +7285,8 @@
       "storyBuilder": "Story Builder",
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas",
-      "ohrwurm": "Ohrwurm"
+      "ohrwurm": "Ohrwurm",
+      "closeenough": "Yaklaştın"
     },
     "gameDescs": {
       "bomb": "Kimde patlar?",
@@ -7058,7 +7306,8 @@
       "storyBuilder": "Çılgın hikayeler",
       "woIstWas": "Yeri bul",
       "drueckDasWort": "Hızlı yaz, hızlı düşün",
-      "ohrwurm": "Şarkıyı dinle, yılını tahmin et"
+      "ohrwurm": "Şarkıyı dinle, yılını tahmin et",
+      "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır"
     },
     "events": {
       "title": "Etkinlikler",
@@ -7603,6 +7852,20 @@
         "name": "Speed Rush",
         "desc": "Words get faster and faster!"
       }
+    },
+    "closeenough": {
+      "entspannt": {
+        "name": "Rahat",
+        "desc": "Soru başına 60 sn."
+      },
+      "klassisch": {
+        "name": "Klasik",
+        "desc": "Soru başına 40 sn."
+      },
+      "blitz": {
+        "name": "Şimşek",
+        "desc": "20 sn. — içgüdüyle"
+      }
     }
   },
   "woIstWas": {
@@ -7964,6 +8227,15 @@
       "step3": "Correct? Next word! Wrong? Points deducted!",
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    },
+    "closeenough": {
+      "title": "Yaklaştın",
+      "tagline": "Cevabı kimse bilmiyor. En az yanılan kazanır.",
+      "step1": "Her turda cevabı bir sayı olan bir soru sorulur.",
+      "step2": "Herkes tahminini yazar — diğerleri yalnızca gönderdiğini görür, ne yazdığını asla.",
+      "step3": "Sonra bütün tahminler tek bir eksene düşer ve gerçek yükselir: en yakına 10 puan, sonra 6, sonra 3.",
+      "step4": "Tolerans aralığına düşen beş puan daha alır.",
+      "tip": "İpucu düğmesi sana bir karşılaştırma değeri verir — bedavadır ve körü körüne tahmini hesaba çevirir."
     }
   },
   "nativeAdmin": {

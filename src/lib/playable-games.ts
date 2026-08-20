@@ -48,6 +48,7 @@ export const playableGames: PlayableGame[] = [
   { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium",               categories: ["wort", "reaktion"] },
   { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        tier: "free",    badge: "Neu", categories: ["party", "quiz"] },
   { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       tier: "free",    badge: "Neu", categories: ["quiz", "reaktion"] },
+  { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     tier: "free",    badge: "Neu", categories: ["quiz", "party"] },
 ];
 
 /** Set of playable game ids — handy for "is this idea card also playable?" checks. */

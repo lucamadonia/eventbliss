@@ -41,6 +41,7 @@ const GAMES: GameMeta[] = [
   { id: "wo-ist-was",      nameKey: "native.gameNames.woIstWas",        descKey: "native.gameDescs.woIstWas",        image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        tier: "premium" },
   { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    tier: "premium" },
   { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       tier: "free",    badge: "Neu" },
+  { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     tier: "free",    badge: "Neu" },
 ];
 
 interface PartyGamePickerProps {

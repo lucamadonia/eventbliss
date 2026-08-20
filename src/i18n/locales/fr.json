@@ -6929,7 +6929,254 @@
         "marken": "Marques",
         "mix": "Aléatoire"
       },
-      "modified": "affichée pixellisée"
+      "modified": "affichée pixellisée",
+      "teamMode": "Qui joue ?",
+      "teamModeSolo": "Individuel",
+      "teamModeGroups": "En équipes",
+      "playersLabel": "Joueurs",
+      "groupsLabel": "Équipes",
+      "teamN": "Équipe {{n}}"
+    },
+    "closeenough": {
+      "title": "Presque !",
+      "tagline": "Une question, un nombre : le plus proche l'emporte.",
+      "backToGames": "Retour aux jeux",
+      "playerN": "Joueur {{n}}",
+      "teamN": "Équipe {{n}}",
+      "playersLabel": "Joueurs",
+      "groupsLabel": "Équipes",
+      "teamMode": "Qui joue ?",
+      "teamModeSolo": "Individuel",
+      "teamModeGroups": "En équipes",
+      "mode": "Temps de réflexion",
+      "rounds": "Manches",
+      "categoriesLabel": "Thèmes",
+      "allCategories": "Tous les thèmes — {{count}} questions",
+      "available": "{{count}} questions disponibles",
+      "loading": "Chargement des questions …",
+      "start": "C'est parti",
+      "noQuestions": "Aucune question pour cette sélection.",
+      "noQuestionsSetup": "Aucune question n'est active pour ces thèmes. Choisis d'autres thèmes ou joue le mélange.",
+      "wordFormHint": "Ton nombre est relu pendant la saisie : 2500000 devient {{example}}.",
+      "roundOf": "Manche {{round}} sur {{total}}",
+      "leave": "Quitter",
+      "leaveTitle": "Quitter la partie ?",
+      "leaveBody": "Les points de cette manche seront perdus.",
+      "leaveStay": "Continuer",
+      "leaveGo": "Quitter",
+      "submit": "Valider",
+      "submitWith": "Valider · {{value}}",
+      "submitted": "Réponse envoyée !",
+      "waitingOthers": "{{done}} sur {{total}} ont répondu",
+      "passTo": "Passe l'appareil à",
+      "passReady": "Je suis prêt",
+      "padSign": "Changer de signe",
+      "padDecimal": "Virgule",
+      "padDelete": "Effacer le dernier chiffre",
+      "showHint": "Afficher un indice",
+      "yourGuess": "Ta réponse",
+      "exactHit": "En plein dans le mille ! Dans la marge.",
+      "offBy": "{{percent}} % d'écart",
+      "noGuess": "Aucune réponse envoyée",
+      "points": "points",
+      "roundWinner": "Le plus proche : {{name}}",
+      "nobody": "Personne n'a répondu cette fois.",
+      "next": "Question suivante",
+      "finish": "Voir le classement final",
+      "source": "Source",
+      "asOf": "(données de {{year}})",
+      "roundIntro": "Manche {{round}}",
+      "getReady": "Tenez-vous prêts",
+      "categories": {
+        "mix": "Mélange varié",
+        "laender": "Pays et villes",
+        "bauwerke": "Bâtiments",
+        "natur": "Nature",
+        "tierwelt": "Animaux",
+        "sport": "Sport",
+        "technik": "Technique",
+        "alltag": "Vie quotidienne"
+      },
+      "units": {
+        "m": {
+          "symbol": "m"
+        },
+        "km": {
+          "symbol": "km"
+        },
+        "cm": {
+          "symbol": "cm"
+        },
+        "km2": {
+          "symbol": "km²"
+        },
+        "kg": {
+          "symbol": "kg"
+        },
+        "t": {
+          "symbol": "t"
+        },
+        "kmh": {
+          "symbol": "km/h"
+        },
+        "m3s": {
+          "symbol": "m³/s"
+        },
+        "volt": {
+          "symbol": "V"
+        },
+        "percent": {
+          "symbol": "%"
+        },
+        "liter": {
+          "symbol": "l"
+        },
+        "usd": {
+          "symbol": "USD"
+        },
+        "mrd_usd": {
+          "symbol": "Md USD"
+        },
+        "mio_eur": {
+          "symbol": "M EUR"
+        },
+        "people": {
+          "one": "personne",
+          "other": "personnes"
+        },
+        "seats": {
+          "one": "place",
+          "other": "places"
+        },
+        "floors": {
+          "one": "étage",
+          "other": "étages"
+        },
+        "pieces": {
+          "one": "exemplaire",
+          "other": "exemplaires"
+        },
+        "members": {
+          "one": "membre",
+          "other": "membres"
+        },
+        "goals": {
+          "one": "but",
+          "other": "buts"
+        },
+        "matches": {
+          "one": "match",
+          "other": "matchs"
+        },
+        "years": {
+          "one": "an",
+          "other": "ans"
+        },
+        "steps": {
+          "one": "pas",
+          "other": "pas"
+        },
+        "beats": {
+          "one": "battement",
+          "other": "battements"
+        },
+        "times": {
+          "one": "fois",
+          "other": "fois"
+        },
+        "count": {
+          "one": "pièce",
+          "other": "pièces"
+        }
+      },
+      "frames": {
+        "population": "Quelle est la population de {{name}} ?",
+        "area": "Quelle est la superficie de {{name}} ?",
+        "gdp": "Quel est le produit intérieur brut de {{name}} ?",
+        "gdp_per_capita": "Quel est le PIB par habitant de {{name}} ?",
+        "life_expectancy": "Quelle est l'espérance de vie en {{name}} ?",
+        "speakers": "Combien de personnes parlent {{name}} ?",
+        "mains_voltage": "Combien de volts sortent d'une prise en {{name}} ?",
+        "unemployment": "Quel est le taux de chômage en {{name}} ?",
+        "height_structure": "Quelle est la hauteur de l’édifice {{name}} ?",
+        "built_year": "En quelle année l’édifice {{name}} a-t-il été achevé ?",
+        "floors": "Combien d’étages compte le bâtiment {{name}} ?",
+        "visitors_year": "Combien de personnes visitent le site {{name}} par an ?",
+        "cost_project": "Combien a coûté le projet {{name}} ?",
+        "length_object": "Quelle est la longueur de l’édifice {{name}} ?",
+        "diameter": "Quel est le diamètre de l’édifice {{name}} ?",
+        "height_mountain": "Quelle est l’altitude du sommet {{name}} ?",
+        "length_river": "Quelle est la longueur du fleuve {{name}} ?",
+        "discharge": "Quel débit d’eau le fleuve {{name}} transporte-t-il par seconde ?",
+        "basin_area": "Quelle est la superficie du bassin du fleuve {{name}} ?",
+        "height_waterfall": "Quelle hauteur de chute a la cascade {{name}} ?",
+        "depth": "Quelle est la profondeur maximale du lac {{name}} ?",
+        "mass_animal": "Combien pèse l’espèce {{name}} ?",
+        "length_animal": "Quelle est la longueur de l’espèce {{name}} ?",
+        "height_animal": "Quelle est la hauteur au garrot de l’espèce {{name}} ?",
+        "wingspan_animal": "Quelle est l’envergure de l’espèce {{name}} ?",
+        "speed_animal": "À quelle vitesse se déplace l’espèce {{name}} ?",
+        "capacity_seats": "Combien de places compte le stade {{name}} ?",
+        "founded_year": "En quelle année {{name}} a-t-il été fondé ?",
+        "members": "Combien de membres compte {{name}} ?",
+        "goals": "Combien de buts {{name}} a-t-il marqués ?",
+        "matches": "Combien de matchs {{name}} a-t-il disputés ?",
+        "body_height": "Quelle est la taille de {{name}} ?",
+        "track_length": "Quelle est la longueur du circuit {{name}} ?",
+        "participants": "Combien de personnes participent à {{name}} ?",
+        "released_year": "En quelle année {{name}} est-il sorti ?",
+        "units_produced": "Combien d'exemplaires de {{name}} ont été produits ?",
+        "speed_vehicle": "À quelle vitesse va {{name}} ?",
+        "range": "Quelle est l'autonomie de {{name}} ?",
+        "mass_object": "Combien pèse {{name}} ?",
+        "wingspan_aircraft": "Quelle est l'envergure de {{name}} ?",
+        "employees": "Combien de personnes travaillent chez {{name}} ?",
+        "revenue": "Quel est le chiffre d'affaires de {{name}} ?"
+      },
+      "anchors": {
+        "population": "Munich compte environ 1,5 million d'habitants.",
+        "area": "Le Luxembourg couvre environ 2 600 km².",
+        "gdp": "L'Autriche produit environ 480 milliards USD par an.",
+        "gdp_per_capita": "En Pologne, le PIB par habitant avoisine 22 000 USD.",
+        "life_expectancy": "Au Japon, on vit en moyenne 84 ans.",
+        "speakers": "Environ 25 millions de personnes parlent néerlandais.",
+        "mains_voltage": "Les prises allemandes délivrent 230 volts.",
+        "unemployment": "Le chômage en Espagne tourne autour de 12 %.",
+        "height_structure": "Une maison mesure environ 10 mètres de haut.",
+        "built_year": "La cathédrale de Cologne a été achevée en 1880.",
+        "floors": "Un immeuble d'habitation compte environ 5 étages.",
+        "visitors_year": "La cathédrale de Cologne reçoit environ 6 millions de visiteurs par an.",
+        "cost_project": "L'Elbphilharmonie a coûté environ 870 millions d'euros.",
+        "length_object": "Un terrain de football fait 105 mètres de long.",
+        "diameter": "Un pneu de voiture fait environ 0,6 mètre de diamètre.",
+        "height_mountain": "Le Brocken culmine à 1 141 mètres.",
+        "length_river": "Le Main fait 527 kilomètres de long.",
+        "discharge": "Le Rhin transporte environ 2 300 m³ par seconde.",
+        "basin_area": "Le bassin de l'Elbe couvre environ 148 000 km².",
+        "height_waterfall": "Les chutes du Rhin tombent de 23 mètres.",
+        "depth": "Le lac de Constance atteint 251 mètres de profondeur.",
+        "mass_animal": "Un cochon pèse environ 120 kilogrammes.",
+        "length_animal": "Un chat domestique mesure environ 50 centimètres.",
+        "height_animal": "Un berger allemand mesure environ 60 centimètres au garrot.",
+        "wingspan_animal": "Un pigeon a une envergure d'environ 65 centimètres.",
+        "speed_animal": "Un être humain court à environ 20 km/h.",
+        "capacity_seats": "Le stade olympique de Berlin compte 74 000 places.",
+        "founded_year": "Le Bayern Munich a été fondé en 1900.",
+        "members": "L'ADAC compte environ 21 millions de membres.",
+        "goals": "Un bon attaquant marque environ 15 buts par saison.",
+        "matches": "Un professionnel dispute environ 40 matchs officiels par saison.",
+        "body_height": "Un homme adulte mesure environ 180 centimètres.",
+        "track_length": "Une piste d'athlétisme fait 400 mètres.",
+        "participants": "Une salle de cinéma accueille environ 200 personnes.",
+        "released_year": "Le premier iPhone est sorti en 2007.",
+        "units_produced": "Environ 21 millions de VW Coccinelle ont été produites.",
+        "speed_vehicle": "Un train à grande vitesse roule jusqu'à 300 km/h.",
+        "range": "Une voiture parcourt environ 700 kilomètres avec un plein.",
+        "mass_object": "Une petite voiture pèse environ 1 tonne.",
+        "wingspan_aircraft": "Un Airbus A320 a une envergure de 36 mètres.",
+        "employees": "Volkswagen emploie environ 680 000 personnes.",
+        "revenue": "Apple réalise environ 390 milliards USD de chiffre d'affaires par an."
+      }
     }
   },
   "native": {
@@ -6988,7 +7235,8 @@
       "storyBuilder": "Story Builder",
       "woIstWas": "Où est-ce ?",
       "drueckDasWort": "Appuie sur le Mot",
-      "ohrwurm": "Ohrwurm"
+      "ohrwurm": "Ohrwurm",
+      "closeenough": "Presque !"
     },
     "gameDescs": {
       "bomb": "Qui se fait exploser ?",
@@ -7008,7 +7256,8 @@
       "storyBuilder": "Histoires folles",
       "woIstWas": "Trouve l'endroit",
       "drueckDasWort": "Tape vite, pense vite",
-      "ohrwurm": "Écoute le titre, place l'année"
+      "ohrwurm": "Écoute le titre, place l'année",
+      "closeenough": "Des questions d'estimation dont la réponse est un nombre — le plus proche gagne"
     },
     "events": {
       "title": "Événements",
@@ -7553,6 +7802,20 @@
         "name": "Speed Rush",
         "desc": "Words get faster and faster!"
       }
+    },
+    "closeenough": {
+      "entspannt": {
+        "name": "Détendu",
+        "desc": "60 s par question"
+      },
+      "klassisch": {
+        "name": "Classique",
+        "desc": "40 s par question"
+      },
+      "blitz": {
+        "name": "Éclair",
+        "desc": "20 s — à l'instinct"
+      }
     }
   },
   "woIstWas": {
@@ -7914,6 +8177,15 @@
       "step3": "Correct? Next word! Wrong? Points deducted!",
       "step4": "Most correct words at the end wins",
       "tip": "Don't tap frantically — one wrong click costs more than a second of thinking!"
+    },
+    "closeenough": {
+      "title": "Presque !",
+      "tagline": "Personne ne connaît la réponse. Gagne celui qui se trompe le moins.",
+      "step1": "Chaque manche pose une question dont la réponse est un nombre.",
+      "step2": "Tout le monde saisit son estimation — les autres voient seulement que tu as validé, jamais quoi.",
+      "step3": "Ensuite toutes les réponses se placent sur un axe et la vérité surgit : 10 points au plus proche, puis 6, puis 3.",
+      "step4": "Si tu tombes dans la marge, tu gagnes cinq points de plus.",
+      "tip": "Le bouton d'indice te donne un ordre de grandeur — il est gratuit et transforme le hasard en calcul."
     }
   },
   "nativeAdmin": {
