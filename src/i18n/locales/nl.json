@@ -7227,6 +7227,106 @@
         "employees": "Volkswagen heeft ongeveer 680.000 medewerkers.",
         "revenue": "Apple zet ongeveer 390 miljard USD per jaar om."
       }
+    },
+    "pantomime": {
+      "title": "Zonder Woorden",
+      "tagline": "Geen geluid, geen woord — alleen jij en je armen.",
+      "backToGames": "Terug naar de spellen",
+      "playerN": "Speler {{n}}",
+      "playersLabel": "Spelers",
+      "teamsHint": "De teams worden geloot",
+      "teamA": "Team Roze",
+      "teamB": "Team Turquoise",
+      "mode": "Tijd per beurt",
+      "rounds": "Rondes",
+      "categoriesLabel": "Thema's",
+      "mix": "Bonte mix",
+      "available": "{{count}} woorden in de stapel",
+      "loading": "Woorden laden …",
+      "start": "Doek op",
+      "needFour": "Twee tegen twee — jullie hebben minstens vier mensen nodig.",
+      "adultHint": "Het thema 18+ is vrijgespeeld.",
+      "extrasLabel": "Uitdagingen",
+      "extrasOn": "Uitdagingen aan",
+      "extrasOff": "Uitdagingen uit",
+      "extrasDesc": "Elke beurt begint met een uitdaging. Aannemen verdubbelt de punten, weigeren kost niets.",
+      "roundOf": "Ronde {{round}} van {{total}}",
+      "leave": "Verlaten",
+      "leaveTitle": "Partij verlaten?",
+      "leaveBody": "De stand gaat verloren.",
+      "leaveStay": "Doorspelen",
+      "leaveGo": "Verlaten",
+      "actorIs": "gaat uitbeelden",
+      "ready": "Daar gaan we",
+      "extraTitle": "Uitdaging",
+      "extraDouble": "Aangenomen telt elke treffer dubbel",
+      "extraAccept": "Aannemen",
+      "extraDecline": "Liever gewoon",
+      "fetchTitle": "Snel, pak:",
+      "fetchGo": "Heb 'm — gaan",
+      "guessed": "Geraden!",
+      "skip": "Volgende",
+      "watching": "{{name}} beeldt uit",
+      "wordsSoFar": "{{count}} geraden",
+      "summaryTitle": "De beurt van {{name}}",
+      "summaryDoubled": "Uitdaging gehaald — dubbele punten",
+      "summaryEmpty": "Deze keer kwam er niets door.",
+      "next": "Volgend team",
+      "finish": "Eindstand bekijken",
+      "winner": "{{team}} wint!",
+      "draw": "Gelijkspel!",
+      "playAgain": "Nog een partij",
+      "extras": {
+        "requisit": "Beeld alles uit met {{item}}",
+        "oneHand": "Met één hand",
+        "sitting": "Alleen zittend",
+        "handsBehindBack": "Handen op je rug",
+        "backTurned": "Met je rug naar je team",
+        "faceOnly": "Alleen mimiek — je lijf blijft stil",
+        "oneLeg": "Op één been",
+        "noJumping": "Zonder je voeten van de grond te halen",
+        "slowMotion": "Alles in slow motion",
+        "robot": "Alles als een robot",
+        "fastForward": "Alles versneld",
+        "ballet": "Alles als ballet",
+        "actionMovie": "Alles als in een actiefilm",
+        "puppet": "Als een marionet aan touwtjes",
+        "silentFilm": "Als in een stomme film — mateloos overdreven",
+        "halfTime": "Maar de helft van de tijd",
+        "duo": "Een tweede teamlid speelt zwijgend mee — zonder overleg"
+      },
+      "props": {
+        "kochloeffel": "een pollepel",
+        "handtuch": "een handdoek",
+        "kissen": "een kussen",
+        "socke": "een sok",
+        "klopapierrolle": "een wc-rol",
+        "besen": "een bezem",
+        "schluesselbund": "een sleutelbos",
+        "wasserflasche": "een waterfles",
+        "buch": "een boek",
+        "regenschirm": "een paraplu",
+        "kleiderbuegel": "een kleerhanger",
+        "zahnbuerste": "een tandenborstel",
+        "topfdeckel": "een pandeksel",
+        "tasse": "een mok",
+        "stift": "een pen",
+        "brille": "een bril",
+        "muetze": "een muts",
+        "schal": "een sjaal",
+        "decke": "een deken",
+        "waescheklammer": "een wasknijper",
+        "zeitung": "een krant",
+        "karton": "een kartonnen doos",
+        "sieb": "een vergiet",
+        "nudelholz": "een deegroller",
+        "foehn": "een föhn",
+        "gummiband": "een elastiekje",
+        "teller": "een bord",
+        "gabel": "een vork",
+        "kerze": "een kaars",
+        "pfanne": "een koekenpan"
+      }
     }
   },
   "native": {
@@ -7286,7 +7386,8 @@
       "woIstWas": "Waar is het?",
       "drueckDasWort": "Druk het Woord",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Bijna Raak"
+      "closeenough": "Bijna Raak",
+      "pantomime": "Zonder Woorden"
     },
     "gameDescs": {
       "bomb": "Bij wie knalt het?",
@@ -7307,7 +7408,8 @@
       "woIstWas": "Vind de plek",
       "drueckDasWort": "Typ snel, denk snel",
       "ohrwurm": "Luister naar de song, plaats het jaar",
-      "closeenough": "Schattingsvragen met een getal als antwoord — wie het dichtst zit, wint"
+      "closeenough": "Schattingsvragen met een getal als antwoord — wie het dichtst zit, wint",
+      "pantomime": "Zwijgend uitbeelden, je team raadt — met uitdagingen voor dubbele punten"
     },
     "events": {
       "title": "Evenementen",
@@ -7866,6 +7968,20 @@
         "name": "Bliksem",
         "desc": "20 sec. — op gevoel"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Ontspannen",
+        "desc": "120 sec. per beurt"
+      },
+      "klassisch": {
+        "name": "Klassiek",
+        "desc": "90 sec. per beurt"
+      },
+      "blitz": {
+        "name": "Bliksem",
+        "desc": "60 sec. — hartslag omhoog"
+      }
     }
   },
   "woIstWas": {
@@ -8236,6 +8352,15 @@
       "step3": "Daarna landen alle antwoorden op één as en komt de waarheid omhoog: 10 punten voor de dichtstbijzijnde, dan 6, dan 3.",
       "step4": "Wie binnen de marge blijft, krijgt er vijf punten bij.",
       "tip": "De hintknop geeft je een vergelijkingswaarde — hij kost niets en maakt van wild gokken een rekensom."
+    },
+    "pantomime": {
+      "title": "Zonder Woorden",
+      "tagline": "Geen geluid, geen woord, geen geluidjes. Alleen jij en je armen.",
+      "step1": "Twee teams spelen om de beurt. Eén speler beeldt een woord volledig zwijgend uit.",
+      "step2": "Zijn team raadt zolang de klok loopt. Elk geraden woord is een punt waard.",
+      "step3": "Elke beurt begint met een uitdaging — alles uitbeelden met een pollepel, bijvoorbeeld. Wie hem aanneemt, krijgt dubbele punten voor elke treffer.",
+      "step4": "Weigeren kost niets, en mislukken ook niet. Aannemen kan dus alleen maar winst opleveren.",
+      "tip": "Een woord dat niet komt kost meer dan het waard is — doorklikken en het volgende pakken."
     }
   },
   "nativeAdmin": {

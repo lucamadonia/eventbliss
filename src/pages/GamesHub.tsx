@@ -14,7 +14,7 @@ import {
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
   HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
   Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
-  Wine, Globe, X, Music2, Eye, Target,
+  Wine, Globe, X, Music2, Eye, Target, Drama,
 } from "lucide-react";
 
 const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
@@ -40,6 +40,7 @@ const BottleSpinGame = lazy(() => import("@/games/bottlespin/BottleSpinGame"));
 const OhrwurmGame = lazy(() => import("@/games/ohrwurm/OhrwurmGame"));
 const PixeljagdGame = lazy(() => import("@/games/pixeljagd/PixeljagdGame"));
 const CloseEnoughGame = lazy(() => import("@/games/closeenough/CloseEnoughGame"));
+const PantomimeGame = lazy(() => import("@/games/pantomime/PantomimeGame"));
 
 // Design tokens
 const C = {
@@ -86,6 +87,7 @@ const allGames: GameCardData[] = [
   { id: "ohrwurm", name: "Ohrwurm", desc: "Song hören, ins richtige Jahr einordnen — Musik-Quiz mit QR & Spotify", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", players: "2-4", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
   { id: "pixeljagd", name: "Pixeljagd", desc: "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", players: "2-8", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
   { id: "closeenough", name: "Nah Dran", desc: "Eine Frage, eine Zahl — wer am nächsten dran liegt, gewinnt", icon: Target, gradient: "from-[#FBBF24] to-[#34D399]", players: "2-8", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/closeenough.webp" },
+  { id: "pantomime", name: "Ohne Worte", desc: "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte", icon: Drama, gradient: "from-[#FBBF24] to-[#F472B6]", players: "4-16", duration: "15-30", badge: "Neu", rating: 4.9, image: "/images/games/pantomime.webp" },
 ];
 
 const categories = [
@@ -121,6 +123,7 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   "ohrwurm": ["party", "quiz"],
   "pixeljagd": ["quiz", "reaktion"],
   "closeenough": ["quiz", "party"],
+  "pantomime": ["party", "kreativ"],
 };
 
 const recentGames = [
@@ -429,6 +432,7 @@ const GamesHubInner = () => {
       if (gameId === "ohrwurm") return <OhrwurmGame online={onlineProps} />;
       if (gameId === "pixeljagd") return <PixeljagdGame online={onlineProps} />;
       if (gameId === "closeenough") return <CloseEnoughGame online={onlineProps} />;
+      if (gameId === "pantomime") return <PantomimeGame online={onlineProps} />;
       return null;
     };
 
@@ -516,6 +520,7 @@ const GamesHubInner = () => {
   if (gameId === "ohrwurm") return <>{rulesOverlay}<Suspense fallback={GameFallback}><OhrwurmGame /></Suspense></>;
   if (gameId === "pixeljagd") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PixeljagdGame /></Suspense></>;
   if (gameId === "closeenough") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CloseEnoughGame /></Suspense></>;
+  if (gameId === "pantomime") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PantomimeGame /></Suspense></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {

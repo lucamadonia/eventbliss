@@ -7153,6 +7153,106 @@
         "employees": "How many people work at {{name}}?",
         "revenue": "What is the revenue of {{name}}?"
       }
+    },
+    "pantomime": {
+      "title": "No Words",
+      "tagline": "No sound, no speech — just you and your arms.",
+      "backToGames": "Back to games",
+      "playerN": "Player {{n}}",
+      "playersLabel": "Players",
+      "teamsHint": "Teams are drawn at random",
+      "teamA": "Team Pink",
+      "teamB": "Team Cyan",
+      "mode": "Time per turn",
+      "rounds": "Rounds",
+      "categoriesLabel": "Topics",
+      "mix": "Mixed bag",
+      "available": "{{count}} words in the deck",
+      "loading": "Loading words …",
+      "start": "Curtain up",
+      "needFour": "Two against two — you need at least four people.",
+      "adultHint": "The 18+ topic is unlocked.",
+      "extrasLabel": "Challenges",
+      "extrasOn": "Challenges on",
+      "extrasOff": "Challenges off",
+      "extrasDesc": "Every turn opens with a twist. Accept it and your points double; decline and nothing is lost.",
+      "roundOf": "Round {{round}} of {{total}}",
+      "leave": "Leave",
+      "leaveTitle": "Leave the game?",
+      "leaveBody": "The scores will be lost.",
+      "leaveStay": "Keep playing",
+      "leaveGo": "Leave",
+      "actorIs": "is about to act",
+      "ready": "Let's go",
+      "extraTitle": "Challenge",
+      "extraDouble": "Accept and every hit counts double",
+      "extraAccept": "Accept",
+      "extraDecline": "Play it straight",
+      "fetchTitle": "Quick, grab:",
+      "fetchGo": "Got it — go",
+      "guessed": "Got it!",
+      "skip": "Next",
+      "watching": "{{name}} is acting",
+      "wordsSoFar": "{{count}} guessed",
+      "summaryTitle": "{{name}}'s turn",
+      "summaryDoubled": "Challenge met — double points",
+      "summaryEmpty": "Nothing landed this time.",
+      "next": "Next team",
+      "finish": "See final scores",
+      "winner": "{{team}} wins!",
+      "draw": "It's a draw!",
+      "playAgain": "One more game",
+      "extras": {
+        "requisit": "Act everything out with {{item}}",
+        "oneHand": "One hand only",
+        "sitting": "Stay seated",
+        "handsBehindBack": "Hands behind your back",
+        "backTurned": "Back turned to your team",
+        "faceOnly": "Face only — the body stays still",
+        "oneLeg": "On one leg",
+        "noJumping": "Without lifting your feet off the floor",
+        "slowMotion": "Everything in slow motion",
+        "robot": "Everything like a robot",
+        "fastForward": "Everything on fast forward",
+        "ballet": "Everything as ballet",
+        "actionMovie": "Everything like an action movie",
+        "puppet": "Like a puppet on strings",
+        "silentFilm": "Like a silent film — wildly over the top",
+        "halfTime": "Half the time only",
+        "duo": "A second team member acts along in silence — no planning"
+      },
+      "props": {
+        "kochloeffel": "a wooden spoon",
+        "handtuch": "a towel",
+        "kissen": "a cushion",
+        "socke": "a sock",
+        "klopapierrolle": "a toilet roll",
+        "besen": "a broom",
+        "schluesselbund": "a bunch of keys",
+        "wasserflasche": "a water bottle",
+        "buch": "a book",
+        "regenschirm": "an umbrella",
+        "kleiderbuegel": "a coat hanger",
+        "zahnbuerste": "a toothbrush",
+        "topfdeckel": "a pot lid",
+        "tasse": "a mug",
+        "stift": "a pen",
+        "brille": "a pair of glasses",
+        "muetze": "a woolly hat",
+        "schal": "a scarf",
+        "decke": "a blanket",
+        "waescheklammer": "a clothes peg",
+        "zeitung": "a newspaper",
+        "karton": "a cardboard box",
+        "sieb": "a sieve",
+        "nudelholz": "a rolling pin",
+        "foehn": "a hairdryer",
+        "gummiband": "a rubber band",
+        "teller": "a plate",
+        "gabel": "a fork",
+        "kerze": "a candle",
+        "pfanne": "a frying pan"
+      }
     }
   },
   "native": {
@@ -7213,7 +7313,8 @@
       "woIstWas": "Where Is It?",
       "drueckDasWort": "Press the Word",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Close Enough"
+      "closeenough": "Close Enough",
+      "pantomime": "No Words"
     },
     "gameDescs": {
       "pixeljagd": "The picture sharpens second by second — guess first to win",
@@ -7235,7 +7336,8 @@
       "woIstWas": "Find the place",
       "drueckDasWort": "Type fast, think fast",
       "ohrwurm": "Hear the song, place the year",
-      "closeenough": "Estimation questions with a number as the answer — closest guess wins"
+      "closeenough": "Estimation questions with a number as the answer — closest guess wins",
+      "pantomime": "Act it out in silence, your team guesses — with challenges for double points"
     },
     "events": {
       "title": "Events",
@@ -7808,6 +7910,20 @@
         "name": "Blitz",
         "desc": "20 sec. — gut feeling"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Relaxed",
+        "desc": "120 sec. per turn"
+      },
+      "klassisch": {
+        "name": "Classic",
+        "desc": "90 sec. per turn"
+      },
+      "blitz": {
+        "name": "Blitz",
+        "desc": "60 sec. — pulse racing"
+      }
     }
   },
   "woIstWas": {
@@ -8187,6 +8303,15 @@
       "step3": "Then every guess lands on one axis and the truth rises up: 10 points for the closest, then 6, then 3.",
       "step4": "Land inside the tolerance and you get five more points on top.",
       "tip": "The hint button gives you a reference value — it costs nothing and turns wild guessing into arithmetic."
+    },
+    "pantomime": {
+      "title": "No Words",
+      "tagline": "No sound, no speech, no noises. Just you and your arms.",
+      "step1": "Two teams take turns. One player acts out a word in complete silence.",
+      "step2": "Their team guesses while the clock runs. Every word guessed is worth a point.",
+      "step3": "Each turn opens with a challenge — acting everything out with a wooden spoon, say. Accept it and every hit counts double.",
+      "step4": "Declining costs nothing, and neither does failing. Accepting can only ever win.",
+      "tip": "A word that will not land costs more than it is worth — skip it and grab the next one."
     }
   },
   "nativeAdmin": {

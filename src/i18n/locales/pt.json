@@ -7227,6 +7227,106 @@
         "employees": "A Volkswagen emprega cerca de 680 000 pessoas.",
         "revenue": "A Apple fatura cerca de 390 mil milhões de USD por ano."
       }
+    },
+    "pantomime": {
+      "title": "Sem Palavras",
+      "tagline": "Sem som, sem fala — só tu e os teus braços.",
+      "backToGames": "Voltar aos jogos",
+      "playerN": "Jogador {{n}}",
+      "playersLabel": "Jogadores",
+      "teamsHint": "As equipas são sorteadas",
+      "teamA": "Equipa Rosa",
+      "teamB": "Equipa Turquesa",
+      "mode": "Tempo por vez",
+      "rounds": "Rondas",
+      "categoriesLabel": "Temas",
+      "mix": "Mistura de tudo",
+      "available": "{{count}} palavras no baralho",
+      "loading": "A carregar palavras …",
+      "start": "Cortina aberta",
+      "needFour": "Dois contra dois — precisam de pelo menos quatro pessoas.",
+      "adultHint": "O tema 18+ está desbloqueado.",
+      "extrasLabel": "Desafios",
+      "extrasOn": "Desafios ligados",
+      "extrasOff": "Desafios desligados",
+      "extrasDesc": "Cada vez começa com um extra. Aceitar duplica os pontos, recusar não custa nada.",
+      "roundOf": "Ronda {{round}} de {{total}}",
+      "leave": "Sair",
+      "leaveTitle": "Sair do jogo?",
+      "leaveBody": "A pontuação perde-se.",
+      "leaveStay": "Continuar a jogar",
+      "leaveGo": "Sair",
+      "actorIs": "vai representar",
+      "ready": "Vamos lá",
+      "extraTitle": "Desafio",
+      "extraDouble": "Aceita e cada acerto conta a dobrar",
+      "extraAccept": "Aceito",
+      "extraDecline": "Prefiro normal",
+      "fetchTitle": "Rápido, vai buscar:",
+      "fetchGo": "Já tenho — vamos",
+      "guessed": "Acertaram!",
+      "skip": "Seguinte",
+      "watching": "{{name}} está a representar",
+      "wordsSoFar": "{{count}} acertadas",
+      "summaryTitle": "A vez de {{name}}",
+      "summaryDoubled": "Desafio cumprido — pontos a dobrar",
+      "summaryEmpty": "Desta vez não passou nada.",
+      "next": "Equipa seguinte",
+      "finish": "Ver resultado final",
+      "winner": "{{team}} ganha!",
+      "draw": "Empate!",
+      "playAgain": "Mais um jogo",
+      "extras": {
+        "requisit": "Representa tudo com {{item}}",
+        "oneHand": "Só com uma mão",
+        "sitting": "Só sentado",
+        "handsBehindBack": "Mãos atrás das costas",
+        "backTurned": "De costas para a equipa",
+        "faceOnly": "Só a cara — o corpo fica quieto",
+        "oneLeg": "Num pé só",
+        "noJumping": "Sem tirar os pés do chão",
+        "slowMotion": "Tudo em câmara lenta",
+        "robot": "Tudo como um robô",
+        "fastForward": "Tudo em avanço rápido",
+        "ballet": "Tudo como ballet",
+        "actionMovie": "Tudo como num filme de ação",
+        "puppet": "Como uma marioneta de fios",
+        "silentFilm": "Como no cinema mudo — exagera à grande",
+        "halfTime": "Só metade do tempo",
+        "duo": "Outra pessoa da equipa representa contigo em silêncio — sem combinar"
+      },
+      "props": {
+        "kochloeffel": "uma colher de pau",
+        "handtuch": "uma toalha",
+        "kissen": "uma almofada",
+        "socke": "uma meia",
+        "klopapierrolle": "um rolo de papel higiénico",
+        "besen": "uma vassoura",
+        "schluesselbund": "um molho de chaves",
+        "wasserflasche": "uma garrafa de água",
+        "buch": "um livro",
+        "regenschirm": "um guarda-chuva",
+        "kleiderbuegel": "um cabide",
+        "zahnbuerste": "uma escova de dentes",
+        "topfdeckel": "uma tampa de panela",
+        "tasse": "uma caneca",
+        "stift": "uma caneta",
+        "brille": "uns óculos",
+        "muetze": "um gorro",
+        "schal": "um cachecol",
+        "decke": "um cobertor",
+        "waescheklammer": "uma mola da roupa",
+        "zeitung": "um jornal",
+        "karton": "uma caixa de cartão",
+        "sieb": "um coador",
+        "nudelholz": "um rolo da massa",
+        "foehn": "um secador",
+        "gummiband": "um elástico",
+        "teller": "um prato",
+        "gabel": "um garfo",
+        "kerze": "uma vela",
+        "pfanne": "uma frigideira"
+      }
     }
   },
   "native": {
@@ -7286,7 +7386,8 @@
       "woIstWas": "Onde é?",
       "drueckDasWort": "Prime a Palavra",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Quase Lá"
+      "closeenough": "Quase Lá",
+      "pantomime": "Sem Palavras"
     },
     "gameDescs": {
       "bomb": "Quem é que rebenta?",
@@ -7307,7 +7408,8 @@
       "woIstWas": "Encontra o lugar",
       "drueckDasWort": "Digita rápido, pensa rápido",
       "ohrwurm": "Ouve a música, acerta no ano",
-      "closeenough": "Perguntas de estimativa com um número por resposta — ganha quem chegar mais perto"
+      "closeenough": "Perguntas de estimativa com um número por resposta — ganha quem chegar mais perto",
+      "pantomime": "Representa em silêncio, a equipa adivinha — com desafios para pontos a dobrar"
     },
     "events": {
       "title": "Eventos",
@@ -7866,6 +7968,20 @@
         "name": "Relâmpago",
         "desc": "20 s — puro instinto"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Descontraído",
+        "desc": "120 seg. por vez"
+      },
+      "klassisch": {
+        "name": "Clássico",
+        "desc": "90 seg. por vez"
+      },
+      "blitz": {
+        "name": "Relâmpago",
+        "desc": "60 seg. — pulsação a subir"
+      }
     }
   },
   "woIstWas": {
@@ -8236,6 +8352,15 @@
       "step3": "Depois todas as respostas assentam num eixo e a verdade sobe: 10 pontos para a mais próxima, depois 6 e 3.",
       "step4": "Quem ficar dentro da margem soma mais cinco pontos.",
       "tip": "O botão de pista dá-te um valor de referência — não custa nada e transforma o palpite em conta."
+    },
+    "pantomime": {
+      "title": "Sem Palavras",
+      "tagline": "Sem som, sem fala, sem ruídos. Só tu e os teus braços.",
+      "step1": "Duas equipas jogam à vez. Um jogador representa uma palavra em silêncio total.",
+      "step2": "A equipa dele adivinha enquanto o relógio corre. Cada palavra acertada vale um ponto.",
+      "step3": "Cada vez começa com um desafio — representar tudo com uma colher de pau, por exemplo. Quem aceitar ganha o dobro por cada acerto.",
+      "step4": "Recusar não custa nada, falhar também não. Aceitar só pode dar lucro.",
+      "tip": "Uma palavra que não sai custa mais do que vale — passa à frente e agarra a seguinte."
     }
   },
   "nativeAdmin": {

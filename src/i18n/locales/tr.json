@@ -7227,6 +7227,106 @@
         "employees": "Volkswagen'de yaklaşık 680.000 kişi çalışır.",
         "revenue": "Apple yılda yaklaşık 390 milyar USD ciro yapar."
       }
+    },
+    "pantomime": {
+      "title": "Tek Kelime Yok",
+      "tagline": "Ses yok, kelime yok — sadece sen ve kolların.",
+      "backToGames": "Oyunlara dön",
+      "playerN": "{{n}}. oyuncu",
+      "playersLabel": "Oyuncular",
+      "teamsHint": "Takımlar kurayla belirlenir",
+      "teamA": "Pembe Takım",
+      "teamB": "Turkuaz Takım",
+      "mode": "Tur başına süre",
+      "rounds": "Raund sayısı",
+      "categoriesLabel": "Konular",
+      "mix": "Karışık",
+      "available": "Destede {{count}} kelime",
+      "loading": "Kelimeler yükleniyor …",
+      "start": "Perde açılsın",
+      "needFour": "İki kişiye karşı iki kişi — en az dört kişi lazım.",
+      "adultHint": "18+ konusu açık.",
+      "extrasLabel": "Meydan okumalar",
+      "extrasOn": "Meydan okumalar açık",
+      "extrasOff": "Meydan okumalar kapalı",
+      "extrasDesc": "Her tur bir ek görevle başlar. Kabul edersen puanlar ikiye katlanır, reddedersen hiçbir şey kaybetmezsin.",
+      "roundOf": "Raund {{round}} / {{total}}",
+      "leave": "Çık",
+      "leaveTitle": "Oyundan çıkılsın mı?",
+      "leaveBody": "Puanlar silinir.",
+      "leaveStay": "Devam et",
+      "leaveGo": "Çık",
+      "actorIs": "birazdan canlandıracak",
+      "ready": "Hadi bakalım",
+      "extraTitle": "Meydan okuma",
+      "extraDouble": "Kabul edersen her doğru iki kat sayılır",
+      "extraAccept": "Kabul",
+      "extraDecline": "Normal oynayayım",
+      "fetchTitle": "Çabuk kap:",
+      "fetchGo": "Aldım — başla",
+      "guessed": "Bildiler!",
+      "skip": "Geç",
+      "watching": "{{name}} canlandırıyor",
+      "wordsSoFar": "{{count}} bilindi",
+      "summaryTitle": "{{name}} turunu bitirdi",
+      "summaryDoubled": "Meydan okuma tamam — çift puan",
+      "summaryEmpty": "Bu sefer hiçbiri tutmadı.",
+      "next": "Sıradaki takım",
+      "finish": "Sonucu gör",
+      "winner": "{{team}} kazandı!",
+      "draw": "Berabere!",
+      "playAgain": "Bir tur daha",
+      "extras": {
+        "requisit": "Her şeyi bununla canlandır: {{item}}",
+        "oneHand": "Sadece tek elle",
+        "sitting": "Sadece oturarak",
+        "handsBehindBack": "Eller arkada",
+        "backTurned": "Takımına sırtın dönük",
+        "faceOnly": "Sadece mimikle — vücut kıpırdamayacak",
+        "oneLeg": "Tek ayak üstünde",
+        "noJumping": "Ayaklarını yerden kaldırmadan",
+        "slowMotion": "Her şey ağır çekimde",
+        "robot": "Her şey robot gibi",
+        "fastForward": "Her şey hızlı çekimde",
+        "ballet": "Her şey bale gibi",
+        "actionMovie": "Her şey aksiyon filmi gibi",
+        "puppet": "İpli kukla gibi",
+        "silentFilm": "Sessiz film gibi — abartabildiğin kadar",
+        "halfTime": "Sürenin sadece yarısı",
+        "duo": "Takımdan biri daha sessizce eşlik eder — konuşmadan"
+      },
+      "props": {
+        "kochloeffel": "tahta kaşık",
+        "handtuch": "havlu",
+        "kissen": "yastık",
+        "socke": "çorap",
+        "klopapierrolle": "tuvalet kâğıdı rulosu",
+        "besen": "süpürge",
+        "schluesselbund": "anahtarlık",
+        "wasserflasche": "su şişesi",
+        "buch": "kitap",
+        "regenschirm": "şemsiye",
+        "kleiderbuegel": "elbise askısı",
+        "zahnbuerste": "diş fırçası",
+        "topfdeckel": "tencere kapağı",
+        "tasse": "kupa",
+        "stift": "kalem",
+        "brille": "gözlük",
+        "muetze": "bere",
+        "schal": "atkı",
+        "decke": "battaniye",
+        "waescheklammer": "çamaşır mandalı",
+        "zeitung": "gazete",
+        "karton": "karton kutu",
+        "sieb": "süzgeç",
+        "nudelholz": "oklava",
+        "foehn": "saç kurutma makinesi",
+        "gummiband": "lastik bant",
+        "teller": "tabak",
+        "gabel": "çatal",
+        "kerze": "mum",
+        "pfanne": "tava"
+      }
     }
   },
   "native": {
@@ -7286,7 +7386,8 @@
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Yaklaştın"
+      "closeenough": "Yaklaştın",
+      "pantomime": "Tek Kelime Yok"
     },
     "gameDescs": {
       "bomb": "Kimde patlar?",
@@ -7307,7 +7408,8 @@
       "woIstWas": "Yeri bul",
       "drueckDasWort": "Hızlı yaz, hızlı düşün",
       "ohrwurm": "Şarkıyı dinle, yılını tahmin et",
-      "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır"
+      "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır",
+      "pantomime": "Sessizce canlandır, takımın bilsin — çift puan için meydan okumalarla"
     },
     "events": {
       "title": "Etkinlikler",
@@ -7866,6 +7968,20 @@
         "name": "Şimşek",
         "desc": "20 sn. — içgüdüyle"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Rahat",
+        "desc": "Tur başına 120 sn."
+      },
+      "klassisch": {
+        "name": "Klasik",
+        "desc": "Tur başına 90 sn."
+      },
+      "blitz": {
+        "name": "Şimşek",
+        "desc": "60 sn. — nabız yükselsin"
+      }
     }
   },
   "woIstWas": {
@@ -8236,6 +8352,15 @@
       "step3": "Sonra bütün tahminler tek bir eksene düşer ve gerçek yükselir: en yakına 10 puan, sonra 6, sonra 3.",
       "step4": "Tolerans aralığına düşen beş puan daha alır.",
       "tip": "İpucu düğmesi sana bir karşılaştırma değeri verir — bedavadır ve körü körüne tahmini hesaba çevirir."
+    },
+    "pantomime": {
+      "title": "Tek Kelime Yok",
+      "tagline": "Ses yok, kelime yok, gürültü yok. Sadece sen ve kolların.",
+      "step1": "İki takım sırayla oynar. Bir oyuncu bir kelimeyi tamamen sessizce canlandırır.",
+      "step2": "Süre işlerken takımı tahmin eder. Bilinen her kelime bir puan.",
+      "step3": "Her tur bir meydan okumayla başlar — mesela her şeyi tahta kaşıkla canlandırmak. Kabul eden her doğru için çift puan alır.",
+      "step4": "Reddetmenin de başaramamanın da bir bedeli yok. Kabul etmek sadece kazandırır.",
+      "tip": "Bir türlü bilinmeyen kelime değerinden fazlasına mal olur — geç ve sıradakini al."
     }
   },
   "nativeAdmin": {

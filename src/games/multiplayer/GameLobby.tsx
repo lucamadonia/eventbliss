@@ -38,6 +38,7 @@ const GAME_LIST = [
   { id: "ohrwurm", name: "Ohrwurm", icon: "🎵" },
   { id: "pixeljagd", name: "Pixeljagd", icon: "🔍" },
   { id: "closeenough", name: "Nah Dran", icon: "🎯" },
+  { id: "pantomime", name: "Ohne Worte", icon: "🎭" },
 ];
 
 interface GameLobbyProps {

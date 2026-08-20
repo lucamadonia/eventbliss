@@ -22,6 +22,7 @@ const GAME_ICONS: Record<string, string> = {
   ohrwurm: "🎵",
   pixeljagd: "🔍",
   closeenough: "🎯",
+  pantomime: "🎭",
 };
 
 const GAME_GRADIENTS: Record<string, string> = {
@@ -37,6 +38,7 @@ const GAME_GRADIENTS: Record<string, string> = {
   ohrwurm: "from-[#FF2E88] to-[#26E0C4]",
   pixeljagd: "from-[#38BDF8] to-[#A78BFA]",
   closeenough: "from-[#FBBF24] to-[#34D399]",
+  pantomime: "from-[#FBBF24] to-[#F472B6]",
 };
 
 const STEP_COLORS = [

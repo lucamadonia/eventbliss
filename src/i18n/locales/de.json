@@ -7153,6 +7153,106 @@
         "employees": "Wie viele Menschen arbeiten bei {{name}}?",
         "revenue": "Wie hoch ist der Umsatz von {{name}}?"
       }
+    },
+    "pantomime": {
+      "title": "Ohne Worte",
+      "tagline": "Kein Ton, kein Wort — nur du und deine Arme.",
+      "backToGames": "Zu den Spielen",
+      "playerN": "Spieler {{n}}",
+      "playersLabel": "Spieler",
+      "teamsHint": "Die Teams werden gemischt",
+      "teamA": "Team Rosa",
+      "teamB": "Team Türkis",
+      "mode": "Zeit pro Zug",
+      "rounds": "Runden",
+      "categoriesLabel": "Themen",
+      "mix": "Bunte Mischung",
+      "available": "{{count}} Begriffe im Stapel",
+      "loading": "Begriffe werden geladen …",
+      "start": "Vorhang auf",
+      "needFour": "Zu zweit gegen zwei — ihr braucht mindestens vier Leute.",
+      "adultHint": "Die Kategorie „Ab 18\" ist freigeschaltet.",
+      "extrasLabel": "Herausforderungen",
+      "extrasOn": "Herausforderungen an",
+      "extrasOff": "Herausforderungen aus",
+      "extrasDesc": "Vor jedem Zug gibt es eine Zusatzaufgabe. Annehmen verdoppelt die Punkte, Ablehnen kostet nichts.",
+      "roundOf": "Runde {{round}} von {{total}}",
+      "leave": "Verlassen",
+      "leaveTitle": "Partie verlassen?",
+      "leaveBody": "Der Punktestand geht verloren.",
+      "leaveStay": "Weiterspielen",
+      "leaveGo": "Verlassen",
+      "actorIs": "stellt gleich dar",
+      "ready": "Los geht's",
+      "extraTitle": "Herausforderung",
+      "extraDouble": "Angenommen zählt jeder Treffer doppelt",
+      "extraAccept": "Annehmen",
+      "extraDecline": "Lieber normal",
+      "fetchTitle": "Hol dir schnell:",
+      "fetchGo": "Hab ich — los",
+      "guessed": "Erraten!",
+      "skip": "Weiter",
+      "watching": "{{name}} stellt dar",
+      "wordsSoFar": "{{count}} erraten",
+      "summaryTitle": "Der Zug von {{name}}",
+      "summaryDoubled": "Herausforderung bestanden — doppelte Punkte",
+      "summaryEmpty": "Diesmal kam nichts durch.",
+      "next": "Nächstes Team",
+      "finish": "Endstand ansehen",
+      "winner": "{{team}} gewinnt!",
+      "draw": "Unentschieden!",
+      "playAgain": "Noch eine Partie",
+      "extras": {
+        "requisit": "Stell alles mit {{item}} dar",
+        "oneHand": "Nur mit einer Hand",
+        "sitting": "Nur im Sitzen",
+        "handsBehindBack": "Hände hinter dem Rücken",
+        "backTurned": "Mit dem Rücken zum Team",
+        "faceOnly": "Nur Mimik — der Körper bleibt still",
+        "oneLeg": "Auf einem Bein",
+        "noJumping": "Ohne die Füße vom Boden zu nehmen",
+        "slowMotion": "Alles in Zeitlupe",
+        "robot": "Alles wie ein Roboter",
+        "fastForward": "Alles im Schnelldurchlauf",
+        "ballet": "Alles als Ballett",
+        "actionMovie": "Alles wie im Actionfilm",
+        "puppet": "Wie eine Marionette an Fäden",
+        "silentFilm": "Wie im Stummfilm — maßlos übertrieben",
+        "halfTime": "Nur die halbe Zeit",
+        "duo": "Ein zweites Teammitglied spielt stumm mit — ohne Absprache"
+      },
+      "props": {
+        "kochloeffel": "einem Kochlöffel",
+        "handtuch": "einem Handtuch",
+        "kissen": "einem Kissen",
+        "socke": "einer Socke",
+        "klopapierrolle": "einer Klopapierrolle",
+        "besen": "einem Besen",
+        "schluesselbund": "einem Schlüsselbund",
+        "wasserflasche": "einer Wasserflasche",
+        "buch": "einem Buch",
+        "regenschirm": "einem Regenschirm",
+        "kleiderbuegel": "einem Kleiderbügel",
+        "zahnbuerste": "einer Zahnbürste",
+        "topfdeckel": "einem Topfdeckel",
+        "tasse": "einer Tasse",
+        "stift": "einem Stift",
+        "brille": "einer Brille",
+        "muetze": "einer Mütze",
+        "schal": "einem Schal",
+        "decke": "einer Decke",
+        "waescheklammer": "einer Wäscheklammer",
+        "zeitung": "einer Zeitung",
+        "karton": "einem Karton",
+        "sieb": "einem Sieb",
+        "nudelholz": "einem Nudelholz",
+        "foehn": "einem Föhn",
+        "gummiband": "einem Gummiband",
+        "teller": "einem Teller",
+        "gabel": "einer Gabel",
+        "kerze": "einer Kerze",
+        "pfanne": "einer Pfanne"
+      }
     }
   },
   "native": {
@@ -7213,7 +7313,8 @@
       "woIstWas": "Wo ist was?",
       "drueckDasWort": "Drück das Wort",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Nah Dran"
+      "closeenough": "Nah Dran",
+      "pantomime": "Ohne Worte"
     },
     "gameDescs": {
       "pixeljagd": "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt",
@@ -7235,7 +7336,8 @@
       "woIstWas": "Finde den Ort",
       "drueckDasWort": "Schnell tippen, schnell denken",
       "ohrwurm": "Song hören, Jahr einordnen",
-      "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt"
+      "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt",
+      "pantomime": "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte"
     },
     "events": {
       "title": "Events",
@@ -7808,6 +7910,20 @@
         "name": "Blitz",
         "desc": "20 Sek. — Bauchgefühl"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Entspannt",
+        "desc": "120 Sek. pro Zug"
+      },
+      "klassisch": {
+        "name": "Klassisch",
+        "desc": "90 Sek. pro Zug"
+      },
+      "blitz": {
+        "name": "Blitz",
+        "desc": "60 Sek. — Puls hoch"
+      }
     }
   },
   "woIstWas": {
@@ -8187,6 +8303,15 @@
       "step3": "Danach fliegen alle Tipps auf eine Achse und die Wahrheit fährt hoch: 10 Punkte für den nächsten Tipp, dann 6, dann 3.",
       "step4": "Wer innerhalb der Toleranz landet, bekommt fünf Punkte obendrauf.",
       "tip": "Der Tipp-Knopf verrät dir einen Vergleichswert — er kostet nichts und macht aus wildem Raten eine Rechnung."
+    },
+    "pantomime": {
+      "title": "Ohne Worte",
+      "tagline": "Kein Ton, kein Wort, keine Geräusche. Nur du und deine Arme.",
+      "step1": "Zwei Teams treten gegeneinander an. Reihum stellt einer aus dem Team einen Begriff stumm dar.",
+      "step2": "Sein Team rät, so lange die Uhr läuft. Jeder erratene Begriff ist einen Punkt wert.",
+      "step3": "Vor jedem Zug gibt es eine Herausforderung — etwa alles mit einem Kochlöffel darzustellen. Wer sie annimmt, bekommt für jeden Treffer die doppelten Punkte.",
+      "step4": "Ablehnen kostet nichts, und Scheitern auch nicht. Annehmen kann also nur gewinnen.",
+      "tip": "Ein Begriff, der nicht kommt, kostet mehr als er wert ist — weiterdrücken und den nächsten holen."
     }
   },
   "nativeAdmin": {

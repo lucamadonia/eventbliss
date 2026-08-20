@@ -25,6 +25,7 @@ const TVImpostorView = lazy(() => import('./games/TVImpostorView'));
 const TVOhrwurmView = lazy(() => import('./games/TVOhrwurmView'));
 const TVPixeljagdView = lazy(() => import('./games/TVPixeljagdView'));
 const TVCloseEnoughView = lazy(() => import('./games/TVCloseEnoughView'));
+const TVPantomimeView = lazy(() => import('./games/TVPantomimeView'));
 const TVEmojiGuessView = lazy(() => import('./games/TVEmojiGuessView'));
 const TVTruthDareView = lazy(() => import('./games/TVTruthDareView'));
 const TVWhoAmIView = lazy(() => import('./games/TVWhoAmIView'));
@@ -57,13 +58,14 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'ohrwurm' && <TVOhrwurmView {...props} />}
       {game === 'pixeljagd' && <TVPixeljagdView {...props} />}
       {game === 'closeenough' && <TVCloseEnoughView {...props} />}
+      {game === 'pantomime' && <TVPantomimeView {...props} />}
       {game === 'emojiguess' && <TVEmojiGuessView {...props} />}
       {game === 'truthdare' && <TVTruthDareView {...props} />}
       {game === 'whoami' && <TVWhoAmIView {...props} />}
       {game === 'wordpress' && <TVWordPressView {...props} />}
       {game === 'findit' && <TVFindItView {...props} />}
       {/* Smart fallback for games without specific TV view */}
-      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'pixeljagd', 'closeenough', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
+      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'pixeljagd', 'closeenough', 'pantomime', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
         <TVSmartFallback gameState={gameState} />
       )}
     </Suspense>

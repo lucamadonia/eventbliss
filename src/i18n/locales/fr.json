@@ -7177,6 +7177,106 @@
         "employees": "Volkswagen emploie environ 680 000 personnes.",
         "revenue": "Apple réalise environ 390 milliards USD de chiffre d'affaires par an."
       }
+    },
+    "pantomime": {
+      "title": "Sans un mot",
+      "tagline": "Aucun son, aucun mot — juste toi et tes bras.",
+      "backToGames": "Retour aux jeux",
+      "playerN": "Joueur {{n}}",
+      "playersLabel": "Joueurs",
+      "teamsHint": "Les équipes sont tirées au sort",
+      "teamA": "Équipe Rose",
+      "teamB": "Équipe Turquoise",
+      "mode": "Temps par tour",
+      "rounds": "Manches",
+      "categoriesLabel": "Thèmes",
+      "mix": "Mélange varié",
+      "available": "{{count}} mots dans la pioche",
+      "loading": "Chargement des mots …",
+      "start": "Lever de rideau",
+      "needFour": "Deux contre deux — il vous faut au moins quatre personnes.",
+      "adultHint": "Le thème 18+ est débloqué.",
+      "extrasLabel": "Défis",
+      "extrasOn": "Défis activés",
+      "extrasOff": "Défis désactivés",
+      "extrasDesc": "Chaque tour commence par un défi. L'accepter double les points, le refuser ne coûte rien.",
+      "roundOf": "Manche {{round}} sur {{total}}",
+      "leave": "Quitter",
+      "leaveTitle": "Quitter la partie ?",
+      "leaveBody": "Les scores seront perdus.",
+      "leaveStay": "Continuer à jouer",
+      "leaveGo": "Quitter",
+      "actorIs": "va mimer",
+      "ready": "C'est parti",
+      "extraTitle": "Défi",
+      "extraDouble": "Accepté, chaque mot trouvé compte double",
+      "extraAccept": "Accepter",
+      "extraDecline": "Plutôt normal",
+      "fetchTitle": "Vite, attrape :",
+      "fetchGo": "Je l'ai — go",
+      "guessed": "Trouvé !",
+      "skip": "Suivant",
+      "watching": "{{name}} mime",
+      "wordsSoFar": "{{count}} trouvés",
+      "summaryTitle": "Le tour de {{name}}",
+      "summaryDoubled": "Défi relevé — points doublés",
+      "summaryEmpty": "Rien n'est passé cette fois.",
+      "next": "Équipe suivante",
+      "finish": "Voir le score final",
+      "winner": "{{team}} gagne !",
+      "draw": "Égalité !",
+      "playAgain": "Une autre partie",
+      "extras": {
+        "requisit": "Mime tout avec {{item}}",
+        "oneHand": "Avec une seule main",
+        "sitting": "Assis seulement",
+        "handsBehindBack": "Les mains dans le dos",
+        "backTurned": "Dos à ton équipe",
+        "faceOnly": "Rien que le visage — le corps ne bouge pas",
+        "oneLeg": "Sur une jambe",
+        "noJumping": "Sans décoller les pieds du sol",
+        "slowMotion": "Tout au ralenti",
+        "robot": "Tout comme un robot",
+        "fastForward": "Tout en accéléré",
+        "ballet": "Tout en ballet",
+        "actionMovie": "Tout comme dans un film d'action",
+        "puppet": "Comme une marionnette à fils",
+        "silentFilm": "Comme au cinéma muet — à outrance",
+        "halfTime": "La moitié du temps seulement",
+        "duo": "Un deuxième équipier mime avec toi en silence — sans concertation"
+      },
+      "props": {
+        "kochloeffel": "une cuillère en bois",
+        "handtuch": "une serviette",
+        "kissen": "un coussin",
+        "socke": "une chaussette",
+        "klopapierrolle": "un rouleau de papier toilette",
+        "besen": "un balai",
+        "schluesselbund": "un trousseau de clés",
+        "wasserflasche": "une bouteille d'eau",
+        "buch": "un livre",
+        "regenschirm": "un parapluie",
+        "kleiderbuegel": "un cintre",
+        "zahnbuerste": "une brosse à dents",
+        "topfdeckel": "un couvercle de casserole",
+        "tasse": "une tasse",
+        "stift": "un stylo",
+        "brille": "une paire de lunettes",
+        "muetze": "un bonnet",
+        "schal": "une écharpe",
+        "decke": "une couverture",
+        "waescheklammer": "une pince à linge",
+        "zeitung": "un journal",
+        "karton": "un carton",
+        "sieb": "une passoire",
+        "nudelholz": "un rouleau à pâtisserie",
+        "foehn": "un sèche-cheveux",
+        "gummiband": "un élastique",
+        "teller": "une assiette",
+        "gabel": "une fourchette",
+        "kerze": "une bougie",
+        "pfanne": "une poêle"
+      }
     }
   },
   "native": {
@@ -7236,7 +7336,8 @@
       "woIstWas": "Où est-ce ?",
       "drueckDasWort": "Appuie sur le Mot",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Presque !"
+      "closeenough": "Presque !",
+      "pantomime": "Sans un mot"
     },
     "gameDescs": {
       "bomb": "Qui se fait exploser ?",
@@ -7257,7 +7358,8 @@
       "woIstWas": "Trouve l'endroit",
       "drueckDasWort": "Tape vite, pense vite",
       "ohrwurm": "Écoute le titre, place l'année",
-      "closeenough": "Des questions d'estimation dont la réponse est un nombre — le plus proche gagne"
+      "closeenough": "Des questions d'estimation dont la réponse est un nombre — le plus proche gagne",
+      "pantomime": "Mime en silence, ton équipe devine — avec des défis pour doubler les points"
     },
     "events": {
       "title": "Événements",
@@ -7816,6 +7918,20 @@
         "name": "Éclair",
         "desc": "20 s — à l'instinct"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Détendu",
+        "desc": "120 sec. par tour"
+      },
+      "klassisch": {
+        "name": "Classique",
+        "desc": "90 sec. par tour"
+      },
+      "blitz": {
+        "name": "Éclair",
+        "desc": "60 sec. — le pouls s'emballe"
+      }
     }
   },
   "woIstWas": {
@@ -8186,6 +8302,15 @@
       "step3": "Ensuite toutes les réponses se placent sur un axe et la vérité surgit : 10 points au plus proche, puis 6, puis 3.",
       "step4": "Si tu tombes dans la marge, tu gagnes cinq points de plus.",
       "tip": "Le bouton d'indice te donne un ordre de grandeur — il est gratuit et transforme le hasard en calcul."
+    },
+    "pantomime": {
+      "title": "Sans un mot",
+      "tagline": "Aucun son, aucun mot, aucun bruit. Juste toi et tes bras.",
+      "step1": "Deux équipes s'affrontent à tour de rôle. Un joueur mime un mot dans le silence complet.",
+      "step2": "Son équipe devine tant que le chrono tourne. Chaque mot trouvé vaut un point.",
+      "step3": "Chaque tour commence par un défi — tout mimer avec une cuillère en bois, par exemple. Qui l'accepte marque le double à chaque mot trouvé.",
+      "step4": "Refuser ne coûte rien, échouer non plus. Accepter ne peut donc que rapporter.",
+      "tip": "Un mot qui ne passe pas coûte plus qu'il ne rapporte — passe et prends le suivant."
     }
   },
   "nativeAdmin": {

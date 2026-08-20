@@ -7251,6 +7251,106 @@
         "employees": "Volkswagen zatrudnia około 680 000 osób.",
         "revenue": "Apple ma około 390 miliardów USD przychodu rocznie."
       }
+    },
+    "pantomime": {
+      "title": "Bez Słów",
+      "tagline": "Bez dźwięku, bez słowa — tylko ty i twoje ręce.",
+      "backToGames": "Wróć do gier",
+      "playerN": "Gracz {{n}}",
+      "playersLabel": "Gracze",
+      "teamsHint": "Drużyny losujemy",
+      "teamA": "Drużyna Różowa",
+      "teamB": "Drużyna Turkusowa",
+      "mode": "Czas na turę",
+      "rounds": "Rundy",
+      "categoriesLabel": "Tematy",
+      "mix": "Miks wszystkiego",
+      "available": "{{count}} haseł w talii",
+      "loading": "Wczytywanie haseł …",
+      "start": "Kurtyna w górę",
+      "needFour": "Dwóch na dwóch — potrzebujecie co najmniej czterech osób.",
+      "adultHint": "Kategoria 18+ jest odblokowana.",
+      "extrasLabel": "Wyzwania",
+      "extrasOn": "Wyzwania włączone",
+      "extrasOff": "Wyzwania wyłączone",
+      "extrasDesc": "Każdą turę otwiera dodatkowe zadanie. Przyjmiesz — punkty lecą podwójnie, odmówisz — nic nie tracisz.",
+      "roundOf": "Runda {{round}} z {{total}}",
+      "leave": "Wyjdź",
+      "leaveTitle": "Wyjść z gry?",
+      "leaveBody": "Wynik przepadnie.",
+      "leaveStay": "Gramy dalej",
+      "leaveGo": "Wyjdź",
+      "actorIs": "zaraz pokazuje",
+      "ready": "Jedziemy",
+      "extraTitle": "Wyzwanie",
+      "extraDouble": "Przyjmij, a każdy traf liczy się podwójnie",
+      "extraAccept": "Przyjmuję",
+      "extraDecline": "Wolę normalnie",
+      "fetchTitle": "Szybko! Twój rekwizyt:",
+      "fetchGo": "Mam — startuję",
+      "guessed": "Trafione!",
+      "skip": "Dalej",
+      "watching": "{{name}} pokazuje",
+      "wordsSoFar": "{{count}} trafionych",
+      "summaryTitle": "Tura gracza {{name}}",
+      "summaryDoubled": "Wyzwanie zaliczone — podwójne punkty",
+      "summaryEmpty": "Tym razem nic nie weszło.",
+      "next": "Następna drużyna",
+      "finish": "Zobacz wynik końcowy",
+      "winner": "{{team}} wygrywa!",
+      "draw": "Remis!",
+      "playAgain": "Jeszcze jedna partia",
+      "extras": {
+        "requisit": "Pokaż wszystko tym rekwizytem: {{item}}",
+        "oneHand": "Tylko jedną ręką",
+        "sitting": "Tylko na siedząco",
+        "handsBehindBack": "Ręce za plecami",
+        "backTurned": "Tyłem do drużyny",
+        "faceOnly": "Tylko mimika — ciało bez ruchu",
+        "oneLeg": "Na jednej nodze",
+        "noJumping": "Bez odrywania stóp od podłogi",
+        "slowMotion": "Wszystko w zwolnionym tempie",
+        "robot": "Wszystko jak robot",
+        "fastForward": "Wszystko na przewijaniu",
+        "ballet": "Wszystko jako balet",
+        "actionMovie": "Wszystko jak w filmie akcji",
+        "puppet": "Jak marionetka na sznurkach",
+        "silentFilm": "Jak w kinie niemym — bez umiaru",
+        "halfTime": "Tylko połowa czasu",
+        "duo": "Druga osoba z drużyny gra z tobą w ciszy — bez ustaleń"
+      },
+      "props": {
+        "kochloeffel": "drewniana łyżka",
+        "handtuch": "ręcznik",
+        "kissen": "poduszka",
+        "socke": "skarpetka",
+        "klopapierrolle": "rolka papieru toaletowego",
+        "besen": "miotła",
+        "schluesselbund": "pęk kluczy",
+        "wasserflasche": "butelka wody",
+        "buch": "książka",
+        "regenschirm": "parasol",
+        "kleiderbuegel": "wieszak",
+        "zahnbuerste": "szczoteczka do zębów",
+        "topfdeckel": "pokrywka od garnka",
+        "tasse": "kubek",
+        "stift": "długopis",
+        "brille": "okulary",
+        "muetze": "czapka",
+        "schal": "szalik",
+        "decke": "koc",
+        "waescheklammer": "klamerka do bielizny",
+        "zeitung": "gazeta",
+        "karton": "karton",
+        "sieb": "sitko",
+        "nudelholz": "wałek do ciasta",
+        "foehn": "suszarka do włosów",
+        "gummiband": "gumka recepturka",
+        "teller": "talerz",
+        "gabel": "widelec",
+        "kerze": "świeczka",
+        "pfanne": "patelnia"
+      }
     }
   },
   "native": {
@@ -7310,7 +7410,8 @@
       "woIstWas": "Gdzie to jest?",
       "drueckDasWort": "Wciśnij Słowo",
       "ohrwurm": "Ohrwurm",
-      "closeenough": "Blisko!"
+      "closeenough": "Blisko!",
+      "pantomime": "Bez Słów"
     },
     "gameDescs": {
       "bomb": "Komu wybuchnie?",
@@ -7331,7 +7432,8 @@
       "woIstWas": "Znajdź miejsce",
       "drueckDasWort": "Pisz szybko, myśl szybko",
       "ohrwurm": "Posłuchaj utworu, wskaż rok",
-      "closeenough": "Pytania szacunkowe z liczbą w odpowiedzi — wygrywa ten, kto jest najbliżej"
+      "closeenough": "Pytania szacunkowe z liczbą w odpowiedzi — wygrywa ten, kto jest najbliżej",
+      "pantomime": "Pokazuj bez słów, drużyna zgaduje — z wyzwaniami za podwójne punkty"
     },
     "events": {
       "title": "Wydarzenia",
@@ -7890,6 +7992,20 @@
         "name": "Błyskawica",
         "desc": "20 s — na wyczucie"
       }
+    },
+    "pantomime": {
+      "entspannt": {
+        "name": "Na luzie",
+        "desc": "120 sek. na turę"
+      },
+      "klassisch": {
+        "name": "Klasyk",
+        "desc": "90 sek. na turę"
+      },
+      "blitz": {
+        "name": "Błyskawica",
+        "desc": "60 sek. — puls w górę"
+      }
     }
   },
   "woIstWas": {
@@ -8260,6 +8376,15 @@
       "step3": "Potem wszystkie typy trafiają na jedną oś i wjeżdża prawda: 10 punktów za najbliższy typ, potem 6 i 3.",
       "step4": "Kto zmieści się w granicach tolerancji, dostaje pięć punktów więcej.",
       "tip": "Przycisk podpowiedzi daje punkt odniesienia — nic nie kosztuje, a zmienia zgadywanie w rachunek."
+    },
+    "pantomime": {
+      "title": "Bez Słów",
+      "tagline": "Bez dźwięku, bez słowa, bez odgłosów. Tylko ty i twoje ręce.",
+      "step1": "Dwie drużyny grają na zmianę. Jedna osoba pokazuje hasło w całkowitej ciszy.",
+      "step2": "Jej drużyna zgaduje, dopóki leci czas. Każde trafione hasło to punkt.",
+      "step3": "Każdą turę otwiera wyzwanie — na przykład pokazanie wszystkiego drewnianą łyżką. Kto je przyjmie, dostaje za każdy traf podwójne punkty.",
+      "step4": "Odmowa nic nie kosztuje, porażka też nie. Przyjęcie wyzwania może tylko pomóc.",
+      "tip": "Hasło, które nie chce wejść, kosztuje więcej, niż jest warte — przewiń dalej i bierz następne."
     }
   },
   "nativeAdmin": {

@@ -49,6 +49,7 @@ export const playableGames: PlayableGame[] = [
   { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        tier: "free",    badge: "Neu", categories: ["party", "quiz"] },
   { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       tier: "free",    badge: "Neu", categories: ["quiz", "reaktion"] },
   { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     tier: "free",    badge: "Neu", categories: ["quiz", "party"] },
+  { id: "pantomime",       nameKey: "native.gameNames.pantomime",       descKey: "native.gameDescs.pantomime",       image: "/images/games/pantomime.webp",       gradient: "from-amber-400 to-pink-400",        tier: "free",    badge: "Neu", categories: ["party", "kreativ"] },
 ];
 
 /** Set of playable game ids — handy for "is this idea card also playable?" checks. */
@@ -66,7 +67,7 @@ export const ideaToPlayable: Record<string, string> = {
   taboo: "taboo",
   pictionary: "schnellzeichner",
   would_you_rather: "this-or-that",
-  charades: "headup",
+  charades: "pantomime",
   one_word_story: "story-builder",
   two_truths_lie: "fake-or-fact",
 };
