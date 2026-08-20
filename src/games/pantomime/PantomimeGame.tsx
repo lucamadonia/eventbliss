@@ -442,6 +442,10 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       timeLeft: timer.timeLeft,
       totalTime: turnSeconds,
       correctCount: turnResults.filter((r) => r.result === 'correct').length,
+      // Fuer die Wertung zwischen den Zuegen — ohne das steht der Fernseher
+      // dort leer, waehrend am Tisch die Punkte verkuendet werden.
+      turnPoints,
+      extraAccepted,
       // Die Herausforderung MUSS auf den Fernseher: Nur so sieht die Gruppe,
       // ob der Kochlöffel wirklich benutzt wurde.
       extra: extraAccepted && extra ? { text: extraText, kind: extra.kind } : null,
@@ -458,6 +462,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       timer.timeLeft,
       turnSeconds,
       turnResults,
+      turnPoints,
       extraAccepted,
       extra,
       extraText,
@@ -474,8 +479,11 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     phase,
     round,
     activeTeamIdx,
+    // Die Uhr MUSS hier stehen: Ohne sie feuert die Bruecke nur bei
+    // Phasenwechseln, und auf dem Fernseher stuende eine eingefrorene Zahl.
     timer.timeLeft,
     turnResults.length,
+    turnPoints,
     fetchLeft,
   ]);
 

@@ -51,6 +51,8 @@ export default function TVPantomimeView({ gameState }: Props) {
   const totalTime = Number(s.totalTime ?? 90);
   const correctCount = Number(s.correctCount ?? 0);
   const fetchLeft = Number(s.fetchLeft ?? 0);
+  const turnPoints = Number(s.turnPoints ?? 0);
+  const extraAccepted = Boolean(s.extraAccepted);
   const extra = (s.extra ?? null) as { text?: string; kind?: string } | null;
 
   const teams = useMemo<TeamState[]>(() => {
@@ -113,6 +115,53 @@ export default function TVPantomimeView({ gameState }: Props) {
               <p className="font-black tabular-nums" style={{ fontSize: tvType.hero, color: PM.gold }}>
                 {fetchLeft}
               </p>
+            </motion.div>
+          )}
+
+          {phase === 'turnStart' && (
+            <motion.p
+              key="turnStart"
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              style={{ fontSize: tvType.title, color: PM.dim }}
+            >
+              {t('games.pantomime.actorIs')}
+            </motion.p>
+          )}
+
+          {phase === 'extra' && (
+            <motion.p
+              key="extraOffer"
+              initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="font-black"
+              style={{ fontSize: tvType.title, color: PM.gold }}
+            >
+              {t('games.pantomime.extraTitle')}
+            </motion.p>
+          )}
+
+          {phase === 'turnSummary' && (
+            <motion.div
+              key="summary"
+              initial={reduce ? false : { opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center"
+            >
+              <p
+                className="font-black tabular-nums"
+                style={{ fontSize: tvType.hero, color: PM.good }}
+              >
+                +{turnPoints}
+              </p>
+              {extraAccepted && (
+                <p className="font-black" style={{ fontSize: tvType.body, color: PM.gold }}>
+                  {t('games.pantomime.summaryDoubled')}
+                </p>
+              )}
             </motion.div>
           )}
 
