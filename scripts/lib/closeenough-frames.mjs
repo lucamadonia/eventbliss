@@ -4,7 +4,7 @@
  * Ein Rahmen bindet eine Wikidata-Eigenschaft an eine Zieleinheit, einen
  * Plausibilitätsbereich und eine Toleranz. Der Fragetext selbst steht NICHT
  * hier, sondern als i18n-Schlüssel `games.closeenough.frames.<key>` in den
- * Sprachdateien — 29 Rahmen mal zehn Sprachen sind 290 Sätze statt tausender
+ * Sprachdateien — 42 Rahmen mal zehn Sprachen sind 420 Sätze statt tausender
  * übersetzter Fragen. Jede künftige Frage kostet damit null Übersetzungsarbeit.
  *
  * `min`/`max` sind das Plausibilitätsfenster in der ZIELEINHEIT. Alles
@@ -13,6 +13,11 @@
  *
  * `tol` ist der Prozentradius für den Volltreffer-Bonus, nicht für die Wertung.
  * Gewertet wird immer der nächste Tipp, egal wie weit daneben.
+ *
+ * ACHTUNG bei Jahreszahlen: Ein Prozentsatz einer Jahreszahl ist riesig. 3 % von
+ * 1889 sind ±57 Jahre — die Bonusgrenze läge zwischen 1832 und 1946, also
+ * praktisch überall. Jahresrahmen stehen deshalb auf 0,15 %, das sind rund
+ * ±3 Jahre.
  *
  * `needsDate` markiert Größen, die sich ändern: dort ist ein P585-Zeitstempel
  * Pflicht, und das Jahr erscheint im Fragetext. Ohne das wirkt jede richtige
@@ -33,7 +38,7 @@ export const FRAMES = {
 
   // ---- Bauwerke ----------------------------------------------------------
   height_structure: { prop: 'P2048', unit: 'm', min: 15, max: 1100, tol: 10 },
-  built_year: { prop: 'P571', unit: 'year', min: -3000, max: 2030, tol: 3, isTime: true },
+  built_year: { prop: 'P571', unit: 'year', min: -3000, max: 2030, tol: 0.15, isTime: true },
   floors: { prop: 'P1101', unit: 'floors', min: 3, max: 180, tol: 10 },
   visitors_year: { prop: 'P1174', unit: 'people', min: 50_000, max: 30_000_000, tol: 25, needsDate: true },
   cost_project: { prop: 'P2130', unit: 'mio_eur', min: 1, max: 50_000, tol: 30 },
@@ -57,7 +62,7 @@ export const FRAMES = {
 
   // ---- Sport -------------------------------------------------------------
   capacity_seats: { prop: 'P1083', unit: 'seats', min: 3000, max: 160_000, tol: 10 },
-  founded_year: { prop: 'P571', unit: 'year', min: 1200, max: 2030, tol: 3, isTime: true },
+  founded_year: { prop: 'P571', unit: 'year', min: 1200, max: 2030, tol: 0.15, isTime: true },
   members: { prop: 'P2124', unit: 'members', min: 1000, max: 400_000, tol: 25, needsDate: true },
   goals: { prop: 'P1351', unit: 'goals', min: 20, max: 1300, tol: 15 },
   matches: { prop: 'P1350', unit: 'matches', min: 50, max: 1400, tol: 15 },
@@ -66,7 +71,7 @@ export const FRAMES = {
   participants: { prop: 'P1132', unit: 'people', min: 100, max: 60_000, tol: 20 },
 
   // ---- Technik & Weltraum ------------------------------------------------
-  released_year: { prop: 'P571', unit: 'year', min: 1750, max: 2030, tol: 2, isTime: true },
+  released_year: { prop: 'P571', unit: 'year', min: 1750, max: 2030, tol: 0.15, isTime: true },
   units_produced: { prop: 'P1092', unit: 'pieces', min: 100, max: 3_000_000_000, tol: 30 },
   speed_vehicle: { prop: 'P2052', unit: 'kmh', min: 20, max: 30_000, tol: 12 },
   range: { prop: 'P2073', unit: 'km', min: 50, max: 20_000, tol: 20 },
