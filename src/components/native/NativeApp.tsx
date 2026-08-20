@@ -9,10 +9,11 @@
  * This component is only rendered when isNative() === true.
  * Desktop / mobile web continue using the original <AppContent /> tree.
  */
-import { lazy, Suspense, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { Routes, Route, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { isNative } from "@/lib/platform";
+import { useBackGuard } from "@/lib/back-guard";
 import { useLaunchFlow } from "@/hooks/useLaunchFlow";
 import { SplashExperience } from "./SplashExperience";
 import { OnboardingSlides } from "./OnboardingSlides";
@@ -110,6 +111,44 @@ function wrap(node: JSX.Element, title?: string, opts?: { fullscreen?: boolean; 
       </NativeStackPage>
     </ErrorBoundary>
   );
+}
+
+/**
+ * Wohin der Zurück-Pfeil aus einem Spiel führt.
+ *
+ * Fest verdrahtet statt `navigate(-1)`: In ein Spiel führen SIEBEN Wege —
+ * Spiele-Tab, Ideen-Tab, Ideen-Regal, Themen-Blatt, Party-Lobby, Raum-Blatt und
+ * Deep-Link. Verlaufsbasiert landete man deshalb mal in den Ideen, mal in der
+ * Party, und nach einem Kaltstart oder Deep-Link auf dem Dashboard, weil
+ * darunter schlicht nichts anderes lag. Ein Spiel gehört unter „Spiele" — also
+ * gehört man beim Verlassen dorthin, unabhängig vom Weg hinein.
+ *
+ * Das läuft bewusst über den Zurück-Stapel und nicht über eine eigene Leitung:
+ * Sowohl der schwebende Pfeil (`FloatingBackButton`) als auch die
+ * Android-Hardware-Taste (`native-setup.ts`) fragen `runBackGuards()` — beide
+ * Wege sind damit in einem Zug erledigt.
+ *
+ * Rang `route` ist zwingend: Der Schutz einer LAUFENDEN Partie („wirklich
+ * verlassen?") muss weiterhin zuerst gefragt werden. Siehe die Begründung in
+ * `src/lib/back-guard.ts`.
+ */
+function GameBackTarget({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  // Ausnahme Party-Lobby: Dort ist das Spiel Teil eines laufenden Abends, und
+  // die Spieleübersicht wäre ein Bruch im Ablauf.
+  const to = params.get("party") === "true" ? "/party" : "/games";
+
+  useBackGuard(
+    () => {
+      navigate(to);
+      return true;
+    },
+    true,
+    "route",
+  );
+
+  return <>{children}</>;
 }
 
 /**
@@ -252,7 +291,11 @@ export function NativeApp() {
               />
               <Route
                 path="/games/:gameId"
-                element={wrap(<GamesHub />, undefined, { fullscreen: true, showBack: true })}
+                element={
+                  <GameBackTarget>
+                    {wrap(<GamesHub />, undefined, { fullscreen: true, showBack: true })}
+                  </GameBackTarget>
+                }
               />
               <Route
                 path="/games/profile"
