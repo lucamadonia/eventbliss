@@ -96,8 +96,9 @@ async function main() {
 
   console.log(`${rows.length} Songs ohne gespeicherte Vorschau`);
   if (rows.length === 0) { console.log('Nichts zu tun.'); return; }
-  console.log(`Quelle: Deezer${WITH_ITUNES ? ' + iTunes für Fehltreffer' : ''}`);
-  console.log(`Geschätzte Dauer: ~${Math.max(1, Math.round((rows.length * DEEZER_DELAY_MS * 1.6) / 60000))} Minuten\n`);
+  console.log('Quelle: iTunes (dauerhaft gueltige Adressen)');
+  console.log(`Geschaetzte Dauer: ~${Math.round((rows.length * ITUNES_DELAY_MS) / 60000)} Minuten
+`);
 
   let cache = {};
   if (existsSync(CACHE)) {
