@@ -98,6 +98,9 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const [confirmExit, setConfirmExit] = useState(false);
   const [guess, setGuess] = useState('');
   const [contentReady, setContentReady] = useState(false);
+  // Steht das Motiv schon auf der Zeichenflaeche? Die Runde darf erst dann
+  // loslaufen — sonst tickt die Uhr gegen ein Bild, das noch niemand sieht.
+  const [imageReady, setImageReady] = useState(false);
 
   const modeDef = useMemo(() => MODES.find((m) => m.id === mode) ?? MODES[0], [mode]);
   const steps = useMemo(() => stepsFor(modeDef.startPx, modeDef.duration), [modeDef]);
@@ -143,8 +146,10 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setGuess('');
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
     roundTimerRef.current?.reset(modeDef.duration);
+    setImageReady(false);
     setPhase('playing');
-    window.setTimeout(() => roundTimerRef.current?.start(), 50);
+    // Kein start() hier: das uebernimmt der Effekt, sobald PixelCanvas
+    // meldet, dass das Motiv geladen und gezeichnet ist.
   }, [modeDef.duration]);
 
   // --- Eingaben ------------------------------------------------------------
@@ -261,15 +266,44 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     });
   }, [online, isHost]);
 
+  /**
+   * Startschuss der Runde: erst wenn das Motiv steht.
+   *
+   * Vorher lief die Uhr 50 ms nach dem Rundenwechsel los, egal wie lange das
+   * Bild noch brauchte. Beim ERSTEN Motiv ist das ein kalter Netzzugriff und
+   * dauert mehrere Sekunden — die Enthuellung war da schon halb durch,
+   * waehrend die Flaeche noch leer war. Ab dem zweiten Bild fiel es nicht
+   * mehr auf, weil Verbindung und Zwischenspeicher warm sind.
+   */
+  useEffect(() => {
+    if (isOnline && !isHost) return;
+    if (phase !== 'playing' || !imageReady || buzzedBy) return;
+    roundTimerRef.current?.start();
+  }, [isOnline, isHost, phase, imageReady, buzzedBy]);
+
+  /**
+   * Das naechste Motiv im Voraus holen.
+   *
+   * Kostet nichts Sichtbares und nimmt der naechsten Runde genau die
+   * Wartezeit, die oben abgefangen wird.
+   */
+  useEffect(() => {
+    const next = deck[round + 1];
+    if (!next?.image) return;
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = next.image;
+  }, [deck, round]);
+
   // Nicht-Host spiegelt die Uhr über EINEN Boolean (Muster aus OhrwurmGame).
   useEffect(() => {
     if (!isOnline || isHost) return;
-    if (phase === 'playing' && !buzzedBy) {
+    if (phase === 'playing' && !buzzedBy && imageReady) {
       roundTimerRef.current?.start();
     } else {
       roundTimerRef.current?.pause();
     }
-  }, [isOnline, isHost, phase, buzzedBy]);
+  }, [isOnline, isHost, phase, buzzedBy, imageReady]);
 
   // TV: gleiche Nutzlast offline wie online. Die Antwort erst in der Auflösung.
   const tvPayload = useMemo(() => ({
@@ -400,12 +434,22 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       <div className="relative z-10 px-4">
         <div className="rounded-3xl overflow-hidden" style={{ background: PJ.elevated, border: `1px solid ${PJ.surface}` }}>
           {puzzle ? (
-            <PixelCanvas
-              src={puzzle.image}
-              step={step}
-              className="w-full h-auto block"
-              onError={() => { flash(t('games.pixeljagd.imageFailed')); nextRound(); }}
-            />
+            <div className="relative">
+              <PixelCanvas
+                src={puzzle.image}
+                step={step}
+                className="w-full h-auto block"
+                onError={() => { flash(t('games.pixeljagd.imageFailed')); nextRound(); }}
+                onReady={() => setImageReady(true)}
+              />
+              {!imageReady && (
+                <div className="absolute inset-0 flex items-center justify-center"
+                  style={{ background: PJ.elevated }}>
+                  <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                    style={{ borderColor: PJ.primary, borderTopColor: 'transparent' }} />
+                </div>
+              )}
+            </div>
           ) : (
             <div className="aspect-[4/3] flex items-center justify-center text-sm" style={{ color: PJ.dim }}>
               {t('games.pixeljagd.noImages')}
@@ -625,13 +669,23 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
   const [answerMode, setAnswerMode] = useState<AnswerMode>('buzzer');
   const [cats, setCats] = useState<PixelCategory[]>([]);
   const [rounds, setRounds] = useState(8);
+  // Einzeln oder in Gruppen. Aendert nur die Beschriftung und die
+  // Vorgabenamen — gespielt wird in beiden Faellen ueber dieselbe Liste,
+  // eine Gruppe ist schlicht ein Spieler mit mehreren Koepfen dahinter.
+  const [teamMode, setTeamMode] = useState<'solo' | 'groups'>('solo');
 
   const available = useMemo(
     () => (contentReady ? getPixelPuzzles(cats.length ? cats : undefined).length : 0),
     [contentReady, cats],
   );
 
-  const named = list.map((p, i) => ({ id: p.id, name: p.name.trim() || t('games.pixeljagd.playerN', { n: i + 1 }) }));
+  const named = list.map((p, i) => ({
+    id: p.id,
+    name: p.name.trim()
+      || (teamMode === 'groups'
+        ? t('games.pixeljagd.teamN', { n: i + 1 })
+        : t('games.pixeljagd.playerN', { n: i + 1 })),
+  }));
   const canStart = contentReady && available > 0 && named.length >= 2;
 
   return (
@@ -646,7 +700,27 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
         </h1>
         <p className="text-sm mt-1" style={{ color: PJ.dim }}>{t('games.pixeljagd.tagline')}</p>
 
-        <div className="mt-6">
+        {/* Einzeln oder in Gruppen */}
+        <p className="mt-6 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
+          {t('games.pixeljagd.teamMode')}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {(['solo', 'groups'] as const).map((m) => (
+            <button key={m} onClick={() => setTeamMode(m)}
+              aria-pressed={teamMode === m}
+              className="p-3 rounded-2xl text-sm font-black"
+              style={{
+                background: teamMode === m ? PJ.secondary : PJ.surface,
+                color: teamMode === m ? PJ.bg : PJ.text,
+              }}>
+              {m === 'solo'
+                ? t('games.pixeljagd.teamModeSolo')
+                : t('games.pixeljagd.teamModeGroups')}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4">
           <PlayerSetup
             players={list}
             onAdd={() => setList((p) => [...p, { id: `p${Date.now()}`, name: '' }])}
@@ -655,6 +729,31 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
             min={2}
             max={8}
             accent={PJ.primary}
+            label={teamMode === 'groups'
+              ? t('games.pixeljagd.groupsLabel')
+              : t('games.pixeljagd.playersLabel')}
+            /* Aus dem Event uebernehmen: Wer schon eine Gaesteliste gepflegt
+               hat, soll sie nicht zum zweiten Mal abtippen. */
+            onImportNames={(names) =>
+              setList((prev) => {
+                const room = Math.max(0, 8 - prev.length);
+                const fresh = names.slice(0, room).map((n, i) => ({
+                  id: `ev${Date.now()}-${i}`,
+                  name: n,
+                }));
+                // Leere Platzhalterzeilen zuerst auffuellen, damit nicht
+                // "Spieler 1" und "Spieler 2" leer daneben stehen bleiben.
+                const filled = prev.map((p) => p);
+                let take = 0;
+                for (let i = 0; i < filled.length && take < fresh.length; i++) {
+                  if (!filled[i].name.trim() && !filled[i].readOnly) {
+                    filled[i] = { ...filled[i], name: fresh[take].name };
+                    take++;
+                  }
+                }
+                return [...filled, ...fresh.slice(take)].slice(0, 8);
+              })
+            }
           />
         </div>
 

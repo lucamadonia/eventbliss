@@ -16,13 +16,17 @@ interface Props {
   height?: number;
   className?: string;
   onError?: () => void;
+  /** Feuert, sobald das Bild geladen UND gezeichnet ist. */
+  onReady?: () => void;
 }
 
-export function PixelCanvas({ src, step, width = 960, height = 720, className, onError }: Props) {
+export function PixelCanvas({ src, step, width = 960, height = 720, className, onError, onReady }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const errorRef = useRef(onError);
   errorRef.current = onError;
+  const readyRef = useRef(onReady);
+  readyRef.current = onReady;
   const [ready, setReady] = useState(false);
 
   // Bild laden.
@@ -44,6 +48,9 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
       if (cancelled) return;
       imgRef.current = img;
       setReady(true);
+      // Erst jetzt darf die Runde loslaufen: Vorher ist die Zeichenflaeche
+      // leer, und die Enthuellung liefe gegen ein Bild, das niemand sieht.
+      readyRef.current?.();
     };
     img.onerror = () => { if (!cancelled) errorRef.current?.(); };
     img.src = src;
