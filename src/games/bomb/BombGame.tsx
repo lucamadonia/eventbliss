@@ -15,6 +15,9 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types (exported for sub-components)
@@ -205,6 +208,24 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const speedReductionRef = useRef(0);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
+
+  const navigate = useNavigate();
+  // Achtung: `handleExit` weiter unten ist KEIN Ausstieg aus der Route, sondern
+  // ein Reset zurück ins Setup desselben Spiels. Der echte Ausstieg gehört
+  // hierher. Bombes Phase liegt verschachtelt in `state.phase`.
+  const exitGuard = useConfirmExit(() => navigate('/games'));
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (state.phase === 'setup' || state.phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
 
 
   // --- Online sync: host broadcasts state, non-host receives ---
@@ -543,6 +564,9 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   return (
+    // Fragment, damit der Verlassen-Dialog NEBEN der AnimatePresence liegt und
+    // deren mode="wait"-Phasenwechsel nicht als zweites Kind stört.
+    <>
     <AnimatePresence mode="wait">
       {state.phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
@@ -587,5 +611,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
         </motion.div>
       )}
     </AnimatePresence>
+    <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ff7350" />
+    </>
   );
 }

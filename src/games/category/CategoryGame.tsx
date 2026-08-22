@@ -29,6 +29,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -898,6 +899,18 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
   // Preserves the existing destination: the back button drops to the setup
   // screen (handleRestart), just gated behind a "Spiel verlassen?" dialog.
   const exitGuard = useConfirmExit(handleRestart);
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
+  // Ohne Eintrag im Back-Guard-Stapel navigiert er mitten in der Runde weg und
+  // die Partie ist futsch. Delegiert bewusst an denselben `exitGuard` wie der
+  // Pfeil, damit es genau EINEN Bestätigungsdialog gibt.
+  useBackGuard(() => {
+    if (phase === "setup" || phase === "gameOver") return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
 
   // Rematch: restart gameplay directly (no setup screen), keeping the same
   // players AND their accumulated score/losses (carry over — do not zero).

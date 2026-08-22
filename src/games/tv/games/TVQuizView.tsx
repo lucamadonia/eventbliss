@@ -296,7 +296,7 @@ export default function TVQuizView({ gameState }: { gameState: any }) {
       {/* PLAYER-based variants: whole-party roster on the shared canvas */}
       {hasRoster && (
         <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-          <TVScoreboard players={roster} activeId={activePlayerId} sort="score" />
+          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={activePlayerId} sort="score" />
         </div>
       )}
     </div>

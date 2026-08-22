@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Check, ArrowLeft, Users, Crown, CircleDot, UserMinus,
@@ -9,6 +10,7 @@ import { useOpenRooms, broadcastRoomCreated, broadcastRoomClosed, broadcastRoomU
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { getBaseUrl } from "@/lib/platform";
+import { playableGames } from "@/lib/playable-games";
 import EventInvite from "./EventInvite";
 
 const EP = {
@@ -17,29 +19,40 @@ const EP = {
   border: "rgba(223,142,255,0.12)",
 } as const;
 
-const GAME_LIST = [
-  { id: "bomb", name: "Tickende Bombe", icon: "💣" },
-  { id: "headup", name: "Stirnraten", icon: "🧠" },
-  { id: "taboo", name: "Wortverbot", icon: "🚫" },
-  { id: "category", name: "Zeit-Kategorie", icon: "⏱️" },
-  { id: "hochstapler", name: "Hochstapler", icon: "🎭" },
-  { id: "drueck-das-wort", name: "Drück das Wort", icon: "🔤" },
-  { id: "wo-ist-was", name: "Wo ist was?", icon: "🗺️" },
-  { id: "split-quiz", name: "Split Quiz", icon: "🧩" },
-  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", icon: "🔗" },
-  { id: "schnellzeichner", name: "Schnellzeichner", icon: "🎨" },
-  { id: "flaschendrehen", name: "Flaschendrehen", icon: "🍾" },
-  { id: "wahrheit-pflicht", name: "Wahrheit/Pflicht", icon: "❤️" },
-  { id: "this-or-that", name: "This or That", icon: "↔️" },
-  { id: "wer-bin-ich", name: "Wer bin ich?", icon: "❓" },
-  { id: "emoji-raten", name: "Emoji-Raten", icon: "😀" },
-  { id: "fake-or-fact", name: "Fake or Fact", icon: "🎲" },
-  { id: "story-builder", name: "Story Builder", icon: "📖" },
-  { id: "ohrwurm", name: "Ohrwurm", icon: "🎵" },
-  { id: "pixeljagd", name: "Pixeljagd", icon: "🔍" },
-  { id: "closeenough", name: "Nah Dran", icon: "🎯" },
-  { id: "pantomime", name: "Ohne Worte", icon: "🎭" },
-];
+/**
+ * Nur die Emoji-Zierde lebt hier. Welche Spiele es gibt und wie sie heissen,
+ * kommt aus playable-games.ts + i18n — sonst driftet die Liste von der im
+ * GamesHub und im nativen Play-Reiter weg.
+ */
+const GAME_ICONS: Record<string, string> = {
+  "bomb": "💣",
+  "headup": "🧠",
+  "taboo": "🚫",
+  "category": "⏱️",
+  "hochstapler": "🎭",
+  "drueck-das-wort": "🔤",
+  "wo-ist-was": "🗺️",
+  "split-quiz": "🧩",
+  "geteilt-gequizzt": "🔗",
+  "schnellzeichner": "🎨",
+  "flaschendrehen": "🍾",
+  "wahrheit-pflicht": "❤️",
+  "this-or-that": "↔️",
+  "wer-bin-ich": "❓",
+  "emoji-raten": "😀",
+  "fake-or-fact": "🎲",
+  "story-builder": "📖",
+  "ohrwurm": "🎵",
+  "pixeljagd": "🔍",
+  "closeenough": "🎯",
+  "pantomime": "🎭",
+};
+
+const GAME_LIST = playableGames.map((g) => ({
+  id: g.id,
+  nameKey: g.nameKey,
+  icon: GAME_ICONS[g.id] ?? "🎮",
+}));
 
 interface GameLobbyProps {
   gameId: string;
@@ -65,6 +78,7 @@ const playerItem = {
 };
 
 function CopyButton({ text }: { text: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(text).then(() => {
@@ -78,12 +92,13 @@ function CopyButton({ text }: { text: string }) {
       className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
       style={{ backgroundColor: copied ? "rgba(143,245,255,0.15)" : "rgba(223,142,255,0.12)", color: copied ? EP.neonCyan : EP.neonPurple }}>
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {copied ? "Kopiert!" : "Kopieren"}
+      {copied ? t("common.copied") : t("common.copy")}
     </motion.button>
   );
 }
 
 function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCurrentHost: boolean; onKick?: () => void }) {
+  const { t } = useTranslation();
   return (
     <motion.div layout {...playerItem} className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ backgroundColor: EP.surface2 }}>
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
@@ -94,13 +109,13 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
           {player.isHost && (
             <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
               style={{ backgroundColor: "rgba(223,142,255,0.15)", color: EP.neonPurple }}>
-              <Crown className="h-2.5 w-2.5" /> Host
+              <Crown className="h-2.5 w-2.5" /> {t("nativeExtra.gameLobby.host")}
             </span>
           )}
           {player.isPremium && (
             <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
               style={{ backgroundColor: "rgba(249,202,36,0.15)", color: "#f9ca24" }}>
-              <Crown className="h-2.5 w-2.5" /> Premium
+              <Crown className="h-2.5 w-2.5" /> {t("nativeExtra.gameLobby.premiumBadge")}
             </span>
           )}
         </div>
@@ -108,11 +123,11 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
       <div className="flex items-center gap-2">
         {player.isReady ? (
           <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: EP.neonCyan }}>
-            <CircleDot className="h-3.5 w-3.5" /> Bereit
+            <CircleDot className="h-3.5 w-3.5" /> {t("nativeExtra.gameLobby.ready")}
           </span>
         ) : (
           <span className="flex items-center gap-1 text-xs font-semibold text-white/30">
-            <CircleDot className="h-3.5 w-3.5" /> Warte...
+            <CircleDot className="h-3.5 w-3.5" /> {t("nativeExtra.gameLobby.waiting")}
           </span>
         )}
         {isCurrentHost && !player.isHost && onKick && (
@@ -128,6 +143,7 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
 type LobbyView = "menu" | "create" | "join" | "lobby";
 
 export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, minPlayers = 2 }: GameLobbyProps) {
+  const { t, i18n } = useTranslation();
   // Read name and room from URL params (for personalized invite links)
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const urlName = urlParams?.get('name') || '';
@@ -162,13 +178,19 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   const savedRoom = getSavedRoom();
   const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
 
+  // Übersetzte Spielnamen, einmal je Sprachwechsel statt je Render.
+  const gameList = useMemo(
+    () => GAME_LIST.map((g) => ({ ...g, name: t(g.nameKey) })),
+    [t]
+  );
+
   // Rejoin a saved room
   const handleRejoin = useCallback(async () => {
     if (!savedRoom) return;
     setIsLoading(true);
-    const name = hostName.trim() || joinName.trim() || "Spieler";
+    const name = hostName.trim() || joinName.trim() || t("nativeExtra.gameLobby.defaultPlayerName");
     try { await joinRoom(savedRoom.roomCode, name, isPremium); setView("lobby"); } finally { setIsLoading(false); }
-  }, [savedRoom, joinRoom, hostName, joinName, isPremium]);
+  }, [savedRoom, joinRoom, hostName, joinName, isPremium, t]);
 
   const handleCreate = useCallback(async () => {
     if (!hostName.trim()) return;
@@ -233,9 +255,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
     if (!room) return;
     const url = `${getBaseUrl()}/games?room=${room.roomCode}`;
     if (navigator.share) {
-      navigator.share({ title: `${gameName} - EventBliss`, text: `Tritt meinem Spiel bei! Code: ${room.roomCode}`, url });
+      navigator.share({
+        title: `${gameName} - EventBliss`,
+        text: t("nativeExtra.gameLobby.shareText", { code: room.roomCode }),
+        url,
+      });
     } else { navigator.clipboard.writeText(url); }
-  }, [room, gameName]);
+  }, [room, gameName, t]);
 
   return (
     <div className="min-h-screen px-4 py-6" style={{ backgroundColor: EP.bg }}>
@@ -248,7 +274,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
             <ArrowLeft className="h-5 w-5 text-white/60" />
           </motion.button>
           <div>
-            <h1 className="text-lg font-extrabold font-game" style={{ color: EP.neonPurple }}>Online Multiplayer</h1>
+            <h1 className="text-lg font-extrabold font-game" style={{ color: EP.neonPurple }}>{t("nativeExtra.gameLobby.title")}</h1>
             <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">{gameName}</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
@@ -276,8 +302,10 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Wifi className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold font-game" style={{ color: EP.neonCyan }}>Aktiver Raum: {savedRoom.roomCode}</p>
-                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Tippe um wieder beizutreten</p>
+                    <p className="text-sm font-bold font-game" style={{ color: EP.neonCyan }}>
+                      {t("nativeExtra.gameLobby.activeRoom", { code: savedRoom.roomCode })}
+                    </p>
+                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.tapToRejoin")}</p>
                   </div>
                 </motion.button>
               )}
@@ -288,14 +316,14 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 if (history.length === 0) return null;
                 return (
                   <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-white/30">Letzte Raeume</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-white/30">{t("nativeExtra.gameLobby.recentRooms")}</span>
                     {history.map(r => (
                       <div key={r.roomCode} className="flex items-center gap-3 rounded-xl px-3 py-2" style={{ backgroundColor: EP.surface2 }}>
                         <span className="text-sm font-bold tracking-wider" style={{ color: EP.neonPurple }}>{r.roomCode}</span>
-                        <span className="text-xs text-white/30 flex-1">{new Date(r.timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="text-xs text-white/30 flex-1">{new Date(r.timestamp).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}</span>
                         <motion.button whileTap={{ scale: 0.9 }} onClick={() => { setJoinCode(r.roomCode); setView("join"); }}
                           className="px-2.5 py-1 rounded-lg text-[10px] font-bold" style={{ backgroundColor: `${EP.neonCyan}15`, color: EP.neonCyan }}>
-                          Beitreten
+                          {t("nativeExtra.gameLobby.join")}
                         </motion.button>
                         <motion.button whileTap={{ scale: 0.9 }} onClick={() => { removeFromRoomHistory(r.roomCode); }}
                           className="px-2 py-1 rounded-lg text-[10px] font-bold text-white/20 hover:text-[#ff6e84] transition-colors">
@@ -315,8 +343,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Plus className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white font-game">Raum erstellen</p>
-                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Erstelle einen Raum und lade Freunde ein</p>
+                    <p className="text-sm font-bold text-white font-game">{t("nativeExtra.gameLobby.createRoom")}</p>
+                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.createRoomSub")}</p>
                   </div>
                 </div>
               </motion.button>
@@ -328,8 +356,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white font-game">Raum beitreten</p>
-                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">Gib einen 6-stelligen Raumcode ein</p>
+                    <p className="text-sm font-bold text-white font-game">{t("nativeExtra.gameLobby.joinRoomTitle")}</p>
+                    <p className="text-xs text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.joinRoomSub")}</p>
                   </div>
                 </div>
               </motion.button>
@@ -339,7 +367,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: EP.surface1, border: `1px solid rgba(143,245,255,0.12)` }}>
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full bg-[#8ff5ff] animate-pulse" />
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8ff5ff]">Offene Raeume</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8ff5ff]">{t("nativeExtra.gameLobby.openRooms")}</span>
                   </div>
                   {openRooms.map(r => (
                     <motion.button key={r.roomCode} whileTap={{ scale: 0.97 }}
@@ -351,10 +379,10 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white truncate">{r.hostName}</p>
-                        <p className="text-[10px] text-[#a8abb3]">{r.playerCount} Spieler</p>
+                        <p className="text-[10px] text-[#a8abb3]">{t("nativeExtra.gameLobby.playerCount", { players: r.playerCount })}</p>
                       </div>
                       <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: `${EP.neonCyan}15`, color: EP.neonCyan }}>
-                        Beitreten
+                        {t("nativeExtra.gameLobby.join")}
                       </span>
                     </motion.button>
                   ))}
@@ -369,25 +397,25 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
               {!isPremium ? (
                 <div className="rounded-2xl p-6 text-center space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                   <Crown className="w-12 h-12 mx-auto text-[#fbbf24]" style={{ filter: 'drop-shadow(0 0 15px rgba(251,191,36,0.4))' }} />
-                  <h3 className="text-lg font-bold text-white">Premium Feature</h3>
-                  <p className="text-sm text-white/40">Erstelle Online-Raeume mit einem Premium-Abo. Beitreten ist fuer alle kostenlos!</p>
+                  <h3 className="text-lg font-bold text-white">{t("nativeExtra.gameLobby.premiumTitle")}</h3>
+                  <p className="text-sm text-white/40">{t("nativeExtra.gameLobby.premiumSub")}</p>
                   <a href="/premium" className="inline-block px-6 py-3 rounded-full text-sm font-bold text-white"
                     style={{ background: `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})`, boxShadow: `0 0 20px rgba(223,142,255,0.3)` }}>
-                    Premium holen
+                    {t("nativeExtra.gameLobby.getPremium")}
                   </a>
                 </div>
               ) : (
                 <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                   <label className="block">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Dein Name</span>
-                    <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder="z.B. Luca" maxLength={20}
+                    <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.yourName")}</span>
+                    <input type="text" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder={t("nativeExtra.gameLobby.hostNamePlaceholder")} maxLength={20}
                       className="mt-2 w-full rounded-xl border px-4 py-3 text-sm font-medium text-white placeholder:text-white/20 focus:outline-none focus:ring-2"
                       style={{ backgroundColor: EP.surface3, borderColor: EP.border }} />
                   </label>
                   <motion.button whileTap={{ scale: 0.96 }} disabled={!hostName.trim() || isLoading} onClick={handleCreate}
                     className="w-full rounded-xl py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
                     style={{ background: `linear-gradient(135deg, ${EP.neonPurple}, ${EP.neonPink})` }}>
-                    {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Raum erstellen"}
+                    {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : t("nativeExtra.gameLobby.createRoom")}
                   </motion.button>
                 </div>
               )}
@@ -399,22 +427,22 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
             <motion.div key="join" {...fadeUp} className="space-y-5">
               <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                 <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Dein Name</span>
-                  <input type="text" value={joinName} onChange={(e) => setJoinName(e.target.value)} placeholder="z.B. Max" maxLength={20}
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.yourName")}</span>
+                  <input type="text" value={joinName} onChange={(e) => setJoinName(e.target.value)} placeholder={t("nativeExtra.gameLobby.joinNamePlaceholder")} maxLength={20}
                     className="mt-2 w-full rounded-xl border px-4 py-3 text-sm font-medium text-white placeholder:text-white/20 focus:outline-none"
                     style={{ backgroundColor: EP.surface3, borderColor: EP.border }} />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Raumcode</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.roomCode")}</span>
                   <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase().slice(0, 6))}
-                    placeholder="Z.B. PARTY7" maxLength={6}
+                    placeholder={t("nativeExtra.gameLobby.roomCodePlaceholder")} maxLength={6}
                     className="mt-2 w-full rounded-xl border px-4 py-3 text-center text-lg font-extrabold tracking-[0.3em] text-white placeholder:text-white/20 placeholder:tracking-[0.2em] placeholder:font-normal placeholder:text-sm focus:outline-none"
                     style={{ backgroundColor: EP.surface3, borderColor: EP.border }} />
                 </label>
                 <motion.button whileTap={{ scale: 0.96 }} disabled={!joinName.trim() || joinCode.length !== 6 || isLoading}
                   onClick={handleJoin} className="w-full rounded-xl py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
                   style={{ background: `linear-gradient(135deg, ${EP.neonCyan}, ${EP.neonPurple})` }}>
-                  {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Beitreten"}
+                  {isLoading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : t("nativeExtra.gameLobby.join")}
                 </motion.button>
               </div>
             </motion.div>
@@ -426,7 +454,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
               <div className="relative rounded-2xl p-5 text-center" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                 <div className="pointer-events-none absolute inset-0 rounded-2xl"
                   style={{ background: `radial-gradient(ellipse at center, ${EP.neonPurple}08, transparent 70%)` }} />
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro'] mb-2">Raumcode</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro'] mb-2">{t("nativeExtra.gameLobby.roomCode")}</p>
                 <p className="text-4xl font-extrabold tracking-[0.25em] font-game" style={{ color: EP.neonPurple }}>
                   {room.roomCode}
                 </p>
@@ -435,14 +463,14 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                   <motion.button whileTap={{ scale: 0.9 }} onClick={handleShare}
                     className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold"
                     style={{ backgroundColor: "rgba(143,245,255,0.12)", color: EP.neonCyan }}>
-                    <Share2 className="h-3.5 w-3.5" /> Teilen
+                    <Share2 className="h-3.5 w-3.5" /> {t("common.share")}
                   </motion.button>
                 </div>
               </div>
 
               <div className="rounded-2xl p-4 space-y-2" style={{ backgroundColor: EP.surface1, border: `1px solid ${EP.border}` }}>
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">Spieler</h2>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40 font-['Be_Vietnam_Pro']">{t("nativeExtra.gameLobby.playersHeading")}</h2>
                   <span className="text-xs font-bold font-['Be_Vietnam_Pro']" style={{ color: EP.neonCyan }}>{players.length}/{maxPlayers}</span>
                 </div>
                 <AnimatePresence initial={false}>
@@ -454,7 +482,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 {players.length < maxPlayers && (
                   <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3 text-xs text-white/20"
                     style={{ borderColor: "rgba(223,142,255,0.1)" }}>
-                    <Users className="h-4 w-4" /> Warte auf Spieler...
+                    <Users className="h-4 w-4" /> {t("nativeExtra.gameLobby.waitingForPlayers")}
                   </div>
                 )}
               </div>
@@ -466,7 +494,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     style={{ backgroundColor: "rgba(249,202,36,0.08)", border: "1px solid rgba(249,202,36,0.2)" }}>
                     <Sparkles className="h-5 w-5 flex-shrink-0" style={{ color: "#f9ca24" }} />
                     <p className="text-xs font-semibold font-['Be_Vietnam_Pro']" style={{ color: "#f9ca24" }}>
-                      Premium-Spiele fuer alle freigeschaltet!
+                      {t("nativeExtra.gameLobby.premiumUnlocked")}
                     </p>
                   </motion.div>
                 ) : (
@@ -474,7 +502,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     style={{ backgroundColor: "rgba(223,142,255,0.06)", border: `1px solid ${EP.border}` }}>
                     <Crown className="h-5 w-5 flex-shrink-0" style={{ color: EP.neonPurple }} />
                     <p className="text-[11px] text-white/40 font-['Be_Vietnam_Pro']">
-                      Tipp: Mit einem Premium-Account spielen alle Gäste kostenlos mit!
+                      {t("nativeExtra.gameLobby.premiumTip")}
                     </p>
                   </motion.div>
                 )}
@@ -487,16 +515,19 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                     className="flex w-full items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Play className="h-4 w-4" style={{ color: EP.neonPurple }} />
-                      <span className="text-xs font-semibold text-white/70">Spiel: <strong style={{ color: EP.neonPurple }}>{GAME_LIST.find(g => g.id === selectedGame)?.name || gameName}</strong></span>
+                      <span className="text-xs font-semibold text-white/70">
+                        {t("nativeExtra.gameLobby.gamePrefix")}{" "}
+                        <strong style={{ color: EP.neonPurple }}>{gameList.find(g => g.id === selectedGame)?.name || gameName}</strong>
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: EP.neonCyan }}>Wechseln</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: EP.neonCyan }}>{t("nativeExtra.gameLobby.switchGame")}</span>
                   </motion.button>
                   <AnimatePresence>
                     {showGamePicker && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 28 }} className="overflow-hidden">
                         <div className="px-3 pb-3 grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto">
-                          {GAME_LIST.map(g => (
+                          {gameList.map(g => (
                             <motion.button key={g.id} whileTap={{ scale: 0.95 }}
                               onClick={() => { setSelectedGame(g.id); setShowGamePicker(false); }}
                               className="flex flex-col items-center gap-1 rounded-xl py-2 px-1 text-center transition-colors"
@@ -526,14 +557,14 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
               {/* TV Screen Link */}
               {isHost && room && (
                 <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "rgba(143,245,255,0.06)", border: "1px solid rgba(143,245,255,0.15)" }}>
-                  <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold mb-1">📺 TV Screen fuer Beamer</p>
+                  <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold mb-1">📺 {t("nativeExtra.gameLobby.tvScreenHint")}</p>
                   <p className="text-xs font-bold text-[#8ff5ff] font-['Be_Vietnam_Pro']">{getBaseUrl()}/tv/{room.roomCode}</p>
                 </div>
               )}
 
               <div className="flex items-center justify-center gap-2 text-[10px] text-white/20 font-['Be_Vietnam_Pro']">
                 <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: EP.neonCyan }} />
-                Echtzeit-Verbindung aktiv
+                {t("nativeExtra.gameLobby.realtimeActive")}
               </div>
             </motion.div>
           )}
@@ -551,7 +582,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 color: myReady ? EP.neonCyan : "rgba(255,255,255,0.6)",
                 border: `1px solid ${myReady ? "rgba(143,245,255,0.3)" : EP.border}`,
               }}>
-              {myReady ? "✓ Bereit!" : "Bereit melden"}
+              {myReady ? `✓ ${t("nativeExtra.gameLobby.readyDone")}` : t("nativeExtra.gameLobby.readyUp")}
             </motion.button>
             {isHost && (
               <motion.button whileTap={allReady ? { scale: 0.96 } : {}}
@@ -563,7 +594,9 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                 }}>
                 <span className="flex items-center justify-center gap-2">
                   <Play className="h-5 w-5" />
-                  {allReady ? "Spiel starten!" : `Warte auf ${players.filter((p) => !p.isReady).length} Spieler...`}
+                  {allReady
+                    ? t("nativeExtra.gameLobby.startGame")
+                    : t("nativeExtra.gameLobby.notReadyCount", { players: players.filter((p) => !p.isReady).length })}
                 </span>
               </motion.button>
             )}

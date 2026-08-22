@@ -212,7 +212,7 @@ export default function TVEmojiGuessView({ gameState }: { gameState: any }) {
 
       {/* BOTTOM — whole-party roster (shared component) */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={roster} activeId={activePlayer?.id ?? null} sort="score" />
+        <TVScoreboard party={gameState?.partyNight} players={roster} activeId={activePlayer?.id ?? null} sort="score" />
       </div>
     </div>
   );

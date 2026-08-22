@@ -17,6 +17,8 @@ import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -62,6 +64,8 @@ const MODE_IDS: Mode[] = ['classic', 'speed', 'blind'];
 
 export default function QuickDrawGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
+  // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
+  const exitGuard = useConfirmExit(() => navigate('/games'));
   const { t } = useTranslation();
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
@@ -86,6 +90,18 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg — die Partie ist
+  // dann futsch. Setup und Endstand haben nichts zu verlieren und reichen
+  // weiter an den Routen-Handler.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [round, setRound] = useState(1);
   const [drawerIdx, setDrawerIdx] = useState(0);
   const deck = useRef<DrawWord[]>(shuffle(getDRAW_WORDS()));
@@ -575,6 +591,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           </div>
         </motion.div>
       )}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ff6b98" />
     </div>
   );
 }

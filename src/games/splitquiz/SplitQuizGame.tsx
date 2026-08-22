@@ -14,6 +14,9 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -195,6 +198,23 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
+
+  const navigate = useNavigate();
+  // GamesHub reicht `onClose` hier zwar durch, die Prop ist aber optional —
+  // deshalb der Rückfall auf `/games`.
+  const exitGuard = useConfirmExit(() => { if (onClose) onClose(); else navigate('/games'); });
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [currentRound, setCurrentRound] = useState(1);
   const [activeTeamIdx, setActiveTeamIdx] = useState(0); // 0 = A answers first, then B
   const [teamAnswered, setTeamAnswered] = useState<[boolean, boolean]>([false, false]);
@@ -529,6 +549,10 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     return (teamA.score / total) * 100;
   }, [teamA.score, teamB.score]);
 
+  /* Jede Phase hat hier ihr eigenes `return`. Damit der Verlassen-Dialog
+     nicht mehrfach im Quelltext steht, wird er einmal gebaut. */
+  const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />;
+
   /* ================================================================== */
   /*  RENDER                                                             */
   /* ================================================================== */
@@ -688,6 +712,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   if (phase === 'handoff') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
+        {exitDialog}
         <motion.div
           className="text-center space-y-6 max-w-sm"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -735,6 +760,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   if (phase === 'betting' && showBetting && currentQuestion) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
+        {exitDialog}
         <motion.div
           className="w-full max-w-sm space-y-6 text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -805,6 +831,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col">
+        {exitDialog}
         {/* HUD */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -900,6 +927,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col items-center justify-center">
+        {exitDialog}
         <AnimatePresence>
           <motion.div
             className="w-full max-w-md space-y-6 text-center"
@@ -1193,5 +1221,5 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* Fallback */
-  return null;
+  return exitDialog;
 }

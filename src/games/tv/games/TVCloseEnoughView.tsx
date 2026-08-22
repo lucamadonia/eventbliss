@@ -25,6 +25,7 @@ import { RevealChart, type RevealMark } from '@/games/closeenough/RevealChart';
 import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
 import TVTimer from '../components/TVTimer';
 import { tvPanel, tvType } from '../tv-tokens';
+import type { PartyNightState } from '../party-types';
 
 interface Props {
   gameState: Record<string, unknown>;
@@ -167,7 +168,7 @@ export default function TVCloseEnoughView({ gameState }: Props) {
 
         {/* Seitenschiene: wer schon abgegeben hat, plus Punktestand */}
         <div className="w-[22vw] min-w-0">
-          <TVScoreboard players={players} layout="rail" />
+          <TVScoreboard party={gameState?.partyNight as PartyNightState | undefined} players={players} layout="rail" />
         </div>
       </div>
     </div>

@@ -232,7 +232,7 @@ export default function TVWhoAmIView({ gameState }: { gameState: any }) {
 
       {/* BOTTOM — shared scoreboard strip (full party; solved/out greyed; NO characters) */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={toRoster(players, t)} activeId={active?.id ?? null} sort="order" />
+        <TVScoreboard party={gameState?.partyNight} players={toRoster(players, t)} activeId={active?.id ?? null} sort="order" />
       </div>
     </div>
   );

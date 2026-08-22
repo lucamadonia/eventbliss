@@ -95,7 +95,7 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
           <div style={{ fontSize: tvType.display }}>🏆</div>
           <div className="font-black" style={{ fontSize: tvType.title, color: WP.primary }}>{winner?.name} {t('tv.wins', 'gewinnt!')}</div>
         </motion.div>
-        <TVScoreboard players={roster.map((r) => ({ ...r, status: 'waiting' }))} sort="score" />
+        <TVScoreboard party={gameState?.partyNight} players={roster.map((r) => ({ ...r, status: 'waiting' }))} sort="score" />
       </div>
     );
   }
@@ -195,7 +195,7 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
 
       {/* BOTTOM — whole-party scoreboard strip */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={roster} activeId={String(currentPlayerIndex)} sort="score" />
+        <TVScoreboard party={gameState?.partyNight} players={roster} activeId={String(currentPlayerIndex)} sort="score" />
       </div>
     </div>
   );

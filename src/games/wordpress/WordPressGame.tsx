@@ -12,6 +12,9 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -740,6 +743,21 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       ? partyPlayerNames
       : [];
   const [phase, setPhase] = useState<GamePhase>('setup');
+
+  const navigate = useNavigate();
+  const exitGuard = useConfirmExit(() => navigate('/games'));
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [mode, setMode] = useState<GameMode>('kategorie');
   const [speed, setSpeed] = useState<Speed>('medium');
@@ -861,6 +879,9 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   }, [online]);
 
   return (
+    // Fragment, damit der Verlassen-Dialog NEBEN der AnimatePresence liegt und
+    // deren mode="wait"-Phasenwechsel nicht als zweites Kind stört.
+    <>
     <AnimatePresence mode="wait">
       {phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
@@ -902,5 +923,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
         </motion.div>
       )}
     </AnimatePresence>
+    <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
+    </>
   );
 }

@@ -210,7 +210,7 @@ export default function TVCategoryView({ gameState }: { gameState: any }) {
       {/* BOTTOM — full-party scoreboard (loser marked 'out' on roundEnd) */}
       {players.length > 0 && (
         <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-          <TVScoreboard players={roster} activeId={isRoundEnd ? null : activeId} sort="score" />
+          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={isRoundEnd ? null : activeId} sort="score" />
         </div>
       )}
     </div>

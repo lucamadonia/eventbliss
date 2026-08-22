@@ -224,7 +224,7 @@ export default function TVBottleView({ gameState }: { gameState: any }) {
       {/* Full-party scoreboard strip — every player on screen */}
       {players.length > 0 && (
         <div className="absolute bottom-4 left-0 right-0 px-[clamp(1.25rem,2.4vw,3rem)] z-10">
-          <TVScoreboard players={roster} activeId={selectedId} sort={showScores ? 'score' : 'order'} />
+          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={selectedId} sort={showScores ? 'score' : 'order'} />
         </div>
       )}
     </div>

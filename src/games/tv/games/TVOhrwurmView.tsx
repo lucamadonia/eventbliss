@@ -85,7 +85,7 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
           <div style={{ fontSize: tvType.display }}>🏆</div>
           <div className="font-black" style={{ fontSize: tvType.title, color: activeColor }}>{winnerName} {t('tv.wins', 'gewinnt!')}</div>
         </motion.div>
-        <TVScoreboard players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, subtitle: `${p.hooks}🎣` }))} target={winTarget} activeId={null} />
+        <TVScoreboard party={gameState?.partyNight} players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, subtitle: `${p.hooks}🎣` }))} target={winTarget} activeId={null} />
       </div>
     );
   }
@@ -196,7 +196,7 @@ export default function TVOhrwurmView({ gameState }: { gameState: any }) {
 
       {/* BOTTOM — scoreboard strip (shared roster: every player, ranked) */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, subtitle: `${p.hooks}🎣` }))} target={winTarget} activeId={activeId} />
+        <TVScoreboard party={gameState?.partyNight} players={players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, subtitle: `${p.hooks}🎣` }))} target={winTarget} activeId={activeId} />
       </div>
     </div>
   );

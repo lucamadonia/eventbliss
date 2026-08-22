@@ -18,6 +18,7 @@ import { PixelCanvas } from '@/games/pixeljagd/PixelCanvas';
 import TVScoreboard from '../components/TVScoreboard';
 import TVTimer from '../components/TVTimer';
 import { tvPanel, tvType } from '../tv-tokens';
+import type { PartyNightState } from '../party-types';
 
 interface Props {
   gameState: Record<string, unknown>;
@@ -122,7 +123,7 @@ export default function TVPixeljagdView({ gameState }: Props) {
         {/* Seitenschiene: Uhr und Punktestand */}
         <div className="w-[18vw] shrink-0 flex flex-col gap-[2vh]">
           <TVTimer timeLeft={timeLeft} totalTime={totalTime} />
-          <TVScoreboard players={players} layout="rail" sort="score" />
+          <TVScoreboard party={gameState?.partyNight as PartyNightState | undefined} players={players} layout="rail" sort="score" />
         </div>
       </div>
     </div>

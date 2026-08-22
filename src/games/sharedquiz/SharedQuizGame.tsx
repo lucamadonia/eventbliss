@@ -17,6 +17,8 @@ import { getSHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -63,6 +65,8 @@ const ANSWER_LABELS = ['A', 'B', 'C', 'D'];
 export default function SharedQuizGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
+  const exitGuard = useConfirmExit(() => navigate('/games'));
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
@@ -87,6 +91,18 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg — die Partie ist
+  // dann futsch. Setup und Endstand haben nichts zu verlieren und reichen
+  // weiter an den Routen-Handler.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [round, setRound] = useState(1);
   const deck = useRef<SharedQuizQuestion[]>(shuffle(getSHARED_QUIZ_QUESTIONS()));
   const deckPos = useRef(0);
@@ -505,6 +521,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
           </div>
         </motion.div>
       )}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#8ff5ff" />
     </div>
   );
 }

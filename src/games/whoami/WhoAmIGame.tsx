@@ -15,6 +15,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
+import { useBackGuard } from '@/lib/back-guard';
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
@@ -56,6 +57,18 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   const haptics = useHaptics();
 
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
+  // Ohne Eintrag im Back-Guard-Stapel navigiert er mitten in der Runde weg und
+  // die Partie ist futsch. Delegiert bewusst an denselben `exitGuard` wie der
+  // Pfeil, damit es genau EINEN Bestätigungsdialog gibt.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [players, setPlayers] = useState<Player[]>([]);
   const [mode, setMode] = useState('prominente');
   const [maxQ, setMaxQ] = useState(MAX_QUESTIONS);

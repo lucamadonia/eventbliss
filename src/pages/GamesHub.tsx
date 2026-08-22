@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/useSEO";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +11,8 @@ import { GameReportModal } from "@/games/ui/GameReportModal";
 import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
+import { playableGames } from "@/lib/playable-games";
+import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
 import {
   Gamepad2, Bomb, Brain, MessageSquareOff, Timer, Users, Clock,
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
@@ -56,8 +59,8 @@ const C = {
 
 interface GameCardData {
   id: string;
-  name: string;
-  desc: string;
+  nameKey: string;
+  descKey: string;
   icon: React.ElementType;
   gradient: string;
   players: string;
@@ -67,39 +70,58 @@ interface GameCardData {
   image?: string;
 }
 
-const allGames: GameCardData[] = [
-  { id: "bomb", name: "Tickende Bombe", desc: "Bei wem knallt's? Nerven aus Stahl gefragt!", icon: Bomb, gradient: "from-[#ff7350] to-[#ff4444]", players: "3-20", duration: "5-20", badge: "Hot", rating: 4.8, image: "/images/games/bomb.webp" },
-  { id: "headup", name: "Stirnraten", desc: "Begriffe erraten mit Stirn-Power", icon: Brain, gradient: "from-[#cf96ff] to-[#9b59b6]", players: "2-20", duration: "5-20", rating: 4.7, image: "/images/games/headup.webp" },
-  { id: "taboo", name: "Wortverbot", desc: "Erklären ohne Tabu-Wörter", icon: MessageSquareOff, gradient: "from-[#00e3fd] to-[#0099cc]", players: "4-20", duration: "10-30", rating: 4.6, image: "/images/games/taboo.webp" },
-  { id: "category", name: "Zeit-Kategorie", desc: "Gegen die Uhr Begriffe nennen", icon: Timer, gradient: "from-amber-500 to-amber-600", players: "2-15", duration: "5-15", rating: 4.5, image: "/images/games/category.webp" },
-  { id: "hochstapler", name: "Hochstapler", desc: "Wer lügt am besten? Entlarve den Faker!", icon: UserX, gradient: "from-[#cf96ff] to-pink-500", players: "4-15", duration: "10-25", badge: "Neu", rating: 4.9, image: "/images/games/hochstapler.webp" },
-  { id: "drueck-das-wort", name: "Drück das Wort", desc: "Schnell tippen, schnell denken!", icon: Type, gradient: "from-emerald-500 to-green-600", players: "1-8", duration: "3-10", rating: 4.3, image: "/images/games/drueck-das-wort.webp" },
-  { id: "wo-ist-was", name: "Wo ist was?", desc: "Finde den versteckten Gegenstand", icon: SearchIcon, gradient: "from-cyan-400 to-cyan-600", players: "2-10", duration: "5-15", rating: 4.4, image: "/images/games/wo-ist-was.webp" },
-  { id: "split-quiz", name: "Split Quiz", desc: "Team-Quiz mit Wissenssplit", icon: Users, gradient: "from-blue-500 to-blue-700", players: "4-30", duration: "10-30", rating: 4.6, image: "/images/games/split-quiz.webp" },
-  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", desc: "Kooperatives Quiz — Wissen ist aufgeteilt!", icon: Link, gradient: "from-[#00e3fd] to-[#0099cc]", players: "3-10", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/geteilt-gequizzt.webp" },
-  { id: "schnellzeichner", name: "Schnellzeichner", desc: "Zeichne & rate — wer erkennt es zuerst?", icon: Pencil, gradient: "from-[#ff7350] to-[#ff4444]", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.7, image: "/images/games/schnellzeichner.webp" },
-  { id: "wahrheit-pflicht", name: "Wahrheit oder Pflicht", desc: "Der Klassiker — digital und erweitert!", icon: Heart, gradient: "from-pink-500 to-rose-600", players: "2-20", duration: "10-30", badge: "Neu", rating: 4.8, image: "/images/games/wahrheit-pflicht.webp" },
-  { id: "this-or-that", name: "This or That", desc: "Blitz-Entscheidungen — wie tickt die Gruppe?", icon: ArrowLeftRight, gradient: "from-violet-500 to-purple-600", players: "2-20", duration: "5-15", badge: "Neu", rating: 4.5, image: "/images/games/this-or-that.webp" },
-  { id: "wer-bin-ich", name: "Wer bin ich?", desc: "Errate wer du bist mit Ja/Nein-Fragen", icon: QuestionMark, gradient: "from-amber-400 to-orange-500", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.6, image: "/images/games/wer-bin-ich.webp" },
-  { id: "emoji-raten", name: "Emoji-Raten", desc: "Erkenne Filme, Songs & mehr aus Emojis", icon: Smile, gradient: "from-yellow-400 to-amber-500", players: "2-10", duration: "5-20", badge: "Neu", rating: 4.7, image: "/images/games/emoji-raten.webp" },
-  { id: "fake-or-fact", name: "Fake or Fact", desc: "Wahrheit oder Lüge? Teste dein Wissen!", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5, image: "/images/games/fake-or-fact.webp" },
-  { id: "story-builder", name: "Story Builder", desc: "Schreibt gemeinsam die verrückteste Geschichte", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
-  { id: "flaschendrehen", name: "Flaschendrehen", desc: "Die Flasche entscheidet — mit Fragen oder pur!", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
-  { id: "ohrwurm", name: "Ohrwurm", desc: "Song hören, ins richtige Jahr einordnen — Musik-Quiz mit QR & Spotify", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", players: "2-4", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
-  { id: "pixeljagd", name: "Pixeljagd", desc: "Bild wird Sekunde für Sekunde schärfer — wer zuerst errät, gewinnt", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", players: "2-8", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
-  { id: "closeenough", name: "Nah Dran", desc: "Eine Frage, eine Zahl — wer am nächsten dran liegt, gewinnt", icon: Target, gradient: "from-[#FBBF24] to-[#34D399]", players: "2-8", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/closeenough.webp" },
-  { id: "pantomime", name: "Ohne Worte", desc: "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte", icon: Drama, gradient: "from-[#FBBF24] to-[#F472B6]", players: "4-16", duration: "15-30", badge: "Neu", rating: 4.9, image: "/images/games/pantomime.webp" },
+/**
+ * Nur Darstellung und Reihenfolge. Name und Beschreibung stehen NICHT hier —
+ * die kommen aus playable-games.ts (nameKey/descKey) und damit aus i18n.
+ * Sonst gibt es zwei Spielkataloge, die auseinanderlaufen.
+ */
+type GamePresentation = Omit<GameCardData, "nameKey" | "descKey">;
+
+const GAME_PRESENTATION: GamePresentation[] = [
+  { id: "bomb", icon: Bomb, gradient: "from-[#ff7350] to-[#ff4444]", players: "3-20", duration: "5-20", badge: "Hot", rating: 4.8, image: "/images/games/bomb.webp" },
+  { id: "headup", icon: Brain, gradient: "from-[#cf96ff] to-[#9b59b6]", players: "2-20", duration: "5-20", rating: 4.7, image: "/images/games/headup.webp" },
+  { id: "taboo", icon: MessageSquareOff, gradient: "from-[#00e3fd] to-[#0099cc]", players: "4-20", duration: "10-30", rating: 4.6, image: "/images/games/taboo.webp" },
+  { id: "category", icon: Timer, gradient: "from-amber-500 to-amber-600", players: "2-15", duration: "5-15", rating: 4.5, image: "/images/games/category.webp" },
+  { id: "hochstapler", icon: UserX, gradient: "from-[#cf96ff] to-pink-500", players: "4-15", duration: "10-25", badge: "Neu", rating: 4.9, image: "/images/games/hochstapler.webp" },
+  { id: "drueck-das-wort", icon: Type, gradient: "from-emerald-500 to-green-600", players: "1-8", duration: "3-10", rating: 4.3, image: "/images/games/drueck-das-wort.webp" },
+  { id: "wo-ist-was", icon: SearchIcon, gradient: "from-cyan-400 to-cyan-600", players: "2-10", duration: "5-15", rating: 4.4, image: "/images/games/wo-ist-was.webp" },
+  { id: "split-quiz", icon: Users, gradient: "from-blue-500 to-blue-700", players: "4-30", duration: "10-30", rating: 4.6, image: "/images/games/split-quiz.webp" },
+  { id: "geteilt-gequizzt", icon: Link, gradient: "from-[#00e3fd] to-[#0099cc]", players: "3-10", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/geteilt-gequizzt.webp" },
+  { id: "schnellzeichner", icon: Pencil, gradient: "from-[#ff7350] to-[#ff4444]", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.7, image: "/images/games/schnellzeichner.webp" },
+  { id: "wahrheit-pflicht", icon: Heart, gradient: "from-pink-500 to-rose-600", players: "2-20", duration: "10-30", badge: "Neu", rating: 4.8, image: "/images/games/wahrheit-pflicht.webp" },
+  { id: "this-or-that", icon: ArrowLeftRight, gradient: "from-violet-500 to-purple-600", players: "2-20", duration: "5-15", badge: "Neu", rating: 4.5, image: "/images/games/this-or-that.webp" },
+  { id: "wer-bin-ich", icon: QuestionMark, gradient: "from-amber-400 to-orange-500", players: "2-10", duration: "10-30", badge: "Neu", rating: 4.6, image: "/images/games/wer-bin-ich.webp" },
+  { id: "emoji-raten", icon: Smile, gradient: "from-yellow-400 to-amber-500", players: "2-10", duration: "5-20", badge: "Neu", rating: 4.7, image: "/images/games/emoji-raten.webp" },
+  { id: "fake-or-fact", icon: Dices, gradient: "from-red-500 to-rose-600", players: "2-15", duration: "5-20", badge: "Neu", rating: 4.5, image: "/images/games/fake-or-fact.webp" },
+  { id: "story-builder", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", players: "3-15", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
+  { id: "flaschendrehen", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", players: "2-12", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
+  { id: "ohrwurm", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", players: "2-4", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
+  { id: "pixeljagd", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", players: "2-8", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
+  { id: "closeenough", icon: Target, gradient: "from-[#FBBF24] to-[#34D399]", players: "2-8", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/closeenough.webp" },
+  { id: "pantomime", icon: Drama, gradient: "from-[#FBBF24] to-[#F472B6]", players: "4-16", duration: "15-30", badge: "Neu", rating: 4.9, image: "/images/games/pantomime.webp" },
 ];
 
+const PLAYABLE_BY_ID = new Map(playableGames.map((g) => [g.id, g]));
+
+const allGames: GameCardData[] = GAME_PRESENTATION.map((p) => {
+  const entry = PLAYABLE_BY_ID.get(p.id);
+  if (!entry) {
+    // Laut scheitern statt einen Schluessel als Titel anzuzeigen: Wer hier ein
+    // Spiel eintraegt, muss es auch in playable-games.ts registrieren.
+    throw new Error(`GamesHub: "${p.id}" fehlt in playable-games.ts`);
+  }
+  return { ...p, nameKey: entry.nameKey, descKey: entry.descKey };
+});
+
 const categories = [
-  { label: "Alle", icon: Gamepad2, color: C.primary, filter: "alle" },
-  { label: "Quiz & Wissen", icon: HelpCircle, color: C.primary, filter: "quiz" },
-  { label: "Wort & Sprache", icon: Languages, color: C.secondary, filter: "wort" },
-  { label: "Karte & Geografie", icon: Globe, color: C.tertiary, filter: "karte" },
-  { label: "Party & JGA", icon: Heart, color: "#ff6b98", filter: "party" },
-  { label: "Reaktion & Geschick", icon: Hand, color: C.tertiary, filter: "reaktion" },
-  { label: "Social & Bluff", icon: Users, color: C.primary, filter: "social" },
-  { label: "Kreativ & Spaß", icon: Palette, color: C.secondary, filter: "kreativ" },
+  { labelKey: "nativeExtra.gamesHub.cat.alle", icon: Gamepad2, color: C.primary, filter: "alle" },
+  { labelKey: "nativeExtra.gamesHub.cat.quiz", icon: HelpCircle, color: C.primary, filter: "quiz" },
+  { labelKey: "nativeExtra.gamesHub.cat.wort", icon: Languages, color: C.secondary, filter: "wort" },
+  { labelKey: "nativeExtra.gamesHub.cat.karte", icon: Globe, color: C.tertiary, filter: "karte" },
+  { labelKey: "nativeExtra.gamesHub.cat.party", icon: Heart, color: "#ff6b98", filter: "party" },
+  { labelKey: "nativeExtra.gamesHub.cat.reaktion", icon: Hand, color: C.tertiary, filter: "reaktion" },
+  { labelKey: "nativeExtra.gamesHub.cat.social", icon: Users, color: C.primary, filter: "social" },
+  { labelKey: "nativeExtra.gamesHub.cat.kreativ", icon: Palette, color: C.secondary, filter: "kreativ" },
 ];
 
 // Game category tags
@@ -128,9 +150,9 @@ const GAME_CATEGORIES: Record<string, string[]> = {
 };
 
 const recentGames = [
-  { name: "Tickende Bombe", icon: Bomb, time: "Vor 2 Std." },
-  { name: "Stirnraten", icon: Brain, time: "Vor 5 Std." },
-  { name: "Wortverbot", icon: MessageSquareOff, time: "Gestern" },
+  { nameKey: "native.gameNames.bomb", icon: Bomb, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 2 } },
+  { nameKey: "native.gameNames.headup", icon: Brain, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 5 } },
+  { nameKey: "native.gameNames.taboo", icon: MessageSquareOff, timeKey: "nativeExtra.gamesHub.yesterday", timeOpts: {} },
 ];
 
 const stagger = {
@@ -157,7 +179,9 @@ function RatingStars({ rating }: { rating: number }) {
 // Handlers receive the game (id) as argument so the parent can pass
 // useCallback-stable references instead of per-card inline closures.
 const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }: { game: GameCardData; onClick: (game: GameCardData) => void; onOnline?: (gameId: string) => void; premiumInfo?: { isLocked: boolean; freePlaysLeft: number; isPremium: boolean } }) {
+  const { t } = useTranslation();
   const Icon = game.icon;
+  const name = t(game.nameKey);
   return (
     <motion.button
       variants={fadeUp}
@@ -169,7 +193,7 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
       {/* Game card header with image */}
       <div className={`relative flex aspect-[16/9] items-center justify-center bg-gradient-to-br ${game.gradient} overflow-hidden`}>
         {game.image && (
-          <img src={game.image} alt={game.name} loading="lazy"
+          <img src={game.image} alt={name} loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -194,8 +218,8 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
 
       {/* Content */}
       <div className="p-3 space-y-2">
-        <h3 className="text-sm font-extrabold text-white font-game truncate">{game.name}</h3>
-        <p className="text-[11px] text-white/50 font-['Be_Vietnam_Pro'] line-clamp-2 leading-relaxed">{game.desc}</p>
+        <h3 className="text-sm font-extrabold text-white font-game truncate">{name}</h3>
+        <p className="text-[11px] text-white/50 font-['Be_Vietnam_Pro'] line-clamp-2 leading-relaxed">{t(game.descKey)}</p>
 
         {/* Badges */}
         <div className="flex flex-wrap gap-1">
@@ -203,7 +227,7 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
             <Users className="h-2.5 w-2.5" />{game.players}
           </span>
           <span className="inline-flex items-center gap-0.5 rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/60 font-['Be_Vietnam_Pro']">
-            <Clock className="h-2.5 w-2.5" />{game.duration} Min
+            <Clock className="h-2.5 w-2.5" />{game.duration} {t("nativeExtra.gamesHub.minutesShort")}
           </span>
         </div>
 
@@ -212,13 +236,13 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
         {/* Spielen + Online buttons */}
         <div className="pt-1 flex gap-1.5">
           <div className="flex-1 rounded-lg bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] py-1.5 text-center text-[11px] font-bold text-[#0d0d15] font-game transition-shadow group-hover:shadow-[0_0_12px_rgba(207,150,255,0.4)]">
-            Spielen
+            {t("nativeExtra.gamesHub.play")}
           </div>
           {onOnline && (
             <button
               onClick={(e) => { e.stopPropagation(); onOnline(game.id); }}
               className="flex items-center justify-center rounded-lg border border-[#df8eff]/25 bg-[#df8eff]/10 px-2 py-1.5 transition-colors hover:bg-[#df8eff]/20"
-              title="Online spielen"
+              title={t("nativeExtra.gamesHub.playOnline")}
             >
               <Globe className="h-3.5 w-3.5 text-[#df8eff]" />
             </button>
@@ -235,6 +259,7 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
 let clickCountedGameId: string | null = null;
 
 const GamesHubInner = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { gameId } = useParams();
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
@@ -281,8 +306,9 @@ const GamesHubInner = () => {
     if (activeCategory === "alle") return allGames;
     return allGames.filter(g => (GAME_CATEGORIES[g.id] || []).includes(activeCategory));
   }, [activeCategory]);
+  const fallbackPlayerName = t("nativeExtra.gameLobby.defaultPlayerName");
   const [onlinePlayerName] = useState(() => {
-    try { return localStorage.getItem("eventbliss_player_name") || "Spieler"; } catch { return "Spieler"; }
+    try { return localStorage.getItem("eventbliss_player_name") || fallbackPlayerName; } catch { return fallbackPlayerName; }
   });
   const { isPremium, loading: premiumLoading } = usePremium();
   // Bumped after recordFreePlay so freePlaysLeft on the cards reflects the new count
@@ -374,6 +400,12 @@ const GamesHubInner = () => {
     navigate(`/games/${random.id}`);
   };
 
+  /** Uebersetzter Anzeigename eines Spiels; faellt auf ein generisches "Spiel" zurueck. */
+  const gameNameById = useCallback((id: string | null | undefined) => {
+    const entry = id ? allGames.find((g) => g.id === id) : undefined;
+    return entry ? t(entry.nameKey) : t("nativeExtra.gamesHub.fallbackGameName");
+  }, [t]);
+
   const handleOnlineStart = (players: any[], roomCode: string, selectedGameId?: string) => {
     const targetGame = selectedGameId || onlineGameId;
     if (targetGame) {
@@ -419,7 +451,7 @@ const GamesHubInner = () => {
       <Suspense fallback={GameFallback}>
         <GameLobby
           gameId="bomb"
-          gameName="Online Multiplayer"
+          gameName={t("nativeExtra.gameLobby.title")}
           onStart={handleOnlineStart}
           onBack={() => navigate('/games', { replace: true })}
         />
@@ -482,7 +514,7 @@ const GamesHubInner = () => {
         <Suspense fallback={GameFallback}>
           <GameLobby
             gameId={onlineGameId}
-            gameName={allGames.find((g) => g.id === onlineGameId)?.name ?? "Spiel"}
+            gameName={gameNameById(onlineGameId)}
             onStart={handleOnlineStart}
             onBack={() => { setOnlineGameId(null); navigate('/games'); }}
           />
@@ -508,7 +540,7 @@ const GamesHubInner = () => {
             <PremiumPaywall
               isOpen={true}
               onClose={() => navigate("/games")}
-              gameName={gameData?.name}
+              gameName={gameData ? t(gameData.nameKey) : undefined}
               freePlaysLeft={0}
             />
           </>
@@ -549,7 +581,7 @@ const GamesHubInner = () => {
         <div className="mx-auto max-w-2xl px-4 py-8">
           <motion.button initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} onClick={() => navigate("/games")}
             className="mb-6 flex items-center gap-2 text-white/60 hover:text-white transition-colors">
-            <ArrowLeft className="h-5 w-5" /><span className="text-sm font-medium font-['Be_Vietnam_Pro']">Zurück</span>
+            <ArrowLeft className="h-5 w-5" /><span className="text-sm font-medium font-['Be_Vietnam_Pro']">{t("common.back")}</span>
           </motion.button>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="rounded-[1rem] border border-[#484750]/10 bg-[#1f1f29] p-8 text-center">
@@ -558,9 +590,11 @@ const GamesHubInner = () => {
                 <Icon className="h-12 w-12 text-white" />
               </div>
             )}
-            <h1 className="text-2xl font-extrabold text-white mb-2 font-game">{game?.name ?? "Spiel nicht gefunden"}</h1>
-            <p className="text-white/50 mb-4 font-['Be_Vietnam_Pro']">{game?.desc ?? ""}</p>
-            <p className="text-sm text-white/30 font-['Be_Vietnam_Pro']">Spiellogik wird in Kürze freigeschaltet.</p>
+            <h1 className="text-2xl font-extrabold text-white mb-2 font-game">
+              {game ? t(game.nameKey) : t("nativeExtra.gamesHub.gameNotFound")}
+            </h1>
+            <p className="text-white/50 mb-4 font-['Be_Vietnam_Pro']">{game ? t(game.descKey) : ""}</p>
+            <p className="text-sm text-white/30 font-['Be_Vietnam_Pro']">{t("nativeExtra.gamesHub.comingSoon")}</p>
           </motion.div>
         </div>
       </div>
@@ -591,15 +625,15 @@ const GamesHubInner = () => {
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
             <div className="flex-1">
-              <h2 className="text-4xl md:text-5xl font-extrabold text-white font-game mb-2">Schnellstart</h2>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white font-game mb-2">{t("nativeExtra.gamesHub.quickStart")}</h2>
               <p className="text-white/50 font-['Be_Vietnam_Pro'] text-sm mb-5">
-                Kein Plan? Kein Problem. Lass den Zufall entscheiden und starte sofort ein zufälliges Partyspiel!
+                {t("nativeExtra.gamesHub.quickStartSub")}
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={handleQuickStart}
                   className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] px-6 py-3 text-sm font-bold text-[#0d0d15] font-game shadow-[0_0_20px_rgba(207,150,255,0.3)] transition-shadow hover:shadow-[0_0_30px_rgba(207,150,255,0.5)]">
                   <Dices className="h-5 w-5" />
-                  Random Game
+                  {t("nativeExtra.gamesHub.randomGame")}
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() => {
@@ -608,13 +642,13 @@ const GamesHubInner = () => {
                   }}
                   className="inline-flex items-center gap-2.5 rounded-xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-6 py-3 text-sm font-bold text-[#df8eff] font-game transition-all hover:bg-[#df8eff]/20 hover:shadow-[0_0_20px_rgba(223,142,255,0.2)]">
                   <Globe className="h-5 w-5" />
-                  Online spielen
+                  {t("nativeExtra.gamesHub.playOnline")}
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() => navigate('/tv')}
                   className="inline-flex items-center gap-2.5 rounded-xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 px-6 py-3 text-sm font-bold text-[#8ff5ff] font-game transition-all hover:bg-[#8ff5ff]/20 hover:shadow-[0_0_20px_rgba(143,245,255,0.2)]">
                   <span className="text-lg">📺</span>
-                  TV Screen
+                  {t("nativeExtra.gamesHub.tvScreen")}
                 </motion.button>
               </div>
             </div>
@@ -629,7 +663,7 @@ const GamesHubInner = () => {
 
         {/* Kategorien */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mt-8">
-          <h2 className="text-lg font-extrabold text-white font-game mb-3">Kategorien</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-3">{t("nativeExtra.gamesHub.categories")}</h2>
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             {categories.map((cat) => {
               const CatIcon = cat.icon;
@@ -642,7 +676,7 @@ const GamesHubInner = () => {
                   }`}
                   style={{ background: active ? `${typeof cat.color === 'string' ? cat.color : '#cf96ff'}15` : '#1f1f29' }}>
                   <CatIcon className="h-5 w-5" style={{ color: active ? (typeof cat.color === 'string' ? cat.color : '#cf96ff') : 'rgba(255,255,255,0.4)' }} />
-                  <span className={`text-[9px] font-semibold text-center leading-tight whitespace-nowrap ${active ? 'text-white' : 'text-white/50'}`}>{cat.label}</span>
+                  <span className={`text-[9px] font-semibold text-center leading-tight whitespace-nowrap ${active ? 'text-white' : 'text-white/50'}`}>{t(cat.labelKey)}</span>
                 </motion.button>
               );
             })}
@@ -651,18 +685,18 @@ const GamesHubInner = () => {
 
         {/* Zuletzt gespielt */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8">
-          <h2 className="text-lg font-extrabold text-white font-game mb-3">Zuletzt gespielt</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-3">{t("nativeExtra.gamesHub.recentlyPlayed")}</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             {recentGames.map((rg) => {
               const RIcon = rg.icon;
               return (
-                <div key={rg.name} className="flex items-center gap-3 min-w-[11rem] rounded-[1rem] bg-[#1f1f29] border border-[#484750]/10 p-3">
+                <div key={rg.nameKey} className="flex items-center gap-3 min-w-[11rem] rounded-[1rem] bg-[#1f1f29] border border-[#484750]/10 p-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 flex-shrink-0">
                     <RIcon className="h-5 w-5 text-[#cf96ff]" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white font-game truncate">{rg.name}</p>
-                    <p className="text-[10px] text-white/40 font-['Be_Vietnam_Pro']">{rg.time}</p>
+                    <p className="text-xs font-bold text-white font-game truncate">{t(rg.nameKey)}</p>
+                    <p className="text-[10px] text-white/40 font-['Be_Vietnam_Pro']">{t(rg.timeKey, rg.timeOpts)}</p>
                   </div>
                 </div>
               );
@@ -672,7 +706,7 @@ const GamesHubInner = () => {
 
         {/* Alle Spiele */}
         <motion.section className="mt-8" initial="hidden" animate="visible" variants={stagger}>
-          <h2 className="text-lg font-extrabold text-white font-game mb-4">Alle Spiele</h2>
+          <h2 className="text-lg font-extrabold text-white font-game mb-4">{t("nativeExtra.gamesHub.allGames")}</h2>
           <div className="grid grid-cols-2 gap-3">
             <AnimatePresence>
               {filteredGames.map((game) => (
@@ -704,7 +738,7 @@ const GamesHubInner = () => {
             <Suspense fallback={GameFallback}>
               <GameLobby
                 gameId={onlineGameId}
-                gameName={allGames.find((g) => g.id === onlineGameId)?.name ?? "Spiel"}
+                gameName={gameNameById(onlineGameId)}
                 onStart={handleOnlineStart}
                 onBack={() => setOnlineGameId(null)}
               />
@@ -717,7 +751,7 @@ const GamesHubInner = () => {
       <PremiumPaywall
         isOpen={!!paywallGame}
         onClose={() => setPaywallGame(null)}
-        gameName={paywallGame?.name}
+        gameName={paywallGame ? t(paywallGame.nameKey) : undefined}
         freePlaysLeft={paywallGame ? (premiumInfoMap[paywallGame.id]?.freePlaysLeft ?? 0) : 0}
       />
 
@@ -725,19 +759,19 @@ const GamesHubInner = () => {
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-4 py-3 bg-[#13131b]/80 backdrop-blur-2xl border-t border-[#484750]/10 rounded-t-[2rem]"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
         {[
-          { label: "Events", icon: Dices, path: "/", active: false },
-          { label: "Games Hub", icon: Gamepad2, path: "/games", active: true },
-          { label: "Profile", icon: Users, path: "/profile", active: false },
-          { label: "Settings", icon: Bell, path: "/settings", active: false },
+          { labelKey: "nativeTabs.events", icon: Dices, path: "/", active: false },
+          { labelKey: "nativeExtra.gamesHub.navGamesHub", icon: Gamepad2, path: "/games", active: true },
+          { labelKey: "nativeTabs.profile", icon: Users, path: "/profile", active: false },
+          { labelKey: "native.profile.settings", icon: Bell, path: "/settings", active: false },
         ].map((item) => {
           const NavIcon = item.icon;
           return (
-            <button key={item.label} onClick={() => navigate(item.path)}
+            <button key={item.labelKey} onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-1 px-4 py-1 rounded-2xl transition-colors ${
                 item.active ? "bg-[#cf96ff]/15" : ""
               }`}>
               <NavIcon className={`h-5 w-5 ${item.active ? "text-[#cf96ff] drop-shadow-[0_0_8px_rgba(207,150,255,0.4)]" : "text-white/40"}`} />
-              <span className={`text-[10px] font-medium font-['Be_Vietnam_Pro'] ${item.active ? "text-[#cf96ff]" : "text-white/40"}`}>{item.label}</span>
+              <span className={`text-[10px] font-medium font-['Be_Vietnam_Pro'] ${item.active ? "text-[#cf96ff]" : "text-white/40"}`}>{t(item.labelKey)}</span>
             </button>
           );
         })}
@@ -768,6 +802,11 @@ function GamesHub() {
   return (
     <TVBroadcastProvider sessionCode={partyTvCode}>
       <GamesHubInner />
+      {/* Der Uebergang zwischen zwei Playlist-Spielen. Bewusst HIER und nicht
+          neben dem laufenden Spiel: Spiele verlassen sich mit
+          `navigate('/games')`, was den `/games/:gameId`-Teilbaum genau dann
+          abraeumt, wenn der Uebergang erscheinen muss. */}
+      <PartyNightFlow />
     </TVBroadcastProvider>
   );
 }

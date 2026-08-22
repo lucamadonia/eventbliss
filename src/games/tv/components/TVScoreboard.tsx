@@ -1,6 +1,9 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Trophy } from 'lucide-react';
 import { tvType, tvActiveRing } from '../tv-tokens';
+import { withPartyContext } from '../withPartyContext';
+import type { PartyNightState } from '../party-types';
 
 /**
  * TVScoreboard — the shared "every player is on screen" roster for all TV views.
@@ -21,6 +24,18 @@ export interface TVScorePlayer {
   /** drives the visual treatment; defaults to 'active' for the activeId player */
   status?: 'active' | 'done' | 'out' | 'waiting';
   avatar?: string;
+  /**
+   * Party Night context — the player's rank and point total for the WHOLE
+   * evening, shown as a compact inline chip next to the in-game score.
+   *
+   * Both are optional on purpose: without them the chip is not rendered and
+   * every existing view looks exactly as before. This is how "wo stehe ich
+   * heute Abend?" reaches all 19 game views without a floating overlay — an
+   * always-on stats overlay was tried here once and removed because it
+   * duplicated this roster and covered game content.
+   */
+  partyRank?: number;
+  partyPoints?: number;
 }
 
 interface Props {
@@ -32,10 +47,23 @@ interface Props {
   layout?: 'strip' | 'rail';
   /** sort by score desc (default) or keep play order (e.g. turn order) */
   sort?: 'score' | 'order';
+  /**
+   * Party Night context, straight off the wire (`gameState.partyNight`).
+   *
+   * Every view passes this one prop instead of matching rosters itself; the
+   * matching lives in `withPartyContext` so it exists exactly once. Players
+   * are matched by id, falling back to a normalised name. Absent or inactive
+   * => the roster is returned by reference and nothing changes.
+   */
+  party?: PartyNightState | null;
   className?: string;
 }
 
-function TVScoreboardImpl({ players, activeId, target, layout = 'strip', sort = 'score', className }: Props) {
+function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'strip', sort = 'score', party, className }: Props) {
+  // Memoised so an active party night does not defeat the memo() below and
+  // re-render the whole roster on the TV's per-second tick.
+  const players = useMemo(() => withPartyContext(rawPlayers, party), [rawPlayers, party]);
+
   const hasScores = players.some((p) => typeof p.score === 'number');
   const ordered = sort === 'score' && hasScores
     ? [...players].sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
@@ -106,6 +134,21 @@ function TVScoreboardImpl({ players, activeId, target, layout = 'strip', sort = 
                   {typeof p.score === 'number' ? (target ? `${p.score}/${target}` : p.score) : ''}
                   {p.subtitle ? `${typeof p.score === 'number' ? ' · ' : ''}${p.subtitle}` : ''}
                 </span>
+                {typeof p.partyRank === 'number' && (
+                  <span
+                    className="inline-flex items-center gap-[0.2em] shrink-0 rounded-full px-[0.45em] py-[0.1em] font-black tabular-nums whitespace-nowrap"
+                    style={{
+                      fontSize: tvType.micro,
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: p.partyRank === 1 ? '#FFD23F' : '#b3a8c9',
+                    }}
+                  >
+                    <Trophy style={{ width: '1em', height: '1em' }} strokeWidth={2.5} />
+                    {p.partyRank}
+                    {typeof p.partyPoints === 'number' ? ` · ${p.partyPoints}` : ''}
+                  </span>
+                )}
               </div>
             </div>
           </motion.div>

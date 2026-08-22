@@ -13,6 +13,8 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,6 +66,8 @@ const GAME_MODES: GameMode[] = [
 export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
+  const exitGuard = useConfirmExit(() => navigate('/games'));
 
   const SETUP_SETTINGS: SettingsConfig = {
     timer: { min: 5, max: 30, default: 15, step: 5, label: t('games.fakeorfact.timerLabel') },
@@ -72,6 +76,18 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
 
   // Setup
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg — die Partie ist
+  // dann futsch. Setup und Endstand haben nichts zu verlieren und reichen
+  // weiter an den Routen-Handler.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [players, setPlayers] = useState<Player[]>([]);
   const [mode, setMode] = useState<Mode>('classic');
   const [totalRounds, setTotalRounds] = useState(10);
@@ -593,6 +609,7 @@ export default function FakeOrFactGame({ online }: { online?: OnlineGameProps } 
           </div>
         </motion.div>
       )}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </div>
   );
 }

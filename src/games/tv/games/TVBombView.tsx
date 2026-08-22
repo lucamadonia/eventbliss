@@ -140,7 +140,7 @@ export default function TVBombView({ gameState }: { gameState: any }) {
 
         {/* Scoreboard stays visible so the penalty just dealt is legible */}
         <div className="absolute bottom-[clamp(1rem,2vh,2rem)] left-0 right-0 px-[clamp(1.25rem,2.4vw,3rem)]">
-          <TVScoreboard players={roster} sort="order" />
+          <TVScoreboard party={gameState?.partyNight} players={roster} sort="order" />
         </div>
       </motion.div>
     );
@@ -273,7 +273,7 @@ export default function TVBombView({ gameState }: { gameState: any }) {
 
       {/* SCOREBOARD strip — whole party */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={roster} sort="order" />
+        <TVScoreboard party={gameState?.partyNight} players={roster} sort="order" />
       </div>
     </div>
   );

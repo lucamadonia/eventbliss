@@ -197,7 +197,7 @@ export default function TVStoryView({ gameState }: { gameState: any }) {
       {/* Author roster — every player on screen, current writer highlighted */}
       {players.length > 0 && (
         <div className="relative z-10 px-10 pb-6 pt-2">
-          <TVScoreboard players={roster} activeId={activeAuthorId} sort="order" />
+          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={activeAuthorId} sort="order" />
         </div>
       )}
 

@@ -14,6 +14,9 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -86,6 +89,24 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
       ? partyPlayerNames
       : players;
   const [phase, setPhase] = useState<Phase>('setup');
+
+  const navigate = useNavigate();
+  // GamesHub reicht `onClose` für dieses Spiel NICHT durch (die Knöpfe auf
+  // Setup/Endstand sind dort deshalb gar nicht sichtbar) — dann ist `/games`
+  // das Ziel.
+  const exitGuard = useConfirmExit(() => { if (onClose) onClose(); else navigate('/games'); });
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
@@ -634,6 +655,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
           </div>
         </motion.div>
       )}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
     </div>
   );
 }

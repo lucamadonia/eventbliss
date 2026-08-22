@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Crown } from 'lucide-react';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from './tv-tokens';
+import { useCountUp } from './useCountUp';
 import type { TVScore } from './useTVConnection';
 
 /**
@@ -21,30 +22,6 @@ const springBouncy = { type: 'spring' as const, stiffness: 280, damping: 16 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
 const RANK_COLOR = ['#FFD23F', '#cfd3dc', '#e0915b'];
-
-/* ─── Score count-up (transform-free, just a number tick) ─── */
-function useCountUp(target: number, duration: number, start: boolean) {
-  const [value, setValue] = useState(0);
-  const rafRef = useRef<number>(0);
-
-  useEffect(() => {
-    if (!start) {
-      setValue(0);
-      return;
-    }
-    const startTime = performance.now();
-    const tick = (now: number) => {
-      const progress = Math.min((now - startTime) / (duration * 1000), 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [target, duration, start]);
-
-  return value;
-}
 
 /* ─── Capped confetti burst — ~26 nodes, stops after one fall, gated ─── */
 const CONFETTI_COLORS = ['#df8eff', '#ff6b98', '#8ff5ff', '#FFD23F', '#26E0C4', '#d779ff'];

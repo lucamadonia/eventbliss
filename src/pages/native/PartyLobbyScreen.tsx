@@ -1,84 +1,136 @@
 /**
- * PartyLobbyScreen — the central hub for a game night party session.
- * Players are added once and shared across multiple games.
- * Tracks overall scores, game history, and TV connection.
+ * PartyLobbyScreen — die Schaltzentrale eines Party-Abends.
+ *
+ * Spieler werden einmal angelegt und ueber viele Spiele mitgenommen. Neu ist
+ * die SET-LISTE: Der Abend wird im Vorfeld geplant und ist damit schon
+ * sichtbar, bevor das erste Spiel laeuft — bisher zeigte die Lobby erst nach
+ * dem ersten Spiel ueberhaupt etwas an.
+ *
+ * Tabelle, Set-Liste und Abschluss liegen in `@/components/native/party/*`,
+ * damit diese Datei uebersichtlich bleibt.
  */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Minus, Trophy, Users, Tv, Crown, Gamepad2,
-  X, ChevronRight, RotateCcw, Sparkles, CalendarPlus,
+  X, ChevronRight, RotateCcw, CalendarPlus, ListPlus, Play,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
-import { usePartySession, PLAYER_COLORS } from "@/hooks/usePartySession";
-import { PartyGamePicker } from "@/components/native/PartyGamePicker";
+import { usePartySession } from "@/hooks/usePartySession";
+import { PartyGamePicker, type PartyPickerMode } from "@/components/native/PartyGamePicker";
+import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay";
+import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
+import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
+import { derivePartyStandings } from "@/games/party/standings";
+import { playableGames } from "@/lib/playable-games";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/platform";
 
-const AVATARS = [
-  "🎉", "🔥", "⭐", "🎯", "🚀", "💎", "🌟", "🎪",
-  "🎲", "🎸", "🎨", "🦄",
-];
+const MAX_PLAYERS = 12;
 
 export default function PartyLobbyScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const haptics = useHaptics();
   const party = usePartySession();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [newName, setNewName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState<PartyPickerMode>("setlist");
   const [showEventPicker, setShowEventPicker] = useState(false);
   const [showFinalLeaderboard, setShowFinalLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Auto-start session if not active
+  const startSession = party.startSession;
+  const isPartyActive = party.isPartyActive;
+
+  // Ohne laufende Sitzung gibt es nichts zu planen — genau einmal beim Betreten.
   useEffect(() => {
-    if (!party.isPartyActive) {
-      party.startSession();
-    }
+    if (!isPartyActive) startSession();
+    // Absichtlich nur beim Mounten: ein spaeteres `resetSession` soll die
+    // Sitzung nicht sofort wieder auferstehen lassen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle return from a game — check for last-game info
-  const lastGame = searchParams.get("lastGame");
-  const lastWinner = searchParams.get("lastWinner");
+  const session = party.session;
+  const players = useMemo(() => session?.players ?? [], [session]);
+  const history = useMemo(() => session?.gameHistory ?? [], [session]);
+  const standings = useMemo(
+    () => derivePartyStandings(players, history),
+    [players, history]
+  );
+  const canStartGame = players.length >= 2;
+
+  const playlist = session?.playlist ?? [];
+  const playlistIndex = session?.playlistIndex ?? 0;
+  const playlistActive = session?.playlistActive ?? false;
+  const currentPlaylistGame = playlistActive ? playlist[playlistIndex] ?? null : null;
+  const currentPlaylistName = currentPlaylistGame
+    ? t(playableGames.find((g) => g.id === currentPlaylistGame)?.nameKey ?? currentPlaylistGame)
+    : null;
 
   const handleAddPlayer = useCallback(() => {
     const trimmed = newName.trim();
     if (!trimmed) return;
-    if ((party.session?.players.length ?? 0) >= 12) return;
+    if ((party.session?.players.length ?? 0) >= MAX_PLAYERS) return;
     haptics.success();
     party.addPlayer(trimmed);
     setNewName("");
   }, [newName, haptics, party]);
 
   const handleImportNames = useCallback((names: string[]) => {
-    const free = 12 - (party.session?.players.length ?? 0);
+    const free = MAX_PLAYERS - (party.session?.players.length ?? 0);
     names.slice(0, Math.max(0, free)).forEach((n) => party.addPlayer(n));
     haptics.success();
   }, [party, haptics]);
 
-  const handleRemovePlayer = useCallback(
-    (id: string) => {
-      haptics.light();
-      party.removePlayer(id);
-    },
-    [haptics, party]
-  );
+  const handleRemovePlayer = useCallback((id: string) => {
+    haptics.light();
+    party.removePlayer(id);
+  }, [haptics, party]);
 
-  const handleSelectGame = useCallback(
-    (gameId: string) => {
-      haptics.medium();
-      party.startGame(gameId);
-      setShowPicker(false);
-      navigate(`/games/${gameId}?party=true`);
-    },
-    [haptics, party, navigate]
-  );
+  const openPicker = useCallback((mode: PartyPickerMode) => {
+    haptics.medium();
+    setPickerMode(mode);
+    setShowPicker(true);
+  }, [haptics]);
+
+  const launchGame = useCallback((gameId: string) => {
+    party.startGame(gameId);
+    setShowPicker(false);
+    navigate(`/games/${gameId}?party=true`);
+  }, [party, navigate]);
+
+  const handleSelectGame = useCallback((gameId: string) => {
+    haptics.medium();
+    launchGame(gameId);
+  }, [haptics, launchGame]);
+
+  /** Set-Liste uebernehmen und direkt mit dem ersten Eintrag loslegen. */
+  const handleStartSetlist = useCallback((gameIds: string[]) => {
+    if (gameIds.length === 0) return;
+    haptics.celebrate();
+    party.setPlaylist(gameIds);
+    launchGame(gameIds[0]);
+  }, [party, haptics, launchGame]);
+
+  /**
+   * `?finale=1` kommt vom Uebergang nach dem letzten Spiel der Set-Liste.
+   * Der Parameter wird sofort entfernt, damit ein Zurueck-Wisch oder ein
+   * spaeterer Besuch die Zeremonie nicht ein zweites Mal aufzieht.
+   */
+  useEffect(() => {
+    if (searchParams.get("finale") !== "1") return;
+    haptics.celebrate();
+    setShowFinalLeaderboard(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("finale");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, haptics]);
 
   const handleEndParty = useCallback(() => {
     haptics.celebrate();
@@ -94,42 +146,35 @@ export default function PartyLobbyScreen() {
   const handleCopyTvLink = useCallback(async () => {
     if (!party.tvCode) return;
     haptics.success();
-    const url = `${getBaseUrl()}/tv/${party.tvCode}`;
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${getBaseUrl()}/tv/${party.tvCode}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard API not available
+      // Zwischenablage nicht verfuegbar — der Code steht ja daneben.
     }
   }, [party.tvCode, haptics]);
 
-  const session = party.session;
-  const players = session?.players ?? [];
-  const leaderboard = party.getOverallLeaderboard();
-  const history = session?.gameHistory ?? [];
-  const canStartGame = players.length >= 2;
-
   return (
     <div className="relative min-h-screen bg-background safe-top">
-      {/* Ambient orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#df8eff]/10 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-[#ff6b98]/10 rounded-full blur-[100px]" />
+      {/* Ambiente */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden>
+        <div className="absolute -top-32 -start-32 w-64 h-64 bg-[#df8eff]/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-32 -end-32 w-64 h-64 bg-[#ff6b98]/10 rounded-full blur-[100px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8ff5ff]/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 pb-32">
-        {/* Header */}
+        {/* Kopf */}
         <div className="px-5 pt-5 pb-4">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <motion.h1
                 className="text-3xl font-display font-bold text-foreground"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                Party Night
+                {t('nativeExtra.partyLobby.title')}
               </motion.h1>
               <motion.p
                 className="text-sm text-muted-foreground mt-0.5"
@@ -137,49 +182,43 @@ export default function PartyLobbyScreen() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                {players.length} Spieler{players.length !== 1 ? "" : ""} &middot; {history.length} Spiel{history.length !== 1 ? "e" : ""} gespielt
+                {t('nativeExtra.partyLobby.subtitle', { players: players.length, games: history.length })}
               </motion.p>
             </div>
             <motion.button
+              type="button"
               whileTap={{ scale: 0.9 }}
               onClick={() => { haptics.light(); navigate("/games"); }}
-              className="w-10 h-10 rounded-full bg-foreground/5 border border-border flex items-center justify-center"
+              aria-label={t('common.close', 'Schließen')}
+              className="cursor-pointer w-11 h-11 shrink-0 rounded-full bg-foreground/5 border border-border flex items-center justify-center"
             >
-              <X className="w-5 h-5 text-muted-foreground" />
+              <X className="w-5 h-5 text-muted-foreground" aria-hidden />
             </motion.button>
           </div>
         </div>
 
-        {/* Last game result banner */}
-        <AnimatePresence>
-          {lastGame && lastWinner && (
-            <motion.div
-              className="mx-5 mb-4 p-3 rounded-2xl bg-[#df8eff]/10 border border-[#df8eff]/20"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="flex items-center gap-2">
-                <Crown className="w-4 h-4 text-amber-500 dark:text-[#f9ca24]" />
-                <span className="text-sm text-foreground">
-                  <span className="font-semibold">{lastWinner}</span> hat gewonnen!
-                </span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Set-Liste — sichtbar, bevor das erste Spiel laeuft */}
+        <PartySetlistStrip
+          playlist={playlist}
+          playlistIndex={playlistIndex}
+          playlistActive={playlistActive}
+          playerCount={players.length}
+          onEdit={() => openPicker("setlist")}
+          onPlayCurrent={launchGame}
+        />
 
-        {/* Players section */}
+        {/* Spieler */}
         <section className="px-5 mb-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Users className="w-4 h-4" /> Spieler ({players.length}/12)
+              <Users className="w-4 h-4" aria-hidden />
+              {t('nativeExtra.partyLobby.playersHeading', { count: players.length, max: MAX_PLAYERS })}
             </h2>
           </div>
 
           <motion.div className="space-y-2" variants={stagger} initial="initial" animate="animate">
             <AnimatePresence initial={false}>
-              {players.map((player, i) => (
+              {players.map((player) => (
                 <motion.div
                   key={player.id}
                   layout
@@ -195,68 +234,70 @@ export default function PartyLobbyScreen() {
                   >
                     {player.avatar}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-start">
                     <p className="text-sm font-semibold text-foreground truncate">{player.name}</p>
                     {player.gamesPlayed > 0 && (
                       <p className="text-[11px] text-muted-foreground">
-                        {player.totalScore} Pkt &middot; {player.gamesWon} Siege
+                        {t('nativeExtra.partyLobby.playerRowStats', { points: player.totalScore, wins: player.gamesWon })}
                       </p>
                     )}
                   </div>
                   <motion.button
+                    type="button"
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleRemovePlayer(player.id)}
-                    className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0"
+                    aria-label={t('nativeExtra.partyNight.removePlayer', { name: player.name })}
+                    className="cursor-pointer w-11 h-11 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0"
                   >
-                    <Minus className="w-4 h-4 text-red-400" />
+                    <Minus className="w-4 h-4 text-red-400" aria-hidden />
                   </motion.button>
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
 
-          {/* Add player input */}
-          {players.length < 12 && (
-            <motion.div
-              className="flex items-center gap-2 mt-3"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddPlayer()}
-                placeholder="Spielername..."
-                maxLength={20}
-                className="flex-1 h-11 px-4 rounded-xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={handleAddPlayer}
-                disabled={!newName.trim()}
-                className={cn(
-                  "h-11 w-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
-                  newName.trim()
-                    ? "bg-primary text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
-                    : "bg-foreground/5 text-muted-foreground border border-border"
-                )}
+          {players.length < MAX_PLAYERS && (
+            <>
+              <motion.div
+                className="flex items-center gap-2 mt-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                <Plus className="w-5 h-5" />
-              </motion.button>
-            </motion.div>
-          )}
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddPlayer()}
+                  placeholder={t('nativeExtra.partyLobby.namePlaceholder')}
+                  maxLength={20}
+                  className="flex-1 h-11 px-4 rounded-xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleAddPlayer}
+                  disabled={!newName.trim()}
+                  aria-label={t('nativeExtra.partyNight.addPlayer')}
+                  className={cn(
+                    "cursor-pointer h-11 w-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
+                    newName.trim()
+                      ? "bg-primary text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                      : "bg-foreground/5 text-muted-foreground border border-border"
+                  )}
+                >
+                  <Plus className="w-5 h-5" aria-hidden />
+                </motion.button>
+              </motion.div>
 
-          {/* Aus Event übernehmen */}
-          {players.length < 12 && (
-            <button
-              type="button"
-              onClick={() => setShowEventPicker(true)}
-              className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-primary bg-primary/10 border border-primary/25"
-            >
-              <CalendarPlus className="w-4 h-4" />
-              Aus Event übernehmen
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowEventPicker(true)}
+                className="cursor-pointer mt-2 w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl text-sm font-medium text-primary bg-primary/10 border border-primary/25"
+              >
+                <CalendarPlus className="w-4 h-4" aria-hidden />
+                {t('nativeExtra.partyNight.importFromEvent')}
+              </button>
+            </>
           )}
         </section>
 
@@ -266,7 +307,7 @@ export default function PartyLobbyScreen() {
           onSelect={handleImportNames}
         />
 
-        {/* TV Connection */}
+        {/* TV-Verbindung */}
         {party.tvCode && (
           <section className="px-5 mb-5">
             <motion.div
@@ -277,9 +318,9 @@ export default function PartyLobbyScreen() {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#df8eff]/20 flex items-center justify-center shrink-0">
-                  <Tv className="w-5 h-5 text-violet-500 dark:text-[#df8eff]" />
+                  <Tv className="w-5 h-5 text-violet-500 dark:text-[#df8eff]" aria-hidden />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-start">
                   <p className="text-sm font-semibold text-foreground">{t('nativeExtra.connectTV')}</p>
                   <p className="text-xs text-muted-foreground truncate">
                     {getBaseUrl()}/tv/{party.tvCode}
@@ -292,68 +333,32 @@ export default function PartyLobbyScreen() {
                 </div>
               </div>
               <motion.button
+                type="button"
                 whileTap={{ scale: 0.97 }}
                 onClick={handleCopyTvLink}
-                className="w-full mt-3 h-9 rounded-xl bg-[#df8eff]/10 border border-[#df8eff]/20 text-violet-500 dark:text-[#df8eff] text-xs font-semibold"
+                className="cursor-pointer w-full mt-3 min-h-[44px] rounded-xl bg-[#df8eff]/10 border border-[#df8eff]/20 text-violet-500 dark:text-[#df8eff] text-xs font-semibold"
               >
-                {copied ? "Kopiert!" : "TV-Link kopieren"}
+                {copied ? t('common.copied') : t('nativeExtra.partyLobby.copyTvLink')}
               </motion.button>
             </motion.div>
           </section>
         )}
 
-        {/* Overall Leaderboard — only after first game */}
+        {/* Gesamtwertung */}
         {history.length > 0 && (
           <section className="px-5 mb-5">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
-              <Trophy className="w-4 h-4" /> Gesamtwertung
+              <Trophy className="w-4 h-4" aria-hidden /> {t('nativeExtra.partyLobby.overallScore')}
             </h2>
-            <div className="space-y-2">
-              {leaderboard.map((player, i) => (
-                <motion.div
-                  key={player.id}
-                  className={cn(
-                    "flex items-center gap-3 p-3 rounded-xl border",
-                    i === 0
-                      ? "bg-[#f9ca24]/10 border-[#f9ca24]/30"
-                      : "bg-card border-border"
-                  )}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <div className="w-7 flex items-center justify-center shrink-0">
-                    {i === 0 && <Crown className="w-5 h-5 text-amber-500 dark:text-[#f9ca24]" />}
-                    {i === 1 && <span className="text-sm font-bold text-muted-foreground">2</span>}
-                    {i === 2 && <span className="text-sm font-bold text-amber-700">3</span>}
-                    {i > 2 && <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>}
-                  </div>
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm shrink-0"
-                    style={{ backgroundColor: player.color + "30", borderColor: player.color, borderWidth: 2 }}
-                  >
-                    {player.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{player.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {player.gamesWon} Siege &middot; {player.gamesPlayed} Spiele
-                    </p>
-                  </div>
-                  <span className="text-base font-bold text-foreground tabular-nums">
-                    {player.totalScore}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+            <PartyStandingsList standings={standings} compact />
           </section>
         )}
 
-        {/* Game History */}
+        {/* Historie */}
         {history.length > 0 && (
           <section className="px-5 mb-5">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
-              <Gamepad2 className="w-4 h-4" /> Gespielte Spiele
+              <Gamepad2 className="w-4 h-4" aria-hidden /> {t('nativeExtra.partyLobby.gamesPlayedHeading')}
             </h2>
             <div className="space-y-2">
               {[...history].reverse().map((entry, i) => (
@@ -362,14 +367,16 @@ export default function PartyLobbyScreen() {
                   className="p-3 rounded-xl bg-card border border-border"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: Math.min(i, 6) * 0.05 }}
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">{entry.gameName}</p>
-                    <div className="flex items-center gap-1">
-                      <Crown className="w-3.5 h-3.5 text-amber-500 dark:text-[#f9ca24]" />
-                      <span className="text-xs font-medium text-muted-foreground">{entry.winnerName}</span>
-                    </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-foreground truncate">{entry.gameName}</p>
+                    {entry.scored && entry.winnerName && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Crown className="w-3.5 h-3.5 text-amber-500 dark:text-[#f9ca24]" aria-hidden />
+                        <span className="text-xs font-medium text-muted-foreground">{entry.winnerName}</span>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -377,144 +384,99 @@ export default function PartyLobbyScreen() {
           </section>
         )}
 
-        {/* Start game CTA */}
+        {/* Aktionen */}
         <div className="px-5 space-y-3">
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              haptics.medium();
-              setShowPicker(true);
-            }}
+          {currentPlaylistGame && currentPlaylistName ? (
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              transition={spring.snappy}
+              onClick={() => { haptics.medium(); launchGame(currentPlaylistGame); }}
+              disabled={!canStartGame}
+              className={cn(
+                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
+                canStartGame
+                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
+                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
+              )}
+            >
+              <Play className="w-5 h-5" aria-hidden />
+              <span className="truncate">
+                {t('nativeExtra.partyNight.continueSetlist', { game: currentPlaylistName })}
+              </span>
+            </motion.button>
+          ) : (
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              transition={spring.snappy}
+              onClick={() => openPicker("setlist")}
+              disabled={!canStartGame}
+              className={cn(
+                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
+                canStartGame
+                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
+                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
+              )}
+            >
+              <ListPlus className="w-5 h-5" aria-hidden />
+              {t('nativeExtra.partyNight.planEvening')}
+              <ChevronRight className="w-5 h-5 rtl:rotate-180" aria-hidden />
+            </motion.button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => openPicker("single")}
             disabled={!canStartGame}
             className={cn(
-              "w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
+              "cursor-pointer w-full min-h-[48px] rounded-2xl border border-border font-semibold text-sm flex items-center justify-center gap-2 transition-colors",
               canStartGame
-                ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
-                : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
+                ? "text-foreground active:bg-foreground/5"
+                : "text-muted-foreground cursor-not-allowed opacity-60"
             )}
           >
-            <Sparkles className="w-5 h-5" />
-            Spiel wahlen
-            <ChevronRight className="w-5 h-5" />
-          </motion.button>
+            <Gamepad2 className="w-4 h-4" aria-hidden />
+            {t('nativeExtra.partyNight.singleGame')}
+          </button>
 
           {!canStartGame && (
             <p className="text-xs text-center text-muted-foreground">
-              Mindestens 2 Spieler hinzufugen
+              {t('nativeExtra.partyLobby.needTwoPlayers')}
             </p>
           )}
 
           {history.length > 0 && (
             <motion.button
+              type="button"
               whileTap={{ scale: 0.97 }}
               onClick={handleEndParty}
-              className="w-full py-3.5 rounded-2xl border border-border text-muted-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:bg-foreground/5 transition-colors"
+              className="cursor-pointer w-full min-h-[48px] rounded-2xl border border-border text-muted-foreground font-semibold text-sm flex items-center justify-center gap-2 active:bg-foreground/5 transition-colors"
             >
-              <RotateCcw className="w-4 h-4" />
-              Party beenden
+              <RotateCcw className="w-4 h-4" aria-hidden />
+              {t('nativeExtra.partyLobby.endParty')}
             </motion.button>
           )}
         </div>
       </div>
 
-      {/* Game picker overlay */}
       <PartyGamePicker
         open={showPicker}
         onClose={() => setShowPicker(false)}
         onSelectGame={handleSelectGame}
         playerCount={players.length}
+        mode={pickerMode}
+        initialSetlist={playlist}
+        onStartSetlist={handleStartSetlist}
       />
 
-      {/* Final Leaderboard overlay */}
-      <AnimatePresence>
-        {showFinalLeaderboard && (
-          <motion.div
-            className="fixed inset-0 z-50 bg-background/98 backdrop-blur-xl flex flex-col items-center justify-center px-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="w-full max-w-sm space-y-6"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={spring.bouncy}
-            >
-              {/* Trophy */}
-              <motion.div
-                className="flex justify-center"
-                initial={{ scale: 0, rotate: -20 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
-              >
-                <div className="w-20 h-20 rounded-full bg-[#f9ca24]/20 flex items-center justify-center">
-                  <Trophy className="w-10 h-10 text-amber-500 dark:text-[#f9ca24]" />
-                </div>
-              </motion.div>
-
-              <div className="text-center">
-                <h2 className="text-2xl font-display font-bold text-foreground">{t('nativeExtra.partyOver')}</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {history.length} Spiel{history.length !== 1 ? "e" : ""} &middot; {players.length} Spieler
-                </p>
-              </div>
-
-              {/* Final rankings */}
-              <div className="space-y-2">
-                {leaderboard.map((player, i) => (
-                  <motion.div
-                    key={player.id}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl border",
-                      i === 0
-                        ? "bg-[#f9ca24]/10 border-[#f9ca24]/30"
-                        : i === 1
-                        ? "bg-foreground/5 border-border"
-                        : "bg-card border-border"
-                    )}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                  >
-                    <div className="w-7 flex items-center justify-center shrink-0">
-                      {i === 0 && <Crown className="w-5 h-5 text-amber-500 dark:text-[#f9ca24]" />}
-                      {i === 1 && <span className="text-sm font-bold text-muted-foreground">2</span>}
-                      {i === 2 && <span className="text-sm font-bold text-amber-700">3</span>}
-                      {i > 2 && <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>}
-                    </div>
-                    <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-sm shrink-0"
-                      style={{ backgroundColor: player.color + "30", borderColor: player.color, borderWidth: 2 }}
-                    >
-                      {player.avatar}
-                    </div>
-                    <span className="flex-1 text-sm font-semibold text-foreground truncate">
-                      {player.name}
-                    </span>
-                    <div className="text-right shrink-0">
-                      <span className="text-base font-bold text-foreground tabular-nums">
-                        {player.totalScore}
-                      </span>
-                      <p className="text-[10px] text-muted-foreground">{player.gamesWon} Siege</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={handleConfirmEnd}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#df8eff] to-[#ff6b98] text-white font-bold text-base shadow-[0_0_25px_rgba(223,142,255,0.3)]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                Fertig
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <PartyFinaleOverlay
+        open={showFinalLeaderboard}
+        standings={standings}
+        gamesPlayed={history.length}
+        playerCount={players.length}
+        onDone={handleConfirmEnd}
+      />
     </div>
   );
 }

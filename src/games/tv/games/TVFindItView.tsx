@@ -117,7 +117,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
           <div style={{ fontSize: tvType.display }}>🏆</div>
           <div className="font-black" style={{ fontSize: tvType.title, color: winner?.color || FI.primary }}>{winner?.name} {t('tv.wins', 'gewinnt!')}</div>
         </motion.div>
-        <TVScoreboard players={roster} sort="score" />
+        <TVScoreboard party={gameState?.partyNight} players={roster} sort="score" />
       </div>
     );
   }
@@ -244,7 +244,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
 
       {/* BOTTOM — whole-party scoreboard strip (score + streak) */}
       <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)]">
-        <TVScoreboard players={roster} sort="score" />
+        <TVScoreboard party={gameState?.partyNight} players={roster} sort="score" />
       </div>
     </div>
   );

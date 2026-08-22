@@ -15,6 +15,7 @@ import { getRandomStreetViewLocations, type StreetViewLocation } from './streetv
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -300,6 +301,21 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   // Core state
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
+  // Ohne Eintrag im Back-Guard-Stapel navigiert er mitten in der Runde weg und
+  // die Partie ist futsch. Delegiert bewusst an denselben `exitGuard` wie der
+  // Pfeil, damit es genau EINEN Bestätigungsdialog gibt.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    // Karten-Setup ist noch Vorbereitung: zurück führt eine Stufe hoch,
+    // genau wie der Pfeil dort (onBack={() => setPhase('setup')}).
+    if (phase === 'karteSetup') { setPhase('setup'); return true; }
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [mode, setMode] = useState<Mode>('memory');
   const [players, setPlayers] = useState<Player[]>([]);
   const [round, setRound] = useState(0);

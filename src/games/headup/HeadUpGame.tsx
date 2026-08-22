@@ -14,6 +14,9 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -111,6 +114,41 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // Live-Debug (nur für die Geräte-Feinjustage; TILT_DEBUG danach auf false).
   const [tiltDebug, setTiltDebug] = useState<{ pitch: number; delta: number; armed: boolean } | null>(null);
   const debugTickRef = useRef(0);
+
+  const navigate = useNavigate();
+  const exitGuard = useConfirmExit(() => navigate('/games'));
+
+  // Der Kipp-Sensor hört auf `devicemotion` und weiß nichts vom Dialog. Bliebe
+  // er scharf, würde eine Neigung HINTER der offenen Abfrage weiter Wörter
+  // abhaken. Also still legen, solange gefragt wird, und beim Weiterspielen
+  // exakt so neu kalibrieren wie beim Rundenstart (Baseline verwerfen, 150ms
+  // Lock, damit die erste Neigung nicht verschluckt wird).
+  const suspendTilt = useCallback(() => {
+    orientationActiveRef.current = false;
+    armedRef.current = false;
+    setIsArmed(false);
+  }, []);
+  const resumeTilt = useCallback(() => {
+    if (screen !== 'playing') return;
+    armedRef.current = false;
+    setIsArmed(false);
+    baselineRef.current = null;
+    smoothRef.current = null;
+    setTimeout(() => { orientationActiveRef.current = true; }, 150);
+  }, [screen]);
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (screen === 'setup' || screen === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); resumeTilt(); return true; }
+    suspendTilt();
+    exitGuard.request();
+    return true;
+  });
 
   const handleTimerExpire = useCallback(() => {
     orientationActiveRef.current = false;
@@ -630,6 +668,12 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         )}
 
       </AnimatePresence>
+      <ConfirmExitDialog
+        open={exitGuard.open}
+        onStay={() => { exitGuard.cancel(); resumeTilt(); }}
+        onLeave={exitGuard.confirm}
+        accent="#df8eff"
+      />
     </div>
   );
 }

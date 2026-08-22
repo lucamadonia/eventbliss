@@ -6,7 +6,7 @@
  * The playable-games registry is shared via @/lib/playable-games so the
  * "Play" tab, the Ideas highlight shelf and party mode never drift apart.
  */
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -27,6 +27,9 @@ import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { playableGames, type PlayableGame } from "@/lib/playable-games";
+import { PartyResumeBanner } from "@/components/native/party/PartyResumeBanner";
+import { usePartyResumeState } from "@/components/native/party/usePartyResume";
+import { usePartySession } from "@/hooks/usePartySession";
 
 type Category = "alle" | "party" | "quiz" | "wort" | "karte" | "reaktion" | "social" | "kreativ";
 
@@ -47,6 +50,20 @@ export default function GamesScreen() {
   const haptics = useHaptics();
   const { isPremium } = usePremium();
   const [category, setCategory] = useState<Category>("alle");
+  const party = usePartySession();
+  // Genau EIN Aufrufer — der Ausblend-Zustand lebt in diesem Hook.
+  const partyResume = usePartyResumeState();
+
+  /** Die unterbrochene Set-Liste beim faelligen Spiel fortsetzen. */
+  const handleResumeParty = useCallback(
+    (gameId: string) => {
+      haptics.medium();
+      party.startGame(gameId);
+      // `?party=true` schickt den Zurueck-Weg in die Party-Lobby.
+      navigate(`/games/${gameId}?party=true`);
+    },
+    [party, haptics, navigate]
+  );
 
   const filtered = useMemo(
     () =>
@@ -102,8 +119,17 @@ export default function GamesScreen() {
         </div>
       </div>
 
-      {/* Party Mode CTA */}
+      {/* Party Mode CTA — bei laufender Set-Liste wird derselbe Platz zum
+          Fortsetzen-Hinweis; es kommt KEIN zweites Element dazu. */}
       <div className="px-5 pb-3">
+        {partyResume.visible && partyResume.gameId ? (
+          <PartyResumeBanner
+            gameId={partyResume.gameId}
+            onResume={handleResumeParty}
+            onDismiss={partyResume.dismiss}
+            onOpenLobby={() => { haptics.light(); navigate("/party"); }}
+          />
+        ) : (
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => {
@@ -117,12 +143,13 @@ export default function GamesScreen() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-foreground">{t('nativeExtra.startParty')}</p>
-            <p className="text-[11px] text-muted-foreground">Mehrere Spiele, eine Rangliste</p>
+            <p className="text-[11px] text-muted-foreground">{t('nativeExtra.startPartySub')}</p>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 group-active:translate-x-0.5 transition-transform" />
           {/* Ambient shimmer */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
         </motion.button>
+        )}
       </div>
 
       {/* Game grid */}

@@ -171,7 +171,7 @@ export default function TVImpostorView({ gameState }: { gameState: any }) {
         </div>
         {/* whole party on screen — who has already spoken (✓) */}
         <div className="absolute bottom-6 left-8 right-8">
-          <TVScoreboard players={rosterPreReveal} sort="order" />
+          <TVScoreboard party={gameState?.partyNight} players={rosterPreReveal} sort="order" />
         </div>
       </div>
     );

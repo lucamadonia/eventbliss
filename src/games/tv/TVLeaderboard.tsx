@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { tvPanel, tvType } from './tv-tokens';
 import TVScoreboard from './components/TVScoreboard';
 import type { TVScore } from './useTVConnection';
+import type { PartyNightState } from './party-types';
 
 /**
  * TVLeaderboard — the between-rounds standings on the shared big screen.
@@ -19,10 +20,13 @@ const spring = { type: 'spring' as const, stiffness: 220, damping: 22 };
 export default function TVLeaderboard({
   scores,
   previousRanks,
+  party,
 }: {
   scores: TVScore[];
   /** optional: drives the up/down arrow per player when the host sends prior ranks */
   previousRanks?: Record<string, number>;
+  /** optional Party Night context — adds the evening's rank/points chip per player */
+  party?: PartyNightState | null;
 }) {
   const { t } = useTranslation();
   const sorted = [...scores].sort((a, b) => b.score - a.score);
@@ -80,7 +84,7 @@ export default function TVLeaderboard({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ ...spring, delay: 0.1 }}
       >
-        <TVScoreboard players={players} layout="rail" sort="score" activeId={null} />
+        <TVScoreboard players={players} party={party} layout="rail" sort="score" activeId={null} />
       </motion.div>
     </motion.div>
   );

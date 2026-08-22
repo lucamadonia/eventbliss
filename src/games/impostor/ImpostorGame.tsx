@@ -18,6 +18,9 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { useAmbientMotion } from "@/lib/useAmbientMotion";
+import { useNavigate } from 'react-router-dom';
+import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -225,6 +228,21 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Game state ---
   const [phase, setPhase] = useState<Phase>('setup');
+
+  const navigate = useNavigate();
+  const exitGuard = useConfirmExit(() => navigate('/games'));
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
+  // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
+  // Back-Guard-Stapel navigiert er mitten in der Runde weg und die Partie ist
+  // futsch. Setup und Endstand haben nichts zu verlieren und reichen an den
+  // Routen-Handler weiter.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'results') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
   const [currentWordSet, setCurrentWordSet] = useState<WordSet | null>(null);
@@ -584,6 +602,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
+  // Jede Phase hat hier ihr eigenes `return`. Damit der Verlassen-Dialog nicht
+  // sechsmal im Quelltext steht, wird er einmal gebaut und unten eingesetzt.
+  const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />;
+
   // =========================================================================
   // RENDER
   // =========================================================================
@@ -739,6 +761,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     const totalPhases = String(players.length).padStart(2, '0');
     return (
       <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        {exitDialog}
         {/* Ambient glow layer */}
         <div className="pointer-events-none absolute inset-0 -z-0">
           <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
@@ -1180,6 +1203,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     const progress = players.length > 0 ? spokenCount / players.length : 0;
     return (
       <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        {exitDialog}
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-0 -right-20 w-72 h-72 rounded-full bg-[#df8eff]/10 blur-[110px]" />
@@ -1318,6 +1342,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     const voter = players[votingPlayer];
     return (
       <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+        {exitDialog}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-[#ff6b98]/12 blur-[120px]" />
           <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
@@ -1398,6 +1423,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'revealCountdown') {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center">
+        {exitDialog}
         <AnimatePresence mode="wait">
           <motion.span
             key={countdownNum}
@@ -1418,6 +1444,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'reveal') {
     return (
       <div className="min-h-screen bg-[#0a0e14] px-4 py-8 flex items-center justify-center">
+        {exitDialog}
         <div className="max-w-md w-full space-y-8 text-center">
           {/* Result banner */}
           <motion.div
@@ -1539,6 +1566,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   if (phase === 'bonusGuess') {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center px-4">
+        {exitDialog}
         <div className="max-w-sm w-full space-y-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -1708,5 +1736,5 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     );
   }
 
-  return null;
+  return exitDialog;
 }

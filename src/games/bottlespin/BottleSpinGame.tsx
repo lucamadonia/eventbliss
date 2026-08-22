@@ -17,6 +17,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getBOTTLE_CARDS, getCATEGORY_META, type BottleCard, type BottleCategory } from './bottlespin-content';
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
+import { useBackGuard } from '@/lib/back-guard';
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
@@ -73,6 +74,18 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
     rounds: { min: 5, max: 50, default: 15, step: 1, label: t('games.bottlespin.setupRoundsLabel') },
   }), [t]);
   const [phase, setPhase] = useState<Phase>('setup');
+
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
+  // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
+  // Ohne Eintrag im Back-Guard-Stapel navigiert er mitten in der Runde weg und
+  // die Partie ist futsch. Delegiert bewusst an denselben `exitGuard` wie der
+  // Pfeil, damit es genau EINEN Bestätigungsdialog gibt.
+  useBackGuard(() => {
+    if (phase === 'setup' || phase === 'gameOver') return false;
+    if (exitGuard.open) { exitGuard.cancel(); return true; }
+    exitGuard.request();
+    return true;
+  });
   const [players, setPlayers] = useState<Player[]>([]);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);

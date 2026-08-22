@@ -82,7 +82,7 @@ export default function TVHeadUpView({ gameState }: { gameState: any }) {
 
         {roster.length > 0 && (
           <div className="absolute bottom-[clamp(1rem,2vh,2rem)] left-0 right-0 px-[clamp(1.25rem,2.4vw,3rem)]">
-            <TVScoreboard players={roster.map((p) => ({ ...p, status: 'waiting' as const, subtitle: undefined }))} sort="order" />
+            <TVScoreboard party={gameState?.partyNight} players={roster.map((p) => ({ ...p, status: 'waiting' as const, subtitle: undefined }))} sort="order" />
           </div>
         )}
       </div>
@@ -208,7 +208,7 @@ export default function TVHeadUpView({ gameState }: { gameState: any }) {
       {/* Whole-party roster — every player on screen, current guesser ringed */}
       {roster.length > 0 && (
         <div className="relative px-[clamp(1.25rem,2.4vw,3rem)] pb-[clamp(1rem,2vh,2rem)] z-10">
-          <TVScoreboard players={roster} sort="order" />
+          <TVScoreboard party={gameState?.partyNight} players={roster} sort="order" />
         </div>
       )}
     </div>

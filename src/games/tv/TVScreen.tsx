@@ -8,8 +8,10 @@ import TVLeaderboard from './TVLeaderboard';
 import TVGameOver from './TVGameOver';
 import TVVFXLayer from './components/TVVFXLayer';
 import TVGlowFrame from './components/TVGlowFrame';
+import TVPartyProgressStrip from './components/TVPartyProgressStrip';
 import { useTVConnection } from './useTVConnection';
 import { useTVAudio } from './TVAudioManager';
+import type { PartyNightState } from './party-types';
 
 // Lazy load game-specific TV views
 const TVBombView = lazy(() => import('./games/TVBombView'));
@@ -32,6 +34,10 @@ const TVWhoAmIView = lazy(() => import('./games/TVWhoAmIView'));
 const TVWordPressView = lazy(() => import('./games/TVWordPressView'));
 const TVFindItView = lazy(() => import('./games/TVFindItView'));
 const TVSmartFallback = lazy(() => import('./games/TVSmartFallback'));
+
+// Party Night scenes — the cross-game evening, not a single game
+const TVPartyStandings = lazy(() => import('./TVPartyStandings'));
+const TVPartyFinale = lazy(() => import('./TVPartyFinale'));
 
 const TVFallback = (
   <div className="min-h-screen flex items-center justify-center">
@@ -92,6 +98,14 @@ export default function TVScreen() {
     return players.map(p => ({ name: p.name, score: 0, color: p.color }));
   }, [leaderboard, players, gameState?.players]);
 
+  // Party Night context, if the phone is running a playlist evening. Absent for
+  // single games, in which case everything below behaves exactly as before.
+  const partyNight = gameState?.partyNight as PartyNightState | undefined;
+  const partyActive = !!partyNight?.active && (partyNight.standings?.length ?? 0) > 0;
+  // Explicit host intent wins over the derived per-game phases below.
+  const showPartyFinale = partyActive && partyNight!.phase === 'finale';
+  const showPartyStandings = partyActive && partyNight!.phase === 'between';
+
   // Determine phase
   const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
   const showGameOver = gameEnded || gameState?.phase === 'gameOver';
@@ -151,7 +165,14 @@ export default function TVScreen() {
       <TVVFXLayer gameState={gameState} />
       {/* Floating live-stats overlay removed: every game view now renders its
           own full TVScoreboard roster, so this only duplicated the standings
-          and covered on-screen content (timelines, cards, etc.). */}
+          and covered on-screen content (timelines, cards, etc.).
+          Party Night keeps that rule: "where do I stand tonight" travels as
+          optional partyRank/partyPoints props on that same TVScoreboard, and
+          the only extra chrome is the hairline strip below — a single
+          text-height row inside the padding every view already reserves. */}
+      {partyActive && !showPartyStandings && !showPartyFinale && (
+        <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
+      )}
 
       {/* Exactly ONE keyed child — AnimatePresence mode="wait" with several
           conditional children can wedge (view faded out but the next one
@@ -160,16 +181,27 @@ export default function TVScreen() {
           derived view name cannot get stuck between views. */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={showGameOver ? 'gameover' : showLeaderboard ? 'leaderboard' : showGame ? 'game' : 'lobby'}
+          key={
+            showPartyFinale ? 'partyFinale'
+            : showPartyStandings ? 'partyStandings'
+            : showGameOver ? 'gameover'
+            : showLeaderboard ? 'leaderboard'
+            : showGame ? 'game'
+            : 'lobby'
+          }
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {showGameOver ? (
+          {showPartyFinale ? (
+            <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} /></Suspense>
+          ) : showPartyStandings ? (
+            <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
+          ) : showGameOver ? (
             <TVGameOver scores={scores} />
           ) : showLeaderboard ? (
-            <TVLeaderboard scores={scores} />
+            <TVLeaderboard scores={scores} party={partyNight} />
           ) : showGame ? (
             <GameView gameState={gameState} drawing={drawing} />
           ) : (
